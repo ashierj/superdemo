@@ -57,6 +57,12 @@ GitLab will publish additional guidance to assist affected customers in migratin
 
 **Planned removal milestone: 15.0 (2022-05-22)**
 
+### Deprecate support for Debian 9
+
+Long term service and support (LTSS) for [Debian 9 Stretch ends in July 2022](https://wiki.debian.org/LTS). Therefore, we will longer support the Debian 9 distribution for the GitLab package. Users can upgrade to Debian 10 or Debian 11.
+
+**Planned removal milestone: 15.1 (2022-06-22)**
+
 ### GitLab Pages running as daemon
 
 In 15.0, support for daemon mode for GitLab Pages will be removed.
