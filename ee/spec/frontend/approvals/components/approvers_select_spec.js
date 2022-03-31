@@ -76,6 +76,7 @@ describe('Approvals ApproversSelect', () => {
   };
 
   beforeEach(() => {
+    jest.spyOn(Api, 'groups').mockResolvedValue(TEST_GROUPS);
     jest.spyOn(Api, 'projectGroups').mockResolvedValue(TEST_GROUPS);
     jest.spyOn(Api, 'projectUsers').mockReturnValue(Promise.resolve(TEST_USERS));
   });
@@ -126,12 +127,9 @@ describe('Approvals ApproversSelect', () => {
     });
 
     it('fetches all available groups', () => {
-      expect(Api.projectGroups).toHaveBeenCalledWith(TEST_PROJECT_ID, {
+      expect(Api.groups).toHaveBeenCalledWith(term, {
         skip_groups: [],
-        search: term,
-        with_shared: true,
-        shared_visible_only: true,
-        shared_min_access_level: 30,
+        all_available: true,
       });
     });
 
@@ -153,7 +151,7 @@ describe('Approvals ApproversSelect', () => {
       });
     });
 
-    it('fetches all available groups including non-visible shared groups', async (done) => {
+    it('does not fetch all available', async (done) => {
       waitForEvent($input, 'select2-loaded')
         .then(jest.runOnlyPendingTimers)
         .then(done)
@@ -161,11 +159,9 @@ describe('Approvals ApproversSelect', () => {
 
       search();
 
-      expect(Api.projectGroups).toHaveBeenCalledWith(TEST_PROJECT_ID, {
+      expect(Api.groups).toHaveBeenCalledWith('', {
         skip_groups: [],
-        with_shared: true,
-        shared_visible_only: false,
-        shared_min_access_level: 30,
+        all_available: false,
       });
     });
   });
@@ -191,11 +187,9 @@ describe('Approvals ApproversSelect', () => {
     });
 
     it('skips groups and does not fetch all available', () => {
-      expect(Api.projectGroups).toHaveBeenCalledWith(TEST_PROJECT_ID, {
-        shared_min_access_level: 30,
-        shared_visible_only: true,
+      expect(Api.groups).toHaveBeenCalledWith('', {
         skip_groups: skipGroupIds,
-        with_shared: true,
+        all_available: false,
       });
     });
 
