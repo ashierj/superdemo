@@ -192,8 +192,12 @@ pending_job_classes.each { |job_class| Gitlab::BackgroundMigration.steal(job_cla
 #### Background migrations stuck in 'pending' state
 
 GitLab 13.6 introduced an issue where a background migration named `BackfillJiraTrackerDeploymentType2` can be permanently stuck in a **pending** state across upgrades. To clean up this stuck migration, see the [13.6.0 version-specific instructions](#1360).
+
 GitLab 14.4 introduced an issue where a background migration named `PopulateTopicsTotalProjectsCountCache` can be permanently stuck in a **pending** state across upgrades when the instance lacks records that match the migration's target. To clean up this stuck migration, see the [14.4.0 version-specific instructions](#1440).
+
 GitLab 14.8 introduced an issue where a background migration named `PopulateTopicsNonPrivateProjectsCount` can be permanently stuck in a **pending** state across upgrades. To clean up this stuck migration, see the [14.8.0 version-specific instructions](#1480).
+
+GitLab 14.9 introduced an issue where a background migration named `ResetDuplicateCiRunnersTokenValuesOnProjects` can be permanently stuck in a **pending** state across upgrades when the instance lacks records that match the migration's target. To clean up this stuck migration, see the [14.9.0 version-specific instructions](#1490).
 
 For other background migrations stuck in pending, run the following check. If it returns non-zero and the count does not decrease over time, follow the rest of the steps in this section.
 
@@ -397,6 +401,35 @@ installation-specific upgrade instructions, based on how you installed GitLab:
 NOTE:
 Specific information that follow related to Ruby and Git versions do not apply to [Omnibus installations](https://docs.gitlab.com/omnibus/)
 and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with appropriate Ruby and Git versions and are not using system binaries for Ruby and Git. There is no need to install Ruby or Git when utilizing these two approaches.
+
+### 14.9.0
+
+- Database changes made by the upgrade to GitLab 14.9 can take hours or days to complete on larger GitLab instances. 
+  These [batched background migrations](#batched-background-migrations) update whole database tables to ensure corresponding
+  records in `namespaces` table for each record in `projects` table.
+
+  After you update to 14.9.0 or a later 14.9 patch version,
+  [batched background migrations need to finish](#batched-background-migrations)
+  before you update to a later version.
+
+  If the migrations are not finished and you try to update to a later version,
+  you'll see an error like:
+
+  ```plaintext
+  Expected batched background migration for the given configuration to be marked as 'finished', but it is 'active':
+  ```
+
+- GitLab 14.9.0 includes a
+  [background migration `ResetDuplicateCiRunnersTokenValuesOnProjects`](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/79140)
+  that may remain stuck permanently in a **pending** state.
+
+  To clean up this stuck job, run the following in the [GitLab Rails Console](../administration/operations/rails_console.md):
+
+  ```ruby
+  Gitlab::Database::BackgroundMigrationJob.pending.where(class_name: "ResetDuplicateCiRunnersTokenValuesOnProjects").find_each do |job|
+    puts Gitlab::Database::BackgroundMigrationJob.mark_all_as_succeeded("ResetDuplicateCiRunnersTokenValuesOnProjects", job.arguments)
+  end
+  ```
 
 ### 14.8.0
 
