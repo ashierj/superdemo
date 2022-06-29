@@ -5,6 +5,48 @@ require 'spec_helper'
 RSpec.describe Auth::ContainerRegistryAuthenticationService do
   include AdminModeHelper
 
+  describe 'with deploy keys' do
+    include_context 'container registry auth service context'
+
+    let_it_be_with_reload(:group) { create(:group, :public) }
+    let_it_be(:current_user) { nil }
+    let_it_be(:project) { create(:project, group: group) }
+
+    let(:deploy_token) { create(:deploy_token, projects: [project], read_registry: true, write_registry: true) }
+
+    context 'with IP restriction' do
+      before do
+        allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
+        stub_licensed_features(group_ip_restriction: true)
+      end
+
+      context 'group with restriction' do
+        before do
+          create(:ip_restriction, group: group, range: range)
+        end
+
+        context 'address is within the range' do
+          let(:range) { '192.168.0.0/24' }
+
+          it_behaves_like 'a container registry auth service'
+        end
+
+        context 'address is outside the range' do
+          let(:range) { '10.0.0.0/8' }
+          let(:current_params) do
+            { scopes: ["repository:#{project.full_path}:push,pull"], deploy_token: deploy_token }
+          end
+
+          context 'when actor is a deploy token with read access' do
+            it_behaves_like 'an inaccessible'
+            it_behaves_like 'not a container repository factory'
+            it_behaves_like 'logs an auth warning', %w(push pull)
+          end
+        end
+      end
+    end
+  end
+
   context 'in maintenance mode' do
     include_context 'container registry auth service context'
 
