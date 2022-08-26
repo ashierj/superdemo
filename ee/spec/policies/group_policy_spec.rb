@@ -659,7 +659,7 @@ RSpec.describe GroupPolicy do
   end
 
   context 'with ip restriction' do
-    let(:current_user) { developer }
+    let(:current_user) { maintainer }
 
     before do
       allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
@@ -669,6 +669,10 @@ RSpec.describe GroupPolicy do
     context 'without restriction' do
       it { is_expected.to be_allowed(:read_group) }
       it { is_expected.to be_allowed(:read_milestone) }
+      it { is_expected.to be_allowed(:read_package) }
+      it { is_expected.to be_allowed(:create_package) }
+      it { is_expected.to be_allowed(:destroy_package) }
+      it { is_expected.to be_allowed(:admin_package) }
     end
 
     context 'with restriction' do
@@ -681,14 +685,22 @@ RSpec.describe GroupPolicy do
 
         it { is_expected.to be_allowed(:read_group) }
         it { is_expected.to be_allowed(:read_milestone) }
+        it { is_expected.to be_allowed(:read_package) }
+        it { is_expected.to be_allowed(:create_package) }
+        it { is_expected.to be_allowed(:destroy_package) }
+        it { is_expected.to be_allowed(:admin_package) }
       end
 
       context 'address is outside the range' do
         let(:range) { '10.0.0.0/8' }
 
-        context 'as developer' do
+        context 'as maintainer' do
           it { is_expected.to be_disallowed(:read_group) }
           it { is_expected.to be_disallowed(:read_milestone) }
+          it { is_expected.to be_disallowed(:read_package) }
+          it { is_expected.to be_disallowed(:create_package) }
+          it { is_expected.to be_disallowed(:destroy_package) }
+          it { is_expected.to be_disallowed(:admin_package) }
         end
 
         context 'as owner' do
@@ -696,6 +708,10 @@ RSpec.describe GroupPolicy do
 
           it { is_expected.to be_allowed(:read_group) }
           it { is_expected.to be_allowed(:read_milestone) }
+          it { is_expected.to be_allowed(:read_package) }
+          it { is_expected.to be_allowed(:create_package) }
+          it { is_expected.to be_allowed(:destroy_package) }
+          it { is_expected.to be_allowed(:admin_package) }
         end
 
         context 'as auditor' do
