@@ -466,7 +466,7 @@ RSpec.describe ProjectPolicy do
       before do
         allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
         stub_licensed_features(group_ip_restriction: true)
-        group.add_developer(current_user)
+        group.add_maintainer(current_user)
       end
 
       context 'group without restriction' do
@@ -475,6 +475,10 @@ RSpec.describe ProjectPolicy do
         it { is_expected.to be_allowed(:read_merge_request) }
         it { is_expected.to be_allowed(:read_milestone) }
         it { is_expected.to be_allowed(:read_container_image) }
+        it { is_expected.to be_allowed(:read_package) }
+        it { is_expected.to be_allowed(:create_package) }
+        it { is_expected.to be_allowed(:destroy_package) }
+        it { is_expected.to be_allowed(:admin_package) }
       end
 
       context 'group with restriction' do
@@ -491,6 +495,10 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to be_allowed(:read_milestone) }
           it { is_expected.to be_allowed(:read_container_image) }
           it { is_expected.to be_allowed(:create_container_image) }
+          it { is_expected.to be_allowed(:read_package) }
+          it { is_expected.to be_allowed(:create_package) }
+          it { is_expected.to be_allowed(:destroy_package) }
+          it { is_expected.to be_allowed(:admin_package) }
         end
 
         context 'address is outside the range' do
@@ -502,6 +510,10 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to be_disallowed(:read_milestone) }
           it { is_expected.to be_disallowed(:read_container_image) }
           it { is_expected.to be_disallowed(:create_container_image) }
+          it { is_expected.to be_disallowed(:read_package) }
+          it { is_expected.to be_disallowed(:create_package) }
+          it { is_expected.to be_disallowed(:destroy_package) }
+          it { is_expected.to be_disallowed(:admin_package) }
 
           context 'with admin enabled', :enable_admin_mode do
             it { is_expected.to be_allowed(:read_project) }
@@ -510,6 +522,10 @@ RSpec.describe ProjectPolicy do
             it { is_expected.to be_allowed(:read_milestone) }
             it { is_expected.to be_allowed(:read_container_image) }
             it { is_expected.to be_allowed(:create_container_image) }
+            it { is_expected.to be_allowed(:read_package) }
+            it { is_expected.to be_allowed(:create_package) }
+            it { is_expected.to be_allowed(:destroy_package) }
+            it { is_expected.to be_allowed(:admin_package) }
           end
 
           context 'with admin disabled' do
@@ -519,6 +535,10 @@ RSpec.describe ProjectPolicy do
             it { is_expected.to be_disallowed(:read_milestone) }
             it { is_expected.to be_disallowed(:read_container_image) }
             it { is_expected.to be_disallowed(:create_container_image) }
+            it { is_expected.to be_disallowed(:read_package) }
+            it { is_expected.to be_disallowed(:create_package) }
+            it { is_expected.to be_disallowed(:destroy_package) }
+            it { is_expected.to be_disallowed(:admin_package) }
           end
 
           context 'with auditor' do
@@ -530,6 +550,10 @@ RSpec.describe ProjectPolicy do
             it { is_expected.to be_allowed(:read_milestone) }
             it { is_expected.to be_allowed(:read_container_image) }
             it { is_expected.to be_allowed(:create_container_image) }
+            it { is_expected.to be_allowed(:read_package) }
+            it { is_expected.to be_allowed(:create_package) }
+            it { is_expected.to be_allowed(:destroy_package) }
+            it { is_expected.to be_allowed(:admin_package) }
           end
         end
       end
