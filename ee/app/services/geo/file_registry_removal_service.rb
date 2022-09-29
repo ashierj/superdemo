@@ -31,15 +31,8 @@ module Geo
 
       try_obtain_lease do
         log_info('Lease obtained')
-
-        unless file_registry
-          log_error('Could not find file_registry')
-          break
-        end
-
         destroy_file
         destroy_registry
-
         log_info('File & registry removed')
       end
     rescue SystemCallError => e
@@ -64,19 +57,23 @@ module Geo
           log_info('Local file not found. Trying object storage')
           destroy_object_storage_file
         else
-          log_error('Unable to unlink file from filesystem, or object storage. A file may be orphaned', object_type: object_type)
+          log_error('Unable to unlink file from filesystem, or object storage. A file may be orphaned.', object_type: object_type, object_db_id: object_db_id)
         end
       else
-        log_error('Unable to unlink file because file path is unknown. A file may be orphaned', object_type: object_type, object_db_id: object_db_id)
+        log_error('Unable to unlink file because file path is unknown. A file may be orphaned.', object_type: object_type, object_db_id: object_db_id)
       end
     end
 
     def destroy_object_storage_file
-      if object_file.nil?
-        log_error("Can't find #{object_file_path} in object storage path #{object_storage_config[:remote_directory]}")
+      if sync_object_storage_enabled?
+        if object_file.nil?
+          log_error("Can't find #{object_file_path} in object storage path #{object_storage_config[:remote_directory]}")
+        else
+          log_info("Removing #{object_file_path} from #{object_storage_config[:remote_directory]}")
+          object_file.destroy
+        end
       else
-        log_info("Removing #{object_file_path} from #{object_storage_config[:remote_directory]}")
-        object_file.destroy
+        log_info('Skipping file deletion as this secondary node is not allowed to replicate content on Object Storage')
       end
     end
 
@@ -102,7 +99,7 @@ module Geo
         next if file_uploader.nil?
         next file_uploader.file.path if file_uploader.object_store == ObjectStorage::Store::LOCAL
 
-        file_uploader.class.absolute_path(file_uploader.file)
+        file_uploader.class.absolute_path(file_uploader)
       end
     end
 
@@ -132,6 +129,10 @@ module Geo
       "file_registry_removal_service:#{object_type}:#{object_db_id}"
     end
 
+    def sync_object_storage_enabled?
+      Gitlab::Geo.current_node.sync_object_storage
+    end
+
     def object_storage_config
       return if file_uploader.nil?
 
@@ -150,7 +151,8 @@ module Geo
 
       ::Fog::Storage.new(config)
         .directories.new(key: object_storage_config[:remote_directory])
-        .files.head(object_file_path)
+        .files
+        .head(object_file_path)
     end
 
     def object_file_path
