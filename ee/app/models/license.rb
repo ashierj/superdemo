@@ -7,7 +7,6 @@
 class License < ApplicationRecord
   include ActionView::Helpers::NumberHelper
   include Gitlab::Utils::StrongMemoize
-  extend Gitlab::Utils::StrongMemoize
 
   STARTER_PLAN = 'starter'
   PREMIUM_PLAN = 'premium'
@@ -30,17 +29,6 @@ class License < ApplicationRecord
     { range: (1000..nil), percentage: true, value: 5 }
   ].freeze
 
-  CACHE_KEYS = %i[
-    offline_cloud_license?
-    restricted_user_count
-    restricted_user_count?
-    ultimate?
-    customer_service_enabled?
-    trial?
-  ].freeze
-
-  CACHE_EXPIRATION = 1.minute
-
   LICENSEE_ATTRIBUTES = %w[Name Email Company].freeze
 
   validate :valid_license
@@ -59,17 +47,15 @@ class License < ApplicationRecord
   scope :recent, -> { reorder(id: :desc) }
   scope :last_hundred, -> { recent.limit(100) }
 
+  CACHE_KEY = :current_license
+
   class << self
     def current
-      strong_memoize(:current) { load_license }
+      cache.fetch(CACHE_KEY, as: License, expires_in: 1.minute) { load_license }
     end
 
-    def reset_cache_keys
-      clear_memoization(:current)
-
-      CACHE_KEYS.each do |cache_key|
-        cache.expire(cache_key)
-      end
+    def reset_current
+      cache.expire(CACHE_KEY)
     end
 
     def cache
@@ -87,10 +73,6 @@ class License < ApplicationRecord
 
     def feature_available?(feature)
       !!current&.feature_available?(feature)
-    end
-
-    def reset_current
-      reset_cache_keys
     end
 
     def load_license
@@ -145,42 +127,28 @@ class License < ApplicationRecord
     end
   end
 
-  def cache_value(method)
-    self.class.cache.fetch(method, expires_in: CACHE_EXPIRATION) do
-      yield
-    end
-  end
-
   def offline_cloud_license?
-    cache_value(:offline_cloud_license?) do
-      cloud_license? && !!license&.offline_cloud_licensing?
-    end
+    cloud_license? && !!license&.offline_cloud_licensing?
   end
 
   def restricted_user_count
-    cache_value(:restricted_user_count) do
-      restricted_attr(:active_user_count)
-    end
+    restricted_attr(:active_user_count)
   end
 
   def restricted_user_count?
-    cache_value(:restricted_user_count?) do
-      restricted_user_count.to_i > 0
-    end
+    restricted_user_count.to_i > 0
   end
 
   def ultimate?
-    cache_value(:ultimate?) { plan == License::ULTIMATE_PLAN }
+    plan == License::ULTIMATE_PLAN
   end
 
   def customer_service_enabled?
-    cache_value(:customer_service_enabled?) do
-      !!license&.operational_metrics?
-    end
+    !!license&.operational_metrics?
   end
 
   def trial?
-    cache_value(:trial?) { restricted_attr(:trial) }
+    restricted_attr(:trial)
   end
 
   def data_filename
