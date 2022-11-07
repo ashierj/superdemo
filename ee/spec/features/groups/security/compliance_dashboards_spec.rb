@@ -10,7 +10,9 @@ RSpec.describe 'Compliance Dashboard', :js do
   let_it_be(:project_2) { create(:project, :repository, :public, namespace: group) }
 
   shared_examples 'exports a merge commit-specific CSV' do
-    it 'downloads a commit chain of custory report', :aggregate_failures do
+    it 'downloads a commit chain of custody report', :aggregate_failures do
+      visit group_security_compliance_dashboard_path(group)
+
       page.within('[data-testid="merge-commit-dropdown"]') do
         find('.dropdown-toggle').click
 
