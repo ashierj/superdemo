@@ -10,7 +10,9 @@ RSpec.describe 'Compliance Dashboard', :js do
   let_it_be(:project_2) { create(:project, :repository, :public, namespace: group) }
 
   shared_examples 'exports a merge commit-specific CSV' do
-    it 'downloads a commit chain of custory report', :aggregate_failures do
+    it 'downloads a commit chain of custody report', :aggregate_failures do
+      visit group_security_compliance_dashboard_path(group)
+
       page.within('[data-testid="merge-commit-dropdown"]') do
         find('.dropdown-toggle').click
 
@@ -37,10 +39,11 @@ RSpec.describe 'Compliance Dashboard', :js do
     stub_licensed_features(group_level_compliance_dashboard: true)
     group.add_owner(user)
     sign_in(user)
-    visit group_security_compliance_dashboard_path(group)
   end
 
   it 'shows the violations report table', :aggregate_failures do
+    visit group_security_compliance_dashboard_path(group)
+
     page.within('table') do
       expect(page).to have_content 'Severity'
       expect(page).to have_content 'Violation'
@@ -50,6 +53,10 @@ RSpec.describe 'Compliance Dashboard', :js do
   end
 
   context 'when there are no compliance violations' do
+    before do
+      visit group_security_compliance_dashboard_path(group)
+    end
+
     it 'shows an empty state' do
       expect(page).to have_content('No violations found')
     end
@@ -74,6 +81,7 @@ RSpec.describe 'Compliance Dashboard', :js do
         merge_request.metrics.update!(merged_at: merged_at)
         merge_request_2.metrics.update!(merged_at: 7.days.ago)
 
+        visit group_security_compliance_dashboard_path(group)
         wait_for_requests
       end
 
