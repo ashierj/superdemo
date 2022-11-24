@@ -68,7 +68,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
         # EE-specific categories
         'compliance',
         'incident_management_oncall',
-        'integrations',
         'ci_secrets_management',
         'epic_boards_usage',
         'epics_usage',
