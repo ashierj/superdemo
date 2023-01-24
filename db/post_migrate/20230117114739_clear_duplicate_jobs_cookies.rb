@@ -6,7 +6,7 @@
 # This post-deployment migration deletes all such cookies. This can
 # cause some jobs that normally would have been deduplicated to twice
 # instead of once.
-class ClearDuplicateJobsCookies < Gitlab::Database::Migration[2.1]
+class ClearDuplicateJobsCookies < Gitlab::Database::Migration[2.0]
   disable_ddl_transaction!
   restrict_gitlab_migration gitlab_schema: :gitlab_main
 
