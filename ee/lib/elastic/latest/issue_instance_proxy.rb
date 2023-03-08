@@ -14,7 +14,10 @@ module Elastic
 
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
-        data['schema_version'] = 22_08
+
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_label_ids_and_schema_version_to_issues_mapping)
+          data['schema_version'] = 22_08
+        end
 
         # Load them through the issue_assignees table since calling
         # assignee_ids can't be easily preloaded and does
@@ -27,7 +30,9 @@ module Elastic
         data['upvotes'] = target.upvotes_count
         data['namespace_ancestry_ids'] = target.namespace_ancestry
 
-        data['label_ids'] = target.label_ids.map(&:to_s)
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_label_ids_and_schema_version_to_issues_mapping)
+          data['label_ids'] = target.label_ids.map(&:to_s)
+        end
 
         data.merge(generic_attributes)
       end
