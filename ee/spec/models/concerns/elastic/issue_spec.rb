@@ -112,27 +112,31 @@ RSpec.describe Issue, :elastic do
     let_it_be(:label) { create(:label) }
     let_it_be(:issue) { create(:labeled_issue, project: project, assignees: [assignee], labels: [label]) }
     let_it_be(:award_emoji) { create(:award_emoji, :upvote, awardable: issue) }
+    let(:expected_hash) do
+      issue.attributes.extract!(
+        'id',
+      'iid',
+      'title',
+      'description',
+      'created_at',
+      'updated_at',
+      'project_id',
+      'author_id',
+      'confidential'
+      ).merge({
+              'type' => issue.es_type,
+              'state' => issue.state,
+              'upvotes' => 1,
+              'namespace_ancestry_ids' => "#{group.id}-#{subgroup.id}-",
+              'label_ids' => [label.id.to_s],
+              'schema_version' => 22_08,
+              'assignee_id' => [assignee.id],
+              'issues_access_level' => ProjectFeature::ENABLED,
+              'visibility_level' => Gitlab::VisibilityLevel::INTERNAL
+            })
+    end
 
     it "returns json with all needed elements" do
-      expected_hash = issue.attributes.extract!(
-        'id',
-        'iid',
-        'title',
-        'description',
-        'created_at',
-        'updated_at',
-        'project_id',
-        'author_id',
-        'confidential'
-      ).merge({
-                'type' => issue.es_type,
-                'state' => issue.state,
-                'upvotes' => 1,
-                'namespace_ancestry_ids' => "#{group.id}-#{subgroup.id}-",
-                'label_ids' => [label.id.to_s],
-                'schema_version' => 22_08
-              })
-
       expected_hash['assignee_id'] = [assignee.id]
       expected_hash['issues_access_level'] = ProjectFeature::ENABLED
       expected_hash['visibility_level'] = Gitlab::VisibilityLevel::INTERNAL
