@@ -26,6 +26,40 @@ RSpec.shared_examples 'authorize read pipeline' do
   end
 end
 
+RSpec.shared_examples 'a security resource' do
+  context 'public project with public builds' do
+    let_it_be(:project) { create(:project, :public, :builds_enabled) }
+    let_it_be(:non_member) { create(:user) }
+    let_it_be(:guest) { create(:user).tap { |user| project.add_guest(user) } }
+
+    let(:comparison_status) { {} }
+
+    it 'restricts access from signed out users' do
+      sign_out viewer
+
+      subject
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+
+    it 'restricts access from non-members' do
+      sign_in non_member
+
+      subject
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+
+    it 'restricts access from guests' do
+      sign_in guest
+
+      subject
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+  end
+end
+
 RSpec.shared_examples 'pending pipeline response' do
   context 'when pipeline is pending' do
     let(:comparison_status) { nil }
@@ -59,6 +93,7 @@ RSpec.describe Projects::MergeRequestsController do
   let(:viewer) { user }
 
   before do
+    stub_licensed_features(security_dashboard: true)
     sign_in(viewer)
   end
 
@@ -464,7 +499,7 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    it_behaves_like 'authorize read pipeline'
+    it_behaves_like 'a security resource'
   end
 
   describe 'GET #container_scanning_reports', feature_category: :vulnerability_management do
@@ -539,7 +574,7 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    it_behaves_like 'authorize read pipeline'
+    it_behaves_like 'a security resource'
   end
 
   describe 'GET #sast_reports', feature_category: :vulnerability_management do
@@ -614,7 +649,7 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    it_behaves_like 'authorize read pipeline'
+    it_behaves_like 'a security resource'
   end
 
   describe 'GET #coverage_fuzzing_reports', feature_category: :vulnerability_management do
@@ -689,7 +724,7 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    it_behaves_like 'authorize read pipeline'
+    it_behaves_like 'a security resource'
   end
 
   describe 'GET #api_fuzzing_reports', feature_category: :vulnerability_management do
@@ -764,7 +799,7 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    it_behaves_like 'authorize read pipeline'
+    it_behaves_like 'a security resource'
   end
 
   describe 'GET #secret_detection_reports', feature_category: :vulnerability_management do
@@ -840,7 +875,7 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    it_behaves_like 'authorize read pipeline'
+    it_behaves_like 'a security resource'
   end
 
   describe 'GET #dast_reports', feature_category: :vulnerability_management do
@@ -915,7 +950,7 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    it_behaves_like 'authorize read pipeline'
+    it_behaves_like 'a security resource'
   end
 
   describe 'GET #license_scanning_reports', feature_category: :license_compliance do
