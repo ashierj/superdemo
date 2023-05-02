@@ -194,11 +194,11 @@ module EE
         prevent :import_project_members_from_another_project
       end
 
-      condition(:user_banned_from_project) do
+      condition(:user_banned_from_namespace) do
         next unless @user.is_a?(User)
 
         root_namespace = @subject.root_ancestor
-        next unless ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, root_namespace)
+        next unless root_namespace.group_namespace? && root_namespace.unique_project_download_limit_enabled?
 
         @user.banned_from_namespace?(root_namespace)
       end
@@ -219,11 +219,7 @@ module EE
         @subject.can_suggest_reviewers?
       end
 
-      # Owners can be banned from their own project except for top-level group
-      # owners. This exception is made at the service layer
-      # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
-      # is created.
-      rule { ~public_project & ~admin & user_banned_from_project }.policy do
+      rule { ~admin & user_banned_from_namespace }.policy do
         prevent :read_project
       end
 
