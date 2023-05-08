@@ -9,7 +9,7 @@ RSpec.describe Projects::CreateService, '#execute' do
   let(:opts) do
     {
       name: "GitLab",
-      namespace: user.namespace
+      namespace_id: user.namespace.id
     }
   end
 
@@ -38,6 +38,52 @@ RSpec.describe Projects::CreateService, '#execute' do
       expect(::Projects::CreateFromTemplateService).to receive_message_chain(:new, :execute)
 
       create_project(user, opts)
+    end
+  end
+
+  context 'with import_type gitlab_custom_project_template' do
+    let(:group) do
+      create(:group, project_creation_level: project_creation_level).tap do |group|
+        group.add_developer(user)
+      end
+    end
+
+    let(:opts) do
+      {
+        name: 'GitLab',
+        namespace_id: group.id,
+        import_type: 'gitlab_custom_project_template',
+        import_data: {
+          data: {
+            template_project_id: 1
+          }
+        }
+      }
+    end
+
+    before do
+      stub_licensed_features(custom_project_templates: true)
+    end
+
+    context 'when the user is allowed to create projects within the namespace' do
+      let(:project_creation_level) { Gitlab::Access::DEVELOPER_MAINTAINER_PROJECT_ACCESS }
+
+      it 'creates a project' do
+        project = create_project(user, opts)
+
+        expect(project).to be_persisted
+        expect(project.import_type).to eq('gitlab_custom_project_template')
+      end
+    end
+
+    context 'when the user is not allowed to create projects within the namespace' do
+      let(:project_creation_level) { Gitlab::Access::MAINTAINER_PROJECT_ACCESS }
+
+      it 'does not create a project' do
+        project = create_project(user, opts)
+
+        expect(project).not_to be_persisted
+      end
     end
   end
 
@@ -114,8 +160,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
   context 'with repository mirror' do
     before do
-      opts.merge!(import_url: 'http://foo.com',
-                  mirror: true)
+      opts.merge!(import_url: 'http://foo.com', mirror: true)
     end
 
     context 'when licensed' do
@@ -446,6 +491,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
   describe 'after create actions' do
     describe 'set_default_compliance_framework' do
+      let_it_be(:admin_bot) { create(:user, :admin_bot, :admin) }
       let_it_be(:group, reload: true) { create(:group) }
       let_it_be(:framework) { create(:compliance_framework, namespace: group, name: 'GDPR') }
       let_it_be(:framework_two) { create(:compliance_framework, namespace: group, name: 'HIPAA') }
@@ -453,6 +499,7 @@ RSpec.describe Projects::CreateService, '#execute' do
       context 'when default compliance framework is set at the root namespace' do
         before do
           group.add_owner(user)
+          group.add_owner(admin_bot)
           group.namespace_settings.update!(default_compliance_framework_id: framework.id)
         end
 
@@ -483,6 +530,7 @@ RSpec.describe Projects::CreateService, '#execute' do
       context 'when default compliance framework is not set at the root namespace' do
         before do
           group.add_owner(user)
+          group.add_owner(admin_bot)
           group.namespace_settings.update!(default_compliance_framework_id: nil)
         end
 
