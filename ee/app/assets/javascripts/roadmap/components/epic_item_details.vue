@@ -148,7 +148,7 @@ export default {
     data-qa-selector="epic_details_cell"
   >
     <div
-      class="gl-display-flex align-items-start gl-p-3 gl-mb-1"
+      class="gl-display-flex align-items-start gl-p-3"
       :class="[epic.isChildEpic ? childMarginClassname : '']"
       data-testid="epic-container"
     >
