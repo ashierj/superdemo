@@ -9,13 +9,6 @@
   }
 }
 
-.limit-container-width {
-  .epic-page-container .issuable-details,
-  .emoji-list-container {
-    @include fixed-width-container;
-  }
-}
-
 .health-status {
   line-height: $gl-line-height;
 
