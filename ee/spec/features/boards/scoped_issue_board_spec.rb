@@ -33,7 +33,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
       allow(helper).to receive(:collapsed_sidebar?).and_return(true)
     end
 
-    stub_feature_flags(apollo_boards: false)
     stub_licensed_features(scoped_issue_board: true)
   end
 

@@ -14,7 +14,6 @@ RSpec.describe 'Boards licensed features', :js, feature_category: :team_planning
   end
 
   before do
-    stub_feature_flags(apollo_boards: false)
     sign_in user
   end
 

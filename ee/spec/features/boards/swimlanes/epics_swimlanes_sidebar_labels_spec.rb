@@ -9,7 +9,6 @@ RSpec.describe 'Issue boards sidebar labels using epic swimlanes', :js, feature_
 
   before do
     stub_licensed_features(epics: true, swimlanes: true)
-    stub_feature_flags(apollo_boards: false)
   end
 
   let(:card) { find_by_testid('board-lane-unassigned-issues').first("[data-testid='board-card']") }

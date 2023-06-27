@@ -18,7 +18,6 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
 
   before do
     stub_licensed_features(epics: true)
-    stub_feature_flags(apollo_boards: false)
 
     group.add_maintainer(user)
     sign_in(user)

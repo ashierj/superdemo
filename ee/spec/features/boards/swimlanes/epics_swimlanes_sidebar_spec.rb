@@ -17,7 +17,6 @@ RSpec.describe 'epics swimlanes sidebar', :js, feature_category: :team_planning,
   let_it_be(:issue, reload: true) { create(:issue, project: project) }
 
   before do
-    stub_feature_flags(apollo_boards: false)
     stub_licensed_features(epics: true, swimlanes: true)
 
     project.add_maintainer(user)

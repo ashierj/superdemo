@@ -26,7 +26,6 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   context 'link to swimlanes view' do
     before do
       stub_licensed_features(epics: true, swimlanes: true)
-      stub_feature_flags(apollo_boards: false)
       sign_in(user)
       visit_epics_swimlanes_page
     end
@@ -63,7 +62,6 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
 
   before do
     stub_licensed_features(epics: true, swimlanes: true)
-    stub_feature_flags(apollo_boards: false)
     sign_in(user)
     visit_board_page
     load_epic_swimlanes
