@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::HooksController, feature_category: :integrations do
+RSpec.describe Groups::HooksController, feature_category: :webhooks do
   let_it_be(:group_owner) { create(:user) }
   let_it_be(:group_maintainer) { create(:user) }
   let_it_be(:group) { create(:group) }
@@ -156,7 +156,7 @@ RSpec.describe Groups::HooksController, feature_category: :integrations do
         end
 
         it 'is successful' do
-          hook.update!(url_variables: { 'a' => 'x', 'b' => 'z' })
+          hook.update!(url_variables: { 'b' => 'z' })
 
           patch :update, params: { group_id: group.to_param, id: hook, hook: hook_params }
 
