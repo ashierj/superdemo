@@ -39,13 +39,13 @@ class MergeRequestApproverPresenter < Gitlab::View::Presenter::Simple
   private
 
   def users
-    strong_memoize(:users) do
+    strong_memoize_with(:users) do
       merge_request.project.members_among(users_from_git_log_authors)
     end
   end
 
   def code_owner_enabled?
-    strong_memoize(:code_owner_enabled) do
+    strong_memoize_with(:code_owner_enabled) do
       merge_request.project.feature_available?(:code_owners)
     end
   end
@@ -59,10 +59,14 @@ class MergeRequestApproverPresenter < Gitlab::View::Presenter::Simple
   end
 
   def code_owner_loader
-    @code_owner_loader ||= Gitlab::CodeOwners::Loader.new(
-      merge_request.target_project,
-      merge_request.target_branch,
-      merge_request.modified_paths
-    )
+    strong_memoize_with(:code_owner_loader) do
+      Gitlab::CodeOwners::Loader.new(
+        merge_request.target_project,
+        # We must use target_branch_ref instead of target_branch to prevent
+        # ambiguous refs from picking the wrong code owner file
+        merge_request.target_branch_ref,
+        merge_request.modified_paths
+      )
+    end
   end
 end
