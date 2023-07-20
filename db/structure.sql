@@ -18369,7 +18369,8 @@ CREATE TABLE merge_request_diff_files (
     diff text,
     "binary" boolean,
     external_diff_offset integer,
-    external_diff_size integer
+    external_diff_size integer,
+    generated boolean
 );
 
 CREATE TABLE merge_request_diff_llm_summaries (
