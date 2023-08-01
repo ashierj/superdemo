@@ -11,7 +11,7 @@ module API
       def dependencies_by(params)
         pipeline = ::Security::ReportFetchService.new(user_project, ::Ci::JobArtifact.of_report_type(:dependency_list)).pipeline
 
-        return [] unless pipeline
+        return ::Gitlab::ItemsCollection.new([]) unless pipeline
 
         ::Security::DependencyListService.new(pipeline: pipeline, params: params).execute
       end
@@ -45,7 +45,7 @@ module API
         ::Gitlab::Tracking.event(self.options[:for].name, 'view_dependencies', project: user_project, user: current_user, namespace: user_project.namespace)
 
         dependency_params = declared_params(include_missing: false).merge(project: user_project)
-        dependencies = paginate(::Gitlab::ItemsCollection.new(dependencies_by(dependency_params)))
+        dependencies = paginate(dependencies_by(dependency_params))
 
         present dependencies, with: ::EE::API::Entities::Dependency, user: current_user, project: user_project
       end

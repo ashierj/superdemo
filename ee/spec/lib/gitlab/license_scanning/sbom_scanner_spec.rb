@@ -270,4 +270,78 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
       end
     end
   end
+
+  describe '#add_licenses' do
+    let(:dependencies) do
+      [
+        {
+          name: "activesupport",
+          package_manager: "bundler",
+          version: "5.1.4",
+          id: 1
+        },
+        {
+          name: "non-matching-package",
+          package_manager: "bundler",
+          version: "1.2.3",
+          id: 2
+        },
+        {
+          name: "acorn",
+          package_manager: "yarn",
+          version: "5.7.3",
+          id: 3
+        },
+        {
+          name: "Django",
+          package_manager: "pip",
+          version: "1.11.4",
+          id: 4
+        },
+        {
+          name: "activesupport",
+          package_manager: "bundler",
+          version: "5.1.4",
+          id: 5
+        },
+        {
+          name: "jquery-ui",
+          package_manager: "",
+          version: "1.10.2",
+          id: 6
+        }
+      ]
+    end
+
+    before_all do
+      create(:pm_package, name: "activesupport", purl_type: "gem",
+        other_licenses: [{ license_names: ["OLDAP-2.3"], versions: ["5.1.4"] }])
+      create(:pm_package, name: "acorn", purl_type: "npm",
+        other_licenses: [{ license_names: ["OLDAP-2.1", "OLDAP-2.2"], versions: ["5.7.3"] }])
+      create(:pm_package, name: "django", purl_type: "pypi",
+        other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
+    end
+
+    subject(:dependencies_with_license) do
+      described_class.new(project, create(:ee_ci_pipeline, project: project)).add_licenses(dependencies)
+    end
+
+    it 'adds licenses to the dependencies' do
+      expect(dependencies_with_license).to eq([
+        { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
+          licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
+        { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
+          licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+        { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
+          licenses: [{ name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
+            { name: "Open LDAP Public License v2.2", url: "https://spdx.org/licenses/OLDAP-2.2.html" }] },
+        { name: "Django", package_manager: "pip", version: "1.11.4", id: 4,
+          licenses: [{ name: "MIT", url: "https://spdx.org/licenses/MIT.html" }] },
+        { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
+          licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
+        { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
+          licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] }
+      ])
+    end
+  end
 end
