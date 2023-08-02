@@ -777,13 +777,6 @@ module EE
       end
     end
 
-    override :any_hook_failed?
-    def any_hook_failed?
-      # Normally `hooks.disabled.exists?`, but since the GroupHook model does not support autodisabling
-      # we simply return `false`.
-      false
-    end
-
     override :git_transfer_in_progress?
     def git_transfer_in_progress?
       reference_counter(type: ::Gitlab::GlRepository::WIKI).value > 0

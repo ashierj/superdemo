@@ -37,7 +37,7 @@ RSpec.describe WebHooks::LogExecutionService, feature_category: :webhooks do
     end
 
     it 'updates the last failure' do
-      expect(project_hook).to receive(:update_last_failure)
+      expect(project_hook.parent).to receive(:update_last_failure).with(project_hook)
 
       service.execute
     end
