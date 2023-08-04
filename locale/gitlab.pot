@@ -8539,6 +8539,9 @@ msgstr ""
 msgid "Bot"
 msgstr ""
 
+msgid "Bot comments"
+msgstr ""
+
 msgid "Both SSH and HTTP(S)"
 msgstr ""
 
