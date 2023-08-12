@@ -406,6 +406,10 @@ module Vulnerabilities
       pluck(:uuid)
     end
 
+    def self.pluck_vulnerability_ids
+      pluck(:vulnerability_id)
+    end
+
     def pipeline_branch
       last_finding_pipeline&.sha || project.default_branch
     end
