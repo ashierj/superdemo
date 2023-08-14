@@ -15,10 +15,9 @@ module QA
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
 
       let(:merge_request) do
-        Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.title = 'Merge request for merge request index test'
-          mr.description = "Some merge request description #{SecureRandom.hex(8)}"
-        end
+        create(:merge_request,
+          title: 'Merge request for merge request index test',
+          description: "Some merge request description #{SecureRandom.hex(8)}")
       end
 
       it(

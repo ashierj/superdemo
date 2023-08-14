@@ -49,13 +49,12 @@ module QA
           branch.require_code_owner_approval = true
         end
 
-        Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.no_preparation = true
-          mr.project = project
-          mr.source_branch = source.branch
-          mr.target_branch = target.branch
-          mr.title = 'merging two commits'
-        end.visit!
+        create(:merge_request,
+          :no_preparation,
+          project: project,
+          source_branch: source.branch,
+          target_branch: target.branch,
+          title: 'merging two commits').visit!
 
         Page::MergeRequest::Show.perform do |mr|
           mr.mark_to_squash

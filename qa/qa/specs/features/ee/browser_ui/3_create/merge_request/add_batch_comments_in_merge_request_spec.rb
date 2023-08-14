@@ -5,11 +5,7 @@ module QA
     describe 'Batch comments in merge request', :reliable, product_group: :code_review do
       let(:project) { create(:project, name: 'project-with-merge-request') }
       let(:merge_request) do
-        Resource::MergeRequest.fabricate_via_api! do |merge_request|
-          merge_request.title = 'This is a merge request'
-          merge_request.description = 'Great feature'
-          merge_request.project = project
-        end
+        create(:merge_request, title: 'This is a merge request', description: 'Great feature', project: project)
       end
 
       it 'user submits a non-diff review', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347777' do

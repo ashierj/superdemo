@@ -40,14 +40,13 @@ module QA
           push.branch_name = 'secure-mr'
         end
 
-        merge_request = Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.project = @project
-          mr.source_branch = 'secure-mr'
-          mr.target_branch = @project.default_branch
-          mr.source = @source
-          mr.target = @project.default_branch
-          mr.target_new_branch = false
-        end
+        merge_request = create(:merge_request,
+          project: @project,
+          source_branch: 'secure-mr',
+          target_branch: @project.default_branch,
+          source: @source,
+          target: @project.default_branch,
+          target_new_branch: false)
 
         @project.visit!
         Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed')

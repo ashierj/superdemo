@@ -70,12 +70,11 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347770' do
         push branch: 'test', as_user: user_one
 
-        merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|
-          merge_request.project = project
-          merge_request.source_branch = 'test'
-          merge_request.target_branch = project.default_branch
-          merge_request.no_preparation = true
-        end
+        merge_request = create(:merge_request,
+          :no_preparation,
+          project: project,
+          source_branch: 'test',
+          target_branch: project.default_branch)
 
         go_to_file
         click_lock

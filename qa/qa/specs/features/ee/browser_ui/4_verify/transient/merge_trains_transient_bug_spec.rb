@@ -51,14 +51,13 @@ module QA
           title = "merge train transient bug test #{random_string_for_this_trial}"
 
           # Create a merge request to be merged to master
-          merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|
-            merge_request.title = title
-            merge_request.project = project
-            merge_request.description = title
-            merge_request.target_new_branch = false
-            merge_request.file_name = random_string_for_this_trial
-            merge_request.file_content = random_string_for_this_trial
-          end
+          merge_request = create(:merge_request,
+            title: title,
+            project: project,
+            description: title,
+            target_new_branch: false,
+            file_name: random_string_for_this_trial,
+            file_content: random_string_for_this_trial)
 
           merge_request.visit!
 
@@ -92,10 +91,7 @@ module QA
       end
 
       def merge_request_state(merge_request)
-        Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.project = project
-          mr.iid = merge_request.iid
-        end.state
+        create(:merge_request, project: project, iid: merge_request.iid).state
       end
     end
   end

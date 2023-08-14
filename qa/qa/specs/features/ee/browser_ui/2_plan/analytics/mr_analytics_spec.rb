@@ -14,20 +14,18 @@ module QA
       let(:project) { create(:project, name: 'mr_analytics', group: group, api_client: admin_api_client) }
 
       let(:mr_1) do
-        Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.title = "First merge request"
-          mr.labels = [label]
-          mr.project = project
-          mr.api_client = user_api_client
-        end
+        create(:merge_request,
+          title: 'First merge request',
+          labels: [label],
+          project: project,
+          api_client: user_api_client)
       end
 
       let(:mr_2) do
-        Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.title = "Second merge request"
-          mr.project = project
-          mr.api_client = user_api_client
-        end
+        create(:merge_request,
+          title: 'Second merge request',
+          project: project,
+          api_client: user_api_client)
       end
 
       before do

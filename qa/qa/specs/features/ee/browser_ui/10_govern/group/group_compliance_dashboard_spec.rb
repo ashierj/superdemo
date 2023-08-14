@@ -15,11 +15,10 @@ module QA
 
       let!(:project) { create(:project, name: 'project-compliance-dashboard', group: group) }
       let(:merge_request) do
-        Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.project = project
-          mr.title = "compliance-dashboard-mr-#{SecureRandom.hex(6)}"
-          mr.source_branch = "test-compliance-report-branch-#{SecureRandom.hex(8)}"
-        end
+        create(:merge_request,
+          project: project,
+          title: "compliance-dashboard-mr-#{SecureRandom.hex(6)}",
+          source_branch: "test-compliance-report-branch-#{SecureRandom.hex(8)}")
       end
 
       context 'with separation of duties in an MR' do

@@ -51,9 +51,7 @@ module QA
           compliant_project = create(:project, name: 'compliant-project', group: group)
           compliant_project.compliance_framework = compliance_framework
 
-          mr = Resource::MergeRequest.fabricate_via_api! do |merge_request|
-            merge_request.project = compliant_project
-          end
+          mr = create(:merge_request, project: compliant_project)
 
           pipeline = compliant_project.wait_for_pipeline(ref: mr.source_branch, status: 'success')
           expect(pipeline).not_to be_nil,
