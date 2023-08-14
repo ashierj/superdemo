@@ -37,12 +37,14 @@ module QA
         'creates a merge request after a push via the API',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/360490'
       ) do
-        commit = Resource::Repository::Commit.fabricate_via_api! do |resource|
-          resource.project = project
-          resource.add_files([{ 'file_path': "file-#{SecureRandom.hex(8)}.txt", 'content': 'MR init' }])
-          resource.branch = branch_name
-          resource.start_branch = project.default_branch
-        end
+        commit = create(:commit,
+          project: project,
+          branch: branch_name,
+          start_branch: project.default_branch,
+          actions: [
+            { action: 'create', file_path: "file-#{SecureRandom.hex(8)}.txt", content: 'MR init' }
+          ])
+
         project.wait_for_push(commit.commit_message)
 
         project.visit!
