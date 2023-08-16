@@ -6,26 +6,19 @@ module QA
       let(:project) { create(:project, :with_readme) }
 
       let!(:target) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.branch = project.default_branch
-          commit.add_files([{ file_path: '.gitlab/CODEOWNERS', content: '* @root' }])
-        end
+        create(:commit, project: project, branch: project.default_branch, actions: [
+          { action: 'create', file_path: '.gitlab/CODEOWNERS', content: '* @root' }
+        ])
       end
 
       let!(:source) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.branch = 'codeowners_test'
-          commit.start_branch = project.default_branch
-          commit.add_files([{ file_path: 'test1.txt', content: '1' }])
-        end
+        create(:commit, project: project, branch: 'codeowners_test', start_branch: project.default_branch, actions: [
+          { action: 'create', file_path: 'test1.txt', content: '1' }
+        ])
 
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.branch = 'codeowners_test'
-          commit.add_files([{ file_path: 'test2.txt', content: '2' }])
-        end
+        create(:commit, project: project, branch: 'codeowners_test', actions: [
+          { action: 'create', file_path: 'test2.txt', content: '2' }
+        ])
       end
 
       before do

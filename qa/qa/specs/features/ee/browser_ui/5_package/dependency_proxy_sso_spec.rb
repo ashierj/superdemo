@@ -68,32 +68,30 @@ module QA
       it "pulls an image using the dependency proxy on a group enforced SSO", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347612' do
         project.group.visit!
 
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Add .gitlab-ci.yml'
-          commit.add_files([{
-                             file_path: '.gitlab-ci.yml',
-                             content:
-                                  <<~YAML
-                                    dependency-proxy-pull-test:
-                                      image: "docker:stable"
-                                      services:
-                                      - name: "docker:stable-dind"
-                                        command: ["--insecure-registry=#{gitlab_host_with_port}"]
-                                      before_script:
-                                        - apk add curl jq grep
-                                        - docker login -u "$CI_DEPENDENCY_PROXY_USER" -p "$CI_DEPENDENCY_PROXY_PASSWORD" "$CI_DEPENDENCY_PROXY_SERVER"
-                                      script:
-                                        - docker pull #{dependency_proxy_url}/#{image_sha}
-                                        - TOKEN=$(curl "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq --raw-output .token)
-                                        - 'curl --head --header "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest" 2>&1'
-                                        - docker pull #{dependency_proxy_url}/#{image_sha}
-                                        - 'curl --head --header "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest" 2>&1'
-                                      tags:
-                                      - "runner-for-#{project.name}"
-                                  YAML
-                           }])
-        end
+        create(:commit, project: project, commit_message: 'Add .gitlab-ci.yml', actions: [
+          {
+            action: 'create',
+            file_path: '.gitlab-ci.yml',
+            content: <<~YAML
+              dependency-proxy-pull-test:
+                image: "docker:stable"
+                services:
+                - name: "docker:stable-dind"
+                  command: ["--insecure-registry=#{gitlab_host_with_port}"]
+                before_script:
+                  - apk add curl jq grep
+                  - docker login -u "$CI_DEPENDENCY_PROXY_USER" -p "$CI_DEPENDENCY_PROXY_PASSWORD" "$CI_DEPENDENCY_PROXY_SERVER"
+                script:
+                  - docker pull #{dependency_proxy_url}/#{image_sha}
+                  - TOKEN=$(curl "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq --raw-output .token)
+                  - 'curl --head --header "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest" 2>&1'
+                  - docker pull #{dependency_proxy_url}/#{image_sha}
+                  - 'curl --head --header "Authorization: Bearer $TOKEN" "https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest" 2>&1'
+                tags:
+                - "runner-for-#{project.name}"
+            YAML
+          }
+        ])
 
         project.visit!
         Flow::Pipeline.visit_latest_pipeline

@@ -20,16 +20,10 @@ module QA
       before do
         Flow::Login.sign_in
 
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.add_files(
-            [
-              {
-                file_path: file_name,
-                content: '# test'
-              }
-            ])
-        end
+        create(:commit, project: project, actions: [
+          { action: 'create', file_path: file_name, content: '# test' }
+        ])
+
         project.visit!
         Page::Project::Show.perform(&:open_web_ide!)
         Page::Project::WebIDE::VSCode.perform(&:wait_for_ide_to_load)

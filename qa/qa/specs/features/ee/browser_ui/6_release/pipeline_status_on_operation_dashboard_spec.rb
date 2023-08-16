@@ -52,11 +52,7 @@ module QA
       private
 
       def commit_ci_file(project, file, status)
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Add .gitlab-ci.yml'
-          commit.add_files([file])
-        end
+        create(:commit, project: project, commit_message: 'Add .gitlab-ci.yml', actions: [file])
 
         wait_for_pipeline(project, status)
       end
@@ -86,6 +82,7 @@ module QA
 
       def ci_file_with_tag
         {
+          action: 'create',
           file_path: '.gitlab-ci.yml',
           content: <<~YAML
             test-success:
@@ -97,6 +94,7 @@ module QA
 
       def ci_file_without_existing_tag
         {
+          action: 'create',
           file_path: '.gitlab-ci.yml',
           content: <<~YAML
             test-pending:
@@ -108,6 +106,7 @@ module QA
 
       def ci_file_failed_run
         {
+          action: 'create',
           file_path: '.gitlab-ci.yml',
           content: <<~YAML
             test-fail:

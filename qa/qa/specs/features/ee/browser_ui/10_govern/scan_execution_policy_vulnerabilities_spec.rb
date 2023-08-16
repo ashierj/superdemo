@@ -104,6 +104,7 @@ module QA
 
       def ci_file
         {
+          action: 'create',
           file_path: '.gitlab-ci.yml',
           content: <<~YAML
             test:
@@ -114,6 +115,7 @@ module QA
 
       def test_file
         {
+          action: 'create',
           file_path: 'abc.py',
           content: <<~TXT
             import os
@@ -123,13 +125,12 @@ module QA
       end
 
       def create_commit(branch_name)
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.start_branch = project.default_branch
-          commit.branch = branch_name
-          commit.commit_message = "Commit files to #{branch_name} branch"
-          commit.add_files([ci_file, test_file])
-        end
+        create(:commit,
+          project: project,
+          start_branch: project.default_branch,
+          branch: branch_name,
+          commit_message: "Commit files to #{branch_name} branch",
+          actions: [ci_file, test_file])
       end
 
       def create_test_mr

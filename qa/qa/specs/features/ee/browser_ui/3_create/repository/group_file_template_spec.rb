@@ -9,6 +9,7 @@ module QA
         {
           file_name: 'Dockerfile',
           template: 'custom_dockerfile',
+          action: 'create',
           file_path: 'Dockerfile/custom_dockerfile.dockerfile',
           content: 'dockerfile template test',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347656'
@@ -16,6 +17,7 @@ module QA
         {
           file_name: '.gitignore',
           template: 'custom_gitignore',
+          action: 'create',
           file_path: 'gitignore/custom_gitignore.gitignore',
           content: 'gitignore template test',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347655'
@@ -23,6 +25,7 @@ module QA
         {
           file_name: '.gitlab-ci.yml',
           template: 'custom_gitlab-ci',
+          action: 'create',
           file_path: 'gitlab-ci/custom_gitlab-ci.yml',
           content: 'gitlab-ci.yml template test',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347653'
@@ -30,6 +33,7 @@ module QA
         {
           file_name: 'LICENSE',
           template: 'custom_license',
+          action: 'create',
           file_path: 'LICENSE/custom_license.txt',
           content: 'license template test',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347654'
@@ -64,12 +68,11 @@ module QA
         it "creates file via custom #{template[:file_name]} file template", testcase: template[:testcase] do
           api_client.personal_access_token
 
-          Resource::Repository::Commit.fabricate_via_api! do |commit|
-            commit.project = file_template_project
-            commit.commit_message = 'Add group file templates'
-            commit.add_files(templates)
-            commit.api_client = api_client
-          end
+          create(:commit,
+            project: file_template_project,
+            commit_message: 'Add group file templates',
+            api_client: api_client,
+            actions: templates)
 
           Flow::Login.sign_in_as_admin
 

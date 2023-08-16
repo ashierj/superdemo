@@ -25,10 +25,9 @@ module QA
         let(:compliance_job_name) { 'comply' }
 
         before do
-          Resource::Repository::Commit.fabricate_via_api! do |commit|
-            commit.project = pipeline_project
-            commit.commit_message = 'Add .compliance-ci.yml'
-            commit.add_files([{
+          create(:commit, project: pipeline_project, commit_message: 'Add .compliance-ci.yml', actions: [
+            {
+              action: 'create',
               file_path: '.compliance-ci.yml',
               content: <<~YAML
                 #{compliance_job_name}:
@@ -36,8 +35,8 @@ module QA
                     - #{runner_name}
                   script: echo "resistance is futile"
               YAML
-            }])
-          end
+            }
+          ])
         end
 
         after do

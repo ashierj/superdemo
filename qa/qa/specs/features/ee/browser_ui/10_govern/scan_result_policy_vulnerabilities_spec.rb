@@ -107,6 +107,7 @@ module QA
 
       def ci_file(report_name)
         {
+          action: 'create',
           file_path: '.gitlab-ci.yml',
           content: <<~YAML
             include:
@@ -146,6 +147,7 @@ module QA
 
       def report_file(report_name:, report_path:, severity:)
         {
+          action: 'create',
           file_path: report_name.to_s,
           content: container_scanning_report_content(report_path, severity)
         }
@@ -160,14 +162,14 @@ module QA
       end
 
       def create_commit(branch_name:, report_name:, report_path:, severity: )
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.start_branch = project.default_branch
-          commit.branch = branch_name
-          commit.commit_message = 'Add premade container scanning report'
-          commit.add_files([ci_file(report_name), report_file(report_name: report_name,
-            report_path: report_path, severity: severity)])
-        end
+        create(:commit,
+          project: project,
+          start_branch: project.default_branch,
+          branch: branch_name,
+          commit_message: 'Add premade container scanning report',
+          actions: [
+            ci_file(report_name), report_file(report_name: report_name, report_path: report_path, severity: severity)
+          ])
       end
     end
   end

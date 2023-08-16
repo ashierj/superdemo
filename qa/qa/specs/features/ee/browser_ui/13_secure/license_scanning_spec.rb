@@ -24,19 +24,23 @@ module QA
       end
 
       let!(:source) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = test_project
-          commit.branch = 'license-management-mr'
-          commit.start_branch = test_project.default_branch
-          commit.add_files([
+        create(:commit,
+          project: test_project,
+          branch: 'license-management-mr',
+          start_branch: test_project.default_branch,
+          actions: [
             {
-              file_path: '.gitlab-ci.yml',
+              action: 'create',
+              file_path: 'gitlab-ci.yml',
               content: File.read(
-                File.join(EE::Runtime::Path.fixtures_path, 'secure_license_scanning_files',
-                  '.gitlab-ci.yml')
+                File.join(
+                  EE::Runtime::Path.fixtures_path, 'secure_license_scanning_files',
+                  '.gitlab-ci.yml'
+                )
               )
             },
             {
+              action: 'create',
               file_path: 'package.json',
               content: File.read(
                 File.join(
@@ -47,6 +51,7 @@ module QA
               )
             },
             {
+              action: 'create',
               file_path: 'package-lock.json',
               content: File.read(
                 File.join(
@@ -57,7 +62,6 @@ module QA
               )
             }
           ])
-        end
       end
 
       after do

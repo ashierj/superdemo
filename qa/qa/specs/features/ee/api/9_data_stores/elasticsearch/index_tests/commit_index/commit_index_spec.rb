@@ -16,18 +16,9 @@ module QA
       let(:project) { create(:project, name: 'test-project-for-commit-index') }
       let(:content) { "Advanced search test commit #{SecureRandom.hex(8)}" }
       let(:commit) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = content
-          commit.add_files(
-            [
-              {
-                file_path: 'test.txt',
-                content: content
-              }
-            ]
-          )
-        end
+        create(:commit, project: project, commit_message: content, actions: [
+          { action: 'create', file_path: 'test.txt', content: content }
+        ])
       end
 
       it(

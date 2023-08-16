@@ -21,20 +21,15 @@ module QA
       it 'merge request assigns code owners as approvers',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347776' do
         # Commit CODEOWNERS to default branch
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Add CODEOWNERS and test files'
-          commit.add_files(
-            [
-              {
-                file_path: 'CODEOWNERS',
-                content: <<~CONTENT
-                  CODEOWNERS @#{approver.username}
-                CONTENT
-              }
-            ]
-          )
-        end
+        create(:commit, project: project, commit_message: 'Add CODEOWNERS and test files', actions: [
+          {
+            action: 'create',
+            file_path: 'CODEOWNERS',
+            content: <<~CONTENT
+              CODEOWNERS @#{approver.username}
+            CONTENT
+          }
+        ])
 
         # Create a projected branch that requires approval from code owners
         Resource::ProtectedBranch.fabricate_via_browser_ui! do |protected_branch|

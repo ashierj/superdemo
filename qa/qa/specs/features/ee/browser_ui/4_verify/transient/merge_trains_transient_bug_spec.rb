@@ -12,24 +12,19 @@ module QA
       let(:project) { create(:project, name: 'merge-trains-transient-bugs', group: group) }
 
       let!(:ci_file) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Add .gitlab-ci.yml'
-          commit.add_files(
-            [
-              {
-                file_path: '.gitlab-ci.yml',
-                content: <<~YAML
-                  test:
-                    tags: [#{group.name}]
-                    script: echo 'OK'
-                    only:
-                    - merge_requests
-                YAML
-              }
-            ]
-          )
-        end
+        create(:commit, project: project, commit_message: 'Add .gitlab-ci.yml', actions: [
+          {
+            action: 'create',
+            file_path: '.gitlab-ci.yml',
+            content: <<~YAML
+              test:
+                tags: [#{group.name}]
+                script: echo 'OK'
+                only:
+                - merge_requests
+            YAML
+          }
+        ])
       end
 
       before do
