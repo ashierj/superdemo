@@ -1,5 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlButton } from '@gitlab/ui';
 import { Wrapper } from '@vue/test-utils'; // eslint-disable-line no-unused-vars
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -28,13 +28,14 @@ describe('NamespaceLimitsApp', () => {
     show: jest.fn(),
   };
 
-  const createComponent = () => {
-    wrapper = shallowMountExtended(NamespaceLimitsApp, { mocks: { $toast } });
+  const createComponent = ({ props } = { props: {} }) => {
+    wrapper = shallowMountExtended(NamespaceLimitsApp, { propsData: props, mocks: { $toast } });
   };
 
   const findNotificationsLimitSection = () => wrapper.findByTestId('notifications-limit-section');
   const findEnforcementLimitSection = () => wrapper.findByTestId('enforcement-limit-section');
   const findDashboardLimitSection = () => wrapper.findByTestId('dashboard-limit-section');
+  const findDownloadButton = () => wrapper.findComponent(GlButton);
 
   beforeEach(async () => {
     window.gon = { api_version: 'v4' };
@@ -51,6 +52,21 @@ describe('NamespaceLimitsApp', () => {
   afterEach(() => {
     axios.put.mockReset();
     axiosMock.reset();
+  });
+
+  describe('rendering stats download button', () => {
+    it('does not render the download button when download link prop is not provided', () => {
+      createComponent({ props: { statsDownloadLink: undefined } });
+      expect(findDownloadButton().exists()).toBe(false);
+    });
+
+    it('renders download button when download link prop is provided', () => {
+      const statsUrl = 'https://gitlab.com/test-url';
+      createComponent({ props: { statsDownloadLink: statsUrl } });
+
+      expect(findDownloadButton().exists()).toBe(true);
+      expect(findDownloadButton().attributes('href')).toBe(statsUrl);
+    });
   });
 
   describe('fetching initial values', () => {

@@ -1,5 +1,5 @@
 <script>
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import Api from '~/api';
 import axios from '~/lib/utils/axios_utils';
@@ -9,6 +9,11 @@ import NamespaceLimitsSection from './namespace_limits_section.vue';
 
 const i18n = {
   excludedNamespacesTitle: s__('NamespaceLimits|Excluded Namespaces'),
+  statsTitle: s__('NamespaceLimits|Namespaces Statistics'),
+  statsDescription: s__(
+    'NamespaceLimits|Export a csv file with Free Tier anonymized namespace storage usage statistics. This is an asynchronous operation, once the file is generated we will send it to your registered email.',
+  ),
+  statsButtonTitle: s__('NamespaceLimits|Export .csv'),
   notificationsLimitTitle: s__('NamespaceLimits|Notifications Limit'),
   notificationsLimitLabel: s__('NamespaceLimits|Set Notifications limit'),
   notificationsLimitDescription: s__(
@@ -39,8 +44,16 @@ export default {
   name: 'NamespaceLimitsApp',
   components: {
     GlAlert,
+    GlButton,
     ExcludedNamespaces,
     NamespaceLimitsSection,
+  },
+  props: {
+    statsDownloadLink: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
@@ -139,6 +152,16 @@ export default {
     <gl-alert v-if="loadingError" variant="danger" :dismissible="false" class="gl-mb-4">
       {{ loadingError }}
     </gl-alert>
+
+    <div v-if="statsDownloadLink">
+      <h2>{{ $options.i18n.statsTitle }}</h2>
+      <p>{{ $options.i18n.statsDescription }}</p>
+      <gl-button category="secondary" variant="info" :href="statsDownloadLink">
+        {{ $options.i18n.statsButtonTitle }}
+      </gl-button>
+
+      <hr class="gl-mt-6" />
+    </div>
 
     <h2>{{ $options.i18n.notificationsLimitTitle }}</h2>
     <namespace-limits-section
