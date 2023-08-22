@@ -12,7 +12,7 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
           stub_ee_application_setting(elasticsearch_indexing: true)
         end
 
-        context 'when Wiki uses separate indices and feature maintain_group_wiki_index is enabled' do
+        context 'when Wiki uses separate indices' do
           before do
             allow(Wiki).to receive(:use_separate_indices?).and_return true
           end
@@ -26,17 +26,6 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
         context 'when Wiki does not use separate indices' do
           before do
             allow(Wiki).to receive(:use_separate_indices?).and_return false
-          end
-
-          it 'does not call ElasticWikiIndexerWorker' do
-            expect(ElasticWikiIndexerWorker).not_to receive(:perform_async).with(anything, 'Group', force: true)
-            create(:group, :wiki_repo)
-          end
-        end
-
-        context 'when feature flag maintain_group_wiki_index is disabled' do
-          before do
-            stub_feature_flags(maintain_group_wiki_index: false)
           end
 
           it 'does not call ElasticWikiIndexerWorker' do
@@ -108,7 +97,8 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
         end
 
         it 'calls Search::Wiki::ElasticDeleteGroupWikiWorker' do
-          expect(Search::Wiki::ElasticDeleteGroupWikiWorker).to receive(:perform_async).with(group.id)
+          expect(Search::Wiki::ElasticDeleteGroupWikiWorker).to receive(:perform_async).with(group.id,
+            namespace_routing_id: group.root_ancestor.id)
           group.destroy!
         end
       end
@@ -125,7 +115,8 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
       end
 
       it 'enqueues Search::ElasticGroupAssociationDeletionWorker' do
-        expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async).with(group.id, group.id).once
+        expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async).with(group.id,
+          group.root_ancestor.id).once
 
         group.destroy!
       end

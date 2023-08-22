@@ -87,7 +87,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
         it 'deletes all group wikis belonging to the namespace' do
           [group_namespace, sub_group].each do |group|
             expect(Search::Wiki::ElasticDeleteGroupWikiWorker).to receive(:perform_in).with(
-              elastic_delete_group_wiki_worker_random_delay_range, group.id)
+              elastic_delete_group_wiki_worker_random_delay_range, group.id, namespace_routing_id: group_namespace.id)
           end
 
           subject.perform(group_namespace.id, :delete)
