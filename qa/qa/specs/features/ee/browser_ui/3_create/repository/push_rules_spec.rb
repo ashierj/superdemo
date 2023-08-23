@@ -98,11 +98,7 @@ module QA
         end
 
         it 'restricts removal of tag', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347782' do
-          tag = Resource::Tag.fabricate_via_api! do |tag|
-            tag.project = @project
-            tag.ref = @project.default_branch
-            tag.name = "test_tag_#{SecureRandom.hex(8)}"
-          end
+          tag = create(:tag, project: @project, ref: @project.default_branch, name: "test_tag_#{SecureRandom.hex(8)}")
 
           expect_error_on_push(file: standard_file, tag: tag.name, error: 'You cannot delete a tag')
         end
