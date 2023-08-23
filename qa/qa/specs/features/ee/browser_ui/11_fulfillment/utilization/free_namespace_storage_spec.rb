@@ -78,12 +78,11 @@ module QA
           }])
         end
 
-        Resource::Wiki::ProjectPage.fabricate_via_api! do |wiki|
-          wiki.api_client = owner_api_client
-          wiki.project = project
-          wiki.title = 'Wiki'
-          wiki.content = content # 10.2 KiB
-        end
+        create(:project_wiki_page,
+          api_client: owner_api_client,
+          project: project,
+          title: 'Wiki',
+          content: content) # 10.2 KiB
 
         create(:project_snippet,
           api_client: admin_api_client,

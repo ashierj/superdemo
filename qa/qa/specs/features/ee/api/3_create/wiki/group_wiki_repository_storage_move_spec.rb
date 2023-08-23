@@ -15,12 +15,11 @@ module QA
       end
 
       let(:wiki) do
-        Resource::Wiki::GroupPage.fabricate_via_api! do |wiki|
-          wiki.title = original_page_title
-          wiki.content = original_page_content
-          wiki.group = group
-          wiki.api_client = Runtime::API::Client.as_admin
-        end
+        create(:group_wiki_page,
+          title: original_page_title,
+          content: original_page_content,
+          group: group,
+          api_client: Runtime::API::Client.as_admin)
       end
 
       praefect_manager = Service::PraefectManager.new

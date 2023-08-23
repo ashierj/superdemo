@@ -26,12 +26,7 @@ module QA
             # Create a new project and wiki
             project = create(:project, name: 'geo-wiki-ssh-project', description: 'Geo project for wiki SSH spec')
 
-            wiki = Resource::Wiki::ProjectPage.fabricate_via_api! do |wiki|
-              wiki.project = project
-              wiki.title = 'Geo Replication Wiki'
-              wiki.content = wiki_content
-            end
-
+            wiki = create(:project_wiki_page, project: project, title: 'Geo Replication Wiki', content: wiki_content)
             wiki.visit!
             validate_content(wiki_content)
 
