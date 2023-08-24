@@ -50,10 +50,11 @@ module EE
 
       override :allowed_scopes
       def allowed_scopes
-        return super unless group.licensed_feature_available?(:epics)
+        return super + %w[epics] unless use_elasticsearch? # In basic search we have epics enabled for groups
+        return super - %w[epics] unless group.licensed_feature_available?(:epics)
 
         strong_memoize(:ee_group_allowed_scopes) do
-          super + %w[epics]
+          super
         end
       end
     end

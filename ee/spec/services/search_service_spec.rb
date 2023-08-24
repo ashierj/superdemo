@@ -116,6 +116,25 @@ RSpec.describe SearchService, feature_category: :global_search do
     end
   end
 
+  describe '.global_search_enabled_for_scope?' do
+    using RSpec::Parameterized::TableSyntax
+    let_it_be(:user) { create(:user) }
+    let(:search_service) { described_class.new(user, { scope: scope, search: search }) }
+    let(:search) { 'foobar' }
+
+    where(:scope, :feature_flag, :enabled, :expected) do
+      'epics'          | :global_search_epics_tab          | false | false
+      'epics'          | :global_search_epics_tab          | true  | true
+    end
+
+    with_them do
+      it 'returns false when feature_flag is not enabled and returns true when feature_flag is enabled' do
+        stub_feature_flags(feature_flag => enabled)
+        expect(search_service.global_search_enabled_for_scope?).to eq expected
+      end
+    end
+  end
+
   describe '#search_type' do
     let_it_be(:user) { create(:user) }
     let_it_be(:project) { create(:project, :public) }

@@ -102,61 +102,29 @@ RSpec.describe Elastic::Latest::EpicClassProxy, feature_category: :global_search
     end
   end
 
-  describe '#allowed?' do
-    before do
-      subject.instance_variable_set(:@current_user, user)
-    end
-
-    context 'when there is no group' do
-      it 'returns false' do
-        expect(subject).not_to be_allowed
-      end
-    end
-
-    context 'when there is a group' do
-      before do
-        subject.instance_variable_set(:@group, group)
-      end
-
-      it 'returns false if the user is not authorized to view epics for the group' do
-        expect(subject).not_to be_allowed
-      end
-
-      context 'when the user is authorized to view the group' do
-        before_all do
-          group.add_owner(user)
-        end
-
-        it 'returns true' do
-          expect(subject).to be_allowed
-        end
-      end
-    end
-  end
-
-  describe '#find_group_by_id' do
+  describe '#find_groups_by_ids' do
     context 'when the group_ids array contains a group' do
       let_it_be(:group) { create(:group) }
       let(:options) { { group_ids: [group.id] } }
 
       it 'returns the group' do
-        expect(subject.find_group_by_id(options)).to eq(group)
+        expect(subject.find_groups_by_ids(options)).to eq([group])
       end
     end
 
     context 'when the group_ids array does not contain a valid group id' do
       let(:options) { { group_ids: ['non_existent_group'] } }
 
-      it 'returns nil' do
-        expect(subject.find_group_by_id(options)).to eq(nil)
+      it 'returns an empty array' do
+        expect(subject.find_groups_by_ids(options)).to eq([])
       end
     end
 
     context 'when the group_ids array is not passed' do
       let(:options) { {} }
 
-      it 'returns nil' do
-        expect(subject.find_group_by_id(options)).to eq(nil)
+      it 'returns an empty array' do
+        expect(subject.find_groups_by_ids(options)).to eq([])
       end
     end
   end
@@ -168,18 +136,7 @@ RSpec.describe Elastic::Latest::EpicClassProxy, feature_category: :global_search
 
     before do
       subject.instance_variable_set(:@current_user, user)
-      subject.instance_variable_set(:@group, group)
-    end
-
-    context 'when the user is allowed to read confidential epics for the top-level group' do
-      before_all do
-        group.add_owner(user)
-      end
-
-      it 'returns the original query_hash' do
-        expect(Ability.allowed?(user, :read_confidential_epic, group)).to eq(true)
-        expect(filters).to be_empty
-      end
+      subject.instance_variable_set(:@groups, [group])
     end
 
     context 'when the user is not allowed to read confidential epics for the top-level group' do
@@ -205,11 +162,14 @@ RSpec.describe Elastic::Latest::EpicClassProxy, feature_category: :global_search
         end
       end
     end
-  end
 
-  describe 'routing' do
-    it 'is equal to root_ancestor_id' do
-      expect(subject.routing_options(options)).to eq({ routing: "group_#{group.root_ancestor.id}" })
+    describe 'routing' do
+      before_all do
+        group.add_owner(user)
+      end
+      it 'is equal to root_ancestor_id' do
+        expect(subject.routing_options(options)).to eq({ routing: "group_#{group.root_ancestor.id}" })
+      end
     end
   end
 end

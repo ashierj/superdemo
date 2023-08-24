@@ -1003,7 +1003,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
           include_context 'with labels'
 
           it 'updates the epic with labels param as array' do
-            allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
+            allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(112)
 
             params[:labels] = ['label1', 'label2', 'foo, bar', '&,?']
 

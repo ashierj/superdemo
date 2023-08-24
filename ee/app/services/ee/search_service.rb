@@ -48,6 +48,16 @@ module EE
       search_service.try(:use_zoekt?)
     end
 
+    override :global_search_enabled_for_scope?
+    def global_search_enabled_for_scope?
+      case params[:scope]
+      when 'epics'
+        ::Feature.enabled?(:global_search_epics_tab, current_user, type: :ops)
+      else
+        super
+      end
+    end
+
     private
 
     override :search_service

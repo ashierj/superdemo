@@ -54,7 +54,7 @@ module EE
         return super unless use_elasticsearch?
 
         strong_memoize(:ee_allowed_scopes) do
-          super + %w[notes wiki_blobs blobs commits]
+          super + %w[blobs commits epics notes wiki_blobs]
         end
       end
     end
