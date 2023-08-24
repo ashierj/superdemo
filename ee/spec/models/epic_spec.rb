@@ -21,7 +21,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     it { is_expected.to have_many(:children) }
     it { is_expected.to have_many(:user_mentions).class_name('EpicUserMention') }
     it { is_expected.to have_many(:boards_epic_user_preferences).class_name('Boards::EpicUserPreference').inverse_of(:epic) }
-    it { is_expected.to have_many(:epic_board_positions).class_name('Boards::EpicBoardPosition').inverse_of(:epic_board) }
+    it { is_expected.to have_many(:epic_board_positions).class_name('Boards::EpicBoardPosition').inverse_of(:epic) }
   end
 
   describe 'default values' do
