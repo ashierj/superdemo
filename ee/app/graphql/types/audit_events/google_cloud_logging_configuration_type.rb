@@ -27,10 +27,6 @@ module Types
       field :log_id_name, GraphQL::Types::String,
         null: false,
         description: 'Log ID.'
-
-      field :private_key, GraphQL::Types::String,
-        null: false,
-        description: 'Private key.'
     end
   end
 end
