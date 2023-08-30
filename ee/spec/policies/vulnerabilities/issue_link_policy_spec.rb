@@ -39,6 +39,7 @@ RSpec.describe Vulnerabilities::IssueLinkPolicy, feature_category: :vulnerabilit
 
   describe ':read_issue_link' do
     before do
+      allow(Ability).to receive(:allowed?).and_call_original
       allow(Ability).to receive(:allowed?).with(user, :read_issue, issue).and_return(allowed?)
     end
 
