@@ -16,7 +16,7 @@ module Gitlab
                   return false
                 end
 
-      Gitlab.com_except_jh? && gitlab_com_user_ids.include?(user_id)
+      Gitlab.com_except_jh? && gitlab_com_user_ids.include?(user_id) # rubocop:disable Gitlab/AvoidGitlabInstanceChecks
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
