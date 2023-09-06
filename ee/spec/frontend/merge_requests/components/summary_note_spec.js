@@ -13,21 +13,27 @@ function createComponent(summary) {
 
 describe('Merge request summary note component', () => {
   it('renders summary note', () => {
+    const contentHtml = '<div>AI</div> content';
     createComponent({
       createdAt: 'created-at',
-      content: 'AI content',
+      contentHtml,
     });
 
-    expect(wrapper.html()).toMatchSnapshot();
+    expect(wrapper.find('p').element.innerHTML).toBe(contentHtml);
   });
 
   it('renders review note', () => {
+    const contentHtml = '<div>AI</div> content';
+    const nestedSummary = { contentHtml: 'review', createdAt: 'created-at' };
     createComponent({
       createdAt: 'created-at',
-      content: 'AI content',
-      children: [{ content: 'review', createdAt: 'created-at' }],
+      contentHtml,
+      children: [nestedSummary],
     });
 
-    expect(wrapper.html()).toMatchSnapshot();
+    expect(wrapper.find('p').element.innerHTML).toBe(contentHtml);
+    expect(wrapper.findComponent('[data-testid="nested-note"]').props('summary')).toStrictEqual(
+      nestedSummary,
+    );
   });
 });

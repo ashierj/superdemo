@@ -73,7 +73,7 @@ describe('Merge request summary notes component', () => {
   it('renders list of review summaries', async () => {
     const reviewSummaries = [
       {
-        content: 'review',
+        contentHtml: 'review',
         createdAt: 'created-at',
         reviewer: { webUrl: 'https://gitlab.com' },
       },
@@ -88,7 +88,7 @@ describe('Merge request summary notes component', () => {
     expect(wrapper.findAllByTestId('summary-note').length).toBe(1);
     expect(wrapper.findAllByTestId('summary-note').at(0).props()).toEqual({
       summary: {
-        content: 'review',
+        contentHtml: 'review',
         createdAt: 'created-at',
         reviewer: { webUrl: 'https://gitlab.com' },
       },
@@ -99,7 +99,7 @@ describe('Merge request summary notes component', () => {
   it('renders list of review summaries without diff summary', async () => {
     const reviewSummaries = [
       {
-        content: 'review',
+        contentHtml: 'review',
         createdAt: 'created-at',
         reviewer: { webUrl: 'https://gitlab.com' },
       },

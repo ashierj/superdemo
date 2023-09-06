@@ -1,6 +1,7 @@
 <script>
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import SummaryNoteWrapper from './summary_note_wrapper.vue';
 
@@ -12,6 +13,9 @@ export default {
     TimeAgoTooltip,
     UserFeedback,
     SummaryNoteWrapper,
+  },
+  directives: {
+    SafeHtml,
   },
   props: {
     summary: {
@@ -56,9 +60,7 @@ export default {
         />
       </template>
       <template #content>
-        <p class="gl-m-0">
-          {{ summary.content }}
-        </p>
+        <p v-safe-html="summary.contentHtml" class="gl-m-0"></p>
       </template>
       <template #feedback>
         <user-feedback
@@ -72,6 +74,7 @@ export default {
       v-for="(review, index) in summary.children"
       :key="index"
       :summary="review"
+      data-testid="nested-note"
       class="gl-ml-5"
     />
   </div>
