@@ -3,6 +3,9 @@
 module Users
   module ParticipableService
     extend ActiveSupport::Concern
+    include Gitlab::Utils::StrongMemoize
+
+    SEARCH_LIMIT = 10
 
     included do
       attr_reader :noteable
@@ -34,8 +37,15 @@ module Users
     def groups
       return [] unless current_user
 
-      current_user.authorized_groups.with_route.sort_by(&:full_path)
+      relation = current_user.authorized_groups
+
+      if params[:search]
+        relation.gfm_autocomplete_search(params[:search]).limit(SEARCH_LIMIT).to_a
+      else
+        relation.with_route.sort_by(&:full_path)
+      end
     end
+    strong_memoize_attr :groups
 
     def render_participants_as_hash(participants)
       participants.map { |participant| participant_as_hash(participant) }
@@ -75,7 +85,7 @@ module Users
 
     def group_counts
       @group_counts ||= GroupMember
-        .of_groups(current_user.authorized_groups)
+        .of_groups(groups)
         .non_request
         .count_users_by_group_id
     end

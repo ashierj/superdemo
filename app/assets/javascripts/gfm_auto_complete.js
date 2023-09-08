@@ -62,6 +62,8 @@ export function showAndHideHelper($input, alias = '') {
   });
 }
 
+// This should be kept in sync with the backend filtering in
+// `User#gfm_autocomplete_search` and `Namespace#gfm_autocomplete_search`
 function createMemberSearchString(member) {
   return `${member.name.replace(/ /g, '')} ${member.username}`;
 }
@@ -344,6 +346,7 @@ class GfmAutoComplete {
   }
 
   setupMembers($input) {
+    const instance = this;
     const fetchData = this.fetchData.bind(this);
     const MEMBER_COMMAND = {
       ASSIGN: '/assign',
@@ -383,6 +386,7 @@ class GfmAutoComplete {
       // eslint-disable-next-line no-template-curly-in-string
       insertTpl: '${atwho-at}${username}',
       limit: 10,
+      delay: 500,
       searchKey: 'search',
       alwaysHighlightFirst: true,
       skipSpecialCharacterTest: true,
@@ -409,14 +413,12 @@ class GfmAutoComplete {
           const match = GfmAutoComplete.defaultMatcher(flag, subtext, this.app.controllers);
           return match && match.length ? match[1] : null;
         },
-        filter(query, data, searchKey) {
-          if (GfmAutoComplete.isLoading(data)) {
-            fetchData(this.$inputor, this.at);
-            return data;
-          }
+        filter(query, data) {
+          if (GfmAutoComplete.isLoading(data) || instance.previousQuery !== query) {
+            instance.previousQuery = query;
 
-          if (data === GfmAutoComplete.defaultLoadingData) {
-            return $.fn.atwho.default.callbacks.filter(query, data, searchKey);
+            fetchData(this.$inputor, this.at, query);
+            return data;
           }
 
           if (command === MEMBER_COMMAND.ASSIGN) {
@@ -987,7 +989,7 @@ GfmAutoComplete.atTypeMap = {
   '[contact:': 'contacts',
 };
 
-GfmAutoComplete.typesWithBackendFiltering = ['vulnerabilities'];
+GfmAutoComplete.typesWithBackendFiltering = ['members', 'vulnerabilities'];
 GfmAutoComplete.isTypeWithBackendFiltering = (type) =>
   GfmAutoComplete.typesWithBackendFiltering.includes(GfmAutoComplete.atTypeMap[type]);
 
@@ -1040,6 +1042,8 @@ GfmAutoComplete.Members = {
     // `member.search` is a name:username string like `MargeSimpson msimpson`
     return member.search.toLowerCase().includes(query);
   },
+  // This should be kept in sync with the backend sorting in
+  // `User#gfm_autocomplete_search` and `Namespace#gfm_autocomplete_search`
   sort(query, members) {
     const lowercaseQuery = query.toLowerCase();
     const { nameOrUsernameStartsWith, nameOrUsernameIncludes } = GfmAutoComplete.Members;

@@ -262,6 +262,28 @@ class Namespace < ApplicationRecord
       end
     end
 
+    # This should be kept in sync with the frontend filtering in
+    # https://gitlab.com/gitlab-org/gitlab/-/blob/1b9bcfa81db01cabe5239e94eb88fbe499174a22/app/assets/javascripts/gfm_auto_complete.js#L68 and
+    # https://gitlab.com/gitlab-org/gitlab/-/blob/1b9bcfa81db01cabe5239e94eb88fbe499174a22/app/assets/javascripts/gfm_auto_complete.js#L1053
+    def gfm_autocomplete_search(query)
+      without_project_namespaces
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/420046")
+        .joins(:route)
+        .where(
+          "REPLACE(routes.name, ' ', '') ILIKE :pattern OR routes.path ILIKE :pattern",
+          pattern: "%#{sanitize_sql_like(query)}%"
+        )
+        .order(
+          Arel.sql(sanitize_sql(
+            [
+              "CASE WHEN starts_with(REPLACE(routes.name, ' ', ''), :pattern) OR starts_with(routes.path, :pattern) THEN 1 ELSE 2 END",
+              { pattern: query }
+            ]
+          )),
+          'routes.path'
+        )
+    end
+
     def clean_path(path, limited_to: Namespace.all)
       slug = Gitlab::Slug::Path.new(path).generate
       path = Namespaces::RandomizedSuffixPath.new(slug)

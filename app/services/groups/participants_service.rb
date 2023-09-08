@@ -29,7 +29,15 @@ module Groups
     def group_hierarchy_users
       return [] unless group
 
-      sorted(Autocomplete::GroupUsersFinder.new(group: group).execute)
+      relation = Autocomplete::GroupUsersFinder.new(group: group).execute
+
+      if params[:search]
+        relation.gfm_autocomplete_search(params[:search]).limit(SEARCH_LIMIT).tap do |users|
+          preload_status(users)
+        end
+      else
+        sorted(relation)
+      end
     end
   end
 end
