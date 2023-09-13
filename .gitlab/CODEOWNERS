@@ -1478,6 +1478,7 @@ ee/lib/ee/api/entities/project.rb
 [Manage::Foundations] @gitlab-org/manage/foundations/engineering
 /lib/sidebars/
 /ee/lib/sidebars/
+/ee/lib/ee/sidebars/
 
 [Global Search] @gitlab-org/search-team/migration-maintainers
 /ee/elastic/migrate/
