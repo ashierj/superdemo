@@ -256,6 +256,31 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
   end
 
+  context 'with limited_access_modal FF enabled' do
+    before do
+      stub_signing_key
+      stub_feature_flags(limited_access_modal: true)
+      stub_feature_flags(usage_quotas_for_all_editions: false)
+      stub_subscription_permissions_data(group.id, can_add_seats: false)
+      stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
+
+      group.add_owner(user)
+      sign_in(user)
+
+      visit_usage_quotas_page
+      wait_for_requests
+
+      click_button 'Buy additional compute minutes'
+    end
+
+    context 'when user is not allowed to add minutes' do
+      it 'opens limited access modal' do
+        expect(page).to have_selector('[data-testid="limited-access-modal-id"]')
+        expect(page).to have_content('Your subscription is in read-only mode')
+      end
+    end
+  end
+
   def visit_usage_quotas_page(anchor = 'pipelines-quota-tab')
     visit group_usage_quotas_path(group, anchor: anchor)
   end

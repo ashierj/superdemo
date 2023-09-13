@@ -9,7 +9,7 @@ import { formatDate, getMonthNames } from '~/lib/utils/datetime_utility';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createMockApollo from 'helpers/mock_apollo_helper';
+import { createMockClient } from 'helpers/mock_apollo_helper';
 import PipelineUsageApp from 'ee/usage_quotas/pipelines/components/app.vue';
 import ProjectList from 'ee/usage_quotas/pipelines/components/project_list.vue';
 import UsageOverview from 'ee/usage_quotas/pipelines/components/usage_overview.vue';
@@ -27,6 +27,8 @@ import {
 } from 'ee/usage_quotas/pipelines/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
+import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
+import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import {
   defaultProvide,
   mockGetCiMinutesUsageNamespace,
@@ -59,23 +61,50 @@ describe('PipelineUsageApp', () => {
   const findMonthDropdown = () => wrapper.findComponentByTestId('minutes-usage-month-dropdown');
   const findMonthDropdownItems = () =>
     wrapper.findAllComponentsByTestId('minutes-usage-month-dropdown-item');
+  const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 
   const ciMinutesHandler = jest.fn();
   const ciMinutesProjectsHandler = jest.fn();
   const gqlRejectResponse = new Error('GraphQL error');
 
-  const createMockApolloProvider = () => {
+  const defaultApolloData = {
+    subscription: {
+      canAddSeats: false,
+      canRenew: false,
+    },
+    userActionAccess: { limitedAccessReason: 'RAMP_SUBSCRIPTION' },
+  };
+
+  const queryHandlerMock = (apolloData) => jest.fn().mockResolvedValue({ data: apolloData });
+
+  const mockGitlabClient = () => {
     const requestHandlers = [
       [getCiMinutesMonthlySummary, ciMinutesHandler],
       [getCiMinutesMonthSummaryWithProjects, ciMinutesProjectsHandler],
     ];
 
-    return createMockApollo(requestHandlers);
+    return createMockClient(requestHandlers);
   };
 
-  const createComponent = ({ provide = {}, mockApollo = createMockApolloProvider() } = {}) => {
+  const mockCustomersDotClient = (apolloData) => {
+    const requestHandlers = [[getSubscriptionPermissionsData, queryHandlerMock(apolloData)]];
+
+    return createMockClient(requestHandlers);
+  };
+
+  const mockApollo = (apolloData) => {
+    return new VueApollo({
+      defaultClient: mockGitlabClient(),
+      clients: {
+        customersDotClient: mockCustomersDotClient(apolloData),
+        gitlabClient: mockGitlabClient,
+      },
+    });
+  };
+
+  const createComponent = ({ provide = {}, apolloData = defaultApolloData } = {}) => {
     wrapper = shallowMountExtended(PipelineUsageApp, {
-      apolloProvider: mockApollo,
+      apolloProvider: mockApollo(apolloData),
       provide: {
         ...defaultProvide,
         ...provide,
@@ -92,13 +121,28 @@ describe('PipelineUsageApp', () => {
   });
 
   describe('Buy additional compute minutes Button', () => {
-    it('calls pushEECproductAddToCartEvent on click', async () => {
+    beforeEach(async () => {
       createComponent();
 
       await waitForPromises();
+    });
 
+    it('calls pushEECproductAddToCartEvent on click', () => {
       findBuyAdditionalMinutesButton().trigger('click');
       expect(pushEECproductAddToCartEvent).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders purchase button with the correct attributes', () => {
+      expect(findBuyAdditionalMinutesButton().attributes()).toMatchObject({
+        href: 'http://test.host/-/subscriptions/buy_minutes?selected_group=12345',
+        target: '_self',
+      });
+    });
+
+    it('does not show modal on purchase button click', () => {
+      findBuyAdditionalMinutesButton().vm.$emit('click');
+
+      expect(findLimitedAccessModal().exists()).toBe(false);
     });
 
     describe('Gitlab SaaS: valid data for buyAdditionalMinutesPath and buyAdditionalMinutesTarget', () => {

@@ -6,12 +6,15 @@ import {
   GlDropdown,
   GlDropdownItem,
   GlFormGroup,
+  GlModalDirective,
 } from '@gitlab/ui';
+import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { s__, sprintf } from '~/locale';
 import { formatDate, getMonthNames } from '~/lib/utils/datetime_utility';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
+import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
 import getCiMinutesUsageNamespace from '../graphql/queries/ci_minutes.query.graphql';
 import getCiMinutesUsageNamespaceProjects from '../graphql/queries/ci_minutes_projects.query.graphql';
 import {
@@ -28,6 +31,7 @@ import {
 } from '../constants';
 import { USAGE_BY_MONTH_HEADER, USAGE_BY_PROJECT_HEADER } from '../../constants';
 import { getUsageDataByYearAsArray, formatIso8601Date } from '../utils';
+import LimitedAccessModal from '../../components/limited_access_modal.vue';
 import ProjectList from './project_list.vue';
 import UsageOverview from './usage_overview.vue';
 import MinutesUsagePerMonth from './minutes_usage_per_month.vue';
@@ -42,10 +46,14 @@ export default {
     GlDropdown,
     GlDropdownItem,
     GlFormGroup,
+    LimitedAccessModal,
     ProjectList,
     UsageOverview,
     MinutesUsagePerProject,
     MinutesUsagePerMonth,
+  },
+  directives: {
+    GlModalDirective,
   },
   inject: [
     'pageSize',
@@ -83,6 +91,8 @@ export default {
       projectsCiMinutesUsage: [],
       selectedYear: year,
       selectedMonth: month,
+      subscriptionPermissions: null,
+      isLimitedAccessModalShown: false,
     };
   },
   apollo: {
@@ -123,6 +133,22 @@ export default {
       error() {
         this.error = ERROR_MESSAGE;
       },
+    },
+    subscriptionPermissions: {
+      query: getSubscriptionPermissionsData,
+      client: 'customersDotClient',
+      variables() {
+        return {
+          namespaceId: parseInt(this.namespaceId, 10),
+        };
+      },
+      skip() {
+        return !gon.features?.limitedAccessModal;
+      },
+      update: (data) => ({
+        ...data.subscription,
+        reason: data.userActionAccess?.limitedAccessReason,
+      }),
     },
   },
   computed: {
@@ -189,6 +215,17 @@ export default {
         },
       );
     },
+    shouldShowLimitedAccessModal() {
+      // NOTE: we're using existing flag for seats `canAddSeats`, to infer
+      // whether the additional minutes are expandable.
+      const canAddMinutes = this.subscriptionPermissions?.canAddSeats ?? true;
+
+      return (
+        !canAddMinutes &&
+        gon.features?.limitedAccessModal &&
+        LIMITED_ACCESS_KEYS.includes(this.subscriptionPermissions.reason)
+      );
+    },
   },
   methods: {
     clearError() {
@@ -227,6 +264,9 @@ export default {
 
       return TOTAL_USED_UNLIMITED;
     },
+    showLimitedAccessModal() {
+      this.isLimitedAccessModalShown = true;
+    },
   },
   LABEL_BUY_ADDITIONAL_MINUTES,
   ADDITIONAL_MINUTES,
@@ -258,6 +298,7 @@ export default {
           class="gl-display-flex gl-justify-content-end gl-py-3"
         >
           <gl-button
+            v-if="!shouldShowLimitedAccessModal"
             :href="buyAdditionalMinutesPath"
             :target="buyAdditionalMinutesTarget"
             :aria-label="$options.LABEL_BUY_ADDITIONAL_MINUTES"
@@ -272,6 +313,21 @@ export default {
           >
             {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
           </gl-button>
+          <gl-button
+            v-else
+            v-gl-modal-directive="'limited-access-modal-id'"
+            category="primary"
+            variant="confirm"
+            class="js-buy-additional-minutes"
+            @click="showLimitedAccessModal"
+          >
+            {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
+          </gl-button>
+          <limited-access-modal
+            v-if="shouldShowLimitedAccessModal"
+            v-model="isLimitedAccessModalShown"
+            :limited-access-reason="subscriptionPermissions.reason"
+          />
         </div>
         <usage-overview
           :class="{ 'gl-pt-5': !shouldShowBuyAdditionalMinutes }"
