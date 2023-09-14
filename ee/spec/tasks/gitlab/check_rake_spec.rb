@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rake_helper'
+require 'spec_helper'
 
 RSpec.describe 'EE check.rake', :silence_stdout, feature_category: :geo_replication do
   before do

@@ -17,7 +17,6 @@ RSpec.describe Backup::Database, :reestablished_active_record_base, feature_cate
   end
 
   before(:all) do # rubocop:disable RSpec/BeforeAll
-    Rake::Task.define_task(:environment)
     Rake.application.rake_require 'active_record/railties/databases'
     Rake.application.rake_require 'tasks/gitlab/backup'
     Rake.application.rake_require 'tasks/gitlab/shell'

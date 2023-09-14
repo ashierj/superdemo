@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-require_relative "rspec_order"
-require_relative "system_exit_detected"
-require_relative "helpers/stub_configuration"
-require_relative "helpers/stub_metrics"
-require_relative "helpers/stub_object_storage"
-require_relative "helpers/fast_rails_root"
+require_relative 'rake'
+require_relative 'rspec_order'
+require_relative 'system_exit_detected'
+require_relative 'helpers/stub_configuration'
+require_relative 'helpers/stub_metrics'
+require_relative 'helpers/stub_object_storage'
+require_relative 'helpers/fast_rails_root'
 
 require 'gitlab/rspec/all'
 require 'gitlab/utils/all'
