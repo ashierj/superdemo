@@ -503,6 +503,51 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     end
   end
 
+  describe 'POST /user/personal_access_tokens' do
+    let(:name) { 'new pat' }
+    let(:scopes) { %w[k8s_proxy] }
+    let(:path) { "/user/personal_access_tokens" }
+    let(:params) { { name: name, scopes: scopes } }
+
+    context 'when disable_personal_access_tokens feature is available' do
+      before do
+        stub_licensed_features(disable_personal_access_tokens: true)
+      end
+
+      context 'when personal access tokens are disabled in settings' do
+        before do
+          stub_application_setting(disable_personal_access_tokens: true)
+        end
+
+        it 'does not create a personal access token' do
+          post api(path, user), params: params
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+      end
+
+      context 'when personal access tokens are enabled in settings' do
+        before do
+          stub_application_setting(disable_personal_access_tokens: false)
+        end
+
+        it 'creates a personal access token' do
+          post api(path, user), params: params
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['name']).to eq(name)
+          expect(json_response['scopes']).to eq(scopes)
+          expect(json_response['expires_at']).to eq(1.day.from_now.to_date.to_s)
+          expect(json_response['id']).to be_present
+          expect(json_response['created_at']).to be_present
+          expect(json_response['active']).to be_truthy
+          expect(json_response['revoked']).to be_falsey
+          expect(json_response['token']).to be_present
+        end
+      end
+    end
+  end
+
   describe 'GET /api/users?extern_uid=:extern_uid&provider=scim' do
     context 'querying users by SCIM identity as an admin' do
       let(:instance_scim_user) { create(:user) }
