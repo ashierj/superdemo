@@ -28,7 +28,7 @@ module API
         end
         get do
           license = ::License.current
-          content_type MIME::Types.type_for('csv').first
+          content_type MIME::Types.type_for('csv').first.content_type
           env['api.format'] = :txt
           body HistoricalUserData::CsvService.new(license.historical_data).generate
         end
