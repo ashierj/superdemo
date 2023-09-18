@@ -28,15 +28,20 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
         end
 
         context 'when next_run_at is in the past' do
-          before do
+          let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+          let_it_be(:security_policy_bot_2) { create(:user, :security_policy_bot) }
+
+          before_all do
             schedule.update_column(:next_run_at, 1.minute.ago)
+            project_1.add_guest(security_policy_bot)
+            project_2.add_guest(security_policy_bot_2)
           end
 
           it 'executes the rule schedule service for all projects in the group' do
             expect_next_instance_of(
               Security::SecurityOrchestrationPolicies::RuleScheduleService,
               project: project_1,
-              current_user: schedule.owner
+              current_user: security_policy_bot
             ) do |service|
               expect(service).to receive(:execute)
             end
@@ -44,7 +49,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
             expect_next_instance_of(
               Security::SecurityOrchestrationPolicies::RuleScheduleService,
               project: project_2,
-              current_user: schedule.owner
+              current_user: security_policy_bot_2
             ) do |service|
               expect(service).to receive(:execute)
             end
@@ -59,13 +64,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           end
 
           context 'when there is a security_policy_bot in the project' do
-            let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
-
-            before_all do
-              project_1.add_guest(security_policy_bot)
-            end
-
-            it 'executes the rule schedule service as the bot and falls back to schedule owner otherwise' do
+            it 'executes the rule schedule service as the bot and does not schedule otherwise' do
               expect_next_instance_of(
                 Security::SecurityOrchestrationPolicies::RuleScheduleService,
                 project: project_1,
@@ -77,7 +76,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
               expect_next_instance_of(
                 Security::SecurityOrchestrationPolicies::RuleScheduleService,
                 project: project_2,
-                current_user: schedule.owner
+                current_user: security_policy_bot_2
               ) do |service|
                 expect(service).to receive(:execute)
               end
