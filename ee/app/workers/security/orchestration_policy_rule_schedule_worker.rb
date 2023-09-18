@@ -34,7 +34,8 @@ module Security
       project = schedule.security_orchestration_policy_configuration.project
       return if project.marked_for_deletion?
 
-      user = project.security_policy_bot || schedule.owner
+      user = project.security_policy_bot
+      return unless user
 
       service_result = Security::SecurityOrchestrationPolicies::RuleScheduleService
         .new(project: project, current_user: user)
