@@ -10237,9 +10237,6 @@ msgstr ""
 msgid "CiStatusText|Warning"
 msgstr ""
 
-msgid "CiVariables|Add Variable"
-msgstr ""
-
 msgid "CiVariables|Add variable"
 msgstr ""
 
@@ -10258,7 +10255,7 @@ msgstr ""
 msgid "CiVariables|Do you want to delete the variable %{key}?"
 msgstr ""
 
-msgid "CiVariables|Edit Variable"
+msgid "CiVariables|Edit variable"
 msgstr ""
 
 msgid "CiVariables|Environments"
