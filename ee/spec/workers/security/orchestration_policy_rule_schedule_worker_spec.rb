@@ -16,11 +16,17 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
       end
 
       context 'when schedule is created for security orchestration policy configuration in project' do
+        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+
+        before do
+          security_orchestration_policy_configuration.project.add_guest(security_policy_bot)
+        end
+
         it 'executes the rule schedule service' do
           expect_next_instance_of(
             Security::SecurityOrchestrationPolicies::RuleScheduleService,
             project: schedule.security_orchestration_policy_configuration.project,
-            current_user: schedule.owner
+            current_user: security_policy_bot
           ) do |service|
             expect(service).to receive(:execute).and_return(ServiceResponse.success)
           end
@@ -47,7 +53,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
             expect(Sidekiq.logger).to receive(:warn).with({
               worker: 'Security::OrchestrationPolicyRuleScheduleWorker',
               security_orchestration_policy_configuration_id: security_orchestration_policy_configuration.id,
-              user_id: schedule.owner.id,
+              user_id: security_policy_bot.id,
               message: 'message. message 2'
             })
 
@@ -61,7 +67,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
               expect(Sidekiq.logger).to receive(:warn).with({
                 worker: 'Security::OrchestrationPolicyRuleScheduleWorker',
                 security_orchestration_policy_configuration_id: security_orchestration_policy_configuration.id,
-                user_id: schedule.owner.id,
+                user_id: security_policy_bot.id,
                 message: 'message'
               })
 
@@ -86,7 +92,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
       end
 
       context 'when policy has a security_policy_bot user' do
-        let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
         let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
         let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
