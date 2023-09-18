@@ -45,18 +45,13 @@ export default {
   <div>
     <section class="gl-display-flex gl-justify-content-space-between gl-mb-3">
       <section>
-        <p
-          v-if="usageValue"
-          class="gl-font-size-h-display gl-font-weight-bold gl-mb-0"
-          data-testid="usage"
-        >
-          {{ usageValue
-          }}<span v-if="usageUnit" data-testid="usage-unit" class="gl-font-lg">{{
-            usageUnit
-          }}</span>
-          <span v-if="totalValue" data-testid="total">
-            / {{ totalValue
-            }}<span v-if="totalUnit" class="gl-font-lg" data-testid="total-unit">{{
+        <p v-if="usageValue" class="gl-font-size-h-display gl-font-weight-bold gl-mb-0">
+          <span data-testid="usage-value">{{ usageValue }}</span>
+          <span v-if="usageUnit" data-testid="usage-unit" class="gl-font-lg">{{ usageUnit }}</span>
+          <span v-if="totalValue">
+            /
+            <span data-testid="total-value">{{ totalValue }}</span>
+            <span v-if="totalUnit" class="gl-font-lg" data-testid="total-unit">{{
               totalUnit
             }}</span>
           </span>
