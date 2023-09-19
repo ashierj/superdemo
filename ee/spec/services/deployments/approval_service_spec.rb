@@ -352,7 +352,7 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
         let(:status) { 'rejected' }
 
         before do
-          deployment.user = user
+          deployment.update!(user: user)
         end
 
         include_examples 'reject'
