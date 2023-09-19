@@ -74,6 +74,7 @@ export default {
       v-else
       class="gl-w-half"
       :svg-path="emptyStateSvgPath"
+      :svg-height="null"
       :title="title"
       :description="description"
       data-testid="vsa-empty-state"

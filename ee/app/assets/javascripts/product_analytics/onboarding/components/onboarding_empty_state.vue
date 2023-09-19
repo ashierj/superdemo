@@ -85,7 +85,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :title="title" :svg-path="chartEmptyStateIllustrationPath">
+  <gl-empty-state :title="title" :svg-path="chartEmptyStateIllustrationPath" :svg-height="null">
     <template #description>
       <p class="gl-max-w-80">
         {{ description }}

@@ -189,6 +189,7 @@ export default {
         v-if="showEmptyState"
         :description="$options.i18n.emptyStateDescription"
         :svg-path="svgPath"
+        :svg-height="null"
         :title="$options.i18n.emptyStateTitle"
       />
 

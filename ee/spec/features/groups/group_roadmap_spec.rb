@@ -477,7 +477,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
 
     describe 'roadmap page' do
       it 'shows empty state page' do
-        page.within('.empty-state') do
+        within_testid('epics-list-empty-state') do
           expect(page).to have_content('The roadmap shows the progress of your epics along a timeline')
         end
       end

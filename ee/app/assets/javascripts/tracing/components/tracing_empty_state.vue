@@ -19,7 +19,11 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :title="$options.i18n.title" :svg-path="$options.EMPTY_TRACING_SVG">
+  <gl-empty-state
+    :title="$options.i18n.title"
+    :svg-path="$options.EMPTY_TRACING_SVG"
+    :svg-height="null"
+  >
     <template #description>
       <div>
         <span>{{ $options.i18n.description }}</span>

@@ -25,6 +25,7 @@ export default {
 <template>
   <gl-empty-state
     :svg-path="svgPath"
+    :svg-height="null"
     :title="$options.i18n.title"
     :description="$options.i18n.description"
     :primary-button-link="$options.DOC_PATH_SECURITY_CONFIGURATION"

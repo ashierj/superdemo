@@ -25,6 +25,7 @@ export default {
     :title="$options.i18n.emptyStateTitle"
     :description="$options.i18n.emptyStateText"
     :svg-path="illustrationPath"
+    :svg-height="null"
     :primary-button-link="newReleasePath"
     :primary-button-text="$options.i18n.newRelease"
     :secondary-button-link="documentationPath"

@@ -155,6 +155,7 @@ export default {
     v-else-if="showEmptyState"
     :title="emptyStateOptions.title"
     :svg-path="emptyStateSvgPath"
+    :svg-height="null"
     data-testid="dependency-list-empty-state-description-content"
   >
     <template #description>

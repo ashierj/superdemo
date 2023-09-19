@@ -188,7 +188,7 @@ describe('ListMemberRoles', () => {
       createComponent({ groupId }, mountExtended);
       await waitForPromises();
 
-      const { fields } = findTable().vm.$attrs;
+      const fields = findTable().props('fields');
 
       expect(fields.find((field) => field.key === fieldKey)?.sortable).toBe(true);
     };

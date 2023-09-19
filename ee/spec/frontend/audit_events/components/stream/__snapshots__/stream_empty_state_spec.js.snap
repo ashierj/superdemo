@@ -2,14 +2,12 @@
 
 exports[`StreamEmptyState should render correctly 1`] = `
 <section
-  class="empty-state gl-display-flex gl-flex-direction-column gl-mt-5 gl-text-center"
+  class="gl-display-flex gl-empty-state gl-flex-direction-column gl-mt-5 gl-text-center"
 >
   <div
     class="gl-max-w-full"
   >
-    <div
-      class="svg-250 svg-content"
-    >
+    <div>
       <img
         alt=""
         class="gl-dark-invert-keep-hue gl-max-w-full"
@@ -20,7 +18,7 @@ exports[`StreamEmptyState should render correctly 1`] = `
     </div>
   </div>
   <div
-    class="gl-m-auto gl-max-w-full"
+    class="gl-m-auto gl-max-w-88"
     data-testid="gl-empty-state-content"
   >
     <div
@@ -32,7 +30,7 @@ exports[`StreamEmptyState should render correctly 1`] = `
         Setup streaming for audit events
       </h3>
       <p
-        class="gl-mt-3"
+        class="gl-mb-0 gl-mt-4"
       >
         <p>
           Add an HTTP endpoint to manage audit logs in third-party systems.
@@ -42,7 +40,7 @@ exports[`StreamEmptyState should render correctly 1`] = `
         </p>
       </p>
       <div
-        class="gl-display-flex gl-flex-wrap gl-justify-content-center"
+        class="gl-display-flex gl-flex-wrap gl-justify-content-center gl-mt-5"
       >
         <div
           class="gl-disclosure-dropdown gl-new-dropdown"

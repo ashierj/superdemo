@@ -61,6 +61,7 @@ export default {
       :title="$options.i18n.noIssuesTitle"
       :svg-path="emptyStateSvgPath"
       :svg-height="150"
+      data-testid="issuable-empty-state"
     >
       <template #description>
         <gl-link :href="$options.issuesHelpPagePath">
@@ -120,8 +121,10 @@ export default {
     v-else
     :title="$options.i18n.noIssuesTitle"
     :svg-path="emptyStateSvgPath"
+    :svg-height="null"
     :primary-button-text="$options.i18n.noIssuesSignedOutButtonText"
     :primary-button-link="signInPath"
+    data-testid="issuable-empty-state"
   >
     <template #description>
       <gl-link :href="$options.issuesHelpPagePath">

@@ -88,6 +88,7 @@ export default {
     emptyStateProps() {
       return {
         svgPath: this.emptyStateSvgPath,
+        svgHeight: null,
         title: s__('SecurityReports|No vulnerabilities found for this pipeline'),
         description: s__(
           `SecurityReports|While it's rare to have no vulnerabilities for your pipeline, it can happen. In any event, we ask that you double check your settings to make sure all security scanning jobs have passed successfully.`,

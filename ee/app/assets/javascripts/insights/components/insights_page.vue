@@ -86,6 +86,7 @@ export default {
       :title="emptyState.title"
       :description="emptyState.description"
       svg-path="/assets/illustrations/monitoring/getting_started.svg"
+      :svg-height="null"
     />
   </div>
 </template>

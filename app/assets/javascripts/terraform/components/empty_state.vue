@@ -32,7 +32,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :svg-path="image" :title="$options.i18n.title">
+  <gl-empty-state :svg-path="image" :svg-height="null" :title="$options.i18n.title">
     <template #actions>
       <gl-button variant="confirm" :href="$options.docsUrl">
         {{ $options.i18n.buttonDoc }}</gl-button
