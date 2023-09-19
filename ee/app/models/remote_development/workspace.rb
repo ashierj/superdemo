@@ -31,13 +31,12 @@ module RemoteDevelopment
 
     # See https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/blob/main/doc/architecture.md?plain=0#workspace-states
     # for state validation rules
-    # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409773
-    #       Add validation preventing desired_state change if it is TERMINATED; you can't restart a terminated workspace
-    #       Also reflect this in GraphQL API and Vue component UI
     validates :desired_state, inclusion: { in: VALID_DESIRED_STATES }
     validates :actual_state, inclusion: { in: VALID_ACTUAL_STATES }
     validates :editor, inclusion: { in: ['webide'], message: "'webide' is currently the only supported editor" }
     validates :max_hours_before_termination, numericality: { less_than_or_equal_to: MAX_HOURS_BEFORE_TERMINATION_LIMIT }
+
+    validate :enforce_permanent_termination
 
     ignore_column :force_full_reconciliation, remove_with: '16.7', remove_after: '2023-11-22'
 
@@ -80,6 +79,12 @@ module RemoteDevelopment
       return true if agent&.remote_development_agent_config
 
       errors.add(:agent, _('for Workspace must have an associated RemoteDevelopmentAgentConfig'))
+    end
+
+    def enforce_permanent_termination
+      return unless persisted? && desired_state_changed? && desired_state_was == Workspaces::States::TERMINATED
+
+      errors.add(:desired_state, "is 'Terminated', and cannot be updated. Create a new workspace instead.")
     end
 
     def touch_desired_state_updated_at

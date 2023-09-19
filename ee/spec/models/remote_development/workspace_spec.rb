@@ -2,14 +2,19 @@
 
 require 'spec_helper'
 
+# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let_it_be(:project) { create(:project, :in_group) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
 
+  let(:desired_state) { ::RemoteDevelopment::Workspaces::States::STOPPED }
+
   subject do
-    create(:workspace, user: user, agent: agent, project: project, personal_access_token: personal_access_token)
+    create(:workspace,
+      user: user, agent: agent, project: project,
+      personal_access_token: personal_access_token, desired_state: desired_state)
   end
 
   describe 'associations' do
@@ -66,7 +71,6 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
       it 'sets desired_state_updated_at' do
         subject.save!
-        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(subject.desired_state_updated_at).to eq(Time.current)
       end
     end
@@ -74,7 +78,6 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
     describe 'when updating desired_state' do
       it 'sets desired_state_updated_at' do
         expect { subject.update!(desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING) }.to change {
-          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           subject.desired_state_updated_at
         }
       end
@@ -83,7 +86,6 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
     describe 'when updating a field other than desired_state' do
       it 'does not set desired_state_updated_at' do
         expect { subject.update!(actual_state: ::RemoteDevelopment::Workspaces::States::RUNNING) }.not_to change {
-          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           subject.desired_state_updated_at
         }
       end
@@ -91,7 +93,6 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
   end
 
   describe 'validations' do
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     it 'validates max_hours_before_termination is no more than 120' do
       subject.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT
       expect(subject).to be_valid
@@ -118,6 +119,20 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
         expect(subject).not_to be_valid
         expect(subject.errors[:agent]).to include('for Workspace must have an associated RemoteDevelopmentAgentConfig')
+      end
+    end
+
+    context 'when desired_state is Terminated' do
+      let(:desired_state) { ::RemoteDevelopment::Workspaces::States::TERMINATED }
+
+      before do
+        subject.desired_state = ::RemoteDevelopment::Workspaces::States::STOPPED
+      end
+
+      it 'prevents changes to desired_state' do
+        expect(subject).not_to be_valid
+        expect(subject.errors[:desired_state])
+          .to include("is 'Terminated', and cannot be updated. Create a new workspace instead.")
       end
     end
   end
