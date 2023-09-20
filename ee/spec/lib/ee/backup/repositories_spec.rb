@@ -85,9 +85,14 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
     let_it_be(:group) { create(:group, :wiki_repo) }
 
     it 'calls enqueue for each repository type', :aggregate_failures do
-      subject.restore(destination)
+      subject.restore(destination, backup_id)
 
-      expect(strategy).to have_received(:start).with(:restore, destination, remove_all_repositories: %w[default])
+      expect(strategy).to have_received(:start).with(
+        :restore,
+        destination,
+        remove_all_repositories: %w[default],
+        backup_id: backup_id
+      )
       expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
       expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
       expect(strategy).to have_received(:finish!)
@@ -107,9 +112,14 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
         excluded_group = create(:group, :wiki_repo)
         excluded_group.group_wiki_repository.update!(shard_name: 'test_second_storage')
 
-        subject.restore(destination)
+        subject.restore(destination, backup_id)
 
-        expect(strategy).to have_received(:start).with(:restore, destination, remove_all_repositories: %w[default])
+        expect(strategy).to have_received(:start).with(
+          :restore,
+          destination,
+          remove_all_repositories: %w[default],
+          backup_id: backup_id
+        )
         expect(strategy).not_to have_received(:enqueue).with(excluded_group, Gitlab::GlRepository::WIKI)
         expect(strategy).to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
         expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
@@ -121,9 +131,14 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
       let(:paths) { [group.full_path] }
 
       it 'calls enqueue for all descendant repositories on the specified group', :aggregate_failures do
-        subject.restore(destination)
+        subject.restore(destination, backup_id)
 
-        expect(strategy).to have_received(:start).with(:restore, destination, remove_all_repositories: nil)
+        expect(strategy).to have_received(:start).with(
+          :restore,
+          destination,
+          remove_all_repositories: nil,
+          backup_id: backup_id
+        )
         expect(strategy).not_to have_received(:enqueue).with(project, Gitlab::GlRepository::PROJECT)
         expect(strategy).to have_received(:enqueue).with(group, Gitlab::GlRepository::WIKI)
         expect(strategy).to have_received(:finish!)
