@@ -50,17 +50,8 @@ module Security
 
       # rubocop: disable CodeReuse/ActiveRecord
       def authorizable_users_in_group_hierarchy_by_ids_or_usernames(user_ids, user_names)
-        User
-          .by_ids_or_usernames(user_ids, user_names)
-          .where(
-            container
-              .authorizable_members_with_parents
-              .merge(Member.where(Member.arel_table[:user_id].eq(User.arel_table[:id])), rewhere: true)
-              .select(1)
-              .arel
-              .exists
-          )
-          .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417460")
+        User.by_ids_or_usernames(user_ids, user_names)
+          .where(id: container.authorizable_members_with_parents.pluck(:user_id))
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
