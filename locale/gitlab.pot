@@ -29033,7 +29033,7 @@ msgstr ""
 msgid "MemberRoles|Admin vulnerability"
 msgstr ""
 
-msgid "MemberRoles|Allows admin access to the vulnerability reports. 'Read vulnerability' must be selected in order to take effect."
+msgid "MemberRoles|Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect."
 msgstr ""
 
 msgid "MemberRoles|Allows read-only access to the source code."
@@ -29081,7 +29081,7 @@ msgstr ""
 msgid "MemberRoles|Incident manager"
 msgstr ""
 
-msgid "MemberRoles|Make sure the group has an Ultimate license."
+msgid "MemberRoles|Make sure the group is in the Ultimate tier."
 msgstr ""
 
 msgid "MemberRoles|Name"
@@ -29097,9 +29097,6 @@ msgid "MemberRoles|Read code"
 msgstr ""
 
 msgid "MemberRoles|Read vulnerability"
-msgstr ""
-
-msgid "MemberRoles|Removing a custom role also removes all members with this custom role from the group. If you decide to delete a custom role, you must re-add these users to the group."
 msgstr ""
 
 msgid "MemberRoles|Role name"
@@ -29118,6 +29115,9 @@ msgid "MemberRoles|To add a new role select 'Add new role'."
 msgstr ""
 
 msgid "MemberRoles|To add a new role select a group and then 'Add new role'."
+msgstr ""
+
+msgid "MemberRoles|To delete the custom role make sure no group member has this custom role"
 msgstr ""
 
 msgid "MemberRole|%{requirement} has to be enabled in order to enable %{permission}."
