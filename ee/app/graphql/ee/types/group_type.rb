@@ -183,6 +183,11 @@ module EE
           calls_gitaly: true,
           alpha: { milestone: '16.4' },
           resolver: ::Resolvers::ProductAnalytics::VisualizationsResolver
+        field :amazon_s3_configurations,
+          ::Types::AuditEvents::AmazonS3ConfigurationType.connection_type,
+          null: true,
+          description: 'Amazon S3 configurations that receive audit events belonging to the group.',
+          authorize: :admin_external_audit_events
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
