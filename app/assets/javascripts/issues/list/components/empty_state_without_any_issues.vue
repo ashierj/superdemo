@@ -72,16 +72,26 @@ export default {
         </p>
       </template>
       <template #actions>
-        <gl-button v-if="canCreateProjects" :href="newProjectPath" variant="confirm">
+        <gl-button
+          v-if="canCreateProjects"
+          :href="newProjectPath"
+          variant="confirm"
+          class="gl-mx-2 gl-mb-3"
+        >
           {{ $options.i18n.newProjectLabel }}
         </gl-button>
-        <gl-button v-if="showNewIssueLink" :href="newIssuePath" variant="confirm">
+        <gl-button
+          v-if="showNewIssueLink"
+          :href="newIssuePath"
+          variant="confirm"
+          class="gl-mx-2 gl-mb-3"
+        >
           {{ $options.i18n.newIssueLabel }}
         </gl-button>
 
         <gl-disclosure-dropdown
           v-if="showCsvButtons"
-          class="gl-w-full gl-sm-w-auto gl-sm-mr-3"
+          class="gl-mx-2 gl-mb-3"
           :toggle-text="$options.i18n.importIssues"
           data-testid="import-issues-dropdown"
         >
@@ -93,7 +103,7 @@ export default {
 
         <new-resource-dropdown
           v-if="showNewIssueDropdown"
-          class="gl-align-self-center"
+          class="gl-align-self-center gl-mx-2 gl-mb-3"
           :query="$options.searchProjectsQuery"
           :query-variables="newIssueDropdownQueryVariables"
           :extract-projects="extractProjects"

@@ -93,10 +93,15 @@ export default {
     </template>
     <template #actions>
       <template v-if="!loading">
-        <gl-button variant="confirm" data-testid="setup-btn" @click="onConfirm">
+        <gl-button
+          class="gl-mx-2 gl-mb-3"
+          variant="confirm"
+          data-testid="setup-btn"
+          @click="onConfirm"
+        >
           {{ s__('ProductAnalytics|Set up product analytics') }}
         </gl-button>
-        <gl-button :href="$options.docsPath" data-testid="learn-more-btn">
+        <gl-button class="gl-mx-2 gl-mb-3" :href="$options.docsPath" data-testid="learn-more-btn">
           {{ __('Learn more') }}
         </gl-button>
       </template>
