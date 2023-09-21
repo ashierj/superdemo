@@ -38,26 +38,11 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :system_a
     end
   end
 
-  context 'when in login page' do
-    let(:page_path) { root_path }
-
-    before do
-      stub_feature_flags(
-        arkose_labs_signup_challenge: false,
-        arkose_labs_login_challenge: feature_flag_state,
-        arkose_labs_oauth_signup_challenge: false
-      )
-    end
-
-    it_behaves_like 'configures Content Security Policy headers correctly', SessionsController
-  end
-
   context 'when in registration page' do
     let(:page_path) { new_user_registration_path }
 
     before do
       stub_feature_flags(
-        arkose_labs_login_challenge: false,
         arkose_labs_signup_challenge: feature_flag_state,
         arkose_labs_oauth_signup_challenge: false
       )
@@ -71,7 +56,6 @@ RSpec.describe 'ArkoseLabs content security policy', feature_category: :system_a
 
     before do
       stub_feature_flags(
-        arkose_labs_login_challenge: false,
         arkose_labs_signup_challenge: false,
         arkose_labs_oauth_signup_challenge: feature_flag_state
       )

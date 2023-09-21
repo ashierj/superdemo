@@ -87,16 +87,6 @@ RSpec.describe Arkose::VerifyResponse, feature_category: :instance_resiliency do
   describe '#low_risk?' do
     subject { described_class.new(json_response).low_risk? }
 
-    context 'when arkose_labs_prevent_login feature flag is disabled' do
-      let(:json_response) { Gitlab::Json.parse("{}") }
-
-      before do
-        stub_feature_flags(arkose_labs_prevent_login: false)
-      end
-
-      it { is_expected.to eq true }
-    end
-
     context 'when response does not contain session_risk.risk_band data' do
       let(:json_response) { Gitlab::Json.parse("{}") }
 
