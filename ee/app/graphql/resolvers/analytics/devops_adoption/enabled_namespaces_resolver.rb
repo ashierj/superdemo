@@ -8,7 +8,7 @@ module Resolvers
         include Gitlab::Allowable
         include LooksAhead
 
-        type Types::Analytics::DevopsAdoption::EnabledNamespaceType, null: true
+        type Types::Analytics::DevopsAdoption::EnabledNamespaceType.connection_type, null: true
 
         argument :display_namespace_id, ::Types::GlobalIDType[::Namespace],
                  required: false,

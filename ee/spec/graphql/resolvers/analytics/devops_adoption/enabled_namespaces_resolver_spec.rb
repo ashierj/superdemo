@@ -32,7 +32,7 @@ RSpec.describe Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver d
 
       context 'as an admin user' do
         it 'returns enabled_namespaces for all groups without display_namespace' do
-          expect(resolved_enabled_namespaces).to match_array([enabled_namespace_2, enabled_namespace_4])
+          expect(resolved_enabled_namespaces.items).to match_array([enabled_namespace_2, enabled_namespace_4])
         end
       end
 
@@ -69,7 +69,7 @@ RSpec.describe Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver d
         end
 
         it 'returns enabled_namespaces for given parent group and its descendants' do
-          expect(resolved_enabled_namespaces).to eq([enabled_namespace_1])
+          expect(resolved_enabled_namespaces.items).to eq([enabled_namespace_1])
         end
       end
 
