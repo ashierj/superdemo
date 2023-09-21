@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, feature_category: :value_stream_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user).tap { |u| group.add_developer(u) } }
+
+  let_it_be(:other_user) { create(:user).tap { |u| group.add_developer(u) } }
   let_it_be(:sub_group) { create(:group, parent: group) }
   let_it_be(:project_1) { create(:project, group: sub_group) }
   let_it_be(:project_2) { create(:project, group: sub_group) }
@@ -12,10 +14,13 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
   let_it_be(:other_group) { create(:group) }
   let_it_be(:other_project) { create(:project, group: other_group) }
 
+  let_it_be(:milestone) { create(:milestone, group: group) }
   let_it_be(:iteration) { create(:iteration, group: group) }
   let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:label) { create(:group_label, group: group) }
 
-  let_it_be(:issue_with_epic) { create(:issue, project: project_2) }
+  let_it_be(:issue_with_iteration) { create(:issue, project: project_1, assignees: [other_user]) }
+  let_it_be(:issue_with_epic) { create(:issue, project: project_2, labels: [label], milestone: milestone) }
   let_it_be(:award_emoji) { create(:award_emoji, name: 'thumbsup', user: user, awardable: issue_with_epic) }
 
   let_it_be(:stage) do
@@ -34,17 +39,19 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
            start_event_timestamp: 4.weeks.ago,
            end_event_timestamp: 1.week.ago,
            sprint_id: iteration.id,
-           issue_id: create(:issue, project: project_1).id
+           issue_id: issue_with_iteration.id
           )
   end
 
   let_it_be(:stage_event_2) do
     create(:cycle_analytics_issue_stage_event,
            stage_event_hash_id: stage.stage_event_hash_id,
+           author_id: other_user.id,
            group_id: sub_group.id,
            project_id: project_2.id,
            start_event_timestamp: 2.weeks.ago,
            end_event_timestamp: 1.week.ago,
+           milestone_id: milestone.id,
            weight: 5,
            issue_id: issue_with_epic.id
           )
@@ -86,6 +93,47 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
     expect(issue_ids).to eq([stage_event_1.issue_id])
   end
 
+  context 'when filtering by negated milestone title' do
+    it 'filters by negated milestone_title' do
+      params[:not] = { milestone_title: milestone.title }
+
+      expect(issue_ids).not_to include(stage_event_2.issue_id)
+    end
+
+    context 'when negated and non-negated filters are present' do
+      it 'filters by the non-negated filter' do
+        params[:milestone_title] = milestone.title
+        params[:not] = { milestone_title: milestone.title }
+
+        expect(issue_ids).to eq([stage_event_2.issue_id])
+      end
+    end
+  end
+
+  context 'when filtering by author_username' do
+    it 'filters by negated author_username' do
+      params[:not] = { author_username: other_user.username }
+
+      expect(issue_ids).not_to include(stage_event_2.issue_id)
+    end
+  end
+
+  context 'when filtering by assignee_username' do
+    it 'filters by negated assignee_username' do
+      params[:not] = { assignee_username: other_user.username }
+
+      expect(issue_ids).not_to include(stage_event_1.issue_id)
+    end
+  end
+
+  context 'when filtering by label_name' do
+    it 'filters by negated label_name' do
+      params[:not] = { label_name: label.name }
+
+      expect(issue_ids).not_to include(stage_event_2.issue_id)
+    end
+  end
+
   context 'when filtering by weight' do
     it 'filters by weight' do
       params[:weight] = 5
@@ -98,6 +146,14 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
         params[:weight] = 0
 
         expect(issue_ids).to eq([])
+      end
+    end
+
+    context 'when the filter is negated' do
+      it 'returns items without the given weight' do
+        params[:not] = { weight: 5 }
+
+        expect(issue_ids).to eq([stage_event_1.issue_id])
       end
     end
   end
@@ -116,6 +172,14 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
         expect(issue_ids).to eq([])
       end
     end
+
+    context 'when the filter is negated' do
+      it 'returns items without the given iteration' do
+        params[:not] = { iteration_id: iteration.id }
+
+        expect(issue_ids).to eq([stage_event_2.issue_id])
+      end
+    end
   end
 
   context 'when filtering by epic_id' do
@@ -132,6 +196,14 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
         expect(issue_ids).to eq([])
       end
     end
+
+    context 'when the filter is negated' do
+      it 'returns items without the given epic' do
+        params[:not] = { epic_id: epic.id }
+
+        expect(issue_ids).to eq([stage_event_1.issue_id])
+      end
+    end
   end
 
   context 'when filtering by my_reaction_emoji' do
@@ -146,6 +218,14 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
         params[:my_reaction_emoji] = 'unknown_emoji'
 
         expect(issue_ids).to eq([])
+      end
+    end
+
+    context 'when the filter is negated' do
+      it 'returns items without the given rection emoji' do
+        params[:not] = { my_reaction_emoji: 'thumbsup' }
+
+        expect(issue_ids).to eq([stage_event_1.issue_id])
       end
     end
   end
