@@ -35,7 +35,7 @@ module ProductAnalytics
 
       visualizations = []
       visualizations << custom_visualizations(config_project)
-      visualizations << builtin_visualizations(container)
+      visualizations << builtin_visualizations
 
       visualizations.flatten
     end
@@ -145,12 +145,10 @@ module ProductAnalytics
       load_visualizations(VALUE_STREAM_DASHBOARD_VISUALIZATIONS, VALUE_STREAM_DASHBOARD_PATH)
     end
 
-    def self.builtin_visualizations(container)
+    def self.builtin_visualizations
       visualizations = []
 
       visualizations << product_analytics_visualizations
-
-      visualizations << value_stream_dashboard_visualizations if container.value_streams_dashboard_available?
 
       visualizations.flatten
     end
