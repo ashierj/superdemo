@@ -30,21 +30,6 @@ RSpec.describe Commits::CreateService, feature_category: :source_code_management
         expect(result[:status]).to be(:error)
         expect(result[:message]).to eq(gitaly_error_in_utf8)
       end
-
-      context 'when feature flag "errors_utf_8_encoding" is disabled' do
-        before do
-          stub_feature_flags(errors_utf_8_encoding: false)
-        end
-
-        it 'returns an error message in original encoding' do
-          allow(service).to receive(:create_commit!).and_raise(Gitlab::Git::CommandError, gitaly_error)
-
-          result = service.execute
-
-          expect(result[:status]).to be(:error)
-          expect(result[:message]).to eq(gitaly_error)
-        end
-      end
     end
 
     context 'when the repository size limit has been exceeded' do
