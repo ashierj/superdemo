@@ -41,6 +41,10 @@ module Types
         field :latest_version, Types::ReleaseType, null: true, description: 'Latest version of the catalog resource.',
           alpha: { milestone: '16.1' }
 
+        field :latest_released_at, Types::TimeType, null: true,
+          description: "Release date of the catalog resource's latest version.",
+          alpha: { milestone: '16.5' }
+
         field :star_count, GraphQL::Types::Int, null: false,
           description: 'Number of times the catalog resource has been starred.',
           alpha: { milestone: '16.1' }

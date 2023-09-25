@@ -20,7 +20,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
     )
   end
 
-  let_it_be(:resource1) { create(:ci_catalog_resource, project: project1) }
+  let_it_be(:resource1) { create(:ci_catalog_resource, project: project1, latest_released_at: '2023-01-01T00:00:00Z') }
 
   let(:query) do
     <<~GQL
@@ -72,7 +72,8 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
             webPath: "/#{project1.full_path}",
             starCount: project1.star_count,
             forksCount: project1.forks_count,
-            readmeHtml: a_string_including('Test</strong>')
+            readmeHtml: a_string_including('Test</strong>'),
+            latestReleasedAt: resource1.latest_released_at
           )
         )
       end
@@ -91,7 +92,8 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
               webPath: "/#{project2.full_path}",
               starCount: project2.star_count,
               forksCount: project2.forks_count,
-              readmeHtml: ''
+              readmeHtml: '',
+              latestReleasedAt: resource2.latest_released_at
             )
           )
         end
