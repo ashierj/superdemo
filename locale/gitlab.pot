@@ -42958,6 +42958,9 @@ msgstr ""
 msgid "SecurityReports|Does not have issue"
 msgstr ""
 
+msgid "SecurityReports|Does not have merge request"
+msgstr ""
+
 msgid "SecurityReports|Download %{artifactName}"
 msgstr ""
 
@@ -43003,6 +43006,9 @@ msgstr ""
 msgid "SecurityReports|Has issue"
 msgstr ""
 
+msgid "SecurityReports|Has merge request"
+msgstr ""
+
 msgid "SecurityReports|Hide dismissed"
 msgstr ""
 
@@ -43034,6 +43040,9 @@ msgid "SecurityReports|Manage and track vulnerabilities identified in your selec
 msgstr ""
 
 msgid "SecurityReports|Maximum selected projects limit reached"
+msgstr ""
+
+msgid "SecurityReports|Merge Request"
 msgstr ""
 
 msgid "SecurityReports|Monitor vulnerabilities in all of your projects"

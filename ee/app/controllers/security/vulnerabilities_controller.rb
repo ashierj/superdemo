@@ -7,6 +7,10 @@ module Security
 
     track_govern_activity 'security_vulnerabilities', :index
 
+    before_action do
+      push_frontend_feature_flag(:activity_filter_has_mr, @project)
+    end
+
     private
 
     def tracking_namespace_source

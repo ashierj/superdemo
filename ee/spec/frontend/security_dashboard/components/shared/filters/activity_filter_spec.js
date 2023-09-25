@@ -3,6 +3,7 @@ import QuerystringSync from 'ee/security_dashboard/components/shared/filters/que
 import ActivityFilter, {
   ITEMS,
   GROUPS,
+  GROUPS_MR,
 } from 'ee/security_dashboard/components/shared/filters/activity_filter.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
@@ -22,9 +23,15 @@ describe('Activity Filter component', () => {
     expect(findListbox().props('selected')).toEqual(values);
   };
 
-  const createWrapper = () => {
+  const createWrapper = ({ glFeatures = {} } = {}) => {
     wrapper = mountExtended(ActivityFilter, {
       stubs: { QuerystringSync: true, GlBadge: true },
+      provide: {
+        glFeatures: {
+          activityFilterHasMr: true,
+          ...glFeatures,
+        },
+      },
     });
   };
 
@@ -89,8 +96,8 @@ describe('Activity Filter component', () => {
     });
   });
 
-  it('passes GROUPS to listbox items', () => {
-    expect(findListbox().props('items')).toEqual(GROUPS);
+  it('passes GROUPS with MR to listbox items', () => {
+    expect(findListbox().props('items')).toEqual([...GROUPS, GROUPS_MR]);
   });
 
   it('selects and unselects an item when clicked on', async () => {
@@ -133,6 +140,52 @@ describe('Activity Filter component', () => {
       expect(wrapper.emitted('filter-changed')[0][0]).toStrictEqual({
         hasIssues: undefined,
         hasResolution: undefined,
+        hasMergeRequest: undefined,
+      });
+    });
+
+    it.each`
+      selectedItems                                                                                                 | hasIssues | hasResolution | hasMergeRequest
+      ${[ITEMS.STILL_DETECTED.value, ITEMS.HAS_ISSUE.value, ITEMS.HAS_MERGE_REQUEST.value]}                         | ${true}   | ${false}      | ${true}
+      ${[ITEMS.NO_LONGER_DETECTED.value, ITEMS.DOES_NOT_HAVE_ISSUE.value, ITEMS.DOES_NOT_HAVE_MERGE_REQUEST.value]} | ${false}  | ${true}       | ${false}
+    `(
+      'emits the expected data for $selectedItems',
+      async ({ selectedItems, hasIssues, hasResolution, hasMergeRequest }) => {
+        for await (const value of selectedItems) {
+          await clickItem(value);
+        }
+
+        // Take the emit of the last item as this will include the change of all items
+        const emitIndexToCheck = selectedItems.length - 1;
+
+        expectSelectedItems(selectedItems);
+        expect(wrapper.emitted('filter-changed')[emitIndexToCheck][0]).toEqual({
+          hasIssues,
+          hasMergeRequest,
+          hasResolution,
+        });
+      },
+    );
+  });
+
+  describe('when feature flag is disabled', () => {
+    beforeEach(() => {
+      createWrapper({
+        glFeatures: { activityFilterHasMr: false },
+      });
+    });
+
+    it('passes GROUPS to listbox items', () => {
+      expect(findListbox().props('items')).toEqual(GROUPS);
+    });
+
+    it('emits the expected data for the all option', async () => {
+      await clickItem(ALL_ID);
+
+      expect(wrapper.emitted('filter-changed')).toHaveLength(1);
+      expect(wrapper.emitted('filter-changed')[0][0]).toStrictEqual({
+        hasIssues: undefined,
+        hasResolution: undefined,
       });
     });
 
@@ -147,9 +200,14 @@ describe('Activity Filter component', () => {
           await clickItem(value);
         }
 
+        // Take the emit of the last item as this will include the change of all items
+        const emitIndexToCheck = selectedItems.length - 1;
+
         expectSelectedItems(selectedItems);
-        // Take 2nd emit as this includes the change to both items
-        expect(wrapper.emitted('filter-changed')[1][0]).toEqual({ hasIssues, hasResolution });
+        expect(wrapper.emitted('filter-changed')[emitIndexToCheck][0]).toEqual({
+          hasIssues,
+          hasResolution,
+        });
       },
     );
   });
