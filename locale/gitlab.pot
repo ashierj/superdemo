@@ -13897,6 +13897,9 @@ msgstr ""
 msgid "Create new directory"
 msgstr ""
 
+msgid "Create new emoji"
+msgstr ""
+
 msgid "Create new file"
 msgstr ""
 
@@ -14407,7 +14410,7 @@ msgstr ""
 msgid "Custom emoji"
 msgstr ""
 
-msgid "Custom emoji will be available to use in every project in group."
+msgid "Custom emoji will be available to use in every project in the group."
 msgstr ""
 
 msgid "Custom hostname (for private commit emails)"
