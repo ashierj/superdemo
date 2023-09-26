@@ -88,13 +88,25 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   def apply_report_approver_rules_to(merge_request)
-    rule = merge_request_report_approver_rule(merge_request)
     Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
       %w[approval_merge_request_rules users namespaces approval_merge_request_rules_users approval_merge_request_rules_groups],
       url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/417459') do
-      rule.update!(report_approver_attributes)
+      ApplicationRecord.transaction do
+        rule = merge_request_report_approver_rule(merge_request)
+        rule.update!(report_approver_attributes)
+
+        next rule unless Feature.enabled?(:scan_result_any_merge_request, merge_request.project)
+        next rule unless rule.scan_result_policy_id
+
+        Security::ScanResultPolicyViolation.upsert_all(
+          [merge_request_id: merge_request.id,
+           scan_result_policy_id: rule.scan_result_policy_id,
+           project_id: merge_request.project_id],
+          unique_by: %w[scan_result_policy_id merge_request_id])
+
+        rule
+      end
     end
-    rule
   end
 
   def audit_add(model)

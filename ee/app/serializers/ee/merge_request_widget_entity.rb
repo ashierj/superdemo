@@ -7,7 +7,7 @@ module EE
 
     prepended do
       expose :require_password_to_approve do |merge_request|
-        merge_request.target_project.require_password_to_approve?
+        merge_request.require_password_to_approve?
       end
 
       expose :merge_request_approvers_available do |merge_request|

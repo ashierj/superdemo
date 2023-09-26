@@ -538,6 +538,38 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
             expect(merge_request.approvals).not_to be_empty
             expect(approval_todos(merge_request)).to be_empty
           end
+
+          context 'when enforced by policy' do
+            let(:configuration) { create(:security_orchestration_policy_configuration) }
+
+            let(:scan_result_policy_read) do
+              create(
+                :scan_result_policy_read,
+                :remove_approvals_with_new_commit,
+                security_orchestration_policy_configuration: configuration,
+                project: project)
+            end
+
+            let!(:violation) do
+              create(
+                :scan_result_policy_violation,
+                merge_request: merge_request,
+                scan_result_policy_read: scan_result_policy_read)
+            end
+
+            let!(:approval_rule) do
+              create(
+                :report_approver_rule,
+                merge_request: merge_request,
+                scan_result_policy_read: scan_result_policy_read)
+            end
+
+            it 'resets approvals' do
+              service.execute(oldrev, newrev, 'refs/heads/master')
+
+              expect(merge_request.approvals).to be_empty
+            end
+          end
         end
 
         context 'when the rebase_commit_sha on the MR matches the pushed SHA' do

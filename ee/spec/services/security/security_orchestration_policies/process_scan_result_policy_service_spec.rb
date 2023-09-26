@@ -49,16 +49,28 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
     context 'when actions are not provided' do
       let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: nil) }
 
-      it 'does not create approval project rules' do
-        expect { subject }.not_to change { project.approval_rules.count }
+      it 'creates approval rules' do
+        expect { subject }.to change { project.approval_rules.count }.by(1)
+      end
+
+      it 'sets approvals_required to 0' do
+        subject
+
+        expect(project.approval_rules.last.approvals_required).to be(0)
       end
     end
 
     context 'without any require_approval action' do
       let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'another_one' }]) }
 
-      it 'does not create approval project rules' do
-        expect { subject }.not_to change { project.approval_rules.count }
+      it 'creates approval rules' do
+        expect { subject }.to change { project.approval_rules.count }.by(1)
+      end
+
+      it 'sets approvals_required to 0' do
+        subject
+
+        expect(project.approval_rules.last.approvals_required).to be(0)
       end
     end
 
@@ -589,6 +601,21 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
           scan_result_policy_read = project.scan_result_policy_reads.first
           expect(scan_result_policy_read).to be_commits_unsigned
           expect(scan_result_policy_read.rule_idx).to be(0)
+        end
+      end
+
+      context 'when rule has no actions' do
+        let(:policy) { build(:scan_result_policy, :any_merge_request, commits: 'unsigned', actions: []) }
+
+        it 'creates approval rules' do
+          expect { subject }.to change { project.approval_rules.count }.by(1)
+        end
+
+        it 'sets approval_required to 0' do
+          subject
+
+          rule = project.approval_rules.reload.last
+          expect(rule.approvals_required).to be(0)
         end
       end
     end

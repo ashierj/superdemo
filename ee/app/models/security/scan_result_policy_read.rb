@@ -13,6 +13,9 @@ module Security
     belongs_to :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration'
     belongs_to :project, optional: true
     has_many :software_license_policies
+    has_many :approval_merge_request_rules, foreign_key: 'scan_result_policy_id', inverse_of: :scan_result_policy_read
+    has_many :violations, foreign_key: 'scan_result_policy_id', class_name: 'Security::ScanResultPolicyViolation',
+      inverse_of: :scan_result_policy_read
 
     validates :match_on_inclusion, inclusion: { in: [true, false], message: 'must be a boolean value' }
     validates :role_approvers, inclusion: { in: Gitlab::Access.all_values }

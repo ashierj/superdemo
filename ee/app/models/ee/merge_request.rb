@@ -61,6 +61,7 @@ module EE
       has_many :blocked_merge_requests, through: :blocks_as_blocker
 
       has_many :compliance_violations, class_name: 'MergeRequests::ComplianceViolation'
+      has_many :scan_result_policy_violations, class_name: 'Security::ScanResultPolicyViolation'
 
       delegate :sha, to: :head_pipeline, prefix: :head_pipeline, allow_nil: true
       delegate :sha, to: :base_pipeline, prefix: :base_pipeline, allow_nil: true
@@ -107,12 +108,27 @@ module EE
       end
 
       def merge_requests_author_approval?
-        !!target_project&.merge_requests_author_approval?
+        !!target_project&.merge_requests_author_approval? &&
+          !policy_approval_settings.fetch(:prevent_approval_by_author, false)
       end
 
       def merge_requests_disable_committers_approval?
-        !!target_project&.merge_requests_disable_committers_approval?
+        !!target_project&.merge_requests_disable_committers_approval? ||
+          policy_approval_settings.fetch(:prevent_approval_by_commit_author, false)
       end
+
+      def require_password_to_approve?
+        target_project&.require_password_to_approve? ||
+          policy_approval_settings.fetch(:require_password_to_approve, false)
+      end
+
+      def policy_approval_settings
+        approval_rules
+          .with_policy_violation
+          .pluck(:project_approval_settings) # rubocop: disable CodeReuse/ActiveRecord
+          .reduce({}) { |acc, setting| acc.merge(setting.select { |_, value| value }.symbolize_keys) }
+      end
+      strong_memoize_attr :policy_approval_settings
     end
 
     class_methods do

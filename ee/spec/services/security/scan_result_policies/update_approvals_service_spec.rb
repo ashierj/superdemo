@@ -46,7 +46,8 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         scanners: scanners,
         vulnerabilities_allowed: vulnerabilities_allowed,
         severity_levels: severity_levels,
-        vulnerability_states: vulnerability_states
+        vulnerability_states: vulnerability_states,
+        scan_result_policy_id: create(:scan_result_policy_read).id
       )
     end
 
@@ -322,7 +323,8 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
               scanners: scanners,
               vulnerabilities_allowed: vulnerabilities_allowed,
               severity_levels: severity_levels,
-              vulnerability_states: vulnerability_states
+              vulnerability_states: vulnerability_states,
+              scan_result_policy_id: create(:scan_result_policy_read).id
             )
           end
 
