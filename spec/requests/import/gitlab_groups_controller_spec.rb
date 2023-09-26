@@ -129,6 +129,19 @@ RSpec.describe Import::GitlabGroupsController, feature_category: :importers do
       end
     end
 
+    context 'when supplied an invalid file type' do
+      let(:request_params) { { path: 'test-group-import', name: 'test-group-import' } }
+      let(:file) { File.join('spec', 'fixtures', 'invalid_export_file.tar.gz') }
+      let(:file_upload) { fixture_file_upload(file) }
+
+      it "redirects with an error" do
+        expect { import_request }.not_to change { Group.count }
+
+        expect(flash[:alert]).to start_with('The group import file cannot contain FIFO type files')
+        expect(response).to have_gitlab_http_status(:found)
+      end
+    end
+
     context 'when the user is not authorized to create groups' do
       let(:request_params) { { path: 'test-group-import', name: 'test-group-import' } }
       let(:user) { create(:user, can_create_group: false) }
