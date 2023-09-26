@@ -4,6 +4,7 @@ ReloadPropagatedFrom=gitlab.target
 PartOf=gitlab.target
 After=network.target
 JoinsNamespaceOf=gitlab-puma.service
+StartLimitIntervalSec=11min
 
 [Service]
 Type=notify

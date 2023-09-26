@@ -4,7 +4,7 @@ Conflicts=gitlab.service
 ReloadPropagatedFrom=gitlab.target
 PartOf=gitlab.target
 After=network.target
-StartLimitIntervalSec=100s
+StartLimitIntervalSec=11min
 
 [Service]
 Type=notify
