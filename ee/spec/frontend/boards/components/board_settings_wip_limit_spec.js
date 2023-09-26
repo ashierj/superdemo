@@ -10,6 +10,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mockLabelList } from 'jest/boards/mock_data';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import { mockUpdateListWipLimitResponse } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -29,6 +30,10 @@ describe('BoardSettingsWipLimit', () => {
   const listUpdateLimitMetricsMutationHandler = jest
     .fn()
     .mockResolvedValue(mockUpdateListWipLimitResponse);
+  const errorMessage = 'Failed to update list';
+  const listUpdateLimitMetricsMutationHandlerFailure = jest
+    .fn()
+    .mockRejectedValue(new Error(errorMessage));
 
   const createComponent = ({
     vuexState = { activeId: listId },
@@ -81,6 +86,10 @@ describe('BoardSettingsWipLimit', () => {
 
     await nextTick();
   };
+
+  beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
+  });
 
   describe('when activeList is present', () => {
     describe('when activeListWipLimit is 0', () => {
@@ -347,6 +356,23 @@ describe('BoardSettingsWipLimit', () => {
       expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
         input: { listId, maxIssueCount: 0 },
       });
+    });
+
+    it('sets error when list update fails', async () => {
+      createComponent({
+        props: { maxIssueCount: 11 },
+        injectedProps: {
+          isApolloBoard: true,
+        },
+        listUpdateWipLimitMutationHandler: listUpdateLimitMetricsMutationHandlerFailure,
+      });
+
+      expect(findWipLimit().text()).toContain('11');
+
+      findRemoveWipLimit().vm.$emit('click');
+      await waitForPromises();
+
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 });
