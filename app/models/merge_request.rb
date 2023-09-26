@@ -1249,6 +1249,7 @@ class MergeRequest < ApplicationRecord
     [
       ::MergeRequests::Mergeability::CheckOpenStatusService,
       ::MergeRequests::Mergeability::CheckDraftStatusService,
+      ::MergeRequests::Mergeability::CheckNotPreparingService,
       ::MergeRequests::Mergeability::CheckBrokenStatusService,
       ::MergeRequests::Mergeability::CheckDiscussionsStatusService,
       ::MergeRequests::Mergeability::CheckCiStatusService
@@ -1547,7 +1548,7 @@ class MergeRequest < ApplicationRecord
 
   def mergeable_ci_state?
     return true unless project.only_allow_merge_if_pipeline_succeeds?(inherit_group_setting: true)
-    return false unless actual_head_pipeline
+    return true unless actual_head_pipeline
     return true if project.allow_merge_on_skipped_pipeline?(inherit_group_setting: true) && actual_head_pipeline.skipped?
 
     actual_head_pipeline.success?
