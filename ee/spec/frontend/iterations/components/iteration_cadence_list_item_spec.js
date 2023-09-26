@@ -1,4 +1,4 @@
-import { GlDropdown, GlInfiniteScroll, GlModal, GlSkeletonLoader } from '@gitlab/ui';
+import { GlDisclosureDropdown, GlInfiniteScroll, GlModal, GlSkeletonLoader } from '@gitlab/ui';
 import { RouterLinkStub } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 
@@ -141,10 +141,11 @@ describe('Iteration cadence list item', () => {
     return nextTick();
   }
 
+  const findDisclosureDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
-  const findAddIterationButton = () => wrapper.findByRole('menuitem', { name: i18n.addIteration });
+  const findAddIterationButton = () => wrapper.findByTestId('add-cadence');
   const findIterationItemText = (i) => wrapper.findAllByTestId('iteration-item').at(i).text();
-  const findDurationBadge = () => wrapper.find('[data-testid="duration-badge"]');
+  const findDurationBadge = () => wrapper.findByTestId('duration-badge');
   const expand = (cadence = automaticIterationCadence) =>
     wrapper.findByRole('button', { text: cadence.title }).trigger('click');
 
@@ -356,7 +357,7 @@ describe('Iteration cadence list item', () => {
       });
 
       it('hides dropdown and delete button', () => {
-        expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
+        expect(findDisclosureDropdown().exists()).toBe(false);
       });
     });
 
@@ -368,7 +369,7 @@ describe('Iteration cadence list item', () => {
       });
 
       it('shows delete button', () => {
-        expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
+        expect(findDisclosureDropdown().exists()).toBe(true);
       });
 
       it('opens confirmation modal to delete cadence', () => {
@@ -388,13 +389,13 @@ describe('Iteration cadence list item', () => {
   it('hides dropdown when canEditCadence is false', async () => {
     await createComponent({ canEditCadence: false });
 
-    expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
+    expect(findDisclosureDropdown().exists()).toBe(false);
   });
 
   it('shows dropdown when canEditCadence is true', async () => {
     await createComponent({ canEditCadence: true });
 
-    expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
+    expect(findDisclosureDropdown().exists()).toBe(true);
   });
 
   it.each([

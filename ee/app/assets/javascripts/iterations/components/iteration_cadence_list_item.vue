@@ -3,8 +3,7 @@ import {
   GlAlert,
   GlButton,
   GlCollapse,
-  GlDropdown,
-  GlDropdownItem,
+  GlDisclosureDropdown,
   GlIcon,
   GlInfiniteScroll,
   GlModal,
@@ -45,8 +44,7 @@ export default {
     GlAlert,
     GlButton,
     GlCollapse,
-    GlDropdown,
-    GlDropdownItem,
+    GlDisclosureDropdown,
     GlIcon,
     GlInfiniteScroll,
     GlModal,
@@ -119,6 +117,34 @@ export default {
     };
   },
   computed: {
+    actionItems() {
+      const items = [
+        {
+          text: s__('Iterations|Edit cadence'),
+          action: () => this.goTo('edit'),
+        },
+        {
+          text: i18n.deleteCadence,
+          action: this.showModal,
+          extraAttrs: {
+            'data-testid': 'delete-cadence',
+          },
+        },
+      ];
+
+      if (this.showAddIteration) {
+        items.unshift({
+          text: i18n.addIteration,
+          action: () => this.goTo('newIteration'),
+          extraAttrs: {
+            'data-testid': 'add-cadence',
+            'data-qa-selector': 'new_iteration_button',
+          },
+        });
+      }
+
+      return items;
+    },
     query() {
       if (this.namespaceType === WORKSPACE_GROUP) {
         return groupQuery;
@@ -149,22 +175,6 @@ export default {
     loading() {
       return this.$apollo.queries.workspace.loading;
     },
-    editCadence() {
-      return {
-        name: 'edit',
-        params: {
-          cadenceId: getIdFromGraphQLId(this.cadenceId),
-        },
-      };
-    },
-    newIteration() {
-      return {
-        name: 'newIteration',
-        params: {
-          cadenceId: getIdFromGraphQLId(this.cadenceId),
-        },
-      };
-    },
     showAddIteration() {
       return !this.automatic && this.canCreateIteration;
     },
@@ -184,6 +194,14 @@ export default {
     }
   },
   methods: {
+    goTo(name) {
+      this.$router.push({
+        name,
+        params: {
+          cadenceId: getIdFromGraphQLId(this.cadenceId),
+        },
+      });
+    },
     fetchMore() {
       if (this.iterations.length === 0 || !this.hasNextPage || this.loading) {
         return;
@@ -229,14 +247,6 @@ export default {
     focusMenu() {
       this.$refs.menu.$el.focus();
     },
-    toEditCadence() {
-      this.$router.push({
-        name: 'edit',
-        params: {
-          cadenceId: getIdFromGraphQLId(this.cadenceId),
-        },
-      });
-    },
     getIterationPeriod,
   },
 };
@@ -264,31 +274,17 @@ export default {
         <gl-icon name="clock" class="gl-mr-3" />
         {{ n__('Every week', 'Every %d weeks', durationInWeeks) }}</span
       >
-      <gl-dropdown
+      <gl-disclosure-dropdown
         v-if="canEditCadence"
         ref="menu"
-        icon="ellipsis_v"
         category="tertiary"
-        right
-        text-sr-only
-        no-caret
         data-qa-selector="cadence_options_button"
-      >
-        <gl-dropdown-item
-          v-if="showAddIteration"
-          :to="newIteration"
-          data-qa-selector="new_iteration_button"
-        >
-          {{ i18n.addIteration }}
-        </gl-dropdown-item>
-
-        <gl-dropdown-item :to="editCadence">
-          {{ s__('Iterations|Edit cadence') }}
-        </gl-dropdown-item>
-        <gl-dropdown-item data-testid="delete-cadence" @click="showModal">
-          {{ i18n.deleteCadence }}
-        </gl-dropdown-item>
-      </gl-dropdown>
+        icon="ellipsis_v"
+        placement="right"
+        no-caret
+        text-sr-only
+        :items="actionItems"
+      />
       <gl-modal
         ref="modal"
         :modal-id="`${cadenceId}-delete-modal`"
