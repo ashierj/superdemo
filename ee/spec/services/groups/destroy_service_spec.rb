@@ -132,4 +132,24 @@ RSpec.describe Groups::DestroyService, feature_category: :groups_and_projects do
       subject.execute
     end
   end
+
+  context 'associated records' do
+    let!(:service_account) { create(:service_account, provisioned_by_group: group) }
+    let!(:service_account_another_group) { create(:service_account, provisioned_by_group: create(:group)) }
+    let!(:provisioned_user) { create(:user, provisioned_by_group: group) }
+
+    it 'deletes group serviced accounts and user bots', :sidekiq_inline do
+      subject.execute
+
+      expect(
+        Users::GhostUserMigration.where(user: service_account, initiator_user: user)
+      ).to be_exists
+      expect(
+        Users::GhostUserMigration.where(user: service_account_another_group, initiator_user: user)
+      ).to be_empty
+      expect(
+        Users::GhostUserMigration.where(user: provisioned_user, initiator_user: user)
+      ).to be_empty
+    end
+  end
 end
