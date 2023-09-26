@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import VueRouter from 'vue-router';
-import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { cacheConfig } from 'ee/ci/catalog/graphql/settings';
+import { CI_CATALOG_RESOURCE_TYPE, cacheConfig } from 'ee/ci/catalog/graphql/settings';
 
 import getCiCatalogResourceSharedData from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_shared_data.query.graphql';
 import getCiCatalogResourceDetails from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_details.query.graphql';
@@ -17,6 +17,7 @@ import CiResourceHeaderSkeletonLoader from 'ee/ci/catalog/components/details/ci_
 
 import { createRouter } from 'ee/ci/catalog/router/index';
 import { CI_RESOURCE_DETAILS_PAGE_NAME } from 'ee/ci/catalog/router/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { catalogSharedDataMock, catalogAdditionalDetailsMock } from '../../mock';
 
 Vue.use(VueApollo);
@@ -41,7 +42,6 @@ describe('CiResourceDetailsPage', () => {
   const findDetailsComponent = () => wrapper.findComponent(CiResourceDetails);
   const findHeaderComponent = () => wrapper.findComponent(CiResourceHeader);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findHeaderSkeletonLoader = () => wrapper.findComponent(CiResourceHeaderSkeletonLoader);
 
   const createComponent = ({ props = {} } = {}) => {
@@ -89,8 +89,7 @@ describe('CiResourceDetailsPage', () => {
         createComponent();
       });
 
-      it('renders only the details loading state', () => {
-        expect(findLoadingIcon().exists()).toBe(true);
+      it('renders the header skeleton loader', () => {
         expect(findHeaderSkeletonLoader().exists()).toBe(false);
       });
 
@@ -111,11 +110,11 @@ describe('CiResourceDetailsPage', () => {
         createComponent();
       });
 
-      it('renders all loading states', () => {
-        expect(findLoadingIcon().exists()).toBe(true);
+      it('does not render the header skeleton', () => {
+        expect(findHeaderSkeletonLoader().exists()).toBe(false);
       });
 
-      it('passes down the loading state to the header component', () => {
+      it('passes all loading state to the header component as true', () => {
         expect(findHeaderComponent().props()).toMatchObject({
           isLoadingDetails: true,
           isLoadingSharedData: true,
@@ -150,8 +149,8 @@ describe('CiResourceDetailsPage', () => {
       await waitForPromises();
     });
 
-    it('does not render a loading icon', () => {
-      expect(findLoadingIcon().exists()).toBe(false);
+    it('does not render the header skeleton loader', () => {
+      expect(findHeaderSkeletonLoader().exists()).toBe(false);
     });
 
     describe('Catalog header', () => {
@@ -179,7 +178,7 @@ describe('CiResourceDetailsPage', () => {
 
       it('passes expected props', () => {
         expect(findDetailsComponent().props()).toEqual({
-          readmeHtml: defaultAdditionalData.readmeHtml,
+          resourceId: convertToGraphQLId(CI_CATALOG_RESOURCE_TYPE, defaultAdditionalData.id),
         });
       });
     });
