@@ -621,7 +621,7 @@ module EE
       return false unless user
 
       if min_access_level == ::Gitlab::Access::MINIMAL_ACCESS && minimal_access_role_allowed?
-        all_group_members.find_by(user_id: user.id).present?
+        all_group_members.find_by(user_id: user.id).present? || members_from_self_and_ancestor_group_shares.where(user_id: user.id).present?
       else
         super
       end

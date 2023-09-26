@@ -15,7 +15,7 @@ module Gitlab
             saml_provider = group.root_saml_provider
 
             return false unless saml_provider
-            return false if user_authorized?(user, group, resource)
+            return false if user_authorized?(user, resource)
 
             new(saml_provider, user: user).access_restricted?
           end
@@ -35,15 +35,15 @@ module Gitlab
 
           private
 
-          def user_authorized?(user, group, resource)
-            return true if resource.public? && !group_member?(group, user)
+          def user_authorized?(user, resource)
+            return true if resource.public? && !resource_member?(resource, user)
             return true if resource.is_a?(::Group) && resource.root? && resource.owned_by?(user)
 
             false
           end
 
-          def group_member?(group, user)
-            user && user.is_a?(::User) && group.member?(user)
+          def resource_member?(resource, user)
+            user && user.is_a?(::User) && resource.member?(user)
           end
         end
 
