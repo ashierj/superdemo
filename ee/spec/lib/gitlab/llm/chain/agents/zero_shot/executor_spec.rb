@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_redis_chat, feature_category: :duo_chat do
+  include FakeBlobHelpers
+
   let_it_be(:user) { create(:user) }
 
   let(:input) { 'foo' }
@@ -160,6 +162,24 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
         agent.execute
       end
+
+      it 'streams the current tool', :aggregate_failures do
+        tool_double = double
+
+        allow(Gitlab::Llm::Chain::ToolResponseModifier).to receive(:new)
+          .with(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
+          .and_return(tool_double)
+
+        expect(response_service_double).to receive(:execute).at_least(:once)
+        expect(stream_response_service_double).to receive(:execute).at_least(:once).with(
+          response: tool_double,
+          options: { cache_response: false, role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM, type: 'tool' }
+        )
+
+        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+
+        agent.execute
+      end
     end
   end
 
@@ -215,16 +235,13 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     end
 
     context 'when resource is a blob' do
-      let_it_be(:project) { create(:project, :repository) }
-      let_it_be(:blob) { project.repository.blob_at("master", "README") }
-
+      let(:project) { build(:project) }
+      let(:blob) { fake_blob(path: 'foobar.rb', data: 'puts "hello world"') }
       let(:extra_resource) { { blob: blob } }
-      let(:injected_prompt) do
-        "The current code file that user sees is #{blob.path} and has the following content\n#{blob.data}"
-      end
 
-      it 'includes the blob data in the prompt' do
-        expect(agent.prompt[:prompt]).to include injected_prompt
+      it 'includes the blob name and data in the prompt' do
+        expect(agent.prompt[:prompt]).to include("foobar.rb")
+        expect(agent.prompt[:prompt]).to include("puts \"hello world\"")
       end
     end
   end
