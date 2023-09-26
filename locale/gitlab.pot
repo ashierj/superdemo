@@ -32769,6 +32769,9 @@ msgstr ""
 msgid "Only SSH"
 msgstr ""
 
+msgid "Only SSH Certificates"
+msgstr ""
+
 msgid "Only accessible by %{membersPageLinkStart}project members%{membersPageLinkEnd}. Membership must be explicitly granted to each user."
 msgstr ""
 

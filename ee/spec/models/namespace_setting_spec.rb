@@ -6,6 +6,14 @@ RSpec.describe NamespaceSetting do
   let(:group) { create(:group) }
   let(:setting) { group.namespace_settings }
 
+  describe 'enums' do
+    it 'defines an enum for enabled_git_access_protocol' do
+      is_expected.to define_enum_for(
+        :enabled_git_access_protocol
+      ).with_values([:all, :ssh, :http, :ssh_certificates]).with_suffix
+    end
+  end
+
   describe 'validations' do
     subject(:settings) { group.namespace_settings }
 

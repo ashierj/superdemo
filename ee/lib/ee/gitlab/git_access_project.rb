@@ -29,11 +29,19 @@ module EE
       end
 
       def allowed_access_namespace?
-        return true unless namespace&.licensed_feature_available?(:ssh_certificates)
-        return true if allowed_namespace_path.blank?
+        # Return early if ssh certificate feature is not enabled for namespace
+        # If allowed_namespace_path is passed anyway, we return false
+        # It may happen, when a user authenticates via SSH certificate and tries accessing to personal namespace
+        return allowed_namespace_path.blank? unless namespace&.licensed_feature_available?(:ssh_certificates)
+
+        root_namespace = namespace.root_ancestor
+
+        # When allowed_namespace_path is not specified, it's checked whether SSH certificates are not enforced
+        return true if allowed_namespace_path.blank? && ::Feature.disabled?(:enforce_ssh_certificates, root_namespace)
+        return root_namespace.enabled_git_access_protocol != 'ssh_certificates' if allowed_namespace_path.blank?
 
         allowed_namespace = ::Namespace.find_by_full_path(allowed_namespace_path)
-        allowed_namespace.present? && namespace.root_ancestor.id == allowed_namespace.id
+        allowed_namespace.present? && root_namespace.id == allowed_namespace.id
       end
     end
   end
