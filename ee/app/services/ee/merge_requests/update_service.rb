@@ -37,7 +37,7 @@ module EE
       def create_branch_change_note(merge_request, branch_type, event_type, old_branch, new_branch)
         super
 
-        reset_approvals(merge_request)
+        delete_approvals(merge_request) if reset_approvals?(merge_request, nil)
       end
 
       def reset_approval_rules(merge_request)
