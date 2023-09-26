@@ -13,6 +13,11 @@ class Import::GitlabGroupsController < ApplicationController
       return redirect_to new_group_path(anchor: 'import-group-pane'), alert: s_('GroupImport|Unable to process group import file')
     end
 
+    unless file_type_permitted?([group_params[:file]])
+      return redirect_to new_group_path(anchor: 'import-group-pane'),
+        alert: s_("GroupImport|The group import file cannot contain FIFO type files. Please generate a new export file for your group.")
+    end
+
     group_data = group_params.except(:file).merge(
       visibility_level: closest_allowed_visibility_level,
       import_export_upload: ImportExportUpload.new(import_file: group_params[:file])

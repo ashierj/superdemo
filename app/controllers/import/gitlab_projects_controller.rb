@@ -15,7 +15,11 @@ class Import::GitlabProjectsController < Import::BaseController
 
   def create
     unless file_is_valid?(project_params[:file])
-      return redirect_back_or_default(options: { alert: _("You need to upload a GitLab project export archive (ending in .gz).") })
+      return redirect_back_or_default(options: { alert: _("You need to upload a valid GitLab project export archive (ending in .gz).") })
+    end
+
+    unless file_type_permitted?([project_params[:file]])
+      return redirect_back_or_default(options: { alert: _("An export archive file cannot contain FIFO type files. Please generate a new export file for your project.") }) # rubocop:disable Layout/LineLength
     end
 
     @project = ::Projects::GitlabProjectsImportService.new(current_user, project_params).execute
