@@ -111,7 +111,7 @@ module Users
       set_redirect_url
       experiment(:phone_verification_for_low_risk_users, user: @user).track(:registration_completed)
 
-      redirect_to @redirect_url
+      render 'devise/sessions/successful_verification'
     end
 
     def verify_credit_card

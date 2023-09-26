@@ -608,16 +608,18 @@ feature_category: :system_access do
       expect(request.session.has_key?(:verification_user_id)).to eq(false)
     end
 
-    it 'redirects to the after_sign_in_path_for variable' do
-      expect(response).to redirect_to(stored_user_return_to_path)
-      expect(controller.stored_location_for(:user)).to be_nil
+    it 'renders the template with the after_sign_in_path_for variable', :aggregate_failures do
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to render_template('successful_verification', layout: 'minimal')
+      expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
     end
 
     context 'when user is in subscription onboarding', :saas do
       let(:stored_user_return_to_path) { new_subscriptions_path(plan_id: 'bronze_id') }
 
-      it 'does not empty out the stored location for user' do
-        expect(response).to redirect_to(stored_user_return_to_path)
+      it 'does not empty out the stored location for user', :aggregate_failures do
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
         expect(controller.stored_location_for(:user)).to eq(stored_user_return_to_path)
       end
     end
