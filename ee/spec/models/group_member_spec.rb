@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe GroupMember do
+RSpec.describe GroupMember, feature_category: :groups_and_projects do
   it { is_expected.to include_module(EE::GroupMember) }
 
   it_behaves_like 'member validations'

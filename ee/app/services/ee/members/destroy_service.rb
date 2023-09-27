@@ -104,6 +104,7 @@ module EE
         super
 
         enqueue_cleanup_add_on_seat_assignments(member)
+        enqueue_cleanup_group_protected_branch_rules(member)
       end
 
       def enqueue_cleanup_add_on_seat_assignments(member)
@@ -114,6 +115,14 @@ module EE
             member.source.root_ancestor.id,
             member.user_id
           )
+        end
+      end
+
+      def enqueue_cleanup_group_protected_branch_rules(member)
+        return unless member.source.is_a?(Group)
+
+        member.run_after_commit_or_now do
+          ::MembersDestroyer::CleanUpGroupProtectedBranchRulesWorker.perform_async(member.source.id, member.user_id)
         end
       end
     end

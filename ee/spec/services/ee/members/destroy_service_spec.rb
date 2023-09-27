@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Members::DestroyService, feature_category: :groups_and_projects do
+  let_it_be(:group) { create(:group) }
   let(:current_user) { create(:user) }
   let(:member_user) { create(:user) }
-  let(:group) { create(:group) }
   let(:member) { group.members.find_by(user_id: member_user.id) }
 
   before do
@@ -191,6 +191,34 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
         let!(:member) { create(:project_member, source: project, user: member_user) }
 
         include_examples 'calls the destroy service', 'with rules for the project', :project_1_rule
+      end
+    end
+
+    context 'when user has associated protected branch rules' do
+      let_it_be(:project) { create(:project) }
+
+      let(:worker_class) { ::MembersDestroyer::CleanUpGroupProtectedBranchRulesWorker }
+
+      context 'when member source is a project' do
+        let(:member) { create(:project_member, project: project, user: member_user) }
+
+        it 'does not enqueues the CleanUpGroupProtectedBranchRulesWorker' do
+          expect(worker_class).not_to receive(:perform_async)
+
+          destroy_service.execute(member, skip_authorization: true)
+        end
+      end
+
+      context 'when member source is a group' do
+        subject do
+          destroy_service.execute(member, skip_authorization: true)
+        end
+
+        it 'enqueues the CleanUpGroupProtectedBranchRulesWorker' do
+          expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
+
+          subject
+        end
       end
     end
 
