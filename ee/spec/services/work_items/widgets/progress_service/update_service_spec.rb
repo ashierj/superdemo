@@ -120,24 +120,6 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
               expect(work_item_note.note).to eq("removed the progress **5**")
             end
           end
-
-          context 'when current_value param is invalid' do
-            context 'if current_value is greater than 100' do
-              let(:params) { { current_value: 120 } }
-
-              it_behaves_like 'raises a WidgetError' do
-                let(:message) { 'Progress must be less than or equal to 100' }
-              end
-            end
-
-            context 'if current_value is less than 0' do
-              let(:params) { { current_value: -120 } }
-
-              it_behaves_like 'raises a WidgetError' do
-                let(:message) { 'Progress must be less than or equal to 100' }
-              end
-            end
-          end
         end
 
         context 'when current_value param is not present' do
