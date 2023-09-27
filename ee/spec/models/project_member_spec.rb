@@ -185,6 +185,55 @@ RSpec.describe ProjectMember, feature_category: :groups_and_projects do
     end
   end
 
+  describe 'deletes member branch access rules cascadingly' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:protected_branches) { create_list(:protected_branch, 2, project: project) }
+
+    let!(:member) { create(:project_member, project: project, user: user) }
+
+    it 'deletes all associated merge_access_levels in the project' do
+      protected_branches.each do |protected_branch|
+        protected_branch.merge_access_levels.create!(user: user)
+      end
+
+      expect { member.destroy! }
+        .to change { ProtectedBranch::MergeAccessLevel.count }.by(-2)
+    end
+
+    it 'deletes all associated push_access_levels in the project' do
+      protected_branches.each do |protected_branch|
+        protected_branch.push_access_levels.create!(user: user)
+      end
+
+      expect { member.destroy! }
+        .to change { ProtectedBranch::PushAccessLevel.count }.by(-2)
+    end
+
+    context 'when user still has inherited access to the project' do
+      let!(:inherited_membership) { group.add_guest(user) }
+
+      it 'does not delete associated merge_access_levels in the project' do
+        protected_branches.each do |protected_branch|
+          protected_branch.merge_access_levels.create!(user: user)
+        end
+
+        expect { member.destroy! }
+          .to change { ProtectedBranch::MergeAccessLevel.count }.by(0)
+      end
+
+      it 'does not delete associated push_access_levels in the project' do
+        protected_branches.each do |protected_branch|
+          protected_branch.push_access_levels.create!(user: user)
+        end
+
+        expect { member.destroy! }
+          .to change { ProtectedBranch::PushAccessLevel.count }.by(0)
+      end
+    end
+  end
+
   describe 'post create hooks' do
     context 'when a new personal project is created' do
       it 'does not send notifications or create events for the creator of the project' do
