@@ -30,14 +30,4 @@ RSpec.describe 'Upload a group export archive', :api, :js, feature_category: :gr
   end
 
   it_behaves_like 'handling file uploads', 'for a group export archive'
-
-  context 'when validating the file' do
-    let(:file) { 'spec/fixtures/invalid_group_export.tar.gz' }
-
-    it 'raises an error and returns a message' do
-      expect(subject.response).to be_a(Net::HTTPBadRequest)
-      expect(subject.code).to eq(400)
-      expect(subject.parsed_response['error']).to eq('file is invalid')
-    end
-  end
 end

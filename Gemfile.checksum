@@ -358,7 +358,6 @@
 {"name":"mini_magick","version":"4.10.1","platform":"ruby","checksum":"e939d2c70c8002233fc6b1eecfe762f38a156d69ad31a87160205870be08f852"},
 {"name":"mini_mime","version":"1.1.2","platform":"ruby","checksum":"a54aec0cc7438a03a850adb00daca2bdb60747f839e28186994df057cea87151"},
 {"name":"mini_portile2","version":"2.8.4","platform":"ruby","checksum":"180bc4193701bbeb9b6c02df5a6b8185bff7f32abd466dd97d6532d36e45b20a"},
-{"name":"minitar","version":"0.9","platform":"ruby","checksum":"23c0bebead35dbfe9e24088dc436c8a233d03f51d365a686b9a11dd30dc2d588"},
 {"name":"minitest","version":"5.11.3","platform":"ruby","checksum":"78e18aa2c49c58e9bc53c54a0b900e87ad0a96394e92fbbfa58d3ff860a68f45"},
 {"name":"mixlib-cli","version":"2.1.8","platform":"ruby","checksum":"e6f27be34d580f6ed71731ca46b967e57793a627131c1f6e1ed2dad39ea3bdf9"},
 {"name":"mixlib-config","version":"3.0.9","platform":"ruby","checksum":"9867adab3ab547eb74a8efdc9dfab6bcc83d2802a571ff8af8d6e981ca8d53ab"},

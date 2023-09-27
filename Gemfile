@@ -379,9 +379,6 @@ gem 'prometheus-client-mmap', '~> 0.28', require: 'prometheus/client'
 
 gem 'warning', '~> 1.3.0'
 
-# Validation of compressed tar files
-gem 'minitar', '~> 0.9'
-
 group :development do
   gem 'lefthook', '~> 1.4.7', require: false
   gem 'rubocop'

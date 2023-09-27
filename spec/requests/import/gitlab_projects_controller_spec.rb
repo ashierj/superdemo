@@ -51,17 +51,6 @@ RSpec.describe Import::GitlabProjectsController, feature_category: :importers do
       end
     end
 
-    context 'with an invalid file type' do
-      let(:file) { File.join('spec', 'fixtures', 'invalid_export_file.tar.gz') }
-
-      it "redirects with an error" do
-        subject
-
-        expect(flash[:alert]).to start_with('An export archive file cannot contain FIFO type files')
-        expect(response).to have_gitlab_http_status(:found)
-      end
-    end
-
     context 'when request exceeds the rate limit' do
       before do
         allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(true)

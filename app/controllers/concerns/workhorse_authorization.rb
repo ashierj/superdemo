@@ -40,8 +40,4 @@ module WorkhorseAuthorization
   def file_extension_allowlist
     ImportExportUploader::EXTENSION_ALLOWLIST
   end
-
-  def file_type_permitted?(file)
-    ::Import::ArchiveFileTypeValidator.new(archive_path: file[0].tempfile.path).valid?
-  end
 end

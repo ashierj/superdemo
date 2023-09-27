@@ -13,7 +13,6 @@ RSpec.describe Gitlab::ImportExport::FileImporter, feature_category: :importers 
   let(:subfolder_symlink_file) { "#{shared.export_path}/subfolder/invalid.json" }
   let(:evil_symlink_file) { "#{shared.export_path}/.\nevil" }
   let(:custom_mode_symlink_file) { "#{shared.export_path}/symlink.mode" }
-  let(:fifo_type_file) { "#{shared.export_path}/fifo_type_file.tar.gz" }
 
   before do
     stub_const('Gitlab::ImportExport::FileImporter::MAX_RETRIES', 0)
@@ -118,7 +117,6 @@ RSpec.describe Gitlab::ImportExport::FileImporter, feature_category: :importers 
 
     before do
       allow_next_instance_of(described_class) do |instance|
-        allow(instance).to receive(:validate_archive_file_type).and_return(true)
         allow(instance).to receive(:wait_for_archived_file).and_raise(StandardError, 'foo')
       end
     end
@@ -184,21 +182,6 @@ RSpec.describe Gitlab::ImportExport::FileImporter, feature_category: :importers 
     end
   end
 
-  context 'when archive contains invalid file type' do
-    let_it_be(:project) { create(:project) }
-    let(:shared) { Gitlab::ImportExport::Shared.new(project) }
-    let(:filepath) { fifo_type_file }
-
-    subject { described_class.new(importable: project, archive_file: filepath, shared: shared) }
-
-    it 'returns false and sets an error on shared' do
-      result = subject.import
-
-      expect(result).to eq(false)
-      expect(shared.errors.join).to eq('Archive file type validation failed.')
-    end
-  end
-
   context 'when file exceeds acceptable decompressed size' do
     let(:project) { create(:project) }
     let(:shared) { Gitlab::ImportExport::Shared.new(project) }
@@ -210,10 +193,6 @@ RSpec.describe Gitlab::ImportExport::FileImporter, feature_category: :importers 
       Zlib::GzipWriter.open(filepath) do |gz|
         gz.write('Hello World!')
       end
-
-      allow(subject)
-        .to receive(:validate_archive_file_type)
-        .and_return(true)
     end
 
     context 'when validate_import_decompressed_archive_size feature flag is enabled' do
@@ -235,7 +214,7 @@ RSpec.describe Gitlab::ImportExport::FileImporter, feature_category: :importers 
         stub_feature_flags(validate_import_decompressed_archive_size: false)
       end
 
-      it 'skips archive size validation' do
+      it 'skips validation' do
         expect(subject).not_to receive(:validate_decompressed_archive_size)
 
         subject.import
@@ -246,7 +225,6 @@ RSpec.describe Gitlab::ImportExport::FileImporter, feature_category: :importers 
   def setup_files
     FileUtils.mkdir_p("#{shared.export_path}/subfolder/")
     FileUtils.touch(valid_file)
-    FileUtils.copy('spec/fixtures/invalid_export_file.tar.gz', "#{shared.export_path}/fifo_type_file.tar.gz" )
     FileUtils.ln_s(valid_file, symlink_file)
     FileUtils.ln_s(valid_file, subfolder_symlink_file)
     FileUtils.ln_s(valid_file, hidden_symlink_file)
