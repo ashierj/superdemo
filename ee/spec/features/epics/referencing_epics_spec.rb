@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Referencing Epics', :js, feature_category: :portfolio_management do
-  include ContentEditorHelpers
-
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:epic) { create(:epic, group: group) }
@@ -100,7 +98,6 @@ RSpec.describe 'Referencing Epics', :js, feature_category: :portfolio_management
 
       before do
         visit project_issue_path(project, issue)
-        close_rich_text_promo_popover_if_present
 
         fill_in 'note[note]', with: note_text
         click_button 'Comment'
