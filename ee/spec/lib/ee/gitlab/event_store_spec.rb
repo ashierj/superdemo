@@ -13,6 +13,7 @@ RSpec.describe Gitlab::EventStore do
         ::Repositories::KeepAroundRefsCreatedEvent,
         ::MergeRequests::ApprovedEvent,
         ::MergeRequests::DraftStateChangeEvent,
+        ::MergeRequests::UnblockedStateEvent,
         ::GitlabSubscriptions::RenewedEvent,
         ::Repositories::DefaultBranchChangedEvent,
         ::NamespaceSettings::AiRelatedSettingsChangedEvent

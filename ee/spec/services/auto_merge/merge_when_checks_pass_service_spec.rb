@@ -31,18 +31,19 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
       before do
         stub_feature_flags(merge_when_checks_pass: project, additional_merge_when_checks_ready: additional_feature_flag)
         mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
+        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs).and_return(blocked_status)
       end
 
-      where(:pipeline_status, :approvals_required, :draft_status, :additional_feature_flag, :result) do
-        :running | 0 | true | true | true
-        :running | 0 | false | true | true
-        :success | 0 | false | true | false
-        :success | 0 | true | true | true
-        :success | 0 | true | false | false
-        :running | 1 | true | true | true
-        :success | 1 | true | true | true
-        :success | 1 | false | true | true
-        :running | 1 | false | true | true
+      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :additional_feature_flag, :result) do
+        :running | 0 | true | true | true | true
+        :running | 0 | false | false | true | true
+        :success | 0 | false | false | true | false
+        :success | 0 | true | true | true | true
+        :success | 0 | true | true | false | false
+        :running | 1 | true | true | true | true
+        :success | 1 | true | true | true | true
+        :success | 1 | false | false | true | true
+        :running | 1 | false | false | true | true
       end
 
       with_them do
@@ -50,17 +51,18 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
       end
     end
 
-    context 'when feature flag "merge_when_checks_pass" is disabled' do
+    context 'when feature flags merge_when_checks_pass and additional_merge_when_checks_ready are disabled"' do
       before do
-        stub_feature_flags(merge_when_checks_pass: false)
+        stub_feature_flags(merge_when_checks_pass: false, additional_merge_when_checks_ready: false)
         mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
+        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs).and_return(blocked_status)
       end
 
-      where(:pipeline_status, :approvals_required, :draft_status, :result) do
-        :running | 0 | true  | false
-        :success | 0 | false | false
-        :running | 1 | false | false
-        :success | 1 | true | false
+      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :result) do
+        :running | 0 | true  | true | false
+        :success | 0 | false | false | false
+        :running | 1 | false | false | false
+        :success | 1 | true | false | false
       end
 
       with_them do
@@ -79,11 +81,12 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
       it { is_expected.to eq false }
     end
 
-    context 'when there is an open MR dependency' do
+    context 'when there is an open MR dependency and "additional_merge_when_checks_ready" is disabled' do
       let(:pipeline_status) { :running }
       let(:approvals_required) { 0 }
 
       before do
+        stub_feature_flags(additional_merge_when_checks_ready: false)
         stub_licensed_features(blocking_merge_requests: true)
         create(:merge_request_block, blocked_merge_request: mr_merge_if_green_enabled)
       end
@@ -183,6 +186,24 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
       it 'returns false' do
         expect(service.skip_draft_check(mr_merge_if_green_enabled)).to eq(false)
+      end
+    end
+  end
+
+  describe '#skip_blocked_check' do
+    context 'when additional_merge_when_checks_ready is true' do
+      it 'returns true' do
+        expect(service.skip_blocked_check(mr_merge_if_green_enabled)).to eq(true)
+      end
+    end
+
+    context 'when additional_merge_when_checks_ready is false' do
+      before do
+        stub_feature_flags(additional_merge_when_checks_ready: false)
+      end
+
+      it 'returns false' do
+        expect(service.skip_blocked_check(mr_merge_if_green_enabled)).to eq(false)
       end
     end
   end

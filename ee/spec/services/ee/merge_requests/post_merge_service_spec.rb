@@ -205,6 +205,40 @@ RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_w
 
         subject
       end
+
+      context 'when additional_merge_when_checks_ready is enabled' do
+        it 'sends an unblocked event for the first blocked merge request' do
+          expect { subject }.to publish_event(MergeRequests::UnblockedStateEvent).with({
+            current_user_id: current_user.id,
+            merge_request_id: blocked_mr_1.id
+          })
+        end
+
+        it 'sends an unblocked event for the second blocked merge request' do
+          expect { subject }.to publish_event(MergeRequests::UnblockedStateEvent).with({
+            current_user_id: current_user.id,
+            merge_request_id: blocked_mr_2.id
+          })
+        end
+
+        it 'does sends any additional unblocked events' do
+          expect(::Gitlab::EventStore).to receive(:publish).twice
+
+          subject
+        end
+      end
+    end
+
+    context 'when additional_merge_when_checks_ready is disabled' do
+      before do
+        stub_feature_flags(additional_merge_when_checks_ready: false)
+      end
+
+      it 'does sends an unblocked events' do
+        expect(::Gitlab::EventStore).not_to receive(:publish)
+
+        subject
+      end
     end
 
     context 'when a temporary unapproval is needed for the MR' do

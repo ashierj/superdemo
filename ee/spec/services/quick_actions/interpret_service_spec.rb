@@ -1451,13 +1451,31 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
     end
 
     context 'when the merge request is blocked' do
-      it_behaves_like 'failed command', 'Could not apply merge command.' do
+      let(:content) { '/merge' }
+      let(:issuable) { create(:merge_request, :blocked, source_project: project) }
+
+      before do
+        stub_licensed_features(blocking_merge_requests: true)
+      end
+
+      context 'when merge_when_checks_pass and additional_merge_when_checks_ready are enabled' do
+        let(:service) { described_class.new(project, current_user, { merge_request_diff_head_sha: issuable.diff_head_sha }) }
+
+        it 'runs merge command and returns merge message' do
+          _, updates, message = service.execute(content, issuable)
+
+          expect(updates).to eq(merge: issuable.diff_head_sha)
+
+          expect(message).to eq('Scheduled to merge this merge request (Merge when checks pass).')
+        end
+      end
+
+      context 'when merge_when_checks_pass and additional_merge_when_checks_ready are disabled' do
         before do
-          stub_licensed_features(blocking_merge_requests: true)
+          stub_feature_flags(merge_when_checks_pass: false, additional_merge_when_checks_ready: false)
         end
 
-        let(:content) { '/merge' }
-        let(:issuable) { create(:merge_request, :blocked, source_project: project) }
+        it_behaves_like 'failed command', 'Could not apply merge command.'
       end
     end
 

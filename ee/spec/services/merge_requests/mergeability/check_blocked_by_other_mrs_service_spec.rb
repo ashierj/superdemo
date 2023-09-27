@@ -3,8 +3,10 @@
 require "spec_helper"
 
 RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService, feature_category: :code_review_workflow do
-  subject(:check_blocked_by_other_mrs) { described_class.new(merge_request: merge_request, params: {}) }
+  subject(:check_blocked_by_other_mrs) { described_class.new(merge_request: merge_request, params: params) }
 
+  let(:params) { { skip_blocked_check: skip_check } }
+  let(:skip_check) { false }
   let(:merge_request) { build(:merge_request) }
 
   let_it_be(:blocking_merge_request) { build(:merge_request) }
@@ -50,8 +52,20 @@ RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService, featu
   end
 
   describe "#skip?" do
-    it "returns false" do
-      expect(check_blocked_by_other_mrs.skip?).to eq false
+    context 'when skip check param is true' do
+      let(:skip_check) { true }
+
+      it 'returns true' do
+        expect(check_blocked_by_other_mrs.skip?).to eq true
+      end
+    end
+
+    context 'when skip check param is false' do
+      let(:skip_check) { false }
+
+      it 'returns false' do
+        expect(check_blocked_by_other_mrs.skip?).to eq false
+      end
     end
   end
 

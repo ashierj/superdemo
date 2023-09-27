@@ -1469,21 +1469,25 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       stub_feature_flags(additional_merge_when_checks_ready: feature_flag)
     end
 
-    where(:auto_merge_strategy, :skip_approved_check, :skip_draft_check, :feature_flag) do
-      ''                                                      | false | false | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_PIPELINE_SUCCEEDS | false | false | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | true | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | false | false
+    where(:auto_merge_strategy, :skip_approved_check, :skip_draft_check, :skip_blocked_check, :feature_flag) do
+      ''                                                      | false | false | false | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_PIPELINE_SUCCEEDS | false | false | false | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | true | true | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | false | false | false
     end
 
     with_them do
-      it { is_expected.to include(skip_approved_check: skip_approved_check, skip_draft_check: skip_draft_check) }
+      it {
+        is_expected.to include(skip_approved_check: skip_approved_check, skip_draft_check: skip_draft_check,
+          skip_blocked_check: skip_blocked_check)
+      }
     end
   end
 
   describe '#mergeable_state?' do
-    subject { merge_request.mergeable_state? }
+    subject { merge_request.mergeable_state?(**params) }
 
+    let(:params) { {} }
     let(:project_with_approver) { create(:project, :repository) }
     let(:merge_request) { create(:merge_request, source_project: project_with_approver, target_project: project_with_approver) }
 
@@ -1522,6 +1526,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
         it 'is not mergeable' do
           is_expected.to be_falsey
+        end
+
+        context 'when skip blocked check' do
+          let(:params) { { skip_blocked_check: true } }
+
+          it 'is mergeable' do
+            is_expected.to be_truthy
+          end
         end
       end
 

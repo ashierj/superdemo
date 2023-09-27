@@ -177,12 +177,13 @@ module EE
 
     override :skipped_mergeable_checks
     def skipped_mergeable_checks(options = {})
+      skip_additional_checks = options[:auto_merge_strategy] == AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS &&
+        ::Feature.enabled?(:additional_merge_when_checks_ready, project)
+
       super.merge(
         skip_approved_check: options[:auto_merge_strategy] == AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS,
-        skip_draft_check: (
-          options[:auto_merge_strategy] == AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS &&
-          ::Feature.enabled?(:additional_merge_when_checks_ready, project)
-        )
+        skip_draft_check: skip_additional_checks,
+        skip_blocked_check: skip_additional_checks
       )
     end
 

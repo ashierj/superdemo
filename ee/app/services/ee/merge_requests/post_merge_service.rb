@@ -81,6 +81,14 @@ module EE
       def trigger_blocked_merge_requests_merge_status_updated(merge_request)
         merge_request.blocked_merge_requests.find_each do |blocked_mr|
           ::GraphqlTriggers.merge_request_merge_status_updated(blocked_mr)
+
+          if ::Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
+            ::Gitlab::EventStore.publish(
+              ::MergeRequests::UnblockedStateEvent.new(
+                data: { current_user_id: current_user.id, merge_request_id: blocked_mr.id }
+              )
+            )
+          end
         end
       end
     end
