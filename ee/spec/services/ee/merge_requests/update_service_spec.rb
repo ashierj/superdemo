@@ -209,18 +209,38 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
           update_merge_request(approver_ids: "#{existing_approver.id},#{new_approver.id}")
         end
 
-        merge_request.target_project.update!(reset_approvals_on_push: true)
         merge_request.approvals.create!(user_id: existing_approver.id)
       end
 
-      it 'resets approvals when target_branch is changed' do
-        update_merge_request(target_branch: 'video')
+      shared_examples 'reset all approvals' do
+        it 'resets approvals when target_branch is changed' do
+          update_merge_request(target_branch: 'video')
 
-        expect(merge_request.reload.approvals).to be_empty
+          expect(merge_request.reload.approvals).to be_empty
+        end
+
+        it 'does not create new todos for the approvers' do
+          expect(Todo.where(action: Todo::APPROVAL_REQUIRED)).to be_empty
+        end
       end
 
-      it 'does not create new todos for the approvers' do
-        expect(Todo.where(action: Todo::APPROVAL_REQUIRED)).to be_empty
+      context 'when reset_approvals_on_push is set to true' do
+        before do
+          merge_request.target_project.update!(reset_approvals_on_push: true)
+        end
+
+        it_behaves_like 'reset all approvals'
+      end
+
+      context 'when selective_code_owner_removals is set to true' do
+        before do
+          merge_request.target_project.update!(
+            reset_approvals_on_push: false,
+            project_setting_attributes: { selective_code_owner_removals: true }
+          )
+        end
+
+        it_behaves_like 'reset all approvals'
       end
     end
 
