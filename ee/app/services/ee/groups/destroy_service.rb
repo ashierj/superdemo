@@ -17,6 +17,12 @@ module EE
 
       private
 
+      # rubocop:disable CodeReuse/ActiveRecord
+      def users_to_destroy
+        group.service_accounts.pluck(:user_id) + super
+      end
+      # rubocop:enable CodeReuse/ActiveRecord
+
       def after_destroy(group)
         delete_dependency_proxy_blobs(group)
 
