@@ -2781,6 +2781,16 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#service_accounts' do
+    let!(:service_account) { create(:service_account, provisioned_by_group: group) }
+    let!(:service_account_another_group) { create(:service_account, provisioned_by_group: create(:group)) }
+    let!(:provisioned_user) { create(:user, provisioned_by_group: group) }
+
+    it 'returns only the group service accounts' do
+      expect(group.service_accounts).to eq([service_account])
+    end
+  end
+
   describe '.pending_delete?' do
     context 'when deletion_schedule is not present' do
       it 'returns false' do

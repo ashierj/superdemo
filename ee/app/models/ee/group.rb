@@ -228,6 +228,10 @@ module EE
           ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, self) &&
           licensed_feature_available?(:unique_project_download_limit)
       end
+
+      def service_accounts
+        provisioned_users.service_account
+      end
     end
 
     override :usage_quotas_enabled?
