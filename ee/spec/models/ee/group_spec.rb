@@ -1170,6 +1170,32 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
         it { is_expected.to be_falsey }
       end
+
+      shared_context 'shared group context' do
+        let_it_be(:shared_group) { create(:group) }
+        let_it_be(:member_shared) { create(:user) }
+
+        before do
+          create(:group_group_link, shared_group: group, shared_with_group: shared_group)
+          shared_group.add_developer(member_shared)
+        end
+      end
+
+      context 'in shared group' do
+        include_context 'shared group context'
+
+        it 'returns true for shared group member' do
+          expect(group.member?(member_shared)).to be_truthy
+        end
+
+        it 'returns true with developer as min_access_level param' do
+          expect(group.member?(member_shared, Gitlab::Access::DEVELOPER)).to be_truthy
+        end
+
+        it 'returns false with maintainer as min_access_level param' do
+          expect(group.member?(member_shared, Gitlab::Access::MAINTAINER)).to be_falsey
+        end
+      end
     end
   end
 
