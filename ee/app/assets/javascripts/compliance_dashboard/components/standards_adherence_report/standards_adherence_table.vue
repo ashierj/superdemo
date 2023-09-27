@@ -22,6 +22,8 @@ import {
 } from './constants';
 import FixSuggestionsSidebar from './fix_suggestions_sidebar.vue';
 
+const columnWidth = 'gl-white-space-nowrap';
+
 export default {
   name: 'ComplianceStandardsAdherenceTable',
   components: {
@@ -138,7 +140,8 @@ export default {
     {
       key: 'status',
       sortable: false,
-      tdClass: 'gl-w-15',
+      thClass: columnWidth,
+      tdClass: columnWidth,
     },
     {
       key: 'project',
@@ -151,16 +154,20 @@ export default {
     {
       key: 'standard',
       sortable: false,
+      thClass: columnWidth,
+      tdClass: columnWidth,
     },
     {
       key: 'lastScanned',
       sortable: false,
-      tdClass: 'gl-w-20',
+      thClass: columnWidth,
+      tdClass: columnWidth,
     },
     {
       key: 'fixSuggestions',
       sortable: false,
-      tdClass: 'gl-w-20',
+      thClass: columnWidth,
+      tdClass: columnWidth,
     },
   ],
   noStandardsAdherencesFound: NO_STANDARDS_ADHERENCES_FOUND,
@@ -184,6 +191,7 @@ export default {
       :busy="isLoading"
       :empty-text="$options.noStandardsAdherencesFound"
       show-empty
+      stacked="lg"
     >
       <template #table-busy>
         <gl-loading-icon size="lg" color="dark" class="gl-my-5" />
