@@ -2797,14 +2797,40 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
         it { is_expected.not_to be_allowed(:create_pipeline) }
 
-        context 'and user is a member of the project' do
+        shared_examples 'allows to create pipeline' do
+          let(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+
           before do
-            [private_project, internal_project, public_project, public_project_in_group].each do |project|
-              project.add_guest(security_policy_bot)
-            end
+            project.add_guest(security_policy_bot)
           end
 
           it { is_expected.to be_allowed(:create_pipeline) }
+        end
+
+        context 'and user is a member of the project' do
+          context 'and the project is private' do
+            let(:project) { private_project }
+
+            it_behaves_like 'allows to create pipeline'
+          end
+
+          context 'and the project is internal' do
+            let(:project) { internal_project }
+
+            it_behaves_like 'allows to create pipeline'
+          end
+
+          context 'and the project is public' do
+            let(:project) { public_project }
+
+            it_behaves_like 'allows to create pipeline'
+          end
+
+          context 'and the project is public in group' do
+            let(:project) { public_project_in_group }
+
+            it_behaves_like 'allows to create pipeline'
+          end
         end
       end
     end
@@ -2850,13 +2876,39 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         it { is_expected.not_to be_allowed(:create_bot_pipeline) }
 
         context 'and user is a member of the project' do
-          before do
-            [private_project, internal_project, public_project, public_project_in_group].each do |project|
+          shared_examples 'allows to create_bot_pipeline' do
+            let(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+
+            before do
               project.add_guest(security_policy_bot)
             end
+
+            it { is_expected.to be_allowed(:create_bot_pipeline) }
           end
 
-          it { is_expected.to be_allowed(:create_bot_pipeline) }
+          context 'and the project is private' do
+            let(:project) { private_project }
+
+            it_behaves_like 'allows to create_bot_pipeline'
+          end
+
+          context 'and the project is internal' do
+            let(:project) { internal_project }
+
+            it_behaves_like 'allows to create_bot_pipeline'
+          end
+
+          context 'and the project is public' do
+            let(:project) { public_project }
+
+            it_behaves_like 'allows to create_bot_pipeline'
+          end
+
+          context 'and the project is public in group' do
+            let(:project) { public_project_in_group }
+
+            it_behaves_like 'allows to create_bot_pipeline'
+          end
         end
       end
     end
