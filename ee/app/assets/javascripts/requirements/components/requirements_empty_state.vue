@@ -54,10 +54,15 @@ export default {
       :description="emptyStateDescription"
     >
       <template v-if="emptyStateDescription && canCreateRequirement" #actions>
-        <gl-button category="primary" variant="confirm" @click="$emit('click-new-requirement')">{{
-          __('New requirement')
-        }}</gl-button>
         <gl-button
+          class="gl-mx-2 gl-mb-3"
+          category="primary"
+          variant="confirm"
+          @click="$emit('click-new-requirement')"
+          >{{ __('New requirement') }}</gl-button
+        >
+        <gl-button
+          class="gl-mx-2 gl-mb-3"
           category="secondary"
           variant="default"
           @click="$emit('click-import-requirements')"

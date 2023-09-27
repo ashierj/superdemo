@@ -72,7 +72,7 @@ export default {
     </div>
     <gl-empty-state
       v-else
-      class="gl-w-half"
+      class="gl-w-half gl-mx-auto"
       :svg-path="emptyStateSvgPath"
       :svg-height="null"
       :title="title"
@@ -82,13 +82,14 @@ export default {
       <template v-if="!hasDateRangeError" #actions>
         <gl-button
           v-gl-modal-directive="'value-stream-form-modal'"
+          class="gl-mx-2 gl-mb-3"
           variant="confirm"
           data-testid="create-value-stream-button"
           data-track-action="click_button"
           data-track-label="empty_state_create_value_stream_form_open"
           >{{ $options.i18n.EMPTY_STATE_ACTION_TEXT }}</gl-button
         >
-        <gl-button data-testid="learn-more-link" :href="$options.docsPath"
+        <gl-button class="gl-mx-2 gl-mb-3" data-testid="learn-more-link" :href="$options.docsPath"
           >{{ $options.i18n.EMPTY_STATE_SECONDARY_TEXT }}
         </gl-button>
       </template>
