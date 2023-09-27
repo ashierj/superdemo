@@ -25,7 +25,6 @@ module Gitlab
 
         clean_extraction_dir!(@shared.export_path)
         copy_archive
-        validate_archive_file_type
 
         wait_for_archived_file do
           validate_decompressed_archive_size if Feature.enabled?(:validate_import_decompressed_archive_size)
@@ -94,16 +93,8 @@ module Gitlab
         FileUtils.rm_rf(@archive_file)
       end
 
-      def validate_archive_file_type
-        raise ImporterError, _('Archive file type validation failed.') unless type_validator.valid?
-      end
-
       def validate_decompressed_archive_size
         raise ImporterError, _('Decompressed archive size validation failed.') unless size_validator.valid?
-      end
-
-      def type_validator
-        @type_validator ||= ::Import::ArchiveFileTypeValidator.new(archive_path: @archive_file)
       end
 
       def size_validator

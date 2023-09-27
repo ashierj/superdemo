@@ -1020,7 +1020,6 @@ GEM
     mini_magick (4.10.1)
     mini_mime (1.1.2)
     mini_portile2 (2.8.4)
-    minitar (0.9)
     minitest (5.11.3)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
@@ -1906,7 +1905,6 @@ DEPENDENCIES
   memory_profiler (~> 1.0)
   microsoft_graph_mailer (~> 0.1.0)!
   mini_magick (~> 4.10.1)
-  minitar (~> 0.9)
   minitest (~> 5.11.0)
   multi_json (~> 1.14.1)
   neighbor (~> 0.2.3)
