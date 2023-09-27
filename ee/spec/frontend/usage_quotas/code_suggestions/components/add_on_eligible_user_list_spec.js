@@ -42,7 +42,6 @@ describe('Add On Eligible User List', () => {
   const defaultQueryVariables = {
     fullPath,
     addOnType: 'CODE_SUGGESTIONS',
-    sort: 'LAST_ACTIVITY_ON_DESC',
     addOnPurchaseIds: [addOnPurchaseId],
     first: 20,
   };

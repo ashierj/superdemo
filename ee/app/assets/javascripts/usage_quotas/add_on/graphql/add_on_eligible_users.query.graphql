@@ -2,8 +2,8 @@
 
 query getAddOnEligibleUsers(
   $fullPath: ID!
-  $sort: UserSort!
   $addOnType: GitlabSubscriptionsAddOnType!
+  $addOnPurchaseIds: [GitlabSubscriptionsAddOnPurchaseID!]!
   $search: String
   $first: Int
   $last: Int
@@ -14,13 +14,12 @@ query getAddOnEligibleUsers(
     id
     addOnEligibleUsers(
       addOnType: $addOnType
-      sort: $sort
       search: $search
       first: $first
       last: $last
       after: $nextPageCursor
       before: $prevPageCursor
-    ) @client {
+    ) {
       edges {
         node {
           id
@@ -30,7 +29,7 @@ query getAddOnEligibleUsers(
           avatarUrl
           webUrl
           lastActivityOn
-          addOnAssignments {
+          addOnAssignments(addOnPurchaseIds: $addOnPurchaseIds) {
             nodes {
               # eslint-disable-next-line @graphql-eslint/require-id-when-available
               addOnPurchase {
