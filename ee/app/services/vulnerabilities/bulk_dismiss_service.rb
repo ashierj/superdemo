@@ -48,7 +48,7 @@ module Vulnerabilities
     end
 
     def dismiss(vulnerabilities)
-      vulnerability_attrs = vulnerabilities.pluck(:id, :state, :project_id) # rubocop:disable CodeReuse/ActiveRecord
+      vulnerability_attrs = vulnerabilities.with_projects.pluck(:id, :state, :project_id, 'projects.project_namespace_id') # rubocop:disable CodeReuse/ActiveRecord
       return if vulnerability_attrs.empty?
 
       state_transitions = transition_attributes_for(vulnerability_attrs)
@@ -74,7 +74,7 @@ module Vulnerabilities
     end
 
     def transition_attributes_for(attrs)
-      attrs.map do |id, state, _|
+      attrs.map do |id, state, _, _|
         {
           vulnerability_id: id,
           from_state: state,
@@ -89,12 +89,13 @@ module Vulnerabilities
     end
 
     def system_note_attributes_for(attrs)
-      attrs.map do |id, _, project_id|
+      attrs.map do |id, _, project_id, namespace_id|
         project_ids[project_id] = true
         {
           noteable_type: "Vulnerability",
           noteable_id: id,
           project_id: project_id,
+          namespace_id: namespace_id,
           system: true,
           note: ::SystemNotes::VulnerabilitiesService.formatted_note(
             'changed',
