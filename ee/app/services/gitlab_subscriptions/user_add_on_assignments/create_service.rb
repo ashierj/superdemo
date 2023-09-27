@@ -61,10 +61,7 @@ module GitlabSubscriptions
       end
 
       def billed_member_of_namespace?
-        namespace.billed_group_user?(user) ||
-          namespace.billed_project_user?(user) ||
-          namespace.billed_shared_group_user?(user) ||
-          namespace.billed_shared_project_user?(user)
+        namespace.eligible_for_code_suggestions_seat?(user)
       end
       strong_memoize_attr :billed_member_of_namespace?
 
