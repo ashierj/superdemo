@@ -55,7 +55,6 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
   context 'with notifications_todos_buttons feature flag enabled' do
     before do
       stub_licensed_features(epics: true)
-      stub_feature_flags(moved_mr_sidebar: true)
       stub_feature_flags(notifications_todos_buttons: true)
 
       sign_in(user)

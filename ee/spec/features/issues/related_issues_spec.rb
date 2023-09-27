@@ -100,7 +100,6 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
         context 'when clicking the top `Close issue` button in the issue header', :aggregate_failures do
           it 'shows a modal to confirm closing the issue' do
             # Workaround for modal not showing when issue is first added
-            stub_feature_flags(moved_mr_sidebar: false)
             visit project_issue_path(project, issue_a)
 
             wait_for_requests
@@ -127,7 +126,6 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
         context 'when clicking the bottom `Close issue` button below the comment textarea', :aggregate_failures do
           it 'shows a modal to confirm closing the issue' do
             # Workaround for modal not showing when issue is first added
-            stub_feature_flags(moved_mr_sidebar: false)
             visit project_issue_path(project, issue_a)
 
             wait_for_requests

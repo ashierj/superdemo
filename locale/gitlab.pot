@@ -47228,9 +47228,6 @@ msgstr ""
 msgid "Source branch will not be deleted."
 msgstr ""
 
-msgid "Source branch: %{source_branch_open}%{source_branch}%{source_branch_close}"
-msgstr ""
-
 msgid "Source code (%{fileExtension})"
 msgstr ""
 

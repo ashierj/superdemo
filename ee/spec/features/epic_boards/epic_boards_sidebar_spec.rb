@@ -182,10 +182,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
     it 'displays notifications toggle', :aggregate_failures do
       click_card(card)
 
-      page.within('.subscriptions') do
-        expect(page).to have_selector('[data-testid="subscription-toggle"]')
-        expect(page).not_to have_content('Disabled by group owner')
-      end
+      expect(page).to have_selector('[data-testid="subscription-toggle"]')
     end
 
     it 'shows toggle as on then as off as user toggles to subscribe and unsubscribe', :aggregate_failures do

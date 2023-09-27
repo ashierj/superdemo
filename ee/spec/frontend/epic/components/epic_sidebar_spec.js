@@ -10,8 +10,6 @@ import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tr
 
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
-import SidebarReferenceWidget from '~/sidebar/components/copy/sidebar_reference_widget.vue';
-import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 
@@ -94,10 +92,6 @@ describe('EpicSidebarComponent', () => {
       expect(wrapper.findComponent(LabelsSelectWidget).exists()).toBe(true);
     });
 
-    it('renders SidebarSubscriptionsWidget', () => {
-      expect(wrapper.findComponent(SidebarSubscriptionsWidget).exists()).toBe(true);
-    });
-
     it('renders SidebarTodoWidget when user is signed in', () => {
       const todoWidget = wrapper.findComponent(SidebarTodoWidget);
       expect(todoWidget.exists()).toBe(true);
@@ -107,10 +101,6 @@ describe('EpicSidebarComponent', () => {
         fullPath: 'frontend-fixtures-group',
         issuableType: 'epic',
       });
-    });
-
-    it('renders SidebarReferenceWidget', () => {
-      expect(wrapper.findComponent(SidebarReferenceWidget).exists()).toBe(true);
     });
 
     describe('when sub-epics feature is not available', () => {
@@ -134,10 +124,6 @@ describe('EpicSidebarComponent', () => {
 
     it('renders participants widget', () => {
       expect(wrapper.findComponent(SidebarParticipantsWidget).exists()).toBe(true);
-    });
-
-    it('renders subscription toggle element', () => {
-      expect(wrapper.findComponent(SidebarSubscriptionsWidget).exists()).toBe(true);
     });
   });
 

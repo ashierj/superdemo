@@ -11,8 +11,6 @@ import notesEventHub from '~/notes/event_hub';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
-import SidebarReferenceWidget from '~/sidebar/components/copy/sidebar_reference_widget.vue';
-import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import sidebarEventHub from '~/sidebar/event_hub';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
@@ -31,8 +29,6 @@ export default {
     SidebarAncestorsWidget,
     SidebarParticipantsWidget,
     SidebarConfidentialityWidget,
-    SidebarSubscriptionsWidget,
-    SidebarReferenceWidget,
     SidebarTodoWidget,
     LabelsSelectWidget,
     ColorSelectDropdown,
@@ -61,9 +57,6 @@ export default {
     },
     fullEpicId() {
       return convertToGraphQLId(TYPENAME_EPIC, this.epicId);
-    },
-    isMrSidebarMoved() {
-      return this.glFeatures.movedMrSidebar;
     },
   },
   mounted() {
@@ -208,16 +201,6 @@ export default {
         :issuable-type="issuableType"
         @toggleSidebar="handleSidebarToggle"
       />
-      <sidebar-subscriptions-widget
-        v-if="!isMrSidebarMoved"
-        :iid="String(iid)"
-        :full-path="fullPath"
-        :issuable-type="issuableType"
-        @expandSidebar="handleSidebarToggle"
-      />
-      <div v-if="!isMrSidebarMoved" class="block with-sub-blocks">
-        <sidebar-reference-widget :issuable-type="issuableType" />
-      </div>
     </div>
   </aside>
 </template>

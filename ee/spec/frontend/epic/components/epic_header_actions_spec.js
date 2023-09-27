@@ -23,11 +23,7 @@ describe('EpicHeaderActions component', () => {
     isEpicAuthor: jest.fn(() => false),
   };
 
-  const createComponent = ({
-    isLoggedIn = true,
-    isMoveSidebarEnabled = false,
-    state = {},
-  } = {}) => {
+  const createComponent = ({ isLoggedIn = true, state = {} } = {}) => {
     const { getters, ...storeConfig } = getStoreConfig();
     store = new Vuex.Store({
       ...storeConfig,
@@ -50,9 +46,6 @@ describe('EpicHeaderActions component', () => {
         fullPath: 'mock-path',
         iid: 'mock-iid',
         reportAbusePath: '/report/abuse/path',
-        glFeatures: {
-          movedMrSidebar: isMoveSidebarEnabled,
-        },
       },
     });
   };
@@ -69,9 +62,6 @@ describe('EpicHeaderActions component', () => {
   const findNewEpicButton = () => wrapper.findByRole('link', { name: 'New epic' });
   const findNotificationToggle = () => wrapper.findComponent(SidebarSubscriptionsWidget);
   const findReopenEpicButton = () => wrapper.findByRole('button', { name: 'Reopen epic' });
-
-  const findActionsDropdownMobile = () => wrapper.findByTestId('actions-dropdown-mobile');
-  const findActionsDropdownDesktop = () => wrapper.findByTestId('actions-dropdown-desktop');
 
   const findReportAbuseButton = () =>
     wrapper.findByRole('button', { name: 'Report abuse to administrator' });
@@ -148,79 +138,29 @@ describe('EpicHeaderActions component', () => {
       });
     });
 
-    describe('moved_mr_sidebar feature flag', () => {
-      describe('when the flag is off', () => {
-        beforeEach(() => {
-          createComponent({ isMoveSidebarEnabled: false });
-        });
-
-        it('does not render notification toggle', () => {
-          expect(findNotificationToggle().exists()).toBe(false);
-        });
-
-        it('does not render the copy reference dropdown item', () => {
-          expect(findCopyReferenceDropdownItem().exists()).toBe(false);
-        });
-
-        it('does not pass bordered property to actions dropdown', () => {
-          expect(findActionsDropdownMobile().props('bordered')).toBe(false);
-          expect(findActionsDropdownDesktop().props('bordered')).toBe(false);
-        });
-      });
-
-      describe('when the flag is on', () => {
-        beforeEach(() => {
-          createComponent({ isMoveSidebarEnabled: true });
-        });
-
-        it('renders the notification toggle', () => {
-          expect(findNotificationToggle().exists()).toBe(true);
-        });
-
-        it('renders the copy reference dropdown item', () => {
-          expect(findCopyReferenceDropdownItem().exists()).toBe(true);
-        });
-
-        it('pass bordered property to actions dropdown', () => {
-          expect(findActionsDropdownMobile().props('bordered')).toBe(true);
-          expect(findActionsDropdownDesktop().props('bordered')).toBe(true);
-        });
-      });
-    });
-
     describe('when logged out', () => {
-      describe.each`
-        movedMrSidebarEnabled | headerActionsVisible
-        ${true}               | ${true}
-        ${false}              | ${false}
-      `(
-        `when movedMrSidebar feature flag is "$movedMrSidebarEnabled"`,
-        ({ movedMrSidebarEnabled, headerActionsVisible }) => {
-          beforeEach(() => {
-            createComponent({
-              isLoggedIn: false,
-              isMoveSidebarEnabled: movedMrSidebarEnabled,
-              state: {
-                canCreate: false,
-                canDestroy: false,
-                canUpdate: false,
-              },
-            });
-          });
+      beforeEach(() => {
+        createComponent({
+          isLoggedIn: false,
+          state: {
+            canCreate: false,
+            canDestroy: false,
+            canUpdate: false,
+          },
+        });
+      });
 
-          it(`${headerActionsVisible ? 'shows' : 'hides'} actions dropdown`, () => {
-            expect(findDropdown().exists()).toBe(headerActionsVisible);
-          });
+      it('shows actions dropdown', () => {
+        expect(findDropdown().exists()).toBe(true);
+      });
 
-          it(`${headerActionsVisible ? 'shows' : 'hides'} "Copy reference" dropdown item`, () => {
-            expect(findCopyReferenceDropdownItem().exists()).toBe(headerActionsVisible);
-          });
+      it('shows "Copy reference" dropdown item', () => {
+        expect(findCopyReferenceDropdownItem().exists()).toBe(true);
+      });
 
-          it('does not show notification toggle', () => {
-            expect(findNotificationToggle().exists()).toBe(false);
-          });
-        },
-      );
+      it('does not show notification toggle', () => {
+        expect(findNotificationToggle().exists()).toBe(false);
+      });
     });
   });
 
