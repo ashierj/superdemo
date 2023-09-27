@@ -22,6 +22,7 @@ module EE
         cleanup_oncall_rotations(member)
         cleanup_escalation_rules(member) if member.user
         cleanup_security_orchestration_policy_configuration(member)
+        enqueue_cleanup_group_protected_branch_rules(member)
       end
 
       private
@@ -107,6 +108,14 @@ module EE
         return unless member.user && member.user.security_policy_bot?
 
         ::Security::OrchestrationPolicyConfiguration.for_bot_user(member.user).update_all(bot_user_id: nil)
+      end
+
+      def enqueue_cleanup_group_protected_branch_rules(member)
+        return unless member.source.is_a?(Group)
+
+        member.run_after_commit_or_now do
+          ::MembersDestroyer::CleanUpGroupProtectedBranchRulesWorker.perform_async(member.source.id, member.user_id)
+        end
       end
     end
   end
