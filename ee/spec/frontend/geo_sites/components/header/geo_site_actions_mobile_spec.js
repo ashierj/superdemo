@@ -1,8 +1,8 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdown } from '@gitlab/ui';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import GeoSiteActionsMobile from 'ee/geo_sites/components/header/geo_site_actions_mobile.vue';
 import { MOCK_PRIMARY_SITE } from 'ee_jest/geo_sites/mock_data';
 
@@ -15,7 +15,7 @@ describe('GeoSiteActionsMobile', () => {
     site: MOCK_PRIMARY_SITE,
   };
 
-  const createComponent = (props, getters) => {
+  const createComponent = (props, getters, mountFn = shallowMountExtended) => {
     const store = new Vuex.Store({
       getters: {
         canRemoveSite: () => () => true,
@@ -23,7 +23,7 @@ describe('GeoSiteActionsMobile', () => {
       },
     });
 
-    wrapper = shallowMountExtended(GeoSiteActionsMobile, {
+    wrapper = mountFn(GeoSiteActionsMobile, {
       store,
       propsData: {
         ...defaultProps,
@@ -32,11 +32,11 @@ describe('GeoSiteActionsMobile', () => {
     });
   };
 
-  const findGeoMobileActionsDropdown = () => wrapper.findComponent(GlDropdown);
-  const findGeoMobileActionsDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findGeoMobileActionsDisclosureDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findGeoMobileActionsDisclosureDropdownItems = () =>
+    findGeoMobileActionsDisclosureDropdown().props('items');
   const findGeoMobileActionsRemoveDropdownItem = () =>
     wrapper.findByTestId('geo-mobile-remove-action');
-  const findGeoMobileActionsRemoveDropdownItemText = () => wrapper.findByText('Remove');
 
   describe('template', () => {
     describe('always', () => {
@@ -45,36 +45,41 @@ describe('GeoSiteActionsMobile', () => {
       });
 
       it('renders Dropdown', () => {
-        expect(findGeoMobileActionsDropdown().exists()).toBe(true);
+        expect(findGeoMobileActionsDisclosureDropdown().exists()).toBe(true);
       });
 
       it('renders an Edit and Remove dropdown item', () => {
-        expect(findGeoMobileActionsDropdownItems().wrappers.map((w) => w.text())).toStrictEqual([
-          'Edit',
-          'Remove',
-        ]);
+        expect(
+          findGeoMobileActionsDisclosureDropdownItems().map((item) => item.text),
+        ).toStrictEqual(['Edit', 'Remove']);
       });
 
       it('renders edit link correctly', () => {
-        expect(findGeoMobileActionsDropdownItems().at(0).attributes('href')).toBe(
+        expect(findGeoMobileActionsDisclosureDropdownItems()[0].href).toBe(
           MOCK_PRIMARY_SITE.webEditUrl,
         );
       });
+    });
+
+    describe('actions', () => {
+      beforeEach(() => {
+        createComponent(null, null, mountExtended);
+      });
 
       it('emits remove when remove button is clicked', () => {
-        findGeoMobileActionsRemoveDropdownItem().vm.$emit('click');
+        findGeoMobileActionsRemoveDropdownItem().trigger('click');
 
         expect(wrapper.emitted('remove')).toHaveLength(1);
       });
     });
 
     describe.each`
-      canRemoveSite | disabled     | dropdownClass
-      ${false}      | ${'true'}    | ${'gl-text-gray-400'}
-      ${true}       | ${undefined} | ${'gl-text-red-500'}
+      canRemoveSite | disabled      | dropdownClass
+      ${false}      | ${'disabled'} | ${'gl-text-gray-400!'}
+      ${true}       | ${undefined}  | ${'gl-text-red-500!'}
     `(`conditionally`, ({ canRemoveSite, disabled, dropdownClass }) => {
       beforeEach(() => {
-        createComponent({}, { canRemoveSite: () => () => canRemoveSite });
+        createComponent({}, { canRemoveSite: () => () => canRemoveSite }, mountExtended);
       });
 
       describe(`when canRemoveSite is ${canRemoveSite}`, () => {
@@ -82,7 +87,7 @@ describe('GeoSiteActionsMobile', () => {
           canRemoveSite ? 'not ' : ''
         }disable the Mobile Remove dropdown item and adds proper class`, () => {
           expect(findGeoMobileActionsRemoveDropdownItem().attributes('disabled')).toBe(disabled);
-          expect(findGeoMobileActionsRemoveDropdownItemText().classes(dropdownClass)).toBe(true);
+          expect(findGeoMobileActionsRemoveDropdownItem().classes(dropdownClass)).toBe(true);
         });
       });
     });
