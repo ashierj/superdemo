@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe ProjectTeam do
+RSpec.describe ProjectTeam do # rubocop: disable RSpec/DuplicateSpecLocation
   let(:group) { create(:group) }
   let(:project) { create(:project, group: group) }
 
