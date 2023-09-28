@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_category: :duo_chat do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { build(:user) }
   let(:request_id) { 'uuid' }
   let(:timestamp) { Time.current.to_s }
   let(:payload) do
@@ -21,7 +21,6 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
   before do
     other_user = create(:user)
     other_cache = described_class.new(other_user)
-
     other_cache.add(payload.merge(content: 'other user unrelated cache'))
   end
 
@@ -37,7 +36,7 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       last = subject.messages.last
       expect(last.id).to eq(uuid)
       expect(last.request_id).to eq(request_id)
-      expect(last.errors).to eq(['some error1. another error'])
+      expect(last.errors).to eq(['some error1', 'another error'])
       expect(last.content).to eq('response')
       expect(last.role).to eq('user')
       expect(last.timestamp).not_to be_nil
@@ -52,24 +51,12 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       expect(last.errors).to eq([])
     end
 
-    it 'raises an exception when role is missing' do
-      payload[:role] = nil
-
-      expect { subject.add(payload) }.to raise_error(ArgumentError, "Invalid role ''")
-    end
-
-    it 'raises an exception when role is invalid' do
-      payload[:role] = 'bot'
-
-      expect { subject.add(payload) }.to raise_error(ArgumentError, "Invalid role 'bot'")
-    end
-
     context 'with MAX_MESSAGES limit' do
       before do
         stub_const('Gitlab::Llm::ChatStorage::MAX_MESSAGES', 2)
       end
 
-      it 'removes oldes messages if we reach maximum message limit' do
+      it 'removes oldest messages if we reach maximum message limit' do
         subject.add(payload.merge(content: 'msg1'))
         subject.add(payload.merge(content: 'msg2'))
 

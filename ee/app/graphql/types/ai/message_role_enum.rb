@@ -6,7 +6,7 @@ module Types
       graphql_name 'AiMessageRole'
       description 'Possible message roles for AI features.'
 
-      ::Gitlab::Llm::ChatMessage::ALLOWED_ROLES.each do |role|
+      ::Gitlab::Llm::AiMessage::ALLOWED_ROLES.each do |role|
         value role.upcase, description: "#{role} message.", value: role
       end
     end

@@ -38,7 +38,7 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer 
     it 'runs the worker' do
       expected_options = [request_id: 'uuid']
 
-      expect(SecureRandom).to receive(:uuid).and_return('uuid')
+      allow(SecureRandom).to receive(:uuid).and_return('uuid')
       expect(::Llm::CompletionWorker)
         .to receive(:perform_async)
         .with(user.id, expected_resource_id, expected_resource_class, :test, *expected_options)

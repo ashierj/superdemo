@@ -39,10 +39,11 @@ module Mutations
 
         response = Llm::ExecuteMethodService.new(current_user, resource, method, options).execute
 
-        {
-          request_id: response[:request_id],
-          errors: response.success? ? [] : [response.message]
-        }
+        if response.error?
+          { errors: [response.message] }
+        else
+          { request_id: response[:ai_message].request_id, errors: [] }
+        end
       end
 
       private

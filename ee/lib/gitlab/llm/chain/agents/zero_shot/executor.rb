@@ -92,7 +92,7 @@ module Gitlab
                     response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
                     options: {
                       cache_response: false,
-                      role: ::Gitlab::Llm::ChatMessage::ROLE_ASSISTANT,
+                      role: ::Gitlab::Llm::AiMessage::ROLE_ASSISTANT,
                       chunk_id: chunk[:id]
                     }
                   )
@@ -132,7 +132,7 @@ module Gitlab
 
               response_handler.execute(
                 response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
-                options: { cache_response: false, role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM,
+                options: { cache_response: false, role: ::Gitlab::Llm::AiMessage::ROLE_SYSTEM,
                            type: RESPONSE_TYPE_TOOL }
               )
 
@@ -164,7 +164,7 @@ module Gitlab
               # include only messages with successful response and reorder
               # messages so each question is followed by its answer
               by_request = last_conversation
-                .reject { |message| message.error.present? }
+                .reject { |message| message.errors.present? }
                 .group_by(&:request_id)
                 .select { |_uuid, messages| messages.size > 1 }
 

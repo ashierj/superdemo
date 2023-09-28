@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'completion worker sync and async' do
-  let(:resonse_double) { instance_double(Gitlab::Llm::BaseResponseModifier, response_body: "response") }
   let(:expected_options) { options.merge(request_id: 'uuid') }
 
   before do
@@ -14,11 +13,9 @@ RSpec.shared_examples 'completion worker sync and async' do
     end
 
     it 'runs worker synchronously' do
-      expect_next_instance_of(Llm::CompletionWorker) do |worker|
-        expect(worker).to receive(:perform).with(
-          user.id, resource.id, resource.class.name, action_name, hash_including(**expected_options)
-        ).and_return(resonse_double)
-      end
+      expect(::Llm::CompletionWorker)
+        .to receive(:perform_inline)
+              .with(user.id, resource.id, resource.class.name, action_name, hash_including(**expected_options))
 
       expect(subject.execute).to be_success
     end

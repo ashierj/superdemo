@@ -24,27 +24,17 @@ module Gitlab
       end
 
       def add(payload)
-        unless ChatMessage::ALLOWED_ROLES.include?(payload[:role])
-          raise ArgumentError, "Invalid role '#{payload[:role]}'"
-        end
+        message = ChatMessage.new(
+          payload.slice(:id, :request_id, :timestamp, :role, :content, :errors, :extras)
+        )
 
-        data = {
-          id: SecureRandom.uuid,
-          request_id: payload[:request_id],
-          timestamp: payload.fetch(:timestamp, Time.current).to_s,
-          role: payload[:role]
-        }
-        data[:content] = payload[:content][0, MAX_TEXT_LIMIT] if payload[:content]
-        data[:error] = payload[:errors].join(". ") if payload[:errors].present?
-        data[:extras] = payload[:extras].to_json if payload[:extras]
-
-        cache_data(data)
+        cache_data(dump_message(message))
       end
 
       def messages(filters = {})
         with_redis do |redis|
           redis.xrange(key).filter_map do |_id, data|
-            ChatMessage.new(data) if matches_filters?(data, filters)
+            load_message(data) if matches_filters?(data, filters)
           end
         end
       end
@@ -82,6 +72,29 @@ module Gitlab
         return false if filters[:request_ids]&.exclude?(data['request_id'])
 
         data
+      end
+
+      def dump_message(message)
+        result = message.to_h.slice(*%w[id request_id role content])
+
+        result['errors'] = message.errors&.to_json
+        result['extras'] = message.extras&.to_json
+        result['timestamp'] = message.timestamp&.to_s
+        result['content'] = result['content'][0, MAX_TEXT_LIMIT] if result['content']
+
+        result.compact
+      end
+
+      def load_message(data)
+        data['extras'] = ::Gitlab::Json.parse(data['extras']) if data['extras']
+        data['errors'] = ::Gitlab::Json.parse(data['errors']) if data['errors']
+        # compatibility code for a while until we get rid of cached messages
+        data['errors'] = Array.wrap(data.delete('error')) if data['error']
+        data['timestamp'] = Time.zone.parse(data['timestamp']) if data['timestamp']
+
+        data['user'] = user
+
+        ChatMessage.new(data)
       end
     end
   end

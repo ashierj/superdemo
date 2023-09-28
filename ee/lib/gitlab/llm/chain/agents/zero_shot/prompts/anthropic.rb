@@ -7,14 +7,14 @@ module Gitlab
         module ZeroShot
           module Prompts
             ROLE_NAMES = {
-              Llm::ChatMessage::ROLE_USER => 'Human',
-              Llm::ChatMessage::ROLE_ASSISTANT => 'Assistant'
+              Llm::AiMessage::ROLE_USER => 'Human',
+              Llm::AiMessage::ROLE_ASSISTANT => 'Assistant'
             }.freeze
 
             class Anthropic < Base
               def self.prompt(options)
                 text = <<~PROMPT
-                  #{ROLE_NAMES[Llm::ChatMessage::ROLE_USER]}: #{base_prompt(options)}
+                  #{ROLE_NAMES[Llm::AiMessage::ROLE_USER]}: #{base_prompt(options)}
                 PROMPT
 
                 history = truncated_conversation(options[:conversation], Requests::Anthropic::PROMPT_SIZE - text.size)
