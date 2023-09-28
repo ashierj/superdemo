@@ -6,11 +6,18 @@ RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
   describe '#execute', :aggregate_failures do
     let(:group) { create(:group, :private) }
     let(:owner) { create(:user, name: 'Owner', username: 'owner', state: 'active') }
+    let(:last_activity_on) { 20.days.ago.iso8601 }
+    let(:last_sign_in_at) { Date.today - 1.week }
 
     subject(:result) { described_class.new(group, owner).execute }
 
     context 'when user is allowed to export seat usage data' do
-      let(:developer) { create(:user, name: 'Dev', username: 'dev', email: 'dev@example.org', state: 'active') }
+      let(:developer) do
+        create(:user, name: 'Dev', username: 'dev', email: 'dev@example.org',
+          state: 'active', last_activity_on: last_activity_on,
+          last_sign_in_at: last_sign_in_at)
+      end
+
       let(:reporter) { create(:user, name: 'Reporter', username: 'reporter', state: 'active') }
 
       before do
@@ -29,13 +36,16 @@ RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
             group.add_reporter(reporter)
           end
 
-          it 'returns csv data' do
+          it 'returns csv data', :freeze_time do
+            formatted_last_activity = developer.last_active_at.strftime('%Y-%m-%dT%H:%M:%SZ')
+            formatted_last_login = developer.last_sign_in_at.strftime('%Y-%m-%dT%H:%M:%SZ')
+
             expect(payload).to eq([
-                                    "Id,Name,Username,Email,State\n",
-                                    "#{owner.id},Owner,owner,,active\n",
-                                    "#{developer.id},Dev,dev,public@email.org,active\n",
-                                    "#{reporter.id},Reporter,reporter,,active\n"
-                                  ])
+              "Id,Name,Username,Email,State,Last Activity,Last Login\n",
+              "#{owner.id},Owner,owner,,active,,\n",
+              "#{developer.id},Dev,dev,public@email.org,active,#{formatted_last_activity},#{formatted_last_login}\n",
+              "#{reporter.id},Reporter,reporter,,active,,\n"
+            ])
           end
         end
 
@@ -45,7 +55,7 @@ RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
             expect(BilledUsersFinder).to receive(:new).and_return(finder)
             expect(finder).to receive(:execute).and_return({})
 
-            expect(payload).to eq(["Id,Name,Username,Email,State\n"])
+            expect(payload).to match_array(["Id,Name,Username,Email,State,Last Activity,Last Login\n"])
           end
         end
       end
