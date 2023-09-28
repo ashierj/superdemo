@@ -115,38 +115,31 @@ module Gitlab
         end
 
         def track_epic_issue_added(author:, namespace:)
-          track_snowplow_action(EPIC_ISSUE_ADDED, author, namespace)
-          track_unique_action(EPIC_ISSUE_ADDED, author)
+          track_internal_action(EPIC_ISSUE_ADDED, author, namespace)
         end
 
         def track_epic_issue_removed(author:, namespace:)
-          track_snowplow_action(EPIC_ISSUE_REMOVED, author, namespace)
-          track_unique_action(EPIC_ISSUE_REMOVED, author)
+          track_internal_action(EPIC_ISSUE_REMOVED, author, namespace)
         end
 
         def track_epic_issue_moved_from_project(author:, namespace:)
-          track_snowplow_action(EPIC_ISSUE_MOVED_FROM_PROJECT, author, namespace)
-          track_unique_action(EPIC_ISSUE_MOVED_FROM_PROJECT, author)
+          track_internal_action(EPIC_ISSUE_MOVED_FROM_PROJECT, author, namespace)
         end
 
         def track_epic_parent_updated_action(author:, namespace:)
-          track_snowplow_action(EPIC_PARENT_UPDATED, author, namespace)
-          track_unique_action(EPIC_PARENT_UPDATED, author)
+          track_internal_action(EPIC_PARENT_UPDATED, author, namespace)
         end
 
         def track_epic_closed_action(author:, namespace:)
-          track_snowplow_action(EPIC_CLOSED, author, namespace)
-          track_unique_action(EPIC_CLOSED, author)
+          track_internal_action(EPIC_CLOSED, author, namespace)
         end
 
         def track_epic_reopened_action(author:, namespace:)
-          track_snowplow_action(EPIC_REOPENED, author, namespace)
-          track_unique_action(EPIC_REOPENED, author)
+          track_internal_action(EPIC_REOPENED, author, namespace)
         end
 
         def track_issue_promoted_to_epic(author:, namespace:)
-          track_snowplow_action(ISSUE_PROMOTED_TO_EPIC, author, namespace)
-          track_unique_action(ISSUE_PROMOTED_TO_EPIC, author)
+          track_internal_action(ISSUE_PROMOTED_TO_EPIC, author, namespace)
         end
 
         def track_epic_confidential_action(author:, namespace:)
