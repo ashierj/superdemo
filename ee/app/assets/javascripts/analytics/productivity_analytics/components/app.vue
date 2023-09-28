@@ -2,8 +2,7 @@
 import {
   GlEmptyState,
   GlLoadingIcon,
-  GlDropdown,
-  GlDropdownItem,
+  GlCollapsibleListbox,
   GlButton,
   GlTooltipDirective,
   GlIcon,
@@ -31,8 +30,7 @@ export default {
   components: {
     GlEmptyState,
     GlLoadingIcon,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlColumnChart,
     GlButton,
     GlIcon,
@@ -79,7 +77,13 @@ export default {
       'notAuthorUsername',
       'notLabelName',
     ]),
-    ...mapState('table', ['isLoadingTable', 'mergeRequests', 'pageInfo', 'columnMetric']),
+    ...mapState('table', [
+      'isLoadingTable',
+      'mergeRequests',
+      'pageInfo',
+      'columnMetric',
+      'sortField',
+    ]),
     ...mapGetters(['getMetricTypes']),
     ...mapGetters('charts', [
       'chartLoading',
@@ -101,8 +105,10 @@ export default {
       'sortTooltipTitle',
       'tableSortOptions',
       'columnMetricLabel',
-      'isSelectedSortField',
     ]),
+    tableSortOptionsListBoxItems() {
+      return this.tableSortOptions?.map(({ key, label }) => ({ value: key, text: label })) || [];
+    },
     showAppContent() {
       return this.groupNamespace && !this.hasNoAccessError;
     },
@@ -314,30 +320,18 @@ export default {
             >
               <strong class="gl-mr-3">{{ __('Sort by') }}</strong>
               <div class="d-flex">
-                <gl-dropdown
+                <gl-collapsible-listbox
+                  block
                   class="gl-mr-3 flex-grow"
+                  fluid-width
+                  is-check-centered
+                  placement="right"
                   toggle-class="dropdown-menu-toggle"
-                  :text="sortFieldDropdownLabel"
-                >
-                  <gl-dropdown-item
-                    v-for="metric in tableSortOptions"
-                    :key="metric.key"
-                    active-class="is-active"
-                    class="w-100"
-                    @click="setSortField(metric.key)"
-                  >
-                    <span class="d-flex">
-                      <gl-icon
-                        class="flex-shrink-0 gl-mr-2"
-                        :class="{
-                          invisible: !isSelectedSortField(metric.key),
-                        }"
-                        name="mobile-issue-close"
-                      />
-                      {{ metric.label }}
-                    </span>
-                  </gl-dropdown-item>
-                </gl-dropdown>
+                  :selected="sortField"
+                  :toggle-text="sortFieldDropdownLabel"
+                  :items="tableSortOptionsListBoxItems"
+                  @select="setSortField"
+                />
                 <gl-button
                   v-gl-tooltip.hover
                   :title="sortTooltipTitle"
