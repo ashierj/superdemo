@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlIcon, GlButton, GlModalDirective } from '@gitlab/ui';
+import { GlLink, GlIcon, GlButton, GlModalDirective, GlSkeletonLoader } from '@gitlab/ui';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import {
   addSeatsText,
@@ -17,7 +17,7 @@ import LimitedAccessModal from '../../components/limited_access_modal.vue';
 
 export default {
   name: 'StatisticsSeatsCard',
-  components: { GlLink, GlIcon, GlButton, LimitedAccessModal },
+  components: { GlLink, GlIcon, GlButton, LimitedAccessModal, GlSkeletonLoader },
   directives: {
     GlModalDirective,
   },
@@ -89,9 +89,6 @@ export default {
           namespaceId: parseInt(this.namespaceId, 10),
         };
       },
-      skip() {
-        return !gon.features?.limitedAccessModal;
-      },
       update: (data) => ({
         ...data.subscription,
         reason: data.userActionAccess?.limitedAccessReason,
@@ -115,6 +112,14 @@ export default {
         LIMITED_ACCESS_MESSAGING[this.subscriptionPermissions.reason]
       );
     },
+    shouldShowAddSeatsButton() {
+      return (
+        !this.subscriptionPermissions?.communityPlan && this.purchaseButtonLink && !this.isLoading
+      );
+    },
+    isLoading() {
+      return this.$apollo.loading;
+    },
   },
   methods: {
     trackClick() {
@@ -137,7 +142,12 @@ export default {
   <div
     class="gl-bg-white gl-border-1 gl-border-gray-100 gl-border-solid gl-p-5 gl-rounded-base gl-display-flex"
   >
-    <div class="gl-flex-grow-1">
+    <gl-skeleton-loader v-if="isLoading" :height="64">
+      <rect width="140" height="30" x="5" y="0" rx="4" />
+      <rect width="240" height="10" x="5" y="40" rx="4" />
+      <rect width="340" height="10" x="5" y="54" rx="4" />
+    </gl-skeleton-loader>
+    <div v-else class="gl-flex-grow-1">
       <p
         v-if="shouldRenderSeatsUsedBlock"
         class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
@@ -178,7 +188,7 @@ export default {
       </p>
     </div>
     <gl-button
-      v-if="purchaseButtonLink"
+      v-if="shouldShowAddSeatsButton"
       v-gl-modal-directive="'limited-access-modal-id'"
       category="primary"
       target="_blank"

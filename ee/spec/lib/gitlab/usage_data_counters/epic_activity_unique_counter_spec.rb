@@ -169,8 +169,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_closed_action(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_CLOSED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_CLOSED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -181,8 +181,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_reopened_action(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_REOPENED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_REOPENED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -219,8 +219,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_start_date_set_as_fixed_action(**params)
         end
 
-        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-          let(:action) { described_class::EPIC_START_DATE_SET_AS_FIXED }
+        it_behaves_like 'internal event tracking' do
+          let(:event) { described_class::EPIC_START_DATE_SET_AS_FIXED }
         end
 
         it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -231,8 +231,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_fixed_start_date_updated_action(**params)
         end
 
-        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-          let(:action) { described_class::EPIC_FIXED_START_DATE_UPDATED }
+        it_behaves_like 'internal event tracking' do
+          let(:event) { described_class::EPIC_FIXED_START_DATE_UPDATED }
         end
 
         it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -243,8 +243,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_start_date_set_as_inherited_action(**params)
         end
 
-        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-          let(:action) { described_class::EPIC_START_DATE_SET_AS_INHERITED }
+        it_behaves_like 'internal event tracking' do
+          let(:event) { described_class::EPIC_START_DATE_SET_AS_INHERITED }
         end
 
         it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -257,8 +257,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_due_date_set_as_fixed_action(**params)
         end
 
-        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-          let(:action) { described_class::EPIC_DUE_DATE_SET_AS_FIXED }
+        it_behaves_like 'internal event tracking' do
+          let(:event) { described_class::EPIC_DUE_DATE_SET_AS_FIXED }
         end
 
         it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -269,8 +269,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_fixed_due_date_updated_action(**params)
         end
 
-        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-          let(:action) { described_class::EPIC_FIXED_DUE_DATE_UPDATED }
+        it_behaves_like 'internal event tracking' do
+          let(:event) { described_class::EPIC_FIXED_DUE_DATE_UPDATED }
         end
 
         it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -281,8 +281,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_due_date_set_as_inherited_action(**params)
         end
 
-        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-          let(:action) { described_class::EPIC_DUE_DATE_SET_AS_INHERITED }
+        it_behaves_like 'internal event tracking' do
+          let(:event) { described_class::EPIC_DUE_DATE_SET_AS_INHERITED }
         end
 
         it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -295,8 +295,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_issue_added(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_ISSUE_ADDED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_ISSUE_ADDED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -319,8 +319,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_issue_removed(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_ISSUE_REMOVED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_ISSUE_REMOVED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -331,8 +331,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_issue_moved_from_project(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_ISSUE_MOVED_FROM_PROJECT }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_ISSUE_MOVED_FROM_PROJECT }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -343,8 +343,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_parent_updated_action(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_PARENT_UPDATED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_PARENT_UPDATED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -355,8 +355,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_issue_promoted_to_epic(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::ISSUE_PROMOTED_TO_EPIC }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::ISSUE_PROMOTED_TO_EPIC }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -403,8 +403,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_cross_referenced(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_CROSS_REFERENCED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_CROSS_REFERENCED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -415,8 +415,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_relates_to_added(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_RELATED_ADDED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_RELATED_ADDED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -427,8 +427,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_relates_to_removed(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_RELATED_REMOVED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_RELATED_REMOVED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -439,8 +439,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_blocks_added(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_BLOCKING_ADDED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_BLOCKING_ADDED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -451,8 +451,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_blocks_removed(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_BLOCKING_REMOVED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_BLOCKING_REMOVED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -463,8 +463,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_is_blocked_by_added(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_BLOCKED_ADDED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_BLOCKED_ADDED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -475,8 +475,8 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_is_blocked_by_removed(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
-      let(:action) { described_class::EPIC_BLOCKED_REMOVED }
+    it_behaves_like 'internal event tracking' do
+      let(:event) { described_class::EPIC_BLOCKED_REMOVED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
