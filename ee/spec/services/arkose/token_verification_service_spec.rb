@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Arkose::TokenVerificationService do
+RSpec.describe Arkose::TokenVerificationService, feature_category: :instance_resiliency do
   let(:user) { create(:user) }
   let(:session_token) { '22612c147bb418c8.2570749403' }
   let(:service) { described_class.new(session_token: session_token, user: user) }
@@ -43,7 +43,7 @@ RSpec.describe Arkose::TokenVerificationService do
         end
       end
 
-      context 'when feature arkose_labs_prevent_login is enabled' do
+      context 'when arkose is enabled' do
         shared_examples 'returns success response with the correct payload' do
           let(:mock_response) { Arkose::VerifyResponse.new(arkose_ec_response) }
 
@@ -224,35 +224,13 @@ RSpec.describe Arkose::TokenVerificationService do
       end
     end
 
-    context 'when arkose_labs_prevent_login feature flag is enabled' do
+    context 'when calling the Arkose::TokenVerificationService' do
       before do
         stub_application_setting(arkose_labs_private_api_key: arkose_labs_private_api_key)
         stub_application_setting(arkose_labs_namespace: "gitlab")
       end
 
       it_behaves_like 'interacting with Arkose verify API', "https://gitlab-verify.arkoselabs.com/api/v4/verify/"
-    end
-
-    context 'when feature arkose_labs_prevent_login is disabled' do
-      before do
-        stub_feature_flags(arkose_labs_prevent_login: false)
-      end
-
-      context 'when the risk score is high' do
-        let(:arkose_ec_response) do
-          Gitlab::Json.parse(
-            File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response_high_risk.json'))
-          )
-        end
-
-        it 'returns a success response' do
-          expect(subject).to be_success
-        end
-
-        it 'returns { low_risk: true } payload' do
-          expect(subject.payload[:low_risk]).to eq true
-        end
-      end
     end
   end
 end

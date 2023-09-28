@@ -66,7 +66,6 @@ module EE
         mount ::API::GroupRepositoryStorageMoves
         mount ::API::GroupProtectedBranches
         mount ::API::Ci::Minutes
-        mount ::API::CaptchaCheck
         mount ::API::Ml::AiAssist
         mount ::API::DependencyListExports
         mount ::API::GroupServiceAccounts

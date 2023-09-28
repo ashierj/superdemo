@@ -8,48 +8,6 @@ RSpec.describe 'devise/sessions/new' do
     view.instance_variable_set(:@arkose_labs_domain, "gitlab-api.arkoselab.com")
   end
 
-  describe 'ArkoseLabs challenge' do
-    subject { render(template: 'devise/sessions/new', layout: 'layouts/devise') }
-
-    before do
-      stub_devise
-      disable_captcha
-      allow(Gitlab).to receive(:com?).and_return(true)
-    end
-
-    context 'when the :arkose_labs_login_challenge feature flag is enabled' do
-      before do
-        stub_feature_flags(arkose_labs_login_challenge: true)
-
-        subject
-      end
-
-      it 'renders the challenge container' do
-        expect(rendered).to have_css('#js-arkose-labs-challenge')
-      end
-
-      it 'passes the API key to the challenge container' do
-        expect(rendered).to have_selector('#js-arkose-labs-challenge[data-api-key="arkose-api-key"]')
-      end
-
-      it 'passes the ArkoseLabs domain to the challenge container' do
-        expect(rendered).to have_selector('#js-arkose-labs-challenge[data-domain="gitlab-api.arkoselab.com"]')
-      end
-    end
-
-    context 'when the :arkose_labs_login_challenge feature flag is disabled' do
-      before do
-        stub_feature_flags(arkose_labs_login_challenge: false)
-
-        subject
-      end
-
-      it 'does not render challenge container' do
-        expect(rendered).not_to have_css('#js-arkose-labs-challenge')
-      end
-    end
-  end
-
   describe 'broadcast messaging' do
     before do
       stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
