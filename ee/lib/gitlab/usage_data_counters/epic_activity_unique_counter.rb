@@ -167,38 +167,31 @@ module Gitlab
         end
 
         def track_epic_cross_referenced(author:, namespace:)
-          track_snowplow_action(EPIC_CROSS_REFERENCED, author, namespace)
-          track_unique_action(EPIC_CROSS_REFERENCED, author)
+          track_internal_action(EPIC_CROSS_REFERENCED, author, namespace)
         end
 
         def track_linked_epic_with_type_relates_to_added(author:, namespace:)
-          track_snowplow_action(EPIC_RELATED_ADDED, author, namespace)
-          track_unique_action(EPIC_RELATED_ADDED, author)
+          track_internal_action(EPIC_RELATED_ADDED, author, namespace)
         end
 
         def track_linked_epic_with_type_relates_to_removed(author:, namespace:)
-          track_snowplow_action(EPIC_RELATED_REMOVED, author, namespace)
-          track_unique_action(EPIC_RELATED_REMOVED, author)
+          track_internal_action(EPIC_RELATED_REMOVED, author, namespace)
         end
 
         def track_linked_epic_with_type_blocks_added(author:, namespace:)
-          track_snowplow_action(EPIC_BLOCKING_ADDED, author, namespace)
-          track_unique_action(EPIC_BLOCKING_ADDED, author)
+          track_internal_action(EPIC_BLOCKING_ADDED, author, namespace)
         end
 
         def track_linked_epic_with_type_blocks_removed(author:, namespace:)
-          track_snowplow_action(EPIC_BLOCKING_REMOVED, author, namespace)
-          track_unique_action(EPIC_BLOCKING_REMOVED, author)
+          track_internal_action(EPIC_BLOCKING_REMOVED, author, namespace)
         end
 
         def track_linked_epic_with_type_is_blocked_by_added(author:, namespace:)
-          track_snowplow_action(EPIC_BLOCKED_ADDED, author, namespace)
-          track_unique_action(EPIC_BLOCKED_ADDED, author)
+          track_internal_action(EPIC_BLOCKED_ADDED, author, namespace)
         end
 
         def track_linked_epic_with_type_is_blocked_by_removed(author:, namespace:)
-          track_snowplow_action(EPIC_BLOCKED_REMOVED, author, namespace)
-          track_unique_action(EPIC_BLOCKED_REMOVED, author)
+          track_internal_action(EPIC_BLOCKED_REMOVED, author, namespace)
         end
 
         private
