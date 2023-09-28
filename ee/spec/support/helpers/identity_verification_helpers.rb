@@ -41,20 +41,20 @@ module IdentityVerificationHelpers
     perform_enqueued_jobs
 
     mail = ActionMailer::Base.deliveries.find { |d| d.to.include?(user_email) }
-    expect(mail.subject).to eq(s_('IdentityVerification|Confirm your email address'))
+    expect(mail.subject).to eq('Confirm your email address')
 
     mail.body.parts.first.to_s[/\d{#{Users::EmailVerification::GenerateTokenService::TOKEN_LENGTH}}/o]
   end
 
   def verify_email
     content = format(
-      s_("IdentityVerification|We've sent a verification code to %{email}"),
+      "We've sent a verification code to %{email}",
       email: Gitlab::Utils::Email.obfuscated_email(user_email)
     )
     expect(page).to have_content(content)
 
     fill_in 'verification_code', with: email_verification_code
-    click_button s_('IdentityVerification|Verify email address')
+    click_button 'Verify email address'
   end
 
   def confirmation_code
@@ -72,13 +72,18 @@ module IdentityVerificationHelpers
   end
 
   def expect_to_see_identity_verification_page
-    expect(page).to have_content(s_("IdentityVerification|For added security, you'll need to verify your identity"))
+    expect(page).to have_content("For added security, you'll need to verify your identity")
   end
 
   def expect_verification_completed
-    expect(page).to have_content(_('Completed'))
-    expect(page).to have_content(_('Next'))
+    expect(page).to have_content('Completed')
+    expect(page).to have_content('Next')
 
-    click_link _('Next')
+    click_link 'Next'
+
+    wait_for_requests
+
+    expect(page).to have_current_path(success_identity_verification_path)
+    expect(page).to have_content('Verification successful')
   end
 end
