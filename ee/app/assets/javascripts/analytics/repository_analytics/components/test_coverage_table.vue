@@ -9,11 +9,9 @@ import {
   GlPopover,
   GlSprintf,
 } from '@gitlab/ui';
-import Vue from 'vue';
 import api from '~/api';
 import { SUPPORTED_FORMATS, getFormatter } from '~/lib/utils/unit_format';
 import { joinPaths } from '~/lib/utils/url_utility';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { tablei18n as i18n } from '../constants';
@@ -144,24 +142,23 @@ export default {
     onProjectClick() {
       api.trackRedisHllUserEvent(this.$options.servicePingProjectEvent);
     },
-    selectAllProjects() {
+    selectAllProjects(ids) {
       this.allProjectsSelected = true;
+
+      this.selectedProjectIds = ids.reduce((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {});
     },
-    toggleProject({ id }) {
+    toggleProject(ids) {
       if (this.allProjectsSelected) {
-        // Reset all project selections to false
         this.allProjectsSelected = false;
-        this.selectedProjectIds = Object.fromEntries(
-          Object.entries(this.selectedProjectIds).map(([key]) => [key, false]),
-        );
       }
 
-      if (Object.prototype.hasOwnProperty.call(this.selectedProjectIds, id)) {
-        Vue.set(this.selectedProjectIds, id, !this.selectedProjectIds[id]);
-        return;
-      }
-
-      Vue.set(this.selectedProjectIds, id, true);
+      this.selectedProjectIds = ids.reduce((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {});
     },
   },
   tableFields: [
@@ -194,7 +191,6 @@ export default {
   },
   averageCoverageFormatter: getFormatter(SUPPORTED_FORMATS.percentHundred),
   servicePingProjectEvent: 'i_testing_group_code_coverage_project_click_total',
-  docsPath: helpPagePath('user/group/repositories_analytics/index.md'),
 };
 </script>
 <template>
@@ -216,6 +212,7 @@ export default {
         </div>
         <select-projects-dropdown
           class="gl-xs-w-full gl-xs-mb-3"
+          placement="right"
           @projects-query-error="handleError"
           @select-all-projects="selectAllProjects"
           @select-project="toggleProject"

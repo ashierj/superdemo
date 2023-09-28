@@ -1,12 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import {
-  GlDropdown,
-  GlDropdownItem,
-  GlIntersectionObserver,
-  GlLoadingIcon,
-  GlIcon,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox, GlIntersectionObserver } from '@gitlab/ui';
 import getGroupProjects from 'ee/analytics/repository_analytics/graphql/queries/get_group_projects.query.graphql';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -53,12 +47,11 @@ describe('Select projects dropdown component', () => {
     return createMockApollo([[getGroupProjects, requestHandlers.getGroupProjects]]);
   };
 
-  const findSelectAllProjects = () => wrapper.findByTestId('select-all-projects');
-  const findProjectById = (id) => wrapper.findByTestId(`select-project-${id}`);
-  const selectAllProjects = () => findSelectAllProjects().trigger('click');
-  const selectProjectById = (id) => findProjectById(id).trigger('click');
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
+  const selectAllProjects = () => findDropdown().vm.$emit('select-all');
+  const resetAllProjects = () => findDropdown().vm.$emit('reset');
+  const selectProjectById = (id) => findDropdown(id).vm.$emit('select', id);
   const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const createComponent = ({ handlers = mockApolloHandlers() } = {}) => {
     wrapper = shallowMountExtended(SelectProjectsDropdown, {
@@ -66,33 +59,29 @@ describe('Select projects dropdown component', () => {
       provide: {
         groupFullPath: 'gitlab-org',
       },
-      stubs: { GlDropdown, GlDropdownItem, GlIcon },
+      stubs: { GlCollapsibleListbox },
     });
   };
 
   describe('when selecting all project', () => {
-    const initialData = { groupProjects: [{ id: 1, name: '1', isSelected: true }] };
-
     beforeEach(async () => {
       createComponent({ handlers: mockApolloHandlers([{ id: 1, name: '1', isSelected: true }]) });
       await waitForPromises();
     });
 
     it('should reset all selected projects', async () => {
-      selectAllProjects();
+      resetAllProjects();
 
       await nextTick();
-      expect(
-        findProjectById(initialData.groupProjects[0].id).findComponent(GlIcon).classes(),
-      ).toContain('gl-visibility-hidden');
+
+      expect(findDropdown().props('selected')).toEqual([]);
     });
 
     it('should emit select-all-projects event', () => {
       selectAllProjects();
 
-      expect(wrapper.emitted('select-all-projects')).toMatchObject([
-        [[{ ...initialData.groupProjects[0], isSelected: false, parsedId: 1 }]],
-      ]);
+      expect(findDropdown().props('items')).toHaveLength(1);
+      expect(wrapper.emitted('select-all-projects')).toMatchObject([[[1]]]);
     });
   });
 
@@ -110,34 +99,17 @@ describe('Select projects dropdown component', () => {
 
     it('should check selected project', async () => {
       const project = initialData.groupProjects[0];
-      selectProjectById(project.id);
+
+      selectProjectById([project.id]);
 
       await nextTick();
-      expect(findProjectById(project.id).findComponent(GlIcon).classes()).not.toContain(
-        'gl-visibility-hidden',
-      );
-    });
-
-    it('should uncheck select all projects', async () => {
-      selectProjectById(initialData.groupProjects[0].id);
-
-      await nextTick();
-      expect(findSelectAllProjects().findComponent(GlIcon).classes()).toContain(
-        'gl-visibility-hidden',
-      );
+      expect(findDropdown().props('selected')).toEqual([project.id]);
     });
 
     it('should emit select-project event', () => {
       const project = initialData.groupProjects[0];
-      selectProjectById(project.id);
-      expect(wrapper.emitted('select-project')).toMatchObject([
-        [
-          {
-            ...project,
-            isSelected: true,
-          },
-        ],
-      ]);
+      selectProjectById([project.id]);
+      expect(wrapper.emitted('select-project')).toMatchObject([[[project.id]]]);
     });
   });
 
@@ -166,7 +138,7 @@ describe('Select projects dropdown component', () => {
       });
 
       it('makes a query to fetch more projects', () => {
-        findIntersectionObserver().vm.$emit('appear');
+        findDropdown().vm.$emit('bottom-reached');
         expect(requestHandlers.getGroupProjects).toHaveBeenCalledTimes(2);
       });
 
@@ -188,10 +160,10 @@ describe('Select projects dropdown component', () => {
         createComponent({ handlers: mockApolloHandlers([], true) });
         await waitForPromises();
 
-        findIntersectionObserver().vm.$emit('appear');
+        findDropdown().vm.$emit('bottom-reached');
         await nextTick();
 
-        expect(findLoadingIcon().exists()).toBe(true);
+        expect(findDropdown().props('loading')).toBe(true);
       });
     });
   });
