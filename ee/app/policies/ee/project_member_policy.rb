@@ -9,6 +9,7 @@ module EE
 
       rule { security_policy_bot }.policy do
         prevent :destroy_project_member
+        prevent :update_project_member
       end
     end
   end
