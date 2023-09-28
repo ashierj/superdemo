@@ -842,7 +842,6 @@ lib/gitlab/checks/**
 /doc/downgrade_ee_to_ce/ @axil
 /doc/drawers/ @ashrafkhamis
 /doc/editor_extensions/ @aqualls
-/doc/editor_extensions/visual_studio_code/ @ashrafkhamis
 /doc/gitlab-basics/ @msedlakjakubowski
 /doc/install/ @axil
 /doc/install/postgresql_extensions.md @aqualls
@@ -872,7 +871,6 @@ lib/gitlab/checks/**
 /doc/security/email_verification.md @phillipwells
 /doc/security/identity_verification.md @phillipwells
 /doc/subscriptions/ @fneill
-/doc/topics/authentication/ @jglassman1
 /doc/topics/autodevops/ @phillipwells
 /doc/topics/data_seeder.md @sselhorn
 /doc/topics/git/ @msedlakjakubowski
