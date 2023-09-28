@@ -1632,6 +1632,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: members_destroyer_clean_up_group_protected_branch_rules
+  :worker_name: MembersDestroyer::CleanUpGroupProtectedBranchRulesWorker
+  :feature_category: :groups_and_projects
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: merge_request_reset_approvals
   :worker_name: MergeRequestResetApprovalsWorker
   :feature_category: :source_code_management
