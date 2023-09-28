@@ -73,10 +73,6 @@ module EE
       end
     end
 
-    def smartcard_config_port
-      ::Gitlab.config.smartcard.client_certificate_required_port
-    end
-
     override :autocomplete_data_sources
     def autocomplete_data_sources(object, noteable_type)
       return {} unless object && noteable_type
