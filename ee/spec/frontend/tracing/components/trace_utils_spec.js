@@ -10,19 +10,19 @@ import {
 describe('trace_utils', () => {
   describe('durationNanoToMs', () => {
     it('converts a duration value from nano to ms', () => {
-      expect(durationNanoToMs(1000000001)).toBe(1000000);
+      expect(durationNanoToMs(1234567)).toBe(1.234567);
     });
   });
 
   describe('formatDurationMs', () => {
     it('formats a duration ms value', () => {
-      expect(formatDurationMs(1000)).toBe('1000 ms');
+      expect(formatDurationMs(12.2934)).toBe('12.29 ms');
     });
   });
 
   describe('formatTraceDuration', () => {
     it('formats the trace duration nano value', () => {
-      expect(formatTraceDuration(1000000001)).toBe('1000000 ms');
+      expect(formatTraceDuration(1234567)).toBe('1.23 ms');
     });
   });
 
@@ -121,7 +121,7 @@ describe('trace_utils', () => {
       };
 
       expect(mapTraceToTreeRoot(trace)).toEqual({
-        durationMs: 100120,
+        durationMs: 100.12,
         operation: 'lets-go',
         service: 'tracegen',
         spanId: 'SPAN-1',
@@ -129,7 +129,7 @@ describe('trace_utils', () => {
         timestamp: '2023-08-07T15:03:32.199806Z',
         children: [
           {
-            durationMs: 100055,
+            durationMs: 100.055,
             operation: 'okey-dokey',
             service: 'tracegen',
             spanId: 'SPAN-2',
@@ -138,7 +138,7 @@ describe('trace_utils', () => {
             children: [
               {
                 children: [],
-                durationMs: 50028,
+                durationMs: 50.0275,
                 operation: 'okey-dokey',
                 service: 'tracegen',
                 spanId: 'SPAN-3',
@@ -147,7 +147,7 @@ describe('trace_utils', () => {
               },
               {
                 children: [],
-                durationMs: 50028,
+                durationMs: 50.0275,
                 operation: 'okey-dokey',
                 service: 'fake-service-2',
                 spanId: 'SPAN-4',

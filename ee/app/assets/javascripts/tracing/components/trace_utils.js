@@ -5,11 +5,11 @@ const SPAN_COLOR_WEIGHT = ['500', '600', '700', '800', '900', '950'];
 const SPAN_COLOR_PALETTE = ['blue', 'orange', 'aqua', 'green', 'magenta'];
 
 export function durationNanoToMs(durationNano) {
-  return Math.round(durationNano / 1000);
+  return durationNano / 1000000;
 }
 
 export function formatDurationMs(durationMs) {
-  return sprintf(s__('Tracing|%{ms} ms'), { ms: durationMs });
+  return sprintf(s__('Tracing|%{ms} ms'), { ms: durationMs.toFixed(2) });
 }
 
 export function formatTraceDuration(durationNano) {
