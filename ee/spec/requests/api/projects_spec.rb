@@ -1760,7 +1760,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
 
     before do
       target_namespace.add_developer(user)
-      project_fork_target.add_maintainer(user)
+      project_fork_target.add_owner(user)
       stub_licensed_features(group_forking_protection: true)
     end
 

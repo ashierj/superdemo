@@ -233,6 +233,10 @@ module EE
           ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, self) &&
           licensed_feature_available?(:unique_project_download_limit)
       end
+
+      def service_accounts
+        provisioned_users.service_account
+      end
     end
 
     override :usage_quotas_enabled?
@@ -621,7 +625,7 @@ module EE
       return false unless user
 
       if min_access_level == ::Gitlab::Access::MINIMAL_ACCESS && minimal_access_role_allowed?
-        all_group_members.find_by(user_id: user.id).present?
+        all_group_members.find_by(user_id: user.id).present? || members_from_self_and_ancestor_group_shares.where(user_id: user.id).present?
       else
         super
       end
