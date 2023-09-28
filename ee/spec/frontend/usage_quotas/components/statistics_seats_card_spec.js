@@ -1,4 +1,4 @@
-import { GlLink } from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -27,7 +27,10 @@ describe('StatisticsSeatsCard', () => {
     purchaseButtonLink,
   };
 
-  const defaultApolloData = { subscription: { canAddSeats: true, canRenew: true } };
+  const defaultApolloData = {
+    subscription: { canAddSeats: true, canRenew: true, communityPlan: false },
+    userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+  };
 
   const createComponent = (options = {}) => {
     const { props = {}, apolloData = defaultApolloData } = options;
@@ -58,9 +61,22 @@ describe('StatisticsSeatsCard', () => {
   const findPurchaseButton = () => wrapper.findByTestId('purchase-button');
   const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 
-  describe('seats used block', () => {
-    it('renders seats used block if seatsUsed is passed', () => {
+  describe('when `isLoading` computed value is `true`', () => {
+    beforeEach(() => {
       createComponent();
+    });
+
+    it('renders `GlSkeletonLoader`', () => {
+      expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
+    });
+  });
+
+  describe('seats used block', () => {
+    it('renders seats used block if seatsUsed is passed', async () => {
+      createComponent();
+
+      // wait for apollo to load
+      await waitForPromises();
 
       const seatsUsedBlock = findSeatsUsedBlock();
 
@@ -69,16 +85,22 @@ describe('StatisticsSeatsCard', () => {
       expect(seatsUsedBlock.findComponent(GlLink).exists()).toBe(true);
     });
 
-    it('does not render seats used block if seatsUsed is not passed', () => {
+    it('does not render seats used block if seatsUsed is not passed', async () => {
       createComponent({ props: { seatsUsed: null } });
+
+      // wait for apollo to load
+      await waitForPromises();
 
       expect(findSeatsUsedBlock().exists()).toBe(false);
     });
   });
 
   describe('seats owed block', () => {
-    it('renders seats owed block if seatsOwed is passed', () => {
+    it('renders seats owed block if seatsOwed is passed', async () => {
       createComponent();
+
+      // wait for apollo to load
+      await waitForPromises();
 
       const seatsOwedBlock = findSeatsOwedBlock();
 
@@ -87,31 +109,44 @@ describe('StatisticsSeatsCard', () => {
       expect(seatsOwedBlock.findComponent(GlLink).exists()).toBe(true);
     });
 
-    it('does not render seats owed block if seatsOwed is not passed', () => {
+    it('does not render seats owed block if seatsOwed is not passed', async () => {
       createComponent({ props: { seatsOwed: null } });
+
+      // wait for apollo to load
+      await waitForPromises();
 
       expect(findSeatsOwedBlock().exists()).toBe(false);
     });
   });
 
   describe('purchase button', () => {
-    it('renders purchase button if purchase link and purchase text is passed', () => {
+    it('renders purchase button if purchase link and purchase text is passed', async () => {
       createComponent();
+
+      // wait for apollo to load
+      await waitForPromises();
 
       const purchaseButton = findPurchaseButton();
 
       expect(purchaseButton.exists()).toBe(true);
     });
 
-    it('does not render purchase button if purchase link is not passed', () => {
+    it('does not render purchase button if purchase link is not passed', async () => {
       createComponent({ props: { purchaseButtonLink: null } });
+
+      // wait for apollo to load
+      await waitForPromises();
 
       expect(findPurchaseButton().exists()).toBe(false);
     });
 
-    it('tracks event', () => {
+    it('tracks event', async () => {
       jest.spyOn(Tracking, 'event');
       createComponent();
+
+      // wait for apollo to load
+      await waitForPromises();
+
       findPurchaseButton().vm.$emit('click');
 
       expect(Tracking.event).toHaveBeenCalledWith(undefined, 'click_button', {
@@ -120,11 +155,27 @@ describe('StatisticsSeatsCard', () => {
       });
     });
 
-    it('redirects when clicked', () => {
+    it('redirects when clicked', async () => {
       createComponent();
+
+      // wait for apollo to load
+      await waitForPromises();
+
       findPurchaseButton().vm.$emit('click');
 
       expect(visitUrl).toHaveBeenCalledWith('https://gitlab.com/purchase-more-seats');
+    });
+
+    it('does not render purchase button if communityPlan is true', async () => {
+      createComponent({
+        apolloData: {
+          subscription: { canAddSeats: false, canRenew: true, communityPlan: true },
+          userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+        },
+      });
+      await waitForPromises();
+
+      expect(findPurchaseButton().exists()).toBe(false);
     });
   });
 
@@ -148,7 +199,7 @@ describe('StatisticsSeatsCard', () => {
           beforeEach(async () => {
             createComponent({
               apolloData: {
-                subscription: { canAddSeats, canRenew: true },
+                subscription: { canAddSeats, canRenew: true, communityPlan: false },
                 userActionAccess: { limitedAccessReason },
               },
             });
@@ -183,7 +234,7 @@ describe('StatisticsSeatsCard', () => {
           beforeEach(async () => {
             createComponent({
               apolloData: {
-                subscription: { canAddSeats, canRenew: true },
+                subscription: { canAddSeats, canRenew: true, communityPlan: false },
                 userActionAccess: { limitedAccessReason },
               },
             });
@@ -208,6 +259,9 @@ describe('StatisticsSeatsCard', () => {
       beforeEach(async () => {
         gon.features = { limitedAccessModal: false };
         createComponent();
+
+        // wait for apollo to load
+        await waitForPromises();
 
         findPurchaseButton().vm.$emit('click');
         await nextTick();

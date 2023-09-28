@@ -2,6 +2,7 @@ query getSubscriptionPermissionsData($namespaceId: ID!) {
   subscription(namespaceId: $namespaceId) {
     canAddSeats
     canRenew
+    communityPlan
   }
   userActionAccess(namespaceId: $namespaceId) {
     limitedAccessReason
