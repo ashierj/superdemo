@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Epic shortcuts', :js, feature_category: :portfolio_management do
-  include ContentEditorHelpers
-
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:label) { create(:group_label, group: group, title: 'bug') }
@@ -49,8 +47,6 @@ RSpec.describe 'Epic shortcuts', :js, feature_category: :portfolio_management do
     end
 
     it "quotes the selected text", quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/11057' do
-      close_rich_text_promo_popover_if_present
-
       # This functionality now requires that the reply component has already been opened.
       click_on('Reply to comment')
 

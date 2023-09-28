@@ -8,7 +8,6 @@ module QA
           class Show < QA::Page::Base
             include QA::Page::Component::Issuable::Common
             include QA::Page::Component::Note
-            include QA::Page::Component::RichTextPopover
 
             view 'ee/app/assets/javascripts/epic/components/epic_header_actions.vue' do
               element 'desktop-dropdown'
@@ -36,7 +35,6 @@ module QA
             end
 
             def add_issue_to_epic(issue_url)
-              close_rich_text_promo_popover_if_present
               click_element(:epic_issue_actions_split_button)
               find('button', text: 'Add an existing issue').click
               fill_element :add_issue_field, issue_url

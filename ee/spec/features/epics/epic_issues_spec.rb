@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
   include NestedEpicsHelper
   include DragTo
-  include ContentEditorHelpers
 
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
@@ -36,7 +35,6 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
   def visit_epic
     sign_in(user)
     visit group_epic_path(group, epic)
-    close_rich_text_promo_popover_if_present
 
     wait_for_requests
 
@@ -48,7 +46,6 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
   def visit_epic_no_subepic
     sign_in(user)
     visit group_epic_path(group, epic)
-    close_rich_text_promo_popover_if_present
 
     wait_for_requests
   end
@@ -202,7 +199,6 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
           before do
             last_child = add_children_to(epic: epic, count: 6)
             visit group_epic_path(group, last_child)
-            close_rich_text_promo_popover_if_present
 
             wait_for_requests
           end
