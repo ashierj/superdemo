@@ -45,7 +45,9 @@ module Groups
         'Name' => 'name',
         'Username' => 'username',
         'Email' => -> (user) { user.public_email.presence },
-        'State' => 'state'
+        'State' => 'state',
+        'Last Activity' => -> (user) { user&.last_active_at&.iso8601 },
+        'Last Login' => -> (user) { user&.last_sign_in_at&.iso8601 }
       }
     end
   end
