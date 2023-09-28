@@ -193,6 +193,19 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
       expect(page).not_to have_selector('[data-testid="limited-access-modal-id"]')
     end
 
+    context 'with community_plan: true' do
+      before do
+        stub_subscription_permissions_data(group.id, community_plan: true)
+
+        visit group_seat_usage_path(group)
+        wait_for_requests
+      end
+
+      it "does not show 'Add seats' button" do
+        expect(page).not_to have_content('Add seats')
+      end
+    end
+
     context 'with limited_access_modal FF enabled' do
       before do
         stub_feature_flags(limited_access_modal: true)
