@@ -34,7 +34,10 @@ describe('Test coverage table component', () => {
   const findProjectDateById = (id) => wrapper.findByTestId(`${id}-date`);
 
   const clickSelectAllProjects = async () => {
-    await findProjectsDropdown().vm.$emit('select-all-projects');
+    await findProjectsDropdown().vm.$emit(
+      'select-all-projects',
+      projects.map(({ id }) => id),
+    );
     jest.runOnlyPendingTimers();
     await waitForPromises();
   };
