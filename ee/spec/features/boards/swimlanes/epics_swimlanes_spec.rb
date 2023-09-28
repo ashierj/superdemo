@@ -124,7 +124,7 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
         click_button 'Create new issue'
       end
 
-      page.within("[data-testid='board-lane-unassigned-issues']") do
+      within_testid('board-lane-unassigned-issues') do
         expect(page).to have_selector('.board-new-issue-form')
       end
     end
@@ -134,7 +134,7 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
         click_button 'Create new issue'
       end
 
-      page.within("[data-testid='board-lane-unassigned-issues']") do
+      within_testid('board-lane-unassigned-issues') do
         expect(page).to have_selector('.board-new-issue-form')
 
         click_button 'Cancel'
@@ -163,7 +163,7 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
 
       wait_for_all_requests
 
-      page.within("[data-testid='board-lane-unassigned-issues']") do
+      within_testid('board-lane-unassigned-issues') do
         page.within(first('.board-card')) do
           issue = project.issues.find_by!(title: 'bug')
 

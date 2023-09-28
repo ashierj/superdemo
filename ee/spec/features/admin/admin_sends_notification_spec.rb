@@ -32,7 +32,7 @@ RSpec.describe "Admin sends notification", :js, :sidekiq_might_not_need_inline, 
 
       wait_for_requests
 
-      within('[data-testid="base-dropdown-menu"]') do
+      within_testid('base-dropdown-menu') do
         expect(page).to have_content(_('All groups and projects'))
         expect(page).to have_content(group.name)
         expect(page).to have_content(project.name)

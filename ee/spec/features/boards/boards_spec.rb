@@ -151,8 +151,8 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
         let(:total_development_issues) { "1" }
 
         it 'displays issue and max issue size' do
-          page.within(find(".board:nth-child(2)")) do
-            expect(page.find('[data-testid="board-items-count"]')).to have_text(total_development_issues)
+          page.within(".board:nth-child(2)") do
+            expect(find_by_testid('board-items-count')).to have_text(total_development_issues)
             expect(page.find('.max-issue-size')).to have_text(max_issue_count)
           end
         end
@@ -220,7 +220,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
 
             wait_for_requests
 
-            expect(page.find('[data-testid="wip-limit"]')).to have_text("None")
+            expect(find_by_testid('wip-limit')).to have_text("None")
           end
         end
 
@@ -244,7 +244,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
               click_button('Edit list settings')
             end
 
-            expect(page.find('[data-testid="wip-limit"]')).to have_text(max_issue_count)
+            expect(find_by_testid('wip-limit')).to have_text(max_issue_count)
           end
         end
 
@@ -262,7 +262,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
 
             wait_for_requests
 
-            expect(page.find('[data-testid="wip-limit"]')).to have_text(max_issue_count)
+            expect(find_by_testid('wip-limit')).to have_text(max_issue_count)
           end
 
           context "When user sets max issue count to 0" do
@@ -279,7 +279,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
 
               wait_for_requests
 
-              expect(page.find('[data-testid="wip-limit"]')).to have_text("None")
+              expect(find_by_testid('wip-limit')).to have_text("None")
             end
           end
         end
@@ -294,7 +294,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
 
             wait_for_requests
 
-            expect(page.find('[data-testid="wip-limit"]')).to have_text(1)
+            expect(find_by_testid('wip-limit')).to have_text(1)
           end
         end
       end
@@ -314,11 +314,15 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
   end
 
   def list_weight_badge(list)
-    find(".board[data-list-id='gid://gitlab/List/#{list.id}'] [data-testid='issue-count-badge']")
+    within(".board[data-list-id='gid://gitlab/List/#{list.id}']") do
+      find_by_testid('issue-count-badge')
+    end
   end
 
   def card_weight_badge(list)
-    find(".board[data-list-id='gid://gitlab/List/#{list.id}'] [data-testid='board-card-weight']")
+    within(".board[data-list-id='gid://gitlab/List/#{list.id}']") do
+      find_by_testid('board-card-weight')
+    end
   end
 
   def visit_board_page

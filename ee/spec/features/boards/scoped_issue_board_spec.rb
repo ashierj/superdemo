@@ -23,7 +23,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
   let(:edit_board) { find('.btn', text: 'Edit board') }
   let(:view_scope) { find('.btn', text: 'View scope') }
   let(:board_title) { find('.boards-selector-wrapper .gl-new-dropdown-toggle') }
-  let(:filtered_search) { find('[data-testid="issue-board-filtered-search"]') }
+  let(:filtered_search) { find_by_testid('issue-board-filtered-search') }
   let(:filter_input) { find('.gl-filtered-search-last-item') }
   let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
   let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
@@ -142,7 +142,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
 
           page.within('.labels') do
             click_button 'Edit'
-            page.within('[data-testid="labels-select-contents-list"]') do
+            within_testid('labels-select-contents-list') do
               expect(page).to have_content(group_label.title)
               expect(page).not_to have_content(project_label.title)
             end
@@ -255,9 +255,9 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
 
         edit_board.click
 
-        expect(find('[data-testid="selected-milestone"]')).to have_content(milestone.title)
-        expect(find('[data-testid="selected-assignee"]')).to have_content(user.name)
-        expect(find('[data-testid="selected-weight"]')).to have_content(2)
+        expect(find_by_testid('selected-milestone')).to have_content(milestone.title)
+        expect(find_by_testid('selected-assignee')).to have_content(user.name)
+        expect(find_by_testid('selected-weight')).to have_content(2)
       end
 
       context 'milestone' do
@@ -430,7 +430,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
 
             page.within('.labels') do
               click_button 'Edit'
-              page.within('[data-testid="labels-select-contents-list"]') do
+              within_testid('labels-select-contents-list') do
                 expect(page).to have_content(group_label.title)
                 expect(page).not_to have_content(project_label.title)
               end
@@ -652,7 +652,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
   end
 
   def click_on_create_new_board
-    page.within '[data-testid="boards-selector"]' do
+    within_testid('boards-selector') do
       find('.gl-new-dropdown-toggle').click
       wait_for_requests
 

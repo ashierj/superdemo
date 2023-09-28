@@ -33,7 +33,7 @@ RSpec.describe 'Subscription expired notification', :js, feature_category: :cons
     it 'displays and dismisses alert' do
       expect(page).to have_content(expected_content)
 
-      within '[data-testid="subscribable_banner"]' do
+      within_testid('subscribable_banner') do
         click_button('Dismiss')
       end
 
