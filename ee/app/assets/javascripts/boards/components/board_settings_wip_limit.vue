@@ -4,6 +4,7 @@ import { GlButton, GlFormInput } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __, n__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import { setError } from '~/boards/graphql/cache_updates';
 import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics.mutation.graphql';
 
 export default {
@@ -113,17 +114,24 @@ export default {
           });
       }
     },
-    updateWipLimit(listId, maxIssueCount) {
-      this.$apollo.mutate({
-        mutation: listUpdateLimitMetricsMutation,
-        variables: {
-          input: {
-            listId,
-            maxIssueCount,
+    async updateWipLimit(listId, maxIssueCount) {
+      try {
+        await this.$apollo.mutate({
+          mutation: listUpdateLimitMetricsMutation,
+          variables: {
+            input: {
+              listId,
+              maxIssueCount,
+            },
           },
-        },
-      });
-      this.resetStateAfterUpdate();
+        });
+        this.resetStateAfterUpdate();
+      } catch (error) {
+        setError({
+          error,
+          message: this.$options.i18n.updateListError,
+        });
+      }
     },
   },
 };
