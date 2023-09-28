@@ -19,6 +19,8 @@
                 = _('Add target branch rule')
         .gl-new-card-description.gl-mt-2.gl-sm-mt-0
           = _('Create rules for target branches in merge requests.')
+          = link_to help_page_url('user/project/repository/branches/index.md', anchor: 'configure-rules-for-target-branches'), target: '_blank', rel: 'noopener noreferrer' do
+            = _("Learn more.")
       - c.with_body do
         - if can?(current_user, :admin_target_branch_rule, @project)
           .gl-new-card-add-form.gl-m-3.gl-display-none.js-toggle-content
