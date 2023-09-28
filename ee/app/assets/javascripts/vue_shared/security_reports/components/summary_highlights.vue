@@ -1,13 +1,17 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
-import { i18n } from './i18n';
+import { s__ } from '~/locale';
 
 export default {
   components: {
     GlSprintf,
   },
-  i18n,
+  i18n: {
+    highlights: s__(
+      'ciReport|%{criticalStart}critical%{criticalEnd}, %{highStart}high%{highEnd} and %{otherStart}others%{otherEnd}',
+    ),
+  },
   props: {
     highlights: {
       type: Object,

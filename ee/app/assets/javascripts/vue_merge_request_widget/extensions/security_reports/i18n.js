@@ -25,9 +25,6 @@ export const i18n = {
     'ciReport|New vulnerabilities are vulnerabilities that the security scan detects in the merge request that are different to existing vulnerabilities in the default branch.',
   ),
   securityScanning: s__('ciReport|Security scanning'),
-  highlights: s__(
-    'ciReport|%{criticalStart}critical%{criticalEnd}, %{highStart}high%{highEnd} and %{otherStart}others%{otherEnd}',
-  ),
   noNewVulnerabilities: s__('ciReport|%{scanner} detected no new potential vulnerabilities'),
   newVulnerabilities: s__('ciReport|%{scanner} detected %{number} new potential %{vulnStr}'),
   newVulnerabilitiesAtLeast: s__(

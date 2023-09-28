@@ -1,5 +1,5 @@
 import { GlSprintf } from '@gitlab/ui';
-import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
+import SummaryHighlights from 'ee/vue_shared/security_reports/components/summary_highlights.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('MR Widget Security Reports - Summary Highlights', () => {
