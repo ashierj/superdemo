@@ -1,6 +1,7 @@
 import { GlAlert, GlCollapsibleListbox, GlModal } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 
 import DownloadTestCoverage from 'ee/analytics/repository_analytics/components/download_test_coverage.vue';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
@@ -16,8 +17,6 @@ describe('Download test coverage component', () => {
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findCodeCoverageDownloadButton = () =>
     wrapper.findByTestId('group-code-coverage-download-button');
-  const clickSelectAllProjectsButton = () =>
-    wrapper.findByTestId('group-code-coverage-select-all-projects-button').vm.$emit('click');
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findSelectProjectsDropdown = () => wrapper.findComponent(SelectProjectsDropdown);
 
@@ -39,7 +38,7 @@ describe('Download test coverage component', () => {
       },
       stubs: {
         GlModal,
-        SelectProjectsDropdown,
+        SelectProjectsDropdown: stubComponent(SelectProjectsDropdown),
       },
     });
   };
@@ -55,15 +54,6 @@ describe('Download test coverage component', () => {
   describe('when download code coverage modal is displayed', () => {
     beforeEach(() => {
       openCodeCoverageModal();
-    });
-
-    describe('when there is an error fetching the projects', () => {
-      it('displays an alert for the failed query', async () => {
-        findSelectProjectsDropdown().vm.$emit('projects-query-error');
-
-        await nextTick();
-        expect(findAlert().exists()).toBe(true);
-      });
     });
 
     describe('when selecting a project', () => {
@@ -82,8 +72,8 @@ describe('Download test coverage component', () => {
 
       describe('with two or more projects selected without selecting all projects', () => {
         it('renders primary action as a link with two project IDs as parameters', async () => {
-          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 1 });
-          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 2 });
+          findSelectProjectsDropdown().vm.$emit('select-project', [1]);
+          findSelectProjectsDropdown().vm.$emit('select-project', [1, 2]);
 
           const projectIdsQueryParam = `project_ids[]=1&project_ids[]=2`;
           const expectedPath = `${groupAnalyticsCoverageReportsPathWithDates}&${projectIdsQueryParam}`;
@@ -95,7 +85,7 @@ describe('Download test coverage component', () => {
 
       describe('with one project selected', () => {
         it('renders primary action as a link with one project ID as a parameter', async () => {
-          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 1 });
+          findSelectProjectsDropdown().vm.$emit('select-project', [1]);
 
           const projectIdsQueryParam = `project_ids[]=1`;
           const expectedPath = `${groupAnalyticsCoverageReportsPathWithDates}&${projectIdsQueryParam}`;
@@ -114,10 +104,10 @@ describe('Download test coverage component', () => {
       describe('when clicking the select all button', () => {
         it('selects all projects and removes the disabled attribute from the download button', async () => {
           // Simulate clicking same project twice so there are no selected project ids
-          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 1 });
-          findSelectProjectsDropdown().vm.$emit('select-project', { parsedId: 1 });
+          findSelectProjectsDropdown().vm.$emit('select-project', [1]);
+          findSelectProjectsDropdown().vm.$emit('select-project', [1]);
 
-          clickSelectAllProjectsButton();
+          findSelectProjectsDropdown().vm.$emit('select-all-projects');
 
           await nextTick();
           expect(findCodeCoverageDownloadButton().attributes('href')).toBe(
@@ -159,6 +149,15 @@ describe('Download test coverage component', () => {
           expect(findCodeCoverageDownloadButton().attributes('href')).toBe(expected);
         },
       );
+    });
+
+    describe('when there is an error fetching the projects', () => {
+      it('displays an alert for the failed query', async () => {
+        findSelectProjectsDropdown().vm.$emit('projects-query-error');
+
+        await nextTick();
+        expect(findAlert().exists()).toBe(true);
+      });
     });
   });
 });

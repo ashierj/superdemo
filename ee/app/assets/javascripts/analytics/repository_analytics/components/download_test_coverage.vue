@@ -93,14 +93,9 @@ export default {
       this.allProjectsSelected = true;
       this.selectedProjectIds = [];
     },
-    selectProject({ parsedId }) {
+    selectProject(ids) {
       this.allProjectsSelected = false;
-      const index = this.selectedProjectIds.indexOf(parsedId);
-      if (index < 0) {
-        this.selectedProjectIds.push(parsedId);
-        return;
-      }
-      this.selectedProjectIds.splice(index, 1);
+      this.selectedProjectIds = ids;
     },
   },
   i18n,
@@ -141,13 +136,15 @@ export default {
         <label class="gl-display-block col-form-label-sm col-form-label">
           {{ $options.i18n.projectDropdownHeader }}
         </label>
-        <select-projects-dropdown
-          ref="projectsDropdown"
-          class="gl-w-half"
-          @projects-query-error="projectsQueryError"
-          @select-all-projects="selectAllProjects"
-          @select-project="selectProject"
-        />
+
+        <div class="gl-display-inline-block gl-w-half">
+          <select-projects-dropdown
+            ref="projectsDropdown"
+            @projects-query-error="projectsQueryError"
+            @select-all-projects="selectAllProjects"
+            @select-project="selectProject"
+          />
+        </div>
 
         <gl-button
           class="gl-ml-2"
