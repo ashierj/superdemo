@@ -69,13 +69,13 @@ export default {
     isExpanded(index) {
       return this.expanded[index];
     },
-    durationWrapperStyle(span) {
+    durationBarIndentation(span) {
       const l = Math.floor((100 * span.startTimeMs) / this.traceDurationMs);
       return {
         marginLeft: `${l}%`,
       };
     },
-    durationLineStyle(span) {
+    durationBarStyle(span) {
       const w = clamp((100 * span.durationMs) / this.traceDurationMs, 0.5, 100);
       return {
         width: `${w}%`,
@@ -122,7 +122,7 @@ export default {
               :aria-label="$options.i18n.toggleChildrenSpans"
               class="gl-mr-1"
               :class="{ invisible: !hasChildrenSpans(index) }"
-              :icon="`chevron-${isExpanded(index) ? 'down' : 'up'}`"
+              :icon="`chevron-${isExpanded(index) ? 'down' : 'right'}`"
               category="tertiary"
               size="small"
               @click.stop="toggleExpand(index)"
@@ -142,14 +142,17 @@ export default {
         <div
           class="gl-display-flex gl-flex-grow-1 gl-flex-direction-column gl-justify-content-center gl-px-4 gl-py-3"
         >
-          <div :style="durationWrapperStyle(span)" data-testid="span-duration">
-            <div
-              data-testid="span-duration-bar"
-              :style="durationLineStyle(span)"
-              :class="`gl-bg-data-viz-${serviceToColor[span.service]}`"
-            ></div>
-            <span class="gl-text-secondary">{{ durationValue(span) }}</span>
-          </div>
+          <div
+            data-testid="span-duration-bar"
+            :style="[durationBarStyle(span), durationBarIndentation(span)]"
+            :class="`gl-bg-data-viz-${serviceToColor[span.service]}`"
+          ></div>
+          <span
+            data-testid="span-duration-value"
+            :style="durationBarIndentation(span)"
+            class="gl-text-secondary"
+            >{{ durationValue(span) }}</span
+          >
         </div>
       </div>
 

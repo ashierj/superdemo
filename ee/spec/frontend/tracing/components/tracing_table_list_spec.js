@@ -9,13 +9,13 @@ describe('TracingTableList', () => {
       timestamp: '2023-07-10T15:02:30.677538Z',
       service_name: 'tracegen',
       operation: 'lets-go',
-      duration_nano: 150000,
+      duration_nano: 1500000,
     },
     {
-      timestamp: '2023-07-10T15:02:30.677538Z',
-      service_name: 'tracegen',
-      operation: 'lets-go',
-      duration_nano: 200000,
+      timestamp: '2023-08-11T16:03:40.577538Z',
+      service_name: 'tracegen-2',
+      operation: 'lets-go-2',
+      duration_nano: 2000000,
     },
   ];
 
@@ -47,13 +47,17 @@ describe('TracingTableList', () => {
 
     expect(rows.length).toBe(mockTraces.length);
 
-    mockTraces.forEach((trace, i) => {
-      expect(getCells(i).length).toBe(4);
-      expect(getCell(i, 0).text()).toBe('Jul 10, 2023 3:02pm UTC');
-      expect(getCell(i, 1).text()).toBe(trace.service_name);
-      expect(getCell(i, 2).text()).toBe(trace.operation);
-      expect(getCell(i, 3).text()).toBe(`${trace.duration_nano / 1000} ms`);
-    });
+    expect(getCells(0).length).toBe(4);
+    expect(getCell(0, 0).text()).toBe('Jul 10, 2023 3:02pm UTC');
+    expect(getCell(0, 1).text()).toBe('tracegen');
+    expect(getCell(0, 2).text()).toBe('lets-go');
+    expect(getCell(0, 3).text()).toBe(`1.50 ms`);
+
+    expect(getCells(1).length).toBe(4);
+    expect(getCell(1, 0).text()).toBe('Aug 11, 2023 4:03pm UTC');
+    expect(getCell(1, 1).text()).toBe('tracegen-2');
+    expect(getCell(1, 2).text()).toBe('lets-go-2');
+    expect(getCell(1, 3).text()).toBe(`2.00 ms`);
   });
 
   it('emits trace-selected on row selection', async () => {

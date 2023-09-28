@@ -49818,9 +49818,6 @@ msgstr ""
 msgid "Tracing|Operation"
 msgstr ""
 
-msgid "Tracing|Period"
-msgstr ""
-
 msgid "Tracing|Service"
 msgstr ""
 
@@ -49831,6 +49828,9 @@ msgid "Tracing|Span ID"
 msgstr ""
 
 msgid "Tracing|Status Code"
+msgstr ""
+
+msgid "Tracing|Time Range"
 msgstr ""
 
 msgid "Tracing|Toggle children spans"

@@ -15,8 +15,8 @@ describe('TracingDetailsDrawer', () => {
           operation: 'operation-1',
           span_id: '123',
           trace_id: '456',
-          timestamp: '2021-01-01',
-          duration_nano: 1000,
+          timestamp: '2023-09-21T06:40:27.068451Z',
+          duration_nano: 1234567,
           statusCode: 200,
         },
         open: true,
@@ -54,7 +54,7 @@ describe('TracingDetailsDrawer', () => {
     expect(values.at(1).text()).toBe('456');
 
     expect(labels.at(2).text()).toBe('Date');
-    expect(values.at(2).text()).toBe('Jan 1, 2021 12:00am UTC');
+    expect(values.at(2).text()).toBe('Sep 21, 2023 06:40:27.068 UTC');
 
     expect(labels.at(3).text()).toBe('Service');
     expect(values.at(3).text()).toBe('service-1');
@@ -63,7 +63,7 @@ describe('TracingDetailsDrawer', () => {
     expect(values.at(4).text()).toBe('operation-1');
 
     expect(labels.at(5).text()).toBe('Duration');
-    expect(values.at(5).text()).toBe('1 ms');
+    expect(values.at(5).text()).toBe('1.23 ms');
 
     expect(labels.at(6).text()).toBe('Status Code');
     expect(values.at(6).text()).toBe('200');

@@ -16,7 +16,7 @@ import {
 export default {
   availableTokens: [
     {
-      title: s__('Tracing|Period'),
+      title: s__('Tracing|Time Range'),
       icon: 'clock',
       type: PERIOD_FILTER_TOKEN_TYPE,
       token: GlFilteredSearchToken,

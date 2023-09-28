@@ -29,7 +29,7 @@ export default {
       return formatDate(this.trace.timestamp, 'mmm d, yyyy');
     },
     traceTime() {
-      return formatDate(this.trace.timestamp, 'H:MM:ss Z');
+      return formatDate(this.trace.timestamp, 'H:MM:ss.l Z');
     },
     traceDuration() {
       return formatTraceDuration(this.trace.duration_nano);
