@@ -32,7 +32,10 @@ export default {
         return [
           { title: s__('Tracing|Span ID'), value: this.span.span_id },
           { title: s__('Tracing|Trace ID'), value: this.span.trace_id },
-          { title: s__('Tracing|Date'), value: formatDate(this.span.timestamp) },
+          {
+            title: s__('Tracing|Date'),
+            value: formatDate(this.span.timestamp, 'mmm d, yyyy HH:MM:ss.l Z'),
+          },
           { title: s__('Tracing|Service'), value: this.span.service_name },
           { title: s__('Tracing|Operation'), value: this.span.operation },
           {

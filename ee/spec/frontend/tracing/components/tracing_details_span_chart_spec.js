@@ -55,11 +55,11 @@ describe('TracingDetailsSpansChart', () => {
   const getToggleButton = (index, depth = 0) =>
     getSpanDetails(index, depth).findComponent(GlButton);
 
-  const getSpanDuration = (index, depth = 0) =>
-    getSpan(index, depth).find('[data-testid="span-duration"]');
+  const getSpanDurationValue = (index, depth = 0) =>
+    getSpan(index, depth).find('[data-testid="span-duration-value"]');
 
   const getSpanDurationBar = (index, depth = 0) =>
-    getSpanDuration(index, depth).find('[data-testid="span-duration-bar"]');
+    getSpan(index, depth).find('[data-testid="span-duration-bar"]');
 
   const getSpanChildren = (index, depth = 0) =>
     getSpanWrapper(index, depth).findComponent(TracingDetailsSpansChart);
@@ -95,7 +95,7 @@ describe('TracingDetailsSpansChart', () => {
   it('toggle the children spans when clicking the expand button', async () => {
     await toggleExpandButton(0);
 
-    expect(getToggleButton(0).props('icon')).toBe('chevron-up');
+    expect(getToggleButton(0).props('icon')).toBe('chevron-right');
     expect(getSpanChildren(0).exists()).toBe(false);
 
     await toggleExpandButton(0);
@@ -159,18 +159,17 @@ describe('TracingDetailsSpansChart', () => {
 
   describe('span duration', () => {
     it('renders the duration value', () => {
-      expect(getSpanDuration(0).text()).toBe('150 ms');
+      const durationValue = getSpanDurationValue(0);
+      expect(durationValue.text()).toBe('150.00 ms');
+      expect(durationValue.element.style.marginLeft).toBe('33%');
     });
 
-    it('renders the proper color based on service', () => {
-      expect(getSpanDurationBar(0).classes()).toContain('gl-bg-data-viz-blue-500');
-    });
-
-    it('renders the bar with the proper style', () => {
-      expect(getSpanDuration(0).element.style.marginLeft).toBe('33%');
-      expect(
-        getSpanDurationBar(0).find('[data-testid="span-duration-bar"]').element.style.width,
-      ).toBe('50%');
+    it('renders the duration bar with the proper style', () => {
+      const spanDurationBar = getSpanDurationBar(0);
+      const barStyle = spanDurationBar.element.style;
+      expect(spanDurationBar.classes()).toContain('gl-bg-data-viz-blue-500');
+      expect(barStyle.marginLeft).toBe('33%');
+      expect(barStyle.width).toBe('50%');
     });
 
     it('bar width should not be less than 0.5% and not bigger than 100%', () => {

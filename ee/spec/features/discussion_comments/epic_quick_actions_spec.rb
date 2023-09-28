@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe 'Epic quick actions', :js, feature_category: :team_planning do
   include Features::NotesHelpers
-  include ContentEditorHelpers
 
   let(:user) { create(:user) }
   let(:group) { create(:group) }
@@ -16,7 +15,6 @@ RSpec.describe 'Epic quick actions', :js, feature_category: :team_planning do
 
     sign_in(user)
     visit group_epic_path(group, epic)
-    close_rich_text_promo_popover_if_present
   end
 
   context 'note with a quick action' do
@@ -33,7 +31,6 @@ RSpec.describe 'Epic quick actions', :js, feature_category: :team_planning do
       expect(epic.reload.title).to eq('New Title')
 
       visit group_epic_path(group, epic)
-      close_rich_text_promo_popover_if_present
 
       expect(page).to have_content('New Title')
     end
