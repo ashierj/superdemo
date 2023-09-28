@@ -103,8 +103,6 @@ module Llm
     end
 
     def cache_response?(options)
-      return false if options[:internal_request]
-
       options.fetch(:cache_response, false)
     end
 
@@ -113,8 +111,6 @@ module Llm
     end
 
     def emit_response?(options)
-      return false if options[:internal_request]
-
       options.fetch(:emit_user_messages, false)
     end
 
