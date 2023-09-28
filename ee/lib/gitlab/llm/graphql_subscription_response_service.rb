@@ -19,7 +19,7 @@ module Gitlab
           request_id: options[:request_id],
           content: response_modifier.response_body,
           errors: response_modifier.errors,
-          role: options[:role] || ChatMessage::ROLE_ASSISTANT,
+          role: options[:role] || AiMessage::ROLE_ASSISTANT,
           timestamp: Time.current,
           type: options.fetch(:type, nil),
           chunk_id: options.fetch(:chunk_id, nil),

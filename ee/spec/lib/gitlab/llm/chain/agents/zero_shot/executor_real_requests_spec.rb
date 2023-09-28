@@ -174,9 +174,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           uuid = SecureRandom.uuid
 
           history.each do |message|
-            Gitlab::Llm::ChatStorage.new(user).add(
-              { request_id: uuid, role: message[:role], content: message[:content] }
-            )
+            create(:ai_chat_message, message.merge(request_id: uuid, user: user))
           end
         end
 

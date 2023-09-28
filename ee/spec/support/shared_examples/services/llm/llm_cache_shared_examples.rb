@@ -3,10 +3,13 @@
 RSpec.shared_examples 'llm service caches user request' do
   let(:expected_cache_payload) do
     {
+      id: 'uuid',
       request_id: 'uuid',
       role: 'user',
       timestamp: an_instance_of(ActiveSupport::TimeWithZone),
-      content: content
+      content: content,
+      errors: [],
+      extras: nil
     }
   end
 

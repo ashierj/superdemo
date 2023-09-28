@@ -5,11 +5,11 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
-      def self.ai_completion_response(subscription_arguments, response)
+      def self.ai_completion_response(subscription_arguments, message)
         ::GitlabSchema.subscriptions.trigger(
           :ai_completion_response,
           subscription_arguments.slice(:user_id, :resource_id, :client_subscription_id, :ai_action),
-          response
+          message.to_h
         )
       end
 

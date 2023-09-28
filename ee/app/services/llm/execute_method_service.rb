@@ -30,9 +30,8 @@ module Llm
       result = METHODS[method].new(user, resource, options).execute
 
       track_snowplow_event(result)
-      return success(result.payload) if result.success?
 
-      error(result.message)
+      result
     end
 
     private

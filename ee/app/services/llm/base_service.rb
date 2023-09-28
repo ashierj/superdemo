@@ -35,17 +35,10 @@ module Llm
     end
 
     def worker_perform(user, resource, action_name, options)
-      request_id = SecureRandom.uuid
-      options[:request_id] = request_id
-      message = content(action_name)
-      payload = {
-        request_id: request_id,
-        role: ::Gitlab::Llm::ChatMessage::ROLE_USER,
-        content: message,
-        timestamp: Time.current
-      }
+      message = build_message(action_name, user: user)
+      options[:request_id] = message.request_id
 
-      ::Gitlab::Llm::ChatStorage.new(user).add(payload) if cache_response?(options)
+      message.save! if cache_response?(options)
 
       if emit_response?(options)
         # We do not add the `client_subscription_id` here on purpose for now.
@@ -54,35 +47,32 @@ module Llm
         # the other open tabs would not receive the message.
         # https://gitlab.com/gitlab-org/gitlab/-/issues/422773
         GraphqlTriggers.ai_completion_response(
-          { user_id: user.to_global_id, resource_id: resource&.to_global_id }, payload
+          { user_id: user.to_global_id, resource_id: resource&.to_global_id }, message
         )
 
         # Once all clients use `chat` for `ai_action` we can remove the trigger above.
-        GraphqlTriggers.ai_completion_response({ user_id: user.to_global_id, ai_action: action_name.to_s }, payload)
+        GraphqlTriggers.ai_completion_response({ user_id: user.to_global_id, ai_action: action_name.to_s }, message)
       end
 
-      return success(payload) if no_worker_message?(message)
+      return success(ai_message: message) if no_worker_message?(message)
 
       logger.debug(
         message: "Enqueuing CompletionWorker",
         user_id: user.id,
         resource_id: resource&.id,
         resource_class: resource&.class&.name,
-        request_id: request_id,
+        request_id: message.request_id,
         action_name: action_name,
         options: options
       )
 
       if development_sync_execution?
-        response_data = ::Llm::CompletionWorker.new.perform(
-          user.id, resource&.id, resource&.class&.name, action_name, options
-        )
-        payload[:response] = response_data
+        ::Llm::CompletionWorker.perform_inline(user.id, resource&.id, resource&.class&.name, action_name, options)
       else
         ::Llm::CompletionWorker.perform_async(user.id, resource&.id, resource&.class&.name, action_name, options)
       end
 
-      success(payload)
+      success(ai_message: message)
     end
 
     def ai_integration_enabled?
@@ -96,8 +86,8 @@ module Llm
       user.any_group_with_ai_available?
     end
 
-    def success(data = {})
-      ServiceResponse.success(payload: data)
+    def success(payload)
+      ServiceResponse.success(payload: payload)
     end
 
     def error(message)
@@ -108,8 +98,8 @@ module Llm
       action_name.to_s.humanize
     end
 
-    def no_worker_message?(content)
-      content == ::Gitlab::Llm::ChatMessage::RESET_MESSAGE
+    def no_worker_message?(message)
+      message.respond_to?(:conversation_reset?) && message.conversation_reset?
     end
 
     def cache_response?(options)
@@ -126,6 +116,14 @@ module Llm
       return false if options[:internal_request]
 
       options.fetch(:emit_user_messages, false)
+    end
+
+    def build_message(action_name, attributes = {})
+      attributes[:request_id] ||= SecureRandom.uuid
+      attributes[:content] ||= content(action_name)
+      attributes[:role] ||= ::Gitlab::Llm::AiMessage::ROLE_USER
+
+      ::Gitlab::Llm::AiMessage.for(action: action_name).new(attributes)
     end
   end
 end

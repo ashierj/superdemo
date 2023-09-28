@@ -14,18 +14,10 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
         user_input: 'foo?',
         agent_scratchpad: "some observation",
         conversation: [
-          Gitlab::Llm::ChatMessage.new(
-            'request_id' => 'uuid1', 'role' => 'user', 'content' => 'question 1', 'timestamp' => Time.current.to_s
-          ),
-          Gitlab::Llm::ChatMessage.new(
-            'request_id' => 'uuid1', 'role' => 'assistant', 'content' => 'response 1', 'timestamp' => Time.current.to_s
-          ),
-          Gitlab::Llm::ChatMessage.new(
-            'request_id' => 'uuid1', 'role' => 'user', 'content' => 'question 2', 'timestamp' => Time.current.to_s
-          ),
-          Gitlab::Llm::ChatMessage.new(
-            'request_id' => 'uuid1', 'role' => 'assistant', 'content' => 'response 2', 'timestamp' => Time.current.to_s
-          )
+          build(:ai_chat_message, request_id: 'uuid1', role: 'user', content: 'question 1'),
+          build(:ai_chat_message, request_id: 'uuid1', role: 'assistant', content: 'response 1'),
+          build(:ai_chat_message, request_id: 'uuid1', role: 'user', content: 'question 2'),
+          build(:ai_chat_message, request_id: 'uuid1', role: 'assistant', content: 'response 2')
         ],
         prompt_version: prompt_version,
         current_code: ""
