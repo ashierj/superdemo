@@ -82,18 +82,6 @@ RSpec.describe Repository, :elastic, feature_category: :global_search do
       # blob filter without search term
       expect(project.repository.elastic_search('blob:7e3e39ebb9b2bf433b4ad17313770fbe4051649c')[:blobs][:total_count]).to eq(1)
     end
-
-    it 'filters by extension when optimization is disabled' do
-      stub_feature_flags(elastic_file_name_reverse_optimization: false)
-
-      # Finds files/markdown/ruby-style-guide.md
-      expect(project.repository.elastic_search('def | popen extension:md')[:blobs][:total_count]).to eq(1)
-
-      # extension filter without search term
-      count = project.repository.ls_files('master').count { |path| path.split('/')[-1].split('.')[-1].include?('md') }
-      expect(project.repository.elastic_search('extension:md')[:blobs][:total_count]).to eq(count)
-      expect(project.repository.elastic_search('extension:md')[:blobs][:total_count]).to be > 0
-    end
   end
 
   def search_and_check!(on, query, type:, per: 1000)

@@ -285,18 +285,10 @@ module Elastic
         query = ::Gitlab::Search::Query.new(query) do
           filter :filename, field: :file_name
           filter :path, parser: ->(input) { "#{input.downcase}*" }
-
-          if Feature.enabled?(:elastic_file_name_reverse_optimization)
-            filter :extension,
-              field: 'file_name.reverse',
-              type: :prefix,
-              parser: ->(input) { "#{input.downcase.reverse}." }
-          else
-            filter :extension,
-              field: :path,
-              parser: ->(input) { "*.#{input.downcase}" }
-          end
-
+          filter :extension,
+            field: 'file_name.reverse',
+            type: :prefix,
+            parser: ->(input) { "#{input.downcase.reverse}." }
           filter :blob, field: :oid
         end
 
