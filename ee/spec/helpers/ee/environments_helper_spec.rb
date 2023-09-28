@@ -25,68 +25,6 @@ RSpec.describe EnvironmentsHelper do
     end
   end
 
-  describe '#deployment_approval_data' do
-    subject { helper.deployment_approval_data(deployment) }
-
-    before do
-      stub_licensed_features(protected_environments: true)
-
-      allow(helper).to receive(:current_user).and_return(user)
-      allow(helper).to receive(:can?)
-        .with(user, :approve_deployment, deployment)
-        .and_return(true)
-    end
-
-    it 'provides data for a deployment approval' do
-      keys = %i[pending_approval_count
-                iid
-                id
-                required_approval_count
-                can_approve_deployment
-                deployable_name
-                approvals
-                has_approval_rules
-                project_id
-                project_path
-                name
-                tier]
-
-      expect(subject.keys).to match_array(keys)
-    end
-  end
-
-  describe '#show_deployment_approval?' do
-    subject { helper.show_deployment_approval?(deployment) }
-
-    before do
-      allow(helper).to receive(:current_user).and_return(user)
-    end
-
-    context 'can read deployment' do
-      before do
-        allow(helper).to receive(:can?)
-          .with(user, :read_deployment, deployment)
-          .and_return(true)
-      end
-
-      it 'returns true' do
-        expect(subject).to eq(true)
-      end
-    end
-
-    context 'cannot read deployment' do
-      before do
-        allow(helper).to receive(:can?)
-          .with(user, :read_deployment, deployment)
-          .and_return(false)
-      end
-
-      it 'returns false' do
-        expect(subject).to eq(false)
-      end
-    end
-  end
-
   describe '#can_approve_deployment?' do
     let_it_be(:protected_environment) do
       create(:protected_environment, name: environment.name, project: project, authorize_user_to_deploy: user)

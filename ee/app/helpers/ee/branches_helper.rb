@@ -4,14 +4,6 @@ module EE
   module BranchesHelper
     extend ::Gitlab::Utils::Override
 
-    # Returns a hash were keys are types of access levels (user, role), and
-    # values are the number of access levels of the particular type.
-    def access_level_frequencies(access_levels)
-      access_levels.each_with_object(Hash.new(0)) do |access_level, frequencies|
-        frequencies[access_level.type] += 1
-      end
-    end
-
     override :access_levels_data
     def access_levels_data(access_levels)
       return [] unless access_levels
