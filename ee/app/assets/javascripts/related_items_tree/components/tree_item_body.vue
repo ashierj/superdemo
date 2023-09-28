@@ -357,7 +357,7 @@ export default {
           :disabled="itemActionInProgress"
           icon="close"
           class="js-issue-item-remove-button gl-align-self-start"
-          data-qa-selector="remove_issue_button"
+          data-testid="remove-issue-button"
           @click="handleRemoveClick"
         />
         <span v-if="showEmptySpacer" class="gl-p-3"></span>

@@ -75,7 +75,7 @@ export default {
 <template>
   <li
     class="tree-item list-item gl-py-0"
-    data-qa-selector="related_issue_item"
+    data-testid="related-issue-item"
     :class="{
       'has-children': hasChildren,
       'item-expanded': childrenFlags[itemReference].itemExpanded,
