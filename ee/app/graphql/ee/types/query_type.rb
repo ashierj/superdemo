@@ -20,7 +20,6 @@ module EE
               resolver: ::Resolvers::Admin::CloudLicenses::CurrentLicenseResolver,
               description: 'Fields related to the current license.'
         field :devops_adoption_enabled_namespaces,
-              ::Types::Analytics::DevopsAdoption::EnabledNamespaceType.connection_type,
               null: true,
               description: 'Get configured DevOps adoption namespaces. **BETA** This endpoint is subject to change ' \
                            'without notice.',
