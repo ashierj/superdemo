@@ -41,6 +41,66 @@ RSpec.describe WorkItems::Progress, feature_category: :team_planning do
     end
   end
 
+  describe '#compute_progress' do
+    shared_examples 'compute_progress' do |start, finish, current, expected_progress|
+      subject(:progress) { build(:progress, start_value: start, end_value: finish, current_value: current) }
+
+      it 'returns the expected progress' do
+        expect(progress.compute_progress).to eq(expected_progress)
+      end
+    end
+
+    context 'when start_value and end_value are the same' do
+      context 'when current_value is equal to start_value' do
+        it_behaves_like 'compute_progress', 20, 20, 20, 0
+      end
+
+      context 'when current_value is not equal to start_value' do
+        it_behaves_like 'compute_progress', 20, 20, 10, 0
+      end
+    end
+
+    context 'when start_value is less than end_value' do
+      context 'when current_value is less than start_value' do
+        it_behaves_like 'compute_progress', 10, 30, 5, 0
+      end
+
+      context 'when current_value is between start_value and end_value' do
+        it_behaves_like 'compute_progress', 10, 30, 20, 50
+      end
+
+      context 'when current_value is greater than end_value' do
+        it_behaves_like 'compute_progress', 10, 30, 40, 100
+      end
+    end
+
+    context 'when start_value is greater than end_value' do
+      context 'when current_value is less than end_value' do
+        it_behaves_like 'compute_progress', 30, 10, 5, 100
+      end
+
+      context 'when current_value is between end_value and start_value' do
+        it_behaves_like 'compute_progress', 30, 10, 20, 50
+      end
+
+      context 'when current_value is greater than start_value' do
+        it_behaves_like 'compute_progress', 30, 10, 40, 0
+      end
+    end
+
+    context 'when start_value and end_value are both negative' do
+      context 'when current_value is between start_value and end_value' do
+        it_behaves_like 'compute_progress', -30, -10, -20, 50
+      end
+    end
+
+    context 'when start_value and end_value are both default' do
+      context 'when current_value is between 29' do
+        it_behaves_like 'compute_progress', 0.0, 100.0, 29, 29
+      end
+    end
+  end
+
   describe '#update_all_parent_objectives_progress' do
     let_it_be(:project) { create(:project) }
     let_it_be_with_reload(:parent_work_item) { create(:work_item, :objective, project: project) }

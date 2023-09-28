@@ -20,7 +20,19 @@ module WorkItems
     }
 
     def compute_progress
-      (((current_value - start_value).abs / (end_value - start_value).abs) * 100).to_i
+      return 0 if start_value === end_value
+
+      if start_value < end_value
+        return 0 if current_value < start_value
+        return 100 if current_value > end_value
+      end
+
+      if start_value > end_value
+        return 0 if current_value > start_value
+        return 100 if current_value < end_value
+      end
+
+      (((current_value - start_value).abs / (end_value - start_value).abs).to_d * 100).to_i
     end
 
     private
