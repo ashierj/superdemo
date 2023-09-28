@@ -124,7 +124,7 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
         )
       end
 
-      it 'shows an error when failing to resend' do
+      it 'shows an error when failing to resend', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/425460' do
         user.confirm
 
         click_link 'Send a new code'

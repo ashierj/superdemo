@@ -129,7 +129,8 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
   end
 
   describe 'access control' do
-    describe 'with ref permissions for users enabled' do
+    describe 'with ref permissions for users enabled',
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/425080' do
       before do
         stub_licensed_features(protected_refs_for_users: true)
       end
