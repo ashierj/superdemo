@@ -14,9 +14,10 @@ RSpec.describe ProjectMemberPolicy, feature_category: :groups_and_projects do
     create(:project_member, :maintainer, project: project, user: maintainer)
   end
 
-  context 'with a security policy bot member' do
+  context 'with a security policy bot member', :aggregate_failures do
     let(:member_user) { create(:user, :security_policy_bot) }
 
     it { is_expected.not_to be_allowed(:destroy_project_member) }
+    it { is_expected.not_to be_allowed(:update_project_member) }
   end
 end
