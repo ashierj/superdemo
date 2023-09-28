@@ -33,5 +33,10 @@ module EE
     def group_member_lock
       group && group.membership_lock
     end
+
+    override :source_members_for_import
+    def source_members_for_import(source_project)
+      source_project.project_members.where.not(user: source_project.security_policy_bots).to_a
+    end
   end
 end

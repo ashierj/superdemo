@@ -128,17 +128,27 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
       let(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
       let(:root_group) { saml_provider.group }
       let(:subgroup) { create(:group, parent: root_group) }
-      let(:project) { create(:project, group: root_group) }
+      let(:shared_group) { create(:group) }
+      let(:project) { create(:project, group: subgroup) }
       let(:member_with_identity) { identity.user }
       let(:member_without_identity) { create(:user) }
+      let(:member_project) { create(:user) }
+      let(:member_subgroup) { create(:user) }
+      let(:member_shared) { create(:user) }
       let(:non_member) { create(:user) }
       let(:not_signed_in_user) { nil }
       let(:deploy_token) { create(:deploy_token) }
 
       before do
-        stub_licensed_features(group_saml: true)
+        create(:group_group_link, shared_group: root_group, shared_with_group: shared_group)
+
+        stub_licensed_features(minimal_access_role: true, group_saml: true)
+
         root_group.add_developer(member_with_identity)
         root_group.add_developer(member_without_identity)
+        subgroup.add_developer(member_subgroup)
+        project.add_developer(member_project)
+        shared_group.add_developer(member_shared)
       end
 
       shared_examples 'SSO Enforced' do
@@ -327,6 +337,45 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
         ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'SSO Not enforced'
         ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
 
+        ref(:root_group) | 'public'  | true  | ref(:member_shared) | false | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_shared) | false | nil   | true | false | nil  | 'SSO Enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_shared) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_shared) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_shared) | false | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_shared) | false | nil   | true | false | nil  | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_shared) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_shared) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_shared) | false | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_shared) | false | nil   | true | false | nil  | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_shared) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_shared) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+
+        ref(:root_group) | 'public'  | true  | ref(:member_project) | false | nil   | nil  | nil   | nil  | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_project) | false | nil   | true | false | nil  | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_project) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_project) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_project) | false | nil   | nil  | nil   | nil  | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_project) | false | nil   | true | false | nil  | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_project) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_project) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_project) | false | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_project) | false | nil   | true | false | nil  | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_project) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_project) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+
+        ref(:root_group) | 'public'  | true  | ref(:member_subgroup) | false | nil   | nil  | nil   | nil  | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_subgroup) | false | nil   | true | false | nil  | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_subgroup) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_subgroup) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_subgroup) | false | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_subgroup) | false | nil   | true | false | nil  | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_subgroup) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_subgroup) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_subgroup) | false | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_subgroup) | false | nil   | true | false | nil  | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_subgroup) | false | nil   | true | true  | nil  | 'SSO Not enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_subgroup) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
+
         ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
         ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
         ref(:root_group) | 'public'  | true  | ref(:deploy_token)            | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
@@ -357,6 +406,10 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
 
           context "when resource is #{params[:resource_visibility_level]}" do
             before do
+              if resource.is_a?(Group) && resource_visibility_level == 'private'
+                resource.descendants.update_all(visibility_level: Gitlab::VisibilityLevel.string_options[resource_visibility_level])
+              end
+
               resource.update!(visibility_level: Gitlab::VisibilityLevel.string_options[resource_visibility_level])
             end
 
