@@ -1,11 +1,4 @@
-import {
-  GlEmptyState,
-  GlLoadingIcon,
-  GlDropdown,
-  GlDropdownItem,
-  GlButton,
-  GlAlert,
-} from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon, GlCollapsibleListbox, GlButton, GlAlert } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
@@ -106,7 +99,7 @@ describe('ProductivityApp component', () => {
   const findCommitBasedMetricChart = () => wrapper.findComponent({ ref: 'commitBasedChart' });
   const findScatterplotMetricChart = () => wrapper.findComponent({ ref: 'scatterplot' });
   const findMrTableSortSection = () => wrapper.find('.js-mr-table-sort');
-  const findSortFieldDropdown = () => findMrTableSortSection().findComponent(GlDropdown);
+  const findSortFieldDropdown = () => findMrTableSortSection().findComponent(GlCollapsibleListbox);
   const findSortOrderToggle = () => findMrTableSortSection().findComponent(GlButton);
   const findMrTableSection = () => wrapper.find('.js-mr-table');
   const findMrTable = () => findMrTableSection().findComponent(MergeRequestTable);
@@ -429,10 +422,7 @@ describe('ProductivityApp component', () => {
                     });
 
                     it('should change the sort field', () => {
-                      findSortFieldDropdown()
-                        .findAllComponents(GlDropdownItem)
-                        .at(0)
-                        .vm.$emit('click');
+                      findSortFieldDropdown().vm.$emit('select');
 
                       expect(tableActionSpies.setSortField).toHaveBeenCalled();
                     });
