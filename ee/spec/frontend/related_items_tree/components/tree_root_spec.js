@@ -4,14 +4,11 @@ import Vue, { nextTick } from 'vue';
 import Draggable from 'vuedraggable';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-
 import { ESC_KEY_CODE } from '~/lib/utils/keycodes';
 import TreeRoot from 'ee/related_items_tree/components/tree_root.vue';
-
 import { treeItemChevronBtnClassName } from 'ee/related_items_tree/constants';
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
-
 import {
   mockQueryResponse,
   mockInitialConfig,
@@ -437,16 +434,19 @@ describe('RelatedItemsTree', () => {
         });
 
         it('calls toggleItem action after a delay if move event finds epic with children and mouse cursor is over it', () => {
-          jest.spyOn(wrapper.vm, 'toggleItem').mockImplementation(() => {});
+          jest.spyOn(store, 'dispatch');
           wrapper.vm.onMove(mockEvt, mockOriginalEvt);
 
           jest.runAllTimers();
 
-          expect(wrapper.vm.toggleItem).toHaveBeenCalled();
+          expect(store.dispatch).toHaveBeenCalledWith('toggleItem', {
+            isDragging: true,
+            parentItem: mockParentItem,
+          });
         });
 
         it('does not call toggleItem action if move event does not find epic with children', () => {
-          jest.spyOn(wrapper.vm, 'toggleItem').mockImplementation(() => {});
+          jest.spyOn(store, 'dispatch').mockImplementation(() => {});
           mockEvt = {
             relatedContext: {
               element: mockIssue2,
@@ -457,27 +457,18 @@ describe('RelatedItemsTree', () => {
             clientY: 10,
           };
 
-          wrapper.vm.onMove(mockEvt, mockOriginalEvt);
+          wrapper.vm.$emit('start', mockOriginalEvt);
 
-          expect(wrapper.vm.toggleItem).not.toHaveBeenCalled();
+          expect(store.dispatch).not.toHaveBeenCalled();
         });
 
         it('does not call toggleItem action if move event no longer have cursor over an epic with children', () => {
-          jest.spyOn(wrapper.vm, 'toggleItem').mockImplementation(() => {});
-
-          wrapper.vm.onMove(mockEvt, mockOriginalEvt);
-
-          // Simulate cursor movement.
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapper.setData({
-            currentClientX: 10,
-            currentClientY: 20,
-          });
+          jest.spyOn(store, 'dispatch').mockImplementation(() => {});
+          wrapper.vm.$emit('start', mockOriginalEvt);
 
           jest.runAllTimers();
 
-          expect(wrapper.vm.toggleItem).not.toHaveBeenCalled();
+          expect(store.dispatch).not.toHaveBeenCalled();
         });
       });
     });
