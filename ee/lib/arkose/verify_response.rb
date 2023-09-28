@@ -34,8 +34,6 @@ module Arkose
     end
 
     def low_risk?
-      return true unless Feature.enabled?(:arkose_labs_prevent_login)
-
       risk_band.present? ? risk_band != 'High' : true
     end
 

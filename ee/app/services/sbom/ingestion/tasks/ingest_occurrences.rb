@@ -32,12 +32,9 @@ module Sbom
               uuid: uuid(occurrence_map),
               package_manager: occurrence_map.packager,
               input_file_path: occurrence_map.input_file_path,
+              licenses: licenses.fetch(occurrence_map.report_component, []),
               component_name: occurrence_map.name
-            }.tap do |attrs|
-              if Feature.enabled?(:ingest_sbom_licenses, pipeline.project)
-                attrs[:licenses] = licenses.fetch(occurrence_map.report_component, [])
-              end
-            end
+            }
           end
         end
 
