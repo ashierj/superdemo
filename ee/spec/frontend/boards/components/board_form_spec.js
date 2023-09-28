@@ -10,6 +10,7 @@ import createEpicBoardMutation from 'ee/boards/graphql/epic_board_create.mutatio
 import destroyEpicBoardMutation from 'ee/boards/graphql/epic_board_destroy.mutation.graphql';
 import updateEpicBoardMutation from 'ee/boards/graphql/epic_board_update.mutation.graphql';
 import updateMutation from '~/boards/graphql/board_update.mutation.graphql';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -60,7 +61,6 @@ describe('BoardForm', () => {
   const findInput = () => wrapper.find('#board-new-name');
 
   const setBoardMock = jest.fn();
-  const setErrorMock = jest.fn();
 
   const createStore = ({ getters = {} } = {}) => {
     store = new Vuex.Store({
@@ -69,7 +69,6 @@ describe('BoardForm', () => {
       },
       actions: {
         setBoard: setBoardMock,
-        setError: setErrorMock,
       },
     });
   };
@@ -117,6 +116,10 @@ describe('BoardForm', () => {
       store,
     });
   };
+
+  beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
+  });
 
   describe('when creating a new epic board', () => {
     beforeEach(() => {
@@ -226,7 +229,7 @@ describe('BoardForm', () => {
 
         await waitForPromises();
         expect(setBoardMock).not.toHaveBeenCalled();
-        expect(setErrorMock).toHaveBeenCalled();
+        expect(cacheUpdates.setError).toHaveBeenCalled();
       });
     });
   });
@@ -406,7 +409,7 @@ describe('BoardForm', () => {
 
       await waitForPromises();
       expect(setBoardMock).not.toHaveBeenCalled();
-      expect(setErrorMock).toHaveBeenCalled();
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 
@@ -485,7 +488,7 @@ describe('BoardForm', () => {
 
       await waitForPromises();
       expect(visitUrl).not.toHaveBeenCalled();
-      expect(setErrorMock).toHaveBeenCalled();
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 });
