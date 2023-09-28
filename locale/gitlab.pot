@@ -21857,6 +21857,9 @@ msgstr ""
 msgid "GithubImporter|PR mergers"
 msgstr ""
 
+msgid "GithubImporter|PR reviewers"
+msgstr ""
+
 msgid "GithubImporter|PR reviews"
 msgstr ""
 
