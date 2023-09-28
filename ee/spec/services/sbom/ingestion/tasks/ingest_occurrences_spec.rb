@@ -56,18 +56,6 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
           'component_name' => occurrence_map.name
         )
       end
-
-      context 'when `ingest_sbom_licenses` is disabled' do
-        before do
-          stub_feature_flags(ingest_sbom_licenses: false)
-        end
-
-        it 'does not apply licenses' do
-          ingest_occurrences
-
-          expect(ingested_occurrence.licenses).to be_empty
-        end
-      end
     end
 
     context 'when there is an existing occurrence' do
