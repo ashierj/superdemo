@@ -668,16 +668,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
               it 'returns the number of available replicables on primary' do
                 expect(subject.send(replicable_count_method)).to eq(2)
               end
-
-              context 'when batch count feature flag is disabled' do
-                before do
-                  stub_feature_flags(geo_batch_count: false)
-                end
-
-                it 'returns the number of available replicables on primary' do
-                  expect(subject.send(replicable_count_method)).to eq(2)
-                end
-              end
             end
 
             context 'when there are no replicables' do
@@ -687,16 +677,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
 
               it 'returns 0' do
                 expect(subject.send(replicable_count_method)).to eq(0)
-              end
-
-              context 'when batch count feature flag is disabled' do
-                before do
-                  stub_feature_flags(geo_batch_count: false)
-                end
-
-                it 'returns 0' do
-                  expect(subject.send(replicable_count_method)).to eq(0)
-                end
               end
             end
           end

@@ -113,26 +113,14 @@ RSpec.shared_examples 'a verifiable replicator' do
       let(:verifiable) { model_record }
 
       before do
+        # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+        # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+        stub_batch_counter_transaction_open_check
+
         allow(described_class).to receive(:verification_enabled?).and_return(true)
       end
 
-      context 'when batch count feature flag is enabled' do
-        before do
-          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-          stub_batch_counter_transaction_open_check
-        end
-
-        it_behaves_like 'a counter of succeeded available verifiables', :checksummed_count
-      end
-
-      context 'when batch count feature flag is disabled' do
-        before do
-          stub_feature_flags(geo_batch_count: false)
-        end
-
-        it_behaves_like 'a counter of succeeded available verifiables', :checksummed_count
-      end
+      it_behaves_like 'a counter of succeeded available verifiables', :checksummed_count
     end
 
     context 'when verification is disabled' do
@@ -156,25 +144,13 @@ RSpec.shared_examples 'a verifiable replicator' do
         # Verification on the secondary requires a synced registry
         verifiable.start
         verifiable.synced!
+
+        # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+        # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+        stub_batch_counter_transaction_open_check
       end
 
-      context 'when batch count feature flag is enabled' do
-        before do
-          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-          stub_batch_counter_transaction_open_check
-        end
-
-        it_behaves_like 'a counter of succeeded available verifiables', :verified_count
-      end
-
-      context 'when batch count feature flag is disabled' do
-        before do
-          stub_feature_flags(geo_batch_count: false)
-        end
-
-        it_behaves_like 'a counter of succeeded available verifiables', :verified_count
-      end
+      it_behaves_like 'a counter of succeeded available verifiables', :verified_count
     end
 
     context 'when verification is disabled' do
@@ -194,23 +170,13 @@ RSpec.shared_examples 'a verifiable replicator' do
     context 'when verification is enabled' do
       let(:verifiable) { model_record }
 
-      context 'when batch count feature flag is enabled' do
-        before do
-          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-          stub_batch_counter_transaction_open_check
-        end
-
-        it_behaves_like 'a counter of failed available verifiables', :checksum_failed_count
+      before do
+        # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+        # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+        stub_batch_counter_transaction_open_check
       end
 
-      context 'when batch count feature flag is disabled' do
-        before do
-          stub_feature_flags(geo_batch_count: false)
-        end
-
-        it_behaves_like 'a counter of failed available verifiables', :checksum_failed_count
-      end
+      it_behaves_like 'a counter of failed available verifiables', :checksum_failed_count
     end
 
     context 'when verification is disabled' do
@@ -234,25 +200,13 @@ RSpec.shared_examples 'a verifiable replicator' do
         # Verification on the secondary requires a synced registry
         verifiable.start
         verifiable.synced!
+
+        # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+        # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+        stub_batch_counter_transaction_open_check
       end
 
-      context 'when batch count feature flag is enabled' do
-        before do
-          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-          stub_batch_counter_transaction_open_check
-        end
-
-        it_behaves_like 'a counter of failed available verifiables', :verification_failed_count
-      end
-
-      context 'when batch count feature flag is disabled' do
-        before do
-          stub_feature_flags(geo_batch_count: false)
-        end
-
-        it_behaves_like 'a counter of failed available verifiables', :verification_failed_count
-      end
+      it_behaves_like 'a counter of failed available verifiables', :verification_failed_count
     end
 
     context 'when verification is disabled' do
@@ -276,51 +230,25 @@ RSpec.shared_examples 'a verifiable replicator' do
         # Verification on the secondary requires a synced registry
         verifiable.start
         verifiable.synced!
+
+        # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+        # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+        stub_batch_counter_transaction_open_check
       end
 
-      context 'when batch count feature flag is enabled' do
-        before do
-          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-          stub_batch_counter_transaction_open_check
-        end
+      context 'when the verification_state is disabled' do
+        specify do
+          verifiable.verification_disabled!
 
-        context 'when the verification_state is disabled' do
-          specify do
-            verifiable.verification_disabled!
-
-            expect(described_class.verification_total_count).to eq(0)
-          end
-        end
-
-        context 'when the verification_state is not disabled' do
-          specify do
-            verifiable.verification_started!
-
-            expect(described_class.verification_total_count).to eq(1)
-          end
+          expect(described_class.verification_total_count).to eq(0)
         end
       end
 
-      context 'when batch count feature flag is disabled' do
-        before do
-          stub_feature_flags(geo_batch_count: false)
-        end
+      context 'when the verification_state is not disabled' do
+        specify do
+          verifiable.verification_started!
 
-        context 'when the verification_state is disabled' do
-          specify do
-            verifiable.verification_disabled!
-
-            expect(described_class.verification_total_count).to eq(0)
-          end
-        end
-
-        context 'when the verification_state is not disabled' do
-          specify do
-            verifiable.verification_started!
-
-            expect(described_class.verification_total_count).to eq(1)
-          end
+          expect(described_class.verification_total_count).to eq(1)
         end
       end
     end

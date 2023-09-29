@@ -20,26 +20,14 @@ RSpec.shared_examples 'a replicator' do
       let_it_be(:replicables) { create_list(model_class_factory, 2) }
 
       describe '.primary_total_count' do
-        context 'when batch count feature flag is enabled' do
-          before do
-            # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-            # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-            stub_batch_counter_transaction_open_check
-          end
-
-          it 'returns the number of available replicables on primary' do
-            expect(described_class.primary_total_count).to eq(2)
-          end
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
         end
 
-        context 'when batch count feature flag is disabled' do
-          before do
-            stub_feature_flags(geo_batch_count: false)
-          end
-
-          it 'returns the number of available replicables on primary' do
-            expect(described_class.primary_total_count).to eq(2)
-          end
+        it 'returns the number of available replicables on primary' do
+          expect(described_class.primary_total_count).to eq(2)
         end
       end
     end
@@ -54,74 +42,38 @@ RSpec.shared_examples 'a replicator' do
       end
 
       describe '.registry_count' do
-        context 'when batch count feature flag is enabled' do
-          before do
-            # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-            # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-            stub_batch_counter_transaction_open_check
-          end
-
-          it 'returns the number of registries on secondary' do
-            expect(described_class.registry_count).to eq(3)
-          end
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
         end
 
-        context 'when batch count feature flag is disabled' do
-          before do
-            stub_feature_flags(geo_batch_count: false)
-          end
-
-          it 'returns the number of registries on secondary' do
-            expect(described_class.registry_count).to eq(3)
-          end
+        it 'returns the number of registries on secondary' do
+          expect(described_class.registry_count).to eq(3)
         end
       end
 
       describe '.synced_count' do
-        context 'when batch count feature flag is enabled' do
-          before do
-            # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-            # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-            stub_batch_counter_transaction_open_check
-          end
-
-          it 'returns the number of synced items on secondary' do
-            expect(described_class.synced_count).to eq(1)
-          end
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
         end
 
-        context 'when batch count feature flag is disabled' do
-          before do
-            stub_feature_flags(geo_batch_count: false)
-          end
-
-          it 'returns the number of synced items on secondary' do
-            expect(described_class.synced_count).to eq(1)
-          end
+        it 'returns the number of synced items on secondary' do
+          expect(described_class.synced_count).to eq(1)
         end
       end
 
       describe '.failed_count' do
-        context 'when batch count feature flag is enabled' do
-          before do
-            # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
-            # is not allowed within a transaction but all RSpec tests run inside of a transaction.
-            stub_batch_counter_transaction_open_check
-          end
-
-          it 'returns the number of failed items on secondary' do
-            expect(described_class.failed_count).to eq(1)
-          end
+        before do
+          # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
+          # is not allowed within a transaction but all RSpec tests run inside of a transaction.
+          stub_batch_counter_transaction_open_check
         end
 
-        context 'when batch count feature flag is disabled' do
-          before do
-            stub_feature_flags(geo_batch_count: false)
-          end
-
-          it 'returns the number of failed items on secondary' do
-            expect(described_class.failed_count).to eq(1)
-          end
+        it 'returns the number of failed items on secondary' do
+          expect(described_class.failed_count).to eq(1)
         end
       end
     end
