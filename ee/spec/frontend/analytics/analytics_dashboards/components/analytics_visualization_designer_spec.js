@@ -30,17 +30,16 @@ const routerPush = jest.fn();
 describe('AnalyticsVisualizationDesigner', () => {
   let wrapper;
 
-  const findTitleInput = () => wrapper.findByTestId('panel-title-tba');
+  const findTitleFormGroup = () => wrapper.findByTestId('visualization-title-form-group');
+  const findTitleInput = () => wrapper.findByTestId('visualization-title-input');
   const findMeasureSelector = () => wrapper.findByTestId('panel-measure-selector');
   const findDimensionSelector = () => wrapper.findByTestId('panel-dimension-selector');
   const findSaveButton = () => wrapper.findByTestId('visualization-save-btn');
   const findQueryBuilder = () => wrapper.findByTestId('query-builder');
   const findVisualizationInspector = () => wrapper.findComponent(VisualizationInspector);
 
-  const setVisualizationTitle = (newTitle = '') => {
-    const textinput = findTitleInput();
-    textinput.setValue(newTitle);
-    textinput.trigger('input');
+  const setVisualizationTitle = async (newTitle = '') => {
+    await findTitleInput().vm.$emit('input', newTitle);
   };
 
   const setMeasurement = (type = '', subType = '') => {
@@ -51,8 +50,8 @@ describe('AnalyticsVisualizationDesigner', () => {
     findVisualizationInspector().vm.$emit('selectVisualizationType', type);
   };
 
-  const setAllRequiredFields = () => {
-    setVisualizationTitle('New Title');
+  const setAllRequiredFields = async () => {
+    await setVisualizationTitle('New Title');
     setMeasurement('pageViews', 'all');
     setVisualizationType('SingleStat');
   };
@@ -97,7 +96,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       createWrapper();
     });
 
-    it('should render title box', () => {
+    it('should render title input', () => {
       expect(findTitleInput().exists()).toBe(true);
     });
 
@@ -128,109 +127,152 @@ describe('AnalyticsVisualizationDesigner', () => {
     beforeEach(() => {
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
       createWrapper();
-      setAllRequiredFields();
     });
 
-    it.each`
-      field            | setter                   | errorMessage
-      ${'title'}       | ${setVisualizationTitle} | ${'Enter a visualization name'}
-      ${'measurement'} | ${setMeasurement}        | ${'Select a measurement'}
-      ${'type'}        | ${setVisualizationType}  | ${'Select a visualization type'}
-    `(
-      'creates an alert when the $field is empty or not selected',
-      async ({ setter, errorMessage }) => {
-        setter();
-        await findSaveButton().vm.$emit('click');
-        expect(createAlert).toHaveBeenCalledWith({
-          message: errorMessage,
-          captureError: false,
-          error: null,
+    describe('and there is no title', () => {
+      beforeEach(() => {
+        findTitleInput().element.focus = jest.fn();
+
+        return findSaveButton().vm.$emit('click');
+      });
+
+      it('does not save the dashboard', () => {
+        expect(saveProductAnalyticsVisualization).not.toHaveBeenCalled();
+      });
+
+      it('shows the invalid state on the title input', () => {
+        expect(findTitleFormGroup().attributes('state')).toBe(undefined);
+        expect(findTitleFormGroup().attributes('invalid-feedback')).toBe('This field is required.');
+
+        expect(findTitleInput().attributes('state')).toBe(undefined);
+      });
+
+      it('sets focus on the dashboard title input', () => {
+        expect(findTitleInput().element.focus).toHaveBeenCalled();
+      });
+
+      describe('and a user then inputs a title', () => {
+        beforeEach(() => setVisualizationTitle('New Title'));
+
+        it('shows title input as valid', () => {
+          expect(findTitleFormGroup().attributes('state')).toBe('true');
+          expect(findTitleInput().attributes('state')).toBe('true');
         });
-      },
-    );
-
-    it('successfully', async () => {
-      await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
-
-      await findSaveButton().vm.$emit('click');
-
-      expect(saveProductAnalyticsVisualization).toHaveBeenCalledWith(
-        'new_title',
-        {
-          data: {
-            query: { foo: 'bar' },
-            type: 'cube_analytics',
-          },
-          options: {},
-          type: 'SingleStat',
-          version: 1,
-        },
-        TEST_CUSTOM_DASHBOARDS_PROJECT,
-      );
-
-      await waitForPromises();
-
-      expect(showToast).toHaveBeenCalledWith('Visualization was saved successfully');
-    });
-
-    it('dismisses the existing alert after successfully saving', async () => {
-      await setVisualizationTitle('');
-      await findSaveButton().vm.$emit('click');
-
-      await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
-
-      await setAllRequiredFields();
-      await findSaveButton().vm.$emit('click');
-      await waitForPromises();
-
-      expect(mockAlertDismiss).toHaveBeenCalled();
-    });
-
-    it('and a error happens', async () => {
-      await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
-
-      await findSaveButton().vm.$emit('click');
-      await waitForPromises();
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Error while saving visualization.',
-        error: new Error(
-          `Received an unexpected HTTP status while saving visualization: ${HTTP_STATUS_FORBIDDEN}`,
-        ),
-        captureError: true,
       });
     });
 
-    it('and the server responds with "A file with this name already exists"', async () => {
-      const responseError = new Error();
-      responseError.response = {
-        data: { message: 'A file with this name already exists' },
-      };
-
-      mockSaveVisualizationImplementation(() => {
-        throw responseError;
-      });
+    it('creates an alert when the measurement is not selected', async () => {
+      await setVisualizationTitle('New Title');
+      setVisualizationType('SingleStat');
 
       await findSaveButton().vm.$emit('click');
-      await waitForPromises();
       expect(createAlert).toHaveBeenCalledWith({
-        message: 'A visualization with that name already exists.',
-        error: null,
+        message: 'Select a measurement',
         captureError: false,
+        error: null,
       });
     });
 
-    it('and an error is thrown', async () => {
-      const newError = new Error();
-      mockSaveVisualizationImplementation(() => {
-        throw newError;
-      });
+    it('creates an alert when the visualization type is not selected', async () => {
+      await setVisualizationTitle('New Title');
+      setMeasurement('pageViews', 'all');
+
       await findSaveButton().vm.$emit('click');
-      await waitForPromises();
       expect(createAlert).toHaveBeenCalledWith({
-        error: newError,
-        message: 'Error while saving visualization.',
-        captureError: true,
+        message: 'Select a visualization type',
+        captureError: false,
+        error: null,
+      });
+    });
+
+    describe('when the visualization is valid', () => {
+      it('successfully saves', async () => {
+        await setAllRequiredFields();
+        await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+
+        await findSaveButton().vm.$emit('click');
+
+        expect(saveProductAnalyticsVisualization).toHaveBeenCalledWith(
+          'new_title',
+          {
+            data: {
+              query: { foo: 'bar' },
+              type: 'cube_analytics',
+            },
+            options: {},
+            type: 'SingleStat',
+            version: 1,
+          },
+          TEST_CUSTOM_DASHBOARDS_PROJECT,
+        );
+
+        await waitForPromises();
+
+        expect(showToast).toHaveBeenCalledWith('Visualization was saved successfully');
+      });
+
+      it('dismisses the existing alert after successfully saving', async () => {
+        await setVisualizationTitle('New Title');
+        await findSaveButton().vm.$emit('click');
+
+        await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+
+        await setAllRequiredFields();
+        await findSaveButton().vm.$emit('click');
+        await waitForPromises();
+
+        expect(mockAlertDismiss).toHaveBeenCalled();
+      });
+
+      it('and a error happens', async () => {
+        await setAllRequiredFields();
+        await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
+
+        await findSaveButton().vm.$emit('click');
+        await waitForPromises();
+
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'Error while saving visualization.',
+          error: new Error(
+            `Received an unexpected HTTP status while saving visualization: ${HTTP_STATUS_FORBIDDEN}`,
+          ),
+          captureError: true,
+        });
+      });
+
+      it('and the server responds with "A file with this name already exists"', async () => {
+        await setAllRequiredFields();
+        const responseError = new Error();
+        responseError.response = {
+          data: { message: 'A file with this name already exists' },
+        };
+
+        mockSaveVisualizationImplementation(() => {
+          throw responseError;
+        });
+
+        await findSaveButton().vm.$emit('click');
+        await waitForPromises();
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'A visualization with that name already exists.',
+          error: null,
+          captureError: false,
+        });
+      });
+
+      it('and an error is thrown', async () => {
+        await setAllRequiredFields();
+        const newError = new Error();
+        mockSaveVisualizationImplementation(() => {
+          throw newError;
+        });
+        await findSaveButton().vm.$emit('click');
+        await waitForPromises();
+        expect(createAlert).toHaveBeenCalledWith({
+          error: newError,
+          message: 'Error while saving visualization.',
+          captureError: true,
+        });
       });
     });
   });
@@ -242,6 +284,7 @@ describe('AnalyticsVisualizationDesigner', () => {
     });
 
     it('should dismiss the alert', async () => {
+      await setVisualizationTitle('New Title');
       await findSaveButton().vm.$emit('click');
 
       wrapper.destroy();
@@ -256,7 +299,7 @@ describe('AnalyticsVisualizationDesigner', () => {
     const setupSaveDashbboard = async (dashboard) => {
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
       createWrapper(dashboard);
-      setAllRequiredFields();
+      await setAllRequiredFields();
 
       await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
 
