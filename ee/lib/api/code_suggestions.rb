@@ -134,10 +134,16 @@ module API
             token = code_suggestions_token.token
           end
 
+          vertex_ai = ::CodeSuggestions::AiModels::VERTEX_AI
+          anthropic = ::CodeSuggestions::AiModels::ANTHROPIC
+
+          # rubocop:disable Layout/LineLength
           safe_params = declared_params(params).merge(
             skip_generate_comment_prefix: Feature.enabled?(:code_generation_no_comment_prefix, current_user),
-            model_family: Feature.enabled?(:code_completion_anthropic, current_user) ? :anthropic : :vertex_ai
+            code_completion_model_family: Feature.enabled?(:code_completion_anthropic, current_user) ? anthropic : vertex_ai,
+            code_generation_model_family: Feature.enabled?(:code_generation_anthropic, current_user) ? anthropic : vertex_ai
           )
+          # rubocop:enable Layout/LineLength
           task = ::CodeSuggestions::TaskSelector.task(
             params: safe_params,
             unsafe_passthrough_params: params.except(:private_token)
