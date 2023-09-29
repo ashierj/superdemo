@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Govern', :runner, product_group: :security_policies do
-    describe 'Scan execution policy' do
+    describe 'Scan Execution Policy' do
       let!(:project) do
         create(:project, :with_readme, name: 'project-with-scan-execution-policy')
       end
@@ -50,17 +50,32 @@ module QA
         runner.remove_via_api!
       end
 
-      it 'scan execution policy takes effect when pipeline is run on the main branch',
+      it 'takes effect when pipeline is run on the main branch',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/423944' do
         expect(scan_execution_policy_commit.api_response).to have_key(:branch)
         expect(scan_execution_policy_commit.api_response[:branch]).not_to be nil
 
         create_scan_execution_policy
 
-        create_commit
+        create_commit('main')
         # Check that secret-detection job is triggered whenever there is a pipeline is triggered on main
-        expect { check_pipeline_for_job }.to eventually_be_truthy.within(max_duration: 60, reload_page: page),
+        expect { pipeline_has_a_job? }.to eventually_be_truthy.within(max_duration: 60, reload_page: page),
           "Expected #{job_name} to appear but it is not present"
+      end
+
+      it 'does not take effect when pipeline is run on non default branch',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/426177' do
+        expect(scan_execution_policy_commit.api_response).to have_key(:branch)
+        expect(scan_execution_policy_commit.api_response[:branch]).not_to be nil
+
+        create_scan_execution_policy
+
+        create_commit("new_branch_#{SecureRandom.hex(8)}")
+
+        create_test_mr
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+        # Check that secret-detection job is NOT present in MR pipeline (non-default branch)
+        expect(pipeline_has_a_job?).to be_falsey
       end
 
       private
@@ -75,7 +90,7 @@ module QA
         end.merge_via_api!
       end
 
-      def check_pipeline_for_job
+      def pipeline_has_a_job?
         Flow::Pipeline.visit_latest_pipeline
 
         Page::Project::Pipeline::Show.perform do |pipeline|
@@ -103,11 +118,22 @@ module QA
         }
       end
 
-      def create_commit
+      def create_commit(branch_name)
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
-          commit.commit_message = 'Commit files to default branch'
+          commit.start_branch = project.default_branch
+          commit.branch = branch_name
+          commit.commit_message = "Commit files to #{branch_name} branch"
           commit.add_files([ci_file, test_file])
+        end
+      end
+
+      def create_test_mr
+        Resource::MergeRequest.fabricate_via_api! do |merge_request|
+          merge_request.no_preparation = true
+          merge_request.project = project
+          merge_request.target_new_branch = false
+          merge_request.source_branch = commit_branch
         end
       end
     end
