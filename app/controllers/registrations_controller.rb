@@ -27,7 +27,7 @@ class RegistrationsController < Devise::RegistrationsController
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
 
-  feature_category :user_management
+  feature_category :instance_resiliency
 
   helper_method :arkose_labs_enabled?
 
