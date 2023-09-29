@@ -38,7 +38,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
         started: true,
         include_inventory: false,
         include_network_policy: false,
-        include_secrets: false,
+        include_all_resources: false,
         dns_zone: dns_zone
       )
     )

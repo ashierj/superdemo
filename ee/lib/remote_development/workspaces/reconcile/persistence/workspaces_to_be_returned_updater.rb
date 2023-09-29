@@ -19,7 +19,7 @@ module RemoteDevelopment
             workspaces_to_be_returned_ids = workspaces_to_be_returned.map(&:id)
 
             agent.workspaces.where(id: workspaces_to_be_returned_ids).touch_all(:responded_to_agent_at) # rubocop:disable CodeReuse/ActiveRecord
-
+            agent.workspaces.where(id: workspaces_to_be_returned_ids, force_include_all_resources: true).update_all(force_include_all_resources: false) # rubocop:disable CodeReuse/ActiveRecord
             value
           end
         end

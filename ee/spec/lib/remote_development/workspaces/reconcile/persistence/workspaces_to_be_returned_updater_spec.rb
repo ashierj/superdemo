@@ -26,8 +26,19 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     )
   end
 
+  let_it_be(:workspace3) do
+    create(
+      :workspace,
+      :without_realistic_after_create_timestamp_updates,
+      name: "workspace3",
+      agent: agent,
+      user: user,
+      force_include_all_resources: true
+    )
+  end
+
   # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
-  let(:workspaces_to_be_returned) { [workspace1, workspace2] }
+  let(:workspaces_to_be_returned) { [workspace1, workspace2, workspace3] }
 
   let(:value) do
     {
@@ -44,6 +55,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   before do
     workspace1.update_attribute(:responded_to_agent_at, 2.hours.ago)
     workspace2.update_attribute(:responded_to_agent_at, 2.hours.ago)
+    workspace3.update_attribute(:responded_to_agent_at, 2.hours.ago)
     agent.reload
   end
 
@@ -61,12 +73,23 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       subject
       expect(workspace1.reload.responded_to_agent_at).to be > 1.minute.ago
       expect(workspace2.reload.responded_to_agent_at).to be > 1.minute.ago
+      expect(workspace3.reload.responded_to_agent_at).to be > 1.minute.ago
     end
 
     # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
     it "preserves existing value entries" do
       subject
-      expect(subject).to eq(value.merge(workspaces_to_be_returned: [workspace1.reload, workspace2.reload]))
+      expect(subject).to eq(value.merge(workspaces_to_be_returned: [workspace1.reload, workspace2.reload,
+        workspace3.reload]))
+    end
+
+    it 'resets force_include_all_resources to false for workspaces with true' do
+      expect { subject }.to change { workspace3.reload.force_include_all_resources }.from(true).to(false)
+    end
+
+    it 'does not change force_include_all_resources for workspaces with false' do
+      expect { subject }.not_to change { workspace1.reload.force_include_all_resources }
+      expect { subject }.not_to change { workspace2.reload.force_include_all_resources }
     end
   end
 end

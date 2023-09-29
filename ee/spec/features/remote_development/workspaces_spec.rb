@@ -139,7 +139,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         expected_config_to_apply = create_config_to_apply(
           workspace: workspace,
           started: true,
-          include_secrets: true
+          include_all_resources: true
         )
 
         config_to_apply = info.fetch(:config_to_apply)

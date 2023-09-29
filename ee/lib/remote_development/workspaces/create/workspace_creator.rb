@@ -41,6 +41,7 @@ module RemoteDevelopment
           # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           workspace.actual_state = CREATION_REQUESTED
           workspace.config_version = RemoteDevelopment::Workspaces::ConfigVersion::VERSION_2
+          workspace.force_include_all_resources = true
           workspace.url = URI::HTTPS.build({
             host: workspace_host(workspace: workspace),
             query: {

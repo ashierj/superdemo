@@ -12,10 +12,10 @@ module RemoteDevelopment
           include States
 
           # @param [RemoteDevelopment::Workspaces::Workspace] workspace
-          # @param [Boolean] include_secrets
+          # @param [Boolean] include_all_resources
           # @param [RemoteDevelopment::Logger] logger
           # @return [Array<Hash>]
-          def self.generate_desired_config(workspace:, include_secrets:, logger:)
+          def self.generate_desired_config(workspace:, include_all_resources:, logger:)
             desired_config = []
             env_secret_name = "#{workspace.name}-env-var"
             file_secret_name = "#{workspace.name}-file"
@@ -71,7 +71,7 @@ module RemoteDevelopment
               desired_config.append(network_policy)
             end
 
-            if include_secrets
+            if include_all_resources
               k8s_resources_for_secrets = get_k8s_resources_for_secrets(
                 workspace: workspace,
                 env_secret_name: env_secret_name,

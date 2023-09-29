@@ -12,7 +12,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
     let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
     let(:actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
     let(:started) { true }
-    let(:include_secrets) { false }
+    let(:include_all_resources) { false }
     let(:deployment_resource_version_from_agent) { workspace.deployment_resource_version }
     let(:network_policy_enabled) { true }
     let(:gitlab_workspaces_proxy_namespace) { 'gitlab-workspaces' }
@@ -33,7 +33,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
           workspace: workspace,
           started: started,
           include_network_policy: network_policy_enabled,
-          include_secrets: include_secrets
+          include_all_resources: include_all_resources
         )
       )
     end
@@ -51,7 +51,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       it 'returns expected config' do
         workspace_resources = subject.generate_desired_config(
           workspace: workspace,
-          include_secrets: include_secrets,
+          include_all_resources: include_all_resources,
           logger: logger
         )
 
@@ -66,7 +66,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       it 'returns expected config' do
         workspace_resources = subject.generate_desired_config(
           workspace: workspace,
-          include_secrets: include_secrets,
+          include_all_resources: include_all_resources,
           logger: logger
         )
 
@@ -80,7 +80,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       it 'returns expected config without network policy' do
         workspace_resources = subject.generate_desired_config(
           workspace: workspace,
-          include_secrets: include_secrets,
+          include_all_resources: include_all_resources,
           logger: logger
         )
 
@@ -88,13 +88,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       end
     end
 
-    context 'when include_secrets=true results in secrets being generated' do
-      let(:include_secrets) { true }
+    context 'when include_all_resources is true' do
+      let(:include_all_resources) { true }
 
       it 'returns expected config' do
         workspace_resources = subject.generate_desired_config(
           workspace: workspace,
-          include_secrets: include_secrets,
+          include_all_resources: include_all_resources,
           logger: logger
         )
 
@@ -110,7 +110,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       it 'returns an empty array' do
         workspace_resources = subject.generate_desired_config(
           workspace: workspace,
-          include_secrets: include_secrets,
+          include_all_resources: include_all_resources,
           logger: logger
         )
 
