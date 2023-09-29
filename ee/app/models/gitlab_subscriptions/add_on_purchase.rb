@@ -46,6 +46,10 @@ module GitlabSubscriptions
       expires_on >= Date.current
     end
 
+    def expired?
+      !active?
+    end
+
     def delete_ineligible_user_assignments_in_batches!(batch_size: 50)
       deleted_assignments_count = 0
 

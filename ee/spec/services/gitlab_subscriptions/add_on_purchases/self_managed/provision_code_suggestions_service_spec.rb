@@ -6,6 +6,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
   :aggregate_failures, feature_category: :sm_provisioning do
   describe '#execute' do
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
+    let_it_be(:namespace) { nil }
 
     let!(:current_license) do
       create_current_license(
@@ -44,7 +45,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
         let_it_be(:existing_add_on_purchase) do
           create(
             :gitlab_subscription_add_on_purchase,
-            namespace: nil,
+            namespace: namespace,
             add_on: add_on,
             expires_on: expiration_date
           )
@@ -117,33 +118,54 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
     end
 
     context 'when add-on purchase exists' do
-      let_it_be(:existing_add_on_purchase) do
+      let(:expiration_date) { Date.current + 3.months }
+      let!(:existing_add_on_purchase) do
         create(
           :gitlab_subscription_add_on_purchase,
-          namespace: nil,
+          namespace: namespace,
           add_on: add_on,
-          expires_on: Date.current + 3.months
+          expires_on: expiration_date
         )
+      end
+
+      shared_examples 'updates the existing add-on purchase' do
+        it 'updates the existing add-on purchase' do
+          expect(GitlabSubscriptions::AddOnPurchases::UpdateService).to receive(:new)
+            .with(
+              namespace,
+              add_on,
+              {
+                add_on_purchase: existing_add_on_purchase,
+                quantity: purchased_add_on_quantity,
+                expires_on: current_license.block_changes_at,
+                purchase_xid: subscription_name
+              }
+            ).and_call_original
+
+          expect { result }.not_to change { GitlabSubscriptions::AddOnPurchase.count }
+
+          expect(current_license.block_changes_at).to eq(current_license.expires_at + 14.days)
+          expect(result[:status]).to eq(:success)
+          expect(result[:add_on_purchase]).to have_attributes(
+            id: existing_add_on_purchase.id,
+            expires_on: current_license.block_changes_at,
+            quantity: purchased_add_on_quantity,
+            purchase_xid: subscription_name
+          )
+        end
       end
 
       context 'when the update fails' do
         it_behaves_like 'handle error', GitlabSubscriptions::AddOnPurchases::UpdateService
       end
 
-      it 'updates the existing add-on purchase' do
-        expect(GitlabSubscriptions::AddOnPurchases::UpdateService).to receive(:new).and_call_original
+      context 'when existing add-on purchase is expired' do
+        let(:expiration_date) { Date.current - 3.months }
 
-        expect { result }.not_to change { GitlabSubscriptions::AddOnPurchase.count }
-
-        expect(current_license.block_changes_at).to eq(current_license.expires_at + 14.days)
-        expect(result[:status]).to eq(:success)
-        expect(result[:add_on_purchase]).to have_attributes(
-          id: existing_add_on_purchase.id,
-          expires_on: current_license.block_changes_at,
-          quantity: purchased_add_on_quantity,
-          purchase_xid: subscription_name
-        )
+        it_behaves_like 'updates the existing add-on purchase'
       end
+
+      it_behaves_like 'updates the existing add-on purchase'
     end
 
     context 'when the creation fails' do
@@ -160,7 +182,16 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
       end
 
       it 'creates a new add-on purchase' do
-        expect(GitlabSubscriptions::AddOnPurchases::CreateService).to receive(:new).and_call_original
+        expect(GitlabSubscriptions::AddOnPurchases::CreateService).to receive(:new)
+          .with(
+            namespace,
+            add_on,
+            {
+              quantity: purchased_add_on_quantity,
+              expires_on: current_license.expires_at,
+              purchase_xid: subscription_name
+            }
+          ).and_call_original
 
         expect { result }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
 
@@ -175,7 +206,16 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
     end
 
     it 'creates a new add-on purchase' do
-      expect(GitlabSubscriptions::AddOnPurchases::CreateService).to receive(:new).and_call_original
+      expect(GitlabSubscriptions::AddOnPurchases::CreateService).to receive(:new)
+        .with(
+          namespace,
+          add_on,
+          {
+            quantity: purchased_add_on_quantity,
+            expires_on: current_license.block_changes_at,
+            purchase_xid: subscription_name
+          }
+        ).and_call_original
 
       expect { result }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
 

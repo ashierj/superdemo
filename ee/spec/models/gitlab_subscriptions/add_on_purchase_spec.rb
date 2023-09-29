@@ -255,6 +255,18 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
     end
   end
 
+  describe '#expired?' do
+    let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
+
+    subject { add_on_purchase.expired? }
+
+    it { is_expected.to eq(false) }
+
+    context 'when subscription has expired' do
+      it { travel_to(add_on_purchase.expires_on + 1.day) { is_expected.to eq(true) } }
+    end
+  end
+
   describe '#delete_ineligible_user_assignments_in_batches!' do
     let(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
 
