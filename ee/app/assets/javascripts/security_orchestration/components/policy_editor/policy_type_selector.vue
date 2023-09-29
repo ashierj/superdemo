@@ -5,7 +5,6 @@ import { GlButton, GlCard, GlIcon, GlSprintf } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __ } from '~/locale';
-import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 
 const i18n = {
@@ -75,11 +74,6 @@ export default {
       ];
     },
   },
-  methods: {
-    constructUrl(policyType) {
-      return mergeUrlParams({ type: policyType }, window.location.href);
-    },
-  },
   i18n,
   safeHtmlConfig: { ADD_TAGS: ['use'] },
 };
@@ -107,8 +101,8 @@ export default {
             <gl-button
               v-if="!option.hasMax"
               variant="confirm"
-              :href="constructUrl(option.urlParameter)"
               :data-testid="`select-policy-${option.urlParameter}`"
+              @click="$emit('select', option.urlParameter)"
             >
               {{ $options.i18n.selectPolicy }}
             </gl-button>
