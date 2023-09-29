@@ -343,7 +343,7 @@ RSpec.describe API::MergeRequests, feature_category: :source_code_management do
     end
   end
 
-  describe "PUT /projects/:id/merge_requests/:merge_request_iid/merge" do
+  describe 'PUT /projects/:id/merge_requests/:merge_request_iid/merge' do
     it 'returns 405 if merge request was not approved' do
       project.add_developer(create(:user))
       project.update!(approvals_before_merge: 1)
@@ -362,6 +362,48 @@ RSpec.describe API::MergeRequests, feature_category: :source_code_management do
       put api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/merge", user)
 
       expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    context 'when the requests asks to skip the train', :aggregate_failures do
+      let(:project)       { create(:project, :public, :repository, creator: user, namespace: user.namespace) }
+      let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+      let(:skip_params)   { { skip_merge_train: true } }
+
+      let(:request) do
+        put api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/merge", user), params: skip_params
+      end
+
+      before do
+        stub_licensed_features(merge_pipelines: true, merge_trains: true)
+        stub_feature_flags(disable_merge_trains: false)
+
+        project.update!(approvals_before_merge: 0)
+        project.ci_cd_settings.update!(
+          merge_pipelines_enabled: true,
+          merge_trains_enabled: true,
+          merge_trains_skip_train_allowed: true
+        )
+      end
+
+      it 'creates a new merged train car to represent the merged MR' do
+        expect { request }.to change { MergeTrains::Car.count }.by(1)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(merge_request.reload).to be_merged
+      end
+
+      context 'with merge_trains_skip_train disabled' do
+        before do
+          stub_feature_flags(merge_trains_skip_train: false)
+        end
+
+        it 'creates a new merged train car to represent the merged MR' do
+          expect { request }.not_to change { MergeTrains::Car.count }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(merge_request.reload).to be_merged
+        end
+      end
     end
   end
 

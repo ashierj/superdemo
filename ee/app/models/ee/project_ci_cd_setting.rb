@@ -29,7 +29,7 @@ module EE
     end
 
     def merge_trains_skip_train_allowed?
-      merge_trains_skip_train_allowed && ::Feature.enabled?(:merge_trains_skip_train, project)
+      merge_trains_skip_train_allowed && merge_trains_enabled? && ::Feature.enabled?(:merge_trains_skip_train, project)
     end
 
     private

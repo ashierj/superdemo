@@ -164,6 +164,60 @@ RSpec.describe MergeRequests::MergeService, feature_category: :source_code_manag
         end
       end
     end
+
+    context 'when skip_merge_train is true', :aggregate_failures do
+      subject { service.execute(merge_request) }
+
+      let(:newest_car) { MergeTrains::Car.last }
+      let(:train)      { MergeTrains::Train.new(merge_request.project_id, merge_request.target_branch) }
+      let(:params)     { { sha: merge_request.diff_head_sha, commit_message: 'A message', skip_merge_train: true } }
+
+      context 'with merge_trains_skip_merge_train_allowed ProjectCiCdSetting enabled' do
+        before do
+          stub_licensed_features(merge_pipelines: true, merge_trains: true)
+          stub_feature_flags(disable_merge_trains: false)
+
+          project.update!(approvals_before_merge: 0)
+          project.ci_cd_settings.update!(
+            merge_pipelines_enabled: true,
+            merge_trains_enabled: true,
+            merge_trains_skip_train_allowed: true
+          )
+        end
+
+        it 'creates a new merged Car record and adds the revision to the train history' do
+          expect { subject }.to change { MergeTrains::Car.count }.by(1)
+          expect(newest_car.merge_request).to eq(merge_request)
+          expect(newest_car).to be_skip_merged
+
+          expect(train.sha_exists_in_history?(merge_request.merge_commit_sha)).to be_truthy
+        end
+      end
+
+      context 'with merge_trains_skip_merge_train_allowed ProjectCiCdSetting disabled' do
+        before do
+          project.ci_cd_settings.update!(merge_trains_skip_train_allowed: false)
+        end
+
+        it 'does not create any new Car record or add to the train revision history' do
+          expect { subject }.not_to change { MergeTrains::Car.count }
+          expect(merge_request).to be_merged
+          expect(train.sha_exists_in_history?(merge_request.merge_commit_sha)).to be_falsy
+        end
+      end
+
+      context 'when the merge_train_skip_trains feature flag is disabled' do
+        before do
+          stub_feature_flags(merge_trains_skip_train: false)
+        end
+
+        it 'does not create any new Car record or add to the train revision history' do
+          expect { subject }.not_to change { MergeTrains::Car.count }
+          expect(merge_request).to be_merged
+          expect(train.sha_exists_in_history?(merge_request.merge_commit_sha)).to be_falsy
+        end
+      end
+    end
   end
 
   it_behaves_like 'merge validation hooks', persisted: true

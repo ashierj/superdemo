@@ -65,7 +65,9 @@ RSpec.describe Mutations::Ci::ProjectCiCdSettingsUpdate, feature_category: :cont
       end
 
       it 'updates the value' do
-        expect(project.ci_cd_settings.merge_trains_skip_train_allowed?).to eq(true)
+        # This column value is not the same as #merge_trains_skip_train_allowed?
+        # which has added business logic
+        expect(project.ci_cd_settings.merge_trains_skip_train_allowed).to eq(true)
       end
     end
   end

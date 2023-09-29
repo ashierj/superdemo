@@ -23,6 +23,37 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     let_it_be(:merging_car) { create(:merge_train_car, :merging) }
   end
 
+  describe '.create' do
+    let(:merge_request) { create(:merge_request, :merged) }
+
+    let(:base_attributes) do
+      {
+        user: merge_request.author,
+        merge_request: merge_request,
+        target_project: merge_request.target_project,
+        target_branch: merge_request.target_branch
+      }
+    end
+
+    subject { described_class.create!(attributes) }
+
+    context 'with merged_at and a skip_merged status' do
+      let(:attributes) do
+        base_attributes.merge(
+          merged_at: Time.current,
+          status: described_class.state_machine.states[:skip_merged].value
+        )
+      end
+
+      it 'creates a completed car with no pipeline', :aggregate_failures do
+        expect(subject).to be_persisted
+        expect(subject).to be_skip_merged
+        expect(subject.pipeline).to be_nil
+        expect(subject.merged_at).to be_present
+      end
+    end
+  end
+
   describe '.active' do
     subject { described_class.active }
 
@@ -76,6 +107,21 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
 
     it 'returns merge trains by id ASC' do
       is_expected.to eq([train_car_1, train_car_2])
+    end
+  end
+
+  describe '.insert_skip_merged_car_for', :aggregate_failures do
+    let(:maintainer)    { create(:user).tap { |u| merge_request.project.add_maintainer(u) } }
+    let(:merge_train)   { MergeTrains::Train.new(merge_request.project_id, merge_request.target_branch) }
+    let(:merge_request) { create(:merge_request, :locked) }
+
+    subject { described_class.insert_skip_merged_car_for(merge_request, maintainer) }
+
+    it 'creates and returns a new completed MergeTrain Car record' do
+      expect { subject }.to change { MergeTrains::Car.count }.by(1)
+      expect(subject).to be_persisted
+      expect(subject).to be_skip_merged
+      expect(subject.merge_request).to eq(merge_request)
     end
   end
 
