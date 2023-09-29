@@ -1,15 +1,15 @@
 import { GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import IssueCardWeight from 'ee/boards/components/issue_card_weight.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
-import defaultStore from '~/boards/stores';
+import isShowingLabelsQuery from '~/boards/graphql/client/is_showing_labels.query.graphql';
 import { TYPE_ISSUE } from '~/issues/constants';
 
-Vue.use(Vuex);
+Vue.use(VueApollo);
 
 describe('Board card component', () => {
   let wrapper;
@@ -17,18 +17,19 @@ describe('Board card component', () => {
   let list;
   let store;
 
-  const createStore = ({ isShowingLabels = true } = {}) => {
-    store = new Vuex.Store({
-      state: {
-        ...defaultStore.state,
+  const mockApollo = createMockApollo();
+
+  const createComponent = ({ props = {}, isShowingLabels = true } = {}) => {
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: isShowingLabelsQuery,
+      data: {
         isShowingLabels,
       },
     });
-  };
 
-  const createComponent = (props = {}) => {
     wrapper = shallowMount(BoardCardInner, {
       store,
+      apolloProvider: mockApollo,
       propsData: {
         list,
         item: issue,
@@ -79,14 +80,6 @@ describe('Board card component', () => {
     };
   });
 
-  beforeEach(() => {
-    createStore();
-  });
-
-  afterEach(() => {
-    store = null;
-  });
-
   describe('labels', () => {
     beforeEach(() => {
       const label1 = {
@@ -115,15 +108,14 @@ describe('Board card component', () => {
         },
       ];
 
-      createComponent({ groupId: 1 });
+      createComponent({ props: { groupId: 1 } });
 
       expect(wrapper.findAllComponents(GlLabel)).toHaveLength(3);
       expect(wrapper.findComponent(GlLabel).props('title')).toContain(title);
     });
 
-    it('shows no labels when the isShowingLabels state is false', () => {
-      createStore({ isShowingLabels: false });
-      createComponent({});
+    it('shows no labels when the isShowingLabels is false', () => {
+      createComponent({ isShowingLabels: false });
 
       expect(wrapper.findAll('.board-card-labels')).toHaveLength(0);
     });

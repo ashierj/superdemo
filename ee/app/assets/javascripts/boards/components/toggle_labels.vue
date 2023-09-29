@@ -1,24 +1,38 @@
 <script>
 import { GlToggle } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions } from 'vuex';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
+import isShowingLabelsQuery from '~/boards/graphql/client/is_showing_labels.query.graphql';
+import setIsShowingLabelsMutation from '~/boards/graphql/client/set_is_showing_labels.mutation.graphql';
 
 export default {
   components: {
     GlToggle,
     LocalStorageSync,
   },
+  data() {
+    return {
+      isShowingLabels: null,
+    };
+  },
+  apollo: {
+    isShowingLabels: {
+      query: isShowingLabelsQuery,
+      update: (data) => data.isShowingLabels,
+    },
+  },
   computed: {
-    ...mapState(['isShowingLabels']),
     trackProperty() {
       return this.isShowingLabels ? 'on' : 'off';
     },
   },
   methods: {
-    ...mapActions(['setShowLabels']),
-    onToggle(val) {
-      this.setShowLabels(val);
+    setShowLabels(val) {
+      this.$apollo.mutate({
+        mutation: setIsShowingLabelsMutation,
+        variables: {
+          isShowingLabels: val,
+        },
+      });
     },
   },
 };
@@ -41,7 +55,7 @@ export default {
       aria-describedby="board-labels-toggle-text"
       data-qa-selector="show_labels_toggle"
       class="gl-flex-direction-row"
-      @change="onToggle"
+      @change="setShowLabels"
     />
   </div>
 </template>
