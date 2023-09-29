@@ -711,6 +711,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
               "index" => {
                 "number_of_shards" => 5,
                 "number_of_replicas" => 1,
+                "refresh_interval" => '2s',
                 "blocks" => {
                   "write" => 'true'
                 }
@@ -719,9 +720,13 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
           }
         })
 
-        expect { subject }.to output(
-          /#{setting.alias_name}:\s+number_of_shards: 5\s+number_of_replicas: 1\s+blocks\.write: yes/
-        ).to_stdout
+        expected = "#{setting.alias_name}:\n  " \
+                   "number_of_shards: 5\n  " \
+                   "number_of_replicas: 1\n  " \
+                   "refresh_interval: 2s\n  " \
+                   "blocks.write: yes"
+
+        expect { subject }.to output(a_string_including(expected)).to_stdout
       end
     end
   end
