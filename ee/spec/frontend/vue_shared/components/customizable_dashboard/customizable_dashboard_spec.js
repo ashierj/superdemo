@@ -815,7 +815,7 @@ describe('CustomizableDashboard', () => {
       return findEditButton().vm.$emit('click');
     });
 
-    it('does not validate the precense of panels when saving', async () => {
+    it('does not validate the presence of panels when saving', async () => {
       await findSaveButton().vm.$emit('click');
 
       expect(createAlert).not.toHaveBeenCalled();

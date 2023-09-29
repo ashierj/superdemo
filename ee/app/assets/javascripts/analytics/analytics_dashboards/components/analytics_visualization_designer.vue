@@ -1,6 +1,6 @@
 <script>
 import { QueryBuilder } from '@cubejs-client/vue';
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlFormGroup, GlFormInput } from '@gitlab/ui';
 
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
@@ -23,6 +23,8 @@ export default {
   components: {
     QueryBuilder,
     GlButton,
+    GlFormInput,
+    GlFormGroup,
     MeasureSelector,
     DimensionSelector,
     VisualizationInspector,
@@ -46,7 +48,8 @@ export default {
         measureType: '',
         measureSubType: '',
       },
-      visualizationName: '',
+      visualizationTitle: '',
+      titleValidationState: null,
       selectedDisplayType: PANEL_DISPLAY_TYPES.DATA,
       selectedVisualizationType: '',
       hasTimeDimension: false,
@@ -119,10 +122,13 @@ export default {
       this.selectDisplayType(PANEL_DISPLAY_TYPES.VISUALIZATION);
       this.selectedVisualizationType = newType;
     },
-    getSaveVisualizationValidationError() {
-      if (!this.visualizationName) {
-        return s__('Analytics|Enter a visualization name');
+    onTitleInput() {
+      // Don't validate if the title has not been submitted
+      if (this.titleValidationState !== null) {
+        this.titleValidationState = this.visualizationTitle.length > 0;
       }
+    },
+    getSaveVisualizationValidationError() {
       if (!this.selectedVisualizationType) {
         return s__('Analytics|Select a visualization type');
       }
@@ -132,8 +138,13 @@ export default {
       return null;
     },
     async saveVisualization() {
-      const validationError = this.getSaveVisualizationValidationError();
+      this.titleValidationState = this.visualizationTitle?.length > 0;
+      if (!this.titleValidationState) {
+        this.$refs.titleInput.$el.focus();
+        return;
+      }
 
+      const validationError = this.getSaveVisualizationValidationError();
       if (validationError) {
         this.showAlert(validationError);
         return;
@@ -142,7 +153,7 @@ export default {
       this.isSaving = true;
 
       try {
-        const filename = slugify(this.visualizationName, '_');
+        const filename = slugify(this.visualizationTitle, '_');
 
         const saveResult = await saveProductAnalyticsVisualization(
           filename,
@@ -209,17 +220,31 @@ export default {
 
 <template>
   <div>
-    <div class="gl-display-flex gl-mb-4 gl-mt-4">
-      <div class="gl-flex-direction-column gl-flex-grow-1">
-        <input
-          v-model="visualizationName"
-          dir="auto"
-          type="text"
-          :placeholder="s__('Analytics|New analytics visualization name')"
-          :aria-label="__('Name')"
-          class="form-control gl-border-gray-200"
-          data-testid="panel-title-tba"
-        />
+    <div class="gl-display-flex gl-py-6">
+      <div class="gl-display-flex flex-fill">
+        <gl-form-group
+          :label="s__('Analytics|Visualization title')"
+          label-for="title"
+          class="gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full"
+          data-testid="visualization-title-form-group"
+          :invalid-feedback="__('This field is required.')"
+          :state="titleValidationState"
+        >
+          <gl-form-input
+            id="title"
+            ref="titleInput"
+            v-model="visualizationTitle"
+            dir="auto"
+            type="text"
+            :placeholder="s__('Analytics|Enter a visualization title')"
+            :aria-label="s__('Analytics|Visualization title')"
+            class="form-control gl-mr-4 gl-border-gray-200"
+            data-testid="visualization-title-input"
+            :state="titleValidationState"
+            required
+            @input="onTitleInput"
+          />
+        </gl-form-group>
       </div>
       <div class="gl-ml-2">
         <gl-button
@@ -295,7 +320,7 @@ export default {
               :loading="loading"
               :result-set="resultSet ? resultSet : null"
               :result-visualization="resultSet && isQueryPresent ? resultVisualization : null"
-              :title="visualizationName"
+              :title="visualizationTitle"
               @selectedDisplayType="selectDisplayType"
             />
           </div>
