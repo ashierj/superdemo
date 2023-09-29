@@ -23,17 +23,19 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
       {
         prompt_version: 2,
         prompt: <<~PROMPT
-          Human: Here is a content of a file 'test.py' written in Python enclosed
-          in <code></code> tags. Review the code to understand existing logic and format, then return
-          a valid code enclosed in <result></result> tags which can be added instead of
-          <complete> tag. Do not add other code.
+          Human: We want to fill in new Python code between existing code.
+          Here is the content of a Python file in the path 'test.py' enclosed
+          in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
+          Review the existing code to understand existing logic and format.
+          Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+          If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+          Do not repeat code that already exists. The new code has to be fully functional and complete.
 
-          <code>
-            prefix<complete>
-            suffix
-          </code>
+          <existing_code>
+            prefix<cursor>suffix
+          </existing_code>
 
-          Assistant:
+          Assistant: <new_code>
         PROMPT
       }
     end
@@ -47,17 +49,19 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
         {
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: Here is a content of a file 'test.py' written in Python enclosed
-            in <code></code> tags. Review the code to understand existing logic and format, then return
-            a valid code enclosed in <result></result> tags which can be added instead of
-            <complete> tag. Do not add other code.
+            Human: We want to fill in new Python code between existing code.
+            Here is the content of a Python file in the path 'test.py' enclosed
+            in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
+            Review the existing code to understand existing logic and format.
+            Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+            Do not repeat code that already exists. The new code has to be fully functional and complete.
 
-            <code>
-              <complete>
-              suffix
-            </code>
+            <existing_code>
+              <cursor>suffix
+            </existing_code>
 
-            Assistant:
+            Assistant: <new_code>
           PROMPT
         }
       end
@@ -72,15 +76,19 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
         {
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: Here is a content of a file 'test.py' written in Python enclosed
-            in <code></code> tags. Review the code to understand existing logic and format, then return
-            a valid code enclosed in <result></result> tags which can be added instead of
-            <complete> tag. Do not add other code.
+            Human: We want to fill in new Python code between existing code.
+            Here is the content of a Python file in the path 'test.py' enclosed
+            in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
+            Review the existing code to understand existing logic and format.
+            Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+            Do not repeat code that already exists. The new code has to be fully functional and complete.
 
-            <code>
-              prefix<complete>\n  \n</code>
+            <existing_code>
+              prefix<cursor>
+            </existing_code>
 
-            Assistant:
+            Assistant: <new_code>
           PROMPT
         }
       end
@@ -95,17 +103,19 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
         {
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: Here is a content of a file '' written in  enclosed
-            in <code></code> tags. Review the code to understand existing logic and format, then return
-            a valid code enclosed in <result></result> tags which can be added instead of
-            <complete> tag. Do not add other code.
+            Human: We want to fill in new  code between existing code.
+            Here is the content of a  file in the path '' enclosed
+            in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
+            Review the existing code to understand existing logic and format.
+            Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+            Do not repeat code that already exists. The new code has to be fully functional and complete.
 
-            <code>
-              prefix<complete>
-              suffix
-            </code>
+            <existing_code>
+              prefix<cursor>suffix
+            </existing_code>
 
-            Assistant:
+            Assistant: <new_code>
           PROMPT
         }
       end
