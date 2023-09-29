@@ -16,6 +16,7 @@ module Sbom
     validates :component_name, length: { maximum: 255 }
     validates :input_file_path, length: { maximum: 255 }
     validates :licenses, json_schema: { filename: 'sbom_occurrences-licenses' }
+    validates :vulnerabilities, json_schema: { filename: 'sbom_occurrences-vulnerabilities' }
 
     delegate :name, to: :component
     delegate :purl_type, to: :component
