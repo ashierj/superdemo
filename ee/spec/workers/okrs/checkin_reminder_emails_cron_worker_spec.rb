@@ -25,6 +25,7 @@ RSpec.describe Okrs::CheckinReminderEmailsCronWorker, feature_category: :team_pl
       stub_feature_flags(okr_checkin_reminders: false)
 
       expect(Notify).not_to receive(:okr_checkin_reminder_notification)
+      expect(TodoService).not_to receive(:new)
 
       key_result.assignees = [user1]
       cron.perform
@@ -32,6 +33,7 @@ RSpec.describe Okrs::CheckinReminderEmailsCronWorker, feature_category: :team_pl
 
     it 'sends one notification if there is one assignee' do
       expect(Notify).to receive(:okr_checkin_reminder_notification).once.and_call_original
+      expect(TodoService).to receive_message_chain(:new, :request_okr_checkin)
 
       key_result.assignees = [user1]
       cron.perform
@@ -39,6 +41,10 @@ RSpec.describe Okrs::CheckinReminderEmailsCronWorker, feature_category: :team_pl
 
     it 'sends multiple notifications if there are multiple assignees' do
       expect(Notify).to receive(:okr_checkin_reminder_notification).twice.and_call_original
+
+      expect_next_instances_of(TodoService, 2) do |todo|
+        expect(todo).to receive(:request_okr_checkin)
+      end
 
       key_result.assignees = [user1, user2]
       cron.perform

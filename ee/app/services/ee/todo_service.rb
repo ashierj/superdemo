@@ -34,6 +34,14 @@ module EE
       create_todos(merge_request.author, attributes, project.namespace, project)
     end
 
+    def request_okr_checkin(work_item, assignee)
+      project = work_item.project
+
+      attributes = attributes_for_todo(project, work_item, work_item.author, ::Todo::OKR_CHECKIN_REQUESTED)
+
+      create_todos(assignee, attributes, project.namespace, project)
+    end
+
     private
 
     override :attributes_for_target
