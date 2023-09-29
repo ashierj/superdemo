@@ -1,4 +1,4 @@
-import { GlDropdownItem, GlFormGroup, GlSprintf } from '@gitlab/ui';
+import { GlFormGroup, GlSprintf } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
 import EscalationRule, { i18n } from 'ee/escalation_policies/components/escalation_rule.vue';
 import UserSelect from 'ee/escalation_policies/components/user_select.vue';
@@ -12,9 +12,9 @@ import {
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 const mockSchedules = [
-  { id: 1, name: 'schedule1' },
-  { id: 2, name: 'schedule2' },
-  { id: 3, name: 'schedule3' },
+  { iid: 1, name: 'schedule1' },
+  { iid: 2, name: 'schedule2' },
+  { iid: 3, name: 'schedule3' },
 ];
 
 const emptyScheduleMsg = i18n.fields.rules.emptyScheduleValidationMsg;
@@ -46,14 +46,9 @@ describe('EscalationRule', () => {
   });
 
   const findStatusDropdown = () => wrapper.findByTestId('alert-status-dropdown');
-  const findStatusDropdownOptions = () => findStatusDropdown().findAllComponents(GlDropdownItem);
-
   const findActionDropdown = () => wrapper.findByTestId('action-dropdown');
-  const findActionDropdownOptions = () => findActionDropdown().findAllComponents(GlDropdownItem);
 
   const findSchedulesDropdown = () => wrapper.findByTestId('schedules-dropdown');
-  const findSchedulesDropdownOptions = () =>
-    findSchedulesDropdown().findAllComponents(GlDropdownItem);
   const findUserSelect = () => wrapper.findComponent(UserSelect);
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
 
@@ -61,32 +56,42 @@ describe('EscalationRule', () => {
 
   describe('Status dropdown', () => {
     it('should have correct alert status options', () => {
-      expect(findStatusDropdownOptions().wrappers.map((w) => w.text())).toStrictEqual(
-        Object.values(ALERT_STATUSES),
+      expect(findStatusDropdown().props('items')).toHaveLength(
+        Object.entries(ALERT_STATUSES).length,
       );
+      expect(findStatusDropdown().props('items')).toEqual([
+        {
+          text: 'Acknowledged',
+          value: 'ACKNOWLEDGED',
+        },
+        {
+          text: 'Resolved',
+          value: 'RESOLVED',
+        },
+      ]);
     });
 
     it('should have default status selected', () => {
-      expect(findStatusDropdownOptions().at(0).props('isChecked')).toBe(true);
+      expect(findStatusDropdown().props('selected')).toBe('ACKNOWLEDGED');
     });
   });
 
   describe('Actions dropdown', () => {
     it('should have correct action options', () => {
-      expect(findActionDropdownOptions().wrappers.map((w) => w.text())).toStrictEqual(
-        Object.values(ACTIONS),
+      expect(findActionDropdown().props('items')).toEqual(
+        Object.entries(ACTIONS).map(([value, text]) => ({ value, text })),
       );
     });
 
     it('should have default action selected', () => {
-      expect(findActionDropdownOptions().at(0).props('isChecked')).toBe(true);
+      expect(findActionDropdown().props('selected')).toBe(EMAIL_ONCALL_SCHEDULE_USER);
     });
   });
 
   describe('Schedules dropdown', () => {
     it('should have correct schedules options', () => {
-      expect(findSchedulesDropdownOptions().wrappers.map((w) => w.text())).toStrictEqual(
-        mockSchedules.map(({ name }) => name),
+      expect(findSchedulesDropdown().props('items')).toEqual(
+        mockSchedules.map(({ iid, name }) => ({ value: iid, text: name })),
       );
     });
 

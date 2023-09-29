@@ -2,8 +2,7 @@
 import {
   GlFormGroup,
   GlFormInput,
-  GlDropdown,
-  GlDropdownItem,
+  GlCollapsibleListbox,
   GlCard,
   GlButton,
   GlIcon,
@@ -13,6 +12,9 @@ import {
 import { s__ } from '~/locale';
 import { ACTIONS, ALERT_STATUSES, EMAIL_ONCALL_SCHEDULE_USER, EMAIL_USER } from '../constants';
 import UserSelect from './user_select.vue';
+
+const mapListBoxItems = (source) =>
+  Object.entries(source).map(([value, text]) => ({ value, text }));
 
 export const i18n = {
   fields: {
@@ -44,8 +46,7 @@ export default {
   components: {
     GlFormGroup,
     GlFormInput,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlCard,
     GlButton,
     GlIcon,
@@ -97,6 +98,15 @@ export default {
     };
   },
   computed: {
+    actionsListBoxItems() {
+      return mapListBoxItems(ACTIONS);
+    },
+    alertStatusesListBoxItems() {
+      return mapListBoxItems(ALERT_STATUSES);
+    },
+    schedulesListBoxItems() {
+      return this.schedules?.map(({ iid, name, id }) => ({ value: iid || id, text: name }));
+    },
     scheduleDropdownTitle() {
       return this.oncallScheduleIid
         ? this.schedules.find(({ iid }) => iid === this.oncallScheduleIid)?.name
@@ -130,12 +140,6 @@ export default {
 
       return { username: this.username };
     },
-    showEmptyScheduleValidationMsg() {
-      return this.isEmailOncallScheduleUserActionSelected && !this.isScheduleValid;
-    },
-    showNoUserValidationMsg() {
-      return this.isEmailUserActionSelected && !this.isUserValid;
-    },
   },
   mounted() {
     this.ruleContainer = this.$refs.ruleContainer?.$el;
@@ -153,8 +157,8 @@ export default {
     removeFocus() {
       this.hasFocus = false;
     },
-    setOncallSchedule({ iid }) {
-      this.oncallScheduleIid = this.oncallScheduleIid === iid ? null : iid;
+    setOncallSchedule(iid) {
+      this.oncallScheduleIid = iid;
       this.emitUpdate();
     },
     setAction(action) {
@@ -216,21 +220,15 @@ export default {
       <div class="gl-display-flex gl-align-items-center">
         <gl-sprintf :message="$options.i18n.fields.rules.condition">
           <template #alertStatus>
-            <gl-dropdown
-              class="rule-control gl-mx-3"
-              :text="$options.ALERT_STATUSES[status]"
+            <gl-collapsible-listbox
+              block
               data-testid="alert-status-dropdown"
-            >
-              <gl-dropdown-item
-                v-for="(label, alertStatus) in $options.ALERT_STATUSES"
-                :key="alertStatus"
-                :is-checked="status === alertStatus"
-                is-check-item
-                @click="setStatus(alertStatus)"
-              >
-                {{ label }}
-              </gl-dropdown-item>
-            </gl-dropdown>
+              toggle-class="rule-control gl-mx-3"
+              :items="alertStatusesListBoxItems"
+              :selected="status"
+              :toggle-text="$options.ALERT_STATUSES[status]"
+              @select="setStatus"
+            />
           </template>
           <template #minutes>
             <gl-form-input
@@ -246,45 +244,28 @@ export default {
       <div class="gl-display-flex gl-align-items-center gl-mt-3">
         <gl-sprintf :message="$options.i18n.fields.rules.action">
           <template #doAction>
-            <gl-dropdown
-              class="rule-control gl-mx-3"
-              :text="$options.ACTIONS[action]"
+            <gl-collapsible-listbox
+              block
+              toggle-class="rule-control gl-mx-3"
               data-testid="action-dropdown"
-            >
-              <gl-dropdown-item
-                v-for="(label, ruleAction) in $options.ACTIONS"
-                :key="ruleAction"
-                :is-checked="action === ruleAction"
-                is-check-item
-                @click="setAction(ruleAction)"
-              >
-                {{ label }}
-              </gl-dropdown-item>
-            </gl-dropdown>
+              :selected="action"
+              :toggle-text="$options.ACTIONS[action]"
+              :items="actionsListBoxItems"
+              @select="setAction"
+            />
           </template>
           <template #scheduleOrUser>
             <template v-if="isEmailOncallScheduleUserActionSelected">
-              <gl-dropdown
-                :disabled="noSchedules"
-                class="rule-control"
-                :text="scheduleDropdownTitle"
+              <gl-collapsible-listbox
+                block
                 data-testid="schedules-dropdown"
-              >
-                <template #button-text>
-                  <span :class="{ 'gl-text-gray-400': !oncallScheduleIid }">
-                    {{ scheduleDropdownTitle }}
-                  </span>
-                </template>
-                <gl-dropdown-item
-                  v-for="schedule in schedules"
-                  :key="schedule.iid"
-                  :is-checked="schedule.iid === oncallScheduleIid"
-                  is-check-item
-                  @click="setOncallSchedule(schedule)"
-                >
-                  {{ schedule.name }}
-                </gl-dropdown-item>
-              </gl-dropdown>
+                toggle-class="rule-control"
+                :disabled="noSchedules"
+                :items="schedulesListBoxItems"
+                :selected="oncallScheduleIid"
+                :toggle-text="scheduleDropdownTitle"
+                @select="setOncallSchedule"
+              />
               <gl-icon
                 v-if="noSchedules"
                 v-gl-tooltip
