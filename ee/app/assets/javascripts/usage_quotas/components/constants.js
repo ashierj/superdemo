@@ -16,3 +16,5 @@ export const LIMITED_ACCESS_MESSAGING = Object.freeze({
     ),
   },
 });
+
+export const LIMITED_ACCESS_KEYS = Object.keys(LIMITED_ACCESS_MESSAGING);

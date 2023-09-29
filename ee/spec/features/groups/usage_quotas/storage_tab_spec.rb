@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_category: :consumables_cost_management do
   include NamespaceStorageHelpers
+  include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :premium_plan) }
@@ -18,6 +19,7 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
 
   before do
     stub_feature_flags(usage_quotas_for_all_editions: false)
+    stub_feature_flags(limited_access_modal: false)
     stub_application_setting(check_namespace_plan: true)
 
     sign_in(user)
@@ -102,6 +104,26 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
       # A cost factor for forks of 0.1 means that forks consume only 10% of their storage size.
       # So this is the total storage_size (300 MB) - 90% of the public_forks_storage_size (90 MB).
       expect(page).to have_text('Namespace storage used 210.0 MiB')
+    end
+  end
+
+  context 'with limited_access_modal FF enabled' do
+    before do
+      stub_signing_key
+      stub_feature_flags(limited_access_modal: true)
+      stub_subscription_permissions_data(group.id, can_add_seats: false)
+
+      visit_usage_quotas_page('storage-quota-tab')
+      wait_for_requests
+
+      click_button 'Buy storage'
+    end
+
+    context 'when user is not allowed to add seats' do
+      it 'opens limited access modal' do
+        expect(page).to have_selector('[data-testid="limited-access-modal-id"]')
+        expect(page).to have_content('Your subscription is in read-only mode')
+      end
     end
   end
 
