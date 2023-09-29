@@ -198,6 +198,28 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#allow_external_status_checks?' do
+    subject { merge_request.allow_external_status_checks? }
+
+    let_it_be(:merge_request) { build_stubbed(:merge_request) }
+
+    context 'when licensed feature `external_status_checks` is `false`' do
+      before do
+        stub_licensed_features(external_status_checks: false)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when licensed feature `external_status_checks` is `true`' do
+      before do
+        stub_licensed_features(external_status_checks: true)
+      end
+
+      it { is_expected.to be true }
+    end
+  end
+
   describe '#participants' do
     subject(:participants) { merge_request.participants }
 
@@ -1618,6 +1640,50 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       it 'returns MRs for projects with security policy project on target project' do
         expect(described_class.for_projects_with_security_policy_project).to eq(
           [merge_request_with_security_policy_project])
+      end
+    end
+  end
+
+  context 'after_commit hooks' do
+    describe 'create_pending_status_check_responses' do
+      subject(:create_merge_request) { create(:merge_request, source_project: project, target_project: project, state: :opened) }
+
+      let_it_be(:status_check) { create(:external_status_check, project: project) }
+      let_it_be(:another_status_check) { create(:external_status_check, project: project) }
+      let(:merge_request) { described_class.last }
+
+      context 'when project can have status checks' do
+        before do
+          stub_licensed_features(external_status_checks: true)
+        end
+
+        context 'when feature `pending_status_check_responses` is enabled' do
+          it 'creates `pending` status check responses' do
+            expect(ComplianceManagement::PendingStatusCheckWorker).to receive(:perform_async).and_call_original
+
+            create_merge_request
+          end
+        end
+
+        context 'when feature `pending_status_check_responses` is disabled' do
+          before do
+            Feature.disable(:pending_status_check_responses)
+          end
+
+          it 'does not create status check responses' do
+            expect(ComplianceManagement::PendingStatusCheckWorker).not_to receive(:perform_async)
+
+            create_merge_request
+          end
+        end
+      end
+
+      context 'when project can not have status checks' do
+        it 'does not create status check responses' do
+          expect(ComplianceManagement::PendingStatusCheckWorker).not_to receive(:perform_async)
+
+          create_merge_request
+        end
       end
     end
   end

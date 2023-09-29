@@ -131,8 +131,8 @@ module API
             documentation: { example: '5957a570eee0ac4580ec027fb874ad7514d1e576' }
           requires :status,
             type: String,
-            desc: 'Set to passed to pass the check or failed to fail it',
-            values: %w[passed failed],
+            desc: 'Set to `pending` to mark the check as pending, `passed` to pass the check, or `failed` to fail it',
+            values: %w[passed failed pending],
             documentation: { example: 'passed' }
         end
         post 'status_check_responses' do

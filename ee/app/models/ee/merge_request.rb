@@ -93,10 +93,17 @@ module EE
         joins(:approval_rules).merge(ApprovalMergeRequestRule.scan_finding)
       end
 
+      after_create_commit :create_pending_status_check_responses, if: :allow_external_status_checks?
       after_update :sync_merge_request_compliance_violation, if: :saved_change_to_title?
 
       def sync_merge_request_compliance_violation
         compliance_violations.update_all(title: title)
+      end
+
+      def create_pending_status_check_responses
+        return unless ::Feature.enabled?(:pending_status_check_responses)
+
+        ::ComplianceManagement::PendingStatusCheckWorker.perform_async(id, project.id, target_branch_sha)
       end
 
       def merge_requests_author_approval?
@@ -191,6 +198,10 @@ module EE
 
     def allows_multiple_reviewers?
       project.feature_available?(:multiple_merge_request_reviewers)
+    end
+
+    def allow_external_status_checks?
+      project.licensed_feature_available?(:external_status_checks)
     end
 
     def visible_blocking_merge_requests(user)
