@@ -1,5 +1,6 @@
 <script>
-import { GlBadge, GlTooltipDirective } from '@gitlab/ui';
+import { GlBadge, GlLink, GlPopover, GlSprintf } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   UPGRADE_STATUS_AVAILABLE,
@@ -8,15 +9,17 @@ import {
   I18N_UPGRADE_STATUS_RECOMMENDED,
   I18N_UPGRADE_STATUS_AVAILABLE_TOOLTIP,
   I18N_UPGRADE_STATUS_RECOMMENDED_TOOLTIP,
+  RUNNER_INSTALL_HELP_PATH,
+  RUNNER_VERSION_HELP_PATH,
 } from '../constants';
 
 export default {
   name: 'RunnerUpgradeStatusBadge',
   components: {
     GlBadge,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
+    GlLink,
+    GlPopover,
+    GlSprintf,
   },
   mixins: [glFeatureFlagMixin()],
   props: {
@@ -51,12 +54,18 @@ export default {
             variant: 'info',
             label: I18N_UPGRADE_STATUS_AVAILABLE,
             tooltip: I18N_UPGRADE_STATUS_AVAILABLE_TOOLTIP,
+            popover: s__(
+              'Runners|%{installLinkStart}Upgrade GitLab Runner%{installLinkEnd} to match your GitLab version. %{versionLinkStart}Major and minor versions%{versionLinkEnd} must match.',
+            ),
           };
         case UPGRADE_STATUS_RECOMMENDED:
           return {
             variant: 'warning',
             label: I18N_UPGRADE_STATUS_RECOMMENDED,
             tooltip: I18N_UPGRADE_STATUS_RECOMMENDED_TOOLTIP,
+            popover: s__(
+              'Runners|%{installLinkStart}Upgrade GitLab Runner%{installLinkEnd} to match your GitLab version. This upgrade is highly recommended for this runner and may contain security or compatibilty fixes. %{versionLinkStart}Major and minor versions%{versionLinkEnd} must match.',
+            ),
           };
         default:
           return null;
@@ -66,17 +75,41 @@ export default {
       return this.size === 'sm' ? null : 'upgrade';
     },
   },
+  RUNNER_INSTALL_HELP_PATH,
+  RUNNER_VERSION_HELP_PATH,
 };
 </script>
 <template>
-  <gl-badge
-    v-if="badge"
-    v-gl-tooltip="badge.tooltip"
-    :variant="badge.variant"
-    :size="size"
-    :icon="icon"
-    v-bind="$attrs"
-  >
-    {{ badge.label }}
-  </gl-badge>
+  <div v-if="badge" class="gl-display-inline-flex">
+    <gl-badge
+      ref="badgeRef"
+      href="#"
+      :variant="badge.variant"
+      :size="size"
+      :icon="icon"
+      v-bind="$attrs"
+    >
+      {{ badge.label }}
+    </gl-badge>
+    <gl-popover triggers="focus" :target="() => $refs.badgeRef.$el" :title="badge.label">
+      <gl-sprintf :message="badge.popover">
+        <template #versionLink="{ content }">
+          <gl-link
+            class="gl-reset-font-size"
+            target="_blank"
+            :href="$options.RUNNER_VERSION_HELP_PATH"
+            >{{ content }}</gl-link
+          >
+        </template>
+        <template #installLink="{ content }">
+          <gl-link
+            class="gl-reset-font-size"
+            target="_blank"
+            :href="$options.RUNNER_INSTALL_HELP_PATH"
+            >{{ content }}</gl-link
+          >
+        </template>
+      </gl-sprintf>
+    </gl-popover>
+  </div>
 </template>
