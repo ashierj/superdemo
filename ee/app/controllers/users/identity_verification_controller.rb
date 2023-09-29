@@ -17,7 +17,7 @@ module Users
     before_action :redirect_banned_user, only: [:show]
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
 
-    feature_category :system_access
+    feature_category :instance_resiliency
 
     layout 'minimal'
 
