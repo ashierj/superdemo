@@ -60,28 +60,23 @@ module Gitlab
         end
 
         def track_epic_note_created_action(author:, namespace:)
-          track_snowplow_action(EPIC_NOTE_CREATED, author, namespace)
-          track_unique_action(EPIC_NOTE_CREATED, author)
+          track_internal_action(EPIC_NOTE_CREATED, author, namespace)
         end
 
         def track_epic_note_updated_action(author:, namespace:)
-          track_snowplow_action(EPIC_NOTE_UPDATED, author, namespace)
-          track_unique_action(EPIC_NOTE_UPDATED, author)
+          track_internal_action(EPIC_NOTE_UPDATED, author, namespace)
         end
 
         def track_epic_note_destroyed_action(author:, namespace:)
-          track_snowplow_action(EPIC_NOTE_DESTROYED, author, namespace)
-          track_unique_action(EPIC_NOTE_DESTROYED, author)
+          track_internal_action(EPIC_NOTE_DESTROYED, author, namespace)
         end
 
         def track_epic_emoji_awarded_action(author:, namespace:)
-          track_snowplow_action(EPIC_EMOJI_AWARDED, author, namespace)
-          track_unique_action(EPIC_EMOJI_AWARDED, author)
+          track_internal_action(EPIC_EMOJI_AWARDED, author, namespace)
         end
 
         def track_epic_emoji_removed_action(author:, namespace:)
-          track_snowplow_action(EPIC_EMOJI_REMOVED, author, namespace)
-          track_unique_action(EPIC_EMOJI_REMOVED, author)
+          track_internal_action(EPIC_EMOJI_REMOVED, author, namespace)
         end
 
         def track_epic_start_date_set_as_fixed_action(author:, namespace:)
