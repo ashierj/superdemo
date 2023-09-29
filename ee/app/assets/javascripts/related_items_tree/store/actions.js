@@ -27,7 +27,7 @@ import { processQueryResponse, formatChildItem, gqClient } from '../utils/epic_u
 import * as types from './mutation_types';
 
 const trackEpicActivity = (params = {}) => {
-  InternalEvents.track_event(trackingAddedIssue, { extra: params });
+  InternalEvents.trackEvent(trackingAddedIssue, { extra: params });
 };
 export const setInitialConfig = ({ commit }, data) => commit(types.SET_INITIAL_CONFIG, data);
 

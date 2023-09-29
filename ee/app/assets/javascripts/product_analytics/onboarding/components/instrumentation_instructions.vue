@@ -34,7 +34,7 @@ export default {
     },
   },
   mounted() {
-    this.track_event('user_viewed_instrumentation_directions');
+    this.trackEvent('user_viewed_instrumentation_directions');
   },
   i18n: {
     sdkClientsTitle: s__('ProductAnalytics|SDK clients'),

@@ -93,7 +93,7 @@ export default {
     },
   },
   mounted() {
-    this.track_event('user_viewed_dashboard_list');
+    this.trackEvent('user_viewed_dashboard_list');
   },
   apollo: {
     userDashboards: {
