@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Update a work item' do
+RSpec.describe 'Update a work item', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
@@ -110,12 +110,18 @@ RSpec.describe 'Update a work item' do
       context 'when the user does not have permission to update the work item' do
         let(:current_user) { guest }
 
-        it_behaves_like 'a mutation that returns top-level errors', errors: [
-          'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
-          'perform this action'
-        ]
-
         it_behaves_like 'work item is not updated'
+
+        context 'when a base attribute is present' do
+          before do
+            input.merge!('title' => 'new title')
+          end
+
+          it_behaves_like 'a mutation that returns top-level errors', errors: [
+            'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
+            'perform this action'
+          ]
+        end
       end
     end
   end
@@ -298,12 +304,18 @@ RSpec.describe 'Update a work item' do
       context 'when the user does not have permission to update the work item' do
         let(:current_user) { guest }
 
-        it_behaves_like 'a mutation that returns top-level errors', errors: [
-          'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
-          'perform this action'
-        ]
-
         it_behaves_like 'work item is not updated'
+
+        context 'when a base attribute is present' do
+          before do
+            input.merge!('title' => 'new title')
+          end
+
+          it_behaves_like 'a mutation that returns top-level errors', errors: [
+            'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
+            'perform this action'
+          ]
+        end
       end
     end
   end
@@ -380,12 +392,18 @@ RSpec.describe 'Update a work item' do
       context 'when the user does not have permission to update the work item' do
         let(:current_user) { guest }
 
-        it_behaves_like 'a mutation that returns top-level errors', errors: [
-          'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
-          'perform this action'
-        ]
-
         it_behaves_like 'work item is not updated'
+
+        context 'when a base attribute is present' do
+          before do
+            input.merge!('title' => 'new title')
+          end
+
+          it_behaves_like 'a mutation that returns top-level errors', errors: [
+            'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
+            'perform this action'
+          ]
+        end
       end
     end
   end
