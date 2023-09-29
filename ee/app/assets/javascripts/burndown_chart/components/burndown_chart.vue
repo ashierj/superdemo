@@ -128,7 +128,7 @@ export default {
 </script>
 
 <template>
-  <div data-qa-selector="burndown_chart">
+  <div data-testid="burndown-chart">
     <div v-if="showTitle" class="burndown-header d-flex align-items-center">
       <h3>{{ __('Burndown chart') }}</h3>
     </div>

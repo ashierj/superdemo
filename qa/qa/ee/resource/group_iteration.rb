@@ -33,6 +33,7 @@ module QA
         def fabricate!
           @cadence ||= QA::EE::Resource::GroupCadence.fabricate_via_browser_ui! do |cadence|
             cadence.group = group
+            cadence.automatic = false # we can only create iterations manually when automatic scheduling is not used
           end
 
           @cadence.group.visit!
@@ -40,7 +41,7 @@ module QA
           QA::Page::Group::Menu.perform(&:go_to_group_iterations)
 
           QA::EE::Page::Group::Iteration::Cadence::Index.perform do |cadence_list|
-            cadence_list.click_new_iteration_button(@cadence.title)
+            cadence_list.click_add_iteration_button_on_cadence(@cadence.title)
           end
 
           QA::EE::Page::Group::Iteration::New.perform do |iteration_page|

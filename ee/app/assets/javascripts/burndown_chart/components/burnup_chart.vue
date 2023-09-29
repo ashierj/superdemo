@@ -117,7 +117,7 @@ export default {
 </script>
 
 <template>
-  <div data-qa-selector="burnup_chart">
+  <div data-testid="burnup-chart">
     <div class="burndown-header d-flex align-items-center">
       <h3>{{ __('Burnup chart') }}</h3>
     </div>

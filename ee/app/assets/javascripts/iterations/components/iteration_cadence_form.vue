@@ -367,7 +367,7 @@ export default {
           id="cadence-title"
           v-model="title"
           autocomplete="off"
-          data-qa-selector="iteration_cadence_title_field"
+          data-testid="iteration-cadence-title-field"
           :placeholder="i18n.title.placeholder"
           :state="validationState.title"
           :disabled="loadingCadence"
@@ -385,7 +385,7 @@ export default {
         <gl-form-textarea
           id="cadence-description"
           v-model="description"
-          data-qa-selector="iteration_cadence_description_field"
+          data-testid="iteration-cadence-description-field"
         />
       </gl-form-group>
 
@@ -396,6 +396,7 @@ export default {
         id="cadence-automated-scheduling"
         v-model="automatic"
         :disabled="loadingCadence"
+        data-testid="automated-scheduling-checkbox"
         @change="updateAutomatic"
       >
         <span>{{ i18n.automatedScheduling.label }}</span>
@@ -421,7 +422,7 @@ export default {
               inputmode="none"
               :disabled="disableAutomationFields"
               :state="validationState.startDate"
-              data-qa-selector="iteration_cadence_start_date_field"
+              data-testid="iteration-cadence-start-date-field"
               @blur="validate('startDate')"
             />
           </gl-datepicker>
@@ -441,7 +442,7 @@ export default {
             :options="$options.availableDurations"
             class="gl-form-input-md"
             :disabled="disableAutomationFields"
-            data-qa-selector="iteration_cadence_duration_field"
+            data-testid="iteration-cadence-duration-field"
             @change="validate('durationInWeeks')"
           />
         </gl-form-group>
@@ -461,7 +462,7 @@ export default {
             :disabled="disableAutomationFields"
             :options="$options.availableUpcomingIterations"
             class="gl-form-input-md"
-            data-qa-selector="iteration_cadence_upcoming_iterations_field"
+            data-testid="iteration-cadence-upcoming-iterations-field"
             @change="validate('iterationsInAdvance')"
           />
         </gl-form-group>
@@ -496,7 +497,6 @@ export default {
           :loading="loading"
           data-testid="save-cadence"
           variant="confirm"
-          data-qa-selector="save_iteration_cadence_button"
           :disabled="!valid"
           @click="saveAndViewList"
         >

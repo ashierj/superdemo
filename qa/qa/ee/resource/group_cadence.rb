@@ -18,6 +18,7 @@ module QA
         attribute :upcoming_iterations
         attribute :start_date
         attribute :title
+        attribute :automatic
 
         def initialize
           @start_date = current_date_yyyy_mm_dd
@@ -25,6 +26,7 @@ module QA
           @title = "Iteration Cadence #{SecureRandom.hex(8)}"
           @duration = 2
           @upcoming_iterations = 2
+          @automatic = true
         end
 
         def fabricate!
@@ -36,9 +38,16 @@ module QA
 
           QA::EE::Page::Group::Iteration::Cadence::New.perform do |new|
             new.fill_title(@title)
-            new.fill_start_date(@start_date)
-            new.fill_duration(@duration)
-            new.fill_upcoming_iterations(@upcoming_iterations)
+            new.fill_description(@description) if @description
+
+            if @automatic
+              new.fill_start_date(@start_date)
+              new.fill_duration(@duration)
+              new.fill_upcoming_iterations(@upcoming_iterations)
+            else
+              new.uncheck_automated_scheduling_checkbox
+            end
+
             new.click_create_iteration_cadence_button
           end
         end
