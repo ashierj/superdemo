@@ -84,11 +84,11 @@ module EE
         end
 
         def create_params
-          params.require(:value_stream).permit(:name, stages: stage_create_params)
+          params.require(:value_stream).permit(:name, setting: settings_params, stages: stage_create_params)
         end
 
         def update_params
-          params.require(:value_stream).permit(:name, stages: stage_update_params)
+          params.require(:value_stream).permit(:name, setting: settings_params, stages: stage_update_params)
         end
 
         def stage_create_params
@@ -104,6 +104,10 @@ module EE
               end_event: [:identifier, :label_id]
             }
           ]
+        end
+
+        def settings_params
+          { project_ids_filter: [] }
         end
 
         def stage_update_params
