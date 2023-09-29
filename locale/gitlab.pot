@@ -36654,9 +36654,6 @@ msgstr ""
 msgid "ProjectFileTree|Show more"
 msgstr ""
 
-msgid "ProjectLastActivity|Never"
-msgstr ""
-
 msgid "ProjectList|Starred"
 msgstr ""
 
