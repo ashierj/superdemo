@@ -413,6 +413,7 @@ export default {
     :primary-button-link="documentationPath"
     :primary-button-text="$options.i18n.notOwnerButtonText"
     :svg-path="policyEditorEmptyStateSvgPath"
+    :svg-height="null"
     title=""
   />
 </template>

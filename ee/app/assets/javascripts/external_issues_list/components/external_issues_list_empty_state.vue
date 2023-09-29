@@ -60,7 +60,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :svg-path="emptyStatePath" :title="emptyStateTitle">
+  <gl-empty-state :svg-path="emptyStatePath" :svg-height="null" :title="emptyStateTitle">
     <template v-if="!hasIssues || hasFiltersApplied" #description>
       <gl-sprintf :message="emptyStateDescription" />
     </template>

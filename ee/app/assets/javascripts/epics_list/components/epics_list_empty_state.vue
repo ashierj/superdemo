@@ -36,7 +36,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :svg-path="emptyStatePath" :title="emptyStateTitle">
+  <gl-empty-state :svg-path="emptyStatePath" :svg-height="null" :title="emptyStateTitle">
     <template v-if="showDescription" #description>
       {{ __('Track groups of issues that share a theme, across projects and milestones') }}
     </template>

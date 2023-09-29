@@ -175,6 +175,7 @@ export default {
       :title="emptyState.title"
       :description="emptyState.description"
       :svg-path="emptyState.svgPath"
+      :svg-height="null"
     />
   </div>
 </template>

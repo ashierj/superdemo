@@ -253,6 +253,7 @@ export default {
         class="js-empty-state gl-mt-2"
         :title="__('You don’t have access to Value Stream Analytics for this group')"
         :svg-path="noAccessSvgPath"
+        :svg-height="null"
         :description="
           __(
             'Only \'Reporter\' roles and above on tiers Premium and above can see Value Stream Analytics.',

@@ -47,6 +47,7 @@ export default {
   <gl-empty-state
     :title="title"
     :svg-path="geoSitesEmptyStateSvg"
+    :svg-height="null"
     :description="description"
     :primary-button-link="primaryButtonLink"
     :primary-button-text="primaryButtonText"

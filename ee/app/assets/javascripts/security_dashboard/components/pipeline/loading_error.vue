@@ -41,5 +41,6 @@ export default {
 <template>
   <gl-empty-state
     v-bind="{ ...$options.emptyStatePropsMap[errorCode], svgPath: illustrations[errorCode] }"
+    :svg-height="null"
   />
 </template>

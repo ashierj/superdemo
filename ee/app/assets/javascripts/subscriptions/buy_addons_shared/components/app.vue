@@ -125,6 +125,7 @@ export default {
     :description="errorDescription"
     :title="errorTitle"
     :svg-path="emptySvgPath"
+    :svg-height="null"
   />
   <step-order-app v-else-if="!$apollo.loading" data-testid="buy-addons-shared">
     <template #alerts>

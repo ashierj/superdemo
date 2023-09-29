@@ -39,7 +39,7 @@ export default {
   <gl-empty-state
     :primary-button-text="$options.i18n.contactSales"
     :primary-button-link="$options.helpLinks.salesLink"
-    class="gl-max-w-48"
+    class="gl-max-w-48 gl-mx-auto"
   >
     <template #title>
       <h1

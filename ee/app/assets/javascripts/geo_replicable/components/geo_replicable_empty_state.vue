@@ -40,7 +40,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :title="title" :svg-path="geoReplicableEmptySvgPath">
+  <gl-empty-state :title="title" :svg-path="geoReplicableEmptySvgPath" :svg-height="null">
     <template #description>
       <gl-sprintf :message="description">
         <template #replicable>

@@ -148,6 +148,7 @@ export default {
     :title="message"
     :svg-path="emptyStateIllustrationPath"
     :svg-height="150"
+    data-testid="epics-list-empty-state"
     v-bind="extraProps"
   >
     <template #description>

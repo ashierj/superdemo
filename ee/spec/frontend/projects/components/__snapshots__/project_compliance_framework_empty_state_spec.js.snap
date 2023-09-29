@@ -7,9 +7,7 @@ exports[`Project compliance framework empty state matches the snapshot when "add
   <div
     class="gl-display-none gl-px-4 gl-sm-display-block"
   >
-    <div
-      class="svg-250"
-    >
+    <div>
       <img
         alt=""
         class="gl-dark-invert-keep-hue gl-max-w-full"
@@ -32,7 +30,7 @@ exports[`Project compliance framework empty state matches the snapshot when "add
         No compliance frameworks are set up yet
       </h5>
       <p
-        class="gl-mt-3"
+        class="gl-mb-0 gl-mt-4"
       >
         Add a framework to
         <gl-link-stub
@@ -43,7 +41,7 @@ exports[`Project compliance framework empty state matches the snapshot when "add
         and it will appear here.
       </p>
       <div
-        class="gl-display-flex gl-flex-wrap"
+        class="gl-display-flex gl-flex-wrap gl-mt-5"
       >
         <gl-button-stub
           buttontextclasses=""
@@ -69,9 +67,7 @@ exports[`Project compliance framework empty state matches the snapshot when "add
   <div
     class="gl-display-none gl-px-4 gl-sm-display-block"
   >
-    <div
-      class="svg-250"
-    >
+    <div>
       <img
         alt=""
         class="gl-dark-invert-keep-hue gl-max-w-full"
@@ -94,7 +90,7 @@ exports[`Project compliance framework empty state matches the snapshot when "add
         No compliance frameworks are set up yet
       </h5>
       <p
-        class="gl-mt-3"
+        class="gl-mb-0 gl-mt-4"
       >
         After a framework is added to
         <gl-link-stub
@@ -105,7 +101,7 @@ exports[`Project compliance framework empty state matches the snapshot when "add
         , it will appear here.
       </p>
       <div
-        class="gl-display-flex gl-flex-wrap"
+        class="gl-display-flex gl-flex-wrap gl-mt-5"
       />
     </div>
   </div>

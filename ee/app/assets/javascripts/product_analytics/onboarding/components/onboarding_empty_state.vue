@@ -85,7 +85,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :title="title" :svg-path="chartEmptyStateIllustrationPath">
+  <gl-empty-state :title="title" :svg-path="chartEmptyStateIllustrationPath" :svg-height="null">
     <template #description>
       <p class="gl-max-w-80">
         {{ description }}
@@ -93,10 +93,15 @@ export default {
     </template>
     <template #actions>
       <template v-if="!loading">
-        <gl-button variant="confirm" data-testid="setup-btn" @click="onConfirm">
+        <gl-button
+          class="gl-mx-2 gl-mb-3"
+          variant="confirm"
+          data-testid="setup-btn"
+          @click="onConfirm"
+        >
           {{ s__('ProductAnalytics|Set up product analytics') }}
         </gl-button>
-        <gl-button :href="$options.docsPath" data-testid="learn-more-btn">
+        <gl-button class="gl-mx-2 gl-mb-3" :href="$options.docsPath" data-testid="learn-more-btn">
           {{ __('Learn more') }}
         </gl-button>
       </template>
