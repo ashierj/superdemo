@@ -506,7 +506,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
       let(:actual_state) { RemoteDevelopment::Workspaces::States::CREATION_REQUESTED }
 
       let_it_be(:unprovisioned_workspace) do
-        create(:workspace, :unprovisioned, agent: agent, user: user)
+        create(:workspace, :unprovisioned, agent: agent, user: user, force_include_all_resources: true)
       end
 
       let(:workspace_agent_infos) { [] }
@@ -516,7 +516,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         create_config_to_apply(
           workspace: unprovisioned_workspace,
           started: expected_value_for_started,
-          include_secrets: true
+          include_all_resources: true
         )
       end
 

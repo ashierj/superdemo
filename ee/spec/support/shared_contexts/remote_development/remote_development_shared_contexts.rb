@@ -261,7 +261,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       started: started,
       include_inventory: false,
       include_network_policy: false,
-      include_secrets: false,
+      include_all_resources: false,
       dns_zone: dns_zone
     )
     config_to_apply = YAML.load_stream(config_to_apply_yaml)
@@ -307,7 +307,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     workspace_variables_file: nil,
     include_inventory: true,
     include_network_policy: true,
-    include_secrets: false,
+    include_all_resources: false,
     dns_zone: 'workspaces.localdev.me'
   )
     spec_replicas = started == true ? 1 : 0
@@ -386,9 +386,9 @@ RSpec.shared_context 'with remote development shared fixtures' do
     resources << workspace_service
     resources << workspace_pvc
     resources << workspace_network_policy if include_network_policy
-    resources << workspace_secrets_inventory if include_secrets && include_inventory
-    resources << workspace_secret_env_var if include_secrets
-    resources << workspace_secret_file if include_secrets
+    resources << workspace_secrets_inventory if include_all_resources && include_inventory
+    resources << workspace_secret_env_var if include_all_resources
+    resources << workspace_secret_file if include_all_resources
 
     resources.map do |resource|
       YAML.dump(resource.deep_stringify_keys)

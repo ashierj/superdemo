@@ -44,17 +44,13 @@ module RemoteDevelopment
           def self.config_to_apply(workspace:, update_type:, logger:)
             return unless should_include_config_to_apply?(update_type: update_type, workspace: workspace)
 
-            include_secrets = false
-
-            if update_type == FULL || (update_type == PARTIAL && workspace.actual_state == States::CREATION_REQUESTED)
-              include_secrets = true
-            end
+            include_all_resources = update_type == FULL || workspace.force_include_all_resources
 
             workspace_resources = case workspace.config_version
                                   when ConfigVersion::VERSION_2
                                     DesiredConfigGenerator.generate_desired_config(
                                       workspace: workspace,
-                                      include_secrets: include_secrets,
+                                      include_all_resources: include_all_resources,
                                       logger: logger
                                     )
                                   else
@@ -77,11 +73,9 @@ module RemoteDevelopment
           # @param [RemoteDevelopment::Workspace] workspace
           # @return [Boolean]
           def self.should_include_config_to_apply?(update_type:, workspace:)
-            return true if update_type == FULL
-
-            return true if workspace.desired_state_updated_more_recently_than_last_response_to_agent?
-
-            false
+            update_type == FULL ||
+              workspace.force_include_all_resources ||
+              workspace.desired_state_updated_more_recently_than_last_response_to_agent?
           end
         end
       end

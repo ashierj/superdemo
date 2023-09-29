@@ -52,6 +52,16 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     )
   end
 
+  let_it_be(:workspace_with_force_include_all_resources, reload: true) do
+    create(
+      :workspace,
+      name: "workspace_with_force_include_all_resources",
+      agent: agent,
+      user: user,
+      responded_to_agent_at: 2.hours.ago
+    )
+  end
+
   # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   let(:workspaces_from_agent_infos) { [workspace_from_agent_info] }
 
@@ -95,6 +105,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       workspace_with_new_update_to_desired_state.responded_to_agent_at + 1.hour
     )
 
+    # desired_state_updated_at IS more recent than responded_to_agent_at
+    workspace_with_force_include_all_resources.update_attribute(
+      :desired_state_updated_at,
+      workspace_with_new_update_to_desired_state.responded_to_agent_at + 1.hour
+    )
+
     subject
   end
 
@@ -123,7 +139,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
         # Includes ALL workspaces including workspace_only_returned_by_full_update
         workspace_only_returned_by_full_update,
         workspace_from_agent_info,
-        workspace_with_new_update_to_desired_state
+        workspace_with_new_update_to_desired_state,
+        workspace_with_force_include_all_resources
       ]
     end
 
