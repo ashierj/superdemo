@@ -1,5 +1,3 @@
-import Vue, { nextTick } from 'vue';
-import VueApollo from 'vue-apollo';
 import { GlButton, GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import TotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/total_storage_available_breakdown_card.vue';
@@ -8,39 +6,13 @@ import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_huma
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
-import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
-import { createMockClient } from 'helpers/mock_apollo_helper';
-import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
-import waitForPromises from 'helpers/wait_for_promises';
 
 import { withRootStorageStatistics, defaultNamespaceProvideValues } from '../mock_data';
-
-Vue.use(VueApollo);
-
-const defaultApolloData = {
-  subscription: {
-    canAddSeats: false,
-    canRenew: false,
-  },
-  userActionAccess: { limitedAccessReason: 'RAMP_SUBSCRIPTION' },
-};
 
 describe('StorageUsageStatistics', () => {
   let wrapper;
 
-  const createComponent = ({ props = {}, provide = {}, apolloData = defaultApolloData } = {}) => {
-    const queryHandlerMock = jest.fn().mockResolvedValue({
-      data: apolloData,
-    });
-    const mockCustomersDotClient = createMockClient([
-      [getSubscriptionPermissionsData, queryHandlerMock],
-    ]);
-    const mockGitlabClient = createMockClient();
-    const mockApollo = new VueApollo({
-      defaultClient: mockGitlabClient,
-      clients: { customersDotClient: mockCustomersDotClient, gitlabClient: mockGitlabClient },
-    });
-
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(StorageUsageStatistics, {
       propsData: {
         additionalPurchasedStorageSize: withRootStorageStatistics.additionalPurchasedStorageSize,
@@ -52,7 +24,6 @@ describe('StorageUsageStatistics', () => {
         ...defaultNamespaceProvideValues,
         ...provide,
       },
-      apolloProvider: mockApollo,
       stubs: {
         StorageStatisticsCard,
         NumberToHumanSize,
@@ -69,8 +40,6 @@ describe('StorageUsageStatistics', () => {
     wrapper.findComponent(TotalStorageAvailableBreakdownCard);
   const findExcessStorageBreakdownCard = () => wrapper.findComponent(ExcessStorageBreakdownCard);
   const findOverviewSubtitle = () => wrapper.findByTestId('overview-subtitle');
-  const findPurchaseButton = () => wrapper.findComponent(GlButton);
-  const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 
   describe('namespace overview section', () => {
     beforeEach(() => {
@@ -84,55 +53,21 @@ describe('StorageUsageStatistics', () => {
     describe('purchase more storage button when namespace is using project enforcement', () => {
       it('does not render the button', () => {
         createComponent();
-        expect(findPurchaseButton().exists()).toBe(false);
+        expect(wrapper.findComponent(GlButton).exists()).toBe(false);
       });
     });
 
     describe('purchase more storage button when namespace is NOT using project enforcement', () => {
-      describe('when purchaseStorageUrl is provided', () => {
-        beforeEach(() => {
-          createComponent({
-            provide: {
-              isUsingProjectEnforcement: false,
-            },
-          });
+      it('renders the button if purchaseStorageUrl is provided', () => {
+        createComponent({
+          provide: {
+            isUsingProjectEnforcement: false,
+          },
         });
-
-        it('renders purchase button with the correct attributes', () => {
-          expect(findPurchaseButton().attributes()).toMatchObject({
-            href: 'some-fancy-url',
-            target: '_blank',
-          });
-        });
-
-        it('does not show modal on purchase button click', () => {
-          findPurchaseButton().vm.$emit('click');
-
-          expect(findLimitedAccessModal().exists()).toBe(false);
-        });
+        expect(wrapper.findComponent(GlButton).exists()).toBe(true);
       });
 
-      describe('when purchaseStorageUrl is provided and limitedAccessModal FF is on', () => {
-        beforeEach(async () => {
-          gon.features = { limitedAccessModal: true };
-          createComponent({
-            provide: {
-              isUsingProjectEnforcement: false,
-            },
-          });
-
-          await waitForPromises();
-
-          findPurchaseButton().vm.$emit('click');
-          await nextTick();
-        });
-
-        it('shows modal', () => {
-          expect(findLimitedAccessModal().isVisible()).toBe(true);
-        });
-      });
-
-      it('is not rendered if purchaseStorageUrl is not provided', () => {
+      it('does not render the button if purchaseStorageUrl is not provided', () => {
         createComponent({
           provide: {
             isUsingProjectEnforcement: false,
@@ -140,7 +75,7 @@ describe('StorageUsageStatistics', () => {
           },
         });
 
-        expect(findPurchaseButton().exists()).toBe(false);
+        expect(wrapper.findComponent(GlButton).exists()).toBe(false);
       });
     });
 
@@ -232,7 +167,6 @@ describe('StorageUsageStatistics', () => {
 
       expect(findExcessStorageBreakdownCard().props()).toEqual({
         purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
-        limitedAccessModeEnabled: false,
         loading: false,
       });
     });
