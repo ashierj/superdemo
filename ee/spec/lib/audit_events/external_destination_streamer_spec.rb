@@ -31,10 +31,16 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
         create_list(:instance_external_audit_event_destination, 2)
         create(:google_cloud_logging_configuration, group: group)
         create(:instance_google_cloud_logging_configuration)
+        create(:amazon_s3_configuration, group: group)
       end
 
-      it 'makes correct number of HTTP calls' do
+      it 'makes correct number of external calls' do
         expect(Gitlab::HTTP).to receive(:post).exactly(5).times
+
+        expect_next_instance_of(Aws::S3::Client) do |instance|
+          expected_body = event.to_json.merge({ event_type: "audit_operation" })
+          expect(instance).to receive(:put_object).with(hash_including(body: expected_body))
+        end
 
         subject
       end
@@ -57,12 +63,13 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
         create(:instance_external_audit_event_destination)
         create(:google_cloud_logging_configuration, group: group)
         create(:instance_google_cloud_logging_configuration)
+        create(:amazon_s3_configuration, group: group)
       end
 
       it { is_expected.to be_truthy }
     end
 
-    context 'when atleast one of them is streamable' do
+    context 'when at least one of them is streamable' do
       context 'when only group external destination is streamable' do
         before do
           create(:external_audit_event_destination, group: group)
@@ -90,6 +97,14 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
       context 'when only instance google cloud logging destination is streamable' do
         before do
           create(:instance_google_cloud_logging_configuration)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when only amazon s3 destination is streamable' do
+        before do
+          create(:amazon_s3_configuration, group: group)
         end
 
         it { is_expected.to be_truthy }
