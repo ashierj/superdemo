@@ -1050,7 +1050,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should track Snowplow event', async () => {
-          jest.spyOn(InternalEvents, 'track_event');
+          jest.spyOn(InternalEvents, 'trackEvent');
           state.epicsEndpoint = '/foo/bar';
           state.parentItem = { groupId: 1 };
 
@@ -1063,7 +1063,7 @@ describe('RelatedItemTree', () => {
           actions.addItem({ state, dispatch: () => {}, getters });
           await axios.waitForAll();
 
-          expect(InternalEvents.track_event).toHaveBeenCalledWith(trackingAddedIssue, {
+          expect(InternalEvents.trackEvent).toHaveBeenCalledWith(trackingAddedIssue, {
             extra: { namespace: 1 },
           });
         });
@@ -1674,7 +1674,7 @@ describe('RelatedItemTree', () => {
 
         describe('for successful request', () => {
           it('should track Internal Event', async () => {
-            jest.spyOn(InternalEvents, 'track_event');
+            jest.spyOn(InternalEvents, 'trackEvent');
             state.parentItem = { id: '1' };
             const data = { author: { id: 1 }, epic: { group_id: 2 } };
 
@@ -1684,7 +1684,7 @@ describe('RelatedItemTree', () => {
             actions.createNewIssue({ state, dispatch: () => {} }, { issuesEndpoint, title: '' });
             await axios.waitForAll();
 
-            expect(InternalEvents.track_event).toHaveBeenCalledWith(trackingAddedIssue, {
+            expect(InternalEvents.trackEvent).toHaveBeenCalledWith(trackingAddedIssue, {
               extra: { namespace: 2, user: 1 },
             });
           });

@@ -261,13 +261,13 @@ export default {
     },
     trackDevopsScoreTabClick() {
       if (!this.devopsScoreTabClicked) {
-        this.track_event(this.$options.trackDevopsScoreTabClickEvent);
+        this.trackEvent(this.$options.trackDevopsScoreTabClickEvent);
         this.devopsScoreTabClicked = true;
       }
     },
     trackDevopsTabClick() {
       if (!this.adoptionTabClicked) {
-        this.track_event(this.$options.trackDevopsTabClickEvent);
+        this.trackEvent(this.$options.trackDevopsTabClickEvent);
         this.adoptionTabClicked = true;
       }
     },
