@@ -4,7 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integration do
   let_it_be(:ci_runner) { create(:ci_runner) }
-  let_it_be_with_reload(:build) { create(:ee_ci_build, :sast, :success, runner: ci_runner) }
+  let_it_be_with_reload(:build) do
+    create(:ee_ci_build, :sast, :success, runner: ci_runner, finished_at: 1.hour.ago)
+  end
+
   let_it_be(:project) { build.project }
   let_it_be(:namespace) { project.shared_runners_limit_namespace }
 
@@ -164,6 +167,40 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
         expect(Ci::InstanceRunnerFailedJobs).to receive(:track).once
 
         perform
+      end
+    end
+
+    describe 'finished builds sync event' do
+      before do
+        stub_licensed_features(runner_performance_insights: runner_performance_insights)
+      end
+
+      context 'when feature is not available' do
+        let(:runner_performance_insights) { false }
+
+        it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
+          expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
+        end
+      end
+
+      context 'when feature is available' do
+        let(:runner_performance_insights) { true }
+
+        it 'saves job on Ci::FinishedBuildChSyncEvent by default' do
+          expect { perform }.to change { Ci::FinishedBuildChSyncEvent.all }
+            .from([])
+            .to([an_object_having_attributes(build_id: build.id, build_finished_at: build.finished_at)])
+        end
+
+        context 'when generate_ci_finished_builds_sync_events FF is disabled' do
+          before do
+            stub_feature_flags(generate_ci_finished_builds_sync_events: false)
+          end
+
+          it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
+            expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
+          end
+        end
       end
     end
   end

@@ -18,6 +18,10 @@ module EE
         end
 
         ::Ci::InstanceRunnerFailedJobs.track(build) if build.failed?
+
+        if build.finished_at.present? && generate_finished_builds_sync_events?
+          ::Ci::FinishedBuildChSyncEvent.new(build_id: build.id, build_finished_at: build.finished_at).save
+        end
       end
 
       private
@@ -30,6 +34,11 @@ module EE
         build.project.feature_available?(:requirements, build.user) &&
           !build.project.requirements.empty? &&
           Ability.allowed?(build.user, :create_requirement_test_report, build.project)
+      end
+
+      def generate_finished_builds_sync_events?
+        ::Feature.enabled?(:generate_ci_finished_builds_sync_events) &&
+          ::License.feature_available?(:runner_performance_insights)
       end
     end
   end
