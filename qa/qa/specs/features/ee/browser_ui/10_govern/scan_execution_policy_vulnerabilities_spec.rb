@@ -64,7 +64,11 @@ module QA
       end
 
       it 'does not take effect when pipeline is run on non default branch',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/426177' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/426177',
+        quarantine: {
+          type: :stale,
+          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/426753"
+        } do
         expect(scan_execution_policy_commit.api_response).to have_key(:branch)
         expect(scan_execution_policy_commit.api_response[:branch]).not_to be nil
 
