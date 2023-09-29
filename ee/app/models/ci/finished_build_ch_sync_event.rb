@@ -2,6 +2,8 @@
 
 module Ci
   class FinishedBuildChSyncEvent < Ci::ApplicationRecord
+    include EachBatch
+
     PARTITION_DURATION = 1.day
 
     include PartitionedTable
@@ -23,6 +25,8 @@ module Ci
 
     validates :build_id, presence: true
     validates :build_finished_at, presence: true
+
+    scope :order_by_build_id, -> { order(:build_id) }
 
     scope :pending, -> { where(processed: false) }
     scope :for_partition, ->(partition) { where(partition: partition) }

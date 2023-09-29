@@ -10,16 +10,6 @@ RSpec.describe Ci::FinishedBuildChSyncEvent, type: :model, feature_category: :ru
     it { is_expected.to validate_presence_of(:build_finished_at) }
   end
 
-  describe '.pending' do
-    subject(:scope) { described_class.pending }
-
-    let_it_be(:event1) { described_class.create!(build_id: 1, build_finished_at: 2.hours.ago, processed: true) }
-    let_it_be(:event2) { described_class.create!(build_id: 2, build_finished_at: 1.hour.ago) }
-    let_it_be(:event3) { described_class.create!(build_id: 3, build_finished_at: 1.hour.ago, processed: true) }
-
-    it { is_expected.to contain_exactly(event2) }
-  end
-
   describe '.for_partition', :freeze_time do
     subject(:scope) { described_class.for_partition(partition) }
 
@@ -152,6 +142,30 @@ RSpec.describe Ci::FinishedBuildChSyncEvent, type: :model, feature_category: :ru
         # and we only have the newly created partition left.
         expect(described_class.count).to eq(1)
       end
+    end
+  end
+
+  describe 'sorting' do
+    let_it_be(:event3) { described_class.create!(build_id: 3, build_finished_at: 2.hours.ago, processed: true) }
+    let_it_be(:event1) { described_class.create!(build_id: 1, build_finished_at: 1.hour.ago) }
+    let_it_be(:event2) { described_class.create!(build_id: 2, build_finished_at: 1.hour.ago, processed: true) }
+
+    describe '.order_by_build_id' do
+      subject(:scope) { described_class.order_by_build_id }
+
+      it { is_expected.to eq([event1, event2, event3]) }
+    end
+  end
+
+  describe 'scopes' do
+    let_it_be(:event1) { described_class.create!(build_id: 1, build_finished_at: 2.hours.ago, processed: true) }
+    let_it_be(:event2) { described_class.create!(build_id: 2, build_finished_at: 1.hour.ago) }
+    let_it_be(:event3) { described_class.create!(build_id: 3, build_finished_at: 1.hour.ago, processed: true) }
+
+    describe '.pending' do
+      subject(:scope) { described_class.pending }
+
+      it { is_expected.to contain_exactly(event2) }
     end
   end
 end
