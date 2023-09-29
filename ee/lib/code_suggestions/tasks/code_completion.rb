@@ -19,7 +19,7 @@ module CodeSuggestions
       private
 
       def prompt
-        if params[:model_family] == :anthropic
+        if params[:code_completion_model_family] == CodeSuggestions::AiModels::ANTHROPIC
           CodeSuggestions::Prompts::CodeCompletion::Anthropic.new(params)
         else
           CodeSuggestions::Prompts::CodeCompletion::VertexAi.new(params)

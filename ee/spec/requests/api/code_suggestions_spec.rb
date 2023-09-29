@@ -361,6 +361,70 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
         end
 
+        context 'when code_completion_anthropic feature flag enabled' do
+          before do
+            stub_feature_flags(code_completion_anthropic: current_user)
+          end
+
+          it 'passses code_completion_model_family: :anthropic into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(
+                params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::ANTHROPIC),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            post_api
+          end
+        end
+
+        context 'when code_completion_anthropic feature flag disabled' do
+          before do
+            stub_feature_flags(code_completion_anthropic: false)
+          end
+
+          it 'passses code_completion_model_family: :vertex_ai into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(
+                params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::VERTEX_AI),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            post_api
+          end
+        end
+
+        context 'when code_generation_anthropic feature flag enabled' do
+          before do
+            stub_feature_flags(code_generation_anthropic: current_user)
+          end
+
+          it 'passses code_generation_model_family: :anthropic into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(
+                params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::ANTHROPIC),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            post_api
+          end
+        end
+
+        context 'when code_generation_anthropic feature flag disabled' do
+          before do
+            stub_feature_flags(code_generation_anthropic: false)
+          end
+
+          it 'passses code_generation_model_family: :vertex_ai into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(
+                params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::VERTEX_AI),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            post_api
+          end
+        end
+
         context 'when passing intent parameter' do
           context 'with completion intent' do
             let(:additional_params) { { intent: 'completion' } }
@@ -426,6 +490,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
 
         context 'when the task is code generation' do
+          before do
+            stub_feature_flags(code_generation_anthropic: false)
+          end
+
           let(:current_user) { authorized_user }
           let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
           let(:prefix) do
