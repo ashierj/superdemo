@@ -30,6 +30,10 @@ module AuditEvents
 
     validate :root_level_group?
 
+    def allowed_to_stream?(*)
+      true
+    end
+
     private
 
     def root_level_group?
