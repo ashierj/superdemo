@@ -39,7 +39,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       subject { described_class.for(container: project) }
 
       it 'returns all visualizations stored in the project as well as built-in ones' do
-        num_custom_visualizations = 2
+        num_custom_visualizations = 1
         expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
         expect(subject.map { |v| v.config['type'] }).to include('BarChart', 'LineChart')
       end
@@ -54,8 +54,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
         end
 
         it 'returns custom visualizations from pointer project' do
-          num_custom_visualizations = 1
-          expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
+          expect(subject.count).to eq(num_builtin_visualizations)
           expect(subject.map(&:slug)).to include('example_custom_visualization')
         end
 
@@ -71,9 +70,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       subject { described_class.for(container: group) }
 
       it 'returns built in visualizations' do
-        expected_visualizations =
-          ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS +
-          ProductAnalytics::Visualization::VALUE_STREAM_DASHBOARD_VISUALIZATIONS
+        expected_visualizations = ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS
 
         expect(subject.map(&:slug)).to match_array(expected_visualizations)
       end
@@ -100,8 +97,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
         it 'returns builtin and custom visualizations' do
           expected_visualizations =
             ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS +
-            ProductAnalytics::Visualization::VALUE_STREAM_DASHBOARD_VISUALIZATIONS
-          expected_visualizations.push('example_custom_visualization')
+            ['example_custom_visualization']
 
           expect(subject.map(&:slug)).to match_array(expected_visualizations)
         end
