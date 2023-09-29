@@ -19,7 +19,7 @@ module Types
           type: GraphQL::Types::String,
           null: true,
           description: 'Title of the vulnerability finding.',
-          hash_key: 'name'
+          hash_key: :name
 
         field :description,
           type: GraphQL::Types::String,

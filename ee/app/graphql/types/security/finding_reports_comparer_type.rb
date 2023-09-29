@@ -22,7 +22,7 @@ module Types
         type: FindingReportsComparer::ReportType,
         null: true,
         alpha: { milestone: '16.1' },
-        hash_key: 'data',
+        hash_key: :data,
         description: 'Compared security report.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
