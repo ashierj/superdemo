@@ -28,6 +28,16 @@ module EE
             usernames'
             mutually_exclusive :approved_by_ids, :approved_by_usernames
           end
+
+          params :optional_merge_params_ee do
+            optional :skip_merge_train,
+              type: Grape::API::Boolean,
+              desc: 'If `true` skips train restart when merging immediately in a merge train configured project.'
+          end
+
+          def ci_params
+            super.merge(skip_merge_train: params[:skip_merge_train])
+          end
         end
 
         resource :projects, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do

@@ -10,7 +10,7 @@ module MergeTrains
     self.table_name = 'merge_trains'
 
     ACTIVE_STATUSES = %w[idle stale fresh].freeze
-    COMPLETE_STATUSES = %w[merged merging].freeze
+    COMPLETE_STATUSES = %w[merged merging skip_merged].freeze
 
     belongs_to :target_project, class_name: "Project"
     belongs_to :merge_request, inverse_of: :merge_train_car
@@ -73,6 +73,7 @@ module MergeTrains
       state :stale, value: 2
       state :fresh, value: 3
       state :merging, value: 4
+      state :skip_merged, value: 5
     end
 
     scope :active, -> { with_status(*ACTIVE_STATUSES) }
@@ -83,6 +84,27 @@ module MergeTrains
     scope :preload_api_entities, -> do
       preload(:user, :merge_request, pipeline: Ci::Pipeline::PROJECT_ROUTE_AND_NAMESPACE_ROUTE)
         .merge(MergeRequest.preload_routables)
+    end
+
+    # The purpose of creating a skip-merged car is to include a merge request
+    # in the completed car history to avoid refreshing the train after an
+    # immediate merge of the associated merge request
+    def self.insert_skip_merged_car_for(merge_request, merged_by)
+      # We currently create this Car directly after the git merge,
+      # in EE::MergeRequests::MergeService#after_merge, before the
+      # PostMergeService actually marks the MR as merged. If we
+      # change the order of operations, we should change this guard.
+      # But right now we're writing this to be used in as specific
+      # of a use case as possible.
+      return unless merge_request.locked?
+
+      merge_request.create_merge_train_car(
+        user: merged_by,
+        target_project: merge_request.target_project,
+        target_branch: merge_request.target_branch,
+        merged_at: Time.current,
+        status: MergeTrains::Car.state_machine.states[:skip_merged].value
+      )
     end
 
     def all_next

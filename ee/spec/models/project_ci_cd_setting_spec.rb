@@ -78,6 +78,36 @@ RSpec.describe ProjectCiCdSetting, feature_category: :continuous_integration do
     end
   end
 
+  describe '#merge_trains_skip_train_allowed?' do
+    subject(:result) { project.merge_trains_skip_train_allowed? }
+
+    let(:project) { create(:project) }
+
+    where(:merge_pipelines_enabled, :merge_trains_enabled, :skip_train_allowed, :feature_available, :expected_result) do
+      true  | true  | true  | true  | true
+      false | true  | true  | true  | false
+      true  | false | true  | true  | false
+      true  | true  | false | true  | false
+      true  | true  | true  | false | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(merge_pipelines: feature_available, merge_trains: feature_available)
+      end
+
+      it 'returns true only if all of the related settings and features are true' do
+        project.update!(
+          merge_pipelines_enabled: merge_pipelines_enabled,
+          merge_trains_enabled: merge_trains_enabled,
+          merge_trains_skip_train_allowed: skip_train_allowed
+        )
+
+        expect(result).to eq(expected_result)
+      end
+    end
+  end
+
   describe '#auto_rollback_enabled?' do
     using RSpec::Parameterized::TableSyntax
 
