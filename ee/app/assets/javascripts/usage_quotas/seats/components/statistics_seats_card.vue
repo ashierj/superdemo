@@ -12,7 +12,7 @@ import {
 } from 'ee/usage_quotas/seats/constants';
 import Tracking from '~/tracking';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { LIMITED_ACCESS_MESSAGING } from 'ee/usage_quotas/components/constants';
+import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
 import LimitedAccessModal from '../../components/limited_access_modal.vue';
 
 export default {
@@ -112,7 +112,7 @@ export default {
       return (
         !this.canAddSeats &&
         gon.features?.limitedAccessModal &&
-        LIMITED_ACCESS_MESSAGING[this.subscriptionPermissions.reason]
+        LIMITED_ACCESS_KEYS.includes(this.subscriptionPermissions.reason)
       );
     },
   },

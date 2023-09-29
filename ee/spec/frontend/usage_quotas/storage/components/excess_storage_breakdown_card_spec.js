@@ -1,4 +1,5 @@
 import { GlButton, GlSkeletonLoader, GlProgressBar, GlLink } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import ExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/excess_storage_breakdown_card.vue';
@@ -13,6 +14,7 @@ describe('ExcessStorageBreakdownCard', () => {
   const defaultProps = {
     purchasedStorage: 0,
     loading: false,
+    limitedAccessModeEnabled: false,
   };
 
   const createComponent = ({ props = {}, provide = {} } = {}) => {
@@ -35,11 +37,34 @@ describe('ExcessStorageBreakdownCard', () => {
   const findGlButton = () => wrapper.findComponent(GlButton);
   const findProgressBar = () => wrapper.findComponent(GlProgressBar);
 
-  it('renders purchase button with the correct attributes', () => {
-    createComponent();
-    expect(findGlButton().attributes()).toMatchObject({
-      href: 'some-fancy-url',
-      target: '_blank',
+  describe('Buy storage button', () => {
+    beforeEach(async () => {
+      createComponent();
+
+      findGlButton().vm.$emit('click');
+      await nextTick();
+    });
+
+    it('renders purchase link with the correct attributes', () => {
+      expect(findGlButton().attributes()).toMatchObject({
+        href: 'some-fancy-url',
+        target: '_blank',
+      });
+    });
+  });
+
+  describe('when limitedAccessModeEnabled prop is true', () => {
+    beforeEach(async () => {
+      createComponent({
+        props: { limitedAccessModeEnabled: true },
+      });
+
+      findGlButton().vm.$emit('click');
+      await nextTick();
+    });
+
+    it('renders purchase button', () => {
+      expect(findGlButton().attributes('href')).toBeUndefined();
     });
   });
 
