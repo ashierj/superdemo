@@ -78,6 +78,7 @@ describe('NamespaceStorageApp', () => {
       const purchaseButton = wrapper.findComponent(GlButton);
 
       expect(purchaseButton.exists()).toBe(true);
+      expect(purchaseButton.attributes('href')).toBe('some-fancy-url');
     });
   });
 

@@ -1,14 +1,12 @@
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-import VueApollo from 'vue-apollo';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
-import apolloProvider from 'ee/usage_quotas/shared/provider';
+import apolloProvider from './provider';
 import initialStore from './store';
 
 Vue.use(Vuex);
-Vue.use(VueApollo);
 
 export default (containerId = 'js-seat-usage-app') => {
   const el = document.getElementById(containerId);
