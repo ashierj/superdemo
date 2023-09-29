@@ -29,6 +29,7 @@ module Okrs
             assignees = key_result.assignees
 
             assignees.each do |assignee|
+              TodoService.new.request_okr_checkin(key_result, assignee)
               Notify.okr_checkin_reminder_notification(
                 user: assignee,
                 work_item: key_result,

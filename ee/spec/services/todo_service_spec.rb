@@ -387,6 +387,21 @@ RSpec.describe TodoService, feature_category: :team_planning do
         end
       end
     end
+
+    describe '#request_okr_checkin' do
+      let_it_be(:project_member) { create(:project_member, :maintainer) }
+      let_it_be(:project) { project_member.project }
+      let_it_be(:user) { project_member.user }
+      let_it_be(:kr) { create(:work_item, :key_result, project: project) }
+
+      it 'creates a pending todo for the key_result assignee' do
+        kr.assignees = [user]
+
+        service.request_okr_checkin(kr, user)
+
+        should_create_todo(user: user, author: kr.author, target: kr, action: Todo::OKR_CHECKIN_REQUESTED)
+      end
+    end
   end
 
   def should_create_todo(attributes = {})
