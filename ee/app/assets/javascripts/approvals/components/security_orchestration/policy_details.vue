@@ -26,13 +26,8 @@ export default {
     humanizedRules() {
       return humanizeRules(this.policy.rules);
     },
-    policyHasNamespace() {
-      return policyHasNamespace(this.policy?.source);
-    },
-    policyPath() {
-      return this.policy.source.inherited
-        ? `groups/${this.policy.source?.namespace?.fullPath}`
-        : `${this.policy.source.project?.fullPath}`;
+    showEditLink() {
+      return this.policy?.source?.inherited ? policyHasNamespace(this.policy.source) : true;
     },
     approvers() {
       return this.policy.approvers;
@@ -60,7 +55,7 @@ export default {
             </li>
           </ul>
         </div>
-        <div v-if="policyHasNamespace" class="gl-text-right">
+        <div v-if="showEditLink" class="gl-text-right">
           <gl-link :href="policy.editPath" target="_blank">
             {{ $options.i18n.policyDetails }}
           </gl-link>

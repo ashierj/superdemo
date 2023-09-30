@@ -26,9 +26,6 @@ describe('PolicyDetails', () => {
       project: {
         fullPath: 'policy/path',
       },
-      namespace: {
-        name: 'policy-name',
-      },
     },
   };
 
@@ -59,6 +56,7 @@ describe('PolicyDetails', () => {
     });
 
     it('renders a link to policy path', () => {
+      expect(findLink().exists()).toBe(true);
       expect(findLink().attributes('href')).toBe(initialPolicy.editPath);
     });
 
@@ -68,6 +66,7 @@ describe('PolicyDetails', () => {
       });
 
       it('renders a link to policy path', () => {
+        expect(findLink().exists()).toBe(true);
         expect(findLink().attributes('href')).toBe(initialPolicy.editPath);
       });
     });
