@@ -253,11 +253,12 @@ describe('AnalyticsVisualizationDesigner', () => {
 
         await findSaveButton().vm.$emit('click');
         await waitForPromises();
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'A visualization with that name already exists.',
-          error: null,
-          captureError: false,
-        });
+
+        expect(findTitleFormGroup().attributes('state')).toBe(undefined);
+        expect(findTitleFormGroup().attributes('invalid-feedback')).toBe(
+          'A visualization with that name already exists.',
+        );
+        expect(findTitleInput().attributes('state')).toBe(undefined);
       });
 
       it('and an error is thrown', async () => {

@@ -2,7 +2,7 @@
 import { QueryBuilder } from '@cubejs-client/vue';
 import { GlButton, GlFormGroup, GlFormInput } from '@gitlab/ui';
 
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { slugify } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
@@ -49,7 +49,7 @@ export default {
         measureSubType: '',
       },
       visualizationTitle: '',
-      titleValidationState: null,
+      titleValidationError: null,
       selectedDisplayType: PANEL_DISPLAY_TYPES.DATA,
       selectedVisualizationType: '',
       hasTimeDimension: false,
@@ -122,10 +122,11 @@ export default {
       this.selectDisplayType(PANEL_DISPLAY_TYPES.VISUALIZATION);
       this.selectedVisualizationType = newType;
     },
-    onTitleInput() {
+    validateTitle(areSubmitting) {
       // Don't validate if the title has not been submitted
-      if (this.titleValidationState !== null) {
-        this.titleValidationState = this.visualizationTitle.length > 0;
+      if (this.titleValidationError !== null || areSubmitting) {
+        this.titleValidationError =
+          this.visualizationTitle.length > 0 ? '' : __('This field is required.');
       }
     },
     getSaveVisualizationValidationError() {
@@ -138,8 +139,8 @@ export default {
       return null;
     },
     async saveVisualization() {
-      this.titleValidationState = this.visualizationTitle?.length > 0;
-      if (!this.titleValidationState) {
+      this.validateTitle(true);
+      if (this.titleValidationError) {
         this.$refs.titleInput.$el.focus();
         return;
       }
@@ -183,7 +184,9 @@ export default {
 
         // eslint-disable-next-line @gitlab/require-i18n-strings
         if (message === 'A file with this name already exists') {
-          this.showAlert(s__('Analytics|A visualization with that name already exists.'));
+          this.titleValidationError = s__(
+            'Analytics|A visualization with that name already exists.',
+          );
         } else {
           this.showAlert(`${this.$options.i18n.saveError} ${message}`.trimEnd(), error, true);
         }
@@ -227,8 +230,8 @@ export default {
           label-for="title"
           class="gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full"
           data-testid="visualization-title-form-group"
-          :invalid-feedback="__('This field is required.')"
-          :state="titleValidationState"
+          :invalid-feedback="titleValidationError"
+          :state="!titleValidationError"
         >
           <gl-form-input
             id="title"
@@ -240,9 +243,9 @@ export default {
             :aria-label="s__('Analytics|Visualization title')"
             class="form-control gl-mr-4 gl-border-gray-200"
             data-testid="visualization-title-input"
-            :state="titleValidationState"
+            :state="!titleValidationError"
             required
-            @input="onTitleInput"
+            @input="validateTitle"
           />
         </gl-form-group>
       </div>
