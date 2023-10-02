@@ -26,11 +26,11 @@ module CodeSuggestions
             // Code goes here
             </new_code>
 
-            This is a task to write new #{language} code in a file '#{file_path_info}', based on a given description.
+            This is a task to write new #{language.name} code in a file '#{file_path_info}', based on a given description.
             #{existing_code_instruction}
             You get the description of the code that needs to be created in <instruction> XML tags.
 
-            It is your task to write valid and working #{language} code.
+            It is your task to write valid and working #{language.name} code.
             Only return in your response new code.
             Do not provide any explanation.
 

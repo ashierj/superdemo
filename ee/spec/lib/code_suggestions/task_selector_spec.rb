@@ -11,7 +11,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
     let(:params) do
       {
         skip_generate_comment_prefix: skip_comment,
-        current_file: { content_above_cursor: prefix },
+        current_file: { file_name: file_name, content_above_cursor: prefix },
         intent: intent
       }
     end
@@ -23,40 +23,36 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         where(:prefix, :type) do
           # rubocop:disable Layout/LineLength
           # Standard code generation comments
-          "# #{generate_prefix}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "// #{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "##{generate_prefix}A function that outputs the first 20 fibonacci numbers"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "//#{generate_prefix}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
 
           # Line breaks at the end of the comment
-          "# #{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "// #{generate_prefix}A function that outputs the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "##{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "//#{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
 
           # These have characters _before_ the comment
-          "end\n\n# #{generate_prefix}A function that outputs the first 20 fibonacci numbers"    | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "}\n\n\n\n// #{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "    ##{generate_prefix}A function that outputs the first 20 fibonacci numbers"        | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "   \r\n   //#{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "end\n\n#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "}\n\n\n\n#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "    #{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers"       | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "   \r\n   #{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
 
           # These rely on case-insensitivity
-          "# #{case_insensitive_prefixes[0]}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "// #{case_insensitive_prefixes[1]}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "##{case_insensitive_prefixes[2]}A function that outputs the first 20 fibonacci numbers"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "//#{case_insensitive_prefixes[3]}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{case_insensitive_prefixes[0]}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{case_insensitive_prefixes[1]}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{case_insensitive_prefixes[2]}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{case_insensitive_prefixes[3]}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
 
           # Multiline comments
-          "# #{generate_prefix}A function that outputs\n# the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "// #{generate_prefix}A function that outputs\n// the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "##{generate_prefix}A function that outputs\n#the first 20 fibonacci numbers\n"     | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "//#{generate_prefix}A function that outputs\n//the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{generate_prefix}A function that outputs\n#{single_line_comment} the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{generate_prefix}A function that outputs\n#{single_line_comment} the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
 
           # These are too short to be considered generation
-          "# #{generate_prefix}A func" | CodeSuggestions::Tasks::CodeCompletion
-          "// #{generate_prefix}A fun" | CodeSuggestions::Tasks::CodeCompletion
-          "##{generate_prefix}A func"  | CodeSuggestions::Tasks::CodeCompletion
-          "//#{generate_prefix}A fu"   | CodeSuggestions::Tasks::CodeCompletion
+          "#{single_line_comment} #{generate_prefix}A func" | CodeSuggestions::Tasks::CodeCompletion
+          "#{single_line_comment} #{generate_prefix}A fun"  | CodeSuggestions::Tasks::CodeCompletion
+          "#{single_line_comment}#{generate_prefix}A func"  | CodeSuggestions::Tasks::CodeCompletion
+          "#{single_line_comment}#{generate_prefix}A fu"    | CodeSuggestions::Tasks::CodeCompletion
 
           # These include no comments at all
           'def fibonacci(i)'        | CodeSuggestions::Tasks::CodeCompletion
@@ -70,6 +66,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
       end
 
       context 'when the last comment is a code generation' do
+        let(:single_line_comment) { '#' }
         let(:prefix) do
           <<~TEXT
             # #{generate_prefix}A function that outputs the first 20 fibonacci numbers
@@ -79,12 +76,15 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           TEXT
         end
 
+        let(:file_name) { 'test.py' }
+
         it 'only takes the last example in to account' do
           expect(subject).to be_an_instance_of(override_type || CodeSuggestions::Tasks::CodeGeneration::FromComment)
         end
       end
 
       context 'when the last comment is a code suggestion' do
+        let(:single_line_comment) { '#' }
         let(:prefix) do
           <<~TEXT
             # #{generate_prefix}A function that outputs the first 20 fibonacci numbers
@@ -94,33 +94,54 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           TEXT
         end
 
+        let(:file_name) { 'test.py' }
+
         it 'only takes the last example in to account' do
           expect(subject).to be_an_instance_of(override_type || CodeSuggestions::Tasks::CodeCompletion)
         end
       end
     end
 
-    context 'without skip_generate_comment_prefix prefix' do
-      let(:skip_comment) { false }
-      let(:generate_prefix) { 'GitLab Duo Generate: ' }
-      let(:case_insensitive_prefixes) do
-        [
-          'GitLab duo generate: ',
-          'gitLab Duo Generate: ',
-          'gitLab Duo generate: ',
-          'gitLab duo generate: '
-        ]
+    context 'when content is a supported language' do
+      CodeSuggestions::ProgrammingLanguage::LANGUAGE_COMMENT_FORMATS.each do |languages, format|
+        lang = languages.first
+        ext = CodeSuggestions::ProgrammingLanguage::SUPPORTED_LANGUAGES[lang].first
+        single_comment_prefix = format[:single]
+
+        # OCaml does not support single line comments
+        context "for language #{lang} (#{single_comment_prefix}) without skip prefix", unless: lang == 'OCaml' do
+          let(:skip_comment) { false }
+          let(:generate_prefix) { 'GitLab Duo Generate: ' }
+          let(:case_insensitive_prefixes) do
+            [
+              'GitLab duo generate: ',
+              'gitLab Duo Generate: ',
+              'gitLab Duo generate: ',
+              'gitLab duo generate: '
+            ]
+          end
+
+          let(:file_name) { "file.#{ext}" }
+          let(:single_line_comment) do
+            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).comment_format[:single]
+          end
+
+          it_behaves_like 'correct task detector'
+        end
+
+        # OCaml does not support single line comments
+        context "for language #{lang} (#{single_comment_prefix}) with skip prefix", unless: lang == 'OCaml' do
+          let(:skip_comment) { true }
+          let(:generate_prefix) { '' }
+          let(:case_insensitive_prefixes) { Array.new(4, '') }
+          let(:file_name) { "file.#{ext}" }
+          let(:single_line_comment) do
+            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).comment_format[:single]
+          end
+
+          it_behaves_like 'correct task detector'
+        end
       end
-
-      it_behaves_like 'correct task detector'
-    end
-
-    context 'with skip_generate_comment_prefix prefix' do
-      let(:skip_comment) { true }
-      let(:generate_prefix) { '' }
-      let(:case_insensitive_prefixes) { Array.new(4, '') }
-
-      it_behaves_like 'correct task detector'
     end
 
     context 'with intent param' do
@@ -131,6 +152,8 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         let(:override_type) { CodeSuggestions::Tasks::CodeGeneration::FromComment }
         let(:generate_prefix) { '' }
         let(:case_insensitive_prefixes) { Array.new(4, '') }
+        let(:file_name) { "file.py" }
+        let(:single_line_comment) { "#" }
 
         it_behaves_like 'correct task detector'
 
@@ -151,6 +174,8 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         let(:override_type) { CodeSuggestions::Tasks::CodeCompletion }
         let(:generate_prefix) { '' }
         let(:case_insensitive_prefixes) { Array.new(4, '') }
+        let(:file_name) { "file.py" }
+        let(:single_line_comment) { "#" }
 
         it_behaves_like 'correct task detector'
       end
