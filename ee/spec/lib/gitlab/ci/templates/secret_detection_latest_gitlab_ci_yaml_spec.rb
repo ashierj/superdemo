@@ -65,7 +65,7 @@ RSpec.describe 'Secret-Detection.gitlab-ci.yml', feature_category: :continuous_i
       context 'when branch pipeline' do
         it 'creates a pipeline with the expected jobs' do
           expect(pipeline.errors.full_messages).to be_empty
-          expect(build_names).to match_array(%w(secret_detection))
+          expect(build_names).to match_array(%w[secret_detection])
         end
       end
 
@@ -94,7 +94,7 @@ RSpec.describe 'Secret-Detection.gitlab-ci.yml', feature_category: :continuous_i
         it 'creates a pipeline with the expected jobs' do
           expect(pipeline).to be_merge_request_event
           expect(pipeline.errors.full_messages).to be_empty
-          expect(build_names).to match_array(%w(secret_detection))
+          expect(build_names).to match_array(%w[secret_detection])
         end
       end
     end

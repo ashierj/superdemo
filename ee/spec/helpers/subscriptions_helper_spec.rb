@@ -50,7 +50,7 @@ RSpec.describe SubscriptionsHelper, feature_category: :billing_and_payments do
     it { is_expected.to include(plan_id: 'bronze_id') }
     it { is_expected.to include(namespace_id: group.id.to_s) }
     it { is_expected.to include(source: 'some_source') }
-    it { is_expected.to include(group_data: %{[{"id":#{group.id},"account_id":null,"name":"My Namespace","full_path":"my_namespace"}]}) }
+    it { is_expected.to include(group_data: %([{"id":#{group.id},"account_id":null,"name":"My Namespace","full_path":"my_namespace"}])) }
     it { is_expected.to include(trial: 'false') }
     it { is_expected.to include(new_trial_registration_path: '/-/trial_registrations/new') }
 
@@ -137,7 +137,7 @@ RSpec.describe SubscriptionsHelper, feature_category: :billing_and_payments do
     it { is_expected.to include(namespace_id: group.id.to_s) }
     it { is_expected.to include(active_subscription: active_subscription) }
     it { is_expected.to include(source: 'some_source') }
-    it { is_expected.to include(group_data: %{[{"id":#{group.id},"account_id":"#{account_id}","name":"My Namespace","full_path":"my_namespace"}]}) }
+    it { is_expected.to include(group_data: %([{"id":#{group.id},"account_id":"#{account_id}","name":"My Namespace","full_path":"my_namespace"}])) }
     it { is_expected.to include(redirect_after_success: group_usage_quotas_path(group, anchor: anchor, purchased_product: purchased_product)) }
   end
 end

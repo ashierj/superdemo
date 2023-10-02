@@ -20,6 +20,6 @@ RSpec.describe Gitlab::StatusPage::Filter::MentionAnonymizationFilter do
   def user_link(username)
     name = username.capitalize
 
-    %{<a href="/#{username}" data-user="1" data-reference-type="user" data-container="body" data-placement="top" data-html="true" class="gfm gfm-project_member js-user-link" title="#{name}">@#{username}</a>}
+    %(<a href="/#{username}" data-user="1" data-reference-type="user" data-container="body" data-placement="top" data-html="true" class="gfm gfm-project_member js-user-link" title="#{name}">@#{username}</a>)
   end
 end

@@ -14,11 +14,11 @@ RSpec.describe Gitlab::Vulnerabilities::Parser, feature_category: :vulnerability
 
     context 'with standard categories' do
       let(:categories) do
-        %w(
+        %w[
           sast
           dast
           dependency_scanning
-        )
+        ]
       end
 
       it 'returns a Standard Vulnerability' do

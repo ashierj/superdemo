@@ -88,7 +88,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
 
   describe '#orchestration_policy_data' do
     context 'for project' do
-      let(:approvers) { %w(approver1 approver2) }
+      let(:approvers) { %w[approver1 approver2] }
       let(:owner) { project.first_owner }
       let(:policy) { nil }
       let(:policy_type) { 'scan_execution_policy' }
@@ -175,7 +175,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
       let_it_be(:mit_license) { create(:software_license, :mit) }
       let_it_be(:apache_license) { create(:software_license, :apache_2_0) }
 
-      let(:approvers) { %w(approver1 approver2) }
+      let(:approvers) { %w[approver1 approver2] }
       let(:owner) { namespace.first_owner }
       let(:policy) { nil }
       let(:policy_type) { 'scan_execution_policy' }

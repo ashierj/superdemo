@@ -120,8 +120,8 @@ RSpec.describe 'Admin Geo Sites', :js, :geo, feature_category: :geo_replication 
   end
 
   describe 'site form fields' do
-    primary_only_fields = %w(site-reverification-interval-field)
-    secondary_only_fields = %w(site-selective-synchronization-field site-repository-capacity-field site-file-capacity-field site-object-storage-field)
+    primary_only_fields = %w[site-reverification-interval-field]
+    secondary_only_fields = %w[site-selective-synchronization-field site-repository-capacity-field site-file-capacity-field site-object-storage-field]
 
     it 'when primary renders only primary fields' do
       geo_site.update!(primary: true)

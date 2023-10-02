@@ -15,7 +15,7 @@ FactoryBot.define do
         active: true,
         timezone: ActiveSupport::TimeZone.all.map { |tz| tz.tzinfo.identifier }.sample,
         startsAt: Time.now,
-        cadence: { unit: %w(day month year week).sample, duration: 1 }
+        cadence: { unit: %w[day month year week].sample, duration: 1 }
       }
 
       ruby_kwargs = arguments.transform_keys { |key| key.to_s.underscore.to_sym }

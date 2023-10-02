@@ -109,16 +109,16 @@ RSpec.describe Gitlab::AlertManagement::Payload::Generic do
 
       let_it_be(:attribute_mapping) do
         {
-          title: { path: %w(alert name), type: 'string' },
-          description: { path: %w(alert desc), type: 'string' },
-          start_time: { path: %w(alert start_time), type: 'datetime' },
-          end_time: { path: %w(alert end_time), type: 'datetime' },
-          service: { path: %w(alert service), type: 'string' },
-          monitoring_tool: { path: %w(alert monitoring_tool), type: 'string' },
-          hosts: { path: %w(alert hosts), type: 'string' },
-          severity: { path: %w(alert severity), type: 'string' },
-          gitlab_environment_name: { path: %w(alert env_name), type: 'string' },
-          fingerprint: { path: %w(alert fingerprint), type: 'string' }
+          title: { path: %w[alert name], type: 'string' },
+          description: { path: %w[alert desc], type: 'string' },
+          start_time: { path: %w[alert start_time], type: 'datetime' },
+          end_time: { path: %w[alert end_time], type: 'datetime' },
+          service: { path: %w[alert service], type: 'string' },
+          monitoring_tool: { path: %w[alert monitoring_tool], type: 'string' },
+          hosts: { path: %w[alert hosts], type: 'string' },
+          severity: { path: %w[alert severity], type: 'string' },
+          gitlab_environment_name: { path: %w[alert env_name], type: 'string' },
+          fingerprint: { path: %w[alert fingerprint], type: 'string' }
         }
       end
 
@@ -193,7 +193,7 @@ RSpec.describe Gitlab::AlertManagement::Payload::Generic do
       context 'with only some attributes defined in custom mapping' do
         let_it_be(:attribute_mapping) do
           {
-            title: { path: %w(alert name), type: 'string' }
+            title: { path: %w[alert name], type: 'string' }
           }
         end
 
@@ -230,8 +230,8 @@ RSpec.describe Gitlab::AlertManagement::Payload::Generic do
 
         let_it_be(:attribute_mapping) do
           {
-            title: { path: %w(alert name), type: 'string' },
-            description: { path: %w(alert desc), type: 'string' }
+            title: { path: %w[alert name], type: 'string' },
+            description: { path: %w[alert desc], type: 'string' }
           }
         end
 

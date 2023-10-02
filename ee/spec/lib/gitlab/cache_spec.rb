@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Cache do
   include ::EE::GeoHelpers
 
   describe '.delete' do
-    let(:key) { %w{a cache key} }
+    let(:key) { %w[a cache key] }
 
     subject(:delete) { described_class.delete(key) }
 
@@ -24,7 +24,7 @@ RSpec.describe Gitlab::Cache do
   end
 
   describe '.delete_on_geo_secondaries' do
-    let(:key) { %w{a cache key} }
+    let(:key) { %w[a cache key] }
 
     subject(:delete_on_geo_secondaries) { described_class.delete_on_geo_secondaries(key) }
 

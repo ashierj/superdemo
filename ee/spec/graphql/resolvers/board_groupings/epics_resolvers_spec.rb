@@ -92,7 +92,7 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
       end
 
       it 'calls service with right params' do
-        filters = { label_name: ['foo'], not: { label_name: %w(foo bar) } }
+        filters = { label_name: ['foo'], not: { label_name: %w[foo bar] } }
         service_params = { all_lists: true, board_id: group_board.id }.merge(filters)
 
         expect(Boards::Issues::ListService).to receive(:new)

@@ -44,7 +44,7 @@ RSpec.describe GitlabSchema.types['EscalationRuleInput'] do
   end
 
   it 'has specific fields' do
-    allowed_args = %w(oncallScheduleIid username elapsedTimeSeconds status)
+    allowed_args = %w[oncallScheduleIid username elapsedTimeSeconds status]
 
     expect(described_class.arguments.keys).to include(*allowed_args)
   end

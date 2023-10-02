@@ -5,19 +5,19 @@ require 'spec_helper'
 RSpec.describe EE::ApplicationSettingsHelper do
   describe '.visible_attributes' do
     it 'contains personal access token parameters' do
-      expect(visible_attributes).to include(*%i(max_personal_access_token_lifetime))
+      expect(visible_attributes).to include(*%i[max_personal_access_token_lifetime])
     end
 
     it 'contains telesign values' do
-      expect(visible_attributes).to include(*%i(telesign_customer_xid telesign_api_key))
+      expect(visible_attributes).to include(*%i[telesign_customer_xid telesign_api_key])
     end
 
     it 'contains openai_api_key value' do
-      expect(visible_attributes).to include(*%i(openai_api_key))
+      expect(visible_attributes).to include(*%i[openai_api_key])
     end
 
     it 'contains anthropic_api_key value' do
-      expect(visible_attributes).to include(*%i(anthropic_api_key))
+      expect(visible_attributes).to include(*%i[anthropic_api_key])
     end
   end
 

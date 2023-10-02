@@ -91,7 +91,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater, feature_category: :sy
       let_it_be(:auth_hash) do
         Gitlab::Auth::GroupSaml::AuthHash.new(
           OmniAuth::AuthHash.new(extra: {
-            raw_info: OneLogin::RubySaml::Attributes.new('groups' => %w(Developers Owners))
+            raw_info: OneLogin::RubySaml::Attributes.new('groups' => %w[Developers Owners])
           })
         )
       end
@@ -254,7 +254,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater, feature_category: :sy
         Gitlab::Auth::GroupSaml::AuthHash.new(
           OmniAuth::AuthHash.new(extra: {
             raw_info: OneLogin::RubySaml::Attributes.new({
-              'groups' => %w(Developers Owners),
+              'groups' => %w[Developers Owners],
               'http://schemas.microsoft.com/claims/groups.link' =>
                 ['https://graph.windows.net/8c750e43/users/e631c82c/getMemberObjects']
             })

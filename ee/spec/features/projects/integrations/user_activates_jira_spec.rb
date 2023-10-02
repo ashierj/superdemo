@@ -9,7 +9,7 @@ RSpec.describe 'User activates Jira', :js, feature_category: :integrations do
   describe 'user sets and activates Jira integration' do
     before do
       server_info = { key: 'value' }.to_json
-      stub_request(:get, test_url).with(basic_auth: %w(username password)).to_return(body: server_info)
+      stub_request(:get, test_url).with(basic_auth: %w[username password]).to_return(body: server_info)
     end
 
     context 'when Jira connection test succeeds' do

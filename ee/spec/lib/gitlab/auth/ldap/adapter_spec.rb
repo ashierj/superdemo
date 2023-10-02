@@ -24,21 +24,21 @@ RSpec.describe Gitlab::Auth::Ldap::Adapter do
       expect(adapter).to receive(:ldap_search) do |arg|
         expect(arg[:filter].to_s).to eq('(cn=*)')
         expect(arg[:base]).to eq('ou=groups,dc=example,dc=com')
-        expect(arg[:attributes]).to match(%w(dn cn memberuid member submember uniquemember memberof))
+        expect(arg[:attributes]).to match(%w[dn cn memberuid member submember uniquemember memberof])
       end.and_return({})
 
       adapter.groups
     end
 
     it 'returns a group object if search returns a result' do
-      entry = ldap_group_entry(%w(uid=john uid=mary), cn: 'group1')
+      entry = ldap_group_entry(%w[uid=john uid=mary], cn: 'group1')
       allow(adapter).to receive(:ldap_search).and_return([entry])
 
       results = adapter.groups('group1')
 
       expect(results.first).to be_a(EE::Gitlab::Auth::Ldap::Group)
       expect(results.first.cn).to eq('group1')
-      expect(results.first.member_dns).to match_array(%w(uid=john uid=mary))
+      expect(results.first.member_dns).to match_array(%w[uid=john uid=mary])
     end
   end
 

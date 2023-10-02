@@ -10,13 +10,13 @@ RSpec.describe Gitlab::Auth::GroupSaml::AuthHash do
   subject(:saml_auth_hash) { described_class.new(omniauth_auth_hash) }
 
   describe '#groups' do
-    let(:raw_info_attr) { { group_attribute => %w(Developers Owners) } }
+    let(:raw_info_attr) { { group_attribute => %w[Developers Owners] } }
 
     context 'with a lowercase groups attribute' do
       let(:group_attribute) { 'groups' }
 
       it 'returns array of groups' do
-        expect(saml_auth_hash.groups).to eq(%w(Developers Owners))
+        expect(saml_auth_hash.groups).to eq(%w[Developers Owners])
       end
     end
 
@@ -24,7 +24,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::AuthHash do
       let(:group_attribute) { 'Groups' }
 
       it 'returns array of groups' do
-        expect(saml_auth_hash.groups).to eq(%w(Developers Owners))
+        expect(saml_auth_hash.groups).to eq(%w[Developers Owners])
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::AuthHash do
 
   describe 'allowed user attributes methods' do
     context 'when the attributes are presented as an array' do
-      let(:raw_info_attr) { { 'can_create_group' => %w(true), 'projects_limit' => %w(20) } }
+      let(:raw_info_attr) { { 'can_create_group' => %w[true], 'projects_limit' => %w[20] } }
 
       it 'returns the proper can_create_groups value' do
         expect(saml_auth_hash.user_attributes['can_create_group']).to eq "true"

@@ -64,7 +64,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
 
           auth_hash[:extra][:raw_info] =
             OneLogin::RubySaml::Attributes.new(
-              'can_create_group' => %w(true), 'projects_limit' => %w(20)
+              'can_create_group' => %w[true], 'projects_limit' => %w[20]
             )
         end
 
@@ -127,7 +127,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
           before do
             auth_hash[:extra][:raw_info] =
               OneLogin::RubySaml::Attributes.new(
-                'can_create_group' => %w(true), 'projects_limit' => %w(20)
+                'can_create_group' => %w[true], 'projects_limit' => %w[20]
               )
           end
 
@@ -183,7 +183,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
 
               auth_hash[:extra][:raw_info] =
                 OneLogin::RubySaml::Attributes.new(
-                  'can_create_group' => %w(true), 'projects_limit' => %w(20)
+                  'can_create_group' => %w[true], 'projects_limit' => %w[20]
                 )
             end
 

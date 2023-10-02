@@ -38,7 +38,7 @@ RSpec.describe 'SAST-IaC.gitlab-ci.yml', feature_category: :continuous_integrati
 
     context 'by default' do
       it 'creates a pipeline with the expected jobs' do
-        expect(build_names).to match_array(%w(kics-iac-sast))
+        expect(build_names).to match_array(%w[kics-iac-sast])
       end
     end
   end

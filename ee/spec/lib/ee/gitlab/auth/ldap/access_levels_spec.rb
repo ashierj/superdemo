@@ -6,10 +6,10 @@ RSpec.describe EE::Gitlab::Auth::Ldap::AccessLevels do
   describe '#set' do
     let(:access_levels) { described_class.new }
     let(:dns) do
-      %w(
+      %w[
         uid=johndoe,ou=users,dc=example,dc=com
         uid=janedoe,ou=users,dc=example,dc=com
-      )
+      ]
     end
 
     subject { access_levels }
@@ -30,17 +30,17 @@ RSpec.describe EE::Gitlab::Auth::Ldap::AccessLevels do
 
     context 'when access_hash has existing entries' do
       let(:developer_dns) do
-        %w{
+        %w[
           uid=janedoe,ou=users,dc=example,dc=com
           uid=jamesdoe,ou=users,dc=example,dc=com
-        }
+        ]
       end
 
       let(:master_dns) do
-        %w{
+        %w[
           uid=johndoe,ou=users,dc=example,dc=com
           uid=janedoe,ou=users,dc=example,dc=com
-        }
+        ]
       end
 
       before do

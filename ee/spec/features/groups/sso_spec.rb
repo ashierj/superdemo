@@ -25,7 +25,7 @@ RSpec.describe 'Group SAML SSO', :js, :snowplow, feature_category: :system_acces
   before do
     stub_feature_flags(group_managed_accounts: true, convert_user_to_group_managed_accounts: true)
     stub_licensed_features(group_saml: true)
-    allow(Devise).to receive(:omniauth_providers).and_return(%i(group_saml))
+    allow(Devise).to receive(:omniauth_providers).and_return(%i[group_saml])
 
     Warden.on_next_request do |proxy|
       proxy.raw_session['oauth_data'] = OmniAuth::AuthHash.new(info: saml_oauth_info, response_object: saml_response, uid: saml_response.name_id)

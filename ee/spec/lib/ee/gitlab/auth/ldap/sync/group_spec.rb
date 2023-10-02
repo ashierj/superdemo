@@ -299,7 +299,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
         let(:user1) { create(:user) }
         let(:user2) { create(:user) }
         let(:ldap_group1) do
-          ldap_group_entry(%W(#{user_dn(user1.username)} #{user_dn(user2.username)}))
+          ldap_group_entry(%W[#{user_dn(user1.username)} #{user_dn(user2.username)}])
         end
 
         it 'downgrades one user but not the other' do
@@ -475,10 +475,10 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
         # Change the case once on the LDAP group, and once on the GitLab Identity
         # to test that both sides can handle the differing case.
         let(:ldap_group1) do
-          ldap_group_entry(%W(
+          ldap_group_entry(%W[
                              #{user_dn(user1.username).upcase}
                              #{user_dn(user2.username)}
-                           ))
+                           ])
         end
 
         it 'does not revert the overrides' do

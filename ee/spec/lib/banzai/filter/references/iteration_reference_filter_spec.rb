@@ -14,7 +14,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
   end
 
   shared_examples 'reference parsing' do
-    %w(pre code a style).each do |elem|
+    %w[pre code a style].each do |elem|
       it "ignores valid references contained inside '#{elem}' element" do
         exp = act = "<#{elem}>iteration #{reference}</#{elem}>"
         expect(reference_filter(act).to_html).to eq exp
@@ -47,7 +47,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
       doc = reference_filter("Iteration #{reference}", only_path: true)
       link = doc.css('a').first.attr('href')
 
-      expect(link).not_to match %r(https?://)
+      expect(link).not_to match %r{https?://}
       expect(link).to eq urls.iteration_path(iteration)
     end
   end
@@ -62,7 +62,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
     it 'links with adjacent text' do
       doc = reference_filter("Iteration (#{reference}.)")
 
-      expect(doc.to_html).to match(%r(\(<a.+>#{iteration.reference_link_text}</a>\.\)))
+      expect(doc.to_html).to match(%r{\(<a.+>#{iteration.reference_link_text}</a>\.\)})
     end
 
     it 'ignores invalid iteration IIDs' do
@@ -89,12 +89,12 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
     it 'links with adjacent text' do
       doc = reference_filter("Iteration (#{reference}.)")
 
-      expect(doc.to_html).to match(%r(\(<a.+>#{iteration.reference_link_text}</a>\.\)))
+      expect(doc.to_html).to match(%r{\(<a.+>#{iteration.reference_link_text}</a>\.\)})
     end
 
     it 'links with adjacent html tags' do
       doc = reference_filter("Iteration <p>#{reference}</p>.")
-      expect(doc.to_html).to match(%r(<p><a.+>#{iteration.reference_link_text}</a></p>))
+      expect(doc.to_html).to match(%r{<p><a.+>#{iteration.reference_link_text}</a></p>})
     end
 
     it 'ignores invalid iteration names' do
@@ -121,7 +121,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
     it 'links with adjacent text' do
       doc = reference_filter("Iteration (#{reference}.)")
 
-      expect(doc.to_html).to match(%r(\(<a.+>#{iteration.reference_link_text}</a>\.\)))
+      expect(doc.to_html).to match(%r{\(<a.+>#{iteration.reference_link_text}</a>\.\)})
     end
 
     it 'ignores invalid iteration names' do
@@ -133,7 +133,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
 
   shared_examples 'referencing a iteration in a link href' do
     let(:unquoted_reference) { "#{Iteration.reference_prefix}#{iteration.name}" }
-    let(:link_reference) { %{<a href="#{unquoted_reference}">Iteration</a>} }
+    let(:link_reference) { %(<a href="#{unquoted_reference}">Iteration</a>) }
 
     before do
       iteration.update!(name: 'gfm')
@@ -148,7 +148,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
     it 'links with adjacent text' do
       doc = reference_filter("Iteration (#{link_reference}.)")
 
-      expect(doc.to_html).to match(%r(\(<a.+>Iteration</a>\.\)))
+      expect(doc.to_html).to match(%r{\(<a.+>Iteration</a>\.\)})
     end
 
     it 'includes a data-project attribute' do

@@ -69,7 +69,7 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
       end
 
       it 'shows a stop button' do
-        stop_button_selector = %q{button[title="Stop environment"]}
+        stop_button_selector = %q(button[title="Stop environment"])
 
         expect(page).to have_selector(stop_button_selector)
       end
@@ -166,7 +166,7 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
       end
 
       it 'does not show a stop button' do
-        stop_button_selector = %q{button[title="Stop environment"]}
+        stop_button_selector = %q(button[title="Stop environment"])
 
         expect(page).not_to have_selector(stop_button_selector)
       end
@@ -210,7 +210,7 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
       end
 
       it 'does not show a re deploy button' do
-        redeploy_button_selector = %q{button[title="Re-deploy to environment"]}
+        redeploy_button_selector = %q(button[title="Re-deploy to environment"])
 
         expect(page).not_to have_button(_('More actions'))
         expect(page).not_to have_selector(redeploy_button_selector)

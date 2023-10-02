@@ -47,7 +47,7 @@ RSpec.describe EE::AuthHelper do
 
       it 'includes smartcard provider' do
         allow(helper).to receive(:auth_providers) { [:twitter, :smartcard] }
-        expect(helper.form_based_providers).to eq %i(smartcard)
+        expect(helper.form_based_providers).to eq %i[smartcard]
       end
     end
   end

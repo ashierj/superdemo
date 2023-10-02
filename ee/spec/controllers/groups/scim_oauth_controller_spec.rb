@@ -12,7 +12,7 @@ RSpec.describe Groups::ScimOauthController, feature_category: :system_access do
   end
 
   def stub_saml_config(enabled:)
-    providers = enabled ? %i(group_saml) : []
+    providers = enabled ? %i[group_saml] : []
     allow(Devise).to receive(:omniauth_providers).and_return(providers)
   end
 

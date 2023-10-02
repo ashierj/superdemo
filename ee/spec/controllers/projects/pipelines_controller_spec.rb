@@ -122,7 +122,7 @@ RSpec.describe Projects::PipelinesController do
 
           it 'returns license scanning report in json format' do
             expect(payload.size).to eq(scanner.report.licenses.size)
-            expect(payload.first.keys).to match_array(%w(name classification dependencies count url))
+            expect(payload.first.keys).to match_array(%w[name classification dependencies count url])
           end
 
           it 'returns MIT license allowed status' do

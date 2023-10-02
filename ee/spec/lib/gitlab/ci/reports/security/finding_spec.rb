@@ -194,13 +194,13 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
 
   describe '#unsafe?' do
     where(:severity, :levels, :report_types, :unsafe?) do
-      'critical' | %w(critical high) | %w(dast)               | true
-      'high'     | %w(critical high) | %w(dast sast)          | true
-      'high'     | %w(critical high) | %w(container_scanning) | false
-      'medium'   | %w(critical high) | %w(dast)               | false
-      'low'      | %w(critical high) | %w(dast)               | false
-      'info'     | %w(critical high) | %w(dast)               | false
-      'unknown'  | []                | %w(dast)               | false
+      'critical' | %w[critical high] | %w[dast]               | true
+      'high'     | %w[critical high] | %w[dast sast]          | true
+      'high'     | %w[critical high] | %w[container_scanning] | false
+      'medium'   | %w[critical high] | %w[dast]               | false
+      'low'      | %w[critical high] | %w[dast]               | false
+      'info'     | %w[critical high] | %w[dast]               | false
+      'unknown'  | []                | %w[dast]               | false
     end
 
     with_them do

@@ -8,7 +8,7 @@ RSpec.describe Groups::SsoController, feature_category: :system_access do
 
   before do
     stub_licensed_features(group_saml: true)
-    allow(Devise).to receive(:omniauth_providers).and_return(%i(group_saml))
+    allow(Devise).to receive(:omniauth_providers).and_return(%i[group_saml])
     sign_in(user)
   end
 

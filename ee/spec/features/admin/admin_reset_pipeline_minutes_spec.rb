@@ -26,7 +26,7 @@ RSpec.describe 'Reset namespace compute usage', :js, feature_category: :continuo
         end
 
         expect(page).to have_selector('.gl-toast')
-        expect(page).to have_current_path(%r(#{namespace.path}), ignore_query: true)
+        expect(page).to have_current_path(%r{#{namespace.path}}, ignore_query: true)
 
         expect(namespace.reload.ci_minutes_usage.total_minutes_used).to eq(0)
         expect(namespace.ci_minutes_usage.reset_date.month).to eq(time.month)
@@ -46,7 +46,7 @@ RSpec.describe 'Reset namespace compute usage', :js, feature_category: :continuo
       it 'renders edit page with an error' do
         click_button 'Reset compute usage'
 
-        expect(page).to have_current_path(%r(#{namespace.path}), ignore_query: true)
+        expect(page).to have_current_path(%r{#{namespace.path}}, ignore_query: true)
         expect(page).to have_selector('.gl-toast')
       end
     end

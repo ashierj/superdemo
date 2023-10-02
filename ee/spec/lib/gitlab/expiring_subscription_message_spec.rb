@@ -245,7 +245,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                   end
                 end
 
-                where plan: %w(gold ultimate)
+                where plan: %w[gold ultimate]
 
                 with_them do
                   it 'has plan specific messaging' do
@@ -255,7 +255,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                   end
                 end
 
-                where plan: %w(silver premium)
+                where plan: %w[silver premium]
 
                 with_them do
                   it 'has plan specific messaging' do

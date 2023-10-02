@@ -28,14 +28,14 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Group do
       stub_ldap_adapter_nested_groups(group.dn, [], adapter)
 
       expect(group.member_dns).to match_array(
-        %w(
+        %w[
           uid=user1,ou=users,dc=example,dc=com
           uid=user2,ou=users,dc=example,dc=com
           uid=user3,ou=users,dc=example,dc=com
           uid=user4,ou=users,dc=example,dc=com
           uid=user5,ou=users,dc=example,dc=com
           uid=user6,ou=users,dc=example,dc=com
-        )
+        ]
       )
     end
 
@@ -74,14 +74,14 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Group do
         stub_ldap_adapter_nested_groups(group3_entry.dn, [], adapter)
 
         expect(group.member_dns).to match_array(
-          %w(
+          %w[
             uid=user1,ou=users,dc=example,dc=com
             uid=user2,ou=users,dc=example,dc=com
             uid=user3,ou=users,dc=example,dc=com
             uid=user4,ou=users,dc=example,dc=com
             uid=user5,ou=users,dc=example,dc=com
             uid=user6,ou=users,dc=example,dc=com
-          )
+          ]
         )
       end
 
@@ -141,10 +141,10 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Group do
         # Users in the top-level group always get added - they're not filtered
         # through the nested groups shenanigans.
         expect(group.member_dns).to match_array(
-          %w(
+          %w[
             uid=user1,ou=users,dc=example,dc=com
             uid=user2,ou=users,dc=example,dc=com
-          )
+          ]
         )
       end
 
@@ -178,12 +178,12 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Group do
         stub_ldap_adapter_nested_groups(group2_entry.dn, [], adapter)
 
         expect(group.member_dns).to match_array(
-          %w(
+          %w[
             uid=user1,ou=users,dc=example,dc=com
             uid=user2,ou=users,dc=example,dc=com
             uid=user3,ou=users,dc=example,dc=com
             uid=user4,ou=users,dc=example,dc=com
-          )
+          ]
         )
       end
     end
@@ -204,10 +204,10 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Group do
       stub_ldap_adapter_nested_groups(group.dn, [], adapter)
 
       expect(group.member_dns).to match_array(
-        %w(
+        %w[
           uid=user1,ou=users,dc=example,dc=com
           uid=user2,ou=users,dc=example,dc=com
-        )
+        ]
       )
     end
   end

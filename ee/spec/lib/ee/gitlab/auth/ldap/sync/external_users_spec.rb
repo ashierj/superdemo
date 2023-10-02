@@ -15,7 +15,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::ExternalUsers do
 
     before do
       stub_ldap_config(
-        external_groups: %w(external_group1 external_group2),
+        external_groups: %w[external_group1 external_group2],
         active_directory: false
       )
       stub_ldap_group_find_by_cn('external_group1', external_group1, adapter)
