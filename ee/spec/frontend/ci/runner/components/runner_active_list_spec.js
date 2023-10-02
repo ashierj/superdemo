@@ -6,6 +6,7 @@ import {
   shallowMountExtended,
   mountExtended,
 } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 
 import RunnerActiveList from 'ee/ci/runner/components/runner_active_list.vue';
 import mostActiveRunnersQuery from 'ee/ci/runner/graphql/performance/most_active_runners.graphql';
@@ -38,9 +39,10 @@ describe('RunnerActiveList', () => {
   const findCell = (row = 0, fieldKey) =>
     extendedWrapper(findRows().at(row).find(`[data-testid="td-${fieldKey}"]`));
 
-  const createComponent = ({ mountFn = shallowMountExtended } = {}) => {
+  const createComponent = ({ mountFn = shallowMountExtended, ...options } = {}) => {
     wrapper = mountFn(RunnerActiveList, {
       apolloProvider: createMockApollo([[mostActiveRunnersQuery, mostActiveRunnersHandler]]),
+      ...options,
     });
   };
 
@@ -49,7 +51,11 @@ describe('RunnerActiveList', () => {
   });
 
   it('Requests most active runners', () => {
-    createComponent();
+    createComponent({
+      stubs: {
+        GlTable: stubComponent(GlTable),
+      },
+    });
 
     expect(mostActiveRunnersHandler).toHaveBeenCalledTimes(1);
   });
@@ -133,7 +139,11 @@ describe('RunnerActiveList', () => {
     beforeEach(async () => {
       mostActiveRunnersHandler.mockRejectedValue(new Error('Error!'));
 
-      createComponent();
+      createComponent({
+        stubs: {
+          GlTable: stubComponent(GlTable),
+        },
+      });
       await waitForPromises();
     });
 
