@@ -42,7 +42,9 @@ export default () => {
       userNamespace: parseBoolean(userNamespace),
       defaultPerPage: Number(defaultPerPage),
       namespacePlanName,
-      namespacePlanStorageIncluded,
+      namespacePlanStorageIncluded: namespacePlanStorageIncluded
+        ? Number(namespacePlanStorageIncluded)
+        : 0,
       purchaseStorageUrl,
       buyAddonTargetAttr,
       enforcementType,

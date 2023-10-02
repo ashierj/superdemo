@@ -97,8 +97,8 @@ export default {
       </div>
       <hr class="gl-my-4" />
       <p>{{ $options.i18n.PROJECT_ENFORCEMENT_TYPE_CARD_SUBTITLE }}</p>
-      <p>
-        <strong><number-to-human-size :value="Number(namespacePlanStorageIncluded)" /></strong>
+      <p v-if="namespacePlanStorageIncluded">
+        <strong><number-to-human-size :value="namespacePlanStorageIncluded" /></strong>
 
         {{ planStorageDescription }}
       </p>
