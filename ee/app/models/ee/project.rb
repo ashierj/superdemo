@@ -65,7 +65,7 @@ module EE
       has_one :security_setting, class_name: 'ProjectSecuritySetting'
       has_one :vulnerability_statistic, class_name: 'Vulnerabilities::Statistic'
 
-      has_one :dependency_proxy_packages_setting, class_name: 'DependencyProxy::Packages::Setting', inverse_of: :project
+      has_one :dependency_proxy_packages_setting, class_name: '::DependencyProxy::Packages::Setting', inverse_of: :project
 
       has_many :approvers, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
       has_many :approver_users, through: :approvers, source: :user
@@ -532,6 +532,10 @@ module EE
 
     def project_state
       super || build_project_state
+    end
+
+    def dependency_proxy_packages_setting
+      super || build_dependency_proxy_packages_setting
     end
 
     def can_store_security_reports?

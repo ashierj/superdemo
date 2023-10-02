@@ -188,7 +188,51 @@ RSpec.describe DependencyProxy::Packages::SettingPolicy, feature_category: :pack
     end
   end
 
-  context 'with packages disabled' do
+  describe 'admin_dependency_proxy_packages_settings', :enable_admin_mode do
+    before do
+      stub_config(dependency_proxy: { enabled: true })
+      stub_licensed_features(dependency_proxy_for_packages: true)
+    end
+
+    where(:project, :current_user, :allowed?) do
+      ref(:public_project)   | ref(:anonymous)  | false
+      ref(:public_project)   | ref(:non_member) | false
+      ref(:public_project)   | ref(:guest)      | false
+      ref(:public_project)   | ref(:reporter)   | false
+      ref(:public_project)   | ref(:developer)  | false
+      ref(:public_project)   | ref(:maintainer) | true
+      ref(:public_project)   | ref(:owner)      | true
+      ref(:public_project)   | ref(:admin)      | true
+
+      ref(:internal_project) | ref(:anonymous)  | false
+      ref(:internal_project) | ref(:non_member) | false
+      ref(:internal_project) | ref(:guest)      | false
+      ref(:internal_project) | ref(:reporter)   | false
+      ref(:internal_project) | ref(:developer)  | false
+      ref(:internal_project) | ref(:maintainer) | true
+      ref(:internal_project) | ref(:owner)      | true
+      ref(:internal_project) | ref(:admin)      | true
+
+      ref(:private_project)  | ref(:anonymous)  | false
+      ref(:private_project)  | ref(:non_member) | false
+      ref(:private_project)  | ref(:guest)      | false
+      ref(:private_project)  | ref(:reporter)   | false
+      ref(:private_project)  | ref(:developer)  | false
+      ref(:private_project)  | ref(:maintainer) | true
+      ref(:private_project)  | ref(:owner)      | true
+      ref(:private_project)  | ref(:admin)      | true
+    end
+
+    with_them do
+      if params[:allowed?]
+        it { is_expected.to be_allowed(:admin_dependency_proxy_packages_settings) }
+      else
+        it { is_expected.to be_disallowed(:admin_dependency_proxy_packages_settings) }
+      end
+    end
+  end
+
+  context 'with project feature packages disabled' do
     let(:current_user) { owner }
 
     before do
@@ -199,6 +243,29 @@ RSpec.describe DependencyProxy::Packages::SettingPolicy, feature_category: :pack
     it { is_expected.to be_disallowed(:create_package) }
     it { is_expected.to be_disallowed(:destroy_package) }
     it { is_expected.to be_disallowed(:admin_package) }
+    it { is_expected.to be_disallowed(:admin_dependency_proxy_packages_settings) }
+  end
+
+  %i[packages dependency_proxy].each do |feature|
+    context "with config #{feature} disabled" do
+      let(:current_user) { owner }
+
+      before do
+        stub_config(feature => { enabled: false })
+      end
+
+      it { is_expected.to be_disallowed(:admin_dependency_proxy_packages_settings) }
+    end
+  end
+
+  context 'with licensed dependency proxy for packages disabled' do
+    let(:current_user) { owner }
+
+    before do
+      stub_licensed_features(dependency_proxy_for_packages: false)
+    end
+
+    it { is_expected.to be_disallowed(:admin_dependency_proxy_packages_settings) }
   end
 
   context 'with ip restriction' do
