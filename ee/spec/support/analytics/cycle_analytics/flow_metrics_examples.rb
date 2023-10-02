@@ -262,13 +262,14 @@ end
 RSpec.shared_examples 'value stream analytics flow metrics issuesCompleted examples' do
   let_it_be(:milestone) { create(:milestone, group: group) }
   let_it_be(:label) { create(:group_label, group: group) }
+  let_it_be(:epic) { create(:epic, group: group) }
 
   let_it_be(:author) { create(:user) }
   let_it_be(:assignee) { create(:user) }
 
   # we don't care about opened date, only closed date.
   let_it_be(:issue1) do
-    create(:issue, project: project1, author: author, created_at: 17.days.ago, closed_at: 12.days.ago)
+    create(:issue, project: project1, author: author, created_at: 17.days.ago, closed_at: 12.days.ago, weight: 4)
   end
 
   let_it_be(:issue2) do
@@ -290,9 +291,18 @@ RSpec.shared_examples 'value stream analytics flow metrics issuesCompleted examp
     create(:labeled_issue,
       project: project2,
       labels: [label],
+      weight: 4,
       assignees: [assignee],
       created_at: 20.days.ago,
       closed_at: 15.days.ago)
+  end
+
+  let_it_be(:epic_issue) { create(:epic_issue, epic: epic, issue: issue3) }
+
+  before_all do
+    create(:award_emoji, name: 'thumbsup', user: current_user, awardable: issue2)
+    create(:award_emoji, name: 'thumbsup', user: current_user, awardable: issue3)
+    create(:award_emoji, name: 'thumbsup', user: current_user, awardable: issue4)
   end
 
   before do
@@ -301,10 +311,10 @@ RSpec.shared_examples 'value stream analytics flow metrics issuesCompleted examp
 
   let(:query) do
     <<~QUERY
-      query($path: ID!, $assigneeUsernames: [String!], $authorUsername: String, $milestoneTitle: String, $labelNames: [String!], $from: Time!, $to: Time!) {
+      query($path: ID!, $assigneeUsernames: [String!], $authorUsername: String, $milestoneTitle: String, $labelNames: [String!], $from: Time!, $to: Time!, $weight: Int, $notAssignee: [String!], $notLabel: [String!], $notMyReactionEmoji: String, $epicId: ID) {
         #{context}(fullPath: $path) {
           flowMetrics {
-            issuesCompletedCount(assigneeUsernames: $assigneeUsernames, authorUsername: $authorUsername, milestoneTitle: $milestoneTitle, labelNames: $labelNames, from: $from, to: $to) {
+            issuesCompletedCount(assigneeUsernames: $assigneeUsernames, authorUsername: $authorUsername, milestoneTitle: $milestoneTitle, labelNames: $labelNames, from: $from, to: $to, weight: $weight, epicId: $epicId, not: { assigneeUsernames: $notAssignee, labelNames: $notLabel, myReactionEmoji: $notMyReactionEmoji }) {
               value
               unit
               identifier
@@ -366,6 +376,67 @@ RSpec.shared_examples 'value stream analytics flow metrics issuesCompleted examp
 
     it 'returns 0 count' do
       expect(result).to match(a_hash_including({ 'value' => 0.0 }))
+    end
+  end
+
+  context 'when filtering by weight and negated assignee' do
+    let(:variables) do
+      {
+        path: full_path,
+        from: 21.days.ago.iso8601,
+        to: 10.days.ago.iso8601,
+        weight: 4,
+        notAssignee: [assignee.username]
+      }
+    end
+
+    it 'returns 1 count' do
+      expect(result).to match(a_hash_including({ 'value' => 1 }))
+    end
+  end
+
+  context 'when filtering by negated label' do
+    let(:variables) do
+      {
+        path: full_path,
+        from: 21.days.ago.iso8601,
+        to: 10.days.ago.iso8601,
+        notLabel: [label.title]
+      }
+    end
+
+    it 'returns 2 count' do
+      expect(result).to match(a_hash_including({ 'value' => 2 }))
+    end
+  end
+
+  context 'when filtering by negated reaction emoji' do
+    let(:variables) do
+      {
+        path: full_path,
+        from: 21.days.ago.iso8601,
+        to: 10.days.ago.iso8601,
+        notMyReactionEmoji: 'thumbsup'
+      }
+    end
+
+    it 'returns 1 count' do
+      expect(result).to match(a_hash_including({ 'value' => 1 }))
+    end
+  end
+
+  context 'when filtering by epic' do
+    let(:variables) do
+      {
+        path: full_path,
+        from: 21.days.ago.iso8601,
+        to: 10.days.ago.iso8601,
+        epicId: epic.id
+      }
+    end
+
+    it 'returns 1 count' do
+      expect(result).to match(a_hash_including({ 'value' => 1 }))
     end
   end
 
