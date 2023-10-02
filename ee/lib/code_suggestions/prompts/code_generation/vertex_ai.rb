@@ -17,9 +17,9 @@ module CodeSuggestions
 
         def prompt
           <<~PROMPT
-            This is a task to write new #{language} code in a file '#{file_path_info}' based on a given description.
+            This is a task to write new #{language.name} code in a file '#{file_path_info}' based on a given description.
             #{existing_code_instruction}
-            It is your task to write valid and working #{language} code.
+            It is your task to write valid and working #{language.name} code.
             Only return in your response new code.
             #{existing_code_block}
             Create new code for the following description:

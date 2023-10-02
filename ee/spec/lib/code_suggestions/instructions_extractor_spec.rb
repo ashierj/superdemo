@@ -4,23 +4,26 @@ require 'fast_spec_helper'
 
 RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_suggestions do
   describe '.extract' do
-    subject { described_class.extract(content, first_line_regex) }
+    let(:language) do
+      CodeSuggestions::ProgrammingLanguage.from_language(CodeSuggestions::ProgrammingLanguage::DEFAULT)
+    end
 
-    let(:first_line_regex) { CodeSuggestions::TaskSelector::GENERATE_COMMENT_NO_PREFIX }
+    subject { described_class.extract(language, content, first_line_regex) }
 
     context 'when content is nil' do
       let(:content) { nil }
+      let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
 
       it 'does not find instruction' do
         is_expected.to eq({})
       end
     end
 
-    ["#", "# ", "//", "// ", "--", "-- "].each do |comment_sign|
+    shared_examples_for 'detects comments correctly' do
       context 'when there is only one comment line' do
         let(:content) do
           <<~CODE
-          #{comment_sign}Generate me a function
+            #{comment_sign}Generate me a function
           CODE
         end
 
@@ -154,7 +157,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       end
 
       context "with GitLab Duo Generate prefix" do
-        let(:first_line_regex) { CodeSuggestions::TaskSelector::GENERATE_COMMENT_PREFIX }
+        let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, false) }
 
         context 'when no prefix in the first line of the comment' do
           let(:content) do
@@ -199,9 +202,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
               full_name()
               address()
 
-                  #{comment_sign}GitLab Duo Generate: Generate me a function
-                  #{comment_sign}with 2 arguments
-                  #{comment_sign}first and last
+                #{comment_sign}GitLab Duo Generate: Generate me a function
+                #{comment_sign}with 2 arguments
+                #{comment_sign}first and last
             CODE
           end
 
@@ -212,6 +215,29 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             )
           end
         end
+      end
+    end
+
+    context 'when content is a supported language' do
+      CodeSuggestions::ProgrammingLanguage::LANGUAGE_COMMENT_FORMATS.each do |languages, lang_format|
+        languages.each do |lang|
+          # OCaml does not support single line comments
+          context "when using language #{lang}", unless: lang == 'OCaml' do
+            let(:language) { CodeSuggestions::ProgrammingLanguage.from_language(lang) }
+            let(:comment_sign) { lang_format[:single] }
+            let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
+
+            it_behaves_like 'detects comments correctly'
+          end
+        end
+      end
+
+      context "when using alternate VBScript comment format" do
+        let(:language) { CodeSuggestions::ProgrammingLanguage.from_language('VBScript') }
+        let(:comment_sign) { 'REM' }
+        let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
+
+        it_behaves_like 'detects comments correctly'
       end
     end
   end

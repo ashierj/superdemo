@@ -5,40 +5,6 @@ module CodeSuggestions
     class Base
       include Gitlab::Utils::StrongMemoize
 
-      # https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview
-      SUPPORTED_LANGUAGES = {
-        "C" => %w[c],
-        "C++" => %w[cc cpp],
-        "C#" => %w[cs],
-        "Clojure" => %w[clj cljs cljc],
-        "Dart" => %w[dart],
-        "Elixir" => %w[ex],
-        "Erlang" => %w[erl],
-        "Fortran" => %w[f],
-        "Go" => %w[go],
-        "GoogleSQL" => %w[sql],
-        "Groovy" => %w[groovy],
-        "Haskell" => %w[hs],
-        "HTML" => %w[html],
-        "Java" => %w[java],
-        "JavaScript" => %w[js],
-        "Kotlin" => %w[kt kts],
-        "Lean (proof assistant)" => %w[lean],
-        "Objective-C" => %w[m],
-        "OCaml" => %w[ml],
-        "Perl" => %w[pl],
-        "PHP" => %w[php],
-        "Python" => %w[py],
-        "Ruby" => %w[rb],
-        "Rust" => %w[rs],
-        "Scala" => %w[scala],
-        "Shell script" => %w[sh],
-        "Solidity" => %w[sol],
-        "Swift" => %w[swift],
-        "TypeScript" => %w[ts],
-        "Verilog" => %w[v]
-      }.freeze
-
       def initialize(params)
         @params = params
       end
@@ -61,7 +27,7 @@ module CodeSuggestions
       strong_memoize_attr :extension
 
       def language
-        SUPPORTED_LANGUAGES.find { |_, extensions| extensions.include?(extension) }&.first
+        ::CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name)
       end
       strong_memoize_attr :language
 

@@ -17,7 +17,7 @@ module CodeSuggestions
 
         def prompt
           <<~PROMPT
-            Human: Here is a content of a file '#{file_path_info}' written in #{language} enclosed
+            Human: Here is a content of a file '#{file_path_info}' written in #{language.name} enclosed
             in <code></code> tags. Review the code to understand existing logic and format, then return
             a valid code enclosed in <result></result> tags which can be added instead of
             <complete> tag. Do not add other code.
