@@ -66,7 +66,11 @@ module QA
       end
 
       it 'checks that dismissed vulnerabilities do not show up', :reliable,
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415291' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415291',
+        quarantine: {
+          type: :investigating,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/426871'
+        } do
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
