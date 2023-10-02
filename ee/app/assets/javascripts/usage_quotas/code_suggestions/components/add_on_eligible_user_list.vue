@@ -20,6 +20,7 @@ import {
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import CodeSuggestionsAddonAssignment from './code_suggestions_addon_assignment.vue';
+import SearchAndSortBar from './search_and_sort_bar.vue';
 
 const PER_PAGE = 20;
 
@@ -36,6 +37,7 @@ export default {
     GlKeysetPagination,
     GlSkeletonLoader,
     GlTable,
+    SearchAndSortBar,
   },
   inject: ['fullPath'],
   props: {
@@ -52,6 +54,7 @@ export default {
       sortOption: 'LAST_ACTIVITY_ON_DESC',
       pageInfo: undefined,
       cursor: { first: PER_PAGE },
+      filterOptions: {},
     };
   },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -111,6 +114,7 @@ export default {
         addOnType: ADD_ON_CODE_SUGGESTIONS,
         addOnPurchaseIds: [this.addOnPurchaseId],
         sort: this.sortOption,
+        ...this.filterOptions,
         ...this.cursor,
       };
     },
@@ -124,6 +128,9 @@ export default {
       return hasNextPage || hasPreviousPage;
     },
     emptyText() {
+      if (this.filterOptions?.search?.length < 3) {
+        return s__('Billing|Enter at least three characters to search.');
+      }
       return s__('Billing|No users to display.');
     },
     isLoaderShown() {
@@ -138,6 +145,10 @@ export default {
     prevPage() {
       this.cursor = { last: PER_PAGE };
       this.cursor.prevPageCursor = this.pageInfo.startCursor;
+    },
+    onFilter(filterOptions) {
+      this.cursor = { first: PER_PAGE };
+      this.filterOptions = filterOptions;
     },
     handleAddOnAssignmentError(errorCode) {
       this.addOnAssignmentError = errorCode;
@@ -158,6 +169,7 @@ export default {
 
 <template>
   <section>
+    <search-and-sort-bar @onFilter="onFilter" />
     <error-alert
       v-if="addOnEligibleUsersFetchError"
       data-testid="add-on-eligible-users-fetch-error"

@@ -24,6 +24,7 @@ import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
+import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 
 jest.mock('~/lib/utils/common_utils');
@@ -80,6 +81,7 @@ describe('Add On Eligible User List', () => {
   const findAddOnAssignmentError = () => wrapper.findByTestId('add-on-assignment-error');
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -337,6 +339,42 @@ describe('Add On Eligible User List', () => {
         createComponent();
 
         expect(findPagination().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('search', () => {
+    beforeEach(async () => {
+      await createComponent({
+        handler: addOnEligibleUsersDataHandler,
+      });
+    });
+
+    it('renders search bar', () => {
+      expect(findSearchAndSortBar().exists()).toBe(true);
+    });
+
+    it('shows appropriate empty text when search term is insufficient', async () => {
+      const searchString = 'se';
+
+      findSearchAndSortBar().vm.$emit('onFilter', { search: searchString });
+      await waitForPromises();
+
+      expect(findTable().attributes()).toMatchObject({
+        'empty-text': 'Enter at least three characters to search.',
+        'show-empty': 'true',
+      });
+    });
+
+    it('triggers a call to addOnEligibleUsers with appropriate params on filter', async () => {
+      const searchString = 'search string';
+
+      findSearchAndSortBar().vm.$emit('onFilter', { search: searchString });
+      await waitForPromises();
+
+      expect(addOnEligibleUsersDataHandler).toHaveBeenLastCalledWith({
+        ...defaultQueryVariables,
+        search: searchString,
       });
     });
   });
