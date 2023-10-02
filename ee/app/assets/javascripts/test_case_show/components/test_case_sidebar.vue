@@ -3,6 +3,7 @@ import { GlTooltipDirective as GlTooltip, GlButton, GlIcon, GlLoadingIcon } from
 import { s__, __ } from '~/locale';
 import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
+import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import { TYPE_TEST_CASE, WORKSPACE_PROJECT } from '~/issues/constants';
 import TestCaseGraphQL from '../mixins/test_case_graphql';
 
@@ -15,6 +16,7 @@ export default {
     GlLoadingIcon,
     ProjectSelect,
     LabelsSelectWidget,
+    SidebarConfidentialityWidget,
   },
   directives: {
     GlTooltip,
@@ -210,6 +212,13 @@ export default {
     >
       {{ __('None') }}
     </labels-select-widget>
+    <sidebar-confidentiality-widget
+      :iid="String(testCaseId)"
+      :full-path="projectFullPath"
+      :issuable-type="$options.TYPE_TEST_CASE"
+      @expandSidebar="expandSidebar"
+      @closeForm="handleSidebarDropdownClose"
+    />
     <project-select
       v-if="canMoveTestCase && !moved"
       :projects-fetch-path="projectsFetchPath"
