@@ -36,8 +36,8 @@ In addition, all features built on large language models (LLM) from Google, Anth
 
 Code Suggestions currently has its own settings:
 
-- View [how to enable for self-managed](project/repository/code_suggestions/saas.md#enable-code-suggestions).
-- View [how to enable for SaaS](project/repository/code_suggestions/self_managed.md#enable-code-suggestions-on-self-managed-gitlab).
+- View [how to enable for self-managed](project/repository/code_suggestions/self_managed.md#enable-code-suggestions-on-self-managed-gitlab).
+- View [how to enable for SaaS](project/repository/code_suggestions/saas.md#enable-code-suggestions).
 
 The use of Code Suggestions is also subject to the [Testing Terms of Use](https://about.gitlab.com/handbook/legal/testing-agreement/).
 
