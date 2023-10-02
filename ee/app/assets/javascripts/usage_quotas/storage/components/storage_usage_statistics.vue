@@ -1,16 +1,9 @@
 <script>
 import { GlSprintf, GlLink, GlButton } from '@gitlab/ui';
-import { sprintf } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
-import {
-  BUY_STORAGE,
-  STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT,
-  STORAGE_INCLUDED_IN_PLAN_NAMESPACE_ENFORCEMENT,
-  NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
-  PROJECT_ENFORCEMENT_TYPE_SUBTITLE,
-  NAMESPACE_ENFORCEMENT_TYPE_SUBTITLE,
-} from '../constants';
+import { BUY_STORAGE, NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from '../constants';
 import StorageStatisticsCard from './storage_statistics_card.vue';
 import TotalStorageAvailableBreakdownCard from './total_storage_available_breakdown_card.vue';
 import ExcessStorageBreakdownCard from './excess_storage_breakdown_card.vue';
@@ -35,12 +28,12 @@ export default {
     additionalPurchasedStorageSize: {
       type: Number,
       required: false,
-      default: null,
+      default: 0,
     },
     usedStorage: {
       type: Number,
       required: false,
-      default: null,
+      default: 0,
     },
     loading: {
       type: Boolean,
@@ -53,37 +46,44 @@ export default {
   },
   computed: {
     enforcementTypei18n() {
-      return this.isUsingProjectEnforcement
+      const namespaceEnforcementTypeTitle = s__('UsageQuota|Included in %{planName} subscription');
+      const namespaceEnforcementTypeSubtitle = s__(
+        'UsageQuota|This namespace has %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}',
+      );
+      const projectEnforcementTypeTitle = s__(
+        'UsageQuota|Storage per project included in %{planName} subscription',
+      );
+      const projectEnforcementTypeSubtitle = s__(
+        'UsageQuota|Projects under this namespace have %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}',
+      );
+
+      const i18nObject = this.isUsingProjectEnforcement
         ? {
-            title: sprintf(STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT, {
+            title: sprintf(projectEnforcementTypeTitle, {
               planName: this.namespacePlanName,
             }),
-            subtitle: sprintf(PROJECT_ENFORCEMENT_TYPE_SUBTITLE, {
-              planLimit: numberToHumanSize(this.includedStorage, 1),
+            subtitle: sprintf(projectEnforcementTypeSubtitle, {
+              planLimit: numberToHumanSize(this.namespacePlanStorageIncluded, 1),
             }),
             learnMoreUrl: usageQuotasHelpPaths.usageQuotasProjectStorageLimit,
           }
         : {
-            title: sprintf(STORAGE_INCLUDED_IN_PLAN_NAMESPACE_ENFORCEMENT, {
+            title: sprintf(namespaceEnforcementTypeTitle, {
               planName: this.namespacePlanName,
             }),
-            subtitle: sprintf(NAMESPACE_ENFORCEMENT_TYPE_SUBTITLE, {
-              planLimit: numberToHumanSize(this.includedStorage, 1),
+            subtitle: sprintf(namespaceEnforcementTypeSubtitle, {
+              planLimit: numberToHumanSize(this.namespacePlanStorageIncluded, 1),
             }),
             learnMoreUrl: usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit,
           };
-    },
-    includedStorage() {
-      return Number(this.namespacePlanStorageIncluded || 0);
-    },
-    purchasedStorage() {
-      return Number(this.additionalPurchasedStorageSize || 0);
+
+      return {
+        ...i18nObject,
+        subtitle: this.namespacePlanStorageIncluded ? i18nObject.subtitle : '',
+      };
     },
     totalStorage() {
-      return (
-        Number(this.namespacePlanStorageIncluded || 0) +
-        Number(this.additionalPurchasedStorageSize || 0)
-      );
+      return this.namespacePlanStorageIncluded + this.additionalPurchasedStorageSize;
     },
   },
 };
@@ -123,14 +123,14 @@ export default {
       <template v-if="namespacePlanName">
         <excess-storage-breakdown-card
           v-if="isUsingProjectEnforcement"
-          :purchased-storage="purchasedStorage"
+          :purchased-storage="additionalPurchasedStorageSize"
           :loading="loading"
         />
         <total-storage-available-breakdown-card
           v-else
           :plan-storage-description="enforcementTypei18n.title"
-          :included-storage="includedStorage"
-          :purchased-storage="purchasedStorage"
+          :included-storage="namespacePlanStorageIncluded"
+          :purchased-storage="additionalPurchasedStorageSize"
           :total-storage="totalStorage"
           :loading="loading"
         />
