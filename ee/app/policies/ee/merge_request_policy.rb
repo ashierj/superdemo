@@ -59,9 +59,11 @@ module EE
       end
 
       condition(:role_enables_admin_merge_request) do
-        next unless @user.is_a?(User)
-
-        @user.custom_permission_for?(subject&.project, :admin_merge_request)
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: subject&.project,
+          ability: :admin_merge_request
+        ).has_ability?
       end
 
       with_scope :subject

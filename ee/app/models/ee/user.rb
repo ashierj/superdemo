@@ -530,45 +530,6 @@ module EE
       namespace_bans.find_by!(namespace: namespace)
     end
 
-    def custom_permission_for?(resource, permission)
-      roles = if resource.is_a?(Project)
-                preloaded_member_roles_for_projects([resource])[resource.id]
-              else
-                preloaded_member_roles_for_groups([resource])[resource.id]
-              end
-
-      roles&.include?(permission)
-    end
-
-    override :preloaded_member_roles_for_projects
-    def preloaded_member_roles_for_projects(projects)
-      resource_key = "member_roles_in_projects:#{self.class}:#{self.id}"
-
-      ::Gitlab::SafeRequestLoader.execute(
-        resource_key: resource_key,
-        resource_ids: projects.map(&:id)
-      ) do |projects|
-        ::Preloaders::UserMemberRolesInProjectsPreloader.new(
-          projects: projects,
-          user: self
-        ).execute
-      end
-    end
-
-    def preloaded_member_roles_for_groups(groups)
-      resource_key = "member_roles_in_groups:#{self.class}:#{self.id}"
-
-      ::Gitlab::SafeRequestLoader.execute(
-        resource_key: resource_key,
-        resource_ids: groups.map(&:id)
-      ) do |groups|
-        ::Preloaders::UserMemberRolesInGroupsPreloader.new(
-          groups: groups,
-          user: self
-        ).execute
-      end
-    end
-
     def can_group_owner_disable_two_factor?(group, user)
       return false unless group && user
 

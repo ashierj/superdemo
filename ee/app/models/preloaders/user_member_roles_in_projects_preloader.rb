@@ -15,6 +15,17 @@ module Preloaders
     end
 
     def execute
+      ::Gitlab::SafeRequestLoader.execute(
+        resource_key: resource_key,
+        resource_ids: projects.map(&:id)
+      ) do
+        abilities_for_user_grouped_by_project
+      end
+    end
+
+    private
+
+    def abilities_for_user_grouped_by_project
       sql_values_array = projects.filter_map do |project|
         next unless project.custom_roles_enabled?
 
@@ -69,7 +80,9 @@ module Preloaders
       end
     end
 
-    private
+    def resource_key
+      "member_roles_in_projects:user:#{user.id}"
+    end
 
     attr_reader :projects, :user
   end
