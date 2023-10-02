@@ -23,7 +23,7 @@
     = gl_tab_link_to '#seats-quota-tab', data: { testid: 'seats-tab' }, item_active: true do
       = s_('UsageQuota|Seats')
     - if show_code_suggestions_tab?(@group)
-      = gl_tab_link_to '#code-suggestions-usage-tab' do
+      = gl_tab_link_to '#code-suggestions-usage-tab', data: { testid: 'code-suggestions-tab' } do
         = s_('UsageQuota|Code Suggestions')
     - if can? current_user, :admin_ci_minutes, @group
       = gl_tab_link_to '#pipelines-quota-tab', data: { testid: 'pipelines-tab' } do

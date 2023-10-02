@@ -35,7 +35,7 @@ describe('UsageStatistics', () => {
     });
 
     it('renders the usage value', () => {
-      expect(wrapper.findByTestId('usage').text()).toBe(`${usageValue}${usageUnit}`);
+      expect(wrapper.findByTestId('usage-value').text()).toBe(usageValue);
     });
 
     it('renders the usage unit', () => {
@@ -52,7 +52,7 @@ describe('UsageStatistics', () => {
     });
 
     it('renders the total value', () => {
-      expect(wrapper.findByTestId('total').text()).toBe(`/ ${totalValue}${totalUnit}`);
+      expect(wrapper.findByTestId('total-value').text()).toBe(totalValue);
     });
 
     it('renders the total unit', () => {
