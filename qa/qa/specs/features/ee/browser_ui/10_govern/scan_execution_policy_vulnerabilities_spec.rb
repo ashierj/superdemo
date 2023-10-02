@@ -31,6 +31,8 @@ module QA
 
       let(:job_name) { 'secret-detection-0' }
 
+      let(:commit_branch) { "new_branch_#{SecureRandom.hex(8)}" }
+
       let(:scan_execution_policy_commit) do
         EE::Resource::ScanResultPolicyCommit.fabricate_via_api! do |commit|
           commit.policy_name = scan_execution_policy_name
@@ -64,20 +66,16 @@ module QA
       end
 
       it 'does not take effect when pipeline is run on non default branch',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/426177',
-        quarantine: {
-          type: :stale,
-          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/426753"
-        } do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/426177' do
         expect(scan_execution_policy_commit.api_response).to have_key(:branch)
         expect(scan_execution_policy_commit.api_response[:branch]).not_to be nil
 
         create_scan_execution_policy
 
-        create_commit("new_branch_#{SecureRandom.hex(8)}")
+        create_commit(commit_branch) # commit_branch variable is also used in create_test_mr function
 
         create_test_mr
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed')
         # Check that secret-detection job is NOT present in MR pipeline (non-default branch)
         expect(pipeline_has_a_job?).to be_falsey
       end
