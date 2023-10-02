@@ -36,7 +36,8 @@ module Security
               severity: report_finding.severity,
               confidence: report_finding.confidence,
               report_type: report_finding.report_type,
-              present_on_default_branch: true
+              present_on_default_branch: true,
+              cvss: report_finding.cvss
             }
           end
 
