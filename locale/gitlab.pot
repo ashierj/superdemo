@@ -28931,6 +28931,9 @@ msgstr ""
 msgid "Maximum project import requests per minute"
 msgstr ""
 
+msgid "Maximum projects allowed in the filter is %{count}"
+msgstr ""
+
 msgid "Maximum push size"
 msgstr ""
 
