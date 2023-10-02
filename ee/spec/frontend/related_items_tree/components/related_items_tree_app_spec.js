@@ -207,6 +207,21 @@ describe('RelatedItemsTreeApp', () => {
       });
     });
 
+    it('renders empty message when content is empty', async () => {
+      await nextTick();
+      expect(wrapper.find('.gl-new-card-empty').exists()).toBe(true);
+    });
+
+    it('hides empty message when add form is shown', async () => {
+      store.dispatch('toggleAddItemForm', {
+        toggleState: true,
+        issuableType: TYPE_EPIC,
+      });
+
+      await nextTick();
+      expect(wrapper.find('.gl-new-card-empty').exists()).toBe(false);
+    });
+
     it('renders loading icon when `state.itemsFetchInProgress` prop is true', async () => {
       store.dispatch('requestItems', {
         parentItem: mockParentItem,
