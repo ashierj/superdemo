@@ -191,16 +191,6 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
         it_behaves_like 'creates a pipeline for merge train'
       end
-
-      context 'when FF standard_merge_train_ref_merge_commit is disabled' do
-        let(:expected_create_mergeable_ref) { false }
-
-        before do
-          stub_feature_flags(standard_merge_train_ref_merge_commit: false)
-        end
-
-        it_behaves_like 'creates a pipeline for merge train'
-      end
     end
 
     context 'when pipeline for merge train is running' do

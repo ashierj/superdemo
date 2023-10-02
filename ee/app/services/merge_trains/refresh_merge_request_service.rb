@@ -54,9 +54,7 @@ module MergeTrains
     end
 
     def create_mergeable_train_ref?
-      # These two flags being enabled are pre-requisites
-      unless Feature.enabled?(:merge_trains_create_ref_service, merge_request.target_project) &&
-          Feature.enabled?(:standard_merge_train_ref_merge_commit, merge_request.target_project)
+      unless Feature.enabled?(:merge_trains_create_ref_service, merge_request.target_project)
         return false
       end
 
