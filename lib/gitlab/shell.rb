@@ -14,10 +14,6 @@ module Gitlab
   class Shell
     Error = Class.new(StandardError)
 
-    PERMITTED_ACTIONS = %w[
-      mv_repository remove_repository repository_exists?
-    ].freeze
-
     class << self
       # Retrieve GitLab Shell secret token
       #
