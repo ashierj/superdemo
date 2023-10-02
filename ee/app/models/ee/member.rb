@@ -129,7 +129,7 @@ module EE
       return unless group
 
       if user
-        return if user.project_bot?
+        return if user.project_bot? || user.security_policy_bot?
 
         validate_users_email
         validate_email_verified
