@@ -11,6 +11,18 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::Create, featur
 
   subject { described_class.new(pipeline, [finding_map]).execute }
 
+  context 'vulnerability CVSS vectors' do
+    let(:expected_hash) do
+      { "vector_string" => "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:N", "vendor" => "GitLab" }
+    end
+
+    it 'set the CVSS vectors' do
+      subject
+
+      expect(vulnerability.cvss.first).to eq(expected_hash)
+    end
+  end
+
   context 'vulnerability state' do
     it 'sets the state of the vulnerability to `detected`' do
       subject

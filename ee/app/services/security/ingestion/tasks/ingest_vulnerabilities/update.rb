@@ -25,7 +25,8 @@ module Security
               confidence: report_finding.confidence,
               resolved_on_default_branch: false,
               updated_at: Time.zone.now,
-              present_on_default_branch: true
+              present_on_default_branch: true,
+              cvss: report_finding.cvss
             }
           end
         end
