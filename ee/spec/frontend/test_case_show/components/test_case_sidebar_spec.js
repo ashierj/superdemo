@@ -7,6 +7,7 @@ import { mockCurrentUserTodo, mockLabels } from 'jest/vue_shared/issuable/list/m
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
+import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import projectTestCase from 'ee/test_case_show/queries/project_test_case.query.graphql';
@@ -45,6 +46,8 @@ describe('TestCaseSidebar', () => {
   };
 
   const findLabelsSelectWidget = () => wrapper.findComponent(LabelsSelectWidget);
+  const findSidebarConfidentialityWidget = () =>
+    wrapper.findComponent(SidebarConfidentialityWidget);
   const findProjectSelect = () => wrapper.findComponent(ProjectSelect);
   const findCollapsedTodoButton = () => wrapper.findByTestId('collapsed-button');
   const findExpandedTodoEl = () => wrapper.findByTestId('todo');
@@ -135,6 +138,51 @@ describe('TestCaseSidebar', () => {
       findLabelsSelectWidget().vm.$emit('toggleCollapse');
 
       expect(wrapper.emitted('sidebar-toggle')).toHaveLength(1);
+    });
+  });
+
+  describe('Confidentiality widget', () => {
+    describe('when sidebar is expanded by default', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('renders confidentiality widget', () => {
+        const { testCaseId, projectFullPath } = mockProvide;
+        const sidebarConfidentialityEl = findSidebarConfidentialityWidget();
+
+        expect(sidebarConfidentialityEl.props()).toMatchObject({
+          iid: testCaseId,
+          fullPath: projectFullPath,
+          issuableType: TYPE_TEST_CASE,
+        });
+      });
+
+      it('does not emit "sidebar-toggle" on closeForm', () => {
+        expect(wrapper.emitted('sidebar-toggle')).toBeUndefined();
+
+        findSidebarConfidentialityWidget().vm.$emit('closeForm');
+
+        expect(wrapper.emitted('sidebar-toggle')).toBeUndefined();
+      });
+    });
+
+    describe('when sidebar has been expanded by click', () => {
+      it('emits "sidebar-toggle" on closeForm', () => {
+        createComponent({
+          sidebarExpanded: false,
+        });
+
+        expect(wrapper.emitted('sidebar-toggle')).toBeUndefined();
+
+        findSidebarConfidentialityWidget().vm.$emit('expandSidebar');
+
+        expect(wrapper.emitted('sidebar-toggle')).toHaveLength(1);
+
+        findSidebarConfidentialityWidget().vm.$emit('closeForm');
+
+        expect(wrapper.emitted('sidebar-toggle')).toHaveLength(2);
+      });
     });
   });
 

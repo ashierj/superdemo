@@ -7,7 +7,17 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:label_bug) { create(:label, project: project, title: 'bug') }
   let_it_be(:label_doc) { create(:label, project: project, title: 'documentation') }
-  let_it_be(:test_case) { create(:quality_test_case, project: project, author: user, description: 'Sample description', created_at: 5.days.ago, updated_at: 2.days.ago, labels: [label_bug]) }
+  let_it_be_with_reload(:test_case) do
+    create(
+      :quality_test_case,
+      project: project,
+      author: user,
+      description: 'Sample description',
+      created_at: 5.days.ago,
+      updated_at: 2.days.ago,
+      labels: [label_bug]
+    )
+  end
 
   before do
     project.add_developer(user)
@@ -105,21 +115,78 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
           expect(page).to have_css('.labels-select-wrapper', text: label_bug.title)
         end
 
-        it 'shows labels dropdown on edit click' do
-          click_button('Edit')
+        context 'when editing' do
+          before do
+            within_testid('sidebar-labels') do
+              click_button('Edit')
+            end
+          end
 
-          expect(page).to have_button(label_bug.title)
-          expect(page).to have_button(label_doc.title)
-          expect(page).to have_button('Create group label')
-          expect(page).to have_link('Manage group labels')
+          it 'shows labels dropdown' do
+            expect(page).to have_button(label_bug.title)
+            expect(page).to have_button(label_doc.title)
+            expect(page).to have_button('Create group label')
+            expect(page).to have_link('Manage group labels')
+          end
+
+          it 'applies label using labels dropdown' do
+            click_button(label_doc.title)
+            send_keys(:escape)
+
+            expect(page).to have_css('.labels-select-wrapper', text: label_doc.title)
+          end
+        end
+      end
+
+      context 'confidentiality' do
+        context 'when test case is not confidential' do
+          it 'sets the test case to confidential' do
+            within_testid('sidebar-confidentiality') do
+              click_button('Edit')
+
+              expect(page).to have_content(
+                'You are going to turn on confidentiality. ' \
+                'Only project members with at least the Reporter role ' \
+                'can view or be notified about this test case.'
+              )
+
+              click_button('Turn on')
+
+              wait_for_requests
+
+              expect(test_case.reload.confidential).to eq(true)
+              expect(page).to have_content(
+                'Confidential Only project members with at least the Reporter role ' \
+                'can view or be notified about this test case.'
+              )
+            end
+          end
         end
 
-        it 'applies label using labels dropdown' do
-          click_button('Edit')
-          click_button(label_doc.title)
-          send_keys(:escape)
+        context 'when test case is confidential' do
+          before do
+            test_case.update!(confidential: true)
+            refresh
+            wait_for_requests
+          end
 
-          expect(page).to have_css('.labels-select-wrapper', text: label_doc.title)
+          it 'sets the test case to not confidential' do
+            within_testid('sidebar-confidentiality') do
+              click_button('Edit')
+
+              expect(page).to have_content(
+                'You are going to turn off the confidentiality. ' \
+                'This means everyone will be able to see this test case.' \
+              )
+
+              click_button('Turn off')
+
+              wait_for_requests
+
+              expect(test_case.reload.confidential).to eq(false)
+              expect(page).to have_content('Not confidential')
+            end
+          end
         end
       end
     end
