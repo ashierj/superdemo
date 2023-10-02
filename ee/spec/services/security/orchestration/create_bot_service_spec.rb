@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Security::Orchestration::CreateBotService, feature_category: :security_policy_management do
-  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
   let!(:security_orchestration_policy_configuration) do
     create(:security_orchestration_policy_configuration, project: project)
@@ -29,6 +30,18 @@ RSpec.describe Security::Orchestration::CreateBotService, feature_category: :sec
       it 'creates and assigns a bot user', :aggregate_failures do
         expect { execute_service }.to change { User.count }.by(1)
         expect(project.security_policy_bot).to be_present
+      end
+
+      context 'when group_allowed_email_domains feature is available' do
+        before do
+          stub_licensed_features(group_allowed_email_domains: true)
+          create(:allowed_email_domain, group: group, domain: 'noreply.gitlab.com')
+        end
+
+        it 'creates and assigns a bot user', :aggregate_failures do
+          expect { execute_service }.to change { User.count }.by(1)
+          expect(project.security_policy_bot).to be_present
+        end
       end
     end
   end
