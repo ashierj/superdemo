@@ -147,7 +147,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
         expect(subject[:assignees]).to eq('["username1"]')
         expect(subject[:labels]).to eq('["label1","label2"]')
         expect(subject[:author]).to eq('author')
-        expect(subject[:stage]).to eq(%|{"id":#{stage.id},"title":"#{stage.name}"}|)
+        expect(subject[:stage]).to eq(%({"id":#{stage.id},"title":"#{stage.name}"}))
         expect(subject[:epic_id]).to eq(1)
         expect(subject[:iteration_id]).to eq(2)
         expect(subject[:my_reaction_emoji]).to eq('thumbsup')

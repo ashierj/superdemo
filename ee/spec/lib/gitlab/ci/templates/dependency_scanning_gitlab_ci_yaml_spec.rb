@@ -6,26 +6,26 @@ RSpec.shared_examples 'language detection' do
   using RSpec::Parameterized::TableSyntax
 
   where(:case_name, :files, :include_build_names) do
-    'Go'                             | { 'go.sum' => '' }                        | %w(gemnasium-dependency_scanning)
-    'Java'                           | { 'pom.xml' => '' }                       | %w(gemnasium-maven-dependency_scanning)
-    'Java Gradle'                    | { 'build.gradle' => '' }                  | %w(gemnasium-maven-dependency_scanning)
-    'Java Gradle Kotlin DSL'         | { 'build.gradle.kts' => '' }              | %w(gemnasium-maven-dependency_scanning)
-    'Javascript package-lock.json'   | { 'package-lock.json' => '' }             | %w(gemnasium-dependency_scanning)
-    'Javascript yarn.lock'           | { 'yarn.lock' => '' }                     | %w(gemnasium-dependency_scanning)
-    'Javascript npm-shrinkwrap.json' | { 'npm-shrinkwrap.json' => '' }           | %w(gemnasium-dependency_scanning)
-    'Multiple languages'             | { 'pom.xml' => '', 'package-lock.json' => '' } | %w(gemnasium-maven-dependency_scanning gemnasium-dependency_scanning)
-    'NuGet'                          | { 'packages.lock.json' => '' }            | %w(gemnasium-dependency_scanning)
-    'Conan'                          | { 'conan.lock' => '' }                    | %w(gemnasium-dependency_scanning)
-    'PHP'                            | { 'composer.lock' => '' }                 | %w(gemnasium-dependency_scanning)
-    'Python requirements.txt'        | { 'requirements.txt' => '' }              | %w(gemnasium-python-dependency_scanning)
-    'Python requirements.pip'        | { 'requirements.pip' => '' }              | %w(gemnasium-python-dependency_scanning)
-    'Python Pipfile'                 | { 'Pipfile' => '' }                       | %w(gemnasium-python-dependency_scanning)
-    'Python requires.txt'            | { 'requires.txt' => '' }                  | %w(gemnasium-python-dependency_scanning)
-    'Python with setup.py'           | { 'setup.py' => '' }                      | %w(gemnasium-python-dependency_scanning)
-    'Python with poetry.lock'        | { 'poetry.lock' => '' }                   | %w(gemnasium-python-dependency_scanning)
-    'Ruby Gemfile.lock'              | { 'Gemfile.lock' => '' }                  | %w(gemnasium-dependency_scanning)
-    'Ruby gems.locked'               | { 'gems.locked' => '' }                   | %w(gemnasium-dependency_scanning)
-    'Scala'                          | { 'build.sbt' => '' }                     | %w(gemnasium-maven-dependency_scanning)
+    'Go'                             | { 'go.sum' => '' }                        | %w[gemnasium-dependency_scanning]
+    'Java'                           | { 'pom.xml' => '' }                       | %w[gemnasium-maven-dependency_scanning]
+    'Java Gradle'                    | { 'build.gradle' => '' }                  | %w[gemnasium-maven-dependency_scanning]
+    'Java Gradle Kotlin DSL'         | { 'build.gradle.kts' => '' }              | %w[gemnasium-maven-dependency_scanning]
+    'Javascript package-lock.json'   | { 'package-lock.json' => '' }             | %w[gemnasium-dependency_scanning]
+    'Javascript yarn.lock'           | { 'yarn.lock' => '' }                     | %w[gemnasium-dependency_scanning]
+    'Javascript npm-shrinkwrap.json' | { 'npm-shrinkwrap.json' => '' }           | %w[gemnasium-dependency_scanning]
+    'Multiple languages'             | { 'pom.xml' => '', 'package-lock.json' => '' } | %w[gemnasium-maven-dependency_scanning gemnasium-dependency_scanning]
+    'NuGet'                          | { 'packages.lock.json' => '' }            | %w[gemnasium-dependency_scanning]
+    'Conan'                          | { 'conan.lock' => '' }                    | %w[gemnasium-dependency_scanning]
+    'PHP'                            | { 'composer.lock' => '' }                 | %w[gemnasium-dependency_scanning]
+    'Python requirements.txt'        | { 'requirements.txt' => '' }              | %w[gemnasium-python-dependency_scanning]
+    'Python requirements.pip'        | { 'requirements.pip' => '' }              | %w[gemnasium-python-dependency_scanning]
+    'Python Pipfile'                 | { 'Pipfile' => '' }                       | %w[gemnasium-python-dependency_scanning]
+    'Python requires.txt'            | { 'requires.txt' => '' }                  | %w[gemnasium-python-dependency_scanning]
+    'Python with setup.py'           | { 'setup.py' => '' }                      | %w[gemnasium-python-dependency_scanning]
+    'Python with poetry.lock'        | { 'poetry.lock' => '' }                   | %w[gemnasium-python-dependency_scanning]
+    'Ruby Gemfile.lock'              | { 'Gemfile.lock' => '' }                  | %w[gemnasium-dependency_scanning]
+    'Ruby gems.locked'               | { 'gems.locked' => '' }                   | %w[gemnasium-dependency_scanning]
+    'Scala'                          | { 'build.sbt' => '' }                     | %w[gemnasium-maven-dependency_scanning]
   end
 
   with_them do
@@ -163,13 +163,13 @@ RSpec.describe 'Dependency-Scanning.gitlab-ci.yml', feature_category: :continuou
           using RSpec::Parameterized::TableSyntax
 
           where(:case_name, :excluded_analyzers, :included_build_names) do
-            'nothing'          | []                                                    | %w(gemnasium-dependency_scanning gemnasium-maven-dependency_scanning gemnasium-python-dependency_scanning)
-            'gemnasium'        | %w(gemnasium)                                         | %w(gemnasium-maven-dependency_scanning gemnasium-python-dependency_scanning)
-            'gemnasium-maven'  | %w(gemnasium-maven)                                   | %w(gemnasium-dependency_scanning gemnasium-python-dependency_scanning)
-            'gemnasium-python' | %w(gemnasium-python)                                  | %w(gemnasium-dependency_scanning gemnasium-maven-dependency_scanning)
-            'two'              | %w(gemnasium)                                         | %w(gemnasium-maven-dependency_scanning gemnasium-python-dependency_scanning)
-            'three'            | %w(gemnasium-maven gemnasium)                         | %w(gemnasium-python-dependency_scanning)
-            'four'             | %w(gemnasium-maven gemnasium)                         | %w(gemnasium-python-dependency_scanning)
+            'nothing'          | []                                                    | %w[gemnasium-dependency_scanning gemnasium-maven-dependency_scanning gemnasium-python-dependency_scanning]
+            'gemnasium'        | %w[gemnasium]                                         | %w[gemnasium-maven-dependency_scanning gemnasium-python-dependency_scanning]
+            'gemnasium-maven'  | %w[gemnasium-maven]                                   | %w[gemnasium-dependency_scanning gemnasium-python-dependency_scanning]
+            'gemnasium-python' | %w[gemnasium-python]                                  | %w[gemnasium-dependency_scanning gemnasium-maven-dependency_scanning]
+            'two'              | %w[gemnasium]                                         | %w[gemnasium-maven-dependency_scanning gemnasium-python-dependency_scanning]
+            'three'            | %w[gemnasium-maven gemnasium]                         | %w[gemnasium-python-dependency_scanning]
+            'four'             | %w[gemnasium-maven gemnasium]                         | %w[gemnasium-python-dependency_scanning]
           end
 
           with_them do

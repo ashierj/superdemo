@@ -76,7 +76,7 @@ RSpec.describe 'Login', feature_category: :system_access do
         it 'correctly renders tabs and panes' do
           subject
 
-          ensure_tab_pane_correctness(%w(Smartcard Standard))
+          ensure_tab_pane_correctness(%w[Smartcard Standard])
         end
 
         it 'renders link to sign up path' do

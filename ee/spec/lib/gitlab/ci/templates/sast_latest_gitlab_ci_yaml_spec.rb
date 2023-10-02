@@ -88,37 +88,37 @@ RSpec.describe 'SAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
           using RSpec::Parameterized::TableSyntax
 
           where(:case_name, :files, :variables, :include_build_names) do
-            ref(:android)          | { 'AndroidManifest.xml' => '', 'a.java' => '' } | ref(:experimental_vars) | %w(mobsf-android-sast)
-            ref(:android)          | { 'app/src/main/AndroidManifest.xml' => '' }    | ref(:experimental_vars) | %w(mobsf-android-sast)
-            ref(:android)          | { 'a/b/AndroidManifest.xml' => '' }             | ref(:experimental_vars) | %w(mobsf-android-sast)
-            ref(:android)          | { 'a/b/android.apk' => '' }                     | ref(:experimental_vars) | %w(mobsf-android-sast)
-            ref(:android)          | { 'android.apk' => '' }                         | ref(:experimental_vars) | %w(mobsf-android-sast)
-            'Apex'                 | { 'app.cls' => '' }                             | {}                      | %w(pmd-apex-sast)
-            'C'                    | { 'app.c' => '' }                               | {}                      | %w(flawfinder-sast)
-            'C++'                  | { 'app.cpp' => '' }                             | {}                      | %w(flawfinder-sast)
-            'C#'                   | { 'app.cs' => '' }                              | {}                      | %w(semgrep-sast)
-            'Elixir'               | { 'mix.exs' => '' }                             | {}                      | %w(sobelow-sast)
-            'Elixir, nested'       | { 'a/b/mix.exs' => '' }                         | {}                      | %w(sobelow-sast)
-            'Golang'               | { 'main.go' => '' }                             | {}                      | %w(semgrep-sast)
-            'Groovy'               | { 'app.groovy' => '' }                          | {}                      | %w(spotbugs-sast)
-            ref(:ios)              | { 'a.xcodeproj/x.pbxproj' => '' }               | ref(:experimental_vars) | %w(mobsf-ios-sast)
-            ref(:ios)              | { 'a/b/ios.ipa' => '' }                         | ref(:experimental_vars) | %w(mobsf-ios-sast)
-            'Java'                 | { 'app.java' => '' }                            | {}                      | %w(semgrep-sast)
-            'Java with MobSF'      | { 'app.java' => '' }                            | ref(:experimental_vars) | %w(semgrep-sast)
-            'Java without MobSF'   | { 'AndroidManifest.xml' => '', 'a.java' => '' } | {}                      | %w(semgrep-sast)
-            'Javascript'           | { 'app.js' => '' }                              | {}                      | %w(semgrep-sast)
-            'JSX'                  | { 'app.jsx' => '' }                             | {}                      | %w(semgrep-sast)
-            'Javascript Node'      | { 'package.json' => '' }                        | {}                      | %w(nodejs-scan-sast)
-            'HTML'                 | { 'index.html' => '' }                          | {}                      | %w(semgrep-sast)
-            'Kubernetes Manifests' | { 'Chart.yaml' => '' }                          | ref(:kubernetes_vars)   | %w(kubesec-sast)
-            'Multiple languages'   | { 'app.java' => '', 'app.js' => '' }            | {}                      | %w(semgrep-sast)
-            'PHP'                  | { 'app.php' => '' }                             | {}                      | %w(phpcs-security-audit-sast)
-            'Python'               | { 'app.py' => '' }                              | {}                      | %w(semgrep-sast)
-            'Ruby'                 | { 'config/routes.rb' => '' }                    | {}                      | %w(brakeman-sast)
-            'Scala'                | { 'app.scala' => '' }                           | {}                      | %w(semgrep-sast)
-            'Scala'                | { 'app.sc' => '' }                              | {}                      | %w(semgrep-sast)
-            'Typescript'           | { 'app.ts' => '' }                              | {}                      | %w(semgrep-sast)
-            'Typescript JSX'       | { 'app.tsx' => '' }                             | {}                      | %w(semgrep-sast)
+            ref(:android)          | { 'AndroidManifest.xml' => '', 'a.java' => '' } | ref(:experimental_vars) | %w[mobsf-android-sast]
+            ref(:android)          | { 'app/src/main/AndroidManifest.xml' => '' }    | ref(:experimental_vars) | %w[mobsf-android-sast]
+            ref(:android)          | { 'a/b/AndroidManifest.xml' => '' }             | ref(:experimental_vars) | %w[mobsf-android-sast]
+            ref(:android)          | { 'a/b/android.apk' => '' }                     | ref(:experimental_vars) | %w[mobsf-android-sast]
+            ref(:android)          | { 'android.apk' => '' }                         | ref(:experimental_vars) | %w[mobsf-android-sast]
+            'Apex'                 | { 'app.cls' => '' }                             | {}                      | %w[pmd-apex-sast]
+            'C'                    | { 'app.c' => '' }                               | {}                      | %w[flawfinder-sast]
+            'C++'                  | { 'app.cpp' => '' }                             | {}                      | %w[flawfinder-sast]
+            'C#'                   | { 'app.cs' => '' }                              | {}                      | %w[semgrep-sast]
+            'Elixir'               | { 'mix.exs' => '' }                             | {}                      | %w[sobelow-sast]
+            'Elixir, nested'       | { 'a/b/mix.exs' => '' }                         | {}                      | %w[sobelow-sast]
+            'Golang'               | { 'main.go' => '' }                             | {}                      | %w[semgrep-sast]
+            'Groovy'               | { 'app.groovy' => '' }                          | {}                      | %w[spotbugs-sast]
+            ref(:ios)              | { 'a.xcodeproj/x.pbxproj' => '' }               | ref(:experimental_vars) | %w[mobsf-ios-sast]
+            ref(:ios)              | { 'a/b/ios.ipa' => '' }                         | ref(:experimental_vars) | %w[mobsf-ios-sast]
+            'Java'                 | { 'app.java' => '' }                            | {}                      | %w[semgrep-sast]
+            'Java with MobSF'      | { 'app.java' => '' }                            | ref(:experimental_vars) | %w[semgrep-sast]
+            'Java without MobSF'   | { 'AndroidManifest.xml' => '', 'a.java' => '' } | {}                      | %w[semgrep-sast]
+            'Javascript'           | { 'app.js' => '' }                              | {}                      | %w[semgrep-sast]
+            'JSX'                  | { 'app.jsx' => '' }                             | {}                      | %w[semgrep-sast]
+            'Javascript Node'      | { 'package.json' => '' }                        | {}                      | %w[nodejs-scan-sast]
+            'HTML'                 | { 'index.html' => '' }                          | {}                      | %w[semgrep-sast]
+            'Kubernetes Manifests' | { 'Chart.yaml' => '' }                          | ref(:kubernetes_vars)   | %w[kubesec-sast]
+            'Multiple languages'   | { 'app.java' => '', 'app.js' => '' }            | {}                      | %w[semgrep-sast]
+            'PHP'                  | { 'app.php' => '' }                             | {}                      | %w[phpcs-security-audit-sast]
+            'Python'               | { 'app.py' => '' }                              | {}                      | %w[semgrep-sast]
+            'Ruby'                 | { 'config/routes.rb' => '' }                    | {}                      | %w[brakeman-sast]
+            'Scala'                | { 'app.scala' => '' }                           | {}                      | %w[semgrep-sast]
+            'Scala'                | { 'app.sc' => '' }                              | {}                      | %w[semgrep-sast]
+            'Typescript'           | { 'app.ts' => '' }                              | {}                      | %w[semgrep-sast]
+            'Typescript JSX'       | { 'app.tsx' => '' }                             | {}                      | %w[semgrep-sast]
           end
 
           with_them do

@@ -71,18 +71,18 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
 
     it 'gathers usage data', :fips_mode do
       expect(subject.keys).to include(
-        *%i(
+        *%i[
           elasticsearch_enabled
           geo_enabled
           license_trial_ends_on
-        ))
+        ])
     end
 
     it 'gathers usage counts', :aggregate_failures do
       expect(count_data[:projects]).to eq(3)
 
       expect(count_data.keys).to include(
-        *%i(
+        *%i[
           confidential_epics
           epics
           epic_issues
@@ -100,7 +100,7 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
           status_page_projects
           user_preferences_group_overview_details
           template_repositories
-        ))
+        ])
 
       expect(count_data[:status_page_projects]).to eq(1)
       expect(count_data[:status_page_issues]).to eq(1)
@@ -198,10 +198,10 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
     end
 
     it 'gathers data on operations dashboard' do
-      expect(subject.keys).to include(*%i(
+      expect(subject.keys).to include(*%i[
                                         operations_dashboard_default_dashboard
                                         operations_dashboard_users_with_projects_added
-                                      ))
+                                      ])
     end
 
     it 'bases counts on active users', :aggregate_failures do

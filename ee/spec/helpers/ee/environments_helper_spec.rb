@@ -38,7 +38,7 @@ RSpec.describe EnvironmentsHelper do
     end
 
     it 'provides data for a deployment approval' do
-      keys = %i(pending_approval_count
+      keys = %i[pending_approval_count
                 iid
                 id
                 required_approval_count
@@ -49,7 +49,7 @@ RSpec.describe EnvironmentsHelper do
                 project_id
                 project_path
                 name
-                tier)
+                tier]
 
       expect(subject.keys).to match_array(keys)
     end

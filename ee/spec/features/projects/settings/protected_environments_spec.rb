@@ -9,7 +9,7 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
   let(:group) { create(:group) }
   let(:project) { create(:project, :repository, group: group) }
   let(:user) { create(:user) }
-  let(:environments) { %w(production development staging test) }
+  let(:environments) { %w[production development staging test] }
 
   before do
     stub_licensed_features(protected_environments: true)

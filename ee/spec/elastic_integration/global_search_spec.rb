@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'GlobalSearch', :elastic_clean, :clean_gitlab_redis_shared_state, feature_category: :global_search do
   include AdminModeHelper
 
-  let(:features) { %i(issues merge_requests repository builds wiki snippets) }
+  let(:features) { %i[issues merge_requests repository builds wiki snippets] }
   let(:admin_with_admin_mode) { create :user, admin: true }
   let(:admin_without_admin_mode) { create :user, admin: true }
   let(:auditor) { create :user, auditor: true }
@@ -17,7 +17,7 @@ RSpec.describe 'GlobalSearch', :elastic_clean, :clean_gitlab_redis_shared_state,
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-    stub_const('POSSIBLE_FEATURES', %i(issues merge_requests wiki_blobs blobs commits).freeze)
+    stub_const('POSSIBLE_FEATURES', %i[issues merge_requests wiki_blobs blobs commits].freeze)
 
     project.add_developer(member)
     project.add_developer(external_member)

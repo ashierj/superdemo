@@ -50,15 +50,15 @@ RSpec.describe Elastic::Latest::CustomLanguageAnalyzers do
   describe '.add_custom_analyzers_fields' do
     using RSpec::Parameterized::TableSyntax
 
-    let!(:original_fields) { %w(title^2 confidential).freeze }
+    let!(:original_fields) { %w[title^2 confidential].freeze }
 
     where(:smartcn_enabled, :kuromoji_enabled, :smartcn_search, :kuromoji_search, :expected_additional_fields) do
       false | false | false | false  | []
       false | false | true  | true   | []
       true  | true  | false | false  | []
-      true  | true  | true  | false  | %w(title.smartcn)
-      true  | true  | false | true   | %w(title.kuromoji)
-      true  | true  | true  | true   | %w(title.smartcn title.kuromoji)
+      true  | true  | true  | false  | %w[title.smartcn]
+      true  | true  | false | true   | %w[title.kuromoji]
+      true  | true  | true  | true   | %w[title.smartcn title.kuromoji]
     end
 
     with_them do

@@ -1151,7 +1151,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
       }
     }
 
-    [%w(feature exact), ['feat*', 'wildcard']].each do |protected_branch_name, protected_branch_type|
+    [%w[feature exact], ['feat*', 'wildcard']].each do |protected_branch_name, protected_branch_type|
       context "user-specific access control" do
         let(:user) { create(:user) }
 

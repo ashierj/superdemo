@@ -13,7 +13,7 @@ RSpec.describe Mutations::Boards::Update do
   let_it_be(:label1) { create(:label, project: project) }
   let_it_be(:label2) { create(:label, project: project) }
 
-  let(:new_labels) { %w(new_label1 new_label2) }
+  let(:new_labels) { %w[new_label1 new_label2] }
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
   let(:mutated_board) { subject[:board] }
 

@@ -22,7 +22,7 @@ RSpec.describe Gitlab::Auth::Ldap::Config do
       end
 
       it 'returns multiple configured providers' do
-        expect(described_class.available_providers).to match_array(%w(ldapmain ldapsecondary))
+        expect(described_class.available_providers).to match_array(%w[ldapmain ldapsecondary])
       end
     end
   end

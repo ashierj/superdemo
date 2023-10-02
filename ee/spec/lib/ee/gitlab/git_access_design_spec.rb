@@ -22,7 +22,7 @@ RSpec.describe Gitlab::GitAccessDesign do
     end
 
     where(:protocol_name) do
-      %w(ssh web http https)
+      %w[ssh web http https]
     end
 
     with_them do

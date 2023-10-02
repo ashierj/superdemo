@@ -350,7 +350,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
     it 'returns finding information' do
       expect(subject.to_h).to match(
         description: finding.description,
-        description_html: match(%r<p data-sourcepos.*?\<\/p>),
+        description_html: match(%r{p data-sourcepos.*?\<\/p}),
         identifiers: kind_of(Array),
         issue_feedback: anything,
         links: finding.links,
@@ -361,7 +361,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
         project_fingerprint: finding.project_fingerprint,
         remediations: finding.remediations,
         solution: kind_of(String),
-        solution_html: match(%r<p data-sourcepos.*?\<\/p>),
+        solution_html: match(%r{p data-sourcepos.*?\<\/p}),
         evidence: kind_of(String),
         scanner: kind_of(Grape::Entity::Exposure::NestingExposure::OutputBuilder),
         request: kind_of(Grape::Entity::Exposure::NestingExposure::OutputBuilder),

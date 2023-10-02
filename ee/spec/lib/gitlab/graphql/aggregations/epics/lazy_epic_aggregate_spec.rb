@@ -28,7 +28,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate do
       end
 
       specify 'as a string', :aggregate_failures do
-        %w(weight_sum health_status_sum count).each do |valid_facet|
+        %w[weight_sum health_status_sum count].each do |valid_facet|
           expect { described_class.new(query_ctx, epic_id, valid_facet) }.not_to raise_error
         end
       end

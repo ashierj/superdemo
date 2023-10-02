@@ -9,7 +9,7 @@ RSpec.describe Gitlab::AuthorityAnalyzer do
     let(:user_a) { create(:user) }
     let(:user_b) { create(:user) }
     let(:merge_request) { create(:merge_request, target_project: project, source_project: project) }
-    let(:files) { %w(so many files) }
+    let(:files) { %w[so many files] }
 
     let(:commits) do
       [

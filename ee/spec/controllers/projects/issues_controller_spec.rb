@@ -358,7 +358,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
           sign_in(user)
         end
 
-        %i(reporter developer maintainer).each do |access|
+        %i[reporter developer maintainer].each do |access|
           it_behaves_like 'user can see confidential issue', access
         end
 

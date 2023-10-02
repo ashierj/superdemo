@@ -84,7 +84,7 @@ RSpec.describe Resolvers::PipelineSecurityReportFindingsResolver, feature_catego
     end
 
     context 'when given states' do
-      let(:params) { { state: %w(detected confirmed) } }
+      let(:params) { { state: %w[detected confirmed] } }
 
       before do
         allow(Security::PipelineVulnerabilitiesFinder).to receive(:new).and_call_original

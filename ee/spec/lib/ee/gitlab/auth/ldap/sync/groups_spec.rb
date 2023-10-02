@@ -79,7 +79,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Groups do
         before do
           stub_ldap_config(
             group_base: 'dc=example,dc=com',
-            external_groups: %w(external_group)
+            external_groups: %w[external_group]
           )
         end
 

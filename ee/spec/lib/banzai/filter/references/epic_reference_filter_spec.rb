@@ -36,7 +36,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
     end
 
     it 'escapes the title attribute' do
-      epic.update_attribute(:title, %{"></a>whatever<a title="})
+      epic.update_attribute(:title, %("></a>whatever<a title="))
 
       expect(doc.text).to eq("Check #{reference}")
     end
@@ -248,7 +248,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
   context 'full cross-refererence in a link href' do
     let(:link) { "#{another_group.path}&#{epic.iid}" }
     let(:text) do
-      ref = %{<a href="#{link}">Reference</a>}
+      ref = %(<a href="#{link}">Reference</a>)
       "Check #{ref}"
     end
 
@@ -272,7 +272,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
   context 'url in a link href' do
     let(:link) { urls.group_epic_url(epic.group, epic) }
     let(:text) do
-      ref = %{<a href="#{link}">Reference</a>}
+      ref = %(<a href="#{link}">Reference</a>)
       "Check #{ref}"
     end
 

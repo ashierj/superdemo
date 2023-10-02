@@ -37,7 +37,7 @@ RSpec.describe 'Secret-Detection.gitlab-ci.yml', feature_category: :continuous_i
 
       context 'by default' do
         it 'creates a pipeline with the expected jobs' do
-          expect(build_names).to match_array(%w(secret_detection))
+          expect(build_names).to match_array(%w[secret_detection])
         end
       end
     end

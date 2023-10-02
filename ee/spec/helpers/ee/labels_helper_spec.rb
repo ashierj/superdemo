@@ -14,7 +14,7 @@ RSpec.describe LabelsHelper do
       end
 
       it 'does not include link to scoped documentation' do
-        expect(render_label(scoped_label)).to match(%r(<span.+><span.+>#{scoped_label.name}</span></span>$)m)
+        expect(render_label(scoped_label)).to match(%r{<span.+><span.+>#{scoped_label.name}</span></span>$}m)
       end
     end
   end

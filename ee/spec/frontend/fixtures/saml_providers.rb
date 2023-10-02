@@ -12,7 +12,7 @@ RSpec.describe Groups::SamlProvidersController, '(JavaScript fixtures)', type: :
   before do
     sign_in(user)
     group.add_owner(user)
-    allow(Devise).to receive(:omniauth_providers).and_return(%i(group_saml))
+    allow(Devise).to receive(:omniauth_providers).and_return(%i[group_saml])
     stub_licensed_features(group_saml: true)
   end
 

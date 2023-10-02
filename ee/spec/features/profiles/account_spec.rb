@@ -16,7 +16,7 @@ RSpec.describe 'Profile > Account', feature_category: :user_profile do
 
     def enable_group_saml
       stub_licensed_features(group_saml: true)
-      allow(Devise).to receive(:omniauth_providers).and_return(%i(group_saml))
+      allow(Devise).to receive(:omniauth_providers).and_return(%i[group_saml])
     end
 
     def create_linked_identity

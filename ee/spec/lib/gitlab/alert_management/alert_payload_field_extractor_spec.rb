@@ -41,8 +41,8 @@ RSpec.describe Gitlab::AlertManagement::AlertPayloadFieldExtractor do
     it 'returns all the possible field combination and types suggestions' do
       expect(fields).to contain_exactly(
         a_field(['str'], 'str', 'string'),
-        a_field(%w(nested key), 'nested/key', 'string'),
-        a_field(%w(nested deep key), 'nested/deep/key', 'string'),
+        a_field(%w[nested key], 'nested/key', 'string'),
+        a_field(%w[nested deep key], 'nested/deep/key', 'string'),
         a_field(['time'], 'time', 'datetime'),
         a_field(['time_iso_8601_and_rfc_3339'], 'time_iso_8601_and_rfc_3339', 'datetime'),
         a_field(['time_iso_8601'], 'time_iso_8601', 'datetime'),

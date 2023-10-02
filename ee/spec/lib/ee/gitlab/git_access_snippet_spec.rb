@@ -17,7 +17,7 @@ RSpec.describe Gitlab::GitAccessSnippet do
     subject { access.check('git-receive-pack', ::Gitlab::GitAccess::ANY) }
 
     where(:protocol_name) do
-      %w(ssh web http https)
+      %w[ssh web http https]
     end
 
     with_them do

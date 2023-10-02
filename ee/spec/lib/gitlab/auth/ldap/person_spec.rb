@@ -129,7 +129,7 @@ RSpec.describe Gitlab::Auth::Ldap::Person do
           'attributes' => {
             'name' => 'cn',
             'email' => 'mail',
-            'username' => %w(uid mail),
+            'username' => %w[uid mail],
             'first_name' => 'name',
             'last_name' => 'surname'
           },
@@ -140,7 +140,7 @@ RSpec.describe Gitlab::Auth::Ldap::Person do
 
     let(:config) { Gitlab::Auth::Ldap::Config.new('ldapmain') }
     let(:ldap_attributes) { described_class.ldap_attributes(config) }
-    let(:expected_attributes) { %w(dn cn uid mail memberof name surname) }
+    let(:expected_attributes) { %w[dn cn uid mail memberof name surname] }
 
     it 'includes a real attribute name' do
       stub_sync_ssh_keys('my-ssh-attribute')

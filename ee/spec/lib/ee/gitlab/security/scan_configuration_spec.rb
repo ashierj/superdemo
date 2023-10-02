@@ -162,7 +162,7 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
     subject { scan.can_enable_by_merge_request? }
 
     context 'with a scanner that can be enabled in merge request' do
-      where(type: %i(sast sast_iac secret_detection dependency_scanning container_scanning))
+      where(type: %i[sast sast_iac secret_detection dependency_scanning container_scanning])
 
       with_them do
         it { is_expected.to be_truthy }
