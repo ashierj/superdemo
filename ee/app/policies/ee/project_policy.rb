@@ -221,37 +221,47 @@ module EE
 
       desc "Custom role on project that enables read code"
       condition(:role_enables_read_code) do
-        next unless @user.is_a?(User)
-
-        @user.custom_permission_for?(@subject, :read_code)
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :read_code
+        ).has_ability?
       end
 
       desc "Custom role on project that enables read vulnerability"
       condition(:role_enables_read_vulnerability) do
-        next unless @user.is_a?(User)
-
-        @user.custom_permission_for?(@subject, :read_vulnerability)
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :read_vulnerability
+        ).has_ability?
       end
 
       desc "Custom role on project that enables admin merge request"
       condition(:role_enables_admin_merge_request) do
-        next unless @user.is_a?(User)
-
-        @user.custom_permission_for?(project, :admin_merge_request)
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_merge_request
+        ).has_ability?
       end
 
       desc "Custom role on project that enables admin vulnerability"
       condition(:role_enables_admin_vulnerability) do
-        next unless @user.is_a?(User)
-
-        @user.custom_permission_for?(@subject, :admin_vulnerability)
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_vulnerability
+        ).has_ability?
       end
 
       desc "Custom role on project that enables read dependency"
       condition(:role_enables_read_dependency) do
-        next unless @user.is_a?(User)
-
-        @user.custom_permission_for?(project, :read_dependency)
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :read_dependency
+        ).has_ability?
       end
 
       with_scope :subject

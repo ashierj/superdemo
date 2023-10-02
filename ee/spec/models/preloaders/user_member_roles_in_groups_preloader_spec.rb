@@ -30,11 +30,11 @@ RSpec.describe Preloaders::UserMemberRolesInGroupsPreloader, feature_category: :
     let(:expected_abilities) { [ability, ability_requirement(ability)].compact }
 
     context 'when custom_roles license is not enabled on group root ancestor' do
-      it 'skips preload' do
+      it 'returns group id with nil ability value' do
         stub_licensed_features(custom_roles: false)
         create_member_role(ability, group_member)
 
-        expect(result).to eq({})
+        expect(result).to eq(group.id => nil)
       end
     end
 
