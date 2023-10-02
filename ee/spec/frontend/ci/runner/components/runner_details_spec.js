@@ -5,7 +5,6 @@ import RunnerDetail from '~/ci/runner/components/runner_detail.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { UPGRADE_STATUS_AVAILABLE } from 'ee/ci/runner/constants';
 
-import RunnerUpgradeStatusAlert from 'ee_component/ci/runner/components/runner_upgrade_status_alert.vue';
 import RunnerMaintenanceNoteDetail from 'ee_component/ci/runner/components/runner_maintenance_note_detail.vue';
 import RunnerUpgradeStatusBadge from 'ee_component/ci/runner/components/runner_upgrade_status_badge.vue';
 
@@ -16,7 +15,6 @@ const mockRunner = runnerData.data.runner;
 describe('RunnerDetails', () => {
   let wrapper;
 
-  const findRunnerUpgradeStatusAlert = () => wrapper.findComponent(RunnerUpgradeStatusAlert);
   const findRunnerMaintenanceNoteDetail = () => wrapper.findComponent(RunnerMaintenanceNoteDetail);
   const findRunnerUpgradeStatusBadge = () => wrapper.findComponent(RunnerUpgradeStatusBadge);
 
@@ -49,10 +47,6 @@ describe('RunnerDetails', () => {
           },
           provide,
         });
-      });
-
-      it('displays upgrade available alert', () => {
-        expect(findRunnerUpgradeStatusAlert().text()).toContain(s__('Runners|Upgrade available'));
       });
 
       it('displays upgrade available badge', () => {
