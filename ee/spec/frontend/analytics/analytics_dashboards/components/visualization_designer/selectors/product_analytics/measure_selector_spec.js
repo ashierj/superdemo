@@ -76,10 +76,9 @@ describe('ProductAnalyticsMeasureSelector', () => {
   });
 
   it.each`
-    startbutton             | showAllbutton               | eventType       | summaryString
-    ${'feature-button'}     | ${'feature-all-button'}     | ${'featureuse'} | ${'featureUsages::all'}
-    ${'clickevents-button'} | ${'clickevents-all-button'} | ${'click'}      | ${'clickEvents::all'}
-    ${'events-button'}      | ${'events-all-button'}      | ${''}           | ${'events::all'}
+    startbutton             | showAllbutton               | eventType  | summaryString
+    ${'clickevents-button'} | ${'clickevents-all-button'} | ${'click'} | ${'clickEvents::all'}
+    ${'events-button'}      | ${'events-all-button'}      | ${''}      | ${'events::all'}
   `(
     'navigates from overview to event subpage $summaryString',
     async ({ startbutton, showAllbutton, eventType, summaryString }) => {

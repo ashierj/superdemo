@@ -52,7 +52,6 @@ export default {
       if (this.measureType && this.measureSubType) {
         const measureMap = {
           pageViews: [`${EVENTS_TABLE_NAME}.pageViewsCount`],
-          featureUsages: [`${EVENTS_TABLE_NAME}.count`],
           clickEvents: [`${EVENTS_TABLE_NAME}.count`],
           events: [`${EVENTS_TABLE_NAME}.count`],
           uniqueUsers: [`${EVENTS_TABLE_NAME}.uniqueUsersCount`],
@@ -60,7 +59,6 @@ export default {
         };
 
         const eventTypeMap = {
-          featureUsages: 'featureuse',
           clickEvents: 'click',
         };
 
@@ -113,13 +111,6 @@ export default {
             @click="selectMeasure('pageViews')"
           />
           <visualization-designer-list-option
-            icon="bulb"
-            data-testid="feature-button"
-            :title="s__('ProductAnalytics|Feature Usages')"
-            :description="s__('ProductAnalytics|Track specific features')"
-            @click="selectMeasure('featureUsages')"
-          />
-          <visualization-designer-list-option
             icon="check-circle"
             data-testid="clickevents-button"
             :title="s__('ProductAnalytics|Click Events')"
@@ -168,19 +159,6 @@ export default {
         </ul>
       </div>
 
-      <div v-else-if="measureType === 'featureUsages'">
-        <h3 class="gl-font-lg">{{ s__('ProductAnalytics|Feature Usages') }}</h3>
-        <ul class="content-list">
-          <visualization-designer-list-option
-            data-testid="feature-all-button"
-            :title="s__('ProductAnalytics|All Features')"
-            :description="
-              s__('ProductAnalytics|Compares feature usage of all features against each other')
-            "
-            @click="selectMeasure('featureUsages', 'all')"
-          />
-        </ul>
-      </div>
       <div v-else-if="measureType === 'clickEvents'">
         <h3 class="gl-font-lg">{{ s__('ProductAnalytics|Click Events') }}</h3>
         <ul class="content-list">
