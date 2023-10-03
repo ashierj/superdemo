@@ -308,7 +308,7 @@ class Namespace < ApplicationRecord
   end
 
   def human_name
-    owner_name
+    owner_name || path
   end
 
   def any_project_has_container_registry_tags?
