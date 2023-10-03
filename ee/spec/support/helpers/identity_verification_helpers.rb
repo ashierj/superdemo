@@ -54,7 +54,7 @@ module IdentityVerificationHelpers
     expect(page).to have_content(content)
 
     fill_in 'verification_code', with: email_verification_code
-    click_button 'Verify email address'
+    click_button s_('IdentityVerification|Verify email address')
   end
 
   def confirmation_code
@@ -72,18 +72,20 @@ module IdentityVerificationHelpers
   end
 
   def expect_to_see_identity_verification_page
-    expect(page).to have_content("For added security, you'll need to verify your identity")
+    expect(page).to have_content(
+      s_("IdentityVerification|For added security, you'll need to verify your identity")
+    )
   end
 
   def expect_verification_completed
-    expect(page).to have_content('Completed')
-    expect(page).to have_content('Next')
+    expect(page).to have_content(_('Completed'))
+    expect(page).to have_content(_('Next'))
 
     click_link 'Next'
 
     wait_for_requests
 
     expect(page).to have_current_path(success_identity_verification_path)
-    expect(page).to have_content('Verification successful')
+    expect(page).to have_content(s_('IdentityVerification|Verification successful'))
   end
 end

@@ -18,6 +18,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   let(:user_email) { 'onboardinguser@example.com' }
+  let(:new_user) { build(:user, email: user_email) }
   let(:user) { User.find_by_email(user_email) }
 
   shared_examples 'registering a low risk user with identity verification' do
@@ -31,6 +32,52 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       expect_verification_completed
 
       expect_to_see_dashboard_page
+    end
+
+    context 'when the verification code is empty' do
+      it 'shows error message' do
+        verify_code('')
+
+        expect(page).to have_content(s_('IdentityVerification|Enter a code.'))
+      end
+    end
+
+    context 'when the verification code is invalid' do
+      it 'shows error message' do
+        verify_code('xxx')
+
+        expect(page).to have_content(s_('IdentityVerification|Enter a valid code.'))
+      end
+    end
+
+    context 'when the verification code has expired' do
+      before do
+        travel (Users::EmailVerification::ValidateTokenService::TOKEN_VALID_FOR_MINUTES + 1).minutes
+      end
+
+      it 'shows error message' do
+        verify_code(email_verification_code)
+
+        expect(page).to have_content(s_('IdentityVerification|The code has expired. Send a new code and try again.'))
+      end
+    end
+
+    context 'when the verification code is incorrect' do
+      it 'shows error message' do
+        verify_code('000000')
+
+        expect(page).to have_content(
+          s_('IdentityVerification|The code is incorrect. Enter it again, or send a new code.')
+        )
+      end
+    end
+
+    context 'when user requests a new code' do
+      it 'resends a new code' do
+        click_link 'Send a new code'
+
+        expect(page).to have_content(s_('IdentityVerification|A new code has been sent.'))
+      end
     end
   end
 
@@ -184,10 +231,42 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     it_behaves_like 'registering a high risk user with identity verification'
   end
 
+  describe 'user that already went through identity verification' do
+    context 'when the user is medium risk but phone verification feature-flag is turned off' do
+      let(:risk) { :medium }
+
+      before do
+        stub_feature_flags(identity_verification_phone_number: false)
+
+        visit new_user_registration_path
+        sign_up
+      end
+
+      it 'verifies the user with email only' do
+        expect_to_see_identity_verification_page
+
+        verify_email
+
+        expect_verification_completed
+
+        expect_to_see_dashboard_page
+
+        user_signs_out
+
+        # even though the phone verification feature-flag is turned back on
+        # when the user logs in next, they will not be asked to do identity verification again
+        stub_feature_flags(identity_verification_phone_number: true)
+
+        gitlab_sign_in(user, password: new_user.password)
+
+        expect_to_see_dashboard_page
+      end
+    end
+  end
+
   private
 
   def sign_up
-    new_user = build(:user, email: user_email)
     fill_in_sign_up_form(new_user) { solve_arkose_verify_challenge(risk: risk) }
   end
 
@@ -197,7 +276,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   def trial_sign_up
-    new_user = build(:user, email: user_email)
     fill_in_sign_up_form(new_user, 'Continue') { solve_arkose_verify_challenge(risk: risk) }
   end
 
@@ -220,8 +298,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     click_button s_('IdentityVerification|Send code')
 
     expect(page).to have_content(
-      format(s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
-        phoneNumber: '61400000000')
+      format(
+        s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
+        phoneNumber: '61400000000'
+      )
     )
 
     fill_in 'verification_code', with: verification_code
@@ -234,5 +314,12 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
   def request_phone_exemption
     click_button s_('IdentityVerification|Verify with a credit card instead?')
+  end
+
+  def user_signs_out
+    find_by_testid('user-dropdown').click
+    click_link 'Sign out'
+
+    expect(page).to have_button(_('Sign in'))
   end
 end
