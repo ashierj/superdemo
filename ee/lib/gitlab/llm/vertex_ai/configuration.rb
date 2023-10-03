@@ -4,7 +4,6 @@ module Gitlab
   module Llm
     module VertexAi
       class Configuration
-        DEFAULT_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
         DEFAULT_TEMPERATURE = 0.2
         DEFAULT_MAX_OUTPUT_TOKENS = 1024
         DEFAULT_TOP_K = 40
@@ -30,13 +29,7 @@ module Gitlab
         end
 
         def access_token
-          Rails.cache.fetch(
-            :tofa_access_token,
-            expires_in: 3540.seconds,
-            skip_nil: true
-          ) do
-            fresh_token
-          end
+          TokenLoader.new.current_token
         end
 
         def headers
@@ -51,21 +44,6 @@ module Gitlab
         private
 
         attr_reader :model_config
-
-        delegate :vertex_ai_credentials, to: :settings
-
-        def settings
-          @settings ||= Gitlab::CurrentSettings.current_application_settings
-        end
-
-        def fresh_token
-          response = ::Google::Auth::ServiceAccountCredentials.make_creds(
-            json_key_io: StringIO.new(vertex_ai_credentials),
-            scope: DEFAULT_SCOPE
-          ).fetch_access_token!
-
-          response["access_token"]
-        end
       end
     end
   end
