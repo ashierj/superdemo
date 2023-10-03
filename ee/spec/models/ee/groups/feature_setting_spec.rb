@@ -20,7 +20,7 @@ RSpec.describe Groups::FeatureSetting do
       end
     end
 
-    let(:features) { %w(wiki) }
+    let(:features) { %w[wiki] }
 
     context 'when features are disabled' do
       it 'returns false' do

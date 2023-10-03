@@ -132,7 +132,7 @@ RSpec.describe InstanceSecurityDashboard do
         end
 
         all_roles = Gitlab::Access.sym_options.keys
-        permitted_roles = %i(developer maintainer).freeze
+        permitted_roles = %i[developer maintainer].freeze
         unpermitted_roles = all_roles - permitted_roles
 
         permitted_roles.each { |role| it_behaves_like 'user with project role', as: role, permitted: true }

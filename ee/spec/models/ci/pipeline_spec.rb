@@ -145,10 +145,10 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
       end
 
       context 'when the `report_types` parameter is provided' do
-        subject(:filtered_report_types) { pipeline.security_reports(report_types: %w(sast)).reports.values.map(&:type).uniq }
+        subject(:filtered_report_types) { pipeline.security_reports(report_types: %w[sast]).reports.values.map(&:type).uniq }
 
         it 'returns only the reports which are requested' do
-          expect(filtered_report_types).to eq(%w(sast))
+          expect(filtered_report_types).to eq(%w[sast])
         end
       end
 

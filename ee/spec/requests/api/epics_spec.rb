@@ -364,7 +364,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
       end
 
       it 'returns an empty array if no epic matches labels with labels param as array' do
-        get api(url), params: { labels: %w(foo bar) }
+        get api(url), params: { labels: %w[foo bar] }
 
         expect_paginated_array_response([])
       end

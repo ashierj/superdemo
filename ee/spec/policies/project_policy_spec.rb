@@ -796,7 +796,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     let(:project) { private_project }
 
     let(:permissions) do
-      %i(
+      %i[
         reporter_access
         push_code
         create_merge_request_from
@@ -804,7 +804,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         create_vulnerability_feedback
         read_project
         admin_merge_request
-      )
+      ]
     end
 
     context 'when auto_fix feature is enabled' do

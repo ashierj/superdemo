@@ -160,7 +160,7 @@ RSpec.describe PushRule, :saas, feature_category: :source_code_management do
   end
 
   describe '#commit_validation?' do
-    let(:settings_with_global_default) { %i(reject_unsigned_commits) }
+    let(:settings_with_global_default) { %i[reject_unsigned_commits] }
 
     where(:setting, :value, :result) do
       :commit_message_regex        | 'regex'       | true

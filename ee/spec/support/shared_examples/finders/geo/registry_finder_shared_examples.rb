@@ -2,14 +2,14 @@
 
 RSpec.shared_examples 'a registry finder' do
   it 'responds to registry finder methods' do
-    registry_finder_methods = %i{
+    registry_finder_methods = %i[
       failed_count
       find_registries_never_attempted_sync
       find_registries_needs_sync_again
       registry_class
       registry_count
       synced_count
-    }
+    ]
 
     registry_finder_methods.each do |method|
       expect(subject).to respond_to(method)

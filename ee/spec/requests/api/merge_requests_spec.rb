@@ -283,7 +283,7 @@ RSpec.describe API::MergeRequests, feature_category: :source_code_management do
 
         expect(response).to have_gitlab_http_status(:created)
         expect(json_response['title']).to eq('Test merge_request')
-        expect(json_response['labels']).to eq(%w(label label2))
+        expect(json_response['labels']).to eq(%w[label label2])
         expect(json_response['milestone']['id']).to eq(milestone.id)
         expect(json_response['squash']).to be_truthy
         expect(json_response['force_remove_source_branch']).to be_falsy

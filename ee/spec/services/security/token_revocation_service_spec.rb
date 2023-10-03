@@ -25,7 +25,7 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
   end
 
   let_it_be(:revocable_external_token_types) do
-    { 'types': %w(aws_key_id aws_secret gcp_key_id gcp_secret) }
+    { 'types': %w[aws_key_id aws_secret gcp_key_id gcp_secret] }
   end
 
   subject { described_class.new(revocable_keys: revocable_keys).execute }
@@ -173,7 +173,7 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
 
       context 'when there is no token to be revoked' do
         let_it_be(:revocable_external_token_types) do
-          { 'types': %w() }
+          { 'types': %w[] }
         end
 
         specify { expect(subject).to eql({ status: :success }) }

@@ -6,7 +6,7 @@ RSpec.describe CiMinutesUsageMailer do
   include EmailSpec::Matchers
 
   let(:namespace) { create(:group) }
-  let(:recipients) { %w(bob@example.com john@example.com) }
+  let(:recipients) { %w[bob@example.com john@example.com] }
 
   shared_examples 'mail format' do
     it { is_expected.to have_subject subject_text }

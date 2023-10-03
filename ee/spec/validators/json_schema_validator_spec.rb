@@ -6,7 +6,7 @@ RSpec.describe JsonSchemaValidator do
   describe '#validates_each' do
     let(:test_value) { 'bar' }
     let(:mock_subject) { double(:subject) }
-    let(:validator) { described_class.new(attributes: [:foo], filename: schema_name, base_directory: %w(spec fixtures)) }
+    let(:validator) { described_class.new(attributes: [:foo], filename: schema_name, base_directory: %w[spec fixtures]) }
     let(:fake_draft) { double('Draft7', valid?: true) }
 
     subject(:validate_subject) { validator.validate_each(mock_subject, :foo, test_value) }

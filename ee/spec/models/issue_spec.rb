@@ -502,11 +502,11 @@ RSpec.describe Issue, feature_category: :team_planning do
   describe '.simple_sorts' do
     it 'includes weight with other base keys' do
       expect(described_class.simple_sorts.keys).to match_array(
-        %w(closest_future_date closest_future_date_asc created_asc
+        %w[closest_future_date closest_future_date_asc created_asc
            created_at_asc created_at_desc created_date created_desc due_date
            due_date_asc due_date_desc id_asc id_desc relative_position
            relative_position_asc title_asc title_desc updated_asc updated_at_asc
-           updated_at_desc updated_desc weight weight_asc weight_desc))
+           updated_at_desc updated_desc weight weight_asc weight_desc])
     end
   end
 
@@ -1245,7 +1245,7 @@ RSpec.describe Issue, feature_category: :team_planning do
     end
 
     it 'gives issues with the given issue types list' do
-      expect(described_class.with_issue_type(%w(issue test_case)))
+      expect(described_class.with_issue_type(%w[issue test_case]))
         .to contain_exactly(issue, test_case)
     end
   end

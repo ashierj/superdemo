@@ -147,7 +147,7 @@ RSpec.describe Security::DependencyListService, feature_category: :vulnerability
               }
             end
 
-            expect(dependencies).to eq([{ name: "saml2-js", vulnerabilities: %w(critical medium unknown) },
+            expect(dependencies).to eq([{ name: "saml2-js", vulnerabilities: %w[critical medium unknown] },
                                         { name: "nokogiri", vulnerabilities: ["high"] }])
           end
         end
@@ -166,7 +166,7 @@ RSpec.describe Security::DependencyListService, feature_category: :vulnerability
             end
 
             expect(dependencies).to eq([{ name: "nokogiri", vulnerabilities: ["high"] },
-                                        { name: "saml2-js", vulnerabilities: %w(critical medium unknown) }])
+                                        { name: "saml2-js", vulnerabilities: %w[critical medium unknown] }])
           end
         end
       end

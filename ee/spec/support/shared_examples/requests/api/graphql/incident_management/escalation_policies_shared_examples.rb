@@ -33,7 +33,7 @@ RSpec.shared_examples 'correctly reorders escalation rule inputs' do
 
       expect(response).to have_gitlab_http_status(:success)
       expect(mutation_response['errors']).to be_empty
-      expect(pluck_from_rules_response('status')).to eq(%w(ACKNOWLEDGED ACKNOWLEDGED RESOLVED))
+      expect(pluck_from_rules_response('status')).to eq(%w[ACKNOWLEDGED ACKNOWLEDGED RESOLVED])
       expect(pluck_from_rules_response('elapsedTimeSeconds')).to eq([0, 60, 60])
     end
 

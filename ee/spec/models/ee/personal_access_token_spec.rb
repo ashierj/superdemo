@@ -199,7 +199,7 @@ RSpec.describe PersonalAccessToken, feature_category: :system_access do
 
   shared_context 'write to cache' do
     let_it_be(:pat) { create(:personal_access_token) }
-    let_it_be(:cache_keys) { %w(token_expired_rotation token_expiring_rotation) }
+    let_it_be(:cache_keys) { %w[token_expired_rotation token_expiring_rotation] }
 
     before do
       cache_keys.each do |key|

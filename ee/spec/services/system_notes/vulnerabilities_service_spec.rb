@@ -25,7 +25,7 @@ RSpec.describe SystemNotes::VulnerabilitiesService, feature_category: :vulnerabi
       end
     end
 
-    %w(dismissed resolved confirmed).each do |state|
+    %w[dismissed resolved confirmed].each do |state|
       context "state changed to #{state}" do
         let!(:state_transition) do
           create(:vulnerability_state_transition, vulnerability: vulnerability, to_state: state, comment: nil)

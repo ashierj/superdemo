@@ -34,7 +34,7 @@ RSpec.describe IssuableExportCsvWorker, feature_category: :team_planning do
     end
 
     context 'with selected fields are present' do
-      let(:selected_fields) { %w(Title Description State') }
+      let(:selected_fields) { %w[Title Description State'] }
 
       it 'calls the Requirements export service with selected fields' do
         params[:selected_fields] = selected_fields

@@ -192,7 +192,7 @@ RSpec.describe EE::Issuable do
           expect(builder).to receive(:build).with(
             user: user,
             changes: hash_including(
-              'escalation_status' => %i(triggered acknowledged),
+              'escalation_status' => %i[triggered acknowledged],
               'escalation_policy' => [nil, expected_policy_hash]
             )
           )

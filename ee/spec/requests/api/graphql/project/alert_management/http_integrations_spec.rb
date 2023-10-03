@@ -19,8 +19,8 @@ RSpec.describe 'getting Alert Management HTTP Integrations', feature_category: :
 
   let_it_be(:payload_attribute_mapping) do
     {
-      title: { path: %w(alert name), type: 'string' },
-      description: { path: %w(alert desc), type: 'string', label: 'Description' }
+      title: { path: %w[alert name], type: 'string' },
+      description: { path: %w[alert desc], type: 'string', label: 'Description' }
     }
   end
 
@@ -117,25 +117,25 @@ RSpec.describe 'getting Alert Management HTTP Integrations', feature_category: :
                 {
                   'fieldName' => 'TITLE',
                   'label' => nil,
-                  'path' => %w(alert name),
+                  'path' => %w[alert name],
                   'type' => 'STRING'
                 },
                 {
                   'fieldName' => 'DESCRIPTION',
                   'label' => 'Description',
-                  'path' => %w(alert desc),
+                  'path' => %w[alert desc],
                   'type' => 'STRING'
                 }
               ],
               'payloadAlertFields' => [
                 {
                   'label' => 'alert/name',
-                  'path' => %w(alert name),
+                  'path' => %w[alert name],
                   'type' => 'STRING'
                 },
                 {
                   'label' => 'alert/desc',
-                  'path' => %w(alert desc),
+                  'path' => %w[alert desc],
                   'type' => 'STRING'
                 }
               ]

@@ -9,7 +9,7 @@ RSpec.describe RepositoryImportWorker, feature_category: :importers do
     create(:import_state, :scheduled, project: project)
 
     stub_licensed_features(custom_project_templates: true)
-    error = %q{remote: Not Found fatal: repository 'https://user:pass@test.com/root/repoC.git/' not found }
+    error = %q(remote: Not Found fatal: repository 'https://user:pass@test.com/root/repoC.git/' not found )
 
     project.update!(import_type: 'gitlab_custom_project_template')
     project.import_state.update!(jid: '123')

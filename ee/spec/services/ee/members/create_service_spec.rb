@@ -100,7 +100,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       {
         user_id: project_users.map(&:id).join(','),
         access_level: Gitlab::Access::DEVELOPER,
-        tasks_to_be_done: %w(ci code),
+        tasks_to_be_done: %w[ci code],
         tasks_project_id: project.id,
         invite_source: '_invite_source_'
       }

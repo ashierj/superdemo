@@ -611,7 +611,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
       expect(response).to have_gitlab_http_status(:created)
       expect(json_response['title']).to eq('new issue')
       expect(json_response['description']).to be_nil
-      expect(json_response['labels']).to eq(%w(label label2))
+      expect(json_response['labels']).to eq(%w[label label2])
       expect(json_response['confidential']).to be_falsy
       expect(json_response['weight']).to eq(101)
       expect(json_response['assignee']['name']).to eq(user2.name)

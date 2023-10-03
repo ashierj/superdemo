@@ -160,7 +160,7 @@ RSpec.describe Vulnerabilities::StatDiff, feature_category: :vulnerability_manag
     subject { stat_diff.changed_attributes }
 
     context 'when there are changes' do
-      let(:expected_attribute_names) { %w(total high) }
+      let(:expected_attribute_names) { %w[total high] }
 
       before do
         vulnerability.destroy!

@@ -100,7 +100,7 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
           end
 
           context 'with wrong key' do
-            let(:params) { { package_manager: %w(nray yarn) } }
+            let(:params) { { package_manager: %w[nray yarn] } }
 
             it 'returns error message' do
               expect(json_response['error']).to eq('package_manager does not have a valid value')

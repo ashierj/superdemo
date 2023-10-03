@@ -596,7 +596,7 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     describe '#vulnerability_states_for_branch' do
       let(:project) { create(:project, :repository) }
       let(:branch_name) { project.default_branch }
-      let!(:rule) { build(:approval_project_rule, project: project, protected_branches: protected_branches, vulnerability_states: %w(newly_detected resolved)) }
+      let!(:rule) { build(:approval_project_rule, project: project, protected_branches: protected_branches, vulnerability_states: %w[newly_detected resolved]) }
 
       context 'with protected branch set to any' do
         let(:protected_branches) { [] }

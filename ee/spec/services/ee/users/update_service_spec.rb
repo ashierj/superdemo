@@ -217,7 +217,7 @@ RSpec.describe Users::UpdateService, feature_category: :user_profile do
             expect(result_one).to be true
             expect(result_two).to be true
             expect(user.identities.count).to eq(2)
-            expect(user.identities.map(&:extern_uid)).to match_array(%w(uid uid2))
+            expect(user.identities.map(&:extern_uid)).to match_array(%w[uid uid2])
             expect(user.identities.map(&:saml_provider_id)).to match_array([provider.id, second_provider.id])
           end
         end

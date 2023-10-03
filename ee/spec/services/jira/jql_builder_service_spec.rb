@@ -17,7 +17,7 @@ RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
         subject { described_class.new('PROJECT\\KEY"', params).execute }
 
         it 'escapes quotes and backslashes' do
-          expect(subject).to eq(%q[project = "PROJECT\\\\KEY\"" order by created DESC])
+          expect(subject).to eq(%q(project = "PROJECT\\\\KEY\"" order by created DESC))
         end
       end
     end
@@ -58,7 +58,7 @@ RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
       let(:params) { { labels: ['label1', 'label2', "\"'try\"some'more\"quote'here\""] } }
 
       it 'builds jql' do
-        expect(subject).to eq(%q[project = "PROJECT_KEY" AND labels = "label1" AND labels = "label2" AND labels = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC])
+        expect(subject).to eq(%q(project = "PROJECT_KEY" AND labels = "label1" AND labels = "label2" AND labels = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC))
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
       let(:params) { { status: "\"'try\"some'more\"quote'here\"" } }
 
       it 'builds jql' do
-        expect(subject).to eq(%q[project = "PROJECT_KEY" AND status = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC])
+        expect(subject).to eq(%q(project = "PROJECT_KEY" AND status = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC))
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
       let(:params) { { author_username: "\"'try\"some'more\"quote'here\"" } }
 
       it 'builds jql' do
-        expect(subject).to eq(%q[project = "PROJECT_KEY" AND reporter = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC])
+        expect(subject).to eq(%q(project = "PROJECT_KEY" AND reporter = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC))
       end
     end
 
@@ -82,7 +82,7 @@ RSpec.describe Jira::JqlBuilderService, feature_category: :integrations do
       let(:params) { { assignee_username: "\"'try\"some'more\"quote'here\"" } }
 
       it 'builds jql' do
-        expect(subject).to eq(%q[project = "PROJECT_KEY" AND assignee = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC])
+        expect(subject).to eq(%q(project = "PROJECT_KEY" AND assignee = "\\"'try\\"some'more\\"quote'here\\"" order by created DESC))
       end
     end
 

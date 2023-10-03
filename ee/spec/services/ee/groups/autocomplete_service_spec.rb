@@ -50,7 +50,7 @@ RSpec.describe Groups::AutocompleteService, feature_category: :groups_and_projec
   end
 
   describe '#epics' do
-    let(:expected_attributes) { %i(iid title group_id) }
+    let(:expected_attributes) { %i[iid title group_id] }
 
     before do
       stub_licensed_features(epics: true)

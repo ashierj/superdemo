@@ -160,7 +160,7 @@ RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
       subject { described_class.security_reports(file_types: file_types) }
 
       context 'when the provided file_types is array' do
-        let(:file_types) { %w(secret_detection) }
+        let(:file_types) { %w[secret_detection] }
 
         context 'when there is a security report with the given value' do
           let!(:secret_detection_artifact) { create(:ee_ci_job_artifact, :secret_detection) }
@@ -205,10 +205,10 @@ RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
     subject { described_class.associated_file_types_for(file_type) }
 
     where(:file_type, :result) do
-      'license_scanning'    | %w(license_scanning)
-      'codequality'         | %w(codequality)
-      'browser_performance' | %w(browser_performance performance)
-      'load_performance'    | %w(load_performance)
+      'license_scanning'    | %w[license_scanning]
+      'codequality'         | %w[codequality]
+      'browser_performance' | %w[browser_performance performance]
+      'load_performance'    | %w[load_performance]
       'quality'             | nil
     end
 

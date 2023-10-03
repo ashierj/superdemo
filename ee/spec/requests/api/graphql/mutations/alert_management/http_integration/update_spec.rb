@@ -115,8 +115,8 @@ RSpec.describe 'Updating an existing HTTP Integration', feature_category: :incid
 
     let_it_be(:current_mapping) do
       {
-        'title' => { 'path' => %w(alert name), 'type' => 'string', 'label' => 'Title' },
-        'description' => { 'path' => %w(alert desc), 'type' => 'string' }
+        'title' => { 'path' => %w[alert name], 'type' => 'string', 'label' => 'Title' },
+        'description' => { 'path' => %w[alert desc], 'type' => 'string' }
       }
     end
 
