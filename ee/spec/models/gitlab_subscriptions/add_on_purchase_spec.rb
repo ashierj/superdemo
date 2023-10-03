@@ -154,6 +154,73 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
         )
       end
     end
+
+    describe '.requiring_assigned_users_refresh' do
+      let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
+      let_it_be(:add_on_purchase_refreshed_nil) { create(:gitlab_subscription_add_on_purchase, add_on: add_on) }
+      let_it_be(:add_on_purchase_fresh) do
+        create(:gitlab_subscription_add_on_purchase, add_on: add_on, last_assigned_users_refreshed_at: 1.hour.ago)
+      end
+
+      let_it_be(:add_on_purchase_stale) do
+        create(:gitlab_subscription_add_on_purchase, add_on: add_on, last_assigned_users_refreshed_at: 21.hours.ago)
+      end
+
+      it 'returns correct add_on_purchases' do
+        result = [
+          add_on_purchase_refreshed_nil,
+          add_on_purchase_stale
+        ]
+
+        expect(described_class.requiring_assigned_users_refresh(3))
+          .to match_array(result)
+      end
+
+      it 'accepts limit param' do
+        expect(described_class.requiring_assigned_users_refresh(1).size).to eq 1
+      end
+    end
+  end
+
+  describe '.next_candidate_requiring_assigned_users_refresh' do
+    let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
+    let_it_be(:add_on_purchase_fresh) do
+      create(:gitlab_subscription_add_on_purchase, add_on: add_on, last_assigned_users_refreshed_at: 1.hour.ago)
+    end
+
+    subject(:next_candidate) { described_class.next_candidate_requiring_assigned_users_refresh }
+
+    context 'when there are stale records' do
+      let_it_be(:add_on_purchase_stale) do
+        create(:gitlab_subscription_add_on_purchase, add_on: add_on, last_assigned_users_refreshed_at: 21.hours.ago)
+      end
+
+      it 'returns the stale record' do
+        expect(next_candidate).to eq(add_on_purchase_stale)
+      end
+
+      context 'when there is stale records with nil refreshed_at' do
+        it 'returns record with nil refreshed_at as next candidate' do
+          result = create(:gitlab_subscription_add_on_purchase, add_on: add_on)
+
+          expect(next_candidate).to eq(result)
+        end
+      end
+
+      context 'when there is stale record with earlier refreshed_at' do
+        it 'returns record with earlier refreshed_at as next candidate' do
+          result = create(
+            :gitlab_subscription_add_on_purchase, add_on: add_on, last_assigned_users_refreshed_at: 1.day.ago
+          )
+
+          expect(next_candidate).to eq(result)
+        end
+      end
+    end
+
+    it 'returns nil when there are no stale records' do
+      expect(next_candidate).to eq(nil)
+    end
   end
 
   describe '#already_assigned?' do
@@ -185,6 +252,70 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
 
     context 'when subscription has expired' do
       it { travel_to(add_on_purchase.expires_on + 1.day) { is_expected.to eq(false) } }
+    end
+  end
+
+  describe '#delete_ineligible_user_assignments_in_batches!' do
+    let(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
+
+    let_it_be(:user_1) { create(:user) }
+    let_it_be(:user_2) { create(:user) }
+
+    subject(:result) { add_on_purchase.delete_ineligible_user_assignments_in_batches! }
+
+    context 'with assigned_users records' do
+      before do
+        add_on_purchase.assigned_users.create!(user: user_1)
+        add_on_purchase.assigned_users.create!(user: user_2)
+      end
+
+      it 'removes only ineligible user assignments' do
+        add_on_purchase.namespace.add_guest(user_1) # user_1 still eligible
+
+        expect(add_on_purchase.reload.assigned_users.count).to eq(2)
+
+        expect do
+          expect(result).to eq(1)
+        end.to change { add_on_purchase.reload.assigned_users.count }.by(-1)
+
+        expect(add_on_purchase.reload.assigned_users.where(user: user_1).count).to eq(1)
+      end
+
+      it 'accepts batch_size and deletes the assignments in batch' do
+        expect(GitlabSubscriptions::UserAddOnAssignment).to receive(:pluck_user_ids).twice.and_call_original
+
+        result = add_on_purchase.delete_ineligible_user_assignments_in_batches!(batch_size: 1)
+
+        expect(result).to eq(2)
+      end
+
+      context 'when the add_on_purchase has no namespace' do
+        before do
+          add_on_purchase.update_attribute(:namespace, nil)
+        end
+
+        it { is_expected.to eq(0) }
+      end
+    end
+
+    context 'with no assigned_users records' do
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when add_on_purchase does not have namespace' do
+      before do
+        add_on_purchase.update!(namespace: nil)
+      end
+
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when add_on_purchase does not have group namespace' do
+      before do
+        add_on_purchase.update!(namespace: create(:user_namespace))
+      end
+
+      it { is_expected.to eq(0) }
     end
   end
 end
