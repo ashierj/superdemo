@@ -6,7 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import IssueCardWeight from 'ee/boards/components/issue_card_weight.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
-import isShowingLabelsQuery from '~/boards/graphql/client/is_showing_labels.query.graphql';
+import isShowingLabelsQuery from '~/graphql_shared/client/is_showing_labels.query.graphql';
 import { TYPE_ISSUE } from '~/issues/constants';
 
 Vue.use(VueApollo);

@@ -1,8 +1,8 @@
 <script>
 import { GlToggle } from '@gitlab/ui';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
-import isShowingLabelsQuery from '~/boards/graphql/client/is_showing_labels.query.graphql';
-import setIsShowingLabelsMutation from '~/boards/graphql/client/set_is_showing_labels.mutation.graphql';
+import isShowingLabelsQuery from '~/graphql_shared/client/is_showing_labels.query.graphql';
+import setIsShowingLabelsMutation from '~/graphql_shared/client/set_is_showing_labels.mutation.graphql';
 
 export default {
   components: {
@@ -53,6 +53,7 @@ export default {
       data-track-label="show_labels"
       label-position="left"
       aria-describedby="board-labels-toggle-text"
+      data-testid="show-labels-toggle"
       data-qa-selector="show_labels_toggle"
       class="gl-flex-direction-row"
       @change="setShowLabels"

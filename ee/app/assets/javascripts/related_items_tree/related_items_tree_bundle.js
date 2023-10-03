@@ -1,8 +1,10 @@
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
 
 import { parseBoolean } from '~/lib/utils/common_utils';
+import { defaultClient } from '~/graphql_shared/issuable_client';
 
 import RelatedItemsTreeApp from './components/related_items_tree_app.vue';
 import TreeItem from './components/tree_item.vue';
@@ -10,6 +12,7 @@ import TreeRoot from './components/tree_root.vue';
 import createStore from './store';
 
 Vue.use(Vuex);
+Vue.use(VueApollo);
 
 export default () => {
   const el = document.getElementById('js-tree');
@@ -17,6 +20,10 @@ export default () => {
   if (!el) {
     return false;
   }
+
+  const apolloProvider = new VueApollo({
+    defaultClient,
+  });
 
   const {
     id,
@@ -43,6 +50,7 @@ export default () => {
     el,
     name: 'RelatedItemsTreeRoot',
     store: createStore(),
+    apolloProvider,
     components: { RelatedItemsTreeApp },
     provide: {
       roadmapAppData,

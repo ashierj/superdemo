@@ -3,6 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
 
 import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
@@ -13,6 +15,7 @@ import { ChildType } from 'ee/related_items_tree/constants';
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 import ItemDueDate from '~/boards/components/issue_due_date.vue';
+import isShowingLabelsQuery from '~/graphql_shared/client/is_showing_labels.query.graphql';
 import { PathIdSeparator } from '~/related_issues/constants';
 import ItemAssignees from '~/issuable/components/issue_assignees.vue';
 import ItemMilestone from '~/issuable/components/issue_milestone.vue';
@@ -32,6 +35,7 @@ import {
 } from '../mock_data';
 
 Vue.use(Vuex);
+Vue.use(VueApollo);
 
 let mockItem;
 let store;
@@ -59,8 +63,13 @@ const createEpicItem = (mockEpic = mockOpenEpic, mockEpicMeta = mockEpicMeta1) =
 describe('RelatedItemsTree', () => {
   describe('TreeItemBody', () => {
     let wrapper;
+    const mockApollo = createMockApollo();
 
-    const createComponent = ({ parentItem = mockParentItem, item = mockItem } = {}) => {
+    const createComponent = ({
+      parentItem = mockParentItem,
+      item = mockItem,
+      isShowingLabels = true,
+    } = {}) => {
       store = createDefaultStore();
       const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
 
@@ -75,8 +84,15 @@ describe('RelatedItemsTree', () => {
         isSubItem: false,
         children,
       });
+      mockApollo.clients.defaultClient.cache.writeQuery({
+        query: isShowingLabelsQuery,
+        data: {
+          isShowingLabels,
+        },
+      });
 
       wrapper = shallowMount(TreeItemBody, {
+        apolloProvider: mockApollo,
         store,
         propsData: {
           parentItem,
@@ -102,11 +118,6 @@ describe('RelatedItemsTree', () => {
         ...mockInitialConfig,
         allowIssuableHealthStatus: true,
       });
-    };
-    const setShowLabels = async (isShowingLabels) => {
-      store.dispatch('setShowLabels', isShowingLabels);
-
-      await nextTick();
     };
 
     beforeEach(() => {
@@ -185,9 +196,9 @@ describe('RelatedItemsTree', () => {
 
       describe('when toggling labels on', () => {
         it('renders labels `item.labels` is defined and has values', async () => {
-          expect(findChildLabels()).toHaveLength(0);
+          createComponent({ isShowingLabels: true });
 
-          await setShowLabels(true);
+          await nextTick();
 
           const labels = findChildLabels();
 
@@ -203,11 +214,9 @@ describe('RelatedItemsTree', () => {
 
       describe('when toggling labels off', () => {
         it('does not render labels when `item.labels` is defined and has values', async () => {
-          await setShowLabels(true);
+          createComponent({ isShowingLabels: false });
 
-          expect(findChildLabels()).toHaveLength(1);
-
-          await setShowLabels(false);
+          await nextTick();
 
           expect(findChildLabels()).toHaveLength(0);
         });
@@ -339,13 +348,12 @@ describe('RelatedItemsTree', () => {
         ${createEpicItem}  | ${`${mockInitialConfig.epicsWebUrl}?label_name[]=Label`}  | ${'epic'}
         ${createIssueItem} | ${`${mockInitialConfig.issuesWebUrl}?label_name[]=Label`} | ${'issue'}
       `('labels', ({ createItem, expectedFilterUrl, itemType }) => {
-        beforeEach(async () => {
+        beforeEach(() => {
           mockItem = createItem();
           createComponent({
             item: createItem(),
+            isShowingLabels: true,
           });
-
-          await setShowLabels(true);
         });
 
         it(`label target for ${itemType} should be ${expectedFilterUrl}`, () => {
