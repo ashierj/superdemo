@@ -176,7 +176,7 @@ export default {
           id="epic-title"
           ref="titleInput"
           v-model="title"
-          data-qa-selector="epic_title_field"
+          data-testid="epic-title-field"
           autocomplete="off"
           autofocus
         />
@@ -198,7 +198,7 @@ export default {
         <gl-form-checkbox
           id="epic-confidentiality"
           v-model="confidential"
-          data-qa-selector="confidential_epic_checkbox"
+          data-testid="confidential-epic-checkbox"
           >{{ $options.i18n.confidentialityLabel }}</gl-form-checkbox
         >
       </gl-form-group>
@@ -216,7 +216,6 @@ export default {
           :label-create-type="$options.WORKSPACE_GROUP"
           issuable-type="epic"
           variant="embedded"
-          data-qa-selector="labels_block"
           @updateSelectedLabels="handleUpdateSelectedLabels($event.labels)"
           >{{ __('None') }}</labels-select-widget
         >
@@ -285,8 +284,7 @@ export default {
           variant="confirm"
           :loading="loading"
           :disabled="!title"
-          data-testid="save-epic"
-          data-qa-selector="create_epic_button"
+          data-testid="create-epic-button"
           class="gl-mr-2"
           >{{ __('Create epic') }}</gl-button
         >
