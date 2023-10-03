@@ -1,9 +1,10 @@
 <script>
-import { GlLoadingIcon, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlLink, GlLoadingIcon, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
-import { __, sprintf } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
+import { __, s__, sprintf } from '~/locale';
 import AddItemForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
 import { ITEM_TABS, OVERFLOW_AFTER, i18nConfidentialParent } from '../constants';
@@ -26,7 +27,15 @@ export default {
   FORM_SLOTS,
   ITEM_TABS,
   i18nConfidentialParent,
+  i18n: {
+    emptyMessage: s__(
+      "Epics|Link child issues and epics together to show that they're related, or that one blocks another.",
+    ),
+    helpLink: s__('Epics|Learn more about linking child issues and epics'),
+    learnMore: __('Learn more'),
+  },
   components: {
+    GlLink,
     GlLoadingIcon,
     GlIcon,
     RelatedItemsTreeHeader,
@@ -45,7 +54,7 @@ export default {
   data() {
     return {
       activeTab: ITEM_TABS.TREE,
-      showRelatedItems: true,
+      isOpen: true,
     };
   },
   computed: {
@@ -112,16 +121,13 @@ export default {
     enableIssuesAutoComplete() {
       return this.issuableType === TYPE_ISSUE && this.autoCompleteIssues;
     },
-    isOpen() {
-      return (
-        (!this.itemsFetchResultEmpty && this.showRelatedItems) ||
-        this.showAddItemForm ||
-        this.showCreateEpicForm ||
-        this.showCreateIssueForm
-      );
-    },
     isOpenString() {
       return this.isOpen ? 'true' : 'false';
+    },
+    helpUrl() {
+      return helpPagePath('user/group/epics/manage_epics', {
+        anchor: 'manage-issues-assigned-to-an-epic',
+      });
     },
   },
   mounted() {
@@ -184,7 +190,7 @@ export default {
       this.activeTab = value;
     },
     handleRelatedItemsView(value) {
-      this.showRelatedItems = value;
+      this.isOpen = value;
     },
   },
 };
@@ -220,70 +226,85 @@ export default {
           </h6>
         </template>
       </slot-switch>
-      <slot-switch
-        v-if="visibleForm"
-        :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
-          visibleForm,
-        ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        class="gl-new-card-add-form gl-m-4"
-        :class="{
-          'gl-mb-1': !itemsFetchResultEmpty,
-          'gl-show-field-errors': itemAddFailure,
-        }"
-        data-testid="add-item-form"
-      >
-        <template #[$options.FORM_SLOTS.addItem]>
-          <add-item-form
-            :issuable-type="issuableType"
-            :input-value="itemInputValue"
-            :is-submitting="itemAddInProgress"
-            :pending-references="pendingReferences"
-            :auto-complete-sources="itemAutoCompleteSources"
-            :auto-complete-epics="enableEpicsAutoComplete"
-            :auto-complete-issues="enableIssuesAutoComplete"
-            :path-id-separator="itemPathIdSeparator"
-            :has-error="itemAddFailure"
-            :item-add-failure-type="itemAddFailureType"
-            :item-add-failure-message="itemAddFailureMessage"
-            :confidential="parentItem.confidential"
-            @pendingIssuableRemoveRequest="handlePendingItemRemove"
-            @addIssuableFormInput="handleAddItemFormInput"
-            @addIssuableFormBlur="handleAddItemFormBlur"
-            @addIssuableFormSubmit="handleAddItemFormSubmit"
-            @addIssuableFormCancel="handleAddItemFormCancel"
-          />
-        </template>
-        <template #[$options.FORM_SLOTS.createEpic]>
-          <create-epic-form
-            :is-submitting="itemCreateInProgress"
-            @createEpicFormSubmit="handleCreateEpicFormSubmit"
-            @createEpicFormCancel="handleCreateEpicFormCancel"
-          />
-        </template>
-        <template #[$options.FORM_SLOTS.createIssue]>
-          <create-issue-form
-            @cancel="toggleCreateIssueForm({ toggleState: false })"
-            @submit="createNewIssue"
-          />
-        </template>
-      </slot-switch>
-      <div v-if="itemsFetchInProgress" class="gl-px-3 gl-py-4">
-        <gl-loading-icon size="sm" />
-      </div>
-      <div
-        v-else-if="!itemsFetchResultEmpty && showRelatedItems"
-        data-testid="related-items-container"
-      >
-        <related-items-tree-actions :active-tab="activeTab" @tab-change="handleTabChange" />
+      <div class="gl-new-card-body gl-py-0">
+        <template v-if="isOpen">
+          <slot-switch
+            v-if="visibleForm"
+            :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+              visibleForm,
+            ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+            class="gl-new-card-add-form gl-mx-2 gl-my-4"
+            :class="{
+              'gl-mb-1': !itemsFetchResultEmpty,
+              'gl-show-field-errors': itemAddFailure,
+            }"
+            data-testid="add-item-form"
+          >
+            <template #[$options.FORM_SLOTS.addItem]>
+              <add-item-form
+                :issuable-type="issuableType"
+                :input-value="itemInputValue"
+                :is-submitting="itemAddInProgress"
+                :pending-references="pendingReferences"
+                :auto-complete-sources="itemAutoCompleteSources"
+                :auto-complete-epics="enableEpicsAutoComplete"
+                :auto-complete-issues="enableIssuesAutoComplete"
+                :path-id-separator="itemPathIdSeparator"
+                :has-error="itemAddFailure"
+                :item-add-failure-type="itemAddFailureType"
+                :item-add-failure-message="itemAddFailureMessage"
+                :confidential="parentItem.confidential"
+                @pendingIssuableRemoveRequest="handlePendingItemRemove"
+                @addIssuableFormInput="handleAddItemFormInput"
+                @addIssuableFormBlur="handleAddItemFormBlur"
+                @addIssuableFormSubmit="handleAddItemFormSubmit"
+                @addIssuableFormCancel="handleAddItemFormCancel"
+              />
+            </template>
+            <template #[$options.FORM_SLOTS.createEpic]>
+              <create-epic-form
+                :is-submitting="itemCreateInProgress"
+                @createEpicFormSubmit="handleCreateEpicFormSubmit"
+                @createEpicFormCancel="handleCreateEpicFormCancel"
+              />
+            </template>
+            <template #[$options.FORM_SLOTS.createIssue]>
+              <create-issue-form
+                @cancel="toggleCreateIssueForm({ toggleState: false })"
+                @submit="createNewIssue"
+              />
+            </template>
+          </slot-switch>
+          <div v-if="itemsFetchInProgress" class="gl-px-3 gl-py-4">
+            <gl-loading-icon size="sm" />
+          </div>
+          <div v-else-if="itemsFetchResultEmpty && !visibleForm" data-testid="related-items-empty">
+            <div class="gl-new-card-empty gl-px-3 gl-py-4">
+              {{ $options.i18n.emptyMessage }}
+              <gl-link
+                :href="helpUrl"
+                target="_blank"
+                data-testid="help-link"
+                :aria-label="$options.i18n.helpLink"
+              >
+                {{ $options.i18n.learnMore }}
+              </gl-link>
+            </div>
+          </div>
+          <div v-else-if="!itemsFetchResultEmpty" data-testid="related-items-container">
+            <related-items-tree-actions :active-tab="activeTab" @tab-change="handleTabChange" />
 
-        <related-items-tree-body
-          v-if="activeTab === $options.ITEM_TABS.TREE"
-          :parent-item="parentItem"
-          :children="directChildren"
-        />
-        <related-items-roadmap-app v-if="activeTab === $options.ITEM_TABS.ROADMAP" />
+            <related-items-tree-body
+              v-if="activeTab === $options.ITEM_TABS.TREE"
+              :parent-item="parentItem"
+              :children="directChildren"
+              data-testid="related-items-tree"
+            />
+            <related-items-roadmap-app v-if="activeTab === $options.ITEM_TABS.ROADMAP" />
+          </div>
+          <tree-item-remove-modal />
+        </template>
       </div>
-      <tree-item-remove-modal />
     </div>
   </div>
 </template>
