@@ -319,15 +319,11 @@ describe('DependenciesTable component', () => {
       });
     });
 
-    it('displays the dependencies grouped by componentId', () => {
-      expect(findTableRows()).toHaveLength(2);
-    });
-
     it('renders a row for each dependency', () => {
       const rows = findTableRows();
-      // dependencies[1] not tested because it is duplicated
       expectGroupDependencyRow(rows.at(0), dependencies[0]);
-      expectGroupDependencyRow(rows.at(1), dependencies[2]);
+      expectGroupDependencyRow(rows.at(1), dependencies[1]);
+      expectGroupDependencyRow(rows.at(2), dependencies[2]);
     });
   });
 
