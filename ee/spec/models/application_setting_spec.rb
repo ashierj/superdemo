@@ -103,8 +103,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       it { is_expected.to allow_value('a' * 255).for(:elasticsearch_username) }
       it { is_expected.not_to allow_value('a' * 256).for(:elasticsearch_username) }
 
-      it { is_expected.to allow_value(true, false).for(:security_policy_global_group_approvers_enabled) }
-      it { is_expected.not_to allow_value(nil).for(:security_policy_global_group_approvers_enabled) }
+      it { is_expected.to validate_inclusion_of(:security_policy_global_group_approvers_enabled).in_array([true, false]) }
     end
 
     describe 'future_subscriptions', feature_category: :subscription_management do
@@ -167,12 +166,10 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
 
     describe 'dashboard', feature_category: :metrics do
       it { is_expected.to validate_numericality_of(:dashboard_limit).only_integer.is_greater_than_or_equal_to(0) }
-      it { is_expected.to allow_value(true, false).for(:dashboard_limit_enabled) }
-      it { is_expected.not_to allow_value(nil).for(:dashboard_limit_enabled) }
+      it { is_expected.to validate_inclusion_of(:dashboard_limit_enabled).in_array([true, false]) }
     end
 
-    it { is_expected.to allow_value(true, false).for(:allow_account_deletion) }
-    it { is_expected.not_to allow_value(nil).for(:allow_account_deletion) }
+    it { is_expected.to validate_inclusion_of(:allow_account_deletion).in_array([true, false]) }
 
     describe 'when additional email text is enabled', feature_category: :user_profile do
       before do
@@ -477,7 +474,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
           stub_application_setting_enum('email_confirmation_setting', 'hard')
         end
 
-        it { is_expected.to allow_value(true, false).for(:delete_unconfirmed_users) }
+        it { is_expected.to validate_inclusion_of(:delete_unconfirmed_users).in_array([true, false]) }
         it { is_expected.to validate_numericality_of(:unconfirmed_users_delete_after_days).is_greater_than(0) }
       end
 
@@ -489,7 +486,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
           allow(Devise).to receive(:allow_unconfirmed_access_for).and_return(allow_unconfirmed_access_for.days)
         end
 
-        it { is_expected.to allow_value(true, false).for(:delete_unconfirmed_users) }
+        it { is_expected.to validate_inclusion_of(:delete_unconfirmed_users).in_array([true, false]) }
         it { is_expected.to validate_numericality_of(:unconfirmed_users_delete_after_days).is_greater_than(allow_unconfirmed_access_for) }
       end
 
@@ -1197,7 +1194,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
         expect(setting.lock_delayed_project_removal).to be false
       end
 
-      it { is_expected.to allow_value(true, false).for(:delayed_project_removal) }
+      it { is_expected.to validate_inclusion_of(:delayed_project_removal).in_array([true, false]) }
     end
   end
 
