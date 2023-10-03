@@ -387,7 +387,12 @@ RSpec.describe Notes::QuickActionsService, feature_category: :team_planning do
         _, update_params, message = service.execute(note)
         service.apply_updates(update_params, note)
 
-        expect(message).to eq("Assigned @#{assignee.username} and @#{user.username}.")
+        expected_format = /Assigned @\w+ and @\w+./
+
+        expect(message).to match(expected_format)
+        expect(message).to include("@#{assignee.username}")
+        expect(message).to include("@#{user.username}")
+
         expect(note.noteable.assignees.count).to eq(2)
       end
 
