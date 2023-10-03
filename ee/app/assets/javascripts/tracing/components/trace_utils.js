@@ -43,28 +43,31 @@ const timestampToMs = (ts) => new Date(ts).getTime();
 
 export function mapTraceToTreeRoot(trace) {
   const nodes = {};
-  let root;
 
+  const rootSpan = trace.spans.find((s) => s.parent_span_id === '');
+  if (!rootSpan) return undefined;
+
+  const spanToNode = (span) => ({
+    startTimeMs: timestampToMs(span.timestamp) - timestampToMs(rootSpan.timestamp),
+    timestamp: span.timestamp,
+    spanId: span.span_id,
+    operation: span.operation,
+    service: span.service_name,
+    durationMs: durationNanoToMs(span.duration_nano),
+    children: [],
+  });
+
+  // We need to loop twice here because we don't want to assume that parent nodes appear
+  // in the list before children nodes
   trace.spans.forEach((s) => {
-    const node = {
-      startTimeMs:
-        root !== undefined ? timestampToMs(s.timestamp) - timestampToMs(root.timestamp) : 0,
-      timestamp: s.timestamp,
-      spanId: s.span_id,
-      operation: s.operation,
-      service: s.service_name,
-      durationMs: durationNanoToMs(s.duration_nano),
-      children: [],
-    };
-    nodes[s.span_id] = node;
-
+    nodes[s.span_id] = spanToNode(s);
+  });
+  trace.spans.forEach((s) => {
+    const node = nodes[s.span_id];
     const parentId = s.parent_span_id;
-    if (parentId === '') {
-      root = node;
-    } else if (nodes[parentId]) {
+    if (nodes[parentId]) {
       nodes[parentId].children.push(node);
     }
   });
-
-  return root;
+  return nodes[rootSpan.span_id];
 }

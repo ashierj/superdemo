@@ -89,19 +89,19 @@ describe('TracingDetailsSpansChart', () => {
     expect(childrenChart.props('spans')).toBe(mockProps.spans[0].children);
 
     // span with no children
-    expect(getSpanChildren(1).exists()).toBe(false);
+    expect(getSpanChildren(1).isVisible()).toBe(false);
   });
 
   it('toggle the children spans when clicking the expand button', async () => {
     await toggleExpandButton(0);
 
     expect(getToggleButton(0).props('icon')).toBe('chevron-right');
-    expect(getSpanChildren(0).exists()).toBe(false);
+    expect(getSpanChildren(0).isVisible()).toBe(false);
 
     await toggleExpandButton(0);
 
     expect(getToggleButton(0).props('icon')).toBe('chevron-down');
-    expect(getSpanChildren(0).exists()).toBe(true);
+    expect(getSpanChildren(0).isVisible()).toBe(true);
   });
 
   it('should stop click event propagation when the toggle button is pressed', async () => {
@@ -129,10 +129,10 @@ describe('TracingDetailsSpansChart', () => {
 
   it('reset the expanded state when the spans change', async () => {
     await toggleExpandButton(0);
-    expect(getSpanChildren(0).exists()).toBe(false);
+    expect(getSpanChildren(0).isVisible()).toBe(false);
 
     await wrapper.setProps({ spans: [...mockSpans] });
-    expect(getSpanChildren(0).exists()).toBe(true);
+    expect(getSpanChildren(0).isVisible()).toBe(true);
   });
 
   describe('span details', () => {

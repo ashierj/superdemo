@@ -23,10 +23,12 @@ export default {
       operators: OPERATORS_IS,
       unique: true,
       options: [
-        { value: '1m', title: s__('Tracing|Last 1 minute') },
+        { value: '5m', title: s__('Tracing|Last 5 minutes') },
         { value: '15m', title: s__('Tracing|Last 15 minutes') },
         { value: '30m', title: s__('Tracing|Last 30 minutes') },
         { value: '1h', title: s__('Tracing|Last 1 hour') },
+        { value: '4h', title: s__('Tracing|Last 4 hours') },
+        { value: '12h', title: s__('Tracing|Last 12 hours') },
         { value: '24h', title: s__('Tracing|Last 24 hours') },
         { value: '7d', title: s__('Tracing|Last 7 days') },
         { value: '14d', title: s__('Tracing|Last 14 days') },

@@ -157,7 +157,7 @@ export default {
       </div>
 
       <tracing-details-spans-chart
-        v-if="isExpanded(index)"
+        v-show="isExpanded(index)"
         :spans="span.children"
         :depth="depth + 1"
         :trace-duration-ms="traceDurationMs"
