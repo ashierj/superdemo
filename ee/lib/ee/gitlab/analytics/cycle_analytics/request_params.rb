@@ -34,10 +34,14 @@ module EE
           def add_licensed_filter_params!(attrs)
             return unless licensed?
 
-            attrs[:weight] = weight if weight.present?
-            attrs[:epic_id] = epic_id if epic_id.present?
-            attrs[:my_reaction_emoji] = my_reaction_emoji if my_reaction_emoji.present?
-            attrs[:iteration_id] = iteration_id if iteration_id.present?
+            self.class::LICENSED_PARAMS.each do |param_name|
+              attrs[param_name] = attributes[param_name.to_s] if attributes[param_name.to_s].present?
+            end
+
+            self.class::NEGATABLE_PARAMS.each do |param_name|
+              attrs[:not] ||= {}
+              attrs[:not][param_name] = self.not[param_name] if self.not && self.not[param_name]
+            end
           end
 
           override :namespace_attributes

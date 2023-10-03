@@ -9,7 +9,8 @@ module EE::Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder
     query = filter_by_weight(query)
     query = filter_by_iteration(query)
     query = filter_by_epic(query)
-    filter_by_my_reaction_emoji(query)
+    query = filter_by_my_reaction_emoji(query)
+    filter_by_negated_params(query)
   end
 
   # rubocop: disable CodeReuse/ActiveRecord
@@ -25,30 +26,94 @@ module EE::Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder
 
   private
 
+  def filter_by_negated_params(query)
+    return query unless params[:not]
+
+    query = filter_by_negated_author_username(query)
+    query = filter_by_negated_assignee_username(query)
+    query = filter_by_negated_epic_id(query)
+    query = filter_by_negated_iteration_id(query)
+    query = filter_by_negated_label_name(query)
+    query = filter_by_negated_milestone(query)
+    query = filter_by_negated_my_reaction_emoji(query)
+    filter_by_negated_weight(query)
+  end
+
+  def filter_by_negated_author_username(query)
+    return query unless negated_issue_filter_present?(:author_username)
+
+    user = find_user(params[:not][:author_username])
+    return query if user.blank?
+
+    query.not_authored(user.id)
+  end
+
+  def filter_by_negated_assignee_username(query)
+    return query unless negated_issue_filter_present?(:assignee_username)
+
+    Issuables::AssigneeFilter
+      .new(params: { not: { assignee_username: params[:not][:assignee_username] } })
+      .filter(query)
+  end
+
   def filter_by_weight(query)
-    return query unless issue_based_stage?
-    return query unless params[:weight]
+    return query unless issue_filter_present?(:weight)
 
     query.where(weight: params[:weight])
   end
 
+  def filter_by_negated_weight(query)
+    return query unless negated_issue_filter_present?(:weight)
+
+    query.without_weight(params[:not][:weight])
+  end
+
   def filter_by_iteration(query)
-    return query unless issue_based_stage?
-    return query unless params[:iteration_id]
+    return query unless issue_filter_present?(:iteration_id)
 
     query.where(sprint_id: params[:iteration_id])
   end
 
+  def filter_by_negated_iteration_id(query)
+    return query unless negated_issue_filter_present?(:iteration_id)
+
+    query.without_sprint_id(params[:not][:iteration_id])
+  end
+
   def filter_by_epic(query)
-    return query unless issue_based_stage?
-    return query unless params[:epic_id]
+    return query unless issue_filter_present?(:epic_id)
 
     query.joins(:epic_issue).where(epic_issues: { epic_id: params[:epic_id] })
   end
 
+  def filter_by_negated_epic_id(query)
+    return query unless negated_issue_filter_present?(:epic_id)
+
+    query.left_joins(:epic_issue).where('epic_issues.epic_id <> ? OR epic_issues.epic_id IS NULL', params[:not][:epic_id])
+  end
+
+  def filter_by_negated_label_name(query)
+    return query unless negated_issue_filter_present?(:label_name)
+
+    ::Gitlab::Analytics::CycleAnalytics::Aggregated::LabelFilter.new(
+      stage: stage,
+      params: { not: { label_name: params[:not][:label_name] } },
+      project: nil,
+      group: root_ancestor
+    ).filter(query)
+  end
+
+  def filter_by_negated_milestone(query)
+    return query unless negated_issue_filter_present?(:milestone_title)
+
+    milestone = find_milestone(params[:not][:milestone_title])
+    return query if milestone.nil?
+
+    query.without_milestone_id(milestone.id)
+  end
+
   def filter_by_my_reaction_emoji(query)
-    return query unless issue_based_stage?
-    return query unless params[:my_reaction_emoji]
+    return query unless issue_filter_present?(:my_reaction_emoji)
 
     query.awarded(
       params[:current_user],
@@ -58,8 +123,23 @@ module EE::Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder
     )
   end
 
-  def issue_based_stage?
-    stage.subject_class == ::Issue
+  def filter_by_negated_my_reaction_emoji(query)
+    return query unless negated_issue_filter_present?(:my_reaction_emoji)
+
+    query.not_awarded(
+      params[:current_user],
+      params[:not][:my_reaction_emoji],
+      ::Issue.name,
+      :issue_id
+    )
+  end
+
+  def issue_filter_present?(filter_name)
+    stage.subject_class == ::Issue && params[filter_name]
+  end
+
+  def negated_issue_filter_present?(filter_name)
+    !issue_filter_present?(filter_name) && params.dig(:not, filter_name)
   end
 
   def in_optimization_array_scope

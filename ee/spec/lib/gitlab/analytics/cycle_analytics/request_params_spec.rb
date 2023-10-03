@@ -59,6 +59,26 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
       it 'contains also the licensed filters' do
         expect(data_collector_params.keys).to include(:weight, :epic_id, :iteration_id, :my_reaction_emoji)
       end
+
+      context 'when negated filters are passed' do
+        let(:params) do
+          {
+            created_after: '2019-01-01',
+            created_before: '2019-03-01',
+            namespace: namespace,
+            current_user: user,
+            not: {
+              weight: 1,
+              label_name: 'label',
+              assignee_username: 'assignee'
+            }
+          }
+        end
+
+        it 'contains the negated filters' do
+          expect(data_collector_params[:not]).to include(:weight, :label_name, :assignee_username)
+        end
+      end
     end
 
     describe 'optional `project_ids`' do
@@ -152,6 +172,16 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
         expect(subject[:iteration_id]).to eq(2)
         expect(subject[:my_reaction_emoji]).to eq('thumbsup')
         expect(subject[:weight]).to eq(5)
+      end
+
+      context 'when adding negated filters' do
+        it 'has the correct attributes' do
+          params.delete(:weight)
+          params[:not] = { weight: 3 }
+
+          expect(subject).not_to have_key(:weight)
+          expect(subject[:not][:weight]).to eq(3)
+        end
       end
     end
 
