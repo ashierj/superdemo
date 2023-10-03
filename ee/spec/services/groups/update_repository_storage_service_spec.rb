@@ -68,6 +68,7 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
         expect(wiki_repository_double).to receive(:replicate)
           .with(wiki.repository.raw)
           .and_raise(Gitlab::Git::CommandError)
+        expect(wiki_repository_double).to receive(:remove)
 
         expect do
           subject.execute
@@ -102,10 +103,11 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
           .with(wiki.repository.raw)
         expect(wiki_repository_double).to receive(:checksum)
           .and_return('not matching checksum')
+        expect(wiki_repository_double).to receive(:remove)
 
         expect do
           subject.execute
-        end.to raise_error(UpdateRepositoryStorageMethods::Error, /Failed to verify wiki repository checksum from \w+ to not matching checksum/)
+        end.to raise_error(Repositories::ReplicateService::Error, /Failed to verify wiki repository checksum from \w+ to not matching checksum/)
 
         expect(group).not_to be_repository_read_only
         expect(wiki.repository_storage).to eq('default')
