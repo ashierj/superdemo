@@ -98,30 +98,6 @@ module Gitlab
       false
     end
 
-    # Removes a repository from file system.
-    # Given the underlying implementation removes the name
-    # passed as second argument on the passed storage.
-    #
-    # @example Remove a repository
-    #   remove_repository("/path/to/storage", "gitlab/gitlab-ci")
-    #
-    # @param [String] storage project's storage path
-    # @param [String] disk_path current project path on disk
-    #
-    # @deprecated
-    def remove_repository(storage, disk_path)
-      return false if disk_path.empty?
-
-      Gitlab::Git::Repository.new(storage, "#{disk_path}.git", nil, nil).remove
-
-      true
-    rescue StandardError => e
-      Gitlab::AppLogger.warn("Repository does not exist: #{e} at: #{disk_path}.git")
-      Gitlab::ErrorTracking.track_exception(e, path: disk_path, storage: storage)
-
-      false
-    end
-
     # Check if repository exists on disk
     #
     # @example Check if repository exists

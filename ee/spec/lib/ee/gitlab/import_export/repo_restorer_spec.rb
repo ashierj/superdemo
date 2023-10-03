@@ -26,8 +26,9 @@ RSpec.describe Gitlab::ImportExport::RepoRestorer do
 
     after do
       FileUtils.rm_rf(export_path)
-      gitlab_shell.remove_repository(group_wiki.repository_storage, group_wiki.disk_path)
-      gitlab_shell.remove_repository(group.wiki.repository_storage, group.wiki.disk_path)
+
+      group_wiki.repository.remove
+      group.wiki.repository.remove
     end
 
     context 'when group wiki in bundle' do
