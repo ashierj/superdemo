@@ -16,8 +16,8 @@ module QA
               prepend Page::Component::LicenseManagement
 
               view 'ee/app/views/projects/merge_requests/_code_owner_approval_rules.html.haml' do
-                element :approver_content
-                element :approver_list_content
+                element 'approver-content'
+                element 'approver-list-content'
               end
 
               view 'ee/app/assets/javascripts/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue' do
@@ -98,8 +98,8 @@ module QA
           end
 
           def approvers
-            within_element :approver_list_content do
-              all_elements(:approver_content, minimum: 1).map { |item| item.find('img')['title'] }
+            within_element 'approver-list-content' do
+              all_elements('approver-content', minimum: 1).map { |item| item.find('img')['title'] }
             end
           end
 
@@ -123,7 +123,7 @@ module QA
 
           def click_vulnerability(name)
             # To fix the flakiness, click on the MR title after widget is expanded
-            click_element(:title_content)
+            click_element('title-content')
             within_element 'vulnerability-report-grouped' do
               click_on name
             end
@@ -186,7 +186,7 @@ module QA
 
           def has_vulnerability_count?(expected_count = nil)
             # Match text cut off in order to find both "1 vulnerability" and "X vulnerabilities"
-            click_element(:title_content)
+            click_element('title-content')
 
             unless expected_count
               return find_element('vulnerability-report-grouped').has_content?(/Security scanning detected/)
