@@ -10,9 +10,6 @@ module EE
       FEATURES = %w[purchases/additional_minutes].freeze
 
       class_methods do
-        extend ::Gitlab::Utils::Override
-
-        override :feature_available?
         def feature_available?(feature)
           raise MissingFeatureError, 'Feature does not exist' unless FEATURES.include?(feature)
 
