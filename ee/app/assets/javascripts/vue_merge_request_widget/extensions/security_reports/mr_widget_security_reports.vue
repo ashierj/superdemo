@@ -16,6 +16,7 @@ import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_findin
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
 import createIssueMutation from 'ee/security_dashboard/graphql/mutations/finding_create_issue.mutation.graphql';
+import SummaryHighlights from 'ee/vue_shared/security_reports/components/summary_highlights.vue';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -26,7 +27,6 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { getDismissalTransitionForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
 import SummaryText, { MAX_NEW_VULNERABILITIES } from './summary_text.vue';
-import SummaryHighlights from './summary_highlights.vue';
 import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
 import { i18n, popovers, reportTypes } from './i18n';
 
