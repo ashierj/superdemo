@@ -33996,6 +33996,9 @@ msgstr ""
 msgid "PerformanceBar|SQL queries"
 msgstr ""
 
+msgid "PerformanceBar|Show stats"
+msgstr ""
+
 msgid "PerformanceBar|Sort by duration"
 msgstr ""
 
