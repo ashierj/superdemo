@@ -15,7 +15,7 @@ module QA
               end
 
               view 'ee/app/assets/javascripts/burndown_chart/components/burndown_chart.vue' do
-                element :burndown_chart
+                element 'burndown-chart'
               end
 
               view 'ee/app/views/shared/milestones/_weight.html.haml' do
@@ -25,7 +25,7 @@ module QA
           end
 
           def burndown_chart
-            find_element(:burndown_chart)
+            find_element('burndown-chart')
           end
 
           def click_weight_button

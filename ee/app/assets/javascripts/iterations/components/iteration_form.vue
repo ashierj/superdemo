@@ -290,7 +290,7 @@ export default {
           id="iteration-title"
           v-model="title"
           autocomplete="off"
-          data-qa-selector="iteration_title_field"
+          data-testid="iteration-title-field"
         />
       </gl-form-group>
       <gl-form-group :label="$options.i18n.form.startDate" label-for="iteration-start-date">
@@ -302,7 +302,6 @@ export default {
           :value="startDate"
           show-clear-button
           autocomplete="off"
-          data-qa-selector="iteration_start_date_field"
           @input="updateStartDate"
           @clear="updateStartDate(null)"
         />
@@ -316,7 +315,6 @@ export default {
           :value="dueDate"
           show-clear-button
           autocomplete="off"
-          data-qa-selector="iteration_due_date_field"
           @input="updateDueDate"
           @clear="updateDueDate(null)"
         />
@@ -340,7 +338,7 @@ export default {
               dir="auto"
               data-supports-quick-actions="false"
               :aria-label="$options.i18n.form.description"
-              data-qa-selector="iteration_description_field"
+              data-testid="iteration-description-field"
             >
             </textarea>
           </template>
@@ -348,13 +346,7 @@ export default {
       </gl-form-group>
     </gl-form>
     <div class="form-actions d-flex">
-      <gl-button
-        :loading="loading"
-        data-testid="save-iteration"
-        variant="confirm"
-        data-qa-selector="save_iteration_button"
-        @click="save"
-      >
+      <gl-button :loading="loading" data-testid="save-iteration" variant="confirm" @click="save">
         {{ isEditing ? $options.i18n.submitButton.save : $options.i18n.submitButton.create }}
       </gl-button>
       <gl-button class="gl-ml-3" data-testid="cancel-iteration" :to="$options.cadencesList">

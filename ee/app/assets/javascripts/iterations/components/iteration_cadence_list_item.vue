@@ -138,7 +138,6 @@ export default {
           action: () => this.goTo('newIteration'),
           extraAttrs: {
             'data-testid': 'add-cadence',
-            'data-qa-selector': 'new_iteration_button',
           },
         });
       }
@@ -278,7 +277,7 @@ export default {
         v-if="canEditCadence"
         ref="menu"
         category="tertiary"
-        data-qa-selector="cadence_options_button"
+        data-testid="cadence-options-button"
         icon="ellipsis_v"
         placement="right"
         no-caret
@@ -319,11 +318,10 @@ export default {
               v-for="iteration in iterations"
               :key="iteration.id"
               class="gl-bg-gray-10 gl-p-5 gl-border-t-solid gl-border-gray-100 gl-border-t-1"
-              data-testid="iteration-item"
             >
               <router-link
                 :to="path(iteration.id)"
-                data-qa-selector="iteration_item"
+                data-testid="iteration-item"
                 :data-qa-title="getIterationPeriod(iteration)"
               >
                 {{ getIterationPeriod(iteration) }}

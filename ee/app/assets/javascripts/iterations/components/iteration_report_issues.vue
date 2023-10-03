@@ -270,7 +270,7 @@ export default {
       show-empty
       stacked="sm"
       :tbody-tr-class="tbodyTrClass"
-      data-qa-selector="iteration_issues_container"
+      data-testid="iteration-issues-container"
     >
       <template #cell(title)="{ item: { iid, labels, title, webUrl } }">
         <div class="gl-text-truncate">
@@ -278,7 +278,7 @@ export default {
             class="gl-text-gray-900 gl-font-weight-bold"
             :href="webUrl"
             :title="title"
-            data-qa-selector="iteration_issue_link"
+            data-testid="iteration-issue-link"
             :data-qa-issue-title="title"
             >{{ title }}
           </gl-link>

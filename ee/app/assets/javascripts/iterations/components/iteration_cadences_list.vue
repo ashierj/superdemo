@@ -190,7 +190,7 @@ export default {
             :title="cadence.title"
             :iteration-state="state"
             :show-state-badge="tabIndex === 2"
-            data-qa-selector="cadence_list_item_content"
+            data-testid="cadence-list-item-content"
             @delete-cadence="deleteCadence"
           />
         </ul>
@@ -214,7 +214,7 @@ export default {
       <li class="gl-ml-auto gl-display-flex gl-align-items-center">
         <gl-button
           variant="confirm"
-          data-qa-selector="create_new_cadence_button"
+          data-testid="create-new-cadence-button"
           :to="{
             name: 'new',
           }"
