@@ -154,6 +154,8 @@ module EE
         only_allow_merge_if_pipeline_succeeds
         allow_merge_on_skipped_pipeline
         only_allow_merge_if_all_discussions_are_resolved
+        experiment_features_enabled
+        third_party_ai_features_enabled
       ].freeze
 
       override :allowed_namespace_settings_params

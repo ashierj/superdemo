@@ -62,6 +62,51 @@ RSpec.describe EE::NamespaceSettings::UpdateService, feature_category: :groups_a
           expect(group.namespace_settings.reload.prevent_forking_outside_group).to eq(true)
         end
       end
+
+      context 'when ai settings change', :saas do
+        before do
+          allow(Gitlab).to receive(:com?).and_return(true)
+          stub_ee_application_setting(should_check_namespace_plan: true)
+          stub_licensed_features(ai_features: true)
+          allow(group.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
+          group.update!(third_party_ai_features_enabled: false)
+        end
+
+        context 'when third_party_ai_features_enabled changes' do
+          let(:params) { { third_party_ai_features_enabled: true } }
+
+          it 'publishes an event' do
+            expect { subject }.to publish_event(::NamespaceSettings::AiRelatedSettingsChangedEvent)
+              .with(group_id: group.id)
+          end
+        end
+
+        context 'when experiment_features_enabled changes' do
+          let(:params) { { experiment_features_enabled: true } }
+
+          it 'publishes an event' do
+            expect { subject }.to publish_event(::NamespaceSettings::AiRelatedSettingsChangedEvent)
+              .with(group_id: group.id)
+          end
+        end
+
+        context 'when third_party_ai_features_enabled and experiment_features_enabled changes' do
+          let(:params) { { third_party_ai_features_enabled: true, experiment_features_enabled: true } }
+
+          it 'publishes an event' do
+            expect { subject }.to publish_event(::NamespaceSettings::AiRelatedSettingsChangedEvent)
+              .with(group_id: group.id)
+          end
+        end
+
+        context 'when AI related setting does not change' do
+          let(:params) { { third_party_ai_features_enabled: false } }
+
+          it 'does not publish an event' do
+            expect { subject }.not_to publish_event(::NamespaceSettings::AiRelatedSettingsChangedEvent)
+          end
+        end
+      end
     end
   end
 end

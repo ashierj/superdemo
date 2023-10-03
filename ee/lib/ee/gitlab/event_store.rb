@@ -36,6 +36,7 @@ module EE
             if: -> (_) { ::Gitlab::CurrentSettings.elasticsearch_indexing? }
           store.subscribe ::Search::Zoekt::DefaultBranchChangedWorker, to: ::Repositories::DefaultBranchChangedEvent
           store.subscribe ::PackageMetadata::AdvisoryScanWorker, to: ::PackageMetadata::IngestedAdvisoryEvent
+          store.subscribe ::Llm::NamespaceAccessCacheResetWorker, to: ::NamespaceSettings::AiRelatedSettingsChangedEvent
           store.subscribe ::Security::RefreshProjectPoliciesWorker,
             to: ::ProjectAuthorizations::AuthorizationsChangedEvent,
             delay: 1.minute

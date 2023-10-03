@@ -17,6 +17,7 @@ module EE
     ELASTICSEARCH_TRACKED_FIELDS = %w[id username email public_email name admin state organization
                                       timezone external otp_required_for_login].freeze
     GROUP_WITH_AI_ENABLED_CACHE_PERIOD = 1.hour
+    GROUP_WITH_AI_ENABLED_CACHE_KEY = 'group_with_ai_enabled'
 
     prepended do
       include UsageStatistics
@@ -604,7 +605,7 @@ module EE
     end
 
     def any_group_with_ai_available?
-      Rails.cache.fetch(['users', id, 'group_with_ai_enabled'], expires_in: GROUP_WITH_AI_ENABLED_CACHE_PERIOD) do
+      Rails.cache.fetch(['users', id, GROUP_WITH_AI_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_ENABLED_CACHE_PERIOD) do
         member_namespaces.namespace_settings_with_ai_enabled.with_ai_supported_plan.any?
       end
     end

@@ -14,7 +14,8 @@ RSpec.describe Gitlab::EventStore do
         ::MergeRequests::ApprovedEvent,
         ::MergeRequests::DraftStateChangeEvent,
         ::GitlabSubscriptions::RenewedEvent,
-        ::Repositories::DefaultBranchChangedEvent
+        ::Repositories::DefaultBranchChangedEvent,
+        ::NamespaceSettings::AiRelatedSettingsChangedEvent
       )
     end
   end
