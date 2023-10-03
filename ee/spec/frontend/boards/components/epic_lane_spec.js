@@ -10,6 +10,7 @@ import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import EpicLane from 'ee/boards/components/epic_lane.vue';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
 import getters from 'ee/boards/stores/getters';
+import updateBoardEpicUserPreferencesMutation from 'ee/boards/graphql/update_board_epic_user_preferences.mutation.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   mockEpic,
@@ -30,6 +31,7 @@ describe('EpicLane', () => {
   const fetchIssuesForEpicSpy = jest.fn();
 
   const findChevronButton = () => wrapper.findComponent(GlButton);
+  const findIssuesLaneLists = () => wrapper.findAllComponents(IssuesLaneList);
   const findEpicLane = () => wrapper.findByTestId('board-epic-lane');
   const findEpicLaneIssueCount = () => wrapper.findByTestId('epic-lane-issue-count');
 
@@ -55,6 +57,7 @@ describe('EpicLane', () => {
   const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
   const errorMessage = 'Failed to fetch issues';
   const listIssuesQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
+  const updateEpicPreferencesMutationHandler = jest.fn();
 
   const createComponent = ({
     props = {},
@@ -64,7 +67,10 @@ describe('EpicLane', () => {
     isApolloBoard = false,
   } = {}) => {
     const store = createStore({ boardItemsByListId, isLoading });
-    mockApollo = createMockApollo([[listsIssuesQuery, listIssuesQueryHandler]]);
+    mockApollo = createMockApollo([
+      [listsIssuesQuery, listIssuesQueryHandler],
+      [updateBoardEpicUserPreferencesMutation, updateEpicPreferencesMutationHandler],
+    ]);
 
     const defaultProps = {
       epic: mockEpic,
@@ -121,18 +127,18 @@ describe('EpicLane', () => {
     });
 
     it('renders one IssuesLaneList component per list passed in props passing lists as props', () => {
-      expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
+      expect(findIssuesLaneLists()).toHaveLength(wrapper.props('lists').length);
       expect(wrapper.findComponent(IssuesLaneList).props('lists')).toEqual(wrapper.props('lists'));
     });
 
     it('hides issues when collapsing', async () => {
-      expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
+      expect(findIssuesLaneLists()).toHaveLength(wrapper.props('lists').length);
       expect(wrapper.vm.isCollapsed).toBe(false);
 
       findChevronButton().vm.$emit('click');
 
       await nextTick();
-      expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(0);
+      expect(findIssuesLaneLists()).toHaveLength(0);
       expect(wrapper.vm.isCollapsed).toBe(true);
     });
 
@@ -189,6 +195,31 @@ describe('EpicLane', () => {
 
       await waitForPromises();
       expect(cacheUpdates.setError).toHaveBeenCalled();
+    });
+
+    it('updates epic user preferences on collapse', async () => {
+      createComponent({
+        isApolloBoard: true,
+      });
+
+      await waitForPromises();
+
+      const collapsedValue = false;
+
+      expect(findEpicLane().classes()).toContain('board-epic-lane-shadow');
+      expect(findIssuesLaneLists()).toHaveLength(wrapper.props('lists').length);
+
+      findChevronButton().vm.$emit('click');
+
+      await waitForPromises();
+      expect(updateEpicPreferencesMutationHandler).toHaveBeenCalledWith({
+        boardId: 'gid://gitlab/Board/1',
+        collapsed: !collapsedValue,
+        epicId: mockEpic.id,
+      });
+
+      expect(findEpicLane().classes()).not.toContain('board-epic-lane-shadow');
+      expect(findIssuesLaneLists()).toHaveLength(0);
     });
   });
 });
