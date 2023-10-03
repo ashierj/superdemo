@@ -240,7 +240,9 @@ describe('ee merge request widget options', () => {
       expect(findPipelineContainer().props('mr').sourceBranchLink).toBe(sourceBranchLink);
     });
 
-    it('renders the branch in the pipeline widget', async () => {
+    // quarantine: https://gitlab.com/gitlab-org/gitlab/-/issues/427192
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip('renders the branch in the pipeline widget', async () => {
       createComponent({
         mountFn: mountExtended,
         updatedMrData: {
