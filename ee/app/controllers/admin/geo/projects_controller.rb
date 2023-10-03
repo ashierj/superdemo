@@ -11,7 +11,7 @@ module Admin
       PROJECTS_LIMIT_COUNT = 10001
 
       def index
-        if Feature.enabled?(:geo_project_repository_replication)
+        if Feature.enabled?(:geo_project_repository_replication, type: :ops)
           redirect_to admin_geo_nodes_path unless @current_node
           redirect_to project_repositories_path
         end

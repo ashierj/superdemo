@@ -168,7 +168,7 @@ module Gitlab
       end
 
       def self.enabled?
-        Feature.enabled?(replication_enabled_feature_key)
+        Feature.enabled?(replication_enabled_feature_key, type: :ops)
       end
 
       def self.disabled?
