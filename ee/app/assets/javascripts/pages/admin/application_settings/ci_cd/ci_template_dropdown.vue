@@ -1,22 +1,18 @@
 <script>
-import {
-  GlDropdown,
-  GlDropdownItem,
-  GlDropdownDivider,
-  GlDropdownSectionHeader,
-  GlSearchBoxByType,
-} from '@gitlab/ui';
-import { s__ } from '~/locale';
-import { filterGitlabCiYmls } from './helpers';
+import { GlCollapsibleListbox } from '@gitlab/ui';
+import { __, n__, s__ } from '~/locale';
+import { filterItems } from './helpers';
 
 export default {
   name: 'CiTemplateDropdown',
+  i18n: {
+    searchPlaceholder: s__('AdminSettings|No required configuration'),
+    headerText: s__('AdminSettings|Select a CI/CD template'),
+    searchSummaryText: s__('AdminSettings|templates found'),
+    resetButtonLabel: __('Reset'),
+  },
   components: {
-    GlDropdown,
-    GlDropdownItem,
-    GlDropdownDivider,
-    GlDropdownSectionHeader,
-    GlSearchBoxByType,
+    GlCollapsibleListbox,
   },
   inject: {
     initialSelectedGitlabCiYmlName: {
@@ -28,45 +24,32 @@ export default {
   },
   data() {
     return {
-      selectedGitlabCiYmlName: this.initialSelectedGitlabCiYmlName,
+      selected: this.initialSelectedGitlabCiYmlName,
       searchTerm: '',
     };
   },
   computed: {
-    filteredYmls() {
-      if (!this.searchTerm) {
-        return this.gitlabCiYmls;
-      }
-
-      return filterGitlabCiYmls(this.gitlabCiYmls, this.searchTerm);
+    items() {
+      return filterItems(this.gitlabCiYmls, this.searchTerm);
     },
-    filteredTemplateCategories() {
-      return Object.keys(this.filteredYmls);
+    toggleText() {
+      return this.selected || this.$options.i18n.searchPlaceholder;
     },
-    dropdownText() {
-      return this.selectedGitlabCiYmlName || this.$options.i18n.defaultDropdownText;
+    numberOfResults() {
+      return this.items.reduce((count, current) => count + current.options.length, 0);
     },
-    selectedGitlabCiYmlValue() {
-      return this.selectedGitlabCiYmlName;
+    searchSummary() {
+      return n__(`%d template found`, `%d templates found`, this.numberOfResults);
     },
   },
   methods: {
-    isDropdownItemChecked(gitlabCiYml) {
-      return this.selectedGitlabCiYmlName === gitlabCiYml.name;
+    onReset() {
+      this.selected = null;
     },
-    onDropdownItemClick(gitlabCiYml) {
-      if (this.selectedGitlabCiYmlName === gitlabCiYml.name) {
-        this.selectedGitlabCiYmlName = null;
-      } else {
-        this.selectedGitlabCiYmlName = gitlabCiYml.name;
-      }
+    onSearch(query) {
+      this.searchTerm = query.trim().toLowerCase();
     },
   },
-  i18n: {
-    defaultDropdownHeaderText: s__('AdminSettings|Select a CI/CD template'),
-    defaultDropdownText: s__('AdminSettings|No required pipeline'),
-  },
-  TYPING_DELAY: 100, // offset user's typing slightly to potentially save excessive DOM updates
 };
 </script>
 
@@ -76,33 +59,22 @@ export default {
       id="required_instance_ci_template_name"
       type="hidden"
       name="application_setting[required_instance_ci_template]"
-      :value="selectedGitlabCiYmlValue"
+      :value="selected"
     />
-    <gl-dropdown
-      :text="dropdownText"
-      :header-text="$options.i18n.defaultDropdownHeaderText"
-      no-flip
-      class="gl-display-block gl-m-0"
+    <gl-collapsible-listbox
+      v-model="selected"
+      searchable
+      :header-text="$options.i18n.headerText"
+      :items="items"
+      :reset-button-label="$options.i18n.resetButtonLabel"
+      :search-placeholder="$options.i18n.searchPlaceholder"
+      :toggle-text="toggleText"
+      @reset="onReset"
+      @search="onSearch"
     >
-      <template #header>
-        <gl-search-box-by-type v-model.trim="searchTerm" :debounce="$options.TYPING_DELAY" />
+      <template #search-summary-sr-only>
+        {{ searchSummary }}
       </template>
-
-      <div v-for="categoryName in filteredTemplateCategories" :key="categoryName">
-        <gl-dropdown-divider />
-        <gl-dropdown-section-header>
-          {{ categoryName }}
-        </gl-dropdown-section-header>
-        <gl-dropdown-item
-          v-for="gitlabCiYml in filteredYmls[categoryName]"
-          :key="gitlabCiYml.id"
-          is-check-item
-          :is-checked="isDropdownItemChecked(gitlabCiYml)"
-          @click="onDropdownItemClick(gitlabCiYml)"
-        >
-          {{ gitlabCiYml.name }}
-        </gl-dropdown-item>
-      </div>
-    </gl-dropdown>
+    </gl-collapsible-listbox>
   </div>
 </template>
