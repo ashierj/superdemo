@@ -33,7 +33,7 @@ module Sbom
 
       collection = filter_by_component_names(collection) if params[:component_names].present?
 
-      collection.with_component.with_version.with_source
+      collection
     end
 
     def filter_by_package_managers(sbom_occurrences)

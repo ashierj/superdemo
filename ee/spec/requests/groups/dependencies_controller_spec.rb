@@ -205,7 +205,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               end
 
               expect(project_routes_count).to eq(1)
-              expect(project_count).to eq(2)
+              expect(project_count).to eq(1)
               expect(component_versions_count).to eq(1)
               expect(sbom_sources_count).to eq(1)
               expect(sbom_components_count).to eq(1)

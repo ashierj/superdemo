@@ -26,8 +26,8 @@ module Groups
           render status: :ok
         end
         format.json do
-          render json: dependencies_serializer
-            .represent(dependencies_finder.execute)
+          dependencies = dependencies_finder.execute.with_component.with_version.with_source.with_project_route
+          render json: dependencies_serializer.represent(dependencies)
         end
       end
     end

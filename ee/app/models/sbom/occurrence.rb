@@ -65,6 +65,7 @@ module Sbom
     end
 
     scope :with_component, -> { includes(:component) }
+    scope :with_project_route, -> { includes(project: :route).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/420046") }
     scope :with_source, -> { includes(:source) }
     scope :with_version, -> { includes(:component_version) }
     scope :with_component_source_version_project_and_pipeline, -> do

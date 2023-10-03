@@ -854,25 +854,21 @@ module EE
     end
 
     def sbom_occurrences
-      our_occurrences = ::Gitlab::SQL::CTE.new(:our_occurrences, Sbom::Occurrence.where(
-        project_id: all_projects_except_soft_deleted.select(:id)
-      ))
-
-      Sbom::Occurrence.includes(project: :route).select('sbom_occurrences.*, agg_occurrences.occurrence_count, agg_occurrences.project_count')
-      .with(our_occurrences.to_arel)
-      .where(Sbom::Occurrence.arel_table[:id].in(our_occurrences.table.project(our_occurrences.table[:id])))
-      .joins(
-        <<-SQL
-          INNER JOIN (
-            SELECT component_id,
-                  COUNT(DISTINCT id) AS occurrence_count,
-                  COUNT(DISTINCT project_id) AS project_count
-            FROM #{our_occurrences.table.name}
-            GROUP BY component_id
-          ) agg_occurrences ON sbom_occurrences.component_id = agg_occurrences.component_id
-        SQL
+      sql = <<-SQL
+      DISTINCT ON (sbom_occurrences.component_version_id) sbom_occurrences.*,
+      COUNT(sbom_occurrences.id) OVER (PARTITION BY sbom_occurrences.component_version_id) AS occurrence_count,
+      COUNT(sbom_occurrences.project_id) OVER (PARTITION BY sbom_occurrences.component_version_id, sbom_occurrences.project_id) AS project_count
+      SQL
+      our_occurrences = ::Gitlab::SQL::CTE.new(:our_occurrences, Sbom::Occurrence
+        .where(project_id: all_projects_except_soft_deleted.select(:id))
+        .where.not(component_version_id: nil)
+        .select(sql)
+        .order(component_version_id: :desc, id: :desc)
       )
-      .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/420046")
+
+      Sbom::Occurrence
+        .with(our_occurrences.to_arel)
+        .from(our_occurrences.alias_to(Sbom::Occurrence.arel_table))
     end
 
     override :reached_project_access_token_limit?

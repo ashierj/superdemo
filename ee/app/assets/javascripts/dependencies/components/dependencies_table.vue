@@ -8,7 +8,7 @@ import {
   GlPopover,
   GlLink,
 } from '@gitlab/ui';
-import { cloneDeep, uniqBy } from 'lodash';
+import { cloneDeep } from 'lodash';
 import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_PROJECT, DEPENDENCIES_TABLE_I18N } from '../constants';
@@ -82,7 +82,7 @@ export default {
     localDependencies() {
       return this.isProjectNamespace
         ? this.transformDependenciesForUI(this.dependencies)
-        : this.uniqueBasedOnComponentId(this.dependencies);
+        : this.dependencies;
     },
     // Once the feature flag is removed, we can move this from a computed property to an option, like `projectFields`
     // Rollout issue: https://gitlab.com/gitlab-org/gitlab/-/issues/422978
@@ -111,9 +111,6 @@ export default {
         ...cloneDeep(dep),
         vulnerabilities: vulnerabilities ? cloneDeep(vulnerabilities) : [],
       }));
-    },
-    uniqueBasedOnComponentId(dependencies) {
-      return uniqBy(dependencies, 'componentId');
     },
     displayLocation(item) {
       return this.isProjectNamespace || item.occurrenceCount < 2;
