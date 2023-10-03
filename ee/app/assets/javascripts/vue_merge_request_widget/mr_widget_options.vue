@@ -257,8 +257,8 @@ export default {
     />
     <mr-widget-pipeline-container
       v-if="shouldRenderPipelines"
-      data-testid="pipeline-container"
       :mr="mr"
+      data-testid="pipeline-container"
     />
     <mr-widget-approvals v-if="shouldRenderApprovals" :mr="mr" :service="service" />
     <report-widget-container>

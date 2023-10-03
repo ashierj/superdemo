@@ -94,6 +94,8 @@ describe('CiResourceHeader', () => {
             showText: true,
             size: 'sm',
             status: pipelineStatus,
+            showTooltip: true,
+            useLink: true,
           });
         }
       });
