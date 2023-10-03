@@ -13787,9 +13787,9 @@ ALTER SEQUENCE ci_pipeline_chat_data_id_seq OWNED BY ci_pipeline_chat_data.id;
 CREATE TABLE ci_pipeline_messages (
     id bigint NOT NULL,
     severity smallint DEFAULT 0 NOT NULL,
-    pipeline_id integer NOT NULL,
+    pipeline_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     content text NOT NULL,
-    pipeline_id_convert_to_bigint bigint DEFAULT 0 NOT NULL,
+    pipeline_id bigint NOT NULL,
     CONSTRAINT check_58ca2981b2 CHECK ((char_length(content) <= 10000))
 );
 
