@@ -2,9 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purchase do
+RSpec.describe Subscriptions::TrialsController, feature_category: :purchase do
   let_it_be(:user, reload: true) { create(:user) }
   let(:glm_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
+  let(:subscriptions_trials_enabled) { true }
+
+  before do
+    stub_saas_features(subscriptions_trials: subscriptions_trials_enabled, marketing_google_tag_manager: false)
+  end
 
   describe 'GET new' do
     let(:base_params) { glm_params }
@@ -25,10 +30,8 @@ RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purcha
 
       it { is_expected.to have_gitlab_http_status(:ok) }
 
-      context 'when not on SaaS' do
-        before do
-          allow(::Gitlab).to receive(:com?).and_return(false)
-        end
+      context 'when subscriptions_trials is not available' do
+        let(:subscriptions_trials_enabled) { false }
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
@@ -253,10 +256,8 @@ RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purcha
         end
       end
 
-      context 'when not on SaaS' do
-        before do
-          allow(::Gitlab).to receive(:com?).and_return(false)
-        end
+      context 'when subscriptions_trials is not available' do
+        let(:subscriptions_trials_enabled) { false }
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
