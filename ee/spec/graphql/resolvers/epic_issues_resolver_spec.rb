@@ -61,8 +61,8 @@ RSpec.describe Resolvers::EpicIssuesResolver do
 
   def resolve_epic_issues(object, user, max_page_size)
     resolver = described_class
-    opts = resolver.field_options
-    allow(resolver).to receive(:field_options).and_return(opts.merge(max_page_size: max_page_size))
+    allow(resolver).to receive(:has_max_page_size?).and_return(true)
+    allow(resolver).to receive(:max_page_size).and_return(max_page_size)
 
     force(resolve(resolver, obj: object, ctx: { current_user: user }))
   end
