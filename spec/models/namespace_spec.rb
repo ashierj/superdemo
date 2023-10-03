@@ -833,6 +833,14 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
 
   describe '#human_name' do
     it { expect(namespace.human_name).to eq(namespace.owner_name) }
+
+    context 'when the owner is missing' do
+      before do
+        namespace.update_column(:owner_id, non_existing_record_id)
+      end
+
+      it { expect(namespace.human_name).to eq(namespace.path) }
+    end
   end
 
   describe '#any_project_has_container_registry_tags?' do
