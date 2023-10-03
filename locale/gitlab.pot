@@ -442,6 +442,11 @@ msgid_plural "%d tags per image name"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d template found"
+msgid_plural "%d templates found"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d unresolved thread"
 msgid_plural "%d unresolved threads"
 msgstr[0] ""
@@ -3596,7 +3601,7 @@ msgstr ""
 msgid "AdminSettings|New CI/CD variables in projects and groups default to protected."
 msgstr ""
 
-msgid "AdminSettings|No required pipeline"
+msgid "AdminSettings|No required configuration"
 msgstr ""
 
 msgid "AdminSettings|Only enable search after installing the plugin, enabling indexing, and recreating the index."
@@ -3753,6 +3758,9 @@ msgid "AdminSettings|You can enable Registration Features because Service Ping i
 msgstr ""
 
 msgid "AdminSettings|You can't delete projects before the warning email is sent."
+msgstr ""
+
+msgid "AdminSettings|templates found"
 msgstr ""
 
 msgid "AdminStatistics|Active Users"
