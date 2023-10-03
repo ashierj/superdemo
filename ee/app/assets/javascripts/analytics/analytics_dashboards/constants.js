@@ -4,7 +4,7 @@ export const FEATURE_PRODUCT_ANALYTICS = 'productAnalytics';
 
 export const PRODUCT_ANALYTICS_FEATURE_DASHBOARDS = ['audience', 'behavior'];
 
-export const EVENTS_TYPES = ['pageViews', 'featureUsages', 'clickEvents', 'events'];
+export const EVENTS_TYPES = ['pageViews', 'clickEvents', 'events'];
 
 export function isTrackedEvent(eventType) {
   return EVENTS_TYPES.includes(eventType);
