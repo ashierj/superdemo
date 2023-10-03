@@ -8,7 +8,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import ToggleEpicsSwimlanes from 'ee/boards/components/toggle_epics_swimlanes.vue';
 import IssueBoardFilteredSearch from 'ee/boards/components/issue_board_filtered_search.vue';
 import EpicBoardFilteredSearch from 'ee/boards/components/epic_filtered_search.vue';
-import ToggleLabels from 'ee/boards/components/toggle_labels.vue';
+import ToggleLabels from '~/vue_shared/components/toggle_labels.vue';
 
 import BoardTopBar from '~/boards/components/board_top_bar.vue';
 import BoardsSelector from '~/boards/components/boards_selector.vue';

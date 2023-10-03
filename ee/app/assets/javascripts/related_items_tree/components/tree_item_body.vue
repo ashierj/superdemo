@@ -17,6 +17,7 @@ import ItemDueDate from '~/boards/components/issue_due_date.vue';
 import { __ } from '~/locale';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 
+import isShowingLabelsQuery from '~/graphql_shared/client/is_showing_labels.query.graphql';
 import ItemAssignees from '~/issuable/components/issue_assignees.vue';
 import ItemMilestone from '~/issuable/components/issue_milestone.vue';
 import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
@@ -62,6 +63,12 @@ export default {
       required: true,
     },
   },
+  apollo: {
+    isShowingLabels: {
+      query: isShowingLabelsQuery,
+      update: (data) => data.isShowingLabels,
+    },
+  },
   computed: {
     ...mapState([
       'allowIssuableHealthStatus',
@@ -69,7 +76,6 @@ export default {
       'allowSubEpics',
       'childrenFlags',
       'epicsWebUrl',
-      'isShowingLabels',
       'issuesWebUrl',
       'userSignedIn',
     ]),

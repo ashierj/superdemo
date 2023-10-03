@@ -24,7 +24,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
   let_it_be(:epic) { create(:epic, group: group, title: epic_title, description: markdown, author: user) }
   let_it_be(:not_child) { create(:epic, group: group, title: 'not child epic', description: markdown, author: user, start_date: 50.days.ago, end_date: 10.days.ago) }
   let_it_be(:child_epic_a) { create(:epic, group: group, title: 'Child epic A', description: markdown, parent: epic, start_date: 50.days.ago, end_date: 20.days.from_now) }
-  let_it_be(:child_epic_b) { create(:epic, group: group, title: 'Child epic B', description: markdown, parent: epic, start_date: 100.days.ago, end_date: 10.days.from_now) }
+  let_it_be(:child_epic_b) { create(:epic, group: group, title: 'Child epic B', description: markdown, parent: epic, start_date: 100.days.ago, end_date: 10.days.from_now, labels: [label1]) }
   let_it_be(:child_issue_a) { create(:epic_issue, epic: epic, issue: public_issue, relative_position: 1) }
 
   before do
@@ -84,6 +84,20 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
             expect(find('.tree-item:nth-child(1) .sortable-link')).to have_content('Child epic B')
             expect(find('.tree-item:nth-child(2) .sortable-link')).to have_content('Child epic A')
           end
+        end
+      end
+
+      it 'toggles epic labels' do
+        page.within('[data-testid="related-items-container"]') do
+          expect(find('.tree-item:nth-child(1)')).to have_selector('.gl-label')
+
+          toggle_labels = find('[data-testid="show-labels-toggle"]')
+
+          toggle_labels.find('button').click
+
+          wait_for_requests
+
+          expect(find('.tree-item:nth-child(1)')).not_to have_selector('.gl-label')
         end
       end
 
