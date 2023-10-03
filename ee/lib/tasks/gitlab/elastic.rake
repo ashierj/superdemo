@@ -356,11 +356,12 @@ namespace :gitlab do
 
       puts ""
       puts "Indices".color(:yellow)
-      ::Elastic::IndexSetting.order(:alias_name).each do |index_setting|
+      indices = ::Elastic::IndexSetting.order(:alias_name).pluck(:alias_name)
+      indices.each do |alias_name|
         setting = begin
-          helper.client.indices.get_settings(index: index_setting.alias_name)
+          helper.client.indices.get_settings(index: alias_name)
         rescue StandardError
-          puts "  - failed to load indices for #{index_setting.alias_name}".color(:red)
+          puts "  - failed to load indices for #{alias_name}".color(:red)
           {}
         end
 
@@ -368,6 +369,8 @@ namespace :gitlab do
           puts "- #{index_name}:"
           puts "  number_of_shards: #{hash.dig('settings', 'index', 'number_of_shards')}"
           puts "  number_of_replicas: #{hash.dig('settings', 'index', 'number_of_replicas')}"
+          refresh_interval = hash.dig('settings', 'index', 'refresh_interval')
+          puts "  refresh_interval: #{refresh_interval}" if refresh_interval
           (hash.dig('settings', 'index', 'blocks') || {}).each do |block, value|
             next unless value == 'true'
 
