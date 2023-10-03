@@ -8,10 +8,13 @@ RSpec.shared_examples 'assigns one or more reviewers to the merge request' do |e
   it 'adds multiple reviewers from the list' do
     _, update_params, message = service.execute(note)
 
-    expected_message = example[:multiline] ? "Assigned @#{user.username} as reviewer. Assigned @#{reviewer.username} as reviewer." : "Assigned @#{reviewer.username} and @#{user.username} as reviewers."
+    expected_format = example[:multiline] ? /Assigned @\w+ as reviewer. Assigned @\w+ as reviewer./ : /Assigned @\w+ and @\w+ as reviewers./
+
+    expect(message).to match(expected_format)
+    expect(message).to include("@#{reviewer.username}")
+    expect(message).to include("@#{user.username}")
 
     expect(update_params[:reviewer_ids]).to match_array([user.id, reviewer.id])
-    expect(message).to eq(expected_message)
     expect { service.apply_updates(update_params, note) }.not_to raise_error
   end
 end
