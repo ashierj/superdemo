@@ -42,6 +42,7 @@ export default {
       :unit="options.unit"
       :animation-decimal-places="decimalPlaces"
       :should-animate="true"
+      :use-delimiters="true"
       variant="muted"
     />
   </div>

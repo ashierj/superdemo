@@ -26,6 +26,7 @@ describe('Single Stat Visualization', () => {
         variant: 'muted',
         shouldAnimate: true,
         animationDecimalPlaces: 0,
+        useDelimiters: true,
       });
     });
 
