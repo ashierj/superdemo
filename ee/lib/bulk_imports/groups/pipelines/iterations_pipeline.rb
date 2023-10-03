@@ -5,6 +5,7 @@ module BulkImports
     module Pipelines
       class IterationsPipeline
         include ::BulkImports::Pipeline
+        include HexdigestCacheStrategy
 
         extractor ::BulkImports::Common::Extractors::GraphqlExtractor,
           query: ::BulkImports::Groups::Graphql::GetIterationsQuery

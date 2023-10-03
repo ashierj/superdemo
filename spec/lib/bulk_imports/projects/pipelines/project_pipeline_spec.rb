@@ -50,6 +50,11 @@ RSpec.describe BulkImports::Projects::Pipelines::ProjectPipeline, feature_catego
       expect(imported_project.visibility).to eq(project_data['visibility'])
       expect(imported_project.created_at).to eq(project_data['created_at'])
     end
+
+    it 'skips duplicate projects on pipeline re-run' do
+      expect { project_pipeline.run }.to change { Project.count }.by(1)
+      expect { project_pipeline.run }.not_to change { Project.count }
+    end
   end
 
   describe 'pipeline parts' do

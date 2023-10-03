@@ -63,6 +63,11 @@ RSpec.describe BulkImports::Groups::Pipelines::GroupPipeline do
       expect(imported_group.emails_disabled?).to eq(group_data['emails_disabled'])
       expect(imported_group.mentions_disabled?).to eq(group_data['mentions_disabled'])
     end
+
+    it 'skips duplicates on pipeline rerun' do
+      expect { subject.run }.to change { Group.count }.by(1)
+      expect { subject.run }.not_to change { Group.count }
+    end
   end
 
   describe 'pipeline parts' do
