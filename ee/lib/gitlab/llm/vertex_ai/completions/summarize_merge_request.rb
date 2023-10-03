@@ -29,7 +29,7 @@ module Gitlab
           end
 
           def store_response(response_modifier, mr_diff)
-            return if response_modifier.errors.any?
+            return if response_modifier.errors.any? || response_modifier.response_body.blank?
 
             MergeRequest::DiffLlmSummary.create!(
               merge_request_diff: mr_diff,

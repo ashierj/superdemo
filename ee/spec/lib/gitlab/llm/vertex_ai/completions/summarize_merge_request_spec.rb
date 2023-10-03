@@ -90,5 +90,23 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
           .not_to change { ::MergeRequest::DiffLlmSummary.count }
       end
     end
+
+    context 'when the AI response is empty' do
+      before do
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
+          allow(client).to receive(:text).and_return({})
+        end
+      end
+
+      it 'does not store the content' do
+        expect { subject.execute(user, merge_request, options) }
+          .not_to change { ::MergeRequest::DiffLlmSummary.count }
+      end
+
+      it 'does not raise an error' do
+        expect { subject.execute(user, merge_request, options) }
+          .not_to raise_error
+      end
+    end
   end
 end
