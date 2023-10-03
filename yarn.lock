@@ -1038,10 +1038,10 @@
     url-search-params-polyfill "^7.0.0"
     uuid "^8.3.2"
 
-"@cubejs-client/vue@^0.33.59":
-  version "0.33.59"
-  resolved "https://registry.yarnpkg.com/@cubejs-client/vue/-/vue-0.33.59.tgz#ffb96c70ac34f0ed8263a7a4b90f1cbfcc3c4468"
-  integrity sha512-u6dXsPUamWAs5riDDYdnN9ULy/k44+QVzxeHW5uJC2Fi3FIIZbysc09XEzh92RS2yV5m5LL+YK/ZyBGpEnOWSA==
+"@cubejs-client/vue@^0.33.65":
+  version "0.33.65"
+  resolved "https://registry.yarnpkg.com/@cubejs-client/vue/-/vue-0.33.65.tgz#1b1f371393173c2cb2fe23a1be4e8d91bf240083"
+  integrity sha512-vzFxMGlYrBxa+7fIEqG17mZqqKPSE83a+I1incb67ICqabN1lG8yw23Es/sl+mkM50/UprKF3kM48vfpyBK0KQ==
   dependencies:
     "@cubejs-client/core" "^0.33.59"
     core-js "^3.6.5"
