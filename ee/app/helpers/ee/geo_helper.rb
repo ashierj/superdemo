@@ -24,14 +24,6 @@ module EE
       }
     end
 
-    def node_namespaces_options(namespaces)
-      namespaces.map { |g| { id: g.id, text: g.full_name } }
-    end
-
-    def node_selected_namespaces_to_replicate(node)
-      node.namespaces.map(&:human_name).sort.join(', ')
-    end
-
     def selective_sync_types_json
       options = {
         ALL: {
@@ -49,13 +41,6 @@ module EE
       }
 
       options.to_json
-    end
-
-    def node_class(node)
-      klass = []
-      klass << 'js-geo-secondary-node' if node.secondary?
-      klass << 'node-disabled' unless node.enabled?
-      klass
     end
 
     def geo_registry_status(registry)
