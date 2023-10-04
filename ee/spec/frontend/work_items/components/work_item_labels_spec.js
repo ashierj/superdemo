@@ -44,6 +44,7 @@ describe('WorkItemLabels component', () => {
       ]),
       provide: {
         fullPath: 'test-project-path',
+        isGroup: false,
       },
       propsData: {
         workItemId,

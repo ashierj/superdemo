@@ -69,6 +69,7 @@ describe('WorkItemNotes component', () => {
       ]),
       provide: {
         fullPath: 'test-path',
+        isGroup: false,
       },
       propsData: {
         workItemId,
