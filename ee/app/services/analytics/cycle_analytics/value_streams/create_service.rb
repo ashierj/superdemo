@@ -44,6 +44,9 @@ module Analytics
           remove_in_memory_stage_ids!(raw_params[:stages_attributes])
           set_relative_positions!(raw_params[:stages_attributes])
 
+          raw_params[:setting_attributes] = raw_params.delete(:setting) if raw_params[:setting].present?
+          process_project_ids_filter(raw_params)
+
           raw_params
         end
 
@@ -53,6 +56,16 @@ module Analytics
 
           # if we're persisting a default stage, ignore the user provided attributes and use our attributes
           use_default_stage_params(stage_attributes)
+        end
+
+        def process_project_ids_filter(raw_params)
+          project_ids_filter =
+            raw_params.dig(:setting_attributes, :project_ids_filter)
+
+          return unless project_ids_filter
+
+          valid_ids = project_ids_filter.select { |n| n.to_i > 0 } # Prevents saving [nil] as value when [""] is passed as argument
+          raw_params[:setting_attributes][:project_ids_filter] = valid_ids.presence
         end
 
         def use_default_stage_params(stage_attributes)
