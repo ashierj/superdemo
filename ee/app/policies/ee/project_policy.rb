@@ -305,6 +305,11 @@ module EE
         project.project_feature&.private?(:merge_requests)
       end
 
+      condition(:tracing_enabled) do
+        ::Feature.enabled?(:observability_tracing, @subject) &&
+          @subject.licensed_feature_available?(:tracing)
+      end
+
       # We are overriding the already defined condition in CE version
       # to allow Guest users with member roles to access the merge requests.
       condition(:merge_requests_disabled) do
@@ -721,6 +726,10 @@ module EE
 
       rule { continuous_vulnerability_scanning_available & can?(:developer_access) }.policy do
         enable :enable_continuous_vulnerability_scans
+      end
+
+      rule { can?(:reporter_access) & tracing_enabled }.policy do
+        enable :read_tracing
       end
     end
 

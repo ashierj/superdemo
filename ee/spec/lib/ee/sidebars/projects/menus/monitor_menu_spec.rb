@@ -10,53 +10,70 @@ RSpec.describe Sidebars::Projects::Menus::MonitorMenu do
   describe 'Menu items' do
     subject { described_class.new(context).renderable_items.index { |e| e.item_id == item_id } }
 
-    describe 'On-call Schedules' do
+    describe 'On-call Schedules', feature_category: :on_call_schedule_management do
       let(:item_id) { :on_call_schedules }
 
       before do
         stub_licensed_features(oncall_schedules: true)
       end
 
-      specify { is_expected.not_to be_nil }
+      it { is_expected.not_to be_nil }
 
       describe 'when the user does not have access' do
         let(:user) { nil }
 
-        specify { is_expected.to be_nil }
+        it { is_expected.to be_nil }
       end
     end
 
-    describe 'Escalation Policies' do
+    describe 'Escalation Policies', feature_category: :incident_management do
       let(:item_id) { :escalation_policies }
 
       before do
         stub_licensed_features(oncall_schedules: true, escalation_policies: true)
       end
 
-      specify { is_expected.not_to be_nil }
+      it { is_expected.not_to be_nil }
 
       describe 'when the user does not have access' do
         let(:user) { nil }
 
-        specify { is_expected.to be_nil }
+        it { is_expected.to be_nil }
       end
     end
 
-    describe 'Tracing' do
+    describe 'Tracing', feature_category: :tracing do
       let(:item_id) { :tracing }
+      let(:user) { build(:user) }
+      let(:role) { :reporter }
 
       before do
-        allow(Gitlab::Observability).to receive(:tracing_enabled?).and_return(true)
+        stub_licensed_features(tracing: true)
+        stub_member_access_level(project, role => user)
       end
 
-      specify { is_expected.not_to be_nil }
+      it { is_expected.not_to be_nil }
 
-      describe 'when feature is disabled' do
+      describe 'when feature flag is disabled' do
         before do
-          allow(Gitlab::Observability).to receive(:tracing_enabled?).and_return(false)
+          stub_feature_flags(observability_tracing: false)
         end
 
-        specify { is_expected.to be_nil }
+        it { is_expected.to be_nil }
+      end
+
+      describe 'when unlicensed' do
+        before do
+          stub_licensed_features(tracing: false)
+        end
+
+        it { is_expected.to be_nil }
+      end
+
+      describe 'when user does not have permissions' do
+        let(:role) { :guest }
+
+        it { is_expected.to be_nil }
       end
     end
   end

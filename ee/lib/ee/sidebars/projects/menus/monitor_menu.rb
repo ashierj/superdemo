@@ -49,7 +49,7 @@ module EE
           end
 
           def tracing_menu_item
-            unless ::Gitlab::Observability.tracing_enabled?(context.project)
+            unless can?(context.current_user, :read_tracing, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :tracing)
             end
 
