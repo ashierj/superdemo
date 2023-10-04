@@ -6,18 +6,12 @@ module Projects
 
     feature_category :tracing
 
-    before_action :check_tracing_enabled
+    before_action :authorize_read_tracing!
 
     def index; end
 
     def show
       @trace_id = params[:id]
-    end
-
-    private
-
-    def check_tracing_enabled
-      render_404 unless ::Gitlab::Observability.tracing_enabled?(project)
     end
   end
 end

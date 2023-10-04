@@ -3073,4 +3073,38 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_allowed(:read_target_branch_rule) }
     end
   end
+
+  describe 'read_tracing policy' do
+    let(:current_user) { reporter }
+
+    before do
+      stub_licensed_features(tracing: true)
+    end
+
+    describe 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(observability_tracing: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_tracing) }
+    end
+
+    describe 'when the project does not have the correct license' do
+      before do
+        stub_licensed_features(tracing: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_tracing) }
+    end
+
+    describe 'when the user does not have permission' do
+      let(:current_user) { guest }
+
+      it { is_expected.to be_disallowed(:read_tracing) }
+    end
+
+    describe 'when the user has permission' do
+      it { is_expected.to be_allowed(:read_tracing) }
+    end
+  end
 end

@@ -23,13 +23,17 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
   shared_examples 'tracing route request' do
     it_behaves_like 'observability csp policy' do
       before_all do
-        project.add_developer(user)
+        project.add_reporter(user)
       end
 
       let(:tested_path) { path }
     end
 
     context 'when user does not have permissions' do
+      before_all do
+        project.add_guest(user)
+      end
+
       it 'returns 404' do
         expect(subject).to have_gitlab_http_status(:not_found)
       end
@@ -37,7 +41,7 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
 
     context 'when user has permissions' do
       before_all do
-        project.add_developer(user)
+        project.add_reporter(user)
       end
 
       it 'returns 200' do
@@ -61,7 +65,7 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
 
     describe 'html response' do
       before_all do
-        project.add_developer(user)
+        project.add_reporter(user)
       end
 
       it 'renders the js-tracing element correctly' do
@@ -84,7 +88,7 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
 
     describe 'html response' do
       before_all do
-        project.add_developer(user)
+        project.add_reporter(user)
       end
 
       it 'renders the js-tracing element correctly' do
