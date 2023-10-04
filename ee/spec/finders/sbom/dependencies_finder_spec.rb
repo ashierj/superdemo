@@ -142,6 +142,18 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
         end
       end
 
+      context 'when filtered by license' do
+        let_it_be(:params) do
+          {
+            licenses: ['MIT', 'MPL-2.0']
+          }
+        end
+
+        it 'returns only records corresponding to the filter' do
+          expect(dependencies.map(&:id)).to match_array([occurrence_1.id, occurrence_3.id])
+        end
+      end
+
       context 'when params is invalid' do
         let_it_be(:params) do
           {

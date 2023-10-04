@@ -32,6 +32,7 @@ module Sbom
       collection = filter_by_package_managers(collection) if params[:package_managers].present?
 
       collection = filter_by_component_names(collection) if params[:component_names].present?
+      collection = collection.by_licenses(params[:licenses]) if params[:licenses].present?
 
       collection
     end

@@ -47,6 +47,14 @@ module Sbom
       ))
     end
 
+    scope :by_licenses, ->(licenses, depth: 1) do
+      query_parts = (0..depth).map do |index|
+        "(licenses#>'{#{index},spdx_identifier}' ?| array[:licenses])"
+      end
+
+      where(query_parts.join(' OR '), licenses: Array(licenses))
+    end
+
     scope :filter_by_package_managers, ->(package_managers) do
       where(package_manager: package_managers)
     end

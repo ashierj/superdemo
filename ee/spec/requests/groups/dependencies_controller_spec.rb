@@ -336,6 +336,22 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                   end
                 end
               end
+
+              context 'when filtered by licenses' do
+                let(:params) do
+                  {
+                    group_id: group.to_param,
+                    licenses: ['Apache-2.0']
+                  }
+                end
+
+                it 'returns a filtered list' do
+                  subject
+
+                  expect(json_response['dependencies'].count).to eq(1)
+                  expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
+                end
+              end
             end
           end
 
