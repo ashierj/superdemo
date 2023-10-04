@@ -172,7 +172,9 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--full-path=#{project.full_path}",
               "--repository-access-level=#{project.repository_access_level}",
               "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
-              "--schema-version-commits=true",
+              "--schema-version-blob=2308",
+              '--schema-version-commits',
+              "--schema-version-commit=2306",
               "--archived=#{project.archived}",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
@@ -213,7 +215,9 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--full-path=#{project.full_path}",
               "--repository-access-level=#{project.repository_access_level}",
               "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
-              "--schema-version-commits=true",
+              "--schema-version-blob=2308",
+              '--schema-version-commits',
+              "--schema-version-commit=2306",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
             ],
@@ -253,7 +257,9 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--full-path=#{project.full_path}",
               "--repository-access-level=#{project.repository_access_level}",
               "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
-              "--schema-version-commits=true",
+              "--schema-version-blob=2308",
+              '--schema-version-commits',
+              "--schema-version-commit=2306",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
             ],
@@ -292,6 +298,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--to-sha=#{to_sha}",
               "--full-path=#{project.full_path}",
               "--repository-access-level=#{project.repository_access_level}",
+              "--schema-version-blob=2308",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
             ],
@@ -331,6 +338,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--full-path=#{project.full_path}",
               "--repository-access-level=#{project.repository_access_level}",
               "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
+              "--schema-version-blob=2308",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
             ],
@@ -365,7 +373,9 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             "--full-path=#{project.full_path}",
             "--repository-access-level=#{project.repository_access_level}",
             "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
-            "--schema-version-commits=true",
+            "--schema-version-blob=2308",
+            '--schema-version-commits',
+            "--schema-version-commit=2306",
             "--archived=#{project.archived}",
             "--traversal-ids=#{project.namespace_ancestry}",
             "#{project.repository.disk_path}.git"
@@ -495,6 +505,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               '--skip-commits',
               "--wiki-access-level=#{project.wiki_access_level}",
               "--archived=false",
+              "--schema-version-wiki=2308",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.wiki.repository.disk_path}.git"
             ],
@@ -524,6 +535,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             '--skip-commits',
             "--wiki-access-level=#{project.wiki_access_level}",
             "--archived=false",
+            "--schema-version-wiki=2308",
             "--traversal-ids=#{project.namespace_ancestry}",
             "#{project.wiki.repository.disk_path}.git"
           ],
@@ -583,6 +595,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               '--blob-type=wiki_blob',
               '--skip-commits',
               "--wiki-access-level=#{project.wiki_access_level}",
+              "--schema-version-wiki=2308",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.wiki.repository.disk_path}.git"
             ],
@@ -626,6 +639,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           '--blob-type=wiki_blob',
           '--skip-commits',
           "--wiki-access-level=#{group.wiki_access_level}",
+          "--schema-version-wiki=2308",
           "--traversal-ids=#{group.elastic_namespace_ancestry}",
           "#{group.wiki.repository.disk_path}.git"
         ], nil, hash_including('ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json, 'RAILS_ENV' => Rails.env)

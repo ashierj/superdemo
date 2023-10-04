@@ -11,6 +11,9 @@ module Gitlab
 
       TIMEOUT = 30.minutes.to_i
       Error = Class.new(StandardError)
+      BLOB_SCHEMA_VERSION = 23_08
+      COMMIT_SCHEMA_VERSION = 23_06
+      WIKI_SCHEMA_VERSION = 23_08
 
       class << self
         def indexer_version
@@ -184,6 +187,7 @@ module Gitlab
       def build_wiki_specific_flags
         %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{container.wiki_access_level}].tap do |c|
           c << "--archived=#{project.archived}" if project && migration_finished?(:add_archived_to_wikis)
+          c << "--schema-version-wiki=#{WIKI_SCHEMA_VERSION}"
         end
       end
 
@@ -191,7 +195,12 @@ module Gitlab
         %W[--repository-access-level=#{container.repository_access_level}].tap do |c|
           migration_done = migration_finished?(:add_hashed_root_namespace_id_to_commits)
           c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}" if migration_done
-          c << '--schema-version-commits=true' if migration_finished?(:add_schema_version_to_commits)
+          c << "--schema-version-blob=#{BLOB_SCHEMA_VERSION}"
+          if migration_finished?(:add_schema_version_to_commits)
+            c << '--schema-version-commits'
+            c << "--schema-version-commit=#{COMMIT_SCHEMA_VERSION}"
+          end
+
           c << "--archived=#{project.archived}" if migration_finished?(:add_archived_to_commits) &&
             migration_finished?(:add_archived_to_main_index)
         end
