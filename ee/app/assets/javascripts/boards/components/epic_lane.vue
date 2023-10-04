@@ -10,6 +10,7 @@ import { formatListIssuesForLanes } from 'ee/boards/boards_util';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import { setError } from '~/boards/graphql/cache_updates';
 import { BoardType } from 'ee_else_ce/boards/constants';
+import updateBoardEpicUserPreferencesMutation from '../graphql/update_board_epic_user_preferences.mutation.graphql';
 import IssuesLaneList from './issues_lane_list.vue';
 
 export default {
@@ -147,7 +148,7 @@ export default {
     shouldDisplay() {
       return this.issuesCount > 0 || this.isLoading;
     },
-    showUnassignedLane() {
+    showIssuesLane() {
       return !this.isCollapsed && this.issuesCount > 0;
     },
     issuesByList() {
@@ -171,15 +172,30 @@ export default {
   },
   methods: {
     ...mapActions(['updateBoardEpicUserPreferences', 'fetchIssuesForEpic']),
-    toggleCollapsed() {
+    async toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
 
-      this.updateBoardEpicUserPreferences({
-        collapsed: this.isCollapsed,
-        epicId: this.epic.id,
-      }).catch(() => {
-        setError({ message: __('Unable to save your preference'), captureError: true });
-      });
+      if (this.isApolloBoard) {
+        try {
+          await this.$apollo.mutate({
+            mutation: updateBoardEpicUserPreferencesMutation,
+            variables: {
+              boardId: this.boardId,
+              epicId: this.epic.id,
+              collapsed: this.isCollapsed,
+            },
+          });
+        } catch (error) {
+          setError({ error, message: __('Unable to save your preference') });
+        }
+      } else {
+        this.updateBoardEpicUserPreferences({
+          collapsed: this.isCollapsed,
+          epicId: this.epic.id,
+        }).catch(() => {
+          setError({ message: __('Unable to save your preference'), captureError: true });
+        });
+      }
     },
     getIssuesByList(listId) {
       if (this.isApolloBoard) {
@@ -239,7 +255,7 @@ export default {
       </div>
     </div>
     <div
-      v-if="showUnassignedLane"
+      v-if="showIssuesLane"
       class="gl-display-flex gl-pt-3 gl-pb-5 board-epic-lane-issues"
       data-testid="board-epic-lane-issues"
     >
