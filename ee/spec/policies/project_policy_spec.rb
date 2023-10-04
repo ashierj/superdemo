@@ -3089,6 +3089,24 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_disallowed(:read_tracing) }
     end
 
+    describe 'when feature flag is enabled for project' do
+      before do
+        stub_feature_flags(observability_tracing: false)
+        stub_feature_flags(observability_tracing: project)
+      end
+
+      it { is_expected.to be_allowed(:read_tracing) }
+    end
+
+    describe 'when feature flag is enabled for root namespace' do
+      before do
+        stub_feature_flags(observability_tracing: false)
+        stub_feature_flags(observability_tracing: project.root_namespace)
+      end
+
+      it { is_expected.to be_allowed(:read_tracing) }
+    end
+
     describe 'when the project does not have the correct license' do
       before do
         stub_licensed_features(tracing: false)

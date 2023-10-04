@@ -306,7 +306,10 @@ module EE
       end
 
       condition(:tracing_enabled) do
-        ::Feature.enabled?(:observability_tracing, @subject) &&
+        # Can be enabled for all projects in root namespace. Maintains backward
+        # compatibility by falling back to checking against project
+        (::Feature.enabled?(:observability_tracing,
+          @subject.root_namespace) || ::Feature.enabled?(:observability_tracing, @subject)) &&
           @subject.licensed_feature_available?(:tracing)
       end
 
