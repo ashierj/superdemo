@@ -47,6 +47,16 @@ RSpec.describe ProjectTeam do # rubocop: disable RSpec/DuplicateSpecLocation
           expect(project.members.map(&:user)).to include(project_bot)
         end
       end
+
+      context 'project security policy bot' do
+        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+
+        it 'adds the project bot user to the team' do
+          project.team.add_member(security_policy_bot, :maintainer)
+
+          expect(project.members.map(&:user)).to include(security_policy_bot)
+        end
+      end
     end
   end
 end

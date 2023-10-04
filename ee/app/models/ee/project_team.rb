@@ -21,7 +21,7 @@ module EE
 
     override :add_member
     def add_member(user, access_level, current_user: nil, expires_at: nil)
-      if group_member_lock && !user.project_bot?
+      if group_member_lock && !(user.project_bot? || user.security_policy_bot?)
         return false
       end
 
