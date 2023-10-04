@@ -58,7 +58,7 @@ describe('ee/epic/components/epic_form.vue', () => {
   const findStartDateReset = () => wrapper.find('[data-testid="clear-start-date"]');
   const findDueDate = () => wrapper.find('[data-testid="epic-due-date"]');
   const findDueDateReset = () => wrapper.find('[data-testid="clear-due-date"]');
-  const findSaveButton = () => wrapper.find('[data-testid="save-epic"]');
+  const findSaveButton = () => wrapper.find('[data-testid="create-epic-button"]');
   const findCancelButton = () => wrapper.find('[data-testid="cancel-epic"]');
 
   beforeEach(() => {

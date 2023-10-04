@@ -273,7 +273,7 @@ export default {
         category="primary"
         variant="confirm"
         :href="epicNewPath"
-        data-qa-selector="new_epic_button"
+        data-testid="new-epic-button"
         >{{ __('New epic') }}</gl-button
       >
     </template>
