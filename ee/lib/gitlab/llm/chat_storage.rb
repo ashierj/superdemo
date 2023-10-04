@@ -75,6 +75,7 @@ module Gitlab
       end
 
       def dump_message(message)
+        # Message is stored only partially. Some data might be missing after reloading from storage.
         result = message.to_h.slice(*%w[id request_id role content])
 
         result['errors'] = message.errors&.to_json
@@ -91,7 +92,7 @@ module Gitlab
         # compatibility code for a while until we get rid of cached messages
         data['errors'] = Array.wrap(data.delete('error')) if data['error']
         data['timestamp'] = Time.zone.parse(data['timestamp']) if data['timestamp']
-
+        data['ai_action'] = 'chat'
         data['user'] = user
 
         ChatMessage.new(data)

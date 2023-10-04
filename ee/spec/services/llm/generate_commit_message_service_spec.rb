@@ -6,10 +6,10 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
   let_it_be_with_refind(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:user) { create(:user) }
   let_it_be_with_refind(:project) { create(:project, :public, group: group) }
-  let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+  let_it_be(:resource) { create(:merge_request, source_project: project) }
   let_it_be(:options) { {} }
 
-  subject { described_class.new(user, merge_request, options) }
+  subject { described_class.new(user, resource, options) }
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
@@ -29,16 +29,8 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
         group.add_developer(user)
       end
 
-      it 'schedules a job' do
-        expect(subject.execute).to be_success
-
-        expect(Llm::CompletionWorker).to have_received(:perform_async).with(
-          user.id,
-          merge_request.id,
-          'MergeRequest',
-          :generate_commit_message,
-          options
-        )
+      it_behaves_like 'completion worker sync and async' do
+        let(:action_name) { :generate_commit_message }
       end
     end
 
@@ -85,7 +77,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
           experiment_features_enabled: experiment_features_enabled)
       end
 
-      subject { described_class.new(user, merge_request, options) }
+      subject { described_class.new(user, resource, options) }
 
       it { expect(subject.valid?).to eq(result) }
     end

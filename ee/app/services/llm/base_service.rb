@@ -17,7 +17,9 @@ module Llm
         return error(INVALID_MESSAGE)
       end
 
-      perform
+      result = perform
+
+      result.is_a?(ServiceResponse) ? result : success(ai_message: prompt_message)
     end
 
     def valid?
@@ -34,47 +36,6 @@ module Llm
       raise NotImplementedError
     end
 
-    def worker_perform(user, resource, action_name, options)
-      message = build_message(action_name, user: user)
-      options[:request_id] = message.request_id
-
-      message.save! if cache_response?(options)
-
-      if emit_response?(options)
-        # We do not add the `client_subscription_id` here on purpose for now.
-        # This subscription event happens to sync user messages on multiple open chats.
-        # If we'd use the `client_subscription_id`, which is unique to the tab,
-        # the other open tabs would not receive the message.
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/422773
-        GraphqlTriggers.ai_completion_response(
-          { user_id: user.to_global_id, resource_id: resource&.to_global_id }, message
-        )
-
-        # Once all clients use `chat` for `ai_action` we can remove the trigger above.
-        GraphqlTriggers.ai_completion_response({ user_id: user.to_global_id, ai_action: action_name.to_s }, message)
-      end
-
-      return success(ai_message: message) if no_worker_message?(message)
-
-      logger.debug(
-        message: "Enqueuing CompletionWorker",
-        user_id: user.id,
-        resource_id: resource&.id,
-        resource_class: resource&.class&.name,
-        request_id: message.request_id,
-        action_name: action_name,
-        options: options
-      )
-
-      if development_sync_execution?
-        ::Llm::CompletionWorker.perform_inline(user.id, resource&.id, resource&.class&.name, action_name, options)
-      else
-        ::Llm::CompletionWorker.perform_async(user.id, resource&.id, resource&.class&.name, action_name, options)
-      end
-
-      success(ai_message: message)
-    end
-
     def ai_integration_enabled?
       Feature.enabled?(:openai_experimentation)
     end
@@ -86,40 +47,62 @@ module Llm
       user.any_group_with_ai_available?
     end
 
-    def success(payload)
-      ServiceResponse.success(payload: payload)
+    def prompt_message
+      @prompt_message ||= build_prompt_message
     end
 
-    def error(message)
-      ServiceResponse.error(message: message)
+    def build_prompt_message(attributes = options)
+      action_name = attributes[:ai_action] || ai_action
+      message_attributes = {
+        request_id: SecureRandom.uuid,
+        content: content(action_name),
+        role: ::Gitlab::Llm::AiMessage::ROLE_USER,
+        ai_action: action_name,
+        user: user,
+        resource: resource
+      }.merge(attributes)
+
+      ::Gitlab::Llm::AiMessage.for(action: action_name).new(message_attributes)
     end
 
     def content(action_name)
       action_name.to_s.humanize
     end
 
-    def no_worker_message?(message)
-      message.respond_to?(:conversation_reset?) && message.conversation_reset?
-    end
+    def schedule_completion_worker(job_options = options)
+      message = prompt_message
 
-    def cache_response?(options)
-      options.fetch(:cache_response, false)
+      job_options = job_options.merge(request_id: message.request_id)
+
+      logger.debug(
+        message: "Enqueuing CompletionWorker",
+        user_id: message.user.id,
+        resource_id: message.resource&.id,
+        resource_class: message.resource&.class&.name,
+        request_id: message.request_id,
+        action_name: message.ai_action,
+        options: job_options
+      )
+
+      if development_sync_execution?
+        ::Llm::CompletionWorker.perform_inline(
+          message.user.id, message.resource&.id, message.resource&.class&.name, message.ai_action, job_options)
+      else
+        ::Llm::CompletionWorker.perform_async(
+          message.user.id, message.resource&.id, message.resource&.class&.name, message.ai_action, job_options)
+      end
     end
 
     def development_sync_execution?
       Gitlab.dev_or_test_env? && Gitlab::Utils.to_boolean(ENV['LLM_DEVELOPMENT_SYNC_EXECUTION'])
     end
 
-    def emit_response?(options)
-      options.fetch(:emit_user_messages, false)
+    def success(payload)
+      ServiceResponse.success(payload: payload)
     end
 
-    def build_message(action_name, attributes = {})
-      attributes[:request_id] ||= SecureRandom.uuid
-      attributes[:content] ||= content(action_name)
-      attributes[:role] ||= ::Gitlab::Llm::AiMessage::ROLE_USER
-
-      ::Gitlab::Llm::AiMessage.for(action: action_name).new(attributes)
+    def error(message)
+      ServiceResponse.error(message: message)
     end
   end
 end

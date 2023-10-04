@@ -4,8 +4,12 @@ module Llm
   class SummarizeMergeRequestService < ::Llm::BaseService
     private
 
+    def ai_action
+      :summarize_merge_request
+    end
+
     def perform
-      worker_perform(user, resource, :summarize_merge_request, options)
+      schedule_completion_worker
     end
 
     def valid?

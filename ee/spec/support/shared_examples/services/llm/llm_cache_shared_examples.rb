@@ -43,11 +43,3 @@ RSpec.shared_examples 'llm service caches user request' do
     end
   end
 end
-
-RSpec.shared_examples 'llm service does not cache user request' do
-  it 'does not cache the request' do
-    expect(::Gitlab::Llm::ChatStorage).not_to receive(:new)
-
-    subject.execute
-  end
-end

@@ -39,6 +39,7 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       expect(last.errors).to eq(['some error1', 'another error'])
       expect(last.content).to eq('response')
       expect(last.role).to eq('user')
+      expect(last.ai_action).to eq('chat')
       expect(last.timestamp).not_to be_nil
     end
 

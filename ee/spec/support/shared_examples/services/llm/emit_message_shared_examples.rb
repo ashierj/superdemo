@@ -13,13 +13,3 @@ RSpec.shared_examples 'service emitting message for user prompt' do
     subject.execute
   end
 end
-
-RSpec.shared_examples 'service not emitting message for user prompt' do
-  it 'does not trigger graphql subscription message' do
-    allow(::Llm::CompletionWorker).to receive(:perform_async)
-
-    expect(GraphqlTriggers).not_to receive(:ai_completion_response)
-
-    subject.execute
-  end
-end

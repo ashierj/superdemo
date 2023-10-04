@@ -17,8 +17,12 @@ module Llm
 
     private
 
+    def ai_action
+      :analyze_ci_job_failure
+    end
+
     def perform
-      worker_perform(user, job, :analyze_ci_job_failure, options)
+      schedule_completion_worker
     end
   end
 end

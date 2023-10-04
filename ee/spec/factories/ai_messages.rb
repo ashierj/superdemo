@@ -4,14 +4,18 @@
 
 FactoryBot.define do
   factory :ai_chat_message, class: 'Gitlab::Llm::ChatMessage' do
-    association :user
     id { nil }
+    association :user
+    resource { nil }
     role { 'user' }
     request_id { SecureRandom.uuid }
     content { 'user message' }
     timestamp { Time.current }
     extras { nil }
     errors { nil }
+    ai_action { 'chat' }
+    client_subscription_id { nil }
+    type { nil }
 
     initialize_with do
       new(
@@ -21,7 +25,11 @@ FactoryBot.define do
         content: content,
         timestamp: timestamp,
         extras: extras,
-        errors: errors
+        errors: errors,
+        ai_action: ai_action,
+        client_subscription_id: client_subscription_id,
+        resource: resource,
+        type: type
       )
     end
   end

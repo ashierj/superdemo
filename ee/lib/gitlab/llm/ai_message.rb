@@ -10,7 +10,12 @@ module Gitlab
       ROLE_SYSTEM = 'system'
       ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT, ROLE_SYSTEM].freeze
 
-      attr_accessor :id, :request_id, :content, :role, :timestamp, :errors, :extras, :user
+      ATTRIBUTES_LIST = [
+        :id, :request_id, :content, :role, :timestamp, :errors, :extras,
+        :user, :resource, :ai_action, :client_subscription_id, :type
+      ].freeze
+
+      attr_accessor(*ATTRIBUTES_LIST)
 
       def self.for(action:)
         if action.to_s == 'chat'
@@ -21,11 +26,11 @@ module Gitlab
       end
 
       def initialize(attributes = {})
-        attributes = attributes.with_indifferent_access
+        attributes = attributes.with_indifferent_access.slice(*ATTRIBUTES_LIST)
 
         raise ArgumentError, "Invalid role '#{attributes['role']}'" unless ALLOWED_ROLES.include?(attributes['role'])
 
-        assign_attributes(attributes) if attributes
+        assign_attributes(attributes)
 
         @id ||= SecureRandom.uuid
         @timestamp ||= Time.current
@@ -33,16 +38,9 @@ module Gitlab
       end
 
       def to_h
-        {
-          id: id,
-          request_id: request_id,
-          content: content,
-          role: role,
-          timestamp: timestamp,
-          errors: errors,
-          extras: extras,
-          user: user
-        }.with_indifferent_access
+        ATTRIBUTES_LIST.index_with do |attr|
+          public_send(attr) # rubocop:disable GitlabSecurity/PublicSend
+        end.compact.with_indifferent_access
       end
 
       def save!

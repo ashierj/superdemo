@@ -30,7 +30,11 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer 
     subject do
       Class.new(described_class) do
         def perform
-          worker_perform(user, resource, :test, options)
+          schedule_completion_worker
+        end
+
+        def ai_action
+          :test
         end
       end.new(user, resource, options)
     end
