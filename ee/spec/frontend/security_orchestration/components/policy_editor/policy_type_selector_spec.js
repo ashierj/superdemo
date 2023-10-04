@@ -53,11 +53,6 @@ describe('PolicyTypeSelector component', () => {
           findPolicyButton(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter).exists(),
         ).toBe(true);
         expect(
-          findPolicyButton(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter).attributes(
-            'href',
-          ),
-        ).toContain(`?type=${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}`);
-        expect(
           findMaxAllowedPolicyText(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter).exists(),
         ).toBe(false);
       });
@@ -81,5 +76,19 @@ describe('PolicyTypeSelector component', () => {
   it('displays a cancel button which brings back to policies page', () => {
     factory();
     expect(wrapper.findByTestId('back-button').attributes('href')).toBe(policiesPath);
+  });
+
+  it.each([
+    POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
+    POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
+  ])('should emit selected policy type', (parameter) => {
+    factory({
+      maxActiveScanExecutionPoliciesReached: false,
+      maxActiveScanResultPoliciesReached: false,
+    });
+
+    findPolicyButton(parameter).vm.$emit('click');
+
+    expect(wrapper.emitted('select')).toEqual([[parameter]]);
   });
 });
