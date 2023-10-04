@@ -202,7 +202,7 @@ describe('ee merge request widget options', () => {
       expect(findPipelineContainer().props('mr').postMergeDeployments).toHaveLength(0);
     });
 
-    // quarantine: https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/3642
+    // quarantine: https://gitlab.com/gitlab-org/gitlab/-/issues/426129
     // eslint-disable-next-line jest/no-disabled-tests
     it.skip('renders multiple deployments', async () => {
       createComponent({
@@ -301,7 +301,9 @@ describe('ee merge request widget options', () => {
       expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(true);
     });
 
-    it('should not render the license widget when the extension is not registered', async () => {
+    // quarantine: https://gitlab.com/gitlab-org/gitlab/-/issues/427334
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip('should not render the license widget when the extension is not registered', async () => {
       createComponent({
         mountFn: mountExtended,
         updatedMrData,
