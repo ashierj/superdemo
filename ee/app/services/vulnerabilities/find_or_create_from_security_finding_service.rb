@@ -67,6 +67,10 @@ module Vulnerabilities
 
         vulnerability.update!(update_params)
 
+        if params[:dismissal_reason]
+          vulnerability.vulnerability_read&.update!(dismissal_reason: params[:dismissal_reason])
+        end
+
         create_system_note(vulnerability)
       end
     end
