@@ -263,9 +263,9 @@ module EE
             use :pagination
           end
           get ":id/ssh_certificates", feature_category: :groups_and_projects, urgency: :low do
-            authenticated_as_admin!
-
             group = find_group!(params[:id])
+            authorize! :admin_group, group
+
             check_ssh_certificate_available_to_group(group)
 
             present paginate(group.ssh_certificates), with: EE::API::Entities::SshCertificate
@@ -287,9 +287,9 @@ module EE
             requires :key, type: String, desc: 'The key of the ssh certificate'
           end
           post ":id/ssh_certificates", feature_category: :groups_and_projects do
-            authenticated_as_admin!
-
             group = find_group!(params[:id])
+            authorize! :admin_group, group
+
             check_ssh_certificate_available_to_group(group)
 
             response = ::Groups::SshCertificates::CreateService.new(group, params).execute
@@ -311,9 +311,9 @@ module EE
             ]
           end
           delete ":id/ssh_certificates/:ssh_certificates_id", feature_category: :groups_and_projects do
-            authenticated_as_admin!
-
             group = find_group!(params[:id])
+            authorize! :admin_group, group
+
             check_ssh_certificate_available_to_group(group)
 
             response = ::Groups::SshCertificates::DestroyService.new(group, params).execute
