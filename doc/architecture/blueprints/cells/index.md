@@ -275,13 +275,13 @@ One iteration describes one quarter's worth of work.
     - Essential workflows: User can create Project.
     - Routing: Technology.
     - Routing: Cell discovery.
-    - Data access layer: Evaluate the efficiency of database-level access vs. API-oriented access layer.
-    - Data access layer: Data access layer.
 
 1. [Iteration 4](https://gitlab.com/groups/gitlab-org/-/epics/10998) - Expected delivery: 16.10 FY25Q1 - Planned
 
     - Essential workflows: User can create organization on Cell 2.
     - Data access layer: Cluster-unique identifiers.
+    - Data access layer: Evaluate the efficiency of database-level access vs. API-oriented access layer.
+    - Data access layer: Data access layer.
     - Routing: User can use single domain to interact with many Cells.
     - Cell deployment: Extend GitLab Dedicated to support GCP.
 
