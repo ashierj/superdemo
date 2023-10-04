@@ -1,12 +1,28 @@
+import {
+  ACCESS_LEVEL_LABELS,
+  ACCESS_LEVEL_DEVELOPER_INTEGER,
+  ACCESS_LEVEL_GUEST_INTEGER,
+  ACCESS_LEVEL_MAINTAINER_INTEGER,
+  ACCESS_LEVEL_OWNER_INTEGER,
+  ACCESS_LEVEL_REPORTER_INTEGER,
+} from '~/access_level/constants';
 import { __, s__ } from '~/locale';
-import { ACCESS_LEVEL_GUEST_INTEGER } from '~/access_level/constants';
 
-// GUEST permissions
+export const BASE_ROLES = Object.freeze(
+  [
+    ACCESS_LEVEL_GUEST_INTEGER,
+    ACCESS_LEVEL_REPORTER_INTEGER,
+    ACCESS_LEVEL_DEVELOPER_INTEGER,
+    ACCESS_LEVEL_MAINTAINER_INTEGER,
+    ACCESS_LEVEL_OWNER_INTEGER,
+  ].map((accessLevel) => ({ text: ACCESS_LEVEL_LABELS[accessLevel], value: accessLevel })),
+);
+
 export const READ_CODE = 'read_code';
 export const READ_VULNERABILITY = 'read_vulnerability';
 export const ADMIN_VULNERABILITY = 'admin_vulnerability';
 
-export const GUEST_PERMISSIONS = Object.freeze({
+export const PERMISSIONS = Object.freeze({
   [READ_CODE]: {
     help: s__('MemberRoles|Allows read-only access to the source code.'),
     text: s__('MemberRoles|Read code'),
@@ -24,10 +40,6 @@ export const GUEST_PERMISSIONS = Object.freeze({
     text: s__('MemberRoles|Admin vulnerability'),
     value: ADMIN_VULNERABILITY,
   },
-});
-
-export const PERMISSIONS = Object.freeze({
-  [ACCESS_LEVEL_GUEST_INTEGER]: GUEST_PERMISSIONS,
 });
 
 export const FIELDS = [

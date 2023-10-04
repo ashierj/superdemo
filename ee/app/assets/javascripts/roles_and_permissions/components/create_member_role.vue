@@ -10,9 +10,9 @@ import {
   GlFormTextarea,
 } from '@gitlab/ui';
 import { createMemberRole } from 'ee/rest_api';
-import { ACCESS_LEVEL_LABELS, ACCESS_LEVEL_GUEST_INTEGER } from '~/access_level/constants';
 import { createAlert, VARIANT_DANGER } from '~/alert';
 import {
+  BASE_ROLES,
   I18N_CANCEL,
   I18N_CREATE_ROLE,
   I18N_CREATION_ERROR,
@@ -48,8 +48,7 @@ export default {
   data() {
     return {
       alert: null,
-      // Remove the default `Guest` role when additional base access roles are supported.
-      baseRole: `${ACCESS_LEVEL_GUEST_INTEGER}`,
+      baseRole: null,
       baseRoleValid: true,
       description: '',
       name: '',
@@ -58,16 +57,11 @@ export default {
       permissionsValid: null,
     };
   },
-  computed: {
-    availablePermissions() {
-      return this.baseRole ? Object.values(PERMISSIONS[this.baseRole]) : [];
-    },
-  },
   methods: {
     areFieldsValid() {
       this.baseRoleValid = true;
       this.nameValid = true;
-      this.permissionsValid = null;
+      this.permissionsValid = null; // Do not change it for `true`, it will turn the checkboxes green.
 
       if (!this.baseRole) {
         this.baseRoleValid = false;
@@ -117,10 +111,7 @@ export default {
       }
     },
   },
-  baseRoleOptions: Object.keys(PERMISSIONS).map((accessLevel) => ({
-    text: ACCESS_LEVEL_LABELS[accessLevel],
-    value: accessLevel,
-  })),
+  baseRoles: BASE_ROLES,
   i18n: {
     baseRole: {
       id: 'group-1',
@@ -144,6 +135,7 @@ export default {
       label: I18N_NEW_ROLE_PERMISSIONS_LABEL,
     },
   },
+  permissions: Object.values(PERMISSIONS),
 };
 </script>
 
@@ -161,8 +153,7 @@ export default {
         <gl-form-select
           :id="$options.i18n.baseRole.id"
           v-model="baseRole"
-          :options="$options.baseRoleOptions"
-          required
+          :options="$options.baseRoles"
           :state="baseRoleValid"
         />
       </gl-form-group>
@@ -194,7 +185,7 @@ export default {
     <gl-form-group :label="$options.i18n.permissions.label">
       <gl-form-checkbox-group v-model="permissions" :state="permissionsValid">
         <gl-form-checkbox
-          v-for="permission in availablePermissions"
+          v-for="permission in $options.permissions"
           :key="permission.value"
           :value="permission.value"
         >
