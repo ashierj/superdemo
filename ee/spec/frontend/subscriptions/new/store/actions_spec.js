@@ -1,6 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import Api from 'ee/api';
 import * as constants from 'ee/subscriptions/constants';
+import { CHARGE_PROCESSING_TYPE } from 'ee/subscriptions/new/constants';
 import defaultClient from 'ee/subscriptions/new/graphql';
 import * as actions from 'ee/subscriptions/new/store/actions';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
@@ -358,7 +359,7 @@ describe('Subscriptions Actions', () => {
     it('updates invoicePreview to the provided value', async () => {
       const invoicePreviewPayload = {
         invoice: { amountWithoutTax: 10 },
-        invoiceItem: [{ chargeAmount: 10, processingType: constants.CHARGE_PROCESSING_TYPE }],
+        invoiceItem: [{ chargeAmount: 10, processingType: CHARGE_PROCESSING_TYPE }],
       };
       await testAction(
         actions.updateInvoicePreview,
