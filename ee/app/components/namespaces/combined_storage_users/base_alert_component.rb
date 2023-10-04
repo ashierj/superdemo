@@ -80,14 +80,11 @@ module Namespaces
           group_name: root_namespace.name,
           read_only_link_start: read_only_link_start,
           faq_link_start: faq_link_start,
-          promotion_link_start: promotion_link_start,
-          offer_availability_link_start: offer_availability_link_start,
           link_end: link_end,
           free_users_limit: free_users_limit,
           free_storage_limit: free_storage_limit,
           strong_start: strong_start,
-          strong_end: strong_end,
-          br_tag: br_tag
+          strong_end: strong_end
         }
       end
 
@@ -108,14 +105,6 @@ module Namespaces
         link_start('https://about.gitlab.com/pricing/faq-efficient-free-tier/#next-steps')
       end
 
-      def promotion_link_start
-        link_start("https://about.gitlab.com/pricing/faq-efficient-free-tier/#transition-offer")
-      end
-
-      def offer_availability_link_start
-        link_start("https://about.gitlab.com/pricing/faq-efficient-free-tier/#q-is-this-offer-available-for-all-free-tier-users")
-      end
-
       def link_start(url)
         "<a href='#{url}' target='_blank' rel='noopener noreferrer'>".html_safe
       end
@@ -130,10 +119,6 @@ module Namespaces
 
       def strong_end
         '</strong>'.html_safe
-      end
-
-      def br_tag
-        '<br />'.html_safe
       end
     end
   end

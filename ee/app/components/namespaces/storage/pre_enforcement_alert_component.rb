@@ -39,14 +39,6 @@ module Namespaces
         help_page_path('user/usage_quotas', anchor: 'namespace-storage-limit')
       end
 
-      def promotion_link
-        "https://about.gitlab.com/pricing/faq-efficient-free-tier/#transition-offer"
-      end
-
-      def offer_availability_link
-        "https://about.gitlab.com/pricing/faq-efficient-free-tier/#q-is-this-offer-available-for-all-free-tier-users"
-      end
-
       def learn_more_link
         help_page_path('user/usage_quotas', anchor: 'manage-your-storage-usage')
       end
@@ -120,28 +112,6 @@ module Namespaces
 
         safe_format(
           s_("UsageQuota|For more information about storage limits, see our %{faq_link_start}FAQ%{link_end}."),
-          text_args
-        )
-      end
-
-      def text_paragraph_4
-        text_args = {
-          promotion_link_start: Kernel.format('<a href="%{url}" >', { url: promotion_link }).html_safe,
-          offer_availability_link_start: Kernel.format(
-            '<a href="%{url}" >', { url: offer_availability_link }
-          ).html_safe,
-          link_end: "</a>".html_safe
-        }
-
-        safe_format(
-          _(
-            "To minimize the impact of storage limits to Free top-level groups, " \
-            "for a limited time, GitLab is offering a " \
-            "%{promotion_link_start}one-time 70 percent discount%{link_end} " \
-            "off the list price for %{offer_availability_link_start}qualifying top-level groups%{link_end} " \
-            "when you purchase a new, one year subscription of GitLab Premium SaaS. " \
-            "This offer is valid until 2023-10-31."
-          ),
           text_args
         )
       end
