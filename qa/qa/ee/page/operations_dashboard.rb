@@ -42,7 +42,9 @@ module QA
         end
 
         def pipeline_status(project_card)
-          project_card.find(element_selector_css('ci-badge-link')).text
+          within(project_card) do
+            find_element('ci-badge-text')
+          end.text
         end
 
         private
