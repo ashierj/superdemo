@@ -14,7 +14,7 @@ class TrialRegistrationsController < RegistrationsController
 
   skip_before_action :require_no_authentication_without_flash
 
-  before_action :check_if_gl_com_or_dev
+  before_action :verify_onboarding_enabled!
   before_action :redirect_to_trial, only: [:new], if: :user_signed_in?
   before_action only: [:new] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)

@@ -15,7 +15,7 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
     allow(Gitlab::Com).to receive(:gitlab_com_group_member?).and_return(nil)
 
     # This feature flag is stubbed because this will add an additional query and break query budget,
-    # but this will enabled for maxiumum of 10% percent of users for limited time, So this should be safe
+    # but this will enabled for maximum of 10% percent of users for limited time, So this should be safe
     stub_feature_flags(compare_project_authorization_linear_cte: false)
     stub_experiments(experiments)
     stub_application_setting(import_sources: %w[github gitlab_project])

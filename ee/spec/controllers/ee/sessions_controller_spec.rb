@@ -90,11 +90,7 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
     end
   end
 
-  describe '#create' do
-    before do
-      allow(::Gitlab).to receive(:com?).and_return(true)
-    end
-
+  describe '#create', :saas do
     context 'with wrong credentials' do
       context 'when is a trial form' do
         it 'redirects to new trial sign in page' do

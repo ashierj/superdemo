@@ -10,7 +10,7 @@ module Registrations
 
     layout 'minimal'
 
-    before_action :check_if_gl_com_or_dev
+    before_action :verify_onboarding_enabled!
     before_action :authenticate_user!
     feature_category :onboarding
     before_action only: [:new] do

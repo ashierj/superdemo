@@ -6,13 +6,17 @@ module Onboarding
 
     private
 
+    def verify_onboarding_enabled!
+      render_404 unless ::Onboarding::Status.enabled?
+    end
+
     def save_onboarding_step_url(onboarding_step_url, user)
       Onboarding.user_onboarding_in_progress?(user) &&
         user.user_detail.update(onboarding_step_url: onboarding_step_url)
     end
 
     def start_onboarding(onboarding_step_url, user)
-      return unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+      return unless ::Onboarding::Status.enabled?
 
       user.onboarding_in_progress = true
       user.user_detail.onboarding_step_url = onboarding_step_url

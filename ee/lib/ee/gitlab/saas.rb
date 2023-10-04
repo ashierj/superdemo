@@ -7,7 +7,7 @@ module EE
 
       MissingFeatureError = Class.new(StandardError)
 
-      FEATURES = %w[purchases/additional_minutes].freeze
+      FEATURES = %w[purchases/additional_minutes onboarding].freeze
 
       class_methods do
         extend ::Gitlab::Utils::Override

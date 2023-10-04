@@ -175,15 +175,12 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
     end
 
     context 'with onboarding progress' do
-      let(:should_check_namespace_plan) { true }
-
       before do
         allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
         allow(::Arkose::Settings).to receive(:enabled?).and_return(false)
-        stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
       end
 
-      context 'when on SaaS' do
+      context 'when on SaaS', :saas do
         it 'sets onboarding' do
           create_user
 
@@ -193,8 +190,6 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
       end
 
       context 'when not on SaaS' do
-        let(:should_check_namespace_plan) { false }
-
         it 'does not set onboarding' do
           create_user
 
