@@ -567,29 +567,41 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         include_examples 'a not found response'
       end
 
-      context 'when user has active code suggestions purchase' do
-        before do
-          add_on_purchase = create(:gitlab_subscription_add_on_purchase)
+      context 'when user belongs to a namespace with an active code suggestions purchase' do
+        let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
+
+        let(:current_user) { authorized_user }
+
+        before_all do
           add_on_purchase.namespace.add_reporter(authorized_user)
         end
 
-        context 'when the task is code generation' do
-          before do
-            stub_feature_flags(code_generation_anthropic: false)
-            stub_feature_flags(code_generation_split_by_language: false)
+        context 'when the user is assigned to the add-on' do
+          before_all do
+            create(
+              :gitlab_subscription_user_add_on_assignment,
+              user: authorized_user,
+              add_on_purchase: add_on_purchase
+            )
           end
 
-          let(:current_user) { authorized_user }
-          let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
-          let(:prefix) do
-            <<~PREFIX
+          context 'when the task is code generation' do
+            before do
+              stub_feature_flags(code_generation_anthropic: false)
+              stub_feature_flags(code_generation_split_by_language: false)
+            end
+
+            let(:current_user) { authorized_user }
+            let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
+            let(:prefix) do
+              <<~PREFIX
               def is_even(n: int) ->
               # #{instruction}
-            PREFIX
-          end
+              PREFIX
+            end
 
-          let(:prompt) do
-            <<~PROMPT
+            let(:prompt) do
+              <<~PROMPT
               This is a task to write new Python code in a file 'test.py' based on a given description.
               You get first the already existing code file and then the description of the code that needs to be created.
               It is your task to write valid and working Python code.
@@ -603,51 +615,145 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
               Create new code for the following description:
               `#{instruction}`
-            PROMPT
-          end
+              PROMPT
+            end
 
-          it 'sends requests to the code generation endpoint' do
-            expected_body = body.merge(
-              prompt_version: 2,
-              prompt: prompt
-            )
-
-            expect(Gitlab::Workhorse)
-              .to receive(:send_url)
-              .with(
-                'https://codesuggestions.gitlab.com/v2/code/generations',
-                hash_including(body: expected_body.to_json)
+            it 'sends requests to the code generation endpoint' do
+              expected_body = body.merge(
+                prompt_version: 2,
+                prompt: prompt
               )
 
-            post_api
-          end
+              expect(Gitlab::Workhorse)
+                .to receive(:send_url)
+                .with(
+                  'https://codesuggestions.gitlab.com/v2/code/generations',
+                  hash_including(body: expected_body.to_json)
+                )
 
-          context 'when body is too big' do
-            before do
-              stub_const("#{described_class}::MAX_BODY_SIZE", 10)
-            end
-
-            it 'returns an error' do
               post_api
+            end
 
-              expect(response).to have_gitlab_http_status(:payload_too_large)
+            context 'when body is too big' do
+              before do
+                stub_const("#{described_class}::MAX_BODY_SIZE", 10)
+              end
+
+              it 'returns an error' do
+                post_api
+
+                expect(response).to have_gitlab_http_status(:payload_too_large)
+              end
+            end
+
+            context 'when a required parameter is invalid' do
+              let(:file_name) { 'x' * 256 }
+
+              it 'returns an error' do
+                post_api
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+              end
             end
           end
 
-          context 'when a required parameter is invalid' do
-            let(:file_name) { 'x' * 256 }
+          it_behaves_like 'code completions endpoint'
 
-            it 'returns an error' do
-              post_api
-
-              expect(response).to have_gitlab_http_status(:bad_request)
-            end
-          end
+          it_behaves_like 'an endpoint authenticated with token', :ok
         end
 
-        it_behaves_like 'code completions endpoint'
+        context 'when the user is not assigned to the add-on' do
+          include_examples 'a not found response'
+        end
+      end
 
-        it_behaves_like 'an endpoint authenticated with token', :ok
+      context 'when the hamilton_seat_management FF is disabled' do
+        before do
+          stub_feature_flags(hamilton_seat_management: false)
+        end
+
+        context 'when user has active code suggestions purchase' do
+          before do
+            add_on_purchase = create(:gitlab_subscription_add_on_purchase)
+            add_on_purchase.namespace.add_reporter(authorized_user)
+          end
+
+          context 'when the task is code generation' do
+            before do
+              stub_feature_flags(code_generation_anthropic: false)
+              stub_feature_flags(code_generation_split_by_language: false)
+            end
+
+            let(:current_user) { authorized_user }
+            let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
+            let(:prefix) do
+              <<~PREFIX
+              def is_even(n: int) ->
+              # #{instruction}
+              PREFIX
+            end
+
+            let(:prompt) do
+              <<~PROMPT
+              This is a task to write new Python code in a file 'test.py' based on a given description.
+              You get first the already existing code file and then the description of the code that needs to be created.
+              It is your task to write valid and working Python code.
+              Only return in your response new code.
+
+              Already existing code:
+
+              ```py
+              def is_even(n: int) ->
+              ```
+
+              Create new code for the following description:
+              `#{instruction}`
+              PROMPT
+            end
+
+            it 'sends requests to the code generation endpoint' do
+              expected_body = body.merge(
+                prompt_version: 2,
+                prompt: prompt
+              )
+
+              expect(Gitlab::Workhorse)
+                .to receive(:send_url)
+                .with(
+                  'https://codesuggestions.gitlab.com/v2/code/generations',
+                  hash_including(body: expected_body.to_json)
+                )
+
+              post_api
+            end
+
+            context 'when body is too big' do
+              before do
+                stub_const("#{described_class}::MAX_BODY_SIZE", 10)
+              end
+
+              it 'returns an error' do
+                post_api
+
+                expect(response).to have_gitlab_http_status(:payload_too_large)
+              end
+            end
+
+            context 'when a required parameter is invalid' do
+              let(:file_name) { 'x' * 256 }
+
+              it 'returns an error' do
+                post_api
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+              end
+            end
+          end
+
+          it_behaves_like 'code completions endpoint'
+
+          it_behaves_like 'an endpoint authenticated with token', :ok
+        end
       end
 
       context 'when code_suggestions_completion_api feature flag is disabled' do

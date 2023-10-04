@@ -2735,8 +2735,6 @@ RSpec.describe User, feature_category: :system_access do
   end
 
   describe '#code_suggestions_add_on_available?' do
-    using RSpec::Parameterized::TableSyntax
-
     let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:user) { create(:user) }
 
@@ -2748,93 +2746,131 @@ RSpec.describe User, feature_category: :system_access do
       create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
     end
 
-    subject { user.code_suggestions_add_on_available? }
+    subject(:code_suggestions_add_on_available?) { user.code_suggestions_add_on_available? }
 
-    context 'with code suggestion purchases' do
-      before do
-        expired_code_suggestion_purchase.namespace.add_owner(user)
-      end
+    context 'when the user has an active assigned code suggestions seat' do
+      it 'returns true' do
+        create(
+          :gitlab_subscription_user_add_on_assignment,
+          user: user,
+          add_on_purchase: active_code_suggestion_purchase
+        )
 
-      context 'with an active purchase for a related group' do
-        where(:group_access_level, :result) do
-          :guest      | false
-          :reporter   | true
-          :developer  | true
-          :maintainer | true
-          :owner      | true
-        end
-
-        with_them do
-          before do
-            active_code_suggestion_purchase.namespace.add_member(user, group_access_level)
-          end
-
-          it { is_expected.to eq(result) }
-        end
-      end
-
-      context 'with an active purchase for a related project' do
-        let_it_be_with_reload(:project) { create(:project, group: active_code_suggestion_purchase.namespace) }
-
-        where(:project_access_level, :result) do
-          :guest      | false
-          :reporter   | true
-          :developer  | true
-          :maintainer | true
-          :owner      | true
-        end
-
-        with_them do
-          before do
-            project.add_member(user, project_access_level)
-          end
-
-          it { is_expected.to eq(result) }
-        end
-      end
-
-      context 'with an active purchase for a shared group' do
-        let_it_be(:invited_group) { create(:group) }
-        let_it_be(:invited_reporter) { invited_group.add_reporter(create(:user)).user }
-        let_it_be(:invited_guest) { invited_group.add_guest(create(:user)).user }
-
-        context 'with user invited member to project' do
-          let_it_be(:project) { create(:project, namespace: active_code_suggestion_purchase.namespace) }
-          let_it_be(:project_group_link) { create(:project_group_link, project: project, group: invited_group) }
-
-          where(:user, :result) do
-            ref(:invited_guest)    | false
-            ref(:invited_reporter) | true
-          end
-
-          with_them do
-            it { is_expected.to eq(result) }
-          end
-        end
-
-        context 'with user invited member to group' do
-          let_it_be(:group_group_link) do
-            create(:group_group_link, shared_group: active_code_suggestion_purchase.namespace, shared_with_group: invited_group)
-          end
-
-          where(:user, :result) do
-            ref(:invited_guest)    | false
-            ref(:invited_reporter) | true
-          end
-
-          with_them do
-            it { is_expected.to eq(result) }
-          end
-        end
-      end
-
-      context 'with all expired purchases' do
-        it { is_expected.to eq(false) }
+        expect(code_suggestions_add_on_available?).to be true
       end
     end
 
-    context 'without code suggestion purchases for any of the groups or projects' do
-      it { is_expected.to eq(false) }
+    context 'when the user has an expired assigned code suggestions seat' do
+      it 'returns false' do
+        create(
+          :gitlab_subscription_user_add_on_assignment,
+          user: user,
+          add_on_purchase: expired_code_suggestion_purchase
+        )
+
+        expect(code_suggestions_add_on_available?).to be false
+      end
+    end
+
+    context 'when the user has no add on seat assignments' do
+      it 'returns false' do
+        expect(code_suggestions_add_on_available?).to be false
+      end
+    end
+
+    context 'when the hamilton_seat_assignment FF is disabled' do
+      using RSpec::Parameterized::TableSyntax
+
+      before do
+        stub_feature_flags(hamilton_seat_management: false)
+      end
+
+      context 'with code suggestion purchases' do
+        before do
+          expired_code_suggestion_purchase.namespace.add_owner(user)
+        end
+
+        context 'with an active purchase for a related group' do
+          where(:group_access_level, :result) do
+            :guest      | false
+            :reporter   | true
+            :developer  | true
+            :maintainer | true
+            :owner      | true
+          end
+
+          with_them do
+            before do
+              active_code_suggestion_purchase.namespace.add_member(user, group_access_level)
+            end
+
+            it { is_expected.to eq(result) }
+          end
+        end
+
+        context 'with an active purchase for a related project' do
+          let_it_be_with_reload(:project) { create(:project, group: active_code_suggestion_purchase.namespace) }
+
+          where(:project_access_level, :result) do
+            :guest      | false
+            :reporter   | true
+            :developer  | true
+            :maintainer | true
+            :owner      | true
+          end
+
+          with_them do
+            before do
+              project.add_member(user, project_access_level)
+            end
+
+            it { is_expected.to eq(result) }
+          end
+        end
+
+        context 'with an active purchase for a shared group' do
+          let_it_be(:invited_group) { create(:group) }
+          let_it_be(:invited_reporter) { invited_group.add_reporter(create(:user)).user }
+          let_it_be(:invited_guest) { invited_group.add_guest(create(:user)).user }
+
+          context 'with user invited member to project' do
+            let_it_be(:project) { create(:project, namespace: active_code_suggestion_purchase.namespace) }
+            let_it_be(:project_group_link) { create(:project_group_link, project: project, group: invited_group) }
+
+            where(:user, :result) do
+              ref(:invited_guest)    | false
+              ref(:invited_reporter) | true
+            end
+
+            with_them do
+              it { is_expected.to eq(result) }
+            end
+          end
+
+          context 'with user invited member to group' do
+            let_it_be(:group_group_link) do
+              create(:group_group_link, shared_group: active_code_suggestion_purchase.namespace, shared_with_group: invited_group)
+            end
+
+            where(:user, :result) do
+              ref(:invited_guest)    | false
+              ref(:invited_reporter) | true
+            end
+
+            with_them do
+              it { is_expected.to eq(result) }
+            end
+          end
+        end
+
+        context 'with all expired purchases' do
+          it { is_expected.to eq(false) }
+        end
+      end
+
+      context 'without code suggestion purchases for any of the groups or projects' do
+        it { is_expected.to eq(false) }
+      end
     end
   end
 
