@@ -3,12 +3,12 @@ import { isEmpty } from 'lodash';
 import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { REPORT_TYPE_DAST } from '~/vue_shared/security_reports/constants';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../../constants';
 import ScanFilterSelector from '../../scan_filter_selector.vue';
 import {
   DEFAULT_SCANNER,
-  SCANNER_DAST,
   SCANNER_HUMANIZED_TEMPLATE,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
@@ -73,7 +73,7 @@ export default {
       );
     },
     isDast() {
-      return this.selectedScanner === SCANNER_DAST;
+      return this.selectedScanner === REPORT_TYPE_DAST;
     },
     selectedScannerText() {
       return RULE_MODE_SCANNERS[this.selectedScanner];

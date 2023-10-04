@@ -1,11 +1,11 @@
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib/actions';
-import { SCANNER_DAST } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
+import { REPORT_TYPE_DAST } from '~/vue_shared/security_reports/constants';
 
 describe('buildScannerAction', () => {
   describe('DAST', () => {
     it('returns a DAST scanner action with empty profiles', () => {
-      expect(buildScannerAction({ scanner: SCANNER_DAST })).toEqual({
-        scan: SCANNER_DAST,
+      expect(buildScannerAction({ scanner: REPORT_TYPE_DAST })).toEqual({
+        scan: REPORT_TYPE_DAST,
         site_profile: '',
         scanner_profile: '',
       });
@@ -15,8 +15,10 @@ describe('buildScannerAction', () => {
       const siteProfile = 'test_site_profile';
       const scannerProfile = 'test_scanner_profile';
 
-      expect(buildScannerAction({ scanner: SCANNER_DAST, siteProfile, scannerProfile })).toEqual({
-        scan: SCANNER_DAST,
+      expect(
+        buildScannerAction({ scanner: REPORT_TYPE_DAST, siteProfile, scannerProfile }),
+      ).toEqual({
+        scan: REPORT_TYPE_DAST,
         site_profile: siteProfile,
         scanner_profile: scannerProfile,
       });
