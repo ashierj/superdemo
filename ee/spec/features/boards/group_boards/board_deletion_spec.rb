@@ -30,6 +30,6 @@ RSpec.describe 'Group Boards', :js, feature_category: :team_planning do
   end
 
   def click_boards_dropdown
-    find('[data-testid="boards-dropdown"]').click
+    find_by_testid('boards-dropdown').click
   end
 end

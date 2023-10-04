@@ -113,7 +113,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
               }
             }.to_json, headers: { 'Content-Type' => 'application/json' })
 
-          page.within(find('[data-testid="subscription-details"]', match: :first)) do
+          page.within(find_by_testid('subscription-details', match: :first)) do
             click_button('Add activation code')
           end
 
@@ -142,7 +142,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
 
     context 'when activating another subscription' do
       before do
-        page.within(find('[data-testid="subscription-details"]', match: :first)) do
+        page.within(find_by_testid('subscription-details', match: :first)) do
           click_button('Add activation code')
         end
       end
@@ -291,7 +291,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       end
 
       it 'shows the appropriate license type' do
-        page.within(find('[data-testid="subscription-cell-type"]', match: :first)) do
+        page.within(find_by_testid('subscription-cell-type', match: :first)) do
           expect(page).to have_content('Online license')
         end
       end

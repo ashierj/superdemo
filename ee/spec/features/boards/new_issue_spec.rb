@@ -32,7 +32,7 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
     it 'successfully assigns weight to newly-created issue' do
       create_issue_in_board_list(0)
 
-      page.within(first('[data-testid="issue-boards-sidebar"]')) do
+      within_testid('issue-boards-sidebar') do
         find('.weight [data-testid="edit-button"]').click
         find('.weight .form-control').set("10\n")
       end
@@ -48,7 +48,7 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
       it 'successfuly loads milestone to be added to newly created issue' do
         create_issue_in_board_list(1)
 
-        page.within('[data-testid="sidebar-milestones"]') do
+        within_testid('sidebar-milestones') do
           click_button 'Edit'
 
           wait_for_requests
@@ -69,7 +69,7 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
 
         expect { create_issue_in_board_list(0) }.to change { Issue.count }.by(1)
 
-        page.within('[data-testid="iteration-edit"]') do
+        within_testid('iteration-edit') do
           expect(page).to have_content iteration.title
         end
 

@@ -238,11 +238,11 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
 
         it 'renders the plan card marked as Legacy' do
           visit page_path
-          page.within("[data-testid='billing-plans']") do
+          within_testid('billing-plans') do
             panels = page.all('.card')
             expect(panels.length).to eq(plans_data.length)
 
-            panel_with_legacy_plan = page.find("[data-testid='plan-card-#{legacy_plan[:code]}']")
+            panel_with_legacy_plan = find_by_testid("plan-card-#{legacy_plan[:code]}")
 
             expect(panel_with_legacy_plan.find('.card-header')).to have_content(expected_card_header)
             expect(panel_with_legacy_plan.find('.card-body')).to have_link('frequently asked questions')
@@ -585,11 +585,11 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
     end
 
     def seats_currently_in_use
-      page.find("[data-testid='seats-currently-in-use']").text
+      find_by_testid('seats-currently-in-use').text
     end
 
     def fill_hand_raise_lead_form_and_submit(form_data)
-      page.within('[data-testid="hand-raise-lead-modal"]') do
+      within_testid('hand-raise-lead-modal') do
         aggregate_failures do
           expect(page).to have_content('Contact our Sales team')
           expect(page).to have_field('First Name', with: form_data[:first_name])
@@ -638,7 +638,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
     end
 
     it 'displays all plans' do
-      page.within("[data-testid='billing-plans']") do
+      within_testid('billing-plans') do
         panels = page.all('.card')
         expect(panels.length).to eq(plans_data.length)
         plans_data.each_with_index do |data, index|

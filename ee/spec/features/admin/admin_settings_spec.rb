@@ -393,9 +393,9 @@ RSpec.describe 'Admin updates EE-only settings' do
           page.within('#js-signup-settings') do
             case require_admin_approval_action
             when :toggled_on
-              find('[data-testid="require-admin-approval-checkbox"]').set(true)
+              find_by_testid('require-admin-approval-checkbox').set(true)
             when :toggled_off
-              find('[data-testid="require-admin-approval-checkbox"]').set(false)
+              find_by_testid('require-admin-approval-checkbox').set(false)
             end
 
             case user_cap_action
@@ -461,7 +461,7 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
 
       it 'saves the settings' do
-        page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
+        within_testid('git-abuse-rate-limit-settings') do
           fill_in(s_('GitAbuse|Number of repositories'), with: 5)
           fill_in(s_('GitAbuse|Reporting time period (seconds)'), with: 300)
           fill_in(s_('GitAbuse|Excluded users'), with: user.name)
@@ -469,7 +469,9 @@ RSpec.describe 'Admin updates EE-only settings' do
           wait_for_requests
 
           click_button user.name
-          find('[data-testid="auto-ban-users-toggle"] .gl-toggle').click
+          within_testid('auto-ban-users-toggle') do
+            find('.gl-toggle').click
+          end
 
           click_button _('Save changes')
         end
@@ -481,7 +483,7 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
 
       it 'shows form errors when the input value is blank' do
-        page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
+        within_testid('git-abuse-rate-limit-settings') do
           fill_in(s_('GitAbuse|Number of repositories'), with: '')
           fill_in(s_('GitAbuse|Reporting time period (seconds)'), with: '')
           find('#reporting-time-period').native.send_keys :tab
@@ -493,7 +495,7 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
 
       it 'shows form errors when the input value is greater than max' do
-        page.within(find('[data-testid="git-abuse-rate-limit-settings"]')) do
+        page.within(find_by_testid('git-abuse-rate-limit-settings')) do
           fill_in(s_('GitAbuse|Number of repositories'), with: 10001)
           fill_in(s_('GitAbuse|Reporting time period (seconds)'), with: 864001)
           find('#reporting-time-period').native.send_keys :tab

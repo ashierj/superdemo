@@ -76,7 +76,7 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
         assignee = all('.gl-avatar-labeled')[1].find('.gl-avatar-labeled-label').text
 
         page.within('.dropdown-menu-user') do
-          find('[data-testid="unassign"]').click
+          find_by_testid('unassign').click
 
           all('.gl-avatar-labeled')[0].click
           all('.gl-avatar-labeled')[1].click
@@ -102,7 +102,7 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
         wait_for_requests
 
         page.within('.dropdown-menu-user') do
-          find('[data-testid="unassign"]').click
+          find_by_testid('unassign').click
         end
 
         click_button('Apply')
@@ -180,7 +180,7 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
   end
 
   context 'epic' do
-    let(:epic_widget) { find('[data-testid="sidebar-epic"]') }
+    let(:epic_widget) { find_by_testid('sidebar-epic') }
 
     before do
       stub_licensed_features(epics: true)
@@ -222,8 +222,8 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
   end
 
   context 'weight' do
-    let(:weight_widget) { find('[data-testid="sidebar-weight"]') }
-    let(:weight_value) { find('[data-testid="sidebar-weight-value"]') }
+    let(:weight_widget) { find_by_testid('sidebar-weight') }
+    let(:weight_value) { find_by_testid('sidebar-weight-value') }
 
     it 'displays weight async' do
       click_card(card1)
@@ -305,7 +305,7 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
     it 'adds multiple scoped labels' do
       click_card(card1)
 
-      page.within('[data-testid="sidebar-labels"]') do
+      within_testid('sidebar-labels') do
         click_button 'Edit'
 
         wait_for_requests
@@ -345,7 +345,7 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
       it 'removes existing scoped label' do
         click_card(card3)
 
-        page.within('[data-testid="sidebar-labels"]') do
+        within_testid('sidebar-labels') do
           click_button 'Edit'
 
           wait_for_requests

@@ -7,7 +7,11 @@ RSpec.describe 'Boards licensed features', :js, feature_category: :team_planning
 
   let_it_be(:user) { create(:user) }
 
-  let(:card) { find('.board:nth-child(1)').find('[data-testid="board_card"]') }
+  let(:card) do
+    within '.board:nth-child(1)' do
+      find_by_testid('board_card')
+    end
+  end
 
   before do
     stub_feature_flags(apollo_boards: false)

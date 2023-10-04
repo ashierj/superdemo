@@ -195,7 +195,7 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   end
 
   def wait_for_board_cards_in_unassigned_lane(board_number, expected_cards)
-    page.within(find("[data-testid='board-lane-unassigned-issues']")) do
+    within_testid('board-lane-unassigned-issues') do
       page.within(all(".board")[board_number]) do
         expect(page).to have_selector('.board-card', count: expected_cards)
       end
