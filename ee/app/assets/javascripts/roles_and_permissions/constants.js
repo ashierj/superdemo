@@ -35,7 +35,7 @@ export const PERMISSIONS = Object.freeze({
   },
   [ADMIN_VULNERABILITY]: {
     help: s__(
-      "MemberRoles|Allows admin access to the vulnerability reports. 'Read vulnerability' must be selected in order to take effect.",
+      "MemberRoles|Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect.",
     ),
     text: s__('MemberRoles|Admin vulnerability'),
     value: ADMIN_VULNERABILITY,
@@ -85,10 +85,11 @@ export const I18N_EMPTY_TEXT_SELF_MANAGED = s__(
 );
 export const I18N_FETCH_ERROR = s__('MemberRoles|Failed to fetch roles.');
 export const I18N_FIELD_FORM_ERROR = __('This field is required.');
-export const I18N_LICENSE_ERROR = s__('MemberRoles|Make sure the group has an Ultimate license.');
+export const I18N_LICENSE_ERROR = s__('MemberRoles|Make sure the group is in the Ultimate tier.');
 export const I18N_MODAL_TITLE = s__('MemberRoles|Are you sure you want to delete this role?');
-export const I18N_MODAL_WARNING = s__(`MemberRoles|Removing a custom role also removes all members with this custom role from the group.
-If you decide to delete a custom role, you must re-add these users to the group.`);
+export const I18N_MODAL_WARNING = s__(
+  `MemberRoles|To delete the custom role make sure no group member has this custom role`,
+);
 export const I18N_NEW_ROLE_BASE_ROLE_LABEL = s__('MemberRoles|Base role to use as template');
 export const I18N_NEW_ROLE_BASE_ROLE_DESCRIPTION = s__(
   'MemberRoles|Select a standard role to add permissions.',

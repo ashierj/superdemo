@@ -76,7 +76,7 @@ describe('CreateMemberRole', () => {
 
     expect(checkboxThreeText).toContain('Admin vulnerability');
     expect(checkboxThreeText).toContain(
-      "Allows admin access to the vulnerability reports. 'Read vulnerability' must be selected in order to take effect.",
+      "Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect.",
     );
   });
 
