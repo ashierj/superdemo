@@ -114,7 +114,7 @@
 - :name: cronjob:click_house_ci_finished_builds_sync_cron
   :worker_name: ClickHouse::CiFinishedBuildsSyncCronWorker
   :feature_category: :runner_fleet
-  :has_external_dependencies: true
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
@@ -1205,6 +1205,15 @@
   :feature_category: :continuous_integration
   :has_external_dependencies: false
   :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: click_house_ci_finished_builds_sync
+  :worker_name: ClickHouse::CiFinishedBuildsSyncWorker
+  :feature_category: :runner_fleet
+  :has_external_dependencies: false
+  :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
