@@ -61,6 +61,7 @@ module Groups
           :sort,
           :sort_by,
           component_names: [],
+          licenses: [],
           package_managers: []
         )
       else

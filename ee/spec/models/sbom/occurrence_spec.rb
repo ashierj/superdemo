@@ -268,6 +268,19 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.by_licenses' do
+    subject { described_class.by_licenses(['MIT', 'MPL-2.0']) }
+
+    let_it_be(:occurrence_1) { create(:sbom_occurrence, :apache_2) }
+    let_it_be(:occurrence_2) { create(:sbom_occurrence, :mit) }
+    let_it_be(:occurrence_3) { create(:sbom_occurrence, :mpl_2) }
+    let_it_be(:occurrence_4) { create(:sbom_occurrence, :apache_2, :mpl_2) }
+
+    it 'returns records filtered by license' do
+      expect(subject).to match_array([occurrence_2, occurrence_3, occurrence_4])
+    end
+  end
+
   describe '.filter_by_package_managers' do
     let_it_be(:occurrence_nuget) { create(:sbom_occurrence, packager_name: 'nuget') }
     let_it_be(:occurrence_npm) { create(:sbom_occurrence, packager_name: 'npm') }
