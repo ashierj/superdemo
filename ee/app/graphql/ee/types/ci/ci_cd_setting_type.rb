@@ -12,6 +12,11 @@ module EE
             null: false,
             description: 'Whether merge immediately is allowed for merge trains.',
             method: :merge_trains_skip_train_allowed?
+          field :merge_trains_enabled,
+            GraphQL::Types::Boolean,
+            null: true,
+            description: 'Whether merge trains are enabled.',
+            method: :merge_trains_enabled?
         end
       end
     end
