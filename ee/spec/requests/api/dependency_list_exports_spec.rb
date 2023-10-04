@@ -88,18 +88,6 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
     let(:exportable) { group }
 
     it_behaves_like 'creating dependency list export'
-
-    context 'when the `group_level_dependencies` feature flag is disabled' do
-      before do
-        stub_feature_flags(group_level_dependencies: false)
-      end
-
-      it 'returns 404' do
-        post api(request_path, user)
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
   end
 
   describe 'POST /pipelines/:id/dependency_list_exports' do

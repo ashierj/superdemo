@@ -205,7 +205,6 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu, feature_category
 
       before do
         stub_licensed_features(security_dashboard: false)
-        stub_feature_flags(group_level_dependencies: false)
       end
 
       specify { is_expected.to be_nil }
@@ -215,15 +214,7 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu, feature_category
           stub_licensed_features(security_dashboard: true)
         end
 
-        specify { is_expected.to be_nil }
-
-        context 'with group_level_dependencies feature flag enabled' do
-          before do
-            stub_feature_flags(group_level_dependencies: true)
-          end
-
-          specify { is_expected.not_to be_nil }
-        end
+        specify { is_expected.not_to be_nil }
       end
     end
   end

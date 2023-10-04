@@ -83,8 +83,7 @@ module EE
       end
 
       def with_sbom_component(items)
-        return items unless params[:sbom_component_id].present? &&
-          ::Feature.enabled?(:group_level_dependencies, namespace)
+        return items unless params[:sbom_component_id].present?
 
         items.with_sbom_component(params[:sbom_component_id].to_i)
       end
