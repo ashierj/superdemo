@@ -1,9 +1,10 @@
 <script>
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { contentTop } from '~/lib/utils/common_utils';
 import {
   queryToFilterObj,
   filterObjToQuery,
@@ -14,6 +15,9 @@ import TracingEmptyState from './tracing_empty_state.vue';
 import TracingTableList from './tracing_table_list.vue';
 import FilteredSearch from './tracing_list_filtered_search.vue';
 
+const PAGE_SIZE = 50;
+const TRACING_LIST_VERTICAL_PADDING = 100; // Accounts for the search bar height + the legend height + some more v padding
+
 export default {
   components: {
     GlLoadingIcon,
@@ -21,6 +25,7 @@ export default {
     TracingEmptyState,
     FilteredSearch,
     UrlSync,
+    GlInfiniteScroll,
   },
   props: {
     observabilityClient: {
@@ -38,6 +43,7 @@ export default {
       tracingEnabled: null,
       traces: [],
       filters: queryToFilterObj(window.location.search),
+      nextPageToken: null,
     };
   },
   computed: {
@@ -47,8 +53,15 @@ export default {
     initialFilterValue() {
       return filterObjToFilterToken(this.filters);
     },
+    infiniteScrollLegend() {
+      if (this.traces.length > 0) return s__(`Tracing|Showing ${this.traces.length} traces`);
+      return null;
+    },
+    listHeight() {
+      return window.innerHeight - contentTop() - TRACING_LIST_VERTICAL_PADDING;
+    },
   },
-  async created() {
+  created() {
     this.checkEnabled();
   },
   methods: {
@@ -83,9 +96,21 @@ export default {
     },
     async fetchTraces() {
       this.loading = true;
+
       try {
-        const traces = await this.observabilityClient.fetchTraces(this.filters);
-        this.traces = traces;
+        const {
+          traces,
+          next_page_token: nextPageToken,
+        } = await this.observabilityClient.fetchTraces({
+          filters: this.filters,
+          pageToken: this.nextPageToken,
+          pageSize: PAGE_SIZE,
+        });
+
+        this.traces = [...this.traces, ...traces];
+        if (nextPageToken) {
+          this.nextPageToken = nextPageToken;
+        }
       } catch (e) {
         createAlert({
           message: s__('Tracing|Failed to load traces.'),
@@ -99,6 +124,11 @@ export default {
     },
     handleFilters(filterTokens) {
       this.filters = filterTokensToFilterObj(filterTokens);
+      this.nextPageToken = null;
+      this.traces = [];
+      this.fetchTraces();
+    },
+    bottomReached() {
       this.fetchTraces();
     },
   },
@@ -107,7 +137,7 @@ export default {
 
 <template>
   <div>
-    <div v-if="loading" class="gl-py-5">
+    <div v-if="loading && traces.length === 0" class="gl-py-5">
       <gl-loading-icon size="lg" />
     </div>
 
@@ -118,7 +148,26 @@ export default {
         <filtered-search :initial-filters="initialFilterValue" @submit="handleFilters" />
         <url-sync :query="query" />
 
-        <tracing-table-list :traces="traces" @reload="fetchTraces" @trace-selected="selectTrace" />
+        <gl-infinite-scroll
+          :max-list-height="listHeight"
+          :fetched-items="traces.length"
+          @bottomReached="bottomReached"
+        >
+          <template #items>
+            <tracing-table-list
+              :traces="traces"
+              @reload="fetchTraces"
+              @trace-selected="selectTrace"
+            />
+          </template>
+
+          <template #default>
+            <gl-loading-icon v-if="loading" size="md" />
+            <span v-else data-testid="tracing-infinite-scrolling-legend">{{
+              infiniteScrollLegend
+            }}</span>
+          </template>
+        </gl-infinite-scroll>
       </template>
     </template>
   </div>
