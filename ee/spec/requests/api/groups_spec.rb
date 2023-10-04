@@ -1494,7 +1494,7 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
     end
   end
 
-  shared_examples_for 'when authenticated as owner' do
+  shared_examples_for 'when authenticated as maintainer' do
     it_behaves_like '403 response' do
       let(:message) { '403 Forbidden' }
     end
@@ -1543,16 +1543,22 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
       stub_licensed_features(ssh_certificates: true)
     end
 
-    it_behaves_like 'when unauthenticated' do
-      let(:request) { get api(route) }
+    context 'when unauthenticated' do
+      it_behaves_like '403 response' do
+        let(:request) { get api(route) }
+      end
     end
 
-    it_behaves_like 'when authenticated as owner' do
+    it_behaves_like 'when authenticated as maintainer' do
+      before do
+        group.add_maintainer(user)
+      end
+
       let(:request) { get api(route, user) }
     end
 
-    context 'when authenticated as admin' do
-      let(:request) { get api(route, admin, admin_mode: true) }
+    context 'when authenticated as owner' do
+      let(:request) { get api(route, user) }
 
       it_behaves_like "when group doesn't exist" do
         let(:route) { '/groups/9999/ssh_certificates' }
@@ -1567,6 +1573,10 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
       end
 
       context 'when no ssh certificates are found' do
+        before do
+          private_group.add_owner(user)
+        end
+
         let(:route) { "/groups/#{private_group.id}/ssh_certificates" }
 
         it 'returns an empty array' do
@@ -1607,12 +1617,16 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
       let(:request) { post api(route) }
     end
 
-    it_behaves_like 'when authenticated as owner' do
+    it_behaves_like 'when authenticated as maintainer' do
+      before do
+        group.add_maintainer(user)
+      end
+
       let(:request) { post api(route, user), params: params }
     end
 
-    context 'when authenticated as admin' do
-      let(:request) { post api(route, admin, admin_mode: true), params: params }
+    context 'when authenticated as owner' do
+      let(:request) { post api(route, user), params: params }
 
       context 'when title param is empty' do
         let(:title) { '' }
@@ -1670,12 +1684,16 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
       let(:request) { delete api(route) }
     end
 
-    it_behaves_like 'when authenticated as owner' do
+    it_behaves_like 'when authenticated as maintainer' do
+      before do
+        group.add_maintainer(user)
+      end
+
       let(:request) { delete api(route, user) }
     end
 
-    context 'when authenticated as admin' do
-      let(:request) { delete api(route, admin, admin_mode: true) }
+    context 'when authenticated as owner' do
+      let(:request) { delete api(route, user) }
 
       it_behaves_like "when group doesn't exist" do
         let(:route) { "/groups/9999/ssh_certificates/#{ssh_certificate_1.id}" }
