@@ -46,6 +46,13 @@ export default {
       type: Object,
     },
   },
+  async beforeRouteLeave(to, from, next) {
+    const confirmed = await this.$refs.dashboard.confirmDiscardIfChanged();
+
+    if (!confirmed) return;
+
+    next();
+  },
   props: {
     isNewDashboard: {
       type: Boolean,
@@ -239,6 +246,7 @@ export default {
   <div>
     <customizable-dashboard
       v-if="initialDashboard"
+      ref="dashboard"
       :initial-dashboard="initialDashboard"
       :available-visualizations="availableVisualizations"
       :default-filters="defaultFilters"
