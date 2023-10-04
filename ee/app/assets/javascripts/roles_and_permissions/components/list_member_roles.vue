@@ -118,7 +118,7 @@ export default {
         if (value !== true) {
           return [];
         }
-        return [PERMISSIONS[item.base_access_level]?.[key]?.text || key];
+        return [PERMISSIONS[key]?.text || key];
       });
     },
     nameAccessLevel(value) {

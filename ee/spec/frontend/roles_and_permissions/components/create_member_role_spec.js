@@ -37,6 +37,7 @@ describe('CreateMemberRole', () => {
   const name = 'My role name';
   const description = 'My description';
   const fillForm = () => {
+    findSelect().setValue('10');
     findNameField().setValue(name);
     findTextArea().setValue(description);
     findCheckboxes().at(0).find('input').setChecked();
@@ -46,11 +47,19 @@ describe('CreateMemberRole', () => {
     createComponent();
   });
 
-  it('has only one select option', () => {
+  it('has five base roles to select', () => {
     const options = findOptions();
-    expect(options).toHaveLength(1);
+    expect(options).toHaveLength(5);
     expect(options.at(0).attributes()).toMatchObject({ value: '10' });
     expect(options.at(0).text()).toBe('Guest');
+    expect(options.at(1).attributes()).toMatchObject({ value: '20' });
+    expect(options.at(1).text()).toBe('Reporter');
+    expect(options.at(2).attributes()).toMatchObject({ value: '30' });
+    expect(options.at(2).text()).toBe('Developer');
+    expect(options.at(3).attributes()).toMatchObject({ value: '40' });
+    expect(options.at(3).text()).toBe('Maintainer');
+    expect(options.at(4).attributes()).toMatchObject({ value: '50' });
+    expect(options.at(4).text()).toBe('Owner');
   });
 
   it('has multiple checkbox permissions', () => {
@@ -80,7 +89,16 @@ describe('CreateMemberRole', () => {
   });
 
   describe('field validation', () => {
-    it('shows warnings in the name field', async () => {
+    it('shows a warning if no base role is selected', async () => {
+      expect(findSelect().classes()).not.toContain('is-invalid');
+
+      findButtonSubmit().trigger('submit');
+      await nextTick();
+
+      expect(findSelect().classes()).toContain('is-invalid');
+    });
+
+    it('shows a warning if name field is empty', async () => {
       expect(findNameField().classes()).toContain('is-valid');
 
       findButtonSubmit().trigger('submit');
@@ -89,7 +107,7 @@ describe('CreateMemberRole', () => {
       expect(findNameField().classes()).toContain('is-invalid');
     });
 
-    it('shows warnings if permissions are unchecked', async () => {
+    it('shows a warning if permissions are unchecked', async () => {
       expect(findCheckboxes().at(0).find('input').classes()).not.toContain('is-invalid');
 
       findButtonSubmit().trigger('submit');
@@ -109,7 +127,7 @@ describe('CreateMemberRole', () => {
       await waitForPromises();
 
       expect(createMemberRole).toHaveBeenCalledWith('4', {
-        base_access_level: '10',
+        base_access_level: 10,
         name,
         description,
         read_code: 1,
