@@ -21,6 +21,7 @@ import {
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { NEW_DASHBOARD } from 'ee/analytics/analytics_dashboards/constants';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import { stubComponent } from 'helpers/stub_component';
 import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
   TEST_EMPTY_DASHBOARD_SVG_PATH,
@@ -104,6 +105,7 @@ describe('AnalyticsDashboard', () => {
     glFeatures = {
       combinedAnalyticsDashboardsEditor: false,
     },
+    stubs = {},
   } = {}) => {
     const mocks = {
       $toast: {
@@ -131,7 +133,11 @@ describe('AnalyticsDashboard', () => {
       propsData: {
         ...props,
       },
-      stubs: ['router-link', 'router-view'],
+      stubs: {
+        RouterLink: true,
+        RouterView: true,
+        ...stubs,
+      },
       mocks,
       provide: {
         namespaceId,
@@ -558,6 +564,50 @@ describe('AnalyticsDashboard', () => {
           showDateRangeFilter: false,
         });
       });
+    });
+  });
+
+  describe('when the route changes', () => {
+    const nextMock = jest.fn();
+
+    beforeEach(() => {
+      mockDashboardResponse(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+    });
+
+    const setupWithConfirmation = async (confirmMock) => {
+      createWrapper({
+        stubs: {
+          CustomizableDashboard: stubComponent(CustomizableDashboard, {
+            methods: {
+              confirmDiscardIfChanged: confirmMock,
+            },
+          }),
+        },
+      });
+
+      await waitForPromises();
+
+      wrapper.vm.$options.beforeRouteLeave.call(wrapper.vm, {}, {}, nextMock);
+
+      await waitForPromises();
+    };
+
+    it('routes to the next route when a user confirmed to discard changes', async () => {
+      const confirmMock = jest.fn().mockResolvedValue(true);
+
+      await setupWithConfirmation(confirmMock);
+
+      expect(confirmMock).toHaveBeenCalledTimes(1);
+      expect(nextMock).toHaveBeenCalled();
+    });
+
+    it('does not route to the next route when a user does not confirm to discard changes', async () => {
+      const confirmMock = jest.fn().mockResolvedValue(false);
+
+      await setupWithConfirmation(confirmMock);
+
+      expect(confirmMock).toHaveBeenCalledTimes(1);
+      expect(nextMock).not.toHaveBeenCalled();
     });
   });
 });

@@ -197,6 +197,8 @@ export default {
       el.classList.add('not-container-limited');
       el.classList.remove('container-limited');
     });
+
+    window.addEventListener('beforeunload', this.onPageUnload);
   },
   beforeDestroy() {
     this.mounted = false;
@@ -209,8 +211,20 @@ export default {
     });
 
     this.alert?.dismiss();
+
+    window.removeEventListener('beforeunload', this.onPageUnload);
   },
   methods: {
+    onPageUnload(event) {
+      if (!this.changesMade) return undefined;
+
+      event.preventDefault();
+      // This returnValue is required on some browsers. This message is displayed on older versions.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event#compatibility_notes
+      const returnValue = __('Are you sure you want to lose unsaved changes?');
+      Object.assign(event, { returnValue });
+      return returnValue;
+    },
     createDraftDashboard(dashboard) {
       const draft = cloneWithoutReferences(dashboard);
       return {
@@ -328,6 +342,12 @@ export default {
       }
 
       this.$emit('save', this.dashboard.slug, this.dashboard);
+    },
+    async confirmDiscardIfChanged() {
+      // Implicityly confirm if no changes were made
+      if (!this.changesMade) return true;
+
+      return this.confirmDiscardChanges();
     },
     async cancelEdit() {
       if (this.changesMade) {

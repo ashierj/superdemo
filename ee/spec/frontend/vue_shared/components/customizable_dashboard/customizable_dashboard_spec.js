@@ -305,8 +305,18 @@ describe('CustomizableDashboard', () => {
       });
 
       describe('when editing', () => {
+        let windowDialogSpy;
+        let beforeUnloadEvent;
+
         beforeEach(() => {
+          beforeUnloadEvent = new Event('beforeunload');
+          windowDialogSpy = jest.spyOn(beforeUnloadEvent, 'returnValue', 'set');
+
           findEditButton().vm.$emit('click');
+        });
+
+        afterEach(() => {
+          windowDialogSpy.mockRestore();
         });
 
         it('sets the grid to non-static mode', () => {
@@ -395,47 +405,63 @@ describe('CustomizableDashboard', () => {
           });
         });
 
-        describe('and the "cancel" button is clicked with changes made', () => {
-          afterEach(() => {
-            confirmAction.mockReset();
-          });
+        it('does not show the confirmation dialog when the "beforeunload" is emitted', () => {
+          window.dispatchEvent(beforeUnloadEvent);
 
+          expect(windowDialogSpy).not.toHaveBeenCalled();
+        });
+
+        describe('and changed were made', () => {
           beforeEach(() => {
             return findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
           });
 
-          it('shows confirm modal when the title was changed', async () => {
-            confirmAction.mockReturnValue(new Promise(() => {}));
+          it('shows the browser confirmation dialog when the "beforeunload" is emitted', () => {
+            window.dispatchEvent(beforeUnloadEvent);
 
-            await findCancelButton().vm.$emit('click');
-
-            expect(confirmAction).toHaveBeenCalledWith(
-              'Are you sure you want to cancel editing this dashboard?',
-              {
-                cancelBtnText: 'Continue editing',
-                primaryBtnText: 'Discard changes',
-              },
+            expect(windowDialogSpy).toHaveBeenCalledWith(
+              'Are you sure you want to lose unsaved changes?',
             );
           });
 
-          it('resets the dashboard if the user confirms', async () => {
-            confirmAction.mockResolvedValue(true);
+          describe('and the "cancel" button is clicked', () => {
+            afterEach(() => {
+              confirmAction.mockReset();
+            });
 
-            await findCancelButton().vm.$emit('click');
-            await waitForPromises();
+            it('shows confirm modal when the title was changed', async () => {
+              confirmAction.mockReturnValue(new Promise(() => {}));
 
-            expect(GridStack.init).toHaveBeenCalledTimes(2);
-            expect(findPanels()).toHaveLength(dashboard.panels.length);
-          });
+              await findCancelButton().vm.$emit('click');
 
-          it('does nothing if the user opts to keep editing', async () => {
-            confirmAction.mockResolvedValue(false);
+              expect(confirmAction).toHaveBeenCalledWith(
+                'Are you sure you want to cancel editing this dashboard?',
+                {
+                  cancelBtnText: 'Continue editing',
+                  primaryBtnText: 'Discard changes',
+                },
+              );
+            });
 
-            await findCancelButton().vm.$emit('click');
-            await waitForPromises();
+            it('resets the dashboard if the user confirms', async () => {
+              confirmAction.mockResolvedValue(true);
 
-            expect(GridStack.init).toHaveBeenCalledTimes(1);
-            expect(findPanels()).toHaveLength(dashboard.panels.length + 1);
+              await findCancelButton().vm.$emit('click');
+              await waitForPromises();
+
+              expect(GridStack.init).toHaveBeenCalledTimes(2);
+              expect(findPanels()).toHaveLength(dashboard.panels.length);
+            });
+
+            it('does nothing if the user opts to keep editing', async () => {
+              confirmAction.mockResolvedValue(false);
+
+              await findCancelButton().vm.$emit('click');
+              await waitForPromises();
+
+              expect(GridStack.init).toHaveBeenCalledTimes(1);
+              expect(findPanels()).toHaveLength(dashboard.panels.length + 1);
+            });
           });
         });
 
