@@ -17,7 +17,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
       context 'when security dashboard feature is enabled' do
         before do
           stub_licensed_features(security_dashboard: true)
-          stub_feature_flags(group_level_dependencies: true)
         end
 
         context 'and user is allowed to access group level dependencies' do
@@ -42,18 +41,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             expect(response.body).to include('data-support-documentation-path')
             expect(response.body).to include('data-export-endpoint')
             expect(response.body).to include('data-enable-project-search')
-          end
-
-          context 'when feature flag group_level_dependencies is disabled' do
-            before do
-              stub_feature_flags(group_level_dependencies: false)
-            end
-
-            it 'return http status :not_found' do
-              subject
-
-              expect(response).to have_gitlab_http_status(:not_found)
-            end
           end
 
           it_behaves_like 'tracks govern usage event', 'users_visiting_dependencies' do
@@ -95,7 +82,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
       context 'when security dashboard feature is enabled' do
         before do
           stub_licensed_features(security_dashboard: true)
-          stub_feature_flags(group_level_dependencies: true)
         end
 
         context 'and user is allowed to access group level dependencies' do
@@ -338,18 +324,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               end
             end
           end
-
-          context 'when feature flag group_level_dependencies is disabled' do
-            before do
-              stub_feature_flags(group_level_dependencies: false)
-            end
-
-            it 'returns http status :forbidden' do
-              subject
-
-              expect(response).to have_gitlab_http_status(:forbidden)
-            end
-          end
         end
 
         context 'when user is not allowed to access group level dependencies' do
@@ -381,7 +355,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
     context 'when security dashboard feature is enabled' do
       before do
         stub_licensed_features(security_dashboard: true)
-        stub_feature_flags(group_level_dependencies: true)
       end
 
       context 'and user is allowed to access group level dependencies' do
@@ -439,18 +412,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
               expect(json_response['locations']).to be_empty
             end
-          end
-        end
-
-        context 'when feature flag group_level_dependencies is disabled' do
-          before do
-            stub_feature_flags(group_level_dependencies: false)
-          end
-
-          it 'returns http status :forbidden' do
-            subject
-
-            expect(response).to have_gitlab_http_status(:forbidden)
           end
         end
       end

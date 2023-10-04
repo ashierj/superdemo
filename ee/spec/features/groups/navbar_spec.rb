@@ -208,7 +208,6 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
       group.add_owner(user)
       stub_group_wikis(false)
       stub_feature_flags(observability_group_tab: false)
-      stub_feature_flags(group_level_dependencies: false)
       stub_licensed_features(domain_verification: true)
       sign_in(user)
       insert_package_nav(_('Kubernetes'))
@@ -248,6 +247,7 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
           nav_sub_items: [
             _('Security dashboard'),
             _('Vulnerability report'),
+            _('Dependency list'),
             _('Compliance center'),
             _('Audit events')
           ]

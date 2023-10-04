@@ -29,8 +29,6 @@ module API
       end
       desc 'Generate a dependency list export on a group-level'
       post ':id/dependency_list_exports' do
-        not_found! unless Feature.enabled?(:group_level_dependencies, user_group)
-
         authorize! :read_dependency, user_group
 
         dependency_list_export = ::Dependencies::CreateExportService.new(user_group, current_user).execute
