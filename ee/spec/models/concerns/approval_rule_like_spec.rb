@@ -129,6 +129,24 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
         end
       end
 
+      context 'when report_type is any_merge_request' do
+        let(:subject_traits) { %i[any_merge_request] }
+
+        it 'returns true' do
+          expect(subject.from_scan_result_policy?).to eq(true)
+        end
+
+        context 'when feature flag "scan_result_any_merge_request" is disabled' do
+          before do
+            stub_feature_flags(scan_result_any_merge_request: false)
+          end
+
+          it 'returns false' do
+            expect(subject.from_scan_result_policy?).to eq(false)
+          end
+        end
+      end
+
       context 'when report_type is nil' do
         before do
           subject.update!(report_type: nil)
