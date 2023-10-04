@@ -111,7 +111,11 @@ module ApprovalRuleLike
   end
 
   def from_scan_result_policy?
-    scan_finding? || (license_scanning? && scan_result_policy_id.present?)
+    return true if scan_finding?
+    return true if license_scanning? && scan_result_policy_id.present?
+    return true if any_merge_request? && ::Feature.enabled?(:scan_result_any_merge_request, project)
+
+    false
   end
 
   private
