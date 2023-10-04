@@ -17,7 +17,7 @@ RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shar
     end
 
     context 'migration_files stubbed' do
-      let(:migration_files) { %w(ee/elastic/migrate/20201105180000_example_migration.rb ee/elastic/migrate/20201201130000_example_migration.rb) }
+      let(:migration_files) { %w[ee/elastic/migrate/20201105180000_example_migration.rb ee/elastic/migrate/20201201130000_example_migration.rb] }
 
       before do
         allow(subject).to receive(:migration_files).and_return(migration_files)

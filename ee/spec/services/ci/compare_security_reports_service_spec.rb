@@ -73,7 +73,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
         it 'reports fixed dependency scanning vulnerabilities' do
           expect(subject[:data]['fixed'].count).to eq(1)
           compare_keys = collect_ids(subject[:data]['fixed'])
-          expected_keys = %w(06565b64-486d-4326-b906-890d9915804d)
+          expected_keys = %w[06565b64-486d-4326-b906-890d9915804d]
           expect(compare_keys).to match_array(expected_keys)
         end
 
@@ -139,7 +139,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
         it 'reports fixed container scanning vulnerabilities' do
           expect(subject[:data]['fixed'].count).to eq(8)
           compare_keys = collect_ids(subject[:data]['fixed'])
-          expected_keys = %w(CVE-2017-16997 CVE-2017-18269 CVE-2018-1000001 CVE-2016-10228 CVE-2010-4052 CVE-2018-18520 CVE-2018-16869 CVE-2018-18311)
+          expected_keys = %w[CVE-2017-16997 CVE-2017-18269 CVE-2018-1000001 CVE-2016-10228 CVE-2010-4052 CVE-2018-18520 CVE-2018-16869 CVE-2018-18311]
           expect(compare_keys).to match_array(expected_keys)
         end
 
@@ -247,7 +247,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
         it 'reports fixed sast vulnerabilities' do
           expect(subject[:data]['fixed'].count).to eq(1)
           compare_keys = collect_ids(subject[:data]['fixed'])
-          expected_keys = %w(CIPHER_INTEGRITY)
+          expected_keys = %w[CIPHER_INTEGRITY]
           expect(compare_keys - expected_keys).to eq([])
         end
 
@@ -292,7 +292,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
         it 'reports fixed secret_detection vulnerabilities' do
           expect(subject[:data]['fixed'].count).to eq(1)
           compare_keys = collect_ids(subject[:data]['fixed'])
-          expected_keys = %w(AWS)
+          expected_keys = %w[AWS]
           expect(compare_keys).to match_array(expected_keys)
         end
       end

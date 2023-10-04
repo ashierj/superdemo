@@ -182,7 +182,7 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
     end
 
     context 'when allowed_plans are defined' do
-      let(:allowed_plans) { %w(silver premium) }
+      let(:allowed_plans) { %w[silver premium] }
 
       context 'when plans match allowed plans' do
         let(:plan) { :premium_plan }
@@ -198,7 +198,7 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
     end
 
     context 'when ci_runner_separation_by_plan feature flag is disabled' do
-      let(:allowed_plans) { %w(silver premium) }
+      let(:allowed_plans) { %w[silver premium] }
       let(:plan) { :ultimate_plan }
 
       before do

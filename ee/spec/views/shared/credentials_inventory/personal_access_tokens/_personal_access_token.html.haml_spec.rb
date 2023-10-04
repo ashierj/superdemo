@@ -66,7 +66,7 @@ RSpec.describe('shared/credentials_inventory/personal_access_tokens/_personal_ac
 
   context 'scopes' do
     context 'when set' do
-      let_it_be(:scopes) { %w(api read_user read_api) }
+      let_it_be(:scopes) { %w[api read_user read_api] }
       let_it_be(:personal_access_token) { build_stubbed(:personal_access_token, user: user, scopes: scopes) }
 
       it 'shows the scopes' do

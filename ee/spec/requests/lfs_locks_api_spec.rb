@@ -59,7 +59,7 @@ RSpec.describe 'Git LFS File Locking API', :saas, feature_category: :source_code
         expect(response).to have_gitlab_http_status(:ok)
 
         expect(json_response['locks'].size).to eq(1)
-        expect(json_response['locks'].first.keys).to match_array(%w(id path locked_at owner))
+        expect(json_response['locks'].first.keys).to match_array(%w[id path locked_at owner])
       end
     end
   end

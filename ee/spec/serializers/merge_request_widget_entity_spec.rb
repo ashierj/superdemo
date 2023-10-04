@@ -22,7 +22,7 @@ RSpec.describe MergeRequestWidgetEntity, feature_category: :code_review_workflow
   end
 
   def create_all_artifacts
-    artifacts = %i(codequality performance browser_performance load_performance)
+    artifacts = %i[codequality performance browser_performance load_performance]
 
     artifacts.each do |artifact_type|
       create(:ee_ci_build, artifact_type, :success, pipeline: pipeline, project: pipeline.project)

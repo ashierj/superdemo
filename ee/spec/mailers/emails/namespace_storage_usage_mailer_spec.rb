@@ -11,7 +11,7 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
     ActionController::Base.helpers.link_to(namespace.name, usage_quotas_url(namespace, anchor: 'storage-quota-tab'))
   end
 
-  let(:recipients) { %w(bob@example.com john@example.com) }
+  let(:recipients) { %w[bob@example.com john@example.com] }
 
   describe '#notify_out_of_storage' do
     it 'creates an email message for a namespace', :aggregate_failures do

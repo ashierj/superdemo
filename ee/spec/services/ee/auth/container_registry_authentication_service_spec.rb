@@ -40,7 +40,7 @@ RSpec.describe Auth::ContainerRegistryAuthenticationService, feature_category: :
           context 'when actor is a deploy token with read access' do
             it_behaves_like 'an inaccessible'
             it_behaves_like 'not a container repository factory'
-            it_behaves_like 'logs an auth warning', %w(push pull)
+            it_behaves_like 'logs an auth warning', %w[push pull]
           end
         end
       end

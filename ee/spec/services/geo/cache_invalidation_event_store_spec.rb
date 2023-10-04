@@ -19,7 +19,7 @@ RSpec.describe Geo::CacheInvalidationEventStore, feature_category: :geo_replicat
     end
 
     context 'when the key is an Array' do
-      let(:cache_key) { %w{a cache key} }
+      let(:cache_key) { %w[a cache key] }
 
       it 'expands the key' do
         expect(subject.key).to eq('a/cache/key')

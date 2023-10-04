@@ -156,7 +156,7 @@ RSpec.describe SamlProvider do
     end
 
     it 'includes nickname attribute statements' do
-      expect(settings[:attribute_statements][:nickname]).to match_array(%w(nickname username))
+      expect(settings[:attribute_statements][:nickname]).to match_array(%w[nickname username])
     end
 
     context 'when saml_message_max_byte_size present in gitlab settings ' do

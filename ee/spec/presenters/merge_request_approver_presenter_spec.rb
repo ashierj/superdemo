@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe MergeRequestApproverPresenter do
   let(:project) { create(:project, :repository) }
   let(:merge_request) { create(:merge_request, target_project: project, source_project: project) }
-  let(:file_paths) { %w{readme.md} }
+  let(:file_paths) { %w[readme.md] }
   let(:approvals_required) { 10 }
   let(:enable_code_owner) { true }
 

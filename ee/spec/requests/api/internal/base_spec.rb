@@ -612,7 +612,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
              params: {
                key_id: key.id,
                name: 'newtoken',
-               scopes: %w(read_api read_repository),
+               scopes: %w[read_api read_repository],
                expires_at: max_expiry_date + 1
              },
              headers: gitlab_shell_internal_api_request_header
@@ -631,7 +631,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
              params: {
                key_id: key.id,
                name: 'newtoken',
-               scopes: %w(read_api read_repository),
+               scopes: %w[read_api read_repository],
                expires_at: expires_at
              },
              headers: gitlab_shell_internal_api_request_header
@@ -639,7 +639,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         aggregate_failures do
           expect(json_response['success']).to eq(true)
           expect(json_response['token']).to match(/\A\S{#{token_size}}\z/)
-          expect(json_response['scopes']).to match_array(%w(read_api read_repository))
+          expect(json_response['scopes']).to match_array(%w[read_api read_repository])
           expect(json_response['expires_at']).to eq(expires_at)
         end
       end

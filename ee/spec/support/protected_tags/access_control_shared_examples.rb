@@ -102,7 +102,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
 
       expect(page).to have_selector('.dropdown-header', count: 3)
 
-      %w{Roles Groups Users}.each_with_index do |header, index|
+      %w[Roles Groups Users].each_with_index do |header, index|
         expect(all('.dropdown-header')[index]).to have_content(header)
       end
 

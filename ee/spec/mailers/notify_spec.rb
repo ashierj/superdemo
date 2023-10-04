@@ -92,7 +92,7 @@ RSpec.describe Notify, feature_category: :not_owned do # rubocop:disable RSpec/I
         end
 
         it "contains the approvers list" do
-          is_expected.to have_body_text %r[#{merge_request.approvers.first.user.name}]
+          is_expected.to have_body_text %r{#{merge_request.approvers.first.user.name}}
         end
       end
 

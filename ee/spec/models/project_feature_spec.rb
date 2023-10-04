@@ -13,7 +13,7 @@ RSpec.describe ProjectFeature do
   end
 
   describe '#feature_available?' do
-    let(:features) { %w(issues wiki builds merge_requests snippets repository pages) }
+    let(:features) { %w[issues wiki builds merge_requests snippets repository pages] }
 
     context 'when features are enabled only for team members' do
       it "returns true if user is an auditor" do

@@ -22,11 +22,11 @@ RSpec.describe ProjectCacheWorker, feature_category: :groups_and_projects do
           expect_any_instance_of(Project).not_to receive(:update_repository_size)
           expect_any_instance_of(Project).not_to receive(:update_commit_count)
 
-          worker.perform(project.id, %w(readme))
+          worker.perform(project.id, %w[readme])
         end
 
         it 'is idempotent' do
-          expect { perform_multiple([project.id, %w(readme)]) }.not_to raise_error
+          expect { perform_multiple([project.id, %w[readme]]) }.not_to raise_error
         end
       end
     end

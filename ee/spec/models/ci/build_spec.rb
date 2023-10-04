@@ -96,7 +96,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
   describe 'updates pipeline minutes' do
     let(:job) { create(:ci_build, :running, pipeline: pipeline) }
 
-    %w(success drop cancel).each do |event|
+    %w[success drop cancel].each do |event|
       it "for event #{event}" do
         expect(Ci::Minutes::UpdateBuildMinutesService)
           .to receive(:new).and_call_original

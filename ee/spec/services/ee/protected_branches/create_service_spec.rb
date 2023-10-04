@@ -126,7 +126,7 @@ RSpec.describe ProtectedBranches::CreateService, feature_category: :compliance_m
       end
 
       context "when the branch is a wildcard" do
-        %w(*ture *eatur* feat*).each do |wildcard|
+        %w[*ture *eatur* feat*].each do |wildcard|
           context "with wildcard: #{wildcard}" do
             before do
               params[:name] = wildcard

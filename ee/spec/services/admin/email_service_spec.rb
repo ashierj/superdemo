@@ -6,7 +6,7 @@ RSpec.describe Admin::EmailService do
   include ExclusiveLeaseHelpers
 
   describe '#execute', :clean_gitlab_redis_shared_state do
-    let(:args) { %w(all email_subject email_body) }
+    let(:args) { %w[all email_subject email_body] }
     let(:lease_key) { 'admin/email_service' }
 
     subject { described_class.new(*args) }

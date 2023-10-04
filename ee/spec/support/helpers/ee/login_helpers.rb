@@ -19,7 +19,7 @@ module EE
           raw_info: OneLogin::RubySaml::Attributes.new({
             'email' => [email],
             'name' => [name],
-            'groups' => %w(Developers Owners)
+            'groups' => %w[Developers Owners]
           }),
           response_object: response_object
         }
@@ -27,7 +27,7 @@ module EE
     end
 
     def mock_group_saml(uid:)
-      allow(Devise).to receive(:omniauth_providers).and_return(%i(group_saml))
+      allow(Devise).to receive(:omniauth_providers).and_return(%i[group_saml])
       allow_next_instance_of(::Gitlab::Auth::Saml::OriginValidator) do |instance|
         allow(instance).to receive(:gitlab_initiated?).and_return(true)
       end

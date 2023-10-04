@@ -148,7 +148,7 @@ RSpec.describe PersonalAccessTokens::RotationVerifierService, feature_category: 
   end
 
   describe '#clear_cache', :use_clean_rails_memory_store_caching do
-    let_it_be(:cache_keys) { %w(token_expired_rotation token_expiring_rotation) }
+    let_it_be(:cache_keys) { %w[token_expired_rotation token_expiring_rotation] }
 
     before do
       cache_keys.each do |key|

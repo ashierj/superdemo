@@ -216,9 +216,9 @@ RSpec.describe ProtectedEnvironment do
     subject(:protected_environments) { described_class.sorted_by_name }
 
     it "sorts protected environments by name" do
-      %w(staging production development).each { |name| create(:protected_environment, name: name) }
+      %w[staging production development].each { |name| create(:protected_environment, name: name) }
 
-      expect(protected_environments.map(&:name)).to eq %w(development production staging)
+      expect(protected_environments.map(&:name)).to eq %w[development production staging]
     end
   end
 

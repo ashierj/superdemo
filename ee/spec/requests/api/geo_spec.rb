@@ -481,7 +481,7 @@ RSpec.describe API::Geo, :aggregate_failures, feature_category: :geo_replication
       {
         'type' => 'object',
         'additionalProperties' => false,
-        'required' => %w(geo_enabled),
+        'required' => %w[geo_enabled],
         'properties' => {
           'geo_enabled' => { 'type' => 'boolean' }
         }
@@ -490,7 +490,7 @@ RSpec.describe API::Geo, :aggregate_failures, feature_category: :geo_replication
 
     let(:proxy_response_schema) do
       non_proxy_response_schema.merge({
-        'required' => %w(geo_enabled geo_proxy_url geo_proxy_extra_data),
+        'required' => %w[geo_enabled geo_proxy_url geo_proxy_extra_data],
         'properties' => {
           'geo_enabled' => { 'type' => 'boolean' },
           'geo_proxy_url' => { 'type' => 'string' },

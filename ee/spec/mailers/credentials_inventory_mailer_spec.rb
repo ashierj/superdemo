@@ -8,7 +8,7 @@ RSpec.describe CredentialsInventoryMailer do
   let_it_be(:administrator) { create(:user, :admin, username: 'Revoker') }
 
   describe '#personal_access_token_revoked_email' do
-    let_it_be(:token) { create(:personal_access_token, scopes: %w(api sudo), last_used_at: 3.weeks.ago) }
+    let_it_be(:token) { create(:personal_access_token, scopes: %w[api sudo], last_used_at: 3.weeks.ago) }
 
     subject(:email) { described_class.personal_access_token_revoked_email(token: token, revoked_by: administrator) }
 

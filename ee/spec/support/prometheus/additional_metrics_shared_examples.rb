@@ -6,7 +6,7 @@ RSpec.shared_examples 'additional custom metrics query' do
   let(:metric_group_class) { Gitlab::Prometheus::MetricGroup }
   let(:metric_class) { Gitlab::Prometheus::Metric }
 
-  let(:metric_names) { %w{metric_a metric_b} }
+  let(:metric_names) { %w[metric_a metric_b] }
 
   let(:query_range_result) do
     [{ 'metric': {}, 'values': [[1488758662.506, '0.00002996364761904785'], [1488758722.506, '0.00003090239047619091']] }]

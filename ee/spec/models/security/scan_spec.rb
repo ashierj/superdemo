@@ -236,7 +236,7 @@ RSpec.describe Security::Scan, feature_category: :vulnerability_management do
     let_it_be(:sast_scan2) { create(:security_scan, scan_type: :sast) }
     let_it_be(:dast_scan) { create(:security_scan, scan_type: :dast) }
 
-    let(:expected_scans) { %w(sast dast) }
+    let(:expected_scans) { %w[sast dast] }
 
     subject { described_class.distinct_scan_types }
 

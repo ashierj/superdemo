@@ -17,7 +17,7 @@ RSpec.describe Vulnerabilities::HistoricalStatistic, feature_category: :vulnerab
     it { is_expected.to validate_numericality_of(:low).is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:unknown).is_greater_than_or_equal_to(0) }
     it { is_expected.to validate_numericality_of(:info).is_greater_than_or_equal_to(0) }
-    it { is_expected.to define_enum_for(:letter_grade).with_values(%i(a b c d f)) }
+    it { is_expected.to define_enum_for(:letter_grade).with_values(%i[a b c d f]) }
   end
 
   describe '.older_than' do

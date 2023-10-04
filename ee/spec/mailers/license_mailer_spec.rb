@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe LicenseMailer do
   include EmailSpec::Matchers
 
-  let(:recipients) { %w(admin@example.com another_admin@example.com) }
+  let(:recipients) { %w[admin@example.com another_admin@example.com] }
 
   let_it_be(:license) { create_current_license({ plan: License::STARTER_PLAN, restrictions: { active_user_count: 21 } }) }
 

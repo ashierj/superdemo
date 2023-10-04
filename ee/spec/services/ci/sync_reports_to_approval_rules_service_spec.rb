@@ -11,7 +11,7 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
   let(:scanners) { %w[dependency_scanning] }
   let(:vulnerabilities_allowed) { 0 }
   let(:severity_levels) { %w[high unknown] }
-  let(:vulnerability_states) { %w(newly_detected) }
+  let(:vulnerability_states) { %w[newly_detected] }
 
   subject(:sync_rules) { described_class.new(pipeline).execute }
 

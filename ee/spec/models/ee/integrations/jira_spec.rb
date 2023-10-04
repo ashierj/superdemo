@@ -155,7 +155,7 @@ RSpec.describe Integrations::Jira do
             end
 
             before do
-              WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: project_info_result.to_json )
+              WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w[gitlab_jira_username gitlab_jira_password]).to_return(body: project_info_result.to_json )
             end
 
             it { is_expected.to eq(success: true, result: { jira: true }, data: { issuetypes: [{ id: '10001', name: 'Bug', description: 'Jira Bug' }] }) }
@@ -199,7 +199,7 @@ RSpec.describe Integrations::Jira do
             end
 
             before do
-              WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: project_info_result.to_json, headers: headers)
+              WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w[gitlab_jira_username gitlab_jira_password]).to_return(body: project_info_result.to_json, headers: headers)
             end
 
             it { is_expected.to eq(success: true, result: { jira: true }, data: expected_data) }
@@ -290,7 +290,7 @@ RSpec.describe Integrations::Jira do
     context 'when there is no issues in Jira API' do
       before do
         WebMock.stub_request(:post, 'http://jira.example.com/rest/api/2/issue')
-          .with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(body: issue_info.to_json)
+          .with(basic_auth: %w[gitlab_jira_username gitlab_jira_password]).to_return(body: issue_info.to_json)
       end
 
       it 'creates issue in Jira API' do
@@ -329,7 +329,7 @@ RSpec.describe Integrations::Jira do
       let(:errors) { { 'errorMessages' => [], 'errors' => { 'summary' => 'You must specify a summary of the issue.' } } }
 
       before do
-        WebMock.stub_request(:post, 'http://jira.example.com/rest/api/2/issue').with(basic_auth: %w(gitlab_jira_username gitlab_jira_password)).to_return(status: [400, 'Bad Request'], body: errors.to_json)
+        WebMock.stub_request(:post, 'http://jira.example.com/rest/api/2/issue').with(basic_auth: %w[gitlab_jira_username gitlab_jira_password]).to_return(status: [400, 'Bad Request'], body: errors.to_json)
       end
 
       it 'returns issue with errors' do
