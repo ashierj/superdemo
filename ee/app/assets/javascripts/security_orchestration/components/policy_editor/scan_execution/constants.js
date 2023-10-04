@@ -1,6 +1,6 @@
 import { __, s__ } from '~/locale';
+import { REPORT_TYPE_SECRET_DETECTION } from '~/vue_shared/security_reports/constants';
 
-export const SCANNER_DAST = 'dast';
 export const DEFAULT_AGENT_NAME = '';
 export const AGENT_KEY = 'agents';
 
@@ -46,7 +46,7 @@ export const TAGS_MODE_SELECTED_ITEMS = [
   },
 ];
 
-export const DEFAULT_SCANNER = SCANNER_DAST;
+export const DEFAULT_SCANNER = REPORT_TYPE_SECRET_DETECTION;
 
 export const SCANNER_HUMANIZED_TEMPLATE = s__(
   'ScanExecutionPolicy|Run a %{scan} scan with the following options:',

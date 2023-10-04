@@ -13,7 +13,5 @@ rules:
     branches:
       - '*'
 actions:
-  - scan: dast
-    site_profile: ''
-    scanner_profile: ''
+  - scan: secret_detection
 `;

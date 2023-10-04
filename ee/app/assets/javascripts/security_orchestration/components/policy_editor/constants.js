@@ -7,6 +7,14 @@ import {
   CONTAINER_SCANNING_NAME,
   SAST_IAC_SHORT_NAME,
 } from '~/security_configuration/components/constants';
+import {
+  REPORT_TYPE_SAST,
+  REPORT_TYPE_SAST_IAC,
+  REPORT_TYPE_DAST,
+  REPORT_TYPE_SECRET_DETECTION,
+  REPORT_TYPE_DEPENDENCY_SCANNING,
+  REPORT_TYPE_CONTAINER_SCANNING,
+} from '~/vue_shared/security_reports/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 export const EDITOR_MODE_RULE = 'rule';
@@ -78,12 +86,12 @@ export const RULE_OR_LABEL = __('or');
 export const ACTION_AND_LABEL = __('and');
 
 export const RULE_MODE_SCANNERS = {
-  sast: SAST_SHORT_NAME,
-  sast_iac: SAST_IAC_SHORT_NAME,
-  dast: DAST_SHORT_NAME,
-  secret_detection: SECRET_DETECTION_NAME,
-  container_scanning: CONTAINER_SCANNING_NAME,
-  dependency_scanning: DEPENDENCY_SCANNING_NAME,
+  [REPORT_TYPE_SAST]: SAST_SHORT_NAME,
+  [REPORT_TYPE_SAST_IAC]: SAST_IAC_SHORT_NAME,
+  [REPORT_TYPE_DAST]: DAST_SHORT_NAME,
+  [REPORT_TYPE_SECRET_DETECTION]: SECRET_DETECTION_NAME,
+  [REPORT_TYPE_CONTAINER_SCANNING]: CONTAINER_SCANNING_NAME,
+  [REPORT_TYPE_DEPENDENCY_SCANNING]: DEPENDENCY_SCANNING_NAME,
 };
 
 export const MAX_ALLOWED_RULES_LENGTH = 5;

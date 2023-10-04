@@ -12,7 +12,11 @@ import CiVariablesSelectors from 'ee/security_orchestration/components/policy_ed
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { SCANNER_HUMANIZED_TEMPLATE } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
+import { REPORT_TYPE_DAST } from '~/vue_shared/security_reports/constants';
+import {
+  DEFAULT_SCANNER,
+  SCANNER_HUMANIZED_TEMPLATE,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import { createMockApolloProvider } from 'ee_jest/security_configuration/dast_profiles/graphql/create_mock_apollo_provider';
 import { RUNNER_TAG_LIST_MOCK } from 'ee_jest/vue_shared/components/runner_tags_dropdown/mocks/mocks';
 import {
@@ -26,7 +30,7 @@ describe('PolicyActionBuilder', () => {
   const namespacePath = 'gid://gitlab/Project/20';
   const namespaceType = NAMESPACE_TYPES.PROJECT;
   const NEW_SCANNER = 'sast';
-  const DEFAULT_ACTION = buildScannerAction({ scanner: 'dast' });
+  const DEFAULT_ACTION = buildScannerAction({ scanner: DEFAULT_SCANNER });
 
   const defaultHandlerValue = (type = 'project') =>
     jest.fn().mockResolvedValue({
@@ -84,12 +88,12 @@ describe('PolicyActionBuilder', () => {
   const findProjectDastSelector = () => wrapper.findComponent(ProjectDastProfileSelector);
   const findGroupDastSelector = () => wrapper.findComponent(GroupDastProfileSelector);
 
-  it('renders DAST as the default scanner', () => {
+  it('renders default scanner', () => {
     factory();
 
     expect(findActionSeperator().exists()).toBe(false);
     expect(findDropdown().props()).toMatchObject({
-      selected: 'dast',
+      selected: DEFAULT_SCANNER,
       headerText: __('Select a scanner'),
     });
   });
@@ -223,9 +227,12 @@ describe('PolicyActionBuilder', () => {
       ${NAMESPACE_TYPES.PROJECT} | ${true}              | ${false}
       ${NAMESPACE_TYPES.GROUP}   | ${false}             | ${true}
     `(
-      'should display correct selector based on namespace type',
+      'should display correct selector based on namespace type for DAST scan',
       ({ namespaceTypeValue, projectSelectorExist, groupSelectorExist }) => {
-        factory({ provide: { namespaceType: namespaceTypeValue } });
+        factory({
+          propsData: { initAction: { ...DEFAULT_ACTION, scan: REPORT_TYPE_DAST } },
+          provide: { namespaceType: namespaceTypeValue },
+        });
 
         expect(findProjectDastSelector().exists()).toBe(projectSelectorExist);
         expect(findGroupDastSelector().exists()).toBe(groupSelectorExist);
