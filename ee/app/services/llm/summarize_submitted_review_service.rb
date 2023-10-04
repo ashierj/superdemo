@@ -4,8 +4,12 @@ module Llm
   class SummarizeSubmittedReviewService < ::Llm::BaseService
     private
 
+    def ai_action
+      :summarize_submitted_review
+    end
+
     def perform
-      worker_perform(user, resource, :summarize_submitted_review, options)
+      schedule_completion_worker
     end
 
     def valid?

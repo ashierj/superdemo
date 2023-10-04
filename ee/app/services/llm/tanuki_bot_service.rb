@@ -8,8 +8,12 @@ module Llm
 
     private
 
+    def ai_action
+      :tanuki_bot
+    end
+
     def perform
-      worker_perform(user, resource, :tanuki_bot, options)
+      schedule_completion_worker
     end
 
     def content(_action_name)

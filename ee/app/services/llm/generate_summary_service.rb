@@ -6,8 +6,12 @@ module Llm
 
     private
 
+    def ai_action
+      :summarize_comments
+    end
+
     def perform
-      worker_perform(user, resource, :summarize_comments, options.merge(ai_provider: :vertex_ai))
+      schedule_completion_worker(options.merge(ai_provider: :vertex_ai))
     end
 
     def valid?

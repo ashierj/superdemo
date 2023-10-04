@@ -11,8 +11,12 @@ module Llm
 
     private
 
+    def ai_action
+      :generate_commit_message
+    end
+
     def perform
-      worker_perform(user, resource, :generate_commit_message, options)
+      schedule_completion_worker
     end
   end
 end

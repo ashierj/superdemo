@@ -6,7 +6,11 @@ module Llm
       private
 
       def perform
-        worker_perform(user, resource, :summarize_review, options)
+        schedule_completion_worker
+      end
+
+      def ai_action
+        :summarize_review
       end
 
       def valid?

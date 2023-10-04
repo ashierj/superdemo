@@ -20,14 +20,14 @@ module Llm
     def perform
       return error('The messages are too big') if messages_are_too_big?
 
-      worker_perform(user, resource, feature_type, options)
+      schedule_completion_worker
     end
 
     def messages_are_too_big?
       options[:messages].sum { |message| message[:content].size } > INPUT_CONTENT_LIMIT
     end
 
-    def feature_type
+    def ai_action
       if Feature.enabled?(:explain_code_vertex_ai, user)
         :explain_code
       else

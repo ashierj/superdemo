@@ -13,8 +13,12 @@ module Llm
 
     private
 
+    def ai_action
+      :fill_in_merge_request_template
+    end
+
     def perform
-      worker_perform(user, resource, :fill_in_merge_request_template, options)
+      schedule_completion_worker
     end
   end
 end

@@ -64,16 +64,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-
-        it_behaves_like 'service not emitting message for user prompt' do
-          subject { described_class.new(current_user, resource, options) }
-        end
-
         it_behaves_like 'completion worker sync and async' do
-          subject { described_class.new(current_user, resource, options) }
-        end
-
-        it_behaves_like 'llm service does not cache user request' do
           subject { described_class.new(current_user, resource, options) }
         end
       end
@@ -95,16 +86,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-
-        it_behaves_like 'service not emitting message for user prompt' do
-          subject { described_class.new(current_user, resource, options) }
-        end
-
         it_behaves_like 'completion worker sync and async' do
-          subject { described_class.new(current_user, resource, options) }
-        end
-
-        it_behaves_like 'llm service does not cache user request' do
           subject { described_class.new(current_user, resource, options) }
         end
       end
@@ -125,16 +107,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-
-        it_behaves_like 'service not emitting message for user prompt' do
-          subject { described_class.new(current_user, resource, options) }
-        end
-
         it_behaves_like 'completion worker sync and async' do
-          subject { described_class.new(current_user, resource, options) }
-        end
-
-        it_behaves_like 'llm service does not cache user request' do
           subject { described_class.new(current_user, resource, options) }
         end
       end

@@ -12,7 +12,12 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       request_id: 'original_request_id',
       errors: ['some error1', 'another error'],
       role: 'user',
-      content: 'response'
+      content: 'response',
+      ai_action: 'chat',
+      client_subscription_id: 'client_subscription_id',
+      user: build_stubbed(:user),
+      resource: build_stubbed(:project),
+      type: 'tool'
     }
   end
 
@@ -70,7 +75,7 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
 
   describe '#to_h' do
     it 'returns hash with all attributes' do
-      expect(subject.to_h).to eq(data.merge(user: subject.user, extras: nil).stringify_keys)
+      expect(subject.to_h).to eq(data.stringify_keys)
     end
   end
 end

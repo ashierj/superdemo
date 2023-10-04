@@ -14,8 +14,12 @@ module Llm
 
     private
 
+    def ai_action
+      :generate_description
+    end
+
     def perform
-      worker_perform(user, resource, :generate_description, options)
+      schedule_completion_worker
     end
   end
 end
