@@ -67,7 +67,7 @@ module Llm
         #
         diff.raw_diffs.to_a.map do |diff|
           diff_output(diff.old_path, diff.new_path, diff.diff.sub(Gitlab::Regex.git_diff_prefix, ""))
-        end.join.truncate_words(2000)
+        end.join.truncate_words(750)
       end
 
       def response_modifier
