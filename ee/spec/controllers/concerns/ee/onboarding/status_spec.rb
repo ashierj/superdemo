@@ -8,6 +8,18 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   let_it_be(:member) { create(:group_member) }
   let_it_be(:user) { member.user }
 
+  describe '.enabled?' do
+    subject { described_class.enabled? }
+
+    context 'when on SaaS', :saas do
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when not on SaaS' do
+      it { is_expected.to eq(false) }
+    end
+  end
+
   describe '#continue_full_onboarding?' do
     let(:instance) { described_class.new(nil, nil, nil) }
 

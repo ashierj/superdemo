@@ -16,6 +16,16 @@ module EE
         invite: 'invite_registration'
       }.freeze
 
+      module ClassMethods
+        def enabled?
+          ::Gitlab::Saas.feature_available?('onboarding')
+        end
+      end
+
+      def self.prepended(base)
+        base.singleton_class.prepend ClassMethods
+      end
+
       def continue_full_onboarding?
         !subscription? &&
           !invite? &&
@@ -77,7 +87,7 @@ module EE
       end
 
       def enabled?
-        ::Gitlab.com?
+        self.class.enabled?
       end
 
       def subscription?

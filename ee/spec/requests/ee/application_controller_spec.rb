@@ -5,7 +5,6 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
   context 'with redirection due to onboarding', feature_category: :onboarding do
     let(:onboarding_in_progress) { true }
     let(:url) { '_onboarding_step_' }
-    let(:should_check_namespace_plan) { true }
 
     let(:user) do
       create(:user, role: nil, onboarding_in_progress: onboarding_in_progress).tap do |record|
@@ -14,11 +13,10 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
     end
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
       sign_in(user)
     end
 
-    context 'when on SaaS' do
+    context 'when on SaaS', :saas do
       it 'redirects to the onboarding step' do
         get root_path
 
@@ -65,18 +63,18 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
         end
       end
 
-      context 'when post request' do
+      context 'with non-get request' do
         it 'does not redirect to the onboarding step' do
-          post users_sign_up_company_path
+          expect_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |instance|
+            expect(instance).to receive(:execute).and_return(ServiceResponse.success)
+          end
 
-          expect(response).not_to be_redirect
+          post users_sign_up_company_path
         end
       end
     end
 
     context 'when on not on SaaS' do
-      let(:should_check_namespace_plan) { false }
-
       it 'redirects to the onboarding step' do
         get root_path
 

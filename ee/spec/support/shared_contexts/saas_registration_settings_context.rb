@@ -15,7 +15,6 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
     # Saas doesn't require admin approval.
     stub_application_setting(require_admin_approval_after_user_signup: false)
 
-    stub_application_setting(check_namespace_plan: true)
     stub_application_setting(import_sources: %w[github gitlab_project])
 
     # SaaS always requires confirmation, since the default is set to `off` we want to ensure SaaS is set to `hard`

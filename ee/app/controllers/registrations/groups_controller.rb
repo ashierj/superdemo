@@ -8,7 +8,7 @@ module Registrations
     include ::Onboarding::SetRedirect
 
     skip_before_action :set_confirm_warning
-    before_action :check_if_gl_com_or_dev
+    before_action :verify_onboarding_enabled!
     before_action :authorize_create_group!, only: :new
     before_action only: [:new] do
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)

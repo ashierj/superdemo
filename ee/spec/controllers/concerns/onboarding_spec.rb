@@ -11,16 +11,16 @@ RSpec.describe Onboarding, feature_category: :onboarding do
     where(
       user?: [true, false],
       user_onboarding?: [true, false],
-      should_check_namespace_plan?: [true, false]
+      com?: [true, false]
     )
 
     with_them do
       let(:local_user) { user? ? user : nil }
-      let(:expected_result) { user_onboarding? && user? && should_check_namespace_plan? }
+      let(:expected_result) { user_onboarding? && user? && com? }
 
       before do
         allow(user).to receive(:onboarding_in_progress?).and_return(user_onboarding?)
-        stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan?)
+        allow(Gitlab).to receive(:com?).and_return(com?)
       end
 
       subject { described_class.user_onboarding_in_progress?(local_user) }

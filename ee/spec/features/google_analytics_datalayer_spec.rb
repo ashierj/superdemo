@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'GitLab.com Google Analytics DataLayer', :js, feature_category: :application_instrumentation do
+RSpec.describe 'GitLab.com Google Analytics DataLayer', :saas, :js, feature_category: :application_instrumentation do
   include JavascriptFormHelper
 
   let(:google_tag_manager_id) { 'GTM-WWKMTWS' }
@@ -11,7 +11,6 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js, feature_category: :
   let_it_be(:group) { create(:group) }
 
   before do
-    allow(Gitlab).to receive(:com?).and_return(true)
     stub_application_setting(require_admin_approval_after_user_signup: false)
     stub_feature_flags(gitlab_gtm_datalayer: true)
     stub_config(extra: { google_tag_manager_id: google_tag_manager_id, google_tag_manager_nonce_id: google_tag_manager_id })
