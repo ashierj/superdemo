@@ -11,6 +11,10 @@ module Groups
       urgency :low
       track_govern_activity 'security_vulnerabilities', :index, conditions: :dashboard_available?
 
+      before_action do
+        push_frontend_feature_flag(:activity_filter_has_mr, @project)
+      end
+
       def index
         render :unavailable unless dashboard_available?
       end

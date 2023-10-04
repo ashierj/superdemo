@@ -3,6 +3,7 @@ import { GlBadge, GlCollapsibleListbox } from '@gitlab/ui';
 import { without } from 'lodash';
 import { s__ } from '~/locale';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import QuerystringSync from './querystring_sync.vue';
 import { ALL_ID } from './constants';
 
@@ -23,6 +24,20 @@ export const ITEMS = {
     value: 'DOES_NOT_HAVE_ISSUE',
     text: s__('SecurityReports|Does not have issue'),
   },
+  HAS_MERGE_REQUEST: {
+    value: 'HAS_MERGE_REQUEST',
+    text: s__('SecurityReports|Has merge request'),
+  },
+  DOES_NOT_HAVE_MERGE_REQUEST: {
+    value: 'DOES_NOT_HAVE_MERGE_REQUEST',
+    text: s__('SecurityReports|Does not have merge request'),
+  },
+};
+
+export const GROUPS_MR = {
+  text: s__('SecurityReports|Merge Request'),
+  options: [ITEMS.HAS_MERGE_REQUEST, ITEMS.DOES_NOT_HAVE_MERGE_REQUEST],
+  icon: 'git-merge',
 };
 
 export const GROUPS = [
@@ -55,6 +70,7 @@ export default {
     QuerystringSync,
     GlCollapsibleListbox,
   },
+  mixins: [glFeatureFlagsMixin()],
   data: () => ({
     selected: [],
   }),
@@ -69,11 +85,19 @@ export default {
     selectedItems() {
       return this.selected.length ? this.selected : [ALL_ID];
     },
+    items() {
+      const groups = [...GROUPS];
+      if (this.glFeatures.activityFilterHasMr) {
+        groups.push(GROUPS_MR);
+      }
+      return groups;
+    },
   },
   watch: {
     selected() {
       let hasResolution;
       let hasIssues;
+      let hasMergeRequest;
       // The above variables can be true, false, or unset, so we need to use if/else-if here instead
       // of if/else.
       if (this.selected.includes(ITEMS.NO_LONGER_DETECTED.value)) {
@@ -88,12 +112,26 @@ export default {
         hasIssues = false;
       }
 
-      this.$emit('filter-changed', { hasResolution, hasIssues });
+      if (this.glFeatures.activityFilterHasMr) {
+        if (this.selected.includes(ITEMS.HAS_MERGE_REQUEST.value)) {
+          hasMergeRequest = true;
+        } else if (this.selected.includes(ITEMS.DOES_NOT_HAVE_MERGE_REQUEST.value)) {
+          hasMergeRequest = false;
+        }
+      }
+
+      this.$emit('filter-changed', {
+        hasResolution,
+        hasIssues,
+        ...(this.glFeatures.activityFilterHasMr ? { hasMergeRequest } : {}),
+      });
     },
   },
   methods: {
     getGroupFromItem(value) {
-      return GROUPS.find((group) => group.options.map((option) => option.value).includes(value));
+      return this.items.find((group) =>
+        group.options.map((option) => option.value).includes(value),
+      );
     },
     updateSelected(selected) {
       const selectedValue = selected?.at(-1);
@@ -125,7 +163,6 @@ export default {
     label: s__('SecurityReports|Activity'),
     allItemsText: s__('SecurityReports|All activity'),
   },
-  GROUPS,
 };
 </script>
 
@@ -134,7 +171,7 @@ export default {
     <querystring-sync v-model="selected" querystring-key="activity" />
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
     <gl-collapsible-listbox
-      :items="$options.GROUPS"
+      :items="items"
       :selected="selectedItems"
       :header-text="$options.i18n.label"
       :toggle-text="toggleText"
