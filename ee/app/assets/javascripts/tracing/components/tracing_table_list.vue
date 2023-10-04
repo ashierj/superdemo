@@ -17,26 +17,22 @@ export default {
       key: 'timestamp',
       label: s__('Tracing|Date'),
       tdClass: tableDataClass,
-      sortable: true,
     },
     {
       key: 'service_name',
       label: s__('Tracing|Service'),
       tdClass: tableDataClass,
-      sortable: true,
     },
     {
       key: 'operation',
       label: s__('Tracing|Operation'),
       tdClass: tableDataClass,
-      sortable: true,
     },
     {
       key: 'duration',
       label: s__('Tracing|Duration'),
       thClass: 'gl-w-15p',
       tdClass: tableDataClass,
-      sortable: true,
     },
   ],
   components: {
@@ -77,8 +73,6 @@ export default {
       :items="formattedTraces"
       :fields="$options.fields"
       show-empty
-      sort-by="timestamp"
-      :sort-desc="true"
       fixed
       stacked="md"
       tbody-tr-class="table-row"
