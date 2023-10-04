@@ -5,68 +5,79 @@ require 'spec_helper'
 RSpec.describe ClickHouse::CiFinishedBuildsSyncCronWorker, :click_house, :freeze_time, feature_category: :runner_fleet do
   let(:worker) { described_class.new }
 
-  let_it_be(:ci_build1) { create(:ci_build, :success) }
-  let_it_be(:ci_build2) { create(:ci_build, :pending) }
-
-  subject(:perform) { worker.perform }
-
-  before do
-    create_sync_events ci_build1
-  end
+  subject(:perform) { worker.perform(*args) }
 
   include_examples 'an idempotent worker' do
-    it 'calls CiFinishedBuildsSyncService and returns its response payload' do
-      expect(worker).to receive(:log_extra_metadata_on_done)
-        .with(:result, { reached_end_of_table: true, records_inserted: 1 })
-
-      params = { worker_index: 0, total_workers: 1 }
-      expect_next_instance_of(::ClickHouse::DataIngestion::CiFinishedBuildsSyncService, params) do |service|
-        expect(service).to receive(:execute).and_call_original
-      end
-
-      expect(ClickHouse::Client).to receive(:insert_csv).once.and_call_original
-
-      expect { perform }.to change { ci_finished_builds_row_count }.by(::Ci::Build.finished.count)
-    end
-
-    context 'when an error is reported from service' do
+    context 'when job version is nil' do
       before do
-        allow(ClickHouse::Client.configuration).to receive(:databases).and_return({})
+        allow(worker).to receive(:job_version).and_return(nil)
       end
 
-      it 'skips execution' do
-        expect(worker).to receive(:log_extra_metadata_on_done)
-          .with(:result, { message: 'ClickHouse database is not configured', reason: :db_not_configured })
+      context 'when arguments are not specified' do
+        let(:args) { [] }
 
-        perform
-      end
-    end
-  end
+        it 'does nothing' do
+          expect(ClickHouse::CiFinishedBuildsSyncWorker).not_to receive(:perform_async)
 
-  context 'with 2 workers' do
-    subject(:perform) { worker.perform(0, 2) }
-
-    it 'calls CiFinishedBuildsSyncService with correct arguments' do
-      expect(worker).to receive(:log_extra_metadata_on_done).once
-
-      params = { worker_index: 0, total_workers: 2 }
-      expect_next_instance_of(::ClickHouse::DataIngestion::CiFinishedBuildsSyncService, params) do |service|
-        expect(service).to receive(:execute).and_call_original
+          perform
+        end
       end
 
-      expect(ClickHouse::Client).to receive(:insert_csv).once.and_call_original
+      context 'when arguments are specified' do
+        let(:args) { [worker_index, total_workers] }
 
-      perform
+        context 'with total_workers set to 3' do
+          let(:total_workers) { 3 }
+
+          context 'with worker_index set to 0' do
+            let(:worker_index) { 0 }
+
+            it 'does nothing' do
+              expect(ClickHouse::CiFinishedBuildsSyncWorker).not_to receive(:perform_async)
+
+              perform
+            end
+          end
+        end
+      end
     end
-  end
 
-  def create_sync_events(*builds)
-    builds.each do |build|
-      Ci::FinishedBuildChSyncEvent.new(build_id: build.id, build_finished_at: build.finished_at).save!
+    context 'when job version is present' do
+      context 'when arguments are not specified' do
+        let(:args) { [] }
+
+        it 'invokes 1 worker with specified arguments' do
+          expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(0, 1)
+
+          perform
+        end
+      end
+
+      context 'when arguments are specified' do
+        let(:args) { [total_workers] }
+
+        context 'with total_workers set to 1' do
+          let(:total_workers) { 1 }
+
+          it 'invokes 1 worker' do
+            expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(0, 1)
+
+            perform
+          end
+        end
+
+        context 'with total_workers set to 3', :aggregate_failures do
+          let(:total_workers) { 3 }
+
+          it 'invokes 3 workers' do
+            expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(0, 3)
+            expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(1, 3)
+            expect(ClickHouse::CiFinishedBuildsSyncWorker).to receive(:perform_async).with(2, 3)
+
+            perform
+          end
+        end
+      end
     end
-  end
-
-  def ci_finished_builds_row_count
-    ClickHouse::Client.select('SELECT COUNT(*) AS count FROM ci_finished_builds', :main).first['count']
   end
 end

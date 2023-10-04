@@ -4,19 +4,24 @@ module ClickHouse
   class CiFinishedBuildsSyncCronWorker
     include ApplicationWorker
 
+    version 2
+
     idempotent!
     queue_namespace :cronjob
     data_consistency :delayed
-    worker_has_external_dependencies! # the worker interacts with a ClickHouse database
     feature_category :runner_fleet
+    loggable_arguments 1
 
-    def perform(worker_index = 0, total_workers = 1)
-      response = ::ClickHouse::DataIngestion::CiFinishedBuildsSyncService.new(
-        worker_index: worker_index, total_workers: total_workers
-      ).execute
+    def perform(*args)
+      return unless job_version == 2
 
-      result = response.success? ? response.payload : response.deconstruct_keys(%i[message reason])
-      log_extra_metadata_on_done(:result, result)
+      total_workers = args.first || 1
+
+      total_workers.times do |worker_index|
+        CiFinishedBuildsSyncWorker.perform_async(worker_index, total_workers)
+      end
+
+      nil
     end
   end
 end
