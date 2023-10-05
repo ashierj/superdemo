@@ -5,15 +5,10 @@ require 'spec_helper'
 RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navigation do
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, :repository, group: group) }
+  let_it_be_with_refind(:project) { create(:project, :repository) }
 
-  let_it_be(:user) { create(:user) }
+  let(:user) { project.first_owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project, current_ref: project.repository.root_ref) }
-
-  before_all do
-    group.add_owner(user)
-  end
 
   subject { described_class.new(context) }
 
@@ -114,21 +109,16 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navi
       before do
         stub_feature_flags(combined_analytics_dashboards: true)
         stub_licensed_features(combined_project_analytics_dashboards: true)
-        group.namespace_settings.update_attribute(:experiment_features_enabled, true)
       end
 
       specify { is_expected.not_to be_nil }
 
       context 'with different user access levels' do
-        where(:access_level, :experiments_enabled, :has_menu_item) do
-          nil         | false | false
-          nil         | true | false
-          :reporter   | false | false
-          :reporter   | true | false
-          :developer  | false | false
-          :developer  | true | true
-          :maintainer | false | false
-          :maintainer | true | true
+        where(:access_level, :has_menu_item) do
+          nil         | false
+          :reporter   | false
+          :developer  | true
+          :maintainer | true
         end
 
         with_them do
@@ -136,7 +126,6 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navi
 
           before do
             project.add_member(user, access_level)
-            group.namespace_settings.update_attribute(:experiment_features_enabled, experiments_enabled)
           end
 
           describe "when the user is not allowed to view the menu item", if: !params[:has_menu_item] do
