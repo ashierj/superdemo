@@ -14,33 +14,6 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
   let_it_be(:issue_project_b_a) { create(:issue, project: project_b) }
   let_it_be(:issue_project_unauthorized_a) { create(:issue, project: project_unauthorized) }
 
-  shared_examples 'issue closed by modal' do |selector|
-    it 'shows a modal to confirm closing the issue' do
-      # Workaround for modal not showing when issue is first added
-      stub_feature_flags(moved_mr_sidebar: false)
-      stub_feature_flags(move_close_into_dropdown: false)
-      visit project_issue_path(project, issue_a)
-
-      wait_for_requests
-
-      within(selector) do
-        click_button 'Close issue'
-      end
-
-      within('.modal-content', visible: true) do
-        expect(page).to have_text 'Are you sure you want to close this blocked issue?'
-        expect(page).to have_link("##{issue_b.iid}", href: project_issue_path(project, issue_b))
-
-        click_button 'Yes, close issue'
-      end
-
-      wait_for_requests
-
-      expect(page).not_to have_selector('.modal-content', visible: true)
-      expect(page).to have_css('.gl-badge', text: 'Closed')
-    end
-  end
-
   context 'when user has permission to manage related issues' do
     before do
       project.add_maintainer(user)
@@ -125,11 +98,56 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
         end
 
         context 'when clicking the top `Close issue` button in the issue header', :aggregate_failures do
-          it_behaves_like 'issue closed by modal', '.detail-page-description'
+          it 'shows a modal to confirm closing the issue' do
+            # Workaround for modal not showing when issue is first added
+            stub_feature_flags(moved_mr_sidebar: false)
+            visit project_issue_path(project, issue_a)
+
+            wait_for_requests
+
+            within('.detail-page-description') do
+              find('#new-actions-header-dropdown').click
+              click_button 'Close issue'
+            end
+
+            within('.modal-content', visible: true) do
+              expect(page).to have_text 'Are you sure you want to close this blocked issue?'
+              expect(page).to have_link("##{issue_b.iid}", href: project_issue_path(project, issue_b))
+
+              click_button 'Yes, close issue'
+            end
+
+            wait_for_requests
+
+            expect(page).not_to have_selector('.modal-content', visible: true)
+            expect(page).to have_css('.gl-badge', text: 'Closed')
+          end
         end
 
         context 'when clicking the bottom `Close issue` button below the comment textarea', :aggregate_failures do
-          it_behaves_like 'issue closed by modal', '.new-note'
+          it 'shows a modal to confirm closing the issue' do
+            # Workaround for modal not showing when issue is first added
+            stub_feature_flags(moved_mr_sidebar: false)
+            visit project_issue_path(project, issue_a)
+
+            wait_for_requests
+
+            within('.new-note') do
+              click_button 'Close issue'
+            end
+
+            within('.modal-content', visible: true) do
+              expect(page).to have_text 'Are you sure you want to close this blocked issue?'
+              expect(page).to have_link("##{issue_b.iid}", href: project_issue_path(project, issue_b))
+
+              click_button 'Yes, close issue'
+            end
+
+            wait_for_requests
+
+            expect(page).not_to have_selector('.modal-content', visible: true)
+            expect(page).to have_css('.gl-badge', text: 'Closed')
+          end
         end
       end
 

@@ -57,7 +57,6 @@ export default {
       'canCreate',
       'canUpdate',
       'canDestroy',
-      'epicStatusChangeInProgress',
       'newEpicWebUrl',
       'webUrl',
       'reference',
@@ -133,7 +132,7 @@ export default {
     actionsDropdownGroupDesktop() {
       const items = [];
 
-      if (this.canUpdate && this.glFeatures.moveCloseIntoDropdown) {
+      if (this.canUpdate) {
         items.push(this.toggleEpicStatusDropdownItem);
       }
 
@@ -230,17 +229,6 @@ export default {
       @click="editEpic"
     >
       {{ $options.i18n.edit }}
-    </gl-button>
-
-    <gl-button
-      v-if="canUpdate && !glFeatures.moveCloseIntoDropdown"
-      :loading="epicStatusChangeInProgress"
-      category="secondary"
-      class="gl-display-none gl-sm-display-block gl-sm-ml-3"
-      data-testid="toggle-status-button"
-      @click="toggleEpicStatus(isEpicOpen)"
-    >
-      {{ actionButtonText }}
     </gl-button>
 
     <gl-disclosure-dropdown
