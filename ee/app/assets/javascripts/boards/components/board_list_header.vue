@@ -56,14 +56,16 @@ export default {
         return null;
       }
 
-      return sprintf(__('%{totalWeight} total weight'), { totalWeight: this.totalWeight });
+      return sprintf(__('%{totalIssueWeight} total weight'), {
+        totalIssueWeight: this.totalIssueWeight,
+      });
     },
-    totalWeight() {
+    totalIssueWeight() {
       if (this.isEpicBoard) {
         return this.boardList?.metadata?.totalWeight || 0;
       }
 
-      return this.boardList?.totalWeight;
+      return this.boardList?.totalIssueWeight;
     },
   },
   watch: {

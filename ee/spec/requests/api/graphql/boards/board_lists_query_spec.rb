@@ -136,7 +136,7 @@ RSpec.describe 'get board lists', feature_category: :team_planning do
 
             expect(list_node['title']).to eq label_list.title
             expect(list_node['issuesCount']).to eq 1
-            expect(list_node['totalWeight']).to eq 2
+            expect(list_node['totalIssueWeight']).to eq 2.to_s
           end
         end
       end
