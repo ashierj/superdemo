@@ -180,5 +180,23 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         it_behaves_like 'correct task detector'
       end
     end
+
+    context 'when prefix from result is empty' do
+      let(:skip_comment) { false }
+      let(:prefix) { 'prefix to set' }
+      let(:intent) { 'generation' }
+      let(:file_name) { "file.py" }
+
+      it 'will set the content before cursor as prefix' do
+        allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
+          # The +'' is done to avoid `can't modify frozen String: ""` exception in tests
+          allow(instance).to receive(:extract).and_return({ prefix: +'' })
+        end
+
+        result = subject
+
+        expect(result.send(:params)[:prefix]).to eq(prefix)
+      end
+    end
   end
 end
