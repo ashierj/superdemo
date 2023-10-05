@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'email_spec'
 
-RSpec.describe Notify, feature_category: :not_owned do # rubocop:disable RSpec/InvalidFeatureCategory
+RSpec.describe Notify, feature_category: :shared do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
   include EmailHelpers
