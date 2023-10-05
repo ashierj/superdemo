@@ -43,12 +43,12 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
         end
       end
 
-      context 'when `Frameworks` tab is clicked' do
-        it 'has the violations tab selected' do
+      context 'when `Projects` tab is clicked' do
+        it 'has the projects tab selected' do
           page.within('.gl-tabs') do
-            click_link _('Frameworks')
+            click_link _('Projects')
 
-            expect(find('[aria-selected="true"]').text).to eq('Frameworks')
+            expect(find('[aria-selected="true"]').text).to eq('Projects')
           end
         end
       end
@@ -61,12 +61,12 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
         end
       end
 
-      context 'when `Frameworks` tab is clicked' do
-        it 'has the violations tab selected' do
+      context 'when `Projects` tab is clicked' do
+        it 'has the projects tab selected' do
           page.within('.gl-tabs') do
-            click_link _('Frameworks')
+            click_link _('Projects')
 
-            expect(find('[aria-selected="true"]').text).to eq('Frameworks')
+            expect(find('[aria-selected="true"]').text).to eq('Projects')
           end
         end
       end
@@ -74,6 +74,16 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
 
     context 'with feature flag `compliance_framework_report_ui` enabled' do
       let(:compliance_framework_ff) { true }
+
+      context 'when `Frameworks` tab is clicked' do
+        it 'has the `Frameworks` tab selected' do
+          page.within('.gl-tabs') do
+            click_link _('Frameworks')
+
+            expect(find('[aria-selected="true"]').text).to eq('Frameworks')
+          end
+        end
+      end
 
       context 'when `Projects` tab is clicked' do
         it 'has the projects tab selected' do
@@ -87,12 +97,12 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
     end
 
     context 'with feature flag `compliance_framework_report_ui` disabled' do
-      context 'when `Frameworks` tab is clicked' do
-        it 'has the frameworks tab selected' do
+      context 'when `Projects` tab is clicked' do
+        it 'has the projects tab selected' do
           page.within('.gl-tabs') do
-            click_link _('Frameworks')
+            click_link _('Projects')
 
-            expect(find('[aria-selected="true"]').text).to eq('Frameworks')
+            expect(find('[aria-selected="true"]').text).to eq('Projects')
           end
         end
       end
@@ -225,9 +235,9 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
     end
   end
 
-  context 'frameworks tab' do
+  context 'projects tab' do
     before do
-      visit group_security_compliance_dashboard_path(group, vueroute: :frameworks)
+      visit group_security_compliance_dashboard_path(group, vueroute: :projects)
     end
 
     it 'shows an export action' do

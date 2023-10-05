@@ -12125,13 +12125,13 @@ msgstr ""
 msgid "Completed in %{duration_seconds} seconds (%{relative_time})"
 msgstr ""
 
-msgid "Compliance Center|Export frameworks as CSV. You will be emailed after the export is processed."
-msgstr ""
-
 msgid "Compliance Center|Export full report as CSV"
 msgstr ""
 
 msgid "Compliance Center|Export merge request violations as CSV. You will be emailed after the export is processed."
+msgstr ""
+
+msgid "Compliance Center|Export projects as CSV. You will be emailed after the export is processed."
 msgstr ""
 
 msgid "Compliance Center|Frameworks"
@@ -12326,6 +12326,9 @@ msgstr ""
 msgid "ComplianceReport|Less than 2 approvers"
 msgstr ""
 
+msgid "ComplianceReport|No frameworks found"
+msgstr ""
+
 msgid "ComplianceReport|No projects found"
 msgstr ""
 
@@ -12351,6 +12354,9 @@ msgid "ComplianceReport|Select at least one project to apply the bulk action"
 msgstr ""
 
 msgid "ComplianceReport|Unable to load the compliance framework projects report. Refresh the page and try again."
+msgstr ""
+
+msgid "ComplianceReport|Unable to load the compliance framework report. Refresh the page and try again."
 msgstr ""
 
 msgid "ComplianceReport|Unable to load the compliance violations report. Refresh the page and try again."
@@ -20738,6 +20744,9 @@ msgid "ForksDivergence|View merge request"
 msgstr ""
 
 msgid "Framework successfully deleted"
+msgstr ""
+
+msgid "Frameworks"
 msgstr ""
 
 msgid "Frameworks can not be added to projects in personal namespaces. %{linkStart}What are personal namespaces?%{linkEnd}"

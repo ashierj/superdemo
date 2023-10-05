@@ -12,7 +12,6 @@ import {
   ROUTE_FRAMEWORKS,
   ROUTE_PROJECTS,
   ROUTE_VIOLATIONS,
-  TABS,
 } from 'ee/compliance_dashboard/constants';
 
 describe('ComplianceReportsApp component', () => {
@@ -28,7 +27,7 @@ describe('ComplianceReportsApp component', () => {
   const findHeader = () => wrapper.findComponent(ReportHeader);
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
   const findViolationsExportButton = () => wrapper.findByTestId('violations-export');
-  const findFrameworkExportButton = () => wrapper.findByTestId('framework-export');
+  const findProjectsExportButton = () => wrapper.findByTestId('projects-export');
   const findTabs = () => wrapper.findComponent(GlTabs);
   const findProjectsTab = () => wrapper.findByTestId('projects-tab');
   const findFrameworksTab = () => wrapper.findByTestId('frameworks-tab');
@@ -98,40 +97,45 @@ describe('ComplianceReportsApp component', () => {
       expect(findViolationsExportButton().exists()).toBe(true);
     });
 
-    it('does not render the framework export button', () => {
-      expect(findFrameworkExportButton().exists()).toBe(false);
+    it('does not render the projects export button', () => {
+      expect(findProjectsExportButton().exists()).toBe(false);
     });
 
     it('does not render the merge commit export button when there is no CSV path', () => {
       wrapper = createComponent({ mergeCommitsCsvExportPath: null }, mount);
-      findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
+      findTabs().vm.$emit('input', 0);
 
       expect(findMergeCommitsExportButton().exists()).toBe(false);
     });
 
     it('does not render the violations export button when there is no CSV path', () => {
       wrapper = createComponent({ violationsCsvExportPath: null }, mount);
-      findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
+      findTabs().vm.$emit('input', 0);
 
       expect(findViolationsExportButton().exists()).toBe(false);
     });
   });
 
-  describe('frameworks report', () => {
+  describe('projects report', () => {
     beforeEach(() => {
-      wrapper = createComponent(defaultProps, mount, {
-        $route: {
-          name: ROUTE_FRAMEWORKS,
+      wrapper = createComponent(
+        defaultProps,
+        mount,
+        {
+          $route: {
+            name: ROUTE_PROJECTS,
+          },
         },
-      });
+        { complianceFrameworkReportUiEnabled: false },
+      );
     });
 
-    it('renders the frameworks report tab', () => {
-      expect(findFrameworksTab().exists()).toBe(true);
+    it('renders the projects report tab', () => {
+      expect(findProjectsTab().exists()).toBe(true);
     });
 
-    it('does not renders the projects tab', () => {
-      expect(findProjectsTab().exists()).toBe(false);
+    it('does not render the frameworks report tab', () => {
+      expect(findFrameworksTab().exists()).toBe(false);
     });
 
     it('passes the expected values to the header', () => {
@@ -148,22 +152,22 @@ describe('ComplianceReportsApp component', () => {
       expect(findMergeCommitsExportButton().exists()).toBe(false);
     });
 
-    it('renders the framework export button', () => {
-      expect(findFrameworkExportButton().exists()).toBe(true);
+    it('renders the projects export button', () => {
+      expect(findProjectsExportButton().exists()).toBe(true);
     });
 
-    it('does not render the framework export button when there is no CSV path', () => {
+    it('does not render the projects export button when there is no CSV path', () => {
       wrapper = createComponent({ frameworksCsvExportPath: null }, mount, {
         $route: {
           name: ROUTE_FRAMEWORKS,
         },
       });
 
-      expect(findFrameworkExportButton().exists()).toBe(false);
+      expect(findProjectsExportButton().exists()).toBe(false);
     });
   });
 
-  describe('projects report', () => {
+  describe('frameworks report', () => {
     beforeEach(() => {
       wrapper = createComponent(
         defaultProps,
@@ -181,8 +185,8 @@ describe('ComplianceReportsApp component', () => {
       expect(findProjectsTab().exists()).toBe(true);
     });
 
-    it('does not renders the frameworks report tab', () => {
-      expect(findFrameworksTab().exists()).toBe(false);
+    it('renders the frameworks report tab', () => {
+      expect(findFrameworksTab().exists()).toBe(true);
     });
   });
 
@@ -198,28 +202,37 @@ describe('ComplianceReportsApp component', () => {
         },
         {
           adherenceReportUiEnabled: true,
+          complianceFrameworkReportUiEnabled: true,
         },
       );
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
     });
 
-    it('tracks clicks on framework tab', async () => {
-      await findFrameworksTab().vm.$emit('click');
+    it('tracks clicks on framework tab', () => {
+      findFrameworksTab().vm.$emit('click');
 
       expect(trackingSpy).toHaveBeenCalledTimes(1);
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_report_tab', {
         label: 'frameworks',
       });
     });
-    it('tracks clicks on adherence tab', async () => {
-      await findStandardsAdherenceTab().vm.$emit('click');
+    it('tracks clicks on projects tab', () => {
+      findProjectsTab().vm.$emit('click');
+
+      expect(trackingSpy).toHaveBeenCalledTimes(1);
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_report_tab', {
+        label: 'projects',
+      });
+    });
+    it('tracks clicks on adherence tab', () => {
+      findStandardsAdherenceTab().vm.$emit('click');
 
       expect(trackingSpy).toHaveBeenCalledTimes(1);
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_report_tab', {
         label: 'standards_adherence',
       });
     });
-    it('tracks clicks on violations tab', async () => {
+    it('tracks clicks on violations tab', () => {
       // Can't navigate to a page we are already on so use a different tab to start with
       wrapper = createComponent(defaultProps, mount, {
         $route: {
@@ -227,7 +240,7 @@ describe('ComplianceReportsApp component', () => {
         },
       });
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-      await findViolationsTab().vm.$emit('click');
+      findViolationsTab().vm.$emit('click');
 
       expect(trackingSpy).toHaveBeenCalledTimes(1);
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_report_tab', {
