@@ -123,7 +123,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
 
           let(:file_name) { "file.#{ext}" }
           let(:single_line_comment) do
-            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).comment_format[:single]
+            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).send(:comment_format)[:single]
           end
 
           it_behaves_like 'correct task detector'
@@ -136,7 +136,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           let(:case_insensitive_prefixes) { Array.new(4, '') }
           let(:file_name) { "file.#{ext}" }
           let(:single_line_comment) do
-            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).comment_format[:single]
+            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).send(:comment_format)[:single]
           end
 
           it_behaves_like 'correct task detector'

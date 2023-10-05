@@ -3,32 +3,6 @@
 require 'fast_spec_helper'
 
 RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_suggestions do
-  describe '.comment_format' do
-    subject { language.comment_format }
-
-    described_class::LANGUAGE_COMMENT_FORMATS.each do |languages, format|
-      languages.each do |lang|
-        context "for the language #{lang}" do
-          let(:language) { described_class.from_language(lang) }
-
-          it { is_expected.to eq(format) }
-        end
-      end
-    end
-
-    context 'for unknown language' do
-      let(:language) { described_class.from_language('unknown') }
-
-      it { is_expected.to eq(described_class::DEFAULT_FORMAT) }
-    end
-
-    context 'for an unspecified language' do
-      let(:language) { described_class.from_language('') }
-
-      it { is_expected.to eq(described_class::DEFAULT_FORMAT) }
-    end
-  end
-
   describe '.detect_from_filename' do
     subject { described_class.detect_from_filename(file_name)&.name }
 
@@ -61,6 +35,41 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
     end
   end
 
+  describe '#single_line_comment_format' do
+    subject { language.single_line_comment_format }
+
+    described_class::LANGUAGE_COMMENT_FORMATS.each do |languages, format|
+      languages.each do |lang|
+        context "for the language #{lang}" do
+          let(:language) { described_class.from_language(lang) }
+          let(:expected_format) { format[:single_regexp] || format[:single] }
+
+          it { is_expected.to eq(expected_format) }
+        end
+      end
+    end
+
+    context 'for unknown language' do
+      let(:language) { described_class.from_language('unknown') }
+
+      it { is_expected.to eq(described_class::DEFAULT_FORMAT[:single_regexp]) }
+    end
+
+    context 'for an unspecified language' do
+      let(:language) { described_class.from_language('') }
+
+      it { is_expected.to eq(described_class::DEFAULT_FORMAT[:single_regexp]) }
+    end
+
+    context 'when single_regexp is specified' do
+      let(:language) { described_class.from_language('VBScript') }
+
+      it 'will prefer regexp to string' do
+        is_expected.to be_a(Regexp)
+      end
+    end
+  end
+
   describe '.single_line_comment?' do
     subject { language.single_line_comment?(content) }
 
@@ -68,7 +77,7 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
       languages.each do |lang|
         context "for the language #{lang}", unless: lang == 'OCaml' do
           let(:language) { described_class.from_language(lang) }
-          let(:single_line_comment_format) { language.comment_format[:single] }
+          let(:single_line_comment_format) { language.send(:comment_format)[:single] }
 
           context "when it is a comment" do
             let(:content) { "#{single_line_comment_format} this is a comment " }
@@ -114,14 +123,6 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
         let(:content) { "REM this is a comment " }
 
         it { is_expected.to be_truthy }
-      end
-    end
-  end
-
-  describe '.single_line_comment_format' do
-    context 'when single_regexp is specified' do
-      it 'will prefer regexp to string' do
-        expect(described_class.from_language('VBScript').single_line_comment_format).to be_a(Regexp)
       end
     end
   end
