@@ -75,9 +75,10 @@ module Security
         return fixed_note_body if reports.empty?
 
         message = reports == optional_approval_reports ? MESSAGE_REQUIRES_NO_APPROVAL : MESSAGE_REQUIRES_APPROVAL
+        optional_approvals_sorted_list = optional_approval_reports.sort.join(',')
         <<~MARKDOWN
-          <!-- violated_reports: #{reports.join(',')} -->
-          #{"<!-- optional_approvals: #{optional_approval_reports.join(',')} -->" if optional_approval_reports.any?}
+          <!-- violated_reports: #{reports.sort.join(',')} -->
+          #{"<!-- optional_approvals: #{optional_approvals_sorted_list} -->" if optional_approval_reports.any?}
           | :warning: **Policy violation(s) detected**|
           | ----------------------------------------- |
           | #{message}                                |
