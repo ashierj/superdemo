@@ -12,6 +12,12 @@ module Emails
       'X-Mailgun-Tag' => 'marketing'
     }.freeze
 
+    def account_validation_email(pipeline, recipient_email)
+      @message = ::Gitlab::Email::Message::AccountValidation.new(pipeline)
+
+      mail_to(to: recipient_email, subject: @message.subject_line)
+    end
+
     private
 
     def mail_to(to:, subject:)
@@ -32,5 +38,3 @@ module Emails
     end
   end
 end
-
-Emails::InProductMarketing.prepend_mod

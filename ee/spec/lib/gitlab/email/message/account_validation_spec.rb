@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Email::Message::AccountValidation do
+RSpec.describe Gitlab::Email::Message::AccountValidation, feature_category: :instance_resiliency do
   let_it_be(:namespace) { create(:namespace) }
   let_it_be(:project) { create(:project, :repository, namespace: namespace) }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
@@ -22,5 +22,9 @@ RSpec.describe Gitlab::Email::Message::AccountValidation do
     expect(message.cta2_text).to eq "I'll bring my own runners"
     expect(message.logo_path).to eq 'mailers/in_product_marketing/verify-2.png'
     expect(message.unsubscribe).to include('%tag_unsubscribe_url%')
+    expect(message.cta_link).to include('Validate your account')
+    expect(message.cta2_link).to include('bring my own runners')
+    expect(message.footer_links).to all(match(/Blog|Twitter|Facebook|YouTube/))
+    expect(message.address).to include('GitLab Inc')
   end
 end

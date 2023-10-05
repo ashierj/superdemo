@@ -3,11 +3,25 @@
 require 'spec_helper'
 require 'email_spec'
 
-RSpec.describe Emails::InProductMarketing do
+RSpec.describe Emails::InProductMarketing, feature_category: :instance_resiliency do
   include EmailSpec::Matchers
   include Gitlab::Routing.url_helpers
 
   let_it_be(:user) { create(:user) }
+
+  it 'has correct custom headers' do
+    headers = {
+      from: 'GitLab <team@gitlab.com>',
+      reply_to: 'GitLab <team@gitlab.com>',
+      'X-Mailgun-Track' => 'yes',
+      'X-Mailgun-Track-Clicks' => 'yes',
+      'X-Mailgun-Track-Opens' => 'yes',
+      'X-Mailgun-Tag' => 'marketing'
+    }
+
+    expect(described_class::FROM_ADDRESS).to be('GitLab <team@gitlab.com>')
+    expect(described_class::CUSTOM_HEADERS).to eq(headers)
+  end
 
   describe '#account_validation_email' do
     let_it_be(:namespace) { create(:namespace) }
