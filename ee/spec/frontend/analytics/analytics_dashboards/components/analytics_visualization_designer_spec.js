@@ -2,6 +2,7 @@ import { nextTick } from 'vue';
 import { __setMockMetadata } from '@cubejs-client/core';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 
 import { HTTP_STATUS_CREATED, HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { createAlert } from '~/alert';
@@ -9,7 +10,7 @@ import { createAlert } from '~/alert';
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 
 import AnalyticsVisualizationDesigner from 'ee/analytics/analytics_dashboards/components/analytics_visualization_designer.vue';
-import VisualizationInspector from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_inspector.vue';
+import VisualizationTypeSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_type_selector.vue';
 
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
 
@@ -36,7 +37,8 @@ describe('AnalyticsVisualizationDesigner', () => {
   const findDimensionSelector = () => wrapper.findByTestId('panel-dimension-selector');
   const findSaveButton = () => wrapper.findByTestId('visualization-save-btn');
   const findQueryBuilder = () => wrapper.findByTestId('query-builder');
-  const findVisualizationInspector = () => wrapper.findComponent(VisualizationInspector);
+  const findTypeFormGroup = () => wrapper.findByTestId('visualization-type-form-group');
+  const findTypeSelector = () => wrapper.findComponent(VisualizationTypeSelector);
 
   const setVisualizationTitle = async (newTitle = '') => {
     await findTitleInput().vm.$emit('input', newTitle);
@@ -47,7 +49,7 @@ describe('AnalyticsVisualizationDesigner', () => {
   };
 
   const setVisualizationType = (type = '') => {
-    findVisualizationInspector().vm.$emit('selectVisualizationType', type);
+    findTypeSelector().vm.$emit('selectVisualizationType', type);
   };
 
   const setAllRequiredFields = async () => {
@@ -82,6 +84,9 @@ describe('AnalyticsVisualizationDesigner', () => {
         RouterView: true,
         BuilderComponent,
         QueryBuilder,
+        VisualizationTypeSelector: stubComponent(VisualizationTypeSelector, {
+          template: `<div><button>Dropdown</button></div>`,
+        }),
       },
       mocks,
       provide: {
@@ -161,6 +166,37 @@ describe('AnalyticsVisualizationDesigner', () => {
       });
     });
 
+    describe('and there is no visualization type selected', () => {
+      const findDropdownButton = () => findTypeSelector().find('button').element;
+
+      beforeEach(() => {
+        findDropdownButton().focus = jest.fn();
+
+        return findSaveButton().vm.$emit('click');
+      });
+
+      it('does not save the dashboard', () => {
+        expect(saveProductAnalyticsVisualization).not.toHaveBeenCalled();
+      });
+
+      it('shows the invalid state on the type selector', () => {
+        expect(findTypeFormGroup().attributes('state')).toBe(undefined);
+        expect(findTypeFormGroup().attributes('invalid-feedback')).toBe('This field is required.');
+      });
+
+      it('sets focus on the dashboard type dropdown button', () => {
+        expect(findDropdownButton().focus).toHaveBeenCalled();
+      });
+
+      describe('and a user then selects a type', () => {
+        beforeEach(() => setVisualizationType('SingleStat'));
+
+        it('shows type selector as valid', () => {
+          expect(findTypeFormGroup().attributes('state')).toBe('true');
+        });
+      });
+    });
+
     it('creates an alert when the measurement is not selected', async () => {
       await setVisualizationTitle('New Title');
       setVisualizationType('SingleStat');
@@ -168,18 +204,6 @@ describe('AnalyticsVisualizationDesigner', () => {
       await findSaveButton().vm.$emit('click');
       expect(createAlert).toHaveBeenCalledWith({
         message: 'Select a measurement',
-        captureError: false,
-        error: null,
-      });
-    });
-
-    it('creates an alert when the visualization type is not selected', async () => {
-      await setVisualizationTitle('New Title');
-      setMeasurement('pageViews', 'all');
-
-      await findSaveButton().vm.$emit('click');
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Select a visualization type',
         captureError: false,
         error: null,
       });
