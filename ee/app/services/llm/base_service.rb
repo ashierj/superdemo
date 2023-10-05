@@ -84,17 +84,8 @@ module Llm
         options: job_options
       )
 
-      if development_sync_execution?
-        ::Llm::CompletionWorker.perform_inline(
-          message.user.id, message.resource&.id, message.resource&.class&.name, message.ai_action, job_options)
-      else
-        ::Llm::CompletionWorker.perform_async(
-          message.user.id, message.resource&.id, message.resource&.class&.name, message.ai_action, job_options)
-      end
-    end
-
-    def development_sync_execution?
-      Gitlab.dev_or_test_env? && Gitlab::Utils.to_boolean(ENV['LLM_DEVELOPMENT_SYNC_EXECUTION'])
+      ::Llm::CompletionWorker.perform_async(
+        message.user.id, message.resource&.id, message.resource&.class&.name, message.ai_action, job_options)
     end
 
     def success(payload)

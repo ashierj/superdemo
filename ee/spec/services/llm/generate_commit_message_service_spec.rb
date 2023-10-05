@@ -29,7 +29,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
         group.add_developer(user)
       end
 
-      it_behaves_like 'completion worker sync and async' do
+      it_behaves_like 'schedules completion worker' do
         let(:action_name) { :generate_commit_message }
       end
     end
