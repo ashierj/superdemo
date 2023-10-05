@@ -8,6 +8,7 @@ module CodeSuggestions
 
         def request_params
           {
+            model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
             prompt: prompt,
             prompt_version: GATEWAY_PROMPT_VERSION
           }
