@@ -11,4 +11,8 @@ FactoryBot.define do
     uuid { SecureRandom.uuid }
     traits_for_enum :dismissal_reason, Vulnerabilities::DismissalReasonEnum.values.keys
   end
+
+  trait :with_remediations do
+    has_remediations { true }
+  end
 end
