@@ -148,7 +148,7 @@ export default {
         <div v-else class="col-12 gl-mt-4">
           <div class="text-content text-center gl-text-gray-400">
             <h3 class="gl-text-gray-400">
-              {{ s__('Analytics|Choose a chart type on the right') }}
+              {{ s__('Analytics|Select a visualization type') }}
             </h3>
           </div>
         </div>
