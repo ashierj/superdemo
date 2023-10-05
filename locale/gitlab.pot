@@ -1838,9 +1838,6 @@ msgstr ""
 msgid "A parent must be provided when bulk updating issuables"
 msgstr ""
 
-msgid "A personal access token has been revoked"
-msgstr ""
-
 msgid "A personal access token, named %{code_start}%{token_name}%{code_end}, has been revoked."
 msgstr ""
 
@@ -55194,6 +55191,9 @@ msgid "Your password"
 msgstr ""
 
 msgid "Your password reset token has expired."
+msgstr ""
+
+msgid "Your personal access token has been revoked"
 msgstr ""
 
 msgid "Your personal access tokens have expired"
