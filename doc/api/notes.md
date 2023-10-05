@@ -8,6 +8,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 Notes are comments on:
 
+- [Commits](../user/project/repository/index.md#commit-changes-to-a-repository)
 - [Epics](../user/group/epics/index.md)
 - [Issues](../user/project/issues/index.md)
 - [Merge requests](../user/project/merge_requests/index.md)
