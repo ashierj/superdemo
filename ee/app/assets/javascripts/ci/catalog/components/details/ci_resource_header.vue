@@ -72,7 +72,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-border-b">
+  <div>
     <ci-resource-header-skeleton-loader v-if="isLoadingSharedData" class="gl-py-5" />
     <div v-else class="gl-display-flex gl-py-5">
       <gl-avatar-link :href="resource.webPath">

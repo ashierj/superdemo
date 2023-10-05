@@ -1,5 +1,5 @@
 <script>
-import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -14,7 +14,6 @@ export default {
     CiResourceDetails,
     CiResourceHeader,
     GlEmptyState,
-    GlLoadingIcon,
   },
   inject: ['ciCatalogPath'],
   data() {
@@ -104,8 +103,7 @@ export default {
         :pipeline-status="pipelineStatus"
         :resource="resourceSharedData"
       />
-      <gl-loading-icon v-if="isLoadingDetails" size="lg" class="gl-mt-5" />
-      <ci-resource-details v-else :readme-html="resourceAdditionalDetails.readmeHtml" />
+      <ci-resource-details :resource-id="graphQLId" />
     </div>
   </div>
 </template>

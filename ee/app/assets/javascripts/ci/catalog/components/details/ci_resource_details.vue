@@ -1,16 +1,33 @@
 <script>
-import SafeHtml from '~/vue_shared/directives/safe_html';
+import { GlTab, GlTabs } from '@gitlab/ui';
+import { __ } from '~/locale';
+import CiResourceReadme from './ci_resource_readme.vue';
 
 export default {
-  directives: { SafeHtml },
+  components: {
+    CiResourceReadme,
+    GlTab,
+    GlTabs,
+  },
   props: {
-    readmeHtml: {
-      required: true,
+    resourceId: {
       type: String,
+      required: true,
+    },
+  },
+  i18n: {
+    tabs: {
+      readme: __('Readme'),
     },
   },
 };
 </script>
+
 <template>
-  <div v-safe-html="readmeHtml"></div>
+  <gl-tabs>
+    <gl-tab :title="$options.i18n.tabs.readme" lazy>
+      <ci-resource-readme :resource-id="resourceId" />
+    </gl-tab>
+  </gl-tabs>
 </template>
+<style></style>

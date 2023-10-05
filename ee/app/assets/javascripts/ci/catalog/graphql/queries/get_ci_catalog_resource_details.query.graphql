@@ -1,7 +1,6 @@
 query getCiCatalogResourceDetails($id: CiCatalogResourceID!) {
   ciCatalogResource(id: $id) {
     id
-    readmeHtml
     openIssuesCount
     openMergeRequestsCount
     versions(first: 1) {
