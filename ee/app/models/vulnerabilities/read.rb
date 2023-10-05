@@ -27,6 +27,7 @@ module Vulnerabilities
     validates :has_issues, inclusion: { in: [true, false], message: N_('must be a boolean value') }
     validates :has_merge_request, inclusion: { in: [true, false], message: N_('must be a boolean value') }
     validates :resolved_on_default_branch, inclusion: { in: [true, false], message: N_('must be a boolean value') }
+    validates :has_remediations, inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
     enum state: ::Enums::Vulnerability.vulnerability_states
     enum report_type: ::Enums::Vulnerability.report_types
@@ -52,6 +53,7 @@ module Vulnerabilities
     scope :with_resolution, -> (has_resolution = true) { where(resolved_on_default_branch: has_resolution) }
     scope :with_issues, -> (has_issues = true) { where(has_issues: has_issues) }
     scope :with_merge_request, -> (has_merge_request = true) { where(has_merge_request: has_merge_request) }
+    scope :with_remediations, -> (has_remediations = true) { where(has_remediations: has_remediations) }
     scope :with_scanner_external_ids, -> (scanner_external_ids) { joins(:scanner).merge(::Vulnerabilities::Scanner.with_external_id(scanner_external_ids)) }
     scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, finding_identifiers: :identifier] }) }
     scope :resolved_on_default_branch, -> { where('resolved_on_default_branch IS TRUE') }

@@ -32,6 +32,7 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
 
     it { is_expected.to validate_inclusion_of(:has_issues).in_array([true, false]) }
     it { is_expected.to validate_inclusion_of(:has_merge_request).in_array([true, false]) }
+    it { is_expected.to validate_inclusion_of(:has_remediations).in_array([true, false]) }
 
     it { is_expected.to validate_inclusion_of(:resolved_on_default_branch).in_array([true, false]) }
   end
@@ -587,6 +588,33 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
 
     it 'returns records by given scanner' do
       expect(vulnerability_reads.pluck(:vulnerability_id)).to match_array([vulnerability.id])
+    end
+  end
+
+  describe '.with_remediations' do
+    let_it_be(:vulnerability_read_with_remediations) { create(:vulnerability_read, :with_remediations) }
+    let_it_be(:vulnerability_read_without_remediations) { create(:vulnerability_read) }
+
+    subject { described_class.with_remediations(has_remediations) }
+
+    context 'when no argument is provided' do
+      subject { described_class.with_remediations }
+
+      it { is_expected.to match_array([vulnerability_read_with_remediations]) }
+    end
+
+    context 'when the argument is provided' do
+      context 'when the given argument is `true`' do
+        let(:has_remediations) { true }
+
+        it { is_expected.to match_array([vulnerability_read_with_remediations]) }
+      end
+
+      context 'when the given argument is `false`' do
+        let(:has_remediations) { false }
+
+        it { is_expected.to match_array([vulnerability_read_without_remediations]) }
+      end
     end
   end
 
