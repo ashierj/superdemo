@@ -102,7 +102,7 @@ module QA
 
               Page::Project::Menu.perform(&:go_to_general_settings)
               settings.expand_advanced_settings do |advanced_settings|
-                advanced_settings.scroll_to_element(:export_project_content)
+                advanced_settings.scroll_to_element('export-project-content')
                 advanced_settings.has_download_export_link?
               end
             end
