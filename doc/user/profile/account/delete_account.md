@@ -61,7 +61,6 @@ When deleting users, you can either:
 - Delete the user and their contributions, including:
   - Abuse reports.
   - Emoji reactions.
-  - Epics.
   - Groups of which the user is the only user with the Owner role.
   - Personal access tokens.
   - Epics.
