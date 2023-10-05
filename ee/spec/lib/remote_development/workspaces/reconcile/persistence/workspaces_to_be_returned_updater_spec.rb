@@ -12,7 +12,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       :without_realistic_after_create_timestamp_updates,
       name: "workspace1",
       agent: agent,
-      user: user
+      user: user,
+      force_include_all_resources: false
     )
   end
 
@@ -22,7 +23,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       :without_realistic_after_create_timestamp_updates,
       name: "workspace2",
       agent: agent,
-      user: user
+      user: user,
+      force_include_all_resources: false
     )
   end
 

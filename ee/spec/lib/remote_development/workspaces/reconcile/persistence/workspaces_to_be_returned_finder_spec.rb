@@ -13,6 +13,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       name: "workspace_only_returned_by_full_update",
       agent: agent,
       user: user,
+      force_include_all_resources: false,
       responded_to_agent_at: 2.hours.ago
     )
   end
@@ -26,6 +27,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       actual_state: RemoteDevelopment::Workspaces::States::TERMINATED,
       agent: agent,
       user: user,
+      force_include_all_resources: false,
       responded_to_agent_at: 2.hours.ago
     )
   end
@@ -37,6 +39,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       name: "workspace_from_agent_info",
       agent: agent,
       user: user,
+      force_include_all_resources: false,
       responded_to_agent_at: 2.hours.ago
     )
   end
@@ -48,6 +51,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       name: "workspace_with_new_update_to_desired_state",
       agent: agent,
       user: user,
+      force_include_all_resources: false,
       responded_to_agent_at: 2.hours.ago
     )
   end
@@ -58,6 +62,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       name: "workspace_with_force_include_all_resources",
       agent: agent,
       user: user,
+      force_include_all_resources: true,
       responded_to_agent_at: 2.hours.ago
     )
   end
@@ -167,7 +172,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       [
         # Does NOT include workspace_only_returned_by_full_update
         workspace_from_agent_info,
-        workspace_with_new_update_to_desired_state
+        workspace_with_new_update_to_desired_state,
+        workspace_with_force_include_all_resources
       ]
     end
 

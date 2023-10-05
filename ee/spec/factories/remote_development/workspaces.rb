@@ -9,6 +9,7 @@ FactoryBot.define do
 
     name { "workspace-#{agent.id}-#{user.id}-#{random_string}" }
     config_version { RemoteDevelopment::Workspaces::ConfigVersion::VERSION_2 }
+    force_include_all_resources { true }
 
     add_attribute(:namespace) { "gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}" }
 
