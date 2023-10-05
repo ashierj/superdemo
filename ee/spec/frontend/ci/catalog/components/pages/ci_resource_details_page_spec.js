@@ -10,7 +10,6 @@ import { cacheConfig } from 'ee/ci/catalog/graphql/settings';
 import getCiCatalogResourceSharedData from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_shared_data.query.graphql';
 import getCiCatalogResourceDetails from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_details.query.graphql';
 
-import CiResourceAbout from 'ee/ci/catalog/components/details/ci_resource_about.vue';
 import CiResourceDetails from 'ee/ci/catalog/components/details/ci_resource_details.vue';
 import CiResourceDetailsPage from 'ee/ci/catalog/components/pages/ci_resource_details_page.vue';
 import CiResourceHeader from 'ee/ci/catalog/components/details/ci_resource_header.vue';
@@ -39,7 +38,6 @@ describe('CiResourceDetailsPage', () => {
     ciCatalogPath: '/ci/catalog/resources',
   };
 
-  const findAboutComponent = () => wrapper.findComponent(CiResourceAbout);
   const findDetailsComponent = () => wrapper.findComponent(CiResourceDetails);
   const findHeaderComponent = () => wrapper.findComponent(CiResourceHeader);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
@@ -96,10 +94,10 @@ describe('CiResourceDetailsPage', () => {
         expect(findHeaderSkeletonLoader().exists()).toBe(false);
       });
 
-      it('passes down the loading state to the about component', () => {
+      it('passes down the loading state to the header component', () => {
         sharedDataResponse.mockReturnValueOnce(catalogSharedDataMock);
 
-        expect(findAboutComponent().props()).toMatchObject({
+        expect(findHeaderComponent().props()).toMatchObject({
           isLoadingDetails: true,
           isLoadingSharedData: false,
         });
@@ -115,11 +113,10 @@ describe('CiResourceDetailsPage', () => {
 
       it('renders all loading states', () => {
         expect(findLoadingIcon().exists()).toBe(true);
-        expect(findHeaderSkeletonLoader().exists()).toBe(true);
       });
 
-      it('passes down the loading state to the about component', () => {
-        expect(findAboutComponent().props()).toMatchObject({
+      it('passes down the loading state to the header component', () => {
+        expect(findHeaderComponent().props()).toMatchObject({
           isLoadingDetails: true,
           isLoadingSharedData: true,
         });
@@ -164,32 +161,13 @@ describe('CiResourceDetailsPage', () => {
 
       it('passes expected props', () => {
         expect(findHeaderComponent().props()).toEqual({
-          description: defaultSharedData.description,
-          icon: defaultSharedData.icon,
-          latestVersion: defaultSharedData.latestVersion,
-          name: defaultSharedData.name,
-          pipelineStatus:
-            defaultAdditionalData.versions.nodes[0].commit.pipelines.nodes[0].detailedStatus,
-          resourceId: defaultSharedData.id,
-          rootNamespace: defaultSharedData.rootNamespace,
-          webPath: defaultSharedData.webPath,
-        });
-      });
-    });
-
-    describe('Catalog about', () => {
-      it('exists', () => {
-        expect(findAboutComponent().exists()).toBe(true);
-      });
-
-      it('passes expected props', () => {
-        expect(findAboutComponent().props()).toEqual({
           isLoadingDetails: false,
           isLoadingSharedData: false,
           openIssuesCount: defaultAdditionalData.openIssuesCount,
           openMergeRequestsCount: defaultAdditionalData.openMergeRequestsCount,
-          latestVersion: defaultSharedData.latestVersion,
-          webPath: defaultSharedData.webPath,
+          pipelineStatus:
+            defaultAdditionalData.versions.nodes[0].commit.pipelines.nodes[0].detailedStatus,
+          resource: defaultSharedData,
         });
       });
     });

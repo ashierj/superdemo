@@ -3,54 +3,50 @@ import { GlAvatar, GlAvatarLink, GlBadge } from '@gitlab/ui';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { isNumeric } from '~/lib/utils/number_utils';
 import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
+import CiResourceAbout from './ci_resource_about.vue';
+import CiResourceHeaderSkeletonLoader from './ci_resource_header_skeleton_loader.vue';
 
 export default {
   components: {
     CiBadgeLink,
+    CiResourceAbout,
+    CiResourceHeaderSkeletonLoader,
     GlAvatar,
     GlAvatarLink,
     GlBadge,
   },
   props: {
-    description: {
-      type: String,
+    isLoadingDetails: {
+      type: Boolean,
       required: true,
     },
-    icon: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    latestVersion: {
-      required: false,
-      type: Object,
-      default: () => ({}),
-    },
-    name: {
-      type: String,
+    isLoadingSharedData: {
+      type: Boolean,
       required: true,
+    },
+    openIssuesCount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    openMergeRequestsCount: {
+      type: Number,
+      required: false,
+      default: 0,
     },
     pipelineStatus: {
       type: Object,
       required: false,
       default: () => ({}),
     },
-    resourceId: {
-      type: String,
-      required: true,
-    },
-    rootNamespace: {
+    resource: {
       type: Object,
       required: true,
-    },
-    webPath: {
-      required: true,
-      type: String,
     },
   },
   computed: {
     entityId() {
-      return getIdFromGraphQLId(this.resourceId);
+      return getIdFromGraphQLId(this.resource.id);
     },
     fullPath() {
       return `${this.rootNamespace.fullPath}/${this.rootNamespace.name}`;
@@ -60,6 +56,12 @@ export default {
     },
     hasPipelineStatus() {
       return this.pipelineStatus?.text;
+    },
+    latestVersion() {
+      return this.resource.latestVersion;
+    },
+    rootNamespace() {
+      return this.resource.rootNamespace;
     },
     versionBadgeText() {
       return isNumeric(this.latestVersion.tagName)
@@ -71,16 +73,16 @@ export default {
 </script>
 <template>
   <div class="gl-border-b">
-    <div class="gl-display-flex gl-py-5">
-      <img />
-      <gl-avatar-link :href="webPath">
+    <ci-resource-header-skeleton-loader v-if="isLoadingSharedData" class="gl-py-5" />
+    <div v-else class="gl-display-flex gl-py-5">
+      <gl-avatar-link :href="resource.webPath">
         <gl-avatar
           class="gl-mr-4"
           :entity-id="entityId"
-          :entity-name="name"
+          :entity-name="resource.name"
           shape="rect"
           :size="64"
-          :src="icon"
+          :src="resource.icon"
         />
       </gl-avatar-link>
       <div
@@ -90,7 +92,7 @@ export default {
           {{ fullPath }}
         </div>
         <span class="gl-display-flex">
-          <div class="gl-font-lg gl-font-weight-bold">{{ name }}</div>
+          <div class="gl-font-lg gl-font-weight-bold">{{ resource.name }}</div>
           <gl-badge
             v-if="hasLatestVersion"
             size="sm"
@@ -109,8 +111,20 @@ export default {
         />
       </div>
     </div>
-    <p>
-      {{ description }}
+    <ci-resource-about
+      :is-loading-details="isLoadingDetails"
+      :is-loading-shared-data="isLoadingSharedData"
+      :open-issues-count="openIssuesCount"
+      :open-merge-requests-count="openMergeRequestsCount"
+      :latest-version="latestVersion"
+      :web-path="resource.webPath"
+    />
+    <div
+      v-if="isLoadingSharedData"
+      class="gl-animate-skeleton-loader gl-h-4 gl-rounded-base gl-my-3 gl-max-w-20!"
+    ></div>
+    <p v-else class="gl-mt-3">
+      {{ resource.description }}
     </p>
   </div>
 </template>

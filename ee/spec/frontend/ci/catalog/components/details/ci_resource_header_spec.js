@@ -3,18 +3,24 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiResourceHeader from 'ee/ci/catalog/components/details/ci_resource_header.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
+import CiResourceAbout from 'ee/ci/catalog/components/details/ci_resource_about.vue';
+import { catalogSharedDataMock, catalogAdditionalDetailsMock } from '../../mock';
 
 describe('CiResourceHeader', () => {
   let wrapper;
 
+  const resource = { ...catalogSharedDataMock.data.ciCatalogResource };
+  const resourceAdditionalData = { ...catalogAdditionalDetailsMock.data.ciCatalogResource };
+
   const defaultProps = {
-    description: 'This is the description of the repo',
-    name: 'Ruby',
-    resourceId: '1',
-    rootNamespace: { id: 1, fullPath: '/group/project', name: 'my-dumb-project' },
-    webPath: 'path/to/project',
+    openIssuesCount: resourceAdditionalData.openIssuesCount,
+    openMergeRequestsCount: resourceAdditionalData.openMergeRequestsCount,
+    isLoadingDetails: false,
+    isLoadingSharedData: false,
+    resource,
   };
 
+  const findAboutComponent = () => wrapper.findComponent(CiResourceAbout);
   const findAvatar = () => wrapper.findComponent(GlAvatar);
   const findAvatarLink = () => wrapper.findComponent(GlAvatarLink);
   const findVersionBadge = () => wrapper.findComponent(GlBadge);
@@ -35,28 +41,57 @@ describe('CiResourceHeader', () => {
     });
 
     it('renders the project name and description', () => {
-      expect(wrapper.html()).toContain(defaultProps.name);
-      expect(wrapper.html()).toContain(defaultProps.description);
+      expect(wrapper.html()).toContain(resource.name);
+      expect(wrapper.html()).toContain(resource.description);
     });
 
     it('renders the namespace and project path', () => {
-      expect(wrapper.html()).toContain(defaultProps.rootNamespace.fullPath);
-      expect(wrapper.html()).toContain(defaultProps.rootNamespace.name);
-    });
-
-    it('does not render release information', () => {
-      expect(findVersionBadge().exists()).toBe(false);
-      expect(findPipelineStatusBadge().exists()).toBe(false);
+      expect(wrapper.html()).toContain(resource.rootNamespace.fullPath);
+      expect(wrapper.html()).toContain(resource.rootNamespace.name);
     });
 
     it('renders the avatar', () => {
-      const { resourceId, name } = defaultProps;
+      const { id, name } = resource;
 
       expect(findAvatar().exists()).toBe(true);
       expect(findAvatarLink().exists()).toBe(true);
       expect(findAvatar().props()).toMatchObject({
-        entityId: getIdFromGraphQLId(resourceId),
+        entityId: getIdFromGraphQLId(id),
         entityName: name,
+      });
+    });
+
+    it('renders the catalog about section and passes props', () => {
+      expect(findAboutComponent().exists()).toBe(true);
+      expect(findAboutComponent().props()).toEqual({
+        isLoadingDetails: false,
+        isLoadingSharedData: false,
+        openIssuesCount: defaultProps.openIssuesCount,
+        openMergeRequestsCount: defaultProps.openMergeRequestsCount,
+        latestVersion: resource.latestVersion,
+        webPath: resource.webPath,
+      });
+    });
+  });
+
+  describe('Version badge', () => {
+    describe('without a version', () => {
+      beforeEach(() => {
+        createComponent({ props: { resource: { ...resource, latestVersion: null } } });
+      });
+
+      it('does not render', () => {
+        expect(findVersionBadge().exists()).toBe(false);
+      });
+    });
+
+    describe('with a version', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('renders', () => {
+        expect(findVersionBadge().exists()).toBe(true);
       });
     });
   });
