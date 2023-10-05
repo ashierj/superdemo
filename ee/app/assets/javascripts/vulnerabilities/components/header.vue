@@ -231,8 +231,10 @@ export default {
         />
       </div>
 
-      <div class="detail-page-header-actions align-items-center">
-        <label class="mb-0 mx-2">{{ __('Status') }}</label>
+      <div
+        class="detail-page-header-actions gl-display-flex gl-flex-wrap gl-gap-3 align-items-center"
+      >
+        <label class="mb-0">{{ __('Status') }}</label>
         <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="d-inline" />
         <vulnerability-state-dropdown
           v-else
@@ -245,7 +247,6 @@ export default {
           v-if="actionButtons.length > 1"
           :buttons="actionButtons"
           :disabled="isProcessingAction"
-          class="js-split-button"
           @createMergeRequest="createMergeRequest"
           @downloadPatch="downloadPatch"
         />
