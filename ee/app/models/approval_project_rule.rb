@@ -89,7 +89,11 @@ class ApprovalProjectRule < ApplicationRecord
 
   def apply_report_approver_rules_to(merge_request)
     rule = merge_request_report_approver_rule(merge_request)
-    rule.update!(report_approver_attributes)
+    Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
+      %w[approval_merge_request_rules users namespaces approval_merge_request_rules_users approval_merge_request_rules_groups],
+      url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/417459') do
+      rule.update!(report_approver_attributes)
+    end
     rule
   end
 
@@ -155,7 +159,7 @@ class ApprovalProjectRule < ApplicationRecord
   end
 
   def merge_request_report_approver_rule(merge_request)
-    if scan_finding? || license_scanning?
+    if scan_finding? || license_scanning? || any_merge_request?
       merge_request
         .approval_rules
         .report_approver
