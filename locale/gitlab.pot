@@ -53825,6 +53825,9 @@ msgstr ""
 msgid "WorkItem|Are you sure you want to delete the %{workItemType}? This action cannot be reversed."
 msgstr ""
 
+msgid "WorkItem|Assign parent"
+msgstr ""
+
 msgid "WorkItem|Assignee"
 msgid_plural "WorkItem|Assignees"
 msgstr[0] ""
@@ -53962,6 +53965,9 @@ msgstr ""
 msgid "WorkItem|Open"
 msgstr ""
 
+msgid "WorkItem|Parent"
+msgstr ""
+
 msgid "WorkItem|Promoted to objective."
 msgstr ""
 
@@ -54031,6 +54037,9 @@ msgstr ""
 msgid "WorkItem|Something went wrong while copying the %{workItemType} reference. Please try again."
 msgstr ""
 
+msgid "WorkItem|Something went wrong while fetching items. Please try again."
+msgstr ""
+
 msgid "WorkItem|Something went wrong while fetching milestones. Please try again."
 msgstr ""
 
@@ -54092,6 +54101,9 @@ msgid "WorkItem|Turn off confidentiality"
 msgstr ""
 
 msgid "WorkItem|Turn on confidentiality"
+msgstr ""
+
+msgid "WorkItem|Unassign"
 msgstr ""
 
 msgid "WorkItem|Undo"
