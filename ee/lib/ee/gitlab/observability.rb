@@ -13,7 +13,7 @@ module EE
         end
 
         def tracing_url(project)
-          "#{::Gitlab::Observability.observability_url}/query/#{project.group.id}/#{project.id}/v1/traces"
+          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/traces"
         end
       end
     end

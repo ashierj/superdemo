@@ -40,6 +40,6 @@ RSpec.describe Gitlab::Observability, feature_category: :tracing do
   describe '.tracing_url' do
     subject { described_class.tracing_url(project) }
 
-    it { is_expected.to eq("#{described_class.observability_url}/query/#{group.id}/#{project.id}/v1/traces") }
+    it { is_expected.to eq("#{described_class.observability_url}/v3/query/#{project.id}/traces") }
   end
 end
