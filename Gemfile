@@ -232,7 +232,7 @@ gem 'rack', '~> 2.2.8' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'rack-timeout', '~> 0.6.3', require: 'rack/timeout/base' # rubocop:todo Gemfile/MissingFeatureCategory
 
 group :puma do
-  gem 'puma', '~> 6.3', '>= 6.3.1', require: false # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'puma', '~> 6.4', require: false # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'sd_notify', '~> 0.1.0', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 end
 
