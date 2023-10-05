@@ -31,9 +31,10 @@ module Gitlab
           end
 
           def parse_content_and_metadata(content, md5sum, source_name, source_type)
-            metadata = if content.match?(metadata_regex)
+            match = content.match(metadata_regex)
+            metadata = if match
                          metadata = YAML.safe_load(content.match(metadata_regex)[:metadata])
-                         content = content.gsub(metadata_regex, '').strip
+                         content = match.post_match.strip
                          metadata
                        else
                          {}
@@ -102,7 +103,7 @@ module Gitlab
           private
 
           def metadata_regex
-            /\A---$\n(?<metadata>(?<anything>[^\n]|\n)+)---$/
+            /\A---(?<metadata>.*?)---/m
           end
         end
       end

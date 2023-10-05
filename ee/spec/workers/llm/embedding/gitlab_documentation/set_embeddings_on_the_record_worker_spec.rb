@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker, feature_category: :duo_chat do
+RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker,
+  :clean_gitlab_redis_shared_state, feature_category: :duo_chat do
   let(:success) { true }
   let(:version) { 112 }
   let(:older_version) { 111 }
@@ -144,6 +145,35 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
               # 3 = -2(:old_records) +1(:record) + 4(:records)
               change { ::Embedding::Vertex::GitlabDocumentation.for_version(older_version).count }.by(3)
             )
+          end
+
+          context 'when the exclusive lease is already locked' do
+            before do
+              lock_name = "#{described_class.name.underscore}/#{record.metadata['source']}"
+              allow(class_instance).to receive(:in_lock).with(lock_name, ttl: 1.minute, sleep_sec: 1)
+            end
+
+            it 'does not remove old records' do
+              expect { perform }.not_to change {
+                ::Embedding::Vertex::GitlabDocumentation.id_in(old_records.pluck(:id)).count
+              }
+            end
+
+            it 'does not cleanups up old records' do
+              expect { perform }.not_to change {
+                ::Embedding::Vertex::GitlabDocumentation.for_version(version).count
+              }
+            end
+          end
+        end
+
+        context 'when rate limit is hit' do
+          it 'enqueues the job for a later time' do
+            expect(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(true)
+            expect(described_class).to receive(:perform_in)
+            expect(ai_client).not_to receive(:text_embeddings)
+
+            expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.for_version(version).count }
           end
         end
       end

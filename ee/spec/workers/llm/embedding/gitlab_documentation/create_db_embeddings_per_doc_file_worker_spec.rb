@@ -131,19 +131,6 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::CreateDbEmbeddingsPerDocFile
           end
         end
       end
-
-      context 'when the exclusive lease is already locked for the version' do
-        before do
-          lock_name = "#{described_class.name.underscore}/version/#{next_version}"
-          allow(class_instance).to receive(:in_lock).with(lock_name, ttl: 10.minutes, sleep_sec: 1)
-        end
-
-        it 'does nothing' do
-          expect(Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker).not_to receive(:perform_in)
-
-          expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.count }
-        end
-      end
     end
   end
 end

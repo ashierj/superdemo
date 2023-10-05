@@ -108,6 +108,62 @@ RSpec.describe Gitlab::Llm::Embeddings::Utils::BaseContentParser, feature_catego
         expect(content).to eq('text')
         expect(metadata['title']).to eq(parser.title(content))
       end
+
+      context 'when content contains other dashes' do
+        let(:source_name) { '/doc/path/to/file.md' }
+        let(:source_type) { 'doc' }
+        let(:content_text) do
+          <<~CONTENT
+            # Heading 1 **(PREMIUM SELF)**
+
+            Instructions:
+
+            - bullet 1
+            - bullet 2
+
+            ## Some Yaml code with dashes
+
+            ```yaml
+            # my/events/packages.yaml
+
+            spec:
+              events:
+                - events/package/published
+                - events/audit/package/*
+              inputs:
+                env:
+            ---
+            do_something:
+              script: ./run_for $[[ event.name ]] --env $[[ inputs.env ]]
+              rules:
+                - if: $[[ event.payload.package.name ]] == "my_package"
+            ```
+          CONTENT
+        end
+
+        let(:input_content) do
+          <<~CONTENT
+            ---
+            info: Test Information
+            type: reference
+            group: Unknown
+            ---
+
+            #{content_text}
+          CONTENT
+        end
+
+        it 'extracts metadata from the content' do
+          content, metadata, _url = parse
+
+          expect(metadata.keys).to match_array(%w[info type group title md5sum source source_type])
+          expect(metadata['info']).to eq('Test Information')
+          expect(metadata['type']).to eq('reference')
+          expect(metadata['group']).to eq('Unknown')
+          expect(content).to eq(content_text.strip)
+          expect(metadata['title']).to eq('Heading 1')
+        end
+      end
     end
   end
 
