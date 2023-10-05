@@ -21,10 +21,6 @@ module Embedding
         nearest_neighbors(:embedding, embedding, distance: 'cosine').limit(limit)
       end
 
-      def self.current_version_cache_key
-        'vertex_gitlab_documentation:version:current'
-      end
-
       def self.current_version
         1
       end
