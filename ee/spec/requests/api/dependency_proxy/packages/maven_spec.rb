@@ -385,6 +385,22 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
       end
     end
 
+    context 'with invalid parameters' do
+      context 'with an invalid path' do
+        let(:path) { 'foo/bar/%0d%0ahttp:/%2fexample.com' }
+
+        it_behaves_like 'returning response status with error', status: :bad_request,
+          error: 'path should be a valid file path'
+      end
+
+      context 'with an invalid file name' do
+        let(:file_name) { '%0d%0ahttp:/%2fexample.com' }
+
+        it_behaves_like 'returning response status with error', status: :bad_request,
+          error: 'file_name should be a valid file path'
+      end
+    end
+
     context 'with a developer' do
       let(:headers) { { 'Private-Token' => personal_access_token.token } }
 
