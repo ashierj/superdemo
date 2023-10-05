@@ -138,11 +138,7 @@ module EE
         end
 
         def repository_out_of_date?(project)
-          if ::Geo::ProjectRepositoryReplicator.enabled?
-            ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
-          else
-            ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
-          end
+          ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
         end
       end
 
@@ -216,11 +212,7 @@ module EE
             return !::Geo::LfsObjectRegistry.oids_synced?(requested_oids)
           end
 
-          if ::Geo::ProjectRepositoryReplicator.enabled?
-            ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
-          else
-            ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
-          end
+          ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
         end
 
         def wanted_version

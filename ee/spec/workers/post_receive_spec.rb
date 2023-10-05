@@ -33,41 +33,27 @@ RSpec.describe PostReceive, feature_category: :shared do
         expect_next(Git::BranchPushService).to receive(:execute).and_return(true)
       end
 
-      context 'with geo_project_repository_replication feature flag disabled' do
+      context 'when on a Geo primary site' do
         before do
-          stub_feature_flags(geo_project_repository_replication: false)
-        end
-
-        it 'calls Geo::RepositoryUpdatedService when running on a Geo primary site' do
           stub_current_geo_node(primary)
-
-          expect(::Geo::RepositoryUpdatedService).to get_executed
-
-          described_class.new.perform(gl_repository, key_id, base64_changes)
         end
 
-        it 'does not call Geo::RepositoryUpdatedService when running on a Geo secondary site' do
-          stub_current_geo_node(secondary)
-
-          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+        it 'calls replicator to update Geo' do
+          expect_next_instance_of(Geo::ProjectRepositoryReplicator) do |instance|
+            expect(instance).to receive(:geo_handle_after_update)
+          end
 
           described_class.new.perform(gl_repository, key_id, base64_changes)
         end
       end
 
-      context 'with geo_project_repository_replication feature flag enabled' do
-        it "doesn't call Geo::RepositoryUpdatedService when running on a Geo primary site" do
-          stub_current_geo_node(primary)
-
-          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
-
-          described_class.new.perform(gl_repository, key_id, base64_changes)
+      context 'when not on a Geo primary site' do
+        before do
+          stub_current_geo_node(secondary)
         end
 
-        it 'does not call Geo::RepositoryUpdatedService when running on a Geo secondary site' do
-          stub_current_geo_node(secondary)
-
-          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+        it 'does not call replicator to update Geo' do
+          expect_next_instance_of(Geo::ProjectRepositoryReplicator).never
 
           described_class.new.perform(gl_repository, key_id, base64_changes)
         end
@@ -162,12 +148,6 @@ RSpec.describe PostReceive, feature_category: :shared do
           stub_current_geo_node(primary)
         end
 
-        it 'does not call Geo::RepositoryUpdatedService' do
-          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
-
-          described_class.new.perform(gl_repository, key_id, base64_changes)
-        end
-
         context 'when wiki is a project wiki' do
           let(:wiki) { build(:project_wiki, project: project) }
 
@@ -203,6 +183,10 @@ RSpec.describe PostReceive, feature_category: :shared do
       end
 
       context 'when not on a Geo primary site' do
+        before do
+          stub_current_geo_node(secondary)
+        end
+
         it 'does not call replicator to update Geo' do
           wiki.create_wiki_repository
 
@@ -236,6 +220,10 @@ RSpec.describe PostReceive, feature_category: :shared do
       end
 
       context 'when not on a Geo primary site' do
+        before do
+          stub_current_geo_node(secondary)
+        end
+
         it 'does not call replicator to update Geo' do
           expect_next_instance_of(Geo::DesignManagementRepositoryReplicator).never
 

@@ -53,7 +53,6 @@ module EE
 
       has_one :repository_state, class_name: 'ProjectRepositoryState', inverse_of: :project
       has_one :wiki_repository, class_name: 'Projects::WikiRepository', inverse_of: :project
-      has_one :project_registry, class_name: 'Geo::ProjectRegistry', inverse_of: :project
       has_one :push_rule, ->(project) { project&.feature_available?(:push_rules) ? all : none }, inverse_of: :project
       has_one :index_status
 
@@ -191,8 +190,6 @@ module EE
 
       scope :with_wiki_enabled, -> { with_feature_enabled(:wiki) }
       scope :within_shards, -> (shard_names) { where(repository_storage: Array(shard_names)) }
-      scope :verification_failed_repos, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_repos) }
-      scope :verification_failed_wikis, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_wikis) }
       scope :for_plan_name, -> (name) do
         joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name })
         .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
@@ -962,12 +959,6 @@ module EE
 
     def elastic_namespace_ancestry
       namespace.elastic_namespace_ancestry + "p#{id}-"
-    end
-
-    def log_geo_updated_events
-      repository.log_geo_updated_event
-      wiki_repository.geo_handle_after_update if wiki_repository
-      design_management_repository.geo_handle_after_update if design_management_repository
     end
 
     override :import?

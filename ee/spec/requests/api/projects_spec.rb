@@ -63,36 +63,6 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
       expect(response).to have_gitlab_http_status(:ok)
     end
 
-    context 'filters by verification flags' do
-      let(:project1) { create(:project, namespace: user.namespace) }
-
-      it 'filters by :repository_verification_failed' do
-        create(:repository_state, :repository_failed, project: project)
-        create(:repository_state, :wiki_failed, project: project1)
-
-        get api('/projects', user), params: { repository_checksum_failed: true }
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(response).to include_pagination_headers
-        expect(json_response).to be_an Array
-        expect(json_response.length).to eq(1)
-        expect(json_response.first['id']).to eq project.id
-      end
-
-      it 'filters by :wiki_verification_failed' do
-        create(:repository_state, :wiki_failed, project: project)
-        create(:repository_state, :repository_failed, project: project1)
-
-        get api('/projects', user), params: { wiki_checksum_failed: true }
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(response).to include_pagination_headers
-        expect(json_response).to be_an Array
-        expect(json_response.length).to eq(1)
-        expect(json_response.first['id']).to eq project.id
-      end
-    end
-
     context 'when there are several projects owned by groups' do
       let_it_be(:admin) { create(:admin) }
 

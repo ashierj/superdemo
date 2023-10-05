@@ -128,22 +128,9 @@ RSpec.describe Repository, feature_category: :source_code_management do
           repository.keep_around(sha)
         end
 
-        context 'when geo_project_repository_replication is enabled' do
-          it 'creates a Geo::Event', :sidekiq_inline do
-            expect { repository.keep_around(sha) }
-              .to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
-          end
-        end
-
-        context 'when geo_project_repository_replication is disabled' do
-          before do
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
-
-          it 'creates a Geo::RepositoryUpdatedEvent', :sidekiq_inline do
-            expect { repository.keep_around(sha) }
-              .to change { ::Geo::RepositoryUpdatedEvent.count }.by(1)
-          end
+        it 'creates a Geo::Event', :sidekiq_inline do
+          expect { repository.keep_around(sha) }
+            .to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
         end
       end
 
@@ -159,22 +146,9 @@ RSpec.describe Repository, feature_category: :source_code_management do
           repository.keep_around(sha, sample_big_commit.id)
         end
 
-        context 'when geo_project_repository_replication is enabled' do
-          it 'creates exactly one Geo::Event', :sidekiq_inline do
-            expect { repository.keep_around(sha, sample_big_commit.id) }
-              .to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
-          end
-        end
-
-        context 'when geo_project_repository_replication is disabled' do
-          before do
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
-
-          it 'creates exactly one Geo::RepositoryUpdatedEvent', :sidekiq_inline do
-            expect { repository.keep_around(sha, sample_big_commit.id) }
-              .to change { ::Geo::RepositoryUpdatedEvent.count }.by(1)
-          end
+        it 'creates exactly one Geo::Event', :sidekiq_inline do
+          expect { repository.keep_around(sha, sample_big_commit.id) }
+            .to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
         end
       end
     end
@@ -196,22 +170,9 @@ RSpec.describe Repository, feature_category: :source_code_management do
           repository.keep_around(sha, sample_big_commit.id)
         end
 
-        context 'when geo_project_repository_replication is enabled' do
-          it 'does not create a Geo::Event', :sidekiq_inline do
-            expect { repository.keep_around(sha) }
-              .not_to change { ::Geo::Event.count }
-          end
-        end
-
-        context 'when geo_project_repository_replication is disabled' do
-          before do
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
-
-          it 'does not create a Geo::RepositoryUpdatedEvent', :sidekiq_inline do
-            expect { repository.keep_around(sha) }
-              .not_to change { ::Geo::RepositoryUpdatedEvent.count }
-          end
+        it 'does not create a Geo::Event', :sidekiq_inline do
+          expect { repository.keep_around(sha) }
+            .not_to change { ::Geo::Event.count }
         end
       end
 
@@ -224,22 +185,9 @@ RSpec.describe Repository, feature_category: :source_code_management do
           repository.keep_around(nil)
         end
 
-        context 'when geo_project_repository_replication is enabled' do
-          it 'does not create a Geo::Event', :sidekiq_inline do
-            expect { repository.keep_around(nil) }
-            .not_to change { ::Geo::Event.count }
-          end
-        end
-
-        context 'when geo_project_repository_replication is disabled' do
-          before do
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
-
-          it 'does not create a Geo::RepositoryUpdatedEvent', :sidekiq_inline do
-            expect { repository.keep_around(nil) }
-              .not_to change { ::Geo::RepositoryUpdatedEvent.count }
-          end
+        it 'does not create a Geo::Event', :sidekiq_inline do
+          expect { repository.keep_around(nil) }
+          .not_to change { ::Geo::Event.count }
         end
       end
     end
@@ -266,40 +214,18 @@ RSpec.describe Repository, feature_category: :source_code_management do
   end
 
   describe '#after_change_head' do
-    context 'when geo_project_repository_replication is disabled' do
-      before do
-        stub_feature_flags(geo_project_repository_replication: false)
-      end
+    it 'creates a geo event on a Geo primary' do
+      stub_current_geo_node(primary_node)
 
-      it 'creates a RepositoryUpdatedEvent on a Geo primary' do
-        stub_current_geo_node(primary_node)
-
-        expect { repository.after_change_head }
-          .to change { ::Geo::RepositoryUpdatedEvent.count }.by(1)
-      end
-
-      it 'does not create a RepositoryUpdatedEvent on a Geo secondary' do
-        stub_current_geo_node(secondary_node)
-
-        expect { repository.after_change_head }
-          .not_to change { ::Geo::RepositoryUpdatedEvent.count }
-      end
+      expect { repository.after_change_head }
+        .to change { ::Geo::Event.count }.by(1)
     end
 
-    context 'when geo_project_repository_replication is enabled' do
-      it 'creates a geo event on a Geo primary' do
-        stub_current_geo_node(primary_node)
+    it 'does not create a geo event on a Geo secondary' do
+      stub_current_geo_node(secondary_node)
 
-        expect { repository.after_change_head }
-          .to change { ::Geo::Event.count }.by(1)
-      end
-
-      it 'does not create a geo event on a Geo secondary' do
-        stub_current_geo_node(secondary_node)
-
-        expect { repository.after_change_head }
-          .not_to change { ::Geo::Event.count }
-      end
+      expect { repository.after_change_head }
+        .not_to change { ::Geo::Event.count }
     end
   end
 
@@ -406,20 +332,12 @@ RSpec.describe Repository, feature_category: :source_code_management do
 
   describe '#log_geo_updated_event' do
     context 'on a primary node' do
-      before do
-        stub_current_geo_node(primary_node)
-      end
-
-      it 'creates a RepositoryUpdatedEvent' do
-        stub_feature_flags(geo_project_repository_replication: false)
-
-        expect { repository.log_geo_updated_event }
-          .to change { ::Geo::RepositoryUpdatedEvent.count }.by(1)
-      end
-
       it 'creates a GeoEvent on a Geo primary' do
+        stub_current_geo_node(primary_node)
+
         expect { repository.log_geo_updated_event }
-          .to change { ::Geo::Event.count }.by(1)
+          .to change { ::Geo::Event.count }
+          .by(1)
       end
     end
   end

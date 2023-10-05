@@ -87,14 +87,5 @@ RSpec.describe WikiPages::UpdateService, feature_category: :wiki do
     end
   end
 
-  it_behaves_like 'WikiPages::UpdateService#execute', :group do
-    # TODO: Geo support for group wiki https://gitlab.com/gitlab-org/gitlab/-/issues/208147
-    it 'does not call Geo::RepositoryUpdatedService when container is group' do
-      stub_primary_node
-
-      expect_next_instance_of(::Geo::RepositoryUpdatedService).never
-
-      service.execute(page)
-    end
-  end
+  it_behaves_like 'WikiPages::UpdateService#execute', :group
 end

@@ -89,14 +89,6 @@ module EE
         helpers do
           extend ::Gitlab::Utils::Override
 
-          def apply_filters(projects)
-            projects = super(projects)
-            projects = projects.verification_failed_wikis if params[:wiki_checksum_failed]
-            projects = projects.verification_failed_repos if params[:repository_checksum_failed]
-
-            projects
-          end
-
           override :verify_update_project_attrs!
           def verify_update_project_attrs!(project, attrs)
             super

@@ -68,8 +68,7 @@ module EE
 
         after_transition started: :finished do |state, _|
           state.run_after_commit do
-            # Create a Geo event so changes will be replicated to secondary node(s).
-            state.project.log_geo_updated_events
+            state.geo_handle_after_import_finished
           end
 
           if state.project.use_elasticsearch?
@@ -164,6 +163,13 @@ module EE
       return false if last_error.blank?
 
       last_error.match?(SSL_CERTIFICATE_PROBLEM)
+    end
+
+    # Create Geo events so changes will be replicated to secondary site(s).
+    def geo_handle_after_import_finished
+      project.geo_handle_after_update
+      project.wiki_repository&.geo_handle_after_update
+      project.design_management_repository&.geo_handle_after_update
     end
 
     # We schedule the next sync time based on the duration of the

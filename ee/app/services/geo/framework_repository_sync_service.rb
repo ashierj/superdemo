@@ -3,8 +3,6 @@
 require 'securerandom'
 
 module Geo
-  # This class is similar to RepositoryBaseSyncService
-  # but it works in a scope of Self-Service-Framework
   class FrameworkRepositorySyncService
     include ExclusiveLeaseGuard
     include ::Gitlab::ShellAdapter

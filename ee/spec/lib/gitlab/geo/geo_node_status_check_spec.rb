@@ -22,42 +22,14 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_rep
     end
 
     context 'with legacy replication' do
-      context 'with geo_project_repository_replication disabled' do
-        before do
-          stub_feature_flags(geo_project_repository_replication: false)
-        end
+      it 'prints messages for all legacy replication and verification checks' do
+        checks = [
+          /Uploads: /,
+          /Container repositories: /
+        ]
 
-        it 'prints messages for all legacy replication and verification checks' do
-          checks = [
-            /Repositories: /,
-            /Verified Repositories: /,
-            /Uploads: /,
-            /Container repositories: /
-          ]
-
-          checks.each do |text|
-            expect { subject.print_replication_verification_status }.to output(text).to_stdout
-          end
-        end
-      end
-
-      context 'with geo_project_repository_replication feature flag disabled' do
-        before do
-          stub_feature_flags(geo_project_repository_replication: false)
-        end
-
-        it 'prints messages for Project repository legacy replication and verification check' do
-          expect { subject.print_replication_verification_status }.to output(/  Repositories: /).to_stdout
-        end
-      end
-
-      context 'with geo_project_repository_replication feature flag enabled' do
-        before do
-          stub_feature_flags(geo_project_repository_replication: true)
-        end
-
-        it 'does not print a message for project repository legacy replication and verification check' do
-          expect { subject.print_replication_verification_status }.not_to output(/  Repositories: /).to_stdout
+        checks.each do |text|
+          expect { subject.print_replication_verification_status }.to output(text).to_stdout
         end
       end
     end
@@ -127,7 +99,7 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_rep
 
     context 'when replication is not up-to-date' do
       it 'returns false when not all replicables were synced' do
-        geo_node_status.update!(repositories_synced_count: 5)
+        geo_node_status.update!(job_artifacts_synced_count: 5)
 
         expect(subject.replication_verification_complete?).to be_falsy
       end

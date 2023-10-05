@@ -79,18 +79,6 @@ RSpec.describe EE::API::Entities::GeoSiteStatus, feature_category: :geo_replicat
     end
   end
 
-  describe '#repositories_synced_in_percentage' do
-    it 'formats as percentage' do
-      geo_node_status.assign_attributes(
-        projects_count: 10,
-        repositories_synced_count: 5,
-        repositories_failed_count: 0
-      )
-
-      expect(subject[:repositories_synced_in_percentage]).to eq '50.00%'
-    end
-  end
-
   describe '#replication_slots_used_in_percentage' do
     it 'formats as percentage' do
       geo_node_status.assign_attributes(

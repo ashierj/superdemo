@@ -139,10 +139,10 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
     end
 
     context 'with a valid license' do
-      let!(:current_node) { create(:geo_node) }
       let!(:primary_node) { create(:geo_node, :primary) }
+      let!(:secondary_node) { create(:geo_node, :secondary) }
       let!(:geo_event_log) { create(:geo_event_log) }
-      let!(:geo_node_status) { build(:geo_node_status, :healthy, geo_node: current_node) }
+      let!(:geo_node_status) { build(:geo_node_status, :healthy, geo_node: secondary_node) }
       let(:self_service_framework_checks) do
         Gitlab::Geo.verification_enabled_replicator_classes.map { |k| /#{k.replicable_title_plural} Verified:/ } +
           Gitlab::Geo.enabled_replicator_classes.map { |k| /#{k.replicable_title_plural}:/ }
@@ -150,7 +150,7 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
 
       before do
         stub_licensed_features(geo: true)
-        stub_current_geo_node(current_node)
+        stub_current_geo_node(secondary_node)
 
         allow(GeoNodeStatus).to receive(:current_node_status).and_return(geo_node_status)
         allow(Gitlab.config.geo.registry_replication).to receive(:enabled).and_return(true)
@@ -173,43 +173,33 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
           expect { run_rake_task('geo:status') }.not_to output(/Health Status Summary/).to_stdout
         end
 
-        context 'with geo replication feature flags disabled' do
-          before do
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
+        it 'prints messages for all the checks' do
+          checks = [
+            /Name: /,
+            /URL: /,
+            /GitLab Version: /,
+            /Geo Role: /,
+            /Health Status: /,
+            /Sync Settings: /,
+            /Database replication lag: /,
+            /Uploads: /,
+            /Container repositories: /,
+            /Last event ID seen from primary: /,
+            /Last status report was: /
+          ] + self_service_framework_checks
 
-          it 'prints messages for all the checks' do
-            checks = [
-              /Name: /,
-              /URL: /,
-              /GitLab Version: /,
-              /Geo Role: /,
-              /Health Status: /,
-              /Sync Settings: /,
-              /Database replication lag: /,
-              /Repositories: /,
-              /Verified Repositories: /,
-              /Uploads: /,
-              /Container repositories: /,
-              /Repositories Checked: /,
-              /Last event ID seen from primary: /,
-              /Last status report was: /
-            ] + self_service_framework_checks
-
-            checks.each do |text|
-              expect { run_rake_task('geo:status') }.to output(text).to_stdout
-            end
+          checks.each do |text|
+            expect { run_rake_task('geo:status') }.to output(text).to_stdout
           end
         end
 
-        context 'with geo_project_repository_replication feature flag enabled' do
+        context 'on a Geo primary site' do
           before do
-            stub_feature_flags(geo_project_repository_replication: true)
+            stub_current_geo_node(primary_node)
           end
 
-          it 'does not print message for design repositories status checks' do
-            expect { run_rake_task('geo:status') }.not_to output(/Verified Repositories:/).to_stdout
-            expect { run_rake_task('geo:status') }.not_to output(/  Repositories:/).to_stdout
+          it 'prints a message for the repositories checked' do
+            expect { run_rake_task('geo:status') }.to output(/Repositories Checked:/).to_stdout
           end
         end
       end
@@ -251,51 +241,6 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
 
     it 'returns misconfigured when not a primary nor a secondary site' do
       expect { run_rake_task('geo:site:role') }.to output(/misconfigured/).to_stdout & raise_error(SystemExit)
-    end
-  end
-
-  describe 'geo:run_orphaned_project_registry_cleaner' do
-    let!(:current_node) { create(:geo_node) }
-
-    before do
-      stub_current_geo_node(current_node)
-
-      create(:geo_project_registry)
-      create(:geo_project_registry)
-
-      @orphaned = create(:geo_project_registry)
-      @orphaned.project.delete
-      @orphaned1 = create(:geo_project_registry)
-      @orphaned1.project.delete
-
-      create(:geo_project_registry)
-    end
-
-    it 'removes orphaned registries' do
-      run_rake_task('geo:run_orphaned_project_registry_cleaner')
-
-      expect(Geo::ProjectRegistry.count).to be 3
-      expect(Geo::ProjectRegistry.find_by_id(@orphaned.id)).to be nil
-    end
-
-    it 'removes orphaned registries taking into account TO_PROJECT_ID' do
-      stub_env('FROM_PROJECT_ID' => nil, 'TO_PROJECT_ID' => @orphaned.project_id)
-
-      run_rake_task('geo:run_orphaned_project_registry_cleaner')
-
-      expect(Geo::ProjectRegistry.count).to be 4
-      expect(Geo::ProjectRegistry.find_by_id(@orphaned.id)).to be nil
-      expect(Geo::ProjectRegistry.find_by_id(@orphaned1.id)).not_to be nil
-    end
-
-    it 'removes orphaned registries taking into account FROM_PROJECT_ID' do
-      stub_env('FROM_PROJECT_ID' => @orphaned1.project_id, 'TO_PROJECT_ID' => nil)
-
-      run_rake_task('geo:run_orphaned_project_registry_cleaner')
-
-      expect(Geo::ProjectRegistry.count).to be 4
-      expect(Geo::ProjectRegistry.find_by_id(@orphaned.id)).not_to be nil
-      expect(Geo::ProjectRegistry.find_by_id(@orphaned1.id)).to be nil
     end
   end
 end

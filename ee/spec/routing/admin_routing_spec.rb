@@ -3,22 +3,8 @@ require 'spec_helper'
 
 RSpec.describe 'EE-specific admin routing' do
   describe Admin::Geo::ProjectsController, 'routing' do
-    let(:project_registry) { create(:geo_project_registry) }
-
     it 'routes / to #index' do
       expect(get('/admin/geo/replication/projects')).to route_to('admin/geo/projects#index')
-    end
-
-    it 'routes delete /:id to #destroy' do
-      expect(delete("/admin/geo/replication/projects/#{project_registry.id}")).to route_to('admin/geo/projects#destroy', id: project_registry.to_param)
-    end
-
-    it 'routes post /:id/reverify to #reverify' do
-      expect(post("/admin/geo/replication/projects/#{project_registry.id}/reverify")).to route_to('admin/geo/projects#reverify', id: project_registry.to_param)
-    end
-
-    it 'routes post /:id/resync to #resync' do
-      expect(post("/admin/geo/replication/projects/#{project_registry.id}/resync")).to route_to('admin/geo/projects#resync', id: project_registry.to_param)
     end
   end
 

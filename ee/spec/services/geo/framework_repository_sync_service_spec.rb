@@ -115,7 +115,31 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo, feature_category: :geo
                                                          .and_return(git_garbage_collect_worker_klass)
     end
 
-    include_context 'lease handling'
+    context 'lease handling' do
+      it 'returns the lease when succeed' do
+        expect_to_cancel_exclusive_lease(lease_key, lease_uuid)
+
+        subject.execute
+      end
+
+      it 'returns the lease when sync fail' do
+        allow(repository).to receive(:fetch_as_mirror)
+          .with(url_to_repo, forced: true, http_authorization_header: anything)
+          .and_raise(Gitlab::Shell::Error)
+
+        expect_to_cancel_exclusive_lease(lease_key, lease_uuid)
+
+        subject.execute
+      end
+
+      it 'does not fetch project repository if cannot obtain a lease' do
+        stub_exclusive_lease_taken(lease_key)
+
+        expect(repository).not_to receive(:fetch_as_mirror)
+
+        subject.execute
+      end
+    end
 
     it 'voids the failure message when it succeeds after an error' do
       registry.update!(last_sync_failure: 'error')

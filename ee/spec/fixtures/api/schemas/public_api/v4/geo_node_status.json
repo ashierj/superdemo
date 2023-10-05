@@ -79,7 +79,6 @@
     "dependency_proxy_manifests_verification_total_count",
     "dependency_proxy_manifests_verified_count",
     "dependency_proxy_manifests_verified_in_percentage",
-    "repositories_replication_enabled",
     "projects_count",
     "project_wiki_repositories_count",
     "project_wiki_repositories_checksum_total_count",
@@ -94,13 +93,6 @@
     "project_wiki_repositories_synced_in_percentage",
     "project_wiki_repositories_verified_in_percentage",
     "repositories_count",
-    "repositories_failed_count",
-    "repositories_synced_count",
-    "repository_verification_enabled",
-    "repositories_checksummed_count",
-    "repositories_checksum_failed_count",
-    "repositories_checksum_total_count",
-    "repositories_checksummed_in_percentage",
     "merge_request_diffs_count",
     "merge_request_diffs_checksum_failed_count",
     "merge_request_diffs_checksum_total_count",
@@ -173,12 +165,6 @@
     "group_wiki_repositories_verification_failed_count",
     "group_wiki_repositories_synced_in_percentage",
     "group_wiki_repositories_verified_in_percentage",
-    "repositories_verified_count",
-    "repositories_verification_failed_count",
-    "repositories_verification_total_count",
-    "repositories_verified_in_percentage",
-    "repositories_checksum_mismatch_count",
-    "repositories_retrying_verification_count",
     "pipeline_artifacts_count",
     "pipeline_artifacts_checksum_total_count",
     "pipeline_artifacts_checksummed_count",
@@ -742,59 +728,11 @@
     "dependency_proxy_manifests_verified_in_percentage": {
       "type": "string"
     },
-    "repositories_replication_enabled": {
-      "type": [
-        "boolean",
-        "null"
-      ]
-    },
     "projects_count": {
       "type": "integer"
     },
     "repositories_count": {
       "type": "integer"
-    },
-    "repositories_failed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "repository_verification_enabled": {
-      "type": [
-        "boolean",
-        "null"
-      ]
-    },
-    "repositories_synced_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "repositories_synced_in_percentage": {
-      "type": "string"
-    },
-    "repositories_checksummed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "repositories_checksum_failed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "repositories_checksum_total_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "repositories_checksummed_in_percentage": {
-      "type": "string"
     },
     "merge_request_diffs_count": {
       "type": [
@@ -1387,33 +1325,6 @@
     "pipeline_artifacts_verified_in_percentage": {
       "type": "string"
     },
-    "repositories_verified_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "repositories_verification_failed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "repositories_verification_total_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "repositories_verified_in_percentage": {
-      "type": "string"
-    },
-    "repositories_checksum_mismatch_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
     "uploads_count": {
       "type": [
         "integer",
@@ -1479,12 +1390,6 @@
     },
     "uploads_verified_in_percentage": {
       "type": "string"
-    },
-    "repositories_retrying_verification_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
     },
     "repositories_checked_count": {
       "type": [

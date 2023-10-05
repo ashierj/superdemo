@@ -5,32 +5,18 @@ require 'spec_helper'
 RSpec.describe Deployments::UpdateEnvironmentService, feature_category: :continuous_delivery do
   include ::EE::GeoHelpers
 
-  let(:primary) { create(:geo_node, :primary) }
-  let(:project) { create(:project, :repository) }
-  let(:repository_state) { create(:repository_state, :repository_verified, project: project) }
-  let!(:deployment) { create(:deployment, :success, project: project) }
-
-  before do
-    stub_current_geo_node(primary)
-  end
+  let_it_be(:primary) { create(:geo_node, :primary) }
+  let_it_be(:secondary) { create(:geo_node) }
+  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:deployment) { create(:deployment, :success, project: project) }
 
   subject { described_class.new(deployment) }
 
   describe '#execute' do
-    before do
-      stub_feature_flags(geo_project_repository_replication: false)
-    end
-
-    it 'triggers a Geo event about the new deployment ref' do
-      expect_next_instance_of(Geo::RepositoryUpdatedService) do |service|
-        expect(service).to receive(:execute)
-      end
+    it 'calls replicator to update Geo' do
+      expect(project).to receive(:geo_handle_after_update).once
 
       subject.execute
-    end
-
-    it 'resets the repository verification checksum' do
-      expect { subject.execute }.to change { repository_state.reload.repository_verification_checksum }.to(nil)
     end
 
     it 'returns the deployment' do

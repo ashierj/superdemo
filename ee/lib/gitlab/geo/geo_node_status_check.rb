@@ -24,8 +24,6 @@ module Gitlab
         print_geo_role
         print_node_health_status
 
-        print_repositories_status
-        print_verified_repositories
         print_container_repositories_status
         print_replicators_status
         print_repositories_checked_status
@@ -40,8 +38,6 @@ module Gitlab
       end
 
       def print_replication_verification_status
-        print_repositories_status
-        print_verified_repositories
         print_container_repositories_status
         print_replicators_status
         print_replicators_verification_status
@@ -61,7 +57,6 @@ module Gitlab
       # rubocop:disable GitlabSecurity/PublicSend
       def legacy_replication_and_verification_checks_status
         replicables = [
-          ["repositories", Gitlab::Geo.repository_verification_enabled?],
           ["job_artifacts", false]
         ]
 
@@ -194,18 +189,6 @@ module Gitlab
         end
       end
 
-      def print_repositories_status
-        return if ::Geo::ProjectRepositoryReplicator.enabled?
-
-        print_counts_row(
-          description: 'Repositories',
-          failed: current_node_status.repositories_failed_count,
-          succeeded: current_node_status.repositories_synced_count,
-          total: current_node_status.projects_count,
-          percentage: current_node_status.repositories_synced_in_percentage
-        )
-      end
-
       def print_replicators_status
         Gitlab::Geo.enabled_replicator_classes.each do |replicator_class|
           print_counts_row(
@@ -214,20 +197,6 @@ module Gitlab
             succeeded: replicator_class.synced_count,
             total: replicator_class.registry_count,
             percentage: current_node_status.synced_in_percentage_for(replicator_class)
-          )
-        end
-      end
-
-      def print_verified_repositories
-        return if ::Geo::ProjectRepositoryReplicator.enabled?
-
-        if Gitlab::Geo.repository_verification_enabled?
-          print_counts_row(
-            description: 'Verified Repositories',
-            failed: current_node_status.repositories_verification_failed_count,
-            succeeded: current_node_status.repositories_verified_count,
-            total: current_node_status.projects_count,
-            percentage: current_node_status.repositories_verified_in_percentage
           )
         end
       end
@@ -245,15 +214,16 @@ module Gitlab
       end
 
       def print_repositories_checked_status
-        if Gitlab::CurrentSettings.repository_checks_enabled
-          print_counts_row(
-            description: 'Repositories Checked',
-            failed: current_node_status.repositories_checked_failed_count,
-            succeeded: current_node_status.repositories_checked_count,
-            total: current_node_status.projects_count,
-            percentage: current_node_status.repositories_checked_in_percentage
-          )
-        end
+        return unless Gitlab::Geo.primary?
+        return unless Gitlab::CurrentSettings.repository_checks_enabled
+
+        print_counts_row(
+          description: 'Repositories Checked',
+          failed: current_node_status.repositories_checked_failed_count,
+          succeeded: current_node_status.repositories_checked_count,
+          total: current_node_status.repositories_count,
+          percentage: current_node_status.repositories_checked_in_percentage
+        )
       end
 
       def print_replicators_verification_status

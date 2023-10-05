@@ -86,14 +86,5 @@ RSpec.describe WikiPages::CreateService, feature_category: :wiki do
     end
   end
 
-  it_behaves_like 'WikiPages::CreateService#execute', :group do
-    # TODO: Geo support for group wiki https://gitlab.com/gitlab-org/gitlab/-/issues/208147
-    it 'does not call Geo::RepositoryUpdatedService when container is group' do
-      stub_primary_node
-
-      expect(::Geo::RepositoryUpdatedService).not_to receive(:new)
-
-      service.execute
-    end
-  end
+  it_behaves_like 'WikiPages::CreateService#execute', :group
 end

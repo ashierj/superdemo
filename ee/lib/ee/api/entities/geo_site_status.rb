@@ -35,9 +35,6 @@ module EE
         expose :db_replication_lag_seconds
 
         expose :container_repositories_replication_enabled
-        expose :repositories_replication_enabled
-
-        expose :repository_verification_enabled
 
         expose :replication_slots_max_retained_wal_bytes
 

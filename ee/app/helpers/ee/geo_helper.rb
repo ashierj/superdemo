@@ -148,44 +148,18 @@ module EE
     end
 
     def replicable_types
-      # Hard Coded Legacy Types, we will want to remove these when they are added to SSF
-      replicable_types = [
+      enabled_replicator_classes.map do |replicator_class|
         {
-          data_type: 'repository',
-          data_type_title: _('Git'),
-          data_type_sort_order: 0,
-          title: _('Repository'),
-          title_plural: _('Repositories'),
-          name: 'repository',
-          name_plural: 'repositories',
-          custom_replication_url: 'admin/geo/replication/projects',
-          verification_enabled: true
+          data_type: replicator_class.data_type,
+          data_type_title: replicator_class.data_type_title,
+          data_type_sort_order: replicator_class.data_type_sort_order,
+          title: replicator_class.replicable_title,
+          title_plural: replicator_class.replicable_title_plural,
+          name: replicator_class.replicable_name,
+          name_plural: replicator_class.replicable_name_plural,
+          verification_enabled: replicator_class.verification_enabled?
         }
-      ]
-
-      migrated_to_ssf = []
-      migrated_to_ssf << 'design_repository' if ::Geo::DesignManagementRepositoryReplicator.enabled?
-      migrated_to_ssf << 'repository' if ::Geo::ProjectRepositoryReplicator.enabled?
-
-      replicable_types.reject! { |t| migrated_to_ssf.include?(t[:name]) }
-
-      # Adds all the SSF Data Types automatically
-      enabled_replicator_classes.each do |replicator_class|
-        replicable_types.push(
-          {
-            data_type: replicator_class.data_type,
-            data_type_title: replicator_class.data_type_title,
-            data_type_sort_order: replicator_class.data_type_sort_order,
-            title: replicator_class.replicable_title,
-            title_plural: replicator_class.replicable_title_plural,
-            name: replicator_class.replicable_name,
-            name_plural: replicator_class.replicable_name_plural,
-            verification_enabled: replicator_class.verification_enabled?
-          }
-        )
       end
-
-      replicable_types
     end
 
     def enabled_replicator_classes

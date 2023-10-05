@@ -229,8 +229,6 @@ configuration option in `gitlab.yml`. These metrics are served from the
 | `sidekiq_mem_total_bytes`                      | Gauge     | 15.3 | Number of bytes allocated for both objects consuming an object slot and objects that required a malloc'|                                                                   |
 | `geo_db_replication_lag_seconds`               | Gauge   | 10.2  | Database replication lag (seconds) | `url` |
 | `geo_repositories`                             | Gauge   | 10.2  | Total number of repositories available on primary | `url` |
-| `geo_repositories_synced`                      | Gauge   | 10.2  | Number of repositories synced on secondary | `url` |
-| `geo_repositories_failed`                      | Gauge   | 10.2  | Number of repositories failed to sync on secondary | `url` |
 | `geo_lfs_objects`                              | Gauge   | 10.2  | Number of LFS objects on primary | `url` |
 | `geo_lfs_objects_checksummed`                  | Gauge   | 14.6  | Number of LFS objects checksummed successfully on primary | `url` |
 | `geo_lfs_objects_checksum_failed`              | Gauge   | 14.6  | Number of LFS objects failed to calculate the checksum on primary | `url` |
@@ -248,14 +246,6 @@ configuration option in `gitlab.yml`. These metrics are served from the
 | `geo_status_failed_total`                      | Counter | 10.2  | Number of times retrieving the status from the Geo Node failed | `url` |
 | `geo_last_successful_status_check_timestamp`   | Gauge   | 10.2  | Last timestamp when the status was successfully updated | `url` |
 | `geo_job_artifacts_synced_missing_on_primary`  | Gauge   | 10.7  | Number of job artifacts marked as synced due to the file missing on the primary | `url` |
-| `geo_repositories_checksummed`                 | Gauge   | 10.7  | Number of repositories checksummed on primary | `url` |
-| `geo_repositories_checksum_failed`             | Gauge   | 10.7  | Number of repositories failed to calculate the checksum on primary | `url` |
-| `geo_repositories_verified`                    | Gauge   | 10.7  | Number of repositories successfully verified on secondary | `url` |
-| `geo_repositories_verification_failed`         | Gauge   | 10.7  | Number of repositories that failed verification on secondary | `url` |
-| `geo_repositories_checksum_mismatch`           | Gauge   | 10.7  | Number of repositories that checksum mismatch on secondary | `url` |
-| `geo_repositories_checked`                     | Gauge   | 11.1  | Number of repositories that have been checked via `git fsck` | `url` |
-| `geo_repositories_checked_failed`              | Gauge   | 11.1  | Number of repositories that have a failure from `git fsck` | `url` |
-| `geo_repositories_retrying_verification`       | Gauge   | 11.2  | Number of repositories verification failures that Geo is actively trying to correct on secondary  | `url` |
 | `geo_package_files`                            | Gauge   | 13.0  | Number of package files on primary | `url` |
 | `geo_package_files_checksummed`                | Gauge   | 13.0  | Number of package files checksummed on primary | `url` |
 | `geo_package_files_checksum_failed`            | Gauge   | 13.0  | Number of package files failed to calculate the checksum on primary | `url` |

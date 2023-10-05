@@ -4,7 +4,6 @@ module Geo
   class ProjectSyncWorker
     include ApplicationWorker
     include GeoQueue
-    include Gitlab::Geo::LogHelpers
 
     # Do not enqueue another instance of this Worker with the same args
     # if one is currently enqueued or executing. If deduplication occurs,
@@ -25,32 +24,6 @@ module Geo
 
     loggable_arguments 1
 
-    # rubocop: disable CodeReuse/ActiveRecord
-    def perform(project_id, options = {})
-      options.symbolize_keys!
-
-      registry = Geo::ProjectRegistry.find_or_initialize_by(project_id: project_id)
-      project = registry.project
-
-      if project.nil?
-        log_error("Couldn't find project, skipping syncing", project_id: project_id)
-        return
-      end
-
-      shard_name = project.repository_storage
-      unless Gitlab::ShardHealthCache.healthy_shard?(shard_name)
-        log_error("Project shard '#{shard_name}' is unhealthy, skipping syncing", project_id: project_id)
-        return
-      end
-
-      sync_repository(registry, options)
-    end
-    # rubocop: enable CodeReuse/ActiveRecord
-
-    def sync_repository(registry, options)
-      return unless options[:sync_repository] && registry.resync_repository?
-
-      Geo::RepositorySyncService.new(registry.project).execute
-    end
+    def perform(project_id, options = {}); end
   end
 end

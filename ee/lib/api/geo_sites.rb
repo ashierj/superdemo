@@ -131,45 +131,6 @@ module API
         present paginate(status), with: EE::API::Entities::GeoSiteStatus
       end
 
-      # Example request:
-      #   GET /geo_sites/current/failures
-      desc 'Get project sync or verification failures that occurred on the current site' do
-        summary 'Get project registry failures for the current Geo site'
-        success code: 200, model: ::GeoProjectRegistryEntity
-        failure [
-          { code: 400, message: '400 Bad request' },
-          { code: 401, message: '401 Unauthorized' },
-          { code: 403, message: '403 Forbidden' },
-          { code: 404, message: '404 Failure type unknown Not Found' }
-        ]
-        is_array true
-        tags %w[geo_sites]
-      end
-      params do
-        optional :type, type: String, values: %w[wiki repository], desc: 'Type of failure (repository/wiki)'
-        optional :failure_type, type: String, values: %w[sync checksum_mismatch verification], default: 'sync',
-          desc: 'Show verification failures'
-        use :pagination
-      end
-      get '/current/failures' do
-        not_found!('Geo site not found') unless Gitlab::Geo.current_node
-        forbidden!('Failures can only be requested from a secondary site') unless Gitlab::Geo.current_node.secondary?
-
-        type = params[:type].to_s.to_sym
-
-        project_registries =
-          case params[:failure_type]
-          when 'sync'
-            ::Geo::ProjectRegistry.sync_failed(type)
-          when 'verification'
-            ::Geo::ProjectRegistry.verification_failed(type)
-          when 'checksum_mismatch'
-            ::Geo::ProjectRegistry.mismatch(type)
-          end
-
-        present paginate(project_registries), with: ::GeoProjectRegistryEntity
-      end
-
       route_param :id, type: Integer, desc: 'The ID of the site' do
         helpers do
           include ::Gitlab::Utils::StrongMemoize

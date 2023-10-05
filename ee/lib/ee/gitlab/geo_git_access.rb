@@ -41,11 +41,7 @@ module EE
       end
 
       def geo_repository_out_of_date?(project)
-        if ::Geo::ProjectRepositoryReplicator.enabled?
-          ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
-        else
-          ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
-        end
+        ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
       end
 
       def proxy_direct_to_primary_headers
