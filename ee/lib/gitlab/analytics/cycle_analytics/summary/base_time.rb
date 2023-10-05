@@ -55,17 +55,24 @@ module Gitlab
           # rubocop: enable CodeReuse/ActiveRecord
 
           def data_collector
-            Gitlab::Analytics::CycleAnalytics::DataCollector.new(
-              stage: @stage,
-              params: {
-                from: @options[:from],
-                to: @options[:to] || DateTime.now,
-                project_ids: @options[:projects],
-                end_event_filter: @options[:end_event_filter],
-                current_user: @current_user,
-                use_aggregated_data_collector: @options[:use_aggregated_data_collector]
-              }.merge(@options.slice(*::Gitlab::Analytics::CycleAnalytics::RequestParams::FINDER_PARAM_NAMES))
+            @data_collector ||= Gitlab::Analytics::CycleAnalytics::DataCollector.new(
+              stage: stage,
+              params: data_collector_params
             )
+          end
+
+          def data_collector_params
+            params = @options.except(:projects, :use_aggregated_data_collector, :from, :to, :group, :project)
+
+            ::Gitlab::Analytics::CycleAnalytics::RequestParams.new(
+              params.merge(
+                project_ids: @options[:projects],
+                current_user: @current_user,
+                namespace: @stage.namespace,
+                created_after: @options[:from],
+                created_before: @options[:to]
+              )
+            ).to_data_collector_params
           end
         end
       end

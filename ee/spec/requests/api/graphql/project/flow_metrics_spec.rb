@@ -6,16 +6,19 @@ RSpec.describe 'getting project flow metrics', feature_category: :value_stream_m
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
+  let(:full_path) { project1.full_path }
+  let(:context) { :project }
   let_it_be(:project1) { create(:project, :repository, group: group) }
   # This is done so we can use the same count expectations in the shared examples and
   # reuse the shared example for the group-level test.
   let_it_be(:project2) { project1 }
   let_it_be(:production_environment1) { create(:environment, :production, project: project1) }
   let_it_be(:production_environment2) { production_environment1 }
-  let_it_be(:current_user) { create(:user, maintainer_projects: [project1]) }
+  let_it_be(:current_user) { create(:user) }
 
-  let(:full_path) { project1.full_path }
-  let(:context) { :project }
+  before_all do
+    group.add_maintainer(current_user)
+  end
 
   before do
     # cycle_analytics_for_groups is needed for the aggregations
