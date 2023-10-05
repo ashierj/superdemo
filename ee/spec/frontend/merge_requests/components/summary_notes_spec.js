@@ -15,7 +15,10 @@ Vue.use(VueApollo);
 let wrapper;
 let mockSummaryNotesQuery;
 
-function createComponent(reviewSummaries = []) {
+function createComponent({
+  diffLlmSummary = { content: 'AI summary', createdAt: 'created-at' },
+  reviewSummaries = [],
+} = {}) {
   mockSummaryNotesQuery = jest.fn().mockResolvedValue({
     data: {
       project: {
@@ -29,7 +32,7 @@ function createComponent(reviewSummaries = []) {
             },
             nodes: [
               {
-                diffLlmSummary: { content: 'AI summary', createdAt: 'created-at' },
+                diffLlmSummary,
                 reviewLlmSummaries: {
                   nodes: reviewSummaries,
                 },
@@ -62,13 +65,13 @@ describe('Merge request summary notes component', () => {
 
     expect(wrapper.findAllByTestId('summary-note').length).toBe(1);
     expect(wrapper.findAllByTestId('summary-note').at(0).props()).toEqual({
-      summary: { content: 'AI summary', createdAt: 'created-at', reviewLlmSummaries: [] },
-      type: 'diff_summary',
+      summary: { content: 'AI summary', createdAt: 'created-at', children: [] },
+      level: 1,
     });
   });
 
   it('renders list of review summaries', async () => {
-    const reviews = [
+    const reviewSummaries = [
       {
         content: 'review',
         createdAt: 'created-at',
@@ -78,14 +81,40 @@ describe('Merge request summary notes component', () => {
 
     summaryState.toggleOpen();
 
-    createComponent(reviews);
+    createComponent({ reviewSummaries, diffLlmSummary: null });
 
     await waitForPromises();
 
     expect(wrapper.findAllByTestId('summary-note').length).toBe(1);
     expect(wrapper.findAllByTestId('summary-note').at(0).props()).toEqual({
-      summary: { content: 'AI summary', createdAt: 'created-at', reviewLlmSummaries: reviews },
-      type: 'diff_summary',
+      summary: {
+        content: 'review',
+        createdAt: 'created-at',
+        reviewer: { webUrl: 'https://gitlab.com' },
+      },
+      level: 1,
+    });
+  });
+
+  it('renders list of review summaries without diff summary', async () => {
+    const reviewSummaries = [
+      {
+        content: 'review',
+        createdAt: 'created-at',
+        reviewer: { webUrl: 'https://gitlab.com' },
+      },
+    ];
+
+    summaryState.toggleOpen();
+
+    createComponent({ reviewSummaries });
+
+    await waitForPromises();
+
+    expect(wrapper.findAllByTestId('summary-note').length).toBe(1);
+    expect(wrapper.findAllByTestId('summary-note').at(0).props()).toEqual({
+      summary: { content: 'AI summary', createdAt: 'created-at', children: reviewSummaries },
+      level: 1,
     });
   });
 
