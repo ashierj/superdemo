@@ -1,3 +1,3 @@
-import { saasTrialContinuousOnboarding } from '~/google_tag_manager';
+import { saasTrialContinuousOnboarding } from 'ee/google_tag_manager';
 
 saasTrialContinuousOnboarding();

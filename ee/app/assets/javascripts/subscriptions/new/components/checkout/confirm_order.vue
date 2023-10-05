@@ -9,7 +9,7 @@ import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
 import { s__, sprintf } from '~/locale';
 import Api from 'ee/api';
-import { trackTransaction } from '~/google_tag_manager';
+import { trackTransaction } from 'ee/google_tag_manager';
 import Tracking from '~/tracking';
 import { addExperimentContext } from '~/tracking/utils';
 import { ActiveModelError } from '~/lib/utils/error_utils';

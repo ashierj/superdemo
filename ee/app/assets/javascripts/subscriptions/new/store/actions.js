@@ -2,7 +2,7 @@ import Api from 'ee/api';
 import { PAYMENT_FORM_ID } from 'ee/subscriptions/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import { s__, sprintf } from '~/locale';
-import { trackCheckout } from '~/google_tag_manager';
+import { trackCheckout } from 'ee/google_tag_manager';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
 

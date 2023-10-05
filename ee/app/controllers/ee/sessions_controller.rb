@@ -6,6 +6,9 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
+      include GoogleAnalyticsCSP
+      include GoogleSyndicationCSP
+
       before_action :gitlab_geo_logout, only: [:destroy]
       prepend_before_action :complete_identity_verification, only: :create
     end

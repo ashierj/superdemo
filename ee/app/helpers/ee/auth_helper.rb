@@ -55,6 +55,19 @@ module EE
       end
     end
 
+    def google_tag_manager_enabled?
+      return false unless ::Gitlab::Saas.feature_available?('marketing/google_tag_manager')
+
+      extra_config.has_key?('google_tag_manager_nonce_id') &&
+        extra_config.google_tag_manager_nonce_id.present?
+    end
+
+    def google_tag_manager_id
+      return unless google_tag_manager_enabled?
+
+      extra_config.google_tag_manager_nonce_id
+    end
+
     def kerberos_enabled?
       auth_providers.include?(:kerberos)
     end

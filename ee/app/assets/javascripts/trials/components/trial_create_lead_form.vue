@@ -3,7 +3,7 @@ import { GlForm, GlButton, GlFormGroup, GlFormInput, GlFormSelect } from '@gitla
 import CountryOrRegionSelector from 'jh_else_ee/trials/components/country_or_region_selector.vue';
 import csrf from '~/lib/utils/csrf';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
-import { trackSaasTrialSubmit } from '~/google_tag_manager';
+import { trackSaasTrialSubmit } from 'ee/google_tag_manager';
 import {
   LEADS_COMPANY_NAME_LABEL,
   LEADS_COMPANY_SIZE_LABEL,

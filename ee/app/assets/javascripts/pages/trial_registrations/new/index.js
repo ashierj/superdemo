@@ -1,5 +1,5 @@
 import '~/pages/sessions/index';
-import { trackFreeTrialAccountSubmissions } from '~/google_tag_manager';
+import { trackFreeTrialAccountSubmissions } from 'ee/google_tag_manager';
 
 import NoEmojiValidator from '~/emoji/no_emoji_validator';
 import LengthValidator from '~/validators/length_validator';

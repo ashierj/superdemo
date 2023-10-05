@@ -2,8 +2,14 @@
 
 module EE
   module ConfirmationsController
+    extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
     include ::Audit::Changes
+
+    prepended do
+      include GoogleAnalyticsCSP
+      include GoogleSyndicationCSP
+    end
 
     protected
 

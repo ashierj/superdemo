@@ -4,10 +4,10 @@ import VueApollo from 'vue-apollo';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TrialCreateLeadForm from 'ee/trials/components/trial_create_lead_form.vue';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
-import { trackSaasTrialSubmit } from '~/google_tag_manager';
+import { trackSaasTrialSubmit } from 'ee/google_tag_manager';
 import { FORM_DATA, SUBMIT_PATH } from './mock_data';
 
-jest.mock('~/google_tag_manager', () => ({
+jest.mock('ee/google_tag_manager', () => ({
   trackSaasTrialSubmit: jest.fn(),
 }));
 

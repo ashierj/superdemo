@@ -20,7 +20,7 @@ import {
   TRIAL_REGISTRATION_FOOTER_DESCRIPTION,
   TRIAL_REGISTRATION_FORM_SUBMIT_TEXT,
 } from 'ee/trials/constants';
-import { trackCompanyForm } from '~/google_tag_manager';
+import { trackCompanyForm } from 'ee/google_tag_manager';
 
 export default {
   csrf,

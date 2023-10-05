@@ -6,7 +6,7 @@ import getCiMinutesMonthlySummary from 'ee/usage_quotas/pipelines/graphql/querie
 import getCiMinutesMonthSummaryWithProjects from 'ee/usage_quotas/pipelines/graphql/queries/ci_minutes_projects.query.graphql';
 import { sprintf } from '~/locale';
 import { formatDate, getMonthNames } from '~/lib/utils/datetime_utility';
-import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
+import { pushEECproductAddToCartEvent } from 'ee/google_tag_manager';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createMockClient } from 'helpers/mock_apollo_helper';
@@ -38,7 +38,7 @@ import {
 } from '../mock_data';
 
 Vue.use(VueApollo);
-jest.mock('~/google_tag_manager');
+jest.mock('ee/google_tag_manager');
 
 describe('PipelineUsageApp', () => {
   /** @type { Wrapper } */
