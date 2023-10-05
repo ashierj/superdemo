@@ -16,7 +16,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gorilla/websocket v1.5.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
-	github.com/johannesboyne/gofakes3 v0.0.0-20230506070712-04da935ef877
+	github.com/johannesboyne/gofakes3 v0.0.0-20230914150226-f005f5cc03aa
 	github.com/jpillora/backoff v1.0.0
 	github.com/mitchellh/copystructure v1.2.0
 	github.com/prometheus/client_golang v1.17.0
