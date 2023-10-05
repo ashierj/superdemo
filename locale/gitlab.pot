@@ -49497,6 +49497,9 @@ msgstr ""
 msgid "Todos|Design"
 msgstr ""
 
+msgid "Todos|Do you want to remove the filters?"
+msgstr ""
+
 msgid "Todos|Due %{due_date}"
 msgstr ""
 
