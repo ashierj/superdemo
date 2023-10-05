@@ -78,7 +78,7 @@ describe('LdapOverrideConfirmationModal', () => {
     });
 
     it('displays modal title', () => {
-      expect(getByText('Edit permissions', { selector: 'h4' }).exists()).toBe(true);
+      expect(getByText('Edit permissions', { selector: 'h2' }).exists()).toBe(true);
     });
 
     it('displays modal body', () => {
