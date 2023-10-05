@@ -15,7 +15,7 @@ RSpec.describe 'Query.ciCatalogResource', feature_category: :pipeline_compositio
       description: 'A simple component',
       namespace: namespace,
       star_count: 1,
-      files: { 'README.md' => '**Test**' }
+      files: { 'README.md' => '[link](README.md)' }
     )
   end
 
@@ -51,7 +51,9 @@ RSpec.describe 'Query.ciCatalogResource', feature_category: :pipeline_compositio
             webPath: "/#{project.full_path}",
             starCount: project.star_count,
             forksCount: project.forks_count,
-            readmeHtml: a_string_including('Test</strong>')
+            readmeHtml: a_string_including(
+              "#{project.full_path}/-/blob/#{project.default_branch}/README.md"
+            )
           )
         )
       end
