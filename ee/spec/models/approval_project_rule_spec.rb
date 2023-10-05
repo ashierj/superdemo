@@ -384,41 +384,49 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
   end
 
   describe "#apply_report_approver_rules_to" do
+    using RSpec::Parameterized::TableSyntax
+
     let(:project) { merge_request.target_project }
     let(:merge_request) { create(:merge_request) }
     let(:user) { create(:user) }
     let(:group) { create(:group) }
-    let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :project) }
+    let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
     before do
-      subject.users << user
-      subject.groups << group
+      rules.each do |rule|
+        rule.users << user
+        rule.groups << group
+      end
     end
 
-    where(:default_name, :report_type) do
-      'License-Check'        | :license_scanning
-      'Coverage-Check'       | :code_coverage
-      'Scan finding example' | :scan_finding
+    where(:default_name, :report_type, :rules_count) do
+      'License-Check'  | :license_scanning  | 2
+      'Coverage-Check' | :code_coverage     | 1
+      'Scan finding'   | :scan_finding      | 2
+      'Any MR'         | :any_merge_request | 2
     end
 
-    context "when there is a project rule for each report type" do
-      with_them do
-        subject { create(:approval_project_rule, report_type, :requires_approval, project: project, orchestration_policy_idx: 1, scanners: [:sast], severity_levels: [:high], vulnerability_states: [:confirmed], vulnerabilities_allowed: 2, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
+    with_them do
+      subject(:rules) { create_list(:approval_project_rule, rules_count, report_type, :requires_approval, project: project, orchestration_policy_idx: 1, scanners: [:sast], severity_levels: [:high], vulnerability_states: [:confirmed], vulnerabilities_allowed: 2, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
-        let!(:result) { subject.apply_report_approver_rules_to(merge_request) }
+      let!(:result) { rules.map { |rule| rule.apply_report_approver_rules_to(merge_request) } }
 
-        specify { expect(merge_request.reload.approval_rules).to match_array([result]) }
-        specify { expect(result.users).to match_array([user]) }
-        specify { expect(result.groups).to match_array([group]) }
-        specify { expect(result.name).to be(:default_name) }
-        specify { expect(result.rule_type).to be(:report_approver) }
-        specify { expect(result.report_type).to be(:report_type) }
-        specify { expect(result.orchestration_policy_idx).to be 1 }
-        specify { expect(result.scanners).to be match_array([:sast]) }
-        specify { expect(result.severity_levels).to be match_array([:high]) }
-        specify { expect(result.vulnerability_states).to match_array([:confirmed]) }
-        specify { expect(result.vulnerabilities_allowed).to be 2 }
-        specify { expect(result.security_orchestration_policy_configuration.id).to be security_orchestration_policy_configuration.id }
+      it 'creates merge_request approval rules with correct attributes', :aggregate_failures do
+        expect(merge_request.reload.approval_rules).to match_array(result)
+        expect(rules.count).to eq rules_count
+        result.each do |result_rule|
+          expect(result_rule.users).to match_array([user])
+          expect(result_rule.groups).to match_array([group])
+          expect(result_rule.name).to include(default_name)
+          expect(result_rule).to be_report_approver
+          expect(result_rule.report_type).to eq(report_type.to_s)
+          expect(result_rule.orchestration_policy_idx).to be 1
+          expect(result_rule.scanners).to contain_exactly('sast')
+          expect(result_rule.severity_levels).to contain_exactly('high')
+          expect(result_rule.vulnerability_states).to contain_exactly('confirmed')
+          expect(result_rule.vulnerabilities_allowed).to be 2
+          expect(result_rule.security_orchestration_policy_configuration.id).to be security_orchestration_policy_configuration.id
+        end
       end
     end
   end
