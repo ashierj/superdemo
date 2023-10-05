@@ -63,10 +63,11 @@ When deleting users, you can either:
   - Emoji reactions.
   - Epics.
   - Groups of which the user is the only user with the Owner role.
+  - Personal access tokens.
+  - Epics.
   - Issues.
   - Merge requests.
   - Notes and comments.
-  - Personal access tokens.
   - Snippets.
 
 An alternative to deleting is [blocking a user](../../../administration/moderate_users.md#block-a-user).
