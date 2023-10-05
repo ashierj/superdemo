@@ -10,7 +10,7 @@ module Gitlab
 
         def can_add_user?(user)
           return true unless root_group.saml_provider&.enforced_sso?
-          return true if user.project_bot?
+          return true if user.project_bot? || user.security_policy_bot?
           return true if user.service_account? && user_provisioned_by_group?(user)
           return false if inactive_scim_identity_for_group?(user)
 
