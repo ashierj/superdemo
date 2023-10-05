@@ -23,8 +23,8 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
   let_it_be(:epic) { create(:epic, group: group, title: epic_title, description: markdown, author: user) }
   let_it_be(:not_child) { create(:epic, group: group, title: 'not child epic', description: markdown, author: user, start_date: 50.days.ago, end_date: 10.days.ago) }
-  let_it_be(:child_epic_a) { create(:epic, group: group, title: 'Child epic A', description: markdown, parent: epic, start_date: 50.days.ago, end_date: 10.days.ago) }
-  let_it_be(:child_epic_b) { create(:epic, group: group, title: 'Child epic B', description: markdown, parent: epic, start_date: 100.days.ago, end_date: 20.days.ago) }
+  let_it_be(:child_epic_a) { create(:epic, group: group, title: 'Child epic A', description: markdown, parent: epic, start_date: 50.days.ago, end_date: 20.days.from_now) }
+  let_it_be(:child_epic_b) { create(:epic, group: group, title: 'Child epic B', description: markdown, parent: epic, start_date: 100.days.ago, end_date: 10.days.from_now) }
   let_it_be(:child_issue_a) { create(:epic_issue, epic: epic, issue: public_issue, relative_position: 1) }
 
   before do
