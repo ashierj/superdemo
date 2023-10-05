@@ -7,6 +7,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
 import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_external_destinations.query.graphql';
+import gcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_get_google_cloud_logging_destinations.query.graphql';
 import {
   AUDIT_STREAMS_NETWORK_ERRORS,
   ADD_STREAM_MESSAGE,
@@ -24,6 +25,8 @@ import {
   mockInstanceExternalDestinations,
   instanceGroupPath,
   instanceDestinationDataPopulator,
+  gcpLoggingDataPopulator,
+  mockGcpLoggingDestinations,
 } from '../mock_data';
 
 jest.mock('~/alert');
@@ -36,6 +39,10 @@ describe('AuditEventsStream', () => {
   const externalDestinationsQuerySpy = jest
     .fn()
     .mockResolvedValue(destinationDataPopulator(mockExternalDestinations));
+
+  const externalGcpLoggingQuerySpy = jest
+    .fn()
+    .mockResolvedValue(gcpLoggingDataPopulator(mockGcpLoggingDestinations));
 
   const createComponent = (mockApollo) => {
     wrapper = mountExtended(AuditEventsStream, {
@@ -70,21 +77,57 @@ describe('AuditEventsStream', () => {
   afterEach(() => {
     createAlert.mockClear();
     externalDestinationsQuerySpy.mockClear();
+    externalGcpLoggingQuerySpy.mockClear();
   });
 
   describe('Group AuditEventsStream', () => {
     describe('when initialized', () => {
       it('should render the loading icon while waiting for data to be returned', () => {
         const destinationQuerySpy = jest.fn();
-        const mockApollo = createMockApollo([[externalDestinationsQuery, destinationQuerySpy]]);
+        const mockApollo = createMockApollo([
+          [externalDestinationsQuery, destinationQuerySpy],
+          [gcpLoggingDestinationsQuery, destinationQuerySpy],
+        ]);
         createComponent(mockApollo);
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('should still render the loading icon while waiting for external destination data to be returned', async () => {
+        const destinationQuerySpy = jest.fn().mockImplementation(() => {
+          return new Promise(() => {});
+        });
+        const mockApollo = createMockApollo([
+          [externalDestinationsQuery, destinationQuerySpy],
+          [gcpLoggingDestinationsQuery, externalGcpLoggingQuerySpy],
+        ]);
+        createComponent(mockApollo);
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('should still render the loading icon while waiting for gcp logging destination data to be returned', async () => {
+        const destinationQuerySpy = jest.fn().mockImplementation(() => {
+          return new Promise(() => {});
+        });
+        const mockApollo = createMockApollo([
+          [externalDestinationsQuery, externalDestinationsQuerySpy],
+          [gcpLoggingDestinationsQuery, destinationQuerySpy],
+        ]);
+        createComponent(mockApollo);
+        await waitForPromises();
 
         expect(findLoadingIcon().exists()).toBe(true);
       });
 
       it('should render empty state when no data is returned', async () => {
         const destinationQuerySpy = jest.fn().mockResolvedValue(destinationDataPopulator([]));
-        const mockApollo = createMockApollo([[externalDestinationsQuery, destinationQuerySpy]]);
+        const gcpLoggingQuerySpy = jest.fn().mockResolvedValue(gcpLoggingDataPopulator([]));
+        const mockApollo = createMockApollo([
+          [externalDestinationsQuery, destinationQuerySpy],
+          [gcpLoggingDestinationsQuery, gcpLoggingQuerySpy],
+        ]);
         createComponent(mockApollo);
         await waitForPromises();
 
@@ -109,6 +152,7 @@ describe('AuditEventsStream', () => {
       beforeEach(() => {
         const mockApollo = createMockApollo([
           [externalDestinationsQuery, externalDestinationsQuerySpy],
+          [gcpLoggingDestinationsQuery, externalGcpLoggingQuerySpy],
         ]);
         createComponent(mockApollo);
 
