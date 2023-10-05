@@ -58,7 +58,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
         end
 
         it 'navigate to the details page', :aggregate_failures do
-          expect(page).to have_content('About this project')
+          expect(page).to have_content('Go to the project')
         end
       end
     end
@@ -72,7 +72,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
     end
 
     it 'shows CI Catalog title in details page' do
-      expect(page).to have_content('About this project')
+      expect(page).to have_content('Go to the project')
     end
   end
 end

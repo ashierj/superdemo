@@ -10095,9 +10095,6 @@ msgstr ""
 msgid "Ci config already present"
 msgstr ""
 
-msgid "CiCatalog|About this project"
-msgstr ""
-
 msgid "CiCatalog|Back to the CI/CD Catalog"
 msgstr ""
 
