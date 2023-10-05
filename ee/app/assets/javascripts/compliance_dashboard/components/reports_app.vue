@@ -10,7 +10,6 @@ import {
   ROUTE_FRAMEWORKS,
   ROUTE_PROJECTS,
   ROUTE_VIOLATIONS,
-  TABS,
 } from '../constants';
 import MergeCommitsExportButton from './violations_report/shared/merge_commits_export_button.vue';
 import ReportHeader from './shared/report_header.vue';
@@ -50,8 +49,8 @@ export default {
     isViolationsReport() {
       return this.$route.name === ROUTE_VIOLATIONS;
     },
-    isFrameworksReport() {
-      return this.$route.name === ROUTE_FRAMEWORKS;
+    isProjectsReport() {
+      return this.$route.name === ROUTE_PROJECTS;
     },
     showMergeCommitsExportButton() {
       return Boolean(this.mergeCommitsCsvExportPath) && this.isViolationsReport;
@@ -59,16 +58,13 @@ export default {
     showViolationsExportButton() {
       return Boolean(this.violationsCsvExportPath) && this.isViolationsReport;
     },
-    showFrameworksExportButton() {
-      return Boolean(this.frameworksCsvExportPath) && this.isFrameworksReport;
+    showProjectsExportButton() {
+      return Boolean(this.frameworksCsvExportPath) && this.isProjectsReport;
     },
     tabIndex() {
       const adherenceTab = this.adherenceReportUiEnabled ? [ROUTE_STANDARDS_ADHERENCE] : [];
-      const complianceFrameworkTab = this.complianceFrameworkReportUiEnabled
-        ? [ROUTE_PROJECTS]
-        : [];
 
-      const currentTabs = [...adherenceTab, ...TABS, ...complianceFrameworkTab];
+      const currentTabs = [...adherenceTab, ROUTE_VIOLATIONS, ROUTE_FRAMEWORKS, ROUTE_PROJECTS];
 
       return currentTabs.indexOf(this.$route.name);
     },
@@ -88,8 +84,8 @@ export default {
   i18n: {
     export: s__('Compliance Center|Export full report as CSV'),
     exportTitle: {
-      frameworks: s__(
-        'Compliance Center|Export frameworks as CSV. You will be emailed after the export is processed.',
+      projects: s__(
+        'Compliance Center|Export projects as CSV. You will be emailed after the export is processed.',
       ),
       violations: s__(
         'Compliance Center|Export merge request violations as CSV. You will be emailed after the export is processed.',
@@ -135,12 +131,12 @@ export default {
             {{ $options.i18n.export }}
           </gl-button>
           <gl-button
-            v-if="showFrameworksExportButton"
+            v-if="showProjectsExportButton"
             v-gl-tooltip.hover
-            :title="$options.i18n.exportTitle.frameworks"
+            :title="$options.i18n.exportTitle.projects"
             :aria-label="$options.i18n.export"
             icon="export"
-            data-testid="framework-export"
+            data-testid="projects-export"
             data-track-action="click_export"
             data-track-label="export_all_frameworks"
             :href="frameworksCsvExportPath"
@@ -165,21 +161,20 @@ export default {
       />
       <gl-tab
         v-if="complianceFrameworkReportUiEnabled"
-        :title="$options.i18n.projectsTab"
-        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-          'data-qa-selector': 'projects_tab',
-        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        data-testid="projects-tab"
-        @click="goTo($options.ROUTE_PROJECTS)"
-      />
-      <gl-tab
-        v-else
         :title="$options.i18n.frameworksTab"
         :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
           'data-qa-selector': 'frameworks_tab',
         } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         data-testid="frameworks-tab"
         @click="goTo($options.ROUTE_FRAMEWORKS)"
+      />
+      <gl-tab
+        :title="$options.i18n.projectsTab"
+        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+          'data-qa-selector': 'projects_tab',
+        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+        data-testid="projects-tab"
+        @click="goTo($options.ROUTE_PROJECTS)"
       />
     </gl-tabs>
     <router-view />

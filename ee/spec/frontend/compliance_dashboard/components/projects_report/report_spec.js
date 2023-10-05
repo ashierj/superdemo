@@ -13,7 +13,7 @@ import ComplianceFrameworksReport from 'ee/compliance_dashboard/components/proje
 import complianceFrameworksGroupProjects from 'ee/compliance_dashboard/graphql/compliance_frameworks_group_projects.query.graphql';
 import complianceFrameworksProjectFragment from 'ee/compliance_dashboard/graphql/compliance_frameworks_project.fragment.graphql';
 
-import { ROUTE_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
+import { ROUTE_PROJECTS } from 'ee/compliance_dashboard/constants';
 import ProjectsTable from 'ee/compliance_dashboard/components/projects_report/projects_table.vue';
 import Pagination from 'ee/compliance_dashboard/components/projects_report/pagination.vue';
 import Filters from 'ee/compliance_dashboard/components/projects_report/filters.vue';
@@ -68,7 +68,7 @@ describe('ComplianceFrameworksReport component', () => {
         mocks: {
           $router,
           $route: {
-            name: ROUTE_FRAMEWORKS,
+            name: ROUTE_PROJECTS,
             query: currentQueryParams,
           },
         },

@@ -262,3 +262,31 @@ export const createComplianceFrameworksTokenResponse = () => {
     },
   };
 };
+
+const createFramework = ({ id } = {}) => ({
+  id: `gid://gitlab/ComplianceManagement::Framework/${id}`,
+  name: `Some framework ${id}`,
+  default: false,
+  description: `This is a framework ${id}`,
+  color: `#3cb37${id}`,
+  pipelineConfigurationFullPath: null,
+  __typename: 'ComplianceFramework',
+});
+
+export const createComplianceFrameworksReportResponse = ({ count = 1 } = {}) => {
+  return {
+    data: {
+      namespace: {
+        id: 'gid://gitlab/Group/1',
+        name: 'Gitlab Org',
+        complianceFrameworks: {
+          nodes: Array(count)
+            .fill(null)
+            .map((_, id) => createFramework({ id })),
+          __typename: 'ComplianceFrameworkConnection',
+        },
+        __typename: 'Namespace',
+      },
+    },
+  };
+};

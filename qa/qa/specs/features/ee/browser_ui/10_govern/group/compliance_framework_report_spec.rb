@@ -54,7 +54,7 @@ module QA
         subgroup.sandbox.visit!
         Page::Group::Menu.perform(&:go_to_compliance_report)
         QA::EE::Page::Group::Compliance::Show.perform do |report|
-          report.click_frameworks_tab
+          report.click_projects_tab
 
           aggregate_failures do
             report.project_row(top_level_project) do |project|
