@@ -4,7 +4,6 @@ require "spec_helper"
 
 RSpec.describe "User creates a merge request", :js, feature_category: :code_review_workflow do
   include ProjectForksHelper
-  include CookieHelper
   include ListboxHelpers
 
   let(:approver) { create(:user) }
@@ -22,7 +21,6 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
     project.add_maintainer(user2)
     project.add_maintainer(approver)
     sign_in(user)
-    set_cookie('new-actions-popover-viewed', 'true')
 
     stub_licensed_features(merge_request_approvers: true)
     create(:approval_project_rule, project: project, users: [approver])
