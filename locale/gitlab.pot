@@ -1268,10 +1268,10 @@ msgstr ""
 msgid "%{totalCpu} (%{freeSpacePercentage}%{percentSymbol} free)"
 msgstr ""
 
-msgid "%{totalMemory} (%{freeSpacePercentage}%{percentSymbol} free)"
+msgid "%{totalIssueWeight} total weight"
 msgstr ""
 
-msgid "%{totalWeight} total weight"
+msgid "%{totalMemory} (%{freeSpacePercentage}%{percentSymbol} free)"
 msgstr ""
 
 msgid "%{total_warnings} warning(s) found:"
