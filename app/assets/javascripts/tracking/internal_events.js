@@ -34,6 +34,7 @@ const InternalEvents = {
       context: mergedContext,
       ...rest,
     });
+    this.trackBrowserSDK(event);
   },
   /**
    * Returns an implementation of this class in the form of
@@ -62,7 +63,10 @@ const InternalEvents = {
     // eslint-disable-next-line no-param-reassign
     parent.internalEventsTrackingBound = true;
 
-    const handler = { name: 'click', func: (e) => InternalEventHandler(e, this.trackEvent) };
+    const handler = {
+      name: 'click',
+      func: (e) => InternalEventHandler(e, this.trackEvent.bind(this)),
+    };
     parent.addEventListener(handler.name, handler.func);
     return handler;
   },
@@ -105,6 +109,17 @@ const InternalEvents = {
         ],
       });
     }
+  },
+  /**
+   * track events for Product Analytics
+   * @param {string} event
+   */
+  trackBrowserSDK(event) {
+    if (!Tracker.enabled()) {
+      return;
+    }
+
+    window.glClient?.track(event);
   },
 };
 
