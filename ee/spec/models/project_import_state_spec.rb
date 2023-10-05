@@ -45,85 +45,17 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
     context 'state transition: [:started] => [:finished]' do
       context 'Geo repository update events' do
-        let(:repository_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
+        let_it_be(:import_state) { create(:import_state, :started, project: project) }
 
-        before do
-          allow(::Geo::RepositoryUpdatedService)
-            .to receive(:new)
-            .with(project.repository)
-            .and_return(repository_updated_service)
-        end
+        it 'calls Geo event code when running on a Geo primary node' do
+          stub_primary_node
 
-        context 'when on a Geo primary site' do
-          before do
-            stub_primary_node
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
+          # Makes Gitlab::Geo.secondary_nodes.any? return true
+          allow(::Gitlab::Geo).to receive(:secondary_nodes).and_return([''])
 
-          it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
-            expect(repository_updated_service).to receive(:execute).once
-
+          expect do
             import_state.finish
-          end
-
-          it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
-            stub_secondary_node
-
-            expect(repository_updated_service).not_to receive(:execute)
-
-            import_state.finish
-          end
-        end
-
-        context 'with geo_project_repository_replication feature flag disabled' do
-          before do
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
-
-          it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
-            stub_primary_node
-
-            expect(repository_updated_service).to receive(:execute).once
-
-            import_state.finish
-          end
-
-          it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
-            stub_secondary_node
-
-            expect(repository_updated_service).not_to receive(:execute)
-
-            import_state.finish
-          end
-        end
-
-        context 'with geo_project_repository_replication feature flag enabled' do
-          let_it_be(:import_state) { create(:import_state, :started, project: project) }
-
-          before do
-            stub_feature_flags(geo_project_repository_replication: true)
-          end
-
-          it 'calls Geo event code, not legacy Geo::RepositoryUpdatedService, when running on a Geo primary node', :aggregate_failures do
-            stub_primary_node
-
-            # Makes Gitlab::Geo.secondary_nodes.any? return true
-            allow(::Gitlab::Geo).to receive(:secondary_nodes).and_return([''])
-
-            expect(repository_updated_service).not_to receive(:execute)
-
-            expect do
-              import_state.finish
-            end.to change { ::Geo::Event.where(replicable_name: :project_repository).count }.by(1)
-          end
-
-          it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
-            stub_secondary_node
-
-            expect(repository_updated_service).not_to receive(:execute)
-
-            import_state.finish
-          end
+          end.to change { ::Geo::Event.where(replicable_name: :project_repository).count }.by(1)
         end
       end
 

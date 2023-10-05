@@ -11,8 +11,6 @@ module Types
       #  value: "Geo::MergeRequestDiffRegistry",
       #  description: "Geo::MergeRequestDiffRegistry registry class"
       ::Geo::Secondary::RegistryConsistencyWorker::REGISTRY_CLASSES.each do |registry_class|
-        next unless registry_class.graphql_mutable?
-
         # Disabling RuboCop: `graphql_enum_key` adheres to the uppercase rule of Graphql/EnumValues.
         value registry_class.graphql_enum_key, # rubocop:disable Graphql/EnumValues
           value: registry_class.to_s,

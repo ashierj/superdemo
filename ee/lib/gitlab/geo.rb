@@ -250,10 +250,6 @@ module Gitlab
       SecureRandom.urlsafe_base64(size)[0, size]
     end
 
-    def self.repository_verification_enabled?
-      Feature.enabled?(:geo_repository_verification)
-    end
-
     def self.allowed_ip?(ip)
       allowed_ips = ::Gitlab::CurrentSettings.current_application_settings.geo_node_allowed_ips
 

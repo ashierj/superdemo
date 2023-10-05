@@ -29,16 +29,6 @@ RSpec.describe 'admin Geo Replication Nav', :js, :geo, feature_category: :geo_re
     end
   end
 
-  describe 'visit admin/geo/replication/projects' do
-    before do
-      stub_feature_flags(geo_project_repository_replication: false)
-    end
-
-    it_behaves_like 'active sidebar link', 'Projects' do
-      let(:path) { admin_geo_replicables_path(replicable_name_plural: 'projects') }
-    end
-  end
-
   describe 'visit admin/geo/replication/*' do
     Gitlab::Geo.enabled_replicator_classes.each do |replicator_class|
       it_behaves_like 'active sidebar link', replicator_class.replicable_title_plural do

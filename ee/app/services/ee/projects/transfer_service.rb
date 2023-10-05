@@ -12,12 +12,6 @@ module EE
         super
 
         Audit::ProjectChangesAuditor.new(current_user, project).execute
-
-        ::Geo::RepositoryRenamedEventStore.new(
-          project,
-          old_path: project.path,
-          old_path_with_namespace: old_path
-        ).create!
       end
 
       override :transfer_missing_group_resources

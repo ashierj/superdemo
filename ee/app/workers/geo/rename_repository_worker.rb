@@ -11,8 +11,6 @@ module Geo
 
     loggable_arguments 1, 2
 
-    def perform(project_id, old_disk_path, new_disk_path)
-      Geo::RenameRepositoryService.new(project_id, old_disk_path, new_disk_path).execute
-    end
+    def perform(project_id, old_disk_path, new_disk_path); end
   end
 end

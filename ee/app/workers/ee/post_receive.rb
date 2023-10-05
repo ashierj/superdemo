@@ -18,11 +18,7 @@ module EE
 
       return unless ::Gitlab::Geo.primary?
 
-      if ::Geo::ProjectRepositoryReplicator.enabled?
-        project.geo_handle_after_update
-      else
-        ::Geo::RepositoryUpdatedService.new(project.repository, refs: refs, changes: changes).execute
-      end
+      project.geo_handle_after_update
     end
     # :nocov:
     # rubocop:enable Gitlab/NoCodeCoverageComment
@@ -51,8 +47,6 @@ module EE
     override :replicate_snippet_changes
     def replicate_snippet_changes(snippet)
       if ::Gitlab::Geo.primary?
-        # We don't use Geo::RepositoryUpdatedService anymore as
-        # it's already deprecated. See https://gitlab.com/groups/gitlab-org/-/epics/2809
         snippet.snippet_repository.geo_handle_after_update if snippet.snippet_repository
       end
     end

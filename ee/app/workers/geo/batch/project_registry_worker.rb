@@ -13,41 +13,10 @@ module Geo
 
       sidekiq_options retry: 3
       include GeoQueue
-      include ::Gitlab::Geo::LogHelpers
-
-      BATCH_SIZE = 250
-      OPERATIONS = [:resync_repositories, :reverify_repositories].freeze
 
       loggable_arguments 0, 1
 
-      def perform(operation, range)
-        case operation.to_sym
-        when :resync_repositories
-          resync_repositories(range)
-        when :reverify_repositories
-          reverify_repositories(range)
-        else
-          fail_invalid_operation!(operation)
-        end
-      end
-
-      private
-
-      def resync_repositories(range)
-        Geo::ProjectRegistry.with_range(range[0], range[1]).each_batch(of: BATCH_SIZE) do |batch|
-          batch.flag_repositories_for_resync!
-        end
-      end
-
-      def reverify_repositories(range)
-        Geo::ProjectRegistry.with_range(range[0], range[1]).each_batch(of: BATCH_SIZE) do |batch|
-          batch.flag_repositories_for_reverify!
-        end
-      end
-
-      def fail_invalid_operation!(operation)
-        raise ArgumentError, "Invalid operation: '#{operation.inspect}' informed. Must be one of the following: #{OPERATIONS.map { |valid_op| "'#{valid_op}'" }.join(', ')}"
-      end
+      def perform(operation, range); end
     end
   end
 end

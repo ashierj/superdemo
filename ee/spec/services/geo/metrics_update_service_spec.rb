@@ -18,8 +18,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
       status_message: nil,
       db_replication_lag_seconds: 0,
       projects_count: 10,
-      repositories_synced_count: 1,
-      repositories_failed_count: 2,
       lfs_objects_count: 100,
       lfs_objects_synced_count: 50,
       lfs_objects_failed_count: 12,
@@ -35,14 +33,7 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
       last_event_date: event_date,
       cursor_last_event_id: 1,
       cursor_last_event_date: event_date,
-      event_log_max_id: 555,
-      repository_created_max_id: 43,
-      repository_updated_max_id: 132,
-      repository_deleted_max_id: 23,
-      repository_renamed_max_id: 11,
-      repositories_changed_max_id: 109,
-      hashed_storage_migrated_max_id: 9,
-      hashed_storage_attachments_max_id: 65
+      event_log_max_id: 555
     }
   end
 
@@ -133,9 +124,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
         subject.execute
 
         expect(metric_value(:geo_db_replication_lag_seconds)).to eq(0)
-        expect(metric_value(:geo_repositories)).to eq(10)
-        expect(metric_value(:geo_repositories_synced)).to eq(1)
-        expect(metric_value(:geo_repositories_failed)).to eq(2)
         expect(metric_value(:geo_lfs_objects)).to eq(100)
         expect(metric_value(:geo_lfs_objects_synced)).to eq(50)
         expect(metric_value(:geo_lfs_objects_failed)).to eq(12)
@@ -149,13 +137,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
         expect(metric_value(:geo_cursor_last_event_timestamp)).to eq(event_date.to_i)
         expect(metric_value(:geo_last_successful_status_check_timestamp)).to be_truthy
         expect(metric_value(:geo_event_log_max_id)).to eq(555)
-        expect(metric_value(:geo_repository_created_max_id)).to eq(43)
-        expect(metric_value(:geo_repository_updated_max_id)).to eq(132)
-        expect(metric_value(:geo_repository_deleted_max_id)).to eq(23)
-        expect(metric_value(:geo_repository_renamed_max_id)).to eq(11)
-        expect(metric_value(:geo_repositories_changed_max_id)).to eq(109)
-        expect(metric_value(:geo_hashed_storage_migrated_max_id)).to eq(9)
-        expect(metric_value(:geo_hashed_storage_attachments_max_id)).to eq(65)
       end
 
       it 'increments a counter when metrics fail to retrieve' do

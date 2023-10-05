@@ -23,6 +23,21 @@ class GeoNodeStatus < ApplicationRecord
     remove_after: '2023-09-22'
   )
 
+  ignore_columns(
+    %i[
+      repositories_synced_count
+      repositories_failed_count
+      repositories_verified_count
+      repositories_verification_failed_count
+      repositories_checksummed_count
+      repositories_checksum_failed_count
+      repositories_checksum_mismatch_count
+      repositories_retrying_verification_count
+    ],
+    remove_with: '16.6',
+    remove_after: '2023-10-22'
+  )
+
   belongs_to :geo_node
 
   delegate :selective_sync_type, to: :geo_node
@@ -33,11 +48,9 @@ class GeoNodeStatus < ApplicationRecord
   attr_accessor :storage_shards
 
   # Prometheus metrics, no need to store them in the database
-  attr_accessor :event_log_max_id, :repository_created_max_id, :repository_updated_max_id,
-    :repository_deleted_max_id, :repository_renamed_max_id, :repositories_changed_max_id,
-    :lfs_objects_registry_count, :job_artifacts_registry_count,
-    :hashed_storage_migrated_max_id, :hashed_storage_attachments_max_id,
-    :repositories_checked_count, :repositories_checked_failed_count
+  attr_accessor :event_log_max_id, :lfs_objects_registry_count,
+    :job_artifacts_registry_count, :repositories_checked_count,
+    :repositories_checked_failed_count
 
   sha_attribute :storage_configuration_digest
 
@@ -78,19 +91,7 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   RESOURCE_STATUS_FIELDS = (%w[
-    repository_verification_enabled
-    repositories_replication_enabled
-    repositories_synced_count
-    repositories_failed_count
-    repositories_verified_count
-    repositories_verification_failed_count
-    repositories_verification_total_count
     job_artifacts_synced_missing_on_primary_count
-    repositories_checksummed_count
-    repositories_checksum_failed_count
-    repositories_checksum_mismatch_count
-    repositories_checksum_total_count
-    repositories_retrying_verification_count
     projects_count
     container_repositories_replication_enabled
   ] + replicator_class_status_fields + usage_data_fields).freeze
@@ -105,16 +106,7 @@ class GeoNodeStatus < ApplicationRecord
   # Be sure to keep this consistent with Prometheus naming conventions
   PROMETHEUS_METRICS = {
     db_replication_lag_seconds: 'Database replication lag (seconds)',
-    repository_verification_enabled: 'Boolean denoting if verification is enabled for Repositories',
-    repositories_replication_enabled: 'Boolean denoting if replication is enabled for Repositories',
     repositories_count: 'Total number of repositories available on primary',
-    repositories_synced_count: 'Number of repositories synced on secondary',
-    repositories_failed_count: 'Number of repositories failed to sync on secondary',
-    repositories_checksummed_count: 'Number of repositories checksummed on primary',
-    repositories_checksum_failed_count: 'Number of repositories failed to calculate the checksum on primary',
-    repositories_verified_count: 'Number of repositories verified on secondary',
-    repositories_verification_failed_count: 'Number of repositories failed to verify on secondary',
-    repositories_checksum_mismatch_count: 'Number of repositories that checksum mismatch on secondary',
     job_artifacts_synced_missing_on_primary_count: 'Number of job artifacts marked as synced due to the file missing on the primary',
     replication_slots_count: 'Total number of replication slots on the primary',
     replication_slots_used_count: 'Number of replication slots in use on the primary',
@@ -126,16 +118,8 @@ class GeoNodeStatus < ApplicationRecord
     last_successful_status_check_timestamp: 'Time when Geo node status was updated internally',
     status_message: 'Summary of health status',
     event_log_max_id: 'Highest ID present in the Geo event log',
-    repository_created_max_id: 'Highest ID present in repositories created',
-    repository_updated_max_id: 'Highest ID present in repositories updated',
-    repository_deleted_max_id: 'Highest ID present in repositories deleted',
-    repository_renamed_max_id: 'Highest ID present in repositories renamed',
-    repositories_changed_max_id: 'Highest ID present in repositories changed',
-    hashed_storage_migrated_max_id: 'Highest ID present in projects migrated to hashed storage',
-    hashed_storage_attachments_max_id: 'Highest ID present in attachments migrated to hashed storage',
     repositories_checked_count: 'Number of repositories checked',
     repositories_checked_failed_count: 'Number of failed repositories checked',
-    repositories_retrying_verification_count: 'Number of repositories verification failures that Geo is actively trying to correct on secondary',
     container_repositories_replication_enabled: 'Boolean denoting if replication is enabled for Container Repositories'
   }.merge(replicator_class_prometheus_metrics).freeze
 
@@ -245,11 +229,8 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def initialize_feature_flags
-    self.repository_verification_enabled = Gitlab::Geo.repository_verification_enabled?
-
     if Gitlab::Geo.secondary?
       self.container_repositories_replication_enabled = Geo::ContainerRepositoryRegistry.replication_enabled?
-      self.repositories_replication_enabled = Geo::ProjectRegistry.replication_enabled?
     end
   end
 
@@ -258,6 +239,8 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def load_data_from_current_node
+    self.event_log_max_id = Geo::EventLog.maximum(:id)
+
     latest_event = Geo::EventLog.latest_event
     self.last_event_id = latest_event&.id
     self.last_event_date = latest_event&.created_at
@@ -270,10 +253,8 @@ class GeoNodeStatus < ApplicationRecord
     self.revision = Gitlab.revision
 
     load_status_message
-    load_event_data
     load_primary_data
     load_secondary_data
-    load_repository_check_data
     load_verification_data
   end
 
@@ -340,9 +321,6 @@ class GeoNodeStatus < ApplicationRecord
     end
   end
 
-  attr_in_percentage :repositories_synced,           :repositories_synced_count,           :repositories_count
-  attr_in_percentage :repositories_checksummed,      :repositories_checksummed_count,      :repositories_count
-  attr_in_percentage :repositories_verified,         :repositories_verified_count,         :repositories_count
   attr_in_percentage :repositories_checked,          :repositories_checked_count,          :repositories_count
   attr_in_percentage :replication_slots_used,        :replication_slots_used_count,        :replication_slots_count
 
@@ -382,17 +360,6 @@ class GeoNodeStatus < ApplicationRecord
       end
   end
 
-  def load_event_data
-    self.event_log_max_id = Geo::EventLog.maximum(:id)
-    self.repository_created_max_id = Geo::RepositoryCreatedEvent.maximum(:id)
-    self.repository_updated_max_id = Geo::RepositoryUpdatedEvent.maximum(:id)
-    self.repository_deleted_max_id = Geo::RepositoryDeletedEvent.maximum(:id)
-    self.repository_renamed_max_id = Geo::RepositoryRenamedEvent.maximum(:id)
-    self.repositories_changed_max_id = Geo::RepositoriesChangedEvent.maximum(:id)
-    self.hashed_storage_migrated_max_id = Geo::HashedStorageMigratedEvent.maximum(:id)
-    self.hashed_storage_attachments_max_id = Geo::HashedStorageAttachmentsEvent.maximum(:id)
-  end
-
   def load_primary_data
     return unless Gitlab::Geo.primary?
 
@@ -400,6 +367,8 @@ class GeoNodeStatus < ApplicationRecord
     self.replication_slots_count = geo_node.replication_slots_count
     self.replication_slots_used_count = geo_node.replication_slots_used_count
     self.replication_slots_max_retained_wal_bytes = geo_node.replication_slots_max_retained_wal_bytes
+    self.repositories_checked_count = Project.where.not(last_repository_check_at: nil).count
+    self.repositories_checked_failed_count = Project.where(last_repository_check_failed: true).count
 
     Gitlab::Geo::REPLICATOR_CLASSES.each do |replicator|
       public_send("#{replicator.replicable_name_plural}_count=", replicator.primary_total_count) # rubocop:disable GitlabSecurity/PublicSend
@@ -412,16 +381,10 @@ class GeoNodeStatus < ApplicationRecord
     self.db_replication_lag_seconds = Gitlab::Geo::HealthCheck.new.db_replication_lag_seconds
     self.cursor_last_event_id = current_cursor_last_event_id
     self.cursor_last_event_date = Geo::EventLog.find_by(id: self.cursor_last_event_id)&.created_at
+    self.projects_count = Geo::ProjectRepositoryReplicator.registry_count
 
-    load_repositories_data
     load_ssf_replicable_data
     load_secondary_usage_data
-  end
-
-  def load_repositories_data
-    self.projects_count = Geo::ProjectRegistry.count
-    self.repositories_synced_count = Geo::ProjectRegistry.synced(:repository).count
-    self.repositories_failed_count = Geo::ProjectRegistry.sync_failed(:repository).count
   end
 
   def load_ssf_replicable_data
@@ -442,19 +405,7 @@ class GeoNodeStatus < ApplicationRecord
     end
   end
 
-  def load_repository_check_data
-    if Gitlab::Geo.primary?
-      self.repositories_checked_count = Project.where.not(last_repository_check_at: nil).count
-      self.repositories_checked_failed_count = Project.where(last_repository_check_failed: true).count
-    elsif Gitlab::Geo.secondary?
-      self.repositories_checked_count = Geo::ProjectRegistry.where.not(last_repository_check_at: nil).count
-      self.repositories_checked_failed_count = Geo::ProjectRegistry.where(last_repository_check_failed: true).count
-    end
-  end
-
   def load_verification_data
-    return unless repository_verification_enabled
-
     if Gitlab::Geo.primary?
       load_primary_verification_data
     elsif Gitlab::Geo.secondary?
@@ -463,10 +414,6 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def load_primary_verification_data
-    self.repositories_checksummed_count = repository_verification_finder.count_verified_repositories
-    self.repositories_checksum_failed_count = repository_verification_finder.count_verification_failed_repositories
-    self.repositories_checksum_total_count = self.projects_count
-
     Gitlab::Geo::REPLICATOR_CLASSES.each do |replicator|
       next unless replicator.verification_feature_flag_enabled?
 
@@ -477,12 +424,6 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def load_secondary_verification_data
-    self.repositories_verified_count = Geo::ProjectRegistry.verified(:repository).count
-    self.repositories_verification_failed_count = Geo::ProjectRegistry.verification_failed(:repository).count
-    self.repositories_verification_total_count = self.projects_count
-    self.repositories_checksum_mismatch_count = Geo::ProjectRegistry.mismatch(:repository).count
-    self.repositories_retrying_verification_count = Geo::ProjectRegistry.retrying_verification(:repository).count
-
     ::Gitlab::Geo.verification_enabled_replicator_classes.each do |replicator|
       public_send("#{replicator.replicable_name_plural}_verified_count=", replicator.verified_count) # rubocop:disable GitlabSecurity/PublicSend
       public_send("#{replicator.replicable_name_plural}_verification_failed_count=", replicator.verification_failed_count) # rubocop:disable GitlabSecurity/PublicSend
@@ -492,9 +433,5 @@ class GeoNodeStatus < ApplicationRecord
 
   def primary_storage_digest
     @primary_storage_digest ||= Gitlab::Geo.primary_node.find_or_build_status.storage_configuration_digest
-  end
-
-  def repository_verification_finder
-    @repository_verification_finder ||= Geo::RepositoryVerificationFinder.new
   end
 end

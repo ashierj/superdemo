@@ -151,27 +151,11 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
       let(:repository_updated_event) { create(:geo_repository_updated_event, project: project) }
       let(:event_log) { create(:geo_event_log, repository_updated_event: repository_updated_event) }
       let!(:event_log_state) { create(:geo_event_log_state, event_id: event_log.id - 1) }
-      let!(:registry) { create(:geo_project_registry, :synced, project: project) }
+      let!(:registry) { create(:geo_project_repository_registry, :synced, project: project) }
 
       before do
         allow(Gitlab::ShardHealthCache).to receive(:healthy_shard?).with('default').and_return(true)
         allow(Gitlab::Geo::Logger).to receive(:info).and_call_original
-      end
-
-      it 'replays events for projects that belong to selected namespaces to replicate' do
-        secondary.update!(namespaces: [group_1])
-
-        expect(Geo::ProjectSyncWorker).to receive(:perform_async).with(project.id, anything).once
-
-        daemon.find_and_handle_events!
-      end
-
-      it 'does not replay events for projects that do not belong to selected namespaces to replicate' do
-        secondary.update!(selective_sync_type: 'namespaces', namespaces: [group_2])
-
-        expect(Geo::ProjectSyncWorker).not_to receive(:perform_async).with(project.id, anything)
-
-        daemon.find_and_handle_events!
       end
 
       it 'detects when an event was skipped' do
@@ -229,14 +213,6 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
                                                              event_id: repository_updated_event.id,
                                                              event_type: 'Geo::RepositoryUpdatedEvent',
                                                              project_id: project.id))
-
-        daemon.find_and_handle_events!
-      end
-
-      it 'does not replay events for projects that do not belong to selected shards to replicate' do
-        secondary.update!(selective_sync_type: 'shards', selective_sync_shards: ['broken'])
-
-        expect(Geo::ProjectSyncWorker).not_to receive(:perform_async).with(project.id, anything)
 
         daemon.find_and_handle_events!
       end

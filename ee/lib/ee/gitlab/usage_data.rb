@@ -194,8 +194,6 @@ module EE
                       # geo_node_usage: [
                       #   {
                       #     repositories_count: 10,
-                      #     repositories_synced_count: 5,
-                      #     repositories_failed_count: 0,
                       #     ... other geo node status fields
                       #   }
                       # ]

@@ -50,7 +50,6 @@ module EE
         if project&.persisted?
           setup_ci_cd_project if ci_cd_only
 
-          log_geo_event(project)
           log_audit_event(project)
         end
 
@@ -61,10 +60,6 @@ module EE
 
       def remove_unallowed_params
         params.delete(:repository_size_limit) unless current_user&.can_admin_all_resources?
-      end
-
-      def log_geo_event(project)
-        ::Geo::RepositoryCreatedEventStore.new(project).create!
       end
 
       override :validate_import_permissions

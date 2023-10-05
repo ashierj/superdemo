@@ -20,10 +20,6 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::HashedStorageAttachmentsEvent,
   end
 
   describe '#process' do
-    it 'does not create a new project registry' do
-      expect { subject.process }.not_to change(Geo::ProjectRegistry, :count)
-    end
-
     it 'schedules a Geo::HashedStorageAttachmentsMigrationWorker' do
       expect(::Geo::HashedStorageAttachmentsMigrationWorker).to receive(:perform_async)
         .with(project.id, old_attachments_path, new_attachments_path)

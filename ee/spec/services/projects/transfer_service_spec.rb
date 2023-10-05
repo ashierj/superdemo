@@ -16,17 +16,6 @@ RSpec.describe Projects::TransferService do
     group.add_owner(user)
   end
 
-  context 'when running on a primary node' do
-    let_it_be(:primary) { create(:geo_node, :primary) }
-    let_it_be(:secondary) { create(:geo_node) }
-
-    it 'logs an event to the Geo event log' do
-      stub_current_geo_node(primary)
-
-      expect { subject.execute(group) }.to change(Geo::RepositoryRenamedEvent, :count).by(1)
-    end
-  end
-
   context 'audit events' do
     include_examples 'audit event logging' do
       let(:fail_condition!) do

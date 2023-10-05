@@ -404,28 +404,6 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
     end
   end
 
-  context 'when running on a primary node' do
-    let_it_be(:primary) { create(:geo_node, :primary) }
-    let_it_be(:secondary) { create(:geo_node) }
-
-    before do
-      stub_current_geo_node(primary)
-    end
-
-    it 'logs an event to the Geo event log' do
-      expect { create_project(user, opts) }.to change(Geo::RepositoryCreatedEvent, :count).by(1)
-    end
-
-    it 'does not log event to the Geo log if project creation fails' do
-      failing_opts = {
-        name: nil,
-        namespace: user.namespace
-      }
-
-      expect { create_project(user, failing_opts) }.not_to change(Geo::RepositoryCreatedEvent, :count)
-    end
-  end
-
   context 'when importing Project by repo URL' do
     context 'and check namespace plan is enabled' do
       before do

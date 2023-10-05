@@ -591,54 +591,6 @@
         "description": "Proxy remote requests event count weekly",
         "type": "number"
       },
-      "repositories_checksum_failed_count": {
-        "description": "Repositories checksum failed count",
-        "type": "number"
-      },
-      "repositories_checksum_mismatch_count": {
-        "description": "Repositories checksum mismatch count",
-        "type": "number"
-      },
-      "repositories_checksum_total_count": {
-        "description": "Repositories checksum total count",
-        "type": "number"
-      },
-      "repositories_checksummed_count": {
-        "description": "Repositories checksummed count",
-        "type": "number"
-      },
-      "repositories_failed_count": {
-        "description": "Repositories failed count",
-        "type": "number"
-      },
-      "repositories_replication_enabled": {
-        "description": "Repositories replication enabled",
-        "type": "number"
-      },
-      "repositories_retrying_verification_count": {
-        "description": "Repositories retrying verification count",
-        "type": "number"
-      },
-      "repositories_synced_count": {
-        "description": "Repositories synced count",
-        "type": "number"
-      },
-      "repositories_verification_failed_count": {
-        "description": "Repositories verification failed count",
-        "type": "number"
-      },
-      "repositories_verification_total_count": {
-        "description": "Repositories verification total count",
-        "type": "number"
-      },
-      "repositories_verified_count": {
-        "description": "Repositories verified count",
-        "type": "number"
-      },
-      "repository_verification_enabled": {
-        "description": "Repository verification enabled",
-        "type": "number"
-      },
       "snippet_repositories_checksum_failed_count": {
         "description": "Snippet repositories checksum failed count",
         "type": "number"

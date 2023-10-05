@@ -13,49 +13,32 @@ RSpec.describe EE::RepositoryCheck::BatchWorker, feature_category: :source_code_
     Gitlab::ShardHealthCache.update([shard_name])
   end
 
-  context 'Geo primary' do
+  context 'with Geo enabled' do
     let_it_be(:primary) { create(:geo_node, :primary) }
+    let_it_be(:secondary) { create(:geo_node, :secondary) }
 
-    before do
-      stub_current_geo_node(primary)
+    context 'on a Geo primary site' do
+      before do
+        stub_current_geo_node(primary)
+      end
+
+      it 'loads project ids from main database' do
+        projects = create_list(:project, 3, created_at: 1.week.ago, repository_storage: shard_name)
+
+        expect(worker.perform(shard_name)).to match_array(projects.map(&:id))
+      end
     end
 
-    it 'loads project ids from main database' do
-      projects = create_list(:project, 3, created_at: 1.week.ago, repository_storage: shard_name)
+    context 'Geo secondary' do
+      before do
+        stub_current_geo_node(secondary)
+      end
 
-      expect(worker.perform(shard_name)).to match_array(projects.map(&:id))
-    end
-  end
+      it 'does nothing' do
+        create(:project, created_at: 1.week.ago)
 
-  context 'Geo secondary' do
-    let_it_be(:secondary) { create(:geo_node) }
-
-    before do
-      stub_current_geo_node(secondary)
-    end
-
-    it 'loads project ids from tracking database' do
-      project_registries = create_list(:geo_project_registry, 3, :synced)
-      update_project_registry_shard(project_registries, shard_name)
-
-      expect(worker.perform(shard_name)).to match_array(project_registries.map(&:project_id))
-    end
-
-    it 'loads project ids that were checked more than a month ago from tracking database' do
-      project_registries = create_list(
-        :geo_project_registry, 3, :synced,
-        last_repository_check_failed: false,
-        last_repository_check_at: 42.days.ago
-      )
-      update_project_registry_shard(project_registries, shard_name)
-
-      expect(worker.perform(shard_name)).to match_array(project_registries.map(&:project_id))
-    end
-  end
-
-  def update_project_registry_shard(project_registries, shard_name)
-    project_registries.each do |registry|
-      Project.find(registry.project_id).update_column(:repository_storage, shard_name)
+        expect(subject.perform(shard_name)).to eq(nil)
+      end
     end
   end
 end

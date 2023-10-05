@@ -119,17 +119,8 @@ RSpec.describe API::Geo, :aggregate_failures, feature_category: :geo_replication
         cursor_last_event_id: 1,
         cursor_last_event_date: Time.now.utc,
         event_log_max_id: 555,
-        repository_created_max_id: 43,
-        repository_updated_max_id: 132,
-        repository_deleted_max_id: 23,
-        repository_renamed_max_id: 11,
-        repositories_changed_max_id: 109,
         status: {
           projects_count: 10,
-          repositories_synced_count: 1,
-          repositories_failed_count: 2,
-          wikis_synced_count: 2,
-          wikis_failed_count: 3,
           lfs_objects_count: 100,
           lfs_objects_synced_count: 50,
           lfs_objects_failed_count: 12,
@@ -141,9 +132,7 @@ RSpec.describe API::Geo, :aggregate_failures, feature_category: :geo_replication
           container_repositories_count: 100,
           container_repositories_synced_count: 50,
           container_repositories_failed_count: 12,
-          container_repositories_replication_enabled: true,
-          repositories_replication_enabled: true,
-          repository_verification_enabled: true
+          container_repositories_replication_enabled: true
         }
       }
     end

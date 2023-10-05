@@ -84,12 +84,17 @@ module EE
     end
 
     def log_geo_updated_event
-      return unless ::Gitlab::Geo.primary?
-
-      if project && ::Geo::ProjectRepositoryReplicator.enabled?
+      case container
+      when Project, ProjectSnippet
         project.geo_handle_after_update
+      when ProjectWiki
+        project.wiki_repository&.geo_handle_after_update
+      when GroupWiki
+        group.group_wiki_repository&.geo_handle_after_update
+      when DesignManagement::Repository
+        container.geo_handle_after_update
       else
-        ::Geo::RepositoryUpdatedService.new(self).execute
+        raise "Cannot log a Geo updated event for #{container.class}"
       end
     end
 

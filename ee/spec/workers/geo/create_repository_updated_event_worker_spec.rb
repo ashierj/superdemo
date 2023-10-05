@@ -21,34 +21,15 @@ RSpec.describe Geo::CreateRepositoryUpdatedEventWorker, feature_category: :geo_r
 
     it_behaves_like 'subscribes to event'
 
-    context 'when geo_project_repository_replication is enabled' do
-      it 'consumes the published event', :sidekiq_inline do
-        expect_next(described_class)
-          .to receive(:handle_event)
-          .with(instance_of(event.class))
-          .and_call_original
+    it 'consumes the published event', :sidekiq_inline do
+      expect_next(described_class)
+        .to receive(:handle_event)
+        .with(instance_of(event.class))
+        .and_call_original
 
-        expect do
-          ::Gitlab::EventStore.publish(event)
-        end.to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
-      end
-    end
-
-    context 'when geo_project_repository_replication is disable' do
-      before do
-        stub_feature_flags(geo_project_repository_replication: false)
-      end
-
-      it 'consumes the published event', :sidekiq_inline do
-        expect_next(described_class)
-          .to receive(:handle_event)
-          .with(instance_of(event.class))
-          .and_call_original
-
-        expect do
-          ::Gitlab::EventStore.publish(event)
-        end.to change { ::Geo::RepositoryUpdatedEvent.count }.by(1)
-      end
+      expect do
+        ::Gitlab::EventStore.publish(event)
+      end.to change { ::Geo::Event.where(event_name: :updated).count }.by(1)
     end
   end
 
