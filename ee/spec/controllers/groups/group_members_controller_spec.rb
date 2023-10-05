@@ -13,6 +13,52 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
     sign_in(user)
   end
 
+  describe 'PUT update' do
+    let_it_be(:member, reload: true) { create(:group_member, :guest, group: group) }
+    let_it_be(:member_role) { create(:member_role, :guest, namespace: group) }
+
+    let(:member_params) { { member_role_id: member_role.id } }
+    let(:params) do
+      { group_member: member_params, group_id: group, id: member }
+    end
+
+    subject { put :update, params: params, format: :json }
+
+    context 'when assigning custom role to a user' do
+      context 'when custom roles feature is enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it 'returns success' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it 'assigns the member role' do
+          expect { subject }.to change { member.reload.member_role }.from(nil).to(member_role)
+        end
+      end
+
+      context 'when custom roles feature is disabled' do
+        before do
+          stub_licensed_features(custom_roles: false)
+        end
+
+        it 'returns success' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it 'does not assign the member role' do
+          expect { subject }.not_to change { member.reload.member_role }
+        end
+      end
+    end
+  end
+
   describe 'GET #index' do
     context 'with members, invites and requests queries' do
       render_views

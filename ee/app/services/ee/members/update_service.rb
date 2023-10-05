@@ -14,17 +14,30 @@ module EE
       private
 
       def update_member(member, permission)
-        if params.key?(:member_role_id)
-          root = member.source.root_ancestor
-          params.delete(:member_role_id) unless root.custom_roles_enabled?
-
-          if params[:member_role_id] && !root.member_roles.find_by_id(params[:member_role_id])
-            member.errors.add(:member_role, "not found")
-            params.delete(:member_role_id)
-          end
-        end
+        handle_member_role_assignement(member) if params.key?(:member_role_id)
 
         super
+      end
+
+      def handle_member_role_assignement(member)
+        top_level_group = member.source.root_ancestor
+
+        params.delete(:member_role_id) unless top_level_group.custom_roles_enabled?
+
+        return unless params[:member_role_id]
+
+        member_role = top_level_group.member_roles.find_by_id(params[:member_role_id])
+
+        unless member_role
+          member.errors.add(:member_role, "not found")
+          params.delete(:member_role_id)
+
+          return
+        end
+
+        return if params[:access_level]
+
+        params[:access_level] ||= member_role.base_access_level
       end
 
       def log_audit_event(old_access_level:, old_expiry:, member:)

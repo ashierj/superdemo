@@ -525,6 +525,7 @@ class Member < ApplicationRecord
 
   def validate_access_level_locked_for_member_role
     return unless member_role_id
+    return if member_role_changed? # it is ok to change the access level when changing member role
 
     if access_level_changed?
       errors.add(:access_level, _("cannot be changed since member is associated with a custom role"))
