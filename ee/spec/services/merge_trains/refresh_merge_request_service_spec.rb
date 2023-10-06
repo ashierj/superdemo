@@ -259,9 +259,15 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       context 'when the merge request is the first queue' do
         it_behaves_like 'merges the merge request'
 
-        context 'when the merge method is fast forward' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:merge_method) do
+          [:ff, :rebase_merge]
+        end
+
+        with_them do
           before do
-            project.update!(merge_method: :ff)
+            project.update!(merge_method: merge_method)
             project.repository.raw_repository.write_ref(merge_request.train_ref_path, pipeline.sha)
           end
 
