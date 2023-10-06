@@ -100,6 +100,45 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         end
       end
 
+      context 'when there are several comment in a row followed by empty line' do
+        let(:content) do
+          # rubocop:disable Layout/TrailingWhitespace
+          <<~CODE
+            full_name()
+            address()
+
+            #{comment_sign}Generate me a function
+            #{comment_sign}with 2 arguments
+            #{comment_sign}first and last\n 
+          CODE
+          # rubocop:enable Layout/TrailingWhitespace
+        end
+
+        specify do
+          is_expected.to eq(
+            prefix: "full_name()\naddress()\n\n",
+            instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
+          )
+        end
+      end
+
+      context 'when there are several comment in a row followed by empty lines' do
+        let(:content) do
+          <<~CODE
+            full_name()
+            address()
+
+            #{comment_sign}Generate me a function
+            #{comment_sign}with 2 arguments
+            #{comment_sign}first and last
+
+
+          CODE
+        end
+
+        it { is_expected.to be_empty }
+      end
+
       context 'when there is another multiline comment above' do
         let(:content) do
           <<~CODE
@@ -148,6 +187,24 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             #{comment_sign}me a function
             #{comment_sign}with 2 arguments
             #{comment_sign}first and last
+          CODE
+        end
+
+        it "does not find instruction" do
+          is_expected.to eq({})
+        end
+      end
+
+      context 'when there is content between comment lines' do
+        let(:content) do
+          <<~CODE
+            full_name()
+            address()
+
+            #{comment_sign}just some comment
+            #{comment_sign}explaining something
+
+            #{comment_sign}Generate
           CODE
         end
 
