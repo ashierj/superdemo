@@ -106,6 +106,14 @@ feature_category: :vulnerability_management do
           expect(state_transition.comment).to eq(comment)
           expect(state_transition.dismissal_reason).to eq(dismissal_reason)
         end
+
+        it 'updates the associated vulnerability_reads dismissal_reason to match the entry', :aggregate_failures do
+          expect { subject }.to change(Vulnerabilities::StateTransition, :count).from(0).to(1)
+
+          state_transition = Vulnerabilities::StateTransition.last
+          vulnerability_read = vulnerability.vulnerability_read
+          expect(vulnerability_read.dismissal_reason).to eq(state_transition.dismissal_reason)
+        end
       end
 
       it 'creates a note' do
