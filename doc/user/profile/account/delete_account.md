@@ -67,12 +67,12 @@ When deleting users, you can either:
   - Issues.
   - Merge requests.
   - Snippets.
-  - [Notes and Comments](../../../api/notes.md)
-    on other users' [Commits](../../../project/repository/index.md#commit-changes-to-a-repository),
-    [Epics](../../group/epics/index.md),
-    [Issues](../../project/issues/index.md),
-    [Merge requests](../../project/merge_requests/index.md)
-    and [Snippets](../../snippets.md).
+  - [Notes and comments](../../../api/notes.md)
+    on other users' [commits](../../../project/repository/index.md#commit-changes-to-a-repository),
+    [epics](../../group/epics/index.md),
+    [issues](../../project/issues/index.md),
+    [merge requests](../../project/merge_requests/index.md)
+    and [snippets](../../snippets.md).
 
 An alternative to deleting is [blocking a user](../../../administration/moderate_users.md#block-a-user).
 
