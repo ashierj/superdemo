@@ -76,7 +76,8 @@ module Registrations
         comment: params[:jobs_to_be_done_other],
         jtbd: update_params[:registration_objective],
         product_interaction: onboarding_status.iterable_product_interaction,
-        opt_in: ::Gitlab::Utils.to_boolean(params[:opt_in_to_email], default: false)
+        opt_in: ::Gitlab::Utils.to_boolean(params[:opt_in_to_email], default: false),
+        preferred_language: current_user.preferred_language
       }.merge(update_params.slice(:setup_for_company, :role).to_h.symbolize_keys)
     end
 
