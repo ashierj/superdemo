@@ -2,6 +2,8 @@
 
 module CodeSuggestions
   class InstructionsExtractor
+    EMPTY_LINES_LIMIT = 1
+
     def initialize(language, content, first_line_regex)
       @language = language
       @content = content
@@ -15,9 +17,11 @@ module CodeSuggestions
     def extract
       lines = content.to_s.lines
       comment_block = []
+      trimmed_lines = 0
 
       single_line_comment_format = @language.single_line_comment_format
       lines.reverse_each do |line|
+        next trimmed_lines += 1 if trimmed_lines < EMPTY_LINES_LIMIT && comment_block.empty? && line.strip.empty?
         break unless @language.single_line_comment?(line)
 
         comment_block.unshift(line)
@@ -27,7 +31,7 @@ module CodeSuggestions
       return {} unless comment_block.first&.match(first_line_regex)
 
       # lines before the last comment block
-      prefix = lines[0...-comment_block.length].join("")
+      prefix = lines[0...-(comment_block.length + trimmed_lines)].join("")
 
       instruction = comment_block.map { |line| line.gsub!(single_line_comment_format, '').strip }.join("\n")
 

@@ -29,6 +29,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           # Line breaks at the end of the comment
           "#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{generate_prefix}define a calculator class that can be called from other functions \n \n\n" | CodeSuggestions::Tasks::CodeCompletion
 
           # These have characters _before_ the comment
           "end\n\n#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
@@ -47,6 +48,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           "#{single_line_comment} #{generate_prefix}A function that outputs\n#{single_line_comment} the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{generate_prefix}A function that outputs fibonacci numbers\nconst hello = () => 'world';\n#{single_line_comment} first 20" | CodeSuggestions::Tasks::CodeCompletion
 
           # These are too short to be considered generation
           "#{single_line_comment} #{generate_prefix}A func" | CodeSuggestions::Tasks::CodeCompletion
