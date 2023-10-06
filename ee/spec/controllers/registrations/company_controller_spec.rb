@@ -95,39 +95,38 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
       }.merge(glm_params)
     end
 
+    let(:redirect_params) do
+      {
+        trial_onboarding_flow: true
+      }.merge(glm_params)
+    end
+
     subject(:post_create) { post :create, params: params }
 
     context 'on success' do
-      where(:trial_onboarding_flow, :redirect_query) do
-        'true'  | { trial_onboarding_flow: true }
-        'false' | {}
-      end
-
-      with_them do
-        it 'creates trial or lead and redirects to the correct path' do
-          expect_next_instance_of(
-            GitlabSubscriptions::CreateTrialOrLeadService,
-            user: user,
-            params: ActionController::Parameters.new(params.merge(
-                                                       trial_onboarding_flow: trial_onboarding_flow
-                                                     )).permit!
-          ) do |service|
-            expect(service).to receive(:execute).and_return(ServiceResponse.success)
-          end
-
-          post :create, params: params.merge(trial_onboarding_flow: trial_onboarding_flow)
-
-          expect(response).to have_gitlab_http_status(:redirect)
-          expect(response).to redirect_to(new_users_sign_up_group_path(redirect_query.merge(glm_params)))
+      it 'creates trial and redirects to the correct path' do
+        expect_next_instance_of(
+          GitlabSubscriptions::CreateCompanyLeadService,
+          user: user,
+          params: ActionController::Parameters.new(params.merge(
+            trial_onboarding_flow: true
+          )).permit!
+        ) do |service|
+          expect(service).to receive(:execute).and_return(ServiceResponse.success)
         end
+
+        post :create, params: params
+
+        expect(response).to have_gitlab_http_status(:redirect)
+        expect(response).to redirect_to(new_users_sign_up_group_path(redirect_params))
       end
 
       context 'when saving onboarding_step_url' do
-        let(:path) { new_users_sign_up_group_path(glm_params) }
+        let(:path) { new_users_sign_up_group_path(redirect_params) }
         let(:should_check_namespace_plan) { true }
 
         before do
-          allow_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
+          allow_next_instance_of(GitlabSubscriptions::CreateCompanyLeadService) do |service|
             allow(service).to receive(:execute).and_return(ServiceResponse.success)
           end
           stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
@@ -164,7 +163,7 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
 
       context 'with snowplow tracking' do
         before do
-          allow_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
+          allow_next_instance_of(GitlabSubscriptions::CreateCompanyLeadService) do |service|
             allow(service).to receive(:execute).and_return(ServiceResponse.success)
           end
         end
@@ -193,30 +192,13 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
               label: 'trial_registration'
             )
           end
-
-          it 'does not track submission event with automatic_trial_registration experiment context' do
-            stub_experiments(automatic_trial_registration: true)
-
-            expect(controller).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
-
-            post_create
-          end
-        end
-
-        it 'tracks successful submission event with automatic_trial_registration experiment context', :experiment do
-          expect(experiment(:automatic_trial_registration)).to track(:successfully_submitted_form,
-            label: 'free_registration')
-            .on_next_instance
-            .with_context(actor: user)
-
-          post_create
         end
       end
     end
 
     context 'on failure' do
       before do
-        allow_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
+        allow_next_instance_of(GitlabSubscriptions::CreateCompanyLeadService) do |service|
           allow(service).to receive(:execute).and_return(ServiceResponse.error(message: 'failed'))
         end
       end
