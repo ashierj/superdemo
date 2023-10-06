@@ -884,7 +884,7 @@ module EE
       creds = url.credentials.slice(:user)
 
       write_attribute(:import_url, url.sanitized_url)
-      create_or_update_import_data(credentials: creds)
+      build_or_assign_import_data(credentials: creds)
 
       username_only_import_url
     end
