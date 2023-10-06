@@ -8,6 +8,7 @@ module EE
       # we don't store is_blocked_by in the db but need it for displaying the relation
       # from the target
       TYPE_IS_BLOCKED_BY = 'is_blocked_by'
+      TYPE_BLOCKS = ::Enums::IssuableLink::TYPE_BLOCKS
     end
 
     class_methods do
