@@ -65,7 +65,7 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
 
       context 'with non-get request' do
         it 'does not redirect to the onboarding step' do
-          expect_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |instance|
+          expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |instance|
             expect(instance).to receive(:execute).and_return(ServiceResponse.success)
           end
 

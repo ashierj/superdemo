@@ -8,7 +8,8 @@ module GitlabSubscriptions
       if response[:success]
         ServiceResponse.success
       else
-        ServiceResponse.error(message: response.dig(:data, :errors))
+        error_message = response.dig(:data, :errors) || 'Submission failed'
+        ServiceResponse.error(message: error_message, reason: :submission_failed)
       end
     end
 

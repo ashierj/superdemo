@@ -1,13 +1,5 @@
 <script>
-import {
-  GlForm,
-  GlButton,
-  GlFormGroup,
-  GlFormInput,
-  GlFormSelect,
-  GlFormText,
-  GlToggle,
-} from '@gitlab/ui';
+import { GlForm, GlButton, GlFormGroup, GlFormInput, GlFormSelect, GlFormText } from '@gitlab/ui';
 import {
   LEADS_COMPANY_NAME_LABEL,
   LEADS_COMPANY_SIZE_LABEL,
@@ -23,10 +15,11 @@ import {
   TRIAL_COMPANY_SIZE_PROMPT,
   TRIAL_PHONE_DESCRIPTION,
   TRIAL_FORM_SUBMIT_TEXT,
-  AUTOMATIC_TRIAL_DESCRIPTION,
-  AUTOMATIC_TRIAL_FORM_SUBMIT_TEXT,
+  TRIAL_DESCRIPTION,
+  TRIAL_REGISTRATION_DESCRIPTION,
+  TRIAL_REGISTRATION_FOOTER_DESCRIPTION,
+  TRIAL_REGISTRATION_FORM_SUBMIT_TEXT,
 } from 'ee/trials/constants';
-import Tracking from '~/tracking';
 import { trackCompanyForm } from '~/google_tag_manager';
 
 export default {
@@ -39,21 +32,10 @@ export default {
     GlFormSelect,
     GlFormText,
     CountryOrRegionSelector,
-    GlToggle,
   },
-  mixins: [
-    Tracking.mixin({
-      experiment: 'automatic_trial_registration',
-    }),
-  ],
   inject: ['user', 'submitPath'],
   props: {
     trial: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    automaticTrial: {
       type: Boolean,
       required: false,
       default: false,
@@ -68,7 +50,6 @@ export default {
       country: '',
       state: '',
       websiteUrl: '',
-      trialOnboardingFlow: this.automaticTrial || this.trial,
     };
   },
   computed: {
@@ -86,26 +67,15 @@ export default {
         ? this.$options.i18n.description.trial
         : this.$options.i18n.description.registration;
     },
-    showTrialToggle() {
-      return !this.automaticTrial && !this.trial;
-    },
     submitButtonText() {
-      return this.automaticTrial
-        ? this.$options.i18n.automaticTrialFormSubmitText
-        : this.$options.i18n.formSubmitText;
+      return this.trial
+        ? this.$options.i18n.formSubmitText.trial
+        : this.$options.i18n.formSubmitText.registration;
     },
   },
   methods: {
-    toggleTrial() {
-      this.$emit('changed', {
-        trialOnboardingFlow: this.trialOnboardingFlow,
-      });
-
-      this.track('click_trial_toggle', { label: this.trialOnboardingFlow ? 'ON' : 'OFF' });
-    },
     trackCompanyForm() {
-      const aboutYourCompanyType = this.trialOnboardingFlow ? 'ultimate_trial' : 'free_account';
-      trackCompanyForm(aboutYourCompanyType);
+      trackCompanyForm('ultimate_trial');
     },
   },
   i18n: {
@@ -116,19 +86,17 @@ export default {
     companySizeSelectPrompt: TRIAL_COMPANY_SIZE_PROMPT,
     phoneNumberLabel: LEADS_PHONE_NUMBER_LABEL,
     phoneNumberDescription: TRIAL_PHONE_DESCRIPTION,
-    formSubmitText: TRIAL_FORM_SUBMIT_TEXT,
     optional: __('(optional)'),
     websiteLabel: __('Website'),
-    trialLabel: __('GitLab Ultimate trial'),
-    trialToggleDescription: __(
-      'Try all GitLab features for free for 30 days. No credit card required.',
-    ),
     description: {
-      trial: __('To activate your trial, we need additional details from you.'),
-      registration: __('To complete registration, we need additional details from you.'),
+      trial: TRIAL_DESCRIPTION,
+      registration: TRIAL_REGISTRATION_DESCRIPTION,
     },
-    automaticTrialDescription: AUTOMATIC_TRIAL_DESCRIPTION,
-    automaticTrialFormSubmitText: AUTOMATIC_TRIAL_FORM_SUBMIT_TEXT,
+    footerDescription: TRIAL_REGISTRATION_FOOTER_DESCRIPTION,
+    formSubmitText: {
+      trial: TRIAL_FORM_SUBMIT_TEXT,
+      registration: TRIAL_REGISTRATION_FORM_SUBMIT_TEXT,
+    },
   },
 };
 </script>
@@ -187,7 +155,7 @@ export default {
         :label="$options.i18n.companySizeLabel"
         label-size="sm"
         label-for="company_size"
-        class="gl-w-half gl-xs-w-full company-size"
+        class="gl-w-half gl-xs-w-full"
       >
         <gl-form-select
           id="company_size"
@@ -242,43 +210,15 @@ export default {
         data-testid="website_url"
       />
     </gl-form-group>
-    <gl-form-group
-      v-show="showTrialToggle"
-      :label="$options.i18n.trialLabel"
-      label-size="sm"
-      :optional-text="$options.i18n.optional"
-      optional
-    >
-      <gl-form-text class="gl-pb-3">{{ $options.i18n.trialToggleDescription }}</gl-form-text>
-      <gl-toggle
-        v-model="trialOnboardingFlow"
-        name="trial_onboarding_flow"
-        :label="$options.i18n.trialLabel"
-        label-position="hidden"
-        data-qa-selector="trial_onboarding_flow_toggle"
-        data-testid="trial_onboarding_flow"
-        @change="toggleTrial"
-      />
-    </gl-form-group>
-    <gl-button
-      type="submit"
-      variant="confirm"
-      :class="{ 'gl-w-20': !automaticTrial }"
-      data-qa-selector="confirm_button"
-    >
+    <gl-button type="submit" variant="confirm" data-qa-selector="confirm_button">
       {{ submitButtonText }}
     </gl-button>
     <gl-form-text
-      v-if="automaticTrial"
-      data-testid="automatic_trial_description_text"
+      v-if="!trial"
+      data-testid="footer_description_text"
       class="gl-mt-3 gl-text-gray-500"
-      >{{ $options.i18n.automaticTrialDescription }}</gl-form-text
     >
+      {{ $options.i18n.footerDescription }}
+    </gl-form-text>
   </gl-form>
 </template>
-
-<style>
-.company-size {
-  line-height: 1.2rem;
-}
-</style>
