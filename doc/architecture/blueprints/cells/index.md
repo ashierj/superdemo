@@ -413,7 +413,7 @@ The design goals of the Cells architecture describe that [all Cells are under a 
 
 - Cell-local features should be limited to those related to managing the Cell, but never be a feature where the Cell semantic is exposed to the customer.
 - The Cells architecture wants to freely control the distribution of Organization and customer data across Cells without impacting users when data is migrated.
- 
+
 Cluster-wide features are strongly discouraged because:
 
 - They might require storing a substantial amount of data cluster-wide which decreases [scalability headroom](goals.md#provides-100x-headroom).
