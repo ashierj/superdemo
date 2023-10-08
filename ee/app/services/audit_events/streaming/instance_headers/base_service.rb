@@ -13,13 +13,15 @@ module AuditEvents
           @current_user = current_user
         end
 
-        def audit(action:, header:, message:, author: current_user)
+        def audit(action:, header:, message:, author: current_user, additional_details: {})
           audit_context = {
             name: "audit_events_streaming_instance_headers_#{action}",
             author: author,
             scope: Gitlab::Audit::InstanceScope.new,
             target: header,
-            message: message
+            target_details: header.key,
+            message: message,
+            additional_details: additional_details
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)

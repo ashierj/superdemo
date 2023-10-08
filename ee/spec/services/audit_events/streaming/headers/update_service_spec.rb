@@ -12,7 +12,8 @@ RSpec.describe AuditEvents::Streaming::Headers::UpdateService, feature_category:
     {
       header: header,
       key: 'new',
-      value: 'new'
+      value: 'new',
+      active: false
     }
   end
 

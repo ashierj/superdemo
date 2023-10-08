@@ -9,7 +9,7 @@ module AuditEvents
           header = params[:header]
           return header_error if header.blank?
 
-          update_header(header, params[:key], params[:value])
+          update_header(header, params)
         end
 
         private
