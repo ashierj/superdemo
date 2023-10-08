@@ -7,5 +7,6 @@ FactoryBot.define do
     end
     value { 'bar' }
     external_audit_event_destination
+    active { true }
   end
 end

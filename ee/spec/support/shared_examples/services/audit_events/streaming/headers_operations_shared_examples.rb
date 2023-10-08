@@ -67,7 +67,14 @@ RSpec.shared_examples 'header updation' do
           author: user,
           scope: audit_scope,
           target: header,
-          message: "Updated a custom HTTP header from key old to have a key new."
+          target_details: "new",
+          message: "Updated a custom HTTP header from key old to have a key new to have a new value activation " \
+                   "status changed to false.",
+          additional_details: {
+            "active" => [true, false],
+            "key" => %w[old new],
+            "value" => %w[old new]
+          }
         }
 
         audit_context = audit_context.merge(extra_audit_context)
@@ -91,7 +98,7 @@ RSpec.shared_examples 'header updation' do
       end
 
       context 'when only the header value is updated' do
-        let(:params) { super().merge(key: 'old') }
+        let(:params) { super().slice(:header, :value) }
 
         it 'has a audit message reflecting just the value was changed' do
           audit_context = {
@@ -99,7 +106,11 @@ RSpec.shared_examples 'header updation' do
             author: user,
             scope: audit_scope,
             target: header,
-            message: "Updated a custom HTTP header with key old to have a new value."
+            target_details: "old",
+            message: "Updated a custom HTTP header with key old to have a new value.",
+            additional_details: {
+              "value" => %w[old new]
+            }
           }
 
           audit_context = audit_context.merge(extra_audit_context)
@@ -109,8 +120,31 @@ RSpec.shared_examples 'header updation' do
         end
       end
 
-      context 'when neither key nor value is updated' do
-        let(:params) { super().merge(key: 'old', value: 'old') }
+      context 'when only the active attribute is updated' do
+        let(:params) { super().slice(:header, :active) }
+
+        it 'has a audit message reflecting just the active attribute was changed' do
+          audit_context = {
+            name: event_type,
+            author: user,
+            scope: audit_scope,
+            target: header,
+            target_details: "old",
+            message: "Updated a custom HTTP header with key old activation status changed to false.",
+            additional_details: {
+              "active" => [true, false]
+            }
+          }
+
+          audit_context = audit_context.merge(extra_audit_context)
+
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+          response
+        end
+      end
+
+      context 'when neither key, value nor active is updated' do
+        let(:params) { super().merge(key: 'old', value: 'old', active: true) }
 
         it_behaves_like 'does not create audit event'
       end
@@ -122,7 +156,8 @@ RSpec.shared_examples 'header updation' do
       {
         header: header,
         key: '',
-        value: 'new'
+        value: 'new',
+        active: false
       }
     end
 
@@ -155,7 +190,9 @@ RSpec.shared_examples 'header deletion' do
           author: user,
           scope: audit_scope,
           target: header,
-          message: "Destroyed a custom HTTP header with key #{header.key}."
+          target_details: header.key,
+          message: "Destroyed a custom HTTP header with key #{header.key}.",
+          additional_details: {}
         }
 
         audit_context = audit_context.merge(extra_audit_context)

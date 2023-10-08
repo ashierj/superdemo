@@ -47,9 +47,37 @@ RSpec.describe 'Update an external audit event destination header', feature_cate
 
     context 'when current user is instance admin' do
       it 'updates the header with the correct attributes', :aggregate_failures do
-        expect { subject }.to change { header.reload.key }.from('key-1').to('new-key')
-                                                          .and change { header.reload.value }.from('bar')
-                                                                                             .to('new-value')
+        expect { subject }
+          .to change { header.reload.key }.from('key-1').to('new-key')
+          .and change { header.value }.from('bar').to('new-value')
+          .and not_change { header.active }
+      end
+
+      context 'when active attribute is also updated' do
+        let(:input) { super().merge(active: false) }
+
+        it 'updates the header with the correct attributes', :aggregate_failures do
+          expect { subject }.to change { header.reload.key }.from('key-1').to('new-key')
+                                                            .and change { header.reload.value }
+                                                                   .from('bar').to('new-value')
+                                                            .and change { header.reload.active }.from(true).to(false)
+        end
+      end
+
+      context 'when only active attribute is updated' do
+        let(:input) do
+          {
+            headerId: header.to_gid,
+            active: false
+          }
+        end
+
+        it 'updates the header active value' do
+          expect { subject }
+            .to change { header.reload.active }.from(true).to(false)
+            .and not_change { header.reload.key }
+            .and not_change { header.reload.value }
+        end
       end
 
       context 'when the header attributes are invalid' do
