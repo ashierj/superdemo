@@ -6,6 +6,14 @@ module EE
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
 
+      prepended do
+        include EachBatch
+
+        scope :with_namespace_associations, -> do
+          preload(namespace: [:namespace_limit, { gitlab_subscription: :hosted_plan }])
+        end
+      end
+
       class_methods do
         extend ::Gitlab::Utils::Override
 

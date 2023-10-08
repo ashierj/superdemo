@@ -5,7 +5,10 @@ require 'spec_helper'
 RSpec.describe Admin::NamespaceLimitsController, :enable_admin_mode,
   type: :request,
   feature_category: :consumables_cost_management do
-  describe 'GET #index' do
+  let_it_be(:admin) { create(:admin) }
+  let_it_be(:user) { create(:user) }
+
+  describe 'GET #index', :aggregate_failures do
     subject(:get_index) { get admin_namespace_limits_path }
 
     shared_examples 'not found' do
@@ -17,8 +20,6 @@ RSpec.describe Admin::NamespaceLimitsController, :enable_admin_mode,
     end
 
     context 'with an admin user' do
-      let_it_be(:admin) { create(:admin) }
-
       before do
         sign_in(admin)
       end
@@ -41,8 +42,6 @@ RSpec.describe Admin::NamespaceLimitsController, :enable_admin_mode,
     end
 
     context 'with non-admin user' do
-      let_it_be(:user) { create(:user) }
-
       before do
         sign_in(user)
       end
