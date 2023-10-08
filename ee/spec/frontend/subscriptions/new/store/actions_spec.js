@@ -5,21 +5,11 @@ import { CHARGE_PROCESSING_TYPE } from 'ee/subscriptions/new/constants';
 import defaultClient from 'ee/subscriptions/new/graphql';
 import * as actions from 'ee/subscriptions/new/store/actions';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
-import { ActiveModelError } from '~/lib/utils/error_utils';
-import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
-import Tracking from '~/tracking';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import * as googleTagManager from '~/google_tag_manager';
 
-const {
-  countriesPath,
-  countryStatesPath,
-  paymentFormPath,
-  paymentMethodPath,
-  confirmOrderPath,
-} = Api;
+const { countriesPath, countryStatesPath, paymentFormPath, paymentMethodPath } = Api;
 
 jest.mock('~/alert');
 
@@ -624,166 +614,6 @@ describe('Subscriptions Actions', () => {
           },
         ],
       );
-    });
-  });
-
-  describe('confirmOrder', () => {
-    describe('on success', () => {
-      const payload = { location: 'x' };
-
-      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, payload));
-
-      it('calls trackTransaction', async () => {
-        const spy = jest.spyOn(googleTagManager, 'trackTransaction');
-
-        await testAction(
-          actions.confirmOrder,
-          null,
-          {},
-          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [{ type: 'confirmOrderSuccess', payload }],
-        );
-
-        expect(spy).toHaveBeenCalled();
-      });
-
-      it('calls tracking event', async () => {
-        const spy = jest.spyOn(Tracking, 'event');
-
-        await testAction(
-          actions.confirmOrder,
-          null,
-          {},
-          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [{ type: 'confirmOrderSuccess', payload }],
-        );
-
-        expect(spy).toHaveBeenCalledWith('default', 'click_button', {
-          label: 'confirm_purchase',
-          property: 'Success: subscription',
-        });
-      });
-    });
-
-    describe('on error', () => {
-      it('calls tracking event', async () => {
-        const errors = 'errors';
-        const spy = jest.spyOn(Tracking, 'event');
-
-        mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, { errors });
-
-        await testAction(
-          actions.confirmOrder,
-          null,
-          {},
-          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [{ type: 'confirmOrderError', payload: new ActiveModelError(null, '"errors"') }],
-        );
-
-        expect(spy).toHaveBeenCalledWith('default', 'click_button', {
-          label: 'confirm_purchase',
-          property: errors,
-        });
-      });
-
-      it('calls confirmOrderError with the returned group name error', async () => {
-        mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, { name: ['Error_1', "Error ' 2"] });
-
-        await testAction(
-          actions.confirmOrder,
-          null,
-          {},
-          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [
-            {
-              type: 'confirmOrderError',
-              payload: new ActiveModelError(null, '"Name: Error_1, Error \' 2"'),
-            },
-          ],
-        );
-      });
-
-      it('calls confirmOrderError with the error message for promo code error', async () => {
-        mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, {
-          errors: {
-            message: 'Promo code is invalid',
-            attributes: ['promo_code'],
-            code: 'INVALID',
-          },
-        });
-
-        await testAction(
-          actions.confirmOrder,
-          null,
-          {},
-          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [
-            {
-              type: 'confirmOrderError',
-              payload: new ActiveModelError(null, '"Promo code is invalid"'),
-            },
-          ],
-        );
-      });
-
-      it('sends the error_attribute_map in the paylod', async () => {
-        const errors = { email: ["can't be blank"] };
-        const errorAttributeMap = { email: ['taken'] };
-        mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, {
-          errors,
-          error_attribute_map: errorAttributeMap,
-        });
-
-        await testAction(
-          actions.confirmOrder,
-          null,
-          {},
-          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [
-            {
-              type: 'confirmOrderError',
-              payload: new ActiveModelError(errorAttributeMap, JSON.stringify(errors)),
-            },
-          ],
-        );
-      });
-    });
-
-    describe('on failure', () => {
-      beforeEach(() => mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR));
-
-      it('calls tracking event', async () => {
-        const spy = jest.spyOn(Tracking, 'event');
-
-        await testAction(
-          actions.confirmOrder,
-          null,
-          {},
-          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [
-            {
-              type: 'confirmOrderError',
-              payload: new Error('Request failed with status code 500'),
-            },
-          ],
-        );
-
-        expect(spy).toHaveBeenCalledWith('default', 'click_button', {
-          label: 'confirm_purchase',
-          property: 'Request failed with status code 500',
-        });
-      });
-    });
-  });
-
-  describe('confirmOrderSuccess', () => {
-    useMockLocationHelper();
-
-    const params = { location: 'http://example.com', plan_id: 'x', quantity: 10 };
-
-    it('changes the window location', async () => {
-      await testAction(actions.confirmOrderSuccess, params, {}, [], []);
-      expect(window.location.assign).toHaveBeenCalledWith('http://example.com');
     });
   });
 

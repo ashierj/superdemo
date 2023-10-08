@@ -1,25 +1,10 @@
 import Api from 'ee/api';
 import { PAYMENT_FORM_ID } from 'ee/subscriptions/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
-import Tracking from '~/tracking';
-import { addExperimentContext } from '~/tracking/utils';
-import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { s__, sprintf } from '~/locale';
-import { trackCheckout, trackTransaction } from '~/google_tag_manager';
-import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
-import { ActiveModelError } from '~/lib/utils/error_utils';
+import { trackCheckout } from '~/google_tag_manager';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
-
-const trackConfirmOrder = (message) =>
-  Tracking.event(
-    'default',
-    'click_button',
-    addExperimentContext({
-      label: 'confirm_purchase',
-      property: message,
-    }),
-  );
 
 export const updateSelectedPlan = ({ commit, getters }, selectedPlan) => {
   commit(types.UPDATE_SELECTED_PLAN, selectedPlan);
@@ -213,65 +198,6 @@ export const fetchPaymentMethodDetailsError = ({ dispatch }) => {
     'confirmOrderError',
     new Error(s__('Checkout|Failed to register credit card. Please try again.')),
   );
-};
-
-const shouldShowErrorMessageOnly = (errors) => {
-  if (!errors?.message) {
-    return false;
-  }
-
-  return isInvalidPromoCodeError(errors);
-};
-
-export const confirmOrder = ({ getters, dispatch, commit }) => {
-  commit(types.UPDATE_IS_CONFIRMING_ORDER, true);
-
-  Api.confirmOrder(getters.confirmOrderParams)
-    .then(({ data }) => {
-      if (data.location) {
-        const transactionDetails = {
-          paymentOption: getters.confirmOrderParams?.subscription?.payment_method_id,
-          revenue: getters.totalExVat,
-          tax: getters.vat,
-          selectedPlan: getters.selectedPlanDetails?.value,
-          quantity: getters.confirmOrderParams?.subscription?.quantity,
-        };
-
-        trackTransaction(transactionDetails);
-        trackConfirmOrder(s__('Checkout|Success: subscription'));
-
-        dispatch('confirmOrderSuccess', {
-          location: data.location,
-        });
-      } else {
-        let errorMessage;
-        if (data.name) {
-          errorMessage = sprintf(
-            s__('Checkout|Name: %{errorMessage}'),
-            { errorMessage: data.name.join(', ') },
-            false,
-          );
-        } else if (shouldShowErrorMessageOnly(data.errors)) {
-          errorMessage = data.errors?.message;
-        } else {
-          errorMessage = data.errors;
-        }
-
-        trackConfirmOrder(errorMessage);
-        dispatch(
-          'confirmOrderError',
-          new ActiveModelError(data.error_attribute_map, JSON.stringify(errorMessage)),
-        );
-      }
-    })
-    .catch((error) => {
-      trackConfirmOrder(error.message);
-      dispatch('confirmOrderError', error);
-    });
-};
-
-export const confirmOrderSuccess = (_, { location }) => {
-  redirectTo(location); // eslint-disable-line import/no-deprecated
 };
 
 export const confirmOrderError = ({ commit }) => {
