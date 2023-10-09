@@ -718,6 +718,10 @@ feature_category: :system_access do
         it_behaves_like 'logs and tracks the event', :credit_card, :failed_attempt, :related_to_banned_user
 
         it 'bans the user' do
+          expect_next_instance_of(::Users::AutoBanService, user: user, reason: :banned_credit_card) do |instance|
+            expect(instance).to receive(:execute).and_call_original
+          end
+
           expect { do_request }.to change { user.reload.banned? }.from(false).to(true)
         end
 

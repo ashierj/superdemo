@@ -21,7 +21,7 @@ module PhoneVerification
         return error_in_params unless valid?
 
         if related_to_banned_user? && Feature.enabled?(:identity_verification_auto_ban)
-          user.ban
+          ::Users::AutoBanService.new(user: user, reason: :banned_phone_number).execute
           return error_banned_user
         end
 
