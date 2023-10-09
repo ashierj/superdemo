@@ -32,6 +32,16 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     it { is_expected.to have_many(:compliance_violations).class_name('MergeRequests::ComplianceViolation') }
 
     describe 'approval_rules association' do
+      describe '#applicable_post_merge' do
+        it 'returns only the rules applicable_post_merge true or nil' do
+          create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: false)
+          rule_2 = create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: true)
+          rule_3 = create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: true)
+
+          expect(merge_request.approval_rules.applicable_post_merge).to contain_exactly(rule_2, rule_3)
+        end
+      end
+
       describe '#applicable_to_branch' do
         let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request) }
         let(:branch) { 'stable' }

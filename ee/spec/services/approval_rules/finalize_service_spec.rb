@@ -46,6 +46,8 @@ RSpec.describe ApprovalRules::FinalizeService do
 
           create(:approval_merge_request_rule_source, approval_merge_request_rule: rule_2, approval_project_rule:
                  protected_rule)
+
+          project.update!(disable_overriding_approvers_per_merge_request: false)
         end
 
         context 'when mr is not merged' do
@@ -123,6 +125,10 @@ RSpec.describe ApprovalRules::FinalizeService do
                  protected_rule)
 
           rule
+        end
+
+        before do
+          project.update!(disable_overriding_approvers_per_merge_request: true)
         end
 
         context 'when mr is not merged' do

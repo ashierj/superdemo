@@ -47,10 +47,12 @@ class ApprovalState
     strong_memoize(:wrapped_approval_rules) do
       next [] unless approval_feature_available?
 
-      if Feature.enabled?(:use_merge_approval_rules_when_merged, merge_request.project) && merge_request.merged?
+      if Feature.enabled?(:use_new_rule_finalize_approach, merge_request.project) && merge_request.merged?
         # After merging, we have historical data that we contain invalid approval rules associated with
         # the merge request. We should remove any of these invalid approver rules.
-        all_approval_rules - invalid_approvers_rules
+        # We also removed any that are not approved, as they would have not been
+        # applicable at the time of merge.
+        (all_approval_rules - invalid_approvers_rules).select(&:approved?)
       else
         all_approval_rules
       end
@@ -206,7 +208,7 @@ class ApprovalState
 
   def user_defined_rules
     strong_memoize(:user_defined_rules) do
-      if approval_rules_overwritten? || (Feature.enabled?(:use_merge_approval_rules_when_merged, merge_request.project) && merge_request.merged? && user_defined_merge_request_rules.any?)
+      if approval_rules_overwritten? || (Feature.enabled?(:use_new_rule_finalize_approach, merge_request.project) && merge_request.merged? && user_defined_merge_request_rules.any?)
         user_defined_merge_request_rules
       else
         project.visible_user_defined_rules(branch: target_branch).map do |rule|
@@ -291,7 +293,13 @@ class ApprovalState
 
   def wrapped_rules
     strong_memoize(:wrapped_rules) do
-      grouped_merge_request_rules = merge_request.approval_rules.applicable_to_branch(target_branch).group_by do |rule|
+      rules = if Feature.enabled?(:use_new_rule_finalize_approach, merge_request.project) && merge_request.merged?
+                merge_request.approval_rules.applicable_post_merge
+              else
+                merge_request.approval_rules.applicable_to_branch(target_branch)
+              end
+
+      grouped_merge_request_rules = rules.group_by do |rule|
         rule.from_scan_result_policy? ? :scan_finding : rule.report_type
       end
 
