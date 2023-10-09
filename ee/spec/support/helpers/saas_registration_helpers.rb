@@ -524,7 +524,8 @@ module SaasRegistrationHelpers
       user,
       group: an_instance_of(Group),
       customer_params: customer_params,
-      subscription_params: subscription_params
+      subscription_params: subscription_params,
+      idempotency_key: nil
     )
 
     # this is an ad-hoc solution to skip the zuora step and allow 'confirm purchase' button to show up

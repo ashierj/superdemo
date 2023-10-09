@@ -4,15 +4,16 @@ module GitlabSubscriptions
   class CreateService
     include Gitlab::Utils::StrongMemoize
 
-    attr_reader :current_user, :customer_params, :subscription_params
+    attr_reader :current_user, :customer_params, :subscription_params, :idempotency_key
 
     CUSTOMERS_OAUTH_APP_UID_CACHE_KEY = 'customers_oauth_app_uid'
 
-    def initialize(current_user, group:, customer_params:, subscription_params:)
+    def initialize(current_user, group:, customer_params:, subscription_params:, idempotency_key:)
       @current_user = current_user
       @group = group
       @customer_params = customer_params
       @subscription_params = subscription_params
+      @idempotency_key = idempotency_key
     end
 
     def execute
@@ -84,7 +85,8 @@ module GitlabSubscriptions
         gl_namespace_id: @group.id,
         gl_namespace_name: @group.name,
         preview: 'false',
-        source: subscription_params[:source]
+        source: subscription_params[:source],
+        idempotency_key: idempotency_key
       }
     end
 

@@ -3,11 +3,21 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::CreateService, feature_category: :billing_and_payments do
-  subject(:execute) { described_class.new(user, group: group, customer_params: customer_params, subscription_params: subscription_params).execute }
+  subject(:execute) do
+    described_class.new(
+      user,
+      group: group,
+      customer_params: customer_params,
+      subscription_params: subscription_params,
+      idempotency_key: idempotency_key
+    ).execute
+  end
 
   let_it_be(:user) { create(:user, id: 111, first_name: 'First name', last_name: 'Last name', email: 'first.last@gitlab.com') }
   let_it_be(:group) { create(:group, id: 222, name: 'Group name') }
   let_it_be(:oauth_app) { create(:oauth_application) }
+
+  let_it_be(:idempotency_key) { 'idempotency-key' }
 
   let_it_be(:customer_params) do
     {
