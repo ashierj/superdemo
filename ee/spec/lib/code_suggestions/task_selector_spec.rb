@@ -212,5 +212,129 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         expect(result.send(:params)[:prefix]).to eq(prefix)
       end
     end
+
+    context 'when selecting model family' do
+      let(:code_completion_model_family) { CodeSuggestions::AiModels::VERTEX_AI }
+      let(:code_generation_model_family) { CodeSuggestions::AiModels::VERTEX_AI }
+      let(:code_completion_model_family_split_by_language) { false }
+      let(:code_generation_model_family_split_by_language) { false }
+      let(:file_name) { 'python.py' }
+      let(:prefix) { "# A function that outputs the first 20 fibonacci numbers" }
+
+      let(:params) do
+        {
+          skip_generate_comment_prefix: true,
+          current_file: { file_name: file_name, content_above_cursor: prefix },
+          code_completion_model_family: code_completion_model_family,
+          code_generation_model_family: code_generation_model_family,
+          code_completion_model_family_split_by_language: code_completion_model_family_split_by_language,
+          code_generation_model_family_split_by_language: code_generation_model_family_split_by_language
+        }
+      end
+
+      context 'when code completion' do
+        let(:prefix) { "# A func" }
+
+        before do
+          allow(CodeSuggestions::InstructionsExtractor).to receive(:extract).and_return({})
+        end
+
+        context 'when code_completion_split_by_language is true' do
+          let(:code_completion_model_family_split_by_language) { true }
+
+          context 'when language is from Anthropic set' do
+            let(:file_name) { 'ruby.rb' }
+
+            it 'calls CodeCompletion.new with code_completion_model_family :anthropic' do
+              expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
+                .with(
+                  params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::ANTHROPIC),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
+
+              subject
+            end
+          end
+
+          context 'when language is not from Anthropic set' do
+            let(:file_name) { 'python.py' }
+
+            it 'calls CodeCompletion.new with code_completion_model_family :vertex_ai' do
+              expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
+                .with(
+                  params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::VERTEX_AI),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
+
+              subject
+            end
+          end
+        end
+
+        context 'when code_completion_split_by_language is false' do
+          let(:code_completion_model_family_split_by_language) { false }
+
+          it 'calls CodeCompletion.new with unchanged code_completion_model_family' do
+            expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
+              .with(
+                params: hash_including(code_completion_model_family: code_completion_model_family),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            subject
+          end
+        end
+      end
+
+      context 'when code generation' do
+        let(:prefix) { "# A function that outputs the first 20 fibonacci numbers" }
+
+        context 'when code_generation_split_by_language is true' do
+          let(:code_generation_model_family_split_by_language) { true }
+
+          context 'when language is from Anthropic set' do
+            let(:file_name) { 'ruby.rb' }
+
+            it 'calls CodeGeneration::FromComment.new with code_generation_model_family :anthropic' do
+              expect(::CodeSuggestions::Tasks::CodeGeneration::FromComment).to receive(:new)
+                .with(
+                  params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::ANTHROPIC),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
+
+              subject
+            end
+          end
+
+          context 'when language is not from Anthropic set' do
+            let(:file_name) { 'python.py' }
+
+            it 'calls CodeGeneration::FromComment.new with code_generation_model_family :vertex_ai' do
+              expect(::CodeSuggestions::Tasks::CodeGeneration::FromComment).to receive(:new)
+                .with(
+                  params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::VERTEX_AI),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
+
+              subject
+            end
+          end
+        end
+
+        context 'when code_generation_split_by_language is false' do
+          let(:code_generation_model_family_split_by_language) { false }
+
+          it 'calls CodeGeneration::FromComment.new with unchanged code_generation_model_family' do
+            expect(::CodeSuggestions::Tasks::CodeGeneration::FromComment).to receive(:new)
+              .with(
+                params: hash_including(code_generation_model_family: code_generation_model_family),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            subject
+          end
+        end
+      end
+    end
   end
 end
