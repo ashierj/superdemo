@@ -19,7 +19,7 @@ module Projects::OnDemandScansHelper
         saved: saved_scans_count
       }.to_json,
       'new-dast-scan-path' => new_project_on_demand_scan_path(project),
-      'empty-state-svg-path' => image_path('illustrations/empty-state/ondemand-scan-empty.svg'),
+      'empty-state-svg-path' => image_path('illustrations/empty-state/empty-radar-md.svg'),
       'timezones' => timezone_data(format: :abbr).to_json,
       'can-edit-on-demand-scans' => can?(current_user, :edit_on_demand_dast_scan, project).to_s
     })
