@@ -20,14 +20,19 @@ module Mutations
                    required: true,
                    description: 'Destination to associate header with.'
 
+          argument :active, GraphQL::Types::Boolean,
+                   required: false,
+                   default_value: true,
+                   description: 'Boolean option determining whether header is active or not.'
+
           field :header, ::Types::AuditEvents::Streaming::HeaderType,
                 null: true,
                 description: 'Created header.'
 
-          def resolve(destination_id:, key:, value:)
+          def resolve(destination_id:, key:, value:, active:)
             response = ::AuditEvents::Streaming::Headers::CreateService.new(
               destination: authorized_find!(destination_id),
-              params: { key: key, value: value },
+              params: { key: key, value: value, active: active },
               current_user: current_user
             ).execute
 

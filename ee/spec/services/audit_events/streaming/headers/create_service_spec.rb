@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::Streaming::Headers::CreateService do
+RSpec.describe AuditEvents::Streaming::Headers::CreateService, feature_category: :audit_events do
   let_it_be(:user) { create(:user) }
   let_it_be(:destination) { create(:external_audit_event_destination) }
   let_it_be(:event_type) { "audit_events_streaming_headers_create" }
@@ -23,7 +23,7 @@ RSpec.describe AuditEvents::Streaming::Headers::CreateService do
     it_behaves_like 'header creation validation errors'
 
     context 'when the header is created successfully' do
-      let(:params) { super().merge( key: 'a_key', value: 'a_value') }
+      let(:params) { super().merge( key: 'a_key', value: 'a_value', active: true) }
 
       it_behaves_like 'header creation successful'
 

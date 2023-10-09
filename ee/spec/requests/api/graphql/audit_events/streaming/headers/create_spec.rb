@@ -56,6 +56,23 @@ RSpec.describe 'Create an external audit event destination header', feature_cate
 
         expect(header.key).to eq('foo')
         expect(header.value).to eq('bar')
+        expect(header.active).to eq(true)
+      end
+
+      context 'when active param is also provided' do
+        let(:input) { super().merge(active: false) }
+
+        it 'creates the header with the correct attributes', :aggregate_failures do
+          expect { subject }
+            .to change { destination.headers.count }.by(1)
+
+          header = AuditEvents::Streaming::Header.last
+
+          expect(header.key).to eq('foo')
+          expect(header.value).to eq('bar')
+          expect(header.active).to eq(false)
+          expect(mutation_response['errors']).to be_empty
+        end
       end
 
       context 'when the header attributes are invalid' do
