@@ -30,7 +30,7 @@ module Gitlab
           def request(user, template)
             ::Gitlab::Llm::VertexAi::Client
               .new(user, tracking_context: tracking_context)
-              .chat(content: template.to_prompt)
+              .text(content: template.to_prompt)
           end
 
           def store_response(response_modifier, review, mr_diff)
