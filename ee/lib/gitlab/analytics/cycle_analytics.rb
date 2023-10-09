@@ -22,10 +22,8 @@ module Gitlab
 
         def allowed?(user, subject)
           case subject
-          when Namespaces::ProjectNamespace
+          when Namespaces::ProjectNamespace, Group
             can?(user, :read_cycle_analytics, subject_for_access_check(subject))
-          when Group
-            can?(user, :read_group_cycle_analytics, subject_for_access_check(subject))
           else
             false
           end

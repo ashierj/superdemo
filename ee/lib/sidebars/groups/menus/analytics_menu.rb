@@ -174,7 +174,7 @@ module Sidebars
 
         def cycle_analytics_menu_item
           strong_memoize(:cycle_analytics_menu_item) do
-            unless can?(context.current_user, :read_group_cycle_analytics, context.group)
+            unless can?(context.current_user, :read_cycle_analytics, context.group)
               next ::Sidebars::NilMenuItem.new(item_id: :cycle_analytics)
             end
 
