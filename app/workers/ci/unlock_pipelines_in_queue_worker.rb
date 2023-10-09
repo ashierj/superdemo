@@ -11,9 +11,9 @@ module Ci
     feature_category :build_artifacts
     idempotent!
 
-    MAX_RUNNING_LOW = 5
-    MAX_RUNNING_MEDIUM = 10
-    MAX_RUNNING_HIGH = 20
+    MAX_RUNNING_LOW = 50
+    MAX_RUNNING_MEDIUM = 500
+    MAX_RUNNING_HIGH = 1500
 
     def perform_work(*_)
       pipeline_id = Ci::UnlockPipelineRequest.next!
