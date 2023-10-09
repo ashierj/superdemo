@@ -65,6 +65,11 @@ export default {
       ];
     },
   },
+  watch: {
+    selected() {
+      this.$emit('filter-changed', { scanner: this.selected });
+    },
+  },
   methods: {
     updateSelected(selected) {
       if (selected.at(-1) === ALL_ID || !selected.length) {
