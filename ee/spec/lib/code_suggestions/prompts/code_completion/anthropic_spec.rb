@@ -21,6 +21,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
   it_behaves_like 'code suggestion prompt' do
     let(:request_params) do
       {
+        model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
         prompt_version: 2,
         prompt: <<~PROMPT
           Human: Here is a content of a file 'test.py' written in Python enclosed
@@ -45,6 +46,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
     it_behaves_like 'code suggestion prompt' do
       let(:request_params) do
         {
+          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: Here is a content of a file 'test.py' written in Python enclosed
@@ -70,6 +72,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
     it_behaves_like 'code suggestion prompt' do
       let(:request_params) do
         {
+          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: Here is a content of a file 'test.py' written in Python enclosed
@@ -93,6 +96,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
     it_behaves_like 'code suggestion prompt' do
       let(:request_params) do
         {
+          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: Here is a content of a file '' written in  enclosed

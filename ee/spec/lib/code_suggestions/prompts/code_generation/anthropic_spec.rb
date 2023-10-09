@@ -40,6 +40,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
     context 'when prefix is present' do
       it 'returns expected request params' do
         request_params = {
+          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
 
@@ -74,7 +75,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             </instruction>
 
 
-            Assistant:
+            Assistant: <new_code>
           PROMPT
         }
 
@@ -87,6 +88,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
       it 'returns expected request params' do
         request_params = {
+          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
 
@@ -113,7 +115,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             </instruction>
 
 
-            Assistant:
+            Assistant: <new_code>
           PROMPT
         }
 
@@ -126,6 +128,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
       it 'returns expected request params' do
         request_params = {
+          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
 
@@ -160,7 +163,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             </instruction>
 
 
-            Assistant:
+            Assistant: <new_code>
           PROMPT
         }
 
@@ -173,6 +176,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
       it 'returns expected request params' do
         request_params = {
+          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
 
@@ -207,7 +211,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             </instruction>
 
 
-            Assistant:
+            Assistant: <new_code>
           PROMPT
         }
 
