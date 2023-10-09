@@ -1,6 +1,6 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
-import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
+import { CRITICAL, HIGH, MEDIUM, LOW, INFO, UNKNOWN } from '~/vulnerabilities/constants';
 import { s__ } from '~/locale';
 
 export default {
@@ -17,9 +17,7 @@ export default {
       type: Object,
       required: true,
       validate: (highlights) =>
-        [CRITICAL, HIGH, 'other'].every(
-          (requiredField) => typeof highlights[requiredField] !== 'undefined',
-        ),
+        [CRITICAL, HIGH].every((requiredField) => typeof highlights[requiredField] !== 'undefined'),
     },
   },
   computed: {
@@ -30,7 +28,13 @@ export default {
       return this.highlights[HIGH];
     },
     otherSeverity() {
-      return this.highlights.other;
+      if (typeof this.highlights.other !== 'undefined') {
+        return this.highlights.other;
+      }
+
+      return Object.keys(this.highlights).reduce((total, key) => {
+        return [MEDIUM, LOW, INFO, UNKNOWN].includes(key) ? total + this.highlights[key] : total;
+      }, 0);
     },
   },
 };
