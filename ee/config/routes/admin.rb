@@ -99,6 +99,7 @@ namespace :admin do
   end
 
   get 'namespace_limits', to: 'namespace_limits#index'
+  get 'namespace_limits/export_usage', to: 'namespace_limits#export_usage'
 
   resources :runners, only: [] do
     collection do

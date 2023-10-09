@@ -57,4 +57,41 @@ RSpec.describe Admin::NamespaceLimitsController, :enable_admin_mode,
       end
     end
   end
+
+  describe 'GET #export_usage', :aggregate_failures do
+    context 'when signed in' do
+      context 'with an admin user' do
+        before do
+          sign_in(admin)
+        end
+
+        context 'when requesting CSV format' do
+          context 'when on .com', :saas do
+            before do
+              stub_ee_application_setting(should_check_namespace_plan: true)
+            end
+
+            subject(:get_export) { get admin_namespace_limits_export_usage_path }
+
+            it 'enqueues the CSV generation', :freeze_time do
+              expect(Namespaces::StorageUsageExportWorker).to receive(:perform_async).with('free', admin.id)
+
+              get_export
+
+              expect(response).to redirect_to admin_namespace_limits_path
+              expect(flash[:notice]).to eq('CSV is being generated and will be emailed to you upon completion.')
+            end
+          end
+        end
+      end
+    end
+
+    context 'when no user is logged in' do
+      it 'redirects to login page' do
+        get admin_namespace_limits_export_usage_path
+
+        expect(response).to have_gitlab_http_status(:redirect)
+      end
+    end
+  end
 end
