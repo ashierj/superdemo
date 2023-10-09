@@ -62,7 +62,7 @@ module Ci
     def percentiles_query
       allowed_percentiles.map do |p|
         <<~SQL.squish
-          INTERVAL quantileMerge(0.#{p})(queueing_duration_quantile) SECOND as p#{p}
+          INTERVAL quantileMerge(0.#{p})(queueing_duration_quantile) MILLISECOND as p#{p}
         SQL
       end.join(",")
     end

@@ -71,6 +71,6 @@ module ClickHouseHelpers
   end
 
   def format_datetime(date)
-    quote(date&.utc&.strftime('%Y-%m-%d %H:%M:%S'))
+    quote(date&.utc&.to_f)
   end
 end
