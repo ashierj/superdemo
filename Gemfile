@@ -478,7 +478,7 @@ group :test do
 
   gem 'capybara', '~> 3.39', '>= 3.39.2' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'capybara-screenshot', '~> 1.0.26' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'selenium-webdriver', '= 4.12.0' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'selenium-webdriver', '= 4.13.1' # rubocop:todo Gemfile/MissingFeatureCategory
 
   gem 'graphlyte', '~> 1.0.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
@@ -487,7 +487,7 @@ group :test do
   gem 'webmock', '~> 3.19.1' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'rails-controller-testing' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'concurrent-ruby', '~> 1.1' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'test-prof', '~> 1.2.2' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'test-prof', '~> 1.2.3' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'rspec_junit_formatter' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'guard-rspec' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'axe-core-rspec' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -495,7 +495,7 @@ group :test do
   # Moved in `test` because https://gitlab.com/gitlab-org/gitlab/-/issues/217527
   gem 'derailed_benchmarks', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'gitlab_quality-test_tooling', '~> 1.0.0', require: false # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'gitlab_quality-test_tooling', '~> 1.1.0', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 end
 
 gem 'octokit', '~> 6.0' # rubocop:todo Gemfile/MissingFeatureCategory
