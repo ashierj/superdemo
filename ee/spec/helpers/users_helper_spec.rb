@@ -194,4 +194,32 @@ RSpec.describe UsersHelper, feature_category: :user_profile do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#user_enterprise_group_text' do
+    context 'when user is not enterprise user' do
+      let(:user_detail_without_group) do
+        create(:user_detail)
+      end
+
+      it 'does not display' do
+        expect(user_enterprise_group_text(user_detail_without_group.user)).to be_nil
+      end
+    end
+
+    context 'when user is enterprise user' do
+      let(:group) { create(:group) }
+      let!(:user_detail_with_group) do
+        create(
+          :user_detail,
+          enterprise_group: group,
+          enterprise_group_id: group.id,
+          enterprise_group_associated_at: Time.now
+        )
+      end
+
+      it 'display' do
+        expect(user_enterprise_group_text(user_detail_with_group.user)).not_to be_nil
+      end
+    end
+  end
 end

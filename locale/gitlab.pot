@@ -18314,6 +18314,12 @@ msgstr ""
 msgid "Enterprise User Account on GitLab"
 msgstr ""
 
+msgid "Enterprise user associated at: "
+msgstr ""
+
+msgid "Enterprise user of: "
+msgstr ""
+
 msgid "EnterpriseUsers|The user does not match the \"Enterprise User\" definition for the group"
 msgstr ""
 
