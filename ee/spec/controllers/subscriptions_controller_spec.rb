@@ -308,9 +308,12 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
       {
         setup_for_company: setup_for_company,
         customer: { company: 'My company', country: 'NL' },
-        subscription: { plan_id: 'x', quantity: 2, source: 'some_source' }
+        subscription: { plan_id: 'x', quantity: 2, source: 'some_source' },
+        idempotency_key: idempotency_key
       }
     end
+
+    let(:idempotency_key) { 'idempotency-key' }
 
     let(:setup_for_company) { true }
 
@@ -330,6 +333,20 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
         allow_next_instance_of(Groups::CreateService) do |instance|
           allow(instance).to receive(:execute).and_return(group)
         end
+      end
+
+      it 'creates subscription idempotently' do
+        expect_next_instance_of(GitlabSubscriptions::CreateService,
+          user,
+          group: group,
+          customer_params: ActionController::Parameters.new(params[:customer]).permit!,
+          subscription_params: ActionController::Parameters.new(params[:subscription]).permit!,
+          idempotency_key: idempotency_key
+        ) do |instance|
+          expect(instance).to receive(:execute).and_return(service_response)
+        end
+
+        subject
       end
 
       context 'when setting up for a company' do
@@ -352,7 +369,8 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
           {
             setup_for_company: setup_for_company,
             customer: { company: 'My company', country: 'NL' },
-            subscription: { plan_id: 'x', quantity: 2, source: 'some_source', promo_code: 'Sample promo code' }
+            subscription: { plan_id: 'x', quantity: 2, source: 'some_source', promo_code: 'Sample promo code' },
+            idempotency_key: idempotency_key
           }
         end
 
@@ -361,7 +379,8 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
             user,
             group: group,
             customer_params: ActionController::Parameters.new(params[:customer]).permit!,
-            subscription_params: ActionController::Parameters.new(params[:subscription]).permit!
+            subscription_params: ActionController::Parameters.new(params[:subscription]).permit!,
+            idempotency_key: idempotency_key
           ) do |instance|
             expect(instance).to receive(:execute).and_return(service_response)
           end
