@@ -97,7 +97,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
 
     # Update Protected Tag
     within(".protected-tags-list") do
-      find(".js-allowed-to-create").click
+      find(".js-allowed-to-create:not([disabled])").click
       find(".gl-search-box-by-type-input", visible: true).set(users.last.name) # Find a user that is not loaded
 
       expect(page).to have_selector('.dropdown-header', count: 3)
@@ -109,13 +109,13 @@ RSpec.shared_examples "protected tags > access control > EE" do
       wait_for_requests
 
       click_on users.last.name
-      find(".js-allowed-to-create").click # close
+      find(".js-allowed-to-create:not([disabled])").click # close
     end
 
     wait_for_requests
 
     # Verify the user is appended in the dropdown
-    find(".protected-tags-list .js-allowed-to-create").click
+    find(".protected-tags-list .js-allowed-to-create:not([disabled])").click
     expect(page).to have_selector '.gl-dropdown-contents .gl-dropdown-item', text: users.last.name
 
     expect(ProtectedTag.count).to eq(1)
