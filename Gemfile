@@ -292,9 +292,6 @@ gem 'atlassian-jwt', '~> 0.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
 # Slack integration
 gem 'slack-messenger', '~> 2.3.4' # rubocop:todo Gemfile/MissingFeatureCategory
 
-# Hangouts Chat integration
-gem 'hangouts-chat', '~> 0.0.5', require: 'hangouts_chat' # rubocop:todo Gemfile/MissingFeatureCategory
-
 # FogBugz integration
 gem 'ruby-fogbugz', '~> 0.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
