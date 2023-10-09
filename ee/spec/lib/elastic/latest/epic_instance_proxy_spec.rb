@@ -31,7 +31,7 @@ RSpec.describe Elastic::Latest::EpicInstanceProxy, feature_category: :global_sea
         traversal_ids: "#{parent_group.id}-#{group.id}-",
         hashed_root_namespace_id: ::Search.hash_namespace_id(parent_group.id),
         visibility_level: group.visibility_level,
-        schema_version: 2306,
+        schema_version: described_class::SCHEMA_VERSION,
         type: 'epic'
       )
     end

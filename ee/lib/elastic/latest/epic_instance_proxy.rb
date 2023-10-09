@@ -3,6 +3,8 @@
 module Elastic
   module Latest
     class EpicInstanceProxy < ApplicationInstanceProxy
+      SCHEMA_VERSION = 23_10
+
       def as_indexed_json(_options = {})
         data = {}
 
@@ -31,7 +33,7 @@ module Elastic
 
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
-        data['schema_version'] = 23_06
+        data['schema_version'] = SCHEMA_VERSION
 
         data.merge(generic_attributes)
       end
