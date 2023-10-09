@@ -30,7 +30,7 @@ RSpec.describe Llm::SummarizeSubmittedReviewService, feature_category: :code_rev
 
     subject { described_class.new(current_user, resource, options).execute }
 
-    it_behaves_like 'completion worker sync and async' do
+    it_behaves_like 'schedules completion worker' do
       subject { described_class.new(current_user, resource, options) }
     end
 

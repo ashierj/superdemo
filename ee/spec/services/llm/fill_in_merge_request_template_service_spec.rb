@@ -23,7 +23,7 @@ RSpec.describe Llm::FillInMergeRequestTemplateService, feature_category: :code_r
 
     subject { described_class.new(current_user, resource, {}).execute }
 
-    it_behaves_like 'completion worker sync and async' do
+    it_behaves_like 'schedules completion worker' do
       subject { described_class.new(current_user, resource, options) }
 
       let(:options) { {} }

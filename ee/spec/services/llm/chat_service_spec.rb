@@ -34,7 +34,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
           let(:action_name) { :chat }
           let(:content) { 'Summarize issue' }
 
-          it_behaves_like 'completion worker sync and async'
+          it_behaves_like 'schedules completion worker'
           it_behaves_like 'llm service caches user request'
           it_behaves_like 'service emitting message for user prompt'
         end
@@ -44,7 +44,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
           let(:action_name) { :chat }
           let(:content) { 'How to reset the password' }
 
-          it_behaves_like 'completion worker sync and async'
+          it_behaves_like 'schedules completion worker'
           it_behaves_like 'llm service caches user request'
           it_behaves_like 'service emitting message for user prompt'
         end
