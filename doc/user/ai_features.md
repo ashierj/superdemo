@@ -269,5 +269,6 @@ Generative AI may produce unexpected results that may be:
 - Produce failed pipelines
 - Insecure code
 - Offensive or insensitive
+- Out of date information
 
 GitLab is actively iterating on all our AI-assisted capabilities to improve the quality of the generated content. We improve the quality through prompt engineering, evaluating new AI/ML models to power these features, and through novel heuristics built into these features directly.
