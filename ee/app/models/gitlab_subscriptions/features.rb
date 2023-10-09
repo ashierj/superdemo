@@ -128,7 +128,6 @@ module GitlabSubscriptions
       group_repository_analytics
       group_saml
       group_scoped_ci_variables
-      group_wikis
       ide_schema_config
       incident_metric_upload
       incident_sla
@@ -280,6 +279,7 @@ module GitlabSubscriptions
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[
       group_ip_restriction
       password_complexity
+      group_wikis
     ].freeze
 
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[
