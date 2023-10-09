@@ -36,12 +36,12 @@ module EE
             associations: [:users, :groups, approval_project_rule: [:users, :groups, :protected_branches]]
           ).call
 
-          self.select do |rule|
-            next true unless rule.approval_project_rule.present?
-            next true if rule.modified_from_project_rule
+          self.select { |rule| rule.applicable_to_branch?(branch) }
+        end
 
-            rule.approval_project_rule.applies_to_branch?(branch)
-          end
+        def set_applicable_when_copying_rules(applicable_ids)
+          where.not(id: applicable_ids).update_all(applicable_post_merge: false)
+          where(id: applicable_ids).update_all(applicable_post_merge: true)
         end
       end
       has_many :approval_merge_request_rule_sources, through: :approval_rules

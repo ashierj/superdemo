@@ -24,8 +24,8 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
     end
 
     context 'for report type different than scan_finding' do
-      it 'is invalid when name not unique within rule type and merge request' do
-        is_expected.to validate_uniqueness_of(:name).scoped_to([:merge_request_id, :rule_type, :section])
+      it 'is invalid when name not unique within rule type,  merge request and applicable_post_merge' do
+        is_expected.to validate_uniqueness_of(:name).scoped_to([:merge_request_id, :rule_type, :section, :applicable_post_merge])
       end
     end
 
@@ -109,6 +109,22 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
 
       expect(described_class.regular_or_any_approver).to(
         contain_exactly(any_approver_rule, regular_rule)
+      )
+    end
+  end
+
+  describe '.not_regular_or_any_approver scope' do
+    it 'returns all rules but regular or any-approver' do
+      create(:any_approver_rule)
+      create(:approval_merge_request_rule)
+      licence_rule = create(:report_approver_rule, :license_scanning)
+      code_owner_rule = create(:code_owner_rule)
+      code_coverage_rule = create(:report_approver_rule, :code_coverage)
+      scan_finding_rule = create(:report_approver_rule, :scan_finding)
+      any_mr_rule = create(:report_approver_rule, :any_merge_request)
+
+      expect(described_class.not_regular_or_any_approver).to(
+        contain_exactly(licence_rule, code_owner_rule, code_coverage_rule, scan_finding_rule, any_mr_rule)
       )
     end
   end
@@ -416,6 +432,85 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
 
         it 'returns empty array' do
           expect(subject).to be_blank
+        end
+      end
+    end
+  end
+
+  describe '#applicable_to_branch?' do
+    let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request) }
+    let(:branch) { 'stable' }
+
+    subject { rule.applicable_to_branch?(branch) }
+
+    shared_examples_for 'with applicable rules to specified branch' do
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when there are no associated source rules' do
+      it_behaves_like 'with applicable rules to specified branch'
+    end
+
+    context 'when there are associated source rules' do
+      let!(:source_rule) { create(:approval_project_rule, project: merge_request.target_project) }
+      let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request, approval_project_rule: source_rule) }
+
+      context 'and rule is not modified_from_project_rule' do
+        before do
+          rule.update!(
+            name: source_rule.name,
+            approvals_required: source_rule.approvals_required,
+            users: source_rule.users,
+            groups: source_rule.groups
+          )
+        end
+
+        context 'and there are no associated protected branches to source rule' do
+          it_behaves_like 'with applicable rules to specified branch'
+        end
+
+        context 'and there are associated protected branches to source rule' do
+          before do
+            source_rule.update!(protected_branches: protected_branches)
+          end
+
+          context 'and branch matches' do
+            let(:protected_branches) { Array.new(1) { create(:protected_branch, name: branch, project: project) } }
+
+            it_behaves_like 'with applicable rules to specified branch'
+          end
+
+          context 'and branch does not match anything' do
+            let(:protected_branches) { Array.new(1) { create(:protected_branch, name: branch.reverse, project: project) } }
+
+            it { is_expected.to be_falsey }
+          end
+        end
+      end
+
+      context 'and rule is modified_from_project_rule' do
+        before do
+          rule.update!(name: 'Overridden Rule')
+        end
+
+        it_behaves_like 'with applicable rules to specified branch'
+      end
+
+      context 'and rule is overridden but not modified_from_project_rule' do
+        let!(:rule) { create(:approval_merge_request_rule, name: 'test', merge_request: merge_request, approval_project_rule: source_rule) }
+
+        it_behaves_like 'with applicable rules to specified branch'
+
+        context 'and protected branches exist but branch does not match anything' do
+          let(:protected_branches) { Array.new(1) { create(:protected_branch, name: branch.reverse, project: project) } }
+
+          before do
+            source_rule.update!(protected_branches: protected_branches)
+          end
+
+          it 'does not find applicable rules' do
+            expect(subject).to be_falsey
+          end
         end
       end
     end
