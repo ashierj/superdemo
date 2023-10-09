@@ -27,7 +27,7 @@ module QA
 
           def wait_for_import_success
             wait_until(max_duration: 120, sleep_interval: 1) do
-              has_element?(:project_name_content)
+              has_element?('project-name-content')
             end
           end
         end
