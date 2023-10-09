@@ -13,6 +13,7 @@ import DiscussionCounter from '~/notes/components/discussion_counter.vue';
 import TodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import titleSubscription from '../queries/title.subscription.graphql';
+import { badgeState } from './merge_request_header.vue';
 
 export default {
   TYPE_MERGE_REQUEST,
@@ -71,6 +72,9 @@ export default {
       activeTab: (state) => state.page.activeTab,
       doneFetchingBatchDiscussions: (state) => state.notes.doneFetchingBatchDiscussions,
     }),
+    badgeState() {
+      return badgeState;
+    },
     issuableId() {
       return convertToGraphQLId(TYPENAME_MERGE_REQUEST, this.getNoteableData.id);
     },
@@ -120,7 +124,7 @@ export default {
           <status-badge
             class="gl-align-self-center gl-mr-3"
             :issuable-type="$options.TYPE_MERGE_REQUEST"
-            :state="getNoteableData.state"
+            :state="badgeState.state"
           />
           <a
             v-safe-html:[$options.safeHtmlConfig]="titleHtml"
