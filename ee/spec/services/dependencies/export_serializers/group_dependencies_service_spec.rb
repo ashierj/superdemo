@@ -34,13 +34,36 @@ RSpec.describe Dependencies::ExportSerializers::GroupDependenciesService, featur
     end
 
     context 'when the group has dependencies' do
-      before do
-        project = create(:project, :public, group: group)
+      let_it_be(:project) { create(:project, :public, group: group) }
+      let_it_be(:occurrence_1) { create(:sbom_occurrence, :mit, project: project) }
+      let_it_be(:occurrence_2) { create(:sbom_occurrence, :apache_2, project: project) }
+      let_it_be(:occurrence_3) { create(:sbom_occurrence, :apache_2, :mpl_2, project: project) }
 
-        create(:sbom_occurrence, project: project)
+      it 'includes each occurrence' do
+        expect(dependencies).to eq([
+          {
+            "name" => occurrence_1.component_name,
+            "version" => occurrence_1.version,
+            "packager" => occurrence_1.package_manager,
+            "licenses" => occurrence_1.licenses,
+            "location" => occurrence_1.location.as_json
+          },
+          {
+            "name" => occurrence_2.component_name,
+            "version" => occurrence_2.version,
+            "packager" => occurrence_2.package_manager,
+            "licenses" => occurrence_2.licenses,
+            "location" => occurrence_2.location.as_json
+          },
+          {
+            "name" => occurrence_3.component_name,
+            "version" => occurrence_3.version,
+            "packager" => occurrence_3.package_manager,
+            "licenses" => occurrence_3.licenses,
+            "location" => occurrence_3.location.as_json
+          }
+        ])
       end
-
-      it { is_expected.not_to be_empty }
     end
   end
 end
