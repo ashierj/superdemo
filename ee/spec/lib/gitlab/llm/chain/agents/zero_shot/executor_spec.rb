@@ -180,6 +180,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       create(:ai_chat_message, user: user, request_id: 'uuid2', role: 'user', content: 'question 2')
       create(:ai_chat_message,
         user: user, request_id: 'uuid2', role: 'assistant', content: 'response 2', errors: ['error'])
+
       # this should be ignored because it doesn't contain response
       create(:ai_chat_message, user: user, request_id: 'uuid3', role: 'user', content: 'question 3')
 
@@ -218,6 +219,24 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
                                                           described_class::PROMPT_TEMPLATE))
 
       agent.prompt
+    end
+
+    context 'with ai_self_discover feature flag' do
+      let_it_be(:self_discoverability_prompt) { "you do not have access to the following GitLab resources" }
+
+      it 'includes self-discoverability part in the prompt' do
+        expect(agent.prompt[:prompt]).to include self_discoverability_prompt
+      end
+
+      context 'without the feature flag do' do
+        before do
+          stub_feature_flags(ai_self_discover: false)
+        end
+
+        it 'does not include self-discoverability part in the prompt' do
+          expect(agent.prompt[:prompt]).not_to include self_discoverability_prompt
+        end
+      end
     end
 
     context 'when resource is a blob' do

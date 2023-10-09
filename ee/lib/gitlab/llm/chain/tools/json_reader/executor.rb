@@ -16,6 +16,8 @@ module Gitlab
             DESCRIPTION = 'Useful tool when you need to get information about specific resource ' \
                           'that was already identified. ' \
                           'Action Input for this tools always starts with: `data`'
+            RESOURCE_NAME = ''
+
             EXAMPLE =
               <<~PROMPT
                 Question: Who is an author of this issue
