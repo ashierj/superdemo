@@ -115,4 +115,23 @@ RSpec.describe Emails::AdminNotification, feature_category: :insider_threat do
       it_behaves_like 'no email is sent'
     end
   end
+
+  describe 'namespace_storage_usage_csv_email' do
+    let_it_be(:user) { create(:admin) }
+
+    let(:csv_data) { CSV.parse_line("a,b,c\nd,e,f") }
+
+    subject(:email) { Notify.namespace_storage_usage_csv_email(user, csv_data) }
+
+    it { expect(email.subject).to eq('Exported namespace storage usage') }
+    it { expect(email.to).to contain_exactly(user.notification_email_or_default) }
+    it { expect(email.html_part).to have_content('Your CSV export of namespace storage usage') }
+    it { expect(email.text_part).to have_content('Your CSV export of namespace storage usage') }
+
+    it 'contains a CSV attachment', :freeze_time do
+      expect(email.attachments.size).to eq(1)
+      expect(email.attachments[0].content_type).to eq('text/csv')
+      expect(email.attachments[0].filename).to eq("namespace-storage-usage-#{Time.current.to_fs(:number)}.csv")
+    end
+  end
 end

@@ -29,6 +29,16 @@ module EE
           to: alerted_user.notification_email_or_default,
           subject: subject(_("We've detected unusual activity")))
       end
+
+      def namespace_storage_usage_csv_email(user, csv_data)
+        filename = "namespace-storage-usage-#{Time.current.to_fs(:number)}.csv"
+        attachments[filename] = { content: csv_data, mime_type: 'text/csv' }
+
+        email_with_layout(
+          to: user.notification_email_or_default,
+          subject: subject('Exported namespace storage usage')
+        )
+      end
     end
   end
 end
