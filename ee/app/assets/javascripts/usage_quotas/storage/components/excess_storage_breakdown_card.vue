@@ -1,5 +1,13 @@
 <script>
-import { GlIcon, GlLink, GlCard, GlButton, GlProgressBar, GlSkeletonLoader } from '@gitlab/ui';
+import {
+  GlIcon,
+  GlLink,
+  GlCard,
+  GlButton,
+  GlProgressBar,
+  GlModalDirective,
+  GlSkeletonLoader,
+} from '@gitlab/ui';
 import { sprintf, s__ } from '~/locale';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import { STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE, BUY_STORAGE } from '../constants';
@@ -25,6 +33,9 @@ export default {
     GlSkeletonLoader,
     NumberToHumanSize,
   },
+  directives: {
+    GlModalDirective,
+  },
   inject: ['purchaseStorageUrl', 'buyAddonTargetAttr', 'totalRepositorySizeExcess'],
   props: {
     loading: {
@@ -33,6 +44,10 @@ export default {
     },
     purchasedStorage: {
       type: Number,
+      required: true,
+    },
+    limitedAccessModeEnabled: {
+      type: Boolean,
       required: true,
     },
   },
@@ -88,17 +103,29 @@ export default {
             <gl-icon name="question-o" />
           </gl-link>
         </div>
-        <gl-button
-          v-if="purchaseStorageUrl"
-          :href="purchaseStorageUrl"
-          :target="buyAddonTargetAttr"
-          category="primary"
-          variant="confirm"
-          data-testid="purchase-more-storage"
-          class="gl-absolute gl-top-4 gl-right-4"
-        >
-          {{ $options.i18n.BUY_STORAGE }}
-        </gl-button>
+        <template v-if="purchaseStorageUrl">
+          <gl-button
+            v-if="!limitedAccessModeEnabled"
+            :href="purchaseStorageUrl"
+            :target="buyAddonTargetAttr"
+            category="primary"
+            variant="confirm"
+            data-testid="purchase-more-storage"
+            class="gl-absolute gl-top-4 gl-right-4"
+          >
+            {{ $options.i18n.BUY_STORAGE }}
+          </gl-button>
+          <gl-button
+            v-else
+            v-gl-modal-directive="'limited-access-modal-id'"
+            category="primary"
+            variant="confirm"
+            data-testid="purchase-more-storage"
+            class="gl-absolute gl-top-4 gl-right-4"
+          >
+            {{ $options.i18n.BUY_STORAGE }}
+          </gl-button>
+        </template>
       </div>
       <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
         <number-to-human-size
