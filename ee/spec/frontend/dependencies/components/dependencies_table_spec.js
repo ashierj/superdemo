@@ -31,7 +31,7 @@ describe('DependenciesTable component', () => {
         DependencyProjectCount: false,
         DependencyLocationCount: false,
       },
-      provide: { ...basicAppProps, glFeatures: { groupLevelLicenses: true }, ...provide },
+      provide: { ...basicAppProps, ...provide },
     });
   };
 
@@ -138,39 +138,34 @@ describe('DependenciesTable component', () => {
 
   describe('given an empty list of dependencies', () => {
     describe.each`
-      namespaceType | expectedLabels                                                                                                                     | groupLevelLicensesFeatureFlagEnabled
-      ${'project'}  | ${['Component', 'Packager', 'Location', 'License', '' /* the last column has no heading, so the label is just an empty string */]} | ${true}
-      ${'group'}    | ${['Component', 'Packager', 'Location', 'License', 'Projects']}                                                                    | ${true}
-      ${'group'}    | ${['Component', 'Packager', 'Location', 'Projects']}                                                                               | ${false}
-    `(
-      'with namespaceType set to "$namespaceType" and groupLevelLicensesFeatureFlagEnabled set to "$groupLevelLicensesFeatureFlagEnabled"',
-      ({ namespaceType, expectedLabels, groupLevelLicensesFeatureFlagEnabled }) => {
-        beforeEach(() => {
-          createComponent({
-            propsData: {
-              dependencies: [],
-              isLoading: false,
-            },
-            provide: {
-              namespaceType,
-              glFeatures: { groupLevelLicenses: groupLevelLicensesFeatureFlagEnabled },
-            },
-          });
+      namespaceType | expectedLabels
+      ${'project'}  | ${['Component', 'Packager', 'Location', 'License', '' /* the last column has no heading, so the label is just an empty string */]}
+      ${'group'}    | ${['Component', 'Packager', 'Location', 'License', 'Projects']}
+    `('with namespaceType set to "$namespaceType"', ({ namespaceType, expectedLabels }) => {
+      beforeEach(() => {
+        createComponent({
+          propsData: {
+            dependencies: [],
+            isLoading: false,
+          },
+          provide: {
+            namespaceType,
+          },
         });
+      });
 
-        it('renders the table header', () => {
-          const headerCells = wrapper.findAll('thead th');
+      it('renders the table header', () => {
+        const headerCells = wrapper.findAll('thead th');
 
-          expectedLabels.forEach((expectedLabel, i) => {
-            expect(headerCells.at(i).text()).toContain(expectedLabel);
-          });
+        expectedLabels.forEach((expectedLabel, i) => {
+          expect(headerCells.at(i).text()).toContain(expectedLabel);
         });
+      });
 
-        it('does not render any rows', () => {
-          expect(findTableRows()).toHaveLength(0);
-        });
-      },
-    );
+      it('does not render any rows', () => {
+        expect(findTableRows()).toHaveLength(0);
+      });
+    });
   });
 
   describe.each`

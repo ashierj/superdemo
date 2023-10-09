@@ -74,7 +74,7 @@ export default {
       return this.localDependencies.some(({ vulnerabilities }) => vulnerabilities?.length > 0);
     },
     fields() {
-      return this.isProjectNamespace ? this.$options.projectFields : this.groupFields;
+      return this.isProjectNamespace ? this.$options.projectFields : this.$options.groupFields;
     },
     isProjectNamespace() {
       return this.namespaceType === NAMESPACE_PROJECT;
@@ -83,20 +83,6 @@ export default {
       return this.isProjectNamespace
         ? this.transformDependenciesForUI(this.dependencies)
         : this.dependencies;
-    },
-    // Once the feature flag is removed, we can move this from a computed property to an option, like `projectFields`
-    // Rollout issue: https://gitlab.com/gitlab-org/gitlab/-/issues/422978
-    groupFields() {
-      const {
-        glFeatures: { groupLevelLicenses },
-      } = this;
-
-      const withoutLicenseField = (fields) => fields.filter((field) => field.key !== 'license');
-
-      return [
-        ...(groupLevelLicenses ? sharedFields : withoutLicenseField(sharedFields)),
-        { key: 'projects', label: DEPENDENCIES_TABLE_I18N.projects, tdClass: tdClass() },
-      ];
     },
   },
   methods: {
@@ -119,6 +105,10 @@ export default {
       return dependency.packager || this.$options.i18n.unknown;
     },
   },
+  groupFields: [
+    ...sharedFields,
+    { key: 'projects', label: DEPENDENCIES_TABLE_I18N.projects, tdClass: tdClass() },
+  ],
   projectFields: [
     ...sharedFields,
     { key: 'isVulnerable', label: '', tdClass: tdClass(['gl-text-right']) },

@@ -72,7 +72,6 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
 
     context 'when all required features are unavailable' do
       before do
-        stub_feature_flags(group_level_licenses: false)
         project.add_developer(user)
       end
 
@@ -100,7 +99,11 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
       let(:sbom_occurrence) { create(:sbom_occurrence, :mit, :bundler, project: project) }
 
       before do
+        allow(request).to receive(:project).and_return(nil)
         allow(request).to receive(:group).and_return(project.group)
+
+        stub_licensed_features(security_dashboard: true)
+        project.group.add_developer(user)
       end
 
       it 'renders the proper representation' do
