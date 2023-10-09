@@ -23,15 +23,12 @@ module Gitlab
             extra_resource: options.delete(:extra_resource) || {}
           )
 
-          chat_response_handler = ::Gitlab::Llm::ChatResponseService.new(context, response_options)
-
           # This can be removed once all clients use the subscription with the `ai_action: "chat"` parameter.
           # We then can only use `chat_response_handler`.
           # https://gitlab.com/gitlab-org/gitlab/-/issues/423080
           response_handler = ::Gitlab::Llm::ResponseService
             .new(context, response_options.except(:client_subscription_id))
 
-          stream_response_handler = nil
           if response_options[:client_subscription_id]
             stream_response_handler = ::Gitlab::Llm::ResponseService.new(context, response_options)
           end
@@ -59,7 +56,6 @@ module Gitlab
           end
 
           response_handler.execute(response: response_modifier)
-          chat_response_handler.execute(response: response_modifier)
 
           response_modifier
         end

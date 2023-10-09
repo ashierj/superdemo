@@ -5,12 +5,26 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
-      def self.ai_completion_response(subscription_arguments, message)
+      def self.ai_completion_response(message)
+        subscription_arguments = {
+          user_id: message.user.to_gid,
+          ai_action: message.ai_action.to_s
+        }
+
+        if message.client_subscription_id && !message.user?
+          subscription_arguments[:client_subscription_id] = message.client_subscription_id
+        end
+
+        ::GitlabSchema.subscriptions.trigger(:ai_completion_response, subscription_arguments, message.to_h)
+
+        # Once all clients `ai_action` we can remove this trigger duplicate .
+        # Clients that use the `ai_action` parameter to subscribe on, no longer need to subscribe on the
+        # `resource_id`. This enables us to broadcast chat messages to clients, regardless of their `resource_id`.
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/423080
         ::GitlabSchema.subscriptions.trigger(
           :ai_completion_response,
-          subscription_arguments.slice(:user_id, :resource_id, :client_subscription_id, :ai_action),
-          message.to_h
-        )
+          subscription_arguments.except(:ai_action).merge(resource_id: message.resource&.to_global_id),
+          message.to_h)
       end
 
       def self.issuable_weight_updated(issuable)

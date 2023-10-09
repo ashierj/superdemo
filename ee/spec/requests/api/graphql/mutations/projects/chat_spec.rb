@@ -34,7 +34,7 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
       expect(Llm::CompletionWorker).to receive(:perform_async).with(
         current_user.id, nil, nil, :chat, {
           content: "summarize", request_id: an_instance_of(String),
-          cache_response: true, referer_url: nil
+          referer_url: nil
         }
       )
 
@@ -47,7 +47,7 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
       expect(Llm::CompletionWorker).to receive(:perform_async).with(
         current_user.id, resource.id, "Issue", :chat, {
           content: "summarize", request_id: an_instance_of(String),
-          cache_response: true, referer_url: nil
+          referer_url: nil
         }
       )
 
@@ -64,7 +64,7 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
       expect(Llm::CompletionWorker).to receive(:perform_async).with(
         current_user.id, current_user.id, "User", :chat, {
           content: "summarize", request_id: an_instance_of(String),
-          cache_response: true, referer_url: nil
+          referer_url: nil
         }
       )
 

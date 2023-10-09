@@ -7,7 +7,7 @@ module Gitlab
         class SummarizeReview < Gitlab::Llm::Completions::Base
           DEFAULT_ERROR = 'An unexpected error has occurred.'
 
-          def execute(user, merge_request, options)
+          def execute(user, merge_request, _options)
             draft_notes = merge_request.draft_notes.authored_by(user)
             return if draft_notes.empty?
 
@@ -27,7 +27,7 @@ module Gitlab
             )
 
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
-              user, merge_request, response_modifier, options: options
+              user, merge_request, response_modifier, options: response_options
             ).execute
 
             response_modifier

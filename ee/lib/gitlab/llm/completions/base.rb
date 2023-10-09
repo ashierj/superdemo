@@ -14,7 +14,7 @@ module Gitlab
         attr_reader :ai_prompt_class, :params
 
         def response_options
-          params.slice(:request_id, :cache_response, :client_subscription_id)
+          params.slice(:request_id, :client_subscription_id, :ai_action)
         end
 
         def tracking_context

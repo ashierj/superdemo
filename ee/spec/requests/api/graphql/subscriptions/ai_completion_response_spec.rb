@@ -66,17 +66,15 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
   subject(:response) do
     subscription_response do
       data = {
-        id: SecureRandom.uuid,
-        model_name: resource.class.name,
         request_id: request_id,
         content: content,
         role: ::Gitlab::Llm::AiMessage::ROLE_ASSISTANT,
         errors: [],
         extras: extras,
         chunk_id: nil
-      }
+      }.with_indifferent_access
 
-      GraphqlTriggers.ai_completion_response(params, data)
+      ::GitlabSchema.subscriptions.trigger(:ai_completion_response, params, data)
     end
   end
 

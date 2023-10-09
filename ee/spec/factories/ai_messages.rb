@@ -16,11 +16,13 @@ FactoryBot.define do
     ai_action { 'chat' }
     client_subscription_id { nil }
     type { nil }
+    chunk_id { nil }
 
     initialize_with do
       new(
         id: id,
         role: role,
+        user: user,
         request_id: request_id,
         content: content,
         timestamp: timestamp,
@@ -29,7 +31,8 @@ FactoryBot.define do
         ai_action: ai_action,
         client_subscription_id: client_subscription_id,
         resource: resource,
-        type: type
+        type: type,
+        chunk_id: chunk_id
       )
     end
   end
