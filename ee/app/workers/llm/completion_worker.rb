@@ -36,7 +36,7 @@ module Llm
       options[:extra_resource] = ::Llm::ExtraResourceFinder.new(user, options.delete(:referer_url)).execute
       track_snowplow_event(user, ai_action_name, options)
 
-      params = options.extract!(:request_id, :cache_response, :client_subscription_id)
+      params = options.extract!(:request_id, :client_subscription_id)
       logger.debug(message: "Params", params: params)
 
       ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym, params)

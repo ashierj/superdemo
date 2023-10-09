@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateCommitMessage, feature_
   let_it_be(:merge_request) { create(:merge_request) }
   let(:params) { [user, merge_request, response_modifier, { options: { request_id: 'uuid' } }] }
 
-  subject { described_class.new(prompt_class) }
+  subject { described_class.new(prompt_class, options) }
 
   before do
     allow(GraphqlTriggers).to receive(:ai_completion_response)
@@ -80,7 +80,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateCommitMessage, feature_
 
       it 'publishes the content field from the AI response' do
         expect(::Gitlab::Llm::OpenAi::ResponseModifiers::Chat).to receive(:new).with(example_response.to_json)
-          .and_return(response_modifier)
+                                                                               .and_return(response_modifier)
         expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_return(
           response_service
         )

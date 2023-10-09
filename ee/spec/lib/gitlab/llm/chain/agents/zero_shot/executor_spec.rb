@@ -139,11 +139,11 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
         expect(stream_response_service_double).to receive(:execute).with(
           response: first_response_double,
-          options: { cache_response: false, role: ::Gitlab::Llm::AiMessage::ROLE_ASSISTANT, chunk_id: 1 }
+          options: { chunk_id: 1 }
         )
         expect(stream_response_service_double).to receive(:execute).with(
           response: second_response_double,
-          options: { cache_response: false, role: ::Gitlab::Llm::AiMessage::ROLE_ASSISTANT, chunk_id: 2 }
+          options: { chunk_id: 2 }
         )
 
         agent.execute
@@ -159,7 +159,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         expect(response_service_double).to receive(:execute).at_least(:once)
         expect(stream_response_service_double).to receive(:execute).at_least(:once).with(
           response: tool_double,
-          options: { cache_response: false, role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM, type: 'tool' }
+          options: { role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM, type: 'tool' }
         )
 
         allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")

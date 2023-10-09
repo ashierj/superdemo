@@ -1,25 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'llm service caches user request' do
-  let(:expected_cache_payload) do
-    {
-      id: 'uuid',
-      request_id: 'uuid',
-      role: 'user',
-      timestamp: an_instance_of(ActiveSupport::TimeWithZone),
-      content: content,
-      errors: [],
-      extras: nil
-    }
-  end
-
-  before do
-    allow(SecureRandom).to receive(:uuid).and_return('uuid')
-  end
-
   it 'caches response' do
     expect_next_instance_of(::Gitlab::Llm::ChatStorage) do |cache|
-      expect(cache).to receive(:add).with(expected_cache_payload)
+      expect(cache).to receive(:add).with(kind_of(::Gitlab::Llm::ChatMessage))
     end
 
     subject.execute
@@ -36,7 +20,7 @@ RSpec.shared_examples 'llm service caches user request' do
       expect(::Llm::CompletionWorker).not_to receive(:perform_async)
 
       expect_next_instance_of(::Gitlab::Llm::ChatStorage) do |cache|
-        expect(cache).to receive(:add).with(expected_cache_payload)
+        expect(cache).to receive(:add).with(kind_of(::Gitlab::Llm::ChatMessage))
       end
 
       subject.execute

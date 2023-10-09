@@ -12,7 +12,7 @@ module Gitlab
 
       ATTRIBUTES_LIST = [
         :id, :request_id, :content, :role, :timestamp, :errors, :extras,
-        :user, :resource, :ai_action, :client_subscription_id, :type
+        :user, :resource, :ai_action, :client_subscription_id, :type, :chunk_id
       ].freeze
 
       attr_accessor(*ATTRIBUTES_LIST)
@@ -29,6 +29,7 @@ module Gitlab
         attributes = attributes.with_indifferent_access.slice(*ATTRIBUTES_LIST)
 
         raise ArgumentError, "Invalid role '#{attributes['role']}'" unless ALLOWED_ROLES.include?(attributes['role'])
+        raise ArgumentError, "User is required" unless attributes['user']
 
         assign_attributes(attributes)
 
@@ -53,6 +54,18 @@ module Gitlab
 
       def size
         content&.size.to_i
+      end
+
+      def user?
+        role == ROLE_USER
+      end
+
+      def system?
+        role == ROLE_SYSTEM
+      end
+
+      def assistant?
+        role == ROLE_ASSISTANT
       end
     end
   end

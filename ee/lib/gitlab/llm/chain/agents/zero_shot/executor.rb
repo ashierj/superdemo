@@ -91,8 +91,6 @@ module Gitlab
                   stream_response_handler.execute(
                     response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
                     options: {
-                      cache_response: false,
-                      role: ::Gitlab::Llm::AiMessage::ROLE_ASSISTANT,
                       chunk_id: chunk[:id]
                     }
                   )
@@ -133,7 +131,7 @@ module Gitlab
 
               response_handler.execute(
                 response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
-                options: { cache_response: false, role: ::Gitlab::Llm::AiMessage::ROLE_SYSTEM,
+                options: { role: ::Gitlab::Llm::AiMessage::ROLE_SYSTEM,
                            type: RESPONSE_TYPE_TOOL }
               )
 
@@ -145,7 +143,6 @@ module Gitlab
               stream_response_handler.execute(
                 response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
                 options: {
-                  cache_response: false,
                   role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM,
                   type: RESPONSE_TYPE_TOOL
                 }

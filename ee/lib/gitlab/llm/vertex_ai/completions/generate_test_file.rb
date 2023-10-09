@@ -10,7 +10,7 @@ module Gitlab
           def execute(user, merge_request, options)
             unless vertex_ai?(merge_request)
               return ::Gitlab::Llm::OpenAi::Completions::GenerateTestFile
-                .new(ai_prompt_class)
+                .new(ai_prompt_class, response_options)
                 .execute(user, merge_request, options)
             end
 
@@ -18,7 +18,7 @@ module Gitlab
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
 
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
-              user, merge_request, response_modifier, options: options
+              user, merge_request, response_modifier, options: response_options
             ).execute
 
             response_modifier
@@ -30,7 +30,7 @@ module Gitlab
             )
 
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
-              user, merge_request, response_modifier, options: options
+              user, merge_request, response_modifier, options: response_options
             ).execute
 
             response_modifier

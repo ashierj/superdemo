@@ -68,7 +68,7 @@ module Types
 
         # ChatMessage is an object already while AiResponse is still a hash.
         # This is temporary solution before we introduce unified AiMessage model.
-        content = object.is_a?(Hash) ? object[:content] : object.content
+        content = object.is_a?(Hash) ? object['content'] : object.content
 
         Banzai.render_and_post_process(content, banzai_options)
       end

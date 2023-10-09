@@ -8,14 +8,12 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
   let_it_be(:project) { create(:project, :public, group: group) }
 
   let(:response_body) { 'Some response' }
-  let(:cache_response) { false }
   let(:client_subscription_id) { nil }
   let(:ai_action) { nil }
 
   let(:options) do
     {
       request_id: 'uuid',
-      cache_response: cache_response,
       client_subscription_id: client_subscription_id,
       ai_action: ai_action
     }
@@ -45,22 +43,13 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
 
   let(:response_modifier) { Gitlab::Llm::OpenAi::ResponseModifiers::Completions.new(ai_response_json) }
 
-  shared_examples 'graphql subscription response' do
-    let(:uuid) { 'u-u-i-d' }
+  describe '#response_message' do
     let(:extras) { { foo: 'bar' } }
+    let(:resource) { build_stubbed(:user) }
+    let(:uuid) { 'u-u-i-d' }
 
-    let(:expected_payload) do
-      {
-        id: uuid,
-        content: response_body,
-        request_id: 'uuid',
-        role: 'assistant',
-        timestamp: an_instance_of(ActiveSupport::TimeWithZone),
-        errors: [],
-        type: nil,
-        chunk_id: nil,
-        extras: extras
-      }
+    subject do
+      described_class.new(user, resource, response_modifier, options: options).response_message
     end
 
     before do
@@ -68,74 +57,74 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
       allow(response_modifier).to receive(:extras).and_return(extras)
     end
 
-    it 'triggers subscription' do
-      expect(GraphqlTriggers)
-        .to receive(:ai_completion_response)
-        .with({ user_id: user.to_global_id, resource_id: expected_resource_gid }, expected_payload)
-
-      subject
-    end
-
-    context 'when client_subscription_id is set' do
-      let(:client_subscription_id) { 'id' }
-
-      it 'triggers subscription including the client_subscription_id' do
-        expect(GraphqlTriggers)
-          .to receive(:ai_completion_response)
-          .with(
-            { user_id: user.to_global_id, resource_id: expected_resource_gid, client_subscription_id: 'id' },
-            expected_payload
-          )
-
-        subject
-      end
-    end
-
-    context 'when ai_action is set' do
-      let(:ai_action) { 'chat' }
-
-      it 'triggers subscription including the ai_action and removes the resource_id' do
-        expect(GraphqlTriggers)
-          .to receive(:ai_completion_response)
-          .with(
-            { user_id: user.to_global_id, ai_action: 'chat' },
-            expected_payload
-          )
-
-        subject
-      end
-    end
-
-    context 'when cache_response: true' do
-      let(:cache_response) { true }
-
-      it 'caches response' do
-        expect_next_instance_of(::Gitlab::Llm::ChatStorage) do |cache|
-          expect(cache).to receive(:add)
-            .with(expected_payload.slice(:request_id, :errors, :role, :timestamp, :extras, :content))
-        end
-
-        subject
-      end
-    end
-
-    context 'when cache_response: false' do
-      let(:cache_response) { false }
-
-      it 'does not cache the response' do
-        expect(Gitlab::Llm::ChatStorage).not_to receive(:new)
-
-        subject
-      end
+    it 'is built with proper params', :freeze_time do
+      expect(subject).to have_attributes(options.merge(id: uuid,
+        content: response_body,
+        role: 'assistant',
+        timestamp: Time.current,
+        errors: [],
+        type: nil,
+        chunk_id: nil,
+        extras: extras,
+        user: user,
+        resource: resource
+      ).compact)
     end
   end
 
   describe '#execute' do
-    subject { described_class.new(user, resource, response_modifier, options: options).execute }
+    let(:service) { described_class.new(user, resource, response_modifier, options: options) }
+    let_it_be(:resource) { project }
 
-    let_it_be(:resource) { create(:merge_request, source_project: project) }
+    subject { service.execute }
 
-    let(:expected_resource_gid) { resource.to_global_id }
+    context 'when message is chat' do
+      let(:ai_action) { 'chat' }
+
+      it 'saves the message' do
+        expect(service.response_message).to receive(:save!)
+
+        subject
+      end
+
+      context 'when message is stream chunk' do
+        let(:options) { super().merge(chunk_id: 1) }
+
+        it 'does not save the message' do
+          expect_next_instance_of(::Gitlab::Llm::AiMessage) do |instance|
+            expect(instance).not_to receive(:save!)
+          end
+
+          subject
+        end
+      end
+
+      context 'when message has special type' do
+        let(:options) { super().merge(type: 'tool') }
+
+        it 'does not save the message' do
+          expect_next_instance_of(::Gitlab::Llm::AiMessage) do |instance|
+            expect(instance).not_to receive(:save!)
+          end
+
+          subject
+        end
+      end
+    end
+
+    it 'triggers graphql subscription' do
+      expect(GraphqlTriggers).to receive(:ai_completion_response).with(service.response_message)
+
+      subject
+    end
+
+    it 'does not save the message' do
+      expect_next_instance_of(::Gitlab::Llm::AiMessage) do |instance|
+        expect(instance).not_to receive(:save!)
+      end
+
+      subject
+    end
 
     context 'without user' do
       let(:user) { nil }
@@ -145,36 +134,6 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
 
         subject
       end
-    end
-
-    context 'for a merge request' do
-      it_behaves_like 'graphql subscription response'
-    end
-
-    context 'for a work item' do
-      let_it_be(:resource) { create(:work_item, project: project) }
-
-      it_behaves_like 'graphql subscription response'
-    end
-
-    context 'for an issue' do
-      let_it_be(:resource) { create(:issue, project: project) }
-
-      it_behaves_like 'graphql subscription response'
-    end
-
-    context 'for an epic' do
-      let_it_be(:resource) { create(:epic, group: group) }
-
-      it_behaves_like 'graphql subscription response'
-    end
-
-    context 'for an empty resource' do
-      let_it_be(:resource) { nil }
-
-      let(:expected_resource_gid) { nil }
-
-      it_behaves_like 'graphql subscription response'
     end
   end
 end

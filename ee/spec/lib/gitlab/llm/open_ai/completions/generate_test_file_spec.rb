@@ -39,6 +39,10 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
             .and_call_original
         end
 
+        response_modifier = double
+
+        expect(::Gitlab::Llm::OpenAi::ResponseModifiers::Chat).to receive(:new).and_return(response_modifier)
+
         expect_next_instance_of(::Gitlab::Llm::Templates::GenerateTestFile) do |template|
           expect(template).to receive(:to_prompt).and_return(ai_template)
         end
@@ -48,25 +52,10 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
           allow(instance).to receive(:chat).with(params).and_return(ai_response)
         end
 
-        uuid = 'uuid'
-
-        expect(SecureRandom).to receive(:uuid).and_return(uuid)
-
-        data = {
-          id: uuid,
-          content: content,
-          request_id: nil,
-          role: 'assistant',
-          timestamp: an_instance_of(ActiveSupport::TimeWithZone),
-          errors: [],
-          type: nil,
-          chunk_id: nil,
-          extras: nil
-        }
-
-        expect(GraphqlTriggers).to receive(:ai_completion_response).with(
-          { user_id: user.to_global_id, resource_id: merge_request.to_global_id }, data
-        )
+        expect_next_instance_of(::Gitlab::Llm::GraphqlSubscriptionResponseService,
+          user, merge_request, response_modifier, options: {}) do |instance|
+          expect(instance).to receive(:execute)
+        end
 
         generate_test_file
       end
