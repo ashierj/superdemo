@@ -116,6 +116,94 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
         it { is_expected.to be_invalid }
       end
     end
+
+    describe '#vulnerabilities' do
+      subject { build(:sbom_occurrence, vulnerabilities: vulnerabilities) }
+
+      let(:info) do
+        { id: 1, name: "name 1", severity: "info", url: "http://url.com/name1" }
+      end
+
+      let(:critical) do
+        { id: 2, name: "name 2", severity: "critical", url: "http://url.com/name2" }
+      end
+
+      context 'when vulnerabilities is empty' do
+        let(:vulnerabilities) { [] }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when vulnerabilities has a single valid license' do
+        let(:vulnerabilities) { [info] }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when vulnerabilities has multiple valid license' do
+        let(:vulnerabilities) { [info, critical] }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when id is missing' do
+        let(:vulnerabilities) { [info.except(:id)] }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when id is not integer' do
+        let(:vulnerabilities) { [info.merge(id: "1")] }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when name is missing' do
+        let(:vulnerabilities) { [info.except(:name)] }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when name is an empty string' do
+        let(:vulnerabilities) { [info.merge(name: "")] }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when url is missing' do
+        let(:vulnerabilities) { [info.except(:url)] }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when url is not valid' do
+        let(:vulnerabilities) { [info.merge(url: "invalid")] }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when severity is missing' do
+        let(:vulnerabilities) { [info.except(:severity)] }
+
+        it { is_expected.not_to be_valid }
+      end
+
+      context 'when severity matches the existing enum' do
+        ::Enums::Vulnerability.severity_levels.each_key do |severity_level|
+          context "with severity set to #{severity_level}" do
+            let(:vulnerabilities) { [info.merge(severity: severity_level)] }
+
+            it { is_expected.to be_valid }
+          end
+        end
+      end
+
+      context 'when severity does not match the existing enum' do
+        let(:vulnerabilities) { [info.merge(severity: "invalid")] }
+
+        it { is_expected.not_to be_valid }
+      end
+    end
   end
 
   describe '.filter_by_components scope' do
