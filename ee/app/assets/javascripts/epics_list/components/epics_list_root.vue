@@ -134,6 +134,11 @@ export default {
     };
   },
   computed: {
+    searchTokens() {
+      return this.getFilteredSearchTokens({
+        supportsEpic: false,
+      });
+    },
     epicsCount() {
       const { opened, closed, all } = this.epics;
       return {
@@ -234,12 +239,7 @@ export default {
     :tabs="$options.issuableListTabs"
     :current-tab="currentState"
     :tab-counts="epicsCount"
-    :search-tokens="
-      /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
-      getFilteredSearchTokens({
-        supportsEpic: false,
-      }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
-    "
+    :search-tokens="searchTokens"
     :sort-options="$options.epicsSortOptions"
     :has-scoped-labels-feature="hasScopedLabelsFeature"
     :initial-filter-value="getFilteredSearchValue()"
