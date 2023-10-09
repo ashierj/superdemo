@@ -481,6 +481,7 @@ module EE
         enable :create_vulnerability_export
         enable :read_security_resource
         enable :read_dependency
+        enable :read_licenses
       end
 
       rule { admin | owner }.policy do
