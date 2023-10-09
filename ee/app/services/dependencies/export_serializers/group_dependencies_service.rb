@@ -26,16 +26,15 @@ module Dependencies
       delegate :group, to: :dependency_list_export, private: true
 
       def build_list_for(batch)
-        batch.with_component
-             .with_source
-             .with_version.map do |occurrence|
-               {
-                 name: occurrence.name,
-                 packager: occurrence.packager,
-                 version: occurrence.version,
-                 location: occurrence.location
-               }
-             end
+        batch.with_source.with_version.map do |occurrence|
+          {
+            name: occurrence.component_name,
+            packager: occurrence.package_manager,
+            version: occurrence.version,
+            licenses: occurrence.licenses,
+            location: occurrence.location
+          }
+        end
       end
 
       def group_dependencies
