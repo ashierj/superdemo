@@ -110,7 +110,8 @@ module Types
         end
 
         def readme_html_resolver
-          ::MarkupHelper.markdown(object.project.repository.readme&.data, context.to_h.dup)
+          markdown_context = context.to_h.dup.merge(project: object.project)
+          ::MarkupHelper.markdown(object.project.repository.readme&.data, markdown_context)
         end
       end
       # rubocop: enable Graphql/AuthorizeTypes
