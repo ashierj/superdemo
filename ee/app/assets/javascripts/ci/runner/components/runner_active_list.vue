@@ -33,7 +33,11 @@ export default {
       query: mostActiveRunnersQuery,
       fetchPolicy: fetchPolicies.NETWORK_ONLY,
       update({ runners }) {
-        return runners?.nodes || [];
+        // The backend does not filter out inactive runners, but
+        // showing them can be confusing for users. Ignore runners
+        // with no active jobs.
+        const items = runners?.nodes || [];
+        return items.filter((item) => item.runningJobCount > 0);
       },
       error(error) {
         createAlert({ message: I18N_FETCH_ERROR });
