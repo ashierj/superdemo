@@ -25,12 +25,6 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
       expect(unindexed_repository.use_zoekt?).to eq(false)
     end
 
-    it 'is false for private projects with legacy indexer' do
-      stub_feature_flags(use_new_zoekt_indexer: false)
-
-      expect(private_repository.use_zoekt?).to eq(false)
-    end
-
     it 'is false for private projects when zoekt_index_private_repositories is disabled' do
       stub_feature_flags(zoekt_index_private_repositories: false)
 

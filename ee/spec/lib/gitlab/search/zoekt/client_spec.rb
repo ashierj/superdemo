@@ -105,24 +105,6 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
       expect(search_results[:Result][:Files].to_a.size).to be > 0
     end
 
-    context 'when use_new_zoekt_indexer is disabled' do
-      before do
-        stub_feature_flags(use_new_zoekt_indexer: false)
-      end
-
-      it 'indexes using the old path' do
-        expect(::Gitlab::HTTP).to receive(:post) do |url, args|
-          body = args[:body]
-          expect(url.to_s).to eq("#{::Zoekt::Shard.first.index_base_url}/index")
-          body = ::Gitlab::Json.parse(body)
-
-          expect(body["CloneUrl"]).to be_present
-          expect(body["RepoId"]).to eq(project_1.id)
-        end.and_return({})
-        described_class.instance.index(project_1, shard_id)
-      end
-    end
-
     it 'raises an exception when indexing errors out' do
       allow(::Gitlab::HTTP).to receive(:post).and_return({ 'Error' => 'command failed: exit status 128' })
 
@@ -175,16 +157,6 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
         search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
           shard_id: shard_id)
         expect(search_results[:Result][:Files].to_a).to be_empty
-      end
-    end
-
-    context 'when use_new_zoekt_indexer is disabled' do
-      before do
-        stub_feature_flags(use_new_zoekt_indexer: false)
-      end
-
-      it 'returns false' do
-        expect(subject).to eq(false)
       end
     end
 
