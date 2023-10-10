@@ -54473,6 +54473,9 @@ msgstr ""
 msgid "You cannot set yourself to awaiting"
 msgstr ""
 
+msgid "You cannot verify %{value} because it is a popular public email domain."
+msgstr ""
+
 msgid "You cannot write to a read-only secondary GitLab Geo instance. Please use %{link_to_primary_node} instead."
 msgstr ""
 

@@ -1,19 +1,6 @@
 # frozen_string_literal: true
 
 class AllowedEmailDomain < ApplicationRecord
-  RESERVED_DOMAINS = [
-    'gmail.com',
-    'yahoo.com',
-    'hotmail.com',
-    'aol.com',
-    'msn.com',
-    'hotmail.co.uk',
-    'hotmail.fr',
-    'live.com',
-    'outlook.com',
-    'icloud.com'
-  ].freeze
-
   ##
   # NOTE: If we need to change this regex, we need to ensure we use the same regex in ruby and JS
   #
@@ -35,7 +22,7 @@ class AllowedEmailDomain < ApplicationRecord
   validates :group_id, presence: true
   validates :domain, presence: true
   validate :allow_root_group_only
-  validates :domain, exclusion: { in: RESERVED_DOMAINS,
+  validates :domain, exclusion: { in: Gitlab::Access::ReservedDomains::ALL,
                                   message: N_('The domain you entered is not allowed.') }
   validates :domain, if: :domain_changed?, format: { with: VALID_DOMAIN_REGEX,
                                                      message: N_('The domain you entered is misformatted.') }
