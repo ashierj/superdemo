@@ -130,7 +130,6 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     group_member
     import_state
     issue_customer_relations_contact
-    member_task
     merge_request_block
     milestone_release
     namespace

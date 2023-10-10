@@ -172,7 +172,6 @@ project_members:
 - user
 - source
 - project
-- member_task
 - member_namespace
 - member_role
 member_roles:
