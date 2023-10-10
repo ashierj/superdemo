@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Approval rules', :reliable, product_group: :code_review do
+    describe 'Approval rules', product_group: :code_review do
       let(:approver1) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
       let(:approver2) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2) }
       let(:project) { create(:project, name: 'approval-rules') }
@@ -25,11 +25,7 @@ module QA
         project&.remove_via_api!
       end
 
-      it 'allows multiple approval rules with users and groups', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347771',
-        quarantine: {
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/425787',
-          type: :flaky
-        } do
+      it 'allows multiple approval rules with users and groups', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347771' do
         # Create a merge request with 2 rules
         merge_request = Resource::MergeRequest.fabricate_via_browser_ui! do |resource|
           resource.title = 'Add a new feature'
