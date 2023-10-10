@@ -11,8 +11,14 @@ RSpec.describe Security::RemediationsProxy, feature_category: :vulnerability_man
     # The following byte offsets are collected by parsing the related artifact with Oj::Introspect.
     # If the specs fail due to a change in the related artifact, you can collect them again by parsing
     # the artifact again and checking the `:__oj_introspect` keys for remediations.
-    let(:remediation_1_byte_offsets) { [11829, 12016] }
-    let(:remediation_2_byte_offsets) { [12023, 12211] }
+    #
+    # For example this specs new offsets can be found by:
+    # raw_json = File.read("spec/fixtures/security_reports/master/gl-common-scanning-report.json")
+    # parser = Oj::Introspect.new(filter: "remediations")
+    # parsed_report = parser.parse(raw_json)
+    # parsed_report.dig(*%w[remediations])[0..1].map { |o| o[:__oj_introspection] }
+    let(:remediation_1_byte_offsets) { [11986, 12173] }
+    let(:remediation_2_byte_offsets) { [12180, 12368] }
 
     subject(:data_fragments) do
       model.by_byte_offsets([remediation_1_byte_offsets, remediation_2_byte_offsets, remediation_2_byte_offsets])
