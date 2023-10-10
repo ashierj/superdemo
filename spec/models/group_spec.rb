@@ -1649,6 +1649,14 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'returns correct access level' do
         expect(group.max_member_access_for_user(group_user)).to eq(Gitlab::Access::OWNER)
       end
+
+      context 'when user is not active' do
+        let_it_be(:group_user) { create(:user, :deactivated) }
+
+        it 'returns NO_ACCESS' do
+          expect(group.max_member_access_for_user(group_user)).to eq(Gitlab::Access::NO_ACCESS)
+        end
+      end
     end
 
     context 'when user is nil' do
