@@ -50413,6 +50413,9 @@ msgstr ""
 msgid "Unauthorized to access the cluster agent in this project"
 msgstr ""
 
+msgid "Unauthorized to create a package protection rule"
+msgstr ""
+
 msgid "Unauthorized to create an environment"
 msgstr ""
 
