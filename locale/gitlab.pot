@@ -35063,6 +35063,9 @@ msgstr ""
 msgid "Pipeline|This pipeline ran on the contents of this merge request combined with the contents of all other merge requests queued for merging into the target branch."
 msgstr ""
 
+msgid "Pipeline|This pipeline ran on the contents of this merge request combined with the contents of the target branch."
+msgstr ""
+
 msgid "Pipeline|This pipeline ran on the contents of this merge request's source branch, not the target branch."
 msgstr ""
 
@@ -35097,6 +35100,9 @@ msgid "Pipeline|merge request"
 msgstr ""
 
 msgid "Pipeline|merge train"
+msgstr ""
+
+msgid "Pipeline|merged results"
 msgstr ""
 
 msgid "Pipeline|on"
