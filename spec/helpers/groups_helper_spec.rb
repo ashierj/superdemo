@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupsHelper do
+RSpec.describe GroupsHelper, feature_category: :groups_and_projects do
   include ApplicationHelper
   include AvatarsHelper
 
@@ -97,23 +97,11 @@ RSpec.describe GroupsHelper do
         end
       end
 
-      context 'recursive' do
-        before do
-          stub_feature_flags(use_traversal_ids: false)
-        end
-
-        include_examples 'correct ancestor order'
+      before do
+        very_deep_nested_group.reload # make sure traversal_ids are reloaded
       end
 
-      context 'linear' do
-        before do
-          stub_feature_flags(use_traversal_ids: true)
-
-          very_deep_nested_group.reload # make sure traversal_ids are reloaded
-        end
-
-        include_examples 'correct ancestor order'
-      end
+      include_examples 'correct ancestor order'
     end
 
     it 'enqueues the elements in the breadcrumb schema list' do
@@ -269,21 +257,7 @@ RSpec.describe GroupsHelper do
         end
       end
 
-      context 'recursive' do
-        before do
-          stub_feature_flags(use_traversal_ids: false)
-        end
-
-        include_examples 'correct ancestor order'
-      end
-
-      context 'linear' do
-        before do
-          stub_feature_flags(use_traversal_ids: true)
-        end
-
-        include_examples 'correct ancestor order'
-      end
+      include_examples 'correct ancestor order'
     end
   end
 
