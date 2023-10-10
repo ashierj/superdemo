@@ -42,7 +42,8 @@ RSpec.describe Gitlab::BackgroundMigration::UpdateWorkspacesConfigVersion, featu
       workspaces_table.create!({
         name: 'workspace1',
         config_version: v1,
-        actual_state: ::RemoteDevelopment::Workspaces::States::TERMINATED
+        actual_state: ::RemoteDevelopment::Workspaces::States::TERMINATED,
+        force_include_all_resources: false
       }.merge!(workspace_attrs))
     end
 
@@ -58,7 +59,8 @@ RSpec.describe Gitlab::BackgroundMigration::UpdateWorkspacesConfigVersion, featu
       workspaces_table.create!({
         name: 'workspace3',
         config_version: v2,
-        actual_state: ::RemoteDevelopment::Workspaces::States::RUNNING
+        actual_state: ::RemoteDevelopment::Workspaces::States::RUNNING,
+        force_include_all_resources: false
       }.merge!(workspace_attrs))
     end
 
