@@ -1,5 +1,5 @@
 <script>
-import { v4 as uuid } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -16,7 +16,7 @@ export default {
   },
   data() {
     return {
-      idempotencyKey: uuid(),
+      idempotencyKey: uuidv4(),
       isActive: false,
       isLoading: false,
       orderParams: {},
@@ -48,7 +48,7 @@ export default {
   watch: {
     idempotencyKeyParams: {
       handler() {
-        this.idempotencyKey = uuid();
+        this.regenerateIdempotencyKey();
       },
     },
   },
@@ -94,6 +94,9 @@ export default {
     },
   },
   methods: {
+    regenerateIdempotencyKey() {
+      this.idempotencyKey = uuidv4();
+    },
     isClientSideError(status) {
       return status >= 400 && status < 500;
     },
@@ -114,7 +117,7 @@ export default {
           // Regenerate the idempotency key on client-side errors, to ensure the server regards the new request.
           // Context: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129830#note_1522796835.
           if (this.isClientSideError(status)) {
-            this.idempotencyKey = uuid();
+            this.regenerateIdempotencyKey();
           }
           this.$emit(PurchaseEvent.ERROR, error);
         })

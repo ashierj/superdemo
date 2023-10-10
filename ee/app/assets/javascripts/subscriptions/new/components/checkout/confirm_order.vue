@@ -2,6 +2,8 @@
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
+import { isEqual } from 'lodash';
 import { STEPS } from 'ee/subscriptions/constants';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
@@ -21,6 +23,7 @@ export default {
   },
   data() {
     return {
+      idempotencyKey: uuidv4(),
       isActive: {},
       isConfirmingOrder: false,
     };
@@ -43,8 +46,42 @@ export default {
     shouldDisableConfirmOrder() {
       return this.isConfirmingOrder || !this.hasValidPriceDetails;
     },
+    orderParams() {
+      return { ...this.confirmOrderParams, idempotency_key: this.idempotencyKey };
+    },
+    idempotencyKeyParams() {
+      return [this.paymentMethodId, this.planId, this.quantity, this.selectedGroup, this.zipCode];
+    },
+    paymentMethodId() {
+      return this.confirmOrderParams?.subscription?.payment_method_id;
+    },
+    planId() {
+      return this.confirmOrderParams?.subscription?.plan_id;
+    },
+    quantity() {
+      return this.confirmOrderParams?.subscription?.quantity;
+    },
+    selectedGroup() {
+      return this.confirmOrderParams?.selected_group;
+    },
+    zipCode() {
+      return this.confirmOrderParams?.customer?.zip_code;
+    },
+  },
+  watch: {
+    idempotencyKeyParams(newValue, oldValue) {
+      if (!isEqual(newValue, oldValue)) {
+        this.regenerateIdempotencyKey();
+      }
+    },
   },
   methods: {
+    regenerateIdempotencyKey() {
+      this.idempotencyKey = uuidv4();
+    },
+    isClientSideError(status) {
+      return status >= 400 && status < 500;
+    },
     handleError(error) {
       this.$emit(PurchaseEvent.ERROR, error);
     },
@@ -65,15 +102,15 @@ export default {
     confirmOrder() {
       this.isConfirmingOrder = true;
 
-      Api.confirmOrder(this.confirmOrderParams)
+      Api.confirmOrder(this.orderParams)
         .then(({ data }) => {
           if (data?.location) {
             const transactionDetails = {
-              paymentOption: this.confirmOrderParams?.subscription?.payment_method_id,
+              paymentOption: this.orderParams?.subscription?.payment_method_id,
               revenue: this.totalExVat,
               tax: this.vat,
               selectedPlan: this.selectedPlanDetails?.value,
-              quantity: this.confirmOrderParams?.subscription?.quantity,
+              quantity: this.orderParams?.subscription?.quantity,
             };
 
             trackTransaction(transactionDetails);
@@ -101,6 +138,12 @@ export default {
           }
         })
         .catch((error) => {
+          const { status } = error?.response || {};
+          // Regenerate the idempotency key on client-side errors, to ensure the server regards the new request.
+          // Context: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129830#note_1522796835.
+          if (this.isClientSideError(status)) {
+            this.regenerateIdempotencyKey();
+          }
           this.trackConfirmOrder(error.message);
           this.handleError(error);
         })

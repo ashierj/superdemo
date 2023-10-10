@@ -525,7 +525,7 @@ module SaasRegistrationHelpers
       group: an_instance_of(Group),
       customer_params: customer_params,
       subscription_params: subscription_params,
-      idempotency_key: nil
+      idempotency_key: a_string_matching(/[0-9a-fA-F-]{36}/) # UUID
     )
 
     # this is an ad-hoc solution to skip the zuora step and allow 'confirm purchase' button to show up
