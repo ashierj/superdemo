@@ -148,7 +148,7 @@ export default {
 <template>
   <div
     class="epic-details-cell gl-display-flex gl-flex-direction-column gl-justify-content-center"
-    data-qa-selector="epic_details_cell"
+    data-testid="epic-details-cell"
   >
     <div
       class="gl-display-flex align-items-start gl-p-3"

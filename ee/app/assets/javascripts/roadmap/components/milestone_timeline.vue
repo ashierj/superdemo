@@ -38,7 +38,6 @@ export default {
       v-for="timeframeItem in timeframe"
       :key="timeframeItem.id"
       class="milestone-timeline-cell gl-display-table-cell gl-relative border-right border-bottom"
-      data-qa-selector="milestone_timeline_cell"
     >
       <current-day-indicator :preset-type="presetType" :timeframe-item="timeframeItem" />
       <template v-if="milestonesExpanded">

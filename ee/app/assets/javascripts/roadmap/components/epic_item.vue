@@ -143,7 +143,7 @@ export default {
         v-for="(timeframeItem, index) in timeframe"
         :key="index"
         class="epic-timeline-cell gl-display-flex"
-        data-qa-selector="epic_timeline_cell"
+        data-testid="epic-timeline-cell"
       >
         <!--
           CurrentDayIndicator internally checks if a given timeframeItem is for today.

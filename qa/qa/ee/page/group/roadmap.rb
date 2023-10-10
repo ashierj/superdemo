@@ -6,15 +6,15 @@ module QA
       module Group
         class Roadmap < QA::Page::Base
           view 'ee/app/assets/javascripts/roadmap/components/epic_item_details.vue' do
-            element :epic_details_cell
+            element 'epic-details-cell'
           end
 
           view 'ee/app/assets/javascripts/roadmap/components/epic_item.vue' do
-            element :epic_timeline_cell
+            element 'epic-timeline-cell'
           end
 
           view 'ee/app/assets/javascripts/roadmap/components/roadmap_shell.vue' do
-            element :roadmap_shell
+            element 'roadmap-shell'
           end
 
           def epic_present?(epic)
@@ -22,9 +22,9 @@ module QA
 
             wait_for_requests
 
-            within_element(:roadmap_shell) do
-              find("[data-qa-selector='epic_details_cell'] #{epic_href_selector}") &&
-                find("[data-qa-selector='epic_timeline_cell'] #{epic_href_selector}")
+            within_element('roadmap-shell') do
+              find("[data-testid='epic-details-cell'] #{epic_href_selector}") &&
+                find("[data-testid='epic-timeline-cell'] #{epic_href_selector}")
             end
           end
         end
