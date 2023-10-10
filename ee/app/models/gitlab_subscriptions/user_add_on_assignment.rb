@@ -11,8 +11,8 @@ module GitlabSubscriptions
     validates :add_on_purchase_id, uniqueness: { scope: :user_id }
 
     scope :by_user, ->(user) { where(user: user) }
-
     scope :for_user_ids, ->(user_ids) { where(user_id: user_ids) }
+    scope :with_namespaces, -> { includes(add_on_purchase: :namespace) }
 
     scope :for_active_add_on_purchase_ids, ->(add_on_purchase_ids) do
       joins(:add_on_purchase)

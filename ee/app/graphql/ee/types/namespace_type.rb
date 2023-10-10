@@ -6,6 +6,14 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
+        field :add_on_eligible_users,
+          ::Types::GitlabSubscriptions::AddOnUserType.connection_type,
+          null: true,
+          description: 'Users in the namespace hierarchy that add ons are applicable for. This only applies to ' \
+                       'root namespaces.',
+          resolver: ::Resolvers::GitlabSubscriptions::AddOnEligibleUsersResolver,
+          alpha: { milestone: '16.5' }
+
         field :add_on_purchase,
           ::Types::GitlabSubscriptions::AddOnPurchaseType,
           null: true,

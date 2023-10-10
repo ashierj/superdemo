@@ -10,7 +10,9 @@ RSpec.describe GitlabSchema.types['AddOnUser'], feature_category: :shared do
 
   it 'has expected fields' do
     add_on_user_fields = %w[
-      addOnAssignments
+      add_on_assignments
+      last_activity_on
+      last_login_at
     ]
 
     generic_user_fields = %w[
