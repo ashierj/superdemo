@@ -74,7 +74,7 @@ export default {
       v-gl-tooltip
       :title="
         s__(
-          'Pipeline|This pipeline ran on the contents of this merge request combined with the contents of all other merge requests queued for merging into the target branch.',
+          'Pipeline|This pipeline ran on the contents of the merge request combined with the contents of all other merge requests queued for merging into the target branch.',
         )
       "
       variant="info"
@@ -149,7 +149,7 @@ export default {
       v-gl-tooltip
       :title="
         s__(
-          `Pipeline|This pipeline ran on the contents of this merge request's source branch, not the target branch.`,
+          `Pipeline|This pipeline ran on the contents of the merge request's source branch, not the target branch.`,
         )
       "
       variant="info"
@@ -162,7 +162,7 @@ export default {
       v-gl-tooltip
       :title="
         s__(
-          `Pipeline|This pipeline ran on the contents of this merge request combined with the contents of the target branch.`,
+          `Pipeline|This pipeline ran on the contents of the merge request combined with the contents of the target branch.`,
         )
       "
       variant="info"
