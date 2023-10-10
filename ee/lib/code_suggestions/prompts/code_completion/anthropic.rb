@@ -18,17 +18,19 @@ module CodeSuggestions
 
         def prompt
           <<~PROMPT
-            Human: Here is a content of a file '#{file_path_info}' written in #{language.name} enclosed
-            in <code></code> tags. Review the code to understand existing logic and format, then return
-            a valid code enclosed in <result></result> tags which can be added instead of
-            <complete> tag. Do not add other code.
+            Human: We want to fill in new #{language.name} code between existing code.
+            Here is the content of a #{language.name} file in the path '#{file_path_info}' enclosed
+            in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
+            Review the existing code to understand existing logic and format.
+            Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+            Do not repeat code that already exists. The new code has to be fully functional and complete.
 
-            <code>
-              #{prefix}<complete>
-              #{suffix}
-            </code>
+            <existing_code>
+              #{prefix}<cursor>#{suffix}
+            </existing_code>
 
-            Assistant:
+            Assistant: <new_code>
           PROMPT
         end
       end
