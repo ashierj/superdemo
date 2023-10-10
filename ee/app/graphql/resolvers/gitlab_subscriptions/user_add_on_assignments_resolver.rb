@@ -16,22 +16,26 @@ module Resolvers
 
       type ::Types::GitlabSubscriptions::UserAddOnAssignmentType.connection_type, null: true
 
-      before_connection_authorization do |nodes, current_user|
-        namespaces = nodes.map { |assignment| assignment.add_on_purchase.namespace }
-
-        Preloaders::GroupPolicyPreloader.new(namespaces, current_user).execute
-      end
-
       alias_method :user, :object
 
       def resolve_with_lookahead(**args)
         return [] unless Feature.enabled?(:hamilton_seat_management)
 
-        query = ::GitlabSubscriptions::UserAddOnAssignment
-                  .for_user_ids(user.id)
-                  .for_active_add_on_purchase_ids(args[:add_on_purchase_ids])
+        BatchLoader::GraphQL.for(user.id).batch do |user_ids, loader|
+          query = ::GitlabSubscriptions::UserAddOnAssignment
+                    .for_user_ids(user_ids)
+                    .for_active_add_on_purchase_ids(args[:add_on_purchase_ids])
+                    .with_namespaces
 
-        apply_lookahead(query)
+          user_assignments = apply_lookahead(query)
+
+          namespaces_for_auth = user_assignments.map { |assignment| assignment.add_on_purchase.namespace }
+          Preloaders::GroupPolicyPreloader.new(namespaces_for_auth, current_user).execute
+
+          grouped_assignments = user_assignments.group_by(&:user_id)
+
+          user_ids.each { |user_id| loader.call(user_id, grouped_assignments.fetch(user_id, [])) }
+        end
       end
 
       private
@@ -45,7 +49,7 @@ module Resolvers
       end
 
       def preloads
-        { add_on_purchase: [add_on_purchase: [:add_on, :namespace]] }
+        { add_on_purchase: [add_on_purchase: [:add_on]] }
       end
     end
   end

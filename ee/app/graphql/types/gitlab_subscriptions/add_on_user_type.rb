@@ -13,6 +13,16 @@ module Types
         resolver: ::Resolvers::GitlabSubscriptions::UserAddOnAssignmentsResolver,
         description: 'Add-on purchase assignments for the user.',
         alpha: { milestone: '16.4' }
+
+      field :last_activity_on,
+        type: Types::DateType,
+        null: true,
+        description: 'Date the user last performed any actions.'
+      field :last_login_at,
+        type: Types::TimeType,
+        null: true,
+        method: :current_sign_in_at,
+        description: 'Timestamp of the last sign in.'
     end
   end
 end

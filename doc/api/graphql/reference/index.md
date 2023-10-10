@@ -7954,6 +7954,30 @@ The edge type for [`Achievement`](#achievement).
 | <a id="achievementedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="achievementedgenode"></a>`node` | [`Achievement`](#achievement) | The item at the end of the edge. |
 
+#### `AddOnUserConnection`
+
+The connection type for [`AddOnUser`](#addonuser).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="addonuserconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
+| <a id="addonuserconnectionedges"></a>`edges` | [`[AddOnUserEdge]`](#addonuseredge) | A list of edges. |
+| <a id="addonuserconnectionnodes"></a>`nodes` | [`[AddOnUser]`](#addonuser) | A list of nodes. |
+| <a id="addonuserconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `AddOnUserEdge`
+
+The edge type for [`AddOnUser`](#addonuser).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="addonuseredgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="addonuseredgenode"></a>`node` | [`AddOnUser`](#addonuser) | The item at the end of the edge. |
+
 #### `AgentConfigurationConnection`
 
 The connection type for [`AgentConfiguration`](#agentconfiguration).
@@ -12854,6 +12878,8 @@ A user with add-on data.
 | <a id="addonuserid"></a>`id` | [`ID!`](#id) | ID of the user. |
 | <a id="addonuseride"></a>`ide` | [`Ide`](#ide) | IDE settings. |
 | <a id="addonuserjobtitle"></a>`jobTitle` | [`String`](#string) | Job title of the user. |
+| <a id="addonuserlastactivityon"></a>`lastActivityOn` | [`Date`](#date) | Date the user last performed any actions. |
+| <a id="addonuserlastloginat"></a>`lastLoginAt` | [`Time`](#time) | Timestamp of the last sign in. |
 | <a id="addonuserlinkedin"></a>`linkedin` | [`String`](#string) | LinkedIn profile name of the user. |
 | <a id="addonuserlocation"></a>`location` | [`String`](#string) | Location of the user. |
 | <a id="addonusername"></a>`name` | [`String!`](#string) | Human-readable name of the user. Returns `****` if the user is a project bot and the requester does not have permission to view the project. |
@@ -17626,6 +17652,27 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="groupachievementsids"></a>`ids` | [`[AchievementsAchievementID!]`](#achievementsachievementid) | Filter achievements by IDs. |
 
+##### `Group.addOnEligibleUsers`
+
+Users in the namespace hierarchy that add ons are applicable for. This only applies to root namespaces.
+
+WARNING:
+**Introduced** in 16.5.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`AddOnUserConnection`](#addonuserconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupaddoneligibleusersaddontype"></a>`addOnType` | [`GitlabSubscriptionsAddOnType!`](#gitlabsubscriptionsaddontype) | Type of add on to filter the eligible users by. |
+| <a id="groupaddoneligibleuserssearch"></a>`search` | [`String`](#string) | Search the user list. |
+
 ##### `Group.addOnPurchase`
 
 AddOnPurchase associated with the namespace.
@@ -21130,6 +21177,27 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="namespaceachievementsids"></a>`ids` | [`[AchievementsAchievementID!]`](#achievementsachievementid) | Filter achievements by IDs. |
+
+##### `Namespace.addOnEligibleUsers`
+
+Users in the namespace hierarchy that add ons are applicable for. This only applies to root namespaces.
+
+WARNING:
+**Introduced** in 16.5.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`AddOnUserConnection`](#addonuserconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="namespaceaddoneligibleusersaddontype"></a>`addOnType` | [`GitlabSubscriptionsAddOnType!`](#gitlabsubscriptionsaddontype) | Type of add on to filter the eligible users by. |
+| <a id="namespaceaddoneligibleuserssearch"></a>`search` | [`String`](#string) | Search the user list. |
 
 ##### `Namespace.addOnPurchase`
 
@@ -28056,6 +28124,14 @@ Geo registry class.
 | <a id="georegistryclasssnippet_repository_registry"></a>`SNIPPET_REPOSITORY_REGISTRY` | Geo::SnippetRepositoryRegistry registry class. |
 | <a id="georegistryclassterraform_state_version_registry"></a>`TERRAFORM_STATE_VERSION_REGISTRY` | Geo::TerraformStateVersionRegistry registry class. |
 | <a id="georegistryclassupload_registry"></a>`UPLOAD_REGISTRY` | Geo::UploadRegistry registry class. |
+
+### `GitlabSubscriptionsAddOnType`
+
+Types of add-ons.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="gitlabsubscriptionsaddontypecode_suggestions"></a>`CODE_SUGGESTIONS` | Code suggestions seat add-on. |
 
 ### `GitlabSubscriptionsUserRole`
 

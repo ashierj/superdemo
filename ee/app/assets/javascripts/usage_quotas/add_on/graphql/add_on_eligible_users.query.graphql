@@ -32,6 +32,7 @@ query getAddOnEligibleUsers(
           lastActivityOn
           addOnAssignments {
             nodes {
+              # eslint-disable-next-line @graphql-eslint/require-id-when-available
               addOnPurchase {
                 name
               }
