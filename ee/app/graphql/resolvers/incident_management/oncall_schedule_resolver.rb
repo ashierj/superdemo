@@ -37,7 +37,7 @@ module Resolvers
       def will_generate_shifts?(rotation)
         return false unless rotation.selects?(:shifts)
 
-        rotation.selection(:shifts).arguments[:end_time] > Time.current
+        rotation.selection(:shifts).arguments[:end_time].future?
       end
 
       def rotation_selection
