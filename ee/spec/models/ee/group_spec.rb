@@ -425,17 +425,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
           expect(subject).to match_array(expected_groups)
         end
 
-        context 'when use_traversal_ids is disabled' do
-          before do
-            stub_feature_flags(use_traversal_ids: false)
-          end
-
-          it 'does not use filter optimization' do
-            expect(described_class).not_to receive(:filter_groups_user_can)
-            expect(subject).to match_array(expected_groups)
-          end
-        end
-
         context 'when same_root is false' do
           let(:params) { { same_root: false } }
 
