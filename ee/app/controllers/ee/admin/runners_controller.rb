@@ -11,6 +11,7 @@ module EE
           push_licensed_feature(:runner_upgrade_management) if ::Gitlab::Ci::RunnerReleases.instance.enabled?
         end
         before_action(only: [:new, :show, :edit]) { push_licensed_feature(:runner_maintenance_note) }
+        before_action(only: [:dashboard]) { push_frontend_feature_flag(:clickhouse_ci_analytics, current_user) }
       end
 
       def dashboard

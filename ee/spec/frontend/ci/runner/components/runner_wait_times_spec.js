@@ -36,13 +36,19 @@ describe('RunnerActiveList', () => {
   const getStatData = () =>
     findSingleStats().wrappers.map((w) => [w.props('title'), w.props('value')]);
 
-  const createComponent = ({ mountFn = shallowMountExtended } = {}) => {
+  const createComponent = ({ glFeatures = {}, mountFn = shallowMountExtended } = {}) => {
     wrapper = mountFn(RunnerWaitTimes, {
       apolloProvider: createMockApollo([
         [runnerWaitTimesQuery, runnerWaitTimesHandler],
         [runnerWaitTimeHistoryQuery, runnerWaitTimeHistoryHandler],
       ]),
       stubs: { GlSprintf },
+      provide: {
+        glFeatures: {
+          clickhouseCiAnalytics: true,
+          ...glFeatures,
+        },
+      },
     });
   };
 
@@ -127,6 +133,36 @@ describe('RunnerActiveList', () => {
         expect(name).toEqual(expect.any(String));
         expect(data).toHaveLength(2); // 2 sample points
       });
+    });
+  });
+
+  describe('When clickhouse_ci_analytics is disabled', () => {
+    beforeEach(async () => {
+      runnerWaitTimesHandler.mockResolvedValue(runnersWaitTimes);
+
+      createComponent({ glFeatures: { clickhouseCiAnalytics: false } });
+      await waitForPromises();
+    });
+
+    it('request wait times', () => {
+      expect(runnerWaitTimesHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows stats', () => {
+      expect(getStatData()).toEqual([
+        [I18N_P99, '99'],
+        [I18N_P90, '90'],
+        [I18N_P75, '75'],
+        [I18N_MEDIAN, '50'],
+      ]);
+    });
+
+    it('does not request wait time history', () => {
+      expect(runnerWaitTimeHistoryHandler).toHaveBeenCalledTimes(0);
+    });
+
+    it('does not show the chart', () => {
+      expect(findChart().exists()).toBe(false);
     });
   });
 });
