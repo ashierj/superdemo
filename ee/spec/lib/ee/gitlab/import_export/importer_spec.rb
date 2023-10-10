@@ -48,7 +48,7 @@ RSpec.describe Gitlab::ImportExport::Importer, feature_category: :importers do
 
       context 'with template_project_id' do
         it 'initializes the CustomTemplateRestorer' do
-          project.create_or_update_import_data(data: { template_project_id: project.id })
+          project.build_or_assign_import_data(data: { template_project_id: project.id })
 
           expect(Gitlab::ImportExport::Project::CustomTemplateRestorer).to receive(:new).and_call_original
 
