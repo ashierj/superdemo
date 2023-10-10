@@ -54,11 +54,13 @@ export default {
   },
   watch: {
     message: {
-      handler() {
+      async handler() {
         const { chunkId, content } = this.message;
         if (!chunkId) {
           this.$options.messageChunks = [];
           this.messageContent = this.getContent();
+
+          await this.$nextTick();
           renderGFM(this.$refs.content);
         } else {
           this.$options.messageChunks[chunkId] = content;

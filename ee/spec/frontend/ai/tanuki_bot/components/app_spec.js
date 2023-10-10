@@ -205,7 +205,7 @@ describe('GitLab Duo Chat', () => {
 
           expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(1, {
             userId: MOCK_USER_ID,
-            resourceId: expectedResourceId,
+            aiAction: 'CHAT',
             htmlResponse: true,
           });
           expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(2, {
@@ -263,8 +263,8 @@ describe('GitLab Duo Chat', () => {
 
         it('once error arrives via GraphQL subscription calls addDuoChatMessage', () => {
           expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(1, {
-            resourceId: expectedResourceId,
             userId: MOCK_USER_ID,
+            aiAction: 'CHAT',
             htmlResponse: true,
           });
           expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(2, {
