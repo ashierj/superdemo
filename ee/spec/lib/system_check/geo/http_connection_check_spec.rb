@@ -69,7 +69,7 @@ RSpec.describe SystemCheck::Geo::HttpConnectionCheck, feature_category: :geo_rep
 
           expect do
             subject.multi_check
-          end.to output("\n* Can connect to the primary node ... no\n  Reason:\n  Gitlab::HTTP::RedirectionTooDeep\n").to_stdout
+          end.to output("\n* Can connect to the primary node ... no\n  Reason:\n  Gitlab::HTTP_V2::RedirectionTooDeep\n").to_stdout
         end
       end
     end
