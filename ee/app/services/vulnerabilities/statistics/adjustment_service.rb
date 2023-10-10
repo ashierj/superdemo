@@ -43,7 +43,7 @@ module Vulnerabilities
           now() AS updated_at
         FROM (
           SELECT
-            vulnerabilities.project_id AS project_id,
+            vulnerability_reads.project_id AS project_id,
             COUNT(*) AS total,
             COUNT(*) FILTER (WHERE severity = #{Vulnerability.severities['info']}) as info,
             COUNT(*) FILTER (WHERE severity = #{Vulnerability.severities['unknown']}) as unknown,
@@ -51,9 +51,11 @@ module Vulnerabilities
             COUNT(*) FILTER (WHERE severity = #{Vulnerability.severities['medium']}) as medium,
             COUNT(*) FILTER (WHERE severity = #{Vulnerability.severities['high']}) as high,
             COUNT(*) FILTER (WHERE severity = #{Vulnerability.severities['critical']}) as critical
-          FROM vulnerabilities
-          WHERE vulnerabilities.project_id IN (%{project_ids}) AND state IN (%{active_states})
-          GROUP BY vulnerabilities.project_id
+          FROM vulnerability_reads
+          WHERE
+            vulnerability_reads.project_id IN (%{project_ids}) AND
+            vulnerability_reads.state IN (%{active_states})
+          GROUP BY vulnerability_reads.project_id
         ) AS severity_counts
       SQL
 

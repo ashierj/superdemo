@@ -76,7 +76,7 @@ RSpec.describe Vulnerabilities::BulkDismissService, feature_category: :vulnerabi
       end
 
       it 'updates the statistics', :sidekiq_inline do
-        _active_vulnerability = create(:vulnerability, :high_severity, project: project)
+        _active_vulnerability = create(:vulnerability, :with_finding, :high_severity, project: project)
 
         service.execute
 
