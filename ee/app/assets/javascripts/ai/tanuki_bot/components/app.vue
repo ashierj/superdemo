@@ -57,12 +57,9 @@ export default {
         query: aiResponseSubscription,
         variables() {
           return {
-            resourceId: this.resourceId || this.userId,
             userId: this.userId,
+            aiAction: 'CHAT',
           };
-        },
-        skip() {
-          return !this.loading;
         },
         result({ data }) {
           this.addDuoChatMessage(data?.aiCompletionResponse);
