@@ -182,6 +182,17 @@ Specific information applies to installations using Geo:
 
 Specific information applies to Linux package installations:
 
+- As of GitLab 16.2, PostgreSQL 13.11 and 14.8 are both shipped with the Linux package.
+  During a package upgrade, the database isn't upgraded to PostgreSQL 14. If you
+  want to upgrade to PostgreSQL 14, you must do it manually:
+
+  ```shell
+  sudo gitlab-ctl pg-upgrade -V 14
+  ```
+
+  PostgreSQL 14 isn't supported on Geo deployments and is [planned](https://gitlab.com/groups/gitlab-org/-/epics/9065)
+  for future releases.
+
 - In 16.2, we are upgrading Redis from 6.2.11 to 7.0.12. This upgrade is expected to be fully backwards compatible.
 
   Redis is not automatically restarted as part of `gitlab-ctl reconfigure`.
