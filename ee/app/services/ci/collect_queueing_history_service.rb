@@ -14,7 +14,7 @@ module Ci
     end
 
     def execute
-      unless Feature.enabled?(:clickhouse_ci_analytics)
+      unless Feature.enabled?(:clickhouse_ci_analytics, @current_user)
         return ServiceResponse.error(message: 'Feature clickhouse_ci_analytics not enabled')
       end
 
