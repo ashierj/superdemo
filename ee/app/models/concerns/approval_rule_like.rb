@@ -29,7 +29,7 @@ module ApprovalRuleLike
     belongs_to :scan_result_policy_read,
       class_name: 'Security::ScanResultPolicyRead',
       foreign_key: 'scan_result_policy_id',
-      inverse_of: :security_orchestration_policy_configuration,
+      inverse_of: :approval_merge_request_rules,
       optional: true
 
     enum report_type: {

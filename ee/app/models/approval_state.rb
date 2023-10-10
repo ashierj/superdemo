@@ -20,8 +20,10 @@ class ApprovalState
   end
 
   # Excludes the author if 'author-approval' is explicitly disabled on project settings.
+  # For Ultimate projects, a scan result policy may override this behaviour by its
+  # `approval_settings.prevent_approval_by_author` attribute.
   def self.filter_author(users, merge_request)
-    return users if merge_request.target_project.merge_requests_author_approval?
+    return users if merge_request.merge_requests_author_approval?
 
     if users.is_a?(ActiveRecord::Relation) && !users.loaded?
       users.where.not(id: merge_request.author_id).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459")
@@ -32,7 +34,7 @@ class ApprovalState
 
   # Excludes the author if 'committers-approval' is explicitly disabled on project settings.
   def self.filter_committers(users, merge_request)
-    return users unless merge_request.target_project.merge_requests_disable_committers_approval?
+    return users unless merge_request.merge_requests_disable_committers_approval?
 
     if users.is_a?(ActiveRecord::Relation) && !users.loaded?
       users.where.not(id: merge_request.committers(with_merge_commits: true).select(:id)).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459")
@@ -185,11 +187,11 @@ class ApprovalState
   end
 
   def authors_can_approve?
-    project.merge_requests_author_approval?
+    merge_request.merge_requests_author_approval?
   end
 
   def committers_can_approve?
-    !project.merge_requests_disable_committers_approval?
+    !merge_request.merge_requests_disable_committers_approval?
   end
 
   # TODO: remove after #1979 is closed

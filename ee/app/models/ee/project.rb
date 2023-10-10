@@ -118,6 +118,10 @@ module EE
         foreign_key: 'project_id',
         inverse_of: :project,
         dependent: :delete_all
+      has_many :scan_result_policy_violations,
+        class_name: 'Security::ScanResultPolicyViolation',
+        foreign_key: 'project_id',
+        inverse_of: :project
 
       has_many :project_aliases
 

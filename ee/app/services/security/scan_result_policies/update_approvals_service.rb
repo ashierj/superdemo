@@ -6,11 +6,12 @@ module Security
       include Gitlab::Utils::StrongMemoize
       include PolicyViolationCommentGenerator
 
-      attr_reader :pipeline, :merge_request
+      attr_reader :pipeline, :merge_request, :violations
 
       def initialize(merge_request:, pipeline:)
         @pipeline = pipeline
         @merge_request = merge_request
+        @violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request)
       end
 
       def execute
@@ -18,12 +19,15 @@ module Security
 
         update_scan_finding_rules
         update_any_merge_request_rules if Feature.enabled?(:scan_result_any_merge_request, pipeline.project)
+
+        violations.execute
       end
 
       def update_scan_finding_rules
         return unless pipeline.can_store_security_reports?
 
         approval_rules = merge_request.approval_rules.scan_finding
+
         return if approval_rules.empty?
 
         log_update_approval_rule('Evaluating MR approval rules from scan result policies',
@@ -35,6 +39,7 @@ module Security
 
         update_required_approvals(violated_rules, unviolated_rules)
         generate_policy_bot_comment(merge_request, violated_rules, :scan_finding)
+        violations.add(violated_rules)
       end
 
       def update_any_merge_request_rules
@@ -51,6 +56,7 @@ module Security
 
         update_required_approvals(violated_rules, unviolated_rules)
         generate_policy_bot_comment(merge_request, violated_rules, :any_merge_request)
+        violations.add(violated_rules)
       end
 
       private

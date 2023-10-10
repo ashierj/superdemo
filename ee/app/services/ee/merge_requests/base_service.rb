@@ -39,14 +39,18 @@ module EE
       end
 
       def reset_approvals?(merge_request, _newrev)
-        (merge_request.target_project.reset_approvals_on_push ||
-          merge_request.target_project.project_setting.selective_code_owner_removals)
+        delete_approvals?(merge_request) || merge_request.target_project.project_setting.selective_code_owner_removals
+      end
+
+      def delete_approvals?(merge_request)
+        merge_request.target_project.reset_approvals_on_push ||
+          merge_request.policy_approval_settings.fetch(:remove_approvals_with_new_commit, false)
       end
 
       def reset_approvals(merge_request, newrev = nil)
         return unless reset_approvals?(merge_request, newrev)
 
-        if merge_request.target_project.reset_approvals_on_push
+        if delete_approvals?(merge_request)
           delete_approvals(merge_request)
         elsif merge_request.target_project.project_setting.selective_code_owner_removals
           delete_code_owner_approvals(merge_request)

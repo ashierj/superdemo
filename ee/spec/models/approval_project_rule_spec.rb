@@ -392,40 +392,82 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     let(:group) { create(:group) }
     let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
-    before do
-      rules.each do |rule|
-        rule.users << user
-        rule.groups << group
+    describe 'attributes' do
+      where(:default_name, :report_type, :rules_count) do
+        'License-Check'  | :license_scanning  | 2
+        'Coverage-Check' | :code_coverage     | 1
+        'Scan finding'   | :scan_finding      | 2
+        'Any MR'         | :any_merge_request | 2
+      end
+
+      before do
+        rules.each do |rule|
+          rule.users << user
+          rule.groups << group
+        end
+      end
+
+      with_them do
+        subject(:rules) { create_list(:approval_project_rule, rules_count, report_type, :requires_approval, project: project, orchestration_policy_idx: 1, scanners: [:sast], severity_levels: [:high], vulnerability_states: [:confirmed], vulnerabilities_allowed: 2, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
+
+        let!(:result) { rules.map { |rule| rule.apply_report_approver_rules_to(merge_request) } }
+
+        it 'creates merge_request approval rules with correct attributes', :aggregate_failures do
+          expect(merge_request.reload.approval_rules).to match_array(result)
+          expect(rules.count).to eq rules_count
+          result.each do |result_rule|
+            expect(result_rule.users).to match_array([user])
+            expect(result_rule.groups).to match_array([group])
+            expect(result_rule.name).to include(default_name)
+            expect(result_rule).to be_report_approver
+            expect(result_rule.report_type).to eq(report_type.to_s)
+            expect(result_rule.orchestration_policy_idx).to be 1
+            expect(result_rule.scanners).to contain_exactly('sast')
+            expect(result_rule.severity_levels).to contain_exactly('high')
+            expect(result_rule.vulnerability_states).to contain_exactly('confirmed')
+            expect(result_rule.vulnerabilities_allowed).to be 2
+            expect(result_rule.security_orchestration_policy_configuration.id).to be security_orchestration_policy_configuration.id
+          end
+        end
       end
     end
 
-    where(:default_name, :report_type, :rules_count) do
-      'License-Check'  | :license_scanning  | 2
-      'Coverage-Check' | :code_coverage     | 1
-      'Scan finding'   | :scan_finding      | 2
-      'Any MR'         | :any_merge_request | 2
-    end
+    describe "violations" do
+      let(:scan_result_policy_read) { create(:scan_result_policy_read, project: project) }
 
-    with_them do
-      subject(:rules) { create_list(:approval_project_rule, rules_count, report_type, :requires_approval, project: project, orchestration_policy_idx: 1, scanners: [:sast], severity_levels: [:high], vulnerability_states: [:confirmed], vulnerabilities_allowed: 2, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
+      let(:approval_rule) do
+        create(
+          :approval_project_rule,
+          :scan_finding,
+          :requires_approval,
+          project: project,
+          scan_result_policy_read: scan_result_policy_read)
+      end
 
-      let!(:result) { rules.map { |rule| rule.apply_report_approver_rules_to(merge_request) } }
+      context "without existent violation" do
+        before do
+          Security::ScanResultPolicyViolation.delete_all
+        end
 
-      it 'creates merge_request approval rules with correct attributes', :aggregate_failures do
-        expect(merge_request.reload.approval_rules).to match_array(result)
-        expect(rules.count).to eq rules_count
-        result.each do |result_rule|
-          expect(result_rule.users).to match_array([user])
-          expect(result_rule.groups).to match_array([group])
-          expect(result_rule.name).to include(default_name)
-          expect(result_rule).to be_report_approver
-          expect(result_rule.report_type).to eq(report_type.to_s)
-          expect(result_rule.orchestration_policy_idx).to be 1
-          expect(result_rule.scanners).to contain_exactly('sast')
-          expect(result_rule.severity_levels).to contain_exactly('high')
-          expect(result_rule.vulnerability_states).to contain_exactly('confirmed')
-          expect(result_rule.vulnerabilities_allowed).to be 2
-          expect(result_rule.security_orchestration_policy_configuration.id).to be security_orchestration_policy_configuration.id
+        it "creates a violation" do
+          expect { approval_rule.apply_report_approver_rules_to(merge_request) }.to change { project.scan_result_policy_violations.count }.by(1)
+        end
+
+        it "sets attributes" do
+          approval_rule.apply_report_approver_rules_to(merge_request)
+
+          attrs = project.scan_result_policy_violations.reload.last.attributes
+
+          expect(attrs).to include(
+            "scan_result_policy_id" => scan_result_policy_read.id,
+            "merge_request_id" => merge_request.id,
+            "project_id" => project.id)
+        end
+      end
+
+      context "with existent violation" do
+        it "upserts" do
+          expect { 2.times { approval_rule.apply_report_approver_rules_to(merge_request) } }.to change { project.scan_result_policy_violations.count }.by(1)
         end
       end
     end
