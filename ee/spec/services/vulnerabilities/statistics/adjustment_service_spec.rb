@@ -42,8 +42,9 @@ RSpec.describe Vulnerabilities::Statistics::AdjustmentService, feature_category:
     subject(:adjust_statistics) { described_class.new(project_ids).execute }
 
     before do
-      create(:vulnerability, :critical_severity, project: project)
-      create(:vulnerability, :high_severity, project: project)
+      create(:vulnerability, :with_finding, :critical_severity, project: project)
+      create(:vulnerability, :with_finding, :high_severity, project: project)
+      create(:vulnerability, :with_finding, :medium_severity, project: project, present_on_default_branch: false)
     end
 
     context 'when more than 1000 projects is provided' do

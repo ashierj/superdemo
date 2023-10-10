@@ -246,7 +246,7 @@ export default {
     <gl-disclosure-dropdown
       v-if="showDesktopDropdown"
       ref="epicActionsDropdownDesktop"
-      class="gl-display-none gl-sm-display-block gl-ml-3"
+      class="gl-display-none gl-sm-display-block"
       placement="right"
       :auto-close="false"
       data-testid="desktop-dropdown"

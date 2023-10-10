@@ -118,6 +118,10 @@ module EE
         foreign_key: 'project_id',
         inverse_of: :project,
         dependent: :delete_all
+      has_many :scan_result_policy_violations,
+        class_name: 'Security::ScanResultPolicyViolation',
+        foreign_key: 'project_id',
+        inverse_of: :project
 
       has_many :project_aliases
 
@@ -884,7 +888,7 @@ module EE
       creds = url.credentials.slice(:user)
 
       write_attribute(:import_url, url.sanitized_url)
-      create_or_update_import_data(credentials: creds)
+      build_or_assign_import_data(credentials: creds)
 
       username_only_import_url
     end

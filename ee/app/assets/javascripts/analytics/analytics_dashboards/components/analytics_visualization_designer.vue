@@ -16,7 +16,7 @@ import { PANEL_DISPLAY_TYPES } from '../constants';
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
 import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
 import VisualizationPreview from './visualization_designer/analytics_visualization_preview.vue';
-import VisualizationInspector from './visualization_designer/analytics_visualization_inspector.vue';
+import VisualizationTypeSelector from './visualization_designer/analytics_visualization_type_selector.vue';
 
 export default {
   name: 'AnalyticsVisualizationDesigner',
@@ -27,7 +27,7 @@ export default {
     GlFormGroup,
     MeasureSelector,
     DimensionSelector,
-    VisualizationInspector,
+    VisualizationTypeSelector,
     VisualizationPreview,
   },
   inject: {
@@ -50,6 +50,7 @@ export default {
       },
       visualizationTitle: '',
       titleValidationError: null,
+      typeValidationError: null,
       selectedDisplayType: PANEL_DISPLAY_TYPES.DATA,
       selectedVisualizationType: '',
       hasTimeDimension: false,
@@ -121,35 +122,51 @@ export default {
     selectVisualizationType(newType) {
       this.selectDisplayType(PANEL_DISPLAY_TYPES.VISUALIZATION);
       this.selectedVisualizationType = newType;
+      this.validateType();
+    },
+    getRequiredFieldError(fieldValue) {
+      return fieldValue.length > 0 ? '' : __('This field is required.');
+    },
+    validateType(isSubmitting) {
+      // Don't validate if the type has not been submitted
+      if (this.typeValidationError !== null || isSubmitting) {
+        this.typeValidationError = this.getRequiredFieldError(this.selectedVisualizationType);
+      }
     },
     validateTitle(areSubmitting) {
       // Don't validate if the title has not been submitted
       if (this.titleValidationError !== null || areSubmitting) {
-        this.titleValidationError =
-          this.visualizationTitle.length > 0 ? '' : __('This field is required.');
+        this.titleValidationError = this.getRequiredFieldError(this.visualizationTitle);
       }
     },
-    getSaveVisualizationValidationError() {
-      if (!this.selectedVisualizationType) {
-        return s__('Analytics|Select a visualization type');
-      }
+    getMetricsValidationError() {
       if (!this.queryState.measureSubType) {
         return s__('Analytics|Select a measurement');
       }
       return null;
     },
     async saveVisualization() {
+      let invalid = false;
+
+      this.validateType(true);
+      if (this.typeValidationError) {
+        this.$refs.typeSelector.$el.querySelector('button').focus();
+        invalid = true;
+      }
+
       this.validateTitle(true);
       if (this.titleValidationError) {
         this.$refs.titleInput.$el.focus();
-        return;
+        invalid = true;
       }
 
-      const validationError = this.getSaveVisualizationValidationError();
+      const validationError = this.getMetricsValidationError();
       if (validationError) {
         this.showAlert(validationError);
-        return;
+        invalid = true;
       }
+
+      if (invalid) return;
 
       this.isSaving = true;
 
@@ -224,11 +241,11 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-py-6">
-      <div class="gl-display-flex flex-fill">
+      <div class="gl-display-flex flex-fill gl-flex-direction-column">
         <gl-form-group
           :label="s__('Analytics|Visualization title')"
           label-for="title"
-          class="gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full"
+          class="gl-w-30p gl-min-w-20 gl-xs-w-full"
           data-testid="visualization-title-form-group"
           :invalid-feedback="titleValidationError"
           :state="!titleValidationError"
@@ -246,6 +263,19 @@ export default {
             :state="!titleValidationError"
             required
             @input="validateTitle"
+          />
+        </gl-form-group>
+        <gl-form-group
+          :label="s__('Analytics|Visualization type')"
+          class="gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full"
+          data-testid="visualization-type-form-group"
+          :invalid-feedback="typeValidationError"
+          :state="!typeValidationError"
+        >
+          <visualization-type-selector
+            ref="typeSelector"
+            :selected-visualization-type="selectedVisualizationType"
+            @selectVisualizationType="selectVisualizationType"
           />
         </gl-form-group>
       </div>
@@ -325,12 +355,6 @@ export default {
               :result-visualization="resultSet && isQueryPresent ? resultVisualization : null"
               :title="visualizationTitle"
               @selectedDisplayType="selectDisplayType"
-            />
-          </div>
-          <div class="gl-ml-4" style="min-width: 240px">
-            <visualization-inspector
-              :selected-visualization-type="selectedVisualizationType"
-              @selectVisualizationType="selectVisualizationType"
             />
           </div>
         </template>

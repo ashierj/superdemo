@@ -1268,10 +1268,10 @@ msgstr ""
 msgid "%{totalCpu} (%{freeSpacePercentage}%{percentSymbol} free)"
 msgstr ""
 
-msgid "%{totalMemory} (%{freeSpacePercentage}%{percentSymbol} free)"
+msgid "%{totalIssueWeight} total weight"
 msgstr ""
 
-msgid "%{totalWeight} total weight"
+msgid "%{totalMemory} (%{freeSpacePercentage}%{percentSymbol} free)"
 msgstr ""
 
 msgid "%{total_warnings} warning(s) found:"
@@ -1344,9 +1344,6 @@ msgid "%{webhooks_link_start}%{webhook_type}%{webhooks_link_end} enable you to s
 msgstr ""
 
 msgid "%{webhooks_link_start}%{webhook_type}%{webhooks_link_end} enable you to send notifications to web applications in response to events in a group or project. We recommend using an %{integrations_link_start}integration%{integrations_link_end} in preference to a webhook."
-msgstr ""
-
-msgid "%{widget} options"
 msgstr ""
 
 msgid "%{wildcards_link_start}Wildcards%{wildcards_link_end} such as %{code_tag_start}v*%{code_tag_end} or %{code_tag_start}*-release%{code_tag_end} are supported."
@@ -1838,9 +1835,6 @@ msgstr ""
 msgid "A parent must be provided when bulk updating issuables"
 msgstr ""
 
-msgid "A personal access token has been revoked"
-msgstr ""
-
 msgid "A personal access token, named %{code_start}%{token_name}%{code_end}, has been revoked."
 msgstr ""
 
@@ -2242,6 +2236,12 @@ msgstr ""
 msgid "AbuseReportEvent|Successfully scheduled the user for deletion and closed the report"
 msgstr ""
 
+msgid "AbuseReportEvent|Successfully trusted the user"
+msgstr ""
+
+msgid "AbuseReportEvent|Successfully trusted the user and closed the report"
+msgstr ""
+
 msgid "AbuseReports|%{reportedUser} reported for %{category} by %{count} users"
 msgstr ""
 
@@ -2309,6 +2309,9 @@ msgid "AbuseReport|Confirmed posting of personal information or credentials"
 msgstr ""
 
 msgid "AbuseReport|Confirmed spam"
+msgstr ""
+
+msgid "AbuseReport|Confirmed trusted user"
 msgstr ""
 
 msgid "AbuseReport|Confirmed violation of a copyright or a trademark"
@@ -2429,6 +2432,9 @@ msgid "AbuseReport|Spam"
 msgstr ""
 
 msgid "AbuseReport|Tier"
+msgstr ""
+
+msgid "AbuseReport|Trust user"
 msgstr ""
 
 msgid "AbuseReport|Verification"
@@ -5420,16 +5426,13 @@ msgstr ""
 msgid "Analytics|Charts"
 msgstr ""
 
-msgid "Analytics|Choose a chart type on the right"
-msgstr ""
-
 msgid "Analytics|Choose a measurement to start"
 msgstr ""
 
 msgid "Analytics|Code"
 msgstr ""
 
-msgid "Analytics|Column Chart"
+msgid "Analytics|Column chart"
 msgstr ""
 
 msgid "Analytics|Configure Dashboard Project"
@@ -5468,7 +5471,7 @@ msgstr ""
 msgid "Analytics|Data"
 msgstr ""
 
-msgid "Analytics|Data Table"
+msgid "Analytics|Data table"
 msgstr ""
 
 msgid "Analytics|Dates and times are displayed in the UTC timezone"
@@ -5504,7 +5507,7 @@ msgstr ""
 msgid "Analytics|Language"
 msgstr ""
 
-msgid "Analytics|Line Chart"
+msgid "Analytics|Line chart"
 msgstr ""
 
 msgid "Analytics|New dashboard"
@@ -5555,7 +5558,7 @@ msgstr ""
 msgid "Analytics|Select a visualization type"
 msgstr ""
 
-msgid "Analytics|Single Statistic"
+msgid "Analytics|Single statistic"
 msgstr ""
 
 msgid "Analytics|Single stats"
@@ -5606,13 +5609,13 @@ msgstr ""
 msgid "Analytics|Visualization Designer"
 msgstr ""
 
-msgid "Analytics|Visualization Type"
-msgstr ""
-
 msgid "Analytics|Visualization designer"
 msgstr ""
 
 msgid "Analytics|Visualization title"
+msgstr ""
+
+msgid "Analytics|Visualization type"
 msgstr ""
 
 msgid "Analytics|Visualization was saved successfully"
@@ -10089,9 +10092,6 @@ msgstr ""
 msgid "Ci config already present"
 msgstr ""
 
-msgid "CiCatalog|About this project"
-msgstr ""
-
 msgid "CiCatalog|Back to the CI/CD Catalog"
 msgstr ""
 
@@ -12125,13 +12125,13 @@ msgstr ""
 msgid "Completed in %{duration_seconds} seconds (%{relative_time})"
 msgstr ""
 
-msgid "Compliance Center|Export frameworks as CSV. You will be emailed after the export is processed."
-msgstr ""
-
 msgid "Compliance Center|Export full report as CSV"
 msgstr ""
 
 msgid "Compliance Center|Export merge request violations as CSV. You will be emailed after the export is processed."
+msgstr ""
+
+msgid "Compliance Center|Export projects as CSV. You will be emailed after the export is processed."
 msgstr ""
 
 msgid "Compliance Center|Frameworks"
@@ -12326,6 +12326,9 @@ msgstr ""
 msgid "ComplianceReport|Less than 2 approvers"
 msgstr ""
 
+msgid "ComplianceReport|No frameworks found"
+msgstr ""
+
 msgid "ComplianceReport|No projects found"
 msgstr ""
 
@@ -12351,6 +12354,9 @@ msgid "ComplianceReport|Select at least one project to apply the bulk action"
 msgstr ""
 
 msgid "ComplianceReport|Unable to load the compliance framework projects report. Refresh the page and try again."
+msgstr ""
+
+msgid "ComplianceReport|Unable to load the compliance framework report. Refresh the page and try again."
 msgstr ""
 
 msgid "ComplianceReport|Unable to load the compliance violations report. Refresh the page and try again."
@@ -13838,6 +13844,9 @@ msgstr ""
 msgid "Create a new project"
 msgstr ""
 
+msgid "Create a new project on GitLab. Store your files, plan your work, and collaborate on code."
+msgstr ""
+
 msgid "Create a new repository"
 msgstr ""
 
@@ -14382,6 +14391,15 @@ msgid "CsvParser|Trailing quote on quoted field is malformed"
 msgstr ""
 
 msgid "CsvParser|Unable to auto-detect delimiter; defaulted to \",\""
+msgstr ""
+
+msgid "CsvViewer|No CSV data to display."
+msgstr ""
+
+msgid "CsvViewer|The file is too large to render all the rows. To see the entire file, switch to the raw view."
+msgstr ""
+
+msgid "CsvViewer|View raw data"
 msgstr ""
 
 msgid "Current"
@@ -18302,6 +18320,12 @@ msgstr ""
 msgid "Enterprise User Account on GitLab"
 msgstr ""
 
+msgid "Enterprise user associated at: "
+msgstr ""
+
+msgid "Enterprise user of: "
+msgstr ""
+
 msgid "EnterpriseUsers|The user does not match the \"Enterprise User\" definition for the group"
 msgstr ""
 
@@ -20740,6 +20764,9 @@ msgstr ""
 msgid "Framework successfully deleted"
 msgstr ""
 
+msgid "Frameworks"
+msgstr ""
+
 msgid "Frameworks can not be added to projects in personal namespaces. %{linkStart}What are personal namespaces?%{linkEnd}"
 msgstr ""
 
@@ -21563,9 +21590,6 @@ msgid "GitLab Shell"
 msgstr ""
 
 msgid "GitLab Support Bot"
-msgstr ""
-
-msgid "GitLab Ultimate trial"
 msgstr ""
 
 msgid "GitLab User"
@@ -31210,9 +31234,6 @@ msgstr ""
 msgid "No %{providerTitle} repositories found"
 msgstr ""
 
-msgid "No CSV data to display."
-msgstr ""
-
 msgid "No Epic"
 msgstr ""
 
@@ -32273,21 +32294,6 @@ msgstr ""
 msgid "Objective"
 msgstr ""
 
-msgid "Observability"
-msgstr ""
-
-msgid "Observability|Dashboards"
-msgstr ""
-
-msgid "Observability|Data sources"
-msgstr ""
-
-msgid "Observability|Explore telemetry data"
-msgstr ""
-
-msgid "Observability|Manage dashboards"
-msgstr ""
-
 msgid "Oct"
 msgstr ""
 
@@ -32758,6 +32764,9 @@ msgid "Only Project Members"
 msgstr ""
 
 msgid "Only SSH"
+msgstr ""
+
+msgid "Only SSH Certificates"
 msgstr ""
 
 msgid "Only accessible by %{membersPageLinkStart}project members%{membersPageLinkEnd}. Membership must be explicitly granted to each user."
@@ -35259,9 +35268,6 @@ msgid "Please review the updated escalation policies for %{project_link}. It is 
 msgstr ""
 
 msgid "Please review the updated escalation policies for %{project}. It is recommended that you reach out to the current on-call responder to ensure continuity of on-call coverage."
-msgstr ""
-
-msgid "Please select"
 msgstr ""
 
 msgid "Please select a Jira project"
@@ -38740,6 +38746,9 @@ msgid "Read the documentation before applying changes."
 msgstr ""
 
 msgid "Read their documentation."
+msgstr ""
+
+msgid "Readme"
 msgstr ""
 
 msgid "Ready to get started with GitLab? Follow these steps to set up your workspace, plan and commit changes, and deploy your project."
@@ -45489,9 +45498,6 @@ msgstr ""
 msgid "Start Date"
 msgstr ""
 
-msgid "Start GitLab Ultimate free trial"
-msgstr ""
-
 msgid "Start Time"
 msgstr ""
 
@@ -45586,9 +45592,6 @@ msgid "Starts: %{startsAt}"
 msgstr ""
 
 msgid "State your message to activate"
-msgstr ""
-
-msgid "State/Province"
 msgstr ""
 
 msgid "State/Province/City"
@@ -45781,9 +45784,6 @@ msgid "Storage:"
 msgstr ""
 
 msgid "StorageSize|Unknown"
-msgstr ""
-
-msgid "Store your files, plan your work, collaborate on code, and more."
 msgstr ""
 
 msgid "Strikethrough (%{modifierKey}%{shiftKey}X)"
@@ -47991,6 +47991,9 @@ msgstr ""
 msgid "There was a problem handling the pipeline data."
 msgstr ""
 
+msgid "There was a problem loading this project's readme content."
+msgstr ""
+
 msgid "There was a problem sending the confirmation email"
 msgstr ""
 
@@ -49258,9 +49261,6 @@ msgstr ""
 msgid "To access this domain create a new DNS record"
 msgstr ""
 
-msgid "To activate your trial, we need additional details from you."
-msgstr ""
-
 msgid "To add a custom suffix, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
@@ -49268,9 +49268,6 @@ msgid "To add the entry manually, provide the following details to the applicati
 msgstr ""
 
 msgid "To approve this merge request, please enter your password. This project requires all approvals to be authenticated."
-msgstr ""
-
-msgid "To complete registration, we need additional details from you."
 msgstr ""
 
 msgid "To connect GitHub repositories, you can use a %{personal_access_token_link}. When you create your Personal Access Token, you will need to select the %{code_open}repo%{code_close} scope, so we can display a list of your public and private repositories which are available to connect."
@@ -49489,6 +49486,9 @@ msgid "Todos|Could not merge"
 msgstr ""
 
 msgid "Todos|Design"
+msgstr ""
+
+msgid "Todos|Do you want to remove the filters?"
 msgstr ""
 
 msgid "Todos|Due %{due_date}"
@@ -49994,6 +49994,15 @@ msgstr ""
 msgid "Trending"
 msgstr ""
 
+msgid "TrialRegistration|Start GitLab Ultimate free trial"
+msgstr ""
+
+msgid "TrialRegistration|To complete registration, we need additional details from you."
+msgstr ""
+
+msgid "TrialRegistration|Your GitLab Ultimate free trial lasts for 30 days. After this period, you can maintain a GitLab Free account forever or upgrade to a paid plan."
+msgstr ""
+
 msgid "Trials|%{planName} Trial"
 msgstr ""
 
@@ -50033,6 +50042,15 @@ msgid "Trial|Allowed characters: +, 0-9, -, and spaces."
 msgstr ""
 
 msgid "Trial|Continue"
+msgstr ""
+
+msgid "Trial|Please select"
+msgstr ""
+
+msgid "Trial|State/Province"
+msgstr ""
+
+msgid "Trial|To activate your trial, we need additional details from you."
 msgstr ""
 
 msgid "Trial|Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial."
@@ -50099,9 +50117,6 @@ msgid "Try again"
 msgstr ""
 
 msgid "Try again?"
-msgstr ""
-
-msgid "Try all GitLab features for free for 30 days. No credit card required."
 msgstr ""
 
 msgid "Try all GitLab has to offer for 30 days."
@@ -50396,6 +50411,9 @@ msgid "Unauthenticated web rate limit period in seconds"
 msgstr ""
 
 msgid "Unauthorized to access the cluster agent in this project"
+msgstr ""
+
+msgid "Unauthorized to create a package protection rule"
 msgstr ""
 
 msgid "Unauthorized to create an environment"
@@ -54467,6 +54485,9 @@ msgstr ""
 msgid "You cannot set yourself to awaiting"
 msgstr ""
 
+msgid "You cannot verify %{value} because it is a popular public email domain."
+msgstr ""
+
 msgid "You cannot write to a read-only secondary GitLab Geo instance. Please use %{link_to_primary_node} instead."
 msgstr ""
 
@@ -54930,9 +54951,6 @@ msgstr ""
 msgid "Your GPG keys"
 msgstr ""
 
-msgid "Your GitLab Ultimate free trial lasts for 30 days. After this period, you can maintain a GitLab Free account forever or upgrade to a paid plan."
-msgstr ""
-
 msgid "Your GitLab account has been locked due to an excessive number of unsuccessful sign in attempts. You can wait for your account to automatically unlock in %{duration} or you can click the link below to unlock now."
 msgstr ""
 
@@ -55143,6 +55161,9 @@ msgid "Your password"
 msgstr ""
 
 msgid "Your password reset token has expired."
+msgstr ""
+
+msgid "Your personal access token has been revoked"
 msgstr ""
 
 msgid "Your personal access tokens have expired"

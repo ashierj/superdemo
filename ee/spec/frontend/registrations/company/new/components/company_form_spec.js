@@ -1,22 +1,17 @@
-import { GlButton, GlForm, GlFormText, GlToggle } from '@gitlab/ui';
-import { nextTick } from 'vue';
-import RegistrationForm from 'ee/registrations/components/company_form.vue';
+import { GlButton, GlForm, GlFormText } from '@gitlab/ui';
+import CompanyForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { mockTracking } from 'helpers/tracking_helper';
-import {
-  TRIAL_FORM_SUBMIT_TEXT,
-  AUTOMATIC_TRIAL_DESCRIPTION,
-  AUTOMATIC_TRIAL_FORM_SUBMIT_TEXT,
-} from 'ee/trials/constants';
-import { stubExperiments } from 'helpers/experimentation_helper';
+import { trackCompanyForm } from '~/google_tag_manager';
 
 const SUBMIT_PATH = '_submit_path_';
 
-describe('RegistrationForm', () => {
+jest.mock('~/google_tag_manager');
+
+describe('CompanyForm', () => {
   let wrapper;
 
-  const createComponent = ({ mountFunction = shallowMountExtended, propsData } = {}) => {
-    return mountFunction(RegistrationForm, {
+  const createComponent = (propsData = {}) => {
+    return shallowMountExtended(CompanyForm, {
       provide: {
         submitPath: SUBMIT_PATH,
         user: {
@@ -31,162 +26,90 @@ describe('RegistrationForm', () => {
   };
 
   const findDescription = () => wrapper.findComponent(GlFormText);
-  const findButton = () => wrapper.findComponent(GlButton);
+  const findSubmitButton = () => wrapper.findComponent(GlButton);
   const findForm = () => wrapper.findComponent(GlForm);
   const findFormInput = (testId) => wrapper.findByTestId(testId);
-  const findToggle = () => wrapper.findComponent(GlToggle);
-  const findAutomaticTrialDescriptionText = () =>
-    wrapper.findByTestId('automatic_trial_description_text');
+  const findFooterDescriptionText = () => wrapper.findByTestId('footer_description_text');
 
-  describe('when trial is true', () => {
+  describe('rendering', () => {
     beforeEach(() => {
-      wrapper = createComponent({ propsData: { trial: true } });
+      wrapper = createComponent();
     });
 
-    it('sets the trial value to be true', () => {
-      expect(wrapper.props().trial).toBe(true);
-    });
-
-    it('hides trial toggle', () => {
-      expect(findToggle()).not.toBeVisible();
+    it.each`
+      testid
+      ${'first_name'}
+      ${'last_name'}
+      ${'company_name'}
+      ${'company_size'}
+      ${'country'}
+      ${'phone_number'}
+      ${'website_url'}
+    `('has the correct form input in the form content', ({ testid }) => {
+      expect(findFormInput(testid).exists()).toBe(true);
     });
   });
 
-  describe('when trial is false', () => {
+  describe('when trial prop true', () => {
     beforeEach(() => {
-      wrapper = createComponent({ propsData: { trial: false } });
+      wrapper = createComponent({ trial: true });
     });
 
-    describe('rendering', () => {
-      it.each`
-        trialBool | descriptionText
-        ${true}   | ${'To activate your trial, we need additional details from you.'}
-        ${false}  | ${'To complete registration, we need additional details from you.'}
-      `('displays the correct page description text', async ({ trialBool, descriptionText }) => {
-        wrapper.setProps({ trial: trialBool });
-        await nextTick();
-
-        expect(findDescription().text()).toContain(descriptionText);
-      });
-
-      it('has the "Continue" text on the submit button', () => {
-        expect(findButton().text()).toBe(TRIAL_FORM_SUBMIT_TEXT);
-      });
-
-      it('trial value should be set to false', () => {
-        expect(wrapper.props().trial).toBe(false);
-        expect(findToggle().props('value')).toBe(false);
-      });
-
-      it.each`
-        testid
-        ${'first_name'}
-        ${'last_name'}
-        ${'company_name'}
-        ${'company_size'}
-        ${'country'}
-        ${'phone_number'}
-        ${'website_url'}
-        ${'trial_onboarding_flow'}
-      `('has the correct form input in the form content', ({ testid }) => {
-        expect(findFormInput(testid).exists()).toBe(true);
-      });
+    it('displays correct description text', () => {
+      expect(findDescription().text()).toBe(
+        'To activate your trial, we need additional details from you.',
+      );
     });
 
-    describe('submitting', () => {
-      it('submits the form when button is clicked', () => {
-        expect(findButton().attributes('type')).toBe('submit');
-      });
-
-      it('displays form with correct action', () => {
-        expect(findForm().attributes('action')).toBe(SUBMIT_PATH);
-      });
+    it('displays correct text on submit button', () => {
+      expect(findSubmitButton().text()).toBe('Continue');
     });
 
-    describe('with snowplow tracking', () => {
-      it('tracks trial toggle is enabled', () => {
-        const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-
-        findToggle().vm.$emit('change', true);
-
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_trial_toggle', {
-          label: 'ON',
-        });
-      });
-
-      it('tracks trial toggle is disabled', () => {
-        const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-
-        findToggle().vm.$emit('change', false);
-
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_trial_toggle', {
-          label: 'OFF',
-        });
-      });
+    it('displays correct footer text', () => {
+      expect(findFooterDescriptionText().exists()).toBe(false);
     });
   });
 
-  describe('when automatic_trial_registration experiment is control', () => {
+  describe('when trial prop false', () => {
     beforeEach(() => {
-      wrapper = createComponent({ propsData: { automaticTrial: false } });
-      stubExperiments({ automatic_trial_registration: 'control' });
+      wrapper = createComponent({ trial: false });
     });
 
-    const trackingExperimentContext = {
-      data: {
-        experiment: 'automatic_trial_registration',
-        variant: 'control',
-      },
-      schema: 'iglu:com.gitlab/gitlab_experiment/jsonschema/1-0-0',
-    };
-
-    it('shows trial toggle', () => {
-      expect(findToggle().isVisible()).toBe(true);
+    it('displays correct description text', () => {
+      expect(findDescription().text()).toBe(
+        'To complete registration, we need additional details from you.',
+      );
     });
 
-    it('does not display automaticTrialDescription text', () => {
-      expect(findAutomaticTrialDescriptionText().exists()).toBe(false);
+    it('displays correct text on submit button', () => {
+      expect(findSubmitButton().text()).toBe('Start GitLab Ultimate free trial');
     });
 
-    it('tracks trial toggle is enabled with experiment context', () => {
-      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-
-      findToggle().vm.$emit('change', true);
-
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_trial_toggle', {
-        label: 'ON',
-        context: trackingExperimentContext,
-      });
-    });
-
-    it('tracks trial toggle is disabled with experiment context', () => {
-      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-
-      findToggle().vm.$emit('change', false);
-
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_trial_toggle', {
-        label: 'OFF',
-        context: trackingExperimentContext,
-      });
+    it('displays correct footer text', () => {
+      expect(findFooterDescriptionText().exists()).toBe(true);
+      expect(findFooterDescriptionText().text()).toBe(
+        'Your GitLab Ultimate free trial lasts for 30 days. After this period, you can maintain a GitLab Free account forever or upgrade to a paid plan.',
+      );
     });
   });
 
-  describe('when automatic_trial_registration experiment is candidate', () => {
+  describe('submitting', () => {
     beforeEach(() => {
-      wrapper = createComponent({ propsData: { automaticTrial: true } });
+      wrapper = createComponent();
     });
 
-    it('hides trial toggle', () => {
-      expect(findToggle().isVisible()).toBe(false);
+    it('submits the form when button is clicked', () => {
+      expect(findSubmitButton().attributes('type')).toBe('submit');
     });
 
-    it('displays automaticTrialFormSubmitText on submit button', () => {
-      expect(findButton().text()).toBe(AUTOMATIC_TRIAL_FORM_SUBMIT_TEXT);
+    it('displays form with correct action', () => {
+      expect(findForm().attributes('action')).toBe(SUBMIT_PATH);
     });
 
-    it('displays automaticTrialDescription text', () => {
-      expect(findAutomaticTrialDescriptionText().exists()).toBe(true);
-      expect(findAutomaticTrialDescriptionText().text()).toBe(AUTOMATIC_TRIAL_DESCRIPTION);
+    it('tracks form submission', () => {
+      findForm().vm.$emit('submit');
+
+      expect(trackCompanyForm).toHaveBeenCalledWith('ultimate_trial');
     });
   });
 });

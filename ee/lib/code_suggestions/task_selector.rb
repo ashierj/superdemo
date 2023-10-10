@@ -36,7 +36,7 @@ module CodeSuggestions
 
       CodeSuggestions::Tasks::CodeGeneration::FromComment.new(
         params: params.merge(
-          prefix: result[:prefix]&.chomp || prefix,
+          prefix: result[:prefix]&.chomp! || prefix,
           instruction: result[:instruction]
         ),
         unsafe_passthrough_params: unsafe_passthrough_params

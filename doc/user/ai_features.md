@@ -12,19 +12,19 @@ GitLab is creating AI-assisted features across our DevSecOps platform. These fea
 | Feature | Purpose | Large Language Model | Current availability | Maturity |
 |-|-|-|-|-|
 | [Suggested Reviewers](project/merge_requests/reviews/index.md#gitlab-duo-suggested-reviewers) | Assists in creating faster and higher-quality reviews by automatically suggesting reviewers for your merge request. | GitLab creates a machine learning model for each project, which is used to generate reviewers <br><br> [View the issue](https://gitlab.com/gitlab-org/modelops/applied-ml/applied-ml-updates/-/issues/10) | SaaS only | [Generally Available (GA)](../policy/experiment-beta-support.md#generally-available-ga) |
-| [Code Suggestions](project/repository/code_suggestions/index.md) | Helps you write code more efficiently by viewing code suggestions as you type. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS <br> Self-managed | [Beta](../policy/experiment-beta-support.md#beta) |
-| [Vulnerability summary](application_security/vulnerabilities/index.md#explaining-a-vulnerability) | Helps you remediate vulnerabilities more efficiently, uplevel your skills, and write more secure code. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) <br><br> Anthropic's claude model if degraded performance | SaaS only <br><br> Ultimate tier | [Beta](../policy/experiment-beta-support.md#beta) |
-| [Code explanation](#explain-code-in-the-web-ui-with-code-explanation) | Helps you understand code by explaining it in English language. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only <br><br> Ultimate tier | [Experiment](../policy/experiment-beta-support.md#experiment) |
+| [Code Suggestions](project/repository/code_suggestions/index.md) | Helps you write code more efficiently by viewing code suggestions as you type. | [`code-gecko`](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/code-completion) and [`code-bison`](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/code-generation) | SaaS <br> Self-managed | [Beta](../policy/experiment-beta-support.md#beta) |
+| [Vulnerability summary](application_security/vulnerabilities/index.md#explaining-a-vulnerability) | Helps you remediate vulnerabilities more efficiently, uplevel your skills, and write more secure code. | [`text-bison`](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text) <br><br> Anthropic's claude model if degraded performance | SaaS only <br><br> Ultimate tier | [Beta](../policy/experiment-beta-support.md#beta) |
+| [Code explanation](#explain-code-in-the-web-ui-with-code-explanation) | Helps you understand code by explaining it in English language. | [`codechat-bison`](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/code-chat) | SaaS only <br><br> Ultimate tier | [Experiment](../policy/experiment-beta-support.md#experiment) |
 | [GitLab Duo Chat](#answer-questions-with-gitlab-duo-chat) | Process and generate text and code in a conversational manner. Helps you quickly identify useful information in large volumes of text in issues, epics, code, and GitLab documentation. | Anthropic's claude model <br><br> OpenAI Embeddings | SaaS only <br><br> Ultimate tier | [Experiment](../policy/experiment-beta-support.md#experiment) |
 | [Value stream forecasting](#forecast-deployment-frequency-with-value-stream-forecasting) | Assists you with predicting productivity metrics and identifying anomalies across your software development lifecycle. | Statistical forecasting | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
-| [Discussion summary](#summarize-issue-discussions-with-discussion-summary) | Assists with quickly getting everyone up to speed on lengthy conversations to help ensure you are all on the same page. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
-| [Merge request summary](project/merge_requests/ai_in_merge_requests.md#summarize-merge-request-changes) | Efficiently communicate the impact of your merge request changes. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
-| [Code review summary](project/merge_requests/ai_in_merge_requests.md#summarize-my-merge-request-review) | Helps ease merge request handoff between authors and reviewers and help reviewers efficiently understand suggestions. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
-| [Merge request template population](project/merge_requests/ai_in_merge_requests.md#fill-in-merge-request-templates) | Generate a description for the merge request based on the contents of the template. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
-| [Test generation](project/merge_requests/ai_in_merge_requests.md#generate-suggested-tests-in-merge-requests) | Automates repetitive tasks and helps catch bugs early. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
+| [Discussion summary](#summarize-issue-discussions-with-discussion-summary) | Assists with quickly getting everyone up to speed on lengthy conversations to help ensure you are all on the same page. | OpenAI's GPT-3 | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
+| [Merge request summary](project/merge_requests/ai_in_merge_requests.md#summarize-merge-request-changes) | Efficiently communicate the impact of your merge request changes. | [`text-bison`](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
+| [Code review summary](project/merge_requests/ai_in_merge_requests.md#summarize-my-merge-request-review) | Helps ease merge request handoff between authors and reviewers and help reviewers efficiently understand suggestions. | [`text-bison`](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
+| [Merge request template population](project/merge_requests/ai_in_merge_requests.md#fill-in-merge-request-templates) | Generate a description for the merge request based on the contents of the template. | [`text-bison`](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
+| [Test generation](project/merge_requests/ai_in_merge_requests.md#generate-suggested-tests-in-merge-requests) | Automates repetitive tasks and helps catch bugs early. | [`text-bison`](https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
 | [Git suggestions](https://gitlab.com/gitlab-org/gitlab/-/issues/409636) | Helps you discover or recall Git commands when and where you need them. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
 | [Root cause analysis](#root-cause-analysis) | Assists you in determining the root cause for a pipeline failure and failed CI/CD build. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only <br><br> Ultimate tier | [Experiment](../policy/experiment-beta-support.md#experiment) |
-| [Issue description generation](#summarize-an-issue-with-issue-description-generation) | Generate issue descriptions. | [Google Vertex Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview) | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
+| [Issue description generation](#summarize-an-issue-with-issue-description-generation) | Generate issue descriptions. | OpenAI's GPT-3 | SaaS only | [Experiment](../policy/experiment-beta-support.md#experiment) |
 
 ## Enable AI/ML features
 
@@ -38,7 +38,7 @@ GitLab is creating AI-assisted features across our DevSecOps platform. These fea
   - This setting is available to Ultimate groups on SaaS and can be
     set by a user who has the Owner role in the group.
   - View [how to enable this setting](group/manage.md#enable-third-party-ai-features).
-- Experiment features
+- Experiment and Beta features
   - All features categorized as
     [Experiment features](../policy/experiment-beta-support.md#experiment) or
     [Beta features](../policy/experiment-beta-support.md#beta)
@@ -46,10 +46,10 @@ GitLab is creating AI-assisted features across our DevSecOps platform. These fea
     level. This is in addition to the Third-party AI features setting.
   - Their usage is subject to the
     [Testing Terms of Use](https://about.gitlab.com/handbook/legal/testing-agreement/).
-  - Experiment features are disabled by default.
+  - Experiment and Beta features are disabled by default.
   - This setting is available to Ultimate groups on SaaS and can be set by a user
     who has the Owner role in the group.
-  - View [how to enable this setting](group/manage.md#enable-experiment-features).
+  - View [how to enable this setting](group/manage.md#enable-experiment-and-beta-features).
 - Code Suggestions
   - View [how to enable for self-managed](project/repository/code_suggestions/saas.md#enable-code-suggestions).
   - View [how to enable for SaaS](project/repository/code_suggestions/self_managed.md#enable-code-suggestions-on-self-managed-gitlab).
@@ -66,7 +66,7 @@ To use this feature:
 
 - The parent group of the project must:
   - Enable the [third-party AI features setting](group/manage.md#enable-third-party-ai-features).
-  - Enable the [experiment features setting](group/manage.md#enable-experiment-features).
+  - Enable the [experiment and beta features setting](group/manage.md#enable-experiment-and-beta-features).
 - You must be a member of the project with sufficient permissions to view the repository.
 
 GitLab can help you get up to speed faster if you:
@@ -111,7 +111,7 @@ We cannot guarantee that the large language model produces results that are corr
 To use this feature, at least one group you're a member of must:
 
 - Have the [third-party AI features setting](group/manage.md#enable-third-party-ai-features) enabled.
-- Have the [experiment features setting](group/manage.md#enable-experiment-features) enabled.
+- Have the [experiment and beta features setting](group/manage.md#enable-experiment-and-beta-features) enabled.
 
 You can get AI generated support from GitLab Duo Chat about the following topics:
 
@@ -158,7 +158,7 @@ To use this feature:
 
 - The parent group of the issue must:
   - Enable the [third-party AI features setting](group/manage.md#enable-third-party-ai-features).
-  - Enable the [experiment features setting](group/manage.md#enable-experiment-features).
+  - Enable the [experiment and beta features setting](group/manage.md#enable-experiment-and-beta-features).
 - You must be a member of the project with sufficient permissions to view the issue.
 
 You can generate a summary of discussions on an issue:
@@ -182,7 +182,7 @@ To use this feature:
 
 - The parent group of the project must:
   - Enable the [third-party AI features setting](group/manage.md#enable-third-party-ai-features).
-  - Enable the [experiment features setting](group/manage.md#enable-experiment-features).
+  - Enable the [experiment and beta features setting](group/manage.md#enable-experiment-and-beta-features).
 - You must be a member of the project with sufficient permissions to view the CI/CD analytics.
 
 In CI/CD Analytics, you can view a forecast of deployment frequency:
@@ -208,7 +208,7 @@ To use this feature:
 
 - The parent group of the project must:
   - Enable the [third-party AI features setting](group/manage.md#enable-third-party-ai-features).
-  - Enable the [experiment features setting](group/manage.md#enable-experiment-features).
+  - Enable the [experiment and beta features setting](group/manage.md#enable-experiment-and-beta-features).
 - You must be a member of the project with sufficient permissions to view the CI/CD job.
 
 When the feature is available, the "Root cause analysis" button will appears on
@@ -223,7 +223,7 @@ To use this feature:
 
 - The parent group of the project must:
   - Enable the [third-party AI features setting](group/manage.md#enable-third-party-ai-features).
-  - Enable the [experiment features setting](group/manage.md#enable-experiment-features).
+  - Enable the [experiment and beta features setting](group/manage.md#enable-experiment-and-beta-features).
 - You must be a member of the project with sufficient permissions to view the issue.
 
 You can generate the description for an issue from a short summary.

@@ -47,8 +47,10 @@ module MergeTrains
     end
 
     def merge_from_train_ref?
-      # For now, we only enable this for fast-forward merge trains
-      return false unless project.merge_requests_ff_only_enabled && Feature.enabled?(:fast_forward_merge_trains_support, project)
+      # Although it should be technically safe to merge from any mergeable train
+      # ref, do so for fast-forward and semi-linear merge trains to avoid
+      # disruption to standard merge commit merge trains.
+      return false unless project.ff_merge_must_be_possible? && Feature.enabled?(:fast_forward_merge_trains_support, project)
 
       mergeable_sha_and_message?(merge_train_car)
     end

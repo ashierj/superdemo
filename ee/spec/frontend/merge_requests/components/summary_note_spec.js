@@ -25,7 +25,7 @@ describe('Merge request summary note component', () => {
     createComponent({
       createdAt: 'created-at',
       content: 'AI content',
-      reviewLlmSummaries: [{ content: 'review', createdAt: 'created-at' }],
+      children: [{ content: 'review', createdAt: 'created-at' }],
     });
 
     expect(wrapper.html()).toMatchSnapshot();

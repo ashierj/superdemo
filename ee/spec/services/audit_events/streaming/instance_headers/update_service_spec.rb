@@ -11,7 +11,8 @@ RSpec.describe AuditEvents::Streaming::InstanceHeaders::UpdateService, feature_c
     {
       header: header,
       key: 'new',
-      value: 'new'
+      value: 'new',
+      active: false
     }
   end
 

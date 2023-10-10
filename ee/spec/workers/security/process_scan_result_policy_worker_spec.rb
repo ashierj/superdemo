@@ -144,19 +144,46 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
           Security::ScanResultPolicyRead.exists?(scan_result_policy_read.id)
         end
 
+        def scan_result_policy_violation_exists?(violation)
+          Security::ScanResultPolicyViolation.exists?(violation.id)
+        end
+
         context 'with matching project_id' do
           it 're-creates scan_result_policy_reads' do
             expect { perform }.to change { scan_result_policy_read_exists? }.to(false)
           end
-        end
 
-        context 'with mismatching project_id' do
-          before do
-            scan_result_policy_read.update_attribute(:project_id, create(:project).id)
+          context 'with scan_result_policy_violations' do
+            let!(:scan_result_policy_violation) do
+              create(:scan_result_policy_violation,
+                project: project,
+                merge_request: create(:merge_request, source_project: project, target_project: project),
+                scan_result_policy_read: scan_result_policy_read)
+            end
+
+            it 'deletes violations' do
+              expect { perform }.to change {
+                                      scan_result_policy_violation_exists?(scan_result_policy_violation)
+                                    }.to(false)
+            end
           end
 
-          it 'does not delete scan_result_policy_reads' do
-            expect { perform }.not_to change { scan_result_policy_read_exists? }.from(true)
+          context 'with other scan_result_policy_violations' do
+            let_it_be(:other_project) { create(:project) }
+
+            let!(:other_scan_result_policy_violation) do
+              create(:scan_result_policy_violation,
+                project: other_project,
+                merge_request: create(:merge_request, source_project: other_project,
+                  target_project: other_project),
+                scan_result_policy_read: create(:scan_result_policy_read, project: other_project))
+            end
+
+            it "does not delete other projects' violations" do
+              expect { perform }.not_to change {
+                                          scan_result_policy_violation_exists?(other_scan_result_policy_violation)
+                                        }
+            end
           end
         end
       end

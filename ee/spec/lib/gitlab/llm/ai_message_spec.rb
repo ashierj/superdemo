@@ -17,6 +17,7 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       client_subscription_id: 'client_subscription_id',
       user: build_stubbed(:user),
       resource: build_stubbed(:project),
+      chunk_id: 1,
       type: 'tool'
     }
   end
@@ -76,6 +77,30 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
   describe '#to_h' do
     it 'returns hash with all attributes' do
       expect(subject.to_h).to eq(data.stringify_keys)
+    end
+  end
+
+  describe 'role predicates' do
+    context 'when role is user' do
+      it { is_expected.to be_user }
+      it { is_expected.not_to be_assistant }
+      it { is_expected.not_to be_system }
+    end
+
+    context 'when role is assistant' do
+      let(:data) { super().merge(role: 'assistant') }
+
+      it { is_expected.not_to be_user }
+      it { is_expected.to be_assistant }
+      it { is_expected.not_to be_system }
+    end
+
+    context 'when role is system' do
+      let(:data) { super().merge(role: 'system') }
+
+      it { is_expected.not_to be_user }
+      it { is_expected.not_to be_assistant }
+      it { is_expected.to be_system }
     end
   end
 end

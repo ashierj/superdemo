@@ -313,10 +313,6 @@ module SaasRegistrationHelpers
       ).and_call_original
   end
 
-  def toggle_trial
-    find('[data-testid="trial_onboarding_flow"] button').click
-  end
-
   def expect_to_be_on_projects_dashboard
     expect(page).to have_content 'There are no projects available to be displayed here.'
   end
@@ -399,17 +395,17 @@ module SaasRegistrationHelpers
       ).and_call_original
   end
 
-  def fill_in_company_form(with_last_name: false, trial: true, glm: true, success: true, opt_in_email: false)
+  def fill_in_company_form(with_last_name: false, glm: true, success: true, opt_in_email: false)
     result = if success
                ServiceResponse.success
              else
                ServiceResponse.error(message: '_company_lead_fail_')
              end
 
-    expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
+    expect(GitlabSubscriptions::CreateCompanyLeadService).to receive(:new).with(
       user: user,
-      params: company_params(user, trial: trial, glm: glm, opt_in: opt_in_email)
-    ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: result))
+      params: company_params(user, glm: glm, opt_in: opt_in_email)
+    ).and_return(instance_double(GitlabSubscriptions::CreateCompanyLeadService, execute: result))
 
     fill_in_company_user_last_name if with_last_name
     fill_company_form_fields
@@ -428,7 +424,7 @@ module SaasRegistrationHelpers
     fill_in 'website_url', with: 'https://gitlab.com'
   end
 
-  def company_params(user, opt_in:, trial: true, glm: true)
+  def company_params(user, opt_in:, glm: true)
     base_params = ActionController::Parameters.new(
       company_name: 'Test Company',
       company_size: '1-99',
@@ -438,7 +434,7 @@ module SaasRegistrationHelpers
       country: 'US',
       state: 'FL',
       website_url: 'https://gitlab.com',
-      trial_onboarding_flow: trial.to_s,
+      trial_onboarding_flow: true,
       # these are the passed through params
       role: 'software_developer',
       registration_objective: 'other',
@@ -528,7 +524,8 @@ module SaasRegistrationHelpers
       user,
       group: an_instance_of(Group),
       customer_params: customer_params,
-      subscription_params: subscription_params
+      subscription_params: subscription_params,
+      idempotency_key: nil
     )
 
     # this is an ad-hoc solution to skip the zuora step and allow 'confirm purchase' button to show up
@@ -598,6 +595,7 @@ module SaasRegistrationHelpers
         provider: 'gitlab',
         work_email: user.email,
         uid: user.id,
+        preferred_language: user.preferred_language,
         comment: 'My reason',
         role: 'software_developer',
         jtbd: 'other',

@@ -101,17 +101,6 @@ module CodeSuggestions
       @name = name
     end
 
-    def comment_format
-      language_format = DEFAULT_FORMAT
-
-      LANGUAGE_COMMENT_FORMATS.find do |languages, lang_format|
-        language_format = lang_format if languages.include?(name)
-      end
-
-      language_format
-    end
-    strong_memoize_attr(:comment_format)
-
     def single_line_comment_format
       comment_format[:single_regexp] || comment_format[:single]
     end
@@ -125,5 +114,18 @@ module CodeSuggestions
         line.strip.starts_with?(single_line_comment_format)
       end
     end
+
+    private
+
+    def comment_format
+      language_format = DEFAULT_FORMAT
+
+      LANGUAGE_COMMENT_FORMATS.find do |languages, lang_format|
+        language_format = lang_format if languages.include?(name)
+      end
+
+      language_format
+    end
+    strong_memoize_attr(:comment_format)
   end
 end

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe PagesDomain, feature_category: :pages do
+  subject(:pages_domain) { described_class.new }
+
   describe '#root_group' do
     let(:pages_domain) { create(:pages_domain, project: project) }
 
@@ -40,6 +42,42 @@ RSpec.describe PagesDomain, feature_category: :pages do
             expect(pages_domain.root_group).to eq(root_group)
           end
         end
+      end
+    end
+  end
+
+  describe "validate domain" do
+    subject(:pages_domain) { build(:pages_domain, domain: domain) }
+
+    let(:reserved_domains) { ['example.com'] }
+
+    before do
+      stub_const("Gitlab::Access::ReservedDomains::ALL", reserved_domains)
+    end
+
+    context 'when domain is reserved' do
+      let(:domain) { 'example.com' }
+
+      it 'does not allow domain' do
+        subject.valid?
+        expect(subject.errors.full_messages).to include("Domain You cannot verify #{domain} because it is a popular \
+public email domain.")
+      end
+
+      context 'when the domain format differs from the format in the list' do
+        let(:domain) { 'Example.com' }
+
+        it 'does not allow domain' do
+          subject.valid?
+          expect(subject.errors.full_messages).to include("Domain You cannot verify #{domain} because it is a popular \
+public email domain.")
+        end
+      end
+
+      context 'when domain is not reserved' do
+        let(:domain) { 'gitlab.com' }
+
+        it { is_expected.to be_valid }
       end
     end
   end

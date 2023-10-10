@@ -17,7 +17,7 @@ module EE
       private
 
       def incorrect_approval_password?(merge_request)
-        merge_request.project.require_password_to_approve? &&
+        merge_request.require_password_to_approve? &&
           !::Gitlab::Auth.find_with_user_password(current_user.username, params[:approval_password])
       end
 

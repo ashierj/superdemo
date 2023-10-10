@@ -68,7 +68,7 @@ FactoryBot.define do
     end
 
     trait :license_scanning do
-      name { ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT }
+      sequence(:name) { |n| "#{ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT}-#{n}" }
       rule_type { :report_approver }
       report_type { :license_scanning }
     end
@@ -87,6 +87,7 @@ FactoryBot.define do
     end
 
     trait :any_merge_request do
+      sequence(:name) { |n| "Any MR #{n}" }
       rule_type { :report_approver }
       report_type { :any_merge_request }
     end

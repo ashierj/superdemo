@@ -137,7 +137,9 @@ export default {
         data-testid="workspaces-dropdown-group"
       >
         <template #group-label>
-          <span class="gl-display-flex gl-font-base">{{ $options.i18n.workspacesGroupLabel }}</span>
+          <span class="gl-display-flex gl-font-base gl-line-height-1">{{
+            $options.i18n.workspacesGroupLabel
+          }}</span>
         </template>
         <gl-loading-icon v-if="isLoading" />
         <template v-else>
@@ -166,15 +168,11 @@ export default {
               @updateWorkspace="update(workspace.id, $event)"
             />
           </template>
-          <div
-            v-else
-            class="gl-px-4 gl-py-2 gl-font-base gl-text-left"
-            data-testid="no-workspaces-message"
-          >
-            <p class="gl-mb-0">
+          <div v-else class="gl-px-4 gl-font-base gl-text-left" data-testid="no-workspaces-message">
+            <p class="gl-mb-0 gl-font-sm gl-text-secondary">
               {{ $options.i18n.noWorkspacesMessage }}
             </p>
-            <p v-if="!supportsWorkspaces" class="gl-mb-0 gl-mt-2">
+            <p v-if="!supportsWorkspaces" class="gl-mb-0 gl-mt-2 gl-font-sm gl-text-secondary">
               {{ $options.i18n.noWorkspacesSupportMessage }}
             </p>
           </div>

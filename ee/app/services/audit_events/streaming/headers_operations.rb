@@ -16,8 +16,10 @@ module AuditEvents
         end
       end
 
-      def update_header(header, key, value)
-        if header.update(key: key, value: value)
+      def update_header(header, params)
+        update_params = params.slice(:key, :value, :active).compact
+
+        if header.update(update_params)
           log_update_audit_event(header)
           ServiceResponse.success(payload: { header: header, errors: [] })
         else
@@ -39,18 +41,27 @@ module AuditEvents
       private
 
       def log_update_audit_event(header)
-        return if header.previous_changes.except(:updated_at).empty?
+        changes = header.previous_changes.except(:updated_at)
+        return if changes.empty?
 
-        audit(action: :update, header: header, message: update_audit_message(header))
+        audit(action: :update, header: header, message: update_audit_message(header, changes),
+          additional_details: changes)
       end
 
-      def update_audit_message(header)
-        changes = header.previous_changes.except(:updated_at)
-        if changes.key?(:key)
-          "Updated a custom HTTP header from key #{changes[:key].first} to have a key #{changes[:key].last}."
-        else
-          "Updated a custom HTTP header with key #{header.key} to have a new value."
-        end
+      def update_audit_message(header, changes)
+        message = "Updated a custom HTTP header "
+
+        message += if changes.key?(:key)
+                     "from key #{changes[:key].first} to have a key #{changes[:key].last}"
+                   else
+                     "with key #{header.key}"
+                   end
+
+        message += " to have a new value" if changes.key?(:value)
+        message += " activation status changed to #{changes[:active].last}" if changes.key?(:active)
+        message += "."
+
+        message
       end
     end
   end

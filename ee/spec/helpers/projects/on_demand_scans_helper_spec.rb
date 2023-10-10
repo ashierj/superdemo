@@ -31,7 +31,7 @@ RSpec.describe Projects::OnDemandScansHelper do
       expect(helper.on_demand_scans_data(current_user, project)).to match(
         'project-path' => "foo/bar",
         'new-dast-scan-path' => "/#{project.full_path}/-/on_demand_scans/new",
-        'empty-state-svg-path' => match_asset_path('/assets/illustrations/empty-state/ondemand-scan-empty.svg'),
+        'empty-state-svg-path' => match_asset_path('/assets/illustrations/empty-state/empty-radar-md.svg'),
         'can-edit-on-demand-scans' => "true",
         'project-on-demand-scan-counts-etag' => graphql_etag_project_on_demand_scan_counts_path,
         'on-demand-scan-counts' => {

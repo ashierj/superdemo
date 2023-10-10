@@ -91,8 +91,6 @@ module Gitlab
                   stream_response_handler.execute(
                     response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
                     options: {
-                      cache_response: false,
-                      role: ::Gitlab::Llm::AiMessage::ROLE_ASSISTANT,
                       chunk_id: chunk[:id]
                     }
                   )
@@ -123,7 +121,8 @@ module Gitlab
                 agent_scratchpad: +"",
                 conversation: conversation,
                 prompt_version: prompt_version,
-                current_code: current_code
+                current_code: current_code,
+                self_discoverability_prompt: self_discoverability_prompt
               }
             end
 
@@ -132,7 +131,7 @@ module Gitlab
 
               response_handler.execute(
                 response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
-                options: { cache_response: false, role: ::Gitlab::Llm::AiMessage::ROLE_SYSTEM,
+                options: { role: ::Gitlab::Llm::AiMessage::ROLE_SYSTEM,
                            type: RESPONSE_TYPE_TOOL }
               )
 
@@ -144,12 +143,32 @@ module Gitlab
               stream_response_handler.execute(
                 response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
                 options: {
-                  cache_response: false,
                   role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM,
                   type: RESPONSE_TYPE_TOOL
                 }
               )
             end
+
+            def self_discoverability_prompt
+              return '' unless Feature.enabled?(:ai_self_discover, context.current_user)
+
+              prompt = <<~PROMPT
+                You have access to the following GitLab resources: %<resources>s.
+                At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
+                When there is no available tool, not enough context or resource is not available to accurately answer the question you must tell it to the user using phrase:
+                "The question you are asking requires data that is not available to GitLab Duo Chat. Please share your feedback below.".
+                Avoid asking for more details if you cannot provide an answer anyway.
+                Ask user to leave feedback.
+              PROMPT
+
+              format(prompt, resources: available_resources_names)
+            end
+
+            def available_resources_names
+              tools.map { |tool_class| tool_class::Executor::RESOURCE_NAME.pluralize }
+                   .join(', ')
+            end
+            strong_memoize_attr :available_resources_names
 
             def prompt_version
               PROMPT_TEMPLATE
@@ -181,32 +200,35 @@ module Gitlab
             PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(
                 <<~PROMPT
-                Answer the question as accurate as you can.
+                  Answer the question as accurate as you can.
 
-                You have access to the following tools:
-                %<tools_definitions>s
-                Consider every tool before making a decision.
-                Identifying resource mustn't be the last step.
-                Ensure that your answer is accurate and contain only information directly supported
-                by the information retrieved using provided tools.
+                  You have access only to the following tools:
+                  %<tools_definitions>s
+                  Consider every tool before making a decision.
+                  Identifying resource mustn't be the last step.
+                  Ensure that your answer is accurate and contain only information directly supported
+                  by the information retrieved using provided tools.
 
-                You must always use the following format:
-                Question: the input question you must answer
-                Thought: you should always think about what to do
-                Action: the action to take, should be one tool from this list or an direct answer (then use DirectAnswer as action): [%<tool_names>s]
-                Action Input: the input to the action needs to be provided for every action that uses a tool
-                Observation: the result of the actions. If the Action is DirectAnswer never write an Observation, but remember that you're still #{AGENT_NAME}.
+                  You must always use the following format:
+                  Question: the input question you must answer
+                  Thought: you should always think about what to do
+                  Action: the action to take, should be one tool from this list or an direct answer (then use DirectAnswer as action): [%<tool_names>s]
+                  Action Input: the input to the action needs to be provided for every action that uses a tool
+                  Observation: the result of the actions. If the Action is DirectAnswer never write an Observation, but remember that you're still #{AGENT_NAME}.
 
-                ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
+                  ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
 
-                Thought: I know the final answer.
-                Final Answer: the final answer to the original input question.
+                  Thought: I know the final answer.
+                  Final Answer: the final answer to the original input question.
 
-                When concluding your response, provide the final answer as "Final Answer:" as soon as the answer is recognized.
-                %<current_code>s
-                If no tool is needed, give a final answer with "Action: DirectAnswer" for the Action parameter and skip writing an Observation.
-                Begin!
-              PROMPT
+                  When concluding your response, provide the final answer as "Final Answer:" as soon as the answer is recognized.
+                  %<current_code>s
+                  If no tool is needed, give a final answer with "Action: DirectAnswer" for the Action parameter and skip writing an Observation.
+
+                  %<self_discoverability_prompt>s
+
+                  Begin!
+                PROMPT
               ),
               Utils::Prompt.as_user("Question: %<user_input>s"),
               Utils::Prompt.as_assistant("Assistant: %<agent_scratchpad>s"),

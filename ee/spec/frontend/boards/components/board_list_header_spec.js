@@ -269,7 +269,7 @@ describe('Board List Header Component', () => {
       it.each`
         isEpicBoard | issuableType | totalWeight
         ${true}     | ${'epic'}    | ${epicBoardListQueryResponse().data.epicBoardList.metadata.totalWeight}
-        ${false}    | ${'issue'}   | ${boardListQueryResponse().data.boardList.totalWeight}
+        ${false}    | ${'issue'}   | ${boardListQueryResponse().data.boardList.totalIssueWeight}
       `('isEpicBoard is $isEpicBoard', async ({ isEpicBoard, totalWeight, issuableType }) => {
         createComponent({
           weightFeatureAvailable: true,

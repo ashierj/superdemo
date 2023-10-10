@@ -42,7 +42,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
     let(:workspace_agent_infos) { [] }
 
     it 'updates workspace record and returns proper workspace_rails_info entry' do
-      create(:workspace, agent: agent, user: user)
+      create(:workspace, agent: agent, user: user, force_include_all_resources: false)
       response = subject
       expect(response[:message]).to be_nil
       workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
@@ -103,7 +103,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           agent: agent,
           user: user,
           desired_state: desired_state,
-          actual_state: actual_state
+          actual_state: actual_state,
+          force_include_all_resources: false
         )
       end
 
@@ -117,7 +118,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
             desired_state: desired_state,
             actual_state: actual_state,
             max_hours_before_termination: 24,
-            created_at: 25.hours.ago
+            created_at: 25.hours.ago,
+            force_include_all_resources: false
           )
         end
 
@@ -154,7 +156,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
             agent: agent,
             user: user,
             desired_state: desired_state,
-            actual_state: actual_state
+            actual_state: actual_state,
+            force_include_all_resources: false
           )
         end
 
@@ -190,12 +193,16 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
       # rubocop:disable RSpec/MultipleMemoizedHelpers
       context 'when only some workspaces fail in devfile flattener' do
-        let(:workspace) { create(:workspace, name: "workspace1", agent: agent, user: user) }
-        let(:invalid_devfile_yaml) { read_devfile('example.invalid-extra-field-devfile.yaml') }
+        let(:workspace) do
+          create(:workspace, name: "workspace1", agent: agent, user: user, force_include_all_resources: false)
+        end
+
         let(:workspace2) do
           create(:workspace, devfile: invalid_devfile_yaml, name: "workspace-failing-flatten",
-            agent: agent, user: user)
+            agent: agent, user: user, force_include_all_resources: false)
         end
+
+        let(:invalid_devfile_yaml) { read_devfile('example.invalid-extra-field-devfile.yaml') }
 
         let(:workspace2_agent_info) do
           create_workspace_agent_info_hash(
@@ -506,7 +513,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
       let(:actual_state) { RemoteDevelopment::Workspaces::States::CREATION_REQUESTED }
 
       let_it_be(:unprovisioned_workspace) do
-        create(:workspace, :unprovisioned, agent: agent, user: user, force_include_all_resources: true)
+        create(:workspace, :unprovisioned, agent: agent, user: user)
       end
 
       let(:workspace_agent_infos) { [] }

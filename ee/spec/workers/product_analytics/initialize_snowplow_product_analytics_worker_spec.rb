@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, feature_category: :product_analytics_data_management do
-  let_it_be(:project) { create(:project) }
+  let_it_be_with_reload(:project) { create(:project) }
 
   let(:app_id) { SecureRandom.hex(16) }
 

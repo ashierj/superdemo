@@ -6,7 +6,6 @@ import {
   GITLAB_INTERNAL_EVENT_CATEGORY,
   SERVICE_PING_SCHEMA,
   LOAD_INTERNAL_EVENTS_SELECTOR,
-  USER_CONTEXT_SCHEMA,
 } from '~/tracking/constants';
 import * as utils from '~/tracking/utils';
 import { Tracker } from '~/tracking/tracker';
@@ -32,6 +31,15 @@ describe('InternalEvents', () => {
 
       expect(API.trackInternalEvent).toHaveBeenCalledTimes(1);
       expect(API.trackInternalEvent).toHaveBeenCalledWith(event);
+    });
+
+    it('trackEvent calls trackBrowserSDK with correct arguments', () => {
+      jest.spyOn(InternalEvents, 'trackBrowserSDK').mockImplementation(() => {});
+
+      InternalEvents.trackEvent(event);
+
+      expect(InternalEvents.trackBrowserSDK).toHaveBeenCalledTimes(1);
+      expect(InternalEvents.trackBrowserSDK).toHaveBeenCalledWith(event);
     });
 
     it('trackEvent calls tracking.event functions with correct arguments', () => {
@@ -181,16 +189,6 @@ describe('InternalEvents', () => {
         environment: 'testing',
         key: 'value',
       };
-      window.gl.snowplowStandardContext = {
-        schema: 'iglu:com.gitlab/gitlab_standard',
-        data: {
-          environment: 'testing',
-          key: 'value',
-          google_analytics_id: '',
-          source: 'gitlab-javascript',
-          extra: {},
-        },
-      };
     });
 
     it('should not call setDocumentTitle or page methods when window.glClient is undefined', () => {
@@ -203,33 +201,11 @@ describe('InternalEvents', () => {
     });
 
     it('should call setDocumentTitle and page methods on window.glClient when it is defined', () => {
-      const mockStandardContext = window.gl.snowplowStandardContext;
-      const userContext = {
-        schema: USER_CONTEXT_SCHEMA,
-        data: mockStandardContext?.data,
-      };
-
       InternalEvents.initBrowserSDK();
 
       expect(window.glClient.setDocumentTitle).toHaveBeenCalledWith('GitLab');
       expect(window.glClient.page).toHaveBeenCalledWith({
         title: 'GitLab',
-        context: [userContext],
-      });
-    });
-
-    it('should call page method with combined standard and experiment contexts', () => {
-      const mockStandardContext = window.gl.snowplowStandardContext;
-      const userContext = {
-        schema: USER_CONTEXT_SCHEMA,
-        data: mockStandardContext?.data,
-      };
-
-      InternalEvents.initBrowserSDK();
-
-      expect(window.glClient.page).toHaveBeenCalledWith({
-        title: 'GitLab',
-        context: [userContext],
       });
     });
 
@@ -241,17 +217,32 @@ describe('InternalEvents', () => {
       expect(window.glClient.setDocumentTitle).toHaveBeenCalledWith('GitLab');
       expect(window.glClient.page).toHaveBeenCalledWith({
         title: 'GitLab',
-        context: [
-          {
-            schema: USER_CONTEXT_SCHEMA,
-            data: {
-              google_analytics_id: '',
-              source: 'gitlab-javascript',
-              extra: {},
-            },
-          },
-        ],
       });
+    });
+  });
+
+  describe('trackBrowserSDK', () => {
+    beforeEach(() => {
+      window.glClient = {
+        track: jest.fn(),
+      };
+    });
+
+    it('should not call glClient.track if Tracker is not enabled', () => {
+      Tracker.enabled.mockReturnValue(false);
+
+      InternalEvents.trackBrowserSDK(event);
+
+      expect(window.glClient.track).not.toHaveBeenCalled();
+    });
+
+    it('should call glClient.track with correct arguments if Tracker is enabled', () => {
+      Tracker.enabled.mockReturnValue(true);
+
+      InternalEvents.trackBrowserSDK(event);
+
+      expect(window.glClient.track).toHaveBeenCalledTimes(1);
+      expect(window.glClient.track).toHaveBeenCalledWith(event);
     });
   });
 });

@@ -36,7 +36,7 @@ module Llm
       options[:extra_resource] = ::Llm::ExtraResourceFinder.new(user, options.delete(:referer_url)).execute
       track_snowplow_event(user, ai_action_name, options)
 
-      params = options.extract!(:request_id, :cache_response, :client_subscription_id)
+      params = options.extract!(:request_id, :client_subscription_id)
       logger.debug(message: "Params", params: params)
 
       ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym, params)
@@ -46,8 +46,6 @@ module Llm
       response = ai_completion.execute(user, resource, options)
       update_error_rate(ai_action_name, response)
       update_duration_metric(ai_action_name, ::Gitlab::Metrics::System.monotonic_time - start_time)
-
-      response
     rescue StandardError => err
       update_error_rate(ai_action_name)
 

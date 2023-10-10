@@ -3,6 +3,36 @@
 require 'spec_helper'
 
 RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumables_cost_management do
+  it 'includes EachBatch' do
+    expect(::Namespace::RootStorageStatistics.included_modules).to include(EachBatch)
+  end
+
+  describe 'scopes' do
+    describe '.with_namespace_associations', :saas do
+      subject { ::Namespace::RootStorageStatistics.with_namespace_associations }
+
+      before do
+        create_list(:namespace_with_plan, 10, :with_root_storage_statistics)
+      end
+
+      it 'preloads the namespace and limit associations' do
+        subject
+
+        query = ActiveRecord::QueryRecorder.new { subject.map(&:namespace).map(&:namespace_limit) }
+
+        expect(query.count).to eq(5)
+      end
+
+      it 'preloads the namespace subscription and plan associations' do
+        subject
+
+        query = ActiveRecord::QueryRecorder.new { subject.map(&:namespace).map(&:paid?) }
+
+        expect(query.count).to eq(5)
+      end
+    end
+  end
+
   describe '#recalculate!' do
     let(:root_storage_statistics) { create(:namespace_root_storage_statistics, namespace: namespace) }
 

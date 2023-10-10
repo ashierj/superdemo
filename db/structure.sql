@@ -13677,10 +13677,10 @@ CREATE TABLE ci_namespace_monthly_usages (
     namespace_id bigint NOT NULL,
     date date NOT NULL,
     notification_level smallint DEFAULT 100 NOT NULL,
-    shared_runners_duration integer DEFAULT 0 NOT NULL,
+    shared_runners_duration_convert_to_bigint integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone,
     amount_used numeric(18,4) DEFAULT 0.0 NOT NULL,
-    shared_runners_duration_convert_to_bigint bigint DEFAULT 0 NOT NULL,
+    shared_runners_duration bigint DEFAULT 0 NOT NULL,
     CONSTRAINT ci_namespace_monthly_usages_year_month_constraint CHECK ((date = date_trunc('month'::text, (date)::timestamp with time zone)))
 );
 
@@ -13964,10 +13964,10 @@ CREATE TABLE ci_project_monthly_usages (
     id bigint NOT NULL,
     project_id bigint NOT NULL,
     date date NOT NULL,
-    shared_runners_duration integer DEFAULT 0 NOT NULL,
+    shared_runners_duration_convert_to_bigint integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone,
     amount_used numeric(18,4) DEFAULT 0.0 NOT NULL,
-    shared_runners_duration_convert_to_bigint bigint DEFAULT 0 NOT NULL,
+    shared_runners_duration bigint DEFAULT 0 NOT NULL,
     CONSTRAINT ci_project_monthly_usages_year_month_constraint CHECK ((date = date_trunc('month'::text, (date)::timestamp with time zone)))
 );
 
@@ -22692,6 +22692,7 @@ CREATE TABLE sbom_occurrences (
     component_name text,
     input_file_path text,
     licenses jsonb DEFAULT '[]'::jsonb,
+    vulnerabilities jsonb DEFAULT '[]'::jsonb,
     CONSTRAINT check_3f2d2c7ffc CHECK ((char_length(package_manager) <= 255)),
     CONSTRAINT check_9b29021fa8 CHECK ((char_length(component_name) <= 255)),
     CONSTRAINT check_bd1367d4c1 CHECK ((char_length(input_file_path) <= 255))
@@ -22752,6 +22753,24 @@ CREATE SEQUENCE scan_result_policies_id_seq
     CACHE 1;
 
 ALTER SEQUENCE scan_result_policies_id_seq OWNED BY scan_result_policies.id;
+
+CREATE TABLE scan_result_policy_violations (
+    id bigint NOT NULL,
+    scan_result_policy_id bigint NOT NULL,
+    merge_request_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+CREATE SEQUENCE scan_result_policy_violations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE scan_result_policy_violations_id_seq OWNED BY scan_result_policy_violations.id;
 
 CREATE TABLE schema_migrations (
     version character varying NOT NULL,
@@ -25139,6 +25158,22 @@ CREATE TABLE work_item_progresses (
     last_reminder_sent_at timestamp with time zone
 );
 
+CREATE TABLE work_item_related_link_restrictions (
+    id bigint NOT NULL,
+    source_type_id bigint NOT NULL,
+    target_type_id bigint NOT NULL,
+    link_type smallint DEFAULT 0 NOT NULL
+);
+
+CREATE SEQUENCE work_item_related_link_restrictions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE work_item_related_link_restrictions_id_seq OWNED BY work_item_related_link_restrictions.id;
+
 CREATE TABLE work_item_types (
     id bigint NOT NULL,
     base_type smallint DEFAULT 0 NOT NULL,
@@ -25227,7 +25262,7 @@ CREATE TABLE workspaces (
     personal_access_token_id bigint,
     config_version integer DEFAULT 1 NOT NULL,
     force_full_reconciliation boolean DEFAULT false NOT NULL,
-    force_include_all_resources boolean DEFAULT false NOT NULL,
+    force_include_all_resources boolean DEFAULT true NOT NULL,
     CONSTRAINT check_15543fb0fa CHECK ((char_length(name) <= 64)),
     CONSTRAINT check_157d5f955c CHECK ((char_length(namespace) <= 64)),
     CONSTRAINT check_2b401b0034 CHECK ((char_length(deployment_resource_version) <= 64)),
@@ -26719,6 +26754,8 @@ ALTER TABLE ONLY sbom_sources ALTER COLUMN id SET DEFAULT nextval('sbom_sources_
 
 ALTER TABLE ONLY scan_result_policies ALTER COLUMN id SET DEFAULT nextval('scan_result_policies_id_seq'::regclass);
 
+ALTER TABLE ONLY scan_result_policy_violations ALTER COLUMN id SET DEFAULT nextval('scan_result_policy_violations_id_seq'::regclass);
+
 ALTER TABLE ONLY scim_identities ALTER COLUMN id SET DEFAULT nextval('scim_identities_id_seq'::regclass);
 
 ALTER TABLE ONLY scim_oauth_access_tokens ALTER COLUMN id SET DEFAULT nextval('scim_oauth_access_tokens_id_seq'::regclass);
@@ -26922,6 +26959,8 @@ ALTER TABLE ONLY wiki_repository_states ALTER COLUMN id SET DEFAULT nextval('wik
 ALTER TABLE ONLY work_item_hierarchy_restrictions ALTER COLUMN id SET DEFAULT nextval('work_item_hierarchy_restrictions_id_seq'::regclass);
 
 ALTER TABLE ONLY work_item_parent_links ALTER COLUMN id SET DEFAULT nextval('work_item_parent_links_id_seq'::regclass);
+
+ALTER TABLE ONLY work_item_related_link_restrictions ALTER COLUMN id SET DEFAULT nextval('work_item_related_link_restrictions_id_seq'::regclass);
 
 ALTER TABLE ONLY work_item_types ALTER COLUMN id SET DEFAULT nextval('work_item_types_id_seq'::regclass);
 
@@ -29216,6 +29255,9 @@ ALTER TABLE ONLY sbom_sources
 ALTER TABLE ONLY scan_result_policies
     ADD CONSTRAINT scan_result_policies_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY scan_result_policy_violations
+    ADD CONSTRAINT scan_result_policy_violations_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
@@ -29569,6 +29611,9 @@ ALTER TABLE ONLY work_item_parent_links
 
 ALTER TABLE ONLY work_item_progresses
     ADD CONSTRAINT work_item_progresses_pkey PRIMARY KEY (issue_id);
+
+ALTER TABLE ONLY work_item_related_link_restrictions
+    ADD CONSTRAINT work_item_related_link_restrictions_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY work_item_types
     ADD CONSTRAINT work_item_types_pkey PRIMARY KEY (id);
@@ -33967,6 +34012,12 @@ CREATE UNIQUE INDEX index_scan_result_policies_on_position_in_configuration ON s
 
 CREATE INDEX index_scan_result_policies_on_project_id ON scan_result_policies USING btree (project_id);
 
+CREATE INDEX index_scan_result_policy_violations_on_merge_request_id ON scan_result_policy_violations USING btree (merge_request_id);
+
+CREATE UNIQUE INDEX index_scan_result_policy_violations_on_policy_and_merge_request ON scan_result_policy_violations USING btree (scan_result_policy_id, merge_request_id);
+
+CREATE INDEX index_scan_result_policy_violations_on_project_id ON scan_result_policy_violations USING btree (project_id);
+
 CREATE INDEX index_scim_identities_on_group_id ON scim_identities USING btree (group_id);
 
 CREATE UNIQUE INDEX index_scim_identities_on_lower_extern_uid_and_group_id ON scim_identities USING btree (lower((extern_uid)::text), group_id);
@@ -34641,9 +34692,13 @@ CREATE UNIQUE INDEX index_work_item_hierarchy_restrictions_on_parent_and_child O
 
 CREATE INDEX index_work_item_hierarchy_restrictions_on_parent_type_id ON work_item_hierarchy_restrictions USING btree (parent_type_id);
 
+CREATE UNIQUE INDEX index_work_item_link_restrictions_on_source_link_type_target ON work_item_related_link_restrictions USING btree (source_type_id, link_type, target_type_id);
+
 CREATE UNIQUE INDEX index_work_item_parent_links_on_work_item_id ON work_item_parent_links USING btree (work_item_id);
 
 CREATE INDEX index_work_item_parent_links_on_work_item_parent_id ON work_item_parent_links USING btree (work_item_parent_id);
+
+CREATE INDEX index_work_item_related_link_restrictions_on_target_type_id ON work_item_related_link_restrictions USING btree (target_type_id);
 
 CREATE INDEX index_work_item_types_on_base_type_and_id ON work_item_types USING btree (base_type, id);
 
@@ -36684,6 +36739,9 @@ ALTER TABLE ONLY internal_ids
 ALTER TABLE ONLY incident_management_timeline_events
     ADD CONSTRAINT fk_17a5fafbd4 FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY scan_result_policy_violations
+    ADD CONSTRAINT fk_17ce579abf FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY incident_management_timeline_events
     ADD CONSTRAINT fk_1800597ef9 FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
 
@@ -36709,7 +36767,7 @@ ALTER TABLE ONLY vulnerabilities
     ADD CONSTRAINT fk_1d37cddf91 FOREIGN KEY (epic_id) REFERENCES epics(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY ci_sources_pipelines
-    ADD CONSTRAINT fk_1df371767f FOREIGN KEY (source_pipeline_id_convert_to_bigint) REFERENCES ci_pipelines(id) ON DELETE CASCADE NOT VALID;
+    ADD CONSTRAINT fk_1df371767f FOREIGN KEY (source_pipeline_id_convert_to_bigint) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT fk_1e9a074a35 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -37065,6 +37123,9 @@ ALTER TABLE ONLY notes
 ALTER TABLE ONLY oauth_openid_requests
     ADD CONSTRAINT fk_77114b3b09 FOREIGN KEY (access_grant_id) REFERENCES oauth_access_grants(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY scan_result_policy_violations
+    ADD CONSTRAINT fk_77251168f1 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY agent_user_access_project_authorizations
     ADD CONSTRAINT fk_78034b05d8 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -37402,7 +37463,7 @@ ALTER TABLE ONLY packages_packages
     ADD CONSTRAINT fk_c188f0dba4 FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY ci_sources_pipelines
-    ADD CONSTRAINT fk_c1b5dc6b6f FOREIGN KEY (pipeline_id_convert_to_bigint) REFERENCES ci_pipelines(id) ON DELETE CASCADE NOT VALID;
+    ADD CONSTRAINT fk_c1b5dc6b6f FOREIGN KEY (pipeline_id_convert_to_bigint) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY sbom_occurrences
     ADD CONSTRAINT fk_c2a5562923 FOREIGN KEY (source_id) REFERENCES sbom_sources(id) ON DELETE CASCADE;
@@ -37646,6 +37707,9 @@ ALTER TABLE ONLY status_check_responses
 
 ALTER TABLE ONLY design_management_designs_versions
     ADD CONSTRAINT fk_f4d25ba00c FOREIGN KEY (version_id) REFERENCES design_management_versions(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY scan_result_policy_violations
+    ADD CONSTRAINT fk_f53706dbdd FOREIGN KEY (scan_result_policy_id) REFERENCES scan_result_policies(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY analytics_devops_adoption_segments
     ADD CONSTRAINT fk_f5aa768998 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -38174,6 +38238,9 @@ ALTER TABLE ONLY merge_request_assignees
 
 ALTER TABLE ONLY packages_dependency_links
     ADD CONSTRAINT fk_rails_4437bf4070 FOREIGN KEY (dependency_id) REFERENCES packages_dependencies(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY work_item_related_link_restrictions
+    ADD CONSTRAINT fk_rails_4513f0061c FOREIGN KEY (target_type_id) REFERENCES work_item_types(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY project_auto_devops
     ADD CONSTRAINT fk_rails_45436b12b2 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -38924,6 +38991,9 @@ ALTER TABLE ONLY pool_repositories
 
 ALTER TABLE ONLY vulnerability_statistics
     ADD CONSTRAINT fk_rails_af61a7df4c FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY work_item_related_link_restrictions
+    ADD CONSTRAINT fk_rails_b013a0fa65 FOREIGN KEY (source_type_id) REFERENCES work_item_types(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY resource_label_events
     ADD CONSTRAINT fk_rails_b126799f57 FOREIGN KEY (label_id) REFERENCES labels(id) ON DELETE SET NULL;

@@ -195,7 +195,7 @@ gem 'seed-fu', '~> 2.3.7' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'elasticsearch-model', '~> 7.2' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'elasticsearch-rails', '~> 7.2', require: 'elasticsearch/rails/instrumentation' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'elasticsearch-api',   '7.13.3' # rubocop:todo Gemfile/MissingFeatureCategory
-gem 'aws-sdk-core', '~> 3.185.0' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'aws-sdk-core', '~> 3.185.1' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'aws-sdk-cloudformation', '~> 1' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'aws-sdk-s3', '~> 1.136.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'faraday_middleware-aws-sigv4', '~>0.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -232,7 +232,7 @@ gem 'rack', '~> 2.2.8' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'rack-timeout', '~> 0.6.3', require: 'rack/timeout/base' # rubocop:todo Gemfile/MissingFeatureCategory
 
 group :puma do
-  gem 'puma', '~> 6.3', '>= 6.3.1', require: false # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'puma', '~> 6.4', require: false # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'sd_notify', '~> 0.1.0', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 end
 
@@ -291,9 +291,6 @@ gem 'atlassian-jwt', '~> 0.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Slack integration
 gem 'slack-messenger', '~> 2.3.4' # rubocop:todo Gemfile/MissingFeatureCategory
-
-# Hangouts Chat integration
-gem 'hangouts-chat', '~> 0.0.5', require: 'hangouts_chat' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # FogBugz integration
 gem 'ruby-fogbugz', '~> 0.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -383,7 +380,7 @@ gem 'snowplow-tracker', '~> 0.8.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Metrics
 gem 'webrick', '~> 1.8.1', require: false # rubocop:todo Gemfile/MissingFeatureCategory
-gem 'prometheus-client-mmap', '~> 0.28', require: 'prometheus/client' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'prometheus-client-mmap', '~> 0.28', '>= 0.28.1', require: 'prometheus/client' # rubocop:todo Gemfile/MissingFeatureCategory
 
 gem 'warning', '~> 1.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
@@ -405,7 +402,7 @@ end
 
 group :development, :test do
   gem 'deprecation_toolkit', '~> 1.5.1', require: false # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'bullet', '~> 7.0.2' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'bullet', '~> 7.1.1' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'parser', '~> 3.2', '>= 3.2.2.3' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'pry-byebug' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'pry-rails', '~> 0.3.9' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -481,7 +478,7 @@ group :test do
 
   gem 'capybara', '~> 3.39', '>= 3.39.2' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'capybara-screenshot', '~> 1.0.26' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'selenium-webdriver', '= 4.12.0' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'selenium-webdriver', '= 4.13.1' # rubocop:todo Gemfile/MissingFeatureCategory
 
   gem 'graphlyte', '~> 1.0.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
@@ -490,7 +487,7 @@ group :test do
   gem 'webmock', '~> 3.19.1' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'rails-controller-testing' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'concurrent-ruby', '~> 1.1' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'test-prof', '~> 1.2.2' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'test-prof', '~> 1.2.3' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'rspec_junit_formatter' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'guard-rspec' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'axe-core-rspec' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -498,7 +495,7 @@ group :test do
   # Moved in `test` because https://gitlab.com/gitlab-org/gitlab/-/issues/217527
   gem 'derailed_benchmarks', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'gitlab_quality-test_tooling', '~> 1.0.0', require: false # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'gitlab_quality-test_tooling', '~> 1.3.0', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 end
 
 gem 'octokit', '~> 6.0' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -540,7 +537,7 @@ gem 'kas-grpc', '~> 0.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 gem 'grpc', '~> 1.58.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
-gem 'google-protobuf', '~> 3.24', '>= 3.24.3' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'google-protobuf', '~> 3.24', '>= 3.24.4' # rubocop:todo Gemfile/MissingFeatureCategory
 
 gem 'toml-rb', '~> 2.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
 

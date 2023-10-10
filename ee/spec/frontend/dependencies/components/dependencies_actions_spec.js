@@ -33,7 +33,7 @@ describe('DependenciesActions component', () => {
       },
       provide: {
         ...objectBasicProp,
-        glFeatures: { groupLevelLicenses: true, groupLevelDependenciesFiltering: true },
+        glFeatures: { groupLevelDependenciesFiltering: true },
         ...provide,
       },
     });
@@ -96,31 +96,7 @@ describe('DependenciesActions component', () => {
           provide: {
             namespaceType: 'group',
             enableProjectSearch: false,
-            glFeatures: { groupLevelLicenses: true },
           },
-        });
-        store.state[namespace].endpoint = `${TEST_HOST}/dependencies.json`;
-        await nextTick();
-      });
-
-      it('does not dispatch the "license" action', () => {
-        const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
-
-        sortingItems.forEach((item) => {
-          item.vm.$emit('click');
-        });
-
-        expect(store.dispatch.mock.calls).not.toEqual(
-          expect.arrayContaining([[`${namespace}/setSortField`, 'license']]),
-        );
-      });
-    });
-
-    describe('with the "groupLevelLicenses" feature flag disabled', () => {
-      beforeEach(async () => {
-        factory({
-          propsData: { namespace },
-          provide: { namespaceType: 'group', glFeatures: { groupLevelLicenses: false } },
         });
         store.state[namespace].endpoint = `${TEST_HOST}/dependencies.json`;
         await nextTick();

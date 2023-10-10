@@ -18,29 +18,34 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
   describe ".completion" do
     context 'with existing completion' do
       let(:completion_name) { :summarize_review }
+      let(:expected_params) { { action: completion_name, ai_action: completion_name }.merge(params) }
+      let(:params) { {} }
 
       it 'returns completion service' do
         completion_class = ::Gitlab::Llm::VertexAi::Completions::SummarizeReview
         template_class = ::Gitlab::Llm::Templates::SummarizeReview
 
-        expect(completion_class).to receive(:new).with(template_class, { action: :summarize_review }).and_call_original
+        expect(completion_class).to receive(:new).with(template_class, expected_params).and_call_original
 
         completion = described_class.completion(completion_name)
 
         expect(completion).to be_a(completion_class)
       end
 
-      it 'passes parameters to the completion class' do
-        completion_class = ::Gitlab::Llm::Completions::ExplainVulnerability
-        template_class = ::Gitlab::Llm::Templates::ExplainVulnerability
+      context 'with params' do
+        let(:params) { { include_source_code: true } }
+        let(:completion_name) { :explain_vulnerability }
 
-        expect(completion_class).to receive(:new)
-          .with(template_class, { include_source_code: true, action: :explain_vulnerability })
-          .and_call_original
+        it 'passes parameters to the completion class' do
+          completion_class = ::Gitlab::Llm::Completions::ExplainVulnerability
+          template_class = ::Gitlab::Llm::Templates::ExplainVulnerability
 
-        completion = described_class.completion(:explain_vulnerability, { include_source_code: true })
+          expect(completion_class).to receive(:new).with(template_class, expected_params).and_call_original
 
-        expect(completion).to be_a(completion_class)
+          completion = described_class.completion(completion_name, params)
+
+          expect(completion).to be_a(completion_class)
+        end
       end
     end
 

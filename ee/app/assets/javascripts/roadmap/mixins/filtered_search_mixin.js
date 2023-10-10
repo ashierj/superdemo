@@ -360,51 +360,51 @@ export default {
       const orLabels = [];
 
       filters.forEach((filter) => {
+        const { operator, data } = filter.value;
         switch (filter.type) {
           case TOKEN_TYPE_AUTHOR: {
-            if (filter.value.operator === OPERATOR_NOT) {
-              filterParams['not[authorUsername]'] = filter.value.data;
-            } else if (filter.value.operator === OPERATOR_OR) {
-              orAuthors.push(filter.value.data);
+            if (operator === OPERATOR_NOT) {
+              filterParams['not[authorUsername]'] = data;
+            } else if (operator === OPERATOR_OR) {
+              orAuthors.push(data);
             } else {
-              filterParams.authorUsername = filter.value.data;
+              filterParams.authorUsername = data;
             }
             break;
           }
           case TOKEN_TYPE_LABEL:
-            if (filter.value.operator === OPERATOR_NOT) {
-              notLabels.push(filter.value.data);
-            } else if (filter.value.operator === OPERATOR_OR) {
-              orLabels.push(filter.value.data);
+            if (operator === OPERATOR_NOT) {
+              notLabels.push(data);
+            } else if (operator === OPERATOR_OR) {
+              orLabels.push(data);
             } else {
-              labels.push(filter.value.data);
+              labels.push(data);
             }
             break;
           case TOKEN_TYPE_MILESTONE:
-            filterParams.milestoneTitle = filter.value.data;
+            filterParams.milestoneTitle = data;
             break;
           case TOKEN_TYPE_CONFIDENTIAL:
-            filterParams.confidential = filter.value.data;
+            filterParams.confidential = data;
             break;
           case TOKEN_TYPE_MY_REACTION: {
-            const key =
-              filter.value.operator === OPERATOR_NOT ? 'not[myReactionEmoji]' : 'myReactionEmoji';
+            const key = operator === OPERATOR_NOT ? 'not[myReactionEmoji]' : 'myReactionEmoji';
 
-            filterParams[key] = filter.value.data;
+            filterParams[key] = data;
             break;
           }
           case TOKEN_TYPE_EPIC:
-            filterParams.epicIid = filter.value.data;
+            filterParams.epicIid = data;
             break;
           case TOKEN_TYPE_GROUP:
-            filterParams.groupPath = filter.value.data;
+            filterParams.groupPath = data;
             break;
           case TOKEN_TYPE_SEARCH_WITHIN:
-            filterParams.in = filter.value.data;
+            filterParams.in = data;
             break;
           case FILTERED_SEARCH_TERM:
             if (filter.value.data) {
-              filterParams.search = filter.value.data;
+              filterParams.search = data;
             }
             break;
           default:

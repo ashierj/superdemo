@@ -95,36 +95,6 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
     end
   end
 
-  context 'when assigning tasks to be done' do
-    let(:params) do
-      {
-        user_id: project_users.map(&:id).join(','),
-        access_level: Gitlab::Access::DEVELOPER,
-        tasks_to_be_done: %w[ci code],
-        tasks_project_id: project.id,
-        invite_source: '_invite_source_'
-      }
-    end
-
-    context 'when passing many user ids' do
-      it 'creates 2 task issues', :aggregate_failures, :sidekiq_inline do
-        expect(TasksToBeDone::CreateWorker)
-          .to receive(:perform_async)
-          .with(anything, user.id, array_including(*project_users.map(&:id)))
-          .once
-          .and_call_original
-
-        expect { execute_service }.to change { project.issues.reload.count }.by(2)
-
-        expect(project.issues).to all have_attributes(
-          project: project,
-          author: user,
-          assignees: match_array(project_users)
-        )
-      end
-    end
-  end
-
   context 'streaming audit event' do
     let(:group) { root_ancestor }
     let(:params) do

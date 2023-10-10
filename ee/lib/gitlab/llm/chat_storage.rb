@@ -23,11 +23,7 @@ module Gitlab
         @user = user
       end
 
-      def add(payload)
-        message = ChatMessage.new(
-          payload.slice(:id, :request_id, :timestamp, :role, :content, :errors, :extras)
-        )
-
+      def add(message)
         cache_data(dump_message(message))
       end
 

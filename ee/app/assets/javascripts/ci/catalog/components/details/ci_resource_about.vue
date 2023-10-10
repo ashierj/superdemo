@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlLink, GlSkeletonLoader } from '@gitlab/ui';
+import { GlIcon, GlLink } from '@gitlab/ui';
 import { n__, s__, sprintf } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
 
@@ -7,9 +7,16 @@ export default {
   components: {
     GlIcon,
     GlLink,
-    GlSkeletonLoader,
   },
   props: {
+    isLoadingDetails: {
+      type: Boolean,
+      required: true,
+    },
+    isLoadingSharedData: {
+      type: Boolean,
+      required: true,
+    },
     openIssuesCount: {
       required: false,
       type: Number,
@@ -19,14 +26,6 @@ export default {
       required: false,
       type: Number,
       default: 0,
-    },
-    isLoadingDetails: {
-      required: true,
-      type: Boolean,
-    },
-    isLoadingSharedData: {
-      required: true,
-      type: Boolean,
     },
     latestVersion: {
       required: false,
@@ -90,7 +89,6 @@ export default {
     },
   },
   i18n: {
-    title: s__('CiCatalog|About this project'),
     projectLink: s__('CiCatalog|Go to the project'),
     lastRelease: s__('CiCatalog|Last release at %{date}'),
     lastReleaseMissing: s__('CiCatalog|No release available'),
@@ -99,19 +97,24 @@ export default {
 </script>
 
 <template>
-  <div class="gl-mt-5 gl-ml-11">
-    <div class="gl-font-lg gl-font-weight-bold gl-mb-2">{{ $options.i18n.title }}</div>
-    <ul class="gl-list-style-none gl-p-0 gl-display-flex gl-flex-direction-column gl-gap-2">
-      <li v-for="item in projectInfoItems" :key="`${item.icon}`" class="gl-display-flex">
-        <gl-icon class="gl-text-primary gl-mr-3" :name="item.icon" />
-        <gl-skeleton-loader v-if="item.isLoading" :lines="1" :width="160" />
-        <template v-else>
-          <gl-link v-if="item.link" :href="item.link"> {{ item.text }} </gl-link>
-          <span v-else class="gl-text-secondary">
-            {{ item.text }}
-          </span>
-        </template>
-      </li>
-    </ul>
+  <div class="gl-py-2 gl-sm-display-flex gl-gap-5">
+    <span
+      v-for="item in projectInfoItems"
+      :key="`${item.icon}`"
+      class="gl-display-flex gl-align-items-center gl-xs-mb-3"
+    >
+      <gl-icon class="gl-text-primary gl-mr-2" :name="item.icon" />
+      <div
+        v-if="item.isLoading"
+        class="gl-animate-skeleton-loader gl-h-4 gl-rounded-base gl-w-15"
+        data-testid="skeleton-loading-line"
+      ></div>
+      <template v-else>
+        <gl-link v-if="item.link" :href="item.link"> {{ item.text }} </gl-link>
+        <span v-else class="gl-text-secondary">
+          {{ item.text }}
+        </span>
+      </template>
+    </span>
   </div>
 </template>

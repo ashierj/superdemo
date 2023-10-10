@@ -39,33 +39,24 @@ RSpec.describe 'registrations/company/new', feature_category: :onboarding do
     end
   end
 
-  describe 'automatic_trial_registration experiment' do
-    it 'renders the control experience' do
-      stub_experiments(automatic_trial_registration: :control)
-
-      render
-
-      expect_to_see_control
-    end
-
-    it 'renders the candidate experience' do
-      stub_experiments(automatic_trial_registration: :candidate)
-
-      render
-
-      expect(rendered).to have_content('About your company')
-      expect(rendered).to have_content('Invite unlimited colleagues')
-    end
-
+  describe 'when page is rendered' do
     context 'when a user is coming from a trial registration' do
       let(:trial?) { true }
 
-      it 'renders the control experience' do
-        stub_experiments(automatic_trial_registration: true)
-
+      it 'renders correctly' do
         render
 
-        expect_to_see_control
+        expect_to_see_trial_column
+      end
+    end
+
+    context 'when a user is coming from a free registration' do
+      let(:trial?) { false }
+
+      it 'renders correctly' do
+        render
+
+        expect_to_see_registration_column
       end
     end
   end
@@ -76,9 +67,13 @@ RSpec.describe 'registrations/company/new', feature_category: :onboarding do
     allow(view).to receive(:resource_name).and_return(:user)
   end
 
-  def expect_to_see_control
-    expect(rendered).to have_content('About your company')
-    expect(rendered).not_to have_content('Invite unlimited colleagues')
-    expect(rendered).not_to have_content('Used by more than 100,000 organizations from around the globe:')
+  def expect_to_see_trial_column
+    expect(rendered).to have_content(_('About your company'))
+    expect(rendered).to have_selector('[data-testid="trial-registration-column"]')
+  end
+
+  def expect_to_see_registration_column
+    expect(rendered).to have_content(_('About your company'))
+    expect(rendered).to have_selector('[data-testid="trial-reassurances-column"]')
   end
 end

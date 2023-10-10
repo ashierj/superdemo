@@ -40,6 +40,26 @@ module EE
       end
     end
 
+    def user_enterprise_group_text(user)
+      enterprise_group = user.user_detail.enterprise_group
+      return unless enterprise_group
+
+      group_info = link_to enterprise_group.name, admin_group_path(enterprise_group)
+      user_enterprise_group = content_tag :li do
+        concat content_tag(:span, _("Enterprise user of: "), class: "light")
+        concat content_tag(:strong, group_info)
+        gid_text = format(' (%{gid})', gid: enterprise_group.id)
+        concat content_tag(:span, gid_text, class: "light")
+      end
+
+      user_enterprise_associated = content_tag :li do
+        concat content_tag(:span, _("Enterprise user associated at: "), class: "light")
+        concat content_tag(:strong, user.user_detail.enterprise_group_associated_at.to_fs(:medium))
+      end
+
+      user_enterprise_group + user_enterprise_associated
+    end
+
     private
 
     override :preload_project_associations

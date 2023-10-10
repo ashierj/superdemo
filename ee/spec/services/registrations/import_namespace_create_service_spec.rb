@@ -56,31 +56,6 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
         )
       end
 
-      context 'when automatic_trial_registration experiment is enabled', :experiment do
-        let(:service) { described_class.new(user, params) }
-
-        before do
-          stub_experiments(automatic_trial_registration: true)
-        end
-
-        it 'tracks automatic_trial_registration assignment event with group information' do
-          expect(experiment(:automatic_trial_registration)).to track(:assignment, namespace: an_instance_of(Group))
-                                                                 .on_next_instance
-                                                                 .with_context(actor: user)
-
-          expect(service.execute).to be_success
-        end
-
-        it 'does not track automatic_trial_registration assignment event when user is not setting up for company' do
-          user.setup_for_company = false
-
-          allow(service).to receive(:experiment).and_call_original
-          expect(service).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
-
-          expect(service.execute).to be_success
-        end
-      end
-
       it 'does not attempt to create a trial' do
         expect(GitlabSubscriptions::Trials::ApplyTrialWorker).not_to receive(:perform_async)
 
@@ -123,7 +98,7 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
 
     context 'with applying for a trial' do
       let(:extra_params) do
-        { trial_onboarding_flow: 'true', glm_source: 'about.gitlab.com', glm_content: 'content', trial: 'true' }
+        { trial_onboarding_flow: 'true', glm_source: 'about.gitlab.com', glm_content: 'content' }
       end
 
       let(:trial_user_information) do
@@ -151,19 +126,6 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
                                                                    .and_call_original
 
         expect(execute).to be_success
-      end
-
-      context 'when automatic_trial_registration experiment is enabled' do
-        subject(:service) { described_class.new(user, params) }
-
-        it 'does not track experiment assignment event' do
-          stub_experiments(automatic_trial_registration: true)
-
-          allow(service).to receive(:experiment).and_call_original
-          expect(service).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
-
-          expect(service.execute).to be_success
-        end
       end
     end
   end

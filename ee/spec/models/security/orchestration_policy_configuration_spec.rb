@@ -1580,6 +1580,54 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  describe '#delete_policy_violations' do
+    let_it_be(:configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:other_configuration) { create(:security_orchestration_policy_configuration) }
+
+    let_it_be(:project) { configuration.project }
+    let_it_be(:other_project) { other_configuration.project }
+
+    let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+    let_it_be(:other_merge_request) { create(:merge_request, source_project: other_project, target_project: other_project) }
+
+    let_it_be(:scan_result_policy_read) do
+      create(
+        :scan_result_policy_read,
+        security_orchestration_policy_configuration: configuration,
+        project: project)
+    end
+
+    let_it_be(:other_scan_result_policy_read) do
+      create(
+        :scan_result_policy_read,
+        security_orchestration_policy_configuration: other_configuration,
+        project: other_project)
+    end
+
+    let_it_be(:violation) do
+      create(
+        :scan_result_policy_violation,
+        project: project,
+        merge_request: merge_request,
+        scan_result_policy_read: scan_result_policy_read)
+    end
+
+    let_it_be(:other_violation) do
+      create(
+        :scan_result_policy_violation,
+        project: other_project,
+        merge_request: other_merge_request,
+        scan_result_policy_read: other_scan_result_policy_read)
+    end
+
+    it 'deletes project scan_result_policy_reads' do
+      configuration.delete_policy_violations(project)
+
+      expect(project.scan_result_policy_violations.count).to be(0)
+      expect(other_project.scan_result_policy_violations.count).to be(1)
+    end
+  end
+
   describe '#delete_scan_result_policy_reads' do
     let_it_be(:project) { create(:project) }
     let_it_be(:other_project) { create(:project) }

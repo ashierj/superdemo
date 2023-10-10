@@ -31,7 +31,7 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline do
 
   subject { described_class.new(context) }
 
-  describe '#run' do
+  describe '#run', :clean_gitlab_redis_cache do
     before do
       allow(Dir).to receive(:mktmpdir).and_return(tmpdir)
       allow_next_instance_of(BulkImports::FileDownloadService) do |service|

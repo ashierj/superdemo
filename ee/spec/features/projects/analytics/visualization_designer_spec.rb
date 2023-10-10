@@ -59,12 +59,13 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
           .to_return(status: 200, body: query_response_with_data, headers: {})
       end
 
-      it 'renders the measure selection, preview, and visualization selection panels' do
+      it 'renders the measure selection & preview panels and the type selector' do
         visit_page
 
         expect(page).to have_content('What do you want to measure?')
         expect(page).to have_content('Choose a measurement to start')
-        expect(page).to have_content('Visualization Type')
+
+        expect(page).to have_content('Visualization type')
       end
 
       context 'with a measure selected' do
@@ -81,31 +82,32 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
         [
           {
             name: 'LineChart',
-            button_text: 'Line Chart',
+            text: 'Line chart',
             content: 'Snowplow Tracked Events Count'
           },
           {
             name: 'ColumnChart',
-            button_text: 'Column Chart',
+            text: 'Column chart',
             selector: 'dashboard-visualization-column-chart'
           },
           {
             name: 'DataTable',
-            button_text: 'Data Table',
+            text: 'Data table',
             content: 'Count 335'
           },
           {
             name: 'SingleStat',
-            button_text: 'Single Statistic',
+            text: 'Single statistic',
             content: '335'
           }
         ].each do |visualization|
-          context "with #{visualization[:button_text]} visualization selected" do
+          context "with #{visualization[:text]} visualization selected" do
             before do
-              click_button visualization[:button_text]
+              click_button 'Select a visualization type'
+              click_button visualization[:text]
             end
 
-            it "shows the #{visualization[:button_text]} preview" do
+            it "shows the #{visualization[:text]} preview" do
               preview_panel = find('[data-testid="preview-visualization"]')
 
               if visualization[:content].nil?

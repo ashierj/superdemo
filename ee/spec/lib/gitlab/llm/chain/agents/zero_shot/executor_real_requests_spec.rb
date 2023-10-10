@@ -95,6 +95,23 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
     end
 
+    context 'without tool' do
+      let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+
+      where(:input_template, :tools, :answer_match) do
+        'Summarize this Merge Request' | [] | /is not available/
+        'Summarize %<merge_request_identifier>s Merge Request' | [] | /is not available/
+        'Why did this pipeline fail?' | [] | /is not available/
+      end
+
+      with_them do
+        let(:resource) { merge_request }
+        let(:input) { format(input_template, merge_request_identifier: merge_request.to_reference(full: true).to_s) }
+
+        it_behaves_like 'successful prompt processing'
+      end
+    end
+
     context 'with predefined issue', time_travel_to: Time.utc(2023, 8, 11) do
       let_it_be(:due_date) { 3.days.from_now }
       let_it_be(:label) { create(:label, project: project, title: 'ai-enablement') }
@@ -303,10 +320,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           before do
             uuid = SecureRandom.uuid
 
-            history.each do |message|
-              Gitlab::Llm::ChatStorage.new(user).add(
-                { request_id: uuid, role: message[:role], content: message[:content] }
-              )
+            history.each do |message_data|
+              build(:ai_chat_message, message_data.merge(user: user, request_id: uuid)).save!
             end
           end
 

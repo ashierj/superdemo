@@ -52,7 +52,7 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state v-bind="emptyStateProps">
+  <gl-empty-state v-bind="emptyStateProps" :svg-height="144">
     <template #description>
       <gl-sprintf :message="text">
         <template #learnMoreLink="{ content }">

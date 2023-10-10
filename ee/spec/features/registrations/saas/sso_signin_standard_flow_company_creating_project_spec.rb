@@ -15,40 +15,12 @@ RSpec.describe 'Single sign on for signing up through sign in flow for user pick
       ensure_onboarding { expect_to_see_company_form }
 
       fill_in_company_form(glm: false)
-      toggle_trial
-      click_on 'Continue'
+      click_on 'Start GitLab Ultimate free trial'
 
       ensure_onboarding { expect_to_see_group_and_project_creation_form }
 
       fills_in_group_and_project_creation_form
       expect_to_apply_trial(glm: false)
-      click_on 'Create project'
-
-      expect_to_be_in_continuous_onboarding
-
-      click_on 'Ok, let\'s go'
-
-      expect_to_be_in_learn_gitlab
-    end
-  end
-
-  context 'when not opting into a trial' do
-    it 'registers the user and creates a group and project reaching onboarding' do
-      sso_signup_through_signin
-
-      expect_to_see_welcome_form
-
-      fills_in_welcome_form
-      click_on 'Continue'
-
-      expect_to_see_company_form
-
-      fill_in_company_form(trial: false, glm: false)
-      click_on 'Continue'
-
-      expect_to_see_group_and_project_creation_form
-
-      fills_in_group_and_project_creation_form
       click_on 'Create project'
 
       expect_to_be_in_continuous_onboarding

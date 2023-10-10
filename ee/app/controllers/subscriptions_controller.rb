@@ -99,7 +99,8 @@ class SubscriptionsController < ApplicationController
       current_user,
       group: group,
       customer_params: customer_params,
-      subscription_params: subscription_params
+      subscription_params: subscription_params,
+      idempotency_key: params[:idempotency_key]
     ).execute
 
     if response[:success]

@@ -271,6 +271,7 @@ class User < MainClusterwide::ApplicationRecord
   has_many :bulk_imports
 
   has_many :custom_attributes, class_name: 'UserCustomAttribute'
+  has_one  :trusted_with_spam_attribute, -> { UserCustomAttribute.trusted_with_spam }, class_name: 'UserCustomAttribute'
   has_many :callouts, class_name: 'Users::Callout'
   has_many :group_callouts, class_name: 'Users::GroupCallout'
   has_many :project_callouts, class_name: 'Users::ProjectCallout'
@@ -2223,8 +2224,8 @@ class User < MainClusterwide::ApplicationRecord
     }
   end
 
-  def allow_possible_spam?
-    custom_attributes.by_key(UserCustomAttribute::ALLOW_POSSIBLE_SPAM).exists?
+  def trusted?
+    trusted_with_spam_attribute.present?
   end
 
   def namespace_commit_email_for_namespace(namespace)
@@ -2507,14 +2508,6 @@ class User < MainClusterwide::ApplicationRecord
 
   def ci_namespace_mirrors_for_group_members(level)
     search_members = group_members.where('access_level >= ?', level)
-
-    # This reduces searched prefixes to only shortest ones
-    # to avoid querying descendants since they are already covered
-    # by ancestor namespaces. If the FF is not available fallback to
-    # inefficient search: https://gitlab.com/gitlab-org/gitlab/-/issues/336436
-    unless Feature.enabled?(:use_traversal_ids)
-      return Ci::NamespaceMirror.contains_any_of_namespaces(search_members.pluck(:source_id))
-    end
 
     traversal_ids = Group.joins(:all_group_members)
       .merge(search_members)

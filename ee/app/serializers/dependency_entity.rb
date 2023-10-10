@@ -60,7 +60,7 @@ class DependencyEntity < Grape::Entity
   end
 
   def can_read_licenses?
-    (group? && Feature.enabled?(:group_level_licenses, group)) ||
+    (group? && can?(request.user, :read_licenses, group)) ||
       can?(request.user, :read_licenses, request.project)
   end
 

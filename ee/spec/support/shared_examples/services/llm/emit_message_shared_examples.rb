@@ -5,10 +5,11 @@ RSpec.shared_examples 'service emitting message for user prompt' do
     allow(::Llm::CompletionWorker).to receive(:perform_async)
 
     expect(GraphqlTriggers).to receive(:ai_completion_response)
-      .with({ user_id: user.to_global_id, resource_id: resource.to_global_id }, kind_of(Gitlab::Llm::AiMessage))
-
-    expect(GraphqlTriggers).to receive(:ai_completion_response)
-      .with({ user_id: user.to_global_id, ai_action: 'chat' }, kind_of(Gitlab::Llm::AiMessage))
+      .with(an_object_having_attributes(
+        user: user,
+        resource: resource,
+        ai_action: :chat
+      ))
 
     subject.execute
   end

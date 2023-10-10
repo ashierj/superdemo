@@ -7,6 +7,9 @@ module RemoteDevelopment
     include Sortable
     include RemoteDevelopment::Workspaces::States
     include IgnorableColumns
+    include SafelyChangeColumnDefault
+
+    columns_changing_default :force_include_all_resources
 
     MAX_HOURS_BEFORE_TERMINATION_LIMIT = 120
 

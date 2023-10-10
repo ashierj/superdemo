@@ -56,6 +56,10 @@ module Security
         )
       end
 
+      def delete_policy_violations(project)
+        delete_in_batches(project.scan_result_policy_violations)
+      end
+
       def active_scan_result_policies
         scan_result_policies&.select { |config| config[:enabled] }&.first(LIMIT)
       end

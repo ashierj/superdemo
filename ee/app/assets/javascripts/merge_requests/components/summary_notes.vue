@@ -80,8 +80,12 @@ export default {
     },
     notes() {
       return this.mergeRequestDiffs.nodes.reduce((acc, diff) => {
+        const reviewSummaries = diff.reviewLlmSummaries.nodes;
+
         if (diff.diffLlmSummary) {
-          acc.push({ ...diff.diffLlmSummary, reviewLlmSummaries: diff.reviewLlmSummaries.nodes });
+          acc.push({ ...diff.diffLlmSummary, children: reviewSummaries });
+        } else if (reviewSummaries.length) {
+          acc.push(...reviewSummaries);
         }
 
         return acc;
@@ -185,7 +189,6 @@ export default {
             v-for="summary in notes"
             :key="summary.mergeRequestDiffId"
             :summary="summary"
-            type="diff_summary"
             data-testid="summary-note"
           />
           <gl-loading-icon v-if="fetchingMore" />

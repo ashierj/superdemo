@@ -6,7 +6,7 @@ RSpec.describe 'Update an external audit event destination header', feature_cate
   include GraphqlHelpers
 
   let_it_be(:destination) { create(:external_audit_event_destination) }
-  let_it_be(:header) do
+  let_it_be_with_reload(:header) do
     create(:audit_events_streaming_header, key: 'key-1', external_audit_event_destination: destination)
   end
 
@@ -41,6 +41,12 @@ RSpec.describe 'Update an external audit event destination header', feature_cate
     it 'does not update a header value' do
       expect { post_graphql_mutation(mutation, current_user: owner) }.not_to change { header.value }
     end
+
+    it 'does not create any audit event', :aggregate_failures do
+      expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+      expect { post_graphql_mutation(mutation, current_user: owner) }.not_to change { AuditEvent.count }
+    end
   end
 
   context 'when feature is licensed' do
@@ -56,9 +62,37 @@ RSpec.describe 'Update an external audit event destination header', feature_cate
       end
 
       it 'updates the header with the correct attributes', :aggregate_failures do
-        expect { subject }.to change { header.reload.key }.from('key-1').to('new-key')
-                                                          .and change { header.reload.value }.from('bar')
-                                                                                             .to('new-value')
+        expect { subject }
+          .to change { header.reload.key }.from('key-1').to('new-key')
+          .and change { header.reload.value }.from('bar').to('new-value')
+          .and not_change { header.reload.active }
+      end
+
+      context 'when active attribute is also updated' do
+        let(:input) { super().merge(active: false) }
+
+        it 'updates the header with the correct attributes', :aggregate_failures do
+          expect { subject }.to change { header.reload.key }.from('key-1').to('new-key')
+                                                            .and change { header.reload.value }
+                                                                   .from('bar').to('new-value')
+                                                            .and change { header.reload.active }.from(true).to(false)
+        end
+      end
+
+      context 'when only active attribute is updated' do
+        let(:input) do
+          {
+            'headerId': header.to_gid,
+            'active': false
+          }
+        end
+
+        it 'updates the header active value' do
+          expect { subject }
+            .to change { header.reload.active }.from(true).to(false)
+            .and not_change { header.reload.key }
+            .and not_change { header.reload.value }
+        end
       end
 
       context 'when the header attributes are invalid' do

@@ -14,8 +14,7 @@ RSpec.describe 'Company Information', :js, :saas, feature_category: :activation 
       'Number of employees',
       'Country',
       'Telephone number (optional)',
-      'Website (optional)',
-      'GitLab Ultimate trial (optional)'
+      'Website (optional)'
     ]
   end
 
@@ -28,7 +27,7 @@ RSpec.describe 'Company Information', :js, :saas, feature_category: :activation 
     fields.each { |field| expect(page).to have_content(field) }
   end
 
-  context 'with company information to create lead concerns' do
+  context 'with company information to create trial concerns' do
     using RSpec::Parameterized::TableSyntax
 
     let(:extra_params) { {} }
@@ -42,7 +41,7 @@ RSpec.describe 'Company Information', :js, :saas, feature_category: :activation 
         country: 'US',
         state: 'FL',
         website_url: 'https://gitlab.com',
-        trial_onboarding_flow: 'false'
+        trial_onboarding_flow: true
       }.merge(extra_params)
     end
 
@@ -59,14 +58,14 @@ RSpec.describe 'Company Information', :js, :saas, feature_category: :activation 
         fill_company_form_fields
 
         expect_next_instance_of(
-          GitlabSubscriptions::CreateTrialOrLeadService,
+          GitlabSubscriptions::CreateCompanyLeadService,
           user: user,
           params: ActionController::Parameters.new(params).permit!
         ) do |service|
           expect(service).to receive(:execute).and_return(service_response)
         end
 
-        click_button 'Continue'
+        click_button 'Start GitLab Ultimate free trial'
 
         expect(page).to have_current_path(current_path, ignore_query: true)
         expect(page).to have_content(page_content)
@@ -80,7 +79,7 @@ RSpec.describe 'Company Information', :js, :saas, feature_category: :activation 
         fill_in 'first_name', with: ''
         fill_in 'last_name', with: ''
 
-        click_button 'Continue'
+        click_button 'Start GitLab Ultimate free trial'
 
         expect(page).to have_native_text_validation_message('first_name')
         expect(page).to have_native_text_validation_message('last_name')
@@ -90,14 +89,14 @@ RSpec.describe 'Company Information', :js, :saas, feature_category: :activation 
         fill_company_form_fields
 
         expect_next_instance_of(
-          GitlabSubscriptions::CreateTrialOrLeadService,
+          GitlabSubscriptions::CreateCompanyLeadService,
           user: user,
           params: ActionController::Parameters.new(params).permit!
         ) do |service|
           expect(service).to receive(:execute).and_return(ServiceResponse.success)
         end
 
-        click_button 'Continue'
+        click_button 'Start GitLab Ultimate free trial'
 
         expect(page).to have_current_path(new_users_sign_up_group_path, ignore_query: true)
         expect(page).to have_content('Create or import your first project')

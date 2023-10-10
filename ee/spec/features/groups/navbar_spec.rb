@@ -16,7 +16,6 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
     before do
       group.add_maintainer(user)
       stub_group_wikis(false)
-      stub_feature_flags(observability_group_tab: false)
       sign_in(user)
 
       insert_package_nav(_('Kubernetes'))
@@ -189,25 +188,12 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
 
       it_behaves_like 'verified navigation bar'
     end
-
-    context 'when observability tab is enabled' do
-      before do
-        stub_feature_flags(observability_group_tab: true)
-
-        insert_observability_nav
-
-        visit group_path(group)
-      end
-
-      it_behaves_like 'verified navigation bar'
-    end
   end
 
   context 'for owners', :saas do
     before do
       group.add_owner(user)
       stub_group_wikis(false)
-      stub_feature_flags(observability_group_tab: false)
       stub_licensed_features(domain_verification: true)
       sign_in(user)
       insert_package_nav(_('Kubernetes'))

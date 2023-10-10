@@ -130,6 +130,35 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
           merge_request.merge_requests_author_approval?
         end
+
+        context 'when overriden by scan result policy' do
+          let(:policy) do
+            create(
+              :scan_result_policy_read,
+              :prevent_approval_by_author,
+              commits: :any,
+              project: merge_request.target_project)
+          end
+
+          before do
+            merge_request.target_project.update_attribute(:merge_requests_author_approval, true)
+
+            create(
+              :approval_merge_request_rule,
+              :any_merge_request,
+              merge_request: merge_request,
+              scan_result_policy_read: policy)
+            create(
+              :scan_result_policy_violation,
+              project: project,
+              merge_request: merge_request,
+              scan_result_policy_read: policy)
+          end
+
+          it 'returns false' do
+            expect(merge_request.merge_requests_author_approval?).to be(false)
+          end
+        end
       end
     end
 
@@ -150,6 +179,190 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
             .to receive(:merge_requests_disable_committers_approval?)
 
           merge_request.merge_requests_disable_committers_approval?
+        end
+
+        context 'when overriden by scan result policy' do
+          let(:policy) do
+            create(
+              :scan_result_policy_read,
+              :prevent_approval_by_commit_author,
+              commits: :any,
+              project: merge_request.target_project)
+          end
+
+          before do
+            merge_request.target_project.update_attribute(:merge_requests_disable_committers_approval, false)
+
+            create(
+              :approval_merge_request_rule,
+              :any_merge_request,
+              merge_request: merge_request,
+              scan_result_policy_read: policy)
+            create(
+              :scan_result_policy_violation,
+              project: project,
+              merge_request: merge_request,
+              scan_result_policy_read: policy)
+          end
+
+          it 'returns false' do
+            expect(merge_request.merge_requests_disable_committers_approval?).to be(true)
+          end
+        end
+      end
+    end
+
+    describe '#require_password_to_approve?' do
+      subject { merge_request.require_password_to_approve? }
+
+      let(:password_required?) { true }
+
+      before do
+        merge_request.target_project.update!(require_password_to_approve: password_required?)
+      end
+
+      context 'when target project requires password' do
+        it { is_expected.to be(password_required?) }
+      end
+
+      context 'when target project does not require password' do
+        let(:password_required?) { false }
+
+        it { is_expected.to be(password_required?) }
+
+        context 'when overridden by scan result policy' do
+          let(:policy) do
+            create(
+              :scan_result_policy_read,
+              :require_password_to_approve,
+              commits: :any,
+              project: merge_request.target_project)
+          end
+
+          before do
+            merge_request.target_project.update_attribute(:merge_requests_disable_committers_approval, false)
+
+            create(
+              :approval_merge_request_rule,
+              :any_merge_request,
+              merge_request: merge_request,
+              scan_result_policy_read: policy)
+            create(
+              :scan_result_policy_violation,
+              project: project,
+              merge_request: merge_request,
+              scan_result_policy_read: policy)
+          end
+
+          it { is_expected.to be(true) }
+        end
+      end
+
+      describe '#policy_approval_settings' do
+        let(:project_approval_settings) do
+          { prevent_approval_by_author: true,
+            prevent_approval_by_commit_author: false,
+            remove_approvals_with_new_commit: true,
+            require_password_to_approve: false }
+        end
+
+        let(:policy) do
+          create(:scan_result_policy_read,
+            project: merge_request.target_project,
+            project_approval_settings: project_approval_settings)
+        end
+
+        let(:overrides) { project_approval_settings.select { |_, v| v } }
+
+        subject(:approval_settings) { merge_request.policy_approval_settings }
+
+        context 'with scan finding rule' do
+          let!(:approval_merge_request_rule) do
+            create(:report_approver_rule,
+              :scan_finding,
+              merge_request: merge_request,
+              scan_result_policy_read: policy)
+          end
+
+          context 'when violated' do
+            before do
+              create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+                scan_result_policy_read: approval_merge_request_rule.scan_result_policy_read)
+            end
+
+            it { is_expected.to eq(overrides) }
+          end
+
+          context 'when unviolated' do
+            it { is_expected.to be_empty }
+          end
+        end
+
+        context 'with any_merge_request rule' do
+          let!(:approval_merge_request_rule) do
+            create(
+              :approval_merge_request_rule,
+              :any_merge_request,
+              merge_request: merge_request,
+              scan_result_policy_read: policy,
+              approvals_required: 1)
+          end
+
+          context 'when violated' do
+            before do
+              create(
+                :scan_result_policy_violation,
+                project: project,
+                merge_request: merge_request,
+                scan_result_policy_read: approval_merge_request_rule.scan_result_policy_read)
+            end
+
+            it { is_expected.to eq(overrides) }
+          end
+
+          context 'when unviolated' do
+            it { is_expected.to be_empty }
+          end
+
+          context 'with competing rules' do
+            let(:other_policy) do
+              create(
+                :scan_result_policy_read,
+                project: merge_request.target_project,
+                project_approval_settings: project_approval_settings.transform_values { false },
+                commits: :any)
+            end
+
+            let!(:approval_merge_request_rule) do
+              create(
+                :approval_merge_request_rule,
+                :any_merge_request,
+                merge_request: merge_request,
+                scan_result_policy_read: policy,
+                approvals_required: 1)
+            end
+
+            let!(:other_approval_merge_request_rule) do
+              create(
+                :approval_merge_request_rule,
+                :any_merge_request,
+                merge_request: merge_request,
+                scan_result_policy_read: other_policy,
+                approvals_required: 1)
+            end
+
+            before do
+              [approval_merge_request_rule, other_approval_merge_request_rule].each do |rule|
+                create(
+                  :scan_result_policy_violation,
+                  project: project,
+                  merge_request: merge_request,
+                  scan_result_policy_read: rule.scan_result_policy_read)
+              end
+            end
+
+            it { is_expected.to eq(overrides) }
+          end
         end
       end
     end
@@ -1489,7 +1702,8 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
         project: project,
         security_orchestration_policy_configuration: policy_configuration,
         scanners: %w[sast],
-        approvals_required: 2
+        approvals_required: 2,
+        scan_result_policy_read: create(:scan_result_policy_read)
       )
     end
 

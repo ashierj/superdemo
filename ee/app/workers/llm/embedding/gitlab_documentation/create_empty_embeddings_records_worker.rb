@@ -9,8 +9,6 @@ module Llm
         include Gitlab::ExclusiveLeaseHelpers
         include EmbeddingsWorkerContext
 
-        MODEL = ::Embedding::Vertex::GitlabDocumentation
-
         idempotent!
         data_consistency :always # rubocop: disable SidekiqLoadBalancing/WorkerDataConsistency
         feature_category :duo_chat
@@ -22,37 +20,32 @@ module Llm
           return unless Feature.enabled?(:create_embeddings_with_vertex_ai) # file_embeddings supported by vertex FF
           return unless ::License.feature_available?(:ai_chat) # license check
 
-          # reset the indexing on chunks to be embedded, this is going to be used to ensure VertexAI embeddings API
-          # quotas/limits are respected.
-          in_lock("#{self.class.name.underscore}/version/#{update_version}", ttl: 10.minutes, sleep_sec: 1) do
-            self.class.set_embeddings_index!(0)
+          embeddings_sources = extract_embedding_sources
 
-            embeddings_sources = extract_embedding_sources
+          files.each do |filename|
+            content = File.read(filename)
+            source = filename.gsub(Rails.root.to_s, '')
 
-            files.each do |filename|
-              content = File.read(filename)
-              source = filename.gsub(Rails.root.to_s, '')
+            next unless embeddable?(content)
 
-              next unless embeddable?(content)
+            current_md5sum = extract_md5sum(embeddings_sources, source)
+            new_md5sum = OpenSSL::Digest::SHA256.hexdigest(content)
 
-              current_md5sum = extract_md5sum(embeddings_sources, source)
-              new_md5sum = OpenSSL::Digest::SHA256.hexdigest(content)
+            # if file content did not change, then no need to rebuild it's file_embeddings, just used them as is.
+            next if new_md5sum == current_md5sum
 
-              # if file content did not change, then no need to rebuild it's file_embeddings, just used them as is.
-              next if new_md5sum == current_md5sum
+            CreateDbEmbeddingsPerDocFileWorker.perform_async(filename, update_version)
 
-              CreateDbEmbeddingsPerDocFileWorker.perform_async(filename, update_version)
-              logger.info(
-                structured_payload(
-                  message: 'Enqueued DB embeddings creation',
-                  filename: filename,
-                  new_version: update_version
-                )
+            logger.info(
+              structured_payload(
+                message: 'Enqueued DB embeddings creation',
+                filename: filename,
+                new_version: update_version
               )
-            end
-
-            cleanup_embeddings_for_missing_files(embeddings_sources)
+            )
           end
+
+          cleanup_embeddings_for_missing_files(embeddings_sources)
         end
 
         private

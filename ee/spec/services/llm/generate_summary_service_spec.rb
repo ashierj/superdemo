@@ -64,7 +64,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-        it_behaves_like 'completion worker sync and async' do
+        it_behaves_like 'schedules completion worker' do
           subject { described_class.new(current_user, resource, options) }
         end
       end
@@ -86,7 +86,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-        it_behaves_like 'completion worker sync and async' do
+        it_behaves_like 'schedules completion worker' do
           subject { described_class.new(current_user, resource, options) }
         end
       end
@@ -107,7 +107,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-        it_behaves_like 'completion worker sync and async' do
+        it_behaves_like 'schedules completion worker' do
           subject { described_class.new(current_user, resource, options) }
         end
       end

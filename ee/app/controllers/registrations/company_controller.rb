@@ -24,15 +24,10 @@ module Registrations
     end
 
     def create
-      result = GitlabSubscriptions::CreateTrialOrLeadService.new(user: current_user, params: permitted_params).execute
+      result = GitlabSubscriptions::CreateCompanyLeadService.new(user: current_user, params: service_params).execute
 
       if result.success?
         track_event('successfully_submitted_form')
-
-        unless onboarding_status.trial?
-          experiment(:automatic_trial_registration, actor: current_user).track(:successfully_submitted_form,
-            label: onboarding_status.tracking_label)
-        end
 
         path = new_users_sign_up_group_path(redirect_params)
         save_onboarding_step_url(path, current_user)
@@ -59,19 +54,16 @@ module Registrations
         :role,
         :registration_objective,
         :jobs_to_be_done_other,
-        :opt_in,
-        :trial_onboarding_flow
+        :opt_in
       ).merge(glm_tracking_params)
     end
 
+    def service_params
+      permitted_params.merge(trial_onboarding_flow: true)
+    end
+
     def redirect_params
-      # Pass through trial param for automatic_trial_registration experiment
-      # to exclude user that comes from trial registration
-      base_params = glm_tracking_params.merge(trial: params[:trial])
-
-      return base_params unless onboarding_status.trial_onboarding_flow?
-
-      base_params.merge(trial_onboarding_flow: true)
+      glm_tracking_params.merge(trial_onboarding_flow: true)
     end
 
     def track_event(action)

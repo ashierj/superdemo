@@ -4,6 +4,7 @@ module EE
   module Integrations
     module Jira
       extend ActiveSupport::Concern
+      include ::Gitlab::Utils::StrongMemoize
 
       MAX_URL_LENGTH = 4000
 
@@ -18,7 +19,11 @@ module EE
       end
 
       def jira_vulnerabilities_integration_available?
-        parent.present? ? parent.licensed_feature_available?(:jira_vulnerabilities_integration) : License.feature_available?(:jira_vulnerabilities_integration)
+        if parent.present?
+          parent.licensed_feature_available?(:jira_vulnerabilities_integration)
+        else
+          License.feature_available?(:jira_vulnerabilities_integration)
+        end
       end
 
       def jira_vulnerabilities_integration_enabled?
@@ -26,10 +31,10 @@ module EE
       end
 
       def configured_to_create_issues_from_vulnerabilities?
-        strong_memoize(:configured_to_create_issues_from_vulnerabilities) do
-          active? && project_key.present? && vulnerabilities_issuetype.present? && jira_vulnerabilities_integration_enabled?
-        end
+        active? && project_key.present? &&
+          vulnerabilities_issuetype.present? && jira_vulnerabilities_integration_enabled?
       end
+      strong_memoize_attr :configured_to_create_issues_from_vulnerabilities?
 
       def test(_)
         super.then do |result|
@@ -73,10 +78,9 @@ module EE
       private
 
       def project_key_required?
-        strong_memoize(:project_key_required) do
-          active? && issues_enabled || vulnerabilities_enabled
-        end
+        (active? && issues_enabled) || vulnerabilities_enabled
       end
+      strong_memoize_attr :project_key_required?
 
       # Returns internal JIRA Project ID
       #
@@ -89,10 +93,11 @@ module EE
       #
       # @return [JIRA::Resource::Project, nil] the object that represents JIRA Projects
       def jira_project
-        strong_memoize(:jira_project) do
-          client_url.present? ? jira_request(API_ENDPOINTS[:find_project] % project_key) { client.Project.find(project_key) } : nil
-        end
+        return unless client_url.present?
+
+        jira_request(API_ENDPOINTS[:find_project] % project_key) { client.Project.find(project_key) }
       end
+      strong_memoize_attr :jira_project
 
       # Returns list of available Issue types in selected JIRA Project
       #
@@ -102,7 +107,7 @@ module EE
 
         jira_project
           .issuetypes
-          .reject { |issue_type| issue_type.subtask }
+          .reject(&:subtask)
           .map do |issue_type|
           {
             id: issue_type.id,

@@ -31,7 +31,6 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
           groupPath: @group.path,
           hasIssueWeightsFeature: nil,
           hasIterationsFeature: nil,
-          state: epic.state,
           initialDescriptionHtml: '<p data-sourcepos="1:1-1:9" dir="auto">epic text</p>',
           initialDescriptionText: 'epic text',
           initialTaskCompletionStatus: { completed_count: 0, count: 0 },

@@ -226,7 +226,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
       it 'redirects to work item page using iid' do
         make_request
 
-        expect(response).to redirect_to(project_work_items_path(project, work_item.iid, query))
+        expect(response).to redirect_to(project_work_item_path(project, work_item.iid, query))
       end
     end
 
@@ -401,7 +401,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
         update_issue(issue_params: { assignee_ids: [assignee.id] })
 
         expect(json_response['assignees'].first.keys)
-          .to match_array(%w[id name username avatar_url state web_url])
+          .to match_array(%w[id name username avatar_url state locked web_url])
       end
     end
   end

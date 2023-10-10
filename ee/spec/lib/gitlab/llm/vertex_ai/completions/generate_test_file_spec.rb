@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateTestFile, feature_cat
   let(:response_service) { double }
   let_it_be(:user) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request) }
-  let(:params) { [user, merge_request, response_modifier, { options: options }] }
+  let(:params) { [user, merge_request, response_modifier, { options: { request_id: 'uuid' } }] }
 
   subject { described_class.new(prompt_class, options) }
 
@@ -40,7 +40,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateTestFile, feature_cat
       it 'publishes the error to the graphql subscription' do
         errors = { error: 'Error' }
         expect(::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions).to receive(:new).with(errors.to_json)
-          .and_return(response_modifier)
+                                                                                        .and_return(response_modifier)
         expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_return(
           response_service
         )
@@ -85,7 +85,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateTestFile, feature_cat
 
       it 'publishes the content from the AI response' do
         expect(::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions).to receive(:new).with(example_response.to_json)
-          .and_return(response_modifier)
+                                                                                        .and_return(response_modifier)
         expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_return(
           response_service
         )
@@ -112,7 +112,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateTestFile, feature_cat
         it 'publishes a generic error to the graphql subscription' do
           errors = { error: { message: 'An unexpected error has occurred.' } }
           expect(::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions).to receive(:new).with(errors.to_json)
-            .and_return(response_modifier)
+                                                                                          .and_return(response_modifier)
           expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_return(
             response_service
           )

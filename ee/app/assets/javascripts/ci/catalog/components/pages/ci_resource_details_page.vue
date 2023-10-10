@@ -1,24 +1,19 @@
 <script>
-import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { CI_CATALOG_RESOURCE_TYPE } from '../../graphql/settings';
 import getCatalogCiResourceDetails from '../../graphql/queries/get_ci_catalog_resource_details.query.graphql';
 import getCatalogCiResourceSharedData from '../../graphql/queries/get_ci_catalog_resource_shared_data.query.graphql';
-import CiResourceAbout from '../details/ci_resource_about.vue';
 import CiResourceDetails from '../details/ci_resource_details.vue';
 import CiResourceHeader from '../details/ci_resource_header.vue';
-import CiResourceHeaderSkeletonLoader from '../details/ci_resource_header_skeleton_loader.vue';
 
 export default {
   components: {
-    CiResourceAbout,
     CiResourceDetails,
     CiResourceHeader,
-    CiResourceHeaderSkeletonLoader,
     GlEmptyState,
-    GlLoadingIcon,
   },
   inject: ['ciCatalogPath'],
   data() {
@@ -99,37 +94,16 @@ export default {
         :primary-button-link="ciCatalogPath"
       />
     </div>
-    <div v-else class="gl-display-flex">
-      <div class="gl-w-70p">
-        <ci-resource-header-skeleton-loader
-          v-if="isLoadingSharedData"
-          class="gl-pt-5 gl-border-b"
-        />
-        <ci-resource-header
-          v-else
-          :description="resourceSharedData.description"
-          :icon="resourceSharedData.icon"
-          :is-loading="isLoadingSharedData"
-          :latest-version="resourceSharedData.latestVersion"
-          :name="resourceSharedData.name"
-          :pipeline-status="pipelineStatus"
-          :resource-id="resourceSharedData.id"
-          :root-namespace="resourceSharedData.rootNamespace"
-          :web-path="resourceSharedData.webPath"
-        />
-        <gl-loading-icon v-if="isLoadingDetails" size="lg" class="gl-mt-5" />
-        <ci-resource-details v-else :readme-html="resourceAdditionalDetails.readmeHtml" />
-      </div>
-      <div>
-        <ci-resource-about
-          :is-loading-details="isLoadingDetails"
-          :is-loading-shared-data="isLoadingSharedData"
-          :open-issues-count="resourceAdditionalDetails.openIssuesCount"
-          :open-merge-requests-count="resourceAdditionalDetails.openMergeRequestsCount"
-          :latest-version="resourceSharedData.latestVersion"
-          :web-path="resourceSharedData.webPath"
-        />
-      </div>
+    <div v-else>
+      <ci-resource-header
+        :open-issues-count="resourceAdditionalDetails.openIssuesCount"
+        :open-merge-requests-count="resourceAdditionalDetails.openMergeRequestsCount"
+        :is-loading-details="isLoadingDetails"
+        :is-loading-shared-data="isLoadingSharedData"
+        :pipeline-status="pipelineStatus"
+        :resource="resourceSharedData"
+      />
+      <ci-resource-details :resource-id="graphQLId" />
     </div>
   </div>
 </template>

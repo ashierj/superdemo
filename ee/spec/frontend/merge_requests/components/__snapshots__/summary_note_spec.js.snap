@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Merge request summary note component renders review note 1`] = `
-<div>
+<div
+  type="summary"
+>
   <article
     class="gl-border gl-mb-4 gl-rounded-base"
   >
@@ -46,14 +48,17 @@ exports[`Merge request summary note component renders review note 1`] = `
     </footer>
   </article>
   <summary-note-stub
+    class="gl-ml-5"
+    level="1"
     summary="[object Object]"
-    type="review_summary"
   />
 </div>
 `;
 
 exports[`Merge request summary note component renders summary note 1`] = `
-<div>
+<div
+  type="summary"
+>
   <article
     class="gl-border gl-mb-4 gl-rounded-base"
   >

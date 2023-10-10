@@ -74,6 +74,7 @@ describe('CiResourcesPage', () => {
 
         await createComponent();
       });
+
       it('renders the empty state', () => {
         expect(findLoadingState().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);

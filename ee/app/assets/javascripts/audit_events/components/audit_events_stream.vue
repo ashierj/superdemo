@@ -48,7 +48,7 @@ export default {
   computed: {
     isLoading() {
       return (
-        this.$apollo.queries.externalAuditEventDestinations.loading &&
+        this.$apollo.queries.externalAuditEventDestinations.loading ||
         this.$apollo.queries.gcpLoggingAuditEventDestinations.loading
       );
     },

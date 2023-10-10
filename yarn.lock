@@ -1194,10 +1194,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@eslint/js@8.50.0":
-  version "8.50.0"
-  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.50.0.tgz#9e93b850f0f3fa35f5fa59adfd03adae8488e484"
-  integrity sha512-NCC3zz2+nvYd+Ckfh87rA47zfu2QsQpvc6k1yzTk+b9KzRj0wkGa8LSoGOXN6Zv4lRf/EIoZ80biDh9HOI+RNQ==
+"@eslint/js@8.51.0":
+  version "8.51.0"
+  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.51.0.tgz#6d419c240cfb2b66da37df230f7e7eef801c32fa"
+  integrity sha512-HxjQ8Qn+4SI3/AFv6sOrDB+g6PpUTDwSJiQqOrnneEk8L71161srI9gjzzZvYVbzHiVg/BvcH95+cK/zfIt4pg==
 
 "@floating-ui/core@^1.2.6":
   version "1.2.6"
@@ -1269,10 +1269,10 @@
     stylelint-declaration-strict-value "1.9.2"
     stylelint-scss "5.1.0"
 
-"@gitlab/svgs@3.65.0":
-  version "3.65.0"
-  resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-3.65.0.tgz#0dace141f1dcac339ae5fc145176ea36f7774c64"
-  integrity sha512-hv7k48brF1xi2JaQ6WkQoSYZyuHx1h1YkX+AAzDRWyugDW0oePe0h9kpsBlggDo843Ae/Vm+4uC6oA9TPgh2dw==
+"@gitlab/svgs@3.66.0":
+  version "3.66.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-3.66.0.tgz#5dbe98f9811001942d78395756b9d7c588300c01"
+  integrity sha512-FdkoMAprxjJJnl90GJYoCMeIpvCaYPNAnRkrlsmo7NY3Ce8fpRb/XE/ZakqULeadj82S7R1IRuTHYfWB06vVtA==
 
 "@gitlab/ui@66.23.1":
   version "66.23.1"
@@ -1292,10 +1292,10 @@
   resolved "https://registry.yarnpkg.com/@gitlab/visual-review-tools/-/visual-review-tools-1.7.3.tgz#9ea641146436da388ffbad25d7f2abe0df52c235"
   integrity sha512-NMV++7Ew1FSBDN1xiZaauU9tfeSfgDHcOLpn+8bGpP+O5orUPm2Eu66R5eC5gkjBPaXosNAxNWtriee+aFk4+g==
 
-"@gitlab/web-ide@0.0.1-dev-20230921201626":
-  version "0.0.1-dev-20230921201626"
-  resolved "https://registry.yarnpkg.com/@gitlab/web-ide/-/web-ide-0.0.1-dev-20230921201626.tgz#9c31a29e6552c48395dcb7b7b82db5e18d367e4b"
-  integrity sha512-EQENU4fv9u7SZEjkEOwjvMr9vmGC8QPeIiaDIVmpHUl51LPp42fN7HsW1zGtg4JF0Aq8R0jrvn1nMhLst5XnRA==
+"@gitlab/web-ide@0.0.1-dev-20231004090414":
+  version "0.0.1-dev-20231004090414"
+  resolved "https://registry.yarnpkg.com/@gitlab/web-ide/-/web-ide-0.0.1-dev-20231004090414.tgz#925c9e942917acbbb17c4ea77b0841649ae186ad"
+  integrity sha512-NfkRzvz5Z3uDceQC5QN8W5u1ETlHbbEXjrnKxiYM4TD1d+bOV567GYglRKjyOhQMTYRGpqbisLSAPgvShAQB6g==
 
 "@graphql-eslint/eslint-plugin@3.20.1":
   version "3.20.1"
@@ -6329,15 +6329,15 @@ eslint-visitor-keys@^3.3.0, eslint-visitor-keys@^3.4.1, eslint-visitor-keys@^3.4
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.4.3.tgz#0cd72fe8550e3c2eae156a96a4dddcd1c8ac5800"
   integrity sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag==
 
-eslint@8.50.0:
-  version "8.50.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.50.0.tgz#2ae6015fee0240fcd3f83e1e25df0287f487d6b2"
-  integrity sha512-FOnOGSuFuFLv/Sa+FDVRZl4GGVAAFFi8LecRsI5a1tMO5HIE8nCm4ivAlzt4dT3ol/PaaGC0rJEEXQmHJBGoOg==
+eslint@8.51.0:
+  version "8.51.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.51.0.tgz#4a82dae60d209ac89a5cff1604fea978ba4950f3"
+  integrity sha512-2WuxRZBrlwnXi+/vFSJyjMqrNjtJqiasMzehF0shoLaW7DzS3/9Yvrmq5JiT66+pNjiX4UBnLDiKHcWAr/OInA==
   dependencies:
     "@eslint-community/eslint-utils" "^4.2.0"
     "@eslint-community/regexpp" "^4.6.1"
     "@eslint/eslintrc" "^2.1.2"
-    "@eslint/js" "8.50.0"
+    "@eslint/js" "8.51.0"
     "@humanwhocodes/config-array" "^0.11.11"
     "@humanwhocodes/module-importer" "^1.0.1"
     "@nodelib/fs.walk" "^1.2.8"

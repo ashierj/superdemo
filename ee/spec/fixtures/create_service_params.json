@@ -33,7 +33,8 @@
       "gl_namespace_name": "Group name",
       "preview": "false",
       "source": "some_source",
-      "promo_code": null
+      "promo_code": null,
+      "idempotency_key": "idempotency-key"
     }
   },
   "subscription_params_with_promo_code": {
@@ -70,7 +71,8 @@
       "gl_namespace_name": "Group name",
       "preview": "false",
       "source": "some_source",
-      "promo_code": "Sample promo code"
+      "promo_code": "Sample promo code",
+      "idempotency_key": "idempotency-key"
     }
   },
   "addon_with_active_sub": {
@@ -103,7 +105,8 @@
       "gl_namespace_id": 222,
       "gl_namespace_name": "Group name",
       "preview": "false",
-      "source": "some_source"
+      "source": "some_source",
+      "idempotency_key": "idempotency-key"
     }
   },
   "addon_without_active_sub": {
@@ -140,7 +143,8 @@
       "gl_namespace_name": "Group name",
       "preview": "false",
       "source": "some_source",
-      "promo_code": null
+      "promo_code": null,
+      "idempotency_key": "idempotency-key"
     }
   }
 }

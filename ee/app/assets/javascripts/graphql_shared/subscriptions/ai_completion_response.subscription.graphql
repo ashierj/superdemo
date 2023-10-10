@@ -1,12 +1,14 @@
 subscription aiCompletionResponse(
   $userId: UserID
-  $resourceId: AiModelID!
+  $resourceId: AiModelID
   $clientSubscriptionId: String
+  $aiAction: AiAction
   $htmlResponse: Boolean = true
 ) {
   aiCompletionResponse(
     userId: $userId
     resourceId: $resourceId
+    aiAction: $aiAction
     clientSubscriptionId: $clientSubscriptionId
   ) {
     id

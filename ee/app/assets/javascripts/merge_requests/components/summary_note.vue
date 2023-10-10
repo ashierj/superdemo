@@ -18,14 +18,16 @@ export default {
       type: Object,
       required: true,
     },
-    type: {
-      type: String,
-      required: true,
+    level: {
+      type: Number,
+      required: false,
+      default: 1,
     },
   },
   computed: {
     isReviewSummary() {
-      return this.type === 'review_summary';
+      // eslint-disable-next-line no-underscore-dangle
+      return this.summary.__typename === 'MergeRequestReviewLlmSummary';
     },
   },
 };
@@ -33,7 +35,7 @@ export default {
 
 <template>
   <div>
-    <summary-note-wrapper :class="{ 'gl-bg-gray-50 gl-ml-5 gl-border-0': isReviewSummary }">
+    <summary-note-wrapper :class="{ 'gl-bg-gray-50 gl-border-0': isReviewSummary }">
       <template #title>
         <h5 class="gl-m-0">
           <gl-sprintf v-if="isReviewSummary" :message="__('%{linkStart}%{linkEnd} review summary')">
@@ -67,10 +69,10 @@ export default {
       </template>
     </summary-note-wrapper>
     <summary-note
-      v-for="(review, index) in summary.reviewLlmSummaries"
+      v-for="(review, index) in summary.children"
       :key="index"
       :summary="review"
-      type="review_summary"
+      class="gl-ml-5"
     />
   </div>
 </template>

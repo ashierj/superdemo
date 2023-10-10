@@ -2,7 +2,7 @@
 # project here: https://gitlab.com/gitlab-org/gitlab/-/project_members
 # As described in https://docs.gitlab.com/ee/user/project/code_owners.html
 
-* @gitlab-org/maintainers/rails-backend @gitlab-org/maintainers/frontend @gitlab-org/maintainers/database @gl-quality/qe-maintainers @gl-quality/tooling-maintainers @gitlab-org/delivery @gitlab-org/maintainers/cicd-templates @nolith @gitlab-org/tw-leadership
+* @gitlab-org/maintainers/rails-backend @gitlab-org/maintainers/frontend @gitlab-org/maintainers/database @gl-quality/qe-maintainers @gl-quality/tooling-maintainers @gitlab-org/delivery @gitlab-org/maintainers/cicd-templates @nolith @gitlab-org/tw-leadership @gitlab-org/maintainers/kas-version-maintainers
 
 .gitlab/CODEOWNERS @gitlab-org/development-leaders @gitlab-org/tw-leadership
 
@@ -546,7 +546,6 @@ lib/gitlab/checks/**
 /doc/administration/settings/gitaly_timeouts.md @eread
 /doc/administration/settings/import_and_export_settings.md @eread @ashrafkhamis
 /doc/administration/settings/import_export_rate_limits.md @eread @ashrafkhamis
-/doc/administration/settings/index.md @msedlakjakubowski
 /doc/administration/settings/instance_template_repository.md @msedlakjakubowski
 /doc/administration/settings/jira_cloud_app.md @eread @ashrafkhamis
 /doc/administration/settings/package_registry_rate_limits.md @phillipwells
@@ -771,6 +770,7 @@ lib/gitlab/checks/**
 /doc/development/cascading_settings.md @jglassman1
 /doc/development/chatops_on_gitlabcom.md @phillipwells
 /doc/development/cicd/ @marcel.amirault
+/doc/development/cloud_connector/ @jglassman1
 /doc/development/code_intelligence/ @aqualls
 /doc/development/code_owners/ @msedlakjakubowski
 /doc/development/code_suggestions/ @jglassman1
@@ -1526,6 +1526,9 @@ ee/lib/ee/api/entities/project.rb
 /ee/app/controllers/users/identity_verification_controller.rb
 /ee/app/models/concerns/identity_verifiable.rb
 /ee/config/routes/identity_verification.rb
+
+[Deploy:Environments - KAS Version Maintainers] @gitlab-org/maintainers/kas-version-maintainers
+/GITLAB_KAS_VERSION
 
 # JiHu GitLab rules. See https://gitlab.com/gitlab-jh/gitlab-jh-enablement/-/issues/213#note_1024367528
 

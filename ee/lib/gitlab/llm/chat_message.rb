@@ -6,15 +6,7 @@ module Gitlab
       RESET_MESSAGE = '/reset'
 
       def save!
-        ChatStorage.new(user).add(
-          id: id,
-          request_id: request_id,
-          timestamp: timestamp,
-          role: role,
-          content: content,
-          errors: errors,
-          extras: extras
-        )
+        ChatStorage.new(user).add(self)
       end
 
       def conversation_reset?

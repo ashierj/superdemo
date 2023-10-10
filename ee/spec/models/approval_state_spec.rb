@@ -77,6 +77,33 @@ RSpec.describe ApprovalState do
       it 'includes author' do
         expect(results).to include(merge_request.author)
       end
+
+      context 'when overridden by scan result policy' do
+        let(:policy) do
+          create(
+            :scan_result_policy_read,
+            :prevent_approval_by_author,
+            commits: :any,
+            project: merge_request.target_project)
+        end
+
+        before do
+          create(
+            :approval_merge_request_rule,
+            :any_merge_request,
+            merge_request: merge_request,
+            scan_result_policy_read: policy)
+          create(
+            :scan_result_policy_violation,
+            project: project,
+            merge_request: merge_request,
+            scan_result_policy_read: policy)
+        end
+
+        it 'returns false' do
+          expect(results).to exclude(merge_request.author)
+        end
+      end
     end
 
     context 'when committers approval is enabled on project' do
@@ -85,6 +112,33 @@ RSpec.describe ApprovalState do
 
       it 'includes committers' do
         expect(results).to include(*committers)
+      end
+
+      context 'when overridden by scan result policy' do
+        let(:policy) do
+          create(
+            :scan_result_policy_read,
+            :prevent_approval_by_commit_author,
+            commits: :any,
+            project: merge_request.target_project)
+        end
+
+        before do
+          create(
+            :approval_merge_request_rule,
+            :any_merge_request,
+            merge_request: merge_request,
+            scan_result_policy_read: policy)
+          create(
+            :scan_result_policy_violation,
+            project: project,
+            merge_request: merge_request,
+            scan_result_policy_read: policy)
+        end
+
+        it 'excludes committers' do
+          expect(results).to exclude(*committers)
+        end
       end
 
       context 'when committers approval is disabled on project' do

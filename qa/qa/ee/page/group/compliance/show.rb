@@ -13,7 +13,7 @@ module QA
             end
 
             view 'ee/app/assets/javascripts/compliance_dashboard/components/reports_app.vue' do
-              element :frameworks_tab
+              element :projects_tab
             end
 
             view 'ee/app/assets/javascripts/compliance_dashboard/components/shared/framework_badge.vue' do
@@ -25,8 +25,8 @@ module QA
               element :violation_reason_content
             end
 
-            def click_frameworks_tab
-              click_element(:frameworks_tab)
+            def click_projects_tab
+              click_element(:projects_tab)
               wait_for_requests
             end
 
@@ -64,8 +64,8 @@ module QA
               has_no_element?(:framework_label, wait: 0) && has_no_element?(:framework_badge, wait: 0)
             end
 
-            def has_no_frameworks_tab?
-              has_no_element?(:frameworks_tab)
+            def has_no_projects_tab?
+              has_no_element?(:projects_tab)
             end
 
             # Yields with the scope within the `:project_frameworks_row` element associated with the specified project.

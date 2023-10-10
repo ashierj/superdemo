@@ -1,4 +1,3 @@
-import { GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiResourceAbout from 'ee/ci/catalog/components/details/ci_resource_about.vue';
 import { formatDate } from '~/lib/utils/datetime_utility';
@@ -37,7 +36,7 @@ describe('CiResourceAbout', () => {
     wrapper.findByText(
       `Last release at ${formatDate(defaultProps.latestVersion.releasedAt, 'yyyy-mm-dd')}`,
     );
-  const findAllSkeletonLoaders = () => wrapper.findAllComponents(GlSkeletonLoader);
+  const findAllLoadingItems = () => wrapper.findAllByTestId('skeleton-loading-line');
 
   // Shared data items are items which gets their data from the index page query.
   const sharedDataItems = [findProjectLink, findLastRelease];
@@ -55,7 +54,7 @@ describe('CiResourceAbout', () => {
         expect(finder().exists()).toBe(false);
       });
 
-      expect(findAllSkeletonLoaders()).toHaveLength(allItems.length);
+      expect(findAllLoadingItems()).toHaveLength(allItems.length);
     });
   });
 
@@ -73,7 +72,7 @@ describe('CiResourceAbout', () => {
         expect(finder().exists()).toBe(false);
       });
 
-      expect(findAllSkeletonLoaders()).toHaveLength(additionalDetailsItems.length);
+      expect(findAllLoadingItems()).toHaveLength(additionalDetailsItems.length);
     });
   });
 

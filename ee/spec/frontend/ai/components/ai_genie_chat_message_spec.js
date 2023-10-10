@@ -377,7 +377,7 @@ describe('AiGenieChatMessage', () => {
       await nextTick();
       expect(renderGFM).not.toHaveBeenCalled();
 
-      wrapper.setProps({
+      await wrapper.setProps({
         message: {
           ...chunk3,
           chunkId: null,

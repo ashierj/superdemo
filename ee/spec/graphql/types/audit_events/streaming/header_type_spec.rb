@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['AuditEventStreamingHeader'] do
+RSpec.describe GitlabSchema.types['AuditEventStreamingHeader'], feature_category: :audit_events do
   let(:fields) do
     %i[id key value active]
   end

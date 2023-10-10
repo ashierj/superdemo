@@ -41,7 +41,6 @@ export const ROUTE_STANDARDS_ADHERENCE = 'standards_adherence';
 export const ROUTE_VIOLATIONS = 'violations';
 export const ROUTE_PROJECTS = 'projects';
 export const ROUTE_FRAMEWORKS = 'frameworks';
-export const TABS = [ROUTE_VIOLATIONS, ROUTE_FRAMEWORKS];
 
 export const FRAMEWORKS_FILTER_TYPE_PROJECT = 'project';
 export const FRAMEWORKS_FILTER_TYPE_FRAMEWORK = 'framework';

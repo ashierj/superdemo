@@ -56,7 +56,8 @@ RSpec.describe GitlabSchema.types['AiMessage'], feature_category: :duo_chat do
 
     context 'when message is a hash' do
       it 'renders html through Banzai' do
-        resolved_field = resolve_field(:content_html, { content: content }, current_user: current_user)
+        resolved_field = resolve_field(:content_html, { content: content }.with_indifferent_access,
+          current_user: current_user)
 
         expect(resolved_field).to eq('banzai_content')
       end

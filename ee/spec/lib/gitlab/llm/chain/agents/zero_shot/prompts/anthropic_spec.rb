@@ -20,7 +20,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
           build(:ai_chat_message, request_id: 'uuid1', role: 'assistant', content: 'response 2')
         ],
         prompt_version: prompt_version,
-        current_code: ""
+        current_code: "",
+        self_discoverability_prompt: ""
       }
     end
 

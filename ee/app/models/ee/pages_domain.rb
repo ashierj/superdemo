@@ -6,6 +6,15 @@ module EE
 
     prepended do
       scope :with_logging_info, -> { includes(project: [:route, { namespace: :gitlab_subscription }]) }
+      validate :domain_deny_list_exclusion
+
+      def domain_deny_list_exclusion
+        return unless domain
+        return unless ::Gitlab::Access::ReservedDomains::ALL.include?(domain.downcase)
+
+        errors.add(:domain, format(_("You cannot verify %{value} because it is a popular public email domain."),
+          value: domain))
+      end
     end
 
     def root_group

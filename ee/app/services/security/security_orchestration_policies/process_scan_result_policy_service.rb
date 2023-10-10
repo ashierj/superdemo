@@ -26,9 +26,8 @@ module Security
 
       def create_new_approval_rules
         action_info = policy[:actions]&.find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }
-        return if action_info.blank? || policy[:rules].blank?
 
-        policy[:rules].first(Security::ScanResultPolicy::LIMIT).each_with_index do |rule, rule_index|
+        policy[:rules]&.first(Security::ScanResultPolicy::LIMIT)&.each_with_index do |rule, rule_index|
           next unless rule_type_allowed?(rule[:type])
 
           scan_result_policy_read = create_scan_result_policy(
@@ -74,7 +73,7 @@ module Security
           rule_idx: rule_index,
           license_states: rule[:license_states],
           match_on_inclusion: rule[:match_on_inclusion] || false,
-          role_approvers: role_access_levels(action_info[:role_approvers]),
+          role_approvers: role_access_levels(action_info&.dig(:role_approvers)),
           vulnerability_attributes: rule[:vulnerability_attributes],
           project_id: project.id,
           age_operator: rule.dig(:vulnerability_age, :operator),
@@ -88,15 +87,15 @@ module Security
       def rule_params(rule, rule_index, action_info, scan_result_policy_read)
         rule_params = {
           skip_authorization: true,
-          approvals_required: action_info[:approvals_required],
+          approvals_required: action_info&.dig(:approvals_required) || 0,
           name: rule_name(policy[:name], rule_index),
           protected_branch_ids: protected_branch_ids(rule),
           applies_to_all_protected_branches: applies_to_all_protected_branches?(rule),
           rule_type: :report_approver,
-          user_ids: users_ids(action_info[:user_approvers_ids], action_info[:user_approvers]),
+          user_ids: users_ids(action_info&.dig(:user_approvers_ids), action_info&.dig(:user_approvers)),
           report_type: report_type(rule[:type]),
           orchestration_policy_idx: policy_index,
-          group_ids: groups_ids(action_info[:group_approvers_ids], action_info[:group_approvers]),
+          group_ids: groups_ids(action_info&.dig(:group_approvers_ids), action_info&.dig(:group_approvers)),
           security_orchestration_policy_configuration_id: policy_configuration.id,
           scan_result_policy_id: scan_result_policy_read&.id,
           permit_inaccessible_groups: true

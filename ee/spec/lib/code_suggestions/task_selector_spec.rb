@@ -29,6 +29,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           # Line breaks at the end of the comment
           "#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{generate_prefix}define a calculator class that can be called from other functions \n \n\n" | CodeSuggestions::Tasks::CodeCompletion
 
           # These have characters _before_ the comment
           "end\n\n#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
@@ -47,6 +48,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           "#{single_line_comment} #{generate_prefix}A function that outputs\n#{single_line_comment} the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{generate_prefix}A function that outputs fibonacci numbers\nconst hello = () => 'world';\n#{single_line_comment} first 20" | CodeSuggestions::Tasks::CodeCompletion
 
           # These are too short to be considered generation
           "#{single_line_comment} #{generate_prefix}A func" | CodeSuggestions::Tasks::CodeCompletion
@@ -123,7 +125,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
 
           let(:file_name) { "file.#{ext}" }
           let(:single_line_comment) do
-            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).comment_format[:single]
+            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).send(:comment_format)[:single]
           end
 
           it_behaves_like 'correct task detector'
@@ -136,7 +138,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           let(:case_insensitive_prefixes) { Array.new(4, '') }
           let(:file_name) { "file.#{ext}" }
           let(:single_line_comment) do
-            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).comment_format[:single]
+            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).send(:comment_format)[:single]
           end
 
           it_behaves_like 'correct task detector'
@@ -178,6 +180,24 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         let(:single_line_comment) { "#" }
 
         it_behaves_like 'correct task detector'
+      end
+    end
+
+    context 'when prefix from result is empty' do
+      let(:skip_comment) { false }
+      let(:prefix) { 'prefix to set' }
+      let(:intent) { 'generation' }
+      let(:file_name) { "file.py" }
+
+      it 'will set the content before cursor as prefix' do
+        allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
+          # The +'' is done to avoid `can't modify frozen String: ""` exception in tests
+          allow(instance).to receive(:extract).and_return({ prefix: +'' })
+        end
+
+        result = subject
+
+        expect(result.send(:params)[:prefix]).to eq(prefix)
       end
     end
   end

@@ -148,48 +148,34 @@ export default {
     isInstance() {
       return this.groupPath === 'instance';
     },
-    destinationCreateMutation() {
+    destinationVariables() {
       return this.isInstance
-        ? instanceExternalAuditEventDestinationCreate
-        : externalAuditEventDestinationCreate;
-    },
-    destinationUpdateMutation() {
-      return this.isInstance
-        ? instanceExternalAuditEventDestinationUpdate
-        : externalAuditEventDestinationUpdate;
-    },
-    destinationDestroyMutation() {
-      return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
-    },
-    headersCreateMutation() {
-      return this.isInstance
-        ? externalInstanceAuditEventDestinationHeaderCreate
-        : externalAuditEventDestinationHeaderCreate;
-    },
-    headersUpdateMutation() {
-      return this.isInstance
-        ? externalInstanceAuditEventDestinationHeaderUpdate
-        : externalAuditEventDestinationHeaderUpdate;
-    },
-    headersDestroyMutation() {
-      return this.isInstance
-        ? externalInstanceAuditEventDestinationHeaderDelete
-        : externalAuditEventDestinationHeaderDelete;
-    },
-    headersCreateString() {
-      return this.isInstance
-        ? 'auditEventsStreamingInstanceHeadersCreate'
-        : 'auditEventsStreamingHeadersCreate';
-    },
-    headersUpdateString() {
-      return this.isInstance
-        ? 'auditEventsStreamingInstanceHeadersUpdate'
-        : 'auditEventsStreamingHeadersUpdate';
-    },
-    headersDestroyString() {
-      return this.isInstance
-        ? 'auditEventsStreamingInstanceHeadersDestroy'
-        : 'auditEventsStreamingHeadersDestroy';
+        ? {
+            destinationCreateMutation: instanceExternalAuditEventDestinationCreate,
+            destinationUpdateMutation: instanceExternalAuditEventDestinationUpdate,
+            destinationDestroyMutation: deleteInstanceExternalDestination,
+            headersCreateMutation: externalInstanceAuditEventDestinationHeaderCreate,
+            headersUpdateMutation: externalInstanceAuditEventDestinationHeaderUpdate,
+            headersDestroyMutation: externalInstanceAuditEventDestinationHeaderDelete,
+            headersCreateString: 'auditEventsStreamingInstanceHeadersCreate',
+            headersUpdateString: 'auditEventsStreamingInstanceHeadersUpdate',
+            headersDestroyString: 'auditEventsStreamingInstanceHeadersDestroy',
+            filterAddMutation: addInstanceExternalDestinationFilters,
+            filterDestroyMutation: deleteInstanceExternalDestinationFilters,
+          }
+        : {
+            destinationCreateMutation: externalAuditEventDestinationCreate,
+            destinationUpdateMutation: externalAuditEventDestinationUpdate,
+            destinationDestroyMutation: deleteExternalDestination,
+            headersCreateMutation: externalAuditEventDestinationHeaderCreate,
+            headersUpdateMutation: externalAuditEventDestinationHeaderUpdate,
+            headersDestroyMutation: externalAuditEventDestinationHeaderDelete,
+            headersCreateString: 'auditEventsStreamingHeadersCreate',
+            headersUpdateString: 'auditEventsStreamingHeadersUpdate',
+            headersDestroyString: 'auditEventsStreamingHeadersDestroy',
+            filterAddMutation: addExternalDestinationFilters,
+            filterDestroyMutation: deleteExternalDestinationFilters,
+          };
     },
     headersToAdd() {
       return this.headers.filter((header) => header.id === null);
@@ -213,16 +199,6 @@ export default {
     },
     isEventTypeUpdated() {
       return !isEqual(this.item?.eventTypeFilters || [], this.filters);
-    },
-    filterAddMutation() {
-      return this.isInstance
-        ? addInstanceExternalDestinationFilters
-        : addExternalDestinationFilters;
-    },
-    filterDestroyMutation() {
-      return this.isInstance
-        ? deleteInstanceExternalDestinationFilters
-        : deleteExternalDestinationFilters;
     },
   },
   watch: {
@@ -274,7 +250,7 @@ export default {
     async addDestinationUrl() {
       const { groupPath: fullPath, isInstance } = this;
       const { data } = await this.$apollo.mutate({
-        mutation: this.destinationCreateMutation,
+        mutation: this.destinationVariables.destinationCreateMutation,
         variables: {
           destinationUrl: this.destinationUrl,
           fullPath: this.groupPath,
@@ -314,7 +290,7 @@ export default {
     },
     async updateDestinationUrl(destinationId) {
       const { data } = await this.$apollo.mutate({
-        mutation: this.destinationUpdateMutation,
+        mutation: this.destinationVariables.destinationUpdateMutation,
         variables: {
           fullPath: this.groupPath,
           id: destinationId,
@@ -332,7 +308,7 @@ export default {
       const { groupPath: fullPath, isInstance } = this;
       const mutations = headers.map((header) => {
         return this.$apollo.mutate({
-          mutation: this.headersCreateMutation,
+          mutation: this.destinationVariables.headersCreateMutation,
           variables: {
             destinationId,
             key: header.name,
@@ -361,12 +337,12 @@ export default {
         });
       });
 
-      return mapAllMutationErrors(mutations, this.headersCreateString);
+      return mapAllMutationErrors(mutations, this.destinationVariables.headersCreateString);
     },
     async updateDestinationHeaders(headers) {
       const mutations = headers.map((header) => {
         return this.$apollo.mutate({
-          mutation: this.headersUpdateMutation,
+          mutation: this.destinationVariables.headersUpdateMutation,
           variables: {
             headerId: header.id,
             key: header.name,
@@ -375,14 +351,14 @@ export default {
         });
       });
 
-      return mapAllMutationErrors(mutations, this.headersUpdateString);
+      return mapAllMutationErrors(mutations, this.destinationVariables.headersUpdateString);
     },
     async deleteDestinationHeaders(headers) {
       const { id: destinationId } = this.item;
       const { groupPath: fullPath, isInstance } = this;
       const mutations = headers.map((header) => {
         return this.$apollo.mutate({
-          mutation: this.headersDestroyMutation,
+          mutation: this.destinationVariables.headersDestroyMutation,
           variables: {
             headerId: header.id,
           },
@@ -405,12 +381,12 @@ export default {
         });
       });
 
-      return mapAllMutationErrors(mutations, this.headersDestroyString);
+      return mapAllMutationErrors(mutations, this.destinationVariables.headersDestroyString);
     },
     async deleteCreatedDestination(destinationId) {
       const { groupPath: fullPath, isInstance } = this;
       return this.$apollo.mutate({
-        mutation: this.destinationDestroyMutation,
+        mutation: this.destinationVariables.destinationDestroyMutation,
         variables: {
           id: destinationId,
         },
@@ -436,7 +412,7 @@ export default {
     async removeDestinationFilters(destinationId, filters) {
       const { isInstance } = this;
       const { data } = await this.$apollo.mutate({
-        mutation: this.filterDestroyMutation,
+        mutation: this.destinationVariables.filterDestroyMutation,
         variables: {
           destinationId,
           eventTypeFilters: filters,
@@ -468,7 +444,7 @@ export default {
     async addDestinationFilters(destinationId, filters) {
       const { isInstance } = this;
       const { data } = await this.$apollo.mutate({
-        mutation: this.filterAddMutation,
+        mutation: this.destinationVariables.filterAddMutation,
         variables: {
           destinationId,
           eventTypeFilters: filters,

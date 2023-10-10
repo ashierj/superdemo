@@ -9,6 +9,16 @@ module Admin
 
     def index; end
 
+    def export_usage
+      # rubocop:disable CodeReuse/Worker
+      Namespaces::StorageUsageExportWorker.perform_async('free', current_user.id)
+      # rubocop:enable CodeReuse/Worker
+
+      flash[:notice] = _('CSV is being generated and will be emailed to you upon completion.')
+
+      redirect_to admin_namespace_limits_path
+    end
+
     private
 
     def check_gitlab_com

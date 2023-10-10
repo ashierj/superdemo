@@ -7,12 +7,12 @@ module Gitlab
         class GenerateCommitMessage < Gitlab::Llm::Completions::Base
           DEFAULT_ERROR = 'An unexpected error has occurred.'
 
-          def execute(user, merge_request, options)
+          def execute(user, merge_request, _options)
             response = response_for(user, merge_request)
             response_modifier = Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new(response)
 
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
-              user, merge_request, response_modifier, options: options
+              user, merge_request, response_modifier, options: response_options
             ).execute
 
             response_modifier
@@ -24,7 +24,7 @@ module Gitlab
             )
 
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
-              user, merge_request, response_modifier, options: options
+              user, merge_request, response_modifier, options: response_options
             ).execute
 
             response_modifier

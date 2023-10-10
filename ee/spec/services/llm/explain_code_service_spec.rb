@@ -39,7 +39,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         let(:action_name) { :explain_code }
         let(:content) { 'Explain code' }
 
-        it_behaves_like 'completion worker sync and async'
+        it_behaves_like 'schedules completion worker'
       end
 
       context 'when explain_code_vertex_ai feature flag is disabled' do
@@ -51,7 +51,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         let(:action_name) { :explain_code_open_ai }
         let(:content) { 'Explain code' }
 
-        it_behaves_like 'completion worker sync and async'
+        it_behaves_like 'schedules completion worker'
       end
 
       context 'when explain_code licensed feature is disabled' do

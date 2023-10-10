@@ -19,19 +19,11 @@ class GroupsWithTemplatesFinder
   attr_reader :user, :group_id
 
   def extended_group_search
-    if Feature.enabled?(:use_traversal_ids)
-      plan_ids = Plan
-        .by_name(GitlabSubscriptions::Features.saas_plans_with_feature(:group_project_templates))
-        .pluck(:id) # rubocop: disable CodeReuse/ActiveRecord
+    plan_ids = Plan
+      .by_name(GitlabSubscriptions::Features.saas_plans_with_feature(:group_project_templates))
+      .pluck(:id) # rubocop: disable CodeReuse/ActiveRecord
 
-      Group.by_root_id(GitlabSubscription.by_hosted_plan_ids(plan_ids).select(:namespace_id))
-    else
-      Group
-        .with_project_templates
-        .self_and_ancestors
-        .with_feature_available_in_plan(:group_project_templates)
-        .self_and_descendants
-    end
+    Group.by_root_id(GitlabSubscription.by_hosted_plan_ids(plan_ids).select(:namespace_id))
   end
 
   def simple_group_search(groups)

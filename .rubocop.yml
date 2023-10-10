@@ -16,6 +16,9 @@ inherit_from:
   <% if RUBY_VERSION[/^\d+\.\d+/, 0] == '3.1' %>
   - ./rubocop/rubocop-ruby31.yml
   <% end %>
+  <% if RUBY_VERSION[/^\d+\.\d+/, 0] == '3.2' %>
+  - ./rubocop/rubocop-ruby32.yml
+  <% end %>
   - ./rubocop/rubocop-migrations.yml
   - ./rubocop/rubocop-usage-data.yml
   - ./rubocop/rubocop-code_reuse.yml
@@ -473,6 +476,14 @@ BackgroundMigration/MissingDictionaryFile:
   EnforcedSince: 20230307160251
   Include:
     - 'db/post_migrate/*.rb'
+
+# See https://gitlab.com/groups/gitlab-org/-/epics/7374
+Gitlab/AvoidGitlabInstanceChecks:
+  Enabled: true
+  Exclude:
+    - 'db/migrate/*.rb'
+    - 'db/post_migrate/*.rb'
+    - 'ee/db/fixtures/**/*'
 
 # See https://gitlab.com/gitlab-org/gitlab/-/issues/373194
 Gitlab/RSpec/AvoidSetup:
