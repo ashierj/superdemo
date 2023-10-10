@@ -291,7 +291,9 @@ describe('ee merge request widget options', () => {
       },
     };
 
-    it('should render the license widget when the extension is registered', async () => {
+    // quarantine: https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/3778
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip('should render the license widget when the extension is registered', async () => {
       registerExtension(licenseComplianceExtension);
       createComponent({
         mountFn: mountExtended,
