@@ -122,6 +122,11 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           labels: [label], created_at: 2.days.ago, milestone: milestone)
       end
 
+      let_it_be(:comment) do
+        create(:note_on_issue, author: user, project: project, noteable: issue,
+          note: 'I believe that latency is an important measure of reliability')
+      end
+
       context 'with predefined tools' do
         context 'with issue reference' do
           let(:input) { format(input_template, issue_identifier: "the issue #{issue.to_reference(full: true)}") }
@@ -134,6 +139,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
             'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /2 days/
             'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader] | //
             'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | lazy { /(#{milestone&.title}|due date.*#{due_date.strftime("%Y-%m-%d")})/ }
+            'Summarize the comments from %<issue_identifier>s into bullet points' | %w[IssueIdentifier ResourceReader] | /latency/
             'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /solution/
           end
           # rubocop: enable Layout/LineLength
@@ -231,6 +237,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         'How would you refactor the ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend"" code?' | [] | /(ruby|refactor)/i
         'Can you fix the bug in my ""def hello_world\\nput(\""Hello, world!\\n\"");\nend"" code?' | [] | /ruby/i
         'Create an example of how to use method ""def hello_world\\nput(\""Hello, world!\\n\"");\nend""' | [] | /(ruby|example|hello_world)/
+        'Write documentation for ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /(ruby|method|hello_world)/i
         'Create a function to validate an e-mail address' | [] | /(validate|email address)/i
         'Create a function in Python to call the spotify API to get my playlists' | [] | /python/i
         'Create a tic tac toe game in Javascript' | [] | /javascript/i
@@ -251,6 +258,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         'How do I fork a project?' | ['GitlabDocumentation'] | /fork/
         'How do I clone a repository?' | ['GitlabDocumentation'] | /clone/
         'How do I create a project template?' | ['GitlabDocumentation'] | /project/
+        'What is DevOps? What is DevSecOps?' | ['GitlabDocumentation'] | /(DevOps|DevSecOps)/i
       end
 
       with_them do
@@ -272,6 +280,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       where(:input_template, :tools, :answer_match) do
         'Please summarize %<epic_identifier>s'                    | %w[EpicIdentifier ResourceReader] | //
         'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicIdentifier ResourceReader] | /ai-framework/
+        'How old is %<epic_identifier>s?' | %w[EpicIdentifier ResourceReader] | /5 days/
         'How many days ago was %<epic_identifier>s epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
 
         let(:input) { format(input_template, epic_identifier: epic.to_reference(full: true)) }
