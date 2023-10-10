@@ -27,6 +27,7 @@ RSpec.describe GitlabSchema.types['Group'] do
   it { expect(described_class).to have_graphql_field(:cluster_agents) }
   it { expect(described_class).to have_graphql_field(:enforce_free_user_cap) }
   it { expect(described_class).to have_graphql_field(:project_compliance_standards_adherence) }
+  it { expect(described_class).to have_graphql_field(:amazon_s3_configurations) }
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }
