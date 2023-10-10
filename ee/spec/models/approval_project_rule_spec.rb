@@ -181,16 +181,6 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
 
       it { is_expected.to be_nil }
     end
-
-    context 'when feature flag "enforce_vulnerability_attributes_rules" is disabled' do
-      let(:scan_result_policy) { create(:scan_result_policy_read, vulnerability_attributes: { false_positive: true }) }
-
-      before do
-        stub_feature_flags(enforce_vulnerability_attributes_rules: false)
-      end
-
-      it { is_expected.to be_nil }
-    end
   end
 
   describe '#vulnerability_attribute_fix_available' do
@@ -212,16 +202,6 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
 
     context 'when vulnerability_attributes is empty' do
       let(:scan_result_policy) { create(:scan_result_policy_read) }
-
-      it { is_expected.to be_nil }
-    end
-
-    context 'when feature flag "enforce_vulnerability_attributes_rules" is disabled' do
-      let(:scan_result_policy) { create(:scan_result_policy_read, vulnerability_attributes: { fix_available: true }) }
-
-      before do
-        stub_feature_flags(enforce_vulnerability_attributes_rules: false)
-      end
 
       it { is_expected.to be_nil }
     end
