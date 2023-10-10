@@ -57,7 +57,7 @@ module EE
     end
 
     def filter_mutually_exclusive_labels(ids, added_label_ids, lock_on_merge: false)
-      return ids if added_label_ids.empty? || !parent.feature_available?(:scoped_labels)
+      return ids if added_label_ids.empty? || !container.licensed_feature_available?(:scoped_labels)
 
       label_sets = ScopedLabelSet.from_label_ids(ids)
 

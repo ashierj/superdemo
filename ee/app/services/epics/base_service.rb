@@ -14,11 +14,10 @@ module Epics
       { group: value }
     end
 
-    attr_reader :group, :parent_epic, :child_epic
+    attr_reader :parent_epic, :child_epic
 
-    # TODO: This constructor does NOT call `super`, because it has
-    # no `project` associated. Thus, the first argument is named
-    # `group`, even though it only a `group` in this sub-hierarchy of `IssuableBaseClass`,
+    # TODO: The first argument of the initializer is named group because it has no `project` associated,
+    # even though it is only a `group` in this sub-hierarchy of `IssuableBaseClass`,
     # but is a `project` everywhere else.  This is because named arguments
     # were added after the class was already in use. We use `.constructor_container_arg`
     # to determine the correct keyword to use.
@@ -46,11 +45,7 @@ module Epics
     # - Original discussion thread: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/59182#note_555401711
     # - Issue to address inheritance problems: https://gitlab.com/gitlab-org/gitlab/-/issues/328438
     def initialize(group:, current_user:, params: {})
-      # NOTE: this does NOT call `super`! See details in comment above.
-
-      @group = group
-      @current_user = current_user
-      @params = params
+      super(container: group, current_user: current_user, params: params)
     end
 
     private
