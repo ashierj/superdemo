@@ -91,36 +91,22 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
       end
     end
 
-    shared_examples 'disabled vulnerability attribute rules' do
-      before do
-        stub_feature_flags(enforce_vulnerability_attributes_rules: false)
-      end
-
-      it { is_expected.to match_array(all_findings) }
-    end
-
     context 'with false_positives true' do
       let(:params) { { false_positive: true } }
 
       it { is_expected.to contain_exactly(false_positive_finding) }
-
-      it_behaves_like 'disabled vulnerability attribute rules'
     end
 
     context 'with false_positives false' do
       let(:params) { { false_positive: false } }
 
       it { is_expected.to match_array(all_findings - [false_positive_finding]) }
-
-      it_behaves_like 'disabled vulnerability attribute rules'
     end
 
     context 'with fix_available true' do
       let(:params) { { fix_available: true } }
 
       it { is_expected.to contain_exactly(fix_available_finding, false_positive_finding, non_false_positive_finding) }
-
-      it_behaves_like 'disabled vulnerability attribute rules'
     end
 
     context 'with fix_available false' do
@@ -130,8 +116,6 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
         is_expected.to contain_exactly(no_fix_available_finding, high_severity_finding, container_scanning_finding,
           dismissed_finding)
       end
-
-      it_behaves_like 'disabled vulnerability attribute rules'
     end
 
     context 'when pipeline is empty' do
