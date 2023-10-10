@@ -15,16 +15,16 @@ RSpec.describe 'On-call Schedules (GraphQL fixtures)' do
   let!(:project_rotations) do
     create_list(
       :incident_management_oncall_rotation,
-        4,
-        :with_participants,
-        starts_at: Time.current,
-        ends_at: 2.weeks.from_now,
-        active_period_start: '02:00',
-        active_period_end: '10:00',
-        participants_count: 2,
-        schedule: project_schedule,
-        length: 1,
-        length_unit: :weeks
+      4,
+      :with_participants,
+      starts_at: Time.current,
+      ends_at: 2.weeks.from_now,
+      active_period_start: '02:00',
+      active_period_end: '10:00',
+      participants_count: 2,
+      schedule: project_schedule,
+      length: 1,
+      length_unit: :weeks
     )
   end
 
@@ -39,11 +39,15 @@ RSpec.describe 'On-call Schedules (GraphQL fixtures)' do
     it "graphql/#{query_path}.json" do
       query = get_graphql_query_as_string(query_path, ee: true)
 
-      post_graphql(query, current_user: current_user, variables: {
-                     projectPath: project.full_path,
-                     startsAt: Time.current,
-                     endsAt: 1.month.after(Time.current)
-                   })
+      post_graphql(
+        query,
+        current_user: current_user,
+        variables: {
+          projectPath: project.full_path,
+          startsAt: Time.current,
+          endsAt: 1.month.after(Time.current)
+        }
+      )
 
       nodes = graphql_dig_at(
         graphql_data,
