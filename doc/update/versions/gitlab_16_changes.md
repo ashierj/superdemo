@@ -178,6 +178,14 @@ Specific information applies to installations using Geo:
 
   For more information, see [issue 421629](https://gitlab.com/gitlab-org/gitlab/-/issues/421629).
 
+- You might encounter the following error after upgrading to GitLab 16.2 or later:
+
+  ```plaintext
+  PG::NotNullViolation: ERROR:  null value in column "source_partition_id" of relation "ci_sources_pipelines" violates not-null constraint
+  ```
+
+  Sidekiq and Puma processes must be restarted to resolve this issue.
+
 ### Linux package installations
 
 Specific information applies to Linux package installations:
