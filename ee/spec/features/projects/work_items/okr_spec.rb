@@ -107,7 +107,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
   context 'for objective' do
     before do
-      visit project_work_items_path(project, work_items_path: objective.iid)
+      visit project_work_item_path(project, objective.iid)
     end
 
     let(:work_item) { objective }
@@ -135,7 +135,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       Capybara::Session.new(:other_session)
 
       using_session :other_session do
-        visit project_work_items_path(project, work_items_path: objective.iid)
+        visit project_work_item_path(project, objective.iid)
         expect(work_item.reload.assignees).not_to include(user)
       end
 
@@ -281,7 +281,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
         click_button 'Close'
       end
 
-      visit project_work_items_path(project, objective.iid)
+      visit project_work_item_path(project, objective.iid)
       wait_for_all_requests
 
       page.within('[data-testid="work-item-tree"] [data-testid="widget-body"]') do
@@ -339,7 +339,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
   context 'for keyresult' do
     before do
-      visit project_work_items_path(project, work_items_path: key_result.iid)
+      visit project_work_item_path(project, key_result.iid)
     end
 
     let(:work_item) { key_result }
@@ -381,7 +381,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       stub_licensed_features(okrs: true, issuable_health_status: true)
       stub_feature_flags(work_items: true, okrs_mvc: true)
 
-      visit project_work_items_path(project, work_items_path: objective.iid)
+      visit project_work_item_path(project, objective.iid)
     end
 
     it_behaves_like 'work items todos'
