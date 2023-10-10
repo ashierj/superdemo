@@ -71,50 +71,50 @@ module QA
         end
 
         view 'app/assets/javascripts/vue_merge_request_widget/components/states/mr_widget_merged.vue' do
-          element :cherry_pick_button
-          element :revert_button
+          element 'cherry-pick-button'
+          element 'revert-button'
         end
 
         view 'app/assets/javascripts/vue_merge_request_widget/components/states/mr_widget_rebase.vue' do
-          element :mr_rebase_button
-          element :no_fast_forward_message_content
+          element 'standard-rebase-button'
+          element 'rebase-message'
         end
 
         view 'app/assets/javascripts/vue_merge_request_widget/components/states/ready_to_merge.vue' do
-          element :merge_button
-          element :merge_moment_dropdown
-          element :merge_immediately_menu_item
-          element :merged_status_content
+          element 'merge-button'
+          element 'merge-immediately-dropdown'
+          element 'merge-immediately-button'
+          element 'merged-status-content'
         end
 
         view 'app/assets/javascripts/vue_merge_request_widget/components/states/sha_mismatch.vue' do
-          element :head_mismatch_content
+          element 'head-mismatch-content'
         end
 
         view 'app/assets/javascripts/vue_merge_request_widget/components/states/squash_before_merge.vue' do
-          element :squash_checkbox
+          element 'squash-checkbox'
         end
 
         view 'app/assets/javascripts/vue_merge_request_widget/mr_widget_options.vue' do
-          element :mr_widget_content
+          element 'mr-widget-content'
           element 'pipeline-container'
         end
 
         view 'app/assets/javascripts/vue_shared/components/markdown/apply_suggestion.vue' do
-          element :apply_suggestion_dropdown
-          element :commit_message_field
-          element :commit_with_custom_message_button
+          element 'apply-suggestion-dropdown'
+          element 'commit-message-field'
+          element 'commit-with-custom-message-button'
         end
 
         view 'app/assets/javascripts/vue_shared/components/markdown/header.vue' do
-          element :suggestion_button
-          element :dismiss_suggestion_popover_button
+          element 'suggestion-button'
+          element 'dismiss-suggestion-popover-button'
         end
 
         view 'app/assets/javascripts/vue_shared/components/markdown/suggestion_diff_header.vue' do
-          element :add_suggestion_batch_button
-          element :applied_badge
-          element :applying_badge
+          element 'add-suggestion-batch-button'
+          element 'applied-badge'
+          element 'applying-badge'
         end
 
         view 'app/views/projects/merge_requests/_description.html.haml' do
@@ -130,10 +130,6 @@ module QA
           element 'notes-tab', required: true
           element 'commits-tab', required: true
           element 'diffs-tab', required: true
-        end
-
-        view 'app/assets/javascripts/vue_merge_request_widget/components/states/mr_widget_auto_merge_enabled.vue' do
-          element :cancel_auto_merge_button
         end
 
         view 'app/views/shared/_broadcast_message.html.haml' do
@@ -195,7 +191,9 @@ module QA
 
           all_elements('left-line-number', minimum: 1).first.hover
           click_element('left-comment-button')
-          click_element(:dismiss_suggestion_popover_button) if has_element?(:dismiss_suggestion_popover_button, wait: 1)
+
+          click_element('dismiss-suggestion-popover-button') if has_element?('dismiss-suggestion-popover-button',
+            wait: 1)
 
           fill_element('reply-field', text)
         end
@@ -227,7 +225,7 @@ module QA
         end
 
         def fast_forward_not_possible?
-          has_element?(:no_fast_forward_message_content)
+          has_element?('rebase-message')
         end
 
         def has_file?(file_name)
@@ -258,13 +256,13 @@ module QA
         def has_merge_button?
           refresh
 
-          has_element?(:merge_button)
+          has_element?('merge-button')
         end
 
         def has_no_merge_button?
           refresh
 
-          has_no_element?(:merge_button)
+          has_no_element?('merge-button')
         end
 
         RSpec::Matchers.define :have_merge_button do
@@ -290,15 +288,15 @@ module QA
         def mark_to_squash
           # Refresh page if commit arrived after loading the MR page
           wait_until(reload: true, message: 'Wait for MR to be unblocked') do
-            has_no_element?(:head_mismatch_content, wait: 1)
+            has_no_element?('head-mismatch-content', wait: 1)
           end
 
           # The squash checkbox is enabled via JS
           wait_until(reload: false) do
-            !find_element(:squash_checkbox, visible: false).disabled?
+            !find_element('squash-checkbox', visible: false).disabled?
           end
 
-          check_element(:squash_checkbox, true)
+          check_element('squash-checkbox', true)
         end
 
         def merge!
@@ -311,7 +309,7 @@ module QA
         def merge_when_pipeline_succeeds!
           wait_until_ready_to_merge
 
-          click_element(:merge_button, text: 'Merge when pipeline succeeds')
+          click_element('merge-button', text: 'Merge when pipeline succeeds')
         end
 
         def merged?
@@ -322,23 +320,23 @@ module QA
           # To remove page refresh logic if possible
           # We don't raise on failure because this method is used as a predicate matcher
           retry_until(max_attempts: 3, reload: true, raise_on_failure: false) do
-            has_element?(:merged_status_content, text: /The changes were merged into|Changes merged into/, wait: 20)
+            has_element?('merged-status-content', text: /The changes were merged into|Changes merged into/, wait: 20)
           end
         end
 
         RSpec::Matchers.define :be_mergeable do
           match do |page|
-            page.has_element?(:merge_button, disabled: false)
+            page.has_element?('merge-button', disabled: false)
           end
 
           match_when_negated do |page|
-            page.has_no_element?(:merge_button, disabled: false)
+            page.has_no_element?('merge-button', disabled: false)
           end
         end
 
         # Waits up 10 seconds and returns false if the Revert button is not enabled
         def revertible?
-          has_element?(:revert_button, disabled: false, wait: 10)
+          has_element?('revert-button', disabled: false, wait: 10)
         end
 
         # Waits up 60 seconds and raises an error if unable to merge.
@@ -352,12 +350,12 @@ module QA
           wait_until(message: "Waiting for ready to merge", sleep_interval: 1) do
             # changes in mr are rendered async, because of that mr can sometimes show no changes and there will be no
             # merge button, in such case we must retry loop otherwise find_element will raise ElementNotFound error
-            next false unless has_element?(:merge_button, wait: 1)
+            next false unless has_element?('merge-button', wait: 1)
 
-            break true unless find_element(:merge_button).disabled?
+            break true unless find_element('merge-button').disabled?
 
             # If the widget shows "Merge blocked: new changes were just added" we can refresh the page and check again
-            next false if has_element?(:head_mismatch_content, wait: 1)
+            next false if has_element?('head-mismatch-content', wait: 1)
 
             # Stop waiting if we're in a transient test. By this point we're in an unexpected state and should let the
             # test fail so we can investigate. If we're not in a transient test we keep trying until we reach timeout.
@@ -372,24 +370,24 @@ module QA
         def rebase!
           # The rebase button is disabled on load
           wait_until do
-            has_element?(:mr_rebase_button)
+            has_element?('standard-rebase-button')
           end
 
           # The rebase button is enabled via JS
           wait_until(reload: false) do
-            !find_element(:mr_rebase_button).disabled?
+            !find_element('standard-rebase-button').disabled?
           end
 
-          click_element(:mr_rebase_button)
+          click_element('standard-rebase-button')
         end
 
         def merge_immediately!
           retry_until(reload: true, sleep_interval: 1, max_attempts: 12) do
-            if has_element?(:merge_moment_dropdown)
-              click_element(:merge_moment_dropdown, skip_finished_loading_check: true)
-              click_element(:merge_immediately_menu_item, skip_finished_loading_check: true)
+            if has_element?('merge-immediately-dropdown')
+              click_element('merge-immediately-dropdown', skip_finished_loading_check: true)
+              click_element('merge-immediately-button', skip_finished_loading_check: true)
             else
-              click_element(:merge_button, skip_finished_loading_check: true)
+              click_element('merge-button', skip_finished_loading_check: true)
             end
 
             merged?
@@ -400,9 +398,9 @@ module QA
           # Revisit after merge page re-architect is done https://gitlab.com/gitlab-org/gitlab/-/issues/300042
           # To remove page refresh logic if possible
           wait_until_ready_to_merge
-          wait_until { !find_element(:merge_button).text.include?('when pipeline succeeds') } # rubocop:disable Rails/NegateInclude
+          wait_until { !find_element('merge-button').text.include?('when pipeline succeeds') } # rubocop:disable Rails/NegateInclude
 
-          click_element(:merge_button)
+          click_element('merge-button')
         end
 
         def view_email_patches
@@ -448,7 +446,7 @@ module QA
         def add_suggestion_to_diff(suggestion, line)
           find("a[data-linenumber='#{line}']").hover
           click_element('left-comment-button')
-          click_element(:suggestion_button)
+          click_element('suggestion-button')
           initial_content = find_element('reply-field').value
           fill_element('reply-field', '')
           fill_element('reply-field', initial_content.gsub(/(```suggestion:-0\+0\n).*(\n```)/, "\\1#{suggestion}\\2"))
@@ -457,24 +455,24 @@ module QA
         end
 
         def apply_suggestion_with_message(message)
-          all_elements(:apply_suggestion_dropdown, minimum: 1).first.click
-          fill_element(:commit_message_field, message)
-          click_element(:commit_with_custom_message_button)
+          all_elements('apply-suggestion-dropdown', minimum: 1).first.click
+          fill_element('commit-message-field', message)
+          click_element('commit-with-custom-message-button')
         end
 
         def add_suggestion_to_batch
-          all_elements(:add_suggestion_batch_button, minimum: 1).first.click
+          all_elements('add-suggestion-batch-button', minimum: 1).first.click
         end
 
         def has_suggestions_applied?(count = 1)
           wait_until(reload: false) do
-            has_no_element?(:applying_badge)
+            has_no_element?('applying-badge')
           end
-          all_elements(:applied_badge, count: count)
+          all_elements('applied-badge', count: count)
         end
 
         def cherry_pick!
-          click_element(:cherry_pick_button, Page::Component::CommitModal)
+          click_element('cherry-pick-button', Page::Component::CommitModal)
           click_element(:submit_commit_button)
         end
 
@@ -482,13 +480,13 @@ module QA
           # reload page when the revert modal occasionally doesn't appear in ee:large-setup job
           # https://gitlab.com/gitlab-org/gitlab/-/issues/386623 (transient issue)
           retry_on_exception(reload: true) do
-            click_element(:revert_button, Page::Component::CommitModal)
+            click_element('revert-button', Page::Component::CommitModal)
           end
           click_element(:submit_commit_button)
         end
 
         def mr_widget_text
-          find_element(:mr_widget_content).text
+          find_element('mr-widget-content').text
         end
 
         def has_fork_icon?

@@ -121,7 +121,6 @@ exports[`License Compliance extension expanded data with new licenses displays a
                     <span>
                       <a
                         class="btn btn-confirm btn-confirm-tertiary btn-sm gl-button gl-float-left gl-md-display-block"
-                        data-qa-selector="mr_widget_extension_actions_button"
                         data-testid="extension-actions-button"
                         href="/group-name/project-name/-/merge_requests/78/full_report"
                       >
@@ -401,7 +400,6 @@ exports[`License Compliance extension expanded data with new licenses displays u
                     <span>
                       <a
                         class="btn btn-confirm btn-confirm-tertiary btn-sm gl-button gl-float-left gl-md-display-block"
-                        data-qa-selector="mr_widget_extension_actions_button"
                         data-testid="extension-actions-button"
                         href="/group-name/project-name/-/merge_requests/78/full_report"
                       >

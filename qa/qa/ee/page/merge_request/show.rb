@@ -234,8 +234,8 @@ module QA
           end
 
           def skip_merge_train_and_merge_immediately
-            click_element :merge_moment_dropdown
-            click_element :merge_immediately_menu_item
+            click_element 'merge-immediately-dropdown'
+            click_element 'merge-immediately-button'
 
             # Wait for the warning modal dialog to appear
             wait_for_animated_element :merge_immediately_button
