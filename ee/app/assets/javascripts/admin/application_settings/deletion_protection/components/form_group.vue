@@ -40,7 +40,7 @@ export default {
         :id="$options.inputId"
         v-model="formData.deletionAdjournedPeriod"
         name="application_setting[deletion_adjourned_period]"
-        size="xs"
+        width="xs"
         type="number"
         :min="1"
         :max="90"

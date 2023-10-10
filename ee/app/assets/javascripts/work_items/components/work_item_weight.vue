@@ -158,7 +158,7 @@ export default {
         min="0"
         :placeholder="placeholder"
         :readonly="!canUpdate"
-        size="sm"
+        width="sm"
         class="hide-unfocused-input-decoration work-item-field-value"
         :type="type"
         :value="weight"

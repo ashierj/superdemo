@@ -135,7 +135,7 @@ export default {
             id="sla-duration"
             v-model="duration"
             number
-            size="xs"
+            width="xs"
             :step="$options.units[unit].step"
             type="number"
           />

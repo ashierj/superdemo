@@ -86,7 +86,7 @@ export default {
       <gl-form-input-group>
         <gl-form-input
           v-model="promoCode"
-          size="md"
+          width="md"
           data-qa-selector="promo_code"
           :disabled="disablePromoCodeInput"
           @change="updatePromoCode"

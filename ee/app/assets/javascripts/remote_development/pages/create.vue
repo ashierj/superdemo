@@ -274,7 +274,7 @@ export default {
               required
               autocomplete="off"
               data-qa-selector="workspace_cluster_max_hours_before_termination"
-              size="xs"
+              width="xs"
             />
             <template #append>
               <div class="input-group-text">{{ __('hours') }}</div>

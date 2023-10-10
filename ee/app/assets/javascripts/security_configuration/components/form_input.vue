@@ -85,7 +85,7 @@ export default {
 
     <gl-form-input
       :id="field"
-      :size="inputSize"
+      :width="inputSize"
       :value="value"
       :disabled="disabled"
       :placeholder="placeholder"
