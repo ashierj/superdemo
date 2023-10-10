@@ -156,6 +156,23 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       it { is_expected.to validate_numericality_of(:deletion_adjourned_period).is_greater_than(0).is_less_than_or_equal_to(90) }
     end
 
+    describe 'enabled_git_access_protocol setting' do
+      it 'validates inclusion in the list of settings' do
+        is_expected.to allow_values('ssh', 'http').for(:enabled_git_access_protocol)
+        is_expected.not_to allow_value('ssh_certificates').for(:enabled_git_access_protocol)
+      end
+
+      context 'when ssh_certificates licensed feature is available' do
+        before do
+          stub_licensed_features(ssh_certificates: true)
+        end
+
+        it 'validates inclusion in the list of settings' do
+          is_expected.to allow_values('ssh', 'http', 'ssh_certificates').for(:enabled_git_access_protocol)
+        end
+      end
+    end
+
     describe 'namespace_storage_forks_cost_factor' do
       it do
         is_expected.to validate_numericality_of(:namespace_storage_forks_cost_factor)

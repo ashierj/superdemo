@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupsHelper do
+RSpec.describe GroupsHelper, feature_category: :source_code_management do
   using RSpec::Parameterized::TableSyntax
 
   let(:owner) { create(:user, group_view: :security_dashboard) }
@@ -450,6 +450,81 @@ RSpec.describe GroupsHelper do
 
     it 'returns false when current_user can not admin members' do
       expect(helper.can_admin_service_accounts?(group)).to be(false)
+    end
+  end
+
+  describe '#enabled_git_access_protocol_options_for_group' do
+    let_it_be(:group) { create(:group) }
+
+    subject { helper.enabled_git_access_protocol_options_for_group(group) }
+
+    before do
+      allow(::Gitlab::CurrentSettings).to receive(:enabled_git_access_protocol).and_return(instance_setting)
+    end
+
+    context "instance setting is nil" do
+      let(:instance_setting) { nil }
+
+      it 'returns all settings' do
+        is_expected.to contain_exactly(
+          [_("Both SSH and HTTP(S)"), "all"],
+          [_("Only SSH"), "ssh"],
+          [_("Only HTTP(S)"), "http"]
+        )
+      end
+    end
+
+    context 'when ssh_certificates licensed feature is available' do
+      before do
+        stub_licensed_features(ssh_certificates: true)
+      end
+
+      context "instance setting is nil" do
+        let(:instance_setting) { nil }
+
+        it 'returns all settings' do
+          is_expected.to contain_exactly(
+            [_("Both SSH and HTTP(S)"), "all"],
+            [_("Only SSH"), "ssh"],
+            [_("Only HTTP(S)"), "http"],
+            [_("Only SSH Certificates"), "ssh_certificates"]
+          )
+        end
+
+        context 'when enforce_ssh_certificates is disabled' do
+          before do
+            stub_feature_flags(enforce_ssh_certificates: false)
+          end
+
+          it 'does not return SSH Certificates label' do
+            is_expected.to contain_exactly(
+              [_("Both SSH and HTTP(S)"), "all"],
+              [_("Only SSH"), "ssh"],
+              [_("Only HTTP(S)"), "http"]
+            )
+          end
+        end
+      end
+
+      context 'when instance setting is ssh_certificates' do
+        let(:instance_setting) { 'ssh_certificates' }
+
+        it 'returns SSH Certificates label' do
+          is_expected.to contain_exactly([_("Only SSH Certificates"), "ssh_certificates"])
+        end
+      end
+
+      context "instance setting is ssh" do
+        let(:instance_setting) { "ssh" }
+
+        it { is_expected.to contain_exactly([_("Only SSH"), "ssh"]) }
+      end
+
+      context "instance setting is http" do
+        let(:instance_setting) { "http" }
+
+        it { is_expected.to contain_exactly([_("Only HTTP(S)"), "http"]) }
+      end
     end
   end
 end

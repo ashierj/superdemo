@@ -126,5 +126,22 @@ module EE
         full_path: group.full_path
       }
     end
+
+    override :enabled_git_access_protocol_options_for_group
+    def enabled_git_access_protocol_options_for_group(group)
+      return super unless ::Feature.enabled?(:enforce_ssh_certificates, group)
+      return super unless group.licensed_feature_available?(:ssh_certificates)
+
+      ssh_certificates_label = [[_("Only SSH Certificates"), "ssh_certificates"]]
+
+      case ::Gitlab::CurrentSettings.enabled_git_access_protocol
+      when nil, ""
+        super + ssh_certificates_label
+      when 'ssh_certificates'
+        ssh_certificates_label
+      else
+        super
+      end
+    end
   end
 end
