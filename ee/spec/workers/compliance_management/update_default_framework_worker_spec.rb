@@ -7,15 +7,24 @@ RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker, feature_categ
   let_it_be(:user) { create(:user) }
   let_it_be(:admin_bot) { create(:user, :admin_bot, :admin) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, namespace: group) }
+  let_it_be_with_reload(:project) { create(:project, namespace: group) }
   let_it_be(:framework) { create(:compliance_framework, namespace: group, name: 'GDPR') }
 
   let(:job_args) { [user.id, project.id, framework.id] }
 
+  shared_examples 'updates the compliance framework for the project' do
+    it do
+      expect(project.compliance_management_framework).to eq(nil)
+
+      worker.perform(*job_args)
+
+      expect(project.reload.compliance_management_framework).to eq(framework)
+    end
+  end
+
   describe "#perform" do
     before do
       group.add_developer(user)
-      group.add_owner(admin_bot)
       stub_licensed_features(custom_compliance_frameworks: true, compliance_framework: true)
     end
 
@@ -29,12 +38,16 @@ RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker, feature_categ
       worker.perform(*job_args)
     end
 
-    it 'updates the compliance framework for the project' do
-      expect(project.compliance_management_framework).to eq(nil)
+    context 'when admin mode is not enabled', :do_not_mock_admin_mode_setting do
+      include_examples 'updates the compliance framework for the project'
+    end
 
-      worker.perform(*job_args)
+    context 'when admin mode is enabled', :request_store do
+      before do
+        stub_application_setting(admin_mode: true)
+      end
 
-      expect(project.reload.compliance_management_framework).to eq(framework)
+      include_examples 'updates the compliance framework for the project'
     end
 
     it_behaves_like 'an idempotent worker'
