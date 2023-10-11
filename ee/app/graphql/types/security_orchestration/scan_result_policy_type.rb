@@ -14,7 +14,8 @@ module Types
       field :all_group_approvers, [::Types::SecurityOrchestration::ApprovalGroupType],
             null: true,
             description: 'All potential approvers of the group type, including groups inaccessible to the user.'
-      field :group_approvers, ['::Types::GroupType'], null: true, description: 'Approvers of the group type.'
+      field :group_approvers, ['::Types::GroupType'], null: true, description: 'Approvers of the group type.',
+            deprecated: { reason: 'Use `allGroupApprovers`', milestone: '16.5' }
       field :role_approvers, [::Types::MemberAccessLevelNameEnum],
             null: true,
             description: 'Approvers of the role type. Users belonging to these role(s) alone will be approvers.'
