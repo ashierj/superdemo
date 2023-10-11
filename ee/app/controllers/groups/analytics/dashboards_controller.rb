@@ -20,14 +20,12 @@ module Groups
 
       layout 'group'
 
-      MAX_ALLOWED_PATHS = 4
-
       def value_streams_dashboard
         @pointer_project = find_pointer_project
 
         @namespaces =
           if params[:query].present?
-            paths_array = params[:query].split(",").first(MAX_ALLOWED_PATHS)
+            paths_array = params[:query].split(",")
             sources = Route.inside_path(@group.full_path).where(path: paths_array).map(&:source) # rubocop:disable CodeReuse/ActiveRecord
 
             sources.map do |source|

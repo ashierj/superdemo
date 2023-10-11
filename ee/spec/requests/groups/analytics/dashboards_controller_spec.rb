@@ -149,20 +149,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
           expect(response.body).to include(parsed_response(project))
         end
 
-        it 'will only return the first 4 namespaces' do
-          get build_dashboard_path(
-            value_streams_dashboard_group_analytics_dashboards_path(group),
-            [].concat(projects, [subgroup])
-          )
-
-          expect(response).to be_successful
-          expect(response.body).not_to include(parsed_response(subgroup, false))
-
-          projects.each do |project|
-            expect(response.body).to include(parsed_response(project))
-          end
-        end
-
         it 'will return projects in a subgroup' do
           first_parent_project = projects.first
           params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
