@@ -3,6 +3,7 @@
 module CodeSuggestions
   class InstructionsExtractor
     EMPTY_LINES_LIMIT = 1
+    MIN_LINES_OF_CODE = 5
 
     def initialize(language, content, first_line_regex)
       @language = language
@@ -19,7 +20,6 @@ module CodeSuggestions
       comment_block = []
       trimmed_lines = 0
 
-      single_line_comment_format = @language.single_line_comment_format
       lines.reverse_each do |line|
         next trimmed_lines += 1 if trimmed_lines < EMPTY_LINES_LIMIT && comment_block.empty? && line.strip.empty?
         break unless @language.single_line_comment?(line)
@@ -27,17 +27,13 @@ module CodeSuggestions
         comment_block.unshift(line)
       end
 
-      # Matches the first comment line requirements
-      return {} unless comment_block.first&.match(first_line_regex)
-
       # lines before the last comment block
-      prefix = lines[0...-(comment_block.length + trimmed_lines)].join("")
+      prefix_lines = lines[0...-(comment_block.length + trimmed_lines)]
+      prefix = prefix_lines.join("")
 
-      instruction = comment_block.map { |line| line.gsub!(single_line_comment_format, '').strip }.join("\n")
+      instruction = get_instruction(lines, comment_block)
 
-      # TODO: Remove when `code_suggestions_no_comment_prefix` feature flag
-      # is removed https://gitlab.com/gitlab-org/gitlab/-/issues/424879
-      instruction.gsub!(/GitLab Duo Generate:\s?/, '')
+      return {} unless instruction
 
       {
         prefix: prefix,
@@ -48,5 +44,21 @@ module CodeSuggestions
     private
 
     attr_reader :language, :content, :first_line_regex
+
+    def get_instruction(lines, comment_block)
+      if comment_block.first&.match(first_line_regex)
+        instruction = comment_block
+        .map { |line| line.gsub(language.single_line_comment_format, '').strip }
+        .join("\n")
+        .gsub(/GitLab Duo Generate:\s?/, '')
+
+        return instruction if instruction
+      end
+
+      non_comment_lines = lines.map(&:strip).reject { |line| line.empty? || language.single_line_comment?(line) }
+      return 'Create more new code for this file.' if non_comment_lines.count < MIN_LINES_OF_CODE
+
+      nil
+    end
   end
 end

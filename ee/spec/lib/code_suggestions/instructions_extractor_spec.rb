@@ -8,14 +8,19 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       CodeSuggestions::ProgrammingLanguage.from_language(CodeSuggestions::ProgrammingLanguage::DEFAULT)
     end
 
+    let(:default_instruction) { 'Create more new code for this file.' }
+
     subject { described_class.extract(language, content, first_line_regex) }
 
     context 'when content is nil' do
       let(:content) { nil }
       let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
 
-      it 'does not find instruction' do
-        is_expected.to eq({})
+      it 'sets create instruction' do
+        is_expected.to eq({
+          prefix: "",
+          instruction: default_instruction
+        })
       end
     end
 
@@ -29,7 +34,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: "",
+            prefix: '',
             instruction: "Generate me a function"
           )
         end
@@ -42,12 +47,15 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it 'does not find instruction' do
-          is_expected.to eq({})
+        it 'sets create instruction' do
+          is_expected.to eq({
+            prefix: '',
+            instruction: default_instruction
+          })
         end
       end
 
-      context 'when the last line is not a comment' do
+      context 'when the last line is not a comment but code is less than 5 lines' do
         let(:content) do
           <<~CODE
             #{comment_sign}A function that outputs the first 20 fibonacci numbers
@@ -57,8 +65,11 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it 'does not find instruction' do
-          is_expected.to eq({})
+        it 'finds the instruction' do
+          is_expected.to eq({
+            prefix: "#{comment_sign}A function that outputs the first 20 fibonacci numbers\n\ndef fibonacci(x)\n",
+            instruction: default_instruction
+          })
         end
       end
 
@@ -127,6 +138,10 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           <<~CODE
             full_name()
             address()
+            street()
+            city()
+            state()
+            pincode()
 
             #{comment_sign}Generate me a function
             #{comment_sign}with 2 arguments
@@ -190,8 +205,23 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it "does not find instruction" do
-          is_expected.to eq({})
+        let(:expected_prefix) do
+          <<~CODE
+            full_name()
+            address()
+
+            #{comment_sign}just some comment
+            #{comment_sign}explaining something
+            another_function()
+
+          CODE
+        end
+
+        it "sets the create instruction" do
+          is_expected.to eq({
+            prefix: expected_prefix,
+            instruction: default_instruction
+          })
         end
       end
 
@@ -200,6 +230,11 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           <<~CODE
             full_name()
             address()
+            street()
+            city()
+            state()
+            pincode()
+
 
             #{comment_sign}just some comment
             #{comment_sign}explaining something
@@ -228,8 +263,11 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             CODE
           end
 
-          it 'does not find instruction' do
-            is_expected.to eq({})
+          it 'finds the instruction' do
+            is_expected.to eq({
+              prefix: "full_name()\naddress()\n\n",
+              instruction: default_instruction
+            })
           end
         end
 

@@ -29,7 +29,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           # Line breaks at the end of the comment
           "#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "#{single_line_comment} #{generate_prefix}define a calculator class that can be called from other functions \n \n\n" | CodeSuggestions::Tasks::CodeCompletion
+          "#{single_line_comment} #{generate_prefix} def index\nend\ndef print\nend\ndef add\nend\ndef sub\nend\ndefine a calculator class that can be called from other functions \n \n\n" | CodeSuggestions::Tasks::CodeCompletion
 
           # These have characters _before_ the comment
           "end\n\n#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
@@ -48,17 +48,17 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           "#{single_line_comment} #{generate_prefix}A function that outputs\n#{single_line_comment} the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
-          "#{single_line_comment}#{generate_prefix}A function that outputs fibonacci numbers\nconst hello = () => 'world';\n#{single_line_comment} first 20" | CodeSuggestions::Tasks::CodeCompletion
+          "#{single_line_comment}#{generate_prefix} def index\nend\ndef print\nend\ndef add\nend\ndef sub\nend\nA function that outputs fibonacci numbers\nconst hello = () => 'world';\n#{single_line_comment} first 20" | CodeSuggestions::Tasks::CodeCompletion
 
-          # These are too short to be considered generation
-          "#{single_line_comment} #{generate_prefix}A func" | CodeSuggestions::Tasks::CodeCompletion
-          "#{single_line_comment} #{generate_prefix}A fun"  | CodeSuggestions::Tasks::CodeCompletion
-          "#{single_line_comment}#{generate_prefix}A func"  | CodeSuggestions::Tasks::CodeCompletion
-          "#{single_line_comment}#{generate_prefix}A fu"    | CodeSuggestions::Tasks::CodeCompletion
+          # These are too short so create instruction will be appended
+          "#{single_line_comment} #{generate_prefix}A func" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment} #{generate_prefix}A fun"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{generate_prefix}A func"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "#{single_line_comment}#{generate_prefix}A fu"    | CodeSuggestions::Tasks::CodeGeneration::FromComment
 
           # These include no comments at all
-          'def fibonacci(i)'        | CodeSuggestions::Tasks::CodeCompletion
-          'function fibonacci(x) {' | CodeSuggestions::Tasks::CodeCompletion
+          "def index\nend\ndef print\nend\ndef add\nend\ndef sub\nend\ndef fibonacci(i)" | CodeSuggestions::Tasks::CodeCompletion
+          "# #{generate_prefix} A func that outputs series\nfunction fibonacci(x) {" | CodeSuggestions::Tasks::CodeGeneration::FromComment
           # rubocop:enable Layout/LineLength
         end
 
@@ -89,6 +89,18 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         let(:single_line_comment) { '#' }
         let(:prefix) do
           <<~TEXT
+            def index
+              return 0
+            end
+
+            def add(x, y)
+              return x + y
+            end
+
+            def sub(x, y)
+              return x - y
+            end
+
             # #{generate_prefix}A function that outputs the first 20 fibonacci numbers
 
             def fibonacci(x)
