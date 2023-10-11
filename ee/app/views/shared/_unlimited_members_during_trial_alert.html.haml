@@ -23,5 +23,6 @@
             trigger_source: 'unlimited_members_during_trial_alert',
             classes: 'gl-mr-3'
           } }
-        = render Pajamas::ButtonComponent.new(href: group_billings_path(root_namespace), variant: button_variant) do
-          = s_('UnlimitedMembersDuringTrialAlert|Explore paid plans')
+        - unless current_page?(group_billings_path(root_namespace))
+          = render Pajamas::ButtonComponent.new(href: group_billings_path(root_namespace), variant: button_variant) do
+            = s_('UnlimitedMembersDuringTrialAlert|Explore paid plans')

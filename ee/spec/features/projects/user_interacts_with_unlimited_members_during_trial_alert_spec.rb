@@ -2,8 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project > Unlimited members alert', :js, :saas,
-  feature_category: :groups_and_projects do
+RSpec.describe 'Project > Unlimited members alert', :js, :saas, feature_category: :groups_and_projects do
   let(:alert_selector) { '[data-testid="unlimited-members-during-trial-alert"]' }
   let_it_be(:group) { create(:group, :private, name: 'unlimited-members-during-trial-alert-group') }
   let_it_be(:project) { create(:project, group: group) }
@@ -26,7 +25,7 @@ RSpec.describe 'Project > Unlimited members alert', :js, :saas,
     before do
       create(:gitlab_subscription, :active_trial, namespace: group)
 
-      stub_ee_application_setting(dashboard_limit_enabled: true)
+      stub_application_setting(dashboard_limit_enabled: true)
     end
 
     context 'when user is not owner' do
@@ -51,6 +50,7 @@ RSpec.describe 'Project > Unlimited members alert', :js, :saas,
 
       it_behaves_like 'unlimited members during trial alert' do
         let_it_be(:members_page_path) { project_project_members_path(project) }
+        let_it_be(:billings_page_path) { group_billings_path(group) }
         let_it_be(:page_path) { project_path(project) }
       end
     end
