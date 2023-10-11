@@ -3,6 +3,10 @@
 RSpec.shared_examples 'does not hit Elasticsearch twice for objects and counts' do |scopes|
   scopes.each do |scope|
     context "for scope #{scope}", :elastic, :request_store, feature_category: :global_search do
+      before do
+        allow(::Gitlab::PerformanceBar).to receive(:enabled_for_request?).and_return(true)
+      end
+
       it 'makes 1 Elasticsearch query' do
         # We want to warm the cache for checking migrations have run since we
         # don't want to count these requests as searches
@@ -24,11 +28,11 @@ end
 
 RSpec.shared_examples 'does not load results for count only queries' do |scopes|
   scopes.each do |scope|
-    before do
-      allow(::Gitlab::PerformanceBar).to receive(:enabled_for_request?).and_return(true)
-    end
-
     context "for scope #{scope}", :elastic, :request_store, feature_category: :global_search do
+      before do
+        allow(::Gitlab::PerformanceBar).to receive(:enabled_for_request?).and_return(true)
+      end
+
       it 'makes count query' do
         # We want to warm the cache for checking migrations have run since we
         # don't want to count these requests as searches
