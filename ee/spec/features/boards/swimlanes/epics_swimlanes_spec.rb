@@ -87,7 +87,7 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   end
 
   context 'issue cards' do
-    let(:issue_card) { first("[data-testid='board-epic-lane-issues'] [data-testid='board_card']") }
+    let(:issue_card) { first("[data-testid='board-epic-lane-issues'] [data-testid='board-card']") }
 
     before do
       wait_for_all_requests

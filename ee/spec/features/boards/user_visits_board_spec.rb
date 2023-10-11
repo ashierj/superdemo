@@ -44,7 +44,7 @@ RSpec.describe 'User visits issue boards', :js, feature_category: :team_planning
     it 'displays all issues satisfiying filter params and correctly sets url params' do
       expect(query_strings(current_url)).to match_array(query_strings(expected_board_path))
 
-      page.assert_selector('[data-testid="board_card"]', count: expected_issues.length)
+      page.assert_selector('[data-testid="board-card"]', count: expected_issues.length)
 
       expected_issues.each { |issue_title| expect(page).to have_link issue_title }
     end

@@ -57,11 +57,11 @@ RSpec.describe 'epics swimlanes sidebar', :js, feature_category: :team_planning,
   end
 
   def first_card
-    find_by_testid('board-lane-unassigned-issues').first("[data-testid='board_card']")
+    find_by_testid('board-lane-unassigned-issues').first("[data-testid='board-card']")
   end
 
   def first_card_with_epic
-    find_by_testid('board-epic-lane-issues').first("[data-testid='board_card']")
+    find_by_testid('board-epic-lane-issues').first("[data-testid='board-card']")
   end
 
   def refresh_and_click_first_card
