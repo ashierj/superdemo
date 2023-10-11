@@ -1,5 +1,5 @@
 <script>
-import { GlFormGroup, GlFormRadioGroup, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 
@@ -15,10 +15,9 @@ export default {
     { text: s__('GroupRoadmap|Within 3 years'), value: DATE_RANGES.THREE_YEARS },
   ],
   components: {
+    GlCollapsibleListbox,
     GlFormGroup,
     GlFormRadioGroup,
-    GlDropdown,
-    GlDropdownItem,
   },
   props: {
     timeframeRangeType: {
@@ -93,25 +92,14 @@ export default {
 <template>
   <div>
     <label for="roadmap-daterange" class="gl-display-block">{{ $options.i18n.header }}</label>
-    <gl-dropdown
+    <gl-collapsible-listbox
       id="roadmap-daterange"
+      v-model="selectedDaterange"
       icon="calendar"
       class="roadmap-daterange-dropdown"
-      toggle-class="gl-rounded-base!"
-      :text="daterangeDropdownText"
       data-testid="daterange-dropdown"
-      @show="handleDaterangeDropdownOpen"
-      @hide="handleDaterangeDropdownClose"
-    >
-      <gl-dropdown-item
-        v-for="dateRange in $options.availableDateRanges"
-        :key="dateRange.value"
-        :value="dateRange.value"
-        @click="handleDaterangeSelect(dateRange.value)"
-      >
-        {{ dateRange.text }}
-      </gl-dropdown-item>
-    </gl-dropdown>
+      :items="$options.availableDateRanges"
+    />
     <gl-form-group v-if="availablePresets.length" class="gl-mb-0 gl-mt-3">
       <gl-form-radio-group
         data-testid="daterange-presets"

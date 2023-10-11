@@ -1,4 +1,4 @@
-import { GlDropdown, GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
 import { nextTick } from 'vue';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -26,7 +26,7 @@ describe('RoadmapDaterange', () => {
     });
   };
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findFormRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
 
