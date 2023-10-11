@@ -9,6 +9,11 @@ module AutoMerge
       Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
     end
 
+    override :skip_blocked_check
+    def skip_blocked_check(merge_request)
+      Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
+    end
+
     private
 
     def add_system_note(merge_request)
@@ -28,7 +33,8 @@ module AutoMerge
 
       super ||
         !merge_request.approved? ||
-        (merge_request.draft? && Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project))
+        (Feature.enabled?(:additional_merge_when_checks_ready,
+          merge_request.project) && (merge_request.draft? || merge_request.merge_blocked_by_other_mrs?))
     end
   end
 end

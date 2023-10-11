@@ -70,6 +70,14 @@ module MergeRequests
       # This is because blocking merge requests are deleted via `delete_all`.
       if merge_request.blocking_merge_requests.reset != previous_blocking_merge_requests
         GraphqlTriggers.merge_request_merge_status_updated(merge_request)
+
+        if Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
+          Gitlab::EventStore.publish(
+            ::MergeRequests::UnblockedStateEvent.new(
+              data: { current_user_id: current_user.id, merge_request_id: merge_request.id }
+            )
+          )
+        end
       end
 
       true

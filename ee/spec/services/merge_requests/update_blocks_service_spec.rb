@@ -74,6 +74,12 @@ RSpec.describe MergeRequests::UpdateBlocksService, feature_category: :code_revie
         it_behaves_like 'does not trigger GraphQL subscription mergeRequestMergeStatusUpdated' do
           let(:action) { service.execute }
         end
+
+        it 'does not call any event' do
+          expect(Gitlab::EventStore).not_to receive(:publish)
+
+          service.execute
+        end
       end
 
       context 'with update: true' do
@@ -91,6 +97,13 @@ RSpec.describe MergeRequests::UpdateBlocksService, feature_category: :code_revie
 
           it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
             let(:action) { service.execute }
+          end
+
+          it 'sends an unblocked event for the merge request' do
+            expect { service.execute }.to publish_event(MergeRequests::UnblockedStateEvent).with({
+              current_user_id: user.id,
+              merge_request_id: merge_request.id
+            })
           end
 
           context 'with a self-referential block' do
@@ -122,6 +135,12 @@ RSpec.describe MergeRequests::UpdateBlocksService, feature_category: :code_revie
 
             it_behaves_like 'does not trigger GraphQL subscription mergeRequestMergeStatusUpdated' do
               let(:action) { service.execute }
+            end
+
+            it 'does not call any event' do
+              expect(Gitlab::EventStore).not_to receive(:publish)
+
+              service.execute
             end
           end
 
@@ -167,6 +186,13 @@ RSpec.describe MergeRequests::UpdateBlocksService, feature_category: :code_revie
             it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
               let(:action) { service.execute }
             end
+
+            it 'sends an unblocked event for the merge request' do
+              expect { service.execute }.to publish_event(MergeRequests::UnblockedStateEvent).with({
+                current_user_id: user.id,
+                merge_request_id: merge_request.id
+              })
+            end
           end
         end
       end
@@ -186,6 +212,12 @@ RSpec.describe MergeRequests::UpdateBlocksService, feature_category: :code_revie
 
       it_behaves_like 'does not trigger GraphQL subscription mergeRequestMergeStatusUpdated' do
         let(:action) { service.execute }
+      end
+
+      it 'does not call any event' do
+        expect(Gitlab::EventStore).not_to receive(:publish)
+
+        service.execute
       end
     end
   end
