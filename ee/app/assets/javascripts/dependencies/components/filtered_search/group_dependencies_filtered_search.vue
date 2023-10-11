@@ -1,5 +1,10 @@
 <script>
 import { GlFilteredSearch } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
+import { mapActions, mapState } from 'vuex';
+import { __ } from '~/locale';
+import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
+import LicenseToken from './tokens/license_token.vue';
 
 export default {
   components: {
@@ -8,21 +13,39 @@ export default {
   data() {
     return {
       value: [],
+      currentFilterParams: null,
     };
   },
   computed: {
+    ...mapState(['currentList']),
     tokens() {
-      // adding filter tokens will be addressed in separate issues/MRs:
-      // * https://gitlab.com/gitlab-org/gitlab/-/issues/422356
-      // * https://gitlab.com/gitlab-org/gitlab/-/issues/422355
-      return [];
+      return [
+        {
+          type: 'licenses',
+          title: __('License'),
+          multiSelect: true,
+          unique: true,
+          token: LicenseToken,
+          operators: OPERATORS_IS,
+        },
+      ];
     },
   },
   methods: {
-    filterDependencies() {
-      // connecting the filter with the parent component, which is responsible for
-      // API calls, will be addressed in a separate MR
-    },
+    ...mapActions({
+      fetchFilteredDependencies(dispatch, filters = []) {
+        const filterParams = {};
+
+        filters.forEach((filter) => {
+          if (Array.isArray(filter.value?.data)) {
+            // `value.data` contains the applied filters as a comma seperated string
+            filterParams[filter.type] = filter.value.data;
+          }
+        });
+
+        dispatch(`${this.currentList}/fetchDependencies`, filterParams);
+      },
+    }),
   },
 };
 </script>
@@ -32,6 +55,6 @@ export default {
     v-model="value"
     :placeholder="__('Search or filter dependencies...')"
     :available-tokens="tokens"
-    @submit="filterDependencies"
+    @submit="fetchFilteredDependencies"
   />
 </template>
