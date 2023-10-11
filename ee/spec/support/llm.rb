@@ -19,9 +19,9 @@ RSpec.configure do |config|
       next
     end
 
-    if vertex_ai_embeddings_bool && !ENV['VERTEX_CREDENTIALS'] && !ENV['VERTEX_AI_PROJECT']
+    if vertex_ai_embeddings_bool && !ENV['VERTEX_AI_PROJECT']
       puts "skipping '#{example.description}' because you picked to run spec examples VERTEX_AI_EMBEDDINGS=true " \
-           "set the VERTEX_AI_CREDENTIALS=<credentials-json> and VERTEX_AI_PROJECT=<project-id>"
+           "set the VERTEX_AI_PROJECT=<project-id>"
       next
     end
 

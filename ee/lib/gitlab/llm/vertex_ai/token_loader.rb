@@ -28,11 +28,16 @@ module Gitlab
         end
 
         def fetch_fresh_token
-          response = ::Google::Auth::ServiceAccountCredentials.make_creds(
-            json_key_io: StringIO.new(vertex_ai_credentials),
-            scope: DEFAULT_SCOPE
-          ).fetch_access_token!
+          creds = if vertex_ai_credentials
+                    ::Google::Auth::ServiceAccountCredentials.make_creds(
+                      json_key_io: StringIO.new(vertex_ai_credentials),
+                      scope: DEFAULT_SCOPE
+                    )
+                  else
+                    ::Google::Auth.get_application_default(DEFAULT_SCOPE)
+                  end
 
+          response = creds.fetch_access_token!
           response["access_token"]
         end
 

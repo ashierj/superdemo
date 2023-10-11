@@ -20,7 +20,7 @@ module Llm
 
     def vertex_enabled?
       Feature.enabled?(:openai_experimentation) &&
-        ::Gitlab::CurrentSettings.vertex_ai_credentials.present?
+        ::Gitlab::CurrentSettings.vertex_ai_project.present?
     end
   end
 end
