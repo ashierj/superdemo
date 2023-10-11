@@ -15,7 +15,7 @@ module Ci
       def execute
         raise Gitlab::Access::AccessDeniedError unless can?(current_user, :add_catalog_resource, project)
 
-        validation_response = Ci::Catalog::ValidateResourceService.new(project, project.default_branch).execute
+        validation_response = Ci::Catalog::Resources::ValidateService.new(project, project.default_branch).execute
 
         if validation_response.success?
           create_catalog_resource
