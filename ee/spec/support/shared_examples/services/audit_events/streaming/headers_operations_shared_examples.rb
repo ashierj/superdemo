@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'header creation validation errors' do
-  let(:expected_errors) { ["Key can't be blank", "Value can't be blank"] }
+  let(:expected_errors) { ["Key can't be blank", "Value can't be blank", "Active must be a boolean value"] }
 
   it 'has an array of errors in the response' do
     expect(response).to be_error

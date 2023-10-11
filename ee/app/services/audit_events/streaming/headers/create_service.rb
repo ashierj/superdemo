@@ -6,7 +6,7 @@ module AuditEvents
       class CreateService < Base
         def execute
           super
-          create_header(destination, params[:key], params[:value])
+          create_header(destination, params[:key], params[:value], params[:active])
         end
       end
     end

@@ -3,8 +3,8 @@
 module AuditEvents
   module Streaming
     module HeadersOperations
-      def create_header(destination, key, value)
-        header = destination.headers.new(key: key, value: value)
+      def create_header(destination, key, value, active)
+        header = destination.headers.new(key: key, value: value, active: active)
 
         if header.save
           audit_message = "Created custom HTTP header with key #{key}."
