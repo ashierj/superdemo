@@ -187,7 +187,6 @@ export default {
           v-model="description"
           :form-field-props="$options.descriptionFormFieldProps"
           :render-markdown-path="markdownPreviewPath"
-          :enable-content-editor="Boolean(glFeatures.contentEditorOnIssues)"
           :markdown-docs-path="markdownDocsPath"
           :autosave-key="descriptionAutosaveKey"
           enable-autocomplete
