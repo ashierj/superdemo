@@ -351,7 +351,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
       ensure_elasticsearch_index!
     end
 
-    include_examples 'search results filtered by archived', 'search_milestones_hide_archived_projects', :backfill_archived_on_milestones
+    include_examples 'search results filtered by archived', nil, :backfill_archived_on_milestones
   end
 
   context 'query performance' do
