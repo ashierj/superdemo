@@ -20,7 +20,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
   let_it_be(:build4) { create(:ci_build, :pending) }
 
   before_all do
-    create_sync_events(*Ci::Build.finished)
+    create_sync_events(*Ci::Build.finished.order(id: :desc))
   end
 
   context 'when the ci_data_ingestion_to_click_house feature flag is on' do
@@ -68,6 +68,18 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
           )
         end
       end
+
+      context 'when a finished build has been deleted' do
+        it 'marks the sync event as processed' do
+          sync_event = Ci::FinishedBuildChSyncEvent
+            .new(build_id: non_existing_record_id, build_finished_at: Time.current)
+            .tap(&:save!)
+
+          expect { execute }
+            .to change { ci_finished_builds_row_count }.by(3)
+            .and change { sync_event.reload.processed }.to(true)
+        end
+      end
     end
 
     context 'when multiple batches are required' do
@@ -86,10 +98,14 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
     context 'when multiple CSV uploads are required' do
       before do
         stub_const("#{described_class}::BUILDS_BATCH_SIZE", 1)
-        stub_const("#{described_class}::INSERT_BATCH_SIZE", 2)
+        stub_const("#{described_class}::BUILDS_BATCH_COUNT", 2)
       end
 
       it 'processes the builds' do
+        expect_next_instance_of(Gitlab::Pagination::Keyset::Iterator) do |iterator|
+          expect(iterator).to receive(:each_batch).once.with(of: described_class::BUILDS_BATCH_SIZE).and_call_original
+        end
+
         expect(ClickHouse::Client).to receive(:insert_csv).twice.and_call_original
 
         expect { execute }.to change { ci_finished_builds_row_count }.by(3)
@@ -97,10 +113,16 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       end
 
       context 'with time limit being reached' do
-        it 'processes the builds' do
-          expect(ClickHouse::Client).to receive(:insert_csv).once.and_call_original
+        it 'processes the builds of the first batch' do
+          over_time = false
+
           expect_next_instance_of(Analytics::CycleAnalytics::RuntimeLimiter) do |limiter|
-            expect(limiter).to receive(:over_time?).at_least(1).and_return(true)
+            expect(limiter).to receive(:over_time?).at_least(1) { over_time }
+          end
+
+          expect(service).to receive(:yield_builds).and_wrap_original do |original, *args|
+            over_time = true
+            original.call(*args)
           end
 
           expect { execute }.to change { ci_finished_builds_row_count }.by(described_class::BUILDS_BATCH_SIZE)
@@ -122,10 +144,15 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
 
     context 'with multiple calls to service' do
       it 'processes the builds' do
-        expect { service.execute }.to change { ci_finished_builds_row_count }.by(3)
+        expect_next_instances_of(Gitlab::Pagination::Keyset::Iterator, 2) do |iterator|
+          expect(iterator).to receive(:each_batch).once.with(of: described_class::BUILDS_BATCH_SIZE).and_call_original
+        end
 
-        build4 = create(:ci_build, :failed)
-        create_sync_events(build4)
+        expect { execute }.to change { ci_finished_builds_row_count }.by(3)
+        expect(execute).to have_attributes({ payload: { reached_end_of_table: true, records_inserted: 3 } })
+
+        build5 = create(:ci_build, :failed)
+        create_sync_events(build5)
 
         expect { service.execute }.to change { ci_finished_builds_row_count }.by(1)
         records = ci_finished_builds
@@ -134,7 +161,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
           a_hash_including(**expected_build_attributes(build1)),
           a_hash_including(**expected_build_attributes(build2)),
           a_hash_including(**expected_build_attributes(build3)),
-          a_hash_including(**expected_build_attributes(build4))
+          a_hash_including(**expected_build_attributes(build5))
         )
       end
 
@@ -142,9 +169,9 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
         it 'processes the builds' do
           expect { service.execute }.to change { ci_finished_builds_row_count }.by(3)
 
-          build4 = create(:ci_build, :failed)
           build5 = create(:ci_build, :failed)
-          create_sync_events(build4, build5)
+          build6 = create(:ci_build, :failed)
+          create_sync_events(build5, build6)
 
           expect { execute }.to change { ci_finished_builds_row_count }.by(2)
           records = ci_finished_builds
@@ -153,8 +180,8 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
             a_hash_including(**expected_build_attributes(build1)),
             a_hash_including(**expected_build_attributes(build2)),
             a_hash_including(**expected_build_attributes(build3)),
-            a_hash_including(**expected_build_attributes(build4)),
-            a_hash_including(**expected_build_attributes(build5))
+            a_hash_including(**expected_build_attributes(build5)),
+            a_hash_including(**expected_build_attributes(build6))
           )
         end
       end
