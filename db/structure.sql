@@ -11182,7 +11182,7 @@ ALTER SEQUENCE analytics_cycle_analytics_stage_event_hashes_id_seq OWNED BY anal
 CREATE TABLE analytics_cycle_analytics_value_stream_settings (
     value_stream_id bigint NOT NULL,
     project_ids_filter bigint[] DEFAULT '{}'::bigint[],
-    CONSTRAINT chk_rails_a91b547c97 CHECK ((cardinality(project_ids_filter) <= 100))
+    CONSTRAINT project_ids_filter_array_check CHECK (((cardinality(project_ids_filter) <= 100) AND (array_position(project_ids_filter, NULL::bigint) IS NULL)))
 );
 
 CREATE TABLE analytics_dashboards_pointers (
