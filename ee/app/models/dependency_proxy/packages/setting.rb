@@ -9,13 +9,13 @@ module DependencyProxy
 
       attr_encrypted :maven_external_registry_username,
         mode: :per_attribute_iv,
-        key: Settings.attr_encrypted_db_key_base_32,
+        key: ::Settings.attr_encrypted_db_key_base_32,
         algorithm: 'aes-256-gcm',
         encode: false,
         encode_iv: false
       attr_encrypted :maven_external_registry_password,
         mode: :per_attribute_iv,
-        key: Settings.attr_encrypted_db_key_base_32,
+        key: ::Settings.attr_encrypted_db_key_base_32,
         algorithm: 'aes-256-gcm',
         encode: false,
         encode_iv: false
