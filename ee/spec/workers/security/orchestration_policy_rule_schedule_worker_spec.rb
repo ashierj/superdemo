@@ -62,7 +62,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
         it 'updates next run at value' do
           worker.perform
 
-          expect(schedule.reload.next_run_at).to be > Time.zone.now
+          expect(schedule.reload.next_run_at).to be_future
         end
 
         it 'invokes the rule schedule worker with the bot user' do

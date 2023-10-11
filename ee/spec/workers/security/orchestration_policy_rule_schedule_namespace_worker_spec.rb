@@ -51,7 +51,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           it 'updates next run at value' do
             worker.perform(schedule_id)
 
-            expect(schedule.reload.next_run_at).to be > Time.zone.now
+            expect(schedule.reload.next_run_at).to be_future
           end
 
           context 'when there is a security_policy_bot in the project' do
