@@ -6,20 +6,20 @@ module QA
       module Group
         class IssuesAnalytics < QA::Page::Base
           view 'ee/app/assets/javascripts/issues_analytics/components/issues_analytics.vue' do
-            element :issues_analytics_graph
-            element :issues_analytics_chart_wrapper
+            element 'issues-analytics-chart-wrapper'
+            element 'issues-analytics-graph'
           end
 
           def graph
             wait_issues_analytics_graph_finish_loading do
-              find_element(:issues_analytics_graph)
+              find_element('issues-analytics-graph')
             end
           end
 
           private
 
           def wait_issues_analytics_graph_finish_loading
-            within_element(:issues_analytics_chart_wrapper) do
+            within_element('issues-analytics-chart-wrapper') do
               wait_until(reload: false, max_duration: 5, sleep_interval: 1) do
                 finished_loading?
                 yield

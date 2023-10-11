@@ -57,7 +57,7 @@ export default {
 </script>
 <template>
   <div>
-    <div data-qa-selector="merge_request_content">
+    <div data-testid="merge-request-content">
       <h3>{{ $options.i18n.header }}</h3>
       <div data-testid="description">
         <gl-sprintf :message="description">
