@@ -67,7 +67,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
         timestamp: Time.now.to_i,
         new_issue_url: "/#{project.full_path}/-/issues/new?vulnerability_id=#{vulnerability.id}",
         create_jira_issue_url: nil,
-        related_jira_issues_path: "/#{project.full_path}/-/integrations/jira/issues?vulnerability_ids%5B%5D=#{vulnerability.id}",
+        related_jira_issues_path: "/#{project.full_path}/-/integrations/jira/issues?state=all&vulnerability_ids%5B%5D=#{vulnerability.id}",
         jira_integration_settings_path: "/#{project.full_path}/-/settings/integrations/jira/edit",
         create_mr_url: "/#{project.full_path}/-/vulnerability_feedback",
         discussions_url: "/#{project.full_path}/-/security/vulnerabilities/#{vulnerability.id}/discussions",
