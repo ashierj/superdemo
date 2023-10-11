@@ -114,7 +114,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
 
         # Update Protected Branch
         within(".protected-branches-list") do
-          within_select(".js-allowed-to-#{git_operation}") do
+          within_select(".js-allowed-to-#{git_operation}:not([disabled])") do
             %w[Roles Groups Users].each do |header|
               expect(page).to have_selector('.dropdown-header', text: header)
             end
@@ -127,7 +127,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
 
           wait_for_requests
 
-          within_select(".js-allowed-to-#{git_operation}") do
+          within_select(".js-allowed-to-#{git_operation}:not([disabled])") do
             wait_for_requests
             # Verify the user is appended in the dropdown
             user_item = find('.dropdown-menu.show .gl-dropdown-item', text: users.last.name)

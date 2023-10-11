@@ -30,7 +30,7 @@ RSpec.describe 'EE Group Repository settings', :js, feature_category: :source_co
       it 'does not show users in the access levels dropdown' do
         within('#js-protected-branches-settings') do
           click_button 'Add protected branch'
-          find('.gl-dropdown-toggle.js-allowed-to-merge').click
+          find('.gl-dropdown-toggle.js-allowed-to-merge:not([disabled])').click
           wait_for_all_requests
 
           expect(page.find('.gl-dropdown-contents')).not_to have_content('Users')
