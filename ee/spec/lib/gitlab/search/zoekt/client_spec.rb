@@ -39,8 +39,9 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
   describe '#search' do
     let(:project_ids) { [project_1.id, project_2.id] }
     let(:query) { 'use.*egex' }
+    let(:shard_id) { Zoekt::Shard.last.id }
 
-    subject { client.search(query, num: 10, project_ids: project_ids) }
+    subject { client.search(query, num: 10, project_ids: project_ids, shard_id: shard_id) }
 
     before do
       zoekt_ensure_project_indexed!(project_1)
@@ -62,9 +63,15 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
       let(:project_ids) { [] }
 
       it 'raises an error if there are somehow no project_id in the filter' do
-        expect do
-          subject
-        end.to raise_error('Not possible to search without at least one project specified')
+        expect { subject }.to raise_error('Not possible to search without at least one project specified')
+      end
+    end
+
+    context 'when project_id filter is any' do
+      let(:project_ids) { :any }
+
+      it 'raises an error if somehow :any is sent as project_ids' do
+        expect { subject }.to raise_error('Global search is not supported')
       end
     end
 
@@ -76,7 +83,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
         expect(::Zoekt::Logger).to receive(:build).and_return(logger)
         expect(logger).to receive(:error).with(hash_including(status: 400))
 
-        expect(subject[:Error]).to include("error parsing regexp")
+        expect(subject[:Error]).to include('error parsing regexp')
       end
     end
 
@@ -86,13 +93,15 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
   end
 
   describe '#index' do
+    let(:shard_id) { Zoekt::Shard.last.id }
+
     it 'indexes the project to make it searchable' do
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id])
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], shard_id: shard_id)
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
 
-      client.index(project_1)
+      client.index(project_1, shard_id)
 
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id])
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], shard_id: shard_id)
       expect(search_results[:Result][:Files].to_a.size).to be > 0
     end
 
@@ -110,8 +119,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
           expect(body["CloneUrl"]).to be_present
           expect(body["RepoId"]).to eq(project_1.id)
         end.and_return({})
-
-        described_class.instance.index(project_1)
+        described_class.instance.index(project_1, shard_id)
       end
     end
 
@@ -119,7 +127,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
       allow(::Gitlab::HTTP).to receive(:post).and_return({ 'Error' => 'command failed: exit status 128' })
 
       expect do
-        client.index(project_1)
+        client.index(project_1, shard_id)
       end.to raise_error(RuntimeError, 'command failed: exit status 128')
     end
 
@@ -129,7 +137,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
 
       allow(::Gitlab::HTTP).to receive(:post).and_return(response)
 
-      expect { client.index(project_1) }.to raise_error(RuntimeError, /Request failed with/)
+      expect { client.index(project_1, shard_id) }.to raise_error(RuntimeError, /Request failed with/)
     end
 
     it 'sets http the correct timeout' do
@@ -139,12 +147,11 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
       expect(::Gitlab::HTTP).to receive(:post)
                                 .with(anything, hash_including(timeout: described_class::INDEXING_TIMEOUT_S))
                                 .and_return(response)
-
-      client.index(project_1)
+      client.index(project_1, shard_id)
     end
 
     it_behaves_like 'an authenticated zoekt request' do
-      let(:make_request) { client.index(project_1) }
+      let(:make_request) { client.index(project_1, shard_id) }
     end
   end
 
@@ -152,17 +159,21 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
     subject { described_class.delete(shard_id: zoekt_shard.id, project_id: project_1.id) }
 
     context 'when project is indexed' do
+      let(:shard_id) { Zoekt::Shard.last.id }
+
       before do
         zoekt_ensure_project_indexed!(project_1)
       end
 
       it 'removes project data from the Zoekt shard' do
-        search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id])
+        search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
+          shard_id: shard_id)
         expect(search_results[:Result][:Files].to_a.size).to eq(2)
 
         subject
 
-        search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id])
+        search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
+          shard_id: shard_id)
         expect(search_results[:Result][:Files].to_a).to be_empty
       end
     end
@@ -193,15 +204,33 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
   end
 
   describe '#truncate' do
-    it 'removes all data from the Zoekt shard' do
-      client.index(project_1)
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id])
+    let(:zoekt_indexer_truncate_path) { '/indexer/truncate' }
+    let(:shard) { Zoekt::Shard.first }
+
+    before do
+      zoekt_ensure_project_indexed!(project_1)
+      zoekt_ensure_project_indexed!(project_2)
+    end
+
+    it 'removes all data from the Zoekt shards' do
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], shard_id: shard.id)
+      expect(search_results[:Result][:Files].to_a.size).to be > 0
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_2.id], shard_id: shard.id)
       expect(search_results[:Result][:Files].to_a.size).to be > 0
 
       client.truncate
-
-      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id])
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], shard_id: shard.id)
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_2.id], shard_id: shard.id)
+      expect(search_results[:Result][:Files].to_a.size).to eq(0)
+    end
+
+    it 'calls post on ::Gitlab::HTTP for all shards' do
+      shard2 = create(:zoekt_shard)
+      zoekt_truncate_path = '/indexer/truncate'
+      expect(::Gitlab::HTTP).to receive(:post).with(URI.join(shard.index_base_url, zoekt_truncate_path), anything)
+      expect(::Gitlab::HTTP).to receive(:post).with(URI.join(shard2.index_base_url, zoekt_truncate_path), anything)
+      client.truncate
     end
 
     it_behaves_like 'an authenticated zoekt request' do

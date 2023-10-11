@@ -42,11 +42,13 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
     end
   end
 
-  def search_for(term)
-    ::Gitlab::Zoekt::SearchResults.new(user, term, :any).objects('blobs').map(&:path)
+  def search_for(term, shard_id)
+    ::Gitlab::Zoekt::SearchResults.new(user, term, Project.pluck(:id), shard_id: shard_id).objects('blobs').map(&:path)
   end
 
   describe '#update_zoekt_index!' do
+    let(:shard_id) { Zoekt::Shard.last.id }
+
     it 'makes updates available' do
       project.repository.create_file(
         user,
@@ -55,12 +57,12 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
         message: 'added test file',
         branch_name: project.default_branch)
 
-      expect(search_for('somenewsearchablefile.txt')).to be_empty
+      expect(search_for('somenewsearchablefile.txt', shard_id)).to be_empty
 
       response = repository.update_zoekt_index!
       expect(response['Success']).to be_truthy
 
-      expect(search_for('somenewsearchablefile.txt')).to match_array(['somenewsearchablefile.txt'])
+      expect(search_for('somenewsearchablefile.txt', shard_id)).to match_array(['somenewsearchablefile.txt'])
     end
   end
 

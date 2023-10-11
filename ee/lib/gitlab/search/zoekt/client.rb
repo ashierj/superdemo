@@ -4,6 +4,7 @@ module Gitlab
   module Search
     module Zoekt
       class Client # rubocop:disable Search/NamespacedClass
+        include Gitlab::Utils::StrongMemoize
         INDEXING_TIMEOUT_S = 30.minutes.to_i
 
         class << self
@@ -14,7 +15,7 @@ module Gitlab
           delegate :search, :index, :delete, :truncate, to: :instance
         end
 
-        def search(query, num:, project_ids:)
+        def search(query, num:, project_ids:, shard_id:)
           start = Time.current
 
           payload = {
@@ -27,20 +28,23 @@ module Gitlab
 
           # Safety net because Zoekt will match all projects if you provide
           # an empty array.
-          raise "Not possible to search without at least one project specified" if project_ids == []
+          raise 'Not possible to search without at least one project specified' if project_ids.blank?
+          raise 'Global search is not supported' if project_ids == :any
 
-          payload[:RepoIDs] = project_ids unless project_ids == :any
-
+          payload[:RepoIDs] = project_ids
           path = '/api/search'
+          target_shard = shard(shard_id)
+          raise 'Shard can not be found' unless target_shard
+
           response = post(
-            URI.join(search_base_url, path),
+            URI.join(target_shard.search_base_url, path),
             payload,
             allow_local_requests: true,
             basic_auth: basic_auth_params
           )
 
           unless response.success?
-            logger.error(message: "Zoekt search failed", status: response.code, response: response.body)
+            logger.error(message: 'Zoekt search failed', status: response.code, response: response.body)
           end
 
           ::Gitlab::Json.parse(response.body, symbolize_names: true)
@@ -48,16 +52,19 @@ module Gitlab
           add_request_details(start_time: start, path: path, body: payload)
         end
 
-        def index(project)
-          use_new_zoekt_indexer? ? index_with_new_indexer(project) : index_with_legacy_indexer(project)
+        def index(project, shard_id)
+          return index_with_new_indexer(project, shard_id) if use_new_zoekt_indexer?
+
+          index_with_legacy_indexer(project, shard_id)
         end
 
         def delete(shard_id:, project_id:)
           return false unless use_new_zoekt_indexer?
 
-          shard = ::Zoekt::Shard.find(shard_id)
+          target_shard = shard(shard_id)
+          raise 'Shard can not be found' unless target_shard
 
-          response = delete_request(URI.join(shard.index_base_url, "/indexer/index/#{project_id}"))
+          response = delete_request(URI.join(target_shard.index_base_url, "/indexer/index/#{project_id}"))
 
           raise "Request failed with: #{response.inspect}" unless response.success?
           raise response['Error'] if response['Error']
@@ -66,7 +73,7 @@ module Gitlab
         end
 
         def truncate
-          post(URI.join(index_base_url, zoekt_indexer_truncate_path))
+          ::Zoekt::Shard.find_each { |shard| post(URI.join(shard.index_base_url, zoekt_indexer_truncate_path)) }
         end
 
         private
@@ -95,9 +102,12 @@ module Gitlab
           )
         end
 
-        def zoekt_indexer_post(path, payload)
+        def zoekt_indexer_post(path, payload, shard_id)
+          target_shard = shard(shard_id)
+          raise 'Shard can not be found' unless target_shard
+
           post(
-            URI.join(index_base_url, path),
+            URI.join(target_shard.index_base_url, path),
             payload,
             timeout: INDEXING_TIMEOUT_S
           )
@@ -110,18 +120,18 @@ module Gitlab
           }.compact
         end
 
-        def index_with_legacy_indexer(project)
+        def index_with_legacy_indexer(project, shard_id)
           payload = { CloneUrl: project.http_url_to_repo, RepoId: project.id }
 
-          response = zoekt_indexer_post('/index', payload)
+          response = zoekt_indexer_post('/index', payload, shard_id)
 
           raise response['Error'] if response['Error']
 
           response
         end
 
-        def index_with_new_indexer(project)
-          response = zoekt_indexer_post('/indexer/index', indexing_payload(project))
+        def index_with_new_indexer(project, shard_id)
+          response = zoekt_indexer_post('/indexer/index', indexing_payload(project), shard_id)
 
           raise response['Error'] if response['Error']
           raise "Request failed with: #{response.inspect}" unless response.success?
@@ -154,18 +164,10 @@ module Gitlab
           }
         end
 
-        def shard
-          # TODO: https://gitlab.com/gitlab-org/gitlab-build-images/-/issues/118
-          # Today we only support a single shard so just choose first
-          ::Zoekt::Shard.first
-        end
-
-        def index_base_url
-          shard.index_base_url
-        end
-
-        def search_base_url
-          shard.search_base_url
+        def shard(shard_id)
+          strong_memoize(:shard) do
+            ::Zoekt::Shard.find_by_id(shard_id)
+          end
         end
 
         def add_request_details(start_time:, path:, body:)

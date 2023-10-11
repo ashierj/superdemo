@@ -13,12 +13,13 @@ module Gitlab
 
       # Limit search results by passed projects
       # It allows us to search only for projects user has access to
-      attr_reader :limit_project_ids
+      attr_reader :limit_project_ids, :shard_id
 
-      def initialize(current_user, query, limit_project_ids = nil, order_by: nil, sort: nil, filters: {})
+      def initialize(current_user, query, limit_project_ids = nil, shard_id:, order_by: nil, sort: nil, filters: {})
         @current_user = current_user
         @query = query
         @limit_project_ids = limit_project_ids
+        @shard_id = shard_id
         @order_by = order_by
         @sort = sort
         @filters = filters
@@ -79,7 +80,8 @@ module Gitlab
           project_ids: limit_project_ids,
           public_and_internal_projects: public_and_internal_projects,
           order_by: order_by,
-          sort: sort
+          sort: sort,
+          shard_id: shard_id
         }
       end
 
@@ -150,7 +152,8 @@ module Gitlab
         search_result = ::Gitlab::Search::Zoekt::Client.search(
           query,
           num: ZOEKT_COUNT_LIMIT,
-          project_ids: options[:project_ids]
+          project_ids: options[:project_ids],
+          shard_id: options[:shard_id]
         )
 
         if search_result[:Error]

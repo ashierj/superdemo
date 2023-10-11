@@ -9,6 +9,7 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
   let_it_be(:project_1) { create(:project, :public, :repository) }
   let_it_be(:project_2) { create(:project, :public, :repository) }
   let(:limit_project_ids) { [project_1.id] }
+  let(:shard_id) { Zoekt::Shard.last.id }
 
   before do
     zoekt_ensure_project_indexed!(project_1)
@@ -21,7 +22,7 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
     end
 
     it 'finds blobs by regex search' do
-      results = described_class.new(user, 'use.*egex', limit_project_ids)
+      results = described_class.new(user, 'use.*egex', limit_project_ids, shard_id: shard_id)
       blobs = results.objects('blobs')
 
       expect(blobs.map(&:data).join).to include("def username_regex\n      default_regex")
@@ -31,7 +32,7 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
     it 'correctly handles pagination' do
       per_page = 2
 
-      results = described_class.new(user, 'use.*egex', limit_project_ids)
+      results = described_class.new(user, 'use.*egex', limit_project_ids, shard_id: shard_id)
       blobs_page1 = results.objects('blobs', page: 1, per_page: per_page)
       blobs_page2 = results.objects('blobs', page: 2, per_page: per_page)
       blobs_page3 = results.objects('blobs', page: 3, per_page: per_page)
@@ -45,7 +46,7 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
     it 'limits to the zoekt count limit' do
       stub_const("#{described_class}::ZOEKT_COUNT_LIMIT", 2)
 
-      results = described_class.new(user, 'test', limit_project_ids)
+      results = described_class.new(user, 'test', limit_project_ids, shard_id: shard_id)
       expect(results.blobs_count).to eq 2
     end
 
@@ -54,24 +55,25 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       zoekt_ensure_project_indexed!(project_3)
       project_3.add_reporter(user)
 
-      results = described_class.new(user, 'project_name_regex', [project_1.id])
+      results = described_class.new(user, 'project_name_regex', [project_1.id], shard_id: shard_id)
       expect(results.blobs_count).to eq 1
       result_project_ids = results.objects('blobs').map(&:project_id)
       expect(result_project_ids.uniq).to match_array([project_1.id])
 
-      results = described_class.new(user, 'project_name_regex', [project_1.id, project_3.id])
+      results = described_class.new(user, 'project_name_regex', [project_1.id, project_3.id], shard_id: shard_id)
       result_project_ids = results.objects('blobs').map(&:project_id)
       expect(result_project_ids.uniq).to match_array([project_1.id, project_3.id])
       expect(results.blobs_count).to eq 2
+    end
 
-      results = described_class.new(user, 'project_name_regex', :any)
-      result_project_ids = results.objects('blobs').map(&:project_id)
-      expect(result_project_ids.uniq).to match_array([project_1.id, project_2.id, project_3.id])
-      expect(results.blobs_count).to eq 3
+    it 'raises an exception when limit_project_ids is passed as :any' do
+      expect do
+        described_class.new(user, 'project_name_regex', :any, shard_id: shard_id).objects('blobs')
+      end.to raise_error('Global search is not supported')
     end
 
     it 'returns zero when blobs are not found' do
-      results = described_class.new(user, 'asdfg', limit_project_ids)
+      results = described_class.new(user, 'asdfg', limit_project_ids, shard_id: shard_id)
 
       expect(results.blobs_count).to eq 0
     end
@@ -134,8 +136,8 @@ branch_name: 'master')
       it 'finds all examples' do
         examples.each do |search_term, file_content|
           file_name = Digest::SHA256.hexdigest(file_content)
-
-          results = described_class.new(user, search_term, limit_project_ids).objects('blobs').map(&:path)
+          search_results_instance = described_class.new(user, search_term, limit_project_ids, shard_id: shard_id)
+          results = search_results_instance.objects('blobs').map(&:path)
           expect(results).to include(file_name)
         end
       end
