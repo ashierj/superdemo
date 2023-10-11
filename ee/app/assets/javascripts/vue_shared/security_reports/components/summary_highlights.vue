@@ -2,6 +2,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import { CRITICAL, HIGH, MEDIUM, LOW, INFO, UNKNOWN } from '~/vulnerabilities/constants';
 import { s__ } from '~/locale';
+import { SEVERITY_CLASS_NAME_MAP } from './constants';
 
 export default {
   components: {
@@ -13,6 +14,16 @@ export default {
     ),
   },
   props: {
+    /**
+     * If provided, this will display only the count for the given severity.
+     */
+    showSingleSeverity: {
+      type: String,
+      required: false,
+      default: '',
+      validate: (severity) =>
+        !severity || [CRITICAL, HIGH, MEDIUM, LOW, INFO, UNKNOWN].contains(severity),
+    },
     highlights: {
       type: Object,
       required: true,
@@ -37,12 +48,16 @@ export default {
       }, 0);
     },
   },
+  cssClass: SEVERITY_CLASS_NAME_MAP,
 };
 </script>
 
 <template>
   <div class="gl-font-sm">
-    <gl-sprintf :message="$options.i18n.highlights">
+    <strong v-if="showSingleSeverity" :class="$options.cssClass[showSingleSeverity]">{{
+      highlights[showSingleSeverity]
+    }}</strong>
+    <gl-sprintf v-else :message="$options.i18n.highlights">
       <template #critical="{ content }"
         ><strong class="gl-text-red-800">{{ criticalSeverity }} {{ content }}</strong></template
       >
