@@ -3,6 +3,7 @@
 module Search
   class ProjectIndexIntegrityWorker
     include ApplicationWorker
+    prepend ::Elastic::IndexingControl
 
     data_consistency :delayed
 

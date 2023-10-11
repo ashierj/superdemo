@@ -4,6 +4,7 @@ module Search
   class IndexCurationWorker
     include ApplicationWorker
     include Gitlab::ExclusiveLeaseHelpers
+    prepend ::Elastic::IndexingControl
 
     data_consistency :always
 

@@ -2,6 +2,7 @@
 
 class ElasticAssociationIndexerWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
+  prepend Elastic::IndexingControl
 
   data_consistency :always
 

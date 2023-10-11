@@ -4,6 +4,7 @@ module Search
   class NamespaceIndexIntegrityWorker
     include ApplicationWorker
     include Gitlab::ExclusiveLeaseHelpers
+    prepend ::Elastic::IndexingControl
 
     data_consistency :delayed
 

@@ -3,8 +3,23 @@
 # Concern for pausing/unpausing elasticsearch indexing workers
 module Elastic
   module IndexingControl
-    WORKERS = [ElasticCommitIndexerWorker, ElasticDeleteProjectWorker, ElasticWikiIndexerWorker,
-      Search::Wiki::ElasticDeleteGroupWikiWorker, Search::ElasticGroupAssociationDeletionWorker].freeze
+    WORKERS = [
+      Elastic::NamespaceUpdateWorker,
+      Elastic::ProjectTransferWorker,
+      ElasticAssociationIndexerWorker,
+      ElasticCommitIndexerWorker,
+      ElasticDeleteProjectWorker,
+      ElasticFullIndexWorker,
+      ElasticNamespaceIndexerWorker,
+      ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker,
+      ElasticWikiIndexerWorker,
+      Search::ElasticDefaultBranchChangedWorker,
+      Search::ElasticGroupAssociationDeletionWorker,
+      Search::IndexCurationWorker,
+      Search::NamespaceIndexIntegrityWorker,
+      Search::ProjectIndexIntegrityWorker,
+      Search::Wiki::ElasticDeleteGroupWikiWorker
+    ].freeze
 
     def perform(*args)
       if Elastic::IndexingControl.non_cached_pause_indexing? && WORKERS.include?(self.class)
