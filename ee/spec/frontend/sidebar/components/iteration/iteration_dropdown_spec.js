@@ -1,11 +1,4 @@
-import {
-  GlDropdownDivider,
-  GlDropdownItem,
-  GlLoadingIcon,
-  GlDropdown,
-  GlDropdownSectionHeader,
-  GlSearchBoxByType,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox, GlListboxItem, GlDropdown } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -85,23 +78,19 @@ describe('IterationDropdown', () => {
     jest.runOnlyPendingTimers();
   };
 
-  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findDropdownItems = () => wrapper.findAllComponents(GlListboxItem);
   const findDropdownItemWithText = (text) =>
     findDropdownItems().wrappers.find((x) => x.text().includes(text));
-  const selectDropdownItemAndWait = async (text) => {
-    const item = findDropdownItemWithText(text);
-
-    item.vm.$emit('click');
-
-    await nextTick();
-  };
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const showDropdownAndWait = async () => {
-    findDropdown().vm.$emit('show');
+    findDropdown().vm.$emit('shown');
 
     await waitForDebounce();
   };
-  const isLoading = () => wrapper.findComponent(GlLoadingIcon).exists();
+  const selectDropdownItemAndWait = async (id) => {
+    findDropdown().vm.$emit('select', id);
+    await nextTick();
+  };
 
   const createComponent = ({ mountFn = shallowMount } = {}) => {
     fakeApollo = createMockApollo([[groupIterationsQuery, groupIterationsSpy]]);
@@ -124,7 +113,7 @@ describe('IterationDropdown', () => {
     });
 
     it('does not show loading', () => {
-      expect(isLoading()).toBe(false);
+      expect(findDropdown().props('loading')).toBe(false);
     });
 
     it('shows gl-dropdown', () => {
@@ -144,7 +133,7 @@ describe('IterationDropdown', () => {
     });
 
     it('shows loading', () => {
-      expect(isLoading()).toBe(true);
+      expect(findDropdown().props('loading')).toBe(true);
     });
 
     it('calls groupIterations query', () => {
@@ -165,12 +154,11 @@ describe('IterationDropdown', () => {
     });
 
     it('does not show loading', () => {
-      expect(isLoading()).toBe(false);
+      expect(findDropdown().props('loading')).toBe(false);
     });
 
     it('shows checkable dropdown items in unchecked state', () => {
-      expect(findDropdownItems().wrappers.every((x) => x.props('isCheckItem'))).toBe(true);
-      expect(findDropdownItems().wrappers.every((x) => x.props('isChecked'))).toBe(false);
+      expect(findDropdownItems().wrappers.every((x) => x.props('isSelected'))).toBe(false);
     });
 
     it('shows dropdown items grouped by iteration cadence', () => {
@@ -178,17 +166,9 @@ describe('IterationDropdown', () => {
 
       expect(dropdownItems.at(0).text()).toContain('No iteration');
 
-      expect(dropdownItems.at(1).findComponent(GlDropdownDivider).exists()).toBe(true);
-      expect(dropdownItems.at(2).findComponent(GlDropdownSectionHeader).text()).toBe('My Cadence');
       expect(dropdownItems.at(3).text()).toContain(getIterationPeriod(TEST_ITERATIONS[0]));
       expect(dropdownItems.at(3).text()).toContain('Test Title');
       expect(dropdownItems.at(4).text()).toContain(getIterationPeriod(TEST_ITERATIONS[2]));
-
-      expect(dropdownItems.at(5).findComponent(GlDropdownDivider).exists()).toBe(true);
-      expect(dropdownItems.at(6).findComponent(GlDropdownSectionHeader).text()).toBe(
-        'My Second Cadence',
-      );
-      expect(dropdownItems.at(7).text()).toContain(getIterationPeriod(TEST_ITERATIONS[1]));
     });
 
     it('does not re-query if opened again', async () => {
@@ -213,26 +193,25 @@ describe('IterationDropdown', () => {
       },
     ])("when iteration '%s' is selected", ({ text, iteration }) => {
       beforeEach(async () => {
-        await selectDropdownItemAndWait(text);
+        await selectDropdownItemAndWait(iteration.id);
       });
 
       it('shows item as checked with text and emits event', () => {
-        expect(findDropdownItemWithText(text).props('isChecked')).toBe(true);
+        expect(findDropdownItemWithText(text).props('isSelected')).toBe(true);
         expect(wrapper.emitted('onIterationSelect')[0][0].id).toBe(iteration.id);
       });
 
       describe('when item is clicked again', () => {
         beforeEach(async () => {
-          await selectDropdownItemAndWait(text);
+          await selectDropdownItemAndWait(iteration.id);
         });
 
         it('shows item as unchecked', () => {
-          expect(findDropdownItems().wrappers.every((x) => x.props('isChecked'))).toBe(false);
+          expect(findDropdownItems().wrappers.every((x) => x.props('isSelected'))).toBe(false);
         });
 
         it('emits event', () => {
           expect(wrapper.emitted('onIterationSelect').length).toBe(2);
-          expect(wrapper.emitted('onIterationSelect')[1]).toEqual([null]);
         });
       });
     });
@@ -244,7 +223,7 @@ describe('IterationDropdown', () => {
 
       await showDropdownAndWait();
 
-      wrapper.findComponent(GlSearchBoxByType).vm.$emit('input', TEST_SEARCH);
+      findDropdown().vm.$emit('search', TEST_SEARCH);
 
       await waitForDebounce();
     });

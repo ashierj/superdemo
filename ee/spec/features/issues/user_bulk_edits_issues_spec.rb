@@ -112,7 +112,7 @@ RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
           check 'Select all'
           click_button 'Select iteration'
           wait_for_requests
-          click_button 'Iteration 1'
+          select_listbox_item('Iteration 1')
           update_issues
         end
 

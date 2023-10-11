@@ -1,38 +1,26 @@
 <script>
-import {
-  GlDropdown,
-  GlDropdownDivider,
-  GlDropdownItem,
-  GlSearchBoxByType,
-  GlDropdownSectionHeader,
-  GlTooltipDirective,
-  GlLoadingIcon,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
+import { debounce } from 'lodash';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
-import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
+import { groupByIterationCadences } from 'ee/iterations/utils';
 import { STATUS_OPEN } from '~/issues/constants';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { __ } from '~/locale';
 import { iterationSelectTextMap } from '../../constants';
 import groupIterationsQuery from '../../queries/group_iterations.query.graphql';
 
+const NO_ITEMS_ID = 'NO_ITEMS_ID';
+
 export default {
-  noIteration: { text: iterationSelectTextMap.noIteration, id: null },
-  directives: {
-    GlTooltip: GlTooltipDirective,
-  },
+  noIteration: { text: iterationSelectTextMap.noIteration, id: NO_ITEMS_ID },
   components: {
-    GlDropdown,
-    GlDropdownDivider,
-    GlDropdownItem,
-    GlSearchBoxByType,
-    GlDropdownSectionHeader,
-    GlLoadingIcon,
+    GlCollapsibleListbox,
     IterationTitle,
   },
   apollo: {
     iterations: {
       query: groupIterationsQuery,
-      debounce: 250,
+      debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
       variables() {
         const search = this.searchTerm ? `"${this.searchTerm}"` : '';
 
@@ -60,11 +48,34 @@ export default {
     };
   },
   computed: {
-    cadenceTitle() {
-      return this.currentIteration?.iterationCadence?.title;
+    currentIterationId() {
+      return this.currentIteration?.id;
     },
     iterationCadences() {
       return groupByIterationCadences(this.iterations);
+    },
+    iterationCadencesListBoxItems() {
+      const groups = this.iterationCadences.map((cadence) => ({
+        text: cadence.title,
+        options: cadence.iterations.map(({ id, period, title }) => ({
+          value: id,
+          text: period,
+          title,
+        })),
+      }));
+
+      return [
+        {
+          text: this.$options.noIteration.text,
+          options: [
+            {
+              text: this.$options.noIteration.text,
+              value: this.$options.noIteration.id,
+            },
+          ],
+        },
+        ...groups,
+      ];
     },
     dropdownSelectedText() {
       return this.currentIteration?.period || __('Select iteration');
@@ -73,68 +84,50 @@ export default {
       return __('Assign Iteration');
     },
   },
+  created() {
+    this.handleSearch = debounce(this.setSearchTerm, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+  },
+  destroyed() {
+    this.handleSearch.cancel();
+  },
   methods: {
-    onClick(iteration) {
-      if (iteration.id === this.currentIteration?.id) {
-        this.currentIteration = null;
-      } else {
-        this.currentIteration = iteration;
-      }
+    setSearchTerm(val = '') {
+      this.searchTerm = val?.trim();
+    },
+    onClick(iterationId) {
+      this.currentIteration =
+        this.iterationCadences
+          .flatMap((cadence) => cadence.iterations)
+          ?.find(({ id }) => id === iterationId) || this.$options.noIteration;
 
       this.$emit('onIterationSelect', this.currentIteration);
-    },
-    isIterationChecked(id) {
-      return id === this.currentIteration?.id;
     },
     onDropdownShow() {
       this.shouldFetch = true;
     },
-    setFocus() {
-      this.$refs.search.focusInput();
-    },
-    getIterationPeriod,
   },
 };
 </script>
 
 <template>
-  <gl-dropdown
-    :text="dropdownSelectedText"
-    :header-text="dropdownHeaderText"
-    class="gl-w-full"
+  <gl-collapsible-listbox
     block
-    @show="onDropdownShow"
-    @shown="setFocus"
+    is-check-centered
+    searchable
+    toggle-class="gl-w-full"
+    :header-text="dropdownHeaderText"
+    :items="iterationCadencesListBoxItems"
+    :loading="$apollo.queries.iterations.loading"
+    :searching="$apollo.queries.iterations.loading"
+    :selected="currentIterationId"
+    :toggle-text="dropdownSelectedText"
+    @shown="onDropdownShow"
+    @search="handleSearch"
+    @select="onClick"
   >
-    <template #header>
-      <gl-search-box-by-type ref="search" v-model="searchTerm" />
+    <template #list-item="{ item }">
+      {{ item.text }}
+      <iteration-title v-if="item.title" :title="item.title" />
     </template>
-    <gl-dropdown-item
-      is-check-item
-      :is-checked="isIterationChecked($options.noIteration.id)"
-      @click="onClick($options.noIteration)"
-    >
-      {{ $options.noIteration.text }}
-    </gl-dropdown-item>
-    <gl-dropdown-divider />
-    <gl-loading-icon v-if="$apollo.queries.iterations.loading" size="sm" />
-    <template v-else>
-      <template v-for="(cadence, index) in iterationCadences">
-        <gl-dropdown-divider v-if="index !== 0" :key="index" />
-        <gl-dropdown-section-header :key="cadence.title">
-          {{ cadence.title }}
-        </gl-dropdown-section-header>
-        <gl-dropdown-item
-          v-for="iterationItem in cadence.iterations"
-          :key="iterationItem.id"
-          is-check-item
-          :is-checked="isIterationChecked(iterationItem.id)"
-          @click="onClick(iterationItem)"
-        >
-          {{ iterationItem.period }}
-          <iteration-title v-if="iterationItem.title" :title="iterationItem.title" />
-        </gl-dropdown-item>
-      </template>
-    </template>
-  </gl-dropdown>
+  </gl-collapsible-listbox>
 </template>
