@@ -2549,7 +2549,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
 
       it 'is in the future' do
-        expect(subject).to be > Time.zone.now
+        expect(subject).to be_future
       end
 
       it 'is in days_from_now' do

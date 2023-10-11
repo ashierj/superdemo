@@ -1156,7 +1156,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       end
 
       it 'is in the future' do
-        expect(subject).to be > Time.zone.now
+        expect(subject).to be_future
       end
 
       it 'is in days_from_now' do
