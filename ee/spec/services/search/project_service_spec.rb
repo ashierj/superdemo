@@ -64,6 +64,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     before do
       allow(project).to receive(:search_code_with_zoekt?).and_return(search_code_with_zoekt)
       allow(user).to receive(:enabled_zoekt?).and_return(user_preference_enabled_zoekt)
+      zoekt_ensure_namespace_indexed!(project.root_namespace)
     end
 
     it 'searches with Zoekt' do

@@ -21,11 +21,17 @@ module Search
       raise NotImplementedError
     end
 
+    def zoekt_shard_id
+      @zoekt_shard_id ||= ::Zoekt::IndexedNamespace.find_by_namespace_id(
+        zoekt_searchable_scope.root_ancestor.id).zoekt_shard_id
+    end
+
     def zoekt_search_results
       ::Gitlab::Zoekt::SearchResults.new(
         current_user,
         params[:search],
         zoekt_projects,
+        shard_id: zoekt_shard_id,
         order_by: params[:order_by],
         sort: params[:sort],
         filters: { language: params[:language] }
