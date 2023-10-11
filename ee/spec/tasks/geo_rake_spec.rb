@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rake_helper'
+require 'spec_helper'
 
 RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_replication do
   include ::EE::GeoHelpers
@@ -9,9 +9,6 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
     Rake.application.rake_require 'active_record/railties/databases'
     Rake.application.rake_require 'tasks/gitlab/db'
     Rake.application.rake_require 'tasks/geo'
-
-    # empty task as env is already loaded
-    Rake::Task.define_task :environment
 
     # We disable the transaction_open? check because Gitlab::Database::BatchCounter.batch_count
     # is not allowed within a transaction but all RSpec tests run inside of a transaction.

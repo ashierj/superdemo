@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rake_helper'
+require 'spec_helper'
 
 module Gitlab
   module DataSeeder

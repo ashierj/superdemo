@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rake_helper'
+require 'spec_helper'
 
 RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_stdout,
   feature_category: :global_search do

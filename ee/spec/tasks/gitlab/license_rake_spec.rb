@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rake_helper'
+require 'spec_helper'
 
 RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
   let(:default_license_path) { Settings.source.dirname + 'Gitlab.gitlab-license' }
