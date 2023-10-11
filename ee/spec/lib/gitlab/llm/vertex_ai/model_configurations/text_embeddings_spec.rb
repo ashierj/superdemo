@@ -32,4 +32,16 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::TextEmbeddings, featu
       )
     end
   end
+
+  describe '#as_json' do
+    it 'returns serializable attributes' do
+      attrs = {
+        vertex_ai_host: host,
+        vertex_ai_project: project,
+        model: described_class::NAME
+      }
+
+      expect(subject.as_json).to eq(attrs)
+    end
+  end
 end

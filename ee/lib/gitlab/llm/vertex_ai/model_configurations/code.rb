@@ -18,6 +18,10 @@ module Gitlab
               parameters: Configuration.payload_parameters(maxOutputTokens: MAX_OUTPUT_TOKENS)
             }
           end
+
+          def as_json(opts = nil)
+            super.merge(Configuration.payload_parameters(maxOutputTokens: MAX_OUTPUT_TOKENS))
+          end
         end
       end
     end

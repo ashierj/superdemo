@@ -38,4 +38,20 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::CodeCompletion, featu
       )
     end
   end
+
+  describe '#as_json' do
+    it 'returns serializable attributes' do
+      attrs = {
+        vertex_ai_host: host,
+        vertex_ai_project: project,
+        model: described_class::NAME,
+        temperature: Gitlab::Llm::VertexAi::Configuration::DEFAULT_TEMPERATURE,
+        maxOutputTokens: described_class::MAX_OUTPUT_TOKENS,
+        topK: Gitlab::Llm::VertexAi::Configuration::DEFAULT_TOP_K,
+        topP: Gitlab::Llm::VertexAi::Configuration::DEFAULT_TOP_P
+      }
+
+      expect(subject.as_json).to eq(attrs)
+    end
+  end
 end

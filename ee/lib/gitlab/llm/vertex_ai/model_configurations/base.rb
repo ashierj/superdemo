@@ -21,6 +21,14 @@ module Gitlab
             vertex_ai_host || "us-central1-aiplatform.googleapis.com"
           end
 
+          def as_json(_opts = nil)
+            {
+              vertex_ai_host: host,
+              vertex_ai_project: vertex_ai_project,
+              model: model
+            }
+          end
+
           private
 
           delegate :vertex_ai_host, :vertex_ai_project, to: :settings
