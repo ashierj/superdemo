@@ -3,6 +3,7 @@
 module Elastic
   class NamespaceUpdateWorker # rubocop:disable Scalability/IdempotentWorker
     include ApplicationWorker
+    prepend IndexingControl
 
     data_consistency :sticky
     feature_category :global_search

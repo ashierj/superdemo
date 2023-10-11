@@ -37,6 +37,28 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
 
       expect(described_class::WORKERS).to match_array(workers)
     end
+
+    it 'includes all workers with feature_category :global_search and without pause_control' do
+      exceptions = [
+        Elastic::MigrationWorker,
+        ElasticClusterReindexingCronWorker,
+        ElasticIndexBulkCronWorker,
+        ElasticIndexInitialBulkCronWorker,
+        ElasticIndexingControlWorker,
+        ElasticNamespaceRolloutWorker,
+        PauseControl::ResumeWorker,
+        Search::Zoekt::DefaultBranchChangedWorker
+      ]
+
+      workers = ObjectSpace.each_object(::Class).select do |klass|
+        klass < ApplicationWorker &&
+          klass.get_feature_category == :global_search &&
+          klass.get_pause_control.nil? &&
+          exceptions.exclude?(klass)
+      end
+
+      expect(described_class::WORKERS).to match_array(workers)
+    end
   end
 
   context 'with stub_const' do

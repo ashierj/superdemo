@@ -3,6 +3,7 @@
 module Elastic
   class ProjectTransferWorker
     include ApplicationWorker
+    prepend IndexingControl
 
     data_consistency :delayed
 
