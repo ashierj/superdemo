@@ -17,8 +17,8 @@ describe('Executive dashboard app', () => {
   let wrapper;
   let userCalloutDismissSpy;
   const fullPath = 'groupFullPath';
-  const tooManyPaths = ['group', 'group/a', 'group/b', 'group/c', 'group/d', 'group/e'];
-  const tooManyPanels = tooManyPaths.map((namespace) => ({ data: { namespace } }));
+  const testPaths = ['group', 'group/a', 'group/b', 'group/c', 'group/d', 'group/e'];
+  const testPanels = testPaths.map((namespace) => ({ data: { namespace } }));
 
   const createWrapper = async ({ props = {}, shouldShowCallout = true } = {}) => {
     userCalloutDismissSpy = jest.fn();
@@ -74,12 +74,6 @@ describe('Executive dashboard app', () => {
 
       const [chart] = charts.wrappers;
       expect(chart.props()).toMatchObject({ data: { namespace: fullPath } });
-    });
-
-    it('does not render more than 4 visualizations', async () => {
-      await createWrapper({ props: { queryPaths: tooManyPaths } });
-      const charts = findDoraVisualizations();
-      expect(charts.length).toBe(4);
     });
 
     it('queryPaths are shown in addition to the group visualization', async () => {
@@ -159,12 +153,12 @@ describe('Executive dashboard app', () => {
       expect(charts.wrappers[1].props()).toMatchObject(panels[1]);
     });
 
-    it('does not render more than 4 visualizations', async () => {
-      jest.spyOn(yamlConfigUtils, 'fetchYamlConfig').mockResolvedValue({ panels: tooManyPanels });
+    it('can render any number of visualizations', async () => {
+      jest.spyOn(yamlConfigUtils, 'fetchYamlConfig').mockResolvedValue({ panels: testPanels });
       await createWrapper({ props: { yamlConfigProject } });
 
       const charts = findDoraVisualizations();
-      expect(charts.length).toBe(4);
+      expect(charts.length).toBe(6);
     });
 
     it('queryPaths override the panels list', async () => {

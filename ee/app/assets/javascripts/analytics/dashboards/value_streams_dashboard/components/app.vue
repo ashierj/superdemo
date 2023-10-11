@@ -9,7 +9,6 @@ import {
   DASHBOARD_DESCRIPTION,
   DASHBOARD_SURVEY_LINK,
   DASHBOARD_DOCS_LINK,
-  MAX_PANELS_LIMIT,
   YAML_CONFIG_LOAD_ERROR,
 } from '../../constants';
 import { fetchYamlConfig } from '../../yaml_utils';
@@ -79,9 +78,7 @@ export default {
         list = this.yamlConfig?.panels;
       }
 
-      // Each panel requires many requests to render, so restrict
-      // the number of panels to prevent overloading the server.
-      return list.slice(0, MAX_PANELS_LIMIT);
+      return list;
     },
     groupPanels() {
       return this.panels.filter(({ isProject }) => !isProject);

@@ -8,8 +8,6 @@ import {
   MERGE_REQUEST_METRICS,
 } from '~/analytics/shared/constants';
 
-export const MAX_PANELS_LIMIT = 4;
-
 export const UNITS = {
   COUNT: 'COUNT',
   DAYS: 'DAYS',
