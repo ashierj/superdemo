@@ -24,13 +24,15 @@ RSpec.describe 'DORA Metrics (JavaScript fixtures)' do
       { date: '2015-07-03', deployment_frequency: 1, lead_time_for_changes_in_seconds: seconds_in_1_day * 7,
         time_to_restore_service_in_seconds: seconds_in_1_day, incidents_count: nil }
     ].each do |data_point|
-      create(:dora_daily_metrics,
-             deployment_frequency: data_point[:deployment_frequency],
-             lead_time_for_changes_in_seconds: data_point[:lead_time_for_changes_in_seconds],
-             time_to_restore_service_in_seconds: data_point[:time_to_restore_service_in_seconds],
-             incidents_count: data_point[:incidents_count],
-             environment: environment,
-             date: data_point[:date])
+      create(
+        :dora_daily_metrics,
+        deployment_frequency: data_point[:deployment_frequency],
+        lead_time_for_changes_in_seconds: data_point[:lead_time_for_changes_in_seconds],
+        time_to_restore_service_in_seconds: data_point[:time_to_restore_service_in_seconds],
+        incidents_count: data_point[:incidents_count],
+        environment: environment,
+        date: data_point[:date]
+      )
     end
   end
 
