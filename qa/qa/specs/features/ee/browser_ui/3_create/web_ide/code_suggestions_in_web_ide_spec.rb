@@ -35,8 +35,14 @@ module QA
         Page::Project::WebIDE::VSCode.perform(&:wait_for_ide_to_load)
       end
 
-      it 'adds text into a file and verifies code suggestions appear',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/425756' do
+      it(
+        'adds text into a file and verifies code suggestions appear',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/425756',
+        quarantine: {
+          type: :investigating,
+          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/427737"
+        }
+      ) do
         Page::Project::WebIDE::VSCode.perform do |ide|
           ide.within_vscode_editor do
             ide.open_file_from_explorer(file_name)
