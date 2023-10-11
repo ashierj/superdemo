@@ -26,23 +26,35 @@ RSpec.describe Groups::IssuesAnalyticsController, feature_category: :team_planni
     before do
       group.add_owner(user)
       sign_in(user)
-      stub_licensed_features(issues_analytics: true)
     end
 
-    it_behaves_like 'tracking unique visits', :show do
-      let(:request_params) { { group_id: group.to_param } }
-      let(:target_id) { 'g_analytics_issues' }
-    end
+    [:license, :usage_ping_features].each do |enabled_through|
+      context "when feature is enabled through #{enabled_through}" do
+        before do
+          case enabled_through
+          when :license
+            stub_licensed_features(issues_analytics: true)
+          when :usage_ping_features
+            stub_usage_ping_features(true)
+          end
+        end
 
-    it_behaves_like 'Snowplow event tracking with RedisHLL context' do
-      subject { get :show, params: { group_id: group.to_param } }
+        it_behaves_like 'tracking unique visits', :show do
+          let(:request_params) { { group_id: group.to_param } }
+          let(:target_id) { 'g_analytics_issues' }
+        end
 
-      let(:category) { described_class.name }
-      let(:action) { 'perform_analytics_usage_action' }
-      let(:label) { 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly' }
-      let(:property) { 'g_analytics_issues' }
-      let(:namespace) { group }
-      let(:project) { nil }
+        it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+          subject { get :show, params: { group_id: group.to_param } }
+
+          let(:category) { described_class.name }
+          let(:action) { 'perform_analytics_usage_action' }
+          let(:label) { 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly' }
+          let(:property) { 'g_analytics_issues' }
+          let(:namespace) { group }
+          let(:project) { nil }
+        end
+      end
     end
   end
 end
