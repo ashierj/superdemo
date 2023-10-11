@@ -9,10 +9,12 @@ module Projects
       before_action :authorize_analytics_settings!
 
       def update
-        # clear instrumentation key since old one is not valid anymore
-        # a new instrumentation key will be set during stack initialization
         params_to_update = update_params.to_h
-          .deep_merge({ project_setting_attributes: { product_analytics_instrumentation_key: nil } })
+        if update_params[:project_setting_attributes].present?
+          # clear instrumentation key since old one is not valid anymore
+          # a new instrumentation key will be set during stack initialization
+          params_to_update.deep_merge!({ project_setting_attributes: { product_analytics_instrumentation_key: nil } })
+        end
 
         ::Projects::UpdateService.new(project, current_user, params_to_update).tap do |service|
           result = service.execute

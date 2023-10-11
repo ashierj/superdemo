@@ -93,6 +93,23 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
             project.reload.project_setting.product_analytics_instrumentation_key
           }.to(nil)
         end
+
+        it 'updates dashboard pointer project reference and does not clean up instrumentation key' do
+          params = {
+            project: {
+              analytics_dashboards_pointer_attributes: {
+                target_project_id: pointer_project.id
+              }
+            }
+          }
+
+          expect do
+            patch project_settings_analytics_path(project, params)
+          end.to change {
+            project.reload.analytics_dashboards_configuration_project
+          }.to(pointer_project)
+          expect(project.reload.project_setting.product_analytics_instrumentation_key).not_to be_nil
+        end
       end
 
       it 'updates dashboard pointer project reference' do
