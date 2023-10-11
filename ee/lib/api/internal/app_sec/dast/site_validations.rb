@@ -20,7 +20,7 @@ module API
                 params do
                   requires :event, type: Symbol, values: %i[start fail_op retry pass], desc: 'The transition event.'
                 end
-                post ':id/transition' do
+                post ':id/transition', urgency: :low do
                   validation = DastSiteValidation.find(params[:id])
 
                   authorize!(:create_on_demand_dast_scan, validation)
