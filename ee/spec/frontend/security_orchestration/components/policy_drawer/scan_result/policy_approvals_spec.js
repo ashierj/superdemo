@@ -60,4 +60,11 @@ describe('PolicyApprovals component', () => {
       });
     },
   );
+
+  describe('zero approvers', () => {
+    it('shows no approval text', () => {
+      factory({ approvers: [] });
+      expect(wrapper.text()).toBe('Requires no approvals if any of the following occur:');
+    });
+  });
 });

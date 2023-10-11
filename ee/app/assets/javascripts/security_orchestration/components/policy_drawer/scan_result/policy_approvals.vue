@@ -1,5 +1,6 @@
 <script>
 import { GlSprintf, GlLink } from '@gitlab/ui';
+import { isEmpty } from 'lodash';
 import { s__, n__, __, sprintf } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
@@ -11,6 +12,7 @@ export default {
     actionText: s__(
       'SecurityOrchestration|Require %{approvals} %{plural} from %{approvers} if any of the following occur:',
     ),
+    noActionText: s__('SecurityOrchestration|Requires no approvals if any of the following occur:'),
     additional_approvers: s__('SecurityOrchestration|, and %{count} more'),
     and: __(' and '),
     comma: __(', '),
@@ -22,7 +24,8 @@ export default {
   props: {
     action: {
       type: Object,
-      required: true,
+      required: false,
+      default: () => ({}),
     },
     approvers: {
       type: Array,
@@ -38,6 +41,9 @@ export default {
     },
     displayedApprovers() {
       return this.approvers.slice(0, THRESHOLD_FOR_APPROVERS);
+    },
+    message() {
+      return isEmpty(this.action) ? this.$options.i18n.noActionText : this.$options.i18n.actionText;
     },
   },
   methods: {
@@ -87,7 +93,7 @@ export default {
 
 <template>
   <span>
-    <gl-sprintf :message="$options.i18n.actionText">
+    <gl-sprintf :message="message">
       <template #approvals>
         {{ approvalsRequired }}
       </template>
