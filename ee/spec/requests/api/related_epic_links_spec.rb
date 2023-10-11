@@ -8,6 +8,10 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:source_group) { create(:group, :public) }
+  let_it_be(:target_group) { create(:group, :public) }
+  let_it_be(:source_epic) { create(:epic, group: source_group) }
+  let_it_be(:target_epic) { create(:epic, group: target_group) }
 
   before do
     stub_licensed_features(epics: true, related_epics: true)
@@ -294,77 +298,53 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
   end
 
   describe 'POST /groups/:id/epics/:epic_id/related_epics' do
-    let_it_be(:target_group) { create(:group, :private) }
-    let_it_be(:target_epic) { create(:epic, group: target_group) }
-
     let(:target_epic_iid) { target_epic.iid }
 
     subject { perform_request(user, target_group_id: target_group.id, target_epic_iid: target_epic_iid) }
 
     def perform_request(user = nil, params = {})
-      post api("/groups/#{group.id}/epics/#{epic.iid}/related_epics", user), params: params
+      post api("/groups/#{source_group.id}/epics/#{source_epic.iid}/related_epics", user), params: params
     end
 
     it_behaves_like 'unauthenticated resource'
 
     context 'when user can not access source epic' do
-      before do
-        target_group.add_guest(user)
-      end
-
-      it_behaves_like 'not found resource', '404 Group Not Found'
+      # user is not a member of the public source group
+      it_behaves_like 'forbidden resource'
     end
 
     context 'when user can access source epic' do
       before do
-        group.add_guest(user)
+        source_group.add_guest(user)
       end
 
       context 'when user cannot access target epic' do
-        # user is not a member of the private target group
-        it_behaves_like 'not found resource', '404 Group Not Found'
+        context 'when group is private' do
+          let(:target_group) { group }
+
+          # user is not a member of the private target group
+          it_behaves_like 'not found resource', '404 Group Not Found'
+        end
 
         context 'when epic_relations_for_non_members is disabled' do
           before do
-            # user is not a member of the public target group
-            target_group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
             stub_feature_flags(epic_relations_for_non_members: false)
           end
 
+          # user is not a member of the public target group
           it_behaves_like 'forbidden resource'
         end
       end
 
-      context 'when user is guest in target group' do
-        before do
-          target_group.add_guest(user)
-        end
-
+      context 'when user can access target epic group' do
         it_behaves_like 'successful response', :created
-
-        context 'when target epic is confidential' do
-          let_it_be(:confidential_target_epic) { create(:epic, :confidential, group: target_group) }
-
-          let(:target_epic_iid) { confidential_target_epic.iid }
-
-          it_behaves_like 'forbidden resource'
-        end
-      end
-
-      context 'when user can relate epics' do
-        before do
-          target_group.add_guest(user)
-        end
-
         it_behaves_like 'endpoint with features check'
-
-        it_behaves_like 'successful response', :created
 
         it 'returns 201 when sending full path of target group' do
           perform_request(user, target_group_id: target_group.full_path, target_epic_iid: target_epic.iid, link_type: 'blocks')
 
           expect_link_response(link_type: 'blocks')
-          expect(json_response['source_epic']['id']).to eq(epic.id)
+          expect(json_response['source_epic']['id']).to eq(source_epic.id)
           expect(json_response['target_epic']['id']).to eq(target_epic.id)
         end
 
@@ -374,7 +354,13 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
           # For `is_blocked_by` we swap the source and target and use `block` as type.
           expect_link_response(link_type: 'blocks')
           expect(json_response['source_epic']['id']).to eq(target_epic.id)
-          expect(json_response['target_epic']['id']).to eq(epic.id)
+          expect(json_response['target_epic']['id']).to eq(source_epic.id)
+        end
+
+        context 'when target epic is confidential' do
+          let(:target_epic) { create(:epic, :confidential, group: target_group) }
+
+          it_behaves_like 'forbidden resource'
         end
 
         context 'when target epic is not found' do
@@ -387,71 +373,55 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
   end
 
   describe 'DELETE /groups/:id/epics/:epic_id/related_epics' do
-    let_it_be(:target_group) { create(:group, :private) }
-    let_it_be(:target_epic) { create(:epic, group: target_group) }
-    let_it_be_with_reload(:related_epic_link) { create(:related_epic_link, source: epic, target: target_epic) }
+    let_it_be(:related_epic_link) { create(:related_epic_link, source: source_epic, target: target_epic) }
 
     subject { perform_request(user) }
 
-    def perform_request(user = nil)
-      delete api("/groups/#{group.id}/epics/#{epic.iid}/related_epics/#{related_epic_link.id}", user)
+    def perform_request(user = nil, link_id = related_epic_link.id)
+      delete api("/groups/#{source_group.id}/epics/#{source_epic.iid}/related_epics/#{link_id}", user)
     end
 
     it_behaves_like 'unauthenticated resource'
 
     context 'when user can not access source epic' do
-      before do
-        target_group.add_guest(user)
-      end
-
-      it_behaves_like 'not found resource', '404 Group Not Found'
+      it_behaves_like 'forbidden resource'
     end
 
     context 'when user can access source epic' do
       before do
-        group.add_guest(user)
+        source_group.add_guest(user)
       end
 
-      it_behaves_like 'not found resource', 'No Related Epic Link found'
+      context 'when target group is private' do
+        let(:related_epic_link) do
+          create(:related_epic_link, source: source_epic, target: create(:epic, group: group))
+        end
+
+        it_behaves_like 'not found resource', 'No Related Epic Link found'
+      end
 
       context 'when epic_relations_for_non_members is disabled' do
         before do
-          # user is not a member of the public target group
-          target_group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
           stub_feature_flags(epic_relations_for_non_members: false)
         end
 
         it_behaves_like 'not found resource', 'No Related Epic Link found'
       end
 
-      context 'when user is guest in target group' do
-        before do
-          target_group.add_guest(user)
-        end
-
+      context 'when user can access target group' do
         it_behaves_like 'successful response', :ok
-      end
-
-      context 'when related_epic_link_id belongs to a different epic' do
-        let_it_be(:other_epic) { create(:epic, group: target_group) }
-        let_it_be(:other_epic_link) { create(:related_epic_link, source: other_epic, target: target_epic) }
-
-        subject { delete api("/groups/#{group.id}/epics/#{epic.iid}/related_epics/#{other_epic_link.id}", user) }
-
-        before do
-          target_group.add_guest(user)
-        end
-
-        it_behaves_like 'not found resource', '404 Not found'
-      end
-
-      context 'when user can relate epics' do
-        before do
-          target_group.add_guest(user)
-        end
-
         it_behaves_like 'endpoint with features check'
-        it_behaves_like 'successful response', :ok
+
+        context 'when related_epic_link_id belongs to a different epic' do
+          let_it_be(:other_epic) { create(:epic, group: target_group) }
+          let_it_be(:other_epic_link) { create(:related_epic_link, source: other_epic, target: target_epic) }
+
+          subject do
+            perform_request(user, other_epic_link.id)
+          end
+
+          it_behaves_like 'not found resource', '404 Not found'
+        end
       end
     end
   end

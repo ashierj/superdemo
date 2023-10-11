@@ -5,6 +5,14 @@ module Epics
     class CreateService < IssuableLinks::CreateService
       include UsageDataHelper
 
+      def execute
+        unless can?(current_user, :admin_epic_link_relation, issuable)
+          return error(issuables_no_permission_error_message, 403)
+        end
+
+        super
+      end
+
       def linkable_issuables(epics)
         @linkable_issuables ||= epics.select { |epic| can?(current_user, :read_epic_link_relation, epic) }
       end
@@ -33,6 +41,10 @@ module Epics
 
       def link_class
         Epic::RelatedEpicLink
+      end
+
+      def issuables_no_permission_error_message
+        _("Couldn't link epics. You must have at least the Guest role in the epic's group.")
       end
     end
   end

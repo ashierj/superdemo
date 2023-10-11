@@ -13772,6 +13772,9 @@ msgstr ""
 msgid "Couldn't link %{issuable}. You must have at least the Reporter role in both projects."
 msgstr ""
 
+msgid "Couldn't link epics. You must have at least the Guest role in the epic's group."
+msgstr ""
+
 msgid "Country / Region"
 msgstr ""
 
