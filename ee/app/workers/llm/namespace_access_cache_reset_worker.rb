@@ -20,17 +20,17 @@ module Llm
     end
 
     def cache_keys(group)
-      unique_group_users(group).map { |user| ["users", user.id, User::GROUP_WITH_AI_ENABLED_CACHE_KEY] }
+      unique_group_user_ids(group).map { |user_id| ["users", user_id, User::GROUP_WITH_AI_ENABLED_CACHE_KEY] }
     end
 
-    def unique_group_users(group)
-      User.from_union(
+    def unique_group_user_ids(group)
+      Member.from_union(
         [
-          group.project_users_with_descendants.select(:id),
-          group.users_with_descendants.select(:id)
+          group.descendant_project_members_with_inactive.select(:user_id),
+          group.members_with_descendants.select(:user_id)
         ],
         remove_duplicates: true
-      ).select(:id)
+      ).pluck_user_ids
     end
   end
 end
