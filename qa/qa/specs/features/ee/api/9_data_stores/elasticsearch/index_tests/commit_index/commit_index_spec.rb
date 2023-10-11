@@ -38,12 +38,14 @@ module QA
           max_attempts: Runtime::Search::RETRY_MAX_ITERATION,
           sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
           get(Runtime::Search.create_search_request(api_client, 'commits', commit.commit_message).url)
+
           aggregate_failures do
             expect_status(QA::Support::API::HTTP_STATUS_OK)
-            expect(json_body).not_to be_empty
-            expect(json_body[0][:title]).to eq(commit.commit_message)
-            expect(json_body[0][:short_id]).to eq(commit.short_id)
+            expect(json_body).not_to be_empty, 'Expected a commit to be returned by search'
           end
+
+          expect(json_body[0][:title]).to eq(commit.commit_message)
+          expect(json_body[0][:short_id]).to eq(commit.short_id)
         end
       end
     end
