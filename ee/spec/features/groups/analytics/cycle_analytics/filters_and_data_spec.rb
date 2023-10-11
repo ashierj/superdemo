@@ -31,7 +31,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
 
   def select_stage(name)
     string_id = "CycleAnalyticsStage|#{name}"
-    within '[data-testid="vsa-path-navigation"]' do
+    within_testid('vsa-path-navigation') do
       page.find('li', text: s_(string_id), match: :prefer_exact).click
     end
 
@@ -379,7 +379,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
     end
 
     it 'will have data available' do
-      duration_overview_chart = page.find('[data-testid="vsa-duration-overview-chart"]')
+      duration_overview_chart = find_by_testid('vsa-duration-overview-chart')
       expect(duration_overview_chart).not_to have_text(_("There is no data available. Please change your selection."))
       expect(duration_overview_chart).to have_text(s_('CycleAnalytics|Average time to completion (days)'))
 
@@ -395,7 +395,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       end
 
       it 'will filter the data' do
-        duration_overview_chart = page.find('[data-testid="vsa-duration-overview-chart"]')
+        duration_overview_chart = find_by_testid('vsa-duration-overview-chart')
         expect(duration_overview_chart).not_to have_text(s_('CycleAnalytics|Average time to completion (days)'))
         expect(duration_overview_chart).to have_text(
           _('No data available ' \

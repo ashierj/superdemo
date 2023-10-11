@@ -69,8 +69,8 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
     describe 'Epic metadata' do
       it 'shows buttons `Tree view` and `Roadmap view`' do
-        expect(find('[data-testid="tree-view-button"]')).to have_content('Tree view')
-        expect(find('[data-testid="roadmap-view-button"]')).to have_content('Roadmap view')
+        expect(find_by_testid('tree-view-button')).to have_content('Tree view')
+        expect(find_by_testid('roadmap-view-button')).to have_content('Roadmap view')
       end
     end
 
@@ -88,10 +88,10 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
       end
 
       it 'toggles epic labels' do
-        page.within('[data-testid="related-items-container"]') do
+        within_testid('related-items-container') do
           expect(find('.tree-item:nth-child(1)')).to have_selector('.gl-label')
 
-          toggle_labels = find('[data-testid="show-labels-toggle"]')
+          toggle_labels = find_by_testid('show-labels-toggle')
 
           toggle_labels.find('button').click
 
@@ -235,7 +235,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
       context 'when sorted by `Newest first`' do
         before do
-          page.within('[data-testid="discussion-preferences"]') do
+          within_testid('discussion-preferences') do
             click_button 'Sort or filter'
             click_button 'Newest first'
             wait_for_requests

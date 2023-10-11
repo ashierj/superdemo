@@ -17,7 +17,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
 
   def search_for_label(label)
     page.within('.vue-filtered-search-bar-container .gl-search-box-by-click') do
-      page.find('[data-testid="filtered-search-term-input"]').click
+      find_by_testid('filtered-search-term-input').click
       click_link 'Label'
       page.first('.gl-filtered-search-suggestion-list .gl-filtered-search-suggestion').click # Select `=` operator
       wait_for_requests
@@ -72,7 +72,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         def select_date_range(range_type)
           open_settings_sidebar
 
-          page.within('[data-testid="roadmap-settings"]') do
+          within_testid('roadmap-settings') do
             page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle').click
             click_button(range_type)
           end
@@ -81,7 +81,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         it 'renders daterange filtering dropdown with "This quarter" selected by default no layout presets available', :aggregate_failures do
           open_settings_sidebar
 
-          page.within('[data-testid="roadmap-settings"]') do
+          within_testid('roadmap-settings') do
             expect(page).to have_selector('[data-testid="daterange-dropdown"]')
             expect(page).not_to have_selector('[data-testid="daterange-presets"]')
             expect(page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle')).to have_content('This quarter')
@@ -91,7 +91,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         it 'selecting "This year" as daterange shows `Months` and `Weeks` layout presets', :aggregate_failures do
           select_date_range('This year')
 
-          page.within('[data-testid="roadmap-settings"]') do
+          within_testid('roadmap-settings') do
             expect(page).to have_selector('[data-testid="daterange-presets"]')
             expect(page).to have_selector('input[value="MONTHS"]')
             expect(page).to have_selector('input[value="WEEKS"]')
@@ -101,7 +101,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         it 'selecting "Within 3 years" as daterange shows `Quarters`, `Months` and `Weeks` layout presets', :aggregate_failures do
           select_date_range('Within 3 years')
 
-          page.within('[data-testid="roadmap-settings"]') do
+          within_testid('roadmap-settings') do
             expect(page).to have_selector('[data-testid="daterange-presets"]')
             expect(page).to have_selector('input[value="QUARTERS"]')
             expect(page).to have_selector('input[value="MONTHS"]')
@@ -112,7 +112,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
 
       describe 'roadmap page with epics state filter' do
         def select_state(state)
-          page.within('[data-testid="roadmap-epics-state"]') do
+          within_testid('roadmap-epics-state') do
             choose state
           end
         end
@@ -183,7 +183,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         end
 
         it 'turns off progress tracking', :aggregate_failures do
-          page.within('[data-testid="roadmap-progress-tracking"]') do
+          within_testid('roadmap-progress-tracking') do
             click_button class: 'gl-toggle'
           end
 
@@ -197,7 +197,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
 
       describe 'roadmap milestones settings' do
         def select_milestones(milestones)
-          page.within('[data-testid="roadmap-milestones-settings"]') do
+          within_testid('roadmap-milestones-settings') do
             choose milestones
           end
         end
@@ -234,7 +234,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         end
 
         it 'turns off milestones' do
-          page.within('[data-testid="roadmap-milestones-settings"]') do
+          within_testid('roadmap-milestones-settings') do
             click_button class: 'gl-toggle'
           end
 
@@ -254,7 +254,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         it 'turns on labels' do
           open_settings_sidebar
 
-          page.within('[data-testid="roadmap-labels-settings"]') do
+          within_testid('roadmap-labels-settings') do
             click_button class: 'gl-toggle'
           end
 
@@ -271,7 +271,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
       end
 
       it 'filters by child epic', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/391611' do
-        page.find('[data-testid="filtered-search-term-input"]').click
+        find_by_testid('filtered-search-term-input').click
         click_link 'Epic'
         click_link sub_epic.title
         click_button 'Search'

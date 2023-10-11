@@ -149,8 +149,8 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
       it 'opens datepicker when clicking Edit button' do
         page.within('.issuable-sidebar [data-testid="start-date"]') do
           click_button('Edit')
-          expect(find('[data-testid="expanded-content"]')).to have_selector('.gl-datepicker')
-          expect(find('[data-testid="expanded-content"]')).to have_selector('.gl-datepicker .pika-single.is-bound')
+          expect(find_by_testid('expanded-content')).to have_selector('.gl-datepicker')
+          expect(find_by_testid('expanded-content')).to have_selector('.gl-datepicker .pika-single.is-bound')
         end
       end
     end

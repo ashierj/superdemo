@@ -89,7 +89,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
       click_button 'Create list'
       wait_for_all_requests
 
-      page.within(find("[data-testid='board-add-new-column']")) do
+      within_testid('board-add-new-column') do
         expect(page).not_to have_text('Iteration')
         expect(page).not_to have_text('Assignee')
         expect(page).not_to have_text('Milestone')
@@ -105,7 +105,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
 
     find_button("Select a").click
 
-    page.within('[data-testid="base-dropdown-menu"]') do
+    within_testid('base-dropdown-menu') do
       find('label', text: title).click
     end
 

@@ -53,7 +53,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
         expect(page).to have_content("Unlimited")
       end
 
-      page.within('[data-testid="pipelines-quota-tab-project-table"]') do
+      within_testid('pipelines-quota-tab-project-table') do
         expect(page).to have_content('Shared runners are disabled, so there are no limits set on pipeline usage')
       end
     end
@@ -95,7 +95,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
         expect(page).to have_content("200% used")
       end
 
-      page.within('[data-testid="pipelines-quota-tab-project-table"]') do
+      within_testid('pipelines-quota-tab-project-table') do
         expect(page).to have_content(project.full_name)
         expect(page).not_to have_content(other_project.full_name)
       end
@@ -116,7 +116,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
       end
 
       it 'does not show projects with 0 compute minutes used' do
-        page.within('[data-testid="pipelines-quota-tab-project-table"]') do
+        within_testid('pipelines-quota-tab-project-table') do
           expect(page).to have_content(project.full_name)
           expect(page).not_to have_content(other_project.full_name)
           expect(page).not_to have_content(no_minutes_project.full_name)
@@ -206,7 +206,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
 
     it 'sorts projects list by compute used in descending order' do
-      page.within('[data-testid="pipelines-quota-tab-project-table"]') do
+      within_testid('pipelines-quota-tab-project-table') do
         expect(page).to have_content("Project")
         expect(page).to have_content("Shared runner duration")
         expect(page).to have_content("Compute usage")

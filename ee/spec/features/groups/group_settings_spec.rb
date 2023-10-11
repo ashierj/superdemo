@@ -315,7 +315,7 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
 
         expect(page).to have_content('Merge request approvals')
 
-        within('[data-testid="merge-request-approval-settings"]') do
+        within_testid('merge-request-approval-settings') do
           click_button 'Expand'
           checkbox = find('[data-testid="prevent-author-approval"] > input')
 
@@ -329,7 +329,7 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
         visit edit_group_path(group)
         wait_for_all_requests
 
-        within('[data-testid="merge-request-approval-settings"]') do
+        within_testid('merge-request-approval-settings') do
           click_button 'Expand'
           expect(find('[data-testid="prevent-author-approval"] > input')).not_to be_checked
         end

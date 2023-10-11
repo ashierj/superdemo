@@ -76,7 +76,7 @@ RSpec.describe 'approaching seat count threshold alert', :saas, :js, feature_cat
         )
       expect(page).to have_link('View seat usage', href: usage_quotas_path(group, anchor: 'seats-quota-tab'))
 
-      find('[data-testid="approaching-seat-count-threshold-alert-dismiss"]').click
+      find_by_testid('approaching-seat-count-threshold-alert-dismiss').click
 
       expect_alert_to_be_hidden
 
@@ -98,7 +98,7 @@ RSpec.describe 'approaching seat count threshold alert', :saas, :js, feature_cat
         )
       expect(page).to have_link('View seat usage', href: usage_quotas_path(group, anchor: 'seats-quota-tab'))
 
-      find('[data-testid="approaching-seat-count-threshold-alert-dismiss"]').click
+      find_by_testid('approaching-seat-count-threshold-alert-dismiss').click
 
       expect_alert_to_be_hidden
 

@@ -330,7 +330,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
         expect(page).to have_content('Your free group is now limited to')
         expect(page).to have_link('upgrade')
 
-        page.find("[data-testid='free-group-limited-dismiss']").click
+        find_by_testid('free-group-limited-dismiss').click
         expect(page).not_to have_content('Your free group is now limited to')
 
         page.refresh

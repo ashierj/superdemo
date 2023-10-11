@@ -25,15 +25,15 @@ RSpec.describe 'CI minutes', :js, time_travel_to: '2022-06-05', feature_category
 
     expect(page.all('[data-testid="minutes-usage-year-dropdown"]').size).to eq 1
 
-    page.find('[data-testid="minutes-usage-year-dropdown"]').click
+    find_by_testid('minutes-usage-year-dropdown').click
 
-    page.within '[data-testid="minutes-usage-year-dropdown"]' do
+    within_testid('minutes-usage-year-dropdown') do
       expect(page.all('[data-testid="minutes-usage-year-dropdown-item"]').size).to eq 1
     end
 
-    page.find('[data-testid="minutes-usage-month-dropdown"]').click
+    find_by_testid('minutes-usage-month-dropdown').click
 
-    page.within '[data-testid="minutes-usage-month-dropdown"]' do
+    within_testid('minutes-usage-month-dropdown') do
       expect(page.all('[data-testid="minutes-usage-month-dropdown-item"]').size).to eq 12
     end
   end

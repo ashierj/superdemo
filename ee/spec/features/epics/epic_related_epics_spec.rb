@@ -46,7 +46,7 @@ RSpec.describe 'Related Epics', :js, feature_category: :portfolio_management do
     it 'user can view related epics section under epic description', :aggregate_failures do
       page.within('#related-issues') do
         card_title = page.find('.gl-new-card-title')
-        card_body = page.find('[data-testid="related-issues-body"]')
+        card_body = find_by_testid('related-issues-body')
         expect(card_title).to have_content('Linked epics')
         expect(card_body).to have_link('', href: '/help/user/group/epics/linked_epics')
         card = page.find('.gl-card')

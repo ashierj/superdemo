@@ -46,7 +46,7 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
     end
 
     it 'displays the Date Range GlTabs' do
-      page.within '[data-testid="contribution-analytics-date-nav"]' do
+      within_testid('contribution-analytics-date-nav') do
         expect(page).to have_link 'Last week',
           href: group_contribution_analytics_path(group, start_date: 1.week.ago.to_date)
         expect(page).to have_link 'Last month',
@@ -57,19 +57,19 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
     end
 
     it 'defaults active to Last Week' do
-      page.within '[data-testid="contribution-analytics-date-nav"]' do
+      within_testid('contribution-analytics-date-nav') do
         expect(page.find('.active')).to have_text('Last week')
       end
     end
 
     it 'clicking a different option updates correctly' do
-      page.within '[data-testid="contribution-analytics-date-nav"]' do
+      within_testid('contribution-analytics-date-nav') do
         page.find_link('Last 3 months').click
       end
 
       wait_for_requests
 
-      page.within '[data-testid="contribution-analytics-date-nav"]' do
+      within_testid('contribution-analytics-date-nav') do
         expect(page.find('.active')).to have_text('Last 3 months')
       end
     end

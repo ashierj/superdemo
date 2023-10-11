@@ -41,7 +41,7 @@ RSpec.describe 'Groups > Settings User configures VSD aggregation', :js, feature
         checkbox_text = s_('GroupSettings|Enable overview background aggregation for Value Streams Dashboard')
         checkbox = 'group_value_stream_dashboard_aggregation_attributes_enabled'
 
-        page.within '[data-testid="value-streams-dashboards-settings"]' do
+        within_testid('value-streams-dashboards-settings') do
           page.check(checkbox_text)
 
           page.click_button _('Save changes')
