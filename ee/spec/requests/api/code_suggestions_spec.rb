@@ -206,7 +206,25 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     let(:access_code_suggestions) { true }
     let(:global_instance_id) { 'instance-ABC' }
     let(:global_user_id) { 'user-ABC' }
-    let(:prefix) { 'def is_even(n: int) ->' }
+
+    let(:prefix) do
+      <<~PREFIX
+        def add(x, y):
+          return x + y
+
+        def sub(x, y):
+          return x - y
+
+        def multiple(x, y):
+          return x * y
+
+        def divide(x, y):
+          return x / y
+
+        def is_even(n: int) ->
+      PREFIX
+    end
+
     let(:file_name) { 'test.py' }
 
     let(:additional_params) { {} }
@@ -561,6 +579,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
 
         it_behaves_like 'code completions endpoint'
+
         it_behaves_like 'an endpoint authenticated with token', :ok
       end
 
@@ -588,6 +607,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     context 'when the instance is Gitlab self-managed' do
       let(:is_saas) { false }
       let(:gitlab_realm) { 'self-managed' }
+
       let_it_be(:token) { 'stored-token' }
       let_it_be(:service_access_token) { create(:service_access_token, :code_suggestions, :active, token: token) }
 
