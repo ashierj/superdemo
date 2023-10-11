@@ -20,7 +20,6 @@ module EE
 
       scope :with_identity_provider, ->(provider) do
         joins(user: :identities).where(identities: { provider: provider })
-        .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
       end
 
       scope :with_saml_identity, ->(provider) do

@@ -314,158 +314,215 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
         end
       end
 
-      context 'when user inherits higher permissions from parent' do
-        let(:parent_group) { create(:group) }
-        let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
+      shared_examples 'inheritance from inherit_higher_access_levels' do
+        context 'when user inherits higher permissions from parent' do
+          let(:parent_group) { create(:group) }
+          let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
 
-        before do
-          group.update!(parent: parent_group)
-          parent_group.add_maintainer(user)
+          before do
+            group.update!(parent: parent_group)
+            parent_group.add_maintainer(user)
+          end
+
+          it "adds member with the inherited higher permission" do
+            sync_group.update_permissions
+
+            expect(group.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::MAINTAINER)
+          end
+
+          it "upgrades existing member to the inherited higher permission" do
+            group.add_member(user, Gitlab::Access::DEVELOPER)
+
+            sync_group.update_permissions
+
+            expect(group.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::MAINTAINER)
+          end
+
+          it "does not alter an ldap member that has a permission override" do
+            group.members.create!(
+              user: user,
+              access_level: ::Gitlab::Access::OWNER,
+              ldap: true,
+              override: true
+            )
+
+            sync_group.update_permissions
+
+            expect(group.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::OWNER)
+          end
+
+          context 'and another member who does not inherit higher permissions' do
+            let(:user2) { create(:user) }
+            let(:ldap_group1) do
+              ldap_group_entry(%W[#{user_dn(user.username)} #{user_dn(user2.username)}])
+            end
+
+            before do
+              create(:identity, user: user2, extern_uid: user_dn(user2.username))
+            end
+
+            it 'upgrades user with the inherited higher permission but not the other' do
+              group.add_members([user, user2], Gitlab::Access::DEVELOPER)
+
+              sync_group.update_permissions
+
+              expect(group.members.find_by(user_id: user.id).access_level)
+                .to eq(::Gitlab::Access::MAINTAINER)
+              expect(group.members.find_by(user_id: user2.id).access_level)
+                .to eq(::Gitlab::Access::DEVELOPER)
+            end
+          end
+
+          context 'and another member who also inherits higher permissions' do
+            let(:user2) { create(:user) }
+            let(:ldap_group1) do
+              ldap_group_entry(%W[#{user_dn(user.username)} #{user_dn(user2.username)}])
+            end
+
+            before do
+              create(:identity, user: user2, extern_uid: user_dn(user2.username))
+              parent_group.add_owner(user2)
+            end
+
+            it 'upgrades both users with the inherited higher permissions' do
+              group.add_members([user, user2], Gitlab::Access::DEVELOPER)
+
+              sync_group.update_permissions
+
+              expect(group.members.find_by(user_id: user.id).access_level)
+                .to eq(::Gitlab::Access::MAINTAINER)
+              expect(group.members.find_by(user_id: user2.id).access_level)
+                .to eq(::Gitlab::Access::OWNER)
+            end
+          end
         end
 
-        it "adds member with the inherited higher permission" do
-          sync_group.update_permissions
+        context 'when user inherits lower permissions from parent' do
+          let(:parent_group) { create(:group) }
+          let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
 
-          expect(group.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::MAINTAINER)
+          before do
+            group.update!(parent: parent_group)
+            parent_group.add_reporter(user)
+          end
+
+          it "adds member with the ldap group link's access level" do
+            sync_group.update_permissions
+
+            expect(group.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::DEVELOPER)
+          end
+
+          it "downgrades existing member access to the ldap group link's access level" do
+            group.add_member(user, Gitlab::Access::MAINTAINER)
+
+            sync_group.update_permissions
+
+            expect(group.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::DEVELOPER)
+          end
+
+          it "does not alter an ldap member that has a permission override" do
+            group.members.create!(
+              user: user,
+              access_level: ::Gitlab::Access::OWNER,
+              ldap: true,
+              override: true
+            )
+
+            sync_group.update_permissions
+
+            expect(group.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::OWNER)
+          end
         end
 
-        it "upgrades existing member to the inherited higher permission" do
-          group.add_member(user, Gitlab::Access::DEVELOPER)
+        context 'when user has a pending access request in a parent group' do
+          let(:parent_group) { create(:group) }
+          let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
+          let(:access_requester) { parent_group.request_access(user) }
 
-          sync_group.update_permissions
+          before do
+            group.update!(parent: parent_group)
+            parent_group.add_owner(create(:user))
+          end
 
-          expect(group.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::MAINTAINER)
+          it 'does not propagate the access level of the pending access request' do
+            group.members.create!(
+              user: user,
+              access_level: ::Gitlab::Access::DEVELOPER,
+              ldap: true
+            )
+            access_requester.update!(access_level: ::Gitlab::Access::MAINTAINER)
+
+            sync_group.update_permissions
+
+            expect(parent_group.requesters.find_by(id: access_requester.id).access_level)
+              .to eq(::Gitlab::Access::MAINTAINER)
+            expect(group.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::DEVELOPER)
+          end
         end
 
-        it "does not alter an ldap member that has a permission override" do
-          group.members.create!(
-            user: user,
-            access_level: ::Gitlab::Access::OWNER,
-            ldap: true,
-            override: true
-          )
+        context 'when user inherits permissions from parent and user is no longer in LDAP group' do
+          let(:parent_group) { create(:group) }
+          let(:ldap_group1) { ldap_group_entry(user_dn('other_user')) }
 
-          sync_group.update_permissions
+          before do
+            group.update!(parent: parent_group)
+            parent_group.add_maintainer(user)
+          end
 
-          expect(group.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::OWNER)
+          it "removes existing member" do
+            group.add_member(user, Gitlab::Access::MAINTAINER)
+
+            sync_group.update_permissions
+
+            expect(group.members.find_by(user_id: user.id)).to be_nil
+
+            # Sanity check that the user record is not deleted
+            expect(User.find_by_id(user.id)).to be_present
+          end
+        end
+
+        context 'when permissions are inherited from a complex ancestry' do
+          let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
+          let(:group1) { create(:group) }
+          let(:group2) { create(:group) }
+          let(:group3) { create(:group) }
+
+          before do
+            group1.add_reporter(user)
+
+            group2.update!(parent: group1)
+            group2.add_maintainer(user)
+
+            group3.update!(parent: group2)
+            # no specific permission for user in group3
+
+            group.update!(parent: group3)
+          end
+
+          it "applies the permission inherited from the closest ancestor when it's higher" do
+            sync_group.update_permissions
+
+            expect(group.members.find_by(user_id: user.id).access_level)
+              .to eq(::Gitlab::Access::MAINTAINER)
+          end
         end
       end
 
-      context 'when user inherits lower permissions from parent' do
-        let(:parent_group) { create(:group) }
-        let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
+      include_examples 'inheritance from inherit_higher_access_levels'
 
+      context 'when inherit_higher_access_levels_no_cross_join FF is disabled' do
         before do
-          group.update!(parent: parent_group)
-          parent_group.add_reporter(user)
+          stub_feature_flags(inherit_higher_access_levels_no_cross_join: false)
         end
 
-        it "adds member with the ldap group link's access level" do
-          sync_group.update_permissions
-
-          expect(group.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::DEVELOPER)
-        end
-
-        it "downgrades existing member access to the ldap group link's access level" do
-          group.add_member(user, Gitlab::Access::MAINTAINER)
-
-          sync_group.update_permissions
-
-          expect(group.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::DEVELOPER)
-        end
-
-        it "does not alter an ldap member that has a permission override" do
-          group.members.create!(
-            user: user,
-            access_level: ::Gitlab::Access::OWNER,
-            ldap: true,
-            override: true
-          )
-
-          sync_group.update_permissions
-
-          expect(group.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::OWNER)
-        end
-      end
-
-      context 'when user has a pending access request in a parent group' do
-        let(:parent_group) { create(:group) }
-        let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
-        let(:access_requester) { parent_group.request_access(user) }
-
-        before do
-          group.update!(parent: parent_group)
-          parent_group.add_owner(create(:user))
-        end
-
-        it 'does not propagate the access level of the pending access request' do
-          group.members.create!(
-            user: user,
-            access_level: ::Gitlab::Access::DEVELOPER,
-            ldap: true
-          )
-          access_requester.update!(access_level: ::Gitlab::Access::MAINTAINER)
-
-          sync_group.update_permissions
-
-          expect(parent_group.requesters.find_by(id: access_requester.id).access_level)
-            .to eq(::Gitlab::Access::MAINTAINER)
-          expect(group.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::DEVELOPER)
-        end
-      end
-
-      context 'when user inherits permissions from parent and user is no longer in LDAP group' do
-        let(:parent_group) { create(:group) }
-        let(:ldap_group1) { ldap_group_entry(user_dn('other_user')) }
-
-        before do
-          group.update!(parent: parent_group)
-          parent_group.add_maintainer(user)
-        end
-
-        it "removes existing member" do
-          group.add_member(user, Gitlab::Access::MAINTAINER)
-
-          sync_group.update_permissions
-
-          expect(group.members.find_by(user_id: user.id)).to be_nil
-
-          # Sanity check that the user record is not deleted
-          expect(User.find_by_id(user.id)).to be_present
-        end
-      end
-
-      context 'when permissions are inherited from a complex ancestry' do
-        let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
-        let(:group1) { create(:group) }
-        let(:group2) { create(:group) }
-        let(:group3) { create(:group) }
-
-        before do
-          group1.add_reporter(user)
-
-          group2.update!(parent: group1)
-          group2.add_maintainer(user)
-
-          group3.update!(parent: group2)
-          # no specific permission for user in group3
-
-          group.update!(parent: group3)
-        end
-
-        it "applies the permission inherited from the closest ancestor when it's higher" do
-          sync_group.update_permissions
-
-          expect(group.members.find_by(user_id: user.id).access_level)
-            .to eq(::Gitlab::Access::MAINTAINER)
-        end
+        include_examples 'inheritance from inherit_higher_access_levels'
       end
 
       context 'when the extern_uid and group member DNs have different case' do
