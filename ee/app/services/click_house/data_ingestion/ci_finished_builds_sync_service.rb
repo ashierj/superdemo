@@ -11,7 +11,7 @@ module ClickHouse
       MAX_TTL = 6.minutes.to_i
       MAX_RUNTIME = 120.seconds
       BUILDS_BATCH_SIZE = 500
-      INSERT_BATCH_SIZE = 5000
+      BUILDS_BATCH_COUNT = 10 # How many batches to process before submitting the CSV to ClickHouse
       BUILD_ID_PARTITIONS = 100
 
       def initialize(worker_index: 0, total_workers: 1)
@@ -21,8 +21,6 @@ module ClickHouse
       end
 
       def execute
-        @total_record_count = 0
-
         unless enabled?
           return ServiceResponse.error(
             message: 'Feature ci_data_ingestion_to_click_house is disabled',
@@ -49,30 +47,86 @@ module ClickHouse
 
       private
 
+      def enabled?
+        Feature.enabled?(:ci_data_ingestion_to_click_house)
+      end
+
+      def continue?
+        !@reached_end_of_table && !@runtime_limiter.over_time?
+      end
+
       def insert_new_finished_builds
-        # Read batches of BUILDS_BATCH_SIZE until the timeout in MAX_RUNTIME is reached
+        # Read BUILDS_BATCH_COUNT batches of BUILDS_BATCH_SIZE until the timeout in MAX_RUNTIME is reached
         # We can expect a single worker to process around 3.4M builds/hour with a single worker,
         # and a bit over 9M builds/hours with three workers (measured in staging).
-        loop do
-          @processed_record_ids = []
+        @reached_end_of_table = false
+        @processed_record_ids = []
 
-          CsvBuilder::Gzip.new(process_batch, CSV_MAPPING).render do |tempfile|
+        csv_batches.each do |csv_batch|
+          break unless continue?
+
+          csv_builder = CsvBuilder::Gzip.new(csv_batch, CSV_MAPPING)
+          csv_builder.render do |tempfile|
+            next if csv_builder.rows_written == 0
+
             File.open(tempfile.path) do |f|
               ClickHouse::Client.insert_csv(INSERT_FINISHED_BUILDS_QUERY, f, :main)
             end
           end
+        end
 
-          Ci::FinishedBuildChSyncEvent.primary_key_in(@processed_record_ids).update_all(processed: true)
-          @processed_record_ids = []
+        {
+          records_inserted:
+            Ci::FinishedBuildChSyncEvent.primary_key_in(@processed_record_ids).update_all(processed: true),
+          reached_end_of_table: @reached_end_of_table
+        }
+      end
 
-          unless continue?
-            return {
-              records_inserted: @total_record_count,
-              reached_end_of_table: !@more_records
-            }
+      def csv_batches
+        events_batches_enumerator = Enumerator.new do |small_batches_yielder|
+          # Main loop to page through the events
+          keyset_iterator_scope.each_batch(of: BUILDS_BATCH_SIZE) { |batch| small_batches_yielder << batch }
+          @reached_end_of_table = true
+        end
+
+        Enumerator.new do |batches_yielder|
+          # Each batches_yielder value represents a CSV file upload
+          while continue?
+            batches_yielder << Enumerator.new do |records_yielder|
+              # records_yielder sends rows to the CSV builder
+              BUILDS_BATCH_COUNT.times do
+                break unless continue?
+
+                yield_builds(events_batches_enumerator.next, records_yielder)
+
+              rescue StopIteration
+                break
+              end
+            end
           end
         end
       end
+
+      def yield_builds(events_batch, records_yielder)
+        build_ids = events_batch.pluck(:build_id) # rubocop: disable CodeReuse/ActiveRecord
+        Ci::Build.id_in(build_ids)
+          .left_outer_joins(:runner, :runner_manager)
+          .select(:finished_at, *finished_build_projections)
+          .each { |build| records_yielder << build }
+
+        @processed_record_ids += build_ids
+      end
+
+      def finished_build_projections
+        [
+          *BUILD_FIELD_NAMES,
+          *BUILD_EPOCH_FIELD_NAMES.map { |n| "EXTRACT(epoch FROM #{::Ci::Build.table_name}.#{n}) AS casted_#{n}" },
+          "#{::Ci::Runner.table_name}.run_untagged AS runner_run_untagged",
+          "#{::Ci::Runner.table_name}.runner_type AS runner_type",
+          *RUNNER_MANAGER_FIELD_NAMES.map { |n| "#{::Ci::RunnerManager.table_name}.#{n} AS runner_manager_#{n}" }
+        ]
+      end
+      strong_memoize_attr :finished_build_projections
 
       BUILD_FIELD_NAMES = %i[id project_id pipeline_id status runner_id].freeze
       BUILD_EPOCH_FIELD_NAMES = %i[created_at queued_at started_at finished_at].freeze
@@ -87,57 +141,13 @@ module ClickHouse
       }.freeze
 
       INSERT_FINISHED_BUILDS_QUERY = <<~SQL.squish
-        INSERT INTO ci_finished_builds (#{CSV_MAPPING.keys.join(', ')})
+        INSERT INTO ci_finished_builds (#{CSV_MAPPING.keys.join(',')})
         SETTINGS async_insert=1, wait_for_async_insert=1 FORMAT CSV
       SQL
 
-      def enabled?
-        Feature.enabled?(:ci_data_ingestion_to_click_house)
-      end
-
-      def finished_build_projections
-        [
-          *BUILD_FIELD_NAMES,
-          *BUILD_EPOCH_FIELD_NAMES.map { |n| "EXTRACT(epoch FROM #{::Ci::Build.table_name}.#{n}) AS casted_#{n}" },
-          "#{::Ci::Runner.table_name}.run_untagged AS runner_run_untagged",
-          "#{::Ci::Runner.table_name}.runner_type AS runner_type",
-          *RUNNER_MANAGER_FIELD_NAMES.map { |n| "#{::Ci::RunnerManager.table_name}.#{n} AS runner_manager_#{n}" }
-        ]
-      end
-      strong_memoize_attr :finished_build_projections
-
-      def continue?
-        @more_records && !@runtime_limiter.over_time?
-      end
-
-      def process_batch
-        Enumerator.new do |yielder|
-          @more_records = false
-
-          total_records_yielded = 0
-
-          keyset_iterator_scope.each_batch(of: BUILDS_BATCH_SIZE) do |events_batch|
-            build_ids = events_batch.pluck(:build_id) # rubocop: disable CodeReuse/ActiveRecord
-            Ci::Build.id_in(build_ids)
-              .left_outer_joins(:runner, :runner_manager)
-              .select(:finished_at, *finished_build_projections)
-              .each do |build|
-              yielder << build
-              @processed_record_ids << build.id
-              total_records_yielded += 1
-            end
-
-            @more_records = build_ids.count == BUILDS_BATCH_SIZE
-            break unless continue? && total_records_yielded < INSERT_BATCH_SIZE
-          end
-
-          @total_record_count += @processed_record_ids.count
-        end
-      end
-
       def keyset_iterator_scope
         lower_bound = (@worker_index * BUILD_ID_PARTITIONS / @total_workers).to_i
-        upper_bound = ((@worker_index + 1) * BUILD_ID_PARTITIONS / @total_workers).to_i
+        upper_bound = ((@worker_index + 1) * BUILD_ID_PARTITIONS / @total_workers).to_i - 1
 
         table_name = Ci::FinishedBuildChSyncEvent.quoted_table_name
         array_scope = Ci::FinishedBuildChSyncEvent.select(:build_id_partition)
