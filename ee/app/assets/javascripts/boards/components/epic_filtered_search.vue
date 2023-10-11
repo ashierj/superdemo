@@ -27,11 +27,7 @@ export default {
   },
   computed: {
     tokens() {
-      const { fetchLabels, fetchUsers } = issueBoardFilters(
-        this.$apollo,
-        this.fullPath,
-        this.isGroupBoard,
-      );
+      const { fetchLabels } = issueBoardFilters(this.$apollo, this.fullPath, this.isGroupBoard);
 
       const tokens = [
         {
@@ -53,7 +49,8 @@ export default {
           symbol: '@',
           token: UserToken,
           unique: true,
-          fetchUsers,
+          isProject: !this.isGroupBoard,
+          fullPath: this.fullPath,
           preloadedUsers: this.preloadedUsers(),
         },
       ];

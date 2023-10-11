@@ -27,18 +27,15 @@ describe('IssueBoardFilter', () => {
     });
   };
 
-  let fetchUsersSpy;
   let fetchLabelsSpy;
   let fetchIterationsSpy;
   let fetchIterationCadencesSpy;
   beforeEach(() => {
-    fetchUsersSpy = jest.fn();
     fetchLabelsSpy = jest.fn();
     fetchIterationsSpy = jest.fn();
     fetchIterationCadencesSpy = jest.fn();
 
     issueBoardFilters.mockReturnValue({
-      fetchUsers: fetchUsersSpy,
       fetchLabels: fetchLabelsSpy,
       fetchIterations: fetchIterationsSpy,
       fetchIterationCadences: fetchIterationCadencesSpy,
@@ -55,12 +52,7 @@ describe('IssueBoardFilter', () => {
     });
 
     it('passes the correct tokens to BoardFilteredSearch including epics', () => {
-      const tokens = mockTokens(
-        fetchLabelsSpy,
-        fetchUsersSpy,
-        fetchIterationsSpy,
-        fetchIterationCadencesSpy,
-      );
+      const tokens = mockTokens(fetchLabelsSpy, fetchIterationsSpy, fetchIterationCadencesSpy);
 
       expect(wrapper.findComponent(BoardFilteredSearch).props('tokens')).toEqual(
         orderBy(tokens, ['title']),

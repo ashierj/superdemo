@@ -729,7 +729,7 @@ export const mockGroupsResponse = (subGroups = [mockGroup1, mockGroup2]) => ({
   },
 });
 
-export const mockTokens = (fetchLabels, fetchUsers, fetchIterations, fetchIterationCadences) => [
+export const mockTokens = (fetchLabels, fetchIterations, fetchIterationCadences) => [
   {
     icon: 'user',
     title: TOKEN_TITLE_ASSIGNEE,
@@ -738,7 +738,8 @@ export const mockTokens = (fetchLabels, fetchUsers, fetchIterations, fetchIterat
     token: UserToken,
     dataType: 'user',
     unique: true,
-    fetchUsers,
+    fullPath: 'gitlab-org',
+    isProject: false,
     preloadedUsers: [],
   },
   {
@@ -750,7 +751,8 @@ export const mockTokens = (fetchLabels, fetchUsers, fetchIterations, fetchIterat
     token: UserToken,
     dataType: 'user',
     unique: true,
-    fetchUsers,
+    fullPath: 'gitlab-org',
+    isProject: false,
     preloadedUsers: [],
   },
   {
