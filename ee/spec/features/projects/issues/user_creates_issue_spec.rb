@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe "User creates issue", :js, feature_category: :team_planning do
+  include ListboxHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project_empty_repo, :public, namespace: group) }
@@ -82,7 +84,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
     it 'creates an issue with no iteration' do
       click_button 'Select iteration'
-      click_button 'No iteration'
+      select_listbox_item 'No iteration'
 
       expect(page).to have_button('Select iteration')
 
@@ -99,7 +101,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
     it 'creates an issue with an iteration' do
       click_button 'Select iteration'
-      click_button iteration.title
+      select_listbox_item(iteration.title)
 
       expect(page).to have_button(iteration.period)
 
