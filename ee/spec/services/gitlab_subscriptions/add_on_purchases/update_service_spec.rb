@@ -46,6 +46,19 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
             .and change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
         end
 
+        context 'when passing in the add-on purchase record' do
+          let(:params) do
+            super().merge(add_on_purchase: add_on_purchase)
+          end
+
+          it 'reuses the passed in record instead of loading one' do
+            expect(GitlabSubscriptions::AddOnPurchase).not_to receive(:find_by)
+
+            expect(result[:status]).to eq(:success)
+            expect(result[:add_on_purchase]).to eq(add_on_purchase)
+          end
+        end
+
         context 'when creating the record failed' do
           let(:params) { super().merge(quantity: 0) }
 

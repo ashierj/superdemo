@@ -5,6 +5,12 @@ module GitlabSubscriptions
     class UpdateService < ::GitlabSubscriptions::AddOnPurchases::BaseService
       extend ::Gitlab::Utils::Override
 
+      def initialize(namespace, add_on, params = {})
+        @add_on_purchase = params[:add_on_purchase]
+
+        super
+      end
+
       override :execute
       def execute
         return error_response unless add_on_purchase

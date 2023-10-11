@@ -9,7 +9,7 @@ module GitlabSubscriptions
         end
 
         def execute
-          if add_on_purchase.update(expires_on: Date.yesterday)
+          if add_on_purchase.expired? || add_on_purchase.update(expires_on: Date.yesterday)
             ServiceResponse.success(payload: { add_on_purchase: nil })
           else
             ServiceResponse.error(

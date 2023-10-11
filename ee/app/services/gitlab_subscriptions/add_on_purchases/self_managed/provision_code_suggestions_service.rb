@@ -54,7 +54,7 @@ module GitlabSubscriptions
 
         # rubocop: disable CodeReuse/ActiveRecord
         def code_suggestions_add_on_purchase
-          GitlabSubscriptions::AddOnPurchase.active.find_by(namespace: namespace, add_on: code_suggestions_add_on)
+          GitlabSubscriptions::AddOnPurchase.find_by(namespace: namespace, add_on: code_suggestions_add_on)
         end
         strong_memoize_attr :code_suggestions_add_on_purchase
         # rubocop: enable CodeReuse/ActiveRecord
@@ -73,7 +73,7 @@ module GitlabSubscriptions
             quantity: license_restrictions[:code_suggestions_seat_count],
             expires_on: current_license.block_changes_at || current_license.expires_at,
             purchase_xid: license_restrictions[:subscription_name]
-          }
+          }.merge({ add_on_purchase: code_suggestions_add_on_purchase }.compact)
         end
 
         def expire_prior_add_on_purchase

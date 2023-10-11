@@ -4,9 +4,23 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ExpireService, :aggregate_failures, feature_category: :sm_provisioning do
   describe '#execute' do
-    let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
+    let!(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
 
     subject(:result) { described_class.new(add_on_purchase).execute }
+
+    context 'when add-on purchase is already expired' do
+      let!(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, expires_on: 1.week.ago.to_date) }
+
+      it 'does not update the add-on purchase again' do
+        expect do
+          result
+          add_on_purchase.reload
+        end.not_to change { add_on_purchase }
+
+        expect(result[:status]).to eq(:success)
+        expect(result[:add_on_purchase]).to eq(nil)
+      end
+    end
 
     context 'when update fails' do
       before do
