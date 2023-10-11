@@ -12,10 +12,7 @@ module Elastic
       end
 
       def es_parent(is_wiki = false)
-        return "project_#{project_id}" unless is_wiki
-        return unless ::Elastic::DataMigrationService.migration_has_finished?(:reindex_wikis_to_fix_routing)
-
-        "n_#{project ? project.root_ancestor.id : group.root_ancestor.id}"
+        "project_#{project_id}" unless is_wiki
       end
 
       def elastic_search(query, type: 'all', page: 1, per: 20, options: {})

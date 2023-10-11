@@ -28,7 +28,7 @@ module Elastic
           ::Gitlab::CurrentSettings.elasticsearch_indexing?
         # If the project is no longer indexed and the indexing settings are different between the old and new namespace,
         # the project should no longer exist in the index and will be deleted asynchronously.
-        ElasticDeleteProjectWorker.perform_async(project.id, project.es_id)
+        ElasticDeleteProjectWorker.perform_async(project.id, project.es_id, namespace_routing_id: old_namespace_id)
       end
     end
 

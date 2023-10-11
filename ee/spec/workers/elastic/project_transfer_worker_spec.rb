@@ -67,7 +67,8 @@ RSpec.describe Elastic::ProjectTransferWorker, :elastic, feature_category: :glob
 
           it 'invalidates the cache and removes the project from the index' do
             expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:backfill_projects!)
-            expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(project.id, project.es_id)
+            expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(project.id, project.es_id,
+              namespace_routing_id: project.root_ancestor.id)
             expect(::Gitlab::CurrentSettings)
               .to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
                     .with(project.id).and_call_original

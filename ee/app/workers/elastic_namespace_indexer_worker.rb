@@ -66,7 +66,7 @@ class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWork
   def delete_group_wikis(namespace)
     namespace.self_and_descendants.find_each.with_index do |grp, idx|
       interval = idx % Search::Wiki::ElasticDeleteGroupWikiWorker::MAX_JOBS_PER_HOUR
-      Search::Wiki::ElasticDeleteGroupWikiWorker.perform_in(interval, grp.id)
+      Search::Wiki::ElasticDeleteGroupWikiWorker.perform_in(interval, grp.id, namespace_routing_id: namespace.id)
     end
   end
 

@@ -166,8 +166,8 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
 
     it 'creates the index' do
       expect { helper.create_migrations_index }
-             .to change { helper.migrations_index_exists? }
-             .from(false).to(true)
+        .to change { helper.migrations_index_exists? }
+              .from(false).to(true)
     end
   end
 
@@ -222,8 +222,8 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
 
     it 'deletes the migrations index' do
       expect { helper.delete_migrations_index }
-             .to change { helper.migrations_index_exists? }
-             .from(true).to(false)
+        .to change { helper.migrations_index_exists? }
+              .from(true).to(false)
     end
   end
 
@@ -396,7 +396,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
       helper.create_empty_index(with_alias: false, options: { index_name: new_index_name })
 
       expect { helper.switch_alias(to: new_index_name) }
-      .to change { helper.target_index_name }.to(new_index_name)
+        .to change { helper.target_index_name }.to(new_index_name)
 
       helper.delete_index(index_name: new_index_name)
     end
@@ -787,9 +787,20 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
             set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: true
           end
 
-          it 'calls delete_by_query with routing' do
-            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{group.root_ancestor.id}" })
-            helper.remove_wikis_from_the_standalone_index(group.id, group.class.name)
+          context 'namespace_routing_id is passed' do
+            let(:namespace_routing_id) { 0 }
+
+            it 'calls delete_by_query with passed namespace_routing_id as routing' do
+              expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{namespace_routing_id}" })
+              helper.remove_wikis_from_the_standalone_index(group.id, group.class.name, namespace_routing_id)
+            end
+          end
+
+          context 'namespace_routing_id is not passed' do
+            it 'calls delete_by_query with group root_ancestor_id as routing' do
+              expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{group.root_ancestor.id}" })
+              helper.remove_wikis_from_the_standalone_index(group.id, group.class.name)
+            end
           end
         end
 

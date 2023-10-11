@@ -11,9 +11,10 @@ class ElasticDeleteProjectWorker
   urgency :throttled
   idempotent!
 
-  def perform(project_id, es_id)
+  def perform(project_id, es_id, options = {})
+    options = options.with_indifferent_access
     remove_project_and_children_documents(project_id, es_id)
-    helper.remove_wikis_from_the_standalone_index(project_id, 'Project') # Wikis have different routing that's why one more query is needed.
+    helper.remove_wikis_from_the_standalone_index(project_id, 'Project', options[:namespace_routing_id]) # Wikis have different routing that's why one more query is needed.
     IndexStatus.for_project(project_id).delete_all
   end
 
