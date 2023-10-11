@@ -10,7 +10,7 @@ RSpec.describe 'Incident details', :js, feature_category: :incident_management d
 
   let(:current_user) { reporter }
   let(:sidebar) { page.find('.right-sidebar') }
-  let(:escalation_status_container) { page.find('[data-testid="escalation_status_container"]') }
+  let(:escalation_status_container) { find_by_testid('escalation_status_container') }
 
   before_all do
     project.add_reporter(reporter)
@@ -22,7 +22,7 @@ RSpec.describe 'Incident details', :js, feature_category: :incident_management d
   end
 
   describe 'escalation policy widget' do
-    let(:escalation_policy_container) { sidebar.find('[data-testid="escalation_policy_container"]') }
+    let(:escalation_policy_container) { within(sidebar) { find_by_testid('escalation_policy_container') } }
 
     shared_examples 'hides the escalation policy widget' do
       specify do
@@ -77,7 +77,7 @@ RSpec.describe 'Incident details', :js, feature_category: :incident_management d
       context 'with escalation policies in the project' do
         let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
 
-        let(:edit_policy_widget) { escalation_policy_container.find('[data-testid="escalation-policy-edit"]') }
+        let(:edit_policy_widget) { within(escalation_policy_container) { find_by_testid('escalation-policy-edit') } }
 
         context 'without escalation policy linked to incident' do
           context 'with only view permissions' do
@@ -161,21 +161,21 @@ RSpec.describe 'Incident details', :js, feature_category: :incident_management d
         end
 
         def assert_policy_in_list
-          policy_item = edit_policy_widget.find('[data-testid="escalation-policy-items"]')
+          policy_item = within(edit_policy_widget) { find_by_testid('escalation-policy-items') }
           expect(policy_item).to have_content escalation_policy.name
 
           policy_item
         end
 
         def assert_null_policy_in_list
-          null_policy_item = edit_policy_widget.find('[data-testid="no-escalation-policy-item"]')
+          null_policy_item = within(edit_policy_widget) { find_by_testid('no-escalation-policy-item') }
           expect(null_policy_item).to have_content 'No escalation policy'
 
           null_policy_item
         end
 
         def edit_button
-          edit_policy_widget.find('[data-testid="edit-button"]')
+          within(edit_policy_widget) { find_by_testid('edit-button') }
         end
 
         def search_bar
@@ -189,12 +189,12 @@ RSpec.describe 'Incident details', :js, feature_category: :incident_management d
         it 'lets users open, view, and close the escalation policy help menu' do
           visit_incident_with_expanded_sidebar
 
-          escalation_policy_container.find('[data-testid="help-button"]').click
+          within(escalation_policy_container) { find_by_testid('help-button') }.click
 
           expect(escalation_policy_container).to have_content('Page your team')
           expect(escalation_policy_container).to have_content('Use escalation policies to automatically page your team')
 
-          escalation_policy_container.find('[data-testid="close-help-button"]').click
+          within(escalation_policy_container) { find_by_testid('close-help-button') }.click
 
           expect(escalation_policy_container).not_to have_content('Page your team')
         end
@@ -219,12 +219,12 @@ RSpec.describe 'Incident details', :js, feature_category: :incident_management d
     end
 
     it 'includes help info as a subtext for status ACKNOWLEDGED and RESOLVED' do
-      expect(page.find('[data-testid="listbox-item-ACKNOWLEDGED"]')).to have_text(help_info_text)
-      expect(page.find('[data-testid="listbox-item-RESOLVED"]')).to have_text(help_info_text)
+      expect(find_by_testid('listbox-item-ACKNOWLEDGED')).to have_text(help_info_text)
+      expect(find_by_testid('listbox-item-RESOLVED')).to have_text(help_info_text)
     end
 
     it 'doesn\'t include help info as a subtext for status TRIGGERED' do
-      expect(page.find('[data-testid="listbox-item-TRIGGERED"]')).not_to have_text(help_info_text)
+      expect(find_by_testid('listbox-item-TRIGGERED')).not_to have_text(help_info_text)
     end
   end
 
@@ -260,15 +260,15 @@ RSpec.describe 'Incident details', :js, feature_category: :incident_management d
   end
 
   def expand_sidebar
-    sidebar.find('[data-testid="chevron-double-lg-left-icon"]').click
+    within(sidebar) { find_by_testid('chevron-double-lg-left-icon') }.click
   end
 
   def collapse_sidebar
-    sidebar.find('[data-testid="chevron-double-lg-right-icon"]').click
+    within(sidebar) { find_by_testid('chevron-double-lg-right-icon') }.click
   end
 
   def click_edit_status
-    escalation_status_container.find('[data-testid="edit-button"]').click
+    within(escalation_status_container) { find_by_testid('edit-button') }.click
   end
 
   def assert_collapsed_policy_values(collapsed_name, policy_name)

@@ -45,7 +45,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
 
     context 'for a single CI/CD catalog resource' do
       it 'renders resource details', :aggregate_failures do
-        page.within('[data-testid="catalog-resource-item"]', match: :first) do
+        within_testid('catalog-resource-item', match: :first) do
           expect(page).to have_content("Name")
           expect(page).to have_content("A simple component")
           expect(page).to have_content(namespace.name)
@@ -54,7 +54,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
 
       context 'when clicked' do
         before do
-          find('[data-testid="ci-resource-link"]', match: :first).click
+          find_by_testid('ci-resource-link', match: :first).click
         end
 
         it 'navigate to the details page', :aggregate_failures do
@@ -68,7 +68,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
     before do
       visit project_ci_catalog_resources_path(project)
       wait_for_requests
-      find('[data-testid="ci-resource-link"]', match: :first).click
+      find_by_testid('ci-resource-link', match: :first).click
     end
 
     it 'shows CI Catalog title in details page' do

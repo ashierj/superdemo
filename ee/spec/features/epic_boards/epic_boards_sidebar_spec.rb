@@ -55,7 +55,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
   it 'shows epic details when sidebar is open', :aggregate_failures do
     click_card(card)
 
-    page.within('[data-testid="epic-boards-sidebar"]') do
+    within_testid('epic-boards-sidebar') do
       expect(page).to have_content(epic1.title)
       expect(page).to have_content(epic1.to_reference)
     end
@@ -65,7 +65,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
     it 'edits epic title' do
       click_card(card)
 
-      page.within('[data-testid="sidebar-title"]') do
+      within_testid('sidebar-title') do
         click_button 'Edit'
 
         wait_for_requests
@@ -88,7 +88,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
       click_card(card)
       wait_for_requests
 
-      page.within '[data-testid="sidebar-todo"]' do
+      within_testid('sidebar-todo') do
         click_button 'Add a to do'
         wait_for_requests
 
@@ -100,7 +100,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
       click_card(card)
       wait_for_requests
 
-      page.within '[data-testid="sidebar-todo"]' do
+      within_testid('sidebar-todo') do
         click_button 'Add a to do'
         wait_for_requests
         click_button 'Mark as done'
@@ -116,7 +116,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
 
       wait_for_requests
 
-      page.within('[data-testid="sidebar-start-date"]') do
+      within_testid('sidebar-start-date') do
         edit_fixed_date
       end
     end
@@ -126,7 +126,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
 
       wait_for_requests
 
-      page.within('[data-testid="sidebar-start-date"]') do
+      within_testid('sidebar-start-date') do
         remove_fixed_date
       end
     end
@@ -138,7 +138,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
 
       wait_for_requests
 
-      page.within('[data-testid="sidebar-due-date"]') do
+      within_testid('sidebar-due-date') do
         edit_fixed_date
       end
     end
@@ -148,7 +148,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
 
       wait_for_requests
 
-      page.within('[data-testid="sidebar-due-date"]') do
+      within_testid('sidebar-due-date') do
         remove_fixed_date
       end
     end
@@ -194,7 +194,7 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
 
       wait_for_requests
 
-      subscription_button = find('[data-testid="subscription-toggle"]')
+      subscription_button = find_by_testid('subscription-toggle')
 
       subscription_button.find('button').click
 
@@ -245,35 +245,35 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
   end
 
   def edit_fixed_date
-    page.within('[data-testid="sidebar-inherited-date"]') do
+    within_testid('sidebar-inherited-date') do
       expect(find_field('Inherited:')).to be_checked
     end
 
     pick_a_date
 
-    page.within('[data-testid="sidebar-fixed-date"]') do
-      expect(find('[data-testid="sidebar-date-value"]').text).to include('25')
+    within_testid('sidebar-fixed-date') do
+      expect(find_by_testid('sidebar-date-value').text).to include('25')
       expect(find_field('Fixed:')).to be_checked
     end
   end
 
   def remove_fixed_date
     expect(page).not_to have_button('remove')
-    page.within('[data-testid="sidebar-fixed-date"]') do
-      expect(find('[data-testid="sidebar-date-value"]').text).to include('None')
+    within_testid('sidebar-fixed-date') do
+      expect(find_by_testid('sidebar-date-value').text).to include('None')
     end
 
     pick_a_date
 
-    page.within('[data-testid="sidebar-fixed-date"]') do
-      expect(find('[data-testid="sidebar-date-value"]').text).not_to include('None')
+    within_testid('sidebar-fixed-date') do
+      expect(find_by_testid('sidebar-date-value').text).not_to include('None')
 
       expect(page).to have_button('remove')
       find_button('remove').click
 
       wait_for_requests
       expect(page).not_to have_button('remove')
-      expect(find('[data-testid="sidebar-date-value"]').text).to include('None')
+      expect(find_by_testid('sidebar-date-value').text).to include('None')
     end
   end
 end

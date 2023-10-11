@@ -26,7 +26,7 @@ RSpec.describe 'Group CI/CD Analytics', :js, feature_category: :value_stream_man
   end
 
   it 'renders statistics about release within the group', :aggregate_failures do
-    within '[data-testid="release-stats-card"]' do
+    within_testid('release-stats-card') do
       expect(page).to have_content 'Releases All time'
 
       expect(page).to have_content '15 Releases 67% Projects with releases'

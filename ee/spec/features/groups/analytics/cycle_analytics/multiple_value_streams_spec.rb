@@ -31,11 +31,11 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
   end
 
   def path_nav_elem
-    page.find('[data-testid="vsa-path-navigation"]')
+    find_by_testid('vsa-path-navigation')
   end
 
   def click_action_button(action, index)
-    page.find("[data-testid='stage-action-#{action}-#{index}']").click
+    find_by_testid("stage-action-#{action}-#{index}").click
   end
 
   def reload_value_stream
@@ -238,7 +238,7 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
     end
 
     it 'can navigate to the create value stream form' do
-      page.find('[data-testid="create-value-stream-button"]').click
+      find_by_testid('create-value-stream-button').click
 
       expect(page).to have_selector('[data-testid="value-stream-form-modal"]')
     end

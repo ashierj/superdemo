@@ -80,7 +80,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
       click_button 'Select a label'
 
-      page.within("[data-testid='board-add-new-column']") do
+      within_testid('board-add-new-column') do
         find('label', text: label2.title).click
       end
 
@@ -127,13 +127,17 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
         expect(find_board_list(1)).to have_content(epic3.title)
 
         page.within(find_board_list(1)) do
-          expect(find('[data-testid="board-list-header"] [data-testid="item-count"]')).to have_content('2')
-          expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content(issue_with_weight.weight)
+          within_testid('board-list-header') do
+            expect(find_by_testid('item-count')).to have_content('2')
+            expect(find_by_testid('weight')).to have_content(issue_with_weight.weight)
+          end
         end
 
         page.within(find_board_list(2)) do
-          expect(find('[data-testid="board-list-header"] [data-testid="item-count"]')).to have_content('1')
-          expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content('0')
+          within_testid('board-list-header') do
+            expect(find_by_testid('item-count')).to have_content('1')
+            expect(find_by_testid('weight')).to have_content('0')
+          end
         end
 
         drag(list_from_index: 0, list_to_index: 1, to_index: 0)
@@ -142,20 +146,24 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
         expect(find_board_list(1)).not_to have_content(epic3.title)
 
         page.within(find_board_list(2)) do
-          expect(find('[data-testid="board-list-header"] [data-testid="item-count"]')).to have_content('2')
-          expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content(issue_with_weight.weight)
+          within_testid('board-list-header') do
+            expect(find_by_testid('item-count')).to have_content('2')
+            expect(find_by_testid('weight')).to have_content(issue_with_weight.weight)
+          end
         end
 
         page.within(find_board_list(1)) do
-          expect(find('[data-testid="board-list-header"] [data-testid="item-count"]')).to have_content('1')
-          expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content('0')
+          within_testid('board-list-header') do
+            expect(find_by_testid('item-count')).to have_content('1')
+            expect(find_by_testid('weight')).to have_content('0')
+          end
         end
       end
     end
 
     context 'ordering in list using move to position' do
       let_it_be(:epic4) { create(:epic, group: group, title: 'Epic4') }
-      let(:move_to_position) { find('[data-testid="board-move-to-position"]') }
+      let(:move_to_position) { find_by_testid('board-move-to-position') }
 
       before do
         visit_epic_boards_page
@@ -326,7 +334,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
     end
 
     it 'can select a Label in order to filter the board by not equals' do
-      page.within('[data-testid="epic-filtered-search"]') do
+      within_testid('epic-filtered-search') do
         click_link 'Label'
         click_link '!='
         click_link label.title
@@ -343,7 +351,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
     end
 
     it 'can select a Label in order to filter the board by equals' do
-      page.within('[data-testid="epic-filtered-search"]') do
+      within_testid('epic-filtered-search') do
         click_link 'Label'
         click_token_equals
         click_link label.title
@@ -360,7 +368,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
     end
 
     it 'can select an Author in order to filter the board by equals' do
-      page.within('[data-testid="epic-filtered-search"]') do
+      within_testid('epic-filtered-search') do
         click_link 'Author'
         click_token_equals
         click_link user.name
@@ -377,7 +385,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
     end
 
     it 'can select an Author in order to filter the board by not equals' do
-      page.within('[data-testid="epic-filtered-search"]') do
+      within_testid('epic-filtered-search') do
         click_link 'Author'
         click_link '!='
         click_link user.name
@@ -441,8 +449,8 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
   end
 
   def click_on_create_new_board
-    page.within '[data-testid="boards-selector"]' do
-      find('[data-testid="boards-dropdown"]').click
+    within_testid('boards-selector') do
+      find_by_testid('boards-dropdown').click
       wait_for_requests
 
       click_button 'Create new board'

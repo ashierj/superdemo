@@ -26,7 +26,7 @@ RSpec.describe 'User edits iteration cadence', :js, feature_category: :team_plan
       end
 
       it 'displays the configured timezone used to rollover issues' do
-        expect(page.find("[data-testid='cadence-rollover-group']"))
+        expect(find_by_testid('cadence-rollover-group'))
           .to have_content("Incomplete issues will be added to the next iteration at midnight, [UTC 0] UTC.")
       end
 
@@ -39,7 +39,7 @@ RSpec.describe 'User edits iteration cadence', :js, feature_category: :team_plan
         end
 
         it 'displays the configured timezone used to rollover issues' do
-          expect(page.find("[data-testid='cadence-rollover-group']"))
+          expect(find_by_testid('cadence-rollover-group'))
             .to have_content("Incomplete issues will be added to the next iteration at midnight, [UTC-10] Hawaii.")
         end
       end

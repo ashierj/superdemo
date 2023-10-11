@@ -26,12 +26,6 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
     let_it_be("issue_#{i}".to_sym) { create(:issue, title: "New Issue #{i}", project: project, created_at: 2.days.ago) }
   end
 
-  def toggle_more_options(stage)
-    stage.hover
-
-    stage.find('[data-testid="more-actions-toggle"]').click
-  end
-
   before_all do
     group.add_owner(user)
   end
@@ -48,7 +42,7 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
     end
 
     it 'displays data for all stages on the overview' do
-      page.within('[data-testid="vsa-path-navigation"]') do
+      within_testid('vsa-path-navigation') do
         click_button "Overview"
       end
 
@@ -56,7 +50,7 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
     end
 
     it 'displays data for a specific stage when selected' do
-      page.within('[data-testid="vsa-path-navigation"]') do
+      within_testid('vsa-path-navigation') do
         click_button "Issue"
       end
 
@@ -66,7 +60,7 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
 
   describe 'Tasks by type chart', :js do
     let(:filters_selector) { '.js-tasks-by-type-chart-filters' }
-    let(:task_by_type_description_tooltip) { page.find('[data-testid="vsa-task-by-type-description"]') }
+    let(:task_by_type_description_tooltip) { find_by_testid('vsa-task-by-type-description') }
 
     before do
       stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true)

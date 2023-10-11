@@ -260,7 +260,7 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   end
 
   def set_date_range(start_date, end_date)
-    page.within('[data-testid="violations-date-range-picker"]') do
+    within_testid('violations-date-range-picker') do
       all('input')[0].set(start_date)
       all('input')[0].native.send_keys(:return)
       all('input')[1].set(end_date)
@@ -269,7 +269,7 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   end
 
   def filter_by_project(project)
-    page.within('[data-testid="violations-project-dropdown"]') do
+    within_testid('violations-project-dropdown') do
       find('.dropdown-projects').click
 
       find('input[aria-label="Search"]').set(project.name)
