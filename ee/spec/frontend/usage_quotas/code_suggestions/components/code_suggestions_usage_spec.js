@@ -21,12 +21,6 @@ describe('Code Suggestions Usage', () => {
 
   const error = new Error('Something went wrong');
   const fullPath = 'namespace/full-path';
-  const setTag = jest.fn();
-
-  Sentry.withScope.mockImplementation((fn) => {
-    const scope = { setTag };
-    fn(scope);
-  });
 
   const noAssignedAddonDataHandler = jest.fn().mockResolvedValue(noAssignedAddonData);
   const noPurchasedAddonDataHandler = jest.fn().mockResolvedValue(noPurchasedAddonData);
@@ -104,9 +98,9 @@ describe('Code Suggestions Usage', () => {
     });
 
     it('captures the error', () => {
-      expect(Sentry.withScope).toHaveBeenCalled();
-      expect(setTag).toHaveBeenCalledWith('vue_component', wrapper.vm.$options.name);
-      expect(Sentry.captureException).toHaveBeenCalledWith(error);
+      expect(Sentry.captureException).toHaveBeenCalledWith(error, {
+        tags: { vue_component: wrapper.vm.$options.name },
+      });
     });
   });
 });

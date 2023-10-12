@@ -56,9 +56,10 @@ export default {
   },
   methods: {
     reportError(error) {
-      Sentry.withScope((scope) => {
-        scope.setTag('vue_component', this.$options.name);
-        Sentry.captureException(error);
+      Sentry.captureException(error, {
+        tags: {
+          vue_component: this.$options.name,
+        },
       });
     },
   },
