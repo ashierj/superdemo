@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe BulkImports::Groups::Pipelines::GroupPipeline do
-  describe '#run' do
+  describe '#run', :clean_gitlab_redis_cache do
     let_it_be(:user) { create(:user) }
     let_it_be(:parent) { create(:group) }
     let_it_be(:bulk_import) { create(:bulk_import, user: user) }
