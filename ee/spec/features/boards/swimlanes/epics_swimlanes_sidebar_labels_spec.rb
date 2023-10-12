@@ -12,7 +12,7 @@ RSpec.describe 'Issue boards sidebar labels using epic swimlanes', :js, feature_
     stub_feature_flags(apollo_boards: false)
   end
 
-  let(:card) { find_by_testid('board-lane-unassigned-issues').first("[data-testid='board_card']") }
+  let(:card) { find_by_testid('board-lane-unassigned-issues').first("[data-testid='board-card']") }
 
   context 'group boards' do
     context 'in the top-level group board' do

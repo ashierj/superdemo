@@ -9,7 +9,7 @@ RSpec.describe 'Boards licensed features', :js, feature_category: :team_planning
 
   let(:card) do
     within '.board:nth-child(1)' do
-      find_by_testid('board_card')
+      find_by_testid('board-card')
     end
   end
 
