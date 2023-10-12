@@ -3,6 +3,10 @@
 module MergeRequests
   module Mergeability
     class CheckApprovedService < CheckBaseService
+      def self.failure_reason
+        :not_approved
+      end
+
       def execute
         return success unless merge_request.approval_feature_available?
 
@@ -19,12 +23,6 @@ module MergeRequests
 
       def cacheable?
         false
-      end
-
-      private
-
-      def failure_reason
-        :not_approved
       end
     end
   end

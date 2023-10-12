@@ -3,6 +3,10 @@
 module MergeRequests
   module Mergeability
     class CheckExternalStatusChecksPassedService < CheckBaseService
+      def self.failure_reason
+        :status_checks_must_pass
+      end
+
       def execute
         if prevent_merge_unless_status_checks_passed?
           failure(reason: failure_reason)
@@ -30,10 +34,6 @@ module MergeRequests
       def only_allow_merge_if_all_status_checks_passed_enabled?(project)
         project.licensed_feature_available?(:external_status_checks) &&
           project.only_allow_merge_if_all_status_checks_passed
-      end
-
-      def failure_reason
-        :status_checks_must_pass
       end
     end
   end
