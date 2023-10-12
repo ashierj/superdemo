@@ -117,13 +117,14 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
     end
 
     context 'when content is a supported language' do
-      CodeSuggestions::ProgrammingLanguage::LANGUAGE_COMMENT_FORMATS.each do |languages, format|
-        lang = languages.first
-        ext = CodeSuggestions::ProgrammingLanguage::SUPPORTED_LANGUAGES[lang].first
-        single_comment_prefix = format[:single]
+      include_context 'with comment prefixes'
 
-        # OCaml does not support single line comments
-        context "for language #{lang} (#{single_comment_prefix}) without skip prefix", unless: lang == 'OCaml' do
+      single_line_comment_prefixes.each do |langs, prefixes|
+        lang = langs.first
+        prefix = prefixes.first
+        ext = CodeSuggestions::ProgrammingLanguage::SUPPORTED_LANGUAGES[lang].first
+
+        context "for language #{lang} (#{prefix}) without skip prefix" do
           let(:skip_comment) { false }
           let(:generate_prefix) { 'GitLab Duo Generate: ' }
           let(:case_insensitive_prefixes) do
@@ -136,22 +137,18 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           end
 
           let(:file_name) { "file.#{ext}" }
-          let(:single_line_comment) do
-            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).send(:comment_format)[:single]
-          end
+          let(:single_line_comment) { prefix }
 
           it_behaves_like 'correct task detector'
         end
 
-        # OCaml does not support single line comments
-        context "for language #{lang} (#{single_comment_prefix}) with skip prefix", unless: lang == 'OCaml' do
+        context "for language #{lang} (#{prefix}) with skip prefix" do
           let(:skip_comment) { true }
           let(:generate_prefix) { '' }
           let(:case_insensitive_prefixes) { Array.new(4, '') }
+
           let(:file_name) { "file.#{ext}" }
-          let(:single_line_comment) do
-            CodeSuggestions::ProgrammingLanguage.detect_from_filename(file_name).send(:comment_format)[:single]
-          end
+          let(:single_line_comment) { prefix }
 
           it_behaves_like 'correct task detector'
         end

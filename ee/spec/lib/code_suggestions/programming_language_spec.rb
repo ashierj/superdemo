@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
+require 'spec_helper'
 
 RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_suggestions do
   describe '.detect_from_filename' do
@@ -11,7 +11,7 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
         context "for the file extension #{ext}" do
           let(:file_name) { "file.#{ext}" }
 
-          it { is_expected.to eq(described_class.from_language(lang).name) }
+          it { is_expected.to eq(lang) }
         end
       end
     end
@@ -19,19 +19,19 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
     context "for an unsupported language" do
       let(:file_name) { "file.nothing" }
 
-      it { is_expected.to eq(described_class.from_language(described_class::DEFAULT).name) }
+      it { is_expected.to eq(described_class::DEFAULT_NAME) }
     end
 
     context "for no file extension" do
       let(:file_name) { "file" }
 
-      it { is_expected.to eq(described_class.from_language(described_class::DEFAULT).name) }
+      it { is_expected.to eq(described_class::DEFAULT_NAME) }
     end
 
     context "for no file_name" do
       let(:file_name) { "" }
 
-      it { is_expected.to eq(described_class.from_language(described_class::DEFAULT).name) }
+      it { is_expected.to eq(described_class::DEFAULT_NAME) }
     end
   end
 
@@ -41,7 +41,7 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
     described_class::LANGUAGE_COMMENT_FORMATS.each do |languages, format|
       languages.each do |lang|
         context "for the language #{lang}" do
-          let(:language) { described_class.from_language(lang) }
+          let(:language) { described_class.new(lang) }
           let(:expected_format) { format[:single_regexp] || format[:single] }
 
           it { is_expected.to eq(expected_format) }
@@ -50,19 +50,19 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
     end
 
     context 'for unknown language' do
-      let(:language) { described_class.from_language('unknown') }
+      let(:language) { described_class.new('unknown') }
 
       it { is_expected.to eq(described_class::DEFAULT_FORMAT[:single_regexp]) }
     end
 
     context 'for an unspecified language' do
-      let(:language) { described_class.from_language('') }
+      let(:language) { described_class.new('') }
 
       it { is_expected.to eq(described_class::DEFAULT_FORMAT[:single_regexp]) }
     end
 
     context 'when single_regexp is specified' do
-      let(:language) { described_class.from_language('VBScript') }
+      let(:language) { described_class.new('VBScript') }
 
       it 'will prefer regexp to string' do
         is_expected.to be_a(Regexp)
@@ -70,59 +70,78 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
     end
   end
 
-  describe '.single_line_comment?' do
-    subject { language.single_line_comment?(content) }
+  describe '#single_line_comment?' do
+    include_context 'with comment prefixes'
 
-    described_class::LANGUAGE_COMMENT_FORMATS.each do |languages, _format|
-      languages.each do |lang|
-        context "for the language #{lang}", unless: lang == 'OCaml' do
-          let(:language) { described_class.from_language(lang) }
-          let(:single_line_comment_format) { language.send(:comment_format)[:single] }
+    subject { described_class.new(language).single_line_comment?(content) }
 
-          context "when it is a comment" do
-            let(:content) { "#{single_line_comment_format} this is a comment " }
+    shared_examples 'single line comment for supported language' do
+      context "when it is a comment" do
+        let(:content) { "#{prefix} this is a comment " }
 
-            it { is_expected.to be_truthy }
-          end
-
-          context "when it is not a comment" do
-            let(:content) { "this is not a comment " }
-
-            it { is_expected.to be_falsey }
-          end
-
-          context "when line doesn't start with comment" do
-            let(:content) { "def something() { #{single_line_comment_format} this is a comment " }
-
-            it { is_expected.to be_falsy }
-          end
-
-          context "when there is whitespace before the comment" do
-            let(:content) { "      #{single_line_comment_format} this is a comment " }
-
-            it { is_expected.to be_truthy }
-          end
-        end
+        it { is_expected.to be_truthy }
       end
-    end
 
-    context "for the language OCaml" do
-      let(:language) { described_class.from_language('OCaml') }
+      context "when it is not a comment" do
+        let(:content) { "this is not a comment " }
 
-      context "when checking single line comment" do
-        let(:content) { "// this is a comment " }
+        it { is_expected.to be_falsey }
+      end
+
+      context "when line doesn't start with comment" do
+        let(:content) { "def something() { #{prefix} this is a comment " }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context "when there is whitespace before the comment" do
+        let(:content) { "      #{prefix} this is a comment " }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context "when it is a comment for different language" do
+        let(:non_comment_prefix) { prefix == '#' ? '//' : '#' }
+        let(:content) { "#{non_comment_prefix} this is a comment " }
 
         it { is_expected.to be_falsey }
       end
     end
 
-    context "for the alternate VBScript format" do
-      let(:language) { described_class.from_language('VBScript') }
+    languages_with_single_line_comment_prefix.each do |lang, pref|
+      context "with language #{lang} and prefix #{pref}" do
+        let(:language) { lang }
+        let(:prefix) { pref }
 
-      context "when checking single line comment" do
-        let(:content) { "REM this is a comment " }
+        it_behaves_like 'single line comment for supported language'
+      end
+    end
+
+    languages_missing_single_line_comments.each do |lang|
+      context "with language #{lang}" do
+        let(:language) { lang }
+
+        context 'with a generic comment' do
+          let(:content) { "// this is a comment " }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+
+    context "when the language is not supported" do
+      let(:language) { 'foo' }
+
+      context "when a common comment prefix is used" do
+        let(:content) { "// this is a comment " }
 
         it { is_expected.to be_truthy }
+      end
+
+      context "when a special comment prefix is used" do
+        let(:content) { "; this is a comment" }
+
+        it { is_expected.to be_falsey }
       end
     end
   end

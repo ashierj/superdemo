@@ -22,7 +22,7 @@ module CodeSuggestions
 
       lines.reverse_each do |line|
         next trimmed_lines += 1 if trimmed_lines < EMPTY_LINES_LIMIT && comment_block.empty? && line.strip.empty?
-        break unless @language.single_line_comment?(line)
+        break unless language.single_line_comment?(line)
 
         comment_block.unshift(line)
       end

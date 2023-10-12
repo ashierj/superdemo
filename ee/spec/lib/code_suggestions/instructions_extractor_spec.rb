@@ -1,26 +1,62 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
+require 'spec_helper'
 
 RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_suggestions do
   describe '.extract' do
     let(:language) do
-      CodeSuggestions::ProgrammingLanguage.from_language(CodeSuggestions::ProgrammingLanguage::DEFAULT)
+      CodeSuggestions::ProgrammingLanguage.new(CodeSuggestions::ProgrammingLanguage::DEFAULT_NAME)
     end
 
     let(:default_instruction) { 'Create more new code for this file.' }
+    let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
 
     subject { described_class.extract(language, content, first_line_regex) }
 
     context 'when content is nil' do
       let(:content) { nil }
-      let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
 
       it 'sets create instruction' do
         is_expected.to eq({
           prefix: "",
           instruction: default_instruction
         })
+      end
+    end
+
+    context 'when language is not supported' do
+      let(:language) { CodeSuggestions::ProgrammingLanguage.new('foo') }
+      let(:content) do
+        <<~CODE
+          full_name()
+          address()
+          street()
+          city()
+          state()
+          pincode()
+
+          #{comment_sign}Generate me a function
+          #{comment_sign}with 2 arguments
+        CODE
+      end
+
+      context 'when content uses generic prefix sign' do
+        let(:comment_sign) { '#' }
+
+        it 'finds instruction' do
+          is_expected.to eq({
+            instruction: "Generate me a function\nwith 2 arguments",
+            prefix: "full_name()\naddress()\nstreet()\ncity()\nstate()\npincode()\n\n"
+          })
+        end
+      end
+
+      context 'when content uses special prefix sign' do
+        let(:comment_sign) { '!' }
+
+        it 'does not find instruction' do
+          is_expected.to eq({})
+        end
       end
     end
 
@@ -120,7 +156,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
             #{comment_sign}Generate me a function
             #{comment_sign}with 2 arguments
-            #{comment_sign}first and last\n 
+            #{comment_sign}first and last\n
           CODE
           # rubocop:enable Layout/TrailingWhitespace
         end
@@ -314,25 +350,15 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     end
 
     context 'when content is a supported language' do
-      CodeSuggestions::ProgrammingLanguage::LANGUAGE_COMMENT_FORMATS.each do |languages, lang_format|
-        languages.each do |lang|
-          # OCaml does not support single line comments
-          context "when using language #{lang}", unless: lang == 'OCaml' do
-            let(:language) { CodeSuggestions::ProgrammingLanguage.from_language(lang) }
-            let(:comment_sign) { lang_format[:single] }
-            let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
+      include_context 'with comment prefixes'
 
-            it_behaves_like 'detects comments correctly'
-          end
+      languages_with_single_line_comment_prefix.each do |lang, pref|
+        context "when using language #{lang} and prefix #{pref}" do
+          let(:language) { CodeSuggestions::ProgrammingLanguage.new(lang) }
+          let(:comment_sign) { pref }
+
+          it_behaves_like 'detects comments correctly'
         end
-      end
-
-      context "when using alternate VBScript comment format" do
-        let(:language) { CodeSuggestions::ProgrammingLanguage.from_language('VBScript') }
-        let(:comment_sign) { 'REM' }
-        let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
-
-        it_behaves_like 'detects comments correctly'
       end
     end
   end
