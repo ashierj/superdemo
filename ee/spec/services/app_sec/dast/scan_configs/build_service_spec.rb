@@ -70,15 +70,7 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService, :dynamic_analysis, featu
         end
 
         context 'when the dast_profile has tag_list' do
-          context 'when feature flag on_demand_scans_runner_tags is disabled' do
-            before do
-              stub_feature_flags(on_demand_scans_runner_tags: false)
-            end
-
-            it_behaves_like 'a payload with a dast_profile'
-          end
-
-          context 'when feature flag on_demand_scans_runner_tags is enabled' do
+          context 'when the dast_profile has tags' do
             let_it_be(:tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
             let_it_be(:dast_profile) do
               create(

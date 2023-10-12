@@ -79,7 +79,7 @@ module Mutations
             run_after_update: run_after_update
           }
 
-          params[:tag_list] = args[:tag_list] if Feature.enabled?(:on_demand_scans_runner_tags, dast_profile.project)
+          params[:tag_list] = args[:tag_list]
 
           response = ::AppSec::Dast::Profiles::UpdateService.new(
             project: dast_profile.project,

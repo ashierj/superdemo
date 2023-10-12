@@ -13,7 +13,7 @@ module AppSec
         end
 
         def tag_list?
-          Feature.enabled?(:on_demand_scans_runner_tags, project) && params.key?(:tag_list)
+          params.key?(:tag_list)
         end
 
         def tag_list

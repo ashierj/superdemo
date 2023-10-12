@@ -50,7 +50,7 @@ module AppSec
             }
           }
 
-          if Feature.enabled?(:on_demand_scans_runner_tags, container) && dast_profile&.tags.present?
+          if dast_profile&.tags.present?
             ci_config['dast']['tags'] = dast_profile.tag_list
           end
 

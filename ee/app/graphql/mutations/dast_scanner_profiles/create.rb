@@ -60,7 +60,7 @@ module Mutations
       def resolve(**args)
         project = authorized_find!(args.delete(:full_path))
 
-        params = service_params(project, args)
+        params = service_params(args)
 
         service = ::AppSec::Dast::ScannerProfiles::CreateService.new(project: project, current_user: current_user, params: params)
         result = service.execute
@@ -74,10 +74,9 @@ module Mutations
 
       private
 
-      def service_params(project, args)
+      def service_params(args)
         args.tap do |values|
           values[:name] = values.delete(:profile_name)
-          values.delete(:tag_list) unless Feature.enabled?(:on_demand_scans_runner_tags, project)
         end
       end
     end

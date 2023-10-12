@@ -189,17 +189,13 @@ RSpec.describe AppSec::Dast::Profiles::CreateService, :dynamic_analysis,
           end
         end
 
-        context 'when feature flag on_demand_scans_runner_tags is disabled' do
-          before do
-            stub_feature_flags(on_demand_scans_runner_tags: false)
-          end
-
+        context 'when tag list for on_demand_scans is available' do
           it 'returns a success status' do
             expect(subject.status).to eq(:success)
           end
 
-          it 'creates a dast_profile ignoring the tags' do
-            expect(subject.payload[:dast_profile].tags).to be_empty
+          it 'creates a dast_profile with the tags' do
+            expect(subject.payload[:dast_profile].tags).to be_present
           end
         end
       end
