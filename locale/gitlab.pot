@@ -44904,9 +44904,6 @@ msgstr ""
 msgid "Snippets|Snippets can't contain empty files. Ensure all files have content, or delete them."
 msgstr ""
 
-msgid "Snippets|This snippet is hidden because its author has been banned"
-msgstr ""
-
 msgid "Snowplow"
 msgstr ""
 
