@@ -130,20 +130,7 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
         let_it_be(:notes) { create_pair(:note_on_issue, project: project, noteable: issuable) }
         let_it_be(:system_note) { create(:note_on_issue, :system, project: project, noteable: issuable) }
 
-        context 'when streaming is enabled' do
-          it_behaves_like 'performs completion'
-        end
-
-        context 'when streaming is disabled' do
-          let(:completion_method) { :complete }
-          let(:ai_response) { { "completion" => "some ai response text" } }
-
-          before do
-            stub_feature_flags(stream_gitlab_duo: false)
-          end
-
-          it_behaves_like 'performs completion'
-        end
+        it_behaves_like 'performs completion'
 
         context 'with vertex_ai provider' do
           let(:options) { { ai_provider: :vertex_ai } }
