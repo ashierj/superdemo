@@ -4,6 +4,7 @@ import eventHub from '~/invite_members/event_hub';
 import { s__ } from '~/locale';
 import { getCookie, removeCookie, parseBoolean } from '~/lib/utils/common_utils';
 import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
+import eventHubNav from '~/super_sidebar/event_hub';
 import { ACTION_LABELS, INVITE_MODAL_OPEN_COOKIE } from '../constants';
 import LearnGitlabSectionCard from './learn_gitlab_section_card.vue';
 
@@ -104,7 +105,17 @@ export default {
     },
     modifySidebarPercentage() {
       const el = document.querySelector('.sidebar-top-level-items .active .count');
-      el.textContent = `${this.progressPercentage}%`;
+      const formattedProgress = `${this.progressPercentage}%`;
+
+      if (el) {
+        el.textContent = formattedProgress;
+      } else {
+        // super sidebar
+        eventHubNav.$emit('updatePillValue', {
+          value: formattedProgress,
+          itemId: 'learn_gitlab',
+        });
+      }
     },
   },
 };
