@@ -7,9 +7,7 @@ module Llm
 
     override :valid
     def valid?
-      super &&
-        Feature.enabled?(:generate_description_ai, resource) &&
-        Ability.allowed?(user, :generate_description, resource)
+      super && Ability.allowed?(user, :generate_description, resource)
     end
 
     private

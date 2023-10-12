@@ -81,12 +81,14 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
         context 'when feature is available' do
           before do
             allow(Ability).to receive(:allowed?).with(user, :summarize_notes, issue).and_return(true)
+            stub_licensed_features(summarize_notes: true)
           end
 
           it 'exposes the required feature flags' do
             get_show
 
-            expect(response.body).to have_pushed_frontend_feature_flags(summarizeComments: true)
+            expect(response.body).to have_pushed_frontend_feature_flags(openaiExperimentation: true)
+            expect(response.body).to have_pushed_licensed_features(summarizeNotes: true)
           end
         end
 
@@ -95,10 +97,10 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
             allow(Ability).to receive(:allowed?).with(user, :summarize_notes, issue).and_return(false)
           end
 
-          it 'does not expose the feature flags' do
+          it 'does not push licensed feature' do
             get_show
 
-            expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeComments: true)
+            expect(response.body).not_to have_pushed_licensed_features(summarizeNotes: true)
           end
         end
       end
@@ -108,10 +110,10 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
           stub_licensed_features(summarize_notes: true)
         end
 
-        it 'does not expose the feature flags' do
+        it 'does not push licensed feature' do
           get_show
 
-          expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeComments: true)
+          expect(response.body).not_to have_pushed_licensed_features(summarizeNotes: true)
         end
       end
     end

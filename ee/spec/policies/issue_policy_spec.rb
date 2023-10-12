@@ -28,7 +28,6 @@ RSpec.describe IssuePolicy, :saas, feature_category: :team_planning do
         before do
           stub_ee_application_setting(should_check_namespace_plan: true)
           stub_licensed_features(summarize_notes: true, ai_features: true, generate_description: true)
-          stub_feature_flags(summarize_comments: project, generate_description_ai: project)
 
           namespace.namespace_settings.update!(experiment_features_enabled: true)
           namespace.namespace_settings.update!(third_party_ai_features_enabled: true)
@@ -66,7 +65,7 @@ RSpec.describe IssuePolicy, :saas, feature_category: :team_planning do
 
           context 'when feature flag is not set' do
             before do
-              stub_feature_flags(summarize_comments: false, generate_description_ai: false)
+              stub_feature_flags(openai_experimentation: false)
             end
 
             it { is_expected.to be_disallowed(:summarize_notes) }
