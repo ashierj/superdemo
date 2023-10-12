@@ -36,15 +36,32 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
 
   describe '#authorize_read_contribution_analytics!' do
     let(:request) { get :show, params: { group_id: group.path } }
+    let(:auditor) { create(:user, :auditor) }
 
-    context 'when feature is available to the group' do
+    context 'when feature is not available' do
       before do
-        stub_licensed_features(contribution_analytics: true)
+        stub_licensed_features(contribution_analytics: false)
+        stub_usage_ping_features(false)
       end
 
       context 'when user is an auditor' do
-        let(:auditor) { create(:user, :auditor) }
+        it 'renders 404' do
+          sign_in(auditor)
 
+          request
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+    end
+
+    context 'when feature is available to the group through license' do
+      before do
+        stub_licensed_features(contribution_analytics: true)
+        stub_usage_ping_features(false)
+      end
+
+      context 'when user is an auditor' do
         it 'allows access' do
           sign_in(auditor)
 
@@ -83,6 +100,22 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
 
             expect(response).to have_gitlab_http_status(:not_found)
           end
+        end
+      end
+    end
+
+    context 'when feature is available to the group through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      context 'when user is an auditor' do
+        it 'allows access' do
+          sign_in(auditor)
+
+          request
+
+          expect(response).to have_gitlab_http_status(:success)
         end
       end
     end

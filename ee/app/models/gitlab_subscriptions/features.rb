@@ -46,7 +46,6 @@ module GitlabSubscriptions
       board_iteration_lists
       code_owners
       code_review_analytics
-      contribution_analytics
       elastic_search
       full_codequality_report
       group_activity_analytics
@@ -272,6 +271,7 @@ module GitlabSubscriptions
       repository_size_limit
       maintenance_mode
       scoped_issue_board
+      contribution_analytics
     ].freeze
 
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[
