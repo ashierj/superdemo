@@ -53,14 +53,15 @@ module Gitlab
         end
 
         def index(project, shard_id)
-          return index_with_new_indexer(project, shard_id) if use_new_zoekt_indexer?
+          response = zoekt_indexer_post('/indexer/index', indexing_payload(project), shard_id)
 
-          index_with_legacy_indexer(project, shard_id)
+          raise response['Error'] if response['Error']
+          raise "Request failed with: #{response.inspect}" unless response.success?
+
+          response
         end
 
         def delete(shard_id:, project_id:)
-          return false unless use_new_zoekt_indexer?
-
           target_shard = shard(shard_id)
           raise 'Shard can not be found' unless target_shard
 
@@ -73,7 +74,7 @@ module Gitlab
         end
 
         def truncate
-          ::Zoekt::Shard.find_each { |shard| post(URI.join(shard.index_base_url, zoekt_indexer_truncate_path)) }
+          ::Zoekt::Shard.find_each { |shard| post(URI.join(shard.index_base_url, '/indexer/truncate')) }
         end
 
         private
@@ -118,25 +119,6 @@ module Gitlab
             username: username,
             password: password
           }.compact
-        end
-
-        def index_with_legacy_indexer(project, shard_id)
-          payload = { CloneUrl: project.http_url_to_repo, RepoId: project.id }
-
-          response = zoekt_indexer_post('/index', payload, shard_id)
-
-          raise response['Error'] if response['Error']
-
-          response
-        end
-
-        def index_with_new_indexer(project, shard_id)
-          response = zoekt_indexer_post('/indexer/index', indexing_payload(project), shard_id)
-
-          raise response['Error'] if response['Error']
-          raise "Request failed with: #{response.inspect}" unless response.success?
-
-          response
         end
 
         def indexing_payload(project)
@@ -184,14 +166,6 @@ module Gitlab
             path: path,
             body: body
           )
-        end
-
-        def zoekt_indexer_truncate_path
-          use_new_zoekt_indexer? ? '/indexer/truncate' : '/truncate'
-        end
-
-        def use_new_zoekt_indexer?
-          ::Feature.enabled?(:use_new_zoekt_indexer)
         end
 
         def username

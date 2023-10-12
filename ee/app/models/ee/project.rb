@@ -956,7 +956,7 @@ module EE
 
     def zoekt_indexable?
       return true if self.public? && self.repository_access_level > ::ProjectFeature::PRIVATE
-      return true if ::Feature.enabled?(:use_new_zoekt_indexer) && ::Feature.enabled?(:zoekt_index_private_repositories)
+      return true if ::Feature.enabled?(:zoekt_index_private_repositories)
 
       false
     end
