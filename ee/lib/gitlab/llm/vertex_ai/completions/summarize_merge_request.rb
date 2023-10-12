@@ -6,7 +6,7 @@ module Gitlab
       module Completions
         class SummarizeMergeRequest < Gitlab::Llm::Completions::Base
           # rubocop:disable CodeReuse/ActiveRecord
-          def execute(user, merge_request, options)
+          def execute
             mr_diff = merge_request.merge_request_diffs.find_by(id: options[:diff_id])
 
             return unless mr_diff.present?
@@ -19,6 +19,10 @@ module Gitlab
           # rubocop:enable CodeReuse/ActiveRecord
 
           private
+
+          def merge_request
+            resource
+          end
 
           def response_for(user, merge_request, mr_diff)
             template = ai_prompt_class.new(merge_request, mr_diff)

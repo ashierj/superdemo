@@ -16,12 +16,15 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeSubmittedReview, fea
   let(:options) do
     {
       diff_id: mr_diff.id,
-      review_id: review.id,
-      request_id: 'uuid'
+      review_id: review.id
     }
   end
 
-  subject { described_class.new(prompt_class, options) }
+  let(:prompt_message) do
+    build(:ai_chat_message, :summarize_submitted_review, user: user, resource: merge_request, request_id: 'uuid')
+  end
+
+  subject { described_class.new(prompt_message, prompt_class, options) }
 
   describe '#execute' do
     context 'when the chat client returns a successful response' do
@@ -54,7 +57,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeSubmittedReview, fea
       end
 
       it 'stores the content from the AI response' do
-        expect { subject.execute(user, merge_request, options) }
+        expect { subject.execute }
           .to change { mr_diff.merge_request_review_llm_summaries.count }
           .by(1)
 
@@ -74,7 +77,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeSubmittedReview, fea
           expect(svc).to receive(:review_submitted).with(review)
         end
 
-        subject.execute(user, merge_request, options)
+        subject.execute
       end
     end
 
@@ -88,14 +91,14 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeSubmittedReview, fea
       end
 
       it 'does not store the content' do
-        expect { subject.execute(user, merge_request, options) }
+        expect { subject.execute }
           .not_to change { mr_diff.merge_request_review_llm_summaries.count }
       end
 
       it 'does not create a todo' do
         expect(TodoService).not_to receive(:new)
 
-        subject.execute(user, merge_request, options)
+        subject.execute
       end
     end
   end

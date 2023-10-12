@@ -8,7 +8,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
 
   let(:content) { "some random content" }
   let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::ExplainCode }
-  let(:tracking_context) { { request_id: "uuid" } }
+  let(:tracking_context) { { request_id: "uuid", action: :explain_code } }
   let(:options) do
     {
       messages: [{
@@ -39,9 +39,11 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
     }.to_json
   end
 
-  let(:params) { { request_id: 'uuid' } }
+  let(:prompt_message) do
+    build(:ai_chat_message, :explain_code, user: user, resource: project, request_id: 'uuid')
+  end
 
-  subject(:explain_code) { described_class.new(template_class, params).execute(user, project, options) }
+  subject(:explain_code) { described_class.new(prompt_message, template_class, options).execute }
 
   describe "#execute" do
     it 'performs an openai request' do
@@ -51,7 +53,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
 
       response_modifier = double
       response_service = double
-      params = [user, project, response_modifier, { options: { request_id: 'uuid' } }]
+      params = [user, project, response_modifier, { options: { request_id: 'uuid', ai_action: :explain_code } }]
 
       expect(Gitlab::Llm::OpenAi::ResponseModifiers::Chat).to receive(:new).with(ai_response).and_return(
         response_modifier

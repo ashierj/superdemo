@@ -4,14 +4,20 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, feature_category: :code_review_workflow do
   let(:prompt_class) { Gitlab::Llm::Templates::GenerateCommitMessage }
-  let(:options) { { request_id: 'uuid' } }
+  let(:options) { {} }
   let(:response_modifier) { double }
   let(:response_service) { double }
   let_it_be(:user) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request) }
-  let(:params) { [user, merge_request, response_modifier, { options: { request_id: 'uuid' } }] }
+  let(:params) do
+    [user, merge_request, response_modifier, { options: { request_id: 'uuid', ai_action: :generate_commit_message } }]
+  end
 
-  subject { described_class.new(prompt_class, options) }
+  let(:prompt_message) do
+    build(:ai_chat_message, :generate_commit_message, user: user, resource: merge_request, request_id: 'uuid')
+  end
+
+  subject { described_class.new(prompt_message, prompt_class, options) }
 
   describe '#execute' do
     context 'when the feature flag is disabled' do
@@ -20,11 +26,12 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
       end
 
       it 'falls back to the OpenAI implementation' do
-        allow_next_instance_of(::Gitlab::Llm::OpenAi::Completions::GenerateCommitMessage) do |completion|
-          expect(completion).to receive(:execute).with(user, merge_request, options)
+        allow_next_instance_of(::Gitlab::Llm::OpenAi::Completions::GenerateCommitMessage,
+          prompt_message, prompt_class, options) do |completion|
+          expect(completion).to receive(:execute)
         end
 
-        subject.execute(user, merge_request, options)
+        subject.execute
       end
     end
 
@@ -46,7 +53,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
         )
         expect(response_service).to receive(:execute)
 
-        subject.execute(user, merge_request, options)
+        subject.execute
       end
     end
 
@@ -91,7 +98,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
         )
         expect(response_service).to receive(:execute)
 
-        subject.execute(user, merge_request, options)
+        subject.execute
       end
 
       context 'when an unexpected error is raised' do
@@ -105,7 +112,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
         end
 
         it 'records the error' do
-          subject.execute(user, merge_request, options)
+          subject.execute
           expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(error)
         end
 
@@ -118,7 +125,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
           )
           expect(response_service).to receive(:execute)
 
-          subject.execute(user, merge_request, options)
+          subject.execute
         end
       end
     end

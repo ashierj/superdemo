@@ -16,18 +16,21 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
   end
 
   describe ".completion" do
+    let(:prompt_message) { build(:ai_chat_message, ai_action: completion_name) }
+
     context 'with existing completion' do
       let(:completion_name) { :summarize_review }
-      let(:expected_params) { { action: completion_name, ai_action: completion_name }.merge(params) }
+      let(:expected_params) { { action: completion_name }.merge(params) }
       let(:params) { {} }
 
       it 'returns completion service' do
         completion_class = ::Gitlab::Llm::VertexAi::Completions::SummarizeReview
         template_class = ::Gitlab::Llm::Templates::SummarizeReview
 
-        expect(completion_class).to receive(:new).with(template_class, expected_params).and_call_original
+        expect(completion_class).to receive(:new).with(prompt_message, template_class,
+          expected_params).and_call_original
 
-        completion = described_class.completion(completion_name)
+        completion = described_class.completion(prompt_message, params)
 
         expect(completion).to be_a(completion_class)
       end
@@ -40,9 +43,10 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
           completion_class = ::Gitlab::Llm::Completions::ExplainVulnerability
           template_class = ::Gitlab::Llm::Templates::ExplainVulnerability
 
-          expect(completion_class).to receive(:new).with(template_class, expected_params).and_call_original
+          expect(completion_class).to receive(:new).with(prompt_message, template_class,
+            expected_params).and_call_original
 
-          completion = described_class.completion(completion_name, params)
+          completion = described_class.completion(prompt_message, params)
 
           expect(completion).to be_a(completion_class)
         end
@@ -53,7 +57,7 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
       let(:completion_name) { :invalid_name }
 
       it 'returns completion service' do
-        completion = described_class.completion(completion_name)
+        completion = described_class.completion(prompt_message)
 
         expect(completion).to be_nil
       end

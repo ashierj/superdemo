@@ -40,12 +40,16 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
 
         expect(Gitlab::Llm::CompletionsFactory)
           .to receive(:completion)
-          .with(ai_action_name, match({ request_id: 'uuid' }))
+          .with(an_object_having_attributes(
+            user: user,
+            resource: resource,
+            request_id: 'uuid',
+            ai_action: ai_action_name
+          ),
+            options.symbolize_keys.merge(extra_resource: extra_resource))
           .and_return(completion)
 
-        expect(completion)
-          .to receive(:execute)
-          .with(user, resource, options.symbolize_keys.merge(extra_resource: extra_resource))
+        expect(completion).to receive(:execute)
 
         subject
 

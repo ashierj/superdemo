@@ -5,7 +5,7 @@ module Gitlab
     module OpenAi
       module Completions
         class SummarizeReview < Gitlab::Llm::Completions::Base
-          def execute(user, merge_request, _ = {})
+          def execute
             return unless user
             return unless merge_request
 
@@ -31,6 +31,10 @@ module Gitlab
                 content: ai_prompt_class.new(draft_notes).to_prompt,
                 moderated: true
               )
+          end
+
+          def merge_request
+            resource
           end
         end
       end

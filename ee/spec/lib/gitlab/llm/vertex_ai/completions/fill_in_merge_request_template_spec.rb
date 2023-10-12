@@ -4,14 +4,20 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::VertexAi::Completions::FillInMergeRequestTemplate, feature_category: :code_review_workflow do
   let(:prompt_class) { Gitlab::Llm::Templates::FillInMergeRequestTemplate }
-  let(:options) { { request_id: 'uuid' } }
+  let(:options) { {} }
   let(:response_modifier) { double }
   let(:response_service) { double }
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let(:params) { [user, project, response_modifier, { options: { request_id: 'uuid' } }] }
+  let(:params) do
+    [user, project, response_modifier, { options: { ai_action: :fill_in_merge_request_template, request_id: 'uuid' } }]
+  end
 
-  subject { described_class.new(prompt_class, options) }
+  let(:prompt_message) do
+    build(:ai_chat_message, :fill_in_merge_request_template, user: user, resource: project, request_id: 'uuid')
+  end
+
+  subject { described_class.new(prompt_message, prompt_class, options) }
 
   describe '#execute' do
     context 'when the text client returns a successful response' do
@@ -51,7 +57,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::FillInMergeRequestTemplate, f
 
         expect(response_service).to receive(:execute)
 
-        subject.execute(user, project, options)
+        subject.execute
       end
     end
 
@@ -77,7 +83,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::FillInMergeRequestTemplate, f
 
         expect(response_service).to receive(:execute)
 
-        subject.execute(user, project, options)
+        subject.execute
       end
     end
   end

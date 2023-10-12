@@ -4,7 +4,7 @@ module Gitlab
   module Llm
     module Completions
       class SummarizeAllOpenNotes < Gitlab::Llm::Completions::Base
-        def execute(user, issuable, options = {})
+        def execute
           return unless user
           return unless issuable
 
@@ -40,6 +40,10 @@ module Gitlab
           else
             raise "unknown ai_provider #{options[:ai_provider]}"
           end
+        end
+
+        def issuable
+          resource
         end
       end
     end

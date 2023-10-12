@@ -7,7 +7,6 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
 
   let(:question) { 'A question' }
   let(:options) { { question: question } }
-  let(:params) { { request_id: 'uuid', action: :tanuki_bot } }
   let(:template_class) { ::Gitlab::Llm::Anthropic::Templates::TanukiBot }
   let(:tracking_context) { { request_id: 'uuid', action: :tanuki_bot } }
 
@@ -15,7 +14,11 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
     instance_double(Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot, response_body: "text", errors: [], extras: {})
   end
 
-  subject(:tanuki_bot) { described_class.new(template_class, params).execute(user, user, options) }
+  let(:prompt_message) do
+    build(:ai_chat_message, :tanuki_bot, user: user, resource: user, request_id: 'uuid')
+  end
+
+  subject(:tanuki_bot) { described_class.new(prompt_message, template_class, options).execute }
 
   describe '#execute' do
     let(:tanuki_instance) { instance_double(::Gitlab::Llm::TanukiBot) }
@@ -35,7 +38,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
 
       response_modifier = ai_response
       response_service = double
-      params = [user, user, response_modifier, { options: { request_id: 'uuid' } }]
+      params = [user, user, response_modifier, { options: { request_id: 'uuid', ai_action: :tanuki_bot } }]
 
       expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_return(
         response_service

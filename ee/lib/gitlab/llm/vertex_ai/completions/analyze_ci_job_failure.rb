@@ -4,7 +4,7 @@ module Gitlab
   module Llm
     module VertexAi
       module Completions
-        class AnalyzeCiJobFailure
+        class AnalyzeCiJobFailure < Gitlab::Llm::Completions::Base
           PROMPT = <<-PROMPT.chomp
             You are an ai assistant explaining the root cause of a CI verification job code failure
             Below are the job logs surrounded by the delimiter: #{@delimiter}
@@ -20,19 +20,17 @@ module Gitlab
           MAX_INPUT_TOKENS = 8_192
           TRACKING_CONTEXT = { action: 'analyze_ci_job_failure' }.freeze
 
-          def initialize(_prompt_class, _params)
+          def initialize(*)
+            super
             @delimiter = generate_delimiter
           end
 
-          def execute(user, job, _options)
-            @user = user
-            @job = job
-
+          def execute
             response = request
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
             return unless response_modifier.response_body
 
-            analysis = Ai::JobFailureAnalysis.new(@job)
+            analysis = Ai::JobFailureAnalysis.new(job)
             analysis.save_content(response_modifier.response_body)
 
             response_modifier
@@ -40,9 +38,13 @@ module Gitlab
 
           private
 
+          def job
+            resource
+          end
+
           def request
             ::Gitlab::Llm::VertexAi::Client
-              .new(@user, tracking_context: TRACKING_CONTEXT)
+              .new(user, tracking_context: TRACKING_CONTEXT)
               .text(content: chat_content)
           end
 
@@ -63,7 +65,7 @@ module Gitlab
             # aprox_max_input_chars/chars_per_line = lines
             # Add 100 to the lines since 90 characters per line is not reliable and
             # we truncate this data based on aprox. tokenization later
-            @job.trace.raw(last_lines: (aprox_max_input_chars / 90) + 100)
+            job.trace.raw(last_lines: (aprox_max_input_chars / 90) + 100)
           end
 
           def aprox_max_input_chars

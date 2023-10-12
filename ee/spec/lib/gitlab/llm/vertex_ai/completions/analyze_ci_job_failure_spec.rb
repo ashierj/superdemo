@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::VertexAi::Completions::AnalyzeCiJobFailure, feature_category: :continuous_integration do
-  let(:options) { { request_id: 'uuid' } }
+  let(:options) { {} }
 
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
@@ -11,7 +11,11 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::AnalyzeCiJobFailure, feature_
 
   let(:ai_response) { { 'predictions' => [{ 'content' => 'world' }] } }
 
-  subject { described_class.new(nil, options) }
+  let(:prompt_message) do
+    build(:ai_chat_message, :analyze_ci_job_failure, user: user, resource: job, request_id: 'uuid')
+  end
+
+  subject { described_class.new(prompt_message, nil, options) }
 
   describe '#execute' do
     it 'stores the ai request result' do
@@ -24,7 +28,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::AnalyzeCiJobFailure, feature_
         end.and_return(ai_response)
       end
 
-      subject.execute(user, job, {})
+      subject.execute
 
       saved_content = Ai::JobFailureAnalysis.new(job).content
 

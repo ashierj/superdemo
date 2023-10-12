@@ -27,38 +27,29 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeReview, feature_catego
     }.to_json
   end
 
+  let(:prompt_message) do
+    build(:ai_chat_message, :summarize_review, user: user, resource: merge_request, request_id: 'uuid')
+  end
+
   subject(:summarize_review) do
-    described_class.new(template_class, { request_id: "uuid" }).execute(user, merge_request)
+    described_class.new(prompt_message, template_class, {}).execute
   end
 
   describe "#execute" do
     context "with invalid params" do
-      context "without user" do
-        it "returns nil" do
-          expect(
-            described_class.new(template_class, { request_id: "uuid" }).execute(nil, merge_request)
-          ).to be_nil
-        end
-      end
-
       context "without merge_request" do
+        let(:prompt_message) do
+          build(:ai_chat_message, :summarize_review, user: user, resource: nil, request_id: 'uuid')
+        end
+
         it "returns nil" do
-          expect(
-            described_class.new(template_class, { request_id: "uuid" }).execute(user, nil)
-          ).to be_nil
+          expect(summarize_review).to be_nil
         end
       end
     end
 
     context "with valid params" do
       it "gets the right template options and calls the openai client" do
-        expect_next_instance_of(::Gitlab::Llm::OpenAi::Completions::SummarizeReview) do |completion_service|
-          expect(completion_service)
-            .to receive(:execute)
-            .with(user, merge_request)
-            .and_call_original
-        end
-
         expect_next_instance_of(template_class) do |template|
           expect(template).to receive(:to_prompt).and_return('AI prompt')
         end
@@ -72,7 +63,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeReview, feature_catego
 
         response_modifier = double
         response_service = double
-        params = [user, merge_request, response_modifier, { options: { request_id: "uuid" } }]
+        params = [user, merge_request, response_modifier,
+          { options: { request_id: "uuid", ai_action: :summarize_review } }]
 
         expect(Gitlab::Llm::OpenAi::ResponseModifiers::Chat)
           .to receive(:new)

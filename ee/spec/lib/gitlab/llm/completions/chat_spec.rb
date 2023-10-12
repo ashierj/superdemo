@@ -16,8 +16,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:blob) { fake_blob(path: 'file.md') }
   let(:extra_resource) { { blob: blob } }
-  let(:options) { { request_id: 'uuid', content: content, extra_resource: extra_resource } }
-  let(:params) { { request_id: 'uuid' } }
+  let(:options) { { content: content, extra_resource: extra_resource } }
   let(:container) { group }
   let(:context) do
     instance_double(
@@ -38,7 +37,11 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   let(:response_handler) { instance_double(Gitlab::Llm::ResponseService) }
   let(:stream_response_handler) { nil }
 
-  subject { described_class.new(nil, **params).execute(user, resource, options) }
+  let(:prompt_message) do
+    build(:ai_chat_message, user: user, resource: resource, request_id: 'uuid')
+  end
+
+  subject { described_class.new(prompt_message, nil, **options).execute }
 
   shared_examples 'success' do
     it 'calls the ZeroShot Agent with the right parameters', :snowplow do
@@ -63,7 +66,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       end
 
       expect(response_handler).to receive(:execute)
-      expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
+      expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid', ai_action: :chat })
         .and_return(response_handler)
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
         .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
@@ -84,10 +87,13 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
     end
 
     context 'when client_subscription_id is set' do
-      let(:params) { { request_id: 'uuid', content: content, client_subscription_id: 'someid' } }
+      let(:prompt_message) do
+        build(:ai_chat_message, user: user, resource: resource, request_id: 'uuid', client_subscription_id: 'someid')
+      end
+
       let(:stream_response_handler) { instance_double(Gitlab::Llm::ResponseService) }
 
-      it 'correctly initialzes response handlers' do
+      it 'correctly initializes response handlers' do
         expected_params = [
           user_input: content,
           tools: an_instance_of(Array),
@@ -102,11 +108,12 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
 
         expect(response_handler).to receive(:execute)
         expect(::Gitlab::Llm::ResponseService).to receive(:new).with(
-          an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid' }
+          an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid', ai_action: :chat }
         ).and_return(response_handler)
 
         expect(::Gitlab::Llm::ResponseService).to receive(:new).with(
-          an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid', client_subscription_id: 'someid' }
+          an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid', ai_action: :chat,
+client_subscription_id: 'someid' }
         ).and_return(stream_response_handler)
 
         subject
@@ -190,7 +197,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
           expect(instance).to receive(:execute).and_return(answer)
         end
         expect(response_handler).to receive(:execute)
-        expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
+        expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { ai_action: :chat, request_id: 'uuid' })
           .and_return(response_handler)
         expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
           .with(current_user: user, container: expected_container, resource: resource,
