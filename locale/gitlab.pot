@@ -43089,9 +43089,6 @@ msgstr ""
 msgid "SecurityReports|Failed updating vulnerabilities with the following IDs: %{ids}"
 msgstr ""
 
-msgid "SecurityReports|Group your vulnerabilities by one of the provided categories. Leave feedback or suggestions in %{feedbackIssueStart}this issue%{feedbackIssueEnd}."
-msgstr ""
-
 msgid "SecurityReports|Has issue"
 msgstr ""
 
@@ -43147,9 +43144,6 @@ msgid "SecurityReports|Monitored projects"
 msgstr ""
 
 msgid "SecurityReports|More info"
-msgstr ""
-
-msgid "SecurityReports|New feature: Grouping"
 msgstr ""
 
 msgid "SecurityReports|No longer detected"
