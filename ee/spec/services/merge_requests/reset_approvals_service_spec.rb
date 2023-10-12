@@ -43,13 +43,30 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
     end
 
     context 'as default' do
+      let(:patch_id_sha) { nil }
+
+      let!(:approval_1) do
+        create(
+          :approval,
+          merge_request: merge_request,
+          user: approver,
+          patch_id_sha: patch_id_sha
+        )
+      end
+
+      let!(:approval_2) do
+        create(
+          :approval,
+          merge_request: merge_request,
+          user: owner,
+          patch_id_sha: patch_id_sha
+        )
+      end
+
       before do
         perform_enqueued_jobs do
           merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
         end
-
-        create(:approval, merge_request: merge_request, user: approver)
-        create(:approval, merge_request: merge_request, user: owner)
       end
 
       it 'resets all approvals and does not create new todos for approvers' do
@@ -76,16 +93,58 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
       it_behaves_like 'triggers GraphQL subscription mergeRequestApprovalStateUpdated' do
         let(:action) { service.execute('refs/heads/master', newrev) }
       end
+
+      context 'when approvals patch_id_sha matches MergeRequest#current_patch_id_sha' do
+        let(:patch_id_sha) { merge_request.current_patch_id_sha }
+
+        it 'does not delete approvals' do
+          service.execute("refs/heads/master", newrev)
+
+          merge_request.reload
+
+          expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
+        end
+
+        context 'when reset_approvals_patch_id feature flag is disabled' do
+          before do
+            stub_feature_flags(reset_approvals_patch_id: false)
+          end
+
+          it 'resets all approvals' do
+            service.execute("refs/heads/master", newrev)
+            merge_request.reload
+
+            expect(merge_request.approvals).to be_empty
+          end
+        end
+      end
     end
 
     context 'when skip_reset_checks: true' do
+      let(:patch_id_sha) { nil }
+
+      let!(:approval_1) do
+        create(
+          :approval,
+          merge_request: merge_request,
+          user: approver,
+          patch_id_sha: patch_id_sha
+        )
+      end
+
+      let!(:approval_2) do
+        create(
+          :approval,
+          merge_request: merge_request,
+          user: owner,
+          patch_id_sha: patch_id_sha
+        )
+      end
+
       before do
         perform_enqueued_jobs do
           merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
         end
-
-        create(:approval, merge_request: merge_request, user: approver)
-        create(:approval, merge_request: merge_request, user: owner)
       end
 
       it 'deletes all approvals directly without additional checks or side-effects' do
@@ -119,20 +178,82 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         expect(merge_request.approvals).to be_empty
         expect(approval_todos(merge_request)).to be_empty
       end
+
+      context 'when approvals patch_id_sha matches MergeRequest#current_patch_id_sha' do
+        let(:patch_id_sha) { merge_request.current_patch_id_sha }
+
+        it 'does not delete approvals' do
+          service.execute("refs/heads/master", newrev, skip_reset_checks: true)
+
+          merge_request.reload
+
+          expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
+        end
+
+        context 'when reset_approvals_patch_id feature flag is disabled' do
+          before do
+            stub_feature_flags(reset_approvals_patch_id: false)
+          end
+
+          it 'resets all approvals' do
+            service.execute("refs/heads/master", newrev, skip_reset_checks: true)
+            merge_request.reload
+
+            expect(merge_request.approvals).to be_empty
+          end
+        end
+      end
     end
 
     context 'with selective code owner removals' do
       let_it_be(:project) do
         create(:project,
-          :custom_repo,
-          files: { 'CODEOWNERS' => "*.rb @co1\n*.js @co2", 'file.rb' => '1' },
+          :repository,
           reset_approvals_on_push: false,
-          project_setting_attributes: { selective_code_owner_removals: true })
+          project_setting_attributes: { selective_code_owner_removals: true }
+        )
       end
 
-      let_it_be(:feature_sha1) { project.repository.create_file(current_user, "another.rb", "2", message: "2", branch_name: 'feature') }
-      let_it_be(:feature_sha2) { project.repository.create_file(current_user, "some.js", "3", message: "3", branch_name: 'feature') }
-      let_it_be(:feature_sha3) { project.repository.create_file(current_user, "last.rb", "4", message: "4", branch_name: 'feature') }
+      let_it_be(:codeowner) do
+        project.repository.create_file(
+          current_user,
+          'CODEOWNERS',
+          "*.rb @co1\n*.js @co2",
+          message: 'Add CODEOWNERS',
+          branch_name: 'master'
+        )
+      end
+
+      let_it_be(:feature_sha1) do
+        project.repository.create_file(
+          current_user,
+          'another.rb',
+          '2',
+          message: '2',
+          branch_name: 'feature'
+        )
+      end
+
+      let_it_be(:feature_sha2) do
+        project.repository.create_file(
+          current_user,
+          'some.js',
+          '3',
+          message: '3',
+          branch_name: 'feature'
+        )
+      end
+
+      let_it_be(:feature_sha3) do
+        project.repository.create_file(
+          current_user,
+          'last.rb',
+          '4',
+          message: '4',
+          branch_name: 'feature'
+        )
+      end
+
       let_it_be(:merge_request) do
         create(:merge_request,
           author: current_user,
@@ -143,16 +264,41 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         )
       end
 
+      let(:patch_id_sha) { nil }
+
+      let!(:approval_1) do
+        create(
+          :approval,
+          merge_request: merge_request,
+          user: security,
+          patch_id_sha: patch_id_sha
+        )
+      end
+
+      let!(:approval_2) do
+        create(
+          :approval,
+          merge_request: merge_request,
+          user: approver,
+          patch_id_sha: patch_id_sha
+        )
+      end
+
+      let!(:approval_3) do
+        create(
+          :approval,
+          merge_request: merge_request,
+          user: owner,
+          patch_id_sha: patch_id_sha
+        )
+      end
+
       before do
         ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute
         perform_enqueued_jobs do
           merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
         end
         create(:any_approver_rule, merge_request: merge_request, users: [approver, owner, security])
-
-        create(:approval, merge_request: merge_request, user: security)
-        create(:approval, merge_request: merge_request, user: approver)
-        create(:approval, merge_request: merge_request, user: owner)
 
         merge_request.approval_rules.regular.each do |rule|
           rule.users = [security]
@@ -164,7 +310,7 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         merge_request.reload
 
         expect(merge_request.approvals.count).to be(2)
-        expect(merge_request.approvals.map(&:user_id)).to contain_exactly(approver.id, security.id)
+        expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
       end
 
       it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
@@ -173,6 +319,32 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
 
       it_behaves_like 'triggers GraphQL subscription mergeRequestApprovalStateUpdated' do
         let(:action) { service.execute('feature', feature_sha3) }
+      end
+
+      context 'when approvals patch_id_sha matches MergeRequest#current_patch_id_sha' do
+        let(:patch_id_sha) { merge_request.current_patch_id_sha }
+
+        it 'does not delete any code owner approvals' do
+          service.execute("feature", feature_sha3)
+          merge_request.reload
+
+          expect(merge_request.approvals.count).to be(3)
+          expect(merge_request.approvals).to contain_exactly(approval_1, approval_2, approval_3)
+        end
+
+        context 'when reset_approvals_patch_id feature flag is disabled' do
+          before do
+            stub_feature_flags(reset_approvals_patch_id: false)
+          end
+
+          it 'resets code owner approvals with changes' do
+            service.execute("feature", feature_sha3)
+            merge_request.reload
+
+            expect(merge_request.approvals.count).to be(2)
+            expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
+          end
+        end
       end
     end
   end

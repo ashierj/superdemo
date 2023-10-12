@@ -209,7 +209,7 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
           update_merge_request(approver_ids: "#{existing_approver.id},#{new_approver.id}")
         end
 
-        merge_request.approvals.create!(user_id: existing_approver.id)
+        merge_request.approvals.create!(user_id: existing_approver.id, patch_id_sha: merge_request.current_patch_id_sha)
       end
 
       shared_examples 'reset all approvals' do
