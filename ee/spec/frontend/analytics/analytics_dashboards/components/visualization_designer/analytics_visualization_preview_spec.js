@@ -39,7 +39,7 @@ describe('AnalyticsVisualizationPreview', () => {
     });
 
     it('should render measurement headline', () => {
-      expect(wrapper.findByTestId('measurement-hl').exists()).toBe(true);
+      expect(wrapper.findByTestId('measurement-hl').text()).toBe('Start by choosing a metric');
     });
   });
 
@@ -91,7 +91,9 @@ describe('AnalyticsVisualizationPreview', () => {
     });
 
     it('should render data table', () => {
-      expect(wrapper.findByTestId('preview-datatable').exists()).toBe(true);
+      expect(wrapper.findByTestId('preview-datatable').attributes('style')).toBe(
+        `height: ${PANEL_VISUALIZATION_HEIGHT};`,
+      );
     });
   });
 

@@ -100,7 +100,9 @@ export default {
     </div>
     <div v-else>
       <div v-if="!measureType">
-        <h3 class="gl-font-xlg">{{ s__('ProductAnalytics|What do you want to measure?') }}</h3>
+        <h3 class="gl-font-xlg">
+          {{ s__('ProductAnalytics|What metric do you want to visualize?') }}
+        </h3>
         <h3 class="gl-font-lg">{{ s__('ProductAnalytics|User activity') }}</h3>
         <ul class="content-list">
           <visualization-designer-list-option
