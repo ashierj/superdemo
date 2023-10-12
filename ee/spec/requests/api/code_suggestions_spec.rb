@@ -22,6 +22,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
   before do
     stub_feature_flags(code_completion_anthropic: false)
+    stub_feature_flags(code_completion_split_by_language: false)
+
     allow(Gitlab).to receive(:org_or_com?).and_return(is_saas)
     allow(Ability).to receive(:allowed?).and_call_original
     allow(Ability).to receive(:allowed?).with(authorized_user, :access_code_suggestions, :global)
@@ -357,7 +359,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               .with(
                 params: hash_including(skip_generate_comment_prefix: true),
                 unsafe_passthrough_params: kind_of(Hash)
-              ).and_call_original
+              )
 
             post_api
           end
@@ -373,7 +375,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               .with(
                 params: hash_including(skip_generate_comment_prefix: false),
                 unsafe_passthrough_params: kind_of(Hash)
-              ).and_call_original
+              )
 
             post_api
           end
@@ -384,12 +386,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             stub_feature_flags(code_completion_anthropic: current_user)
           end
 
-          it 'passses code_completion_model_family: :anthropic into TaskSelector.task' do
+          it 'passes code_completion_model_family: :anthropic into TaskSelector.task' do
             expect(::CodeSuggestions::TaskSelector).to receive(:task)
               .with(
                 params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::ANTHROPIC),
                 unsafe_passthrough_params: kind_of(Hash)
-              ).and_call_original
+              )
 
             post_api
           end
@@ -400,12 +402,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             stub_feature_flags(code_completion_anthropic: false)
           end
 
-          it 'passses code_completion_model_family: :vertex_ai into TaskSelector.task' do
+          it 'passes code_completion_model_family: :vertex_ai into TaskSelector.task' do
             expect(::CodeSuggestions::TaskSelector).to receive(:task)
               .with(
                 params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::VERTEX_AI),
                 unsafe_passthrough_params: kind_of(Hash)
-              ).and_call_original
+              )
 
             post_api
           end
@@ -416,12 +418,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             stub_feature_flags(code_generation_anthropic: current_user)
           end
 
-          it 'passses code_generation_model_family: :anthropic into TaskSelector.task' do
+          it 'passes code_generation_model_family: :anthropic into TaskSelector.task' do
             expect(::CodeSuggestions::TaskSelector).to receive(:task)
               .with(
                 params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::ANTHROPIC),
                 unsafe_passthrough_params: kind_of(Hash)
-              ).and_call_original
+              )
 
             post_api
           end
@@ -432,12 +434,76 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             stub_feature_flags(code_generation_anthropic: false)
           end
 
-          it 'passses code_generation_model_family: :vertex_ai into TaskSelector.task' do
+          it 'passes code_generation_model_family: :vertex_ai into TaskSelector.task' do
             expect(::CodeSuggestions::TaskSelector).to receive(:task)
               .with(
                 params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::VERTEX_AI),
                 unsafe_passthrough_params: kind_of(Hash)
-              ).and_call_original
+              )
+
+            post_api
+          end
+        end
+
+        context 'when code_completion_split_by_language feature flag enabled' do
+          before do
+            stub_feature_flags(code_completion_split_by_language: current_user)
+          end
+
+          it 'passes code_completion_model_family_split_by_language: true into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(
+                params: hash_including(code_completion_model_family_split_by_language: true),
+                unsafe_passthrough_params: kind_of(Hash)
+              )
+
+            post_api
+          end
+        end
+
+        context 'when code_completion_split_by_language feature flag disabled' do
+          before do
+            stub_feature_flags(code_completion_split_by_language: false)
+          end
+
+          it 'passes code_completion_model_family_split_by_language: false into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(
+                params: hash_including(code_completion_model_family_split_by_language: false),
+                unsafe_passthrough_params: kind_of(Hash)
+              )
+
+            post_api
+          end
+        end
+
+        context 'when code_generation_split_by_language feature flag enabled' do
+          before do
+            stub_feature_flags(code_generation_split_by_language: current_user)
+          end
+
+          it 'passes code_generation_model_family_split_by_language: true into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(
+                params: hash_including(code_generation_model_family_split_by_language: true),
+                unsafe_passthrough_params: kind_of(Hash)
+              )
+
+            post_api
+          end
+        end
+
+        context 'when code_generation_split_by_language feature flag disabled' do
+          before do
+            stub_feature_flags(code_generation_split_by_language: false)
+          end
+
+          it 'passes code_generation_model_family_split_by_language: false into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(
+                params: hash_including(code_generation_model_family_split_by_language: false),
+                unsafe_passthrough_params: kind_of(Hash)
+              )
 
             post_api
           end
@@ -510,6 +576,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         context 'when the task is code generation' do
           before do
             stub_feature_flags(code_generation_anthropic: false)
+            stub_feature_flags(code_generation_split_by_language: false)
           end
 
           let(:current_user) { authorized_user }

@@ -141,7 +141,9 @@ module API
           safe_params = declared_params(params).merge(
             skip_generate_comment_prefix: Feature.enabled?(:code_generation_no_comment_prefix, current_user),
             code_completion_model_family: Feature.enabled?(:code_completion_anthropic, current_user) ? anthropic : vertex_ai,
-            code_generation_model_family: Feature.enabled?(:code_generation_anthropic, current_user) ? anthropic : vertex_ai
+            code_generation_model_family: Feature.enabled?(:code_generation_anthropic, current_user) ? anthropic : vertex_ai,
+            code_completion_model_family_split_by_language: Feature.enabled?(:code_completion_split_by_language, current_user),
+            code_generation_model_family_split_by_language: Feature.enabled?(:code_generation_split_by_language, current_user)
           )
           # rubocop:enable Layout/LineLength
           task = ::CodeSuggestions::TaskSelector.task(

@@ -28,16 +28,27 @@ module CodeSuggestions
       intent = params[:intent] || (result.empty? ? INTENT_COMPLETION : INTENT_GENERATION)
 
       if intent == INTENT_COMPLETION
+        model_family = CodeSuggestions::AiModels.code_completion_model_family(
+          default: params[:code_completion_model_family],
+          split_by_language: params[:code_completion_model_family_split_by_language],
+          language: language
+        )
         return CodeSuggestions::Tasks::CodeCompletion.new(
-          params: params,
+          params: params.merge(code_completion_model_family: model_family),
           unsafe_passthrough_params: unsafe_passthrough_params
         )
       end
 
+      model_family = CodeSuggestions::AiModels.code_generation_model_family(
+        default: params[:code_generation_model_family],
+        split_by_language: params[:code_generation_model_family_split_by_language],
+        language: language
+      )
       CodeSuggestions::Tasks::CodeGeneration::FromComment.new(
         params: params.merge(
           prefix: result[:prefix]&.chomp! || prefix,
-          instruction: result[:instruction]
+          instruction: result[:instruction],
+          code_generation_model_family: model_family
         ),
         unsafe_passthrough_params: unsafe_passthrough_params
       )
