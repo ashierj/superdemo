@@ -13,26 +13,38 @@ RSpec.describe Resolvers::Ci::RunnersJobsStatisticsResolver, feature_category: :
 
   before_all do
     freeze_time do
-      create(:ci_build, :running, runner: project_runner1, pipeline: pipeline1,
-             queued_at: 5.seconds.ago, started_at: 1.second.ago)
-      create(:ci_build, :success, runner: project_runner2, pipeline: pipeline2,
-             queued_at: 10.seconds.ago, started_at: 8.seconds.ago, finished_at: 7.seconds.ago)
-      create(:ci_build, :success, runner: project_runner1, pipeline: pipeline2,
-             queued_at: 10.seconds.ago, started_at: 9.seconds.ago, finished_at: 1.second.ago)
-      create(:ci_build, :failed, runner: project_runner2, pipeline: pipeline1, queued_at: 2.minutes.ago,
-             started_at: nil)
-      create(:ci_build, :success, runner: project_runner2, pipeline: pipeline1,
-             queued_at: 10.seconds.ago, started_at: 9.5.seconds.ago, finished_at: 1.second.ago)
+      create(
+        :ci_build, :running, runner: project_runner1, pipeline: pipeline1,
+        queued_at: 5.seconds.ago, started_at: 1.second.ago
+      )
+      create(
+        :ci_build, :success, runner: project_runner2, pipeline: pipeline2,
+        queued_at: 10.seconds.ago, started_at: 8.seconds.ago, finished_at: 7.seconds.ago
+      )
+      create(
+        :ci_build, :success, runner: project_runner1, pipeline: pipeline2,
+        queued_at: 10.seconds.ago, started_at: 9.seconds.ago, finished_at: 1.second.ago
+      )
+      create(
+        :ci_build, :failed, runner: project_runner2, pipeline: pipeline1, queued_at: 2.minutes.ago,
+        started_at: nil
+      )
+      create(
+        :ci_build, :success, runner: project_runner2, pipeline: pipeline1,
+        queued_at: 10.seconds.ago, started_at: 9.5.seconds.ago, finished_at: 1.second.ago
+      )
     end
   end
 
   describe '#resolve' do
     subject(:response) do
-      resolve(described_class,
-              obj: obj,
-              ctx: { current_user: current_user },
-              lookahead: positive_lookahead,
-              arg_style: :internal)
+      resolve(
+        described_class,
+        obj: obj,
+        ctx: { current_user: current_user },
+        lookahead: positive_lookahead,
+        arg_style: :internal
+      )
     end
 
     let(:obj) { instance_double(::Gitlab::Graphql::Pagination::Keyset::Connection, items: ::Ci::Runner.project_type) }
@@ -86,8 +98,10 @@ RSpec.describe Resolvers::Ci::RunnersJobsStatisticsResolver, feature_category: :
 
           context 'with JOBS_LIMIT set to one lower than dataset size' do
             before do
-              stub_const('Resolvers::Ci::RunnersJobsStatisticsResolver::JOBS_LIMIT',
-                         ::Ci::Build.where.not(started_at: nil).count)
+              stub_const(
+                'Resolvers::Ci::RunnersJobsStatisticsResolver::JOBS_LIMIT',
+                ::Ci::Build.where.not(started_at: nil).count
+              )
             end
 
             it 'ignores non-started job and does not affect statistics' do
