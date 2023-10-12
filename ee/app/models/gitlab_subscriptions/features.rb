@@ -132,7 +132,6 @@ module GitlabSubscriptions
       incident_metric_upload
       incident_sla
       instance_level_scim
-      issues_analytics
       jira_issues_integration
       ldap_group_sync_filter
       merge_pipelines
@@ -278,6 +277,7 @@ module GitlabSubscriptions
 
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[
       group_ip_restriction
+      issues_analytics
       password_complexity
       group_wikis
     ].freeze
