@@ -22,11 +22,11 @@ RSpec.describe EE::EmailsHelper do
   end
 
   describe '#service_desk_email_additional_text' do
+    let(:custom_text) { 'this is some additional custom text' }
+
     subject { helper.service_desk_email_additional_text }
 
-    context 'when additional email text is enabled' do
-      let(:custom_text) { 'this is some additional custom text' }
-
+    context 'when additional email text is enabled through license' do
       before do
         stub_licensed_features(email_additional_text: true)
         stub_ee_application_setting(email_additional_text: custom_text)
@@ -38,9 +38,19 @@ RSpec.describe EE::EmailsHelper do
     context 'when additional email text is disabled' do
       before do
         stub_licensed_features(email_additional_text: false)
+        stub_usage_ping_features(false)
       end
 
       it { expect(subject).to be_nil }
+    end
+
+    context 'when additional email text is enabled through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+        stub_ee_application_setting(email_additional_text: custom_text)
+      end
+
+      it { is_expected.to eq(custom_text) }
     end
   end
 

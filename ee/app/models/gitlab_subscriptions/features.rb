@@ -109,7 +109,6 @@ module GitlabSubscriptions
       disable_name_update_for_users
       disable_personal_access_tokens
       domain_verification
-      email_additional_text
       epics
       extended_audit_events
       external_authorization_service_api_management
@@ -280,6 +279,7 @@ module GitlabSubscriptions
       issues_analytics
       password_complexity
       group_wikis
+      email_additional_text
     ].freeze
 
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[

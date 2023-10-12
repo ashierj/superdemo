@@ -190,6 +190,7 @@ RSpec.describe Admin::ApplicationSettingsController do
       let(:feature) { :email_additional_text }
 
       it_behaves_like 'settings for licensed features'
+      it_behaves_like 'settings for registration features'
     end
 
     context 'custom project templates settings' do
