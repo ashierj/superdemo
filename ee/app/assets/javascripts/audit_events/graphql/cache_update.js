@@ -1,7 +1,8 @@
 import produce from 'immer';
 import getExternalDestinationsQuery from './queries/get_external_destinations.query.graphql';
 import getInstanceExternalDestinationsQuery from './queries/get_instance_external_destinations.query.graphql';
-import gcpLoggingDestinationsQuery from './queries/get_get_google_cloud_logging_destinations.query.graphql';
+import gcpLoggingDestinationsQuery from './queries/get_google_cloud_logging_destinations.query.graphql';
+import instanceGcpLoggingDestinationsQuery from './queries/get_instance_google_cloud_logging_destinations.query.graphql';
 import ExternalAuditEventDestinationFragment from './fragments/external_audit_event_destination.fragment.graphql';
 import InstanceExternalAuditEventDestinationFragment from './fragments/instance_external_audit_event_destination.fragment.graphql';
 
@@ -152,8 +153,10 @@ export function removeEventTypeFilters({ store, isInstance, destinationId, filte
 }
 
 export function addGcpLoggingAuditEventsStreamingDestination({ store, fullPath, newDestination }) {
+  const getGcpLoggingDestinationsQuery =
+    fullPath === 'instance' ? instanceGcpLoggingDestinationsQuery : gcpLoggingDestinationsQuery;
   const sourceData = store.readQuery({
-    query: gcpLoggingDestinationsQuery,
+    query: getGcpLoggingDestinationsQuery,
     variables: { fullPath },
   });
 
@@ -162,11 +165,15 @@ export function addGcpLoggingAuditEventsStreamingDestination({ store, fullPath, 
   }
 
   const data = produce(sourceData, (draftData) => {
-    const { nodes } = draftData.group.googleCloudLoggingConfigurations;
+    const nodes =
+      fullPath === 'instance'
+        ? draftData.instanceGoogleCloudLoggingConfigurations.nodes
+        : draftData.group.googleCloudLoggingConfigurations.nodes;
+
     nodes.unshift(newDestination);
   });
 
-  store.writeQuery({ query: gcpLoggingDestinationsQuery, variables: { fullPath }, data });
+  store.writeQuery({ query: getGcpLoggingDestinationsQuery, variables: { fullPath }, data });
 }
 
 export function removeGcpLoggingAuditEventsStreamingDestination({
@@ -174,8 +181,10 @@ export function removeGcpLoggingAuditEventsStreamingDestination({
   fullPath,
   destinationId,
 }) {
+  const getGcpLoggingDestinationsQuery =
+    fullPath === 'instance' ? instanceGcpLoggingDestinationsQuery : gcpLoggingDestinationsQuery;
   const sourceData = store.readQuery({
-    query: gcpLoggingDestinationsQuery,
+    query: getGcpLoggingDestinationsQuery,
     variables: { fullPath },
   });
 
@@ -184,10 +193,16 @@ export function removeGcpLoggingAuditEventsStreamingDestination({
   }
 
   const data = produce(sourceData, (draftData) => {
-    draftData.group.googleCloudLoggingConfigurations.nodes = draftData.group.googleCloudLoggingConfigurations.nodes.filter(
-      (node) => node.id !== destinationId,
-    );
+    if (fullPath === 'instance') {
+      draftData.instanceGoogleCloudLoggingConfigurations.nodes = draftData.instanceGoogleCloudLoggingConfigurations.nodes.filter(
+        (node) => node.id !== destinationId,
+      );
+    } else {
+      draftData.group.googleCloudLoggingConfigurations.nodes = draftData.group.googleCloudLoggingConfigurations.nodes.filter(
+        (node) => node.id !== destinationId,
+      );
+    }
   });
 
-  store.writeQuery({ query: gcpLoggingDestinationsQuery, variables: { fullPath }, data });
+  store.writeQuery({ query: getGcpLoggingDestinationsQuery, variables: { fullPath }, data });
 }
