@@ -64,8 +64,7 @@ module CodeSuggestions
         },
       %w[VBScript] =>
         {
-          single: '\'',
-          single_regexp: %r{^[ \t]*'|REM}
+          single_regexp: %r{^[ \t]*('|REM)}
         },
       %w[Fortran] =>
         {
@@ -77,7 +76,7 @@ module CodeSuggestions
         }
     }.freeze
 
-    DEFAULT = ''
+    DEFAULT_NAME = ''
     DEFAULT_FORMAT = {
       single_regexp: %r{^[ \t]*//|#|--}
     }.freeze
@@ -88,11 +87,7 @@ module CodeSuggestions
         value.include?(extension)
       end
 
-      new(language&.first || DEFAULT)
-    end
-
-    def self.from_language(name)
-      new(name)
+      new(language&.first || DEFAULT_NAME)
     end
 
     attr_reader :name
