@@ -2,7 +2,6 @@ mutation sendChat($project: ID!, $content: String!) {
   ciAiGenerateConfig(input: { projectPath: $project, userContent: $content }) {
     errors
     userMessage {
-      __typename
       id
       role
       content
