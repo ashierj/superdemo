@@ -4,7 +4,7 @@ module QA
   module EE
     module Resource
       class SecurityScanPolicyProject < QA::Resource::Base
-        attributes :project_path
+        attributes :full_path
 
         def resource_web_url(resource)
           super
@@ -25,7 +25,7 @@ module QA
         def api_post_body
           <<~GQL
              mutation{
-                  securityPolicyProjectCreate(input: { fullPath: "#{project_path}" }) {
+                  securityPolicyProjectCreate(input: { fullPath: "#{full_path}" }) {
                     project {
                       id
                       fullPath
