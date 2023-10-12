@@ -17,19 +17,6 @@ module EE
       CL_SUBSCRIPTION_ACTIVATION = 'cloud_licensing_subscription_activation_banner'
       PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
 
-      def show_enable_hashed_storage_warning?
-        return if hashed_storage_enabled?
-
-        !user_dismissed?(GEO_ENABLE_HASHED_STORAGE)
-      end
-
-      def show_migrate_hashed_storage_warning?
-        return unless hashed_storage_enabled?
-        return if user_dismissed?(GEO_MIGRATE_HASHED_STORAGE)
-
-        any_project_not_in_hashed_storage?
-      end
-
       override :render_dashboard_ultimate_trial
       def render_dashboard_ultimate_trial(user)
         return unless show_ultimate_trial?(user, ULTIMATE_TRIAL) &&
