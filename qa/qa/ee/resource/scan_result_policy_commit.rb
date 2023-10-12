@@ -7,7 +7,7 @@ module QA
         attributes :policy_yaml,
           :mode,
           :policy_name,
-          :project_path
+          :full_path
 
         MAX_MUTATION_RETRY_ATTEMPTS = 3
 
@@ -37,7 +37,7 @@ module QA
                 scanExecutionPolicyCommit(
                    input: {
                     name: "#{policy_name}",
-                    fullPath: "#{project_path}",
+                    fullPath: "#{full_path}",
                     operationMode: #{mode},
                     policyYaml: "#{policy_yaml.to_yaml}"
                   }

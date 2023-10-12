@@ -2,9 +2,11 @@
 
 module QA
   RSpec.describe 'Govern', :runner, product_group: :security_policies do
-    describe 'Scan Execution Policy' do
+    describe 'Group Level Scan Execution Policy' do
+      let(:group) { create(:group, path: "scan-execution-policy-group-#{SecureRandom.hex(4)}") }
+
       let!(:project) do
-        create(:project, :with_readme, name: 'project-with-scan-execution-policy')
+        create(:project, :with_readme, group: group, name: 'project-with-scan-execution-policy')
       end
 
       let!(:runner) do
@@ -13,7 +15,7 @@ module QA
 
       let!(:scan_execution_policy_project) do
         EE::Resource::SecurityScanPolicyProject.fabricate_via_api! do |commit|
-          commit.project_path = project.full_path
+          commit.full_path = project.group.full_path # Configuring group scan execution policy
         end
       end
 
@@ -36,7 +38,7 @@ module QA
       let(:scan_execution_policy_commit) do
         EE::Resource::ScanResultPolicyCommit.fabricate_via_api! do |commit|
           commit.policy_name = scan_execution_policy_name
-          commit.project_path = project.full_path
+          commit.full_path = project.group.full_path # Configuring group scan execution policy
           commit.mode = :APPEND
           commit.policy_yaml = YAML.load_file(policy_yaml_path)
         end
