@@ -150,6 +150,10 @@ module EE
 
       scope :with_scim_identities_by_extern_uid, ->(extern_uid) { joins(:scim_identities).merge(ScimIdentity.with_extern_uid(extern_uid)) }
 
+      scope :with_email_domain, ->(domain) { where("lower(split_part(email, '@', 2)) = ?", domain.downcase) }
+
+      scope :excluding_enterprise_users_of_group, ->(group) { left_joins(:user_detail).where('user_details.enterprise_group_id != ? OR user_details.enterprise_group_id IS NULL', group.id) }
+
       accepts_nested_attributes_for :namespace
       accepts_nested_attributes_for :custom_attributes
 

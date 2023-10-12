@@ -269,6 +269,46 @@ RSpec.describe User, feature_category: :system_access do
         )
       end
     end
+
+    describe '.with_email_domain' do
+      let(:email_domain) { 'example.GitLab.com' }
+
+      it 'returns users with email domain that is equal to the specified domain' do
+        user_with_the_specified_domain_1 = create(:user, email: "user_with_the_specified_domain_1@#{email_domain}")
+        # to ensure the query is case-insensitive
+        user_with_the_specified_domain_2 = create(:user, email: "user_with_the_specified_domain_2@#{email_domain}")
+        user_with_the_specified_domain_2.update_column(:email, "user_with_the_specified_domain_2@#{email_domain.swapcase}")
+        _user_with_subdomain_of_the_specified_domain = create(:user, email: "user_with_subdomain_of_the_specified_domain@subdomain.#{email_domain}")
+        _user_with_domain_that_contains_the_specified_domain = create(:user, email: "user_with_domain_that_contains_the_specified_domain@subdomain.#{email_domain}.example.com")
+
+        expect(described_class.with_email_domain(email_domain)).to match_array(
+          [
+            user_with_the_specified_domain_1,
+            user_with_the_specified_domain_2
+          ]
+        )
+      end
+    end
+
+    describe '.excluding_enterprise_users_of_group' do
+      let_it_be(:group) { create(:group) }
+
+      it 'excludes users that are enterprise users of the specified group' do
+        _enterprise_user_of_the_group = create(:user_detail, enterprise_group_id: group.id).user
+        enterprise_user_of_some_group = create(:user, :enterprise_user)
+        not_enterprise_user = create(:user_detail, enterprise_group_id: nil).user
+        user_without_user_detail_record = create(:user)
+        user_without_user_detail_record.user_detail.destroy!
+
+        expect(described_class.excluding_enterprise_users_of_group(group)).to match_array(
+          [
+            enterprise_user_of_some_group,
+            not_enterprise_user,
+            user_without_user_detail_record
+          ]
+        )
+      end
+    end
   end
 
   describe 'after_create' do
