@@ -1,11 +1,13 @@
 <script>
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlButtonGroup, GlButton, GlCollapsibleListbox } from '@gitlab/ui';
+import { __ } from '~/locale';
 import { visitUrl } from '~/lib/utils/url_utility';
 
 export default {
   components: {
-    GlDropdown,
-    GlDropdownItem,
+    GlButtonGroup,
+    GlButton,
+    GlCollapsibleListbox,
   },
   props: {
     buttons: {
@@ -27,10 +29,17 @@ export default {
     selectedButton() {
       return this.buttons[this.selectedButtonIndex];
     },
+    items() {
+      return this.buttons.map((button) => ({
+        text: button.name,
+        value: button.action,
+        description: button.tagline,
+      }));
+    },
   },
   methods: {
-    setButton(index) {
-      this.selectedButtonIndex = index;
+    setButton(action) {
+      this.selectedButtonIndex = this.buttons.findIndex((button) => button.action === action);
     },
     handleClick() {
       if (this.selectedButton.href) {
@@ -40,31 +49,41 @@ export default {
       }
     },
   },
+  i18n: {
+    changeAction: __('Change action'),
+  },
 };
 </script>
 
 <template>
-  <gl-dropdown
-    v-if="selectedButton"
-    :disabled="disabled"
-    variant="success"
-    :text="selectedButton.name"
-    :href="selectedButton.href"
-    :loading="selectedButton.loading"
-    split
-    @click="handleClick"
-  >
-    <gl-dropdown-item
-      v-for="(button, index) in buttons"
-      :key="button.action"
-      :is-checked="selectedButton === button"
-      :data-testid="`${button.action}-button`"
-      is-check-item
-      @click="setButton(index)"
+  <!--TODO: Replace button-group workaround once `split` option for new dropdowns is implemented.-->
+  <!-- See issue at https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2263-->
+  <gl-button-group v-if="selectedButton">
+    <gl-button
+      :disabled="disabled"
+      variant="success"
+      :href="selectedButton.href"
+      :loading="selectedButton.loading"
+      @click="handleClick"
+      >{{ selectedButton.name }}</gl-button
     >
-      <strong>{{ button.name }}</strong>
-      <br />
-      <span>{{ button.tagline }}</span>
-    </gl-dropdown-item>
-  </gl-dropdown>
+    <gl-collapsible-listbox
+      class="split"
+      toggle-class="gl-rounded-top-left-none! gl-rounded-bottom-left-none! gl-pl-1!"
+      variant="success"
+      text-sr-only
+      :toggle-text="$options.i18n.changeAction"
+      :disabled="disabled || selectedButton.loading"
+      :items="items"
+      :selected="selectedButton.action"
+      @select="setButton"
+    >
+      <template #list-item="{ item }">
+        <div :data-testid="`${item.value}-button`">
+          <strong>{{ item.text }}</strong>
+          <p class="gl-m-0">{{ item.description }}</p>
+        </div>
+      </template>
+    </gl-collapsible-listbox>
+  </gl-button-group>
 </template>

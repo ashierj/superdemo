@@ -1,5 +1,6 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
+import { GlButton, GlButtonGroup, GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { shallowMount, mount } from '@vue/test-utils';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import * as urlUtility from '~/lib/utils/url_utility';
 
@@ -21,45 +22,49 @@ const buttons = [
 describe('Split Button', () => {
   let wrapper;
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findButtonGroup = () => wrapper.findComponent(GlButtonGroup);
+  const findButton = () => wrapper.findComponent(GlButton);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findListboxItem = () => wrapper.findComponent(GlListboxItem);
 
-  const createComponent = (props) => {
-    wrapper = shallowMount(SplitButton, {
+  const createComponent = (props, mountFn = shallowMount) => {
+    wrapper = mountFn(SplitButton, {
       propsData: {
         ...props,
       },
     });
   };
 
-  it('does not render dropdown if buttons array is empty', () => {
+  it('does not render button group if buttons array is empty', () => {
     createComponent({
       buttons: [],
     });
 
-    expect(findDropdown().exists()).toBe(false);
+    expect(findButtonGroup().exists()).toBe(false);
   });
 
-  it('renders disabled dropdown if disabled prop is true', () => {
+  it('renders disabled listbox and disabled button if disabled prop is true', () => {
     createComponent({
       buttons: buttons.slice(0),
       disabled: true,
     });
 
-    expect(findDropdown().attributes().disabled).toBe('true');
+    expect(findButton().attributes('disabled')).toBe('true');
+    expect(findListbox().attributes('disabled')).toBe('true');
   });
 
-  it('renders a loading icon when loading prop is true', () => {
+  it('renders a loading icon in button and disables listbox when loading prop is true', () => {
     createComponent({ buttons: buttons.slice(0).map((b) => ({ ...b, loading: true })) });
-    expect(findDropdown().attributes().loading).toBe('true');
+    expect(findButton().props('loading')).toBe(true);
+    expect(findListbox().props('disabled')).toBe(true);
   });
 
-  it('emits correct action on dropdown click', () => {
+  it('emits correct action on button click', () => {
     createComponent({
       buttons: buttons.slice(0),
     });
 
-    findDropdown().vm.$emit('click');
+    findButton().vm.$emit('click');
 
     expect(wrapper.emitted('button1Action')).toBeDefined();
     expect(wrapper.emitted('button1Action')).toHaveLength(1);
@@ -73,25 +78,39 @@ describe('Split Button', () => {
       buttons: [{ ...buttons.slice(0), action: undefined, href }],
     });
 
-    findDropdown().vm.$emit('click');
+    findButton().vm.$emit('click');
 
     expect(wrapper.emitted('button1Action')).toBeUndefined();
     expect(spy).toHaveBeenCalledWith(href, true);
   });
 
-  it('renders a correct amount of dropdown items', () => {
+  it('renders a correct amount of listbox items', () => {
     createComponent({
       buttons,
     });
 
-    expect(findDropdownItems()).toHaveLength(2);
+    expect(findListbox().props('items')).toHaveLength(2);
   });
 
-  it('renders an icon if dropdown item is selected', () => {
-    createComponent({
-      buttons: buttons.slice(0),
-    });
+  it('renders both button text and tagline', () => {
+    createComponent(
+      {
+        buttons: buttons.slice(0),
+      },
+      mount,
+    );
+    const item = findListboxItem();
 
-    expect(findDropdownItems().at(0).props('isChecked')).toBe(true);
+    expect(item.text()).toContain('button one');
+    expect(item.text()).toContain("button one's tagline");
+  });
+
+  it('updates selected item', async () => {
+    createComponent({ buttons });
+
+    findListbox().vm.$emit('select', 'button2Action');
+    await nextTick();
+
+    expect(findListbox().props('selected')).toBe('button2Action');
   });
 });
