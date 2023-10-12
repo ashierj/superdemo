@@ -6,6 +6,8 @@ module EE
       extend ::Gitlab::Utils::Override
       extend ActiveSupport::Concern
 
+      UNINDEXED_PROJECT_DISPLAY_LIMIT = 50
+
       prepended do
         include MicrosoftApplicationActions
 
@@ -20,6 +22,7 @@ module EE
         before_action :scim_token, only: [:general]
         before_action :find_or_initialize_microsoft_application, only: [:general]
         before_action :verify_namespace_plan_check_enabled, only: [:namespace_storage]
+        before_action :indexing_status, only: [:advanced_search]
 
         after_action :sync_link_data, only: [:general], if: :instance_level_code_suggestions_enabled_submitted?
 
@@ -73,6 +76,18 @@ module EE
           scim_token = ScimOauthAccessToken.find_for_instance
 
           @scim_token_url = scim_token.as_entity_json[:scim_api_url] if scim_token
+        end
+
+        def indexing_status
+          @initial_queue_size = ::Elastic::ProcessInitialBookkeepingService.queue_size
+          @incremental_queue_size = ::Elastic::ProcessBookkeepingService.queue_size
+
+          # This code cannot be run on GitLab.com due to performance issues
+          return if ::Gitlab::Saas.feature_available?('search/indexing_status')
+
+          @projects_not_indexed_count = ::Search::ElasticProjectsNotIndexedFinder.execute.count
+          @projects_not_indexed = ::Search::ElasticProjectsNotIndexedFinder
+            .execute.limit(UNINDEXED_PROJECT_DISPLAY_LIMIT)
         end
       end
 

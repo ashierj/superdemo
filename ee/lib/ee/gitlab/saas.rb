@@ -7,7 +7,7 @@ module EE
 
       MissingFeatureError = Class.new(StandardError)
 
-      FEATURES = %w[purchases/additional_minutes onboarding].freeze
+      FEATURES = %w[purchases/additional_minutes onboarding search/indexing_status].freeze
 
       class_methods do
         def feature_available?(feature)
