@@ -1,11 +1,12 @@
 <script>
 import { QueryBuilder } from '@cubejs-client/vue';
-import { GlButton, GlFormGroup, GlFormInput } from '@gitlab/ui';
+import { GlButton, GlFormGroup, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { slugify } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { getPanelOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_panel_options';
@@ -25,6 +26,8 @@ export default {
     GlButton,
     GlFormInput,
     GlFormGroup,
+    GlLink,
+    GlSprintf,
     MeasureSelector,
     DimensionSelector,
     VisualizationTypeSelector,
@@ -83,17 +86,13 @@ export default {
     saveButtonText() {
       return this.$route?.params.dashboardid
         ? s__('Analytics|Save and add to Dashboard')
-        : s__('Analytics|Save new visualization');
+        : s__('Analytics|Save your visualization');
     },
   },
   beforeDestroy() {
     this.alert?.dismiss();
   },
   mounted() {
-    // Needs to be dynamic as it can't be changed on the cube component
-    const outerShell = document.getElementById('js-query-builder-wrapper');
-    if (outerShell) outerShell.childNodes[0].classList.add('gl-display-flex');
-
     const wrappers = document.querySelectorAll('.container-fluid.container-limited');
 
     wrappers.forEach((el) => {
@@ -224,6 +223,9 @@ export default {
         });
       }
     },
+    routeToDashboardList() {
+      this.$router.push('/');
+    },
     showAlert(message, error = null, captureError = false) {
       this.alert = createAlert({
         message,
@@ -235,12 +237,32 @@ export default {
   i18n: {
     saveError: s__('Analytics|Error while saving visualization.'),
   },
+  helpPageUrl: helpPagePath('user/analytics/analytics_dashboards', {
+    anchor: 'define-a-chart-visualization',
+  }),
 };
 </script>
 
 <template>
   <div>
-    <div class="gl-display-flex gl-py-6">
+    <header class="gl-my-6">
+      <h2 class="gl-mt-0" data-testid="page-title">
+        {{ s__('Analytics|Create your visualization') }}
+      </h2>
+      <p data-testid="page-description" class="gl-mb-0">
+        {{
+          s__(
+            'Analytics|Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard.',
+          )
+        }}
+        <gl-sprintf :message="__('%{linkStart} Learn more%{linkEnd}.')">
+          <template #link="{ content }">
+            <gl-link data-testid="help-link" :href="$options.helpPageUrl">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </p>
+    </header>
+    <section class="gl-display-flex gl-mb-6">
       <div class="gl-display-flex flex-fill gl-flex-direction-column">
         <gl-form-group
           :label="s__('Analytics|Visualization title')"
@@ -279,18 +301,8 @@ export default {
           />
         </gl-form-group>
       </div>
-      <div class="gl-ml-2">
-        <gl-button
-          :loading="isSaving"
-          category="primary"
-          variant="confirm"
-          data-testid="visualization-save-btn"
-          @click="saveVisualization"
-          >{{ saveButtonText }}</gl-button
-        >
-      </div>
-    </div>
-    <div id="js-query-builder-wrapper" class="gl-border-t">
+    </section>
+    <section class="gl-border-t gl-border-b gl-mb-6">
       <query-builder
         ref="builder"
         :cubejs-api="cubejsApi"
@@ -298,6 +310,7 @@ export default {
         :wrap-with-query-renderer="true"
         :disable-heuristics="true"
         data-testid="query-builder"
+        class="gl-display-flex"
         @queryStatus="onQueryStatusChange"
         @vizStateChange="onVizStateChange"
       >
@@ -316,7 +329,7 @@ export default {
             addFilters,
           }"
         >
-          <div class="gl-mr-4" style="min-width: 360px">
+          <div class="gl-pr-4 gl-pb-5 gl-border-r">
             <measure-selector
               :measures="measures"
               :set-measures="setMeasures"
@@ -343,9 +356,7 @@ export default {
         </template>
 
         <template #default="{ resultSet, isQueryPresent, loading }">
-          <div
-            class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-bg-gray-10 gl-overflow-auto gl-border-l gl-border-r"
-          >
+          <div class="gl-flex-grow-1 gl-bg-gray-10 gl-overflow-auto">
             <visualization-preview
               :selected-visualization-type="selectedVisualizationType"
               :display-type="selectedDisplayType"
@@ -359,6 +370,17 @@ export default {
           </div>
         </template>
       </query-builder>
-    </div>
+    </section>
+    <section>
+      <gl-button
+        :loading="isSaving"
+        category="primary"
+        variant="confirm"
+        data-testid="visualization-save-btn"
+        @click="saveVisualization"
+        >{{ saveButtonText }}</gl-button
+      >
+      <gl-button category="secondary" @click="routeToDashboardList">{{ __('Cancel') }}</gl-button>
+    </section>
   </div>
 </template>

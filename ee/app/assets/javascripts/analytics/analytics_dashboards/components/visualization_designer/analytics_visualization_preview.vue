@@ -84,7 +84,7 @@ export default {
       <div class="col-12 gl-mt-4">
         <div class="text-content text-center gl-text-gray-400">
           <h3 v-if="!isQueryPresent" data-testid="measurement-hl" class="gl-text-gray-400">
-            {{ s__('Analytics|Choose a measurement to start') }}
+            {{ s__('Analytics|Start by choosing a metric') }}
           </h3>
           <gl-loading-icon
             v-else-if="loading"
@@ -122,14 +122,14 @@ export default {
           class="grid-stack-item-content gl-shadow-sm gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
         >
           <strong class="gl-mb-2">{{ s__('Analytics|Resulting Data') }}</strong>
-          <div class="gl-overflow-y-auto gl-h-full">
-            <!-- Using Datatable specifically for data preview here -->
-            <data-table
-              :data="dataTableResults"
-              data-testid="preview-datatable"
-              @error="(error) => handleVisualizationError('TITLE', error)"
-            />
-          </div>
+          <!-- Using Datatable specifically for data preview here -->
+          <data-table
+            :data="dataTableResults"
+            data-testid="preview-datatable"
+            class="gl-overflow-y-auto"
+            :style="{ height: $options.PANEL_VISUALIZATION_HEIGHT }"
+            @error="(error) => handleVisualizationError('TITLE', error)"
+          />
         </div>
       </div>
 

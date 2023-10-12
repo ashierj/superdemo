@@ -62,8 +62,8 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
       it 'renders the measure selection & preview panels and the type selector' do
         visit_page
 
-        expect(page).to have_content('What do you want to measure?')
-        expect(page).to have_content('Choose a measurement to start')
+        expect(page).to have_content('What metric do you want to visualize?')
+        expect(page).to have_content('Start by choosing a metric')
 
         expect(page).to have_content('Visualization type')
       end

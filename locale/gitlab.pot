@@ -5426,9 +5426,6 @@ msgstr ""
 msgid "Analytics|Charts"
 msgstr ""
 
-msgid "Analytics|Choose a measurement to start"
-msgstr ""
-
 msgid "Analytics|Code"
 msgstr ""
 
@@ -5448,6 +5445,9 @@ msgid "Analytics|Create dashboard %{dashboardSlug}"
 msgstr ""
 
 msgid "Analytics|Create your dashboard"
+msgstr ""
+
+msgid "Analytics|Create your visualization"
 msgstr ""
 
 msgid "Analytics|Custom dashboards"
@@ -5546,10 +5546,10 @@ msgstr ""
 msgid "Analytics|Save and add to Dashboard"
 msgstr ""
 
-msgid "Analytics|Save new visualization"
+msgid "Analytics|Save your dashboard"
 msgstr ""
 
-msgid "Analytics|Save your dashboard"
+msgid "Analytics|Save your visualization"
 msgstr ""
 
 msgid "Analytics|Select a measurement"
@@ -5579,6 +5579,9 @@ msgstr ""
 msgid "Analytics|Something went wrong."
 msgstr ""
 
+msgid "Analytics|Start by choosing a metric"
+msgstr ""
+
 msgid "Analytics|Tables"
 msgstr ""
 
@@ -5592,6 +5595,9 @@ msgid "Analytics|Updating dashboard %{dashboardSlug}"
 msgstr ""
 
 msgid "Analytics|Updating visualization %{visualizationName}"
+msgstr ""
+
+msgid "Analytics|Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard."
 msgstr ""
 
 msgid "Analytics|Users"
@@ -35969,7 +35975,7 @@ msgstr ""
 msgid "ProductAnalytics|Waiting for events"
 msgstr ""
 
-msgid "ProductAnalytics|What do you want to measure?"
+msgid "ProductAnalytics|What metric do you want to visualize?"
 msgstr ""
 
 msgid "ProductAnalytics|You can instrument your application using a JS module or an HTML script. Follow the instructions below for the option you prefer."

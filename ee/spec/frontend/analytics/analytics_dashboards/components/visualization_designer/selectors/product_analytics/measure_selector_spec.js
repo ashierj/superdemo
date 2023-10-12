@@ -73,6 +73,10 @@ describe('ProductAnalyticsMeasureSelector', () => {
       expect(setMeasures).toHaveBeenCalledWith([]);
       expect(setFilters).toHaveBeenCalledWith([]);
     });
+
+    it('renders the column title', () => {
+      expect(wrapper.text()).toContain('What metric do you want to visualize?');
+    });
   });
 
   it.each`

@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import { GlLink, GlSprintf } from '@gitlab/ui';
 import { __setMockMetadata } from '@cubejs-client/core';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -6,6 +7,7 @@ import { stubComponent } from 'helpers/stub_component';
 
 import { HTTP_STATUS_CREATED, HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { createAlert } from '~/alert';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 
@@ -39,6 +41,9 @@ describe('AnalyticsVisualizationDesigner', () => {
   const findQueryBuilder = () => wrapper.findByTestId('query-builder');
   const findTypeFormGroup = () => wrapper.findByTestId('visualization-type-form-group');
   const findTypeSelector = () => wrapper.findComponent(VisualizationTypeSelector);
+  const findPageTitle = () => wrapper.findByTestId('page-title');
+  const findPageDescription = () => wrapper.findByTestId('page-description');
+  const findPageDescriptionLink = () => findPageDescription().findComponent(GlLink);
 
   const setVisualizationTitle = async (newTitle = '') => {
     await findTitleInput().vm.$emit('input', newTitle);
@@ -84,6 +89,7 @@ describe('AnalyticsVisualizationDesigner', () => {
         RouterView: true,
         BuilderComponent,
         QueryBuilder,
+        GlSprintf,
         VisualizationTypeSelector: stubComponent(VisualizationTypeSelector, {
           template: `<div><button>Dropdown</button></div>`,
         }),
@@ -101,12 +107,39 @@ describe('AnalyticsVisualizationDesigner', () => {
       createWrapper();
     });
 
-    it('should render title input', () => {
+    it('renders the page title', () => {
+      expect(findPageTitle().text()).toBe('Create your visualization');
+    });
+
+    it('renders the page description with a link to user documentation', () => {
+      expect(findPageDescription().text()).toContain(
+        'Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard.',
+      );
+
+      expect(findPageDescriptionLink().text()).toBe('Learn more');
+      expect(findPageDescriptionLink().attributes('href')).toBe(
+        helpPagePath('user/analytics/analytics_dashboards', {
+          anchor: 'define-a-chart-visualization',
+        }),
+      );
+    });
+
+    it('renders title input', () => {
       expect(findTitleInput().exists()).toBe(true);
     });
 
-    it('should not render dimension selector', () => {
+    it('does not render dimension selector', () => {
       expect(findDimensionSelector().exists()).toBe(false);
+    });
+
+    it('render a cancel button that routes to the dashboard listing page', async () => {
+      const button = wrapper.findByText('Cancel');
+
+      expect(button.attributes('category')).toBe('secondary');
+
+      await button.vm.$emit('click');
+
+      expect(routerPush).toHaveBeenCalledWith('/');
     });
   });
 
