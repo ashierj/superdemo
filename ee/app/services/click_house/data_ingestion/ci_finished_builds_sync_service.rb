@@ -57,8 +57,8 @@ module ClickHouse
 
       def insert_new_finished_builds
         # Read BUILDS_BATCH_COUNT batches of BUILDS_BATCH_SIZE until the timeout in MAX_RUNTIME is reached
-        # We can expect a single worker to process around 3.4M builds/hour with a single worker,
-        # and a bit over 9M builds/hours with three workers (measured in staging).
+        # We can expect a single worker to process around 1.26M builds/hour with a single worker,
+        # and a bit over 3M builds/hours with three workers (measured in prod).
         @reached_end_of_table = false
         @processed_record_ids = []
 
