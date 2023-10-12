@@ -135,6 +135,15 @@ module API
             token = code_suggestions_token.token
           end
 
+          check_rate_limit!(:code_suggestions_api_endpoint, scope: current_user) do
+            Gitlab::InternalEvents.track_event(
+              'code_suggestions_rate_limit_exceeded',
+              user: current_user
+            )
+
+            render_api_error!({ error: _('This endpoint has been requested too many times. Try again later.') }, 429)
+          end
+
           task = ::CodeSuggestions::TaskFactory.new(
             current_user,
             params: declared_params(params),

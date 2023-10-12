@@ -20,7 +20,8 @@ module EE
               threshold: 0,
               interval: 0
             },
-            credit_card_verification_check_for_reuse: { threshold: 10, interval: 1.hour }
+            credit_card_verification_check_for_reuse: { threshold: 10, interval: 1.hour },
+            code_suggestions_api_endpoint: { threshold: 60, interval: 1.minute }
           }).freeze
         end
       end
