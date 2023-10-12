@@ -73,8 +73,8 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
           open_settings_sidebar
 
           within_testid('roadmap-settings') do
-            page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle').click
-            click_button(range_type)
+            find_by_testid('daterange-dropdown').click
+            find('.gl-new-dropdown-item', text: range_type).click
           end
         end
 
@@ -84,7 +84,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
           within_testid('roadmap-settings') do
             expect(page).to have_selector('[data-testid="daterange-dropdown"]')
             expect(page).not_to have_selector('[data-testid="daterange-presets"]')
-            expect(page.find('[data-testid="daterange-dropdown"] button.dropdown-toggle')).to have_content('This quarter')
+            expect(page.find('[data-testid="daterange-dropdown"] button.gl-new-dropdown-toggle')).to have_content('This quarter')
           end
         end
 
