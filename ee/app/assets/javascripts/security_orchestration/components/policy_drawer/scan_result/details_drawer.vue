@@ -38,7 +38,7 @@ export default {
       }
     },
     requireApproval() {
-      return this.parsedYaml.actions.find((action) => action.type === 'require_approval');
+      return this.parsedYaml?.actions?.find((action) => action.type === 'require_approval');
     },
     approvers() {
       return [

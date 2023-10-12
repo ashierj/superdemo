@@ -42630,6 +42630,9 @@ msgstr ""
 msgid "SecurityOrchestration|Required approvals exceed eligible approvers."
 msgstr ""
 
+msgid "SecurityOrchestration|Requires no approvals if any of the following occur:"
+msgstr ""
+
 msgid "SecurityOrchestration|Roles"
 msgstr ""
 
