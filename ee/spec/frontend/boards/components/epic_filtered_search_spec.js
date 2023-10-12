@@ -14,7 +14,7 @@ import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label
 
 describe('EpicFilteredSearch', () => {
   let wrapper;
-  const { fetchUsers, fetchLabels } = issueBoardFilters({}, '', true);
+  const { fetchLabels } = issueBoardFilters({}, '', true);
 
   const findFilteredSearch = () => wrapper.findComponent(BoardFilteredSearch);
 
@@ -70,7 +70,6 @@ describe('EpicFilteredSearch', () => {
           symbol: '@',
           token: UserToken,
           unique: true,
-          fetchUsers,
           preloadedUsers: [
             { id: 'gid://gitlab/User/4', name: 'Admin', username: 'root', avatarUrl: 'url' },
           ],
