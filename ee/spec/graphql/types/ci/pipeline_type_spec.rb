@@ -66,13 +66,15 @@ RSpec.describe GitlabSchema.types['Pipeline'] do
         report.merge!(report)
 
         scan.report_findings.each do |finding|
-          create(:security_finding,
-                 severity: finding.severity,
-                 confidence: finding.confidence,
-                 project_fingerprint: finding.project_fingerprint,
-                 deduplicated: true,
-                 scan: scan,
-                 uuid: finding.uuid)
+          create(
+            :security_finding,
+            severity: finding.severity,
+            confidence: finding.confidence,
+            project_fingerprint: finding.project_fingerprint,
+            deduplicated: true,
+            scan: scan,
+            uuid: finding.uuid
+          )
         end
       end
 

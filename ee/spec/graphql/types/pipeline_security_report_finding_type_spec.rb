@@ -181,10 +181,12 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
         expect(issues.count).to eq(2)
 
         new_vulnerability = create(:vulnerability, :with_issue_links, project: project)
-        create(:vulnerabilities_finding,
-               project: project,
-               vulnerability: new_vulnerability,
-               uuid: sast_findings.second.uuid)
+        create(
+          :vulnerabilities_finding,
+          project: project,
+          vulnerability: new_vulnerability,
+          uuid: sast_findings.second.uuid
+        )
 
         expect { run_with_clean_state(sast_query, context: { current_user: user }) }
           .not_to exceed_query_limit(control_count)
@@ -233,10 +235,12 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       let_it_be(:issue) { create(:issue, description: 'Vulnerability issue description', project: project) }
       let_it_be(:vulnerability) { create(:vulnerability, project: project) }
       let_it_be(:vulnerability_finding) do
-        create(:vulnerabilities_finding,
-               project: project,
-               vulnerability: vulnerability,
-               uuid: sast_findings.first.uuid)
+        create(
+          :vulnerabilities_finding,
+          project: project,
+          vulnerability: vulnerability,
+          uuid: sast_findings.first.uuid
+        )
       end
 
       let_it_be(:issue_link) { create(:vulnerabilities_issue_link, vulnerability: vulnerability, issue: issue) }
@@ -261,10 +265,12 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
         expect(issues.count).to eq(1)
 
         new_vulnerability = create(:vulnerability, :with_issue_links, project: project)
-        create(:vulnerabilities_finding,
-               project: project,
-               vulnerability: new_vulnerability,
-               uuid: sast_findings.second.uuid)
+        create(
+          :vulnerabilities_finding,
+          project: project,
+          vulnerability: new_vulnerability,
+          uuid: sast_findings.second.uuid
+        )
 
         expect { run_with_clean_state(sast_query, context: { current_user: user }) }
           .not_to exceed_query_limit(control_count)

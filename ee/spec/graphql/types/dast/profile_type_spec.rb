@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['DastProfile'], :dynamic_analysis,
-                                                  feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }
@@ -53,8 +53,9 @@ RSpec.describe GitlabSchema.types['DastProfile'], :dynamic_analysis,
 
   describe 'dast_pre_scan_verification field' do
     it 'correctly resolves the field' do
-      expect(resolve_field(:dast_pre_scan_verification,
-                           object, current_user: user)).to eq(object.dast_pre_scan_verification)
+      expect(
+        resolve_field(:dast_pre_scan_verification, object, current_user: user)
+      ).to eq(object.dast_pre_scan_verification)
     end
 
     context 'when the feature flag is not enabled' do

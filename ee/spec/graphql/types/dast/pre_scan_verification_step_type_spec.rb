@@ -3,17 +3,19 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['DastPreScanVerificationStep'], :dynamic_analysis,
-                                                              feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project) }
   let_it_be(:dast_pre_scan_verification) { create(:dast_pre_scan_verification, dast_profile: dast_profile) }
   let_it_be(:object) do
-    create(:dast_pre_scan_verification_step,
-           check_type: 'connection',
-           dast_pre_scan_verification: dast_pre_scan_verification,
-           verification_errors: ['Actionable error message'])
+    create(
+      :dast_pre_scan_verification_step,
+      check_type: 'connection',
+      dast_pre_scan_verification: dast_pre_scan_verification,
+      verification_errors: ['Actionable error message']
+    )
   end
 
   let_it_be(:user) { create(:user, developer_projects: [project]) }
