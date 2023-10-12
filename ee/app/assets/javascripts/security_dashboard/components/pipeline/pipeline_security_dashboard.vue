@@ -29,10 +29,7 @@ export default {
   mixins: [glFeatureFlagMixin()],
   provide() {
     return {
-      // We can't use this.dismissalDescriptions due to bug in vue-apollo when
-      // provide is called in beforeCreate
-      // See https://github.com/vuejs/vue-apollo/pull/1153 for details
-      dismissalDescriptions: this.$options.propsData.dismissalDescriptions,
+      dismissalDescriptions: this.dismissalDescriptions,
     };
   },
   inject: [
