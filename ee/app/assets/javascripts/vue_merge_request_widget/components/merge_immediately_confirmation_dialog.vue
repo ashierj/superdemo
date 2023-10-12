@@ -62,7 +62,7 @@ export default {
       <gl-button ref="cancelButton" @click="cancel">{{ __('Cancel') }}</gl-button>
       <gl-button
         variant="danger"
-        data-qa-selector="merge_immediately_button"
+        data-testid="merge-immediately-confirmation-button"
         @click="mergeImmediately"
         >{{ __('Merge immediately') }}</gl-button
       >
