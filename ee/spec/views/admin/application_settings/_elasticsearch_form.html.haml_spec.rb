@@ -9,12 +9,16 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form', feature_categor
   let(:pause_indexing) { false }
   let(:pending_migrations) { false }
   let(:elastic_reindexing_task) { build(:elastic_reindexing_task) }
+  let(:projects_not_indexed) { [] }
+  let(:projects_not_indexed_count) { 0 }
 
   before do
     assign(:application_setting, application_setting)
     assign(:elasticsearch_reindexing_task, elastic_reindexing_task)
     allow(view).to receive(:current_user) { admin }
     allow(view).to receive(:expanded) { true }
+    assign(:projects_not_indexed, projects_not_indexed)
+    assign(:projects_not_indexed_count, projects_not_indexed_count)
   end
 
   context 'es indexing' do
@@ -305,6 +309,167 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form', feature_categor
 
         expect(rendered).not_to include('Elasticsearch migration halted')
         expect(rendered).not_to include('Retry migration')
+      end
+    end
+  end
+
+  context 'indexing status' do
+    let(:projects_not_indexed_max_shown) { 50 }
+    let(:application_setting) { build(:application_setting) }
+
+    before do
+      assign(:initial_queue_size, initial_queue_size)
+      assign(:incremental_queue_size, incremental_queue_size)
+    end
+
+    context 'when there are projects being indexed' do
+      let(:initial_queue_size) { 10 }
+      let(:incremental_queue_size) { 10 }
+
+      context 'when there are projects in initial queue' do
+        let(:initial_queue_size) { 20 }
+        let(:incremental_queue_size) { 0 }
+
+        it 'shows count of items in this queue' do
+          render
+
+          expect(rendered).to have_selector('[data-testid="initial_queue_size"]', text: '20')
+        end
+
+        it 'has a button leading to documentation' do
+          render
+
+          expect(rendered).to have_selector('[data-testid="initial_indexing_documentation"]', text: 'Documentation')
+        end
+      end
+
+      context 'when there are projects in incremental queue' do
+        let(:initial_queue_size) { 0 }
+        let(:incremental_queue_size) { 30 }
+
+        it 'shows count of items in this queue' do
+          render
+
+          expect(rendered).to have_selector('[data-testid="incremental_queue_size"]', text: '30')
+        end
+
+        it 'has a button leading to documentation' do
+          render
+
+          expect(rendered).to have_selector('[data-testid="incremental_indexing_documentation"]', text: 'Documentation')
+        end
+      end
+    end
+
+    context 'when there are projects not indexed' do
+      context 'when there is 20 projects not indexed' do
+        let(:namespace) { instance_double("Namespace", human_name: "Namespace 1") }
+        let_it_be(:projects_not_indexed) { create_list(:project, 20, :repository) }
+        let(:projects_not_indexed_count) { 20 }
+
+        let(:initial_queue_size) { 10 }
+        let(:incremental_queue_size) { 10 }
+
+        before do
+          assign(:projects_not_indexed, projects_not_indexed)
+          assign(:initial_queue_size, initial_queue_size)
+          assign(:incremental_queue_size, incremental_queue_size)
+          assign(:projects_not_indexed_count, projects_not_indexed_count)
+
+          render
+        end
+
+        it 'shows count of 20 projects not indexed' do
+          expect(rendered).to have_selector('[data-testid="projects_not_indexed_size"]', text: '20')
+        end
+
+        it 'doesn’t show text “Only first 50 of not indexed projects is shown"' do
+          expect(rendered).not_to include('Only first 50 of not indexed projects is shown')
+        end
+
+        it 'shows 20 items in the list .project-row' do
+          expect(rendered).to have_selector('[data-testid="not_indexed_project_row"]', count: 20)
+        end
+
+        context 'when on gitlab.com don\'t show 20 not indexed projects', :saas do
+          it 'does not shows the list' do
+            expect(rendered).not_to have_selector('.indexing-projects-list')
+          end
+
+          it 'does not show the count of projects not indexed' do
+            expect(rendered).not_to have_selector('[data-testid="projects_not_indexed_size"]')
+          end
+        end
+      end
+
+      context 'when there is 100 projects not indexed' do
+        let(:namespace) { instance_double("Namespace", human_name: "Namespace 1") }
+        let_it_be(:projects_not_indexed) { create_list(:project, 100, :repository) }
+        let(:projects_not_indexed_count) { 100 }
+
+        let(:initial_queue_size) { 10 }
+        let(:incremental_queue_size) { 10 }
+
+        before do
+          assign(:projects_not_indexed, projects_not_indexed)
+          assign(:initial_queue_size, initial_queue_size)
+          assign(:incremental_queue_size, incremental_queue_size)
+          assign(:projects_not_indexed_count, projects_not_indexed_count)
+
+          render
+        end
+
+        it 'shows count of 100 projects not indexed' do
+          expect(rendered).to have_selector('[data-testid="projects_not_indexed_size"]', text: '100')
+        end
+
+        it 'shows text “Only first 50 of not indexed projects is shown"' do
+          expect(rendered).to have_selector('[data-testid="projects_not_indexed_max_shown"]', text: 'Only first 50 of not indexed projects is shown')
+        end
+
+        it 'shows 100 items in the list .project-row' do
+          # Under real conditions this will never have 100 items
+          # since we are limiting ElasticProjectsNotIndexedFinder items
+          # but for this test we are mocking the @projects_not_indexed
+          # directly so limit is not applied
+          expect(rendered).to have_selector('[data-testid="not_indexed_project_row"]', count: 100)
+        end
+
+        context 'when on gitlab.com don\'t show any not indexed projects', :saas do
+          it 'does not shows the list' do
+            expect(rendered).not_to have_selector('.indexing-projects-list')
+          end
+
+          it 'does not show the count of projects not indexed' do
+            expect(rendered).not_to have_selector('[data-testid="projects_not_indexed_size"]')
+          end
+        end
+      end
+
+      context 'when there is 0 projects not indexed' do
+        let(:namespace) { instance_double("Namespace", human_name: "Namespace 1") }
+        let_it_be(:projects_not_indexed) { [] }
+        let(:projects_not_indexed_count) { 0 }
+
+        let(:initial_queue_size) { 10 }
+        let(:incremental_queue_size) { 10 }
+
+        before do
+          assign(:projects_not_indexed, projects_not_indexed)
+          assign(:initial_queue_size, initial_queue_size)
+          assign(:incremental_queue_size, incremental_queue_size)
+          assign(:projects_not_indexed_count, projects_not_indexed_count)
+
+          render
+        end
+
+        it 'shows count of 0 projects not indexed' do
+          expect(rendered).to have_selector('[data-testid="projects_not_indexed_size"]', text: '0')
+        end
+
+        it 'does not show the list' do
+          expect(rendered).not_to have_selector('.indexing-projects-list')
+        end
       end
     end
   end

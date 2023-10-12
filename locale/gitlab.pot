@@ -3229,6 +3229,9 @@ msgstr ""
 msgid "AdminArea|Developer"
 msgstr ""
 
+msgid "AdminArea|Documentation"
+msgstr ""
+
 msgid "AdminArea|Features"
 msgstr ""
 
@@ -14204,6 +14207,9 @@ msgstr ""
 msgid "Created"
 msgstr ""
 
+msgid "Created %{date} ago"
+msgstr ""
+
 msgid "Created %{epicTimeagoDate}"
 msgstr ""
 
@@ -22000,6 +22006,12 @@ msgstr ""
 msgid "GlobalSearch|Include archived"
 msgstr ""
 
+msgid "GlobalSearch|Incremental indexing queue length"
+msgstr ""
+
+msgid "GlobalSearch|Initial indexing queue length"
+msgstr ""
+
 msgid "GlobalSearch|Issues I've created"
 msgstr ""
 
@@ -22022,6 +22034,9 @@ msgid "GlobalSearch|Merge requests that I'm a reviewer"
 msgstr ""
 
 msgid "GlobalSearch|No labels found"
+msgstr ""
+
+msgid "GlobalSearch|Only first %{max_shown} of not indexed projects is shown"
 msgstr ""
 
 msgid "GlobalSearch|Places"
@@ -22106,6 +22121,9 @@ msgid "GlobalSearch|all GitLab"
 msgstr ""
 
 msgid "GlobalSearch|in %{scope}"
+msgstr ""
+
+msgid "GlobalSearch|projects not indexed"
 msgstr ""
 
 msgid "GlobalShortcuts|Copied reference to clipboard."
@@ -24976,6 +24994,9 @@ msgid "Index all projects"
 msgstr ""
 
 msgid "Index deletion is canceled"
+msgstr ""
+
+msgid "Indexing status"
 msgstr ""
 
 msgid "Indicates whether this runner can pick jobs without tags"
@@ -44237,6 +44258,9 @@ msgid "Show comments only"
 msgstr ""
 
 msgid "Show complete raw log"
+msgstr ""
+
+msgid "Show current status of indexing"
 msgstr ""
 
 msgid "Show details"
