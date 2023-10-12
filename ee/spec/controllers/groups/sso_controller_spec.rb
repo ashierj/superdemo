@@ -216,7 +216,9 @@ RSpec.describe Groups::SsoController, feature_category: :system_access do
 
       context 'and group managed accounts enforced' do
         context 'and oauth data available' do
-          let(:oauth_data) { { "info" => { name: 'Test', email: 'testuser@email.com' } } }
+          let(:oauth_data) do
+            OmniAuth::AuthHash.new({ "info" => { name: 'Test', email: 'testuser@email.com' }, "provider" => "saml" })
+          end
 
           it 'has status 200' do
             expect(subject).to have_gitlab_http_status(:ok)
@@ -264,7 +266,9 @@ RSpec.describe Groups::SsoController, feature_category: :system_access do
     end
 
     let(:new_user_data) { { username: "myusername" } }
-    let(:oauth_data) { { "info" => { name: 'Test', email: 'testuser@email.com' } } }
+    let(:oauth_data) do
+      OmniAuth::AuthHash.new({ "info" => { name: 'Test', email: 'testuser@email.com' }, "provider" => "saml" })
+    end
 
     let!(:saml_provider) { create(:saml_provider, :enforced_group_managed_accounts, group: group) }
 
@@ -327,7 +331,10 @@ RSpec.describe Groups::SsoController, feature_category: :system_access do
     end
 
     let(:session) { { "oauth_data" => oauth_data, "oauth_group_id" => group.id } }
-    let(:oauth_data) { { "info" => { name: 'Test', email: 'testuser@email.com' } } }
+    let(:oauth_data) do
+      OmniAuth::AuthHash.new({ "info" => { name: 'Test', email: 'testuser@email.com' }, "provider" => "saml" })
+    end
+
     let!(:saml_provider) { create(:saml_provider, :enforced_group_managed_accounts, group: group) }
     let(:transfer_membership_service_spy) { spy('GroupSaml::GroupManagedAccounts::TransferMembershipService') }
 
