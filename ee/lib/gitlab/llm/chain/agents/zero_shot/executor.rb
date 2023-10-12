@@ -38,11 +38,7 @@ module Gitlab
 
             def execute
               MAX_ITERATIONS.times do
-                thought = if stream_response_handler && Feature.enabled?(:stream_gitlab_duo, context.current_user)
-                            execute_streamed_request
-                          else
-                            request
-                          end
+                thought = execute_streamed_request
 
                 answer = Answer.from_response(response_body: "Thought: #{thought}", tools: tools, context: context)
 
@@ -85,6 +81,8 @@ module Gitlab
               streamed_answer = StreamedAnswer.new
 
               request do |content|
+                next unless stream_response_handler
+
                 chunk = streamed_answer.next_chunk(content)
 
                 if chunk
@@ -138,7 +136,7 @@ module Gitlab
               # We need to stream the response for clients that already migrated to use `ai_action` and no longer
               # use `resource_id` as an identifier. Once streaming is enabled and all clients migrated, we can
               # remove the `response_handler` call above.
-              return unless stream_response_handler && Feature.enabled?(:stream_gitlab_duo, context.current_user)
+              return unless stream_response_handler
 
               stream_response_handler.execute(
                 response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),

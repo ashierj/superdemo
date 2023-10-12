@@ -18,21 +18,14 @@ module Gitlab
           end
 
           def request(prompt)
-            if Feature.enabled?(:stream_gitlab_duo, user)
-              ai_client.stream(
-                prompt: prompt[:prompt],
-                **default_options.merge(prompt.fetch(:options, {}))
-              ) do |data|
-                logger.info(message: "Streaming error", error: data&.dig("error")) if data&.dig("error")
+            ai_client.stream(
+              prompt: prompt[:prompt],
+              **default_options.merge(prompt.fetch(:options, {}))
+            ) do |data|
+              logger.info(message: "Streaming error", error: data&.dig("error")) if data&.dig("error")
 
-                content = data&.dig("completion").to_s
-                yield content if block_given?
-              end
-            else
-              ai_client.complete(
-                prompt: prompt[:prompt],
-                **default_options.merge(prompt.fetch(:options, {}))
-              )&.dig("completion").to_s.strip
+              content = data&.dig("completion").to_s
+              yield content if block_given?
             end
           end
 
