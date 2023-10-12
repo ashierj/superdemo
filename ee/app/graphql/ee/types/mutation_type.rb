@@ -133,6 +133,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceEventTypeFilters::Destroy
         mount_mutation ::Mutations::Security::CiConfiguration::ProjectSetContinuousVulnerabilityScanning
         mount_mutation ::Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Destroy
+        mount_mutation ::Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Update
         mount_mutation ::Mutations::DependencyProxy::Packages::Settings::Update, alpha: { milestone: '16.5' }
 
         prepend(Types::DeprecatedMutations)
