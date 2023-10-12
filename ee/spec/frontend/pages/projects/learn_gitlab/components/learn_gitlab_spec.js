@@ -5,6 +5,7 @@ import LearnGitlab from 'ee/pages/projects/learn_gitlab/components/learn_gitlab.
 import eventHub from '~/invite_members/event_hub';
 import { INVITE_MODAL_OPEN_COOKIE } from 'ee/pages/projects/learn_gitlab/constants';
 import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
+import eventHubNav from '~/super_sidebar/event_hub';
 import { testActions, testSections, testProject } from './mock_data';
 
 describe('Learn GitLab', () => {
@@ -21,38 +22,27 @@ describe('Learn GitLab', () => {
     });
   };
 
-  beforeEach(() => {
-    sidebar = document.createElement('div');
-    sidebar.innerHTML = `
-    <div class="sidebar-top-level-items">
-      <div class="active">
-        <div class="count"></div>
-      </div>
-    </div>
-    `;
-    document.body.appendChild(sidebar);
-    createWrapper();
-  });
+  describe('Initial rendering concerns', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
 
-  afterEach(() => {
-    sidebar.remove();
-  });
+    it('renders correctly', () => {
+      expect(wrapper.element).toMatchSnapshot();
+    });
 
-  it('renders correctly', () => {
-    expect(wrapper.element).toMatchSnapshot();
-  });
+    it('renders the progress percentage', () => {
+      const text = wrapper.find('[data-testid="completion-percentage"]').text();
 
-  it('renders the progress percentage', () => {
-    const text = wrapper.find('[data-testid="completion-percentage"]').text();
+      expect(text).toBe('25% completed');
+    });
 
-    expect(text).toBe('25% completed');
-  });
+    it('renders the progress bar with correct values', () => {
+      const progressBar = wrapper.findComponent(GlProgressBar);
 
-  it('renders the progress bar with correct values', () => {
-    const progressBar = wrapper.findComponent(GlProgressBar);
-
-    expect(progressBar.vm.$attrs.value).toBe(3);
-    expect(progressBar.vm.$attrs.max).toBe(12);
+      expect(progressBar.vm.$attrs.value).toBe(3);
+      expect(progressBar.vm.$attrs.max).toBe(12);
+    });
   });
 
   describe('Invite Members Modal', () => {
@@ -92,6 +82,7 @@ describe('Learn GitLab', () => {
     const findAlert = () => wrapper.findComponent(GlAlert);
 
     beforeEach(() => {
+      createWrapper();
       eventHub.$emit('showSuccessfulInvitationsAlert');
     });
 
@@ -104,9 +95,44 @@ describe('Learn GitLab', () => {
         "Your team is growing! You've successfully invited new team members to the test-project project.",
       );
     });
+  });
+
+  describe('with sidebar percentage updates', () => {
+    let spy;
+
+    beforeEach(() => {
+      spy = jest.spyOn(eventHubNav, '$emit');
+    });
 
     it('modifies the sidebar percentage', () => {
+      sidebar = document.createElement('div');
+      sidebar.innerHTML = `
+    <div class="sidebar-top-level-items">
+      <div class="active">
+        <div class="count"></div>
+      </div>
+    </div>
+    `;
+      document.body.appendChild(sidebar);
+      createWrapper();
+
+      eventHub.$emit('showSuccessfulInvitationsAlert');
+
       expect(sidebar.textContent.trim()).toBe('25%');
+      expect(spy).not.toHaveBeenCalled();
+
+      sidebar.remove();
+    });
+
+    it('emits updatePillValue event for super sidebar', () => {
+      createWrapper();
+
+      eventHub.$emit('showSuccessfulInvitationsAlert');
+
+      expect(spy).toHaveBeenCalledWith('updatePillValue', {
+        value: '25%',
+        itemId: 'learn_gitlab',
+      });
     });
   });
 });
