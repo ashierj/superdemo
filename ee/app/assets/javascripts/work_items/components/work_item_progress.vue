@@ -177,7 +177,7 @@ export default {
         :class="{ 'hide-spinners gl-shadow-none!': !isEditing }"
         :placeholder="placeholder"
         :readonly="!canUpdate"
-        size="sm"
+        width="sm"
         type="number"
         @blur="updateProgress"
         @focus="handleFocus"

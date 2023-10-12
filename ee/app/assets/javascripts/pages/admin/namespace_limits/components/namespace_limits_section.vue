@@ -107,7 +107,7 @@ export default {
         {{ error }}
       </gl-alert>
       <gl-form-group :label="label" :description="description" class="gl-lg-w-half">
-        <gl-form-input v-model="value" size="md" type="number" min="0" />
+        <gl-form-input v-model="value" width="md" type="number" min="0" />
       </gl-form-group>
       <gl-button v-gl-modal="modalId" variant="danger">{{
         $options.i18n.updateLimitsButton

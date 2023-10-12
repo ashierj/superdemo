@@ -133,7 +133,7 @@ export default {
       <gl-form-input
         v-model="excludingReason"
         :placeholder="$options.i18n.reasonPlaceholder"
-        size="xl"
+        width="xl"
         autocomplete="off"
         required
       />

@@ -65,7 +65,7 @@ export default {
     :description="hint"
   >
     <gl-form-input-group>
-      <gl-form-input :value="value" size="lg" readonly />
+      <gl-form-input :value="value" width="lg" readonly />
       <template #append>
         <gl-button
           ref="copyButton"

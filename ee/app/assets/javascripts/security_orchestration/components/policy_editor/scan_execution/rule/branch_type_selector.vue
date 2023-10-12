@@ -69,7 +69,7 @@ export default {
       v-if="isBranchScope"
       :value="branchesToAdd"
       class="gl-max-w-34"
-      size="lg"
+      width="lg"
       :placeholder="$options.i18n.selectedBranchesPlaceholder"
       data-testid="rule-branches"
       @input="handleInput"

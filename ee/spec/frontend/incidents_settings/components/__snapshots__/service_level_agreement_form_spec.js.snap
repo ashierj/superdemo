@@ -44,10 +44,10 @@ exports[`Alert integration settings form should match the default snapshot 1`] =
         <gl-form-input-stub
           id="reference-1"
           number=""
-          size="xs"
           step="15"
           type="number"
           value="15"
+          width="xs"
         />
         <gl-form-select-stub
           class="gl-border-gray-400 gl-line-height-normal gl-ml-3 gl-w-auto"

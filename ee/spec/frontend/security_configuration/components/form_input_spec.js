@@ -124,7 +124,7 @@ describe('FormInput component', () => {
 
   describe('size prop', () => {
     it.each(Object.entries(SCHEMA_TO_PROP_SIZE_MAP))(
-      'maps the %p size prop to %p',
+      'maps the %p width prop to %p',
       (size, mappedSize) => {
         createComponent({
           props: {
@@ -133,7 +133,7 @@ describe('FormInput component', () => {
           },
         });
 
-        expect(findInputComponent().props('size')).toBe(mappedSize);
+        expect(findInputComponent().props('width')).toBe(mappedSize);
       },
     );
   });
