@@ -47,13 +47,13 @@ module EE
           merge_request.policy_approval_settings.fetch(:remove_approvals_with_new_commit, false)
       end
 
-      def reset_approvals(merge_request, newrev = nil)
+      def reset_approvals(merge_request, newrev = nil, patch_id_sha: nil)
         return unless reset_approvals?(merge_request, newrev)
 
         if delete_approvals?(merge_request)
-          delete_approvals(merge_request)
+          delete_approvals(merge_request, patch_id_sha: patch_id_sha)
         elsif merge_request.target_project.project_setting.selective_code_owner_removals
-          delete_code_owner_approvals(merge_request)
+          delete_code_owner_approvals(merge_request, patch_id_sha: patch_id_sha)
         end
       end
 
@@ -61,7 +61,7 @@ module EE
         merge_request.wrapped_approval_rules.select { |rule| rule.code_owner? && rule.approved_approvers.any? }
       end
 
-      def delete_code_owner_approvals(merge_request)
+      def delete_code_owner_approvals(merge_request, patch_id_sha: nil)
         return if merge_request.approvals.empty?
 
         code_owner_rules = approved_code_owner_rules(merge_request)
@@ -77,19 +77,27 @@ module EE
         # In case there is still a temporary flag on the MR
         merge_request.approval_state.expire_unapproved_key!
 
-        merge_request.approvals.where(user_id: match_ids).delete_all # rubocop:disable CodeReuse/ActiveRecord
+        approvals = merge_request.approvals.where(user_id: match_ids) # rubocop:disable CodeReuse/ActiveRecord
+        approvals = filter_approvals(approvals, patch_id_sha) if patch_id_sha.present?
+        approvals.delete_all
         trigger_merge_request_merge_status_updated(merge_request)
         trigger_merge_request_approval_state_updated(merge_request)
       end
 
-      def delete_approvals(merge_request)
-        merge_request.approvals.delete_all
+      def delete_approvals(merge_request, patch_id_sha: nil)
+        approvals = merge_request.approvals
+        approvals = filter_approvals(approvals, patch_id_sha) if patch_id_sha.present?
+        approvals.delete_all
 
         # In case there is still a temporary flag on the MR
         merge_request.approval_state.expire_unapproved_key!
 
         trigger_merge_request_merge_status_updated(merge_request)
         trigger_merge_request_approval_state_updated(merge_request)
+      end
+
+      def filter_approvals(approvals, patch_id_sha)
+        approvals.with_invalid_patch_id_sha(patch_id_sha)
       end
 
       def all_approvers(merge_request)
