@@ -31,6 +31,7 @@ module Security
 
         def after_ingest
           upload_remediations
+          update_vulnerability_reads
           dissassociate_unfound_remediations
         end
 
@@ -89,9 +90,31 @@ module Security
         end
 
         def dissassociate_unfound_remediations
-          Vulnerabilities::FindingRemediation.by_finding_id(finding_maps.map(&:finding_id))
-                                             .id_not_in(return_data.flatten)
-                                             .delete_all
+          unfound_remediations.delete_all
+        end
+
+        # When a new pipeline is run and the new findings set doesn't include some of the older findings,
+        # the remediation associated with the older findings should be corrected.
+        def unfound_remediations
+          @unfound_remediations ||= Vulnerabilities::FindingRemediation.by_finding_id(finding_maps.map(&:finding_id))
+                                        .id_not_in(return_data.flatten)
+        end
+
+        def update_vulnerability_reads
+          finding_ids = finding_maps.map(&:finding_id)
+          vulnerability_ids = Vulnerabilities::Finding.id_in(finding_ids).pluck_vulnerability_ids
+
+          if unfound_remediations.present?
+            unfound_remediations_finding_ids = unfound_remediations.map(&:vulnerability_occurrence_id)
+            unfound_remediations_vulnerability_ids = Vulnerabilities::Finding.id_in(unfound_remediations_finding_ids)
+                                                      .pluck_vulnerability_ids
+
+            Vulnerabilities::Read.by_vulnerabilities(unfound_remediations_vulnerability_ids).update_all(has_remediations: false)
+
+            vulnerability_ids -= unfound_remediations_vulnerability_ids
+          end
+
+          Vulnerabilities::Read.by_vulnerabilities(vulnerability_ids).update_all(has_remediations: true)
         end
 
         def new_report_remediations
