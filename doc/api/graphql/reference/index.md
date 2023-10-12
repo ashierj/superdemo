@@ -4193,6 +4193,30 @@ Input type: `InstanceGoogleCloudLoggingConfigurationDestroyInput`
 | <a id="mutationinstancegooglecloudloggingconfigurationdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationinstancegooglecloudloggingconfigurationdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.instanceGoogleCloudLoggingConfigurationUpdate`
+
+Input type: `InstanceGoogleCloudLoggingConfigurationUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdateclientemail"></a>`clientEmail` | [`String`](#string) | Email address associated with the service account that will be used to authenticate and interact with the Google Cloud Logging service. This is part of the IAM credentials. |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdategoogleprojectidname"></a>`googleProjectIdName` | [`String`](#string) | Unique identifier of the Google Cloud project to which the logging configuration belongs. |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdateid"></a>`id` | [`AuditEventsInstanceGoogleCloudLoggingConfigurationID!`](#auditeventsinstancegooglecloudloggingconfigurationid) | ID of the instance google Cloud configuration to update. |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdatelogidname"></a>`logIdName` | [`String`](#string) | Unique identifier used to distinguish and manage different logs within the same Google Cloud project. |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdatename"></a>`name` | [`String`](#string) | Destination name. |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdateprivatekey"></a>`privateKey` | [`String`](#string) | Private Key associated with the service account. This key is used to authenticate the service account and authorize it to interact with the Google Cloud Logging service. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationinstancegooglecloudloggingconfigurationupdateinstancegooglecloudloggingconfiguration"></a>`instanceGoogleCloudLoggingConfiguration` | [`InstanceGoogleCloudLoggingConfigurationType`](#instancegooglecloudloggingconfigurationtype) | configuration updated. |
+
 ### `Mutation.issuableResourceLinkCreate`
 
 Input type: `IssuableResourceLinkCreateInput`
