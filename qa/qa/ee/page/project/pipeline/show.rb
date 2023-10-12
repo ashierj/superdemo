@@ -36,18 +36,6 @@ module QA
               has_element?('report-item-row', text: name)
             end
 
-            def has_approved_license?(name)
-              within_element('report-item-row', text: name) do
-                has_element?(:status_success_icon, wait: 1)
-              end
-            end
-
-            def has_denied_license?(name)
-              within_element('report-item-row', text: name) do
-                has_element?(:status_failed_icon, wait: 1)
-              end
-            end
-
             def wait_for_pipeline_job_replication(name)
               QA::Runtime::Logger.debug(%(#{self.class.name} - wait_for_pipeline_job_replication))
               wait_until(max_duration: Runtime::Geo.max_file_replication_time) do

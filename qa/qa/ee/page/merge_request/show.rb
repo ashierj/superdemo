@@ -44,7 +44,7 @@ module QA
               end
 
               view 'ee/app/assets/javascripts/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue' do
-                element :merge_immediately_button
+                element 'merge-immediately-confirmation-button'
               end
 
               view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/vulnerability_finding_modal.vue' do
@@ -234,13 +234,13 @@ module QA
           end
 
           def skip_merge_train_and_merge_immediately
-            click_element :merge_moment_dropdown
-            click_element :merge_immediately_menu_item
+            click_element 'merge-immediately-dropdown'
+            click_element 'merge-immediately-button'
 
             # Wait for the warning modal dialog to appear
-            wait_for_animated_element :merge_immediately_button
+            wait_for_animated_element 'merge-immediately-confirmation-button'
 
-            click_element :merge_immediately_button
+            click_element 'merge-immediately-confirmation-button'
 
             finished_loading?
           end
