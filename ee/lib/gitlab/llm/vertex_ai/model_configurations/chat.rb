@@ -17,6 +17,10 @@ module Gitlab
               parameters: Configuration.payload_parameters
             }
           end
+
+          def as_json(opts = nil)
+            super.merge(Configuration.payload_parameters)
+          end
         end
       end
     end

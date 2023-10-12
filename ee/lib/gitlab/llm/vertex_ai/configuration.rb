@@ -9,7 +9,7 @@ module Gitlab
         DEFAULT_TOP_K = 40
         DEFAULT_TOP_P = 0.95
 
-        delegate :host, :url, :payload, to: :model_config
+        delegate :host, :url, :payload, :as_json, to: :model_config
 
         def initialize(model_config:)
           @model_config = model_config
