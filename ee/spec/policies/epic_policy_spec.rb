@@ -396,7 +396,6 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
     before do
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_licensed_features(epics: true, summarize_notes: true, ai_features: true)
-      stub_feature_flags(summarize_comments: group)
       group.namespace_settings.update!(experiment_features_enabled: true)
       group.namespace_settings.update!(third_party_ai_features_enabled: true)
     end
@@ -434,7 +433,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
 
       context 'when feature flag is not set' do
         before do
-          stub_feature_flags(summarize_comments: false)
+          stub_feature_flags(openai_experimentation: false)
         end
 
         it { is_expected.to be_disallowed(:summarize_notes) }

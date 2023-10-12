@@ -12,14 +12,14 @@ module EE
 
       with_scope :subject
       condition(:summarize_notes_enabled) do
-        ::Feature.enabled?(:summarize_comments, subject_container) &&
+        ::Feature.enabled?(:openai_experimentation) &&
           subject_container.licensed_feature_available?(:summarize_notes) &&
           ::Gitlab::Llm::StageCheck.available?(subject_container, :summarize_notes)
       end
 
       with_scope :subject
       condition(:generate_description_enabled) do
-        ::Feature.enabled?(:generate_description_ai, subject_container) &&
+        ::Feature.enabled?(:openai_experimentation) &&
           subject_container.licensed_feature_available?(:generate_description) &&
           ::Gitlab::Llm::StageCheck.available?(subject_container, :generate_description)
       end

@@ -283,7 +283,7 @@ module EE
 
       with_scope :subject
       condition(:generate_description_enabled) do
-        ::Feature.enabled?(:generate_description_ai, subject) &&
+        ::Feature.enabled?(:openai_experimentation) &&
           subject.group&.licensed_feature_available?(:generate_description) &&
           ::Gitlab::Llm::StageCheck.available?(subject, :generate_description)
       end

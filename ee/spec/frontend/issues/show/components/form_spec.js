@@ -29,11 +29,6 @@ describe('Form component', () => {
         ...defaultProps,
         ...props,
       },
-      provide: {
-        glFeatures: {
-          generateDescriptionAi: true,
-        },
-      },
     });
   };
 

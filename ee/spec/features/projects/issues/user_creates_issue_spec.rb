@@ -26,6 +26,53 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
     visit(new_project_issue_path(project))
   end
 
+  context "when user can use AI to generate description" do
+    before do
+      stub_licensed_features(generate_description: true)
+      stub_feature_flags(openai_experimentation: true)
+      project.group.root_ancestor.namespace_settings.update_attribute(:experiment_features_enabled, true)
+
+      sign_in(user)
+
+      visit new_project_issue_path(project)
+    end
+
+    it 'has the AI actions button' do
+      expect(page).to have_button('AI actions')
+    end
+  end
+
+  context 'when user cannot use AI to generate description' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:generate_description, :openai_experimentation, :experiment_features_enabled) do
+      true  | false | false
+      true  | true  | false
+      true  | false | true
+      false | true  | true
+      false | true  | false
+      false | false | true
+      false | false | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(generate_description: generate_description)
+        stub_feature_flags(openai_experimentation: openai_experimentation)
+        project.group.root_ancestor.namespace_settings.update_attribute(:experiment_features_enabled,
+          experiment_features_enabled)
+
+        sign_in(user)
+
+        visit new_project_issue_path(project)
+      end
+
+      it 'does not have the AI actions button' do
+        expect(page).not_to have_button('AI actions')
+      end
+    end
+  end
+
   context "with weight set" do
     it "creates issue" do
       weight = "7"
