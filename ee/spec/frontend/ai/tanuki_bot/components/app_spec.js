@@ -252,7 +252,7 @@ describe('GitLab Duo Chat', () => {
         ${null}             | ${MOCK_USER_ID}
       `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
         beforeEach(async () => {
-          subscriptionHandlerMock.mockRejectedValue(error);
+          subscriptionHandlerMock.mockRejectedValueOnce(error);
           createComponent({ loading: true }, { userId: MOCK_USER_ID, resourceId });
 
           helpCenterState.showTanukiBotChatDrawer = true;
@@ -282,6 +282,7 @@ describe('GitLab Duo Chat', () => {
 
     describe('when mutation fails', () => {
       beforeEach(async () => {
+        subscriptionHandlerMock.mockRejectedValueOnce('foo');
         chatMutationHandlerMock = jest.fn().mockRejectedValue('foo');
         createComponent({ loading: true });
 
