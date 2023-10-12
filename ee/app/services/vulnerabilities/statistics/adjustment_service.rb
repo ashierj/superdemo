@@ -23,8 +23,18 @@ module Vulnerabilities
       SQL
 
       STATS_SQL = <<~SQL
+        WITH project_ids AS (
+          SELECT unnest(ARRAY[%{project_ids}]::bigint[]) AS project_id
+        )
         SELECT
-          severity_counts.*,
+          project_ids.project_id AS project_id,
+          COALESCE(severity_counts.total, 0) AS total,
+          COALESCE(severity_counts.info, 0) AS info,
+          COALESCE(severity_counts.unknown, 0) AS unknown,
+          COALESCE(severity_counts.low, 0) AS low,
+          COALESCE(severity_counts.medium, 0) AS medium,
+          COALESCE(severity_counts.high, 0) AS high,
+          COALESCE(severity_counts.critical, 0) AS critical,
           (
             CASE
             WHEN severity_counts.critical > 0 THEN
@@ -41,7 +51,9 @@ module Vulnerabilities
           ) AS letter_grade,
           now() AS created_at,
           now() AS updated_at
-        FROM (
+        FROM
+          project_ids
+        LEFT OUTER JOIN(
           SELECT
             vulnerability_reads.project_id AS project_id,
             COUNT(*) AS total,
@@ -56,7 +68,7 @@ module Vulnerabilities
             vulnerability_reads.project_id IN (%{project_ids}) AND
             vulnerability_reads.state IN (%{active_states})
           GROUP BY vulnerability_reads.project_id
-        ) AS severity_counts
+        ) AS severity_counts ON severity_counts.project_id = project_ids.project_id
       SQL
 
       MAX_PROJECTS = 1_000
