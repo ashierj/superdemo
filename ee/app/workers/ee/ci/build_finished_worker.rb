@@ -19,7 +19,7 @@ module EE
 
         ::Ci::InstanceRunnerFailedJobs.track(build) if build.failed?
 
-        if build.finished_at.present? && generate_finished_builds_sync_events?
+        if build.is_a?(::Ci::Build) && build.finished_at.present? && generate_finished_builds_sync_events?
           ::Ci::FinishedBuildChSyncEvent.new(build_id: build.id, build_finished_at: build.finished_at).save
         end
       end

@@ -192,6 +192,16 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
             .to([an_object_having_attributes(build_id: build.id, build_finished_at: build.finished_at)])
         end
 
+        context 'when build is not Ci::Build' do
+          let(:build) do
+            create(:ci_bridge, :success, finished_at: 1.hour.ago)
+          end
+
+          it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
+            expect { perform }.not_to change { Ci::FinishedBuildChSyncEvent.count }
+          end
+        end
+
         context 'when generate_ci_finished_builds_sync_events FF is disabled' do
           before do
             stub_feature_flags(generate_ci_finished_builds_sync_events: false)
