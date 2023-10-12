@@ -30,7 +30,6 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
   before do
     group.add_developer(user)
     stub_licensed_features(epics: true, subepics: true)
-    stub_feature_flags(move_close_into_dropdown: false)
     sign_in(user)
   end
 
@@ -371,34 +370,6 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
   end
 
   describe 'epic actions' do
-    shared_examples 'epic closed' do |selector|
-      it 'can close an epic' do
-        expect(page).to have_css('.gl-badge', text: 'Open')
-
-        within selector do
-          click_button 'Close epic'
-        end
-
-        wait_for_all_requests
-
-        expect(page).to have_css('.gl-badge', text: 'Closed')
-      end
-    end
-
-    shared_examples 'epic reopened' do |selector|
-      it 'can reopen an epic' do
-        expect(page).to have_css('.gl-badge', text: 'Closed')
-
-        within selector do
-          click_button 'Reopen epic'
-        end
-
-        wait_for_all_requests
-
-        expect(page).to have_css('.gl-badge', text: 'Open')
-      end
-    end
-
     describe 'when open' do
       context 'when clicking the top `Close epic` button', :aggregate_failures do
         let(:open_epic) { create(:epic, group: group) }
@@ -407,7 +378,16 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           visit group_epic_path(group, open_epic)
         end
 
-        it_behaves_like 'epic closed', '.detail-page-description'
+        it 'can close an epic' do
+          expect(page).to have_css('.gl-badge', text: 'Open')
+
+          within '.detail-page-description' do
+            click_button 'Epic actions'
+            click_button 'Close epic'
+          end
+
+          expect(page).to have_css('.gl-badge', text: 'Closed')
+        end
       end
 
       context 'when clicking the bottom `Close epic` button', :aggregate_failures do
@@ -417,7 +397,15 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           visit group_epic_path(group, open_epic)
         end
 
-        it_behaves_like 'epic closed', '.timeline-content-form'
+        it 'can close an epic' do
+          expect(page).to have_css('.gl-badge', text: 'Open')
+
+          within '.timeline-content-form' do
+            click_button 'Close epic'
+          end
+
+          expect(page).to have_css('.gl-badge', text: 'Closed')
+        end
       end
     end
 
@@ -429,7 +417,16 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           visit group_epic_path(group, closed_epic)
         end
 
-        it_behaves_like 'epic reopened', '.detail-page-description'
+        it 'can reopen an epic' do
+          expect(page).to have_css('.gl-badge', text: 'Closed')
+
+          within '.detail-page-description' do
+            click_button 'Epic actions'
+            click_button 'Reopen epic'
+          end
+
+          expect(page).to have_css('.gl-badge', text: 'Open')
+        end
       end
 
       context 'when clicking the bottom `Reopen epic` button', :aggregate_failures do
@@ -439,7 +436,15 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           visit group_epic_path(group, closed_epic)
         end
 
-        it_behaves_like 'epic reopened', '.timeline-content-form'
+        it 'can reopen an epic' do
+          expect(page).to have_css('.gl-badge', text: 'Closed')
+
+          within '.timeline-content-form' do
+            click_button 'Reopen epic'
+          end
+
+          expect(page).to have_css('.gl-badge', text: 'Open')
+        end
       end
     end
   end
