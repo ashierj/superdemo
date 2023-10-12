@@ -5,6 +5,7 @@ import {
   createdAfter,
   createdBefore,
   selectedProjects,
+  predefinedDateRange,
 } from 'jest/analytics/cycle_analytics/mock_data';
 import {
   PAGINATION_SORT_DIRECTION_DESC,
@@ -96,6 +97,7 @@ describe('Value Stream Analytics mutations', () => {
     mutation                                     | payload                                                  | expectedState
     ${types.SET_SELECTED_PROJECTS}               | ${selectedProjects}                                      | ${{ selectedProjects }}
     ${types.SET_DATE_RANGE}                      | ${{ createdAfter, createdBefore }}                       | ${{ createdAfter, createdBefore }}
+    ${types.SET_PREDEFINED_DATE_RANGE}           | ${predefinedDateRange}                                   | ${{ predefinedDateRange }}
     ${types.SET_SELECTED_STAGE}                  | ${{ id: 'first-stage' }}                                 | ${{ selectedStage: { id: 'first-stage' } }}
     ${types.RECEIVE_CREATE_VALUE_STREAM_ERROR}   | ${valueStreamErrors}                                     | ${{ createValueStreamErrors: expectedValueStreamErrors, isCreatingValueStream: false }}
     ${types.RECEIVE_UPDATE_VALUE_STREAM_ERROR}   | ${valueStreamErrors}                                     | ${{ createValueStreamErrors: expectedValueStreamErrors, isEditingValueStream: false }}

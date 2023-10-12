@@ -103,7 +103,7 @@ module QA
               expect(vsa_page.overview_chart).to be_visible
             end
 
-            vsa_page.select_date_range(from: "2023-06-10", to: "2023-07-10")
+            vsa_page.select_custom_date_range(from: "2023-06-10", to: "2023-07-10")
             aggregate_failures "Checking lifecycle metrics" do
               expect(vsa_page.lifecycle_metric(:lead_time)).to eq("852.7 days")
               expect(vsa_page.lifecycle_metric(:cycle_time)).to eq("1.4 days")

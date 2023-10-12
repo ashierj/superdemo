@@ -22,6 +22,10 @@ export const setDateRange = (
   return dispatch('fetchCycleAnalyticsData');
 };
 
+export const setPredefinedDateRange = ({ commit }, predefinedDateRange) => {
+  commit(types.SET_PREDEFINED_DATE_RANGE, predefinedDateRange);
+};
+
 export const setFilters = ({
   dispatch,
   getters: { isOverviewStageSelected },

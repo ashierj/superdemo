@@ -21,6 +21,9 @@ export default {
     state.createdBefore = createdBefore;
     state.createdAfter = createdAfter;
   },
+  [types.SET_PREDEFINED_DATE_RANGE](state, predefinedDateRange) {
+    state.predefinedDateRange = predefinedDateRange;
+  },
   [types.SET_STAGE_EVENTS](state, data = []) {
     state.formEvents = data.map((ev) => convertObjectPropsToCamelCase(ev, { deep: true }));
   },
