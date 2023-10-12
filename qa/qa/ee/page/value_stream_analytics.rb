@@ -35,6 +35,10 @@ module QA
             view "ee/app/assets/javascripts/analytics/cycle_analytics/components/duration_overview_chart.vue" do
               element 'vsa-duration-overview-chart'
             end
+
+            view "app/assets/javascripts/analytics/cycle_analytics/components/value_stream_filters.vue" do
+              element "vsa-date-range-filter-container"
+            end
           end
         end
 
@@ -99,7 +103,11 @@ module QA
         # @param [String] from
         # @param [String] to
         # @return [void]
-        def select_date_range(from:, to:)
+        def select_custom_date_range(from:, to:)
+          within_element('vsa-date-range-filter-container') do
+            click_element('base-dropdown-toggle')
+            click_element('listbox-item-custom')
+          end
           set_date('daterange-picker-start-container', from)
           set_date('daterange-picker-end-container', to)
         end

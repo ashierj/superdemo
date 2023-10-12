@@ -72,6 +72,7 @@ export default {
       'enableTasksByTypeChart',
       'enableProjectsFilter',
       'enableCustomizableStages',
+      'predefinedDateRange',
     ]),
     ...mapGetters([
       'hasNoAccessError',
@@ -169,6 +170,7 @@ export default {
       'setSelectedStage',
       'setDefaultSelectedStage',
       'setDateRange',
+      'setPredefinedDateRange',
       'updateStageTablePagination',
     ]),
     onProjectsSelect(projects) {
@@ -230,8 +232,10 @@ export default {
         :start-date="createdAfter"
         :end-date="createdBefore"
         :has-project-filter="enableProjectsFilter"
+        :predefined-date-range="predefinedDateRange"
         @selectProject="onProjectsSelect"
         @setDateRange="onSetDateRange"
+        @setPredefinedDateRange="setPredefinedDateRange"
       />
       <path-navigation
         v-if="selectedStageReady"

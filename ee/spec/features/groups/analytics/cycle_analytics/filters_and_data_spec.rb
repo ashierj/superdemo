@@ -13,6 +13,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
   let_it_be(:group_label1) { create(:group_label, group: group) }
   let_it_be(:group_label2) { create(:group_label, group: group) }
   let_it_be(:custom_value_stream_name) { "First custom value stream" }
+  let_it_be(:predefined_date_ranges_dropdown_selector) { '[data-testid="vsa-predefined-date-ranges-dropdown"]' }
+  let_it_be(:date_range_picker_selector) { '[data-testid="vsa-date-range-picker"]' }
 
   let(:milestone) { create(:milestone, project: project) }
   let(:mr) { create_merge_request_closing_issue(user, project, issue, commit_message: "References #{issue.to_reference}") }
@@ -121,17 +123,33 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       end
     end
 
-    shared_examples 'has default filters' do
+    shared_examples 'has default filters' do |has_predefined_date_ranges: false|
       it 'shows the projects filter' do
         expect(page).to have_selector('.dropdown-projects', visible: true)
       end
 
-      it 'shows the date filter' do
-        expect(page).to have_selector('.js-daterange-picker', visible: true)
-      end
-
       it 'shows the filter bar' do
         expect(page).to have_selector(filter_bar_selector, visible: false)
+      end
+
+      if has_predefined_date_ranges
+        it 'shows the predefined date ranges dropdown with `Last 30 days` selected' do
+          page.within(predefined_date_ranges_dropdown_selector) do
+            expect(page).to have_button('Last 30 days')
+          end
+        end
+
+        it 'does not show the date range picker' do
+          expect(page).not_to have_css(date_range_picker_selector)
+        end
+      else
+        it 'shows the date range picker' do
+          expect(page).to have_css(date_range_picker_selector, visible: true)
+        end
+
+        it 'does not show the predefined date ranges dropdown' do
+          expect(page).not_to have_css(predefined_date_ranges_dropdown_selector)
+        end
       end
     end
 
@@ -183,6 +201,23 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       end
     end
 
+    shared_examples 'date range prepopulated' do |start_date:, end_date:|
+      it 'has the date range prepopulated' do
+        expected_date_format = '%b %-d, %Y'
+        formatted_start_date = DateTime.parse(start_date).strftime(expected_date_format)
+        formatted_end_date = DateTime.parse(end_date).strftime(expected_date_format)
+
+        page.within(date_range_picker_selector) do
+          expect(find('.js-daterange-picker-from input').value).to eq start_date
+          expect(find('.js-daterange-picker-to input').value).to eq end_date
+        end
+
+        hover('[data-testid="vsa-task-by-type-description"]')
+
+        expect(page.find('.tooltip')).to have_text(_("Shows issues for group '%{group_name}' from %{start_date} to %{end_date}") % { group_name: group.name, start_date: formatted_start_date, end_date: formatted_end_date })
+      end
+    end
+
     context 'without valid query parameters set' do
       before do
         create_value_stream_aggregation(group)
@@ -190,7 +225,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
 
       context 'with created_after date > created_before date' do
         before do
-          visit "#{group_analytics_cycle_analytics_path(group)}?created_after=2019-12-31&created_before=2019-11-01"
+          visit group_analytics_cycle_analytics_path(group, created_before: '2019-11-01', created_after: '2019-12-31')
         end
 
         it 'displays empty text' do
@@ -241,22 +276,35 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       end
 
       context 'with created_before and created_after set' do
-        before do
-          visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
+        context 'when the `vsa_predefined_date_ranges` feature flag is enabled' do
+          before do
+            visit group_analytics_cycle_analytics_path(group, created_before: '2019-12-31', created_after: '2019-11-01')
 
-          wait_for_requests
+            wait_for_requests
+          end
+
+          it 'shows predefined date ranges dropdown with `Custom` option selected' do
+            page.within(predefined_date_ranges_dropdown_selector) do
+              expect(page).to have_button('Custom')
+            end
+          end
+
+          it_behaves_like 'date range prepopulated', start_date: '2019-11-01', end_date: '2019-12-31'
         end
 
-        it 'has the date range prepopulated' do
-          date_range = '.js-daterange-picker'
-          element = page.find(date_range)
+        context 'when the `vsa_predefined_date_ranges` feature flag is disabled' do
+          before do
+            stub_feature_flags(vsa_predefined_date_ranges: false)
+            visit group_analytics_cycle_analytics_path(group, created_before: '2019-12-31', created_after: '2019-11-01')
 
-          expect(element.find('.js-daterange-picker-from input').value).to eq '2019-11-01'
-          expect(element.find('.js-daterange-picker-to input').value).to eq '2019-12-31'
+            wait_for_requests
+          end
 
-          hover('[data-testid="vsa-task-by-type-description"]')
+          it 'does not show predefined date ranges dropdown' do
+            expect(page).not_to have_css(predefined_date_ranges_dropdown_selector)
+          end
 
-          expect(page.find('.tooltip')).to have_text(_("Shows issues for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019") % { group_name: group.name })
+          it_behaves_like 'date range prepopulated', start_date: '2019-11-01', end_date: '2019-12-31'
         end
       end
     end
@@ -264,36 +312,74 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
     context 'with a group' do
       let(:selected_group) { group }
 
-      before do
-        select_group_and_custom_value_stream(group, custom_value_stream_name)
+      context 'when the `vsa_predefined_date_ranges` feature flag is enabled' do
+        before do
+          select_group_and_custom_value_stream(group, custom_value_stream_name)
+        end
+
+        it_behaves_like 'group value stream analytics'
+
+        it_behaves_like 'has overview metrics'
+
+        it_behaves_like 'has default filters', has_predefined_date_ranges: true
+
+        it_behaves_like 'value streams dashboard link' do
+          let(:target_group) { group }
+        end
       end
 
-      it_behaves_like 'group value stream analytics'
+      context 'when the `vsa_predefined_date_ranges` feature flag is disabled' do
+        before do
+          stub_feature_flags(vsa_predefined_date_ranges: false)
+          select_group_and_custom_value_stream(group, custom_value_stream_name)
+        end
 
-      it_behaves_like 'has overview metrics'
+        it_behaves_like 'group value stream analytics'
 
-      it_behaves_like 'has default filters'
+        it_behaves_like 'has overview metrics'
 
-      it_behaves_like 'value streams dashboard link' do
-        let(:target_group) { group }
+        it_behaves_like 'has default filters'
+
+        it_behaves_like 'value streams dashboard link' do
+          let(:target_group) { group }
+        end
       end
     end
 
     context 'with a sub group' do
       let(:selected_group) { sub_group }
 
-      before do
-        select_group_and_custom_value_stream(sub_group, 'First subgroup value stream')
+      context 'when the `vsa_predefined_date_ranges` feature flag is enabled' do
+        before do
+          select_group_and_custom_value_stream(sub_group, 'First subgroup value stream')
+        end
+
+        it_behaves_like 'group value stream analytics'
+
+        it_behaves_like 'has overview metrics'
+
+        it_behaves_like 'has default filters', has_predefined_date_ranges: true
+
+        it_behaves_like 'value streams dashboard link' do
+          let(:target_group) { sub_group }
+        end
       end
 
-      it_behaves_like 'group value stream analytics'
+      context 'when the `vsa_predefined_date_ranges` feature flag is disabled' do
+        before do
+          stub_feature_flags(vsa_predefined_date_ranges: false)
+          select_group_and_custom_value_stream(sub_group, 'First subgroup value stream')
+        end
 
-      it_behaves_like 'has overview metrics'
+        it_behaves_like 'group value stream analytics'
 
-      it_behaves_like 'has default filters'
+        it_behaves_like 'has overview metrics'
 
-      it_behaves_like 'value streams dashboard link' do
-        let(:target_group) { sub_group }
+        it_behaves_like 'has default filters'
+
+        it_behaves_like 'value streams dashboard link' do
+          let(:target_group) { sub_group }
+        end
       end
     end
   end
@@ -389,7 +475,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
 
     context 'with filters applied' do
       before do
-        visit "#{group_analytics_cycle_analytics_path(group)}?created_before=2019-12-31&created_after=2019-11-01"
+        visit group_analytics_cycle_analytics_path(group, created_before: '2019-12-31', created_after: '2019-11-01')
 
         wait_for_stages_to_load
       end

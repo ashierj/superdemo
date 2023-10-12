@@ -97,4 +97,19 @@ describe('Value Stream Analytics actions / filters', () => {
       });
     });
   });
+
+  describe('setPredefinedDateRange', () => {
+    beforeEach(() => {
+      state = { ...state, selectedStage };
+    });
+
+    it(`will commit the ${types.SET_PREDEFINED_DATE_RANGE} mutation`, () => {
+      return testAction({
+        action: actions.setPredefinedDateRange,
+        state,
+        expectedMutations: [{ type: types.SET_PREDEFINED_DATE_RANGE }],
+        expectedActions: [],
+      });
+    });
+  });
 });

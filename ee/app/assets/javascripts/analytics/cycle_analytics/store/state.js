@@ -10,6 +10,7 @@ export default () => ({
 
   createdAfter: null,
   createdBefore: null,
+  predefinedDateRange: null,
 
   isLoading: false,
   isLoadingStage: false,
