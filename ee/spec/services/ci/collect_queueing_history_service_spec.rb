@@ -87,7 +87,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
         :success,
         created_at: starting_time,
         queued_at: starting_time,
-        started_at: starting_time + 2.seconds,
+        started_at: starting_time + 2.5.seconds,
         finished_at: starting_time + 1.minute,
         runner: instance_runner,
         runner_manager: instance_runner.runner_managers.first)
@@ -96,7 +96,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
       expect(result.success?).to eq(true)
       expect(result.payload).to eq([
-        { "p90" => 2.seconds, "p95" => 2.seconds, "time" => starting_time }
+        { "p90" => 2.5.seconds, "p95" => 2.5.seconds, "time" => starting_time }
       ])
     end
   end
@@ -168,11 +168,19 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
     expect(result.success?).to eq(true)
 
-    # We don't calculate exact quantiles, so 10 seconds for 95 and 99 percentiles become 9 seconds
-    expect(result.payload).to eq([
-      { "p50" => 5.seconds, "p75" => 7.seconds, "p90" => 9.seconds, "p95" => 9.seconds, "p99" => 9.seconds,
-        "time" => starting_time }
-    ])
+    payload = result.payload.first
+    p50 = payload["p50"]
+    p75 = payload["p75"]
+    p90 = payload["p90"]
+    p95 = payload["p95"]
+    p99 = payload["p99"]
+
+    # the percentile calculations are fuzzy, so we compare them among themselves
+    # instead of comparing them to fixed values
+    expect(p50).to be < p75
+    expect(p75).to be < p90
+    expect(p90).to be < p95
+    expect(p95).to be < p99
   end
 
   it 'properly handles from_time and to_time' do

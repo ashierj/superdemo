@@ -54,7 +54,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :runne
 
     it 'returns error' do
       execute_query
-      expect_graphql_errors_to_include('Feature not enabled')
+      expect_graphql_errors_to_include('Feature clickhouse_ci_analytics not enabled')
     end
   end
 
