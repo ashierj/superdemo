@@ -9,6 +9,7 @@ import {
   sprintfWorkItem,
   I18N_WORK_ITEM_ERROR_UPDATING,
   TRACKING_CATEGORY_SHOW,
+  WORK_ITEM_TYPE_VALUE_OBJECTIVE,
 } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
@@ -70,6 +71,11 @@ export default {
     },
     showPercent() {
       return !this.isEditing && isNumber(this.localProgress);
+    },
+    showProgressPopover() {
+      return (
+        this.glFeatures.okrAutomaticRollups && this.workItemType === WORK_ITEM_TYPE_VALUE_OBJECTIVE
+      );
     },
     isOkrsEnabled() {
       return this.hasOkrsFeature && this.glFeatures.okrsMvc;
@@ -133,9 +139,6 @@ export default {
           Sentry.captureException(error);
         });
     },
-    showProgressPopover() {
-      return this.glFeatures.okrAutomaticRollups && this.workItemType === __('Objective');
-    },
   },
 };
 </script>
@@ -151,19 +154,16 @@ export default {
     >
       <template #label>
         {{ __('Progress') }}
-        <gl-icon
-          v-if="showProgressPopover()"
-          id="okr-progress-popover"
-          class="gl-text-blue-600"
-          name="question-o"
-        />
-        <gl-popover
-          triggers="hover"
-          target="okr-progress-popover"
-          placement="right"
-          :title="$options.i18n.progressPopoverTitle"
-          :content="$options.i18n.progressPopoverContent"
-        />
+        <template v-if="showProgressPopover">
+          <gl-icon id="okr-progress-popover" class="gl-text-blue-600" name="question-o" />
+          <gl-popover
+            triggers="hover"
+            target="okr-progress-popover"
+            placement="right"
+            :title="$options.i18n.progressPopoverTitle"
+            :content="$options.i18n.progressPopoverContent"
+          />
+        </template>
       </template>
 
       <gl-form-input
