@@ -17,12 +17,7 @@ module QA
           # Create a new project and wiki
           project = create(:project, name: 'geo-wiki-http2-project', description: 'Geo test project')
 
-          wiki = Resource::Wiki::ProjectPage.fabricate_via_api! do |wiki|
-            wiki.project = project
-            wiki.title = 'Geo wiki'
-            wiki.content = wiki_content
-          end
-
+          wiki = create(:project_wiki_page, project: project, title: 'Geo wiki', content: wiki_content)
           wiki.visit!
           expect(wiki).to have_content(wiki_content)
 

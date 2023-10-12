@@ -14,12 +14,7 @@ module QA
           QA::Flow::Login.while_signed_in(address: :geo_primary) do
             project = create(:project, name: 'geo-wiki-http-project', description: 'Geo project for wiki repo test')
 
-            wiki = Resource::Wiki::ProjectPage.fabricate_via_api! do |wiki|
-              wiki.project = project
-              wiki.title = 'Geo Replication Wiki'
-              wiki.content = wiki_content
-            end
-
+            wiki = create(:project_wiki_page, project: project, title: 'Geo Replication Wiki', content: wiki_content)
             wiki.visit!
             expect(page).to have_content(wiki_content)
 

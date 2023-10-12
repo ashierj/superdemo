@@ -8,7 +8,7 @@ module QA
       type: :bug
     } do
     describe 'Testing group wiki file upload' do
-      let(:initial_wiki) { Resource::Wiki::GroupPage.fabricate_via_api! }
+      let(:initial_wiki) { create(:group_wiki_page) }
       let(:page_title) { 'Content Editor Page' }
       let(:heading_text) { 'My New Heading' }
       let(:image_file_name) { 'testfile.png' }
