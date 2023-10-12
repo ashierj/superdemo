@@ -7,7 +7,7 @@ module Gitlab
         class GenerateTestFile < Gitlab::Llm::Completions::Base
           DEFAULT_ERROR = 'An unexpected error has occurred.'
 
-          def execute(user, merge_request, options)
+          def execute
             response = response_for(user, merge_request, options[:file_path])
             response_modifier = Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new(response)
 
@@ -37,6 +37,10 @@ module Gitlab
             client_class = ::Gitlab::Llm::OpenAi::Client
             client_class.new(user, tracking_context: tracking_context)
               .chat(content: template.to_prompt, **template.options(client_class))
+          end
+
+          def merge_request
+            resource
           end
         end
       end

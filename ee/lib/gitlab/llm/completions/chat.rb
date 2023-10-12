@@ -10,7 +10,7 @@ module Gitlab
           ::Gitlab::Llm::Chain::Tools::GitlabDocumentation
         ].freeze
 
-        def execute(user, resource, options)
+        def execute
           # we should be able to switch between different providers that we know agent supports, by initializing the
           # one we like. At the moment Anthropic is default and some features may not be supported
           # by other providers.
@@ -48,7 +48,7 @@ module Gitlab
               self.class.to_s,
               'process_gitlab_duo_question',
               label: tool::NAME,
-              property: params[:request_id],
+              property: prompt_message.request_id,
               namespace: context.container,
               user: user,
               value: response.status == :ok ? 1 : 0

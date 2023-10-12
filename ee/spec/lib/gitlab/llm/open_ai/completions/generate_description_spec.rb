@@ -4,6 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateDescription, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
+  let(:prompt_message) do
+    build(:ai_chat_message, :generate_description, user: user, resource: issuable, request_id: uuid)
+  end
+
   let_it_be(:project) { create(:project, :public) }
 
   let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::GenerateDescription }
@@ -33,10 +37,6 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateDescription, feature_ca
 
   RSpec.shared_examples 'performs completion' do
     it 'gets the right template options and calls the openai client' do
-      expect_next_instance_of(::Gitlab::Llm::OpenAi::Completions::GenerateDescription) do |completion_service|
-        expect(completion_service).to receive(:execute).with(user, issuable, ai_options).and_call_original
-      end
-
       expect(Gitlab::Llm::OpenAi::Templates::GenerateDescription).to receive(:get_options)
         .and_return(ai_options)
 
@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateDescription, feature_ca
 
       response_modifier = double
       response_service = double
-      params = [user, issuable, response_modifier, { options: { request_id: uuid } }]
+      params = [user, issuable, response_modifier, { options: { request_id: uuid, ai_action: :generate_description } }]
 
       expect(Gitlab::Llm::OpenAi::ResponseModifiers::Chat).to receive(:new).with(ai_response).and_return(
         response_modifier
@@ -62,18 +62,11 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateDescription, feature_ca
   end
 
   subject(:generate_description) do
-    described_class.new(template_class, { request_id: uuid }).execute(user, issuable, ai_options)
+    described_class.new(prompt_message, template_class, {}).execute
   end
 
   describe "#execute" do
     context 'with invalid params' do
-      context 'without user' do
-        let(:user) { nil }
-        let_it_be(:issuable) { double }
-
-        specify { expect(generate_description).to be_nil }
-      end
-
       context 'without issuable' do
         let_it_be(:issuable) { nil }
 

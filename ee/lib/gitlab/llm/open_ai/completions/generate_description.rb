@@ -11,7 +11,7 @@ module Gitlab
 
           INPUT_CONTENT_LIMIT = INPUT_TOKEN_LIMIT * 4
 
-          def execute(user, issuable, options)
+          def execute
             return unless user
             return unless issuable
 
@@ -45,6 +45,12 @@ module Gitlab
             ).execute
 
             response_modifier
+          end
+
+          private
+
+          def issuable
+            resource
           end
         end
       end

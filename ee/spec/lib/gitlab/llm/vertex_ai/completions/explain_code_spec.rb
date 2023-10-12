@@ -64,10 +64,13 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ExplainCode, feature_category
     }.to_json
   end
 
-  let(:tracking_context) { { request_id: 'uuid' } }
-  let(:params) { { request_id: 'uuid' } }
+  let(:tracking_context) { { request_id: 'uuid', action: :explain_code } }
 
-  subject(:explain_code) { described_class.new(template_class, params).execute(user, project, options) }
+  let(:prompt_message) do
+    build(:ai_chat_message, :explain_code, user: user, resource: project, request_id: 'uuid')
+  end
+
+  subject(:explain_code) { described_class.new(prompt_message, template_class, options).execute }
 
   describe "#execute" do
     it 'performs an Vertex AI request' do
@@ -75,7 +78,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ExplainCode, feature_category
         expect(instance).to receive(:chat).with(content: nil, **ai_template).and_return(ai_response)
       end
 
-      params = [user, project, anything, { options: { request_id: 'uuid' } }]
+      params = [user, project, anything, { options: { request_id: 'uuid', ai_action: :explain_code } }]
 
       expect(Gitlab::Llm::VertexAi::ResponseModifiers::Predictions).to receive(:new).with(ai_response).and_call_original
       expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_call_original

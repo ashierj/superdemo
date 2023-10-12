@@ -36,14 +36,22 @@ module Llm
       options[:extra_resource] = ::Llm::ExtraResourceFinder.new(user, options.delete(:referer_url)).execute
       track_snowplow_event(user, ai_action_name, options)
 
-      params = options.extract!(:request_id, :client_subscription_id)
-      logger.debug(message: "Params", params: params)
+      logger.debug(message: "Params", params: options.slice(:request_id, :client_subscription_id))
 
-      ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym, params)
+      message_attributes = options.extract!(:request_id, :client_subscription_id).merge(
+        user: user,
+        resource: resource,
+        ai_action: ai_action_name,
+        role: ::Gitlab::Llm::AiMessage::ROLE_USER
+      )
+
+      ai_prompt_message = ::Gitlab::Llm::AiMessage.for(action: ai_action_name).new(message_attributes)
+
+      ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_prompt_message, options)
       raise NameError, "completion class for action #{ai_action_name} not found" unless ai_completion
 
       logger.debug(message: "Getting Completion Service from factory", class_name: ai_completion.class.name)
-      response = ai_completion.execute(user, resource, options)
+      response = ai_completion.execute
       update_error_rate(ai_action_name, response)
       update_duration_metric(ai_action_name, ::Gitlab::Metrics::System.monotonic_time - start_time)
     rescue StandardError => err

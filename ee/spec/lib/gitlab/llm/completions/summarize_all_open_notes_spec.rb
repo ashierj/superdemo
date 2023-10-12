@@ -4,6 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category: :duo_chat do
   let(:ai_response) { "some ai response text" }
+  let(:prompt_message) do
+    build(:ai_chat_message, :summarize_comments, user: user, resource: issuable, request_id: 'uuid')
+  end
+
   let(:template_class) { nil }
   let(:ai_options) do
     {
@@ -17,17 +21,13 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
 
   RSpec.shared_examples 'performs completion' do
     it 'returns summary' do
-      expect_next_instance_of(::Gitlab::Llm::Completions::SummarizeAllOpenNotes) do |completion_service|
-        expect(completion_service).to receive(:execute).with(user, issuable, options).and_call_original
-      end
-
       expect_next_instance_of(ai_request_class) do |instance|
         expect(instance).to receive(completion_method).and_return(ai_response)
       end
 
       response_modifier = double
       response_service = double
-      params = [user, issuable, response_modifier, { options: { request_id: 'uuid' } }]
+      params = [user, issuable, response_modifier, { options: { request_id: 'uuid', ai_action: :summarize_comments } }]
 
       content = "some ai response text"
 
@@ -45,13 +45,9 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
 
   RSpec.shared_examples 'completion fails' do
     it 'returns failure answer' do
-      expect_next_instance_of(::Gitlab::Llm::Completions::SummarizeAllOpenNotes) do |completion_service|
-        expect(completion_service).to receive(:execute).with(user, issuable, options).and_call_original
-      end
-
       response_modifier = double
       response_service = double
-      params = [user, issuable, response_modifier, { options: { request_id: 'uuid' } }]
+      params = [user, issuable, response_modifier, { options: { request_id: 'uuid', ai_action: :summarize_comments } }]
 
       content = "I am sorry, I am unable to find the #{issuable.to_ability_name.humanize} you are looking for."
 
@@ -71,7 +67,7 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
   end
 
   subject(:summarize_comments) do
-    described_class.new(template_class, { request_id: 'uuid' }).execute(user, issuable, options)
+    described_class.new(prompt_message, template_class, options).execute
   end
 
   describe "#execute", :saas do
@@ -101,13 +97,6 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
     end
 
     context 'with invalid params' do
-      context 'without user' do
-        let(:user) { nil }
-        let_it_be(:issuable) { double }
-
-        specify { expect(summarize_comments).to be_nil }
-      end
-
       context 'without issuable' do
         let_it_be(:issuable) { nil }
 

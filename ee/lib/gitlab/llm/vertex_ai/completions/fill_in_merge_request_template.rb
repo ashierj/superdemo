@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       module Completions
         class FillInMergeRequestTemplate < Gitlab::Llm::Completions::Base
-          def execute(user, project, options)
+          def execute
             response = response_for(user, project, options)
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
 
@@ -17,6 +17,10 @@ module Gitlab
           end
 
           private
+
+          def project
+            resource
+          end
 
           def response_for(user, project, options)
             template = ai_prompt_class.new(user, project, options)

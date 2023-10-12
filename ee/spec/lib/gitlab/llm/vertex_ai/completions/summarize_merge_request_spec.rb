@@ -10,16 +10,19 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
 
   let(:prompt_class) { Gitlab::Llm::Templates::SummarizeMergeRequest }
   let(:diff_id) { mr_diff.id }
-  let(:tracking_context) { { action: 'summarize_merge_request', request_id: 'uuid' } }
+  let(:tracking_context) { { action: :summarize_merge_request, request_id: 'uuid' } }
   let(:options) do
     {
       diff_id: diff_id,
-      request_id: 'uuid',
-      action: 'summarize_merge_request'
+      action: :summarize_merge_request
     }
   end
 
-  subject { described_class.new(prompt_class, options) }
+  let(:prompt_message) do
+    build(:ai_chat_message, :summarize_merge_request, user: user, resource: merge_request, request_id: 'uuid')
+  end
+
+  subject { described_class.new(prompt_message, prompt_class, options) }
 
   describe '#execute' do
     context 'when specific diff_id does not exist' do
@@ -28,7 +31,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
       it 'does not make a request to AI provider' do
         expect(Gitlab::Llm::VertexAi::Client).not_to receive(:new)
 
-        subject.execute(user, merge_request, options)
+        subject.execute
       end
     end
 
@@ -62,7 +65,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
       end
 
       it 'stores the content from the AI response' do
-        expect { subject.execute(user, merge_request, options) }
+        expect { subject.execute }
           .to change { ::MergeRequest::DiffLlmSummary.count }
           .by(1)
 
@@ -86,7 +89,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
       end
 
       it 'does not store the content' do
-        expect { subject.execute(user, merge_request, options) }
+        expect { subject.execute }
           .not_to change { ::MergeRequest::DiffLlmSummary.count }
       end
     end
@@ -99,12 +102,12 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
       end
 
       it 'does not store the content' do
-        expect { subject.execute(user, merge_request, options) }
+        expect { subject.execute }
           .not_to change { ::MergeRequest::DiffLlmSummary.count }
       end
 
       it 'does not raise an error' do
-        expect { subject.execute(user, merge_request, options) }
+        expect { subject.execute }
           .not_to raise_error
       end
     end

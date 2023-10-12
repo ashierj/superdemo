@@ -23,8 +23,12 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
     }.to_json
   end
 
+  let(:prompt_message) do
+    build(:ai_chat_message, :generate_test_file, user: user, resource: merge_request, request_id: 'uuid')
+  end
+
   subject(:generate_test_file) do
-    described_class.new(template_class).execute(user, merge_request, { file_path: 'index.js' })
+    described_class.new(prompt_message, template_class, { file_path: 'index.js' }).execute
   end
 
   before do
@@ -34,11 +38,6 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
   describe "#execute" do
     context 'with valid params' do
       it 'performs the OpenAI request' do
-        expect_next_instance_of(::Gitlab::Llm::OpenAi::Completions::GenerateTestFile) do |completion_service|
-          expect(completion_service).to receive(:execute).with(user, merge_request, { file_path: 'index.js' })
-            .and_call_original
-        end
-
         response_modifier = double
 
         expect(::Gitlab::Llm::OpenAi::ResponseModifiers::Chat).to receive(:new).and_return(response_modifier)
@@ -53,7 +52,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
         end
 
         expect_next_instance_of(::Gitlab::Llm::GraphqlSubscriptionResponseService,
-          user, merge_request, response_modifier, options: {}) do |instance|
+          user, merge_request, response_modifier,
+          options: { ai_action: :generate_test_file, request_id: 'uuid' }) do |instance|
           expect(instance).to receive(:execute)
         end
 

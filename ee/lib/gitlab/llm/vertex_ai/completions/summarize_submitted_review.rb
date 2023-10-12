@@ -6,7 +6,7 @@ module Gitlab
       module Completions
         class SummarizeSubmittedReview < Gitlab::Llm::Completions::Base
           # rubocop:disable CodeReuse/ActiveRecord
-          def execute(user, merge_request, options)
+          def execute
             review = merge_request.reviews.find_by(id: options[:review_id])
             mr_diff = merge_request.merge_request_diffs.find_by(id: options[:diff_id])
 
@@ -21,6 +21,10 @@ module Gitlab
           # rubocop:enable CodeReuse/ActiveRecord
 
           private
+
+          def merge_request
+            resource
+          end
 
           def response_for(user, review)
             template = ai_prompt_class.new(review)
