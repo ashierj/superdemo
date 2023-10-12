@@ -19,6 +19,7 @@ class UserCustomAttribute < ApplicationRecord
   AUTO_BANNED_BY_SPAM_LOG_ID = 'auto_banned_by_spam_log_id'
   TRUSTED_BY = 'trusted_by'
   IDENTITY_VERIFICATION_PHONE_EXEMPT = 'identity_verification_phone_exempt'
+  IDENTITY_VERIFICATION_EXEMPT = 'identity_verification_exempt'
 
   class << self
     def upsert_custom_attributes(custom_attributes)

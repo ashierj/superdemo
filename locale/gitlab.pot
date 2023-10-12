@@ -13925,6 +13925,9 @@ msgstr ""
 msgid "Create group label"
 msgstr ""
 
+msgid "Create identity verification exemption"
+msgstr ""
+
 msgid "Create issue"
 msgstr ""
 
@@ -13986,9 +13989,6 @@ msgid "Create or edit diagram"
 msgstr ""
 
 msgid "Create or import your first project"
-msgstr ""
-
-msgid "Create phone verification exemption"
 msgstr ""
 
 msgid "Create pipeline trigger token"
@@ -23945,6 +23945,15 @@ msgid "Identifiers"
 msgstr ""
 
 msgid "Identities"
+msgstr ""
+
+msgid "Identity verification exemption"
+msgstr ""
+
+msgid "Identity verification exemption has been created."
+msgstr ""
+
+msgid "Identity verification exemption has been removed."
 msgstr ""
 
 msgid "IdentityVerification|%d country found"
@@ -34136,15 +34145,6 @@ msgstr ""
 msgid "Phone"
 msgstr ""
 
-msgid "Phone verification exemption"
-msgstr ""
-
-msgid "Phone verification exemption has been created."
-msgstr ""
-
-msgid "Phone verification exemption has been removed."
-msgstr ""
-
 msgid "PhoneVerification|Enter a valid code."
 msgstr ""
 
@@ -39274,6 +39274,9 @@ msgstr ""
 msgid "Remove icon"
 msgstr ""
 
+msgid "Remove identity verification exemption"
+msgstr ""
+
 msgid "Remove issue reference"
 msgstr ""
 
@@ -39311,9 +39314,6 @@ msgid "Remove milestone"
 msgstr ""
 
 msgid "Remove parent epic from an epic"
-msgstr ""
-
-msgid "Remove phone verification exemption"
 msgstr ""
 
 msgid "Remove priority"
@@ -45156,10 +45156,10 @@ msgstr ""
 msgid "Something went wrong. Try again later."
 msgstr ""
 
-msgid "Something went wrong. Unable to create phone exemption."
+msgid "Something went wrong. Unable to create identity verification exemption."
 msgstr ""
 
-msgid "Something went wrong. Unable to remove phone exemption."
+msgid "Something went wrong. Unable to remove identity verification exemption."
 msgstr ""
 
 msgid "Sorry, no projects matched your search"
@@ -48876,7 +48876,7 @@ msgstr ""
 msgid "This user has the %{access} role in the %{name} project."
 msgstr ""
 
-msgid "This user is currently exempt from phone verification. Remove the exemption using the button below."
+msgid "This user is currently exempt from identity verification. Remove the exemption using the button below."
 msgstr ""
 
 msgid "This user is the author of this %{noteable}."
@@ -49336,6 +49336,9 @@ msgstr ""
 msgid "To add the entry manually, provide the following details to the application on your phone."
 msgstr ""
 
+msgid "To allow the user to confirm their identity by only confirming an email address and skip phone number and/or credit card verification, create an identity verification exemption using the button below."
+msgstr ""
+
 msgid "To approve this merge request, please enter your password. This project requires all approvals to be authenticated."
 msgstr ""
 
@@ -49450,9 +49453,6 @@ msgid "To remove the %{link_start}read-only%{link_end} state and regain write ac
 msgstr ""
 
 msgid "To remove the %{link_start}read-only%{link_end} state and regain write access, you can reduce the number of users in your top-level group to %{free_limit} users or less. You can also upgrade to a paid tier, which do not have user limits. If you need additional time, you can start a free 30-day trial which includes unlimited users."
-msgstr ""
-
-msgid "To replace phone verification with credit card verification, create a phone verification exemption using the button below."
 msgstr ""
 
 msgid "To resolve this, try to:"

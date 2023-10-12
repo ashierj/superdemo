@@ -49,25 +49,6 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       end
     end
 
-    describe 'has_medium_or_high_risk_band?' do
-      subject(:has_medium_or_high_risk_band?) { helper.has_medium_or_high_risk_band?(user) }
-
-      where(:risk, :expectation) do
-        Arkose::VerifyResponse::RISK_BAND_HIGH   | true
-        Arkose::VerifyResponse::RISK_BAND_MEDIUM | true
-        Arkose::VerifyResponse::RISK_BAND_LOW    | false
-      end
-
-      with_them do
-        before do
-          create(:user_custom_attribute, key: UserCustomAttribute::ARKOSE_RISK_BAND, value: risk.downcase,
-            user_id: user.id)
-        end
-
-        it { is_expected.to be expectation }
-      end
-    end
-
     describe '#rate_limited_error_message' do
       subject(:message) { helper.rate_limited_error_message(limit) }
 

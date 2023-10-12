@@ -16,6 +16,10 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       user_id: user.id)
   end
 
+  def add_identity_verification_exemption
+    create(:user_custom_attribute, key: UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT, value: true, user: user)
+  end
+
   describe('#identity_verification_enabled?') do
     where(
       identity_verification: [true, false],
@@ -139,31 +143,34 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
     let(:user) { create(:user) }
 
-    where(:risk_band, :credit_card, :phone_number, :phone_exempt, :result) do
-      'High'   | true  | true  | false | %w[credit_card phone email]
-      'High'   | true  | true  | true  | %w[credit_card email]
-      'High'   | false | true  | false | %w[phone email]
-      'High'   | true  | false | false | %w[credit_card email]
-      'High'   | false | false | false | %w[email]
-      'Medium' | true  | true  | false | %w[phone email]
-      'Medium' | false | true  | false | %w[phone email]
-      'Medium' | true  | true  | true  | %w[credit_card email]
-      'Medium' | true  | false | false | %w[email]
-      'Medium' | false | false | false | %w[email]
-      'Low'    | true  | true  | false | %w[email]
-      'Low'    | false | true  | false | %w[email]
-      'Low'    | true  | false | false | %w[email]
-      'Low'    | false | false | false | %w[email]
-      nil      | true  | true  | false | %w[email]
-      nil      | false | true  | false | %w[email]
-      nil      | true  | false | false | %w[email]
-      nil      | false | false | false | %w[email]
+    where(:risk_band, :credit_card, :phone_number, :phone_exempt, :identity_verification_exempt, :result) do
+      'High'   | true  | true  | false | false | %w[credit_card phone email]
+      'High'   | true  | true  | true  | false | %w[credit_card email]
+      'High'   | true  | true  | false | true  | %w[email]
+      'High'   | false | true  | false | false | %w[phone email]
+      'High'   | true  | false | false | false | %w[credit_card email]
+      'High'   | false | false | false | false | %w[email]
+      'Medium' | true  | true  | false | false | %w[phone email]
+      'Medium' | false | true  | false | false | %w[phone email]
+      'Medium' | true  | true  | true  | false | %w[credit_card email]
+      'Medium' | true  | true  | false | true  | %w[email]
+      'Medium' | true  | false | false | false | %w[email]
+      'Medium' | false | false | false | false | %w[email]
+      'Low'    | true  | true  | false | false | %w[email]
+      'Low'    | false | true  | false | false | %w[email]
+      'Low'    | true  | false | false | false | %w[email]
+      'Low'    | false | false | false | false | %w[email]
+      nil      | true  | true  | false | false | %w[email]
+      nil      | false | true  | false | false | %w[email]
+      nil      | true  | false | false | false | %w[email]
+      nil      | false | false | false | false | %w[email]
     end
 
     with_them do
       before do
         add_user_risk_band(risk_band) if risk_band
         add_phone_exemption if phone_exempt
+        add_identity_verification_exemption if identity_verification_exempt
 
         stub_feature_flags(identity_verification_credit_card: credit_card)
         stub_feature_flags(identity_verification_phone_number: phone_number)
@@ -433,6 +440,58 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
     context 'when a user does not have a phone number exemption' do
       it { is_expected.to be false }
+    end
+  end
+
+  describe '#exempt_from_identity_verification?' do
+    subject(:exempt_from_identity_verification) { user.exempt_from_identity_verification? }
+
+    let(:user) { create(:user) }
+
+    context 'when a user has a identity verification exemption' do
+      before do
+        add_identity_verification_exemption
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context 'when a user does not have an exemption' do
+      it { is_expected.to be_falsy }
+    end
+  end
+
+  describe '#create_identity_verification_exemption' do
+    subject(:create_identity_verification_exemption) { user.create_identity_verification_exemption }
+
+    let(:user) { create(:user) }
+
+    it 'creates an exemption' do
+      expect { subject }.to change {
+        user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT).count
+      }.from(0).to(1)
+    end
+  end
+
+  describe '#destroy_identity_verification_exemption' do
+    subject(:destroy_identity_verification_exemption) { user.destroy_identity_verification_exemption }
+
+    let(:user) { create(:user) }
+
+    context 'when a user has a identity verification exemption' do
+      before do
+        add_identity_verification_exemption
+      end
+
+      it 'destroys the exemption' do
+        subject
+
+        expect(user.custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT)).to be_empty
+      end
+    end
+
+    context 'when a user does not have a identity verification exemption' do
+      it { is_expected.to be_falsy }
     end
   end
 
