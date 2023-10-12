@@ -853,7 +853,9 @@ module EE
       feature_available?(:code_owner_approval_required)
     end
 
-    def sbom_occurrences
+    def sbom_occurrences(with_totals: true)
+      return Sbom::Occurrence.where(project_id: all_projects_except_soft_deleted.select(:id)) unless with_totals
+
       sql = <<-SQL
       DISTINCT ON (sbom_occurrences.component_version_id) sbom_occurrences.*,
       COUNT(sbom_occurrences.id) OVER (PARTITION BY sbom_occurrences.component_version_id) AS occurrence_count,

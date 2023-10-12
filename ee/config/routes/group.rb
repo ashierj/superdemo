@@ -197,6 +197,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     resources :dependencies, only: [:index] do
       collection do
+        get :licenses, format: :json
         get :locations, format: :json
       end
     end
