@@ -3,6 +3,10 @@
 module MergeRequests
   module Mergeability
     class CheckDeniedPoliciesService < CheckBaseService
+      def self.failure_reason
+        :policies_denied
+      end
+
       def execute
         if merge_request.has_denied_policies?
           failure(reason: failure_reason)
@@ -17,12 +21,6 @@ module MergeRequests
 
       def cacheable?
         false
-      end
-
-      private
-
-      def failure_reason
-        :policies_denied
       end
     end
   end

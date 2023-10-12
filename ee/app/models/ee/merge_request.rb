@@ -132,6 +132,8 @@ module EE
     end
 
     class_methods do
+      extend ::Gitlab::Utils::Override
+
       # This is an ActiveRecord scope in CE
       def with_web_entity_associations
         super.preload(target_project: :invited_groups)
@@ -168,6 +170,16 @@ module EE
       def use_separate_indices?
         true
       end
+
+      override :mergeable_state_checks
+      def mergeable_state_checks
+        [
+          ::MergeRequests::Mergeability::CheckApprovedService,
+          ::MergeRequests::Mergeability::CheckDeniedPoliciesService,
+          ::MergeRequests::Mergeability::CheckBlockedByOtherMrsService,
+          ::MergeRequests::Mergeability::CheckExternalStatusChecksPassedService
+        ] + super
+      end
     end
 
     override :predefined_variables
@@ -185,16 +197,6 @@ module EE
         skip_draft_check: skip_additional_checks,
         skip_blocked_check: skip_additional_checks
       )
-    end
-
-    override :mergeable_state_checks
-    def mergeable_state_checks
-      [
-        ::MergeRequests::Mergeability::CheckApprovedService,
-        ::MergeRequests::Mergeability::CheckDeniedPoliciesService,
-        ::MergeRequests::Mergeability::CheckBlockedByOtherMrsService,
-        ::MergeRequests::Mergeability::CheckExternalStatusChecksPassedService
-      ] + super
     end
 
     override :merge_blocked_by_other_mrs?
