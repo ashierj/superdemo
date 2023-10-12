@@ -208,8 +208,10 @@ describe('Vulnerability Header', () => {
   });
 
   describe('split button', () => {
-    it('renders the create merge request and issue button as a split button', () => {
+    it('renders the create merge request and issue button as a split button', async () => {
       createWrapper({ vulnerability: getVulnerability({ shouldShowMergeRequestButton: true }) });
+      await waitForPromises();
+
       expect(findSplitButton().exists()).toBe(true);
       const buttons = findSplitButton().props('buttons');
       expect(buttons).toHaveLength(2);

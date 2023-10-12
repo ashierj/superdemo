@@ -1,7 +1,6 @@
 <script>
 import { GlLoadingIcon, GlButton } from '@gitlab/ui';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
-import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -25,9 +24,9 @@ export default {
     GlButton,
     StatusBadge,
     ResolutionAlert,
-    SplitButton,
     StatusDescription,
     VulnerabilityStateDropdown: () => import('./vulnerability_state_dropdown.vue'),
+    SplitButton: () => import('ee/vue_shared/security_reports/components/split_button.vue'),
   },
 
   props: {
