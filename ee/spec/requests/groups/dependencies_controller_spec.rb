@@ -449,4 +449,99 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
       end
     end
   end
+
+  describe 'GET #licenses' do
+    let_it_be(:project) { create(:project, namespace: group) }
+
+    subject { get licenses_group_dependencies_path(group_id: group.full_path), as: :json }
+
+    context 'when security dashboard feature is enabled' do
+      before do
+        stub_licensed_features(security_dashboard: true)
+      end
+
+      context 'and user is allowed to access group level dependencies' do
+        before do
+          group.add_developer(user)
+        end
+
+        it 'returns http status :ok' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it 'returns empty array' do
+          subject
+
+          expect(json_response['licenses']).to be_empty
+        end
+
+        context 'with detected licenses' do
+          let_it_be(:occurrence_1) { create(:sbom_occurrence, :mit, project: project) }
+          let_it_be(:occurrence_2) { create(:sbom_occurrence, :apache_2, project: project) }
+          let_it_be(:occurrence_3) { create(:sbom_occurrence, :mpl_2, project: project) }
+          let_it_be(:occurrence_4) { create(:sbom_occurrence, :apache_2, project: project) }
+
+          let(:expected_response) do
+            [
+              {
+                'spdx_identifier' => 'Apache-2.0',
+                'name' => 'Apache 2.0 License',
+                'url' => 'https://spdx.org/licenses/Apache-2.0.html'
+              },
+              {
+                'spdx_identifier' => 'MIT',
+                'name' => 'MIT License',
+                'url' => 'https://spdx.org/licenses/MIT.html'
+              },
+              {
+                'spdx_identifier' => 'MPL-2.0',
+                'name' => 'Mozilla Public License 2.0',
+                'url' => 'https://spdx.org/licenses/MPL-2.0.html'
+              }
+            ]
+          end
+
+          it 'returns the list of detected licenses' do
+            subject
+
+            expect(json_response['licenses']).to eq(expected_response)
+          end
+        end
+
+        context 'when feature flag `group_level_dependencies_filtering` is disabled' do
+          before do
+            stub_feature_flags(group_level_dependencies_filtering: false)
+          end
+
+          it 'returns http status :forbidden' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+      end
+
+      context 'when user is not allowed to access group level dependencies' do
+        it 'returns http status :forbidden' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'when security dashboard feature is disabled' do
+      before do
+        stub_licensed_features(security_dashboard: false)
+      end
+
+      it 'returns http status :forbidden' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
 end

@@ -40,6 +40,14 @@ module Groups
       )
     end
 
+    def licenses
+      return render_not_authorized unless filtering_allowed?
+
+      render json: ::Sbom::DependencyLicenseListEntity.represent(
+        Sbom::DependencyLicensesFinder.new(namespace: group).execute
+      )
+    end
+
     private
 
     def authorize_read_dependency_list!
@@ -53,7 +61,7 @@ module Groups
     end
 
     def dependencies_finder_params
-      if Feature.enabled?(:group_level_dependencies_filtering, group) && filtering_allowed?
+      if filtering_allowed?
         params.permit(
           :page,
           :per_page,
@@ -90,7 +98,8 @@ module Groups
     end
 
     def filtering_allowed?
-      group.count_within_namespaces <= GROUP_COUNT_LIMIT
+      Feature.enabled?(:group_level_dependencies_filtering, group) &&
+        group.count_within_namespaces <= GROUP_COUNT_LIMIT
     end
   end
 end
