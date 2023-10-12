@@ -16,14 +16,6 @@ module Security
 
       def execute
         return if pipeline.incomplete?
-
-        update_scan_finding_rules
-        update_any_merge_request_rules if Feature.enabled?(:scan_result_any_merge_request, pipeline.project)
-
-        violations.execute
-      end
-
-      def update_scan_finding_rules
         return unless pipeline.can_store_security_reports?
 
         approval_rules = merge_request.approval_rules.scan_finding
@@ -40,23 +32,7 @@ module Security
         update_required_approvals(violated_rules, unviolated_rules)
         generate_policy_bot_comment(merge_request, violated_rules, :scan_finding)
         violations.add(violated_rules)
-      end
-
-      def update_any_merge_request_rules
-        approval_rules = merge_request.approval_rules.any_merge_request
-        return if approval_rules.empty?
-
-        merge_request_has_unsigned_commits = !merge_request.commits(load_from_gitaly: true).all?(&:has_signature?)
-        violated_rules, unviolated_rules = approval_rules.including_scan_result_policy_read
-                                                         .partition do |approval_rule|
-          scan_result_policy_read = approval_rule.scan_result_policy_read
-          scan_result_policy_read.commits_any? ||
-            (scan_result_policy_read.commits_unsigned? && merge_request_has_unsigned_commits)
-        end
-
-        update_required_approvals(violated_rules, unviolated_rules)
-        generate_policy_bot_comment(merge_request, violated_rules, :any_merge_request)
-        violations.add(violated_rules)
+        violations.execute
       end
 
       private

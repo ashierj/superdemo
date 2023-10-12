@@ -16,7 +16,7 @@ module Security
         pipeline = ::Ci::Pipeline.find_by_id(pipeline_id)
         project = pipeline&.project
 
-        return unless project&.can_store_security_reports? || project&.approval_rules&.any_merge_request&.exists?
+        return unless project&.can_store_security_reports?
 
         Security::ScanResultPolicies::SyncFindingsToApprovalRulesService.new(pipeline).execute
       end

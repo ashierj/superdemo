@@ -13,3 +13,11 @@ RSpec.shared_examples_for 'triggers policy bot comment' do |report_type, expecte
     execute
   end
 end
+
+RSpec.shared_examples_for "does not trigger policy bot comment" do
+  it 'does not trigger policy bot comment' do
+    expect(Security::GeneratePolicyViolationCommentWorker).not_to receive(:perform_async)
+
+    execute
+  end
+end

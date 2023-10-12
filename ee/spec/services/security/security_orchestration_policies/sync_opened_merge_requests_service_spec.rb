@@ -82,6 +82,40 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
       end
     end
 
+    context "when merge request has `any_merge_request` rules" do
+      let_it_be(:any_merge_request_project_approval_rule) do
+        create(:approval_project_rule, :any_merge_request,
+          project: project,
+          security_orchestration_policy_configuration: policy_configuration
+        )
+      end
+
+      it "enqueues SyncAnyMergeRequestApprovalRulesWorker with opened merge requests" do
+        expect(::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to(
+          receive(:perform_async).with(opened_merge_request.id)
+        )
+        expect(::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to(
+          receive(:perform_async).with(draft_merge_request.id)
+        )
+
+        subject
+      end
+
+      context 'when the feature flag "scan_result_any_merge_request" is disabled' do
+        before do
+          stub_feature_flags(scan_result_any_merge_request: false)
+        end
+
+        it "does not enqueue SyncAnyMergeRequestApprovalRulesWorker" do
+          expect(::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to(
+            receive(:perform_async)
+          )
+
+          subject
+        end
+      end
+    end
+
     it "does not synchronize rules to merged or closed requests" do
       subject
 

@@ -51,6 +51,38 @@ RSpec.describe MergeRequests::SyncReportApproverApprovalRules, feature_category:
             expect(previous_rule.approvals_required).to eq(report_approval_project_rule.approvals_required)
             expect(previous_rule.approval_project_rule).to eq(report_approval_project_rule)
           end
+
+          it 'does not enqueue SyncAnyMergeRequestApprovalRulesWorker' do
+            expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to receive(:perform_async)
+
+            service.execute
+          end
+        end
+      end
+
+      context 'with any_merge_request rules' do
+        let!(:any_merge_request_approval_project_rule) do
+          create(:approval_project_rule, :any_merge_request, project: merge_request.target_project)
+        end
+
+        it 'enqueues SyncAnyMergeRequestApprovalRulesWorker' do
+          expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to(
+            receive(:perform_async).with(merge_request.id)
+          )
+
+          service.execute
+        end
+
+        context 'when feature flag "scan_result_any_merge_request" is disabled' do
+          before do
+            stub_feature_flags(scan_result_any_merge_request: false)
+          end
+
+          it 'does not enqueue SyncAnyMergeRequestApprovalRulesWorker' do
+            expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to receive(:perform_async)
+
+            service.execute
+          end
         end
       end
     end
