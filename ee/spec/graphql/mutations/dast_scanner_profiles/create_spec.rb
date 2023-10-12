@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::DastScannerProfiles::Create, :dynamic_analysis,
-                                                       feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   let(:group) { create(:group) }
   let(:project) { create(:project, group: group) }
   let(:user) { create(:user) }

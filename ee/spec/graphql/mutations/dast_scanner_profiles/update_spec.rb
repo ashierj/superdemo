@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::DastScannerProfiles::Update, :dynamic_analysis,
-                                                       feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }

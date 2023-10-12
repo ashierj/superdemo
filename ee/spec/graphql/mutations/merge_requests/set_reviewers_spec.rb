@@ -16,10 +16,12 @@ RSpec.describe Mutations::MergeRequests::SetReviewers do
     let(:mutated_merge_request) { subject[:merge_request] }
 
     subject do
-      mutation.resolve(project_path: merge_request.project.full_path,
-                       iid: merge_request.iid,
-                       operation_mode: mode,
-                       reviewer_usernames: reviewer_usernames)
+      mutation.resolve(
+        project_path: merge_request.project.full_path,
+        iid: merge_request.iid,
+        operation_mode: mode,
+        reviewer_usernames: reviewer_usernames
+      )
     end
 
     before do

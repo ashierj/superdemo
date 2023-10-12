@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Mutations::Dast::Profiles::Run, :dynamic_analysis,
-                                               feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be_with_refind(:project) { create(:project, :repository) }
@@ -42,7 +42,13 @@ RSpec.describe Mutations::Dast::Profiles::Run, :dynamic_analysis,
 
         it_behaves_like 'it creates a DAST on-demand scan pipeline' do
           context 'when there is a dast_site_profile_secret_variable associated with the dast_profile' do
-            let_it_be(:dast_site_profile_secret_variable) { create(:dast_site_profile_secret_variable, dast_site_profile: dast_profile.dast_site_profile, raw_value: 'hello, world') }
+            let_it_be(:dast_site_profile_secret_variable) do
+              create(
+                :dast_site_profile_secret_variable,
+                dast_site_profile: dast_profile.dast_site_profile,
+                raw_value: 'hello, world'
+              )
+            end
 
             it 'makes the variable available to the dast build' do
               subject
@@ -83,7 +89,15 @@ RSpec.describe Mutations::Dast::Profiles::Run, :dynamic_analysis,
 
           context 'when target is validated' do
             it 'has no errors' do
-              create(:dast_site_validation, state: :passed, dast_site_token: create(:dast_site_token, project: project, url: dast_profile.dast_site_profile.dast_site.url))
+              create(
+                :dast_site_validation,
+                state: :passed,
+                dast_site_token: create(
+                  :dast_site_token,
+                  project: project,
+                  url: dast_profile.dast_site_profile.dast_site.url
+                )
+              )
 
               expect(subject[:errors]).to be_empty
             end
