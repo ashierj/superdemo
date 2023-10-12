@@ -1469,17 +1469,17 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       stub_feature_flags(additional_merge_when_checks_ready: feature_flag)
     end
 
-    where(:auto_merge_strategy, :skip_approved_check, :skip_draft_check, :skip_blocked_check, :feature_flag) do
-      ''                                                      | false | false | false | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_PIPELINE_SUCCEEDS | false | false | false | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | true | true | true
-      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | false | false | false
+    where(:auto_merge_strategy, :skip_approved_check, :skip_draft_check, :skip_blocked_check, :skip_discussions_check, :feature_flag) do
+      ''                                                      | false | false | false | false | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_PIPELINE_SUCCEEDS | false | false | false | false | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | true | true | true | true
+      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true | false | false | false | false
     end
 
     with_them do
       it {
         is_expected.to include(skip_approved_check: skip_approved_check, skip_draft_check: skip_draft_check,
-          skip_blocked_check: skip_blocked_check)
+          skip_blocked_check: skip_blocked_check, skip_discussions_check: skip_discussions_check)
       }
     end
   end
