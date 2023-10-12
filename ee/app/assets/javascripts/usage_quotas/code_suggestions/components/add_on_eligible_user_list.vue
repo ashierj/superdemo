@@ -51,7 +51,6 @@ export default {
       addOnEligibleUsers: undefined,
       addOnEligibleUsersFetchError: undefined,
       addOnAssignmentError: undefined,
-      sortOption: 'LAST_ACTIVITY_ON_DESC',
       pageInfo: undefined,
       cursor: { first: PER_PAGE },
       filterOptions: {},
@@ -114,7 +113,6 @@ export default {
         fullPath: this.fullPath,
         addOnType: ADD_ON_CODE_SUGGESTIONS,
         addOnPurchaseIds: [this.addOnPurchaseId],
-        sort: this.sortOption,
         ...this.filterOptions,
         ...this.cursor,
       };
