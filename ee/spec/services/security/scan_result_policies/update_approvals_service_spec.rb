@@ -515,50 +515,5 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         end
       end
     end
-
-    describe 'any_merge_request rules' do
-      let(:approvals_required) { 2 }
-      let!(:report_approver_rule) do
-        create(:approval_merge_request_rule, :any_merge_request, merge_request: merge_request,
-          approval_project_rule: approval_rule, scan_result_policy_read: policy, approvals_required: approvals_required)
-      end
-
-      let_it_be(:policy) { create(:scan_result_policy_read, commits: :any) }
-
-      let_it_be(:approval_rule) do
-        create(:approval_project_rule, :any_merge_request, project: project, scan_result_policy_read: policy)
-      end
-
-      context 'when applied to any commits' do
-        it_behaves_like 'does not update approvals_required'
-        it_behaves_like 'triggers policy bot comment', :any_merge_request, true
-      end
-
-      context 'when no approvals are required' do
-        let(:approvals_required) { 0 }
-
-        it_behaves_like 'triggers policy bot comment', :any_merge_request, true, requires_approval: false
-      end
-
-      context 'when applied to unsigned commits' do
-        let_it_be(:policy) { create(:scan_result_policy_read, commits: :unsigned) }
-
-        context 'without unsigned commits' do
-          it_behaves_like 'sets approvals_required to 0'
-          it_behaves_like 'triggers policy bot comment', :any_merge_request, false
-        end
-
-        context 'with unsigned commits' do
-          let(:commits) { instance_double("CommitCollection", all?: false) }
-
-          before do
-            allow(merge_request).to receive(:commits).and_return(commits)
-          end
-
-          it_behaves_like 'does not update approvals_required'
-          it_behaves_like 'triggers policy bot comment', :any_merge_request, true
-        end
-      end
-    end
   end
 end

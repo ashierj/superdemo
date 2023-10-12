@@ -27,22 +27,6 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker, 
           run_worker
         end
       end
-
-      context 'when project has `any_merge_request` approval rule' do
-        let(:service) do
-          instance_double(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService, execute: nil)
-        end
-
-        before do
-          create(:approval_project_rule, :any_merge_request, project: pipeline.project)
-        end
-
-        it 'does calls SyncFindingsToApprovalRulesService' do
-          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).to receive(:new).and_return(service)
-
-          run_worker
-        end
-      end
     end
 
     context 'when security reports can be stored for the pipeline' do

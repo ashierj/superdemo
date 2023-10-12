@@ -15,6 +15,11 @@ module Security
         each_open_merge_request do |merge_request|
           merge_request.sync_project_approval_rules_for_policy_configuration(@policy_configuration.id)
 
+          if ::Feature.enabled?(:scan_result_any_merge_request, merge_request.project) &&
+              merge_request.approval_rules.any_merge_request.any?
+            ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)
+          end
+
           head_pipeline = merge_request.actual_head_pipeline
           next unless head_pipeline
 
