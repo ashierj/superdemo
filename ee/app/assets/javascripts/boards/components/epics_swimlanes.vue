@@ -287,7 +287,6 @@ export default {
     ref="scrollableContainer"
     class="board-swimlanes gl-white-space-nowrap gl-pb-5 gl-px-3 gl-display-flex gl-flex-grow-1"
     data-testid="board-swimlanes"
-    data_qa_selector="board_epics_swimlanes"
   >
     <swimlanes-loading-skeleton v-if="isLoading" />
     <div v-else class="board-swimlanes-content">

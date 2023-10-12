@@ -89,7 +89,7 @@ export default {
 <template>
   <div
     class="js-roadmap-shell gl-relative gl-w-full gl-overflow-x-auto"
-    data-qa-selector="roadmap_shell"
+    data-testid="roadmap-shell"
     :style="containerStyles"
     @scroll="handleScroll"
   >
