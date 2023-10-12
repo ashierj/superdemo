@@ -112,6 +112,8 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
       stub_signing_key
       stub_feature_flags(limited_access_modal: true)
       stub_subscription_permissions_data(group.id, can_add_seats: false)
+      enforce_namespace_storage_limit(group)
+      set_enforcement_limit(group, megabytes: 100)
 
       visit_usage_quotas_page('storage-quota-tab')
       wait_for_requests
