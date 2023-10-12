@@ -20599,9 +20599,6 @@ msgstr ""
 msgid "For investigating IT service disruptions or outages"
 msgstr ""
 
-msgid "For more info, read the documentation."
-msgstr ""
-
 msgid "For more information on how the number of active users is calculated, see the %{self_managed_subscriptions_doc_link} documentation."
 msgstr ""
 
@@ -35195,9 +35192,6 @@ msgstr ""
 msgid "Please create an index before enabling indexing"
 msgstr ""
 
-msgid "Please enable and migrate to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}"
-msgstr ""
-
 msgid "Please enter a URL for the custom emoji."
 msgstr ""
 
@@ -35250,9 +35244,6 @@ msgid "Please follow the %{link_start}Let's Encrypt troubleshooting instructions
 msgstr ""
 
 msgid "Please follow the Let's Encrypt troubleshooting instructions to re-obtain your Let's Encrypt certificate: %{docs_url}."
-msgstr ""
-
-msgid "Please migrate all existing projects to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}"
 msgstr ""
 
 msgid "Please note that this application is not provided by GitLab and you should verify its authenticity before allowing access."
