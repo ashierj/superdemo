@@ -303,22 +303,6 @@ RSpec.describe AppSec::Dast::Profiles::UpdateService, :dynamic_analysis,
               expect(subject.message).to eq('Invalid tags')
             end
           end
-
-          context 'when feature flag on_demand_scans_runner_tags is disabled' do
-            before do
-              stub_feature_flags(on_demand_scans_runner_tags: false)
-            end
-
-            it 'returns a success status' do
-              expect(subject.status).to eq(:success)
-            end
-
-            it 'does not update the tags' do
-              updated_profile = dast_profile.reload
-
-              expect(updated_profile.tag_list).to match_array(old_tags.map(&:name))
-            end
-          end
         end
       end
     end

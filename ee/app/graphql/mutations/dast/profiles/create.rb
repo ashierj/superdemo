@@ -62,8 +62,6 @@ module Mutations
           dast_site_profile = project.dast_site_profiles.find(args.delete(:dast_site_profile_id).model_id)
           dast_scanner_profile = project.dast_scanner_profiles.find(args.delete(:dast_scanner_profile_id).model_id)
 
-          args.delete(:tag_list) unless Feature.enabled?(:on_demand_scans_runner_tags, project)
-
           response = ::AppSec::Dast::Profiles::CreateService.new(
             project: project,
             current_user: current_user,

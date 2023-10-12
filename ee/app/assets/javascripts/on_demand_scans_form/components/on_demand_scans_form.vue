@@ -417,7 +417,6 @@ export default {
             </div>
           </gl-form-group>
           <gl-form-group
-            v-if="glFeatures.onDemandScansRunnerTags"
             class="gl-mt-6 gl-mb-3"
             data-testid="on-demand-scan-runner-tags"
             optional

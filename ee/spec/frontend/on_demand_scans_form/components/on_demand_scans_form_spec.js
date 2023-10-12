@@ -556,11 +556,6 @@ describe('OnDemandScansForm', () => {
           },
         },
         false,
-        {
-          glFeatures: {
-            onDemandScansRunnerTags: true,
-          },
-        },
       );
 
       expect(findRunnerTagsFormGroup().text()).toContain(

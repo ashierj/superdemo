@@ -186,20 +186,6 @@ RSpec.describe Mutations::Dast::Profiles::Update, :dynamic_analysis,
           end
         end
 
-        context 'when feature flag on_demand_scans_runner_tags is disabled' do
-          before do
-            stub_feature_flags(on_demand_scans_runner_tags: false)
-          end
-
-          it 'does not update the tag_list' do
-            subject
-
-            updated_dast_profile = dast_profile.reload
-
-            expect(updated_dast_profile.tags).to match_array(old_tags)
-          end
-        end
-
         context 'when the tagList is an empty list' do
           let(:new_tag_list) { [] }
 
