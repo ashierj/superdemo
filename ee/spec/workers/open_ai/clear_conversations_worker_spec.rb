@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe OpenAi::ClearConversationsWorker, feature_category: :not_owned do # rubocop: disable  RSpec/InvalidFeatureCategory
+RSpec.describe OpenAi::ClearConversationsWorker, feature_category: :shared do
   subject { described_class.new }
 
   describe '#perform' do
