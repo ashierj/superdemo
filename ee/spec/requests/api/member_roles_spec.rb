@@ -102,6 +102,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "read_code" => false,
                   "read_dependency" => false,
                   "read_vulnerability" => true,
+                  "admin_group_member" => false,
                   "admin_merge_request" => false,
                   "admin_vulnerability" => false,
                   "group_id" => group_id
@@ -114,6 +115,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "read_code" => true,
                   "read_dependency" => true,
                   "read_vulnerability" => false,
+                  "admin_group_member" => false,
                   "admin_merge_request" => true,
                   "admin_vulnerability" => false,
                   "group_id" => group_id
