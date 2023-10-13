@@ -61,9 +61,6 @@ describe('SecurityScanRuleBuilder', () => {
         namespaceId: '1',
         namespaceType: NAMESPACE_TYPES.PROJECT,
         namespacePath: 'gitlab-org/test',
-        glFeatures: {
-          securityPoliciesBranchExceptions: true,
-        },
         ...provide,
       },
       stubs: {
@@ -492,20 +489,5 @@ describe('SecurityScanRuleBuilder', () => {
     findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
 
     expect(wrapper.emitted('set-scan-type')).toEqual([[getDefaultRule(SCAN_FINDING)]]);
-  });
-
-  describe('disabled feature flag', () => {
-    it('should not render branch exceptions when feature flag is disabled', () => {
-      factory(
-        {},
-        {
-          glFeatures: {
-            securityPoliciesBranchExceptions: false,
-          },
-        },
-      );
-
-      expect(findBranchExceptionSelector().exists()).toBe(false);
-    });
   });
 });

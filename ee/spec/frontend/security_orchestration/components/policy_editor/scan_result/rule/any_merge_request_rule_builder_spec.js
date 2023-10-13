@@ -36,9 +36,6 @@ describe('AnyMergeRequestRuleBuilder', () => {
       },
       provide: {
         namespaceType: NAMESPACE_TYPES.GROUP,
-        glFeatures: {
-          securityPoliciesBranchExceptions: true,
-        },
         ...provide,
       },
       stubs: {

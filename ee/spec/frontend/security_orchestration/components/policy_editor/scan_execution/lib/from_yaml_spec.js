@@ -24,28 +24,10 @@ describe('fromYaml', () => {
     ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedManifest }}                                           | ${unsupportedManifestObject}
     ${'returns error object for a policy with invalid cadence cron string and validation mode'}          | ${{ manifest: mockInvalidCadenceScanExecutionObject, validateRuleMode: true }} | ${{ error: true }}
     ${'returns error object for a policy with invalid cadence cron string'}                              | ${{ manifest: mockInvalidYamlCadenceValue }}                                   | ${{ error: true, key: 'yaml-parsing' }}
+    ${'returns the policy object for branch exceptions'}                                                 | ${{ manifest: mockBranchExceptionsExecutionManifest, validateRuleMode: true }} | ${mockBranchExceptionsScanExecutionObject}
   `('$title', ({ input, output }) => {
     expect(fromYaml(input)).toStrictEqual(output);
   });
-});
-
-describe('feature flag', () => {
-  it.each`
-    securityPoliciesBranchExceptions | output
-    ${true}                          | ${mockBranchExceptionsScanExecutionObject}
-    ${false}                         | ${{ error: true }}
-  `(
-    'returns the policy object for branch exceptions with feature flag',
-    ({ securityPoliciesBranchExceptions, output }) => {
-      expect(
-        fromYaml({
-          manifest: mockBranchExceptionsExecutionManifest,
-          validateRuleMode: true,
-          glFeatures: { securityPoliciesBranchExceptions },
-        }),
-      ).toStrictEqual(output);
-    },
-  );
 });
 
 describe('createPolicyObject', () => {

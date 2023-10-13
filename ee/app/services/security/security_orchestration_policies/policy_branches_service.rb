@@ -31,8 +31,6 @@ module Security
       end
 
       def excluded_branches(rules)
-        return Set.new unless Feature.enabled?(:security_policies_branch_exceptions, project)
-
         rules.reduce(Set.new) do |set, rule|
           set.merge(match_exceptions(rule))
         end
