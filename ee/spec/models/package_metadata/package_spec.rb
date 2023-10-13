@@ -29,7 +29,7 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
   describe '#license_ids_for' do
     context 'when licenses are present' do
       let(:default) { [5, 7] }
-      let(:highest) { '0.0.2' }
+      let(:highest) { '0.0.3' }
       let(:lowest) { '0.0.1' }
       let(:other) { [[[2, 4], ['v0.0.3', 'v0.0.4']], [[3], ['v0.0.5']]] }
 
@@ -44,8 +44,113 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
       end
 
       context 'and the given version does not match any of the versions in other licenses' do
+        context 'and the given version exactly matches the highest version' do
+          it 'returns the default licenses' do
+            expect(package.license_ids_for(version: highest)).to eq(default)
+          end
+        end
+
+        context 'and the given version exactly matches the lowest version' do
+          it 'returns the default licenses' do
+            expect(package.license_ids_for(version: lowest)).to eq(default)
+          end
+        end
+
+        context 'and the given version is between the highest and lowest versions' do
+          it 'returns the default licenses' do
+            expect(package.license_ids_for(version: "0.0.2")).to eq(default)
+          end
+        end
+
+        context 'and the given version is higher than the highest version' do
+          it 'returns an empty array' do
+            expect(package.license_ids_for(version: "9.9.9")).to be_empty
+          end
+        end
+
+        context 'and the given version is lower than the lowest version' do
+          it 'returns an empty array' do
+            expect(package.license_ids_for(version: "0.0.0")).to be_empty
+          end
+        end
+      end
+    end
+
+    context 'when licenses are present but highest and lowest are missing' do
+      let(:default) { [5, 7] }
+      let(:highest) { nil }
+      let(:lowest) { nil }
+      let(:other) { [[[2, 4], ['v0.0.3', 'v0.0.4']], [[3], ['v0.0.5']]] }
+
+      subject(:package) do
+        build_stubbed(:pm_package, name: "cliui", purl_type: "npm", licenses: [default, lowest, highest, other])
+      end
+
+      context 'and the given version does not match any of the versions in other licenses' do
         it 'returns the default licenses' do
-          expect(package.license_ids_for(version: "9.9.9")).to eq(default)
+          expect(package.license_ids_for(version: "0.0.2")).to eq(default)
+        end
+      end
+    end
+
+    context 'when licenses are present but highest is missing' do
+      let(:default) { [5, 7] }
+      let(:highest) { nil }
+      let(:lowest) { '0.0.1' }
+      let(:other) { [[[2, 4], ['v0.0.3', 'v0.0.4']], [[3], ['v0.0.5']]] }
+
+      subject(:package) do
+        build_stubbed(:pm_package, name: "cliui", purl_type: "npm", licenses: [default, lowest, highest, other])
+      end
+
+      context 'and the given version does not match any of the versions in other licenses' do
+        context 'and the given version exactly matches the lowest version' do
+          it 'returns the default licenses' do
+            expect(package.license_ids_for(version: lowest)).to eq(default)
+          end
+        end
+
+        context 'and the given version is higher than the lowest version' do
+          it 'returns the default licenses' do
+            expect(package.license_ids_for(version: "9.9.9")).to eq(default)
+          end
+        end
+
+        context 'and the given version is lower than the lowest version' do
+          it 'returns an empty array' do
+            expect(package.license_ids_for(version: "0.0.0")).to be_empty
+          end
+        end
+      end
+    end
+
+    context 'when licenses are present but lowest is missing' do
+      let(:default) { [5, 7] }
+      let(:highest) { '0.0.3' }
+      let(:lowest) { nil }
+      let(:other) { [[[2, 4], ['v0.0.3', 'v0.0.4']], [[3], ['v0.0.5']]] }
+
+      subject(:package) do
+        build_stubbed(:pm_package, name: "cliui", purl_type: "npm", licenses: [default, lowest, highest, other])
+      end
+
+      context 'and the given version does not match any of the versions in other licenses' do
+        context 'and the given version exactly matches the highest version' do
+          it 'returns the default licenses' do
+            expect(package.license_ids_for(version: highest)).to eq(default)
+          end
+        end
+
+        context 'and the given version is lower than the highest version' do
+          it 'returns the default licenses' do
+            expect(package.license_ids_for(version: "0.0.2")).to eq(default)
+          end
+        end
+
+        context 'and the given version is higher than the highest version' do
+          it 'returns an empty array' do
+            expect(package.license_ids_for(version: "9.9.9")).to be_empty
+          end
         end
       end
     end

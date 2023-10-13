@@ -131,16 +131,20 @@ module Gitlab
       # uncompressed and compressed queries.
       def add_record_with_known_licenses(purl_type:, name:, version:, license_ids:, path:)
         all_records[component_key(name: name, version: version, purl_type: purl_type)] =
-          Hashie::Mash.new(purl_type: purl_type, name: name, version: version,
-            licenses: licenses_with_names_for(license_ids: license_ids), path: path || '')
+          Hashie::Mash.new(
+            purl_type: purl_type, name: name, version: version,
+            licenses: licenses_with_names_for(license_ids: license_ids), path: path || ''
+          )
       end
 
       def add_record_with_unknown_license(component)
         key = component_key(name: component.name, version: component.version, purl_type: component.purl_type)
 
-        all_records[key] = Hashie::Mash.new(
-          purl_type: component.purl_type, name: component.name, version: component.version,
-          licenses: [UNKNOWN_LICENSE])
+        all_records[key] =
+          Hashie::Mash.new(
+            purl_type: component.purl_type, name: component.name, version: component.version,
+            licenses: [UNKNOWN_LICENSE], path: component.path || ''
+          )
       end
 
       def use_replica_if_available(&block)

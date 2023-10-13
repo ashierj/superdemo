@@ -393,9 +393,9 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
         where(:case_name, :name, :purl_type, :version) do
           "name does not match"      | "does-not-match" | "golang" | "v1.10.0"
           "purl_type does not match" | "beego"          | "npm"    | "v1.10.0"
-          # TODO: re-enable the following when https://gitlab.com/gitlab-org/vulnerability-research/foss/semver_dialects/-/issues/3
-          # has been completed.
-          # "version is invalid"     | "beego"          | "golang" | "invalid-version"
+          "version is too low"       | "beego"          | "golang" | "v00000000"
+          "version is too high"      | "beego"          | "golang" | "v999999999"
+          "version is invalid"       | "beego"          | "golang" | "invalid-version"
         end
 
         with_them do
@@ -403,53 +403,27 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it "returns 'unknown' as the license" do
             expect(fetch).to eq([
-              "name" => name, "purl_type" => purl_type, "version" => version,
+              "name" => name, "path" => "", "purl_type" => purl_type, "version" => version,
               "licenses" => [{ "name" => "unknown", "spdx_identifier" => "unknown", "url" => nil }]
             ])
           end
         end
+      end
 
-        context 'and the version is invalid' do
-          let(:components_to_fetch) do
-            [Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "invalid-version" })]
-          end
-
-          # this test shows that the current matching behaviour is incorrect, because the default
-          # license is returned, when 'unknown' should actually be returned.
-          # We need to add a new `valid?` method to the semver_dialects gem to handle invalid versions.
-          #
-          # See https://gitlab.com/gitlab-org/vulnerability-research/foss/semver_dialects/-/issues/3
-          # for more details.
-          #
-          # TODO: once we have a `valid?` method in the semver_dialects gem, remove this test
-          # and add a test to the table in the `returns 'unknown' as the license` example above.
-          it "returns the default licenses" do
-            expect(fetch).to eq([
-              "name" => "beego", "purl_type" => "golang", "version" => "invalid-version", "path" => "",
-              "licenses" => [{
-                "name" => "Default License 2.1",
-                "spdx_identifier" => "DEFAULT-2.1",
-                "url" => "https://spdx.org/licenses/DEFAULT-2.1.html"
-              }]
-            ])
-          end
+      context 'when the version is between the highest and lowest versions' do
+        let(:components_to_fetch) do
+          [Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "v00000005" })]
         end
 
-        context 'and the version does not match' do
-          let(:components_to_fetch) do
-            [Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "123.456.789" })]
-          end
-
-          it "returns the default licenses" do
-            expect(fetch).to eq([
-              "name" => "beego", "purl_type" => "golang", "version" => "123.456.789", "path" => "",
-              "licenses" => [{
-                "name" => "Default License 2.1",
-                "spdx_identifier" => "DEFAULT-2.1",
-                "url" => "https://spdx.org/licenses/DEFAULT-2.1.html"
-              }]
-            ])
-          end
+        it "returns the default licenses" do
+          expect(fetch).to eq([
+            "name" => "beego", "purl_type" => "golang", "version" => "v00000005", "path" => "",
+            "licenses" => [{
+              "name" => "Default License 2.1",
+              "spdx_identifier" => "DEFAULT-2.1",
+              "url" => "https://spdx.org/licenses/DEFAULT-2.1.html"
+            }]
+          ])
         end
       end
 

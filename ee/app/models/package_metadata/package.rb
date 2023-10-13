@@ -3,7 +3,18 @@
 module PackageMetadata
   class Package < ApplicationRecord
     DEFAULT_LICENSES_IDX = 0
-    OTHER_LICENSES_IDX   = 3
+    LOWEST_VERSION_IDX = 1
+    HIGHEST_VERSION_IDX = 2
+    OTHER_LICENSES_IDX = 3
+
+    # Our license-db exporter exports license and advisory data from the
+    # external license-db to a public GCP bucket for ingestion by the GitLab
+    # Rails application. Using the same regular expression in both projects
+    # ensures consistency across system boundaries.
+    # https://pkg.go.dev/github.com/hashicorp/go-version#pkg-constants
+    # rubocop: disable Layout/LineLength
+    VERSION_REGEXP_RAW = /v?([0-9]+(\.[0-9]+)*?)(-([0-9]+[0-9A-Za-z\-~]*(\.[0-9A-Za-z\-~]+)*)|(-?([A-Za-z\-~]+[0-9A-Za-z\-~]*(\.[0-9A-Za-z\-~]+)*)))?(\+([0-9A-Za-z\-~]+(\.[0-9A-Za-z\-~]+)*))??/
+    # rubocop: enable Layout/LineLength
 
     has_many :package_versions, inverse_of: :package, foreign_key: :pm_package_id
 
@@ -20,7 +31,7 @@ module PackageMetadata
       # might be nil, in which case we return an empty array.
       return [] if licenses.blank?
 
-      matching_other_license_ids(version: version) || default_license_ids
+      matching_other_license_ids(version: version) || default_license_ids(version: version)
     end
 
     # Takes an array of components and uses the purl_type and name fields to search for matching
@@ -50,12 +61,39 @@ module PackageMetadata
       nil
     end
 
-    def default_license_ids
-      licenses[DEFAULT_LICENSES_IDX]
+    def lowest_version
+      licenses[LOWEST_VERSION_IDX]
+    end
+
+    def highest_version
+      licenses[HIGHEST_VERSION_IDX]
     end
 
     def other_licenses
       licenses[OTHER_LICENSES_IDX]
+    end
+
+    def default_license_ids(version:)
+      # if the version does not match the exporter format, return an empty array.
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/410434
+      return [] unless VERSION_REGEXP_RAW.match(version)
+
+      # if the given version is greater than the highest known version or lower
+      # than the lowest known version, then the version is not supported, in
+      # which case we return an empty array.
+      return [] unless version_in_default_licenses_range?(version)
+
+      licenses[DEFAULT_LICENSES_IDX]
+    end
+
+    def version_in_default_licenses_range?(input_version)
+      interval = VersionParser.parse("=#{input_version}")
+
+      range = VersionRange.new
+      range.add(VersionParser.parse("<#{lowest_version}")) if lowest_version
+      range.add(VersionParser.parse(">#{highest_version}")) if highest_version
+
+      !range.overlaps_with?(interval)
     end
   end
 end
