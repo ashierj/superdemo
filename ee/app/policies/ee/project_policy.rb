@@ -199,6 +199,9 @@ module EE
       condition(:user_banned_from_namespace) do
         next unless @user.is_a?(User)
         next if @user.can_admin_all_resources?
+        # Loading the namespace_bans association is intentional because it is going to
+        # be used in the banned_from_namespace? check below
+        next if @user.namespace_bans.to_a.empty?
 
         groups = @subject.invited_groups + [@subject.group]
         groups.compact!
