@@ -10,12 +10,18 @@ module EE
       include Arkose::ContentSecurityPolicy
       include RegistrationsTracking
       include ::Onboarding::SetRedirect
+      include GoogleAnalyticsCSP
+      include GoogleSyndicationCSP
 
       skip_before_action :check_captcha, if: -> { arkose_labs_enabled? }
       before_action only: [:new, :create] do
         push_frontend_feature_flag(:arkose_labs_signup_challenge)
       end
       before_action :ensure_can_remove_self, only: [:destroy]
+
+      before_action only: [:new] do
+        push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+      end
     end
 
     override :create

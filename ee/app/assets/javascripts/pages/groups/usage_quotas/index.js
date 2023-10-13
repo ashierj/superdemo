@@ -4,7 +4,7 @@ import initCodeSuggestionsUsageApp from 'ee/usage_quotas/code_suggestions';
 import initPipelineUsageApp from 'ee/usage_quotas/pipelines';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
 import { GlTabsBehavior, HISTORY_TYPE_HASH, TAB_SHOWN_EVENT } from '~/tabs';
-import { trackAddToCartUsageTab } from '~/google_tag_manager';
+import { trackAddToCartUsageTab } from 'ee/google_tag_manager';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 

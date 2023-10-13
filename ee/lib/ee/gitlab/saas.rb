@@ -7,7 +7,7 @@ module EE
 
       MissingFeatureError = Class.new(StandardError)
 
-      FEATURES = %w[purchases/additional_minutes onboarding search/indexing_status].freeze
+      FEATURES = %w[marketing/google_tag_manager purchases/additional_minutes onboarding search/indexing_status].freeze
 
       class_methods do
         def feature_available?(feature)
@@ -20,7 +20,7 @@ module EE
           # Use existing checks initially. We can allow it only in this place and remove it anywhere else.
           # eventually we can change its implementation like using an ENV variable for each instance
           # or any other method that people can't mess with.
-          ::Gitlab.com?
+          ::Gitlab.com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks
         end
       end
     end

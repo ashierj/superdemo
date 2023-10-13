@@ -5,7 +5,7 @@ import { GlCard, GlLoadingIcon } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { unescape, isEmpty } from 'lodash';
 import { sprintf, s__ } from '~/locale';
-import { trackCheckout } from '~/google_tag_manager';
+import { trackCheckout } from 'ee/google_tag_manager';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import Tracking from '~/tracking';
 

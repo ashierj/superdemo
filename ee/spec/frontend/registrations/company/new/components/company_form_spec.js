@@ -1,11 +1,11 @@
 import { GlButton, GlForm, GlFormText } from '@gitlab/ui';
 import CompanyForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { trackCompanyForm } from '~/google_tag_manager';
+import { trackCompanyForm } from 'ee/google_tag_manager';
 
 const SUBMIT_PATH = '_submit_path_';
 
-jest.mock('~/google_tag_manager');
+jest.mock('ee/google_tag_manager');
 
 describe('CompanyForm', () => {
   let wrapper;
