@@ -55,6 +55,12 @@ module QA
               has_element?('filter-status-dropdown')
             end
 
+            if has_element?('group-by-new-feature')
+              within_element('group-by-new-feature') do
+                click_element('close-button')
+              end
+            end
+
             # Retry on exception to avoid ElementNotFound errors when clicks are sent too fast for the UI to update
             retry_on_exception(sleep_interval: 2, message: "Retrying status click until current url matches state") do
               find(status_dropdown_button_selector, wait: 5).click
