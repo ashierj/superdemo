@@ -4,9 +4,10 @@ mutation createInstanceExternalDestinationHeader(
   $destinationId: AuditEventsInstanceExternalAuditEventDestinationID!
   $key: String!
   $value: String!
+  $active: Boolean!
 ) {
   auditEventsStreamingInstanceHeadersCreate(
-    input: { destinationId: $destinationId, key: $key, value: $value }
+    input: { destinationId: $destinationId, key: $key, value: $value, active: $active }
   ) {
     errors
     header {

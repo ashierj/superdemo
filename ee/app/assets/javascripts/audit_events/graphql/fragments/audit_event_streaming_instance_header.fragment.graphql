@@ -2,4 +2,5 @@ fragment AuditEventStreamingHeaderFragment on AuditEventsStreamingInstanceHeader
   key
   value
   id
+  active
 }

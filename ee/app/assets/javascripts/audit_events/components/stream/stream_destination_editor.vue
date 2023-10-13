@@ -185,7 +185,9 @@ export default {
         this.existingHeaders.some(
           (existing) =>
             changed.id === existing.id &&
-            (changed.name !== existing.name || changed.value !== existing.value),
+            (changed.name !== existing.name ||
+              changed.value !== existing.value ||
+              changed.active !== existing.active),
         ),
       );
     },
@@ -313,6 +315,7 @@ export default {
             destinationId,
             key: header.name,
             value: header.value,
+            active: header.active,
           },
           update(cache, { data }) {
             const errors = isInstance
@@ -347,6 +350,7 @@ export default {
             headerId: header.id,
             key: header.name,
             value: header.value,
+            active: header.active,
           },
         });
       });
@@ -716,7 +720,6 @@ export default {
             <gl-form-checkbox
               class="gl-mt-3"
               :checked="active"
-              :disabled="true"
               @input="handleHeaderActiveInput(index, $event)"
             >
               {{ $options.i18n.TABLE_COLUMN_ACTIVE_LABEL }}

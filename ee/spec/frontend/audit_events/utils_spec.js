@@ -96,39 +96,33 @@ describe('Audit Event Utils', () => {
           id: header1.id,
           name: header1.key,
           value: header1.value,
-          active: true,
-          disabled: false,
+          active: false,
           validationErrors: { name: '' },
         },
         {
           id: header2.id,
           name: header2.key,
           value: header2.value,
-          active: true,
-          disabled: false,
+          active: false,
           validationErrors: { name: '' },
         },
       ]);
     });
 
     it('applies the settings to each header when given', () => {
-      expect(
-        mapItemHeadersToFormData({ headers: { nodes: [header1, header2] } }, { disabled: true }),
-      ).toStrictEqual([
+      expect(mapItemHeadersToFormData({ headers: { nodes: [header1, header2] } })).toStrictEqual([
         {
           id: header1.id,
           name: header1.key,
           value: header1.value,
-          active: true,
-          disabled: true,
+          active: false,
           validationErrors: { name: '' },
         },
         {
           id: header2.id,
           name: header2.key,
           value: header2.value,
-          active: true,
-          disabled: true,
+          active: false,
           validationErrors: { name: '' },
         },
       ]);
@@ -142,24 +136,21 @@ describe('Audit Event Utils', () => {
           id: header1.id,
           name: header1.key,
           value: header1.value,
-          active: true,
-          disabled: false,
+          active: false,
           validationErrors: { name: '' },
         },
         {
           id: header2.id,
           name: header2.key,
           value: header2.value,
-          active: true,
-          disabled: false,
+          active: false,
           validationErrors: { name: '' },
         },
         {
           id: header3.id,
           name: header3.key,
           value: header3.value,
-          active: true,
-          disabled: false,
+          active: false,
           validationErrors: { name: '' },
         },
       ]);

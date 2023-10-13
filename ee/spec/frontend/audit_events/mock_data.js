@@ -51,6 +51,7 @@ export const mockExternalDestinationHeader = () => ({
   id: uniqueId('gid://gitlab/AuditEvents::Streaming::Header/'),
   key: uniqueId('header-key-'),
   value: uniqueId('header-value-'),
+  active: false,
 });
 
 const makeHeader = () => ({
@@ -58,12 +59,14 @@ const makeHeader = () => ({
   id: `header-id-${uniqueId()}`,
   key: `header-key-${uniqueId()}`,
   value: 'header-value',
+  active: false,
 });
 
 export const mockInstanceExternalDestinationHeader = () => ({
   id: uniqueId('gid://gitlab/AuditEvents::Streaming::Header/'),
   key: uniqueId('header-key-'),
   value: uniqueId('header-value-'),
+  active: false,
 });
 
 const makeInstanceHeader = () => ({
@@ -71,6 +74,7 @@ const makeInstanceHeader = () => ({
   id: `header-id-${uniqueId()}`,
   key: `header-key-${uniqueId()}`,
   value: 'header-value',
+  active: false,
 });
 
 export const mockExternalDestinations = [
