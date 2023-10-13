@@ -397,7 +397,6 @@ module Elastic
 
       def archived_filter_applicable_for_blob_search?(options)
         !options[:include_archived] && options[:search_scope] != 'project' &&
-          Feature.enabled?(:search_blobs_hide_archived_projects) &&
           ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_field_in_blob)
       end
 
