@@ -38,6 +38,13 @@ export default {
           this.pipeline?.project?.full_path !== `/${this.targetProjectFullPath}`,
       );
     },
+    showMergedResultsBadge() {
+      // A merge train pipeline is technically also a merged results pipeline,
+      // but we want the badges to be mutually exclusive.
+      return (
+        this.pipeline.flags.merged_result_pipeline && !this.pipeline.flags.merge_train_pipeline
+      );
+    },
     autoDevopsTagId() {
       return `pipeline-url-autodevops-${this.pipeline.id}`;
     },
@@ -158,7 +165,7 @@ export default {
       >{{ s__('Pipeline|merge request') }}</gl-badge
     >
     <gl-badge
-      v-if="pipeline.flags.merged_result_pipeline"
+      v-if="showMergedResultsBadge"
       v-gl-tooltip
       :title="
         s__(
