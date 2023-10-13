@@ -32451,7 +32451,7 @@ CREATE INDEX index_gpg_keys_on_user_id ON gpg_keys USING btree (user_id);
 
 CREATE UNIQUE INDEX index_gpg_signatures_on_commit_sha ON gpg_signatures USING btree (commit_sha);
 
-CREATE INDEX index_gpg_signatures_on_gpg_key_id ON gpg_signatures USING btree (gpg_key_id);
+CREATE INDEX index_gpg_signatures_on_gpg_key_id_and_id ON gpg_signatures USING btree (gpg_key_id, id);
 
 CREATE INDEX index_gpg_signatures_on_gpg_key_primary_keyid ON gpg_signatures USING btree (gpg_key_primary_keyid);
 
