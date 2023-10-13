@@ -115,7 +115,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="flatFindings.length" class="gl-z-index-1 gl-relative">
+  <div v-if="flatFindings.length" class="gl-relative">
     <div class="gl-display-inline-flex">
       <span ref="inlineFindingsIcon" class="gl-z-index-200">
         <inline-findings-dropdown
