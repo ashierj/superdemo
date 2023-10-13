@@ -17,6 +17,7 @@ RSpec.describe Sbom::DependencyLicensesFinder, feature_category: :dependency_man
     let_it_be(:occurrence_5) { create(:sbom_occurrence, :apache_2, :mpl_2, project: project) }
     let_it_be(:occurrence_6) { create(:sbom_occurrence, :apache_2, :mit, project: project) }
     let_it_be(:occurrence_7) { create(:sbom_occurrence, :mit, :mpl_2, project: project) }
+    let_it_be(:occurrence_8) { create(:sbom_occurrence, project: project) }
 
     subject(:licenses) { finder.execute }
 
@@ -40,9 +41,13 @@ RSpec.describe Sbom::DependencyLicensesFinder, feature_category: :dependency_man
       ])
     end
 
-    context "with more than #{described_class::MAXIMUM_LICENSES} unique licenses" do
+    context "with more than the maximum unique licenses" do
+      let(:maximum) { 10 }
+
       before do
-        105.times do |index|
+        stub_const('Sbom::DependencyLicensesFinder::MAXIMUM_LICENSES', maximum)
+
+        (maximum + 5).times do |index|
           version = index + 1
           create(:sbom_occurrence, project: project, licenses: [{
             spdx_identifier: version.to_s,
@@ -52,8 +57,8 @@ RSpec.describe Sbom::DependencyLicensesFinder, feature_category: :dependency_man
         end
       end
 
-      it "returns #{described_class::MAXIMUM_LICENSES} licenses" do
-        expect(licenses.count).to eq(described_class::MAXIMUM_LICENSES)
+      it "returns the maximum licenses" do
+        expect(licenses.count).to eq(maximum)
       end
     end
   end
