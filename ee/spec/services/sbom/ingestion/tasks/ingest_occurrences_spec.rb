@@ -23,9 +23,13 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
       let(:ingested_occurrence) { Sbom::Occurrence.last }
 
       before do
-        licenses = ["MIT", "Apache-2.0"]
+        default_licenses = ["MIT", "Apache-2.0"]
+
         occurrence_maps.map(&:report_component).each do |component|
-          create(:pm_package, name: component.name, purl_type: component.purl&.type, default_license_names: licenses)
+          create(:pm_package, name: component.name, purl_type: component.purl&.type,
+            lowest_version: component.version, highest_version: component.version,
+            default_license_names: default_licenses
+          )
         end
       end
 
