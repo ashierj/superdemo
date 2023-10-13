@@ -6,7 +6,7 @@ module QA
       context 'when the project is in the root group', :requires_admin, product_group: :source_code do
         let(:approver) { create(:user, api_client: Runtime::API::Client.as_admin) }
 
-        let(:root_group) { Resource::Sandbox.fabricate_via_api! }
+        let(:root_group) { create(:sandbox) }
         let(:project) { create(:project, :with_readme, name: 'code-owner-approve-and-merge', group: root_group) }
 
         before do

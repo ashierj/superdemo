@@ -14,10 +14,7 @@ module QA
 
         # Group cannot be deleted until subscription is deleted in Zuora
         let(:group) do
-          Resource::Sandbox.fabricate! do |sandbox|
-            sandbox.path = "test-group-fulfillment#{hash}"
-            sandbox.api_client = Runtime::API::Client.as_admin
-          end
+          create(:sandbox, path: "test-group-fulfillment-#{hash}", api_client: Runtime::API::Client.as_admin)
         end
 
         before do
@@ -50,12 +47,7 @@ module QA
           let(:plan_limits) { PREMIUM[:ci_minutes] }
 
           before do
-            Resource::Project.fabricate_via_api! do |project|
-              project.name = 'ci-minutes'
-              project.group = group
-              project.initialize_with_readme = true
-              project.api_client = Runtime::API::Client.as_admin
-            end
+            create(:project, :with_readme, name: 'ci-minutes', group: group, api_client: Runtime::API::Client.as_admin)
 
             Flow::Purchase.purchase_ci_minutes(quantity: ci_minutes_quantity)
           end

@@ -5,14 +5,8 @@ module QA
     describe 'LDAP Group sync', product_group: :authentication_and_authorization do
       include Support::API
 
-      let(:root_group) do
-        Resource::Sandbox.fabricate_via_api! do |resource|
-          resource.path = "group_sync_root_group-#{SecureRandom.hex(4)}"
-        end
-      end
-
+      let(:root_group) { create(:sandbox, path: "group_sync_root_group-#{SecureRandom.hex(4)}") }
       let(:group) { create(:group, sandbox: root_group, path: "#{group_name}-#{SecureRandom.hex(4)}") }
-
       let(:project) { create(:project, name: "project-to-test-PrAT-#{SecureRandom.hex(8)}", group: group) }
 
       after do |example|

@@ -5,27 +5,16 @@ module QA
     describe 'Group SAML SSO - Enforced SSO', product_group: :authentication_and_authorization do
       include Support::API
 
-      let!(:group) do
-        Resource::Sandbox.fabricate_via_api! do |sandbox_group|
-          sandbox_group.path = "saml_sso_group_#{SecureRandom.hex(8)}"
-          sandbox_group.visibility = :private
-        end
-      end
-
+      let!(:group) { create(:sandbox, :private, path: "saml_sso_group_#{SecureRandom.hex(8)}") }
       let(:idp_user) { Struct.new(:username, :password).new('user3', 'user3pass') }
 
       # The user that signs in via the IDP with username `user3` and password `user3pass`
       # will have `user_3` as username in GitLab
       let(:user) do
-        QA::Resource::User.init do |user|
-          user.username = 'user_3'
-          user.email = 'user_3@example.com'
-          user.name = 'User Three'
-        end
+        build(:user, username: 'user_3', email: 'user_3@example.com', name: 'User Three')
       end
 
       let!(:saml_idp_service) { Flow::Saml.run_saml_idp_service(group.path) }
-
       let!(:group_sso_url) { Flow::Saml.enable_saml_sso(group, saml_idp_service, enforce_sso: true) }
 
       before do

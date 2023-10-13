@@ -88,12 +88,7 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347939' do
         before do
           QA::Support::Retrier.retry_until do
-            project = Resource::Project.fabricate_via_api! do |project|
-              project.name = 'project_for_export'
-              project.initialize_with_readme = true
-            end
-
-            project.visit!
+            create(:project, :with_readme, name: 'project_for_export').visit!
 
             Page::Project::Menu.perform(&:go_to_general_settings)
             Page::Project::Settings::Main.perform do |settings|

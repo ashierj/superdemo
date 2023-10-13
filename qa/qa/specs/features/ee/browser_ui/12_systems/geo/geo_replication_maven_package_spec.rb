@@ -14,12 +14,7 @@ module QA
         Resource::PersonalAccessToken.fabricate!.token
       end
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'geo-maven-package-project'
-        end
-      end
-
+      let(:project) { create(:project, name: 'geo-maven-package-project') }
       let(:uri) { URI.parse(Runtime::Scenario.gitlab_address) }
       let(:gitlab_address_with_port) { Support::GitlabAddress.address_with_port }
 

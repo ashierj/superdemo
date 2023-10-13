@@ -15,22 +15,14 @@ module QA
 
       # Group cannot be deleted until subscription is deleted in Zuora
       let(:group) do
-        Resource::Sandbox.fabricate! do |sandbox|
-          sandbox.path = "test-group-fulfillment-#{hash}"
-          sandbox.api_client = Runtime::API::Client.as_admin
-        end
+        create(:sandbox, path: "test-group-fulfillment-#{hash}", api_client: Runtime::API::Client.as_admin)
       end
 
       before do
         Flow::Login.sign_in(as: user)
 
         # A group project is required for additional CI Minutes to show up
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'ci-minutes'
-          project.group = group
-          project.initialize_with_readme = true
-          project.api_client = Runtime::API::Client.as_admin
-        end
+        create(:project, :with_readme, name: 'ci-minutes', group: group, api_client: Runtime::API::Client.as_admin)
 
         group.visit!
       end

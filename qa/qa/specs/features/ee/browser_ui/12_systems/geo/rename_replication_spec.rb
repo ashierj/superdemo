@@ -13,10 +13,7 @@ module QA
 
         # create the project and push code
         QA::Flow::Login.while_signed_in(address: :geo_primary) do
-          project = Resource::Project.fabricate_via_api! do |project|
-            project.name = original_project_name
-            project.description = 'Geo project to be renamed'
-          end
+          project = create(:project, name: original_project_name, description: 'Geo project to be renamed')
 
           geo_project_name = project.name
 

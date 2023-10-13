@@ -7,11 +7,7 @@ module QA
 
       let(:user) { create(:user) }
 
-      let(:group) do
-        Resource::Sandbox.fabricate_via_api! do |sandbox_group|
-          sandbox_group.path = "saml_sso_group_#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:group) { create(:sandbox, path: "saml_sso_group_#{SecureRandom.hex(8)}") }
 
       let!(:saml_idp_service) { Flow::Saml.run_saml_idp_service(group.path) }
 

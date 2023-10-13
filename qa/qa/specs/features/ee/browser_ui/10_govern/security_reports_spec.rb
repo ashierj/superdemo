@@ -45,11 +45,7 @@ module QA
       end
 
       let!(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-with-secure'
-          project.description = 'Project with Secure'
-          project.group = group
-        end
+        create(:project, name: 'project-with-secure', description: 'Project with Secure', group: group)
       end
 
       let!(:runner) do

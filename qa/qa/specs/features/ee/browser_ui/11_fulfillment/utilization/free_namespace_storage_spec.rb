@@ -12,9 +12,7 @@ module QA
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: owner_user) }
       let(:hash) { SecureRandom.hex(8) }
       let(:content) { Faker::Lorem.paragraph(sentence_count: 1000) }
-
       let(:owner_user) { create(:user, :hard_delete, api_client: admin_api_client) }
-
       let(:free_plan_group) do
         Resource::Sandbox.fabricate! do |sandbox|
           sandbox.path = "fulfillment-free-plan-group-#{hash}"
@@ -23,12 +21,11 @@ module QA
       end
 
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "free-project-#{hash}"
-          project.template_name = 'express'
-          project.group = free_plan_group
-          project.api_client = owner_api_client
-        end
+        create(:project,
+          name: "free-project-#{hash}",
+          template_name: 'express',
+          group: free_plan_group,
+          api_client: owner_api_client)
       end
 
       before do

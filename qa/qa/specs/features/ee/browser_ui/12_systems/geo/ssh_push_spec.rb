@@ -26,10 +26,7 @@ module QA
             end
 
             # Create a new Project
-            project = Resource::Project.fabricate_via_api! do |project|
-              project.name = 'geo-project'
-              project.description = 'Geo test project for SSH push'
-            end
+            project = create(:project, name: 'geo-project', description: 'Geo test project for SSH push')
 
             # Perform a git push over SSH directly to the primary
             Resource::Repository::ProjectPush.fabricate! do |push|
@@ -84,10 +81,7 @@ module QA
             end
 
             # Create a new Project
-            project = Resource::Project.fabricate_via_api! do |project|
-              project.name = 'geo-project'
-              project.description = 'Geo test project for SSH LFS push'
-            end
+            project = create(:project, name: 'geo-project', description: 'Geo test project for SSH LFS push')
 
             # Perform a git push over SSH directly to the primary
             push = Resource::Repository::ProjectPush.fabricate! do |push|
