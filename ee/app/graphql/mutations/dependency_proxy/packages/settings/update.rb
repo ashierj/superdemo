@@ -76,7 +76,7 @@ module Mutations
           private
 
           def find_object(project_path:)
-            resolve_project(full_path: project_path).sync.dependency_proxy_packages_setting
+            resolve_project(full_path: project_path).sync&.dependency_proxy_packages_setting
           end
         end
       end
