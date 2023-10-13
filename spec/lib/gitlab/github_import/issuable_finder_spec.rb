@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::GithubImport::IssuableFinder, :clean_gitlab_redis_cache, feature_category: :importers do
-  let(:project) { create(:project, import_data_attributes: import_data_attributes) }
+  let(:project) { build(:project, id: 20, import_data_attributes: import_data_attributes) }
   let(:single_endpoint_optional_stage) { false }
   let(:import_data_attributes) do
     {
@@ -77,7 +77,7 @@ RSpec.describe Gitlab::GithubImport::IssuableFinder, :clean_gitlab_redis_cache, 
     it 'caches the ID of a database row' do
       expect(Gitlab::Cache::Import::Caching)
         .to receive(:write)
-        .with("github-import/issuable-finder/#{project.id}/MergeRequest/#{merge_request.iid}", 10, timeout: 86400)
+        .with("github-import/issuable-finder/20/MergeRequest/#{merge_request.iid}", 10, timeout: 86400)
 
       finder.cache_database_id(10)
     end
