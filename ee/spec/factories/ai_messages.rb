@@ -3,7 +3,7 @@
 # Read about factories at https://github.com/thoughtbot/factory_bot
 
 FactoryBot.define do
-  factory :ai_chat_message, class: 'Gitlab::Llm::ChatMessage' do
+  factory :ai_message, class: 'Gitlab::Llm::AiMessage' do
     id { nil }
     association :user
     resource { nil }
@@ -13,7 +13,7 @@ FactoryBot.define do
     timestamp { Time.current }
     extras { nil }
     errors { nil }
-    ai_action { :chat }
+    ai_action { :explain_code }
     client_subscription_id { nil }
     type { nil }
     chunk_id { nil }
@@ -86,6 +86,14 @@ FactoryBot.define do
 
     trait :categorize_question do
       ai_action { :categorize_question }
+    end
+
+    skip_create
+
+    factory :ai_chat_message, class: 'Gitlab::Llm::ChatMessage' do
+      ai_action { :chat }
+
+      to_create(&:save!)
     end
   end
 end

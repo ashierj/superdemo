@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::FillInMergeRequestTemplate, f
   end
 
   let(:prompt_message) do
-    build(:ai_chat_message, :fill_in_merge_request_template, user: user, resource: project, request_id: 'uuid')
+    build(:ai_message, :fill_in_merge_request_template, user: user, resource: project, request_id: 'uuid')
   end
 
   subject { described_class.new(prompt_message, prompt_class, options) }

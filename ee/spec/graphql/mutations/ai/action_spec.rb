@@ -126,7 +126,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
               .to receive(:execute)
               .and_return(ServiceResponse.success(
                 payload: {
-                  ai_message: build(:ai_chat_message, request_id: request_id)
+                  ai_message: build(:ai_message, request_id: request_id)
                 }))
           end
 
@@ -149,7 +149,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
                 .to receive(:execute)
                 .and_return(ServiceResponse.success(
                   payload: {
-                    ai_message: build(:ai_chat_message, request_id: request_id)
+                    ai_message: build(:ai_message, request_id: request_id)
                   }))
             end
 

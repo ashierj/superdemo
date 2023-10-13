@@ -17,7 +17,7 @@ RSpec.describe GitlabSchema.types['AiMessage'], feature_category: :duo_chat do
 
   describe '#id' do
     let(:expected_id) { '123' }
-    let(:message) { build(:ai_chat_message, id: expected_id) }
+    let(:message) { build(:ai_message, id: expected_id) }
 
     it 'returns message gid' do
       resolved_field = resolve_field(:id, message, current_user: current_user)
@@ -35,7 +35,7 @@ RSpec.describe GitlabSchema.types['AiMessage'], feature_category: :duo_chat do
   end
 
   describe '#content_html' do
-    let(:message) { build(:ai_chat_message, content: content) }
+    let(:message) { build(:ai_message, content: content) }
     let(:content) { "Hello, **World**!" }
 
     before do

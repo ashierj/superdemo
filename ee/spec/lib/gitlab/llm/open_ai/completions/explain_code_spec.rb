@@ -40,7 +40,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
   end
 
   let(:prompt_message) do
-    build(:ai_chat_message, :explain_code, user: user, resource: project, request_id: 'uuid')
+    build(:ai_message, :explain_code, user: user, resource: project, request_id: 'uuid')
   end
 
   subject(:explain_code) { described_class.new(prompt_message, template_class, options).execute }

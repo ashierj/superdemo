@@ -16,7 +16,7 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
   end
 
   describe ".completion" do
-    let(:prompt_message) { build(:ai_chat_message, ai_action: completion_name) }
+    let(:prompt_message) { build(:ai_message, ai_action: completion_name) }
 
     context 'with existing completion' do
       let(:completion_name) { :summarize_review }

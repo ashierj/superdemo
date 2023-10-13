@@ -24,7 +24,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
   end
 
   let(:prompt_message) do
-    build(:ai_chat_message, :generate_test_file, user: user, resource: merge_request, request_id: 'uuid')
+    build(:ai_message, :generate_test_file, user: user, resource: merge_request, request_id: 'uuid')
   end
 
   subject(:generate_test_file) do
