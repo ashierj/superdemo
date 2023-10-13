@@ -290,7 +290,7 @@
                 = s_('GlobalSearch|Incremental indexing queue length')
             = render Pajamas::ButtonComponent.new(href: help_page_path('integration/advanced_search/elasticsearch_troubleshooting.md'), button_options: { data: { testid: 'incremental_indexing_documentation' } }) do
               = s_('AdminArea|Documentation')
-    - unless Gitlab.com?
+    - unless ::Gitlab::Saas.feature_available?('search/indexing_status')
       .row
         .col-12
           = render Pajamas::CardComponent.new(**component_params) do |c|
