@@ -294,6 +294,25 @@ RSpec.describe Issues::CreateService, feature_category: :team_planning do
       end
     end
 
+    context 'when zoom and severity quick action is used together' do
+      let(:params) do
+        { title: 'New incident',
+          description: "/zoom https://gitlab.zoom.us/j/1234\n/severity 1",
+          issue_type: :incident }
+      end
+
+      before do
+        stub_licensed_features(issuable_resource_links: true)
+        project.add_reporter(user)
+      end
+
+      it 'adds the link and assigns the severity without any regression' do
+        expect(created_issue).to be_persisted
+        expect(created_issue.issuable_resource_links.last.link).to eq('https://gitlab.zoom.us/j/1234')
+        expect(created_issue.severity).to eq('critical')
+      end
+    end
+
     it_behaves_like 'new issuable with scoped labels' do
       let(:parent) { project }
       let(:service_result) { described_class.new(**args).execute }

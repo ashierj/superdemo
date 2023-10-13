@@ -51,17 +51,11 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService, feature
       end
 
       it 'creates a system note notification' do
-        resource_link = instance_double(IncidentManagement::IssuableResourceLink, save: true)
-
-        expect(IncidentManagement::IssuableResourceLink)
-          .to receive(:new)
-          .with(args.merge({ issue: incident }))
-          .and_return(resource_link)
         expect(SystemNoteService).to receive(:issuable_resource_link_added).with(
           incident,
           project,
           current_user,
-          resource_link
+          instance_of(IncidentManagement::IssuableResourceLink)
         )
         expect(SystemNoteService).not_to receive(:issuable_resource_link_removed)
 
@@ -160,6 +154,28 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService, feature
 
     it 'successfully creates a database record', :aggregate_failures do
       expect { execute }.to change { ::IncidentManagement::IssuableResourceLink.count }.by(1)
+    end
+
+    context 'when incident is not persisted' do
+      let(:incident) { build(:incident, project: project) }
+
+      it 'just builds the link to the incident' do
+        expect { execute }.not_to change { ::IncidentManagement::IssuableResourceLink.count }
+      end
+
+      it 'returns the initialized link with correct attributes' do
+        expect(execute.payload[:issuable_resource_link]).to have_attributes(
+          link: link,
+          link_text: link_text,
+          issue: incident
+        )
+      end
+
+      context 'when link is invalid' do
+        let(:link) { 'ftp://localhost' }
+
+        it_behaves_like 'error_message', 'Link is blocked: Only allowed schemes are http, https'
+      end
     end
   end
 end
