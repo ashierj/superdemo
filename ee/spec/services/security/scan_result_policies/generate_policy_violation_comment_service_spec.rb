@@ -15,7 +15,7 @@ RSpec.describe Security::ScanResultPolicies::GeneratePolicyViolationCommentServi
 
     let(:service) { described_class.new(merge_request, params) }
     let(:params) do
-      { 'report_type' => report_type, 'violated_policy' => violated_policy, requires_approval: requires_approval }
+      { 'report_type' => report_type, 'violated_policy' => violated_policy, 'requires_approval' => requires_approval }
     end
 
     let(:expected_violation_note) { 'Policy violation(s) detected' }
@@ -107,12 +107,12 @@ RSpec.describe Security::ScanResultPolicies::GeneratePolicyViolationCommentServi
     end
 
     context 'when there is already a bot comment' do
-      let(:violated_reports) { [report_type] }
+      let(:violated_reports) { report_type }
       let!(:bot_comment) do
         create(:note, project: project, noteable: merge_request, author: bot_user,
           note: [
             Security::ScanResultPolicies::PolicyViolationComment::MESSAGE_HEADER,
-            "<!-- violated_reports: #{violated_reports}-->",
+            "<!-- violated_reports: #{violated_reports} -->",
             "Previous comment"
           ].join("\n"))
       end
@@ -138,6 +138,23 @@ RSpec.describe Security::ScanResultPolicies::GeneratePolicyViolationCommentServi
           it 'updates the comment with a violated note and extends existing violated reports' do
             expect(bot_comment.note).to include(expected_violation_note)
             expect(bot_comment.note).to include('license_scanning,scan_finding')
+          end
+        end
+
+        context 'when the existing comment was violated with optional approvals' do
+          let!(:bot_comment) do
+            create(:note, project: project, noteable: merge_request, author: bot_user,
+              note: [
+                Security::ScanResultPolicies::PolicyViolationComment::MESSAGE_HEADER,
+                "<!-- violated_reports: #{violated_reports} -->",
+                "<!-- optional_approvals: #{violated_reports} -->",
+                "Previous comment"
+              ].join("\n"))
+          end
+
+          it 'updates the comment and removes the optional approvals section' do
+            expect(bot_comment.note).to include(expected_violation_note)
+            expect(bot_comment.note).not_to include('<!-- optional_approvals')
           end
         end
       end
