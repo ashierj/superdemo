@@ -13600,6 +13600,12 @@ msgstr ""
 msgid "Copy audio URL"
 msgstr ""
 
+msgid "Copy autocomplete description"
+msgstr ""
+
+msgid "Copy autocomplete usage hint"
+msgstr ""
+
 msgid "Copy branch name"
 msgstr ""
 
@@ -13616,6 +13622,12 @@ msgid "Copy commands"
 msgstr ""
 
 msgid "Copy commit SHA"
+msgstr ""
+
+msgid "Copy customize name"
+msgstr ""
+
+msgid "Copy descriptive label"
 msgstr ""
 
 msgid "Copy diagram URL"
