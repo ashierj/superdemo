@@ -61,7 +61,7 @@ export default {
   <gl-button-group v-if="selectedButton">
     <gl-button
       :disabled="disabled"
-      variant="success"
+      variant="confirm"
       :href="selectedButton.href"
       :loading="selectedButton.loading"
       @click="handleClick"
@@ -70,7 +70,7 @@ export default {
     <gl-collapsible-listbox
       class="split"
       toggle-class="gl-rounded-top-left-none! gl-rounded-bottom-left-none! gl-pl-1!"
-      variant="success"
+      variant="confirm"
       text-sr-only
       :toggle-text="$options.i18n.changeAction"
       :disabled="disabled || selectedButton.loading"
