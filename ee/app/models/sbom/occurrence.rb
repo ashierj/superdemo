@@ -2,6 +2,7 @@
 
 module Sbom
   class Occurrence < ApplicationRecord
+    LICENSE_COLUMNS = [:spdx_identifier, :name, :url].freeze
     include EachBatch
 
     belongs_to :component, optional: false
@@ -74,6 +75,15 @@ module Sbom
     end
 
     scope :with_component, -> { includes(:component) }
+    scope :with_licenses, -> do
+      columns = LICENSE_COLUMNS.map { |column| "#{column} TEXT" }.join(", ")
+      sbom_licenses = Arel.sql(<<~SQL.squish)
+      LEFT JOIN LATERAL jsonb_to_recordset(sbom_occurrences.licenses) AS sbom_licenses(#{columns}) ON TRUE
+      SQL
+      joins(sbom_licenses)
+        .where("licenses != '[]'")
+        .where.not(sbom_licenses: { spdx_identifier: nil })
+    end
     scope :with_project_route, -> { includes(project: :route).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/420046") }
     scope :with_source, -> { includes(:source) }
     scope :with_version, -> { includes(:component_version) }

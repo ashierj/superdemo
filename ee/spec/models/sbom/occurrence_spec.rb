@@ -436,6 +436,44 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe ".with_licenses" do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    subject { described_class.with_licenses }
+
+    context "without occurrences" do
+      it { is_expected.to be_empty }
+    end
+
+    context "without a license" do
+      let_it_be(:occurrence) { create(:sbom_occurrence, project: project) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context "with occurrences" do
+      let_it_be(:occurrence_1) { create(:sbom_occurrence, :mit, project: project) }
+      let_it_be(:occurrence_2) { create(:sbom_occurrence, :mpl_2, project: project) }
+      let_it_be(:occurrence_3) { create(:sbom_occurrence, :apache_2, project: project) }
+      let_it_be(:occurrence_4) { create(:sbom_occurrence, :apache_2, :mpl_2, project: project) }
+      let_it_be(:occurrence_5) { create(:sbom_occurrence, :mit, :mpl_2, project: project) }
+      let_it_be(:occurrence_6) { create(:sbom_occurrence, :apache_2, :mit, project: project) }
+      let_it_be(:occurrence_7) { create(:sbom_occurrence, project: project) }
+
+      it "returns an occurrence for each unique license" do
+        expect(subject.pluck(:spdx_identifier)).to eq([
+          "MIT",
+          "MPL-2.0",
+          "Apache-2.0",
+          "Apache-2.0", "MPL-2.0",
+          "MIT", "MPL-2.0",
+          "Apache-2.0", "MIT"
+        ])
+      end
+    end
+  end
+
   describe '#name' do
     let(:component) { build(:sbom_component, name: 'rails') }
     let(:occurrence) { build(:sbom_occurrence, component: component) }

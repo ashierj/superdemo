@@ -10,16 +10,7 @@ module Sbom
     end
 
     def execute
-      # rubocop: disable CodeReuse/ActiveRecord
-      namespace
-        .sbom_occurrences(with_totals: false)
-        .distinct(:licenses)
-        .order(:licenses)
-        .limit(MAXIMUM_LICENSES)
-        .pluck(:licenses)
-        .flatten
-        .uniq { |license| license["spdx_identifier"] }
-      # rubocop: enable CodeReuse/ActiveRecord
+      namespace.sbom_licenses(limit: MAXIMUM_LICENSES)
     end
 
     private
