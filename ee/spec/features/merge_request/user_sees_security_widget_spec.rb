@@ -117,4 +117,11 @@ RSpec.describe "Merge request > User sees security widget",
       )
     end
   end
+
+  it 'sets commit_path_template' do
+    visit(merge_request_path)
+    expect(page.evaluate_script('window.gl.mrWidgetData.commit_path_template')).to eq(
+      "/#{project.path_with_namespace}/-/commit/$COMMIT_SHA"
+    )
+  end
 end

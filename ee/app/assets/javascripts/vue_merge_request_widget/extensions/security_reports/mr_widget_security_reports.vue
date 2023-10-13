@@ -34,6 +34,8 @@ export default {
   name: 'WidgetSecurityReports',
   components: {
     FindingModal,
+    StandaloneFindingModal: () =>
+      import('ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue'),
     MrWidget,
     MrWidgetRow,
     SummaryText,
@@ -72,7 +74,7 @@ export default {
       variables() {
         return {
           fullPath: this.mr.sourceProjectFullPath,
-          pipelineId: this.modalData.vulnerability.found_by_pipeline?.iid,
+          pipelineId: this.pipelineIid,
           uuid: this.modalData.vulnerability.uuid,
         };
       },
@@ -242,6 +244,10 @@ export default {
       ];
     },
 
+    showStandaloneFindingModal() {
+      return this.glFeatures.standaloneFindingModalMergeRequestWidget && this.modalData;
+    },
+
     endpoints() {
       // TODO: check if gl.mrWidgetData can be safely removed after we migrate to the
       // widget extension.
@@ -259,11 +265,19 @@ export default {
       });
     },
 
+    pipelineIid() {
+      return this.modalData.vulnerability.found_by_pipeline?.iid;
+    },
+
     shouldRenderMrWidget() {
       return !this.mr.isPipelineActive && this.endpoints.length > 0;
     },
   },
   methods: {
+    updateFindingState(state) {
+      this.modalData.vulnerability.state = state;
+    },
+
     handleIsLoading(value) {
       this.isLoading = value;
     },
@@ -626,8 +640,17 @@ export default {
       />
     </template>
     <template #content>
+      <standalone-finding-modal
+        v-if="showStandaloneFindingModal"
+        :finding-uuid="modalData.vulnerability.uuid"
+        :pipeline-iid="pipelineIid"
+        :project-full-path="mr.targetProjectFullPath"
+        @hidden="clearModalData"
+        @dismissed="updateFindingState('dismissed')"
+        @detected="updateFindingState('detected')"
+      />
       <finding-modal
-        v-if="modalData"
+        v-else-if="modalData"
         :visible="true"
         :modal="modalData"
         :is-dismissing-vulnerability="isDismissingFinding"

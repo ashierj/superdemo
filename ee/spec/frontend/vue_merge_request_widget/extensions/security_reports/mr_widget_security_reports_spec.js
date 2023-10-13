@@ -6,6 +6,7 @@ import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
 import MRSecurityWidget from 'ee/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
+import VulnerabilityFindingModal from 'ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue';
 import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports/summary_text.vue';
 import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.query.graphql';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
@@ -86,9 +87,15 @@ describe('MR Widget Security Reports', () => {
     mountFn = shallowMountExtended,
     findingHandler = [findingQuery, findingQueryMockData()],
     additionalHandlers = [],
+    enableStandaloneModal = true,
   } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
       apolloProvider: createMockApollo([findingHandler, ...additionalHandlers]),
+      provide: {
+        glFeatures: {
+          standaloneFindingModalMergeRequestWidget: enableStandaloneModal,
+        },
+      },
       propsData: {
         ...propsData,
         mr: {
@@ -129,6 +136,7 @@ describe('MR Widget Security Reports', () => {
     mockDataProps,
     mrProps = {},
     additionalHandlers,
+    enableStandaloneModal,
   }) => {
     mockDataFn(mockDataProps);
     createComponent({
@@ -137,6 +145,7 @@ describe('MR Widget Security Reports', () => {
       propsData: {
         mr: mrProps,
       },
+      enableStandaloneModal,
     });
 
     await waitForPromises();
@@ -156,6 +165,7 @@ describe('MR Widget Security Reports', () => {
   const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
   const findDismissedBadge = () => wrapper.findComponent(GlBadge);
   const findModal = () => wrapper.findComponent(FindingModal);
+  const findStandaloneModal = () => wrapper.findComponent(VulnerabilityFindingModal);
   const findDynamicScroller = () => wrapper.findByTestId('dynamic-content-scroller');
 
   beforeEach(() => {
@@ -569,482 +579,614 @@ describe('MR Widget Security Reports', () => {
     };
 
     const createComponentExpandWidgetAndOpenModal = async ({
-      mockDataProps = {},
+      mockDataFn = mockWithData,
+      mockDataProps,
       mrProps,
       additionalHandlers,
+      enableStandaloneModal = true,
     } = {}) => {
       await createComponentAndExpandWidget({
-        mockDataFn: mockWithData,
+        mockDataFn,
         mockDataProps,
         mrProps,
         additionalHandlers,
+        enableStandaloneModal,
       });
 
       // Click on the vulnerability name
       wrapper.findAllByText('Password leak').at(0).trigger('click');
+
+      if (enableStandaloneModal) {
+        // We need to wait for the import and the mounting of vulnerability_finding_modal.vue
+        // because it's dynamically imported.
+        await import('ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue');
+        await nextTick();
+      }
     };
 
-    it('does not display the modal until the finding is clicked', async () => {
-      await createComponentAndExpandWidget({ mockDataFn: mockWithData });
-
-      expect(findModal().exists()).toBe(false);
-    });
-
-    it('clears modal data when the modal is closed', async () => {
-      await createComponentExpandWidgetAndOpenModal();
-
-      expect(findModal().props('modal')).not.toBe(null);
-
-      findModal().vm.$emit('hidden');
-      await nextTick();
-
-      expect(findModal().exists()).toBe(false);
-    });
-
-    it('renders the modal when the finding is clicked', async () => {
-      await createComponentExpandWidgetAndOpenModal();
-
-      const modal = findModal();
-
-      expect(modal.props('canCreateIssue')).toBe(false);
-      expect(modal.props('isDismissingVulnerability')).toBe(false);
-      expect(modal.props('isLoadingAdditionalInfo')).toBe(true);
-
-      await waitForPromises();
-
-      expect(modal.props('isLoadingAdditionalInfo')).toBe(false);
-
-      const { mergeRequest, issueLinks, vulnerability } = findingMockData;
-      const { issue } = issueLinks.nodes[0];
-
-      expect(modal.props('modal')).toMatchObject({
-        title: 'Password leak',
-        error: null,
-        isShowingDeleteButtons: false,
-        vulnerability: {
-          uuid: '0',
-          severity: 'critical',
-          name: 'Password leak',
-          state_transitions: vulnerability.stateTransitions.nodes.map(
-            convertObjectPropsToSnakeCase,
-          ),
-          merge_request_links: [
+    describe('`standalone_finding_modal_merge_request_widget` enabled', () => {
+      const mockWithDataOneFinding = (state = 'dismissed') => {
+        mockAxios.onGet(reportEndpoints.sastComparisonPathV2).replyOnce(HTTP_STATUS_OK, {
+          added: [
             {
-              author: mergeRequest.author,
-              merge_request_path: mergeRequest.webUrl,
-              created_at: mergeRequest.createdAt,
-              merge_request_iid: mergeRequest.iid,
+              uuid: '1',
+              severity: 'critical',
+              name: 'Password leak',
+              state,
+              found_by_pipeline: {
+                iid: 1,
+              },
+              project: {
+                id: 278964,
+                name: 'GitLab',
+                full_path: '/gitlab-org/gitlab',
+                full_name: 'GitLab.org / GitLab',
+              },
             },
           ],
-          issue_links: [
-            {
-              author: issue.author,
-              created_at: issue.createdAt,
-              issue_url: issue.webUrl,
-              issue_iid: issue.iid,
-              link_type: 'created',
-            },
-          ],
-        },
-      });
-    });
-
-    it('downloads a patch when the downloadPatch event is emitted', async () => {
-      await createComponentExpandWidgetAndOpenModal({
-        mockDataProps: {
-          remediations: [{ diff: 'some-diff' }],
-        },
-      });
-
-      findModal().vm.$emit('downloadPatch');
-
-      expect(download).toHaveBeenCalledWith({
-        fileData: 'some-diff',
-        fileName: 'remediation.patch',
-      });
-    });
-
-    describe('merge request creation', () => {
-      it('handles merge request creation - success', async () => {
-        const mergeRequestPath = '/merge/request/1';
-
-        mockAxios.onPost(createVulnerabilityFeedbackMergeRequestPath).replyOnce(HTTP_STATUS_OK, {
-          merge_request_links: [{ merge_request_path: mergeRequestPath }],
+          fixed: [],
         });
 
-        await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackDismissalPath,
-          },
+        [
+          reportEndpoints.dastComparisonPathV2,
+          reportEndpoints.dependencyScanningComparisonPathV2,
+          reportEndpoints.coverageFuzzingComparisonPathV2,
+          reportEndpoints.apiFuzzingComparisonPathV2,
+          reportEndpoints.secretDetectionComparisonPathV2,
+          reportEndpoints.containerScanningComparisonPathV2,
+        ].forEach((path) => {
+          mockAxios.onGet(path).replyOnce(HTTP_STATUS_OK, {
+            added: [],
+          });
+        });
+      };
+
+      it('does not display the modal until the finding is clicked', async () => {
+        await createComponentAndExpandWidget({
+          mockDataFn: mockWithData,
         });
 
-        const spy = jest.spyOn(urlUtils, 'visitUrl');
+        expect(findStandaloneModal().exists()).toBe(false);
+      });
 
-        expect(findModal().props('isCreatingMergeRequest')).toBe(false);
+      it('clears modal data when the modal is closed', async () => {
+        await createComponentExpandWidgetAndOpenModal();
 
-        findModal().vm.$emit('createMergeRequest');
+        expect(findStandaloneModal().props('modal')).not.toBe(null);
 
+        findStandaloneModal().vm.$emit('hidden');
         await nextTick();
 
-        expect(findModal().props('isCreatingMergeRequest')).toBe(true);
-
-        await waitForPromises();
-
-        expect(spy).toHaveBeenCalledWith(mergeRequestPath);
+        expect(findStandaloneModal().exists()).toBe(false);
       });
 
-      it('handles merge request creation - error', async () => {
-        mockAxios
-          .onPost(createVulnerabilityFeedbackMergeRequestPath)
-          .replyOnce(HTTP_STATUS_BAD_REQUEST);
-
+      it('renders the modal when the finding is clicked', async () => {
+        const targetProjectFullPath = 'root/security-reports-v2';
         await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackDismissalPath,
-          },
+          mrProps: { targetProjectFullPath },
         });
 
-        findModal().vm.$emit('createMergeRequest');
+        const modal = findStandaloneModal();
 
-        await waitForPromises();
+        expect(modal.props()).toMatchObject({
+          findingUuid: '0',
+          pipelineIid: 1,
+          projectFullPath: targetProjectFullPath,
+        });
+      });
 
-        expect(findModal().props('modal').error).toBe(
-          'There was an error creating the merge request. Please try again.',
-        );
+      it('renders the dismissed badge when `dismissed` is emitted', async () => {
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataFn: mockWithDataOneFinding,
+          mockDataProps: { state: 'detected' },
+        });
+
+        expect(findDismissedBadge().exists()).toBe(false);
+
+        findStandaloneModal().vm.$emit('dismissed');
+        await nextTick();
+
+        expect(findDismissedBadge().exists()).toBe(true);
+      });
+
+      it('does not render the dismissed badge when `detected` is emitted', async () => {
+        await createComponentExpandWidgetAndOpenModal({ mockDataFn: mockWithDataOneFinding });
+
+        expect(findDismissedBadge().exists()).toBe(true);
+
+        findStandaloneModal().vm.$emit('detected');
+        await nextTick();
+
+        expect(findDismissedBadge().exists()).toBe(false);
       });
     });
 
-    describe('issue creation', () => {
-      it('can create issue when createVulnerabilityFeedbackIssuePath is provided', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackIssuePath,
-          },
+    describe('`standalone_finding_modal_merge_request_widget` disabled', () => {
+      it('does not display the modal until the finding is clicked', async () => {
+        await createComponentAndExpandWidget({
+          mockDataFn: mockWithData,
+          enableStandaloneModal: false,
         });
 
-        expect(findModal().props('canCreateIssue')).toBe(true);
+        expect(findModal().exists()).toBe(false);
       });
 
-      it('can create issue when user can create a jira issue', async () => {
+      it('clears modal data when the modal is closed', async () => {
+        await createComponentExpandWidgetAndOpenModal({ enableStandaloneModal: false });
+
+        expect(findModal().props('modal')).not.toBe(null);
+
+        findModal().vm.$emit('hidden');
+        await nextTick();
+
+        expect(findModal().exists()).toBe(false);
+      });
+
+      it('renders the modal when the finding is clicked', async () => {
+        await createComponentExpandWidgetAndOpenModal({ enableStandaloneModal: false });
+
+        const modal = findModal();
+
+        expect(modal.props('canCreateIssue')).toBe(false);
+        expect(modal.props('isDismissingVulnerability')).toBe(false);
+        expect(modal.props('isLoadingAdditionalInfo')).toBe(true);
+
+        await waitForPromises();
+
+        expect(modal.props('isLoadingAdditionalInfo')).toBe(false);
+
+        const { mergeRequest, issueLinks, vulnerability } = findingMockData;
+        const { issue } = issueLinks.nodes[0];
+
+        expect(modal.props('modal')).toMatchObject({
+          title: 'Password leak',
+          error: null,
+          isShowingDeleteButtons: false,
+          vulnerability: {
+            uuid: '0',
+            severity: 'critical',
+            name: 'Password leak',
+            state_transitions: vulnerability.stateTransitions.nodes.map(
+              convertObjectPropsToSnakeCase,
+            ),
+            merge_request_links: [
+              {
+                author: mergeRequest.author,
+                merge_request_path: mergeRequest.webUrl,
+                created_at: mergeRequest.createdAt,
+                merge_request_iid: mergeRequest.iid,
+              },
+            ],
+            issue_links: [
+              {
+                author: issue.author,
+                created_at: issue.createdAt,
+                issue_url: issue.webUrl,
+                issue_iid: issue.iid,
+                link_type: 'created',
+              },
+            ],
+          },
+        });
+      });
+
+      it('downloads a patch when the downloadPatch event is emitted', async () => {
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps: {
-            create_jira_issue_url: 'create/jira/issue/url',
+            remediations: [{ diff: 'some-diff' }],
           },
+          enableStandaloneModal: false,
         });
 
-        expect(findModal().props('canCreateIssue')).toBe(true);
-      });
+        findModal().vm.$emit('downloadPatch');
 
-      it('handles issue creation - success', async () => {
-        const webUrl = 'https://gitlab.com/issue/1';
-
-        await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackIssuePath,
-          },
-          additionalHandlers: [
-            [
-              createIssueMutation,
-              jest.fn().mockResolvedValue({
-                data: {
-                  securityFindingCreateIssue: {
-                    issue: {
-                      id: '1',
-                      webUrl,
-                    },
-                    errors: [],
-                  },
-                },
-              }),
-            ],
-          ],
+        expect(download).toHaveBeenCalledWith({
+          fileData: 'some-diff',
+          fileName: 'remediation.patch',
         });
-
-        const spy = jest.spyOn(urlUtils, 'visitUrl');
-
-        findModal().vm.$emit('createNewIssue');
-
-        await waitForPromises();
-
-        expect(spy).toHaveBeenCalledWith(webUrl);
       });
 
-      it('handles issue creation - error', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackIssuePath,
-          },
-          additionalHandlers: [[createIssueMutation, jest.fn().mockRejectedValue()]],
-        });
+      describe('merge request creation', () => {
+        it('handles merge request creation - success', async () => {
+          const mergeRequestPath = '/merge/request/1';
 
-        findModal().vm.$emit('createNewIssue');
+          mockAxios.onPost(createVulnerabilityFeedbackMergeRequestPath).replyOnce(HTTP_STATUS_OK, {
+            merge_request_links: [{ merge_request_path: mergeRequestPath }],
+          });
 
-        await waitForPromises();
-
-        expect(findModal().props('modal').error).toBe(
-          'There was an error creating the issue. Please try again.',
-        );
-      });
-    });
-
-    describe('dismissing finding', () => {
-      it('can dismiss finding when createVulnerabilityFeedbackDismissalPath is provided', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackDismissalPath,
-          },
-        });
-
-        expect(findModal().props('canDismissVulnerability')).toBe(true);
-      });
-
-      it('handles dismissing finding - success', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
-        });
-
-        const rootWrapper = createWrapper(wrapper.vm.$root);
-
-        expect(findDismissedBadge().exists()).toBe(false);
-        expect(rootWrapper.emitted(BV_HIDE_MODAL)).toBeUndefined();
-
-        findModal().vm.$emit('dismissVulnerability');
-
-        await waitForPromises();
-
-        expect(toast).toHaveBeenCalledWith("Dismissed 'Password leak'");
-        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
-
-        // There should be a finding with the dismissed badge now
-        expect(findDismissedBadge().text()).toBe('Dismissed');
-      });
-
-      it('handles dismissing finding - error', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
-        });
-
-        findModal().vm.$emit('dismissVulnerability');
-
-        await waitForPromises();
-
-        expect(findModal().props('modal').error).toBe(
-          'There was an error dismissing the vulnerability. Please try again.',
-        );
-
-        expect(findDismissedBadge().exists()).toBe(false);
-      });
-    });
-
-    describe('dismissal comment', () => {
-      let mockDataProps;
-
-      beforeEach(() => {
-        mockDataProps = {
-          state: 'dismissed',
-          state_transitions: [
-            {
-              author: {},
-              to_state: 'DISMISSED',
+          await createComponentExpandWidgetAndOpenModal({
+            mrProps: {
+              createVulnerabilityFeedbackDismissalPath,
             },
-          ],
-          dismissal_feedback: {
-            author: {},
-            project_id: 20,
-            id: 15,
-          },
-        };
-      });
+            enableStandaloneModal: false,
+          });
 
-      it.each`
-        event                                  | booleanValue
-        ${'openDismissalCommentBox'}           | ${true}
-        ${'closeDismissalCommentBox'}          | ${false}
-        ${'editVulnerabilityDismissalComment'} | ${true}
-      `('handles opening dismissal comment for event $event', async ({ event, booleanValue }) => {
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps,
+          const spy = jest.spyOn(urlUtils, 'visitUrl');
+
+          expect(findModal().props('isCreatingMergeRequest')).toBe(false);
+
+          findModal().vm.$emit('createMergeRequest');
+
+          await nextTick();
+
+          expect(findModal().props('isCreatingMergeRequest')).toBe(true);
+
+          await waitForPromises();
+
+          expect(spy).toHaveBeenCalledWith(mergeRequestPath);
         });
 
-        expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
+        it('handles merge request creation - error', async () => {
+          mockAxios
+            .onPost(createVulnerabilityFeedbackMergeRequestPath)
+            .replyOnce(HTTP_STATUS_BAD_REQUEST);
 
-        findModal().vm.$emit(event);
+          await createComponentExpandWidgetAndOpenModal({
+            mrProps: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+            enableStandaloneModal: false,
+          });
 
-        await waitForPromises();
+          findModal().vm.$emit('createMergeRequest');
 
-        expect(findModal().props('modal').isCommentingOnDismissal).toBe(booleanValue);
-      });
+          await waitForPromises();
 
-      it('adds the dismissal comment - success', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps,
-          additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
+          expect(findModal().props('modal').error).toBe(
+            'There was an error creating the merge request. Please try again.',
+          );
         });
-        const rootWrapper = createWrapper(wrapper.vm.$root);
-        findModal().vm.$emit('addDismissalComment', 'Edited comment');
-
-        await waitForPromises();
-
-        expect(toast).toHaveBeenCalledWith("Comment added to 'Password leak'");
-        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
       });
 
-      it('edits the dismissal comment - success', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps,
-          additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
-        });
-        const rootWrapper = createWrapper(wrapper.vm.$root);
-        await waitForPromises();
+      describe('issue creation', () => {
+        it('can create issue when createVulnerabilityFeedbackIssuePath is provided', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mrProps: {
+              createVulnerabilityFeedbackIssuePath,
+            },
+            enableStandaloneModal: false,
+          });
 
-        findModal().vm.$emit('addDismissalComment', 'Edited comment');
-
-        await waitForPromises();
-
-        expect(toast).toHaveBeenCalledWith("Comment edited on 'Password leak'");
-        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
-      });
-
-      it('adds the dismissal comment - error', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps,
-          additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
+          expect(findModal().props('canCreateIssue')).toBe(true);
         });
 
-        findModal().vm.$emit('addDismissalComment', 'Edited comment');
+        it('can create issue when user can create a jira issue', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps: {
+              create_jira_issue_url: 'create/jira/issue/url',
+            },
+            enableStandaloneModal: false,
+          });
 
-        await waitForPromises();
-
-        expect(toast).not.toHaveBeenCalled();
-        expect(findModal().props('modal').error).toBe('There was an error adding the comment.');
-      });
-
-      it('deletes the dismissal comment - success', async () => {
-        mockDataProps.dismissal_feedback.comment_details = {
-          comment: 'Existing comment',
-          comment_author: { id: 15 },
-        };
-
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps,
-          additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
-        });
-        const rootWrapper = createWrapper(wrapper.vm.$root);
-
-        expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
-
-        // This displays the `Delete` button
-        findModal().vm.$emit('showDismissalDeleteButtons');
-        await nextTick();
-
-        expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
-
-        // This triggers the actual delete call
-        findModal().vm.$emit('deleteDismissalComment');
-        await nextTick();
-
-        await waitForPromises();
-
-        expect(toast).toHaveBeenCalledWith("Comment deleted on 'Password leak'");
-        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
-      });
-
-      it('deletes the dismissal comment - error', async () => {
-        mockDataProps.dismissal_feedback.comment_details = {
-          comment: 'Existing comment',
-          comment_author: { id: 15 },
-        };
-
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps,
-          additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
+          expect(findModal().props('canCreateIssue')).toBe(true);
         });
 
-        expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
+        it('handles issue creation - success', async () => {
+          const webUrl = 'https://gitlab.com/issue/1';
 
-        // This displays the `Delete` button
-        findModal().vm.$emit('showDismissalDeleteButtons');
-        await nextTick();
+          await createComponentExpandWidgetAndOpenModal({
+            mrProps: {
+              createVulnerabilityFeedbackIssuePath,
+            },
+            enableStandaloneModal: false,
+            additionalHandlers: [
+              [
+                createIssueMutation,
+                jest.fn().mockResolvedValue({
+                  data: {
+                    securityFindingCreateIssue: {
+                      issue: {
+                        id: '1',
+                        webUrl,
+                      },
+                      errors: [],
+                    },
+                  },
+                }),
+              ],
+            ],
+          });
 
-        expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
+          const spy = jest.spyOn(urlUtils, 'visitUrl');
 
-        // This triggers the actual delete call
-        findModal().vm.$emit('deleteDismissalComment');
-        await nextTick();
+          findModal().vm.$emit('createNewIssue');
 
-        await waitForPromises();
+          await waitForPromises();
 
-        expect(toast).not.toHaveBeenCalled();
-        expect(findModal().props('modal').error).toBe('There was an error deleting the comment.');
+          expect(spy).toHaveBeenCalledWith(webUrl);
+        });
+
+        it('handles issue creation - error', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mrProps: {
+              createVulnerabilityFeedbackIssuePath,
+            },
+            enableStandaloneModal: false,
+            additionalHandlers: [[createIssueMutation, jest.fn().mockRejectedValue()]],
+          });
+
+          findModal().vm.$emit('createNewIssue');
+
+          await waitForPromises();
+
+          expect(findModal().props('modal').error).toBe(
+            'There was an error creating the issue. Please try again.',
+          );
+        });
       });
-    });
 
-    describe('undo dismissing finding', () => {
-      let mockDataProps;
+      describe('dismissing finding', () => {
+        it('can dismiss finding when createVulnerabilityFeedbackDismissalPath is provided', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mrProps: {
+              createVulnerabilityFeedbackDismissalPath,
+            },
+            enableStandaloneModal: false,
+          });
 
-      beforeEach(() => {
-        mockDataProps = {
-          state: 'dismissed',
-          dismissal_feedback: {
-            author: {},
-          },
-        };
+          expect(findModal().props('canDismissVulnerability')).toBe(true);
+        });
+
+        it('handles dismissing finding - success', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            enableStandaloneModal: false,
+            additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
+          });
+
+          const rootWrapper = createWrapper(wrapper.vm.$root);
+
+          expect(findDismissedBadge().exists()).toBe(false);
+          expect(rootWrapper.emitted(BV_HIDE_MODAL)).toBeUndefined();
+
+          findModal().vm.$emit('dismissVulnerability');
+
+          await waitForPromises();
+
+          expect(toast).toHaveBeenCalledWith("Dismissed 'Password leak'");
+          expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
+
+          // There should be a finding with the dismissed badge now
+          expect(findDismissedBadge().text()).toBe('Dismissed');
+        });
+
+        it('handles dismissing finding - error', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            enableStandaloneModal: false,
+            additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
+          });
+
+          findModal().vm.$emit('dismissVulnerability');
+
+          await waitForPromises();
+
+          expect(findModal().props('modal').error).toBe(
+            'There was an error dismissing the vulnerability. Please try again.',
+          );
+
+          expect(findDismissedBadge().exists()).toBe(false);
+        });
       });
 
-      it('handles undoing dismissing a finding - success', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps,
-          additionalHandlers: [
-            [
-              revertFindingToDetectedMutation,
-              jest.fn().mockResolvedValue({
-                data: {
-                  securityFindingRevertToDetected: {
-                    errors: [],
-                    securityFinding: {
-                      vulnerability: {
-                        id: 1,
-                        stateTransitions: {
-                          nodes: {
-                            author: null,
-                            comment: 'comment',
-                            createdAt: '',
-                            toState: 'DETECTED',
+      describe('dismissal comment', () => {
+        let mockDataProps;
+
+        beforeEach(() => {
+          mockDataProps = {
+            state: 'dismissed',
+            state_transitions: [
+              {
+                author: {},
+                to_state: 'DISMISSED',
+              },
+            ],
+            dismissal_feedback: {
+              author: {},
+              project_id: 20,
+              id: 15,
+            },
+          };
+        });
+
+        it.each`
+          event                                  | booleanValue
+          ${'openDismissalCommentBox'}           | ${true}
+          ${'closeDismissalCommentBox'}          | ${false}
+          ${'editVulnerabilityDismissalComment'} | ${true}
+        `('handles opening dismissal comment for event $event', async ({ event, booleanValue }) => {
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps,
+            enableStandaloneModal: false,
+          });
+
+          expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
+
+          findModal().vm.$emit(event);
+
+          await waitForPromises();
+
+          expect(findModal().props('modal').isCommentingOnDismissal).toBe(booleanValue);
+        });
+
+        it('adds the dismissal comment - success', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps,
+            enableStandaloneModal: false,
+            additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
+          });
+          const rootWrapper = createWrapper(wrapper.vm.$root);
+          findModal().vm.$emit('addDismissalComment', 'Edited comment');
+
+          await waitForPromises();
+
+          expect(toast).toHaveBeenCalledWith("Comment added to 'Password leak'");
+          expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
+        });
+
+        it('edits the dismissal comment - success', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps,
+            enableStandaloneModal: false,
+            additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
+          });
+          const rootWrapper = createWrapper(wrapper.vm.$root);
+          await waitForPromises();
+
+          findModal().vm.$emit('addDismissalComment', 'Edited comment');
+
+          await waitForPromises();
+
+          expect(toast).toHaveBeenCalledWith("Comment edited on 'Password leak'");
+          expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
+        });
+
+        it('adds the dismissal comment - error', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps,
+            enableStandaloneModal: false,
+            additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
+          });
+
+          findModal().vm.$emit('addDismissalComment', 'Edited comment');
+
+          await waitForPromises();
+
+          expect(toast).not.toHaveBeenCalled();
+          expect(findModal().props('modal').error).toBe('There was an error adding the comment.');
+        });
+
+        it('deletes the dismissal comment - success', async () => {
+          mockDataProps.dismissal_feedback.comment_details = {
+            comment: 'Existing comment',
+            comment_author: { id: 15 },
+          };
+
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps,
+            enableStandaloneModal: false,
+            additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
+          });
+          const rootWrapper = createWrapper(wrapper.vm.$root);
+
+          expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
+
+          // This displays the `Delete` button
+          findModal().vm.$emit('showDismissalDeleteButtons');
+          await nextTick();
+
+          expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
+
+          // This triggers the actual delete call
+          findModal().vm.$emit('deleteDismissalComment');
+          await nextTick();
+
+          await waitForPromises();
+
+          expect(toast).toHaveBeenCalledWith("Comment deleted on 'Password leak'");
+          expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
+        });
+
+        it('deletes the dismissal comment - error', async () => {
+          mockDataProps.dismissal_feedback.comment_details = {
+            comment: 'Existing comment',
+            comment_author: { id: 15 },
+          };
+
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps,
+            enableStandaloneModal: false,
+            additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
+          });
+
+          expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
+
+          // This displays the `Delete` button
+          findModal().vm.$emit('showDismissalDeleteButtons');
+          await nextTick();
+
+          expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
+
+          // This triggers the actual delete call
+          findModal().vm.$emit('deleteDismissalComment');
+          await nextTick();
+
+          await waitForPromises();
+
+          expect(toast).not.toHaveBeenCalled();
+          expect(findModal().props('modal').error).toBe('There was an error deleting the comment.');
+        });
+      });
+
+      describe('undo dismissing finding', () => {
+        let mockDataProps;
+
+        beforeEach(() => {
+          mockDataProps = {
+            state: 'dismissed',
+            dismissal_feedback: {
+              author: {},
+            },
+          };
+        });
+
+        it('handles undoing dismissing a finding - success', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps,
+            enableStandaloneModal: false,
+            additionalHandlers: [
+              [
+                revertFindingToDetectedMutation,
+                jest.fn().mockResolvedValue({
+                  data: {
+                    securityFindingRevertToDetected: {
+                      errors: [],
+                      securityFinding: {
+                        vulnerability: {
+                          id: 1,
+                          stateTransitions: {
+                            nodes: {
+                              author: null,
+                              comment: 'comment',
+                              createdAt: '',
+                              toState: 'DETECTED',
+                            },
                           },
                         },
                       },
                     },
                   },
-                },
-              }),
+                }),
+              ],
             ],
-          ],
-        });
-        const rootWrapper = createWrapper(wrapper.vm.$root);
+          });
+          const rootWrapper = createWrapper(wrapper.vm.$root);
 
-        findModal().vm.$emit('revertDismissVulnerability');
+          findModal().vm.$emit('revertDismissVulnerability');
 
-        await waitForPromises();
+          await waitForPromises();
 
-        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
+          expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
 
-        // The dismissal_feedback object should be set back to `null`.
-        expect(findModal().props('modal').vulnerability.dismissal_feedback).toBe(null);
-      });
-
-      it('handles undoing dismissing a finding - error', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          mockDataProps,
-          additionalHandlers: [[revertFindingToDetectedMutation, jest.fn().mockRejectedValue({})]],
+          // The dismissal_feedback object should be set back to `null`.
+          expect(findModal().props('modal').vulnerability.dismissal_feedback).toBe(null);
         });
 
-        findModal().vm.$emit('revertDismissVulnerability');
+        it('handles undoing dismissing a finding - error', async () => {
+          await createComponentExpandWidgetAndOpenModal({
+            mockDataProps,
+            enableStandaloneModal: false,
+            additionalHandlers: [
+              [revertFindingToDetectedMutation, jest.fn().mockRejectedValue({})],
+            ],
+          });
 
-        await waitForPromises();
+          findModal().vm.$emit('revertDismissVulnerability');
 
-        expect(findModal().props('modal').error).toBe(
-          'There was an error reverting the dismissal. Please try again.',
-        );
+          await waitForPromises();
+
+          expect(findModal().props('modal').error).toBe(
+            'There was an error reverting the dismissal. Please try again.',
+          );
+        });
       });
     });
   });
