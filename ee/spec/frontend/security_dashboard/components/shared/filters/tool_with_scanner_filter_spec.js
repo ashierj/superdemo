@@ -7,7 +7,10 @@ import QuerystringSync from 'ee/security_dashboard/components/shared/filters/que
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import { MOCK_SCANNERS, MOCK_SCANNERS_WITH_CLUSTER_IMAGE_SCANNING } from './mock_data';
 
-const manuallyAddedText = 'Manually added';
+const MANUALLY_ADDED_OPTION = {
+  text: 'Manually added',
+  value: 'gitlab-manual-vulnerability-report',
+};
 
 describe('Tool With Scanner Filter component', () => {
   let wrapper;
@@ -34,6 +37,10 @@ describe('Tool With Scanner Filter component', () => {
 
   const expectSelectedItems = (ids) => {
     expect(findListBox().props('selected')).toMatchObject(ids);
+  };
+
+  const expectFilterChanged = (expected) => {
+    expect(wrapper.emitted('filter-changed')[0][0]).toEqual(expected);
   };
 
   const findDropdownItemByValue = (value) => {
@@ -121,11 +128,11 @@ describe('Tool With Scanner Filter component', () => {
     });
 
     it('shows the "Manually added" item', () => {
-      const manuallyAddedValue = 'gitlab-manual-vulnerability-report';
+      createWrapper();
 
-      expect(findDropdownItemByValue(manuallyAddedValue)).toMatchObject({
-        text: manuallyAddedText,
-        value: manuallyAddedValue,
+      expect(findDropdownItemByValue(MANUALLY_ADDED_OPTION.value)).toMatchObject({
+        text: MANUALLY_ADDED_OPTION.text,
+        value: MANUALLY_ADDED_OPTION.value,
       });
     });
 
@@ -145,6 +152,33 @@ describe('Tool With Scanner Filter component', () => {
           text: expectedText,
           value: externalId,
         });
+      },
+    );
+  });
+
+  describe('filter-changed event', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
+    it('emits the default presets when nothing is selected', async () => {
+      await clickAllItem();
+
+      expectFilterChanged({ scanner: [] });
+    });
+
+    it("emits custom Manually added's external id", async () => {
+      await clickDropdownItem(MANUALLY_ADDED_OPTION.value);
+
+      expectFilterChanged({ scanner: [MANUALLY_ADDED_OPTION.value] });
+    });
+
+    it.each(['eslint', 'gitleaks'])(
+      "emits the scanner's external id '%s' when it is selected",
+      async (externalId) => {
+        await clickDropdownItem(externalId);
+
+        expectFilterChanged({ scanner: [externalId] });
       },
     );
   });
