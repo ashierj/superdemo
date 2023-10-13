@@ -120,7 +120,7 @@ module Users
       if @user.credit_card_validation.used_by_banned_user?
         json_response =
           if Feature.enabled?(:identity_verification_auto_ban)
-            @user.ban
+            ::Users::AutoBanService.new(user: @user, reason: :banned_credit_card).execute
             { message: user_banned_error_message, reason: :related_to_banned_user }
           else
             { message: s_('IdentityVerification|There was a problem with the credit card details you ' \

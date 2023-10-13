@@ -81,6 +81,10 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         end
 
         it 'bans the user' do
+          expect_next_instance_of(::Users::AutoBanService, user: user, reason: :banned_phone_number) do |instance|
+            expect(instance).to receive(:execute).and_call_original
+          end
+
           service.execute
 
           expect(user).to be_banned
