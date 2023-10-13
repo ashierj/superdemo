@@ -26,8 +26,8 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
         let(:container) { page.find('#new_protected_branch') }
         let(:code_owner_toggle) { container.find('.js-code-owner-toggle').find('button') }
         let(:branch_input) { container.find('.js-protected-branch-select') }
-        let(:allowed_to_merge_input) { container.find('.js-allowed-to-merge') }
-        let(:allowed_to_push) { container.find('.js-allowed-to-push') }
+        let(:allowed_to_merge_input) { container.find('.js-allowed-to-merge:not([disabled])') }
+        let(:allowed_to_push) { container.find('.js-allowed-to-push:not([disabled])') }
 
         before do
           visit project_settings_repository_path(project)

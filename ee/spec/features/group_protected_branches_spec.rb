@@ -94,8 +94,8 @@ RSpec.describe 'Group-level Protected Branches', :js, feature_category: :source_
 
   describe 'create protected branch' do
     let(:branch_input) { new_container.find('#protected_branch_name') }
-    let(:allowed_to_merge_input) { new_container.find('.js-allowed-to-merge') }
-    let(:allowed_to_push_input) { new_container.find('.js-allowed-to-push') }
+    let(:allowed_to_merge_input) { new_container.find('.js-allowed-to-merge:not([disabled])') }
+    let(:allowed_to_push_input) { new_container.find('.js-allowed-to-push:not([disabled])') }
     let(:force_push_toggle) { new_container.find('.js-force-push-toggle').find('button') }
     let(:code_owner_toggle) { new_container.find('.js-code-owner-toggle').find('button') }
 
@@ -124,8 +124,8 @@ RSpec.describe 'Group-level Protected Branches', :js, feature_category: :source_
 
   describe 'update protected branch' do
     let(:branch_input) { list_container.find('.ref-name') }
-    let(:allowed_to_merge_input) { list_container.find('.js-allowed-to-merge') }
-    let(:allowed_to_push_input) { list_container.find('.js-allowed-to-push') }
+    let(:allowed_to_merge_input) { list_container.find('.js-allowed-to-merge:not([disabled])') }
+    let(:allowed_to_push_input) { list_container.find('.js-allowed-to-push:not([disabled])') }
     let(:force_push_toggle) { list_container.find('.js-force-push-toggle').find('button') }
     let(:code_owner_toggle) { list_container.find('.js-code-owner-toggle').find('button') }
 
