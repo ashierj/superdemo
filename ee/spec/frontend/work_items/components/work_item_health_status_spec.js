@@ -1,4 +1,4 @@
-import { GlDropdownItem, GlFormGroup, GlDropdown, GlBadge } from '@gitlab/ui';
+import { GlFormGroup, GlBadge, GlCollapsibleListbox } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount, mount } from '@vue/test-utils';
@@ -33,9 +33,8 @@ describe('WorkItemHealthStatus component', () => {
   const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
 
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findBadge = () => wrapper.findComponent(GlBadge);
-  const findDropdownItemAt = (index) => wrapper.findAllComponents(GlDropdownItem).at(index);
 
   const createComponent = ({
     canUpdate = true,
@@ -86,7 +85,7 @@ describe('WorkItemHealthStatus component', () => {
       it(`${canUpdate ? 'renders' : 'does not render'} the dropdown`, () => {
         createComponent({ canUpdate });
 
-        expect(findDropdown().exists()).toBe(exists);
+        expect(findListbox().exists()).toBe(exists);
       });
     });
   });
@@ -122,18 +121,18 @@ describe('WorkItemHealthStatus component', () => {
 
   describe('health status input', () => {
     it.each`
-      index | expectedStatus
-      ${0}  | ${null}
-      ${1}  | ${'onTrack'}
-      ${2}  | ${'needsAttention'}
-      ${3}  | ${'atRisk'}
-    `('calls mutation with health status = "$expectedStatus"', ({ index, expectedStatus }) => {
+      selected            | expectedStatus
+      ${'empty'}          | ${null}
+      ${'onTrack'}        | ${'onTrack'}
+      ${'needsAttention'} | ${'needsAttention'}
+      ${'atRisk'}         | ${'atRisk'}
+    `('calls mutation with health status = "$expectedStatus"', ({ selected, expectedStatus }) => {
       const mutationSpy = jest.fn().mockResolvedValue(updateWorkItemMutationResponse);
       createComponent({
         mutationHandler: mutationSpy,
       });
 
-      findDropdownItemAt(index).vm.$emit('click');
+      findListbox().vm.$emit('select', selected);
 
       expect(mutationSpy).toHaveBeenCalledWith({
         input: {
@@ -158,7 +157,7 @@ describe('WorkItemHealthStatus component', () => {
         mutationHandler: jest.fn().mockResolvedValue(response),
       });
 
-      findDropdownItemAt(1).vm.$emit('click');
+      findListbox().vm.$emit('select', 'onTrack');
       await waitForPromises();
 
       expect(wrapper.emitted('error')).toEqual([
@@ -171,7 +170,7 @@ describe('WorkItemHealthStatus component', () => {
         mutationHandler: jest.fn().mockRejectedValue(new Error()),
       });
 
-      findDropdownItemAt(1).vm.$emit('click');
+      findListbox().vm.$emit('select', 'onTrack');
       await waitForPromises();
 
       expect(wrapper.emitted('error')).toEqual([
@@ -183,7 +182,7 @@ describe('WorkItemHealthStatus component', () => {
       const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
       createComponent();
 
-      findDropdownItemAt(1).vm.$emit('click');
+      findListbox().vm.$emit('select', 'onTrack');
 
       expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_health_status', {
         category: TRACKING_CATEGORY_SHOW,

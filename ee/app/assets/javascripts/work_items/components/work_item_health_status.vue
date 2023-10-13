@@ -1,5 +1,5 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlFormGroup } from '@gitlab/ui';
+import { GlFormGroup, GlCollapsibleListbox, GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import {
@@ -23,8 +23,10 @@ export default {
   healthStatusDropdownOptions,
   components: {
     GlFormGroup,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
+    GlButton,
+    GlIcon,
+    GlLoadingIcon,
     IssueHealthStatus,
   },
   mixins: [Tracking.mixin()],
@@ -72,6 +74,16 @@ export default {
         'is-not-focused': !this.isFocused,
       };
     },
+    dropdownItems() {
+      const emptyItem = {
+        text: this.$options.HEALTH_STATUS_I18N_NO_STATUS,
+        value: 'empty',
+      };
+      return [emptyItem, ...healthStatusDropdownOptions];
+    },
+    selectedHealthStatus() {
+      return this.healthStatus || 'empty';
+    },
   },
   methods: {
     isSelected(healthStatus) {
@@ -99,7 +111,7 @@ export default {
             input: {
               id: this.workItemId,
               healthStatusWidget: {
-                healthStatus,
+                healthStatus: healthStatus === 'empty' ? null : healthStatus,
               },
             },
           },
@@ -137,39 +149,33 @@ export default {
         $options.HEALTH_STATUS_I18N_NONE
       }}</span>
     </div>
-    <gl-dropdown
+    <gl-collapsible-listbox
       v-else
+      :items="dropdownItems"
       :disabled="!canUpdate"
-      class="gl-mt-3 work-item-field-value"
-      data-testid="work-item-health-status-dropdown"
       :loading="isLoading"
       :toggle-class="dropdownToggleClasses"
+      :selected="selectedHealthStatus"
+      class="gl-mt-3 work-item-field-value"
+      data-testid="work-item-health-status-dropdown"
       @shown="onDropdownShown"
-      @hide="onDropdownHide"
-      @change="updateHealthStatus"
+      @hidden="onDropdownHide"
+      @select="updateHealthStatus"
     >
-      <template #button-text>
-        <issue-health-status v-if="healthStatus" :health-status="healthStatus" />
-        <span v-else class="gl-text-secondary gl-display-inline-block work-item-field-value">{{
-          $options.HEALTH_STATUS_I18N_NONE
-        }}</span>
+      <template #toggle>
+        <gl-button
+          class="gl-dropdown-toggle"
+          :class="{ 'is-not-focused': !isFocused }"
+          :disabled="isLoading"
+        >
+          <gl-loading-icon v-if="isLoading" inline />
+          <issue-health-status v-if="healthStatus" :health-status="healthStatus" />
+          <span v-else class="gl-text-secondary gl-display-inline-block work-item-field-value">{{
+            $options.HEALTH_STATUS_I18N_NONE
+          }}</span>
+          <gl-icon class="dropdown-chevron gl-button-icon gl-ml-2" name="chevron-down" />
+        </gl-button>
       </template>
-      <gl-dropdown-item
-        is-check-item
-        :is-checked="isSelected(null)"
-        @click="updateHealthStatus(null)"
-      >
-        {{ $options.HEALTH_STATUS_I18N_NO_STATUS }}
-      </gl-dropdown-item>
-      <gl-dropdown-item
-        v-for="option in $options.healthStatusDropdownOptions"
-        :key="option.value"
-        is-check-item
-        :is-checked="isSelected(option.value)"
-        @click="updateHealthStatus(option.value)"
-      >
-        {{ option.text }}
-      </gl-dropdown-item>
-    </gl-dropdown>
+    </gl-collapsible-listbox>
   </gl-form-group>
 </template>

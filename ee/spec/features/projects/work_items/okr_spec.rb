@@ -81,7 +81,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       expect(find(dropdown_selector)).to have_content 'None'
 
       page.find(dropdown_selector).click
-      page.find(dropdown_selector).click_on "Needs attention"
+      find('[data-testid="listbox-item-needsAttention"]').click
 
       wait_for_requests
 
