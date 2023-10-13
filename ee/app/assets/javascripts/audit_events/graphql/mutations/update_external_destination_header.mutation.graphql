@@ -4,8 +4,11 @@ mutation updateExternalDestinationHeader(
   $headerId: AuditEventsStreamingHeaderID!
   $key: String!
   $value: String!
+  $active: Boolean!
 ) {
-  auditEventsStreamingHeadersUpdate(input: { headerId: $headerId, key: $key, value: $value }) {
+  auditEventsStreamingHeadersUpdate(
+    input: { headerId: $headerId, key: $key, value: $value, active: $active }
+  ) {
     errors
     clientMutationId
     header {

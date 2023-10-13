@@ -70,11 +70,12 @@ export const mapItemHeadersToFormData = (item, settings = {}) => {
 
   return (
     headers
-      .map(({ id, key, value }) => ({
+      .map(({ id, key, value, active }) => ({
         ...createBlankHeader(),
         id,
         name: key,
         value,
+        active,
         ...settings,
       }))
       // Sort the headers so they appear in the order they were created

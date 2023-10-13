@@ -172,7 +172,6 @@ export const createBlankHeader = () => ({
   name: '',
   value: '',
   active: true,
-  disabled: false,
   validationErrors: { name: '' },
 });
 

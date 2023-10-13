@@ -223,7 +223,7 @@ describe('StreamDestinationEditor', () => {
           expect(findHeaderValueInput(0).attributes('placeholder')).toBe(
             ADD_STREAM_EDITOR_I18N.VALUE_INPUT_PLACEHOLDER,
           );
-          expect(findHeaderCheckbox(0).find('input').attributes('disabled')).toBeDefined();
+          expect(findHeaderCheckbox(0).find('input').attributes('value')).toBe('true');
           expect(findHeaderDeleteBtn(0).exists()).toBe(true);
         });
       });
@@ -565,12 +565,14 @@ describe('StreamDestinationEditor', () => {
             headerId: updatedHeader.id,
             key: updatedHeader.key,
             value: updatedHeader.newValue,
+            active: false,
           });
           expect(headerCreateSpy).toHaveBeenCalledTimes(1);
           expect(headerCreateSpy).toHaveBeenCalledWith({
             destinationId: item.id,
             key: addedHeader.key,
             value: addedHeader.value,
+            active: true,
           });
           expect(findAlertErrors()).toHaveLength(0);
           expect(wrapper.emitted('error')).toBeUndefined();
@@ -858,7 +860,7 @@ describe('StreamDestinationEditor', () => {
           expect(findHeaderValueInput(0).attributes('placeholder')).toBe(
             ADD_STREAM_EDITOR_I18N.VALUE_INPUT_PLACEHOLDER,
           );
-          expect(findHeaderCheckbox(0).find('input').attributes('disabled')).toBeDefined();
+          expect(findHeaderCheckbox(0).find('input').attributes('value')).toBe('true');
           expect(findHeaderDeleteBtn(0).exists()).toBe(true);
         });
       });
@@ -1209,12 +1211,14 @@ describe('StreamDestinationEditor', () => {
             headerId: updatedHeader.id,
             key: updatedHeader.key,
             value: updatedHeader.newValue,
+            active: false,
           });
           expect(headerCreateSpy).toHaveBeenCalledTimes(1);
           expect(headerCreateSpy).toHaveBeenCalledWith({
             destinationId: item.id,
             key: addedHeader.key,
             value: addedHeader.value,
+            active: true,
           });
 
           expect(findAlertErrors()).toHaveLength(0);
