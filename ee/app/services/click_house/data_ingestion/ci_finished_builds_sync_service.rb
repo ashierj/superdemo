@@ -24,12 +24,14 @@ module ClickHouse
         unless enabled?
           return ServiceResponse.error(
             message: 'Feature ci_data_ingestion_to_click_house is disabled',
-            reason: :disabled
+            reason: :disabled,
+            payload: service_payload
           )
         end
 
         unless ClickHouse::Client.configuration.databases[:main].present?
-          return ServiceResponse.error(message: 'ClickHouse database is not configured', reason: :db_not_configured)
+          return ServiceResponse.error(
+            message: 'ClickHouse database is not configured', reason: :db_not_configured, payload: service_payload)
         end
 
         # Prevent parallel jobs
@@ -37,12 +39,12 @@ module ClickHouse
           ::Gitlab::Database::LoadBalancing::Session.without_sticky_writes do
             report = insert_new_finished_builds
 
-            ServiceResponse.success(payload: report)
+            ServiceResponse.success(payload: report.merge(service_payload))
           end
         end
       rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError => e
         # Skip retrying, just let the next worker to start after a few minutes
-        ServiceResponse.error(message: e.message, reason: :skipped)
+        ServiceResponse.error(message: e.message, reason: :skipped, payload: service_payload)
       end
 
       private
@@ -53,6 +55,13 @@ module ClickHouse
 
       def continue?
         !@reached_end_of_table && !@runtime_limiter.over_time?
+      end
+
+      def service_payload
+        {
+          worker_index: @worker_index,
+          total_workers: @total_workers
+        }
       end
 
       def insert_new_finished_builds
@@ -75,10 +84,14 @@ module ClickHouse
           end
         end
 
+        min_id, max_id = @processed_record_ids.minmax
+
         {
           records_inserted:
             Ci::FinishedBuildChSyncEvent.primary_key_in(@processed_record_ids).update_all(processed: true),
-          reached_end_of_table: @reached_end_of_table
+          reached_end_of_table: @reached_end_of_table,
+          min_build_id: min_id,
+          max_build_id: max_id
         }
       end
 
