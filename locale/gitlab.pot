@@ -49949,7 +49949,7 @@ msgstr ""
 msgid "Tracing|Status Code"
 msgstr ""
 
-msgid "Tracing|Time Range"
+msgid "Tracing|Time range"
 msgstr ""
 
 msgid "Tracing|Toggle children spans"
