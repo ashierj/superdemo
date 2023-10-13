@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Blocking issues count', feature_category: :team_planning do
+  include Features::SortingHelpers
+
   let_it_be(:project) { build(:project, :public) }
   let_it_be(:blocked_issue) { build(:issue, project: project, created_at: 1.day.ago) }
   let_it_be(:issue1) { build(:issue, project: project, created_at: 2.days.ago, title: 'blocks one issue') }
@@ -19,8 +21,7 @@ RSpec.describe 'Blocking issues count', feature_category: :team_planning do
   end
 
   it 'sorts by blocking', :js do
-    click_button 'Created date'
-    click_on 'Blocking'
+    pajamas_sort_by 'Blocking', from: 'Created date'
 
     page.within(".issues-list") do
       page.within("li.issue:nth-child(1)") do

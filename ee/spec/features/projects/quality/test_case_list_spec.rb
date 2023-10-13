@@ -49,9 +49,8 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
         expect(page).to have_selector('.gl-search-box-by-click')
         expect(page.find('.gl-filtered-search-term-input')[:placeholder]).to eq('Search test cases')
 
-        expect(page).to have_selector('.sort-dropdown-container')
-        page.find('.sort-dropdown-container button.gl-dropdown-toggle').click
-        expect(page.find('.sort-dropdown-container')).to have_selector('li', count: 2)
+        click_button 'Created date'
+        expect(page).to have_selector('[role="option"]', count: 2)
       end
     end
 

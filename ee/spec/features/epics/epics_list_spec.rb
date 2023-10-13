@@ -21,7 +21,8 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
 
   context 'epics list' do
     available_tokens = %w[Author Label My-Reaction]
-    available_sort_options = ['Created date', 'Updated date', 'Start date', 'Due date', 'Title']
+    default_sort_option = 'Start date'
+    available_sort_options = ['Created date', 'Updated date', default_sort_option, 'Due date', 'Title']
 
     describe 'within a group' do
       let!(:epic1) { create(:epic, group: group, start_date: '2020-12-15', end_date: '2021-1-15', labels: [docs_label]) }
@@ -82,7 +83,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
 
         it_behaves_like 'epic list'
 
-        it_behaves_like 'filtered search bar', available_tokens, available_sort_options
+        it_behaves_like 'filtered search bar', available_tokens, available_sort_options, default_sort_option
 
         it 'filters epics list based on labels with "=" operator' do
           select_tokens 'Label', '=', docs_label.title, submit: true
@@ -216,7 +217,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         wait_for_requests
       end
 
-      it_behaves_like 'filtered search bar', available_tokens, available_sort_options
+      it_behaves_like 'filtered search bar', available_tokens, available_sort_options, default_sort_option
     end
   end
 end

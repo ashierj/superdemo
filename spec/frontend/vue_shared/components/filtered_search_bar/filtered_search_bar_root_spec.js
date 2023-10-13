@@ -1,11 +1,4 @@
-import {
-  GlFilteredSearch,
-  GlButtonGroup,
-  GlButton,
-  GlDropdown,
-  GlDropdownItem,
-  GlFormCheckbox,
-} from '@gitlab/ui';
+import { GlDropdownItem, GlSorting, GlFilteredSearch, GlFormCheckbox } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
@@ -13,7 +6,6 @@ import RecentSearchesService from '~/filtered_search/services/recent_searches_se
 import RecentSearchesStore from '~/filtered_search/stores/recent_searches_store';
 import {
   FILTERED_SEARCH_TERM,
-  SORT_DIRECTION,
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_LABEL,
   TOKEN_TYPE_MILESTONE,
@@ -48,6 +40,7 @@ const createComponent = ({
   recentSearchesStorageKey = 'requirements',
   tokens = mockAvailableTokens,
   sortOptions,
+  initialSortBy,
   initialFilterValue = [],
   showCheckbox = false,
   checkboxChecked = false,
@@ -61,6 +54,7 @@ const createComponent = ({
       recentSearchesStorageKey,
       tokens,
       sortOptions,
+      initialSortBy,
       initialFilterValue,
       showCheckbox,
       checkboxChecked,
@@ -72,8 +66,7 @@ const createComponent = ({
 describe('FilteredSearchBarRoot', () => {
   let wrapper;
 
-  const findGlButton = () => wrapper.findComponent(GlButton);
-  const findGlDropdown = () => wrapper.findComponent(GlDropdown);
+  const findGlSorting = () => wrapper.findComponent(GlSorting);
   const findGlFilteredSearch = () => wrapper.findComponent(GlFilteredSearch);
 
   beforeEach(() => {
@@ -85,21 +78,16 @@ describe('FilteredSearchBarRoot', () => {
       expect(wrapper.vm.filterValue).toEqual([]);
       expect(wrapper.vm.selectedSortOption).toBe(mockSortOptions[0]);
       expect(wrapper.vm.selectedSortDirection).toBe(SORT_DIRECTION.descending);
-      expect(wrapper.findComponent(GlButtonGroup).exists()).toBe(true);
-      expect(wrapper.findComponent(GlButton).exists()).toBe(true);
-      expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
-      expect(wrapper.findComponent(GlDropdownItem).exists()).toBe(true);
+      expect(findGlSorting().exists()).toBe(true);
     });
 
     it('does not initialize `selectedSortOption` and `selectedSortDirection` when `sortOptions` is not applied and hides the sort dropdown', () => {
-      const wrapperNoSort = createComponent();
+      wrapper.destroy();
+      wrapper = createComponent();
 
-      expect(wrapperNoSort.vm.filterValue).toEqual([]);
-      expect(wrapperNoSort.vm.selectedSortOption).toBe(undefined);
-      expect(wrapperNoSort.findComponent(GlButtonGroup).exists()).toBe(false);
-      expect(wrapperNoSort.findComponent(GlButton).exists()).toBe(false);
-      expect(wrapperNoSort.findComponent(GlDropdown).exists()).toBe(false);
-      expect(wrapperNoSort.findComponent(GlDropdownItem).exists()).toBe(false);
+      expect(wrapper.vm.filterValue).toEqual([]);
+      expect(wrapper.vm.selectedSortOption).toBe(undefined);
+      expect(wrapper.findComponent(GlSorting).exists()).toBe(false);
     });
   });
 
@@ -125,23 +113,15 @@ describe('FilteredSearchBarRoot', () => {
     });
 
     describe('sortDirectionIcon', () => {
-      it('renders `sort-highest` descending icon by default', () => {
-        expect(findGlButton().props('icon')).toBe('sort-highest');
-        expect(findGlButton().attributes()).toMatchObject({
-          'aria-label': 'Sort direction: Descending',
-          title: 'Sort direction: Descending',
-        });
+      it('passes isAscending=false to GlSorting by default', () => {
+        expect(findGlSorting().props('isAscending')).toBe(false);
       });
 
       it('renders `sort-lowest` ascending icon when the sort button is clicked', async () => {
-        findGlButton().vm.$emit('click');
+        findGlSorting().vm.$emit('sortDirectionChange', true);
         await nextTick();
 
-        expect(findGlButton().props('icon')).toBe('sort-lowest');
-        expect(findGlButton().attributes()).toMatchObject({
-          'aria-label': 'Sort direction: Ascending',
-          title: 'Sort direction: Ascending',
-        });
+        expect(findGlSorting().props('isAscending')).toBe(true);
       });
     });
 
@@ -227,34 +207,35 @@ describe('FilteredSearchBarRoot', () => {
       });
     });
 
-    describe('handleSortOptionClick', () => {
-      it('emits component event `onSort` with selected sort by value', () => {
-        wrapper.vm.handleSortOptionClick(mockSortOptions[1]);
+    describe('handleSortOptionChange', () => {
+      it('emits component event `onSort` with selected sort by value', async () => {
+        findGlSorting().vm.$emit('sortByChange', mockSortOptions[1].id);
+        await nextTick();
 
         expect(wrapper.vm.selectedSortOption).toBe(mockSortOptions[1]);
         expect(wrapper.emitted('onSort')[0]).toEqual([mockSortOptions[1].sortDirection.descending]);
       });
     });
 
-    describe('handleSortDirectionClick', () => {
+    describe('handleSortDirectionChange', () => {
       beforeEach(() => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          selectedSortOption: mockSortOptions[0],
+        wrapper.destroy();
+        wrapper = createComponent({
+          sortOptions: mockSortOptions,
+          initialSortBy: mockSortOptions[0].sortDirection.descending,
         });
       });
 
       it('sets `selectedSortDirection` to be opposite of its current value', () => {
         expect(wrapper.vm.selectedSortDirection).toBe(SORT_DIRECTION.descending);
 
-        wrapper.vm.handleSortDirectionClick();
+        findGlSorting().vm.$emit('sortDirectionChange', true);
 
         expect(wrapper.vm.selectedSortDirection).toBe(SORT_DIRECTION.ascending);
       });
 
       it('emits component event `onSort` with opposite of currently selected sort by value', () => {
-        wrapper.vm.handleSortDirectionClick();
+        findGlSorting().vm.$emit('sortDirectionChange', true);
 
         expect(wrapper.emitted('onSort')[0]).toEqual([mockSortOptions[0].sortDirection.ascending]);
       });
@@ -362,8 +343,6 @@ describe('FilteredSearchBarRoot', () => {
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
       wrapper.setData({
-        selectedSortOption: mockSortOptions[0],
-        selectedSortDirection: SORT_DIRECTION.descending,
         recentSearches: mockHistoryItems,
       });
 
@@ -454,25 +433,24 @@ describe('FilteredSearchBarRoot', () => {
     });
 
     it('renders sort dropdown component', () => {
-      expect(wrapper.findComponent(GlButtonGroup).exists()).toBe(true);
-      expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
-      expect(wrapper.findComponent(GlDropdown).props('text')).toBe(mockSortOptions[0].title);
+      expect(wrapper.findComponent(GlSorting).exists()).toBe(true);
     });
 
     it('renders sort dropdown items', () => {
-      const dropdownItemsEl = wrapper.findAllComponents(GlDropdownItem);
+      const { sortOptions, sortBy } = wrapper.findComponent(GlSorting).props();
 
-      expect(dropdownItemsEl).toHaveLength(mockSortOptions.length);
-      expect(dropdownItemsEl.at(0).text()).toBe(mockSortOptions[0].title);
-      expect(dropdownItemsEl.at(0).props('isChecked')).toBe(true);
-      expect(dropdownItemsEl.at(1).text()).toBe(mockSortOptions[1].title);
-    });
+      expect(sortOptions).toEqual([
+        {
+          value: mockSortOptions[0].id,
+          text: mockSortOptions[0].title,
+        },
+        {
+          value: mockSortOptions[1].id,
+          text: mockSortOptions[1].title,
+        },
+      ]);
 
-    it('renders sort direction button', () => {
-      const sortButtonEl = wrapper.findComponent(GlButton);
-
-      expect(sortButtonEl.attributes('title')).toBe('Sort direction: Descending');
-      expect(sortButtonEl.props('icon')).toBe('sort-highest');
+      expect(sortBy).toBe(mockSortOptions[0].id);
     });
   });
 
@@ -498,17 +476,33 @@ describe('FilteredSearchBarRoot', () => {
     it('syncs sort values', async () => {
       await wrapper.setProps({ initialSortBy: 'updated_asc', syncFilterAndSort: true });
 
-      expect(findGlDropdown().props('text')).toBe('Last updated');
-      expect(findGlButton().props('icon')).toBe('sort-lowest');
-      expect(findGlButton().attributes('aria-label')).toBe('Sort direction: Ascending');
+      expect(findGlSorting().props()).toMatchObject({
+        sortBy: 2,
+        isAscending: true,
+      });
     });
 
     it('does not sync sort values when syncFilterAndSort=false', async () => {
       await wrapper.setProps({ initialSortBy: 'updated_asc', syncFilterAndSort: false });
 
-      expect(findGlDropdown().props('text')).toBe('Created date');
-      expect(findGlButton().props('icon')).toBe('sort-highest');
-      expect(findGlButton().attributes('aria-label')).toBe('Sort direction: Descending');
+      expect(findGlSorting().props()).toMatchObject({
+        sortBy: 1,
+        isAscending: false,
+      });
+    });
+
+    it('does not sync sort values when initialSortBy is unset', async () => {
+      // Give initialSort some value which changes the current sort option...
+      await wrapper.setProps({ initialSortBy: 'updated_asc', syncFilterAndSort: true });
+
+      // ... Read the new sort options...
+      const { sortBy, isAscending } = findGlSorting().props();
+
+      // ... Then *unset* initialSortBy...
+      await wrapper.setProps({ initialSortBy: undefined });
+
+      // ... The sort options should not have changed.
+      expect(findGlSorting().props()).toMatchObject({ sortBy, isAscending });
     });
   });
 });
