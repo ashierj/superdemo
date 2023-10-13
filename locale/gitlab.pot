@@ -50036,9 +50036,6 @@ msgstr ""
 msgid "TransferGroup|You don't have enough permissions."
 msgstr ""
 
-msgid "TransferProject|Cannot move project"
-msgstr ""
-
 msgid "TransferProject|Please select a new namespace for your project."
 msgstr ""
 
