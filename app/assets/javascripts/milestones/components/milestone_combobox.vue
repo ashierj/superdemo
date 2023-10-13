@@ -55,10 +55,12 @@ export default {
     allMilestones() {
       return [
         {
+          id: 'project-milestones',
           text: this.$options.translations.projectMilestones,
           options: this.matches?.projectMilestones?.list || [],
         },
         {
+          id: 'group-milestones',
           text: this.$options.translations.groupMilestones,
           options: this.matches?.groupMilestones?.list || [],
         },
@@ -122,10 +124,6 @@ export default {
       'search',
       'fetchMilestones',
     ]),
-    onSearchBoxEnter() {
-      this.debouncedSearch.cancel();
-      this.search(this.searchQuery);
-    },
     onSearchBoxInput(q) {
       this.debouncedSearch(q);
     },
@@ -157,7 +155,9 @@ export default {
     @select="selectMilestone"
   >
     <template #group-label="{ group }">
-      {{ group.text }} <gl-badge size="sm">{{ group.options.length }}</gl-badge>
+      <span :data-testid="`${group.id}-section`"
+        >{{ group.text }} <gl-badge size="sm">{{ group.options.length }}</gl-badge></span
+      >
     </template>
     <template #footer>
       <div
