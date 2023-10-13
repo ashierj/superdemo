@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import apolloProvider from 'ee/usage_quotas/shared/provider';
 import PipelineUsageApp from './components/app.vue';
 
 Vue.use(VueApollo);
@@ -31,10 +31,6 @@ export default () => {
     buyAdditionalMinutesPath,
     buyAdditionalMinutesTarget,
   } = el.dataset;
-
-  const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
-  });
 
   return new Vue({
     el,
