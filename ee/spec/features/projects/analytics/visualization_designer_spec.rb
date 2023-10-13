@@ -43,7 +43,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
     it 'has the visualization designer breadcrumb' do
       visit_page
 
-      page.within(find('[data-testid="breadcrumb-links"]')) do
+      within_testid('breadcrumb-links') do
         expect(page).to have_link(
           s_('Analytics|Visualization designer'),
           href: "#"
@@ -75,7 +75,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
         end
 
         it 'shows the selected measure data' do
-          expect(find('[data-testid="grid-stack-panel"]'))
+          expect(find_by_testid('grid-stack-panel'))
             .to have_content('Event Count 335')
         end
 
@@ -108,7 +108,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
             end
 
             it "shows the #{visualization[:text]} preview" do
-              preview_panel = find('[data-testid="preview-visualization"]')
+              preview_panel = find_by_testid('preview-visualization')
 
               if visualization[:content].nil?
                 expect(preview_panel).to have_selector("[data-testid=\"#{visualization[:selector]}\"]")
@@ -124,7 +124,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
 
               it 'shows the visualization code' do
                 json_snippet = "\"type\": \"#{visualization[:name]}\","
-                expect(find('[data-testid="preview-code"]')).to have_content(json_snippet)
+                expect(find_by_testid('preview-code')).to have_content(json_snippet)
               end
             end
           end

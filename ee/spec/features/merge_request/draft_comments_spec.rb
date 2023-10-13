@@ -37,7 +37,7 @@ RSpec.describe 'Merge request > Batch comments', :js, :sidekiq_inline, feature_c
       it 'allows user to approve' do
         click_button 'Finish review'
 
-        find('[data-testid="approve_merge_request"]').click
+        find_by_testid('approve_merge_request').click
         click_button 'Submit review'
 
         wait_for_requests
@@ -55,7 +55,7 @@ RSpec.describe 'Merge request > Batch comments', :js, :sidekiq_inline, feature_c
         it 'does not allow user to approve without password' do
           click_button 'Finish review'
 
-          find('[data-testid="approve_merge_request"]').click
+          find_by_testid('approve_merge_request').click
           click_button 'Submit review'
 
           wait_for_requests
@@ -66,7 +66,7 @@ RSpec.describe 'Merge request > Batch comments', :js, :sidekiq_inline, feature_c
         it 'allows user to approve' do
           click_button 'Finish review'
 
-          find('[data-testid="approve_merge_request"]').click
+          find_by_testid('approve_merge_request').click
           fill_in(type: 'password', with: current_user.password)
           click_button 'Submit review'
 

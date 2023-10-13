@@ -77,7 +77,7 @@ RSpec.describe 'Epic in issue sidebar', :js, feature_category: :team_planning do
 
           wait_for_all_requests
 
-          expect(page.find('[data-testid="select-epic"]')).to have_content(epic2.title)
+          expect(find_by_testid('select-epic')).to have_content(epic2.title)
         end
       end
     end

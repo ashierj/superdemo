@@ -24,7 +24,7 @@ RSpec.describe 'Blocked deployment job page', :js, feature_category: :continuous
     expect(page).to have_text('Waiting for approvals')
     expect(page).to have_link('View environment details page', href: project_environment_path(project, environment))
 
-    find("[data-testid='job-empty-state-action']").click
+    find_by_testid('job-empty-state-action').click
 
     expect(page).to have_current_path(project_environment_path(project, environment))
   end

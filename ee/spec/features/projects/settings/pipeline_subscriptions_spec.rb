@@ -29,7 +29,7 @@ RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_composi
   end
 
   it 'renders the list of downstream projects' do
-    within '[data-testid="downstream-project-subscriptions"]' do
+    within_testid('downstream-project-subscriptions') do
       expect(find('.gl-new-card-count').text).to eq '1'
     end
 
@@ -38,7 +38,7 @@ RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_composi
   end
 
   it 'doesn\'t allow to delete downstream projects' do
-    within '[data-testid="downstream-project-subscriptions"]' do
+    within_testid('downstream-project-subscriptions') do
       expect(page).not_to have_content('[data-testid="delete-subscription"]')
     end
   end
@@ -52,7 +52,7 @@ RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_composi
         click_on 'Subscribe'
       end
 
-      within '[data-testid="upstream-project-subscriptions"]' do
+      within_testid('upstream-project-subscriptions') do
         expect(find('.gl-new-card-count').text).to eq '1'
       end
 
@@ -72,7 +72,7 @@ RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_composi
         click_on 'Subscribe'
       end
 
-      within '[data-testid="upstream-project-subscriptions"]' do
+      within_testid('upstream-project-subscriptions') do
         expect(find('.gl-new-card-count').text).to eq '0'
         expect(page).to have_content('This project is not subscribed to any project pipelines.')
       end
@@ -91,7 +91,7 @@ RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_composi
       end
     end
 
-    find('[data-testid="delete-subscription"]').click
+    find_by_testid('delete-subscription').click
     click_button 'OK'
 
     expect(page).to have_content('Subscription successfully deleted.')

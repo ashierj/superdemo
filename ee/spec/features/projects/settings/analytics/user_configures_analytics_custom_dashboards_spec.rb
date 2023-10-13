@@ -36,7 +36,7 @@ RSpec.describe 'Project > Settings > Analytics -> Custom dashboard projects', :j
     end
 
     it 'allows to select a project for the Analytics Dashboards config' do
-      page.within '[data-testid="analytics-dashboards-settings"]' do
+      within_testid('analytics-dashboards-settings') do
         select_from_listbox(upper_project.full_name, from: s_('ProjectSelect|Search for project'))
 
         click_button _('Save changes')

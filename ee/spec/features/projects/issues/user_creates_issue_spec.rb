@@ -102,7 +102,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
       wait_for_all_requests
 
-      page.within('[data-testid="select-epic"]') do
+      within_testid('select-epic') do
         expect(page).to have_content('None')
       end
 
@@ -116,7 +116,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
       wait_for_all_requests
 
-      page.within('[data-testid="select-epic"]') do
+      within_testid('select-epic') do
         expect(page).to have_content(epic.title)
       end
 
@@ -139,7 +139,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
       wait_for_all_requests
 
-      page.within('[data-testid="select-iteration"]') do
+      within_testid('select-iteration') do
         expect(page).to have_content('None')
       end
 
@@ -156,7 +156,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
       wait_for_all_requests
 
-      page.within('[data-testid="select-iteration"]') do
+      within_testid('select-iteration') do
         expect(page).to have_content(iteration.title)
       end
 

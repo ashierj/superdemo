@@ -113,14 +113,14 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     let(:work_item) { objective }
 
     it 'assigns to multiple users' do
-      find('[data-testid="work-item-assignees-input"]').fill_in(with: user.username)
+      find_by_testid('work-item-assignees-input').fill_in(with: user.username)
       wait_for_requests
 
       send_keys(:enter)
       find("body").click
       wait_for_requests
 
-      find('[data-testid="work-item-assignees-input"]').fill_in(with: user2.username)
+      find_by_testid('work-item-assignees-input').fill_in(with: user2.username)
       wait_for_requests
 
       send_keys(:enter)
@@ -139,8 +139,8 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
         expect(work_item.reload.assignees).not_to include(user)
       end
 
-      find('[data-testid="work-item-assignees-input"]').hover
-      find('[data-testid="assign-self"]').click
+      find_by_testid('work-item-assignees-input').hover
+      find_by_testid('assign-self').click
       wait_for_requests
 
       expect(work_item.reload.assignees).to include(user)
@@ -162,14 +162,14 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
     context 'in hierarchy' do
       it 'shows no children', :aggregate_failures do
-        page.within('[data-testid="work-item-tree"]') do
+        within_testid('work-item-tree') do
           expect(page).to have_content('Child objectives and key results')
           expect(page).to have_content('No objectives or key results are currently assigned.')
         end
       end
 
       it 'toggles widget body', :aggregate_failures do
-        page.within('[data-testid="work-item-tree"]') do
+        within_testid('work-item-tree') do
           expect(page).to have_selector('[data-testid="work-item-tree"] [data-testid="widget-body"]')
 
           click_button 'Collapse'
@@ -183,29 +183,29 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       end
 
       it 'toggles forms', :aggregate_failures do
-        page.within('[data-testid="work-item-tree"]') do
+        within_testid('work-item-tree') do
           expect(page).not_to have_selector('[data-testid="add-tree-form"]')
 
           click_button 'Add'
           click_button 'New objective'
 
           expect(page).to have_selector('[data-testid="add-tree-form"]')
-          expect(find('[data-testid="add-tree-form"]')).to have_button('Create objective', disabled: true)
+          expect(find_by_testid('add-tree-form')).to have_button('Create objective', disabled: true)
 
           click_button 'Add'
           click_button 'Existing objective'
 
-          expect(find('[data-testid="add-tree-form"]')).to have_button('Add objective', disabled: true)
+          expect(find_by_testid('add-tree-form')).to have_button('Add objective', disabled: true)
 
           click_button 'Add'
           click_button 'New key result'
 
-          expect(find('[data-testid="add-tree-form"]')).to have_button('Create key result', disabled: true)
+          expect(find_by_testid('add-tree-form')).to have_button('Create key result', disabled: true)
 
           click_button 'Add'
           click_button 'Existing key result'
 
-          expect(find('[data-testid="add-tree-form"]')).to have_button('Add key result', disabled: true)
+          expect(find_by_testid('add-tree-form')).to have_button('Add key result', disabled: true)
 
           click_button 'Cancel'
 
@@ -218,7 +218,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       it 'displays progress of 0% by default, in tree and modal' do
         create_okr('objective', 'Objective 2')
 
-        page.within('[data-testid="work-item-tree"]') do
+        within_testid('work-item-tree') do
           expect(page).to have_content('Objective 2')
           expect(page).to have_content('0%')
 
@@ -227,7 +227,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
         wait_for_all_requests
 
-        page.within('[data-testid="work-item-detail-modal"]') do
+        within_testid('work-item-detail-modal') do
           expect(page).to have_content('0%')
         end
       end
@@ -236,20 +236,20 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it 'creates objective' do
       create_okr('objective', 'Objective 2')
 
-      expect(find('[data-testid="work-item-tree"]')).to have_content('Objective 2')
+      expect(find_by_testid('work-item-tree')).to have_content('Objective 2')
     end
 
     it 'removes direct child of objective with undoing' do
       create_okr('objective', 'Objective 2')
 
-      page.within('[data-testid="links-child"]') do
-        find('[data-testid="work_items_links_menu"]').click
+      within_testid('links-child') do
+        find_by_testid('work_items_links_menu').click
         click_button 'Remove'
 
         wait_for_all_requests
       end
 
-      page.within('[data-testid="work-item-tree"]') do
+      within_testid('work-item-tree') do
         expect(page).not_to have_content('Objective 2')
       end
 
@@ -260,7 +260,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
       wait_for_all_requests
 
-      page.within('[data-testid="work-item-tree"]') do
+      within_testid('work-item-tree') do
         expect(page).to have_content('Objective 2')
       end
     end
@@ -268,13 +268,13 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it 'removes indirect child of objective with undoing' do
       create_okr('objective', 'Objective 2')
 
-      page.within('[data-testid="work-item-tree"]') do
+      within_testid('work-item-tree') do
         click_link 'Objective 2'
 
         wait_for_all_requests
       end
 
-      page.within('[data-testid="work-item-detail-modal"]') do
+      within_testid('work-item-detail-modal') do
         create_okr('objective', 'Child objective 1')
         expect(page).to have_content('Child objective 1')
 
@@ -284,16 +284,18 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       visit project_work_item_path(project, objective.iid)
       wait_for_all_requests
 
-      page.within('[data-testid="work-item-tree"] [data-testid="widget-body"]') do
-        click_button 'Expand'
+      within_testid('work-item-tree') do
+        within_testid('widget-body') do
+          click_button 'Expand'
 
-        wait_for_all_requests
+          wait_for_all_requests
 
-        expect(page).to have_content('Child objective 1')
+          expect(page).to have_content('Child objective 1')
+        end
       end
 
-      page.within('[data-testid="tree-children"]') do
-        find('[data-testid="work_items_links_menu"]').click
+      within_testid('tree-children') do
+        find_by_testid('work_items_links_menu').click
         click_button 'Remove'
 
         wait_for_all_requests
@@ -308,7 +310,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
       wait_for_all_requests
 
-      page.within('[data-testid="work-item-tree"]') do
+      within_testid('work-item-tree') do
         expect(page).to have_content('Child objective 1')
       end
     end
@@ -316,7 +318,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it 'creates key result' do
       create_okr('key result', 'KR 2')
 
-      expect(find('[data-testid="work-item-tree"]')).to have_content('KR 2')
+      expect(find_by_testid('work-item-tree')).to have_content('KR 2')
     end
 
     it 'reorders children', :aggregate_failures do
@@ -345,14 +347,14 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     let(:work_item) { key_result }
 
     it 'assigns to multiple users' do
-      find('[data-testid="work-item-assignees-input"]').fill_in(with: user.username)
+      find_by_testid('work-item-assignees-input').fill_in(with: user.username)
       wait_for_requests
 
       send_keys(:enter)
       find("body").click
       wait_for_requests
 
-      find('[data-testid="work-item-assignees-input"]').fill_in(with: user2.username)
+      find_by_testid('work-item-assignees-input').fill_in(with: user2.username)
       wait_for_requests
 
       send_keys(:enter)
@@ -390,7 +392,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   def create_okr(type, title)
     wait_for_all_requests
 
-    page.within('[data-testid="work-item-tree"]') do
+    within_testid('work-item-tree') do
       click_button 'Add'
       click_button "New #{type}"
       wait_for_all_requests # wait for work items type to load

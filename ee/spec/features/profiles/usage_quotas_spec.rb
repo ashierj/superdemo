@@ -52,7 +52,7 @@ RSpec.describe 'Profile > Usage Quota', :js, feature_category: :consumables_cost
       end
 
       it 'shows the correct per-project metrics' do
-        page.within('[data-testid="pipelines-quota-tab-project-table"]') do
+        within_testid('pipelines-quota-tab-project-table') do
           expect(page).to have_content(project.name)
 
           if shared_runners_enabled

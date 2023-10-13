@@ -70,7 +70,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js, feature_categor
         wait_for_requests
         expect(page).to have_content("Requires 1 approval from #{rule.name}")
 
-        find('[data-testid="widget-toggle"]').click
+        find_by_testid('widget-toggle').click
         wait_for_requests
 
         within('.mr-widget-workflow table') do
@@ -100,7 +100,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js, feature_categor
           wait_for_requests
           expect(page).to have_content("Requires 1 approval from #{rule.name}.")
 
-          find('[data-testid="widget-toggle"]').click
+          find_by_testid('widget-toggle').click
           wait_for_requests
 
           within('.mr-widget-workflow table .gl-font-monospace') do
@@ -124,7 +124,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js, feature_categor
 
             expect(page).to have_content("Requires 2 approvals from #{rule.name} and Code Owners")
 
-            find('[data-testid="widget-toggle"]').click
+            find_by_testid('widget-toggle').click
             wait_for_requests
 
             within('.mr-widget-workflow table .gl-font-monospace') do
