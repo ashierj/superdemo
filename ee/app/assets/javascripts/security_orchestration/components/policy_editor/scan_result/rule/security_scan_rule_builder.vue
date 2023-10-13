@@ -376,7 +376,7 @@ export default {
 
               <template #branchExceptions>
                 <branch-exception-selector
-                  v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
+                  v-if="isProject"
                   :selected-exceptions="branchExceptions"
                   @remove="removeExceptions"
                   @select="triggerChanged"

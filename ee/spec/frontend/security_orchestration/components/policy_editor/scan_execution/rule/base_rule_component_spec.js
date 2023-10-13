@@ -31,9 +31,6 @@ describe('BaseRuleComponent', () => {
       },
       provide: {
         namespaceType: NAMESPACE_TYPES.PROJECT,
-        glFeatures: {
-          securityPoliciesBranchExceptions: false,
-        },
         ...provide,
       },
       stubs: {
@@ -224,9 +221,6 @@ describe('BaseRuleComponent', () => {
       createComponent({
         provide: {
           namespaceType,
-          glFeatures: {
-            securityPoliciesBranchExceptions: true,
-          },
         },
       });
 
@@ -234,13 +228,7 @@ describe('BaseRuleComponent', () => {
     });
 
     it('selects exceptions', () => {
-      createComponent({
-        provide: {
-          glFeatures: {
-            securityPoliciesBranchExceptions: true,
-          },
-        },
-      });
+      createComponent();
 
       findBranchExceptionSelector().vm.$emit('select', exceptions);
 
@@ -262,11 +250,6 @@ describe('BaseRuleComponent', () => {
             ...exceptions,
           },
         },
-        provide: {
-          glFeatures: {
-            securityPoliciesBranchExceptions: true,
-          },
-        },
       });
 
       expect(findBranchExceptionSelector().props('selectedExceptions')).toEqual(
@@ -280,11 +263,6 @@ describe('BaseRuleComponent', () => {
           initRule: {
             ...initRule,
             ...exceptions,
-          },
-        },
-        provide: {
-          glFeatures: {
-            securityPoliciesBranchExceptions: true,
           },
         },
       });

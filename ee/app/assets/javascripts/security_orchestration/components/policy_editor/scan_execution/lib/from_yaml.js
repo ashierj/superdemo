@@ -42,7 +42,7 @@ export const hasRuleModeSupportedScanners = (policy) => {
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
 */
-export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }) => {
+export const fromYaml = ({ manifest, validateRuleMode = false }) => {
   try {
     const policy = safeLoad(manifest, { json: true });
 
@@ -61,7 +61,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
         'branch_type',
         'cadence',
         'timezone',
-        ...(glFeatures.securityPoliciesBranchExceptions ? ['branch_exceptions'] : []),
+        'branch_exceptions',
       ];
       const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
 
@@ -85,11 +85,10 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
 /**
  * Converts a security policy from yaml to an object
  * @param {String} manifest a security policy in yaml form
- * @param {Object} glFeatures check if flag is anbled
  * @returns {Object} security policy object and any errors
  */
-export const createPolicyObject = (manifest, glFeatures = {}) => {
-  const policy = fromYaml({ manifest, validateRuleMode: true, glFeatures });
+export const createPolicyObject = (manifest) => {
+  const policy = fromYaml({ manifest, validateRuleMode: true });
 
   return { policy, hasParsingError: Boolean(policy.error) };
 };

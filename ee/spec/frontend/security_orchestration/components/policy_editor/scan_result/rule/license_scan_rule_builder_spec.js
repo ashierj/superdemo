@@ -36,9 +36,6 @@ describe('LicenseScanRuleBuilder', () => {
       },
       provide: {
         namespaceType: NAMESPACE_TYPES.GROUP,
-        glFeatures: {
-          securityPoliciesBranchExceptions: true,
-        },
         ...provide,
       },
       stubs: {
@@ -178,19 +175,5 @@ describe('LicenseScanRuleBuilder', () => {
         expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
       },
     );
-  });
-
-  describe('disabled feature flag', () => {
-    it('should not render branch exceptions when feature flag is disabled', () => {
-      factory({
-        provide: {
-          glFeatures: {
-            securityPoliciesBranchExceptions: false,
-          },
-        },
-      });
-
-      expect(findBranchExceptionSelector().exists()).toBe(false);
-    });
   });
 });

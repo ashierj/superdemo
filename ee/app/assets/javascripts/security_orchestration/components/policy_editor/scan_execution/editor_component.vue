@@ -86,7 +86,7 @@ export default {
       ? toYaml(this.existingPolicy)
       : DEFAULT_SCAN_EXECUTION_POLICY;
 
-    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue, this.glFeatures);
+    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
     const parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
 
     return {
@@ -166,9 +166,7 @@ export default {
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name:
-            this.originalName ||
-            fromYaml({ manifest: this.yamlEditorValue, glFeatures: this.glFeatures })?.name,
+          name: this.originalName || fromYaml({ manifest: this.yamlEditorValue })?.name,
           namespacePath: this.namespacePath,
           yamlEditorValue: this.yamlEditorValue,
         });
@@ -197,7 +195,7 @@ export default {
       );
     },
     updateYaml(manifest) {
-      const { policy, hasParsingError } = createPolicyObject(manifest, this.glFeatures);
+      const { policy, hasParsingError } = createPolicyObject(manifest);
 
       this.yamlEditorValue = manifest;
       this.hasParsingError = hasParsingError;

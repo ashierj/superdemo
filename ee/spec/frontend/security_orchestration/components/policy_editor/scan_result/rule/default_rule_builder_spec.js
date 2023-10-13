@@ -119,9 +119,6 @@ describe('DefaultRuleBuilder', () => {
   it('selects branch exceptions', () => {
     createComponent({
       provide: {
-        glFeatures: {
-          securityPoliciesBranchExceptions: true,
-        },
         namespaceType: NAMESPACE_TYPES.PROJECT,
       },
     });
@@ -150,9 +147,6 @@ describe('DefaultRuleBuilder', () => {
   it('can remove branch exceptions', () => {
     createComponent({
       provide: {
-        glFeatures: {
-          securityPoliciesBranchExceptions: true,
-        },
         namespaceType: NAMESPACE_TYPES.PROJECT,
       },
     });
