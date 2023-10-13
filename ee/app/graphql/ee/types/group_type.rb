@@ -188,6 +188,10 @@ module EE
           null: true,
           description: 'Amazon S3 configurations that receive audit events belonging to the group.',
           authorize: :admin_external_audit_events
+        field :member_roles, ::Types::MemberRoles::MemberRoleType.connection_type,
+          null: true, description: 'Member roles available for the group.',
+          resolver: ::Resolvers::MemberRoles::RolesResolver,
+          alpha: { milestone: '16.5' }
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
