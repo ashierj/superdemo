@@ -162,8 +162,8 @@ describe('DependenciesTable component', () => {
         });
       });
 
-      it('does not render any rows', () => {
-        expect(findTableRows()).toHaveLength(0);
+      it('renders a message that there are no records to show', () => {
+        expect(wrapper.text()).toContain('There are no records to show');
       });
     });
   });
