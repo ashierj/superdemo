@@ -1,4 +1,5 @@
 <script>
+import { GlButton } from '@gitlab/ui';
 import { __ } from '~/locale';
 import AssigneeSelect from './assignee_select.vue';
 import BoardLabelsSelect from './labels_select.vue';
@@ -8,6 +9,7 @@ import BoardWeightSelect from './weight_select.vue';
 
 export default {
   components: {
+    GlButton,
     AssigneeSelect,
     BoardLabelsSelect,
     BoardIterationSelect,
@@ -71,9 +73,9 @@ export default {
   <div data-testid="board-scope-modal">
     <div v-if="canAdminBoard" class="media">
       <label class="label-bold gl-font-lg media-body">{{ __('Scope') }}</label>
-      <button v-if="collapseScope" type="button" class="btn" @click="expanded = !expanded">
+      <gl-button v-if="collapseScope" @click="expanded = !expanded">
         {{ expandButtonText }}
-      </button>
+      </gl-button>
     </div>
     <p class="text-secondary gl-mb-3">
       {{ scopeText }}
