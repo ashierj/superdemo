@@ -31156,6 +31156,10 @@ CREATE INDEX idx_test_reports_on_issue_id_created_at_and_id ON requirements_mana
 
 CREATE UNIQUE INDEX idx_uniq_analytics_dashboards_pointers_on_project_id ON analytics_dashboards_pointers USING btree (project_id);
 
+CREATE INDEX idx_user_credit_card_validations_on_holder_name_hash ON user_credit_card_validations USING btree (holder_name_hash);
+
+CREATE INDEX idx_user_credit_card_validations_on_similar_to_meta_data ON user_credit_card_validations USING btree (expiration_date_hash, last_digits_hash, network_hash, credit_card_validated_at);
+
 CREATE INDEX idx_user_details_on_provisioned_by_group_id_user_id ON user_details USING btree (provisioned_by_group_id, user_id);
 
 CREATE INDEX idx_vuln_reads_for_filtering ON vulnerability_reads USING btree (project_id, state, dismissal_reason, severity DESC, vulnerability_id DESC NULLS LAST);
