@@ -90,7 +90,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
       let(:scope) { 'blobs' }
       let(:query) { 'something went wrong' }
 
-      include_examples 'search results filtered by archived', 'search_blobs_hide_archived_projects', 'backfill_archived_field_in_blob'
+      include_examples 'search results filtered by archived', nil, 'backfill_archived_field_in_blob'
     end
   end
 
