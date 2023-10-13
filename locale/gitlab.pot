@@ -16807,6 +16807,9 @@ msgstr ""
 msgid "Descriptive label"
 msgstr ""
 
+msgid "Deselect"
+msgstr ""
+
 msgid "Deselect all"
 msgstr ""
 
@@ -30089,25 +30092,13 @@ msgstr ""
 msgid "Milestone(s) not found: %{milestones}"
 msgstr ""
 
-msgid "MilestoneCombobox|An error occurred while searching for milestones"
-msgstr ""
-
 msgid "MilestoneCombobox|Group milestones"
-msgstr ""
-
-msgid "MilestoneCombobox|Milestone"
-msgstr ""
-
-msgid "MilestoneCombobox|No matching results"
 msgstr ""
 
 msgid "MilestoneCombobox|No milestone"
 msgstr ""
 
 msgid "MilestoneCombobox|Project milestones"
-msgstr ""
-
-msgid "MilestoneCombobox|Search Milestones"
 msgstr ""
 
 msgid "MilestoneCombobox|Select milestone"
