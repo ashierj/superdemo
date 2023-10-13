@@ -1,14 +1,18 @@
 <script>
 import { GlTab, GlTabs } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import CiResourceComponents from './ci_resource_components.vue';
 import CiResourceReadme from './ci_resource_readme.vue';
 
 export default {
   components: {
     CiResourceReadme,
+    CiResourceComponents,
     GlTab,
     GlTabs,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     resourceId: {
       type: String,
@@ -17,7 +21,8 @@ export default {
   },
   i18n: {
     tabs: {
-      readme: __('Readme'),
+      components: s__('CiCatalog|Components'),
+      readme: s__('CiCatalog|Readme'),
     },
   },
 };
@@ -25,6 +30,9 @@ export default {
 
 <template>
   <gl-tabs>
+    <gl-tab v-if="glFeatures.ciCatalogComponentsTab" :title="$options.i18n.tabs.components" lazy>
+      <ci-resource-components :resource-id="resourceId"
+    /></gl-tab>
     <gl-tab :title="$options.i18n.tabs.readme" lazy>
       <ci-resource-readme :resource-id="resourceId" />
     </gl-tab>
