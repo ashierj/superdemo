@@ -3,6 +3,9 @@
 class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
   ALL_CUSTOMIZABLE_PERMISSIONS = {
+    admin_group_member: {
+      description: 'Allows admin access to group members.'
+    },
     admin_merge_request: {
       description: 'Allows admin access to the merge requests.'
     },
@@ -30,7 +33,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   ALL_CUSTOMIZABLE_GROUP_PERMISSIONS = [
     :read_dependency,
     :read_vulnerability,
-    :admin_vulnerability
+    :admin_vulnerability,
+    :admin_group_member
   ].freeze
 
   CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT = [:read_code].freeze
