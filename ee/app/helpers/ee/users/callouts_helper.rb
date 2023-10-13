@@ -68,7 +68,6 @@ module EE
 
       def show_verification_reminder?
         return false unless ::Gitlab.com?
-        return false unless ::Feature.enabled?(:verification_reminder)
         return false unless current_user
         return false if current_user.has_valid_credit_card?
 
