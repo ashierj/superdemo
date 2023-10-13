@@ -18,8 +18,8 @@ const SEVERITIES = [
   { key: 'high', name: s__('severity|High'), color: '#ae1800' },
   { key: 'medium', name: s__('severity|Medium'), color: '#9e5400' },
   { key: 'low', name: s__('severity|Low'), color: '#c17d10' },
-  { key: 'unknown', name: s__('severity|Unknown'), color: '#868686' },
   { key: 'info', name: s__('severity|Info'), color: '#428fdc' },
+  { key: 'unknown', name: s__('severity|Unknown'), color: '#868686' },
 ];
 
 export default {
