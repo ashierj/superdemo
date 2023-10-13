@@ -669,6 +669,7 @@ project:
 - statistics
 - container_repositories
 - container_registry_data_repair_detail
+- container_registry_protection_rules
 - uploads
 - file_uploads
 - import_state
