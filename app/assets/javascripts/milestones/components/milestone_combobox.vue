@@ -1,19 +1,10 @@
 <script>
-import {
-  GlDropdown,
-  GlDropdownDivider,
-  GlDropdownSectionHeader,
-  GlDropdownItem,
-  GlLoadingIcon,
-  GlSearchBoxByType,
-  GlIcon,
-} from '@gitlab/ui';
+import { GlBadge, GlButton, GlCollapsibleListbox } from '@gitlab/ui';
 import { debounce, isEqual } from 'lodash';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { s__, __, sprintf } from '~/locale';
 import createStore from '../stores';
-import MilestoneResultsSection from './milestone_results_section.vue';
 
 const SEARCH_DEBOUNCE_MS = 250;
 
@@ -21,14 +12,9 @@ export default {
   name: 'MilestoneCombobox',
   store: createStore(),
   components: {
-    GlDropdown,
-    GlDropdownDivider,
-    GlDropdownSectionHeader,
-    GlDropdownItem,
-    GlLoadingIcon,
-    GlSearchBoxByType,
-    GlIcon,
-    MilestoneResultsSection,
+    GlCollapsibleListbox,
+    GlBadge,
+    GlButton,
   },
   props: {
     value: {
@@ -56,27 +42,31 @@ export default {
       required: false,
     },
   },
-  data() {
-    return {
-      searchQuery: '',
-    };
-  },
   translations: {
-    milestone: s__('MilestoneCombobox|Milestone'),
     selectMilestone: s__('MilestoneCombobox|Select milestone'),
     noMilestone: s__('MilestoneCombobox|No milestone'),
-    noResultsLabel: s__('MilestoneCombobox|No matching results'),
-    searchMilestones: s__('MilestoneCombobox|Search Milestones'),
-    searchErrorMessage: s__('MilestoneCombobox|An error occurred while searching for milestones'),
     projectMilestones: s__('MilestoneCombobox|Project milestones'),
     groupMilestones: s__('MilestoneCombobox|Group milestones'),
+    deselect: __('Deselect'),
   },
   computed: {
     ...mapState(['matches', 'selectedMilestones']),
     ...mapGetters(['isLoading', 'groupMilestonesEnabled']),
+    allMilestones() {
+      return [
+        {
+          text: this.$options.translations.projectMilestones,
+          options: this.matches?.projectMilestones?.list || [],
+        },
+        {
+          text: this.$options.translations.groupMilestones,
+          options: this.matches?.groupMilestones?.list || [],
+        },
+      ];
+    },
     selectedMilestonesLabel() {
       const { selectedMilestones } = this;
-      const firstMilestoneName = selectedMilestones[0];
+      const [firstMilestoneName] = selectedMilestones;
 
       if (selectedMilestones.length === 0) {
         return this.$options.translations.noMilestone;
@@ -91,20 +81,6 @@ export default {
         firstMilestoneName,
         numberOfOtherMilestones,
       });
-    },
-    showProjectMilestoneSection() {
-      return Boolean(
-        this.matches.projectMilestones.totalCount > 0 || this.matches.projectMilestones.error,
-      );
-    },
-    showGroupMilestoneSection() {
-      return (
-        this.groupMilestonesEnabled &&
-        Boolean(this.matches.groupMilestones.totalCount > 0 || this.matches.groupMilestones.error)
-      );
-    },
-    showNoResults() {
-      return !this.showProjectMilestoneSection && !this.showGroupMilestoneSection;
     },
   },
   watch: {
@@ -127,8 +103,8 @@ export default {
     // because we need to access the .cancel() method
     // lodash attaches to the function, which is
     // made inaccessible by Vue.
-    this.debouncedSearch = debounce(function search() {
-      this.search(this.searchQuery);
+    this.debouncedSearch = debounce(function search(q) {
+      this.search(q);
     }, SEARCH_DEBOUNCE_MS);
 
     this.setProjectId(this.projectId);
@@ -143,22 +119,18 @@ export default {
       'setGroupMilestonesAvailable',
       'setSelectedMilestones',
       'clearSelectedMilestones',
-      'toggleMilestones',
       'search',
       'fetchMilestones',
     ]),
-    focusSearchBox() {
-      this.$refs.searchBox.$el.querySelector('input').focus();
-    },
     onSearchBoxEnter() {
       this.debouncedSearch.cancel();
       this.search(this.searchQuery);
     },
-    onSearchBoxInput() {
-      this.debouncedSearch();
+    onSearchBoxInput(q) {
+      this.debouncedSearch(q);
     },
-    selectMilestone(milestone) {
-      this.toggleMilestones(milestone);
+    selectMilestone(milestones) {
+      this.setSelectedMilestones(milestones);
       this.$emit('input', this.selectedMilestones);
     },
     selectNoMilestone() {
@@ -170,84 +142,40 @@ export default {
 </script>
 
 <template>
-  <gl-dropdown v-bind="$attrs" class="milestone-combobox" @shown="focusSearchBox">
-    <template #button-content>
-      <span data-testid="milestone-combobox-button-content" class="gl-flex-grow-1 text-muted">{{
-        selectedMilestonesLabel
-      }}</span>
-      <gl-icon name="chevron-down" />
+  <gl-collapsible-listbox
+    :header-text="$options.translations.selectMilestone"
+    :items="allMilestones"
+    :selected="selectedMilestones"
+    :reset-button-label="$options.translations.deselect"
+    :toggle-text="selectedMilestonesLabel"
+    :loading="isLoading"
+    block
+    searchable
+    multiple
+    @reset="selectNoMilestone"
+    @search="onSearchBoxInput"
+    @select="selectMilestone"
+  >
+    <template #group-label="{ group }">
+      {{ group.text }} <gl-badge size="sm">{{ group.options.length }}</gl-badge>
     </template>
-
-    <gl-dropdown-section-header>
-      <span class="text-center d-block">{{ $options.translations.selectMilestone }}</span>
-    </gl-dropdown-section-header>
-
-    <gl-dropdown-divider />
-
-    <gl-search-box-by-type
-      ref="searchBox"
-      v-model.trim="searchQuery"
-      class="gl-m-3"
-      :placeholder="$options.translations.searchMilestones"
-      @input="onSearchBoxInput"
-      @keydown.enter.prevent="onSearchBoxEnter"
-    />
-
-    <gl-dropdown-item
-      :is-checked="selectedMilestones.length === 0"
-      is-check-item
-      @click="selectNoMilestone()"
-    >
-      {{ $options.translations.noMilestone }}
-    </gl-dropdown-item>
-
-    <gl-dropdown-divider />
-
-    <template v-if="isLoading">
-      <gl-loading-icon size="sm" />
-      <gl-dropdown-divider />
-    </template>
-    <template v-else-if="showNoResults">
-      <div class="dropdown-item-space">
-        <span data-testid="milestone-combobox-no-results" class="gl-pl-6">{{
-          $options.translations.noResultsLabel
-        }}</span>
+    <template #footer>
+      <div
+        class="gl-border-t-solid gl-border-t-1 gl-border-t-gray-200 gl-display-flex gl-flex-direction-column gl-p-2! gl-pt-0!"
+      >
+        <gl-button
+          v-for="(item, idx) in extraLinks"
+          :key="idx"
+          :href="item.url"
+          is-check-item
+          data-testid="milestone-combobox-extra-links"
+          category="tertiary"
+          block
+          class="gl-justify-content-start! gl-mt-2!"
+        >
+          {{ item.text }}
+        </gl-button>
       </div>
-      <gl-dropdown-divider />
     </template>
-    <template v-else>
-      <milestone-results-section
-        v-if="showProjectMilestoneSection"
-        :section-title="$options.translations.projectMilestones"
-        :total-count="matches.projectMilestones.totalCount"
-        :items="matches.projectMilestones.list"
-        :selected-milestones="selectedMilestones"
-        :error="matches.projectMilestones.error"
-        :error-message="$options.translations.searchErrorMessage"
-        data-testid="project-milestones-section"
-        @selected="selectMilestone($event)"
-      />
-
-      <milestone-results-section
-        v-if="showGroupMilestoneSection"
-        :section-title="$options.translations.groupMilestones"
-        :total-count="matches.groupMilestones.totalCount"
-        :items="matches.groupMilestones.list"
-        :selected-milestones="selectedMilestones"
-        :error="matches.groupMilestones.error"
-        :error-message="$options.translations.searchErrorMessage"
-        data-testid="group-milestones-section"
-        @selected="selectMilestone($event)"
-      />
-    </template>
-    <gl-dropdown-item
-      v-for="(item, idx) in extraLinks"
-      :key="idx"
-      :href="item.url"
-      is-check-item
-      data-testid="milestone-combobox-extra-links"
-    >
-      {{ item.text }}
-    </gl-dropdown-item>
-  </gl-dropdown>
+  </gl-collapsible-listbox>
 </template>
