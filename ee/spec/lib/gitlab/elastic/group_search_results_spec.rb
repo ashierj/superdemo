@@ -118,7 +118,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
       ensure_elasticsearch_index!
     end
 
-    include_examples 'search results filtered by archived', 'search_commits_hide_archived_projects'
+    include_examples 'search results filtered by archived', nil, :backfill_archived_field_in_commits
   end
 
   context 'for projects' do
