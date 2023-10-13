@@ -1,3 +1,5 @@
+import { componentsMockData } from 'ee/ci/catalog/constants';
+
 export const catalogSharedDataMock = {
   data: {
     ciCatalogResource: {
@@ -99,3 +101,15 @@ const generateResourcesNodes = (count = 20, startId = 0) => {
 };
 
 export const mockCatalogResourceItem = generateResourcesNodes(1)[0];
+
+export const mockComponents = {
+  data: {
+    ciCatalogResource: {
+      __typename: 'CiCatalogResource',
+      id: `gid://gitlab/CiCatalogResource/1`,
+      components: {
+        ...componentsMockData,
+      },
+    },
+  },
+};

@@ -1,3 +1,5 @@
+import { componentsMockData } from '../constants';
+
 export const ciCatalogResourcesItemsCount = 20;
 export const CI_CATALOG_RESOURCE_TYPE = 'Ci::Catalog::Resource';
 
@@ -17,6 +19,14 @@ export const cacheConfig = {
           },
         },
       },
+    },
+  },
+};
+
+export const resolvers = {
+  CiCatalogResource: {
+    components() {
+      return componentsMockData;
     },
   },
 };
