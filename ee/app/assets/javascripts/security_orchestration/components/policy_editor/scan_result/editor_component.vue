@@ -6,6 +6,7 @@ import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
+  ADD_ACTION_LABEL,
   BRANCHES_KEY,
   EDITOR_MODE_YAML,
   EDITOR_MODE_RULE,
@@ -52,6 +53,7 @@ export default {
   EDITOR_MODE_YAML,
   EDITOR_MODE_RULE,
   i18n: {
+    ADD_ACTION_LABEL,
     PARSING_ERROR_MESSAGE,
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
@@ -172,6 +174,10 @@ export default {
   methods: {
     ruleHasBranchesProperty(rule) {
       return BRANCHES_KEY in rule;
+    },
+    addAction() {
+      this.policy.actions = [{ type: 'require_approval', approvals_required: 1 }];
+      this.updateYamlEditorValue(this.policy);
     },
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
@@ -380,17 +386,25 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <policy-action-builder
-          v-for="(action, index) in policy.actions"
-          :key="index"
-          class="gl-mb-4"
-          :init-action="action"
-          :errors="errors.action"
-          :existing-approvers="existingApprovers"
-          @error="handleParsingError"
-          @updateApprovers="updatePolicyApprovers"
-          @changed="updateAction(index, $event)"
-        />
+        <div v-if="Boolean(policy.actions)">
+          <policy-action-builder
+            v-for="(action, index) in policy.actions"
+            :key="index"
+            class="gl-mb-4"
+            :init-action="action"
+            :errors="errors.action"
+            :existing-approvers="existingApprovers"
+            @error="handleParsingError"
+            @updateApprovers="updatePolicyApprovers"
+            @changed="updateAction(index, $event)"
+          />
+        </div>
+
+        <div v-else class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
+          <gl-button variant="link" data-testid="add-action" icon="plus" @click="addAction">
+            {{ $options.i18n.ADD_ACTION_LABEL }}
+          </gl-button>
+        </div>
       </dim-disable-container>
     </template>
     <template #settings>
