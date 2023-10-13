@@ -13,21 +13,26 @@ module Todos
         @epic = ::Epic.find_by_id(epic_id)
       end
 
+      def execute
+        return unless todos_to_remove?
+
+        delete_todos
+      end
+
       private
 
-      override :todos
+      def delete_todos
+        authorized_users = epic.group.members_with_parents.non_guests.select(:user_id)
+
+        todos.not_in_users(authorized_users).delete_all
+      end
+
       def todos
         epic.todos
       end
 
-      override :todos_to_remove?
       def todos_to_remove?
         epic&.confidential?
-      end
-
-      override :authorized_users
-      def authorized_users
-        epic.group.members_with_parents.non_guests.select(:user_id)
       end
     end
   end
