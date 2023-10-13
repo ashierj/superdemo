@@ -4,6 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portfolio_management do
   describe '#execute' do
+    let_it_be(:public_group) { create(:group, :public) }
+    let_it_be(:public_epic) { create(:epic, group: public_group) }
     let_it_be(:group) { create(:group, :private) }
     let_it_be(:guest) { create(:user).tap { |user| group.add_guest(user) } }
     let_it_be(:source) { create(:epic, group: group) }
@@ -20,26 +22,36 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
 
     it_behaves_like 'a destroyable issuable link'
 
-    context 'with a public group' do
-      let_it_be(:issuable_link) { create(:related_epic_link) }
+    context 'when user is not a guest in public source group' do
+      let_it_be(:issuable_link) { create(:related_epic_link, source: public_epic, target: target) }
 
-      context 'when user is not a memmber' do
-        it 'removes relation' do
-          expect { subject }.to change { issuable_link.class.count }.by(-1)
+      it 'does not remove relation' do
+        expect { subject }.not_to change { issuable_link.class.count }
+      end
+
+      it 'returns an error message' do
+        is_expected.to eq(message: 'No Related Epic Link found', status: :error, http_status: 404)
+      end
+    end
+
+    context 'when user is not a guest in public target group' do
+      let_it_be(:issuable_link) { create(:related_epic_link, source: source, target: public_epic) }
+
+      it 'removes relation' do
+        expect { subject }.to change { issuable_link.class.count }.by(-1)
+      end
+
+      context 'and `epic_relations_for_non_members` feature flag is disabled' do
+        before do
+          stub_feature_flags(epic_relations_for_non_members: false)
         end
 
-        context 'and `epic_relations_for_non_members` feature flag is disabled' do
-          before do
-            stub_feature_flags(epic_relations_for_non_members: false)
-          end
+        it 'does not remove relation' do
+          expect { subject }.not_to change { issuable_link.class.count }
+        end
 
-          it 'does not remove relation' do
-            expect { subject }.not_to change { issuable_link.class.count }
-          end
-
-          it 'returns an error message' do
-            is_expected.to eq(message: 'No Related Epic Link found', status: :error, http_status: 404)
-          end
+        it 'returns an error message' do
+          is_expected.to eq(message: 'No Related Epic Link found', status: :error, http_status: 404)
         end
       end
     end

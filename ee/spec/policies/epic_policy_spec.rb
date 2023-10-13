@@ -202,14 +202,14 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
         it_behaves_like 'can comment on epics'
         it_behaves_like 'cannot admin epic relations'
 
-        it { is_expected.to be_allowed(:admin_epic_link_relation, :read_epic_link_relation) }
+        it { is_expected.to be_allowed(:read_epic_link_relation) }
 
         context 'when `epic_relations_for_non_members` feature flag is disabled' do
           before do
             stub_feature_flags(epic_relations_for_non_members: false)
           end
 
-          it { is_expected.to be_disallowed(:admin_epic_link_relation, :read_epic_link_relation) }
+          it { is_expected.to be_disallowed(:read_epic_link_relation) }
         end
       end
 
@@ -241,14 +241,14 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
         it_behaves_like 'can comment on epics'
         it_behaves_like 'cannot admin epic relations'
 
-        it { is_expected.to be_allowed(:admin_epic_link_relation, :read_epic_link_relation) }
+        it { is_expected.to be_allowed(:read_epic_link_relation) }
 
         context 'when `epic_relations_for_non_members` feature flag is disabled' do
           before do
             stub_feature_flags(epic_relations_for_non_members: false)
           end
 
-          it { is_expected.to be_disallowed(:admin_epic_link_relation, :read_epic_link_relation) }
+          it { is_expected.to be_disallowed(:read_epic_link_relation) }
         end
       end
 

@@ -33,22 +33,64 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
       end
     end
 
-    context 'when related_epics is not available for target epic' do
-      let(:params) do
-        { issuable_references: [issuable3.to_reference(issuable3.group, full: true)] }
+    context 'with permission checks' do
+      let_it_be(:other_user) { create(:user) }
+
+      let(:error_msg) { "Couldn't link epics. You must have at least the Guest role in the epic's group." }
+      let(:params) { { issuable_references: [issuable3.to_reference(full: true)] } }
+
+      subject { described_class.new(issuable, current_user, params).execute }
+
+      shared_examples 'creates link' do
+        it 'creates relationship', :aggregate_failures do
+          expect { subject }.to change(issuable_link_class, :count).by(1)
+
+          expect(issuable_link_class.find_by!(target: issuable3))
+            .to have_attributes(source: issuable, link_type: 'relates_to')
+        end
       end
 
-      subject { described_class.new(issuable, user, params).execute }
-
-      before do
-        stub_licensed_features(epics: true, related_epics: false)
-        allow(issuable.group).to receive(:licensed_feature_available?).with(:related_epics).and_return(true)
+      shared_examples 'fails to create link' do
+        it 'does not create relationship', :aggregate_failures do
+          expect { subject }.not_to change { issuable_link_class.count }
+          is_expected.to eq(message: error_msg, status: :error, http_status: 403)
+        end
       end
 
-      it 'creates relationships' do
-        expect { subject }.to change(issuable_link_class, :count).by(1)
+      context 'when user is not a guest in source group' do
+        let_it_be(:current_user) { create(:user).tap { |user| another_group.add_guest(user) } }
 
-        expect(issuable_link_class.find_by!(target: issuable3)).to have_attributes(source: issuable, link_type: 'relates_to')
+        it_behaves_like 'fails to create link'
+      end
+
+      context 'when user is not a guest in target group' do
+        let_it_be(:current_user) { create(:user).tap { |user| group.add_guest(user) } }
+
+        it_behaves_like 'creates link'
+      end
+
+      context 'when related_epics feature is not available' do
+        let(:current_user) { user }
+
+        context 'for source group' do
+          before do
+            stub_licensed_features(epics: true, related_epics: false)
+            allow(another_group).to receive(:licensed_feature_available?).with(anything).and_call_original
+            allow(another_group).to receive(:licensed_feature_available?).with(:related_epics).and_return(true)
+          end
+
+          it_behaves_like 'fails to create link'
+        end
+
+        context 'for target group' do
+          before do
+            stub_licensed_features(epics: true, related_epics: false)
+            allow(group).to receive(:licensed_feature_available?).with(anything).and_call_original
+            allow(group).to receive(:licensed_feature_available?).with(:related_epics).and_return(true)
+          end
+
+          it_behaves_like 'creates link'
+        end
       end
     end
 

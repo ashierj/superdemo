@@ -118,8 +118,4 @@ class EpicPolicy < BasePolicy
   rule { relations_for_non_members_available & ~anonymous & can?(:read_epic) }.policy do
     enable :read_epic_link_relation
   end
-
-  rule { can?(:read_epic_link_relation) & related_epics_available }.policy do
-    enable :admin_epic_link_relation
-  end
 end
