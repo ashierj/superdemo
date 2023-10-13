@@ -112,15 +112,18 @@ RSpec.shared_examples 'a repository replicator' do
     end
 
     context 'when a sync is currently running' do
+      let(:registry) { replicator.registry }
+
       it 'moves registry state to pending' do
-        replicator.registry.start!
+        registry.start!
 
         # sync no-op, as if the lease is already taken
         allow(replicator).to receive(:sync_repository)
 
         expect do
           replicator.consume(::Geo::RepositoryReplicatorStrategy::EVENT_UPDATED)
-        end.to change { replicator.registry.reload.pending? }.from(false).to(true)
+        end.to change { registry.reload.pending? }.from(false).to(true)
+          .and change { registry.reload.last_synced_at }.to(nil)
       end
     end
   end
