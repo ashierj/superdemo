@@ -76,6 +76,7 @@ module Elastic
       return false if Feature.disabled?(:elastic_migration_worker, type: :ops)
       return false unless Gitlab::CurrentSettings.elasticsearch_indexing?
       return false unless helper.alias_exists?
+      return false if Elastic::ReindexingTask.current
 
       if helper.unsupported_version?
         logger.info(structured_payload(message: 'MigrationWorker: You are using an unsupported version of Elasticsearch. Indexing will be paused to prevent data loss'))

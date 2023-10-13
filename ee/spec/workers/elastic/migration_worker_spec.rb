@@ -47,6 +47,19 @@ RSpec.describe Elastic::MigrationWorker, :elastic_clean, feature_category: :glob
       end
     end
 
+    context 'reindexing task is in progress' do
+      let!(:task) { create(:elastic_reindexing_task) }
+
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: true)
+      end
+
+      it 'returns without execution' do
+        expect(subject).not_to receive(:execute_migration)
+        expect(subject.perform).to be_falsey
+      end
+    end
+
     context 'indexing is enabled' do
       let(:migration) { Elastic::DataMigrationService.migrations.first }
 
