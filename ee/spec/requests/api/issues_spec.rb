@@ -225,13 +225,13 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
         let!(:issue3) { create(:issue, author: user2, project: project, health_status: :needs_attention) }
 
         it 'returns issues with specific health_status' do
-          get api('/issues', user), params: { health_status: 'at_risk', scope: 'all' }
+          get api('/issues', user), params: { health_status: 'AT_risk', scope: 'all' }
 
           expect_paginated_array_response([issue2.id, issue1.id])
         end
 
         it 'returns issues with any health_status' do
-          get api('/issues', user), params: { health_status: 'any', scope: 'all' }
+          get api('/issues', user), params: { health_status: 'ANY', scope: 'all' }
 
           expect_paginated_array_response([issue3.id, issue2.id, issue1.id])
         end
