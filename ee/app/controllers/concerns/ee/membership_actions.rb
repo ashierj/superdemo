@@ -12,5 +12,11 @@ module EE
         sign_out current_user
       end
     end
+
+    private
+
+    def update_params
+      super.merge(params.require(root_params_key).permit(:member_role_id))
+    end
   end
 end
