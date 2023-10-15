@@ -1,28 +1,13 @@
 <script>
-import { GlDropdown, GlDropdownDivider, GlDropdownSectionHeader, GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdown } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 
 import { s__, __ } from '~/locale';
 
-const issueActionItems = [
-  {
-    title: __('Add a new issue'),
-    eventName: 'showCreateIssueForm',
-  },
-  {
-    title: __('Add an existing issue'),
-    eventName: 'showAddIssueForm',
-  },
-];
-
 export default {
-  issueActionItems,
   components: {
-    GlDropdown,
-    GlDropdownDivider,
-    GlDropdownSectionHeader,
-    GlDropdownItem,
+    GlDisclosureDropdown,
   },
   props: {
     allowSubEpics: {
@@ -41,43 +26,53 @@ export default {
 
       if (this.parentItem.userPermissions.canAdmin) {
         epicActionItems.push({
-          title: s__('Epics|Add a new epic'),
-          eventName: 'showCreateEpicForm',
+          text: s__('Epics|Add a new epic'),
+          action: () => this.$emit('showCreateEpicForm'),
         });
       }
       epicActionItems.push({
-        title: s__('Epics|Add an existing epic'),
-        eventName: 'showAddEpicForm',
+        text: s__('Epics|Add an existing epic'),
+        action: () => this.$emit('showAddEpicForm'),
       });
 
-      return epicActionItems;
+      return {
+        name: __('Epic'),
+        items: epicActionItems,
+      };
     },
-  },
-  methods: {
-    change({ eventName }) {
-      this.$emit(eventName);
+    actions() {
+      const actions = [
+        {
+          name: __('Issue'),
+          items: [
+            {
+              text: __('Add a new issue'),
+              action: () => this.$emit('showCreateIssueForm'),
+            },
+            {
+              text: __('Add an existing issue'),
+              action: () => this.$emit('showAddIssueForm'),
+            },
+          ],
+        },
+      ];
+
+      if (this.allowSubEpics && this.canAdminRelation) {
+        actions.push(this.epicActionItems);
+      }
+
+      return actions;
     },
   },
 };
 </script>
 
 <template>
-  <gl-dropdown :text="__('Add')" data-testid="epic-issue-actions-split-button" size="small" right>
-    <gl-dropdown-section-header>{{ __('Issue') }}</gl-dropdown-section-header>
-    <gl-dropdown-item
-      v-for="item in $options.issueActionItems"
-      :key="item.eventName"
-      @click="change(item)"
-    >
-      {{ item.title }}
-    </gl-dropdown-item>
-
-    <template v-if="allowSubEpics && canAdminRelation">
-      <gl-dropdown-divider />
-      <gl-dropdown-section-header>{{ __('Epic') }}</gl-dropdown-section-header>
-      <gl-dropdown-item v-for="item in epicActionItems" :key="item.eventName" @click="change(item)">
-        {{ item.title }}
-      </gl-dropdown-item>
-    </template>
-  </gl-dropdown>
+  <gl-disclosure-dropdown
+    :toggle-text="__('Add')"
+    :items="actions"
+    size="small"
+    placement="right"
+    data-testid="epic-issue-actions-split-button"
+  />
 </template>
