@@ -1,4 +1,4 @@
-import { GlDropdownSectionHeader, GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdown } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
@@ -34,50 +34,79 @@ const createComponent = ({ slots, state = {} } = {}) => {
   );
 };
 
-describe('RelatedItemsTree', () => {
-  describe('EpicActionsSplitButton', () => {
-    describe('template', () => {
-      let wrapper;
+describe('ee/related_items_tree/components/epic_issue_actions_split_button.vue', () => {
+  let wrapper;
 
-      beforeEach(() => {
-        wrapper = createComponent({ state: { canAdmin: true, canAdminRelation: true } });
+  const findDisclosureDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findDropdownSections = () => findDisclosureDropdown().props('items');
+  const findDropdownItems = () => findDropdownSections().flatMap((x) => x.items);
+
+  describe('default (canAdmin and canAdminRelation)', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ state: { canAdmin: true, canAdminRelation: true } });
+    });
+
+    it('renders section headers', () => {
+      const sections = findDropdownSections().map((x) => x.name);
+
+      expect(sections).toEqual(['Issue', 'Epic']);
+    });
+
+    it('renders items', () => {
+      const items = findDropdownItems().map((x) => x.text);
+
+      expect(items).toEqual([
+        'Add a new issue',
+        'Add an existing issue',
+        'Add a new epic',
+        'Add an existing epic',
+      ]);
+    });
+
+    it.each`
+      itemText                   | event                    | args
+      ${'Add a new issue'}       | ${'showCreateIssueForm'} | ${[]}
+      ${'Add an existing issue'} | ${'showAddIssueForm'}    | ${[]}
+      ${'Add a new epic'}        | ${'showCreateEpicForm'}  | ${[]}
+      ${'Add an existing epic'}  | ${'showAddEpicForm'}     | ${[]}
+    `('when $itemText clicked, emits $event', ({ itemText, event, args }) => {
+      const item = findDropdownItems().find((x) => x.text === itemText);
+
+      expect(wrapper.emitted()).toEqual({});
+
+      item.action();
+
+      expect(wrapper.emitted()).toEqual({
+        [event]: [args],
       });
+    });
+  });
 
-      it.each`
-        index | headerText
-        ${0}  | ${'Issue'}
-        ${1}  | ${'Epic'}
-      `('renders "$headerText" section header', ({ index, headerText }) => {
-        expect(wrapper.findAllComponents(GlDropdownSectionHeader).at(index).text()).toContain(
-          headerText,
-        );
-      });
+  describe('when cannot admin relation', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ state: { canAdminRelation: false } });
+    });
 
-      it('does not render entire "Epic" section when `parentItem.userPermissions.canAdminRelation` is false', () => {
-        wrapper = createComponent({ state: { canAdminRelation: false } });
+    it('does not render entire "Epic"', () => {
+      const sections = findDropdownSections().map((x) => x.name);
 
-        expect(wrapper.findAllComponents(GlDropdownSectionHeader)).toHaveLength(1);
-        expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(2);
-      });
+      expect(sections).toEqual(['Issue']);
+    });
+  });
 
-      it.each`
-        index | actionText
-        ${0}  | ${'Add a new issue'}
-        ${1}  | ${'Add an existing issue'}
-        ${2}  | ${'Add a new epic'}
-        ${3}  | ${'Add an existing epic'}
-      `('renders "$actionText" action', ({ index, actionText }) => {
-        expect(wrapper.findAllComponents(GlDropdownItem).at(index).text()).toContain(actionText);
-      });
+  describe('when cannot admin', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ state: { canAdmin: false, canAdminRelation: true } });
+    });
 
-      it('does not render "Add a new epic" action when `parentItem.userPermissions.canAdmin` is false', () => {
-        wrapper = createComponent({ state: { canAdmin: false, canAdminRelation: true } });
+    it('does not render "Add a new epic" action', () => {
+      const actionTexts = findDropdownItems().map((x) => x.text);
 
-        expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(3);
-        expect(wrapper.findAllComponents(GlDropdownItem).at(2).text()).not.toContain(
-          'Add a new epic',
-        );
-      });
+      expect(actionTexts).toEqual([
+        'Add a new issue',
+        'Add an existing issue',
+        'Add an existing epic',
+      ]);
     });
   });
 });

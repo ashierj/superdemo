@@ -75,7 +75,7 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
 
     def add_issues(references)
       find(".related-items-tree-container .js-add-epics-issues-button").click
-      find('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing issue').click
+      find('.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]', text: 'Add an existing issue').click
       fill_in 'Paste issue link', with: "#{references} "
       within '.gl-new-card-add-form' do
         click_button 'Add'
@@ -86,7 +86,7 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
 
     def add_epics(references)
       find('.related-items-tree-container .js-add-epics-issues-button').click
-      find('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing epic').click
+      find('.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]', text: 'Add an existing epic').click
       fill_in 'Paste epic link', with: "#{references} "
       within '.gl-new-card-add-form' do
         click_button 'Add'
@@ -104,8 +104,8 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
       it 'user can display create new epic form by clicking the dropdown item' do
         expect(page).not_to have_selector('input[placeholder="New epic title"]')
 
-        find('.related-items-tree-container .js-add-epics-issues-button .dropdown-toggle').click
-        find('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add a new epic').click
+        find('.related-items-tree-container .js-add-epics-issues-button [data-testid="base-dropdown-toggle"]').click
+        find('.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]', text: 'Add a new epic').click
 
         expect(page).to have_selector('input[placeholder="New epic title"]')
       end
@@ -220,8 +220,8 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
           visit_epic_no_subepic
           find('.related-items-tree-container .js-add-epics-issues-button').click
 
-          expect(page).not_to have_selector('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing epic')
-          expect(page).not_to have_selector('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add a new epic')
+          expect(page).not_to have_selector('.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]', text: 'Add an existing epic')
+          expect(page).not_to have_selector('.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]', text: 'Add a new epic')
         end
       end
     end
@@ -241,7 +241,7 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
 
     it 'user does not see the linked issues part of the form when they click "Add an existing issue"' do
       find(".related-items-tree-container .js-add-epics-issues-button").click
-      find('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing issue').click
+      find('.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]', text: 'Add an existing issue').click
 
       expect(page).not_to have_content("The current issue")
       expect(page).not_to have_content("is blocked by")
