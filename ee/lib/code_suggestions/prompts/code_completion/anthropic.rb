@@ -43,7 +43,7 @@ module CodeSuggestions
                        puts "Hello, <cursor>
                      end
                   </existing_code>
-                A: puts "world!"
+                A: world!"
               </example>
             </examples>
 
