@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe ProjectTeam, feature_category: :groups_and_projects do # rubocop: disable RSpec/DuplicateSpecLocation
+RSpec.describe ProjectTeam, feature_category: :groups_and_projects do
   describe '#import_team' do
     let_it_be(:source_project) { create(:project) }
     let_it_be(:target_project) { create(:project) }
@@ -28,6 +28,44 @@ RSpec.describe ProjectTeam, feature_category: :groups_and_projects do # rubocop:
         import
 
         expect(target_project.members.find_by(user: source_project_security_policy_bot)).to eq(nil)
+      end
+    end
+  end
+
+  describe '#add_member' do
+    let_it_be(:group) { create(:group) }
+    let(:project) { create(:project, group: group) }
+    let(:user) { create(:user) }
+
+    context 'when group membership is locked' do
+      before do
+        group.update_attribute(:membership_lock, true)
+      end
+
+      it 'does not add the given user to the team' do
+        project.team.add_member(user, :reporter)
+
+        expect(project.members.map(&:user)).not_to include(user)
+      end
+
+      context 'when user is a project bot' do
+        let_it_be(:project_bot) { create(:user, :project_bot) }
+
+        it 'adds the project bot user to the team' do
+          project.team.add_member(project_bot, :maintainer)
+
+          expect(project.members.map(&:user)).to include(project_bot)
+        end
+      end
+
+      context 'when user is a security policy bot' do
+        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+
+        it 'adds the project bot user to the team' do
+          project.team.add_member(security_policy_bot, :maintainer)
+
+          expect(project.members.map(&:user)).to include(security_policy_bot)
+        end
       end
     end
   end
