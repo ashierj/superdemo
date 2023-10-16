@@ -21,6 +21,7 @@ export const BASE_ROLES = Object.freeze(
 export const READ_CODE = 'read_code';
 export const READ_VULNERABILITY = 'read_vulnerability';
 export const ADMIN_VULNERABILITY = 'admin_vulnerability';
+export const MANAGE_PROJECT_ACCESS_TOKENS = 'manage_project_access_tokens';
 
 export const PERMISSIONS = Object.freeze({
   [READ_CODE]: {
@@ -39,6 +40,13 @@ export const PERMISSIONS = Object.freeze({
     ),
     text: s__('MemberRoles|Admin vulnerability'),
     value: ADMIN_VULNERABILITY,
+  },
+  [MANAGE_PROJECT_ACCESS_TOKENS]: {
+    help: s__(
+      "MemberRoles|Allows manage access to the project access tokens. Select 'Manage Project Access Tokens' for this to take effect.",
+    ),
+    text: s__('MemberRoles|Manage Project Access Tokens'),
+    value: MANAGE_PROJECT_ACCESS_TOKENS,
   },
 });
 

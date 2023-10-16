@@ -21,6 +21,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     },
     read_vulnerability: {
       description: 'Allows read-only access to the vulnerability reports.'
+    },
+    manage_project_access_tokens: {
+      description: 'Allows manage access to the project access tokens'
     }
   }.freeze
   ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS = [
@@ -28,7 +31,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     :read_dependency,
     :read_vulnerability,
     :admin_merge_request,
-    :admin_vulnerability
+    :admin_vulnerability,
+    :manage_project_access_tokens
   ].freeze
   ALL_CUSTOMIZABLE_GROUP_PERMISSIONS = [
     :read_dependency,

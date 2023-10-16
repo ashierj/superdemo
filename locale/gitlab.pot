@@ -29133,6 +29133,9 @@ msgstr ""
 msgid "MemberRoles|Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect."
 msgstr ""
 
+msgid "MemberRoles|Allows manage access to the project access tokens. Select 'Manage Project Access Tokens' for this to take effect."
+msgstr ""
+
 msgid "MemberRoles|Allows read-only access to the source code."
 msgstr ""
 
@@ -29179,6 +29182,9 @@ msgid "MemberRoles|Incident manager"
 msgstr ""
 
 msgid "MemberRoles|Make sure the group is in the Ultimate tier."
+msgstr ""
+
+msgid "MemberRoles|Manage Project Access Tokens"
 msgstr ""
 
 msgid "MemberRoles|Name"

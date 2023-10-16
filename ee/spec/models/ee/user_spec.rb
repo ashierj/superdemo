@@ -1181,7 +1181,8 @@ RSpec.describe User, feature_category: :system_access do
              OR admin_merge_request = true
              OR admin_vulnerability = true
              OR read_dependency = true
-             OR read_vulnerability = true\)\)\)\)'.squish # allow_cross_joins_across_databases
+             OR read_vulnerability = true
+             OR manage_project_access_tokens = true\)\)\)\)'.squish # allow_cross_joins_across_databases
       end
 
       before do
