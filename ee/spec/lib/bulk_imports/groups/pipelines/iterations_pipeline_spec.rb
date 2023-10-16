@@ -29,7 +29,7 @@ RSpec.describe BulkImports::Groups::Pipelines::IterationsPipeline do
     group.add_owner(user)
   end
 
-  describe '#run' do
+  describe '#run', :clean_gitlab_redis_cache do
     it 'imports group iterations' do
       first_page = extracted_data(title: 'iteration1', has_next_page: true)
       last_page = extracted_data(title: 'iteration2', start_date: Date.today + 2.days)
@@ -52,6 +52,23 @@ RSpec.describe BulkImports::Groups::Pipelines::IterationsPipeline do
       expect(iteration.due_date).to eq(Date.today + 3.days)
       expect(iteration.created_at).to eq(timestamp)
       expect(iteration.updated_at).to eq(timestamp)
+    end
+
+    it 'skips load on duplicates' do
+      first_page = extracted_data(title: 'iteration1', has_next_page: true)
+      last_page = extracted_data(title: 'iteration2', start_date: Date.today + 2.days)
+
+      allow_next_instance_of(BulkImports::Common::Extractors::GraphqlExtractor) do |extractor|
+        allow(extractor)
+          .to receive(:extract)
+          .and_return(first_page, last_page)
+      end
+
+      expect { subject.run }.to change(Iteration, :count).by(2)
+
+      expect(subject).not_to receive(:load)
+
+      subject.run
     end
   end
 
