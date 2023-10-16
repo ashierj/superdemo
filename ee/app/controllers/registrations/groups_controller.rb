@@ -10,9 +10,6 @@ module Registrations
     skip_before_action :set_confirm_warning
     before_action :verify_onboarding_enabled!
     before_action :authorize_create_group!, only: :new
-    before_action only: [:new] do
-      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    end
 
     layout 'minimal'
 

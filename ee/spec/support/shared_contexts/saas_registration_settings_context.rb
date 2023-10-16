@@ -23,8 +23,7 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
     stub_feature_flags(
       # our focus isn't around the arkose challenge, so we'll omit it
       arkose_labs_signup_challenge: false,
-      identity_verification: true,
-      gitlab_gtm_datalayer: true
+      identity_verification: true
     )
 
     stub_config(extra: { 'google_tag_manager_nonce_id' => 'key' })

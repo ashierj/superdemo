@@ -12,9 +12,6 @@ module Subscriptions
     skip_before_action :set_confirm_warning
     before_action :check_if_gl_com_or_dev
     before_action :authenticate_user!
-    before_action only: :new do
-      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    end
 
     feature_category :purchase
     urgency :low

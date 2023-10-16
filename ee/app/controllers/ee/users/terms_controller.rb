@@ -7,10 +7,6 @@ module EE
 
       prepended do
         include GoogleAnalyticsCSP
-
-        before_action only: [:index] do
-          push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-        end
       end
     end
   end

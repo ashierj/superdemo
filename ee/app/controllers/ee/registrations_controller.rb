@@ -18,10 +18,6 @@ module EE
         push_frontend_feature_flag(:arkose_labs_signup_challenge)
       end
       before_action :ensure_can_remove_self, only: [:destroy]
-
-      before_action only: [:new] do
-        push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-      end
     end
 
     override :create

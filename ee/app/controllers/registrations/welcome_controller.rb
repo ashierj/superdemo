@@ -13,9 +13,6 @@ module Registrations
     layout 'minimal'
 
     before_action :verify_onboarding_enabled!
-    before_action only: :show do
-      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    end
 
     helper_method :onboarding_status
 

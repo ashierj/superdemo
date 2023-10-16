@@ -29,9 +29,6 @@ describe('ee/google_tag_manager/index', () => {
     window.dataLayer = {
       push: spy,
     };
-    window.gon.features = {
-      gitlabGtmDatalayer: true,
-    };
   });
 
   const createHTML = ({ links = [], forms = [] } = {}) => {
@@ -454,13 +451,9 @@ describe('ee/google_tag_manager/index', () => {
     });
   });
 
-  describe.each([
-    { dataLayer: null },
-    { gon: { features: null } },
-    { gon: { features: { gitlabGtmDatalayer: false } } },
-  ])('when window %o', (windowAttrs) => {
+  describe('when window has no dataLayer', () => {
     beforeEach(() => {
-      merge(window, windowAttrs);
+      merge(window, { dataLayer: null });
     });
 
     it('no ops', () => {
