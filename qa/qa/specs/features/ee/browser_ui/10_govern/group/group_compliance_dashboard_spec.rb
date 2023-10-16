@@ -21,6 +21,14 @@ module QA
           source_branch: "test-compliance-report-branch-#{SecureRandom.hex(8)}")
       end
 
+      before do
+        Runtime::Feature.disable(:adherence_report_ui, group: group)
+      end
+
+      after do
+        Runtime::Feature.enable(:adherence_report_ui, group: group)
+      end
+
       context 'with separation of duties in an MR' do
         before do
           project.update_approval_configuration(merge_requests_author_approval: true)
