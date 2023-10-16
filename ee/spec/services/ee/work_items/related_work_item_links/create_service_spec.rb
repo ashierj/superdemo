@@ -59,6 +59,7 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::CreateService, feature_category:
       end
 
       it_behaves_like 'issuable link creation with blocking link_type' do
+        let(:async_notes) { true }
         let(:issuable_link_class) { link_class }
         let(:issuable) { work_item }
         let(:issuable2) { work_item_a }

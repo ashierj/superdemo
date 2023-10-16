@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'issuable link creation with blocking link_type' do
+  let(:async_notes) { false }
+
   subject { described_class.new(issuable, user, params).execute }
 
   context 'when is_blocked_by relation is used' do
@@ -16,17 +18,31 @@ RSpec.shared_examples 'issuable link creation with blocking link_type' do
     end
 
     it 'creates block and blocked_by notes with swapped issuables' do
-      # First block and blocked_by notes
-      expect(SystemNoteService).to receive(:block_issuable)
-                                     .with(issuable2, issuable, user)
-      expect(SystemNoteService).to receive(:blocked_by_issuable)
-                                     .with(issuable, issuable2, user)
+      if async_notes
+        expect(Issuable::RelatedLinksCreateWorker).to receive(:perform_async) do |args|
+          expect(args).to eq(
+            {
+              issuable_class: issuable.class.name,
+              issuable_id: issuable.id,
+              link_ids: issuable_link_class.where(target: issuable).last(2).pluck(:id),
+              link_type: 'is_blocked_by',
+              user_id: user.id
+            }
+          )
+        end
+      else
+        # First block and blocked_by notes
+        expect(SystemNoteService).to receive(:block_issuable)
+                                       .with(issuable2, issuable, user)
+        expect(SystemNoteService).to receive(:blocked_by_issuable)
+                                       .with(issuable, issuable2, user)
 
-      # Second block and blocked_by notes
-      expect(SystemNoteService).to receive(:block_issuable)
-                                     .with(issuable3, issuable, user)
-      expect(SystemNoteService).to receive(:blocked_by_issuable)
-                                     .with(issuable, issuable3, user)
+        # Second block and blocked_by notes
+        expect(SystemNoteService).to receive(:block_issuable)
+                                       .with(issuable3, issuable, user)
+        expect(SystemNoteService).to receive(:blocked_by_issuable)
+                                       .with(issuable, issuable3, user)
+      end
 
       subject
     end
@@ -45,17 +61,31 @@ RSpec.shared_examples 'issuable link creation with blocking link_type' do
     end
 
     it 'creates block and blocked_by notes' do
-      # First block and blocked_by notes
-      expect(SystemNoteService).to receive(:block_issuable)
-                                     .with(issuable, issuable2, user)
-      expect(SystemNoteService).to receive(:blocked_by_issuable)
-                                     .with(issuable2, issuable, user)
+      if async_notes
+        expect(Issuable::RelatedLinksCreateWorker).to receive(:perform_async) do |args|
+          expect(args).to eq(
+            {
+              issuable_class: issuable.class.name,
+              issuable_id: issuable.id,
+              link_ids: issuable_link_class.where(source: issuable).last(2).pluck(:id),
+              link_type: 'blocks',
+              user_id: user.id
+            }
+          )
+        end
+      else
+        # First block and blocked_by notes
+        expect(SystemNoteService).to receive(:block_issuable)
+                                       .with(issuable, issuable2, user)
+        expect(SystemNoteService).to receive(:blocked_by_issuable)
+                                       .with(issuable2, issuable, user)
 
-      # Second block and blocked_by notes
-      expect(SystemNoteService).to receive(:block_issuable)
-                                     .with(issuable, issuable3, user)
-      expect(SystemNoteService).to receive(:blocked_by_issuable)
-                                     .with(issuable3, issuable, user)
+        # Second block and blocked_by notes
+        expect(SystemNoteService).to receive(:block_issuable)
+                                       .with(issuable, issuable3, user)
+        expect(SystemNoteService).to receive(:blocked_by_issuable)
+                                       .with(issuable3, issuable, user)
+      end
 
       subject
     end

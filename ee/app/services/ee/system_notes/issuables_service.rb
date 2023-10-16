@@ -81,16 +81,18 @@ module EE
 
       # Called when an issuable is linked as blocking
       #
-      # noteable_ref - Referenced noteable object
+      # noteable_ref - Referenced noteable object, or array of objects
       #
       # Example Note text:
       #
       #   "marked this issue as blocking gitlab-foss#9001"
+      #   "marked this issue as blocking gitlab-foss#9001 and gitlab-foss#9002"
       #   "marked this epic as blocking &9"
+      #   "marked this epic as blocking &9, &10, and &11"
       #
       # Returns the created Note object
       def block_issuable(noteable_ref)
-        body = block_message(noteable_name, noteable_ref.to_reference(noteable.resource_parent), 'blocking')
+        body = block_message(noteable_name, extract_issuable_reference(noteable_ref), 'blocking')
 
         track_issue_event(:track_issue_related_action)
 
@@ -99,16 +101,18 @@ module EE
 
       # Called when an issuable is linked as a blocked by
       #
-      # noteable_ref - Referenced noteable object
+      # noteable_ref - Referenced noteable object, or array of objects
       #
       # Example Note text:
       #
       #   "marked this issue as blocked by gitlab-foss#9001"
+      #   "marked this issue as blocked by gitlab-foss#9001 and gitlab-foss#9002"
       #   "marked this epic as blocked by &9"
+      #   "marked this epic as blocked by &9, &10, and &11"
       #
       # Returns the created Note object
       def blocked_by_issuable(noteable_ref)
-        body = block_message(noteable_name, noteable_ref.to_reference(noteable.resource_parent), 'blocked by')
+        body = block_message(noteable_name, extract_issuable_reference(noteable_ref), 'blocked by')
 
         track_issue_event(:track_issue_related_action)
 
