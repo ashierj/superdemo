@@ -30,7 +30,30 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           Review the existing code to understand existing logic and format.
           Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
           If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-          Do not repeat code that already exists. The new code has to be fully functional and complete.
+
+          Do not repeat code that is already included in <existing_code></existing_code>.
+          Here is an example of response which doesn't repeat existing code:
+
+          <examples>
+            <example>
+              H: <existing_code>
+                   def hello_world
+                     <cursor>
+                   end
+                </existing_code>
+              A: puts "Hello, world!"
+            </example>
+            <example>
+              H: <existing_code>
+                   def hello_world
+                     puts "Hello, <cursor>
+                   end
+                </existing_code>
+              A: puts "world!"
+            </example>
+          </examples>
+
+          The new code has to be fully functional and complete. Let's start, here is the existing code:
 
           <existing_code>
             prefix<cursor>suffix
@@ -57,7 +80,30 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
             Review the existing code to understand existing logic and format.
             Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-            Do not repeat code that already exists. The new code has to be fully functional and complete.
+
+            Do not repeat code that is already included in <existing_code></existing_code>.
+            Here is an example of response which doesn't repeat existing code:
+
+            <examples>
+              <example>
+                H: <existing_code>
+                     def hello_world
+                       <cursor>
+                     end
+                  </existing_code>
+                A: puts "Hello, world!"
+              </example>
+              <example>
+                H: <existing_code>
+                     def hello_world
+                       puts "Hello, <cursor>
+                     end
+                  </existing_code>
+                A: puts "world!"
+              </example>
+            </examples>
+
+            The new code has to be fully functional and complete. Let's start, here is the existing code:
 
             <existing_code>
               <cursor>suffix
@@ -85,7 +131,30 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
             Review the existing code to understand existing logic and format.
             Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-            Do not repeat code that already exists. The new code has to be fully functional and complete.
+
+            Do not repeat code that is already included in <existing_code></existing_code>.
+            Here is an example of response which doesn't repeat existing code:
+
+            <examples>
+              <example>
+                H: <existing_code>
+                     def hello_world
+                       <cursor>
+                     end
+                  </existing_code>
+                A: puts "Hello, world!"
+              </example>
+              <example>
+                H: <existing_code>
+                     def hello_world
+                       puts "Hello, <cursor>
+                     end
+                  </existing_code>
+                A: puts "world!"
+              </example>
+            </examples>
+
+            The new code has to be fully functional and complete. Let's start, here is the existing code:
 
             <existing_code>
               prefix<cursor>
@@ -113,7 +182,30 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
             Review the existing code to understand existing logic and format.
             Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-            Do not repeat code that already exists. The new code has to be fully functional and complete.
+
+            Do not repeat code that is already included in <existing_code></existing_code>.
+            Here is an example of response which doesn't repeat existing code:
+
+            <examples>
+              <example>
+                H: <existing_code>
+                     def hello_world
+                       <cursor>
+                     end
+                  </existing_code>
+                A: puts "Hello, world!"
+              </example>
+              <example>
+                H: <existing_code>
+                     def hello_world
+                       puts "Hello, <cursor>
+                     end
+                  </existing_code>
+                A: puts "world!"
+              </example>
+            </examples>
+
+            The new code has to be fully functional and complete. Let's start, here is the existing code:
 
             <existing_code>
               prefix<cursor>suffix
