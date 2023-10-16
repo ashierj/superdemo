@@ -49,8 +49,13 @@ class DependencyEntity < Grape::Entity
   expose :licenses, using: LicenseEntity, if: ->(_) { can_read_licenses? } do |object|
     object[:licenses].presence || [::Gitlab::LicenseScanning::PackageLicenses::UNKNOWN_LICENSE]
   end
+  expose :occurrence_count, if: ->(_) { group? } do |object|
+    object.respond_to?(:occurrence_count) ? object.occurrence_count : 1
+  end
   expose :project, using: ProjectEntity, if: ->(_) { group? }
-  expose :project_count, :occurrence_count, if: ->(_) { group_counts? }
+  expose :project_count, if: ->(_) { group? } do |object|
+    object.respond_to?(:project_count) ? object.project_count : 1
+  end
   expose :component_id, if: ->(_) { group? }
 
   private
@@ -70,11 +75,5 @@ class DependencyEntity < Grape::Entity
 
   def group?
     group.present?
-  end
-
-  def group_counts?
-    group? &&
-      object.respond_to?(:project_count) &&
-      object.respond_to?(:occurrence_count)
   end
 end

@@ -109,11 +109,13 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
       it 'renders the proper representation' do
         expect(subject.as_json).to eq({
           "name" => sbom_occurrence.name,
+          "occurrence_count" => 1,
           "packager" => sbom_occurrence.packager,
           "project" => {
             "name" => project.name,
             "full_path" => project.full_path
           },
+          "project_count" => 1,
           "version" => sbom_occurrence.version,
           "licenses" => sbom_occurrence.licenses,
           "component_id" => sbom_occurrence.component_id,
