@@ -84,6 +84,22 @@ describe('Dependencies mutations', () => {
         generatedAt: 'foo',
       });
     });
+
+    it('does not overwrite the report status if the state is already initialized', () => {
+      const initialReportStatus = state.reportInfo.status;
+      const newReportStatus = REPORT_STATUS.noDependencies;
+
+      mutations[types.RECEIVE_DEPENDENCIES_SUCCESS](state, {
+        dependencies,
+        reportInfo: {
+          ...reportInfo,
+          status: newReportStatus,
+        },
+        pageInfo,
+      });
+
+      expect(state.reportInfo.status).toBe(initialReportStatus);
+    });
   });
 
   describe(types.RECEIVE_DEPENDENCIES_ERROR, () => {

@@ -23,9 +23,14 @@ export default {
     state.pageInfo = pageInfo;
     state.isLoading = false;
     state.errorLoading = false;
-    state.reportInfo.status = reportInfo.status;
     state.reportInfo.jobPath = reportInfo.job_path;
     state.reportInfo.generatedAt = reportInfo.generated_at;
+
+    // keep the initial report status to prevent the empty state from being displayed when filters are applied
+    if (!state.initialized) {
+      state.reportInfo.status = reportInfo.status;
+    }
+
     state.initialized = true;
   },
   [types.RECEIVE_DEPENDENCIES_ERROR](state) {

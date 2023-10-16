@@ -127,6 +127,7 @@ export default {
     data-testid="dependencies-table-content"
     details-td-class="pt-0"
     stacked="md"
+    show-empty
   >
     <template #head(location)="data">
       {{ data.label }}
