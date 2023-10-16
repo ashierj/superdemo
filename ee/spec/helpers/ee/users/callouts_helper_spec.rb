@@ -249,14 +249,13 @@ RSpec.describe EE::Users::CalloutsHelper do
     let_it_be(:user) { create(:user) }
     let_it_be(:pipeline) { create(:ci_pipeline, user: user, failure_reason: :user_not_verified) }
 
-    where(:on_gitlab_com?, :logged_in?, :unverified?, :failed_pipeline?, :not_dismissed_callout?, :flag_enabled?, :result) do
-      true  | true  | true  | true  | true  | true  | true
-      false | true  | true  | true  | true  | true  | false
-      true  | false | true  | true  | true  | true  | false
-      true  | true  | false | true  | true  | true  | false
-      true  | true  | true  | false | true  | true  | false
-      true  | true  | true  | true  | false | true  | false
-      true  | true  | true  | true  | true  | false | false
+    where(:on_gitlab_com?, :logged_in?, :unverified?, :failed_pipeline?, :not_dismissed_callout?, :result) do
+      true  | true  | true  | true  | true  | true
+      false | true  | true  | true  | true  | false
+      true  | false | true  | true  | true  | false
+      true  | true  | false | true  | true  | false
+      true  | true  | true  | false | true  | false
+      true  | true  | true  | true  | false | false
     end
 
     with_them do
@@ -266,7 +265,6 @@ RSpec.describe EE::Users::CalloutsHelper do
         allow(user).to receive(:has_valid_credit_card?).and_return(!unverified?)
         pipeline.update!(failure_reason: nil) unless failed_pipeline?
         allow(user).to receive(:dismissed_callout?).and_return(!not_dismissed_callout?)
-        stub_feature_flags(verification_reminder: flag_enabled?)
       end
 
       it { is_expected.to eq(result) }
