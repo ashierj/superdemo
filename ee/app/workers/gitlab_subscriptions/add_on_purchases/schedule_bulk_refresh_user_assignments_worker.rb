@@ -13,7 +13,7 @@ module GitlabSubscriptions
       idempotent!
 
       def perform
-        return unless Feature.enabled?(:hamilton_seat_management)
+        return unless Feature.enabled?(:bulk_add_on_assignment_refresh_worker)
 
         return unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 

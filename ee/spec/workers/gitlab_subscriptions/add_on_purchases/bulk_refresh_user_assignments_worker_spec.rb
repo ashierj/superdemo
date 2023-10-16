@@ -70,9 +70,9 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWo
         it_behaves_like 'returns early'
       end
 
-      context 'when feature flag hamilton_seat_management is disabled' do
+      context 'when feature flag bulk_add_on_assignment_refresh_worker is disabled' do
         before do
-          stub_feature_flags(hamilton_seat_management: false)
+          stub_feature_flags(bulk_add_on_assignment_refresh_worker: false)
         end
 
         it_behaves_like 'returns early'
@@ -99,10 +99,22 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWo
     end
 
     context 'when there is remaining work' do
-      it 'returns correct amount' do
+      before do
         stub_const("#{described_class}::MAX_RUNNING_JOBS", 1)
+      end
 
+      it 'returns correct amount' do
         expect(subject.remaining_work_count).to eq(2)
+      end
+
+      context 'when the bulk_add_on_assignment_refresh_worker FF is disabled' do
+        before do
+          stub_feature_flags(bulk_add_on_assignment_refresh_worker: false)
+        end
+
+        it 'returns zero' do
+          expect(subject.remaining_work_count).to eq(0)
+        end
       end
     end
 
