@@ -5,6 +5,7 @@ import { __, s__ } from '~/locale';
 import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
 import deleteInstanceExternalDestination from '../../graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import googleCloudLoggingConfigurationDestroy from '../../graphql/mutations/delete_gcp_logging_destination.mutation.graphql';
+import instanceGoogleCloudLoggingConfigurationDestroy from '../../graphql/mutations/delete_instance_gcp_logging_destination.mutation.graphql';
 import { DESTINATION_TYPE_HTTP, DESTINATION_TYPE_GCP_LOGGING } from '../../constants';
 
 export default {
@@ -30,7 +31,9 @@ export default {
     destinationDestroyMutation() {
       switch (this.type) {
         case DESTINATION_TYPE_GCP_LOGGING:
-          return googleCloudLoggingConfigurationDestroy;
+          return this.isInstance
+            ? instanceGoogleCloudLoggingConfigurationDestroy
+            : googleCloudLoggingConfigurationDestroy;
         case DESTINATION_TYPE_HTTP:
         default:
           return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
@@ -44,7 +47,9 @@ export default {
     destinationErrors(data) {
       switch (this.type) {
         case DESTINATION_TYPE_GCP_LOGGING:
-          return data.googleCloudLoggingConfigurationDestroy.errors;
+          return this.isInstance
+            ? data.instanceGoogleCloudLoggingConfigurationDestroy.errors
+            : data.googleCloudLoggingConfigurationDestroy.errors;
         case DESTINATION_TYPE_HTTP:
         default:
           return this.isInstance

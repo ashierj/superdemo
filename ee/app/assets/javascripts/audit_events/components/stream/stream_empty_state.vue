@@ -14,11 +14,8 @@ export default {
     GlEmptyState,
     GlDisclosureDropdown,
   },
-  inject: ['groupPath', 'emptyStateSvgPath'],
+  inject: ['emptyStateSvgPath'],
   computed: {
-    isInstance() {
-      return this.groupPath === 'instance';
-    },
     destinationOptions() {
       return [
         {
@@ -40,9 +37,6 @@ export default {
           },
         },
       ];
-    },
-    addOptions() {
-      return this.isInstance ? [this.destinationOptions[0]] : this.destinationOptions;
     },
   },
   i18n: {
@@ -74,7 +68,7 @@ export default {
         category="primary"
         variant="confirm"
         data-testid="dropdown-toggle"
-        :items="addOptions"
+        :items="destinationOptions"
       />
     </template>
   </gl-empty-state>

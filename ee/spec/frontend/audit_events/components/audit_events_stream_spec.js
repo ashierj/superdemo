@@ -7,7 +7,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
 import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_external_destinations.query.graphql';
-import gcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_get_google_cloud_logging_destinations.query.graphql';
+import gcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_google_cloud_logging_destinations.query.graphql';
 import {
   AUDIT_STREAMS_NETWORK_ERRORS,
   ADD_STREAM_MESSAGE,
@@ -186,7 +186,7 @@ describe('AuditEventsStream', () => {
         expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
       });
 
-      it('shows http gcp logging editor', async () => {
+      it('shows gcp logging editor', async () => {
         expect(findLoadingIcon().exists()).toBe(false);
         expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(false);
 
@@ -313,7 +313,7 @@ describe('AuditEventsStream', () => {
         return waitForPromises();
       });
 
-      it('shows destination editor', async () => {
+      it('shows http destination editor', async () => {
         expect(findLoadingIcon().exists()).toBe(false);
         expect(findStreamDestinationEditor().exists()).toBe(false);
 
@@ -322,7 +322,7 @@ describe('AuditEventsStream', () => {
         expect(findStreamDestinationEditor().exists()).toBe(true);
       });
 
-      it('exits edit mode when an external destination is added', async () => {
+      it('exits edit mode when an http external destination is added', async () => {
         expect(findLoadingIcon().exists()).toBe(false);
         expect(findStreamDestinationEditor().exists()).toBe(false);
 
@@ -331,6 +331,31 @@ describe('AuditEventsStream', () => {
         expect(findStreamDestinationEditor().exists()).toBe(true);
 
         findStreamDestinationEditor().vm.$emit('added');
+        await waitForPromises();
+
+        expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+      });
+
+      it('shows gcp logging editor', async () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(false);
+
+        expect(findAddDestinationButton().props('toggleText')).toBe('Add streaming destination');
+
+        await findGcpLoggingDropdownItem().trigger('click');
+
+        expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(true);
+      });
+
+      it('exits edit mode when an external gcp logging destination is added', async () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(false);
+
+        await findGcpLoggingDropdownItem().trigger('click');
+
+        expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(true);
+
+        findStreamGcpLoggingDestinationEditor().vm.$emit('added');
         await waitForPromises();
 
         expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);

@@ -6,6 +6,8 @@ import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tool
 import { createAlert } from '~/alert';
 import googleCloudLoggingConfigurationCreate from '../../graphql/mutations/create_gcp_logging_destination.mutation.graphql';
 import googleCloudLoggingConfigurationUpdate from '../../graphql/mutations/update_gcp_logging_destination.mutation.graphql';
+import instanceGoogleCloudLoggingConfigurationCreate from '../../graphql/mutations/create_instance_gcp_logging_destination.mutation.graphql';
+import instanceGoogleCloudLoggingConfigurationUpdate from '../../graphql/mutations/update_instance_gcp_logging_destination.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
@@ -97,6 +99,19 @@ export default {
     showPrivateKey() {
       return !this.isEditing || (this.isEditing && this.addingPrivateKey);
     },
+    isInstance() {
+      return this.groupPath === 'instance';
+    },
+    destinationCreateMutation() {
+      return this.isInstance
+        ? instanceGoogleCloudLoggingConfigurationCreate
+        : googleCloudLoggingConfigurationCreate;
+    },
+    destinationUpdateMutation() {
+      return this.isInstance
+        ? instanceGoogleCloudLoggingConfigurationUpdate
+        : googleCloudLoggingConfigurationUpdate;
+    },
   },
   mounted() {
     this.name = this.item.name;
@@ -124,13 +139,24 @@ export default {
     clearError(index) {
       this.errors.splice(index, 1);
     },
+    getDestinationCreateErrors(data) {
+      return this.isInstance
+        ? data.instanceGoogleCloudLoggingConfigurationCreate.errors
+        : data.googleCloudLoggingConfigurationCreate.errors;
+    },
+    getDestinationUpdateErrors(data) {
+      return this.isInstance
+        ? data.instanceGoogleCloudLoggingConfigurationUpdate.errors
+        : data.googleCloudLoggingConfigurationUpdate.errors;
+    },
     async addDestination() {
       this.errors = [];
       this.loading = true;
 
       try {
+        const { isInstance } = this;
         const { data } = await this.$apollo.mutate({
-          mutation: googleCloudLoggingConfigurationCreate,
+          mutation: this.destinationCreateMutation,
           variables: {
             id: this.item.id,
             fullPath: this.groupPath,
@@ -144,13 +170,17 @@ export default {
             isSingleRequest: true,
           },
           update(cache, { data: updateData }, args) {
-            const errors = updateData?.googleCloudLoggingConfigurationCreate?.errors;
+            const errors = isInstance
+              ? updateData.instanceGoogleCloudLoggingConfigurationCreate.errors
+              : updateData.googleCloudLoggingConfigurationCreate.errors;
             if (errors.length) {
               return;
             }
 
-            const newGcpLoggingDestination =
-              updateData?.googleCloudLoggingConfigurationCreate?.googleCloudLoggingConfiguration;
+            const newGcpLoggingDestination = isInstance
+              ? updateData.instanceGoogleCloudLoggingConfigurationCreate
+                  .instanceGoogleCloudLoggingConfiguration
+              : updateData.googleCloudLoggingConfigurationCreate.googleCloudLoggingConfiguration;
 
             addGcpLoggingAuditEventsStreamingDestination({
               store: cache,
@@ -160,7 +190,7 @@ export default {
           },
         });
 
-        const { errors } = data.googleCloudLoggingConfigurationCreate;
+        const errors = this.getDestinationCreateErrors(data);
 
         if (errors.length > 0) {
           this.errors.push(...errors);
@@ -182,7 +212,7 @@ export default {
 
       try {
         const { data } = await this.$apollo.mutate({
-          mutation: googleCloudLoggingConfigurationUpdate,
+          mutation: this.destinationUpdateMutation,
           variables: {
             id: this.item.id,
             fullPath: this.groupPath,
@@ -197,9 +227,7 @@ export default {
           },
         });
 
-        const {
-          googleCloudLoggingConfigurationUpdate: { errors },
-        } = data;
+        const errors = this.getDestinationUpdateErrors(data);
 
         if (errors.length > 0) {
           this.errors.push(...errors);

@@ -18,7 +18,8 @@ import {
 } from '../graphql/cache_update';
 import externalDestinationsQuery from '../graphql/queries/get_external_destinations.query.graphql';
 import instanceExternalDestinationsQuery from '../graphql/queries/get_instance_external_destinations.query.graphql';
-import gcpLoggingDestinationsQuery from '../graphql/queries/get_get_google_cloud_logging_destinations.query.graphql';
+import gcpLoggingDestinationsQuery from '../graphql/queries/get_google_cloud_logging_destinations.query.graphql';
+import instanceGcpLoggingDestinationsQuery from '../graphql/queries/get_instance_google_cloud_logging_destinations.query.graphql';
 import StreamEmptyState from './stream/stream_empty_state.vue';
 import StreamDestinationEditor from './stream/stream_destination_editor.vue';
 import StreamGcpLoggingDestinationEditor from './stream/stream_gcp_logging_destination_editor.vue';
@@ -71,7 +72,7 @@ export default {
       return this.isInstance ? instanceExternalDestinationsQuery : externalDestinationsQuery;
     },
     gcpLoggingDestinationQuery() {
-      return gcpLoggingDestinationsQuery;
+      return this.isInstance ? instanceGcpLoggingDestinationsQuery : gcpLoggingDestinationsQuery;
     },
     destinationOptions() {
       return [
@@ -88,9 +89,6 @@ export default {
           },
         },
       ];
-    },
-    addOptions() {
-      return this.isInstance ? [this.destinationOptions[0]] : this.destinationOptions;
     },
   },
   methods: {
@@ -184,10 +182,12 @@ export default {
         };
       },
       skip() {
-        return this.isInstance;
+        return !this.groupPath;
       },
       update(data) {
-        const destinations = data.group.googleCloudLoggingConfigurations.nodes;
+        const destinations = this.isInstance
+          ? data.instanceGoogleCloudLoggingConfigurations.nodes
+          : data.group.googleCloudLoggingConfigurations.nodes;
         return destinations;
       },
       error() {
@@ -235,7 +235,7 @@ export default {
         category="primary"
         variant="confirm"
         data-testid="dropdown-toggle"
-        :items="addOptions"
+        :items="destinationOptions"
       />
     </div>
     <div v-if="isEditorVisible" class="gl-mb-4 gl-p-4 gl-border gl-rounded-base">

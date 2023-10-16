@@ -11,7 +11,8 @@ import {
 } from 'ee/audit_events/graphql/cache_update';
 import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
 import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_external_destinations.query.graphql';
-import gcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_get_google_cloud_logging_destinations.query.graphql';
+import gcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_google_cloud_logging_destinations.query.graphql';
+import instanceGcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_google_cloud_logging_destinations.query.graphql';
 import {
   mockExternalDestinations,
   destinationDataPopulator,
@@ -24,6 +25,9 @@ import {
   destinationInstanceHeaderCreateMutationPopulator,
   mockGcpLoggingDestinations,
   gcpLoggingDestinationCreateMutationPopulator,
+  mockInstanceGcpLoggingDestinations,
+  instanceGcpLoggingDataPopulator,
+  instanceGcpLoggingDestinationCreateMutationPopulator,
 } from '../mock_data';
 
 describe('Audit Events GraphQL cache updates', () => {
@@ -50,6 +54,14 @@ describe('Audit Events GraphQL cache updates', () => {
       mockGcpLoggingDestinations.map((record) => ({ ...record, id: `${record.id}-set-${id}` })),
     );
 
+  const getMockInstanceGcpLoggingDestination = (id) =>
+    instanceGcpLoggingDataPopulator(
+      mockInstanceGcpLoggingDestinations.map((record) => ({
+        ...record,
+        id: `${record.id}-set-${id}`,
+      })),
+    );
+
   const getDestinations = (fullPath) =>
     cache.readQuery({
       query: externalDestinationsQuery,
@@ -66,6 +78,11 @@ describe('Audit Events GraphQL cache updates', () => {
       query: gcpLoggingDestinationsQuery,
       variables: { fullPath },
     }).group.googleCloudLoggingConfigurations.nodes;
+
+  const getInstanceGcpLoggingDestinations = () =>
+    cache.readQuery({
+      query: instanceGcpLoggingDestinationsQuery,
+    }).instanceGoogleCloudLoggingConfigurations.nodes;
 
   beforeEach(() => {
     cache = new InMemoryCache();
@@ -97,6 +114,11 @@ describe('Audit Events GraphQL cache updates', () => {
       query: gcpLoggingDestinationsQuery,
       variables: { fullPath: GCP_GROUP2_PATH },
       data: getMockGcpLoggingDestination(GCP_GROUP2_PATH).data,
+    });
+
+    cache.writeQuery({
+      query: instanceGcpLoggingDestinationsQuery,
+      data: getMockInstanceGcpLoggingDestination().data,
     });
   });
 
@@ -533,6 +555,42 @@ describe('Audit Events GraphQL cache updates', () => {
             filtersToRemove: [],
           }),
         ).not.toThrow();
+      });
+    });
+
+    describe('addGcpLoggingAuditEventsStreamingDestination', () => {
+      const {
+        instanceGoogleCloudLoggingConfiguration: newInstanceGcpLoggingDestination,
+      } = instanceGcpLoggingDestinationCreateMutationPopulator().data.instanceGoogleCloudLoggingConfigurationCreate;
+
+      it('adds new GCP configuration to beginning of list of destinations', () => {
+        const { length: originalDestinationsLength } = getInstanceGcpLoggingDestinations();
+
+        addGcpLoggingAuditEventsStreamingDestination({
+          store: cache,
+          fullPath: 'instance',
+          newDestination: newInstanceGcpLoggingDestination,
+        });
+
+        expect(getInstanceGcpLoggingDestinations()).toHaveLength(originalDestinationsLength + 1);
+        expect(getInstanceGcpLoggingDestinations()[0].id).toBe(newInstanceGcpLoggingDestination.id);
+      });
+    });
+
+    describe('removeGcpLoggingAuditEventsStreamingDestination', () => {
+      it('removes new destination to list of destinations', () => {
+        const [firstDestination, ...restDestinations] = getInstanceGcpLoggingDestinations();
+
+        removeGcpLoggingAuditEventsStreamingDestination({
+          store: cache,
+          fullPath: 'instance',
+          destinationId: firstDestination.id,
+        });
+
+        expect(getInstanceGcpLoggingDestinations()).toHaveLength(restDestinations.length);
+        expect(getInstanceGcpLoggingDestinations()).not.toStrictEqual(
+          expect.arrayContaining([expect.objectContaining({ id: firstDestination.id })]),
+        );
       });
     });
   });
