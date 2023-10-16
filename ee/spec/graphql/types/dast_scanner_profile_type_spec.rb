@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['DastScannerProfile'], :dynamic_analysis,
-                                                                feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   include RepoHelpers
 
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile) }

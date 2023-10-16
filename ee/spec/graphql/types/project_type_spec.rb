@@ -264,8 +264,12 @@ RSpec.describe GitlabSchema.types['Project'] do
   describe 'vulnerability_images' do
     let_it_be(:vulnerability) { create(:vulnerability, project: project, report_type: :cluster_image_scanning) }
     let_it_be(:finding) do
-      create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata,
-             project: project, vulnerability: vulnerability)
+      create(
+        :vulnerabilities_finding,
+        :with_cluster_image_scanning_scanning_metadata,
+        project: project,
+        vulnerability: vulnerability
+      )
     end
 
     let_it_be(:query) do

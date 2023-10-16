@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['DastPreScanVerification'], :dynamic_analysis,
-                                                              feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
@@ -11,22 +11,28 @@ RSpec.describe GitlabSchema.types['DastPreScanVerification'], :dynamic_analysis,
   let_it_be(:object) { create(:dast_pre_scan_verification, dast_profile: dast_profile) }
   let_it_be(:user) { create(:user, developer_projects: [project]) }
   let_it_be(:dast_pre_scan_verification_step_1) do
-    create(:dast_pre_scan_verification_step,
-           check_type: 'connection',
-           dast_pre_scan_verification: object)
+    create(
+      :dast_pre_scan_verification_step,
+      check_type: 'connection',
+      dast_pre_scan_verification: object
+    )
   end
 
   let_it_be(:dast_pre_scan_verification_step_2) do
-    create(:dast_pre_scan_verification_step,
-           check_type: 'authentication',
-           dast_pre_scan_verification: object,
-           verification_errors: ['Actionable error message'])
+    create(
+      :dast_pre_scan_verification_step,
+      check_type: 'authentication',
+      dast_pre_scan_verification: object,
+      verification_errors: ['Actionable error message']
+    )
   end
 
   let_it_be(:dast_pre_scan_verification_step_3) do
-    create(:dast_pre_scan_verification_step,
-           check_type: 'crawling',
-           dast_pre_scan_verification: object)
+    create(
+      :dast_pre_scan_verification_step,
+      check_type: 'crawling',
+      dast_pre_scan_verification: object
+    )
   end
 
   let_it_be(:fields) { %i[preScanVerificationSteps status valid] }
