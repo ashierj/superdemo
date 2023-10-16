@@ -50,7 +50,6 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:ee_ci_job_artifact, :v1_1],
     [:ee_ci_job_artifact, :v2],
     [:ee_ci_job_artifact, :v2_1],
-    [:geo_event_log, :geo_event],
     [:lfs_object, :checksum_failure],
     [:lfs_object, :checksummed],
     [:merge_request, :blocked],

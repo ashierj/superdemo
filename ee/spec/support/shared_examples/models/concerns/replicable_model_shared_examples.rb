@@ -22,9 +22,9 @@ RSpec.shared_examples 'a replicable model' do
     end
   end
 
-  it 'invokes replicator.handle_after_create_commit on create' do
+  it 'invokes replicator.geo_handle_after_create on create' do
     expect_next_instance_of(replicator_class) do |replicator|
-      expect(replicator).to receive(:handle_after_create_commit)
+      expect(replicator).to receive(:geo_handle_after_create)
     end
 
     model_record.save!

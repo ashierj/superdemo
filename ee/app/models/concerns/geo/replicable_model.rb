@@ -16,6 +16,7 @@ module Geo
         log_error("Geo replicator after_destroy failed", err)
       end
 
+      delegate :geo_handle_after_create, to: :replicator
       delegate :geo_handle_after_destroy, to: :replicator
       delegate :geo_handle_after_update, to: :replicator
 
@@ -59,7 +60,7 @@ module Geo
       # The method is tested but undercoverage task doesn't detect it.
       # :nocov:
       def geo_create_event!
-        replicator.handle_after_create_commit if replicator.respond_to?(:handle_after_create_commit)
+        replicator.geo_handle_after_create if replicator.respond_to?(:geo_handle_after_create)
       rescue StandardError => err
         log_error("Geo replicator after_create_commit failed", err)
       end

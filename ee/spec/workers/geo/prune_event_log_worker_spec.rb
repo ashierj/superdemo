@@ -10,6 +10,12 @@ RSpec.describe Geo::PruneEventLogWorker, :geo, feature_category: :geo_replicatio
   let_it_be(:primary) { create(:geo_node, :primary) }
   let_it_be(:secondary, refind: true) { create(:geo_node) }
 
+  before do
+    allow(Postgresql::ReplicationSlot)
+      .to receive(:lag_too_great?)
+      .and_return(false)
+  end
+
   describe '#perform' do
     context 'current node secondary' do
       before do
@@ -95,7 +101,7 @@ RSpec.describe Geo::PruneEventLogWorker, :geo, feature_category: :geo_replicatio
       context 'multiple secondary nodes' do
         let_it_be(:secondary2) { create(:geo_node) }
 
-        let!(:events) { create_list(:geo_event_log, 5, :updated_event) }
+        let!(:events) { create_list(:geo_event_log, 5, :geo_event) }
 
         it 'aborts when there is a node without status' do
           create(:geo_node_status, :healthy, cursor_last_event_id: events.last.id, geo_node_id: secondary.id)

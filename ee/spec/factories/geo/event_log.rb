@@ -35,7 +35,7 @@ FactoryBot.define do
     end
 
     trait :geo_event do
-      event factory: :geo_event
+      geo_event factory: :geo_event
     end
   end
 

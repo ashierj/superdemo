@@ -131,6 +131,11 @@ module EE
       DummyModel.reset_column_information
     end
 
+    def stub_dummy_replication_feature_flag(replicator_class: 'Geo::DummyReplicator', enabled: true)
+      replicator = Object.const_get(replicator_class, false)
+      allow(replicator).to receive(:enabled?).and_return(enabled)
+    end
+
     # Example:
     #
     # before(:all) do

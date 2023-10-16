@@ -217,8 +217,13 @@ RSpec.describe Repository, feature_category: :source_code_management do
     it 'creates a geo event on a Geo primary' do
       stub_current_geo_node(primary_node)
 
+      event_params = {
+        event_name: :updated,
+        replicable_name: :project_repository
+      }
+
       expect { repository.after_change_head }
-        .to change { ::Geo::Event.count }.by(1)
+        .to change { ::Geo::Event.where(event_params).count }.by(1)
     end
 
     it 'does not create a geo event on a Geo secondary' do
@@ -335,8 +340,13 @@ RSpec.describe Repository, feature_category: :source_code_management do
       it 'creates a GeoEvent on a Geo primary' do
         stub_current_geo_node(primary_node)
 
-        expect { repository.log_geo_updated_event }
-          .to change { ::Geo::Event.count }
+        event_params = {
+          event_name: :updated,
+          replicable_name: :project_repository
+        }
+
+        expect { repository.after_change_head }
+          .to change { ::Geo::Event.where(event_params).count }
           .by(1)
       end
     end

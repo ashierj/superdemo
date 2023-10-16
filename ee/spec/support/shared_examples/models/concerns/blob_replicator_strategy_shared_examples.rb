@@ -32,12 +32,12 @@ RSpec.shared_examples 'a blob replicator' do
     let(:replicator_class) { described_class }
   end
 
-  describe '#handle_after_create_commit' do
+  describe '#geo_handle_after_create' do
     it 'creates a Geo::Event' do
       model_record.save!
 
       expect do
-        replicator.handle_after_create_commit
+        replicator.geo_handle_after_create
       end.to change { ::Geo::Event.count }.by(1)
 
       expect(::Geo::Event.last.attributes).to include(
@@ -52,7 +52,7 @@ RSpec.shared_examples 'a blob replicator' do
     it 'calls #after_verifiable_update' do
       expect(replicator).to receive(:after_verifiable_update)
 
-      replicator.handle_after_create_commit
+      replicator.geo_handle_after_create
     end
 
     context 'when replication feature flag is disabled' do
@@ -63,13 +63,13 @@ RSpec.shared_examples 'a blob replicator' do
       it 'does not call #after_verifiable_update' do
         expect(replicator).not_to receive(:after_verifiable_update)
 
-        replicator.handle_after_create_commit
+        replicator.geo_handle_after_create
       end
 
       it 'does not publish' do
         expect(replicator).not_to receive(:publish)
 
-        replicator.handle_after_create_commit
+        replicator.geo_handle_after_create
       end
     end
   end
@@ -101,7 +101,7 @@ RSpec.shared_examples 'a blob replicator' do
       it 'does not publish' do
         expect(replicator).not_to receive(:publish)
 
-        replicator.handle_after_create_commit
+        replicator.geo_handle_after_destroy
       end
     end
   end
@@ -316,11 +316,11 @@ RSpec.shared_examples 'a blob replicator' do
   describe '.bulk_create_delete_events_async' do
     let(:uploads) { create_list(:upload, 2) }
     let(:upload_deleted_details) { uploads.map { |upload| upload.replicator.deleted_params } }
-    let(:inherited_replicator_class) { ::Geo::UploadReplicator }
+    let(:inherited_replicator_class) { described_class }
 
     it 'creates events' do
       expect { inherited_replicator_class.bulk_create_delete_events_async(upload_deleted_details) }
-        .to change { ::Geo::Event.count }.from(0).to(2)
+        .to change { ::Geo::Event.count }.from(0).to(4)
 
       expect(::Geo::EventLog.last.event).to be_present
     end
