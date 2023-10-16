@@ -49,7 +49,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
                      puts "Hello, <cursor>
                    end
                 </existing_code>
-              A: puts "world!"
+              A: world!"
             </example>
           </examples>
 
@@ -99,7 +99,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
                        puts "Hello, <cursor>
                      end
                   </existing_code>
-                A: puts "world!"
+                A: world!"
               </example>
             </examples>
 
@@ -150,7 +150,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
                        puts "Hello, <cursor>
                      end
                   </existing_code>
-                A: puts "world!"
+                A: world!"
               </example>
             </examples>
 
@@ -201,7 +201,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
                        puts "Hello, <cursor>
                      end
                   </existing_code>
-                A: puts "world!"
+                A: world!"
               </example>
             </examples>
 
