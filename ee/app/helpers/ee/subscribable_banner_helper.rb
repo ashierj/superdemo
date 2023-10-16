@@ -8,19 +8,19 @@ module EE
     def gitlab_subscription_or_license
       return decorated_subscription if display_subscription_banner?
 
-      License.current if display_license_banner?
+      License.current
     end
 
     def gitlab_subscription_message_or_license_message
       return subscription_message if display_subscription_banner?
 
-      license_message if display_license_banner?
+      license_message
     end
 
     def gitlab_subscription_subject_or_license_subject
       return subscription_subject if display_subscription_banner?
 
-      license_subject if display_license_banner?
+      license_subject
     end
 
     override :display_subscription_banner!
@@ -97,10 +97,6 @@ module EE
       return unless subscription
 
       ::SubscriptionPresenter.new(subscription)
-    end
-
-    def display_license_banner?
-      ::Feature.enabled?(:subscribable_license_banner)
     end
 
     def display_subscription_banner?
