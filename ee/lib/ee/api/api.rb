@@ -74,8 +74,9 @@ module EE
         mount ::API::GitlabSubscriptions::AddOnPurchases
 
         mount ::API::Internal::AppSec::Dast::SiteValidations
-        mount ::API::Internal::UpcomingReconciliations
+        mount ::API::Internal::Search::Zoekt
         mount ::API::Internal::SuggestedReviewers
+        mount ::API::Internal::UpcomingReconciliations
       end
     end
   end
