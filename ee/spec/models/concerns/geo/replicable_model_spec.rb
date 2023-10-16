@@ -40,7 +40,7 @@ RSpec.describe Geo::ReplicableModel, feature_category: :geo_replication do
 
       before do
         expect_next_instance_of(Geo::DummyReplicator) do |instance|
-          expect(instance).to receive(:handle_after_create_commit).and_raise(error)
+          expect(instance).to receive(:geo_handle_after_create).and_raise(error)
         end
       end
 

@@ -36,6 +36,8 @@ RSpec.shared_examples 'a repository replicator' do
 
   describe '#geo_handle_after_update' do
     it 'creates a Geo::Event' do
+      model_record
+
       expect do
         replicator.geo_handle_after_update
       end.to change { ::Geo::Event.count }.by(1)
@@ -57,8 +59,52 @@ RSpec.shared_examples 'a repository replicator' do
     end
   end
 
+  describe '#geo_handle_after_create' do
+    it 'creates a Geo::Event' do
+      model_record.save!
+
+      expect do
+        replicator.geo_handle_after_create
+      end.to change { ::Geo::Event.count }.by(1)
+
+      expect(::Geo::Event.last.attributes).to include(
+        "replicable_name" => replicator.replicable_name,
+        "event_name" => ::Geo::RepositoryReplicatorStrategy::EVENT_CREATED,
+        "payload" => {
+          "model_record_id" => replicator.model_record.id
+        }
+      )
+    end
+
+    it 'calls #after_verifiable_update' do
+      expect(replicator).to receive(:after_verifiable_update)
+
+      replicator.geo_handle_after_create
+    end
+
+    context 'when replication feature flag is disabled' do
+      before do
+        stub_feature_flags(replicator.replication_enabled_feature_key => false)
+      end
+
+      it 'does not call #after_verifiable_update' do
+        expect(replicator).not_to receive(:after_verifiable_update)
+
+        replicator.geo_handle_after_create
+      end
+
+      it 'does not publish' do
+        expect(replicator).not_to receive(:publish)
+
+        replicator.geo_handle_after_create
+      end
+    end
+  end
+
   describe '#geo_handle_after_destroy' do
     it 'creates a Geo::Event' do
+      model_record
+
       expect do
         replicator.geo_handle_after_destroy
       end.to change { ::Geo::Event.count }.by(1)

@@ -34,8 +34,13 @@ RSpec.describe WikiPages::CreateService, feature_category: :wiki do
           end
 
           it 'does not create a Geo::Event' do
+            event_params = {
+              event_name: :updated,
+              replicable_name: :project_wiki_repository
+            }
+
             expect { service.execute }
-              .not_to change { ::Geo::Event.count }
+              .not_to change { ::Geo::Event.where(event_params).count }
           end
         end
 

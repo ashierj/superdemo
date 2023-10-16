@@ -62,15 +62,6 @@ module Geo
       end
     end
 
-    def handle_after_create_commit
-      return false unless Gitlab::Geo.primary?
-      return unless self.class.enabled?
-
-      publish(EVENT_CREATED, **created_params)
-
-      after_verifiable_update
-    end
-
     # Called by Gitlab::Geo::Replicator#consume
     def consume_event_created(**params)
       resync

@@ -298,6 +298,15 @@ module Gitlab
         { replicable_name: replicable_name, replicable_id: model_record_id }
       end
 
+      def geo_handle_after_create
+        return false unless Gitlab::Geo.primary?
+        return unless self.class.enabled?
+
+        publish(:created, **created_params)
+
+        after_verifiable_update if respond_to?(:after_verifiable_update)
+      end
+
       def geo_handle_after_destroy
         return false unless Gitlab::Geo.primary?
         return unless self.class.enabled?
