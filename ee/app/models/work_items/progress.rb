@@ -32,7 +32,10 @@ module WorkItems
         return 100 if current_value < end_value
       end
 
-      (((current_value - start_value).abs / (end_value - start_value).abs).to_d * 100).to_i
+      # .to_d is not working as expected on linux instances
+      # Example: ((94-0)/(100-0) * 100).to_i is returning 93 on linux and 94 on Mac
+      # As a solution, I want to replace .to_i to .round
+      (((current_value - start_value).abs / (end_value - start_value).abs) * 100).round
     end
 
     private

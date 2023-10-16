@@ -95,8 +95,12 @@ RSpec.describe WorkItems::Progress, feature_category: :team_planning do
     end
 
     context 'when start_value and end_value are both default' do
-      context 'when current_value is between 29' do
+      context 'when current_value is 29' do
         it_behaves_like 'compute_progress', 0.0, 100.0, 29, 29
+      end
+
+      context 'when current_value is 94' do
+        it_behaves_like 'compute_progress', 0.0, 100.0, 94, 94
       end
     end
   end
