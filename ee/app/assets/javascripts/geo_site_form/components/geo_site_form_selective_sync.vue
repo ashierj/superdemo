@@ -129,8 +129,7 @@ export default {
       <geo-site-form-namespaces
         id="site-synchronization-namespaces-field"
         :selected-namespaces="siteData.selectiveSyncNamespaceIds"
-        @addSyncOption="addSyncOption"
-        @removeSyncOption="removeSyncOption"
+        @updateSyncOptions="$emit('updateSyncOptions', arguments[0])"
       />
     </gl-form-group>
     <gl-form-group

@@ -6,6 +6,7 @@ import GeoSiteForm from 'ee/geo_site_form/components/geo_site_form.vue';
 import GeoSiteFormCapacities from 'ee/geo_site_form/components/geo_site_form_capacities.vue';
 import GeoSiteFormCore from 'ee/geo_site_form/components/geo_site_form_core.vue';
 import GeoSiteFormSelectiveSync from 'ee/geo_site_form/components/geo_site_form_selective_sync.vue';
+import { SELECTIVE_SYNC_NAMESPACES } from 'ee/geo_site_form/constants';
 import initStore from 'ee/geo_site_form/store';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
@@ -13,6 +14,7 @@ import {
   MOCK_SELECTIVE_SYNC_TYPES,
   MOCK_SYNC_SHARDS,
   MOCK_SITES_PATH,
+  MOCK_SYNC_NAMESPACE_IDS,
 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -165,6 +167,27 @@ describe('GeoSiteForm', () => {
         expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual(
           [],
         );
+      });
+
+      describe('updateSyncOptions', () => {
+        beforeEach(() => {
+          createComponent();
+        });
+
+        it('should update value of siteData', () => {
+          expect(
+            findGeoSiteFormSelectiveSyncField().props('siteData')[SELECTIVE_SYNC_NAMESPACES],
+          ).toStrictEqual([]);
+
+          findGeoSiteFormSelectiveSyncField().vm.$emit('updateSyncOptions', {
+            key: SELECTIVE_SYNC_NAMESPACES,
+            value: MOCK_SYNC_NAMESPACE_IDS,
+          });
+
+          expect(
+            findGeoSiteFormSelectiveSyncField().props('siteData')[SELECTIVE_SYNC_NAMESPACES],
+          ).toStrictEqual(MOCK_SYNC_NAMESPACE_IDS);
+        });
       });
     });
   });

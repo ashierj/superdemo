@@ -1,10 +1,13 @@
-import { GlIcon, GlSearchBoxByType, GlDropdown } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import GeoSiteFormNamespaces from 'ee/geo_site_form/components/geo_site_form_namespaces.vue';
-import { MOCK_SYNC_NAMESPACES } from '../mock_data';
+import { SELECTIVE_SYNC_NAMESPACES } from 'ee/geo_site_form/constants';
+import waitForPromises from 'helpers/wait_for_promises';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
+import { MOCK_SYNC_NAMESPACES, MOCK_SYNC_NAMESPACE_IDS } from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -39,173 +42,140 @@ describe('GeoSiteFormNamespaces', () => {
     });
   };
 
-  const findGlDropdown = () => wrapper.findComponent(GlDropdown);
-  const findGlDropdownSearch = () => findGlDropdown().findComponent(GlSearchBoxByType);
-  const findDropdownItems = () => findGlDropdown().findAll('button');
-  const findDropdownItemsText = () => findDropdownItems().wrappers.map((w) => w.text());
-  const findGlIcons = () => wrapper.findAllComponents(GlIcon);
+  const findGlCollapsibleListbox = () => wrapper.findComponent(GlCollapsibleListbox);
 
   describe('template', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('renders GlDropdown', () => {
-      expect(findGlDropdown().exists()).toBe(true);
+    it('renders GlCollapsibleListbox', () => {
+      expect(findGlCollapsibleListbox().exists()).toBe(true);
+    });
+  });
+
+  describe('events', () => {
+    describe('select', () => {
+      beforeEach(() => {
+        createComponent();
+        findGlCollapsibleListbox().vm.$emit('select', MOCK_SYNC_NAMESPACE_IDS);
+      });
+
+      it('emits updateSyncOptions with selected options', () => {
+        expect(wrapper.emitted('updateSyncOptions')).toStrictEqual([
+          [{ key: SELECTIVE_SYNC_NAMESPACES, value: MOCK_SYNC_NAMESPACE_IDS }],
+        ]);
+      });
     });
 
-    describe('findGlDropdownSearch', () => {
-      it('renders always', () => {
-        expect(findGlDropdownSearch().exists()).toBe(true);
-      });
-
-      it('has debounce prop', () => {
-        expect(findGlDropdownSearch().attributes('debounce')).toBe('500');
-      });
-
-      describe('onSearch', () => {
-        const namespaceSearch = 'test search';
-
+    describe('shown', () => {
+      describe('with no current search', () => {
         beforeEach(() => {
-          findGlDropdownSearch().vm.$emit('input', namespaceSearch);
+          createComponent();
+          findGlCollapsibleListbox().vm.$emit('shown');
         });
 
-        it('calls fetchSyncNamespaces when input event is fired from GlSearchBoxByType', () => {
+        it('calls fetchSyncNamespaces with an empty search', () => {
+          expect(actionSpies.fetchSyncNamespaces).toHaveBeenCalledWith(expect.any(Object), '');
+        });
+      });
+
+      describe('with a current search', () => {
+        const mockSearch = 'test';
+
+        beforeEach(() => {
+          createComponent();
+          findGlCollapsibleListbox().vm.$emit('search', mockSearch);
+          findGlCollapsibleListbox().vm.$emit('shown');
+        });
+
+        it('calls fetchSyncNamespaces with current search', () => {
           expect(actionSpies.fetchSyncNamespaces).toHaveBeenCalledWith(
             expect.any(Object),
-            namespaceSearch,
+            mockSearch,
           );
         });
       });
     });
 
-    describe('findDropdownItems', () => {
+    describe('search', () => {
+      const mockSearch = 'test';
+
       beforeEach(() => {
-        createComponent(
-          { selectedNamespaces: [[MOCK_SYNC_NAMESPACES[0].id]] },
-          { synchronizationNamespaces: MOCK_SYNC_NAMESPACES },
+        createComponent();
+      });
+
+      it('debounces search before calling fetchSyncNamespaces', async () => {
+        findGlCollapsibleListbox().vm.$emit('search', mockSearch);
+
+        expect(actionSpies.fetchSyncNamespaces).not.toHaveBeenCalled();
+
+        jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+        await waitForPromises();
+
+        expect(actionSpies.fetchSyncNamespaces).toHaveBeenCalledWith(
+          expect.any(Object),
+          mockSearch,
         );
-      });
-
-      it('renders an instance for each namespace', () => {
-        expect(findDropdownItemsText()).toStrictEqual(MOCK_SYNC_NAMESPACES.map((n) => n.full_name));
-      });
-
-      it('hides GlIcon if namespace not in selectedNamespaces', () => {
-        expect(findGlIcons().wrappers.every((w) => w.classes('gl-visibility-hidden'))).toBe(true);
       });
     });
   });
 
-  describe('methods', () => {
-    describe('toggleNamespace', () => {
+  describe('computed', () => {
+    describe('dropdownItems', () => {
       beforeEach(() => {
-        createComponent(
-          { selectedNamespaces: [MOCK_SYNC_NAMESPACES[0].id] },
-          { synchronizationNamespaces: MOCK_SYNC_NAMESPACES },
-        );
+        createComponent(null, { synchronizationNamespaces: MOCK_SYNC_NAMESPACES });
       });
 
-      describe('when namespace is in selectedNamespaces', () => {
-        it('emits `removeSyncOption`', () => {
-          wrapper.vm.toggleNamespace(MOCK_SYNC_NAMESPACES[0]);
-          expect(wrapper.emitted()).toHaveProperty('removeSyncOption');
+      it('properly formats the dropdown items for the list box', () => {
+        const expectedArray = MOCK_SYNC_NAMESPACES.map((item) => {
+          return { ...item, value: item.id, text: item.full_name };
         });
-      });
 
-      describe('when namespace is not in selectedNamespaces', () => {
-        it('emits `addSyncOption`', () => {
-          wrapper.vm.toggleNamespace(MOCK_SYNC_NAMESPACES[1]);
-          expect(wrapper.emitted()).toHaveProperty('addSyncOption');
-        });
+        expect(findGlCollapsibleListbox().props('items')).toStrictEqual(expectedArray);
       });
     });
 
-    describe('isSelected', () => {
-      beforeEach(() => {
-        createComponent(
-          { selectedNamespaces: [MOCK_SYNC_NAMESPACES[0].id] },
-          { synchronizationNamespaces: MOCK_SYNC_NAMESPACES },
-        );
-      });
-
-      describe('when namespace is in selectedNamespaces', () => {
-        it('returns `true`', () => {
-          expect(wrapper.vm.isSelected(MOCK_SYNC_NAMESPACES[0])).toBe(true);
-        });
-      });
-
-      describe('when namespace is not in selectedNamespaces', () => {
-        it('returns `false`', () => {
-          expect(wrapper.vm.isSelected(MOCK_SYNC_NAMESPACES[1])).toBe(false);
-        });
-      });
-    });
-
-    describe('computed', () => {
-      describe('dropdownTitle', () => {
-        describe('when selectedNamespaces is empty', () => {
-          beforeEach(() => {
-            createComponent({
-              selectedNamespaces: [],
-            });
-          });
-
-          it('returns `Select groups to replicate`', () => {
-            expect(wrapper.vm.dropdownTitle).toBe(
-              GeoSiteFormNamespaces.i18n.noSelectedDropdownTitle,
-            );
-          });
-        });
-
-        describe('when selectedNamespaces length === 1', () => {
-          beforeEach(() => {
-            createComponent({
-              selectedNamespaces: [MOCK_SYNC_NAMESPACES[0].id],
-            });
-          });
-
-          it('returns `this.selectedNamespaces.length` group selected', () => {
-            expect(wrapper.vm.dropdownTitle).toBe(
-              `${wrapper.vm.selectedNamespaces.length} group selected`,
-            );
-          });
-        });
-
-        describe('when selectedNamespaces length > 1', () => {
-          beforeEach(() => {
-            createComponent({
-              selectedNamespaces: [MOCK_SYNC_NAMESPACES[0].id, MOCK_SYNC_NAMESPACES[1].id],
-            });
-          });
-
-          it('returns `this.selectedNamespaces.length` group selected', () => {
-            expect(wrapper.vm.dropdownTitle).toBe(
-              `${wrapper.vm.selectedNamespaces.length} groups selected`,
-            );
-          });
-        });
-      });
-
-      describe('noSyncNamespaces', () => {
-        describe('when synchronizationNamespaces.length > 0', () => {
-          beforeEach(() => {
-            createComponent({}, { synchronizationNamespaces: MOCK_SYNC_NAMESPACES });
-          });
-
-          it('returns `false`', () => {
-            expect(wrapper.vm.noSyncNamespaces).toBe(false);
-          });
-        });
-      });
-
-      describe('when synchronizationNamespaces.length === 0', () => {
+    describe('dropdownTitle', () => {
+      describe('when selectedNamespaces is empty', () => {
         beforeEach(() => {
-          createComponent();
+          createComponent({
+            selectedNamespaces: [],
+          });
         });
 
-        it('returns `true`', () => {
-          expect(wrapper.vm.noSyncNamespaces).toBe(true);
+        it('returns `Select groups to replicate`', () => {
+          expect(findGlCollapsibleListbox().props('toggleText')).toBe(
+            GeoSiteFormNamespaces.i18n.noSelectedDropdownTitle,
+          );
+        });
+      });
+
+      describe('when selectedNamespaces length === 1', () => {
+        beforeEach(() => {
+          createComponent({
+            selectedNamespaces: [MOCK_SYNC_NAMESPACES[0].id],
+          });
+        });
+
+        it('returns `this.selectedNamespaces.length` group selected', () => {
+          expect(findGlCollapsibleListbox().props('toggleText')).toBe(
+            `${wrapper.vm.selectedNamespaces.length} group selected`,
+          );
+        });
+      });
+
+      describe('when selectedNamespaces length > 1', () => {
+        beforeEach(() => {
+          createComponent({
+            selectedNamespaces: [MOCK_SYNC_NAMESPACES[0].id, MOCK_SYNC_NAMESPACES[1].id],
+          });
+        });
+
+        it('returns `this.selectedNamespaces.length` group selected', () => {
+          expect(findGlCollapsibleListbox().props('toggleText')).toBe(
+            `${wrapper.vm.selectedNamespaces.length} groups selected`,
+          );
         });
       });
     });

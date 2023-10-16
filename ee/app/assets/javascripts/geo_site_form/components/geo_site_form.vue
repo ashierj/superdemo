@@ -74,6 +74,9 @@ export default {
     removeSyncOption({ key, index }) {
       this.siteData[key].splice(index, 1);
     },
+    updateSyncOptions({ key, value }) {
+      this.siteData[key] = value;
+    },
   },
 };
 </script>
@@ -92,6 +95,7 @@ export default {
       :sync-shards-options="syncShardsOptions"
       @addSyncOption="addSyncOption"
       @removeSyncOption="removeSyncOption"
+      @updateSyncOptions="updateSyncOptions"
     />
     <geo-site-form-capacities :site-data="siteData" />
     <section
