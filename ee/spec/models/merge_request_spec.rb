@@ -2002,4 +2002,173 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       end
     end
   end
+
+  describe '#comparison_base_pipeline' do
+    let_it_be(:project) { create(:project, :public, :repository) }
+    let_it_be_with_refind(:merge_request) do
+      create(:merge_request, :with_merge_request_pipeline, source_project: project)
+    end
+
+    let_it_be(:base_pipeline) do
+      create(:ci_pipeline,
+        :with_test_reports,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
+    end
+
+    subject(:pipeline) { merge_request.comparison_base_pipeline(service_class) }
+
+    context 'when the service class is not `Ci::CompareSecurityReportsService`' do
+      let(:service_class) { ::Ci::CompareCodequalityReportsService }
+
+      before do
+        allow(merge_request).to receive_messages(merge_base_pipeline: nil, base_pipeline: nil)
+      end
+
+      it 'follows the normal execution order' do
+        pipeline
+
+        expect(merge_request).to have_received(:merge_base_pipeline)
+        expect(merge_request).to have_received(:base_pipeline)
+      end
+    end
+
+    context 'when the service class is `Ci::CompareSecurityReportsService`' do
+      let(:service_class) { ::Ci::CompareSecurityReportsService }
+
+      before do
+        merge_request.update_head_pipeline
+      end
+
+      context 'when there are merge base pipelines' do
+        let_it_be(:old_merge_base_pipeline) do
+          create(:ci_pipeline,
+            project: project,
+            ref: merge_request.target_branch,
+            sha: merge_request.target_branch_sha
+          )
+        end
+
+        let_it_be(:most_recent_merge_base_pipeline) do
+          create(:ci_pipeline,
+            project: project,
+            ref: merge_request.target_branch,
+            sha: merge_request.target_branch_sha
+          )
+        end
+
+        context 'when all pipelines have security reports' do
+          before do
+            build_1 = build(:ci_build,
+              :sast_report,
+              pipeline: old_merge_base_pipeline,
+              project: project)
+
+            build_2 = build(:ci_build,
+              :sast_report,
+              pipeline: most_recent_merge_base_pipeline,
+              project: project)
+
+            old_merge_base_pipeline.builds << build_1
+            most_recent_merge_base_pipeline.builds << build_2
+          end
+
+          it 'returns the most recent merge base pipeline' do
+            expect(pipeline).to eq(most_recent_merge_base_pipeline)
+          end
+        end
+
+        context 'when the most recent pipeline does not have security reports' do
+          before do
+            build = build(:ci_build,
+              :sast_report,
+              pipeline: old_merge_base_pipeline,
+              project: project)
+
+            old_merge_base_pipeline.builds << build
+          end
+
+          it 'returns the latest merge base pipeline with security reports' do
+            expect(pipeline).to eq(old_merge_base_pipeline)
+          end
+
+          context 'when the `check_multiple_pipelines_for_security_reports` FF is disabled' do
+            before do
+              stub_feature_flags(check_multiple_pipelines_for_security_reports: false)
+            end
+
+            it 'returns the most recent merge base pipeline' do
+              expect(pipeline).to eq(most_recent_merge_base_pipeline)
+            end
+          end
+        end
+      end
+
+      context 'when there is no merge base pipeline' do
+        let_it_be(:old_base_pipeline) do
+          create(:ci_pipeline,
+            project: project,
+            ref: merge_request.target_branch,
+            sha: merge_request.diff_base_sha
+          )
+        end
+
+        let_it_be(:most_recent_base_pipeline) do
+          create(:ci_pipeline,
+            project: project,
+            ref: merge_request.target_branch,
+            sha: merge_request.diff_base_sha
+          )
+        end
+
+        context 'when all pipelines have security reports' do
+          before do
+            build_1 = build(:ci_build,
+              :sast_report,
+              pipeline: old_base_pipeline,
+              project: project)
+
+            build_2 = build(:ci_build,
+              :sast_report,
+              pipeline: most_recent_base_pipeline,
+              project: project)
+
+            old_base_pipeline.builds << build_1
+            most_recent_base_pipeline.builds << build_2
+          end
+
+          it 'returns the most recent base pipeline' do
+            expect(pipeline).to eq(most_recent_base_pipeline)
+          end
+        end
+
+        context 'when the most recent pipeline does not have security reports' do
+          before do
+            build = build(:ci_build,
+              :sast_report,
+              pipeline: old_base_pipeline,
+              project: project)
+
+            old_base_pipeline.builds << build
+          end
+
+          it 'returns the latest base pipeline with security reports' do
+            expect(pipeline).to eq(old_base_pipeline)
+          end
+
+          context 'when the `check_multiple_pipelines_for_security_reports` FF is disabled' do
+            before do
+              stub_feature_flags(check_multiple_pipelines_for_security_reports: false)
+            end
+
+            it 'returns the most recent base pipeline' do
+              expect(pipeline).to eq(most_recent_base_pipeline)
+            end
+          end
+        end
+      end
+    end
+  end
 end

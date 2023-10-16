@@ -15,6 +15,8 @@ module EE
       ::Ci::CompareSecurityReportsService => ->(_project) { true }
     }.freeze
 
+    MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON = 10
+
     prepended do
       include Elastic::ApplicationVersionedSearch
       include DeprecatedApprovalsBeforeMerge
@@ -474,7 +476,39 @@ module EE
       super && !on_current_ff_train?
     end
 
+    override :comparison_base_pipeline
+    def comparison_base_pipeline(service_class)
+      return super unless security_comparision_and_checks_multiple_pipelines?(service_class)
+
+      find_merge_base_pipeline_with_security_reports || find_base_pipeline_with_security_reports
+    end
+
     private
+
+    def security_comparision_and_checks_multiple_pipelines?(service_class)
+      service_class == ::Ci::CompareSecurityReportsService &&
+        ::Feature.enabled?(:check_multiple_pipelines_for_security_reports, project)
+    end
+
+    def find_merge_base_pipeline_with_security_reports
+      last_merge_base_pipelines(limit: MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON).find do |pipeline|
+        pipeline.self_and_project_descendants.any?(&:has_security_reports?)
+      end
+    end
+
+    def find_base_pipeline_with_security_reports
+      last_base_pipelines(limit: MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON).find do |pipeline|
+        pipeline.self_and_project_descendants.any?(&:has_security_reports?)
+      end
+    end
+
+    def last_merge_base_pipelines(limit:)
+      merge_base_pipelines.order(id: :desc).limit(limit)
+    end
+
+    def last_base_pipelines(limit:)
+      base_pipelines.order(id: :desc).limit(limit)
+    end
 
     def on_current_ff_train?
       return false unless on_train? && merge_train_car.pipeline&.sha == merge_params.dig('train_ref', 'commit_sha')
