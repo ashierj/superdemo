@@ -63,7 +63,7 @@ module QA
               puts 'Adding GitLab EE license ...'
 
               QA::Runtime::Browser.visit(:geo_primary, QA::Page::Main::Login) do
-                Resource::License.fabricate!(ENV['EE_LICENSE'])
+                Resource::License.fabricate!(QA::Runtime::Env.ee_license)
               end
             end
 
