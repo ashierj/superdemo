@@ -11,7 +11,7 @@ import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/
 import { getPanelOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_panel_options';
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
-import { PANEL_DISPLAY_TYPES } from '../constants';
+import { FILE_ALREADY_EXISTS_SERVER_RESPONSE, PANEL_DISPLAY_TYPES } from '../constants';
 
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
 import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
@@ -133,9 +133,9 @@ export default {
         this.typeValidationError = this.getRequiredFieldError(this.selectedVisualizationType);
       }
     },
-    validateTitle(areSubmitting) {
+    validateTitle(submitting) {
       // Don't validate if the title has not been submitted
-      if (this.titleValidationError !== null || areSubmitting) {
+      if (this.titleValidationError !== null || submitting) {
         this.titleValidationError = this.getRequiredFieldError(this.visualizationTitle);
       }
     },
@@ -199,8 +199,7 @@ export default {
       } catch (error) {
         const { message = '' } = error?.response?.data || {};
 
-        // eslint-disable-next-line @gitlab/require-i18n-strings
-        if (message === 'A file with this name already exists') {
+        if (message === FILE_ALREADY_EXISTS_SERVER_RESPONSE) {
           this.titleValidationError = s__(
             'Analytics|A visualization with that name already exists.',
           );

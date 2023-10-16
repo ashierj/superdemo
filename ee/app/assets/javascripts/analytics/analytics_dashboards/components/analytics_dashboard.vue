@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/browser';
 import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import {
@@ -13,7 +13,7 @@ import {
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { NEW_DASHBOARD } from '../constants';
+import { FILE_ALREADY_EXISTS_SERVER_RESPONSE, NEW_DASHBOARD } from '../constants';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
 
@@ -71,6 +71,7 @@ export default {
       },
       defaultFilters: buildDefaultDashboardFilters(window.location.search),
       isSaving: false,
+      titleValidationError: null,
       backUrl: this.$router.resolve('/').href,
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
       changesSaved: false,
@@ -182,6 +183,11 @@ export default {
       return NEW_DASHBOARD();
     },
     async saveDashboard(dashboardSlug, dashboard) {
+      this.validateDashboardTitle(dashboard.title, true);
+      if (this.titleValidationError) {
+        return;
+      }
+
       try {
         this.changesSaved = false;
         this.isSaving = true;
@@ -219,7 +225,11 @@ export default {
           throw new Error(`Bad save dashboard response. Status:${saveResult?.status}`);
         }
       } catch (error) {
-        if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
+        const { message = '' } = error?.response?.data || {};
+
+        if (message === FILE_ALREADY_EXISTS_SERVER_RESPONSE) {
+          this.titleValidationError = s__('Analytics|A dashboard with that name already exists.');
+        } else if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
           // We can assume bad request errors are a result of user error.
           // We don't need to capture these errors and can render the message to the user.
           this.showError({ error, capture: false, message: error.response?.data?.message });
@@ -237,6 +247,11 @@ export default {
         error,
         captureError: capture,
       });
+    },
+    validateDashboardTitle(newTitle, submitting) {
+      if (this.titleValidationError !== null || submitting) {
+        this.titleValidationError = newTitle?.length > 0 ? '' : __('This field is required.');
+      }
     },
   },
 };
@@ -256,7 +271,9 @@ export default {
       :is-new-dashboard="isNewDashboard"
       :show-date-range-filter="showDateRangeFilter"
       :changes-saved="changesSaved"
+      :title-validation-error="titleValidationError"
       @save="saveDashboard"
+      @title-input="validateDashboardTitle"
     />
     <gl-empty-state
       v-else-if="showEmptyState"

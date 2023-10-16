@@ -80,6 +80,7 @@ describe('CustomizableDashboard', () => {
         initialDashboard: loadDashboard,
         availableVisualizations: {
           loading: true,
+          hasError: false,
           visualizations: [],
         },
         ...props,
@@ -116,6 +117,11 @@ describe('CustomizableDashboard', () => {
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findVisualizationDrawer = () => wrapper.findComponent(AvailableVisualizationsDrawer);
   const findDashboardDescription = () => wrapper.findByTestId('dashboard-description');
+
+  const enterDashboardTitle = async (title, titleValidationError = '') => {
+    await findTitleInput().vm.$emit('input', title);
+    await wrapper.setProps({ titleValidationError });
+  };
 
   describe('when being created and an error occurs while loading the CSS', () => {
     beforeEach(() => {
@@ -361,8 +367,14 @@ describe('CustomizableDashboard', () => {
           });
         });
 
+        it('emits an event when title is edited', async () => {
+          await enterDashboardTitle('New Title');
+
+          expect(wrapper.emitted('title-input')[0]).toContain('New Title');
+        });
+
         it('saves the dashboard changes when the "save" button is clicked', async () => {
-          await findTitleInput().vm.$emit('input', 'New Title');
+          await enterDashboardTitle('New Title');
 
           await findSaveButton().vm.$emit('click');
 
@@ -654,10 +666,11 @@ describe('CustomizableDashboard', () => {
 
     describe('when saving', () => {
       describe('and there is no title nor visualizations', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           findTitleInput().element.focus = jest.fn();
 
-          return findSaveButton().vm.$emit('click');
+          await findSaveButton().vm.$emit('click');
+          await wrapper.setProps({ titleValidationError: 'This field is required.' });
         });
 
         it('does not save the dashboard', () => {
@@ -678,8 +691,8 @@ describe('CustomizableDashboard', () => {
         });
 
         describe('and a user then inputs a title', () => {
-          beforeEach(() => {
-            return findTitleInput().vm.$emit('input', 'New Title');
+          beforeEach(async () => {
+            await enterDashboardTitle('New Title');
           });
 
           it('shows title input as valid', () => {
@@ -691,8 +704,7 @@ describe('CustomizableDashboard', () => {
 
       describe('and there is a title but no visualizations', () => {
         beforeEach(async () => {
-          await findTitleInput().vm.$emit('input', 'New Title');
-
+          await enterDashboardTitle('New Title');
           await findSaveButton().vm.$emit('click');
         });
 
@@ -731,7 +743,7 @@ describe('CustomizableDashboard', () => {
 
       describe('and there is a title and visualizations', () => {
         beforeEach(async () => {
-          await findTitleInput().vm.$emit('input', 'New Title');
+          await enterDashboardTitle('New Title');
 
           await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
 
