@@ -7,6 +7,8 @@ RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:author) { create(:user) }
   let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:issue1) { create(:issue, project: project) }
+  let_it_be(:issue2) { create(:issue, project: project) }
   let_it_be_with_reload(:noteable) { create(:issue, project: project, health_status: 'on_track') }
 
   let(:service) { described_class.new(noteable: noteable, project: project, author: author) }
@@ -182,30 +184,62 @@ RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning
   end
 
   describe '#block_issuable' do
-    let(:noteable_ref) { create(:issue) }
+    subject(:system_note) { service.block_issuable(noteable_ref) }
 
-    subject { service.block_issuable(noteable_ref) }
+    context 'when argument is a single issuable' do
+      let_it_be(:noteable_ref) { issue1 }
 
-    it_behaves_like 'a system note' do
-      let(:action) { 'relate' }
+      it_behaves_like 'a system note' do
+        let(:action) { 'relate' }
+      end
+
+      it 'creates system note when issues gets marked as blocking' do
+        expect(system_note.note).to eq "marked this issue as blocking #{issue1.to_reference(project)}"
+      end
     end
 
-    it 'creates system note when issues gets marked as blocking' do
-      expect(subject.note).to eq "marked this issue as blocking #{noteable_ref.to_reference(project)}"
+    context 'when argument is a collection of issuables' do
+      let_it_be(:noteable_ref) { [issue1, issue2] }
+
+      it_behaves_like 'a system note' do
+        let(:action) { 'relate' }
+      end
+
+      it 'creates system note mentioning all issuables' do
+        expect(system_note.note).to eq(
+          "marked this issue as blocking #{issue1.to_reference(project)} and #{issue2.to_reference(project)}"
+        )
+      end
     end
   end
 
   describe '#blocked_by_issuable' do
-    let(:noteable_ref) { create(:issue) }
+    subject(:system_note) { service.blocked_by_issuable(noteable_ref) }
 
-    subject { service.blocked_by_issuable(noteable_ref) }
+    context 'when argument is a single issuable' do
+      let_it_be(:noteable_ref) { issue1 }
 
-    it_behaves_like 'a system note' do
-      let(:action) { 'relate' }
+      it_behaves_like 'a system note' do
+        let(:action) { 'relate' }
+      end
+
+      it 'creates system note when issues gets marked as blocked by noteable' do
+        expect(system_note.note).to eq "marked this issue as blocked by #{issue1.to_reference(project)}"
+      end
     end
 
-    it 'creates system note when issues gets marked as blocked by noteable' do
-      expect(subject.note).to eq "marked this issue as blocked by #{noteable_ref.to_reference(project)}"
+    context 'when argument is a collection of issuables' do
+      let_it_be(:noteable_ref) { [issue1, issue2] }
+
+      it_behaves_like 'a system note' do
+        let(:action) { 'relate' }
+      end
+
+      it 'creates system note mentioning all issuables' do
+        expect(system_note.note).to eq(
+          "marked this issue as blocked by #{issue1.to_reference(project)} and #{issue2.to_reference(project)}"
+        )
+      end
     end
   end
 end
