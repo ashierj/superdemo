@@ -28,11 +28,24 @@ module Gitlab
               # We can't reuse the injected client here but need to call TanukiBot as it uses the
               # embedding database and calls the OpenAI API internally.
               logger.info(message: "Calling TanukiBot", class: self.class.to_s)
+              streamed_answer = StreamedDocumentationAnswer.new
+
               response_modifier = Gitlab::Llm::TanukiBot.new(
                 current_user: context.current_user,
                 question: options[:input],
                 tracking_context: { action: 'chat_documentation' }
-              ).execute
+              ).execute do |content|
+                next unless stream_response_handler
+
+                chunk = streamed_answer.next_chunk(content)
+
+                if chunk
+                  stream_response_handler.execute(
+                    response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
+                    options: { chunk_id: chunk[:id] }
+                  )
+                end
+              end
 
               Gitlab::Llm::Chain::Answer.final_answer(context: context,
                 content: response_modifier.response_body,

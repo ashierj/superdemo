@@ -24,10 +24,11 @@ module Gitlab
             self::EXAMPLE
           end
 
-          def initialize(context:, options:)
+          def initialize(context:, options:, stream_response_handler: nil)
             @context = context
             @options = options
             @logger = Gitlab::Llm::Logger.build
+            @stream_response_handler = stream_response_handler
           end
 
           def execute
@@ -75,7 +76,7 @@ module Gitlab
 
           private
 
-          attr_reader :logger
+          attr_reader :logger, :stream_response_handler
 
           def not_found
             content = "I am sorry, I am unable to find the #{resource_name} you are looking for."

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failures, feature_category: :duo_chat do
-  subject(:reader) { described_class.new(context: context, options: options) }
+  subject(:reader) { described_class.new(context: context, options: options, stream_response_handler: nil) }
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }

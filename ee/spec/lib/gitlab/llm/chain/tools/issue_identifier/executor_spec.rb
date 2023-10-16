@@ -62,7 +62,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
         )
       end
 
-      let(:tool) { described_class.new(context: context, options: input_variables) }
+      let(:tool) { described_class.new(context: context, options: input_variables, stream_response_handler: nil) }
       let(:input_variables) do
         { input: "user input", suggestions: "Action: IssueIdentifier\nActionInput: #{issue1.iid}" }
       end

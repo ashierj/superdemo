@@ -34,7 +34,7 @@ module Gitlab
               vertex_ai: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::VertexAi
             }.freeze
 
-            def initialize(context:, options:)
+            def initialize(context:, options:, stream_response_handler: nil)
               super
               @retries = 0
             end

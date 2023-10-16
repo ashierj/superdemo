@@ -21,11 +21,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:openai_response) { { "data" => [{ "embedding" => embedding }] } }
     let(:vertex_response) { { "predictions" => [{ "embeddings" => { "values" => vertex_embedding } }] } }
     let(:attrs) { embeddings.map(&:id).map { |x| "CNT-IDX-#{x}" }.join(", ") }
-    let(:completion_response) do
-      instance_double(
-        HTTParty::Response, code: 200, success?: true, body: { 'completion' => "#{answer} ATTRS: #{attrs}" }.to_json
-      )
-    end
+    let(:completion_response) { "#{answer} ATTRS: #{attrs}" }
 
     let(:status_code) { 200 }
     let(:success) { true }
@@ -127,8 +123,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
       before do
         allow(License).to receive(:feature_available?).and_return(true)
         allow(logger).to receive(:debug)
-        allow(completion_response).to receive(:code).and_return(status_code)
-        allow(completion_response).to receive(:success?).and_return(success)
       end
 
       context 'with the ai_tanuki_bot license not available' do
@@ -206,9 +200,30 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
               it 'executes calls through to anthropic' do
                 embeddings
 
-                expect(anthropic_client).to receive(:complete).once.and_return(completion_response)
+                expect(anthropic_client).to receive(:stream).once.and_return(completion_response)
                 expect(embeddings_client).to receive(api_endpoint).with(**endpoint_args).and_return(embedding_response)
-                allow(completion_response).to receive(:parsed_response).and_return(completion_response)
+
+                execute
+              end
+
+              it 'yields the streamed response to the given block' do
+                embeddings
+
+                allow(anthropic_client).to receive(:stream).once
+                  .and_yield({ "completion" => answer })
+                  .and_return(completion_response)
+
+                expect(embeddings_client).to receive(api_endpoint).with(**endpoint_args).and_return(embedding_response)
+
+                expect { |b| instance.execute(&b) }.to yield_with_args(answer)
+              end
+
+              it 'raises an error when request failed' do
+                embeddings
+
+                expect(logger).to receive(:info).with(message: "Streaming error", error: { "message" => "some error" })
+                expect(embeddings_client).to receive(api_endpoint).with(**endpoint_args).and_return(embedding_response)
+                allow(anthropic_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
 
                 execute
               end
@@ -227,7 +242,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
           context 'when the feature flags are enabled' do
             before do
-              allow(completion_response).to receive(:parsed_response).and_return(completion_response)
               allow(client_class).to receive(:new).and_return(embeddings_client)
               allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
               allow(user).to receive(:any_group_with_ai_available?).and_return(true)

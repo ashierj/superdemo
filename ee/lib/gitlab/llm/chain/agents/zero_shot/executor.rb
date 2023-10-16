@@ -56,7 +56,8 @@ module Gitlab
                   options: {
                     input: user_input,
                     suggestions: options[:agent_scratchpad]
-                  }
+                  },
+                  stream_response_handler: stream_response_handler
                 )
 
                 tool_answer = tool.execute
