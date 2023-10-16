@@ -1,0 +1,10 @@
+{
+  "description": "Zoekt shard metadata",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
