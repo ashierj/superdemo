@@ -56,6 +56,12 @@ export const groupMembersResponse = {
             },
           },
         ],
+        pageInfo: {
+          hasNextPage: false,
+          startCursor: 'start-cursor',
+          endCursor: 'end-cursor',
+          __typename: 'PageInfo',
+        },
       },
     },
   },
