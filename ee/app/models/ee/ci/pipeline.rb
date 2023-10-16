@@ -231,11 +231,11 @@ module EE
         Security::Scan.where(pipeline_id: self_and_project_descendants.pluck(:id))
       end
 
-      private
-
       def has_security_reports?
         complete_and_has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.of_report_type(:license_scanning)))
       end
+
+      private
 
       def has_sbom_reports?
         complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
