@@ -90,6 +90,11 @@ export default {
       required: false,
       default: false,
     },
+    titleValidationError: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -100,7 +105,6 @@ export default {
       editing: this.isNewDashboard,
       filters: this.defaultFilters,
       alert: null,
-      titleValidationState: null,
       visualizationDrawerOpen: false,
       gridStackRenderKey: 0,
     };
@@ -120,9 +124,6 @@ export default {
     },
     showEditControls() {
       return this.editingEnabled && this.editing;
-    },
-    showGrid() {
-      return this.dashboard.panels.length > 0;
     },
     showDashboardDescription() {
       return Boolean(this.dashboard.description) && !this.editing;
@@ -177,7 +178,7 @@ export default {
       }
     },
     initialDashboard() {
-      this.resetToIntialDashboard();
+      this.resetToInitialDashboard();
     },
   },
   async created() {
@@ -236,7 +237,7 @@ export default {
         })),
       };
     },
-    async resetToIntialDashboard() {
+    async resetToInitialDashboard() {
       this.dashboard = this.createDraftDashboard(this.initialDashboard);
       // Update the element key to force re-render
       this.gridStackRenderKey += 1;
@@ -244,11 +245,8 @@ export default {
       // Reinitialize gridstack for the new grid items
       this.initGridStack();
     },
-    onTitleInput() {
-      // Don't validate if the title has not been submitted
-      if (this.titleValidationState !== null) {
-        this.titleValidationState = this.dashboard.title.length > 0;
-      }
+    onTitleInput(submitting) {
+      this.$emit('title-input', this.dashboard.title, submitting);
     },
     initGridStack() {
       if (this.loaded) {
@@ -321,9 +319,14 @@ export default {
       this.editing = true;
     },
     async saveEdit() {
-      this.titleValidationState = this.dashboard.title.length > 0;
+      if (this.titleValidationError === null && this.isNewDashboard) {
+        // ensure validation gets run when form is submitted with an empty title
+        this.onTitleInput(true);
+        this.$refs.titleInput.$el.focus();
+        return;
+      }
 
-      if (!this.titleValidationState) {
+      if (this.titleValidationError) {
         this.$refs.titleInput.$el.focus();
         return;
       }
@@ -355,7 +358,7 @@ export default {
 
         if (!confirmed) return;
 
-        await this.resetToIntialDashboard();
+        await this.resetToInitialDashboard();
       }
 
       if (this.isNewDashboard) {
@@ -435,8 +438,8 @@ export default {
             label-for="title"
             class="gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full"
             data-testid="dashboard-title-form-group"
-            :invalid-feedback="__('This field is required.')"
-            :state="titleValidationState"
+            :invalid-feedback="titleValidationError"
+            :state="!titleValidationError"
           >
             <gl-form-input
               id="title"
@@ -448,7 +451,7 @@ export default {
               :aria-label="s__('Analytics|Dashboard title')"
               class="form-control gl-mr-4 gl-border-gray-200"
               data-testid="dashboard-title-input"
-              :state="titleValidationState"
+              :state="!titleValidationError"
               required
               @input="onTitleInput"
             />

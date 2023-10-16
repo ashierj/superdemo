@@ -21,6 +21,7 @@ import {
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { NEW_DASHBOARD } from 'ee/analytics/analytics_dashboards/constants';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 import { stubComponent } from 'helpers/stub_component';
 import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
@@ -63,12 +64,12 @@ describe('AnalyticsDashboard', () => {
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
-  const mockSaveDashboardImplementation = async (responseCallback) => {
+  const mockSaveDashboardImplementation = async (responseCallback, dashboardToSave = dashboard) => {
     saveCustomDashboard.mockImplementation(responseCallback);
 
     await waitForPromises();
 
-    findDashboard().vm.$emit('save', 'custom_dashboard', { panels: [] });
+    findDashboard().vm.$emit('save', dashboardToSave.slug, dashboardToSave);
   };
 
   const getFirstParsedDashboard = (dashboards) => {
@@ -383,22 +384,25 @@ describe('AnalyticsDashboard', () => {
     );
 
     describe('when saving', () => {
-      beforeEach(() => mockDashboardResponse(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE));
+      beforeEach(() => {
+        mockDashboardResponse(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
 
-      describe('custom dashboard', () => {
-        beforeEach(() => {
-          createWrapper({
-            routeSlug: 'custom_dashboard',
-            glFeatures: { combinedAnalyticsDashboardsEditor: true },
-          });
-
-          return mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+        createWrapper({
+          routeSlug: 'custom_dashboard',
+          glFeatures: { combinedAnalyticsDashboardsEditor: true },
         });
+      });
+
+      describe('with a valid dashboard', () => {
+        beforeEach(() => mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED })));
 
         it('saves the dashboard and shows a success toast', () => {
           expect(saveCustomDashboard).toHaveBeenCalledWith({
-            dashboardSlug: 'custom_dashboard',
-            dashboardConfig: { panels: [] },
+            dashboardSlug: 'analytics_overview',
+            dashboardConfig: expect.objectContaining({
+              title: 'Analytics Overview',
+              panels: expect.any(Array),
+            }),
             projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
             isNewFile: false,
           });
@@ -411,14 +415,19 @@ describe('AnalyticsDashboard', () => {
         });
       });
 
-      describe('dashboard errors', () => {
-        beforeEach(() => {
-          createWrapper({
-            routeSlug: 'custom_dashboard',
-            glFeatures: { combinedAnalyticsDashboardsEditor: true },
-          });
-        });
+      describe('with an invalid dashboard', () => {
+        it('does not save when dashboard has no title', async () => {
+          const { title, ...dashboardWithNoTitle } = dashboard;
+          await mockSaveDashboardImplementation(
+            () => ({ status: HTTP_STATUS_CREATED }),
+            dashboardWithNoTitle,
+          );
 
+          expect(saveCustomDashboard).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('dashboard errors', () => {
         it('creates an alert when the response status is HTTP_STATUS_FORBIDDEN', async () => {
           await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
 
@@ -492,9 +501,8 @@ describe('AnalyticsDashboard', () => {
       });
 
       it('updates the apollo cache', async () => {
-        const slug = 'custom_dashboard';
         createWrapper({
-          routeSlug: slug,
+          routeSlug: dashboard.slug,
           glFeatures: { combinedAnalyticsDashboardsEditor: true },
         });
 
@@ -504,10 +512,12 @@ describe('AnalyticsDashboard', () => {
         expect(updateApolloCache).toHaveBeenCalledWith(
           expect.any(Object),
           namespaceId,
-          slug,
-          {
-            panels: [],
-          },
+          dashboard.slug,
+          expect.objectContaining({
+            slug: 'analytics_overview',
+            title: 'Analytics Overview',
+            userDefined: true,
+          }),
           TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         );
       });
@@ -538,8 +548,11 @@ describe('AnalyticsDashboard', () => {
         await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
 
         expect(saveCustomDashboard).toHaveBeenCalledWith({
-          dashboardSlug: 'custom_dashboard',
-          dashboardConfig: { panels: [] },
+          dashboardSlug: 'analytics_overview',
+          dashboardConfig: expect.objectContaining({
+            title: 'Analytics Overview',
+            panels: expect.any(Array),
+          }),
           projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
           isNewFile: true,
         });
