@@ -145,7 +145,11 @@ export default {
       <tracing-empty-state v-if="tracingEnabled === false" @enable-tracing="enableTracing" />
 
       <template v-else>
-        <filtered-search :initial-filters="initialFilterValue" @submit="handleFilters" />
+        <filtered-search
+          :initial-filters="initialFilterValue"
+          :observability-client="observabilityClient"
+          @submit="handleFilters"
+        />
         <url-sync :query="query" />
 
         <gl-infinite-scroll
