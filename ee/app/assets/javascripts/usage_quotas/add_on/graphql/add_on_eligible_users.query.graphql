@@ -20,21 +20,19 @@ query getAddOnEligibleUsers(
       after: $nextPageCursor
       before: $prevPageCursor
     ) {
-      edges {
-        node {
-          id
-          username
-          name
-          publicEmail
-          avatarUrl
-          webUrl
-          lastActivityOn
-          addOnAssignments(addOnPurchaseIds: $addOnPurchaseIds) {
-            nodes {
-              # eslint-disable-next-line @graphql-eslint/require-id-when-available
-              addOnPurchase {
-                name
-              }
+      nodes {
+        id
+        username
+        name
+        publicEmail
+        avatarUrl
+        webUrl
+        lastActivityOn
+        addOnAssignments(addOnPurchaseIds: $addOnPurchaseIds) {
+          nodes {
+            # eslint-disable-next-line @graphql-eslint/require-id-when-available
+            addOnPurchase {
+              name
             }
           }
         }

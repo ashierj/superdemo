@@ -126,8 +126,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
   const getAddOnAssignmentStatusForUserFromCache = (userId) => {
     return mockApolloClient.clients.defaultClient.cache
       .readQuery({ query: getAddOnEligibleUsers, variables: addOnEligibleUsersQueryVariables })
-      .namespace.addOnEligibleUsers.edges.find((edge) => edge.node.id === userId).node
-      .addOnAssignments.nodes;
+      .namespace.addOnEligibleUsers.nodes.find((node) => node.id === userId).addOnAssignments.nodes;
   };
 
   const findToggle = () => wrapper.findComponent(GlToggle);
