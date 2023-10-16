@@ -5,15 +5,18 @@ module Gitlab
     module Parsers
       module Sbom
         module Source
-          class DependencyScanning < BaseSource
+          class ContainerScanning < BaseSource
             REQUIRED_ATTRIBUTES = [
-              %w[input_file path]
+              %w[image name],
+              %w[image tag],
+              %w[operating_system name],
+              %w[operating_system version]
             ].freeze
 
             private
 
             def type
-              :dependency_scanning
+              :container_scanning
             end
           end
         end
