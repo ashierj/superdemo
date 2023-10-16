@@ -81,7 +81,6 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
     context 'when licensed' do
       before do
         stub_licensed_features(ci_cd_projects: true)
-        stub_feature_flags(remove_legacy_github_client: false)
       end
 
       it 'shows CI/CD tab and pane' do
@@ -158,23 +157,24 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
         expect(page).to have_text('Authenticate with GitHub')
 
         octokit = instance_double(Octokit::Client)
-        allow_next_instance_of(Gitlab::LegacyGithubImport::Client) do |client|
-          allow(client).to receive(:repos).and_return([repo])
-          allow(client).to receive(:user).with(nil).and_return({ login: 'my-user' })
+
+        allow_next_instance_of(Gitlab::GithubImport::Clients::Proxy) do |proxy|
+          allow(proxy).to receive(:repos).and_return({ repos: [repo] })
+        end
+        allow_next_instance_of(Gitlab::GithubImport::Client) do |client|
+          allow(client).to receive(:user).and_return({ login: 'my-user' })
           allow(client).to receive(:octokit).and_return(octokit)
         end
         allow(octokit).to receive(:access_token).and_return('fake-token')
+        allow(octokit).to receive(:organizations).and_return([])
 
         fill_in 'personal_access_token', with: 'fake-token'
-
-        stub_request(:get, 'https://api.github.com/user/orgs?page=1&per_page=25')
-          .to_return(status: 200, body: [].to_json, headers: { 'Content-Type' => 'application/json' })
 
         click_button 'Authenticate'
         wait_for_requests
 
         # Mock the POST `/import/github`
-        allow_any_instance_of(Gitlab::LegacyGithubImport::Client).to receive(:repository).and_return(repo)
+        allow_any_instance_of(Gitlab::GithubImport::Client).to receive(:repository).and_return(repo)
         project = create(
           :project,
           name: 'some-github-repo', creator: user,
@@ -206,7 +206,9 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
           find('.js-import-github').click
         end
 
-        allow_any_instance_of(Gitlab::LegacyGithubImport::Client).to receive(:repos).and_raise(Octokit::Unauthorized)
+        allow_next_instance_of(Gitlab::GithubImport::Client) do |client|
+          allow(client).to receive(:search_repos_by_name_graphql).and_raise(Octokit::Unauthorized)
+        end
 
         fill_in 'personal_access_token', with: 'unauthorized-fake-token'
         click_button 'Authenticate'
