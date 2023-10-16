@@ -74,6 +74,44 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignment, feature_category: :seat
       end
     end
 
+    describe '.for_active_code_suggestions_purchase' do
+      context 'when the assignment is for an active code suggestions purchase' do
+        it 'is included in the scope' do
+          purchase = create(:gitlab_subscription_add_on_purchase, :code_suggestions)
+          assignment = create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: purchase)
+
+          expect(described_class.for_active_code_suggestions_purchase).to eq [assignment]
+        end
+      end
+
+      context 'when the assignment is for an expired code suggestions purchase' do
+        it 'is not included in the scope' do
+          purchase = create(:gitlab_subscription_add_on_purchase, :code_suggestions, expires_on: 1.week.ago)
+          create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: purchase)
+
+          expect(described_class.for_active_code_suggestions_purchase).to be_empty
+        end
+      end
+
+      context 'when the assignment is for a non-code suggestions add on' do
+        it 'is not included in the scope' do
+          add_on = create(:gitlab_subscription_add_on).tap { |add_on| add_on.update_column(:name, -1) }
+          purchase = create(:gitlab_subscription_add_on_purchase, add_on: add_on)
+          create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: purchase)
+
+          expect(described_class.for_active_code_suggestions_purchase).to be_empty
+        end
+      end
+
+      context 'when there are no assignments for an active code suggestions purchase' do
+        it 'returns an empty relation' do
+          create(:gitlab_subscription_add_on_purchase, :code_suggestions)
+
+          expect(described_class.for_active_code_suggestions_purchase).to be_empty
+        end
+      end
+    end
+
     describe '.for_active_add_on_purchase_ids' do
       context 'when supplied no add on purchase IDs' do
         it 'returns an empty collection' do

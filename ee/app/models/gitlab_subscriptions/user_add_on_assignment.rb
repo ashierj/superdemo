@@ -14,6 +14,10 @@ module GitlabSubscriptions
     scope :for_user_ids, ->(user_ids) { where(user_id: user_ids) }
     scope :with_namespaces, -> { includes(add_on_purchase: :namespace) }
 
+    scope :for_active_code_suggestions_purchase, -> do
+      joins(:add_on_purchase).merge(::GitlabSubscriptions::AddOnPurchase.active.for_code_suggestions)
+    end
+
     scope :for_active_add_on_purchase_ids, ->(add_on_purchase_ids) do
       joins(:add_on_purchase)
         .merge(::GitlabSubscriptions::AddOnPurchase.where(id: add_on_purchase_ids).active)

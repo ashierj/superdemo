@@ -556,7 +556,11 @@ module EE
     end
 
     def code_suggestions_add_on_available?
-      GitlabSubscriptions::AddOnPurchase.for_user(self).for_code_suggestions.active.any?
+      if ::Feature.enabled?(:hamilton_seat_management)
+        GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_code_suggestions_purchase.any?
+      else
+        GitlabSubscriptions::AddOnPurchase.for_user(self).for_code_suggestions.active.any?
+      end
     end
 
     def billable_code_suggestions_root_group_ids
