@@ -14221,14 +14221,14 @@ ALTER SEQUENCE ci_secure_files_id_seq OWNED BY ci_secure_files.id;
 CREATE TABLE ci_sources_pipelines (
     id integer NOT NULL,
     project_id integer,
-    pipeline_id integer,
+    pipeline_id_convert_to_bigint integer,
     source_project_id integer,
-    source_pipeline_id integer,
+    source_pipeline_id_convert_to_bigint integer,
     source_job_id bigint,
     partition_id bigint NOT NULL,
     source_partition_id bigint NOT NULL,
-    pipeline_id_convert_to_bigint bigint,
-    source_pipeline_id_convert_to_bigint bigint
+    pipeline_id bigint,
+    source_pipeline_id bigint
 );
 
 CREATE SEQUENCE ci_sources_pipelines_id_seq
