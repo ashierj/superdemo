@@ -596,6 +596,19 @@ module EE
         ::Feature.enabled?(:dependency_scanning_on_advisory_ingestion)
       end
 
+      condition(:manage_project_access_tokens_custom_roles_enabled) do
+        ::Feature.enabled?(:manage_project_access_tokens, @subject.root_ancestor)
+      end
+
+      desc "Custom role on project that enables manage project access tokens"
+      condition(:role_enables_manage_project_access_tokens) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: project,
+          ability: :manage_project_access_tokens
+        ).has_ability?
+      end
+
       rule { needs_new_sso_session }.policy do
         prevent :read_project
       end
@@ -699,6 +712,13 @@ module EE
       rule { suggested_reviewers_bot & suggested_reviewers_available & resource_access_token_feature_available & resource_access_token_creation_allowed }.policy do
         enable :admin_project_member
         enable :create_resource_access_tokens
+      end
+
+      rule { role_enables_manage_project_access_tokens & resource_access_token_feature_available & resource_access_token_creation_allowed & manage_project_access_tokens_custom_roles_enabled }.policy do
+        enable :read_resource_access_tokens
+        enable :create_resource_access_tokens
+        enable :destroy_resource_access_tokens
+        enable :manage_resource_access_tokens
       end
 
       rule { security_policy_bot }.policy do

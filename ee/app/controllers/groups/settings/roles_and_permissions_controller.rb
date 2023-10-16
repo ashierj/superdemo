@@ -8,6 +8,9 @@ module Groups
       before_action :authorize_admin_member_roles!
       before_action :ensure_root_group!
       before_action :ensure_custom_roles_available!
+      before_action do
+        push_frontend_feature_flag(:manage_project_access_tokens, group)
+      end
 
       private
 

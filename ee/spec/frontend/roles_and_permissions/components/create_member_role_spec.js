@@ -44,6 +44,7 @@ describe('CreateMemberRole', () => {
   };
 
   beforeEach(() => {
+    window.gon.features = {};
     createComponent();
   });
 
@@ -78,6 +79,21 @@ describe('CreateMemberRole', () => {
     expect(checkboxThreeText).toContain(
       "Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect.",
     );
+  });
+
+  describe('manage_project_access_token feature flag is on', () => {
+    beforeEach(() => {
+      window.gon.features = { manageProjectAccessTokens: true };
+      createComponent();
+    });
+
+    it('renders manage project access token permission', () => {
+      const checkboxFourText = findCheckboxes().at(3).text();
+      expect(checkboxFourText).toContain('Manage Project Access Tokens');
+      expect(checkboxFourText).toContain(
+        "Allows manage access to the project access tokens. Select 'Manage Project Access Tokens' for this to take effect.",
+      );
+    });
   });
 
   it('emits cancel event', () => {

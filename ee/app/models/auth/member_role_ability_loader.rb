@@ -12,9 +12,9 @@ module Auth
       return false unless user.is_a?(User)
 
       roles = if resource.is_a?(::Project)
-                preloaded_member_roles_for_project.fetch(resource.id)
+                preloaded_member_roles_for_project[resource.id]
               else # Group
-                preloaded_member_roles_for_group.fetch(resource.id)
+                preloaded_member_roles_for_group[resource.id]
               end
 
       roles&.include?(ability)

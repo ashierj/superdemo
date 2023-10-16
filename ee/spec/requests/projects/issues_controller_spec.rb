@@ -27,6 +27,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
       it 'does not cause extra queries when multiple blocking issues are present' do
         create(:issue_link, source: blocking_issue, target: issue, link_type: IssueLink::TYPE_BLOCKS)
 
+        project.reload
         control = ActiveRecord::QueryRecorder.new { get_show }
 
         other_project_issue = create(:issue)

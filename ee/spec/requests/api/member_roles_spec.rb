@@ -105,6 +105,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "admin_group_member" => false,
                   "admin_merge_request" => false,
                   "admin_vulnerability" => false,
+                  "manage_project_access_tokens" => false,
                   "group_id" => group_id
                 },
                 {
@@ -118,6 +119,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "admin_group_member" => false,
                   "admin_merge_request" => true,
                   "admin_vulnerability" => false,
+                  "manage_project_access_tokens" => false,
                   "group_id" => group_id
                 }
               ]

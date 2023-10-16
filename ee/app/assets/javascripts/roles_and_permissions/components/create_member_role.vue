@@ -54,8 +54,18 @@ export default {
       name: '',
       nameValid: true,
       permissions: [],
+      availablePermissions: [],
       permissionsValid: null,
     };
+  },
+  mounted() {
+    if (!gon.features.manageProjectAccessTokens) {
+      this.availablePermissions = Object.values(PERMISSIONS).filter(
+        (permission) => permission.value !== 'manage_project_access_tokens',
+      );
+    } else {
+      this.availablePermissions = Object.values(PERMISSIONS);
+    }
   },
   methods: {
     areFieldsValid() {
@@ -135,7 +145,6 @@ export default {
       label: I18N_NEW_ROLE_PERMISSIONS_LABEL,
     },
   },
-  permissions: Object.values(PERMISSIONS),
 };
 </script>
 
@@ -185,7 +194,7 @@ export default {
     <gl-form-group :label="$options.i18n.permissions.label">
       <gl-form-checkbox-group v-model="permissions" :state="permissionsValid">
         <gl-form-checkbox
-          v-for="permission in $options.permissions"
+          v-for="permission in availablePermissions"
           :key="permission.value"
           :value="permission.value"
         >
