@@ -16018,6 +16018,9 @@ msgstr ""
 msgid "Deleting a project places it into a read-only state until %{date}, at which point the project will be permanently deleted. Are you ABSOLUTELY sure?"
 msgstr ""
 
+msgid "Deleting protected branches is blocked by security policies"
+msgstr ""
+
 msgid "Deleting the project will delete its repository and all related resources, including issues and merge requests."
 msgstr ""
 

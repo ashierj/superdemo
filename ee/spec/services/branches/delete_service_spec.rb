@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# rubocop: disable RSpec/DuplicateSpecLocation
 RSpec.describe Branches::DeleteService do
   let(:project) { create(:project, :repository) }
   let(:repository) { project.repository }
@@ -34,3 +35,4 @@ RSpec.describe Branches::DeleteService do
     repository.ref_exists?("refs/heads/#{branch_name}")
   end
 end
+# rubocop: enable RSpec/DuplicateSpecLocation
