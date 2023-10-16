@@ -97,11 +97,17 @@ describe('EditorComponent', () => {
     });
   };
 
-  const factoryWithExistingPolicy = (policy = {}, provide = {}) => {
+  const factoryWithExistingPolicy = ({ policy = {}, provide = {}, hasActions = true } = {}) => {
+    const existingPolicy = { ...mockDefaultBranchesScanResultObject };
+
+    if (!hasActions) {
+      delete existingPolicy.actions;
+    }
+
     return factory({
       propsData: {
         assignedPolicyProject,
-        existingPolicy: { ...mockDefaultBranchesScanResultObject, ...policy },
+        existingPolicy: { ...existingPolicy, ...policy },
         isEditing: true,
       },
       provide,
@@ -112,6 +118,7 @@ describe('EditorComponent', () => {
   const findPolicyEditorLayout = () => wrapper.findComponent(EditorLayout);
   const findPolicyActionBuilder = () => wrapper.findComponent(PolicyActionBuilder);
   const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
+  const findAddActionButton = () => wrapper.findByTestId('add-action');
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
@@ -217,7 +224,7 @@ describe('EditorComponent', () => {
       it('hides add button when the limit of five rules has been reached', () => {
         const limit = 5;
         const rule = mockDefaultBranchesScanResultObject.rules[0];
-        factoryWithExistingPolicy({ rules: [rule, rule, rule, rule, rule] });
+        factoryWithExistingPolicy({ policy: { rules: [rule, rule, rule, rule, rule] } });
 
         expect(findAllRuleBuilders()).toHaveLength(limit);
         expect(findAddRuleButton().exists()).toBe(false);
@@ -253,33 +260,49 @@ describe('EditorComponent', () => {
     });
 
     describe('action builder', () => {
-      beforeEach(() => {
-        factory();
-      });
-
-      it('updates policy action when edited', async () => {
-        const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
-        await findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
-
-        expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
-      });
-
-      it('updates the policy approvers', async () => {
-        const newApprover = ['owner'];
-
-        await findPolicyActionBuilder().vm.$emit('updateApprovers', {
-          ...scanResultPolicyApprovers,
-          role: newApprover,
+      describe('add', () => {
+        it('hides the add button when actions exist', () => {
+          factory();
+          expect(findPolicyActionBuilder().exists()).toBe(true);
+          expect(findAddActionButton().exists()).toBe(false);
         });
 
-        expect(findPolicyActionBuilder().props('existingApprovers')).toMatchObject({
-          role: newApprover,
+        it('shows the add button when actions do not exist', () => {
+          factoryWithExistingPolicy({ hasActions: false });
+          expect(findPolicyActionBuilder().exists()).toBe(false);
+          expect(findAddActionButton().exists()).toBe(true);
         });
       });
 
-      it('creates an error when the action builder emits one', async () => {
-        await findPolicyActionBuilder().vm.$emit('error');
-        verifiesParsingError();
+      describe('update', () => {
+        beforeEach(() => {
+          factory();
+        });
+
+        it('updates policy action when edited', async () => {
+          const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
+          await findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
+
+          expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
+        });
+
+        it('updates the policy approvers', async () => {
+          const newApprover = ['owner'];
+
+          await findPolicyActionBuilder().vm.$emit('updateApprovers', {
+            ...scanResultPolicyApprovers,
+            role: newApprover,
+          });
+
+          expect(findPolicyActionBuilder().props('existingApprovers')).toMatchObject({
+            role: newApprover,
+          });
+        });
+
+        it('creates an error when the action builder emits one', async () => {
+          await findPolicyActionBuilder().vm.$emit('error');
+          verifiesParsingError();
+        });
       });
     });
   });
@@ -381,42 +404,46 @@ describe('EditorComponent', () => {
     });
 
     it('creates an error when policy scanners are invalid', async () => {
-      factoryWithExistingPolicy({ rules: [{ scanners: ['cluster_image_scanning'] }] });
+      factoryWithExistingPolicy({ policy: { rules: [{ scanners: ['cluster_image_scanning'] }] } });
 
       await changesToRuleMode();
       verifiesParsingError();
     });
 
     it('creates an error when policy severity_levels are invalid', async () => {
-      factoryWithExistingPolicy({ rules: [{ severity_levels: ['non-existent'] }] });
+      factoryWithExistingPolicy({ policy: { rules: [{ severity_levels: ['non-existent'] }] } });
 
       await changesToRuleMode();
       verifiesParsingError();
     });
 
     it('creates an error when vulnerabilities_allowed are invalid', async () => {
-      factoryWithExistingPolicy({ rules: [{ vulnerabilities_allowed: 'invalid' }] });
+      factoryWithExistingPolicy({ policy: { rules: [{ vulnerabilities_allowed: 'invalid' }] } });
 
       await changesToRuleMode();
       verifiesParsingError();
     });
 
     it('creates an error when vulnerability_states are invalid', async () => {
-      factoryWithExistingPolicy({ rules: [{ vulnerability_states: ['invalid'] }] });
+      factoryWithExistingPolicy({ policy: { rules: [{ vulnerability_states: ['invalid'] }] } });
 
       await changesToRuleMode();
       verifiesParsingError();
     });
 
     it('creates an error when vulnerability_age is invalid', async () => {
-      factoryWithExistingPolicy({ rules: [{ vulnerability_age: { operator: 'invalid' } }] });
+      factoryWithExistingPolicy({
+        policy: { rules: [{ vulnerability_age: { operator: 'invalid' } }] },
+      });
 
       await changesToRuleMode();
       verifiesParsingError();
     });
 
     it('creates an error when vulnerability_attributes are invalid', async () => {
-      factoryWithExistingPolicy({ rules: [{ vulnerability_attributes: [{ invalid: true }] }] });
+      factoryWithExistingPolicy({
+        policy: { rules: [{ vulnerability_attributes: [{ invalid: true }] }] },
+      });
 
       await changesToRuleMode();
       verifiesParsingError();
@@ -443,8 +470,11 @@ describe('EditorComponent', () => {
       `(
         '$title create an error when the policy does not match existing approvers',
         async ({ policy, approver, output }) => {
-          factoryWithExistingPolicy(policy, {
-            scanResultPolicyApprovers: approver,
+          factoryWithExistingPolicy({
+            policy,
+            provide: {
+              scanResultPolicyApprovers: approver,
+            },
           });
 
           await changesToRuleMode();
@@ -465,7 +495,7 @@ describe('EditorComponent', () => {
         const rule = { ...mockDefaultBranchesScanResultObject.rules[0], branches: ['main'] };
         getInvalidBranches.mockReturnValue(value);
 
-        factoryWithExistingPolicy({ rules: [rule] });
+        factoryWithExistingPolicy({ policy: { rules: [rule] } });
 
         await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
         await waitForPromises();
@@ -476,7 +506,7 @@ describe('EditorComponent', () => {
     );
 
     it('does not query protected branches when namespaceType is other than project', async () => {
-      factoryWithExistingPolicy({}, { namespaceType: NAMESPACE_TYPES.GROUP });
+      factoryWithExistingPolicy({ provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
 
       await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
       await waitForPromises();
