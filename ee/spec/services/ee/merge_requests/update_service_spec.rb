@@ -155,7 +155,6 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
           update_merge_request(approver_ids: [existing_approver, removed_approver].map(&:id).join(','))
         end
 
-        Todo.where(action: Todo::APPROVAL_REQUIRED).destroy_all # rubocop: disable Cop/DestroyAll
         ActionMailer::Base.deliveries.clear
       end
 
@@ -166,18 +165,15 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
           end
         end
 
-        it 'does not add todos for or send emails to the new approvers' do
-          expect(Todo.where(user: new_approver, action: Todo::APPROVAL_REQUIRED)).to be_empty
+        it 'does not send emails to the new approvers' do
           should_not_email(new_approver)
         end
 
-        it 'does not add todos for or send emails to the existing approvers' do
-          expect(Todo.where(user: existing_approver, action: Todo::APPROVAL_REQUIRED)).to be_empty
+        it 'does not send emails to the existing approvers' do
           should_not_email(existing_approver)
         end
 
-        it 'does not add todos for or send emails to the removed approvers' do
-          expect(Todo.where(user: removed_approver, action: Todo::APPROVAL_REQUIRED)).to be_empty
+        it 'does not send emails to the removed approvers' do
           should_not_email(removed_approver)
         end
       end
@@ -217,10 +213,6 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
           update_merge_request(target_branch: 'video')
 
           expect(merge_request.reload.approvals).to be_empty
-        end
-
-        it 'does not create new todos for the approvers' do
-          expect(Todo.where(action: Todo::APPROVAL_REQUIRED)).to be_empty
         end
       end
 

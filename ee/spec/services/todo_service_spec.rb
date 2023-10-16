@@ -302,15 +302,9 @@ RSpec.describe TodoService, feature_category: :team_planning do
       end
     end
 
-    shared_examples 'when code owner is not mentioned' do
-      it 'skips creating a todo' do
-        # skip for code owner
-        should_not_create_todo(user: code_owner, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-      end
-    end
-
     shared_examples 'when code owner is mentioned' do
       let(:description) { 'FYI: ' + [code_owner].map(&:to_reference).join(' ') }
+
       it 'creates a todo' do
         should_create_todo(user: code_owner, target: merge_request, action: Todo::MENTIONED)
       end
@@ -318,15 +312,7 @@ RSpec.describe TodoService, feature_category: :team_planning do
 
     describe '#new_merge_request' do
       context 'when the merge request has approvers' do
-        it 'skips creating a approval required todo', :aggregate_failures do
-          # for each approver
-          should_not_create_todo(user: approver_1, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-          should_not_create_todo(user: approver_2, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-          should_not_create_todo(user: approver_3, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-        end
-
         it_behaves_like 'when user is mentioned'
-        it_behaves_like 'when code owner is not mentioned'
         it_behaves_like 'when code owner is mentioned'
       end
     end
@@ -335,21 +321,6 @@ RSpec.describe TodoService, feature_category: :team_planning do
   context 'Merge Requests' do
     let(:project) { create(:project, :private, :repository) }
     let(:merge_request) { create(:merge_request, source_project: project, author: author) }
-
-    context 'an approver has lost access to the project', :sidekiq_inline do
-      before do
-        create(:approver, user: non_member, target: project)
-        project.members.find_by(user_id: non_member.id).destroy!
-      end
-
-      describe '#new_merge_request' do
-        it 'does not create a todo for the approver' do
-          service.new_merge_request(merge_request, author)
-
-          should_not_create_todo(user: non_member, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-        end
-      end
-    end
 
     describe '#merge_train_removed' do
       let(:merge_participants) { [admin, create(:user)] }
