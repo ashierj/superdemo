@@ -10,27 +10,27 @@ module QA
             include ::QA::Page::Component::Dropdown
 
             view 'ee/app/views/admin/application_settings/_custom_templates_form.html.haml' do
-              element :custom_project_template_container
-              element :save_changes_button
+              element 'custom-project-template-container'
+              element 'save-changes-button'
             end
 
             def current_custom_project_template
-              expand_content(:custom_project_template_container)
+              expand_content('custom-project-template-container')
 
-              within_element(:custom_project_template_container) do
+              within_element('custom-project-template-container') do
                 wait_for_requests
                 current_selection
               end
             end
 
             def choose_custom_project_template(path)
-              expand_content(:custom_project_template_container)
+              expand_content('custom-project-template-container')
 
-              within_element(:custom_project_template_container) do
+              within_element('custom-project-template-container') do
                 clear_current_selection_if_present
                 expand_select_list
                 search_and_select(path)
-                click_element(:save_changes_button)
+                click_element('save-changes-button')
               end
             end
           end

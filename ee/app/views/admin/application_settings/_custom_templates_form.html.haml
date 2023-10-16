@@ -1,5 +1,5 @@
 - if ::Gitlab::CurrentSettings.custom_project_templates_enabled?
-  %section.settings.as-custom-project-templates.no-animate#js-custom-project-templates-settings{ class: ('expanded' if expanded), data: { qa_selector: 'custom_project_template_container' } }
+  %section.settings.as-custom-project-templates.no-animate#js-custom-project-templates-settings{ class: ('expanded' if expanded), data: { testid: 'custom-project-template-container' } }
     .settings-header
       %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
         = _('Custom project templates')
@@ -15,4 +15,4 @@
 
         .js-vue-group-select{ data: { label: _('Select group'), input_name: 'application_setting[custom_project_templates_group_id]', input_id: 'application_setting_file_template_project_id', selected: @application_setting.custom_project_templates_group_id, clearable: 'true' } }
 
-        = f.submit _('Save changes'), pajamas_button: true, data: { qa_selector: 'save_changes_button' }
+        = f.submit _('Save changes'), pajamas_button: true, data: { testid: 'save-changes-button' }

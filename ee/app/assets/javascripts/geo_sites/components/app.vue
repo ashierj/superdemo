@@ -112,7 +112,7 @@ export default {
         variant="confirm"
         :href="newSiteUrl"
         target="_blank"
-        data-qa-selector="add_site_button"
+        data-testid="add-site-button"
         >{{ $options.i18n.addSite }}
       </gl-button>
     </div>
