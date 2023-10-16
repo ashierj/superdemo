@@ -9,11 +9,7 @@ module QA
 
       let(:issue) { create(:issue, project: project) }
 
-      let(:mr) do
-        Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.project = project
-        end
-      end
+      let(:mr) { create(:merge_request, project: project) }
 
       before do
         Flow::Login.sign_in

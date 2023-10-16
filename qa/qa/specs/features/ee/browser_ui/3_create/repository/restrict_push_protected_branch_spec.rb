@@ -22,12 +22,11 @@ module QA
 
           expect(push.output).to match(/To create a merge request for protected-branch, visit/)
 
-          Resource::MergeRequest.fabricate_via_api! do |merge_request|
-            merge_request.project = project
-            merge_request.target_new_branch = false
-            merge_request.source_branch = branch_name
-            merge_request.no_preparation = true
-          end.visit!
+          create(:merge_request,
+            :no_preparation,
+            project: project,
+            target_new_branch: false,
+            source_branch: branch_name).visit!
 
           Page::MergeRequest::Show.perform do |mr|
             mr.merge!

@@ -48,12 +48,11 @@ module QA
       end
 
       let(:merge_request) do
-        Resource::MergeRequest.fabricate_via_api! do |mr|
-          mr.project = project
-          mr.source = source_mr_repository
-          mr.source_branch = 'test-dismissed-vulnerabilities'
-          mr.target_branch = project.default_branch
-        end
+        create(:merge_request,
+          project: project,
+          source: source_mr_repository,
+          source_branch: 'test-dismissed-vulnerabilities',
+          target_branch: project.default_branch)
       end
 
       before do
