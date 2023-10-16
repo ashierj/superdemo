@@ -5,6 +5,7 @@ import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 
 import complianceFrameworks from '../../../graphql_shared/queries/get_compliance_framework.query.graphql';
+import complianceFrameworksProjects from '../../../graphql_shared/queries/get_compliance_framework_associated_projects.query.graphql';
 import FrameworksTable from './frameworks_table.vue';
 
 export default {
@@ -23,6 +24,7 @@ export default {
     return {
       hasQueryError: false,
       frameworks: [],
+      projects: [],
     };
   },
   apollo: {
@@ -36,6 +38,22 @@ export default {
       },
       update(data) {
         return data.namespace.complianceFrameworks.nodes;
+      },
+      error(e) {
+        Sentry.captureException(e);
+        this.hasQueryError = true;
+      },
+    },
+    projects: {
+      query: complianceFrameworksProjects,
+      fetchPolicy: fetchPolicies.NETWORK_ONLY,
+      variables() {
+        return {
+          fullPath: this.groupPath,
+        };
+      },
+      update(data) {
+        return data.group.projects.nodes;
       },
       error(e) {
         Sentry.captureException(e);
@@ -62,6 +80,11 @@ export default {
       {{ $options.i18n.queryError }}
     </gl-alert>
 
-    <frameworks-table v-else :is-loading="isLoading" :frameworks="frameworks" />
+    <frameworks-table
+      v-else
+      :is-loading="isLoading"
+      :frameworks="frameworks"
+      :projects="projects"
+    />
   </section>
 </template>

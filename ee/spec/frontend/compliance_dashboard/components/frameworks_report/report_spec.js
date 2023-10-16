@@ -7,10 +7,14 @@ import { GlAlert } from '@gitlab/ui';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createComplianceFrameworksReportResponse } from 'ee_jest/compliance_dashboard/mock_data';
+import {
+  createComplianceFrameworksReportResponse,
+  createComplianceFrameworksReportProjectsResponse,
+} from 'ee_jest/compliance_dashboard/mock_data';
 
 import ComplianceFrameworksReport from 'ee/compliance_dashboard/components/frameworks_report/report.vue';
 import complianceFrameworks from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
+import complianceFrameworksProjects from 'ee/graphql_shared/queries/get_compliance_framework_associated_projects.query.graphql';
 
 import { ROUTE_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
 import FrameworksTable from 'ee/compliance_dashboard/components/frameworks_report/frameworks_table.vue';
@@ -25,21 +29,27 @@ describe('ComplianceFrameworksReport component', () => {
 
   const sentryError = new Error('GraphQL networkError');
   const frameworksResponse = createComplianceFrameworksReportResponse();
+  const projectsResponse = createComplianceFrameworksReportProjectsResponse();
   const mockGraphQlLoading = jest.fn().mockResolvedValue(new Promise(() => {}));
-  const mockGraphQlSuccess = jest.fn().mockResolvedValue(frameworksResponse);
+  const mockFrameworksGraphQlSuccess = jest.fn().mockResolvedValue(frameworksResponse);
+  const mockProjectsGraphQlSuccess = jest.fn().mockResolvedValue(projectsResponse);
   const mockGraphQlError = jest.fn().mockRejectedValue(sentryError);
 
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
   const findFrameworksTable = () => wrapper.findComponent(FrameworksTable);
 
-  function createMockApolloProvider(resolverMock) {
-    return createMockApollo([[complianceFrameworks, resolverMock]]);
+  function createMockApolloProvider(complianceFrameworksResolverMock, projectsResolverMock) {
+    return createMockApollo([
+      [complianceFrameworks, complianceFrameworksResolverMock],
+      [complianceFrameworksProjects, projectsResolverMock],
+    ]);
   }
 
   function createComponent(
     mountFn = shallowMount,
     props = {},
-    resolverMock = mockGraphQlLoading,
+    complianceFrameworksResolverMock = mockGraphQlLoading,
+    projectsResolverMock = mockGraphQlLoading,
     queryParams = {},
   ) {
     const currentQueryParams = { ...queryParams };
@@ -49,7 +59,10 @@ describe('ComplianceFrameworksReport component', () => {
       }),
     };
 
-    apolloProvider = createMockApolloProvider(resolverMock);
+    apolloProvider = createMockApolloProvider(
+      complianceFrameworksResolverMock,
+      projectsResolverMock,
+    );
 
     wrapper = extendedWrapper(
       mountFn(ComplianceFrameworksReport, {
@@ -89,17 +102,34 @@ describe('ComplianceFrameworksReport component', () => {
     });
 
     it('fetches the list of frameworks', () => {
-      expect(mockGraphQlLoading).toHaveBeenCalledTimes(1);
+      expect(mockGraphQlLoading).toHaveBeenCalledTimes(2);
       expect(mockGraphQlLoading).toHaveBeenCalledWith({
         fullPath,
       });
     });
   });
 
-  describe('when the query fails', () => {
+  describe('when the frameworks query fails', () => {
     beforeEach(() => {
       jest.spyOn(Sentry, 'captureException');
-      createComponent(shallowMount, {}, mockGraphQlError);
+      createComponent(shallowMount, {}, mockGraphQlError, mockProjectsGraphQlSuccess);
+    });
+
+    it('renders the error message', async () => {
+      await waitForPromises();
+
+      expect(findErrorMessage().exists()).toBe(true);
+      expect(findErrorMessage().text()).toBe(
+        'Unable to load the compliance framework report. Refresh the page and try again.',
+      );
+      expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(sentryError);
+    });
+  });
+
+  describe('when the projects query fails', () => {
+    beforeEach(() => {
+      jest.spyOn(Sentry, 'captureException');
+      createComponent(shallowMount, {}, mockFrameworksGraphQlSuccess, mockGraphQlError);
     });
 
     it('renders the error message', async () => {
@@ -115,7 +145,7 @@ describe('ComplianceFrameworksReport component', () => {
 
   describe('when there are frameworks', () => {
     beforeEach(async () => {
-      createComponent(mount, {}, mockGraphQlSuccess);
+      createComponent(mount, {}, mockFrameworksGraphQlSuccess, mockProjectsGraphQlSuccess);
       await waitForPromises();
     });
 
@@ -129,6 +159,12 @@ describe('ComplianceFrameworksReport component', () => {
         id: 'gid://gitlab/ComplianceManagement::Framework/0',
         name: 'Some framework 0',
         pipelineConfigurationFullPath: null,
+      });
+      expect(findFrameworksTable().props('projects')).toHaveLength(1);
+      expect(findFrameworksTable().props('projects')[0]).toMatchObject({
+        __typename: 'Project',
+        id: 'gid://gitlab/Project/0',
+        name: 'Gitlab Shell',
       });
     });
   });
