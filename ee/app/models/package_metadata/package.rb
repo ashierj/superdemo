@@ -94,6 +94,10 @@ module PackageMetadata
       range.add(VersionParser.parse(">#{highest_version}")) if highest_version
 
       !range.overlaps_with?(interval)
+      # semver_dialects may throw on parse errors
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/428251
+    rescue NoMethodError
+      false
     end
   end
 end

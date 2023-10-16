@@ -73,6 +73,12 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
             expect(package.license_ids_for(version: "0.0.0")).to be_empty
           end
         end
+
+        context 'and the given version is a semver_dialects parse error' do
+          it 'returns an empty array' do
+            expect(package.license_ids_for(version: "1.0\n2.0")).to be_empty
+          end
+        end
       end
     end
 
