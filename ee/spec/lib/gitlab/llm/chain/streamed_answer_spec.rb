@@ -3,14 +3,6 @@
 require 'fast_spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::StreamedAnswer, feature_category: :duo_chat do
-  let(:input) do
-    <<-INPUT
-      Thought: thought
-      Action: IssueIdentifier
-      Action Input: Bar
-    INPUT
-  end
-
   describe '#next_chunk' do
     let(:streamed_answer) { described_class.new }
 

@@ -40,7 +40,7 @@ module Gitlab
         @tracking_context = tracking_context
       end
 
-      def execute
+      def execute(&block)
         return empty_response unless question.present?
         return empty_response unless self.class.enabled_for?(user: current_user)
 
@@ -55,7 +55,7 @@ module Gitlab
         search_documents = get_nearest_neighbors(embedding)
         return empty_response if search_documents.empty?
 
-        get_completions(search_documents)
+        get_completions(search_documents, &block)
       end
 
       # Note: a Rake task is using this method to extract embeddings for a test fixture.
@@ -119,25 +119,22 @@ module Gitlab
         final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
           .final_prompt(question: question, documents: search_documents)
 
-        final_prompt_result = anthropic_client.complete(
+        final_prompt_result = anthropic_client.stream(
           prompt: final_prompt[:prompt],
           options: {
             model: "claude-instant-1.1"
           }
-        )
+        ) do |data|
+          logger.info(message: "Streaming error", error: data&.dig("error")) if data&.dig("error")
 
-        unless final_prompt_result.success?
-          raise final_prompt_result.dig('error', 'message') || "Final prompt failed with '#{final_prompt_result}'"
+          yield data&.dig("completion").to_s if block_given?
         end
 
-        logger.debug(message: "Got Final Result", content: {
-          prompt: final_prompt[:prompt],
-          status_code: final_prompt_result.code,
-          openai_completions_response: final_prompt_result.parsed_response,
-          message: 'Final prompt request'
-        })
+        logger.debug(message: "Got Final Result", prompt: final_prompt[:prompt], response: final_prompt_result)
 
-        Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(final_prompt_result.body, current_user)
+        Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(
+          { completion: final_prompt_result }.to_json, current_user
+        )
       end
 
       def empty_response

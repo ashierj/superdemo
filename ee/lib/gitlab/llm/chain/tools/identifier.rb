@@ -11,7 +11,7 @@ module Gitlab
 
           MAX_RETRIES = 3
 
-          def initialize(context:, options:)
+          def initialize(context:, options:, stream_response_handler: nil)
             super
             @retries = 0
           end

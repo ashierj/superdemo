@@ -48,7 +48,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
       allow(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
         .to receive(:new)
-              .with(context: context, options: anything)
+              .with(context: context, options: anything, stream_response_handler: stream_response_service_double)
               .and_return(tool_double)
     end
 
