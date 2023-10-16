@@ -46,7 +46,7 @@ export const mockNoAddOnEligibleUsers = {
     namespace: {
       id: 'gid://gitlab/Group/176',
       addOnEligibleUsers: {
-        edges: [],
+        nodes: [],
       },
     },
   },
@@ -74,17 +74,14 @@ export const mockUserWithNoAddOnAssignment = {
   addOnAssignments: { nodes: [] },
 };
 
-const eligibleUsers = [
-  { node: mockUserWithAddOnAssignment },
-  { node: mockUserWithNoAddOnAssignment },
-];
+const eligibleUsers = [mockUserWithAddOnAssignment, mockUserWithNoAddOnAssignment];
 
 export const mockAddOnEligibleUsers = {
   data: {
     namespace: {
       id: 'gid://gitlab/Group/1',
       addOnEligibleUsers: {
-        edges: eligibleUsers,
+        nodes: eligibleUsers,
         pageInfo: {
           hasNextPage: false,
           hasPreviousPage: false,
@@ -102,7 +99,7 @@ export const mockPaginatedAddOnEligibleUsers = {
     namespace: {
       id: 'gid://gitlab/Group/1',
       addOnEligibleUsers: {
-        edges: eligibleUsers,
+        nodes: eligibleUsers,
         pageInfo: {
           hasNextPage: true,
           hasPreviousPage: true,

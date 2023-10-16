@@ -130,9 +130,9 @@ export default {
         (sourceData) =>
           produce(sourceData, (draftData) => {
             if (updatedAssignment?.user) {
-              draftData.namespace.addOnEligibleUsers.edges.find(
-                (edge) => edge.node.id === this.userId,
-              ).node.addOnAssignments.nodes = updatedAssignment.user.addOnAssignments.nodes;
+              draftData.namespace.addOnEligibleUsers.nodes.find(
+                (node) => node.id === this.userId,
+              ).addOnAssignments.nodes = updatedAssignment.user.addOnAssignments.nodes;
             }
           }),
       );

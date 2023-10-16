@@ -95,10 +95,10 @@ export default {
       },
       update({ namespace }) {
         this.pageInfo = namespace?.addOnEligibleUsers?.pageInfo;
-        return namespace?.addOnEligibleUsers?.edges?.map((edge) => ({
-          ...edge.node,
-          username: `@${edge.node.username}`,
-          addOnAssignments: edge.node.addOnAssignments.nodes,
+        return namespace?.addOnEligibleUsers?.nodes?.map((node) => ({
+          ...node,
+          username: `@${node.username}`,
+          addOnAssignments: node.addOnAssignments.nodes,
         }));
       },
       error(error) {
