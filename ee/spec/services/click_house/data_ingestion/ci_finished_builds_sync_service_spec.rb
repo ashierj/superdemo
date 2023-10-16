@@ -33,7 +33,15 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
         expect(ClickHouse::Client).to receive(:insert_csv).once.and_call_original
 
         expect { execute }.to change { ci_finished_builds_row_count }.by(3)
-        expect(execute).to have_attributes({ payload: { reached_end_of_table: true, records_inserted: 3 } })
+        expect(execute).to have_attributes({
+          payload: {
+            reached_end_of_table: true,
+            records_inserted: 3,
+            worker_index: 0, total_workers: 1,
+            min_build_id: build1.id,
+            max_build_id: build3.id
+          }
+        })
 
         records = ci_finished_builds
         expect(records.count).to eq 3
@@ -48,7 +56,9 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
         build = create(:ci_build, :failed)
 
         expect { execute }.to change { ci_finished_builds_row_count }.by(3)
-        expect(execute).to have_attributes({ payload: { reached_end_of_table: true, records_inserted: 3 } })
+        expect(execute).to have_attributes({
+          payload: a_hash_including(reached_end_of_table: true, records_inserted: 3)
+        })
 
         create_sync_events(build)
         expect { service.execute }.to change { ci_finished_builds_row_count }.by(1)
@@ -91,7 +101,9 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
         expect(ClickHouse::Client).to receive(:insert_csv).once.and_call_original
 
         expect { execute }.to change { ci_finished_builds_row_count }.by(3)
-        expect(execute).to have_attributes({ payload: { reached_end_of_table: true, records_inserted: 3 } })
+        expect(execute).to have_attributes({
+          payload: a_hash_including(reached_end_of_table: true, records_inserted: 3)
+        })
       end
     end
 
@@ -109,7 +121,9 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
         expect(ClickHouse::Client).to receive(:insert_csv).twice.and_call_original
 
         expect { execute }.to change { ci_finished_builds_row_count }.by(3)
-        expect(execute).to have_attributes({ payload: { reached_end_of_table: true, records_inserted: 3 } })
+        expect(execute).to have_attributes({
+          payload: a_hash_including(reached_end_of_table: true, records_inserted: 3)
+        })
       end
 
       context 'with time limit being reached' do
@@ -126,9 +140,12 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
           end
 
           expect { execute }.to change { ci_finished_builds_row_count }.by(described_class::BUILDS_BATCH_SIZE)
-          expect(execute).to have_attributes({ payload: {
-            reached_end_of_table: false, records_inserted: described_class::BUILDS_BATCH_SIZE
-          } })
+          expect(execute).to have_attributes({
+            payload: a_hash_including(
+              reached_end_of_table: false, records_inserted: described_class::BUILDS_BATCH_SIZE,
+              min_build_id: build1.id, max_build_id: build1.id
+            )
+          })
         end
       end
 
@@ -149,7 +166,9 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
         end
 
         expect { execute }.to change { ci_finished_builds_row_count }.by(3)
-        expect(execute).to have_attributes({ payload: { reached_end_of_table: true, records_inserted: 3 } })
+        expect(execute).to have_attributes({
+          payload: a_hash_including(reached_end_of_table: true, records_inserted: 3)
+        })
 
         build5 = create(:ci_build, :failed)
         create_sync_events(build5)
@@ -174,6 +193,10 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
           create_sync_events(build5, build6)
 
           expect { execute }.to change { ci_finished_builds_row_count }.by(2)
+          expect(execute).to have_attributes({
+            payload: a_hash_including(min_build_id: build5.id, max_build_id: build6.id)
+          })
+
           records = ci_finished_builds
           expect(records.count).to eq 5
           expect(records).to contain_exactly(
@@ -206,7 +229,8 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
         is_expected.to have_attributes({
           status: :error,
           message: 'ClickHouse database is not configured',
-          reason: :db_not_configured
+          reason: :db_not_configured,
+          payload: { worker_index: 0, total_workers: 1 }
         })
       end
     end
@@ -224,7 +248,9 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
         it 'does nothing' do
           expect { execute }.not_to change { ci_finished_builds_row_count }
 
-          expect(execute).to have_attributes({ status: :error, reason: :skipped })
+          expect(execute).to have_attributes({
+            status: :error, reason: :skipped, payload: { worker_index: 2, total_workers: 3 }
+          })
         end
       end
     end
@@ -239,7 +265,8 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
       is_expected.to have_attributes({
         status: :error,
         message: 'Feature ci_data_ingestion_to_click_house is disabled',
-        reason: :disabled
+        reason: :disabled,
+        payload: { worker_index: 0, total_workers: 1 }
       })
     end
   end
