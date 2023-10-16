@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import CiNamespaceCatalogApp from 'ee/ci/catalog/ci_namespace_catalog_app.vue';
-import CiCatalogHome from 'ee/ci/catalog/components/ci_catalog_home.vue';
+import CiCatalogHome from '~/ci/catalog/components/ci_catalog_home.vue';
 
 describe('CiNamespaceCatalogApp', () => {
   let wrapper;

@@ -1,8 +1,8 @@
 import { GlBanner, GlButton } from '@gitlab/ui';
 import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CatalogHeader from 'ee/ci/catalog/components/list/catalog_header.vue';
-import { CATALOG_FEEDBACK_DISMISSED_KEY } from 'ee/ci/catalog/constants';
+import CatalogHeader from '~/ci/catalog/components/list/catalog_header.vue';
+import { CATALOG_FEEDBACK_DISMISSED_KEY } from '~/ci/catalog/constants';
 
 describe('CatalogHeader', () => {
   useLocalStorageSpy();

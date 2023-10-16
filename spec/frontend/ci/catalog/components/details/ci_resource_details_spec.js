@@ -1,8 +1,8 @@
 import { GlTabs, GlTab } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import CiResourceComponents from 'ee/ci/catalog/components/details/ci_resource_components.vue';
-import CiResourceDetails from 'ee/ci/catalog/components/details/ci_resource_details.vue';
-import CiResourceReadme from 'ee/ci/catalog/components/details/ci_resource_readme.vue';
+import CiResourceComponents from '~/ci/catalog/components/details/ci_resource_components.vue';
+import CiResourceDetails from '~/ci/catalog/components/details/ci_resource_details.vue';
+import CiResourceReadme from '~/ci/catalog/components/details/ci_resource_readme.vue';
 
 describe('CiResourceDetails', () => {
   let wrapper;

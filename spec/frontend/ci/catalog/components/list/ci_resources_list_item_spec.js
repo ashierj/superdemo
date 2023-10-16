@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import { GlAvatar, GlBadge, GlButton, GlSprintf } from '@gitlab/ui';
-import responseBodySinglePage from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources_single_page.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { createRouter } from 'ee/ci/catalog/router/index';
-import CiResourcesListItem from 'ee/ci/catalog/components/list/ci_resources_list_item.vue';
+import { createRouter } from '~/ci/catalog/router/index';
+import CiResourcesListItem from '~/ci/catalog/components/list/ci_resources_list_item.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { CI_RESOURCE_DETAILS_PAGE_NAME } from 'ee/ci/catalog/router/constants';
+import { CI_RESOURCE_DETAILS_PAGE_NAME } from '~/ci/catalog/router/constants';
+import { catalogSinglePageResponse } from '../../mock';
 
 Vue.use(VueRouter);
 
@@ -16,7 +16,7 @@ let routerPush;
 describe('CiResourcesListItem', () => {
   let wrapper;
 
-  const resource = responseBodySinglePage.data.ciCatalogResources.nodes[0];
+  const resource = catalogSinglePageResponse.data.ciCatalogResources.nodes[0];
   const release = {
     author: { name: 'author', webUrl: '/user/1' },
     releasedAt: Date.now(),

@@ -1,5 +1,5 @@
 <script>
-import CiCatalogHome from './components/ci_catalog_home.vue';
+import CiCatalogHome from '~/ci/catalog/components/ci_catalog_home.vue';
 
 export default {
   components: {

@@ -1,21 +1,21 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
-import responseBody from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources.json';
-import emptyResponseBody from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources_empty.json';
+import responseBody from 'test_fixtures/graphql/ci/catalog/namespace_catalog_resources.json';
+import emptyResponseBody from 'test_fixtures/graphql/ci/catalog/namespace_catalog_resources_empty.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { createAlert } from '~/alert';
 
-import CatalogHeader from 'ee/ci/catalog/components/list/catalog_header.vue';
-import ciResourcesPage from 'ee/ci/catalog/components/pages/ci_resources_page.vue';
-import CiResourcesList from 'ee/ci/catalog/components/list/ci_resources_list.vue';
-import CatalogListSkeletonLoader from 'ee/ci/catalog/components/list/catalog_list_skeleton_loader.vue';
+import CatalogHeader from '~/ci/catalog/components/list/catalog_header.vue';
+import CiResourcesList from '~/ci/catalog/components/list/ci_resources_list.vue';
+import CatalogListSkeletonLoader from '~/ci/catalog/components/list/catalog_list_skeleton_loader.vue';
+import EmptyState from '~/ci/catalog/components/list/empty_state.vue';
+import { cacheConfig } from '~/ci/catalog/graphql/settings';
 
-import EmptyState from 'ee/ci/catalog/components/list/empty_state.vue';
-import getCiCatalogResources from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resources.query.graphql';
-import { cacheConfig } from 'ee/ci/catalog/graphql/settings';
+import ciResourcesPage from 'ee/ci/catalog/components/pages/ci_resources_page.vue';
+import getNamespaceCatalogResources from 'ee/ci/catalog/graphql/queries/get_namespace_catalog_resources.query.graphql';
 
 Vue.use(VueApollo);
 jest.mock('~/alert');
@@ -27,7 +27,7 @@ describe('CiResourcesPage', () => {
   const defaultProvide = { projectFullPath: 'my-org/project' };
 
   const createComponent = () => {
-    const handlers = [[getCiCatalogResources, catalogResourcesResponse]];
+    const handlers = [[getNamespaceCatalogResources, catalogResourcesResponse]];
     const mockApollo = createMockApollo(handlers, {}, cacheConfig);
 
     wrapper = shallowMountExtended(ciResourcesPage, {

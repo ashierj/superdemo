@@ -1,12 +1,12 @@
 <script>
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
-import CatalogHeader from '../list/catalog_header.vue';
-import CatalogListSkeletonLoader from '../list/catalog_list_skeleton_loader.vue';
-import CiResourcesList from '../list/ci_resources_list.vue';
-import getCiCatalogResources from '../../graphql/queries/get_ci_catalog_resources.query.graphql';
-import { ciCatalogResourcesItemsCount } from '../../graphql/settings';
-import EmptyState from '../list/empty_state.vue';
+import CatalogHeader from '~/ci/catalog/components/list/catalog_header.vue';
+import CatalogListSkeletonLoader from '~/ci/catalog/components/list/catalog_list_skeleton_loader.vue';
+import CiResourcesList from '~/ci/catalog/components/list/ci_resources_list.vue';
+import EmptyState from '~/ci/catalog/components/list/empty_state.vue';
+import { ciCatalogResourcesItemsCount } from '~/ci/catalog/graphql/settings';
+import getNamespaceCatalogResources from '../../graphql/queries/get_namespace_catalog_resources.query.graphql';
 
 export default {
   components: {
@@ -26,7 +26,7 @@ export default {
   },
   apollo: {
     catalogResources: {
-      query: getCiCatalogResources,
+      query: getNamespaceCatalogResources,
       variables() {
         return {
           fullPath: this.projectFullPath,

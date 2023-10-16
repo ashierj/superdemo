@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import CatalogListSkeletonLoader from 'ee/ci/catalog/components/list/catalog_list_skeleton_loader.vue';
+import CatalogListSkeletonLoader from '~/ci/catalog/components/list/catalog_list_skeleton_loader.vue';
 
 describe('CatalogListSkeletonLoader', () => {
   let wrapper;

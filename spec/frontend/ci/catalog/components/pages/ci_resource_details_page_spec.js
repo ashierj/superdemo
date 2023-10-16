@@ -5,18 +5,18 @@ import { GlEmptyState } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { CI_CATALOG_RESOURCE_TYPE, cacheConfig } from 'ee/ci/catalog/graphql/settings';
+import { CI_CATALOG_RESOURCE_TYPE, cacheConfig } from '~/ci/catalog/graphql/settings';
 
-import getCiCatalogResourceSharedData from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_shared_data.query.graphql';
-import getCiCatalogResourceDetails from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_details.query.graphql';
+import getCiCatalogResourceSharedData from '~/ci/catalog/graphql/queries/get_ci_catalog_resource_shared_data.query.graphql';
+import getCiCatalogResourceDetails from '~/ci/catalog/graphql/queries/get_ci_catalog_resource_details.query.graphql';
 
-import CiResourceDetails from 'ee/ci/catalog/components/details/ci_resource_details.vue';
-import CiResourceDetailsPage from 'ee/ci/catalog/components/pages/ci_resource_details_page.vue';
-import CiResourceHeader from 'ee/ci/catalog/components/details/ci_resource_header.vue';
-import CiResourceHeaderSkeletonLoader from 'ee/ci/catalog/components/details/ci_resource_header_skeleton_loader.vue';
+import CiResourceDetails from '~/ci/catalog/components/details/ci_resource_details.vue';
+import CiResourceDetailsPage from '~/ci/catalog/components/pages/ci_resource_details_page.vue';
+import CiResourceHeader from '~/ci/catalog/components/details/ci_resource_header.vue';
+import CiResourceHeaderSkeletonLoader from '~/ci/catalog/components/details/ci_resource_header_skeleton_loader.vue';
 
-import { createRouter } from 'ee/ci/catalog/router/index';
-import { CI_RESOURCE_DETAILS_PAGE_NAME } from 'ee/ci/catalog/router/constants';
+import { createRouter } from '~/ci/catalog/router/index';
+import { CI_RESOURCE_DETAILS_PAGE_NAME } from '~/ci/catalog/router/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { catalogSharedDataMock, catalogAdditionalDetailsMock } from '../../mock';
 

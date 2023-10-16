@@ -1,17 +1,16 @@
 import { GlKeysetPagination } from '@gitlab/ui';
 
-import responseBody from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources.json';
-import responseBodySinglePage from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources_single_page.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CiResourcesList from 'ee/ci/catalog/components/list/ci_resources_list.vue';
-import CiResourcesListItem from 'ee/ci/catalog/components/list/ci_resources_list_item.vue';
-import { ciCatalogResourcesItemsCount } from 'ee/ci/catalog/graphql/settings';
+import CiResourcesList from '~/ci/catalog/components/list/ci_resources_list.vue';
+import CiResourcesListItem from '~/ci/catalog/components/list/ci_resources_list_item.vue';
+import { ciCatalogResourcesItemsCount } from '~/ci/catalog/graphql/settings';
+import { catalogResponseBody, catalogSinglePageResponse } from '../../mock';
 
 describe('CiResourcesList', () => {
   let wrapper;
 
   const createComponent = ({ props = {} } = {}) => {
-    const { nodes, pageInfo, count } = responseBody.data.ciCatalogResources;
+    const { nodes, pageInfo, count } = catalogResponseBody.data.ciCatalogResources;
 
     const defaultProps = {
       currentPage: 1,
@@ -37,7 +36,7 @@ describe('CiResourcesList', () => {
   const findNextBtn = () => wrapper.findByTestId('nextButton');
 
   describe('contains only one page', () => {
-    const { nodes, pageInfo, count } = responseBodySinglePage.data.ciCatalogResources;
+    const { nodes, pageInfo, count } = catalogSinglePageResponse.data.ciCatalogResources;
 
     beforeEach(async () => {
       await createComponent({
@@ -70,7 +69,7 @@ describe('CiResourcesList', () => {
   `(
     'when on page $pageText',
     ({ currentPage, expectedTotal, pageText, hasPreviousPage, hasNextPage }) => {
-      const { nodes, pageInfo, count } = responseBody.data.ciCatalogResources;
+      const { nodes, pageInfo, count } = catalogResponseBody.data.ciCatalogResources;
 
       const previousPageState = hasPreviousPage ? 'enabled' : 'disabled';
       const nextPageState = hasNextPage ? 'enabled' : 'disabled';

@@ -1,5 +1,5 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CiResourceAbout from 'ee/ci/catalog/components/details/ci_resource_about.vue';
+import CiResourceAbout from '~/ci/catalog/components/details/ci_resource_about.vue';
 import { formatDate } from '~/lib/utils/datetime_utility';
 
 describe('CiResourceAbout', () => {
