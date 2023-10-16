@@ -131,8 +131,6 @@ module Groups
       end
 
       def sso_enforcement_redirect
-        return unless Feature.enabled?(:domain_verification_sso_redirect)
-
         enforce = ::Gitlab::Auth::GroupSaml::SsoEnforcer.new(group.saml_provider, user: current_user).access_restricted?
 
         redirect_to sso_group_saml_providers_url(group, { redirect: request.fullpath }) if enforce

@@ -88,18 +88,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
 
       expect(response).to redirect_to(sso_group_saml_providers_path(group, { redirect: request.fullpath }))
     end
-
-    context 'when the feature is disabled' do
-      before do
-        stub_feature_flags(domain_verification_sso_redirect: false)
-      end
-
-      it 'does not redirect to SSO sign in' do
-        perform_request
-
-        expect(response).not_to redirect_to(sso_group_saml_providers_url(group, { redirect: request.fullpath }))
-      end
-    end
   end
 
   describe 'GET /groups/:group_id/-/settings/domain_verification', :saas do
