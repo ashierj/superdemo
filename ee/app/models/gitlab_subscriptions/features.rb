@@ -96,7 +96,6 @@ module GitlabSubscriptions
       custom_compliance_frameworks
       cross_project_pipelines
       custom_file_templates
-      custom_file_templates_for_namespace
       custom_project_templates
       cycle_analytics_for_groups
       cycle_analytics_for_projects
@@ -280,6 +279,7 @@ module GitlabSubscriptions
       password_complexity
       group_wikis
       email_additional_text
+      custom_file_templates_for_namespace
     ].freeze
 
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[

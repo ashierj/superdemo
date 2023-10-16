@@ -106,13 +106,37 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
   describe 'Group file templates setting', :js do
     context 'without a license key' do
       before do
-        stub_licensed_features(custom_file_templates_for_namespace: false)
+        allow(License).to receive(:current).and_return(nil)
       end
 
       it 'is not visible' do
         visit edit_group_path(group)
 
         expect(page).not_to have_content('Select a template repository')
+      end
+
+      context 'available through usage ping features' do
+        before do
+          stub_usage_ping_features(true)
+        end
+
+        it 'is visible' do
+          visit edit_group_path(group)
+
+          expect(page).to have_content('Select a template repository')
+        end
+
+        context 'when current user is not the Owner' do
+          before do
+            sign_in(developer)
+          end
+
+          it 'is not visible' do
+            visit edit_group_path(group)
+
+            expect(page).not_to have_content('Select a template repository')
+          end
+        end
       end
     end
 

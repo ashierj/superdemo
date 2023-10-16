@@ -33,6 +33,21 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
               post :update, params: { id: group.to_param, group: { file_template_project_id: project.id } }
             end.not_to change { group.reload.file_template_project_id }
           end
+
+          context 'available through usage ping features' do
+            before do
+              allow(License).to receive(:current).and_return(nil)
+              stub_usage_ping_features(true)
+            end
+
+            it 'updates the file_template_project_id successfully' do
+              project = create(:project, group: group)
+
+              expect do
+                post :update, params: { id: group.to_param, group: { file_template_project_id: project.id } }
+              end.to change { group.reload.file_template_project_id }.to(project.id)
+            end
+          end
         end
 
         context 'with license' do
