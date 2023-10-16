@@ -1,9 +1,13 @@
 <script>
-import { GlIcon, GlSearchBoxByType, GlDropdown } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
+import { debounce } from 'lodash';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { s__, n__ } from '~/locale';
 import { SELECTIVE_SYNC_NAMESPACES } from '../constants';
+
+const mapItemToListboxFormat = (item) => ({ ...item, value: item.id, text: item.full_name });
 
 export default {
   name: 'GeoSiteFormNamespaces',
@@ -13,18 +17,25 @@ export default {
     nothingFound: s__('Geo|Nothing found…'),
   },
   components: {
-    GlIcon,
-    GlSearchBoxByType,
-    GlDropdown,
+    GlCollapsibleListbox,
   },
   props: {
     selectedNamespaces: {
       type: Array,
-      required: true,
+      required: false,
+      default: () => [],
     },
   },
+  data() {
+    return {
+      search: '',
+    };
+  },
   computed: {
-    ...mapState(['synchronizationNamespaces']),
+    ...mapState(['synchronizationNamespaces', 'isLoading']),
+    dropdownItems() {
+      return this.synchronizationNamespaces?.map(mapItemToListboxFormat) || [];
+    },
     dropdownTitle() {
       if (this.selectedNamespaces.length === 0) {
         return this.$options.i18n.noSelectedDropdownTitle;
@@ -32,45 +43,38 @@ export default {
 
       return this.$options.i18n.withSelectedDropdownTitle(this.selectedNamespaces.length);
     },
-    noSyncNamespaces() {
-      return this.synchronizationNamespaces.length === 0;
+  },
+  watch: {
+    search() {
+      this.debounceSearch();
     },
   },
   methods: {
     ...mapActions(['fetchSyncNamespaces']),
-    toggleNamespace(namespace) {
-      const index = this.selectedNamespaces.findIndex((id) => id === namespace.id);
-      if (index > -1) {
-        this.$emit('removeSyncOption', { key: SELECTIVE_SYNC_NAMESPACES, index });
-      } else {
-        this.$emit('addSyncOption', { key: SELECTIVE_SYNC_NAMESPACES, value: namespace.id });
-      }
+    setSearch(search) {
+      this.search = search;
     },
-    isSelected(namespace) {
-      return this.selectedNamespaces.includes(namespace.id);
+    debounceSearch: debounce(function debouncedSearch() {
+      this.fetchSyncNamespaces(this.search);
+    }, DEFAULT_DEBOUNCE_AND_THROTTLE_MS),
+    onItemSelect(items) {
+      this.$emit('updateSyncOptions', { key: SELECTIVE_SYNC_NAMESPACES, value: items });
     },
   },
 };
 </script>
 
 <template>
-  <gl-dropdown :text="dropdownTitle" @show="fetchSyncNamespaces('')">
-    <gl-search-box-by-type :debounce="500" @input="fetchSyncNamespaces" />
-    <button
-      v-for="namespace in synchronizationNamespaces"
-      :key="namespace.id"
-      class="dropdown-item"
-      type="button"
-      @click="toggleNamespace(namespace)"
-    >
-      <gl-icon
-        :class="[{ 'gl-visibility-hidden': !isSelected(namespace) }]"
-        name="mobile-issue-close"
-      />
-      <span class="gl-ml-2">{{ namespace.full_name }}</span>
-    </button>
-    <div v-if="noSyncNamespaces" class="gl-text-gray-500 gl-p-3">
-      {{ $options.i18n.nothingFound }}
-    </div>
-  </gl-dropdown>
+  <gl-collapsible-listbox
+    :items="dropdownItems"
+    :toggle-text="dropdownTitle"
+    :selected="selectedNamespaces"
+    :searching="isLoading"
+    :no-results-text="$options.i18n.nothingFound"
+    multiple
+    searchable
+    @shown="fetchSyncNamespaces(search)"
+    @search="setSearch"
+    @select="onItemSelect"
+  />
 </template>

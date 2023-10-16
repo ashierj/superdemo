@@ -4,7 +4,12 @@ import GeoSiteFormNamespaces from 'ee/geo_site_form/components/geo_site_form_nam
 import GeoSiteFormSelectiveSync from 'ee/geo_site_form/components/geo_site_form_selective_sync.vue';
 import GeoSiteFormShards from 'ee/geo_site_form/components/geo_site_form_shards.vue';
 import { SELECTIVE_SYNC_MORE_INFO, OBJECT_STORAGE_MORE_INFO } from 'ee/geo_site_form/constants';
-import { MOCK_SITE, MOCK_SELECTIVE_SYNC_TYPES, MOCK_SYNC_SHARDS } from '../mock_data';
+import {
+  MOCK_SITE,
+  MOCK_SELECTIVE_SYNC_TYPES,
+  MOCK_SYNC_SHARDS,
+  MOCK_SYNC_NAMESPACE_IDS,
+} from '../mock_data';
 
 describe('GeoSiteFormSelectiveSync', () => {
   let wrapper;
@@ -152,6 +157,23 @@ describe('GeoSiteFormSelectiveSync', () => {
       it('should remove value from siteData', () => {
         wrapper.vm.removeSyncOption({ key: 'selectiveSyncShards', index: 0 });
         expect(wrapper.emitted('removeSyncOption')).toHaveLength(1);
+      });
+    });
+
+    describe('updateSyncOptions', () => {
+      beforeEach(() => {
+        createComponent({
+          siteData: {
+            ...defaultProps.siteData,
+            selectiveSyncType: MOCK_SELECTIVE_SYNC_TYPES.NAMESPACES.value,
+          },
+        });
+      });
+
+      it('emits `updateSyncOptions`', () => {
+        findGeoSiteFormNamespacesField().vm.$emit('updateSyncOptions', MOCK_SYNC_NAMESPACE_IDS);
+
+        expect(wrapper.emitted('updateSyncOptions')).toStrictEqual([[MOCK_SYNC_NAMESPACE_IDS]]);
       });
     });
   });
