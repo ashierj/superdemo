@@ -1,13 +1,12 @@
 <script>
 import {
   GlLoadingIcon,
-  GlDropdown,
-  GlDropdownDivider,
-  GlDropdownItem,
   GlButton,
   GlSprintf,
   GlLink,
   GlAlert,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
 } from '@gitlab/ui';
 
 import { STATUS_OPEN, WORKSPACE_PROJECT } from '~/issues/constants';
@@ -28,15 +27,14 @@ export default {
   WORKSPACE_PROJECT,
   components: {
     GlLoadingIcon,
-    GlDropdown,
-    GlDropdownDivider,
-    GlDropdownItem,
     GlButton,
     GlSprintf,
     GlLink,
     GlAlert,
     IssuableShow,
     TestCaseSidebar,
+    GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
   },
   mixins: [TestCaseGraphQL],
   inject: [
@@ -82,6 +80,9 @@ export default {
         ...label,
         id: getIdFromGraphQLId(label.id),
       }));
+    },
+    newTestCaseItem() {
+      return { text: __('New test case'), href: this.testCaseNewPath };
     },
   },
   methods: {
@@ -182,17 +183,20 @@ export default {
         <span v-else>{{ statusBadgeText }}</span>
       </template>
       <template #header-actions>
-        <gl-dropdown
+        <gl-disclosure-dropdown
           v-if="canEditTestCase"
           data-testid="actions-dropdown"
-          :text="__('Options')"
-          :right="true"
           class="d-md-none gl-flex-grow-1"
+          category="secondary"
+          :toggle-text="__('Options')"
         >
-          <gl-dropdown-item>{{ testCaseActionTitle }}</gl-dropdown-item>
-          <gl-dropdown-divider />
-          <gl-dropdown-item :href="testCaseNewPath">{{ __('New test case') }}</gl-dropdown-item>
-        </gl-dropdown>
+          <gl-disclosure-dropdown-item @action="handleTestCaseStateChange">
+            <template #list-item>
+              {{ testCaseActionTitle }}
+            </template>
+          </gl-disclosure-dropdown-item>
+          <gl-disclosure-dropdown-item :item="newTestCaseItem" />
+        </gl-disclosure-dropdown>
         <gl-button
           v-if="canEditTestCase"
           data-testid="archive-test-case"
