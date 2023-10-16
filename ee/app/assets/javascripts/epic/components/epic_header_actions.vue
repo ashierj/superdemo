@@ -187,7 +187,9 @@ export default {
       toggle-class="gl-w-full"
       :toggle-text="$options.i18n.dropdownText"
     >
-      <gl-disclosure-dropdown-group v-if="showNotificationToggle">
+      <gl-disclosure-dropdown-group
+        v-if="showNotificationToggle && !glFeatures.notificationsTodosButtons"
+      >
         <sidebar-subscriptions-widget
           :iid="String(iid)"
           :full-path="fullPath"
@@ -198,7 +200,7 @@ export default {
       <gl-disclosure-dropdown-group
         data-testid="actions-dropdown-mobile"
         :group="actionsDropdownGroupMobile"
-        :bordered="showNotificationToggle"
+        :bordered="showNotificationToggle && !glFeatures.notificationsTodosButtons"
       />
 
       <gl-disclosure-dropdown-group v-if="canReportAbuseToAdmin" bordered>
@@ -244,7 +246,9 @@ export default {
       category="tertiary"
       no-caret
     >
-      <gl-disclosure-dropdown-group v-if="showNotificationToggle">
+      <gl-disclosure-dropdown-group
+        v-if="showNotificationToggle && !glFeatures.notificationsTodosButtons"
+      >
         <sidebar-subscriptions-widget
           :iid="String(iid)"
           :full-path="fullPath"
@@ -255,7 +259,7 @@ export default {
       <gl-disclosure-dropdown-group
         data-testid="actions-dropdown-desktop"
         :group="actionsDropdownGroupDesktop"
-        :bordered="showNotificationToggle"
+        :bordered="showNotificationToggle && !glFeatures.notificationsTodosButtons"
       />
 
       <gl-disclosure-dropdown-group v-if="canReportAbuseToAdmin" bordered>

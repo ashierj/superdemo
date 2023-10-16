@@ -19,7 +19,7 @@ describe('SidebarHeaderComponent', () => {
   });
 
   describe('template', () => {
-    it('renders component container element with classes `block` & `issuable-sidebar-header`', () => {
+    it('renders component container element with `issuable-sidebar-header` class', () => {
       expect(wrapper.classes('block')).toBe(true);
       expect(wrapper.classes('issuable-sidebar-header')).toBe(true);
     });

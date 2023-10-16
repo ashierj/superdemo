@@ -121,10 +121,20 @@ export default {
       <sidebar-header :sidebar-collapsed="sidebarCollapsed">
         <sidebar-todo-widget
           v-if="isUserSignedIn"
+          :class="{ 'btn-icon': glFeatures.notificationsTodosButtons }"
           :issuable-id="fullEpicId"
           :issuable-iid="String(iid)"
           :full-path="fullPath"
           :issuable-type="issuableType"
+        />
+        <sidebar-subscriptions-widget
+          v-if="glFeatures.notificationsTodosButtons"
+          class="btn-icon"
+          :iid="String(iid)"
+          :full-path="fullPath"
+          :issuable-type="issuableType"
+          :class="{ 'gl-ml-2': !sidebarCollapsed }"
+          @expandSidebar="handleSidebarToggle"
         />
       </sidebar-header>
       <sidebar-date-widget
