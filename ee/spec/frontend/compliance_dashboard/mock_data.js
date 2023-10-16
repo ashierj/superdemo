@@ -290,3 +290,21 @@ export const createComplianceFrameworksReportResponse = ({ count = 1 } = {}) => 
     },
   };
 };
+
+export const createComplianceFrameworksReportProjectsResponse = ({ count = 1 } = {}) => {
+  return {
+    data: {
+      group: {
+        id: 'gid://gitlab/Group/1',
+        name: 'Gitlab Org',
+        projects: {
+          nodes: Array(count)
+            .fill(null)
+            .map((_, id) => createProject({ id })),
+          __typename: 'ProjectConnection',
+        },
+        __typename: 'Group',
+      },
+    },
+  };
+};

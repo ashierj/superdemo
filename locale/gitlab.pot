@@ -6713,6 +6713,9 @@ msgstr ""
 msgid "Assigns %{reviewer_users_sentence} as %{reviewer_text}."
 msgstr ""
 
+msgid "Associated projects"
+msgstr ""
+
 msgid "At least one approval from a code owner is required to change files matching the respective CODEOWNER rules."
 msgstr ""
 
