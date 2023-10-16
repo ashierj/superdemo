@@ -10,6 +10,8 @@ describe('DetailsIndex', () => {
     oauthUrl: 'https://example.com/oauth',
     tracingUrl: 'https://example.com/tracing',
     provisioningUrl: 'https://example.com/provisioning',
+    servicesUrl: 'https://example.com/services',
+    operationsUrl: 'https://example.com/operations',
   };
 
   let wrapper;
@@ -28,6 +30,8 @@ describe('DetailsIndex', () => {
     expect(observabilityContainer.props('oauthUrl')).toBe(props.oauthUrl);
     expect(observabilityContainer.props('tracingUrl')).toBe(props.tracingUrl);
     expect(observabilityContainer.props('provisioningUrl')).toBe(props.provisioningUrl);
+    expect(observabilityContainer.props('servicesUrl')).toBe(props.servicesUrl);
+    expect(observabilityContainer.props('operationsUrl')).toBe(props.operationsUrl);
   });
 
   it('renders TracingList component inside ObservabilityContainer', () => {

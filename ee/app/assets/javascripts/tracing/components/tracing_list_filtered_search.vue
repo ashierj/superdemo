@@ -12,9 +12,10 @@ import {
   TRACE_ID_FILTER_TOKEN_TYPE,
   DURATION_MS_FILTER_TOKEN_TYPE,
 } from '../filters';
+import ServiceToken from './service_search_token.vue';
 
 export default {
-  availableTokens: [
+  availableTokens: (client) => [
     {
       title: s__('Tracing|Time Range'),
       icon: 'clock',
@@ -38,8 +39,9 @@ export default {
     {
       title: s__('Tracing|Service'),
       type: SERVICE_NAME_FILTER_TOKEN_TYPE,
-      token: GlFilteredSearchToken,
+      token: ServiceToken,
       operators: OPERATORS_IS_NOT,
+      fetchServices: client.fetchServices,
     },
     {
       title: s__('Tracing|Operation'),
@@ -72,6 +74,15 @@ export default {
       required: false,
       default: () => [],
     },
+    observabilityClient: {
+      required: true,
+      type: Object,
+    },
+  },
+  computed: {
+    availableTokens() {
+      return this.$options.availableTokens(this.observabilityClient);
+    },
   },
 };
 </script>
@@ -82,7 +93,7 @@ export default {
       :value="initialFilters"
       terms-as-tokens
       :placeholder="s__('Tracing|Filter Traces')"
-      :available-tokens="$options.availableTokens"
+      :available-tokens="availableTokens"
       @submit="$emit('submit', $event)"
     />
   </div>

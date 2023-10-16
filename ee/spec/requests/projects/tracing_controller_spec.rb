@@ -72,9 +72,11 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
         element = Nokogiri::HTML.parse(subject.body).at_css('#js-tracing')
 
         expected_view_model = {
-          tracingUrl: Gitlab::Observability.tracing_url(project),
+          oauthUrl: Gitlab::Observability.oauth_url,
           provisioningUrl: Gitlab::Observability.provisioning_url(project),
-          oauthUrl: Gitlab::Observability.oauth_url
+          tracingUrl: Gitlab::Observability.tracing_url(project),
+          servicesUrl: Gitlab::Observability.services_url(project),
+          operationsUrl: Gitlab::Observability.operations_url(project)
         }.to_json
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
       end
@@ -95,11 +97,13 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
         element = Nokogiri::HTML.parse(subject.body).at_css('#js-tracing-details')
 
         expected_view_model = {
-          tracingIndexUrl: project_tracing_index_path(project),
-          traceId: 'test-trace-id',
-          tracingUrl: Gitlab::Observability.tracing_url(project),
+          oauthUrl: Gitlab::Observability.oauth_url,
           provisioningUrl: Gitlab::Observability.provisioning_url(project),
-          oauthUrl: Gitlab::Observability.oauth_url
+          tracingUrl: Gitlab::Observability.tracing_url(project),
+          servicesUrl: Gitlab::Observability.services_url(project),
+          operationsUrl: Gitlab::Observability.operations_url(project),
+          traceId: 'test-trace-id',
+          tracingIndexUrl: project_tracing_index_path(project)
         }.to_json
 
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)

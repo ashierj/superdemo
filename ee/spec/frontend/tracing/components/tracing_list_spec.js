@@ -126,6 +126,10 @@ describe('TracingList', () => {
       await mountComponent();
     });
 
+    it('sets the client prop', () => {
+      expect(findFilteredSearch().props('observabilityClient')).toBe(observabilityClientMock);
+    });
+
     it('renders FilteredSeach with initial filters parsed from window.location', () => {
       expect(queryToFilterObj).toHaveBeenCalledWith('?trace-id=foo');
       expect(filterObjToFilterToken).toHaveBeenLastCalledWith(mockFilterObj);

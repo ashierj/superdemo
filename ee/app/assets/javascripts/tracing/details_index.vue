@@ -20,6 +20,10 @@ export default {
       type: String,
       required: true,
     },
+    servicesUrl: {
+      type: String,
+      required: true,
+    },
     provisioningUrl: {
       type: String,
       required: true,
@@ -27,6 +31,10 @@ export default {
     tracingIndexUrl: {
       required: true,
       type: String,
+    },
+    operationsUrl: {
+      type: String,
+      required: true,
     },
   },
 };
@@ -36,7 +44,9 @@ export default {
   <observability-container
     :oauth-url="oauthUrl"
     :tracing-url="tracingUrl"
+    :services-url="servicesUrl"
     :provisioning-url="provisioningUrl"
+    :operations-url="operationsUrl"
   >
     <template #default="{ observabilityClient }">
       <tracing-details
