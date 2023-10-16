@@ -48,8 +48,13 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
   end
 
   subject(:resolve_scan_policies) do
-    resolve(described_class, obj: project, args: args, ctx: { current_user: user },
-                             arg_style: :internal)
+    resolve(
+      described_class,
+      obj: project,
+      args: args,
+      ctx: { current_user: user },
+      arg_style: :internal
+    )
   end
 
   describe '#resolve' do
