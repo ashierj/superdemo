@@ -83,7 +83,7 @@ export default {
           v-model="siteData.name"
           class="col-sm-6 gl-pr-8!"
           :class="{ 'is-invalid': Boolean(formErrors.name) }"
-          data-qa-selector="site_name_field"
+          data-testid="site-name-field"
           type="text"
           @update="checkName"
         />
@@ -116,7 +116,7 @@ export default {
             v-model="siteData.url"
             class="gl-pr-8!"
             :class="{ 'is-invalid': Boolean(formErrors.url) }"
-            data-qa-selector="site_url_field"
+            data-testid="site-url-field"
             type="text"
             @update="checkUrl"
           />

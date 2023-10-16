@@ -99,7 +99,7 @@ export default {
     >
       <gl-button
         id="site-save-button"
-        data-qa-selector="add_site_button"
+        data-qa-selector="add-site-button"
         class="gl-mr-3"
         variant="confirm"
         :disabled="formHasError"
