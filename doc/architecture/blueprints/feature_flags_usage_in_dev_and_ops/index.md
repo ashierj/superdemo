@@ -1,6 +1,6 @@
 ---
 status: proposed
-creation-date: "2023-10-09"
+creation-date: "2023-10-18"
 authors: [ "@rymai" ]
 coach: "@DylanGriffith"
 approvers: []
@@ -17,7 +17,7 @@ This blueprint builds upon [the Development Feature Flags Architecture blueprint
 Feature flags are critical both in developing and operating GitLab, but in the current state
 of the process, they can lead to production issues, and introduce a lot of manual and maintenance work.
 
-The goals of this blueprint is to make the process safer, more maintainable, transparent and lightweight.
+The goals of this blueprint is to make the process safer, more maintainable, lightweight, automated and transparent.
 
 ## Motivations
 
@@ -25,19 +25,13 @@ The goals of this blueprint is to make the process safer, more maintainable, tra
 
 Feature flags can be used for different purposes:
 
-- Fast rollback (most feature flags): De-risking GitLab.com deployments by having a
-  very fast way to disable changes in the event of a production incident.
-- De-risking on-premise release of new features: In some cases, a new feature might
-  result in a performance regression for on-premise customers
-  ([example](https://gitlab.com/gitlab-org/gitlab/-/issues/336070#note_1523983444)).
-  Providing a flag in this case allows customers to disable the new feature until
-  it's performant enough.
-- Work in progress: Development teams want to hide partially complete features.
-  This also includes features that aren't yet ready to be rolled out to all
-  customers (scaling or UX concerns) but we still want to test them internally or
-  for specific opt-in customers. For instance,
-  [the `ci_enable_live_trace` feature flag isn't compatible with Object storage](https://gitlab.com/gitlab-org/gitlab/-/issues/24177#note_1311242146)
-  so the flag needs to stay until Object storage is compatible with it.
+- De-risking GitLab.com deployments (most feature flags): Allows to quickly enable/disable
+  a feature flag in production in the event of a production incident.
+- Beta features: We might
+  [not be confident we'll be able to scale, support, and maintain a feature](https://about.gitlab.com/handbook/product/gitlab-the-product/#experiment-beta-ga)
+  in its current form for every designed use case ([example](https://gitlab.com/gitlab-org/gitlab/-/issues/336070#note_1523983444)).
+  There are also scenarios where a feature is not complete enough to be considered an MVC.
+  Providing a flag in this case allows customers to disable the new feature until it's performant enough.
 - Future setting: It's tempting to use a feature flag instead of a proper instance
   setting (no database migration, no backend/frontend/UI change), but it's almost
   always a bad idea and
@@ -52,8 +46,7 @@ We need to better categorize our feature flags.
 
 Feature flags have caused production incidents on GitLab.com ([1](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/5289), [2](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/4155), [3](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/16366)).
 
-We need to prevent this for the sake of GitLab.com stability and long-term maintainability
-& quality of the GitLab codebase.
+We need to prevent this for the sake of GitLab.com stability.
 
 ### Technical debt caused by feature flags
 
@@ -145,18 +138,15 @@ This leads to confusion for almost all feature flag stakeholders (Development en
 
 It's clear that the `development` feature flag type actually includes several use-cases:
 
-- Fast rollback (YAML value: `fast_rollback`): Derisking GitLab.com deployments by having a very fast way to disable changes in the
-  event of a production incident.
-- De-risking on-premise release of new features (YAML value: `on_premise_derisk`) ([example](https://gitlab.com/gitlab-org/gitlab/-/issues/336070#note_1523983444)):
-  In some cases, a new feature might result in a performance regression for on-premise customers
-- Work in progress (YAML value: `work_in_progress`): Development teams want to hide partially complete features.
-  This also includes features that aren't yet ready to be rolled out to all customers (scaling or UX concerns)
-  but we still want to test them internally or for specific opt-in customers
-- Future setting (YAML value: `future_setting`): It's tempting to use a feature flag instead of a proper
-  instance/group/project setting (no database migration, no backend/frontend/UI change), but it's almost
-  always a bad idea and
-  [these kind of feature flags should be ported to an instance setting at some point](https://gitlab.com/gitlab-org/gitlab/-/issues/395931).
+- Deployment de-risking. YAML value: `deploy_derisk`.
+- Beta features. YAML value: `beta`.
+- Future setting. YAML value: `future_setting`.
   Note that `ops` feature flags can be used if the setting isn't meant to be changed through the UI.
+
+Notes:
+
+- These new types replace the broad `development` type, which shouldn't be used anymore in the future.
+- Backward-compatibility will be kept until there's no `development` feature flags in the codebase anymore.
 
 ### Introduce constraints per feature flag type
 
@@ -171,80 +161,82 @@ The MLS will be enforced through automation, reporting & regular review meetings
 
 Following are the constraints for each feature flag type:
 
-- `fast_rollback`
+- `deploy_derisk`
   - `default_enabled` **must not** be set to `true`. This kind of feature flag is meant to lower the risk on GitLab.com, thus
     there's no need to keep the flag in the codebase after it's been enabled on GitLab.com.
-  - MLS: 2 months
-- `on_premise_derisk`
-  - `default_enabled` can be set to `true`
-  - MLS: 3 months
-- `work_in_progress`
-  - `default_enabled` **must not** be set to `true`.
-  - MLS: 6 months
+    **`default_enabled: true` will not have any effect for this type of feature flag.**
+  - Maximum Life Span: 2 months.
+  - Additional note: This type of feature flag won't be documented in the [All feature flags in GitLab](../../../user/feature_flags.md)
+    page given they're short-lived and deployment-related.
+- `beta`
+  - `default_enabled` can be set to `true` so that a feature can be "released" to everyone in Beta with the possibility to disable
+    it in the case of scalability issues (ideally it should only be disabled for this reason on specific on-premise installations).
+  - Maximum Life Span: 6 months.
 - `future_setting`
   - `default_enabled` can be set to `true`. In that case, the setting to replace the feature flag should default to be enabled.
-  - MLS: 6 months (remember that this type should only be used to save time before introducing a proper instance setting)
+  - Maximum Life Span: 12 months
+  - Additional note: Remember that this type should only be used to save time before introducing a proper instance setting.
 - `ops`
-  - `default_enabled` can be set to `true`
-  - MLS: Unlimited (remember that using this type should follow a conscious decision not to introduce an instance setting)
+  - `default_enabled` can be set to `true`.
+  - Maximum Life Span: Unlimited
+  - Additional note: Remember that using this type should follow a conscious decision not to introduce an instance setting.
 
-### Introduce a new `feature_issue_url` and `cleanup_issue_url` fields
+### Introduce a new `feature_issue_url` field
 
 Keeping the URL to the original feature issue will allow automated cross-linking from the rollout
 and logging issues. The new field for this information is `feature_issue_url`.
-
-In many cases, the rollout issues aren't sufficient to track the "next step" after a feature flag
-rollout has been done, for several reasons:
-
-- The team prefers to keep the feature flag enabled by default for a few releases before actually
-  removing the flag ([example](https://gitlab.com/gitlab-org/gitlab/-/issues/416297#note_1448217853)).
-- A feature flag "cleanup" is more complex than just removing the flag. Discussions need to happen
-  to decide whether to introduce a new instance setting, or if the feature can actually be enabled by default
-  without a feature flag. In those cases, a rollout issue doesn't make sense and it's better to open a new
-  dedicated "cleanup" issue and document it in the feature flag YAML definition file with the `cleanup_issue_url`
-  field.
-
-That way, the rollout issue would only concern the actual production changes (i.e. enablement/disablement
-of the flag on production) and should be closed as soon as the production change is confirmed to work as expected.
 
 For instance:
 
 ```yaml
 ---
 name: auto_devops_banner_disabled
-feature_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/12345
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/12345
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/678910
+rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/9876
+milestone: '16.5'
+type: deploy_derisk
+group: group::pipeline execution
+```
+
+```yaml
+---
+name: ai_mr_creation
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/12345
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab-foss/-/merge_requests/14218
 rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/83652
-cleanup_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/395931
-milestone: '10.0'
-type: fast_rollback
-group: group::pipeline execution
-default_enabled: false
+milestone: '16.3'
+type: beta
+group: group::code review
+default_enabled: true
 ```
 
 ### Streamline the feature flag rollout process
 
-1. Transition to **create rollout issues in the
+1. (Process) Transition to **create rollout issues in the
    [Production issue tracker](https://gitlab.com/gitlab-com/gl-infra/production/-/issues)** and adapt the
    template to be closer to the
    [Change management issue template](https://gitlab.com/gitlab-com/gl-infra/production/-/blob/master/.gitlab/issue_templates/change_management.md)
-   (see [this issue](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/2780) for inspiration)
-1. Ensure the rollout DRI stays online for a few hours after enabling a feature flag (ideally they'd enable the flag at the
+   (see [this issue](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/2780) for inspiration).
+   That way, the rollout issue would only concern the actual production changes (i.e. enablement/disablement
+   of the flag on production) and should be closed as soon as the production change is confirmed to work as expected.
+1. (Automation) Automate most rollout steps, such as:
+     - (Done) [Let the author know that their feature has been deployed to staging / canary / production environments](https://gitlab.com/gitlab-org/quality/triage-ops/-/issues/1403)
+     - (Done) [Cross-link actual feature flag state change (from Chatops project) to rollout issues](https://gitlab.com/gitlab-org/gitlab/-/issues/290770)
+     - [Let the author know that their `default_enabled: true` MR has been deployed to production and that the feature flag can be removed from production](https://gitlab.com/gitlab-org/quality/triage-ops/-/merge_requests/2482)
+     - Ping DRI and their group on Slack upon feature flag state change
+     - 7 days before the Maximumn Life Span of a feature flag is reached, automatically create a "cleanup MR" with the group label set, and
+       assigned to the feature flag author (if they're still with GitLab). We could take advantage of the [automation of repetitive developer tasks](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134487).
+     - Enforce Maximum Life Span of feature flags through automated reporting & regular review at the section level.
+1. (Documentation/process) Ensure the rollout DRI stays online for a few hours after enabling a feature flag (ideally they'd enable the flag at the
    beginning of their day) in case of any issue with the feature flag
-1. Provide a standardized set of rollout steps. Trade-offs to consider include:
+1. (Process) Provide a standardized set of rollout steps. Trade-offs to consider include:
     - Likelihood of errors occurring
     - Total actors (users / requests / projects / groups) affected by the feature flag rollout,
       e.g. it will be bad if 100,000 users cannot log in when we roll out for 1%
     - How long to wait between each step. Some FF only need to wait 10 minutes per step, some
       flags should wait 24 hours. Ideally there should be automation to actively verify there
       is no adverse effect for each step.
-1. Automate most rollout steps, such as:
-     - [Let the author know that their feature has been deployed to staging / canary / production environments](https://gitlab.com/gitlab-org/quality/triage-ops/-/issues/1403)
-     - [Cross-link actual feature flag state change (from Chatops project) to rollout issues](https://gitlab.com/gitlab-org/gitlab/-/issues/290770)
-     - Ping DRI and their group on Slack upon feature flag state change
-     - Let the author know that their `default_enabled: true` MR has been deployed to production and that
-       the feature flag can be removed from production
-     - Enforce MLS of feature flags through automation, reporting & regular review at the section level
 
 ### Provide better SSOT for the feature flag default states and current states & state changes on GitLab.com
 
@@ -279,4 +271,6 @@ This epic describes a meta reasons for making these changes.
 
 ## Resources
 
+- [What Are Feature Flags?](https://launchdarkly.com/blog/what-are-feature-flags/#:~:text=Feature%20flags%20are%20a%20software,portions%20of%20code%20are%20executed)
+- [Feature Flags Best Practices](https://featureflags.io/feature-flags-best-practices/)
 - [Short-lived or Long-lived Flags? Explaining Feature Flag lifespans](https://configcat.com/blog/2022/07/08/how-long-should-you-keep-feature-flags/)
