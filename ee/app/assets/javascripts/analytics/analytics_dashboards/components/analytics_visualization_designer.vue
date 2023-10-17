@@ -237,7 +237,7 @@ export default {
     saveError: s__('Analytics|Error while saving visualization.'),
   },
   helpPageUrl: helpPagePath('user/analytics/analytics_dashboards', {
-    anchor: 'define-a-chart-visualization',
+    anchor: 'visualization-designer',
   }),
 };
 </script>

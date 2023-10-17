@@ -119,7 +119,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       expect(findPageDescriptionLink().text()).toBe('Learn more');
       expect(findPageDescriptionLink().attributes('href')).toBe(
         helpPagePath('user/analytics/analytics_dashboards', {
-          anchor: 'define-a-chart-visualization',
+          anchor: 'visualization-designer',
         }),
       );
     });
