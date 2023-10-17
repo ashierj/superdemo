@@ -13,5 +13,7 @@ module Security
     belongs_to :merge_request, inverse_of: :scan_result_policy_violations
 
     validates :scan_result_policy_id, uniqueness: { scope: %i[merge_request_id] }
+
+    scope :including_scan_result_policy_reads, -> { includes(:scan_result_policy_read) }
   end
 end

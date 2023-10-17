@@ -125,9 +125,9 @@ module EE
       end
 
       def policy_approval_settings
-        approval_rules
-          .with_policy_violation
-          .pluck(:project_approval_settings) # rubocop: disable CodeReuse/ActiveRecord
+        scan_result_policy_violations
+          .including_scan_result_policy_reads
+          .pluck(:project_approval_settings)
           .reduce({}) { |acc, setting| acc.merge(setting.select { |_, value| value }.symbolize_keys) }
       end
       strong_memoize_attr :policy_approval_settings

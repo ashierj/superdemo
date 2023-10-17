@@ -324,6 +324,41 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
             it { is_expected.to be_empty }
           end
 
+          context 'when rule is violated by other merge request' do
+            let(:merge_request_2) do
+              create(:merge_request, source_branch: 'test', source_project: project, target_project: project,
+                state: :opened)
+            end
+
+            let(:project_approval_settings_2) do
+              { prevent_approval_by_author: true,
+                prevent_approval_by_commit_author: true,
+                remove_approvals_with_new_commit: true,
+                require_password_to_approve: true }
+            end
+
+            let(:policy_2) do
+              create(:scan_result_policy_read, project: project, project_approval_settings: project_approval_settings_2)
+            end
+
+            let!(:approval_merge_request_rule_2) do
+              create(:approval_merge_request_rule, :any_merge_request, merge_request: merge_request,
+                scan_result_policy_read: policy_2, approvals_required: 1)
+            end
+
+            before do
+              create(:scan_result_policy_violation, project: project, merge_request: merge_request,
+                scan_result_policy_read: policy)
+
+              create(:scan_result_policy_violation, project: project, merge_request: merge_request_2,
+                scan_result_policy_read: policy_2)
+            end
+
+            it 'applies violations for the correct merge request' do
+              is_expected.to eq(overrides)
+            end
+          end
+
           context 'with competing rules' do
             let(:other_policy) do
               create(

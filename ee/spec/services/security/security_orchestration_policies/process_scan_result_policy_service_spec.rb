@@ -607,15 +607,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       context 'when rule has no actions' do
         let(:policy) { build(:scan_result_policy, :any_merge_request, commits: 'unsigned', actions: []) }
 
-        it 'creates approval rules' do
-          expect { subject }.to change { project.approval_rules.count }.by(1)
-        end
-
-        it 'sets approval_required to 0' do
-          subject
-
-          rule = project.approval_rules.reload.last
-          expect(rule.approvals_required).to be(0)
+        it 'does not create approval rule' do
+          expect { subject }.not_to change { project.approval_rules.count }
         end
       end
     end

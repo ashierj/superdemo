@@ -5,7 +5,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   include ApprovalRuleLike
   include UsageStatistics
 
-  has_many :scan_result_policy_violations, through: :scan_result_policy_reads
+  has_many :scan_result_policy_violations, through: :scan_result_policy_read, source: :violations
 
   scope :not_matching_pattern, -> (pattern) { code_owner.where.not(name: pattern) }
   scope :matching_pattern, -> (pattern) { code_owner.where(name: pattern) }
@@ -28,7 +28,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
   scope :code_owner_approval_optional, -> { code_owner.where(approvals_required: 0) }
   scope :code_owner_approval_required, -> { code_owner.where('approvals_required > 0') }
   scope :with_added_approval_rules, -> { left_outer_joins(:approval_merge_request_rule_source).where(approval_merge_request_rule_sources: { approval_merge_request_rule_id: nil }) }
-  scope :with_policy_violation, -> { including_scan_result_policy_read.joins(scan_result_policy_read: :violations) }
 
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section] }, unless: :scan_finding?
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section, :security_orchestration_policy_configuration_id, :orchestration_policy_idx] }, if: :scan_finding?
