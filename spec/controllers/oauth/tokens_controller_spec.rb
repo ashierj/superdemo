@@ -24,12 +24,6 @@ RSpec.describe Oauth::TokensController do
       end
     end
 
-    before do
-      Rails.application.routes.draw do
-        post 'create' => 'anonymous#create'
-      end
-    end
-
     it 'does log correlation id' do
       Labkit::Correlation::CorrelationId.use_id('new-id') do
         post :create
