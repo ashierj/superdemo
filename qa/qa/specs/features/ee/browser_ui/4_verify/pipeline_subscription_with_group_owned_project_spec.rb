@@ -53,11 +53,7 @@ module QA
           # Downstream project should have one pipeline at this time
           Support::Waiter.wait_until { downstream_project.pipelines.size == 1 }
 
-          Resource::Tag.fabricate_via_api! do |tag|
-            tag.project = upstream_project
-            tag.ref = upstream_project.default_branch
-            tag.name = tag_name
-          end
+          create(:tag, project: upstream_project, ref: upstream_project.default_branch, name: tag_name)
 
           downstream_project.visit!
 
