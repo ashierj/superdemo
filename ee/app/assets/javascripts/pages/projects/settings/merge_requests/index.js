@@ -1,5 +1,6 @@
 import '~/pages/projects/settings/merge_requests';
 import Vue from 'vue';
+import { __ } from '~/locale';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import mountApprovals from 'ee/approvals/mount_project_settings';
 import { initMergeOptionSettings } from 'ee/pages/projects/edit/merge_options';
@@ -23,6 +24,9 @@ function initRefSwitcher() {
           useSymbolicRefNames: true,
           queryParams: { sort: 'updated_desc' },
           enabledRefTypes: ['REF_TYPE_BRANCHES'],
+          translations: {
+            noRefSelected: __('No branch selected'),
+          },
         },
         on: {
           input(selectedRef) {
