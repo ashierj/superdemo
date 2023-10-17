@@ -1,18 +1,28 @@
-import { shallowMount } from '@vue/test-utils';
+import VueRouter from 'vue-router';
+import Vue from 'vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GroupSecretsApp from 'ee/ci/secrets/group_secrets_app.vue';
 
 describe('GroupSecretsApp', () => {
   let wrapper;
 
-  const props = { groupPath: '/path/to/group', groupId: '123' };
+  Vue.use(VueRouter);
 
-  const createComponent = () => {
-    wrapper = shallowMount(GroupSecretsApp, { propsData: { ...props } });
+  const findRouterView = () => wrapper.findComponent({ ref: 'router-view' });
+
+  const createComponent = (props = { groupPath: '/path/to/group', groupId: '123' }) => {
+    wrapper = shallowMountExtended(GroupSecretsApp, { propsData: { ...props } });
   };
 
-  it('renders the secrets app', () => {
-    createComponent(props);
+  it('renders the group secrets app', () => {
+    createComponent();
 
     expect(wrapper.findComponent(GroupSecretsApp).exists()).toBe(true);
+  });
+
+  it('renders the router view', () => {
+    createComponent();
+
+    expect(findRouterView().exists()).toBe(true);
   });
 });

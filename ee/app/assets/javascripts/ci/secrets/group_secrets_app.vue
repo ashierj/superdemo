@@ -1,4 +1,6 @@
 <script>
+import { mockGroupSecretsData } from './constants';
+
 export default {
   name: 'GroupSecretsApp',
   props: {
@@ -13,8 +15,11 @@ export default {
       default: undefined,
     },
   },
+  data() {
+    return { groupSecrets: mockGroupSecretsData };
+  },
 };
 </script>
 <template>
-  <div></div>
+  <router-view ref="router-view" :secrets="groupSecrets" />
 </template>

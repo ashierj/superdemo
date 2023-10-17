@@ -1,4 +1,6 @@
 <script>
+import { mockProjectSecretsData } from './constants';
+
 export default {
   name: 'ProjectSecretsApp',
   props: {
@@ -13,8 +15,11 @@ export default {
       default: undefined,
     },
   },
+  data() {
+    return { projectSecrets: mockProjectSecretsData };
+  },
 };
 </script>
 <template>
-  <div></div>
+  <router-view ref="router-view" :secrets="projectSecrets" />
 </template>
