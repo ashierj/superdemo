@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # rubocop:disable Scalability/IdempotentWorker
 # Worker triggers email so cannot be considered idempotent.
 
