@@ -55,7 +55,11 @@ module CodeSuggestions
         return instruction if instruction
       end
 
-      non_comment_lines = lines.map(&:strip).reject { |line| line.empty? || language.single_line_comment?(line) }
+      # Instead of iterating through all lines, we abort when reach `MIN_LINES_OF_CODE`
+      non_comment_lines = lines.lazy.reject do |line|
+        line.blank? || language.single_line_comment?(line)
+      end.take(MIN_LINES_OF_CODE) # rubocop:disable CodeReuse/ActiveRecord
+
       return 'Create more new code for this file.' if non_comment_lines.count < MIN_LINES_OF_CODE
 
       nil
