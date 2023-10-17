@@ -307,7 +307,7 @@ gem 'sanitize', '~> 6.0.2' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'babosa', '~> 2.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Sanitizes SVG input
-gem 'loofah', '~> 2.21.3' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'loofah', '~> 2.21.4' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Used to provide license templates
 gem 'licensee', '~> 9.16' # rubocop:todo Gemfile/MissingFeatureCategory
