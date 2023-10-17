@@ -385,7 +385,7 @@ gem 'prometheus-client-mmap', '~> 0.28', '>= 0.28.1', require: 'prometheus/clien
 gem 'warning', '~> 1.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 group :development do
-  gem 'lefthook', '~> 1.4.7', require: false, feature_category: :tooling
+  gem 'lefthook', '~> 1.5.2', require: false, feature_category: :tooling
   gem 'rubocop', feature_category: :tooling
   gem 'solargraph', '~> 0.47.2', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
@@ -403,7 +403,7 @@ end
 group :development, :test do
   gem 'deprecation_toolkit', '~> 1.5.1', require: false # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'bullet', '~> 7.1.1' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'parser', '~> 3.2', '>= 3.2.2.3' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'parser', '~> 3.2', '>= 3.2.2.4' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'pry-byebug' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'pry-rails', '~> 0.3.9' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'pry-shell', '~> 0.6.4' # rubocop:todo Gemfile/MissingFeatureCategory
