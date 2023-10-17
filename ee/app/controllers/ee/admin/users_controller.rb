@@ -34,7 +34,7 @@ module EE
 
         credit_card_validation = user.credit_card_validation
 
-        if credit_card_validation&.holder_name
+        if credit_card_validation.present?
           @similar_credit_card_validations = credit_card_validation.similar_records.page(params[:page]).per(100)
         else
           redirect_to [:admin, @user], notice: _('No credit card data for matching')

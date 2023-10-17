@@ -19,7 +19,7 @@
         %thead
           %th= _('ID')
           %th= _('User')
-          %th= _('Card holder name')
+          %th= _('Name')
           %th.gl-text-right= _('Validated at')
           %th.gl-text-right= _('User created at')
           %th.gl-text-right= _('Current sign-in ip')
@@ -34,7 +34,7 @@
               - if user == @user
                 = _('(this user)')
             %td
-              = credit_card_validation.holder_name
+              = user.name
             %td.gl-text-right
               = validated_at.to_fs(:medium)
               \/
@@ -47,6 +47,4 @@
       = _('* All times are in UTC unless specified')
       = paginate @similar_credit_card_validations, theme: 'gitlab'
 
-.gl-float-right
-  = render 'admin/users/credit_card_info', user: @user
 
