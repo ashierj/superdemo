@@ -30431,10 +30431,18 @@ msgstr ""
 msgid "MlExperimentTracking|Triggered by"
 msgstr ""
 
+msgid "MlModelRegistry|%{version} · No other versions"
+msgid_plural "MlModelRegistry|%{version} · %{versionCount} versions"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "MlModelRegistry|Model registry"
 msgstr ""
 
 msgid "MlModelRegistry|No models registered in this project"
+msgstr ""
+
+msgid "MlModelRegistry|No registered versions"
 msgstr ""
 
 msgid "Modal updated"
