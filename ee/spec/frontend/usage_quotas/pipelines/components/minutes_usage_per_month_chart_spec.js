@@ -52,7 +52,7 @@ describe('MinutesUsagePerMonth', () => {
       });
 
       it('has the right start month', () => {
-        expect(findAreaChart().props('data')[0].data[0][0]).toEqual('Aug 2022');
+        expect(findAreaChart().props('data')[0].data[0][0]).toEqual('Jun 2022');
       });
     });
   });
