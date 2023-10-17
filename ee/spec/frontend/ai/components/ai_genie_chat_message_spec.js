@@ -359,6 +359,29 @@ describe('AiGenieChatMessage', () => {
       expect(findContent().text()).toBe(content1 + content2);
     });
 
+    it('does not re-render when chunk gets received after full message', async () => {
+      // setProps is justified here because we are testing the component's
+      // reactive behavior which consistutes an exception
+      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+      wrapper.setProps({
+        message: chunk1,
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(content1);
+
+      wrapper.setProps({
+        message: { ...MOCK_CHUNK_MESSAGE, content: content1 + content2, chunkId: null },
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(content1 + content2);
+
+      wrapper.setProps({
+        message: chunk2,
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(content1 + content2);
+    });
+
     it('does not hydrate the chunk message with GLFM', async () => {
       createComponent({
         propsData: {
