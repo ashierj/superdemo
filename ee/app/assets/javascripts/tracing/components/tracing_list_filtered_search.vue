@@ -88,7 +88,7 @@ export default {
 </script>
 
 <template>
-  <div class="vue-filtered-search-bar-container row-content-block gl-border-t-none">
+  <div class="vue-filtered-search-bar-container gl-border-t-none gl-my-6">
     <gl-filtered-search
       :value="initialFilters"
       terms-as-tokens

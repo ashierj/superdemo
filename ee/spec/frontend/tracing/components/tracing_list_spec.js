@@ -14,8 +14,10 @@ import {
   filterTokensToFilterObj,
 } from 'ee/tracing/filters';
 import FilteredSearch from 'ee/tracing/components/tracing_list_filtered_search.vue';
+import ScatterChart from 'ee/tracing/components/tracing_scatter_chart.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
+import * as traceUtils from 'ee/tracing/components/trace_utils';
 
 jest.mock('~/alert');
 jest.mock('ee/tracing/filters');
@@ -30,6 +32,11 @@ describe('TracingList', () => {
   const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findInfiniteScrolling = () => wrapper.findComponent(GlInfiniteScroll);
+  const findScatterChart = () => wrapper.findComponent(ScatterChart);
+  const bottomReached = async () => {
+    findInfiniteScrolling().vm.$emit('bottomReached');
+    await waitForPromises();
+  };
 
   const mockResponse = {
     traces: [{ trace_id: 'trace1' }, { trace_id: 'trace2' }],
@@ -172,11 +179,6 @@ describe('TracingList', () => {
   });
 
   describe('infinite scrolling', () => {
-    const bottomReached = async () => {
-      findInfiniteScrolling().vm.$emit('bottomReached');
-      await waitForPromises();
-    };
-
     const findLegend = () =>
       findInfiniteScrolling().find('[data-testid="tracing-infinite-scrolling-legend"]');
 
@@ -266,6 +268,73 @@ describe('TracingList', () => {
       });
 
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);
+    });
+  });
+
+  describe('scatter chart', () => {
+    const mockPeriodFilter = (filter) =>
+      jest.spyOn(traceUtils, 'periodFilterToDate').mockReturnValue(filter);
+
+    beforeEach(async () => {
+      mockPeriodFilter({
+        min: new Date('2023-10-09 12:30:00'),
+        max: new Date('2023-10-09 15:30:00'),
+      });
+
+      await mountComponent();
+    });
+
+    it('renders the chart', () => {
+      const chart = findScatterChart();
+      expect(chart.exists()).toBe(true);
+      expect(chart.props('traces')).toEqual(mockResponse.traces);
+      expect(chart.props('rangeMin')).toEqual(new Date('2023-10-09 12:30:00'));
+      expect(chart.props('rangeMax')).toEqual(new Date('2023-10-09 15:30:00'));
+    });
+
+    it('updates the chart boundaries when changing the filters', async () => {
+      mockPeriodFilter({
+        min: new Date('2023-01-01 00:00:00'),
+        max: new Date('2023-01-02 00:00:00'),
+      });
+
+      findFilteredSearch().vm.$emit('submit', {});
+      await waitForPromises();
+
+      const chart = findScatterChart();
+      expect(chart.props('rangeMin')).toEqual(new Date('2023-01-01 00:00:00'));
+      expect(chart.props('rangeMax')).toEqual(new Date('2023-01-02 00:00:00'));
+    });
+
+    it('does not updates the chart boundaries when scrolling down', async () => {
+      mockPeriodFilter({
+        min: new Date('2023-01-01 00:00:00'),
+        max: new Date('2023-01-02 00:00:00'),
+      });
+
+      await bottomReached();
+
+      const chart = findScatterChart();
+      expect(chart.props('rangeMin')).toEqual(new Date('2023-10-09 12:30:00'));
+      expect(chart.props('rangeMax')).toEqual(new Date('2023-10-09 15:30:00'));
+    });
+
+    it('goes to the trace details page on item selection', () => {
+      setWindowLocation('base_path');
+      const visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
+
+      findScatterChart().vm.$emit('chart-item-selected', { traceId: 'test-trace-id' });
+
+      expect(visitUrlMock).toHaveBeenCalledTimes(1);
+      expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id');
+    });
+
+    it('calls fetchTraces method when the chart emits reload event', () => {
+      observabilityClientMock.fetchTraces.mockClear();
+
+      findScatterChart().vm.$emit('reload-data');
+
+      expect(observabilityClientMock.fetchTraces).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -14,9 +14,12 @@ import {
 import TracingEmptyState from './tracing_empty_state.vue';
 import TracingTableList from './tracing_table_list.vue';
 import FilteredSearch from './tracing_list_filtered_search.vue';
+import ScatterChart from './tracing_scatter_chart.vue';
+import { periodFilterToDate } from './trace_utils';
 
 const PAGE_SIZE = 50;
-const TRACING_LIST_VERTICAL_PADDING = 100; // Accounts for the search bar height + the legend height + some more v padding
+const CHART_HEIGHT = 300;
+const TRACING_LIST_VERTICAL_PADDING = 120; // Accounts for the search bar height + the legend height + some more v padding
 
 export default {
   components: {
@@ -26,6 +29,7 @@ export default {
     FilteredSearch,
     UrlSync,
     GlInfiniteScroll,
+    ScatterChart,
   },
   props: {
     observabilityClient: {
@@ -44,6 +48,8 @@ export default {
       traces: [],
       filters: queryToFilterObj(window.location.search),
       nextPageToken: null,
+      chartRangeMin: null,
+      chartRangeMax: null,
     };
   },
   computed: {
@@ -58,7 +64,7 @@ export default {
       return null;
     },
     listHeight() {
-      return window.innerHeight - contentTop() - TRACING_LIST_VERTICAL_PADDING;
+      return window.innerHeight - contentTop() - TRACING_LIST_VERTICAL_PADDING - CHART_HEIGHT;
     },
   },
   created() {
@@ -94,7 +100,7 @@ export default {
         this.loading = false;
       }
     },
-    async fetchTraces() {
+    async fetchTraces({ skipUpdatingChartRange = false } = {}) {
       this.loading = true;
 
       try {
@@ -106,6 +112,11 @@ export default {
           pageToken: this.nextPageToken,
           pageSize: PAGE_SIZE,
         });
+        if (!skipUpdatingChartRange) {
+          const { min, max } = periodFilterToDate(this.filters);
+          this.chartRangeMax = max;
+          this.chartRangeMin = min;
+        }
 
         this.traces = [...this.traces, ...traces];
         if (nextPageToken) {
@@ -129,9 +140,13 @@ export default {
       this.fetchTraces();
     },
     bottomReached() {
-      this.fetchTraces();
+      this.fetchTraces({ skipUpdatingChartRange: true });
+    },
+    chartItemSelected({ traceId }) {
+      this.selectTrace({ traceId });
     },
   },
+  CHART_HEIGHT,
 };
 </script>
 
@@ -145,12 +160,20 @@ export default {
       <tracing-empty-state v-if="tracingEnabled === false" @enable-tracing="enableTracing" />
 
       <template v-else>
+        <url-sync :query="query" />
         <filtered-search
           :initial-filters="initialFilterValue"
           :observability-client="observabilityClient"
           @submit="handleFilters"
         />
-        <url-sync :query="query" />
+        <scatter-chart
+          :height="$options.CHART_HEIGHT"
+          :range-min="chartRangeMin"
+          :range-max="chartRangeMax"
+          :traces="traces"
+          @chart-item-selected="chartItemSelected"
+          @reload-data="fetchTraces"
+        />
 
         <gl-infinite-scroll
           :max-list-height="listHeight"
