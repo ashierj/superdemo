@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe AppSec::Dast::ProfileScheduleWorker, feature_category: :dynamic_application_security_testing do
