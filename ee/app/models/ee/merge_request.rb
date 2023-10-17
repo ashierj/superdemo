@@ -197,7 +197,8 @@ module EE
       super.merge(
         skip_approved_check: options[:auto_merge_strategy] == AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS,
         skip_draft_check: skip_additional_checks,
-        skip_blocked_check: skip_additional_checks
+        skip_blocked_check: skip_additional_checks,
+        skip_discussions_check: skip_additional_checks
       )
     end
 

@@ -31,19 +31,21 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
       before do
         stub_feature_flags(merge_when_checks_pass: project, additional_merge_when_checks_ready: additional_feature_flag)
         mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
-        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs).and_return(blocked_status)
+        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs?).and_return(blocked_status)
+        allow(mr_merge_if_green_enabled).to receive(:mergeable_discussions_state?).and_return(discussions_status)
       end
 
-      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :additional_feature_flag, :result) do
-        :running | 0 | true | true | true | true
-        :running | 0 | false | false | true | true
-        :success | 0 | false | false | true | false
-        :success | 0 | true | true | true | true
-        :success | 0 | true | true | false | false
-        :running | 1 | true | true | true | true
-        :success | 1 | true | true | true | true
-        :success | 1 | false | false | true | true
-        :running | 1 | false | false | true | true
+      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status,
+        :additional_feature_flag, :result) do
+        :running | 0 | true | true | false | true | true
+        :running | 0 | false | false | true | true | true
+        :success | 0 | false | false | true | true | false
+        :success | 0 | true | true | false | true | true
+        :success | 0 | true | true | true | false | false
+        :running | 1 | true | true | false | true | true
+        :success | 1 | true | true | false | true | true
+        :success | 1 | false | false | true | true | true
+        :running | 1 | false | false | true | true | true
       end
 
       with_them do
@@ -55,14 +57,15 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
       before do
         stub_feature_flags(merge_when_checks_pass: false, additional_merge_when_checks_ready: false)
         mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
-        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs).and_return(blocked_status)
+        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs?).and_return(blocked_status)
+        allow(mr_merge_if_green_enabled).to receive(:mergeable_discussions_state?).and_return(discussions_status)
       end
 
-      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :result) do
-        :running | 0 | true  | true | false
-        :success | 0 | false | false | false
-        :running | 1 | false | false | false
-        :success | 1 | true | false | false
+      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status, :result) do
+        :running | 0 | true  | true | false | false
+        :success | 0 | false | false | true | false
+        :running | 1 | false | false | true | false
+        :success | 1 | true | false | true | false
       end
 
       with_them do
@@ -204,6 +207,24 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
       it 'returns false' do
         expect(service.skip_blocked_check(mr_merge_if_green_enabled)).to eq(false)
+      end
+    end
+  end
+
+  describe '#skip_discussions_check' do
+    context 'when additional_merge_when_checks_ready is true' do
+      it 'returns true' do
+        expect(service.skip_discussions_check(mr_merge_if_green_enabled)).to eq(true)
+      end
+    end
+
+    context 'when additional_merge_when_checks_ready is false' do
+      before do
+        stub_feature_flags(additional_merge_when_checks_ready: false)
+      end
+
+      it 'returns false' do
+        expect(service.skip_discussions_check(mr_merge_if_green_enabled)).to eq(false)
       end
     end
   end
