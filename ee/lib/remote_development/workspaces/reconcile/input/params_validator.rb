@@ -35,7 +35,7 @@ module RemoteDevelopment
               "properties" => {
                 "error_type" => {
                   "type" => "string",
-                  "enum" => [ErrorType::APPLIER]
+                  "enum" => [ErrorType::APPLIER, ErrorType::KUBERNETES]
                 },
                 "error_message" => {
                   "type" => "string"
