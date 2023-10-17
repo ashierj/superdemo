@@ -171,7 +171,7 @@ RSpec.shared_examples 'product analytics dashboards' do
               it 'renders an error alert when setting up a new instance' do
                 click_button s_('ProductAnalytics|Set up product analytics')
 
-                expect(find('[data-testid="alert-danger"]'))
+                expect(find_by_testid('alert-danger'))
                   .to have_text(/Product analytics initialization is already (completed|in progress)/)
               end
             end
@@ -212,7 +212,7 @@ RSpec.shared_examples 'product analytics dashboards' do
                 error_msg =
                   s_('ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.')
 
-                expect(find('[data-testid="alert-danger"]')).to have_text(error_msg)
+                expect(find_by_testid('alert-danger')).to have_text(error_msg)
               end
             end
 
@@ -276,7 +276,7 @@ RSpec.shared_examples 'product analytics dashboards' do
               end
 
               it 'has the dashboards page breadcrumb' do
-                page.within(find('[data-testid="breadcrumb-links"]')) do
+                within_testid('breadcrumb-links') do
                   expect(page).to have_link(
                     s_('Analytics|Analytics dashboards'),
                     href: "#{project_analytics_dashboards_path(project)}/"

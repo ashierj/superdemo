@@ -9,10 +9,10 @@ RSpec.describe 'Merge Request > User views blocked MR', :js, feature_category: :
   let(:project) { blocked_mr.target_project }
   let(:user) { create(:user) }
 
-  let(:merge_button) { find('[data-testid="merge-button"]') }
+  let(:merge_button) { find_by_testid('merge-button') }
 
   def click_expand_button
-    find('[data-testid="report-section-expand-button"]').click
+    find_by_testid('report-section-expand-button').click
   end
 
   before do

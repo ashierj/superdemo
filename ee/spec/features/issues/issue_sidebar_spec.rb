@@ -182,14 +182,14 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
       it 'selects and updates the right iteration', :aggregate_failures do
         find_and_click_edit_iteration
 
-        within '[data-testid="iteration-edit"]' do
+        within_testid('iteration-edit') do
           expect(page).to have_text(iteration_cadence.title)
           expect(page).to have_text(iteration.period)
         end
 
         select_iteration(iteration.period)
 
-        within '[data-testid="select-iteration"]' do
+        within_testid('select-iteration') do
           expect(page).to have_text(iteration_cadence.title)
           expect(page).to have_text(iteration.period)
         end
@@ -198,7 +198,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
 
         select_iteration('No iteration')
 
-        expect(page.find('[data-testid="select-iteration"]')).to have_content('None')
+        expect(find_by_testid('select-iteration')).to have_content('None')
       end
 
       context 'when searching iteration by its cadence title', :aggregate_failures do
@@ -210,7 +210,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
         it "returns the correct iteration" do
           find_and_click_edit_iteration
 
-          within '[data-testid="iteration-edit"]' do
+          within_testid('iteration-edit') do
             page.find(".gl-search-box-by-type-input").send_keys('plan')
 
             wait_for_requests
@@ -227,7 +227,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
       it 'does not show closed iterations' do
         find_and_click_edit_iteration
 
-        page.within '[data-testid="iteration-edit"]' do
+        within_testid('iteration-edit') do
           expect(page).not_to have_content iteration2.period
         end
       end
@@ -273,7 +273,9 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
   end
 
   def find_and_click_edit_iteration
-    page.find('[data-testid="iteration-edit"] [data-testid="edit-button"]').click
+    within_testid('iteration-edit') do
+      find_by_testid('edit-button').click
+    end
 
     wait_for_all_requests
   end

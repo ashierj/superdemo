@@ -146,7 +146,7 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
     it "appears in the project's audit events", :js do
       visit project_settings_merge_requests_path(project)
 
-      page.within('[data-testid="merge-request-approval-settings"]') do
+      within_testid('merge-request-approval-settings') do
         find('[data-testid="prevent-author-approval"] > input').set(false)
         find('[data-testid="prevent-committers-approval"] > input').set(true)
         click_button 'Save changes'

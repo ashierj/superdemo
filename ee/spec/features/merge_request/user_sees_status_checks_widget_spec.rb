@@ -45,11 +45,11 @@ RSpec.describe 'Merge request > User sees status checks widget', :js, feature_ca
 
     with_them do
       it 'is rendered correctly', :aggregate_failures do
-        within '[data-testid="info-status-checks"]' do
-          find('[data-testid="toggle-button"]').click
+        within_testid('info-status-checks') do
+          find_by_testid('toggle-button').click
         end
 
-        within '[data-testid="info-status-checks"]' do
+        within_testid('info-status-checks') do
           expect(page).to have_css(icon_class)
           expect(page).to have_content("#{check.name}: #{check.external_url}")
           expect(page).to have_content("Status Check ID: #{check.id}")

@@ -38,15 +38,15 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js, feature_category: 
         click_button 'Add status check'
 
         within('.modal-content') do
-          find('[data-testid="name"]').set('My new check')
-          find('[data-testid="url"]').set('https://api.gitlab.com')
+          find_by_testid('name').set('My new check')
+          find_by_testid('url').set('https://api.gitlab.com')
 
           click_button 'Add status check'
         end
 
         wait_for_requests
 
-        expect(find('[data-testid="status-checks-table"]')).to have_content('My new check')
+        expect(find_by_testid('status-checks-table')).to have_content('My new check')
       end
 
       context 'with a status check' do
@@ -55,29 +55,29 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js, feature_category: 
         it 'updates the status check' do
           visit project_settings_merge_requests_path(project)
 
-          expect(find('[data-testid="status-checks-table"]')).to have_content(rule.name)
+          expect(find_by_testid('status-checks-table')).to have_content(rule.name)
 
-          within('[data-testid="status-checks-table"]') do
+          within_testid('status-checks-table') do
             click_button 'Edit'
           end
 
           within('.modal-content') do
-            find('[data-testid="name"]').set('Something new')
+            find_by_testid('name').set('Something new')
 
             click_button 'Update status check'
           end
 
           wait_for_requests
 
-          expect(find('[data-testid="status-checks-table"]')).to have_content('Something new')
+          expect(find_by_testid('status-checks-table')).to have_content('Something new')
         end
 
         it 'removes the status check' do
           visit project_settings_merge_requests_path(project)
 
-          expect(find('[data-testid="status-checks-table"]')).to have_content(rule.name)
+          expect(find_by_testid('status-checks-table')).to have_content(rule.name)
 
-          within('[data-testid="status-checks-table"]') do
+          within_testid('status-checks-table') do
             click_button 'Remove'
           end
 
@@ -87,7 +87,7 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js, feature_category: 
 
           wait_for_requests
 
-          expect(find('[data-testid="status-checks-table"]')).not_to have_content(rule.name)
+          expect(find_by_testid('status-checks-table')).not_to have_content(rule.name)
         end
       end
     end

@@ -63,7 +63,7 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
       end
 
       it 'allows creating explicit protected environments', :js do
-        within('[data-testid="new-protected-environment"]') do
+        within_testid('new-protected-environment') do
           click_button s_('ProtectedEnvironment|Protect an environment')
           set_protected_environment('staging')
           set_allowed_to_deploy('Developers + Maintainers')
@@ -151,7 +151,7 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
   end
 
   def set_allowed_to_deploy(option)
-    button = within '[data-testid="create-deployer-dropdown"]' do
+    button = within_testid('create-deployer-dropdown') do
       find_button('Select users')
     end
 
@@ -163,7 +163,7 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
   end
 
   def set_allowed_to_approve(option)
-    button = within '[data-testid="create-approver-dropdown"]' do
+    button = within_testid('create-approver-dropdown') do
       find_button('Select users')
     end
 
@@ -175,20 +175,20 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
   end
 
   def set_required_approvals_for(option, number)
-    within '[data-testid="approval-rules"]' do
+    within_testid('approval-rules') do
       fill_in "approval-count-#{option}", with: number.to_s
     end
   end
 
   def within_protected_environments_list(&block)
-    within('[data-testid="protected-environments-list"]', &block)
+    within_testid('protected-environments-list', &block)
   end
 
   def within_deployers(&block)
-    within('[data-testid="protected-environment-staging-deployers"]', &block)
+    within_testid('protected-environment-staging-deployers', &block)
   end
 
   def within_approvers(&block)
-    within('[data-testid="protected-environment-staging-approvers"]', &block)
+    within_testid('protected-environment-staging-approvers', &block)
   end
 end

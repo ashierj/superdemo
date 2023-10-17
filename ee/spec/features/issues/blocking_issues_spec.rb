@@ -25,12 +25,12 @@ RSpec.describe 'Blocking issues count', feature_category: :team_planning do
     page.within(".issues-list") do
       page.within("li.issue:nth-child(1)") do
         expect(page).to have_content('blocks two issues')
-        expect(page.find('[data-testid="blocking-issues"]')).to have_content('2')
+        expect(find_by_testid('blocking-issues')).to have_content('2')
       end
 
       page.within("li.issue:nth-child(2)") do
         expect(page).to have_content('blocks one issue')
-        expect(page.find('[data-testid="blocking-issues"]')).to have_content('1')
+        expect(find_by_testid('blocking-issues')).to have_content('1')
       end
     end
   end

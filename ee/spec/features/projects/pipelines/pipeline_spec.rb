@@ -142,7 +142,7 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
         it 'shows pipeline compute minutes and time ago' do
           visit project_pipeline_path(project, finished_pipeline)
 
-          within '[data-testid="pipeline-details-header"]' do
+          within_testid('pipeline-details-header') do
             expect(page).to have_selector('[data-testid="compute-minutes"]')
             expect(page).to have_selector('[data-testid="pipeline-finished-time-ago"]')
           end
@@ -153,7 +153,7 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
         it 'does not show pipeline compute minutes and time ago' do
           subject
 
-          within '[data-testid="pipeline-details-header"]' do
+          within_testid('pipeline-details-header') do
             expect(page).not_to have_selector('[data-testid="compute-minutes"]')
             expect(page).not_to have_selector('[data-testid="pipeline-finished-time-ago"]')
           end
@@ -226,7 +226,7 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
       it 'shows license tab pane as active' do
         expect(page).to have_content('Licenses')
         expect(page).to have_selector('[data-testid="license-tab"]')
-        expect(find('[data-testid="license-tab"]')).to have_content('4')
+        expect(find_by_testid('license-tab')).to have_content('4')
       end
 
       it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do

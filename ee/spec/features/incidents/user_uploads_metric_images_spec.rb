@@ -16,24 +16,24 @@ RSpec.describe 'User uploads metrics to incident', :js, feature_category: :incid
       specify do
         upload_metric_image
 
-        page.within find('[data-testid="metrics-tab"]') do
+        within_testid('metrics-tab') do
           expect(page).to have_link('Metric image title', href: 'http://example.gitlab.com/')
           expect(page).to have_selector('img', wait: 0)
 
-          find('[data-testid="collapse-button"]').click
+          find_by_testid('collapse-button').click
           expect(page).to have_link('Metric image title', href: 'http://example.gitlab.com/')
           expect(page).not_to have_selector('img', wait: 0)
         end
 
         update_metric_image
 
-        page.within find('[data-testid="metrics-tab"]') do
+        within_testid('metrics-tab') do
           expect(page).to have_link('New metric image title', href: 'http://example.gitlab.com/new')
         end
 
         delete_metric_image
 
-        page.within find('[data-testid="metrics-tab"]') do
+        within_testid('metrics-tab') do
           expect(page).not_to have_link('New metric image title', href: 'http://example.gitlab.com/new')
           expect(page).not_to have_selector('img', wait: 0)
         end

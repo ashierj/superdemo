@@ -31,8 +31,8 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
     expect(page).to have_button('Set to auto-merge')
     expect(page).to have_selector('[data-testid="auto-merge-helper-text"]')
 
-    within '[data-testid="ready_to_merge_state"]' do
-      find('[data-testid="auto-merge-helper-text-icon"]').hover
+    within_testid('ready_to_merge_state') do
+      find_by_testid('auto-merge-helper-text-icon').hover
     end
 
     expect(page).to have_link('merge train')
