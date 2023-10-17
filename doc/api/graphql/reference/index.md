@@ -7487,6 +7487,31 @@ Input type: `ValueStreamCreateInput`
 | <a id="mutationvaluestreamcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationvaluestreamcreatevaluestream"></a>`valueStream` | [`ValueStream`](#valuestream) | Created value stream. |
 
+### `Mutation.valueStreamDestroy`
+
+Destroy a value stream.
+
+WARNING:
+**Introduced** in 16.6.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `ValueStreamDestroyInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationvaluestreamdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvaluestreamdestroyid"></a>`id` | [`AnalyticsCycleAnalyticsValueStreamID!`](#analyticscycleanalyticsvaluestreamid) | Global ID of the value stream to destroy. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationvaluestreamdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvaluestreamdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationvaluestreamdestroyvaluestream"></a>`valueStream` | [`ValueStream`](#valuestream) | Value stream deleted after mutation. |
+
 ### `Mutation.vulnerabilitiesDismiss`
 
 Input type: `VulnerabilitiesDismissInput`
@@ -26170,6 +26195,7 @@ fields relate to interactions between the two entities.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="valuestreamid"></a>`id` | [`AnalyticsCycleAnalyticsValueStreamID!`](#analyticscycleanalyticsvaluestreamid) | ID of the value stream. |
 | <a id="valuestreamname"></a>`name` | [`String!`](#string) | Name of the value stream. |
 | <a id="valuestreamnamespace"></a>`namespace` | [`Namespace!`](#namespace) | Namespace the value stream belongs to. |
 | <a id="valuestreamproject"></a>`project` **{warning-solid}** | [`Project`](#project) | **Introduced** in 15.6. This feature is an Experiment. It can be changed or removed at any time. Project the value stream belongs to, returns empty if it belongs to a group. |
@@ -30011,6 +30037,12 @@ An example `AlertManagementAlertID` is: `"gid://gitlab/AlertManagement::Alert/1"
 A `AlertManagementHttpIntegrationID` is a global ID. It is encoded as a string.
 
 An example `AlertManagementHttpIntegrationID` is: `"gid://gitlab/AlertManagement::HttpIntegration/1"`.
+
+### `AnalyticsCycleAnalyticsValueStreamID`
+
+A `AnalyticsCycleAnalyticsValueStreamID` is a global ID. It is encoded as a string.
+
+An example `AnalyticsCycleAnalyticsValueStreamID` is: `"gid://gitlab/Analytics::CycleAnalytics::ValueStream/1"`.
 
 ### `AnalyticsDevopsAdoptionEnabledNamespaceID`
 
