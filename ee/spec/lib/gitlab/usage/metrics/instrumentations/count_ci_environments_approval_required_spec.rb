@@ -20,8 +20,12 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountCiEnvironmentsAppr
   context 'with multiple approvals per environment' do
     let_it_be(:protected_environment) { create(:protected_environment) }
     let_it_be(:protected_environment_approval_rules) do
-      create_list(:protected_environment_approval_rule, 2,
-                  :maintainer_access, protected_environment: protected_environment)
+      create_list(
+        :protected_environment_approval_rule,
+        2,
+        :maintainer_access,
+        protected_environment: protected_environment
+      )
     end
 
     let(:expected_value) { 1 }
