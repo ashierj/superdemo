@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oauth::TokensController do
+RSpec.describe Oauth::TokensController, feature_category: :user_management do
   let(:user) { create(:user) }
 
   it 'includes Two-factor enforcement concern' do
