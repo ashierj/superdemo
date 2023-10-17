@@ -18,7 +18,7 @@ describe('MinutesUsagePerProjectChart', () => {
 
   const findColumnChart = () => wrapper.findComponent(GlColumnChart);
 
-  const createComponent = (displaySharedRunner = false, selectedYear = 2022, selectedMonth = 8) => {
+  const createComponent = (displaySharedRunner = false, selectedYear = 2022, selectedMonth = 7) => {
     wrapper = shallowMountExtended(MinutesUsagePerProjectChart, {
       propsData: {
         usageDataByYear: usageDataByYearObject,

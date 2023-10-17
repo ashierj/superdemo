@@ -28,13 +28,13 @@ RSpec.describe 'CI minutes', :js, time_travel_to: '2022-06-05', feature_category
     find_by_testid('minutes-usage-year-dropdown').click
 
     within_testid('minutes-usage-year-dropdown') do
-      expect(page.all('[data-testid="minutes-usage-year-dropdown-item"]').size).to eq 1
+      expect(page.all('.gl-new-dropdown-item').size).to eq 1
     end
 
     find_by_testid('minutes-usage-month-dropdown').click
 
     within_testid('minutes-usage-month-dropdown') do
-      expect(page.all('[data-testid="minutes-usage-month-dropdown-item"]').size).to eq 12
+      expect(page.all('.gl-new-dropdown-item').size).to eq 12
     end
   end
 end

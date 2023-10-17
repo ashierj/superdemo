@@ -3,9 +3,8 @@ import {
   GlAlert,
   GlButton,
   GlLoadingIcon,
-  GlDropdown,
-  GlDropdownItem,
   GlFormGroup,
+  GlCollapsibleListbox,
   GlModalDirective,
 } from '@gitlab/ui';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
@@ -43,14 +42,13 @@ export default {
     GlAlert,
     GlButton,
     GlLoadingIcon,
-    GlDropdown,
-    GlDropdownItem,
     GlFormGroup,
     LimitedAccessModal,
     ProjectList,
     UsageOverview,
     MinutesUsagePerProject,
     MinutesUsagePerMonth,
+    GlCollapsibleListbox,
   },
   directives: {
     GlModalDirective,
@@ -76,13 +74,7 @@ export default {
   data() {
     const lastResetDate = new Date(this.ciMinutesLastResetDate);
     const year = lastResetDate.getUTCFullYear();
-    // NOTE: month indexes in JS start from 0. So `(new Date()).getMonth()` for
-    // January would be 0. To keep indexes in data humane, it required a few +1
-    // and -1 operations with month indexes in this component. Though the result
-    // might be not worth the effort juggling the indexes. We can change this to
-    // keep 0-based indexes and do a +1 only before we need to present data in
-    // text format.
-    const month = lastResetDate.getUTCMonth() + 1;
+    const month = lastResetDate.getUTCMonth();
 
     return {
       error: '',
@@ -153,7 +145,13 @@ export default {
   },
   computed: {
     selectedDateInIso8601() {
-      return formatIso8601Date(this.selectedYear, this.selectedMonth, 1);
+      // NOTE: month indexes in JS start from 0. So `(new Date()).getMonth()` for
+      // January would be 0. To keep indexes in data humane, it required a few +1
+      // and -1 operations with month indexes in this component. Though the result
+      // might be not worth the effort juggling the indexes. We can change this to
+      // keep 0-based indexes and do a +1 only before we need to present data in
+      // text format.
+      return formatIso8601Date(this.selectedYear, this.selectedMonth + 1, 1);
     },
     selectedMonthProjectData() {
       const monthData = this.projectsCiMinutesUsage.find((usage) => {
@@ -201,16 +199,25 @@ export default {
       return getUsageDataByYearAsArray(this.ciMinutesUsage);
     },
     years() {
-      return Object.keys(this.usageDataByYear).map(Number).reverse();
+      return Object.keys(this.usageDataByYear)
+        .map(Number)
+        .reverse()
+        .map((year) => ({
+          text: String(year),
+          value: year,
+        }));
     },
     months() {
-      return getMonthNames();
+      return getMonthNames().map((month, index) => ({
+        text: month,
+        value: index,
+      }));
     },
     projectsTableInfoMessage() {
       return sprintf(
         s__('UsageQuota|The chart and the table below show usage for %{month} %{year}'),
         {
-          month: getMonthNames()[this.selectedMonth - 1],
+          month: getMonthNames()[this.selectedMonth],
           year: this.selectedYear,
         },
       );
@@ -357,22 +364,12 @@ export default {
 
     <div class="gl-display-flex gl-my-5">
       <gl-form-group :label="s__('UsageQuota|Filter charts by year')">
-        <gl-dropdown
-          :text="selectedYear.toString()"
+        <gl-collapsible-listbox
+          v-model="selectedYear"
+          :items="years"
           :disabled="isLoadingYearUsageData"
           data-testid="minutes-usage-year-dropdown"
-        >
-          <gl-dropdown-item
-            v-for="year in years"
-            :key="year"
-            :is-checked="selectedYear === year"
-            is-check-item
-            data-testid="minutes-usage-year-dropdown-item"
-            @click="selectedYear = year"
-          >
-            {{ year }}
-          </gl-dropdown-item>
-        </gl-dropdown>
+        />
       </gl-form-group>
     </div>
 
@@ -398,22 +395,12 @@ export default {
 
       <div class="gl-display-flex gl-my-3">
         <gl-form-group :label="s__('UsageQuota|Filter projects data by month')">
-          <gl-dropdown
-            :text="months[selectedMonth - 1]"
+          <gl-collapsible-listbox
+            v-model="selectedMonth"
+            :items="months"
             :disabled="isLoadingMonthProjectUsageData"
             data-testid="minutes-usage-month-dropdown"
-          >
-            <gl-dropdown-item
-              v-for="(month, index) in months"
-              :key="month"
-              :is-checked="selectedMonth === index + 1"
-              is-check-item
-              data-testid="minutes-usage-month-dropdown-item"
-              @click="selectedMonth = index + 1"
-            >
-              {{ month }}
-            </gl-dropdown-item>
-          </gl-dropdown>
+          />
         </gl-form-group>
       </div>
 
