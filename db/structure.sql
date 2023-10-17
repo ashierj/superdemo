@@ -36715,9 +36715,6 @@ ALTER TABLE ONLY service_desk_settings
 ALTER TABLE ONLY design_management_designs_versions
     ADD CONSTRAINT fk_03c671965c FOREIGN KEY (design_id) REFERENCES design_management_designs(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY projects
-    ADD CONSTRAINT fk_03ec10b0d3 FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE SET NULL;
-
 ALTER TABLE ONLY analytics_dashboards_pointers
     ADD CONSTRAINT fk_05d96922bd FOREIGN KEY (target_project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -36855,9 +36852,6 @@ ALTER TABLE ONLY agent_activity_events
 
 ALTER TABLE ONLY epics
     ADD CONSTRAINT fk_25b99c1be3 FOREIGN KEY (parent_id) REFERENCES epics(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY projects
-    ADD CONSTRAINT fk_25d8780d11 FOREIGN KEY (marked_for_deletion_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY ci_pipelines
     ADD CONSTRAINT fk_262d4c2d19 FOREIGN KEY (auto_canceled_by_id) REFERENCES ci_pipelines(id) ON DELETE SET NULL;
