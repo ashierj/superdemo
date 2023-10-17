@@ -37,4 +37,17 @@ RSpec.describe Gitlab::Saas, feature_category: :shared do
       end
     end
   end
+
+  context 'with saas feature file check' do
+    where(
+      case_names: ->(feature) { described_class.feature_file_path(feature) },
+      feature: described_class::FEATURES
+    )
+
+    with_them do
+      it 'exists for the defined_feature' do
+        expect(File.exist?(Gitlab::Saas.feature_file_path(feature))).to be_truthy
+      end
+    end
+  end
 end

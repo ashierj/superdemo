@@ -8,6 +8,7 @@ module EE
       MissingFeatureError = Class.new(StandardError)
 
       FEATURES = %w[marketing/google_tag_manager purchases/additional_minutes onboarding search/indexing_status].freeze
+      CONFIG_FILE_ROOT = 'ee/config/saas_features'
 
       class_methods do
         def feature_available?(feature)
@@ -21,6 +22,10 @@ module EE
           # eventually we can change its implementation like using an ENV variable for each instance
           # or any other method that people can't mess with.
           ::Gitlab.com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks
+        end
+
+        def feature_file_path(feature)
+          Rails.root.join(CONFIG_FILE_ROOT, "#{feature.tr('/', '_')}.yml")
         end
       end
     end
