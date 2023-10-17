@@ -8891,9 +8891,6 @@ msgstr ""
 msgid "BulkImport|Direct transfer maximum download file size (MiB)"
 msgstr ""
 
-msgid "BulkImport|Existing groups"
-msgstr ""
-
 msgid "BulkImport|Filter by source group"
 msgstr ""
 
