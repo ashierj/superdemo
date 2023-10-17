@@ -29,6 +29,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
+import { captureException } from '~/ci/runner/sentry_utils';
 import {
   defaultProvide,
   mockGetCiMinutesUsageNamespace,
@@ -39,6 +40,7 @@ import {
 
 Vue.use(VueApollo);
 jest.mock('ee/google_tag_manager');
+jest.mock('~/ci/runner/sentry_utils');
 
 describe('PipelineUsageApp', () => {
   /** @type { Wrapper } */
@@ -297,6 +299,11 @@ describe('PipelineUsageApp', () => {
 
     it('renders failed request error message', () => {
       expect(findAlert().text()).toBe(ERROR_MESSAGE);
+    });
+
+    it('captures the exception in Sentry', async () => {
+      await Vue.nextTick();
+      expect(captureException).toHaveBeenCalledTimes(1);
     });
   });
 
