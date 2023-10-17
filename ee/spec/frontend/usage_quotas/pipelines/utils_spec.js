@@ -53,7 +53,7 @@ describe('CI Minutes Usage Utils', () => {
   it('getUsageDataByYearByMonthAsObject normalizes data by year and by month', () => {
     const expectedDataByYearMonth = {
       2021: {
-        6: {
+        5: {
           date: new Date('2021-06-01'),
           day: '01',
           month: 'June',
@@ -62,7 +62,7 @@ describe('CI Minutes Usage Utils', () => {
           minutes: 5,
           sharedRunnersDuration: 60,
         },
-        7: {
+        6: {
           date: new Date('2021-07-01'),
           day: '01',
           month: 'July',
@@ -73,7 +73,7 @@ describe('CI Minutes Usage Utils', () => {
         },
       },
       2022: {
-        8: {
+        7: {
           date: new Date('2022-08-01'),
           day: '01',
           month: 'August',

@@ -32,7 +32,7 @@ export const getUsageDataByYearByMonthAsObject = (ciMinutesUsage) => {
       acc[formattedData.year] = {};
     }
 
-    acc[formattedData.year][formattedData.date.getMonth() + 1] = formattedData;
+    acc[formattedData.year][formattedData.date.getMonth()] = formattedData;
     return acc;
   }, {});
 };

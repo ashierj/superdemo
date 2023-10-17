@@ -5,7 +5,7 @@ import { Wrapper } from '@vue/test-utils'; // eslint-disable-line no-unused-vars
 import getCiMinutesMonthlySummary from 'ee/usage_quotas/pipelines/graphql/queries/ci_minutes.query.graphql';
 import getCiMinutesMonthSummaryWithProjects from 'ee/usage_quotas/pipelines/graphql/queries/ci_minutes_projects.query.graphql';
 import { sprintf } from '~/locale';
-import { formatDate, getMonthNames } from '~/lib/utils/datetime_utility';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import { pushEECproductAddToCartEvent } from 'ee/google_tag_manager';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -56,11 +56,7 @@ describe('PipelineUsageApp', () => {
   const findMonthlyUsageOverview = () => wrapper.findByTestId('monthly-usage-overview');
   const findPurchasedUsageOverview = () => wrapper.findByTestId('purchased-usage-overview');
   const findYearDropdown = () => wrapper.findComponentByTestId('minutes-usage-year-dropdown');
-  const findYearDropdownItems = () =>
-    wrapper.findAllComponentsByTestId('minutes-usage-year-dropdown-item');
   const findMonthDropdown = () => wrapper.findComponentByTestId('minutes-usage-month-dropdown');
-  const findMonthDropdownItems = () =>
-    wrapper.findAllComponentsByTestId('minutes-usage-month-dropdown-item');
   const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 
   const ciMinutesHandler = jest.fn();
@@ -335,10 +331,10 @@ describe('PipelineUsageApp', () => {
     it('sets initial values of Year and Month dropdowns', () => {
       const lastResetDate = new Date(defaultProvide.ciMinutesLastResetDate);
       const expectedYear = lastResetDate.getUTCFullYear().toString();
-      const expectedMonth = getMonthNames()[lastResetDate.getUTCMonth()];
+      const expectedMonth = lastResetDate.getUTCMonth();
 
-      expect(findYearDropdown().props('text')).toBe(expectedYear);
-      expect(findMonthDropdown().props('text')).toBe(expectedMonth);
+      expect(findYearDropdown().props('selected')).toBe(Number(expectedYear));
+      expect(findMonthDropdown().props('selected')).toBe(expectedMonth);
     });
 
     it('makes monthly initial summary call', () => {
@@ -373,10 +369,14 @@ describe('PipelineUsageApp', () => {
       });
 
       it('will switch years', async () => {
-        const yearItem = findYearDropdownItems().at(1);
-        yearItem.vm.$emit('click');
+        const selectedItem = {
+          text: '2021',
+          value: 2021,
+        };
+
+        findYearDropdown().vm.$emit('select', selectedItem.value);
         await nextTick();
-        expect(findYearDropdown().props('text')).toBe(yearItem.text());
+        expect(findYearDropdown().props('selected')).toBe(selectedItem.value);
         expect(ciMinutesHandler).toHaveBeenCalledTimes(0);
         expect(ciMinutesProjectsHandler).toHaveBeenCalledTimes(1);
         expect(ciMinutesProjectsHandler).toHaveBeenCalledWith({
@@ -386,10 +386,14 @@ describe('PipelineUsageApp', () => {
       });
 
       it('will switch months', async () => {
-        const monthItem = findMonthDropdownItems().at(2);
-        monthItem.vm.$emit('click');
+        const selectedItem = {
+          text: 'March',
+          value: 2,
+        };
+
+        findMonthDropdown().vm.$emit('select', selectedItem.value);
         await nextTick();
-        expect(findMonthDropdown().props('text')).toBe(monthItem.text());
+        expect(findMonthDropdown().props('selected')).toBe(selectedItem.value);
         expect(ciMinutesHandler).toHaveBeenCalledTimes(0);
         expect(ciMinutesProjectsHandler).toHaveBeenCalledTimes(1);
         expect(ciMinutesProjectsHandler).toHaveBeenCalledWith({
