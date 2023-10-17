@@ -31,16 +31,23 @@ RSpec.describe Admin::UsersController, :enable_admin_mode, feature_category: :us
       end
 
       context 'when user has credit card validation' do
-        let!(:credit_card_validation) { create(:credit_card_validation, user: user) }
-        let(:card_details) { credit_card_validation.attributes.slice(:expiration_date, :last_digits, :holder_name) }
-        let!(:match) { create(:credit_card_validation, card_details) }
+        let_it_be(:credit_card_validation) { create(:credit_card_validation, user: user) }
+        let_it_be(:card_details) do
+          credit_card_validation.attributes.slice(:expiration_date, :last_digits, :holder_name)
+        end
 
-        it 'displays its own and matching card details' do
+        let_it_be(:match) { create(:credit_card_validation, card_details) }
+
+        it 'displays its own and matching card details', :aggregate_failures do
           send_request
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(response.body).to include(credit_card_validation.holder_name)
-          expect(response.body).to include(match.holder_name)
+
+          expect(response.body).to include(match.user.id.to_s)
+          expect(response.body).to include(match.user.username)
+          expect(response.body).to include(match.user.name)
+          expect(response.body).to include(match.credit_card_validated_at.to_fs(:medium))
+          expect(response.body).to include(match.user.created_at.to_fs(:medium))
         end
       end
     end
