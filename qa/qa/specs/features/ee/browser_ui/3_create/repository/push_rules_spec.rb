@@ -117,12 +117,11 @@ module QA
         end
 
         it 'rejects non-member users', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347812' do
-          non_member_user = Resource::User.init do |user|
-            user.username = ''
-            user.password = ''
-            user.name = 'non_member_user'
-            user.email = 'non_member_user@non_member_user.com'
-          end
+          non_member_user = build(:user,
+            username: '',
+            password: '',
+            name: 'non_member_user',
+            email: 'non_member_user@non_member_user.com')
 
           expect_error_on_push(
             file: standard_file,
@@ -209,12 +208,7 @@ module QA
 
         @creator = create(:user, username: Runtime::User.username, password: Runtime::User.password)
 
-        @root = Resource::User.init do |user|
-          user.username = 'root'
-          user.name = 'GitLab QA'
-          user.email = 'root@gitlab.com'
-          user.password = nil
-        end
+        @root = build(:user, username: 'root', name: 'GitLab QA', email: 'root@gitlab.com', password: nil)
 
         @project = create(:project, name: 'push_rules')
 
