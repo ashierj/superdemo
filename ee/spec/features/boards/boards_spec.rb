@@ -85,6 +85,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
     let!(:list) { create(:list, board: board, label: label, position: 0) }
     let!(:issue) { create(:issue, project: project, weight: 3, relative_position: 2) }
     let!(:issue_2) { create(:issue, project: project, weight: 2, relative_position: 1) }
+    let!(:issue_3) { create(:issue, project: project, relative_position: 3) }
 
     before do
       stub_feature_flags(apollo_boards: false)
@@ -116,6 +117,23 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       expect(card_weight_badge(to)).to have_content('2')
     end
 
+    it 'maintains weight if null when moving to list' do
+      from = board.lists.first
+      to = list
+
+      drag_to(
+        selector: '.board-list',
+        scrollable: '#board-app',
+        list_from_index: 0,
+        from_index: 1,
+        to_index: 0,
+        list_to_index: 1
+      )
+
+      expect(card_weight_badge(from)).to have_content('2')
+      expect(card_weight_badge(to)).to have_content('3')
+    end
+
     context 'unlicensed' do
       before do
         stub_licensed_features(issue_weights: false)
@@ -123,12 +141,12 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       end
 
       it 'hides weight' do
-        expect(page).not_to have_text('2 issues')
+        expect(page).not_to have_text('3 issues')
 
         backlog = board.lists.first
         list_weight_badge(backlog).hover
 
-        expect(page).to have_text('2 issues')
+        expect(page).to have_text('3 issues')
       end
     end
   end
