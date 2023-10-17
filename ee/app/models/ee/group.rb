@@ -880,7 +880,7 @@ module EE
         .order("sbom_licenses.spdx_identifier ASC")
         .distinct
         .limit(limit)
-        .pluck(*columns)
+        .pluck(*columns.map { |column| ["sbom_licenses", column].join(".") })
         .map { |row| Hash[columns.zip(row)].with_indifferent_access }
     end
 
