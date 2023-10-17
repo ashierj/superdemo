@@ -31,6 +31,10 @@ module Security
             identifiers.map(&:id)
           )
         end
+      rescue StandardError => error
+        # failure should not block the rest of the ingestion process
+        Gitlab::ErrorTracking.track_exception(
+          error, project_id: @project_id, scan_type: @scan_type, primary_identifiers: @primary_identifiers)
       end
 
       private

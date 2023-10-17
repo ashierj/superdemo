@@ -103,6 +103,7 @@ module Vulnerabilities
     scope :by_uuid, -> (uuids) { where(uuid: uuids) }
     scope :excluding_uuids, -> (uuids) { where.not(uuid: uuids) }
     scope :eager_load_comparison_entities, -> { includes(:scanner, :primary_identifier) }
+    scope :by_primary_identifiers, -> (identifier_ids) { where(primary_identifier: identifier_ids) }
 
     scope :all_preloaded, -> do
       preload(:scanner, :identifiers, :feedbacks, project: [:namespace, :project_feature])

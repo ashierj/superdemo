@@ -5,6 +5,8 @@ module Vulnerabilities
   class MarkDroppedAsResolvedWorker
     include ApplicationWorker
 
+    BATCH_SIZE = 100
+
     data_consistency :delayed
     idempotent!
     deduplicate :until_executing, including_scheduled: true
@@ -13,16 +15,35 @@ module Vulnerabilities
 
     loggable_arguments 1
 
-    def perform(project_id, dropped_identifier_ids)
-      @project_id = project_id
-      @dropped_identifier_ids = dropped_identifier_ids
+    def perform(_, dropped_identifier_ids)
+      dropped_identifier_ids.each_slice(BATCH_SIZE) do |identifier_ids|
+        vulnerability_ids = vulnerability_ids_for(identifier_ids)
+        vulnerabilities = resolvable_vulnerabilities(vulnerability_ids)
 
-      dropped_vulnerabilities.each_batch { |batch| resolve_batch(batch) }
+        resolve_batch(vulnerabilities)
+      end
     end
 
     private
 
+    def vulnerability_ids_for(identifier_ids)
+      ::Vulnerabilities::Identifier.id_in(identifier_ids)
+                                   .order(:id) # rubocop:disable CodeReuse/ActiveRecord
+                                   .select_primary_finding_vulnerability_ids
+                                   .map(&:vulnerability_id)
+    end
+
+    def resolvable_vulnerabilities(vulnerability_ids)
+      return [] unless vulnerability_ids.present?
+
+      ::Vulnerability.with_states(:detected)
+                     .with_resolution(true)
+                     .by_ids(vulnerability_ids)
+    end
+
     def resolve_batch(vulnerabilities)
+      return unless vulnerabilities.present?
+
       ::Vulnerability.transaction do
         create_state_transitions(vulnerabilities)
         current_time = Time.zone.now
@@ -33,14 +54,6 @@ module Vulnerabilities
           updated_at: current_time,
           state: :resolved)
       end
-    end
-
-    def dropped_vulnerabilities
-      ::Vulnerability
-        .with_states(:detected)
-        .with_resolution(true)
-        .for_projects(@project_id)
-        .by_primary_identifier_ids(@dropped_identifier_ids)
     end
 
     def create_state_transitions(vulnerabilities)
