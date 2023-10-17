@@ -3,27 +3,22 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService, '#execute', feature_category: :security_policy_management do
+  let(:service) { described_class.new(merge_request) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+  let_it_be(:merge_request, reload: true) do
+    create(:merge_request, source_project: project, target_project: project)
+  end
+
   let_it_be(:policy_a) { create(:scan_result_policy_read, project: project) }
   let_it_be(:policy_b) { create(:scan_result_policy_read, project: project) }
-  let_it_be(:rule_a) do
-    create(:approval_merge_request_rule, merge_request: merge_request, scan_result_policy_id: policy_a.id)
-  end
 
-  let_it_be(:rule_b) do
-    create(:approval_merge_request_rule, merge_request: merge_request, scan_result_policy_id: policy_b.id)
-  end
-
-  let(:violated_policies) { merge_request.approval_rules.with_policy_violation }
-
-  subject(:service) { described_class.new(merge_request) }
+  subject(:violated_policies) { merge_request.scan_result_policy_violations.map(&:scan_result_policy_read) }
 
   describe 'attributes' do
     subject(:attrs) { project.scan_result_policy_violations.last.attributes }
 
     before do
-      service.add([rule_b])
+      service.add([policy_b.id], [])
       service.execute
     end
 
@@ -37,33 +32,49 @@ RSpec.describe Security::SecurityOrchestrationPolicies::UpdateViolationsService,
 
   context 'without pre-existing violations' do
     it 'creates violations' do
-      service.add([rule_b])
+      service.add([policy_b.id], [])
       service.execute
 
-      expect(violated_policies).to contain_exactly(rule_b)
+      expect(violated_policies).to contain_exactly(policy_b)
     end
   end
 
   context 'with pre-existing violations' do
     before do
-      service.add([rule_a])
+      service.add([policy_a.id], [])
       service.execute
     end
 
     it 'clears existing violations' do
-      service.add([rule_b])
+      service.add([policy_b.id], [policy_a.id])
       service.execute
 
-      expect(violated_policies).to contain_exactly(rule_b)
+      expect(violated_policies).to contain_exactly(policy_b)
     end
 
     context 'with identical state' do
       it 'does not clear violations' do
-        service.add([rule_a])
+        service.add([policy_a.id], [])
         service.execute
 
-        expect(violated_policies).to contain_exactly(rule_a)
+        expect(violated_policies).to contain_exactly(policy_a)
       end
+    end
+  end
+
+  context 'with unrelated existing violation' do
+    let_it_be(:unrelated_violation) do
+      create(:scan_result_policy_violation, scan_result_policy_read: policy_a, merge_request: merge_request)
+    end
+
+    before do
+      service.add([], [policy_b.id])
+    end
+
+    it 'removes only violations provided in unviolated ids' do
+      service.execute
+
+      expect(merge_request.scan_result_policy_violations).to contain_exactly(unrelated_violation)
     end
   end
 

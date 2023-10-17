@@ -14,6 +14,7 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
     before do
       allow(Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async)
       allow(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to receive(:perform_async)
+      allow(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to receive(:perform_async)
     end
 
     context 'when the merge request has actual_head_pipeline' do
@@ -40,6 +41,34 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
 
         expect(Ci::SyncReportsToReportApprovalRulesWorker).not_to have_received(:perform_async)
         expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to have_received(:perform_async)
+      end
+    end
+
+    context 'when merge request has any_merge_request rules' do
+      before do
+        create(:report_approver_rule, :any_merge_request, merge_request: merge_request)
+      end
+
+      it 'enqueues SyncAnyMergeRequestApprovalRulesWorker worker' do
+        execute
+
+        expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to(
+          have_received(:perform_async).with(merge_request.id)
+        )
+      end
+
+      context 'when feature flag "scan_result_any_merge_request" is disabled' do
+        before do
+          stub_feature_flags(scan_result_any_merge_request: false)
+        end
+
+        it 'does not enqueue the worker' do
+          execute
+
+          expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to(
+            have_received(:perform_async)
+          )
+        end
       end
     end
 

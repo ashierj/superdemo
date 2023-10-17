@@ -45,8 +45,12 @@ module Security
       end
 
       def create_approval_rule?(rule)
-        rule[:type] != Security::ScanResultPolicy::ANY_MERGE_REQUEST ||
-          Feature.enabled?(:scan_result_any_merge_request, project)
+        return true if rule[:type] != Security::ScanResultPolicy::ANY_MERGE_REQUEST
+
+        # For `any_merge_request` rules, the approval rules can be created without approvers and can override
+        # project approval settings in general.
+        # The violations in this case are handled via SyncAnyMergeRequestRulesService
+        Feature.enabled?(:scan_result_any_merge_request, project) && policy[:actions].present?
       end
 
       def license_finding?(rule)

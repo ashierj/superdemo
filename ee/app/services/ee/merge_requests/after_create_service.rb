@@ -22,6 +22,13 @@ module EE
       private
 
       def schedule_sync_for(merge_request)
+        if ::Feature.enabled?(:scan_result_any_merge_request, merge_request.project) &&
+            merge_request.approval_rules.any_merge_request.any?
+          # We need to make sure to run the merge request worker after hooks were called to
+          # get correct commit signatures
+          ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)
+        end
+
         pipeline_id = merge_request.head_pipeline_id
         return unless pipeline_id
 

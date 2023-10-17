@@ -28,6 +28,8 @@ module Security
     validates :project_approval_settings, json_schema: { filename: 'scan_result_policy_project_approval_settings' },
       allow_blank: true
 
+    scope :targeting_commits, -> { where.not(commits: nil) }
+
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
     end

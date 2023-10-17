@@ -55,87 +55,159 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
       it_behaves_like 'does not trigger policy bot comment'
     end
 
-    context 'without violations' do
-      context 'when policy does not target any commit' do
-        it_behaves_like 'sets approvals_required to 0'
-        it_behaves_like 'triggers policy bot comment', :any_merge_request, false
+    describe 'approval rules' do
+      context 'without violations' do
+        context 'when policy targets unsigned commits and there are only signed commits in merge request' do
+          before do
+            scan_result_policy_read.update!(commits: :unsigned)
+            allow(merge_request).to receive(:commits).and_return([signed_commit])
+          end
+
+          it_behaves_like 'sets approvals_required to 0'
+          it_behaves_like 'triggers policy bot comment', :any_merge_request, false
+
+          it 'creates no violation records' do
+            expect { execute }.not_to change { merge_request.scan_result_policy_violations.count }
+          end
+
+          it 'does not create a log' do
+            expect(Gitlab::AppJsonLogger).not_to receive(:info)
+
+            execute
+          end
+        end
       end
 
-      context 'when policy targets unsigned commits and there are only signed commits in merge request' do
+      context 'with violations' do
+        let(:policy_commits) { :any }
+        let(:merge_request_commits) { [unsigned_commit] }
+
+        let_it_be(:scan_result_policy_read_2, reload: true) do
+          create(:scan_result_policy_read, project: project)
+        end
+
+        let_it_be(:unrelated_scan_result_violation) do
+          create(:scan_result_policy_violation, merge_request: merge_request,
+            scan_result_policy_read: scan_result_policy_read_2, project: project)
+        end
+
         before do
-          scan_result_policy_read.update!(commits: :unsigned)
-          allow(merge_request).to receive(:commits).and_return([signed_commit])
+          scan_result_policy_read.update!(commits: policy_commits)
+          allow(merge_request).to receive(:commits).and_return(merge_request_commits)
         end
 
-        it_behaves_like 'sets approvals_required to 0'
-        it_behaves_like 'triggers policy bot comment', :any_merge_request, false
+        context 'when approvals are optional' do
+          let(:approvals_required) { 0 }
 
-        it 'creates no violation records' do
-          expect { execute }.not_to change { merge_request.scan_result_policy_violations.count }
+          it_behaves_like 'does not update approval rules'
+          it_behaves_like 'triggers policy bot comment', :any_merge_request, true, requires_approval: false
         end
 
-        it 'does not create a log' do
-          expect(Gitlab::AppJsonLogger).not_to receive(:info)
+        context 'when approval are required but approval_merge_request_rules have been made optional' do
+          let!(:approval_project_rule) do
+            create(:approval_project_rule, :any_merge_request, project: project, approvals_required: 1,
+              scan_result_policy_read: scan_result_policy_read)
+          end
 
-          execute
+          let!(:approver_rule) do
+            create(:report_approver_rule, :any_merge_request, merge_request: merge_request,
+              approval_project_rule: approval_project_rule, approvals_required: 0,
+              scan_result_policy_read: scan_result_policy_read)
+          end
+
+          it 'resets the required approvals' do
+            expect { execute }.to change { approver_rule.reload.approvals_required }.to(1)
+          end
+
+          it_behaves_like 'triggers policy bot comment', :any_merge_request, true
+        end
+
+        where(:policy_commits, :merge_request_commits) do
+          :unsigned | [ref(:unsigned_commit)]
+          :unsigned | [ref(:signed_commit), ref(:unsigned_commit)]
+          :any      | [ref(:signed_commit)]
+          :any      | [ref(:unsigned_commit)]
+        end
+
+        with_them do
+          it_behaves_like 'does not update approval rules'
+          it_behaves_like 'triggers policy bot comment', :any_merge_request, true
+
+          it 'creates violation records' do
+            expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(1)
+          end
+
+          it 'does not delete unrelated violation records from other policies' do
+            execute
+
+            expect(merge_request.scan_result_policy_violations).to include unrelated_scan_result_violation
+          end
+
+          it 'logs violated rules' do
+            expect(Gitlab::AppJsonLogger).to receive(:info).with(hash_including(message: 'Updating MR approval rule'))
+
+            execute
+          end
         end
       end
-    end
 
-    context 'with violations' do
-      let(:policy_commits) { :any }
-      let(:merge_request_commits) { [unsigned_commit] }
+      describe 'policies with no approval rules' do
+        let!(:approver_rule) { nil }
 
-      before do
-        scan_result_policy_read.update!(commits: policy_commits)
-        allow(merge_request).to receive(:commits).and_return(merge_request_commits)
-      end
+        context 'when policies target commits' do
+          let_it_be(:scan_result_policy_read_with_commits, reload: true) do
+            create(:scan_result_policy_read, project: project, commits: :any)
+          end
 
-      context 'when approvals are optional' do
-        let(:approvals_required) { 0 }
+          it 'creates violations for policies that have no approval rules' do
+            expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(1)
+            expect(merge_request.scan_result_policy_violations.first.scan_result_policy_read).to(
+              eq scan_result_policy_read_with_commits
+            )
+          end
 
-        it_behaves_like 'does not update approval rules'
-        it_behaves_like 'triggers policy bot comment', :any_merge_request, true, requires_approval: false
-      end
+          context 'when there are other approval rules' do
+            let_it_be(:scan_finding_project_rule) do
+              create(:approval_project_rule, :scan_finding, project: project,
+                scan_result_policy_read: scan_result_policy_read_with_commits, approvals_required: 1)
+            end
 
-      context 'when approval are required but approval_merge_request_rules have been made optional' do
-        let!(:approval_project_rule) do
-          create(:approval_project_rule, :any_merge_request, project: project, approvals_required: 1,
-            scan_result_policy_read: scan_result_policy_read)
+            let!(:another_approver_rule) { approver_rule }
+
+            let_it_be(:license_scanning_project_rule) do
+              create(:approval_project_rule, :scan_finding, project: project,
+                scan_result_policy_read: scan_result_policy_read_with_commits, approvals_required: 1)
+            end
+
+            let_it_be(:scan_finding_merge_request_rule) do
+              create(:report_approver_rule, :scan_finding, merge_request: merge_request,
+                approval_project_rule: scan_finding_project_rule, approvals_required: 0,
+                scan_result_policy_read: scan_result_policy_read_with_commits)
+            end
+
+            let_it_be(:license_scanning_merge_request_rule) do
+              create(:report_approver_rule, :license_scanning, merge_request: merge_request,
+                approval_project_rule: license_scanning_project_rule, approvals_required: 0,
+                scan_result_policy_read: scan_result_policy_read_with_commits)
+            end
+
+            it 'does not reset required approvals' do
+              execute
+
+              expect(scan_finding_merge_request_rule.reload.approvals_required).to eq 0
+              expect(license_scanning_merge_request_rule.reload.approvals_required).to eq 0
+            end
+          end
         end
 
-        let!(:approver_rule) do
-          create(:report_approver_rule, :any_merge_request, merge_request: merge_request,
-            approval_project_rule: approval_project_rule, approvals_required: 0,
-            scan_result_policy_read: scan_result_policy_read)
-        end
+        context 'when the policies are not targeting commits' do
+          before do
+            scan_result_policy_read.update!(commits: nil)
+          end
 
-        it 'resets the required approvals' do
-          expect { execute }.to change { approver_rule.reload.approvals_required }.to(1)
-        end
-
-        it_behaves_like 'triggers policy bot comment', :any_merge_request, true
-      end
-
-      where(:policy_commits, :merge_request_commits) do
-        :unsigned | [ref(:unsigned_commit)]
-        :unsigned | [ref(:signed_commit), ref(:unsigned_commit)]
-        :any      | [ref(:signed_commit)]
-        :any      | [ref(:unsigned_commit)]
-      end
-
-      with_them do
-        it_behaves_like 'does not update approval rules'
-        it_behaves_like 'triggers policy bot comment', :any_merge_request, true
-
-        it 'creates violation records' do
-          expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(1)
-        end
-
-        it 'logs violated rules' do
-          expect(Gitlab::AppJsonLogger).to receive(:info).with(hash_including(message: 'Updating MR approval rule'))
-
-          execute
+          it 'does not create any violations' do
+            expect { subject }.not_to change { merge_request.scan_result_policy_violations.count }
+          end
         end
       end
     end

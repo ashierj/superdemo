@@ -13,7 +13,7 @@ module Security
       def execute
         return if merge_request.merged?
 
-        sync_approval_rules(merge_request)
+        remove_required_approvals
         violations.execute
       end
 
@@ -21,31 +21,39 @@ module Security
 
       attr_reader :merge_request, :violations
 
-      def sync_approval_rules(merge_request)
-        approval_rules = merge_request.approval_rules.any_merge_request
-        return if approval_rules.empty?
+      def remove_required_approvals
+        related_policies = merge_request.project.scan_result_policy_reads.targeting_commits
+        return if related_policies.empty?
 
-        violated_rules, unviolated_rules = partition_rules(approval_rules)
+        violated_policies, unviolated_policies = partition_policies(related_policies)
 
-        violated_rules, _ = update_required_approvals(violated_rules, unviolated_rules)
+        violated_rules, _unviolated_rules = update_required_approvals(violated_policies, unviolated_policies)
         generate_policy_bot_comment(merge_request, violated_rules, :any_merge_request)
         log_violated_rules(violated_rules)
-        violations.add(violated_rules)
+        violations.add(violated_policies.pluck(:id), unviolated_policies.pluck(:id)) # rubocop:disable CodeReuse/ActiveRecord
       end
 
-      def partition_rules(approval_rules)
+      def partition_policies(scan_result_policy_reads)
         has_unsigned_commits = !merge_request.commits(load_from_gitaly: true).all?(&:has_signature?)
-        approval_rules.including_scan_result_policy_read.partition do |approval_rule|
-          scan_result_policy_read = approval_rule.scan_result_policy_read
+        scan_result_policy_reads.partition do |scan_result_policy_read|
           scan_result_policy_read.commits_any? ||
             (scan_result_policy_read.commits_unsigned? && has_unsigned_commits)
         end
       end
 
-      def update_required_approvals(violated_rules, unviolated_rules)
+      def update_required_approvals(violated_policies, unviolated_policies)
+        approval_rules = merge_request.approval_rules.any_merge_request
+        violated_rules = approval_rules_for_policies(approval_rules, violated_policies)
+        unviolated_rules = approval_rules_for_policies(approval_rules, unviolated_policies)
+
         updated_violated_rules = merge_request.reset_required_approvals(violated_rules)
-        ApprovalMergeRequestRule.remove_required_approved(unviolated_rules)
+        ApprovalMergeRequestRule.remove_required_approved(unviolated_rules) if unviolated_rules.any?
         [updated_violated_rules, unviolated_rules]
+      end
+
+      def approval_rules_for_policies(approval_rules, policies)
+        policies_ids = policies.pluck(:id) # rubocop:disable CodeReuse/ActiveRecord
+        approval_rules.select { |rule| policies_ids.include? rule.scan_result_policy_id }
       end
 
       def log_violated_rules(rules)

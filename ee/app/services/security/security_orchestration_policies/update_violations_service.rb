@@ -4,47 +4,47 @@ module Security
   module SecurityOrchestrationPolicies
     class UpdateViolationsService
       attr_reader :merge_request,
-        :violated_rules,
-        :unviolated_rules,
-        :violations
+        :violated_policy_ids,
+        :unviolated_policy_ids
 
       def initialize(merge_request)
         @merge_request = merge_request
-        @violated_rules = []
+        @violated_policy_ids = []
+        @unviolated_policy_ids = []
       end
 
-      def add(rules)
-        violated_rules.concat(rules)
+      def add(violated_ids, unviolated_ids)
+        violated_policy_ids.concat(violated_ids)
+        unviolated_policy_ids.concat(unviolated_ids)
       end
 
       def execute
-        return violated_rules.clear unless Feature.enabled?(:scan_result_any_merge_request, merge_request.project)
+        return [violated_policy_ids.clear, unviolated_policy_ids.clear] unless Feature.enabled?(
+          :scan_result_any_merge_request, merge_request.project)
 
         Security::ScanResultPolicyViolation.transaction do
-          delete_violations
-          create_violations if violated_rules.any?
+          delete_violations if unviolated_policy_ids.any?
+          create_violations if violated_policy_ids.any?
         end
 
-        violated_rules.clear
+        [violated_policy_ids.clear, unviolated_policy_ids.clear]
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
       def delete_violations
         Security::ScanResultPolicyViolation
-          .where(merge_request_id: merge_request.id)
+          .where(merge_request_id: merge_request.id, scan_result_policy_id: unviolated_policy_ids)
           .each_batch(order_hint: :updated_at) { |batch| batch.delete_all } # rubocop: disable Style/SymbolProc
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
-      # rubocop: disable CodeReuse/ActiveRecord
       def create_violations
-        attrs = violated_rules.pluck(:scan_result_policy_id).map do |id|
+        attrs = violated_policy_ids.map do |id|
           { scan_result_policy_id: id, merge_request_id: merge_request.id, project_id: merge_request.project_id }
         end
 
         Security::ScanResultPolicyViolation.insert_all(attrs) if attrs.any?
       end
-      # rubocop: enable CodeReuse/ActiveRecord
     end
   end
 end
