@@ -39,16 +39,16 @@ export const getUsageDataByYearByMonthAsObject = (ciMinutesUsage) => {
 
 /**
  * Formats date to `yyyy-mm-dd`
- * @param { Number } year full year
- * @param { Number } month month number, between 1 and 12
- * @param { Number } day day of the month
- * @returns { String } formatted date string
+ * @param { number } year full year
+ * @param { number } monthIndex month index, between 0 and 11
+ * @param { number } day day of the month
+ * @returns { string } formatted date string
  *
  * NOTE: it might be worth moving this utility to date time utils
  * in ~/lib/utils/datetime_utility.js
  */
-export const formatIso8601Date = (year, month, day) => {
-  return [year, month, day]
+export const formatIso8601Date = (year, monthIndex, day) => {
+  return [year, monthIndex + 1, day]
     .map(String)
     .map((s) => s.padStart(2, '0'))
     .join('-');

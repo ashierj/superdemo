@@ -39,21 +39,27 @@ export const mockGetCiMinutesUsageNamespace = {
     ciMinutesUsage: {
       nodes: [
         {
-          month: 'June',
-          monthIso8601: '2021-06-01',
+          month: 'Jan',
+          monthIso8601: '2021-01-01',
           minutes: 5,
           sharedRunnersDuration: 60,
         },
         {
-          month: 'July',
-          monthIso8601: '2021-07-01',
+          month: 'June',
+          monthIso8601: '2022-06-01',
           minutes: 0,
           sharedRunnersDuration: 0,
         },
         {
+          month: 'July',
+          monthIso8601: '2022-07-01',
+          minutes: 5,
+          sharedRunnersDuration: 60,
+        },
+        {
           month: 'August',
           monthIso8601: '2022-08-01',
-          minutes: 5,
+          minutes: 7,
           sharedRunnersDuration: 80,
         },
       ],

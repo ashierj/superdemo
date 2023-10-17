@@ -6,9 +6,10 @@ import {
   GlFormGroup,
   GlCollapsibleListbox,
   GlModalDirective,
+  GlSprintf,
 } from '@gitlab/ui';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
-import { s__, sprintf } from '~/locale';
+import { sprintf } from '~/locale';
 import { formatDate, getMonthNames } from '~/lib/utils/datetime_utility';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -44,6 +45,7 @@ export default {
     GlButton,
     GlLoadingIcon,
     GlFormGroup,
+    GlSprintf,
     LimitedAccessModal,
     ProjectList,
     UsageOverview,
@@ -83,7 +85,7 @@ export default {
       ciMinutesUsage: [],
       projectsCiMinutesUsage: [],
       selectedYear: year,
-      selectedMonth: month,
+      selectedMonth: month, // 0-based month index
       subscriptionPermissions: null,
       isLimitedAccessModalShown: false,
     };
@@ -148,13 +150,7 @@ export default {
   },
   computed: {
     selectedDateInIso8601() {
-      // NOTE: month indexes in JS start from 0. So `(new Date()).getMonth()` for
-      // January would be 0. To keep indexes in data humane, it required a few +1
-      // and -1 operations with month indexes in this component. Though the result
-      // might be not worth the effort juggling the indexes. We can change this to
-      // keep 0-based indexes and do a +1 only before we need to present data in
-      // text format.
-      return formatIso8601Date(this.selectedYear, this.selectedMonth + 1, 1);
+      return formatIso8601Date(this.selectedYear, this.selectedMonth, 1);
     },
     selectedMonthProjectData() {
       const monthData = this.projectsCiMinutesUsage.find((usage) => {
@@ -216,14 +212,8 @@ export default {
         value: index,
       }));
     },
-    projectsTableInfoMessage() {
-      return sprintf(
-        s__('UsageQuota|The chart and the table below show usage for %{month} %{year}'),
-        {
-          month: getMonthNames()[this.selectedMonth],
-          year: this.selectedYear,
-        },
-      );
+    selectedMonthName() {
+      return getMonthNames()[this.selectedMonth];
     },
     shouldShowLimitedAccessModal() {
       // NOTE: we're using existing flag for seats `canAddSeats`, to infer
@@ -302,67 +292,65 @@ export default {
     </gl-alert>
 
     <section v-else>
-      <section>
-        <div
-          v-if="shouldShowBuyAdditionalMinutes"
-          class="gl-display-flex gl-justify-content-end gl-py-3"
+      <div
+        v-if="shouldShowBuyAdditionalMinutes"
+        class="gl-display-flex gl-justify-content-end gl-py-3"
+      >
+        <gl-button
+          v-if="!shouldShowLimitedAccessModal"
+          :href="buyAdditionalMinutesPath"
+          :target="buyAdditionalMinutesTarget"
+          :aria-label="$options.LABEL_BUY_ADDITIONAL_MINUTES"
+          :data-track-label="namespaceActualPlanName"
+          data-testid="buy-ci-minutes"
+          data-track-action="click_buy_ci_minutes"
+          data-track-property="pipeline_quota_page"
+          category="primary"
+          variant="confirm"
+          class="js-buy-additional-minutes"
+          @click="trackBuyAdditionalMinutesClick"
         >
-          <gl-button
-            v-if="!shouldShowLimitedAccessModal"
-            :href="buyAdditionalMinutesPath"
-            :target="buyAdditionalMinutesTarget"
-            :aria-label="$options.LABEL_BUY_ADDITIONAL_MINUTES"
-            :data-track-label="namespaceActualPlanName"
-            data-testid="buy-ci-minutes"
-            data-track-action="click_buy_ci_minutes"
-            data-track-property="pipeline_quota_page"
-            category="primary"
-            variant="confirm"
-            class="js-buy-additional-minutes"
-            @click="trackBuyAdditionalMinutesClick"
-          >
-            {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
-          </gl-button>
-          <gl-button
-            v-else
-            v-gl-modal-directive="'limited-access-modal-id'"
-            category="primary"
-            variant="confirm"
-            class="js-buy-additional-minutes"
-            @click="showLimitedAccessModal"
-          >
-            {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
-          </gl-button>
-          <limited-access-modal
-            v-if="shouldShowLimitedAccessModal"
-            v-model="isLimitedAccessModalShown"
-            :limited-access-reason="subscriptionPermissions.reason"
-          />
-        </div>
-        <usage-overview
-          :class="{ 'gl-pt-5': !shouldShowBuyAdditionalMinutes }"
-          :minutes-title="monthlyUsageTitle"
-          :minutes-used="monthlyMinutesUsed"
-          minutes-used-testid-selector="plan-ci-minutes"
-          :minutes-used-percentage="usagePercentage(ciMinutesMonthlyMinutesUsedPercentage)"
-          :minutes-limit="ciMinutesMonthlyMinutesLimit"
-          :help-link-href="$options.CI_MINUTES_HELP_LINK"
-          :help-link-label="$options.CI_MINUTES_HELP_LINK_LABEL"
-          data-testid="monthly-usage-overview"
+          {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
+        </gl-button>
+        <gl-button
+          v-else
+          v-gl-modal-directive="'limited-access-modal-id'"
+          category="primary"
+          variant="confirm"
+          class="js-buy-additional-minutes"
+          @click="showLimitedAccessModal"
+        >
+          {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
+        </gl-button>
+        <limited-access-modal
+          v-if="shouldShowLimitedAccessModal"
+          v-model="isLimitedAccessModalShown"
+          :limited-access-reason="subscriptionPermissions.reason"
         />
-        <usage-overview
-          v-if="shouldShowAdditionalMinutes"
-          class="gl-pt-5"
-          :minutes-title="$options.ADDITIONAL_MINUTES"
-          :minutes-used="purchasedMinutesUsed"
-          minutes-used-testid-selector="additional-ci-minutes"
-          :minutes-used-percentage="usagePercentage(ciMinutesPurchasedMinutesUsedPercentage)"
-          :minutes-limit="ciMinutesPurchasedMinutesLimit"
-          :help-link-href="$options.ADDITIONAL_MINUTES_HELP_LINK"
-          :help-link-label="$options.ADDITIONAL_MINUTES"
-          data-testid="purchased-usage-overview"
-        />
-      </section>
+      </div>
+      <usage-overview
+        :class="{ 'gl-pt-5': !shouldShowBuyAdditionalMinutes }"
+        :minutes-title="monthlyUsageTitle"
+        :minutes-used="monthlyMinutesUsed"
+        minutes-used-testid-selector="plan-ci-minutes"
+        :minutes-used-percentage="usagePercentage(ciMinutesMonthlyMinutesUsedPercentage)"
+        :minutes-limit="ciMinutesMonthlyMinutesLimit"
+        :help-link-href="$options.CI_MINUTES_HELP_LINK"
+        :help-link-label="$options.CI_MINUTES_HELP_LINK_LABEL"
+        data-testid="monthly-usage-overview"
+      />
+      <usage-overview
+        v-if="shouldShowAdditionalMinutes"
+        class="gl-pt-5"
+        :minutes-title="$options.ADDITIONAL_MINUTES"
+        :minutes-used="purchasedMinutesUsed"
+        minutes-used-testid-selector="additional-ci-minutes"
+        :minutes-used-percentage="usagePercentage(ciMinutesPurchasedMinutesUsedPercentage)"
+        :minutes-limit="ciMinutesPurchasedMinutesLimit"
+        :help-link-href="$options.ADDITIONAL_MINUTES_HELP_LINK"
+        :help-link-label="$options.ADDITIONAL_MINUTES"
+        data-testid="purchased-usage-overview"
+      />
     </section>
 
     <div class="gl-display-flex gl-my-5">
@@ -416,7 +404,14 @@ export default {
 
       <template v-else>
         <gl-alert :dismissible="false" class="gl-my-3" data-testid="project-usage-info-alert">
-          {{ projectsTableInfoMessage }}
+          <gl-sprintf
+            :message="
+              s__('UsageQuota|The chart and the table below show usage for %{month} %{year}')
+            "
+          >
+            <template #month>{{ selectedMonthName }}</template>
+            <template #year>{{ selectedYear }}</template>
+          </gl-sprintf>
         </gl-alert>
 
         <minutes-usage-per-project
