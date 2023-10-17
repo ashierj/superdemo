@@ -27,7 +27,8 @@ module GitlabSubscriptions
       {
         uid: user.id,
         work_email: user.email,
-        setup_for_company: user.setup_for_company
+        setup_for_company: user.setup_for_company,
+        preferred_language: ::Gitlab::I18n.trimmed_language_name(user.preferred_language)
       }
     end
 
