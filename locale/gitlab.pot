@@ -21150,9 +21150,6 @@ msgstr ""
 msgid "Geo|Filter by name"
 msgstr ""
 
-msgid "Geo|Filter by status"
-msgstr ""
-
 msgid "Geo|Geo Settings"
 msgstr ""
 
