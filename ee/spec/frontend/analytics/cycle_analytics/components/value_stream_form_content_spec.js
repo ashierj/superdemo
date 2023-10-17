@@ -1,4 +1,4 @@
-import { GlModal, GlFormInput } from '@gitlab/ui';
+import { GlAlert, GlModal, GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
@@ -119,6 +119,7 @@ describe('ValueStreamFormContent', () => {
   const findFieldErrors = (testId) => wrapper.findByTestId(testId).attributes('invalid-feedback');
   const findNameInput = () =>
     wrapper.findByTestId('create-value-stream-name').findComponent(GlFormInput);
+  const findSubmitErrorAlert = () => wrapper.findComponent(GlAlert);
 
   const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
   const clickAddStage = () => findModal().vm.$emit('secondary', mockEvent);
@@ -370,6 +371,12 @@ describe('ValueStreamFormContent', () => {
         it('renders errors for the name field', () => {
           expectFieldError('create-value-stream-name', formSubmissionErrors.name[0]);
         });
+
+        it('renders a dismissible generic alert error', async () => {
+          expect(findSubmitErrorAlert().exists()).toBe(true);
+          await findSubmitErrorAlert().vm.$emit('dismiss');
+          expect(findSubmitErrorAlert().exists()).toBe(false);
+        });
       });
     });
   });
@@ -586,6 +593,12 @@ describe('ValueStreamFormContent', () => {
 
         it('renders errors for a custom stage field', () => {
           expectFieldError('custom-stage-name-0', formSubmissionErrors.stages[0].name[0]);
+        });
+
+        it('renders a dismissible generic alert error', async () => {
+          expect(findSubmitErrorAlert().exists()).toBe(true);
+          await findSubmitErrorAlert().vm.$emit('dismiss');
+          expect(findSubmitErrorAlert().exists()).toBe(false);
         });
       });
     });

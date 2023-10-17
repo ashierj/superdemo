@@ -41,6 +41,9 @@ export const i18n = {
   DEFAULT_STAGE_FEATURES: s__(
     'CreateValueStreamForm|Default stages can only be hidden or re-ordered',
   ),
+  SUBMIT_FAILED: s__(
+    'CreateValueStreamForm|An error occurred while creating the custom value stream. Try again.',
+  ),
 };
 
 export const ERRORS = {
