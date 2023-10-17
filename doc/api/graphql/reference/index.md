@@ -13981,6 +13981,18 @@ Represents how the blob content should be displayed.
 | <a id="blobviewertoolarge"></a>`tooLarge` | [`Boolean!`](#boolean) | Shows whether the blob is too large to be displayed. |
 | <a id="blobviewertype"></a>`type` | [`BlobViewersType!`](#blobviewerstype) | Type of blob viewer. |
 
+### `BlockingMergeRequests`
+
+Information about the rules that must be satisfied to merge this merge request.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="blockingmergerequestshiddencount"></a>`hiddenCount` | [`Int!`](#int) | Blocking merge requests not visible to the user. |
+| <a id="blockingmergerequeststotalcount"></a>`totalCount` | [`Int!`](#int) | Total number of blocking merge requests. |
+| <a id="blockingmergerequestsvisiblemergerequests"></a>`visibleMergeRequests` | [`[MergeRequest!]`](#mergerequest) | Blocking merge requests visible to the user. |
+
 ### `Board`
 
 Represents a project or group issue board.
@@ -19770,6 +19782,7 @@ Defines which user roles, users, or groups can merge into a protected branch.
 | <a id="mergerequestautomergestrategy"></a>`autoMergeStrategy` | [`String`](#string) | Selected auto merge strategy. |
 | <a id="mergerequestavailableautomergestrategies"></a>`availableAutoMergeStrategies` | [`[String!]`](#string) | Array of available auto merge strategies. |
 | <a id="mergerequestawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of emoji reactions associated with the merge request. (see [Connections](#connections)) |
+| <a id="mergerequestblockingmergerequests"></a>`blockingMergeRequests` **{warning-solid}** | [`BlockingMergeRequests`](#blockingmergerequests) | **Introduced** in 16.5. This feature is an Experiment. It can be changed or removed at any time. Merge requests that block another merge request from merging. |
 | <a id="mergerequestcodequalityreportscomparer"></a>`codequalityReportsComparer` **{warning-solid}** | [`CodequalityReportsComparer`](#codequalityreportscomparer) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. Code quality reports comparison reported on the merge request. Returns `null` if `sast_reports_in_inline_diff` feature flag is disabled. |
 | <a id="mergerequestcommenters"></a>`commenters` | [`UserCoreConnection!`](#usercoreconnection) | All commenters on this noteable. (see [Connections](#connections)) |
 | <a id="mergerequestcommitcount"></a>`commitCount` | [`Int`](#int) | Number of commits in the merge request. |
