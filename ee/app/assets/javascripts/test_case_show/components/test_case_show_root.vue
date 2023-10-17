@@ -6,6 +6,7 @@ import {
   GlLink,
   GlAlert,
   GlDisclosureDropdown,
+  GlDisclosureDropdownGroup,
   GlDisclosureDropdownItem,
 } from '@gitlab/ui';
 
@@ -34,6 +35,7 @@ export default {
     IssuableShow,
     TestCaseSidebar,
     GlDisclosureDropdown,
+    GlDisclosureDropdownGroup,
     GlDisclosureDropdownItem,
   },
   mixins: [TestCaseGraphQL],
@@ -80,6 +82,9 @@ export default {
         ...label,
         id: getIdFromGraphQLId(label.id),
       }));
+    },
+    toggleTestCaseStateItem() {
+      return { text: this.testCaseActionTitle, action: this.handleTestCaseStateChange };
     },
     newTestCaseItem() {
       return { text: __('New test case'), href: this.testCaseNewPath };
@@ -186,21 +191,23 @@ export default {
         <gl-disclosure-dropdown
           v-if="canEditTestCase"
           data-testid="actions-dropdown"
-          class="d-md-none gl-flex-grow-1"
+          class="gl-md-display-none gl-ml-auto"
+          placement="right"
           category="secondary"
           :toggle-text="__('Options')"
         >
-          <gl-disclosure-dropdown-item @action="handleTestCaseStateChange">
-            <template #list-item>
-              {{ testCaseActionTitle }}
-            </template>
-          </gl-disclosure-dropdown-item>
-          <gl-disclosure-dropdown-item :item="newTestCaseItem" />
+          <gl-disclosure-dropdown-item
+            :item="toggleTestCaseStateItem"
+            data-testid="toggle-state-dropdown-item"
+          />
+          <gl-disclosure-dropdown-group bordered>
+            <gl-disclosure-dropdown-item :item="newTestCaseItem" />
+          </gl-disclosure-dropdown-group>
         </gl-disclosure-dropdown>
         <gl-button
           v-if="canEditTestCase"
           data-testid="archive-test-case"
-          class="d-none d-md-inline-block gl-mr-2"
+          class="gl-display-none gl-md-display-inline-block gl-mr-2"
           :loading="testCaseStateChangeInProgress"
           @click="handleTestCaseStateChange"
           >{{ testCaseActionTitle }}</gl-button
@@ -209,8 +216,8 @@ export default {
           data-testid="new-test-case"
           category="secondary"
           variant="confirm"
-          class="d-md-inline-block"
-          :class="{ 'd-none': canEditTestCase, 'gl-flex-grow-1': !canEditTestCase }"
+          class="gl-md-display-inline-block"
+          :class="{ 'gl-display-none': canEditTestCase, 'gl-flex-grow-1': !canEditTestCase }"
           :href="testCaseNewPath"
           >{{ __('New test case') }}</gl-button
         >
@@ -222,13 +229,13 @@ export default {
           :loading="testCaseSaveInProgress"
           category="primary"
           variant="confirm"
-          class="float-left"
+          class="gl-float-left"
           @click.prevent="handleSaveTestCase(issuableMeta)"
           >{{ __('Save changes') }}</gl-button
         >
         <gl-button
           data-testid="cancel-test-case-edit"
-          class="float-right"
+          class="gl-float-right"
           @click="handleCancelClick"
         >
           {{ __('Cancel') }}
