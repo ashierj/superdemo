@@ -39,27 +39,27 @@ module Gitlab
 
             return unless text.present?
 
-            output = text.split("#{CONTENT_ID_FIELD}:")
-            msg = output[0].strip
-
-            sources = if msg.match(NO_ANSWER_REGEX)
-                        []
-                      else
-                        ids = output[1].scan(CONTENT_ID_REGEX).flatten.map(&:to_i)
-                        documents = embeddings_model_class.id_in(ids).select(:url, :metadata)
-                        documents.map do |doc|
-                          { source_url: doc.url }.merge(doc.metadata)
-                        end.uniq
-                      end
+            message, source_ids = text.split("#{CONTENT_ID_FIELD}:")
+            message.strip!
 
             {
-              content: msg,
+              content: message,
               extras: {
-                sources: sources
+                sources: message.match?(NO_ANSWER_REGEX) ? [] : find_sources(source_ids)
               }
             }
           end
           strong_memoize_attr :parsed_response
+
+          def find_sources(source_ids)
+            return [] if source_ids.blank?
+
+            ids = source_ids.match(CONTENT_ID_REGEX).captures.map(&:to_i)
+            documents = embeddings_model_class.id_in(ids).select(:url, :metadata)
+            documents.map do |doc|
+              { source_url: doc.url }.merge(doc.metadata)
+            end.uniq
+          end
 
           def embeddings_model_class
             if Feature.enabled?(:use_embeddings_with_vertex, current_user)
