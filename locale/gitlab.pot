@@ -22623,12 +22623,6 @@ msgstr ""
 msgid "Group membership expiration date removed"
 msgstr ""
 
-msgid "Group mention in private"
-msgstr ""
-
-msgid "Group mention in public"
-msgstr ""
-
 msgid "Group milestone"
 msgstr ""
 
@@ -25266,6 +25260,12 @@ msgid "IntegrationEvents|A confidential issue is created, closed, or reopened"
 msgstr ""
 
 msgid "IntegrationEvents|A deployment is started or finished"
+msgstr ""
+
+msgid "IntegrationEvents|A group is mentioned in a confidential context"
+msgstr ""
+
+msgid "IntegrationEvents|A group is mentioned in a public context"
 msgstr ""
 
 msgid "IntegrationEvents|A merge request is created, merged, closed, or reopened"
@@ -37019,12 +37019,6 @@ msgid "ProjectService|Trigger event when a confidential issue is created, update
 msgstr ""
 
 msgid "ProjectService|Trigger event when a deployment starts or finishes."
-msgstr ""
-
-msgid "ProjectService|Trigger event when a group is mentioned in a confidential context."
-msgstr ""
-
-msgid "ProjectService|Trigger event when a group is mentioned in a public context."
 msgstr ""
 
 msgid "ProjectService|Trigger event when a merge request is created, updated, or merged."
