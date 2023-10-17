@@ -83,6 +83,17 @@ RSpec.describe 'Updating the dependency proxy packages settings', :aggregate_fai
           end
         end
       end
+
+      context 'with a non existing project path' do
+        let(:params) { super().merge!(project_path: 'non_existing/project/path') }
+
+        it 'returns the resource access error' do
+          project.add_maintainer(user)
+
+          expect { subject }.to not_change { ::DependencyProxy::Packages::Setting.count }
+          expect_graphql_errors_to_include(::Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR)
+        end
+      end
     end
 
     context 'without permission' do
