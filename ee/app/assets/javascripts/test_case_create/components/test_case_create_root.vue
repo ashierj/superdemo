@@ -3,12 +3,14 @@ import { GlButton } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { TYPE_TEST_CASE } from '~/issues/constants';
 
 import { s__ } from '~/locale';
 
 import createTestCase from '../queries/create_test_case.mutation.graphql';
 
 export default {
+  TYPE_TEST_CASE,
   components: {
     GlButton,
     IssuableCreate,
@@ -27,7 +29,12 @@ export default {
     };
   },
   methods: {
-    handleTestCaseSubmitClick({ issuableTitle, issuableDescription, selectedLabels }) {
+    handleTestCaseSubmitClick({
+      issuableTitle,
+      issuableDescription,
+      issuableConfidential,
+      selectedLabels,
+    }) {
       this.createTestCaseRequestActive = true;
       return this.$apollo
         .mutate({
@@ -37,6 +44,7 @@ export default {
               projectPath: this.projectFullPath,
               title: issuableTitle,
               description: issuableDescription,
+              confidential: issuableConfidential,
               labelIds: selectedLabels.map((label) => label.id),
             },
           },
@@ -75,6 +83,7 @@ export default {
     :description-help-path="descriptionHelpPath"
     :labels-fetch-path="labelsFetchPath"
     :labels-manage-path="labelsManagePath"
+    :issuable-type="$options.TYPE_TEST_CASE"
   >
     <template #title>
       <h1 class="page-title gl-font-size-h-display">{{ s__('TestCases|New test case') }}</h1>

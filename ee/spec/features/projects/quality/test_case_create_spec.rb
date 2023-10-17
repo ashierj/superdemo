@@ -17,28 +17,25 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
   end
 
   context 'test case create form' do
+    let(:title) { 'Sample title' }
+    let(:description) { 'Sample _test case_ description.' }
+
     before do
       visit new_project_quality_test_case_path(project)
 
       wait_for_requests
     end
 
-    it 'shows page title, title, description and label input fields' do
+    it 'shows page title, title, description, confidentiality and label input fields' do
       page.within('.issuable-create-container') do
         expect(page.find('.page-title')).to have_content('New test case')
       end
 
       page.within('.issuable-create-container form') do
-        form_fields = page.find_all('.row')
-
-        expect(form_fields[0].find('label')).to have_content('Title')
-        expect(form_fields[0]).to have_selector('input#issuable-title')
-
-        expect(form_fields[1].find('label')).to have_content('Description')
-        expect(form_fields[1]).to have_selector('.js-vue-markdown-field')
-
-        expect(form_fields[2].find('label')).to have_content('Labels')
-        expect(form_fields[2]).to have_selector('.labels-select-wrapper')
+        expect(find_by_testid('issuable-title')).to have_selector('input#issuable-title')
+        expect(find_by_testid('issuable-description')).to have_selector('.js-vue-markdown-field')
+        expect(find_by_testid('issuable-confidential')).to have_selector('input#issuable-confidential')
+        expect(find_by_testid('issuable-labels')).to have_selector('.labels-select-wrapper')
       end
     end
 
@@ -60,27 +57,53 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
       end
     end
 
-    it 'creates a test case on saving form' do
-      title = 'Sample title'
-      description = 'Sample _test case_ description.'
-
-      page.within('.issuable-create-container form') do
-        form_fields = page.find_all('.row')
-
-        form_fields[0].find('input#issuable-title').native.send_keys title
-        form_fields[1].find('textarea#issuable-description').native.send_keys description
-        form_fields[2].find('.js-dropdown-button').click
-
-        wait_for_requests
-
-        form_fields[2].find_all('.js-labels-list .dropdown-content li')[0].click
+    context 'when creating a confidential test case' do
+      before do
+        fill_and_submit_form(confidential: true)
       end
 
-      click_button 'Submit test case'
+      it 'saves test case as confidential' do
+        page.within('.content-wrapper .project-test-cases') do
+          expect(page).to have_content(title)
+          expect(page).to have_css('[data-testid="eye-slash-icon"]')
+        end
+      end
+    end
 
-      wait_for_requests
+    context 'when creating a non-confidential test case' do
+      before do
+        fill_and_submit_form(confidential: false)
+      end
 
-      expect(page).to have_selector('.content-wrapper .project-test-cases')
+      it 'saves test case as non-confidential' do
+        page.within('.content-wrapper .project-test-cases') do
+          expect(page).to have_content(title)
+          expect(page).not_to have_css('[data-testid="eye-slash-icon"]')
+        end
+      end
     end
   end
+end
+
+private
+
+def fill_and_submit_form(confidential:)
+  page.within('.issuable-create-container form') do
+    fill_in _('Title'), with: title
+    fill_in _('Description'), with: description
+
+    find('#issuable-confidential').set(confidential)
+
+    click_button _('Label')
+
+    wait_for_requests
+
+    click_link _('bug')
+    click_link _('enhancement')
+    click_link _('documentation')
+  end
+
+  click_button 'Submit test case'
+
+  wait_for_requests
 end
