@@ -66,6 +66,7 @@ describe('TestCaseCreateRoot', () => {
                 name="actions"
                 issuable-title="${title}"
                 issuable-description="Test description"
+                :issuable-confidential="true"
                 :selected-labels="[]"
               ></slot>
             </div>
@@ -95,6 +96,7 @@ describe('TestCaseCreateRoot', () => {
       expect(mutationSuccessHandler).toHaveBeenCalledWith({
         createTestCaseInput: {
           description: 'Test description',
+          confidential: true,
           labelIds: [],
           projectPath: 'gitlab-org/gitlab-test',
           title: 'Test title',
@@ -144,7 +146,7 @@ describe('TestCaseCreateRoot', () => {
     });
   });
 
-  it('shows a warning  when mutation has recoverable error', async () => {
+  it('shows a warning when mutation has recoverable error', async () => {
     createComponent({
       title: 'Test title',
       handler: jest.fn().mockResolvedValue(mutationResponseError),
