@@ -77,7 +77,7 @@ module Registrations
         jtbd: update_params[:registration_objective],
         product_interaction: onboarding_status.iterable_product_interaction,
         opt_in: ::Gitlab::Utils.to_boolean(params[:opt_in_to_email], default: false),
-        preferred_language: current_user.preferred_language
+        preferred_language: ::Gitlab::I18n.trimmed_language_name(current_user.preferred_language)
       }.merge(update_params.slice(:setup_for_company, :role).to_h.symbolize_keys)
     end
 

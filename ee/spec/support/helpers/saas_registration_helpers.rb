@@ -595,7 +595,7 @@ module SaasRegistrationHelpers
         provider: 'gitlab',
         work_email: user.email,
         uid: user.id,
-        preferred_language: user.preferred_language,
+        preferred_language: 'English',
         comment: 'My reason',
         role: 'software_developer',
         jtbd: 'other',
