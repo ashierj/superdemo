@@ -107,6 +107,23 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
     ).to eq([pipeline.project_id, [dropped_ident2.id]])
   end
 
+  context 'when an error is raised' do
+    before do
+      allow(::Vulnerabilities::MarkDroppedAsResolvedWorker).to receive(:perform_in).and_raise(StandardError)
+    end
+
+    it 'tracks it' do
+      expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+        StandardError,
+        project_id: pipeline.project_id,
+        scan_type: 'sast',
+        primary_identifiers: [untriaged_ident]
+      )
+
+      service
+    end
+  end
+
   context 'when primary_identifiers is empty' do
     subject(:service) { described_class.new(pipeline.project_id, 'sast', []).execute }
 

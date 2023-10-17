@@ -376,6 +376,32 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
       end
     end
 
+    describe '.by_primary_identifiers' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:pipeline) { create(:ci_pipeline, user: user) }
+      let_it_be(:identifier) do
+        create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'PREDICTABLE_RANDOM')
+      end
+
+      let_it_be(:finding) do
+        create(:vulnerabilities_finding,
+          project_id: pipeline.project_id, primary_identifier_id: identifier.id, identifiers: [identifier]
+        )
+      end
+
+      let_it_be(:vulnerability) do
+        create(:vulnerability, :detected, resolved_on_default_branch: true, project_id: pipeline.project_id).tap do |vuln|
+          finding.update!(vulnerability_id: vuln.id)
+        end
+      end
+
+      subject(:identifier_findings) { described_class.by_primary_identifiers(identifier.id) }
+
+      it 'returns findings with given agent_id' do
+        expect(identifier_findings).to contain_exactly(finding)
+      end
+    end
+
     describe '#false_positive?' do
       let_it_be(:finding) { create(:vulnerabilities_finding) }
       let_it_be(:finding_with_fp) { create(:vulnerabilities_finding, vulnerability_flags: [create(:vulnerabilities_flag)]) }
