@@ -12,6 +12,7 @@ import { s__, sprintf } from '~/locale';
 import { formatDate, getMonthNames } from '~/lib/utils/datetime_utility';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { captureException } from '~/ci/runner/sentry_utils';
 import { pushEECproductAddToCartEvent } from 'ee/google_tag_manager';
 import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
 import getCiMinutesUsageNamespace from '../graphql/queries/ci_minutes.query.graphql';
@@ -102,8 +103,9 @@ export default {
       update(res) {
         return res?.ciMinutesUsage?.nodes;
       },
-      error() {
+      error(error) {
         this.error = ERROR_MESSAGE;
+        captureException({ error, component: this.$options.name });
       },
     },
     projectsCiMinutesUsage: {
@@ -122,8 +124,9 @@ export default {
       update(res) {
         return res?.ciMinutesUsage?.nodes;
       },
-      error() {
+      error(error) {
         this.error = ERROR_MESSAGE;
+        captureException({ error, component: this.$options.name });
       },
     },
     subscriptionPermissions: {
