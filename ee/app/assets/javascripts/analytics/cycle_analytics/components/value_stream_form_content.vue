@@ -1,5 +1,6 @@
 <script>
 import {
+  GlAlert,
   GlButton,
   GlForm,
   GlFormInput,
@@ -53,6 +54,7 @@ const initializeEditingStages = (stages = []) =>
 export default {
   name: 'ValueStreamFormContent',
   components: {
+    GlAlert,
     GlButton,
     GlForm,
     GlFormInput,
@@ -113,6 +115,7 @@ export default {
       name: initialName,
       nameErrors,
       stageErrors,
+      showSubmitError: false,
       ...additionalFields,
     };
   },
@@ -151,6 +154,9 @@ export default {
         attributes: { category: 'secondary', variant: 'confirm', class: '' },
       };
     },
+    cancelProps() {
+      return { text: this.$options.i18n.BTN_CANCEL };
+    },
     hasFormErrors() {
       return Boolean(
         this.nameErrors.length || this.stageErrors.some((obj) => Object.keys(obj).length),
@@ -178,6 +184,7 @@ export default {
   methods: {
     ...mapActions(['createValueStream', 'updateValueStream', 'fetchGroupLabels']),
     onSubmit() {
+      this.showSubmitError = false;
       this.validate();
       if (this.hasFormErrors) return false;
 
@@ -212,6 +219,7 @@ export default {
 
           this.nameErrors = nameErrors;
           this.stageErrors = stageErrors;
+          this.showSubmitError = true;
         }
       });
     },
@@ -341,9 +349,7 @@ export default {
     :title="formTitle"
     :action-primary="primaryProps"
     :action-secondary="secondaryProps"
-    :action-cancel="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-      text: $options.i18n.BTN_CANCEL,
-    } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+    :action-cancel="cancelProps"
     :hide-footer="isFetchingGroupLabels"
     @hidden.prevent="$emit('hidden')"
     @secondary.prevent="onAddStage"
@@ -351,6 +357,14 @@ export default {
   >
     <gl-loading-icon v-if="isFetchingGroupLabels" size="lg" color="dark" class="gl-my-12" />
     <gl-form v-else>
+      <gl-alert
+        v-if="showSubmitError"
+        variant="danger"
+        class="gl-mb-3"
+        @dismiss="showSubmitError = false"
+      >
+        {{ $options.i18n.SUBMIT_FAILED }}
+      </gl-alert>
       <gl-form-group
         data-testid="create-value-stream-name"
         label-for="create-value-stream-name"

@@ -14170,6 +14170,9 @@ msgstr ""
 msgid "CreateValueStreamForm|All default stages are currently visible"
 msgstr ""
 
+msgid "CreateValueStreamForm|An error occurred while creating the custom value stream. Try again."
+msgstr ""
+
 msgid "CreateValueStreamForm|Code stage start"
 msgstr ""
 
