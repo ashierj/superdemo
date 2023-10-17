@@ -37,8 +37,7 @@ RSpec.describe Mutations::MergeRequests::Accept do
 
     it "can use the MERGE_TRAIN strategy" do
       enum = ::Types::MergeStrategyEnum.values['MERGE_TRAIN']
-      merge_request = create(:merge_request, :with_test_reports,
-                             source_project: project)
+      merge_request = create(:merge_request, :with_test_reports, source_project: project)
 
       args = mutation_arguments(merge_request).merge(
         auto_merge_strategy: enum.value
@@ -51,8 +50,7 @@ RSpec.describe Mutations::MergeRequests::Accept do
 
     it "can use the ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS strategy" do
       enum = ::Types::MergeStrategyEnum.values['ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS']
-      merge_request = create(:merge_request, :with_head_pipeline,
-                             source_project: project)
+      merge_request = create(:merge_request, :with_head_pipeline, source_project: project)
 
       args = mutation_arguments(merge_request).merge(
         auto_merge_strategy: enum.value
