@@ -51,6 +51,12 @@ const GROUP_MEMBER_RESPONSE = {
             __typename: 'GroupMember',
           },
         ],
+        pageInfo: {
+          hasNextPage: false,
+          startCursor: 'start-cursor',
+          endCursor: 'end-cursor',
+          __typename: 'PageInfo',
+        },
         __typename: 'GroupMemberConnection',
       },
       __typename: 'Group',
