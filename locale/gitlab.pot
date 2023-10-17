@@ -56889,6 +56889,9 @@ msgstr ""
 msgid "mrWidget|Assign yourself to this issue"
 msgstr ""
 
+msgid "mrWidget|Auto-merge enabled"
+msgstr ""
+
 msgid "mrWidget|Cancel auto-merge"
 msgstr ""
 
