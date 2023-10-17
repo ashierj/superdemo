@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User searches for epics', :js, :disable_rate_limiter, feature_category: :global_search do
+RSpec.describe 'User searches for epics', :elastic, :sidekiq_inline, :js, :disable_rate_limiter, feature_category: :global_search do
   let_it_be(:user) { create(:user, :no_super_sidebar) }
   let_it_be(:group) { create(:group) }
   let_it_be(:epic1) { create(:epic, title: 'Foo', group: group, updated_at: 6.days.ago) }
@@ -29,47 +29,68 @@ RSpec.describe 'User searches for epics', :js, :disable_rate_limiter, feature_ca
     let(:additional_params) { { group_id: group.id } }
   end
 
-  it 'finds an epic' do
-    search_for_epic(epic1.title)
+  shared_examples 'searches for epics' do
+    it 'finds an epic' do
+      search_for_epic(epic1.title)
 
-    page.within('.results') do
-      expect(page).to have_link(epic1.title)
-      expect(page).to have_text('updated 6 days ago')
-      expect(page).not_to have_link(epic2.title)
+      page.within('.results') do
+        expect(page).to have_link(epic1.title)
+        expect(page).to have_text('updated 6 days ago')
+        expect(page).not_to have_link(epic2.title)
+      end
+    end
+
+    it 'hides confidential icon for non-confidential epics' do
+      search_for_epic(epic1.title)
+
+      page.within('.results') do
+        expect(page).not_to have_css('[data-testid="eye-slash-icon"]')
+      end
+    end
+
+    it 'shows confidential icon for confidential epics' do
+      search_for_epic(epic2.title)
+
+      page.within('.results') do
+        expect(page).to have_css('[data-testid="eye-slash-icon"]')
+      end
+    end
+
+    it 'shows correct badge for open epics' do
+      search_for_epic(epic1.title)
+
+      page.within('.results') do
+        expect(page).to have_css('.badge-success')
+        expect(page).not_to have_css('.badge-info')
+      end
+    end
+
+    it 'shows correct badge for closed epics' do
+      search_for_epic(epic2.title)
+
+      page.within('.results') do
+        expect(page).not_to have_css('.badge-success')
+        expect(page).to have_css('.badge-info')
+      end
     end
   end
 
-  it 'hides confidential icon for non-confidential epics' do
-    search_for_epic(epic1.title)
+  context 'when advanced_search is enabled' do
+    before do
+      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
-    page.within('.results') do
-      expect(page).not_to have_css('[data-testid="eye-slash-icon"]')
+      Elastic::ProcessBookkeepingService.track!(*[epic1, epic2])
+      ensure_elasticsearch_index!
     end
+
+    include_examples 'searches for epics'
   end
 
-  it 'shows confidential icon for confidential epics' do
-    search_for_epic(epic2.title)
-
-    page.within('.results') do
-      expect(page).to have_css('[data-testid="eye-slash-icon"]')
+  context 'when advanced_search is disabled' do
+    before do
+      stub_ee_application_setting(elasticsearch_search: false, elasticsearch_indexing: false)
     end
-  end
 
-  it 'shows correct badge for open epics' do
-    search_for_epic(epic1.title)
-
-    page.within('.results') do
-      expect(page).to have_css('.badge-success')
-      expect(page).not_to have_css('.badge-info')
-    end
-  end
-
-  it 'shows correct badge for closed epics' do
-    search_for_epic(epic2.title)
-
-    page.within('.results') do
-      expect(page).not_to have_css('.badge-success')
-      expect(page).to have_css('.badge-info')
-    end
+    include_examples 'searches for epics'
   end
 end

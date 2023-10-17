@@ -5,19 +5,31 @@ module Elastic
     class EpicClassProxy < ApplicationClassProxy
       include Elastic::Latest::Routing
 
-      attr_reader :group, :current_user, :options
+      attr_reader :groups, :current_user, :options
 
       def elastic_search(query, options: {})
-        @group = find_group_by_id(options)
         @current_user = options[:current_user]
         @options = options
+        @groups = find_groups_by_ids(options)
 
-        query_hash = if allowed?
-                       traversal_id = group.elastic_namespace_ancestry
+        query_hash = if !groups.empty? || current_user&.can_read_all_resources?
                        query_hash = basic_query_hash(%w[title^2 description], query, options)
-                       query_hash = traversal_ids_ancestry_filter(query_hash, [traversal_id], options)
+                       traversal_ids = if options[:search_scope] == 'global'
+                                         groups.map { |g| g.root_ancestor.elastic_namespace_ancestry }.uniq
+                                       else
+                                         groups.map(&:elastic_namespace_ancestry)
+                                       end
+
+                       unless current_user&.can_read_all_resources? && options[:search_scope] == 'global'
+                         query_hash = traversal_ids_ancestry_filter(query_hash, traversal_ids, options)
+                       end
+
                        query_hash = groups_filter(query_hash)
                        apply_sort(query_hash, options)
+                     elsif options[:search_scope] == 'global'
+                       # For Global Search we can show all the public epics
+                       query_hash = basic_query_hash(%w[title^2 description], query, options)
+                       public_visbility_filter(query_hash)
                      else
                        match_none
                      end
@@ -25,19 +37,14 @@ module Elastic
         search(query_hash, options)
       end
 
-      def find_group_by_id(options)
-        group_id = options[:group_ids]&.first
-        Group.find_by_id(group_id)
+      def find_groups_by_ids(options)
+        group_ids = options[:group_ids]
+        groups = Group.id_in(group_ids)
+        groups.select { |group| Ability.allowed?(current_user, :read_epic, group) }
       end
 
-      def group_and_descendants
-        @group_and_descendants ||= group.self_and_descendants
-      end
-
-      def allowed?
-        return false unless group
-
-        Ability.allowed?(current_user, :read_epic, group)
+      def groups_and_descendants
+        @groups_and_descendants ||= groups.flat_map(&:self_and_descendants)
       end
 
       def match_none
@@ -48,15 +55,10 @@ module Elastic
       end
 
       def groups_filter(query_hash)
-        # If a user is a member of a group, they also inherit access to all subgroups,
-        # so here we check if user is member of the current group by checking :read_confidential_epic.
-        # If that's the case we don't need further filtering.
-        return query_hash if Ability.allowed?(current_user, :read_confidential_epic, group)
-
-        # Filter for non-confidential epics OR confidential epics in subgroups having access to :read_confidential_epic.
-        shoulds = [{ term: { confidential: { value: false, _name: 'confidential:false' } } }]
-
-        group_ids = groups_can_read_confidential_epics.map(&:id)
+        group_ids = groups_user_can_read_confidential_epics.map(&:id)
+        shoulds = [
+          { term: { confidential: { value: false, _name: 'confidential:false' } } }
+        ]
 
         if group_ids.any?
           shoulds << {
@@ -78,16 +80,22 @@ module Elastic
         query_hash
       end
 
-      def groups_can_read_confidential_epics
-        Group.groups_user_can(group_and_descendants, current_user, :read_confidential_epic)
+      def public_visbility_filter(query_hash)
+        add_filter(query_hash, :query, :bool, :filter) do
+          { term: { visibility_level: { value: ::Gitlab::VisibilityLevel::PUBLIC } } }
+        end
+      end
+
+      def groups_user_can_read_confidential_epics
+        Group.groups_user_can(groups_and_descendants, current_user, :read_confidential_epic)
       end
 
       def routing_options(options)
-        group = find_group_by_id(options)
+        groups = find_groups_by_ids(options)
 
-        return {} unless group
+        return {} if options[:search_scope] == 'global' || groups.blank?
 
-        root_namespace_id = group.root_ancestor.id
+        root_namespace_id = groups[0].root_ancestor.id
 
         { routing: "group_#{root_namespace_id}" }
       end

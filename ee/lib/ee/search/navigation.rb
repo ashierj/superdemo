@@ -13,7 +13,7 @@ module EE
       private
 
       def show_epics_search_tab?
-        project.nil? && !!options[:show_epics]
+        project.nil? && !!options[:show_epics] && feature_flag_tab_enabled?(:global_search_epics_tab)
       end
     end
   end

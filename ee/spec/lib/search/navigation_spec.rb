@@ -14,19 +14,25 @@ RSpec.describe Search::Navigation, feature_category: :global_search do
     before do
       allow(search_navigation).to receive(:can?).and_return(true)
       allow(search_navigation).to receive(:tab_enabled_for_project?).and_return(false)
-      allow(search_navigation).to receive(:feature_flag_tab_enabled?).and_return(false)
+      allow(search_navigation).to receive(:feature_flag_tab_enabled?).and_return(feature_flag_enabled)
     end
 
     subject(:tabs) { search_navigation.tabs }
 
     context 'for epics tab' do
-      where(:project, :show_epics, :condition) do
-        nil | false | false
-        nil | nil | false
-        ref(:project_double) | true | false
-        ref(:project_double) | false | false
-        ref(:project_double) | nil | false
-        nil | true | true
+      where(:feature_flag_enabled, :project, :show_epics, :condition) do
+        false | nil | false | false
+        false | nil | nil | false
+        false | ref(:project_double) | true | false
+        false | ref(:project_double) | false | false
+        false | ref(:project_double) | nil | false
+        false | nil | true | false
+        true | nil | false | false
+        true | nil | nil | false
+        true | ref(:project_double) | true | false
+        true | ref(:project_double) | false | false
+        true | ref(:project_double) | nil | false
+        true | nil | true | true
       end
 
       with_them do

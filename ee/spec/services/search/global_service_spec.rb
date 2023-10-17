@@ -53,11 +53,12 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
   context 'visibility', :elastic_delete_by_query, :sidekiq_inline do
     include_context 'ProjectPolicyTable context'
 
-    let_it_be(:group) { create(:group) }
+    let_it_be_with_reload(:group) { create(:group) }
     let_it_be_with_reload(:project) { create(:project, namespace: group) }
     let(:projects) { [project] }
 
     let(:user) { create_user_from_membership(project, membership) }
+    let(:user_in_group) { create_user_from_membership(group, membership) }
 
     context 'merge request' do
       let!(:merge_request) { create :merge_request, target_project: project, source_project: project }
@@ -149,6 +150,28 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
 
       with_them do
         it_behaves_like 'search respects visibility'
+      end
+    end
+
+    context 'epic' do
+      let(:scope) { 'epics' }
+      let!(:epic) { create :epic, group: group }
+      let(:search) { epic.title }
+
+      where(:group_level, :membership, :admin_mode, :expected_count) do
+        permission_table_for_epics_access
+      end
+
+      with_them do
+        it 'respects visibility' do
+          enable_admin_mode!(user_in_group) if admin_mode
+
+          group.update!(visibility_level: Gitlab::VisibilityLevel.level_value(group_level.to_s))
+          ensure_elasticsearch_index!
+          expect_search_results(user_in_group, scope, expected_count: expected_count) do |user|
+            described_class.new(user, search: search).execute
+          end
+        end
       end
     end
 
