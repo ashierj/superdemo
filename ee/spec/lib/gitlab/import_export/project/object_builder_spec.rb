@@ -6,41 +6,49 @@ RSpec.describe Gitlab::ImportExport::Project::ObjectBuilder do
   let!(:group) { create(:group, :private) }
   let!(:subgroup) { create(:group, :private, parent: group) }
   let!(:project) do
-    create(:project, :repository,
-           :builds_disabled,
-           :issues_disabled,
-           name: 'project',
-           path: 'project',
-           group: subgroup)
+    create(
+      :project, :repository,
+      :builds_disabled,
+      :issues_disabled,
+      name: 'project',
+      path: 'project',
+      group: subgroup
+    )
   end
 
   context 'epics' do
     it 'finds the existing epic' do
       epic = create(:epic, title: 'epic', group: project.group)
 
-      expect(described_class.build(Epic,
-                                   'iid' => 1,
-                                   'title' => 'epic',
-                                   'group' => project.group,
-                                   'author_id' => project.creator.id)).to eq(epic)
+      expect(described_class.build(
+        Epic,
+        'iid' => 1,
+        'title' => 'epic',
+        'group' => project.group,
+        'author_id' => project.creator.id
+      )).to eq(epic)
     end
 
     it 'finds the existing epic in root ancestor' do
       epic = create(:epic, title: 'epic', group: group)
 
-      expect(described_class.build(Epic,
-                                   'iid' => 1,
-                                   'title' => 'epic',
-                                   'group' => project.group,
-                                   'author_id' => project.creator.id)).to eq(epic)
+      expect(described_class.build(
+        Epic,
+        'iid' => 1,
+        'title' => 'epic',
+        'group' => project.group,
+        'author_id' => project.creator.id
+      )).to eq(epic)
     end
 
     it 'creates a new epic' do
-      epic = described_class.build(Epic,
-                                   'iid' => 1,
-                                   'title' => 'epic',
-                                   'group' => project.group,
-                                   'author_id' => project.creator.id)
+      epic = described_class.build(
+        Epic,
+        'iid' => 1,
+        'title' => 'epic',
+        'group' => project.group,
+        'author_id' => project.creator.id
+      )
 
       expect(epic.persisted?).to be true
     end
@@ -74,11 +82,13 @@ RSpec.describe Gitlab::ImportExport::Project::ObjectBuilder do
 
     context 'when existing iteration does not exist' do
       it 'does not create a new iteration' do
-        expect(described_class.build(Iteration,
-                                     'iid' => 2,
-                                     'start_date' => '2022-01-01',
-                                     'due_date' => '2022-02-02',
-                                     'group' => project.group)).to eq(nil)
+        expect(described_class.build(
+          Iteration,
+          'iid' => 2,
+          'start_date' => '2022-01-01',
+          'due_date' => '2022-02-02',
+          'group' => project.group
+        )).to eq(nil)
       end
     end
   end
