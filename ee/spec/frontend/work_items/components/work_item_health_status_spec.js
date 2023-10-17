@@ -56,7 +56,6 @@ describe('WorkItemHealthStatus component', () => {
         workItemType,
       },
       provide: {
-        fullPath: 'test-project-path',
         hasIssuableHealthStatusFeature,
       },
     });

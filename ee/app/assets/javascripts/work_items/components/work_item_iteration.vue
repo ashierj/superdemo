@@ -46,8 +46,12 @@ export default {
     GlDropdownText,
   },
   mixins: [Tracking.mixin()],
-  inject: ['fullPath', 'hasIterationsFeature'],
+  inject: ['hasIterationsFeature'],
   props: {
+    fullPath: {
+      type: String,
+      required: true,
+    },
     iteration: {
       type: Object,
       required: false,
