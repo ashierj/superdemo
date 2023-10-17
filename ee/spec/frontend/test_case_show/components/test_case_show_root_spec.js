@@ -1,8 +1,15 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 
-import { GlBadge, GlLink, GlLoadingIcon, GlSprintf, GlAlert } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import {
+  GlBadge,
+  GlLink,
+  GlLoadingIcon,
+  GlSprintf,
+  GlAlert,
+  GlDisclosureDropdownItem,
+} from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import TestCaseShowRoot from 'ee/test_case_show/components/test_case_show_root.vue';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
@@ -39,6 +46,12 @@ describe('TestCaseShowRoot', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findIssuableShow = () => wrapper.findComponent(IssuableShow);
   const findTestCaseSidebar = () => wrapper.findComponent(TestCaseSidebar);
+  const findToggleStateButton = () => wrapper.findByTestId('archive-test-case');
+  const findToggleStateDropdownItem = () => wrapper.findByTestId('toggle-state-dropdown-item');
+
+  const toggleStateViaButton = () => findToggleStateButton().vm.$emit('click');
+  const toggleStateViaDropdown = () =>
+    findToggleStateDropdownItem().find('button').trigger('click');
 
   const createComponent = ({
     testCaseHandler = jest.fn().mockResolvedValue(mockTestCaseResponse()),
@@ -49,7 +62,7 @@ describe('TestCaseShowRoot', () => {
       [projectTestCaseTaskList, taskCompletionHandler],
     ]);
 
-    wrapper = shallowMount(TestCaseShowRoot, {
+    wrapper = shallowMountExtended(TestCaseShowRoot, {
       apolloProvider: mockApollo,
       provide: {
         ...mockProvide,
@@ -61,6 +74,7 @@ describe('TestCaseShowRoot', () => {
         IssuableBody,
         IssuableEditForm,
         IssuableSidebar,
+        GlDisclosureDropdownItem,
       },
     });
   };
@@ -128,31 +142,39 @@ describe('TestCaseShowRoot', () => {
         jest.spyOn(wrapper.vm, 'updateTestCase').mockResolvedValue(updateTestCase);
       });
 
-      it('sets `testCaseStateChangeInProgress` prop to true', () => {
-        wrapper.vm.handleTestCaseStateChange();
+      describe.each`
+        context                                 | trigger
+        ${'when clicking on the button'}        | ${toggleStateViaButton}
+        ${'when clicking on the dropdown item'} | ${toggleStateViaDropdown}
+      `('$context', ({ trigger }) => {
+        it('sets `testCaseStateChangeInProgress` prop to true', () => {
+          trigger();
 
-        expect(wrapper.vm.testCaseStateChangeInProgress).toBe(true);
-      });
-
-      it('calls `wrapper.vm.updateTestCase` with variable `stateEvent` and errorMessage string', () => {
-        wrapper.vm.handleTestCaseStateChange();
-
-        expect(wrapper.vm.updateTestCase).toHaveBeenCalledWith({
-          variables: {
-            stateEvent: 'CLOSE',
-          },
-          errorMessage: 'Something went wrong while updating the test case.',
+          expect(wrapper.vm.testCaseStateChangeInProgress).toBe(true);
         });
-      });
 
-      it('sets `testCase` prop with updated test case received in response', () => {
-        return wrapper.vm.handleTestCaseStateChange().then(() => {
+        it('calls `wrapper.vm.updateTestCase` with variable `stateEvent` and errorMessage string', () => {
+          trigger();
+
+          expect(wrapper.vm.updateTestCase).toHaveBeenCalledWith({
+            variables: {
+              stateEvent: 'CLOSE',
+            },
+            errorMessage: 'Something went wrong while updating the test case.',
+          });
+        });
+
+        it('sets `testCase` prop with updated test case received in response', async () => {
+          trigger();
+          await waitForPromises();
+
           expect(wrapper.vm.testCase).toBe(updateTestCase);
         });
-      });
 
-      it('sets `testCaseStateChangeInProgress` prop to false', () => {
-        return wrapper.vm.handleTestCaseStateChange().then(() => {
+        it('sets `testCaseStateChangeInProgress` prop to false', async () => {
+          trigger();
+          await waitForPromises();
+
           expect(wrapper.vm.testCaseStateChangeInProgress).toBe(false);
         });
       });
