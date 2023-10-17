@@ -45,8 +45,14 @@ module QA
             group.remove_via_api!
           end
 
-          it 'registers for a new trial',
-            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347671' do
+          it(
+            'registers for a new trial',
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347671',
+            quarantine: {
+              type: :investigating,
+              issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/428262"
+            }
+          ) do
             Flow::Trial.register_for_trial(group: group_for_trial)
 
             Page::Alert::FreeTrial.perform do |free_trial_alert|
