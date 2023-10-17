@@ -35,5 +35,16 @@ RSpec.describe Gitlab::Llm::Chain::StreamedAnswer, feature_category: :duo_chat d
         expect(streamed_answer.next_chunk(" ")).to eq({ id: 2, content: " " })
       end
     end
+
+    context 'when receiving empty chunks', :aggregate_failures do
+      it 'skips them', :aggregate_failures do
+        expect(streamed_answer.next_chunk("Final Answer:")).to be_nil
+        expect(streamed_answer.next_chunk("")).to be_nil
+        expect(streamed_answer.next_chunk("Hello")).to eq({ id: 1, content: "Hello" })
+        expect(streamed_answer.next_chunk(" ")).to eq({ id: 2, content: " " })
+        expect(streamed_answer.next_chunk("")).to be_nil
+        expect(streamed_answer.next_chunk("World")).to eq({ id: 3, content: "World" })
+      end
+    end
   end
 end

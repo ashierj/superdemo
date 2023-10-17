@@ -11,6 +11,7 @@ module Gitlab
         end
 
         def next_chunk(content)
+          return if content.empty?
           # If it already contains the final answer, we can return the content directly.
           # There is then also no longer the need to build the full message.
           return payload(content) if final_answer_started
