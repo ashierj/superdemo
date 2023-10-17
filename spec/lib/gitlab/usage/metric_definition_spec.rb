@@ -40,13 +40,10 @@ RSpec.describe Gitlab::Usage::MetricDefinition, feature_category: :service_ping 
     File.write(path, content)
   end
 
-  after do
-    # Reset memoized `definitions` result
-    described_class.instance_variable_set(:@definitions, nil)
-  end
-
-  it 'has all definitons valid' do
-    expect { described_class.definitions }.not_to raise_error
+  it 'has only valid definitions' do
+    described_class.all.each do |definition|
+      expect { definition.validate! }.not_to raise_error
+    end
   end
 
   describe 'not_removed' do
@@ -183,20 +180,6 @@ RSpec.describe Gitlab::Usage::MetricDefinition, feature_category: :service_ping 
         expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).at_least(:once).with(instance_of(Gitlab::Usage::MetricDefinition::InvalidError))
 
         described_class.new(path, attributes).validate!
-      end
-
-      context 'with skip_validation' do
-        it 'raise exception if skip_validation: false' do
-          expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).at_least(:once).with(instance_of(Gitlab::Usage::MetricDefinition::InvalidError))
-
-          described_class.new(path, attributes.merge( { skip_validation: false } )).validate!
-        end
-
-        it 'does not raise exception if has skip_validation: true' do
-          expect(Gitlab::ErrorTracking).not_to receive(:track_and_raise_for_dev_exception)
-
-          described_class.new(path, attributes.merge( { skip_validation: true } )).validate!
-        end
       end
     end
 
