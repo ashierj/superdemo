@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportFindings',
-feature_category: :continuous_integration do
+  feature_category: :continuous_integration do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository, :public) }

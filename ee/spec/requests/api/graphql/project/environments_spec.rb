@@ -17,8 +17,13 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
 
   context 'with protected environments' do
     let!(:protected_environment) do
-      create(:protected_environment, name: environment.name, project: project,
-                                     deploy_access_levels: deploy_access_levels, approval_rules: approval_rules)
+      create(
+        :protected_environment,
+        name: environment.name,
+        project: project,
+        deploy_access_levels: deploy_access_levels,
+        approval_rules: approval_rules
+      )
     end
 
     let(:deploy_access_levels) { [build(:protected_environment_deploy_access_level, :maintainer_access)] }
@@ -87,8 +92,9 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
     it 'returns deploy access levels', :aggregate_failures do
       subject
 
-      deploy_access_levels_data = graphql_data_at(:project, :environment, :protectedEnvironments, :nodes, 0,
-                                                  :deployAccessLevels, :nodes)
+      deploy_access_levels_data = graphql_data_at(
+        :project, :environment, :protectedEnvironments, :nodes, 0, :deployAccessLevels, :nodes
+      )
       expect(deploy_access_levels_data.count).to eq(1)
 
       deploy_access_level_data = deploy_access_levels_data.first
@@ -100,8 +106,9 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
     it 'returns approval rules', :aggregate_failures do
       subject
 
-      approval_rules_data = graphql_data_at(:project, :environment, :protectedEnvironments, :nodes, 0,
-                                            :approvalRules, :nodes)
+      approval_rules_data = graphql_data_at(
+        :project, :environment, :protectedEnvironments, :nodes, 0, :approvalRules, :nodes
+      )
       expect(approval_rules_data.count).to eq(1)
 
       approval_rule_data = approval_rules_data.first
@@ -113,8 +120,9 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
     it 'returns unified approval setting', :aggregate_failures do
       subject
 
-      required_approval_count = graphql_data_at(:project, :environment, :protectedEnvironments, :nodes, 0,
-                                                :requiredApprovalCount)
+      required_approval_count = graphql_data_at(
+        :project, :environment, :protectedEnvironments, :nodes, 0, :requiredApprovalCount
+      )
       expect(required_approval_count).to eq(0)
     end
 
@@ -125,8 +133,9 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
       it 'returns deploy access levels', :aggregate_failures do
         subject
 
-        deploy_access_level_data = graphql_data_at(:project, :environment, :protectedEnvironments, :nodes, 0,
-                                                   :deployAccessLevels, :nodes, 0)
+        deploy_access_level_data = graphql_data_at(
+          :project, :environment, :protectedEnvironments, :nodes, 0, :deployAccessLevels, :nodes, 0
+        )
         expect(deploy_access_level_data['group']).to be_nil
         expect(deploy_access_level_data['user']['name']).to eq(deployer.name)
         expect(deploy_access_level_data['accessLevel']).to be_nil
@@ -140,8 +149,9 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
       it 'returns approval rules', :aggregate_failures do
         subject
 
-        approval_rule_data = graphql_data_at(:project, :environment, :protectedEnvironments, :nodes, 0,
-                                             :approvalRules, :nodes, 0)
+        approval_rule_data = graphql_data_at(
+          :project, :environment, :protectedEnvironments, :nodes, 0, :approvalRules, :nodes, 0
+        )
         expect(approval_rule_data['group']).to be_nil
         expect(approval_rule_data['user']['name']).to eq(approver.name)
         expect(approval_rule_data['accessLevel']).to be_nil
@@ -155,8 +165,9 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
       it 'returns deploy access levels', :aggregate_failures do
         subject
 
-        deploy_access_level_data = graphql_data_at(:project, :environment, :protectedEnvironments, :nodes, 0,
-                                                   :deployAccessLevels, :nodes, 0)
+        deploy_access_level_data = graphql_data_at(
+          :project, :environment, :protectedEnvironments, :nodes, 0, :deployAccessLevels, :nodes, 0
+        )
         expect(deploy_access_level_data['group']['name']).to eq(deployer.name)
         expect(deploy_access_level_data['user']).to be_nil
         expect(deploy_access_level_data['accessLevel']).to be_nil
@@ -170,8 +181,9 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
       it 'returns approval rules', :aggregate_failures do
         subject
 
-        approval_rule_data = graphql_data_at(:project, :environment, :protectedEnvironments, :nodes, 0,
-                                             :approvalRules, :nodes, 0)
+        approval_rule_data = graphql_data_at(
+          :project, :environment, :protectedEnvironments, :nodes, 0, :approvalRules, :nodes, 0
+        )
         expect(approval_rule_data['group']['name']).to eq(approver.name)
         expect(approval_rule_data['user']).to be_nil
         expect(approval_rule_data['accessLevel']).to be_nil

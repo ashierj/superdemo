@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportFinding',
-feature_category: :continuous_integration do
+  feature_category: :continuous_integration do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository, :public) }
@@ -52,12 +52,14 @@ feature_category: :continuous_integration do
     report.merge!(report)
 
     scan.report_findings.each do |finding|
-      create(:security_finding,
-            severity: finding.severity,
-            project_fingerprint: finding.project_fingerprint,
-            deduplicated: true,
-            scan: scan,
-            uuid: finding.uuid)
+      create(
+        :security_finding,
+        severity: finding.severity,
+        project_fingerprint: finding.project_fingerprint,
+        deduplicated: true,
+        scan: scan,
+        uuid: finding.uuid
+      )
     end
   end
 
@@ -95,10 +97,12 @@ feature_category: :continuous_integration do
       context 'when the finding has been dismissed' do
         let!(:vulnerability) { create(:vulnerability, :dismissed, project: project) }
         let!(:vulnerability_finding) do
-          create(:vulnerabilities_finding,
-                 project: project,
-                 vulnerability: vulnerability,
-                 uuid: security_finding.uuid)
+          create(
+            :vulnerabilities_finding,
+            project: project,
+            vulnerability: vulnerability,
+            uuid: security_finding.uuid
+          )
         end
 
         it 'returns a finding in the dismissed state' do

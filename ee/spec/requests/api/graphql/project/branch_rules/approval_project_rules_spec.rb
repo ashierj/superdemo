@@ -9,12 +9,14 @@ RSpec.describe 'getting approval project rules for a branch rule', feature_categ
   let_it_be(:branch_rule) { create(:protected_branch) }
   let_it_be(:project) { branch_rule.project }
   let_it_be(:approval_project_rule) do
-    create(:approval_project_rule,
-           :requires_approval,
-           :license_scanning,
-           project: project,
-           protected_branches: [branch_rule],
-           users: [current_user])
+    create(
+      :approval_project_rule,
+      :requires_approval,
+      :license_scanning,
+      project: project,
+      protected_branches: [branch_rule],
+      users: [current_user]
+    )
   end
 
   let(:variables) { { path: project.full_path } }
