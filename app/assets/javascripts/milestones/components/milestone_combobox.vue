@@ -143,13 +143,13 @@ export default {
   <gl-collapsible-listbox
     :header-text="$options.translations.selectMilestone"
     :items="allMilestones"
-    :selected="selectedMilestones"
     :reset-button-label="$options.translations.deselect"
+    :searching="isLoading"
+    :selected="selectedMilestones"
     :toggle-text="selectedMilestonesLabel"
-    :loading="isLoading"
     block
-    searchable
     multiple
+    searchable
     @reset="selectNoMilestone"
     @search="onSearchBoxInput"
     @select="selectMilestone"
