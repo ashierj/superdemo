@@ -2896,7 +2896,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   end
 
   describe '#sbom_occurrences' do
-    subject { group.sbom_occurrences }
+    subject { group.sbom_occurrences(with_totals: true) }
 
     it { is_expected.to be_empty }
 

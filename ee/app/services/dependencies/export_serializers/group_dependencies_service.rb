@@ -38,7 +38,7 @@ module Dependencies
       end
 
       def group_dependencies
-        ::Sbom::DependenciesFinder.new(group).execute
+        group.sbom_occurrences(with_totals: false).order_by_id
       end
     end
   end

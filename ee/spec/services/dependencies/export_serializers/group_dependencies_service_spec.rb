@@ -35,9 +35,21 @@ RSpec.describe Dependencies::ExportSerializers::GroupDependenciesService, featur
 
     context 'when the group has dependencies' do
       let_it_be(:project) { create(:project, :public, group: group) }
+
+      let_it_be(:bundler) { create(:sbom_component, :bundler) }
+      let_it_be(:bundler_v1) { create(:sbom_component_version, component: bundler, version: "1.0.0") }
+
       let_it_be(:occurrence_1) { create(:sbom_occurrence, :mit, project: project) }
       let_it_be(:occurrence_2) { create(:sbom_occurrence, :apache_2, project: project) }
       let_it_be(:occurrence_3) { create(:sbom_occurrence, :apache_2, :mpl_2, project: project) }
+
+      let_it_be(:occurrence_of_bundler_v1) do
+        create(:sbom_occurrence, :mit, project: project, component: bundler, component_version: bundler_v1)
+      end
+
+      let_it_be(:other_occurrence_of_bundler_v1) do
+        create(:sbom_occurrence, :mit, project: project, component: bundler, component_version: bundler_v1)
+      end
 
       it 'includes each occurrence' do
         expect(dependencies).to eq([
@@ -61,6 +73,20 @@ RSpec.describe Dependencies::ExportSerializers::GroupDependenciesService, featur
             "packager" => occurrence_3.package_manager,
             "licenses" => occurrence_3.licenses,
             "location" => occurrence_3.location.as_json
+          },
+          {
+            "name" => occurrence_of_bundler_v1.component_name,
+            "version" => occurrence_of_bundler_v1.version,
+            "packager" => occurrence_of_bundler_v1.package_manager,
+            "licenses" => occurrence_of_bundler_v1.licenses,
+            "location" => occurrence_of_bundler_v1.location.as_json
+          },
+          {
+            "name" => other_occurrence_of_bundler_v1.component_name,
+            "version" => other_occurrence_of_bundler_v1.version,
+            "packager" => other_occurrence_of_bundler_v1.package_manager,
+            "licenses" => other_occurrence_of_bundler_v1.licenses,
+            "location" => other_occurrence_of_bundler_v1.location.as_json
           }
         ])
       end
