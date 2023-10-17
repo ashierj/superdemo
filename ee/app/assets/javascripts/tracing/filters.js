@@ -50,7 +50,7 @@ export function filterObjToQuery(filters) {
   return filterToQueryObject(
     {
       period: filters.period,
-      service: filters.serviceName,
+      service: filters.service,
       operation: filters.operation,
       trace_id: filters.traceId,
       durationMs: filters.durationMs,
@@ -77,7 +77,7 @@ export function filterObjToQuery(filters) {
 export function filterObjToFilterToken(filters) {
   return prepareTokens({
     [PERIOD_FILTER_TOKEN_TYPE]: filters.period,
-    [SERVICE_NAME_FILTER_TOKEN_TYPE]: filters.serviceName,
+    [SERVICE_NAME_FILTER_TOKEN_TYPE]: filters.service,
     [OPERATION_FILTER_TOKEN_TYPE]: filters.operation,
     [TRACE_ID_FILTER_TOKEN_TYPE]: filters.traceId,
     [DURATION_MS_FILTER_TOKEN_TYPE]: filters.durationMs,
@@ -87,7 +87,7 @@ export function filterObjToFilterToken(filters) {
 
 export function filterTokensToFilterObj(tokens) {
   const {
-    [SERVICE_NAME_FILTER_TOKEN_TYPE]: serviceName,
+    [SERVICE_NAME_FILTER_TOKEN_TYPE]: service,
     [PERIOD_FILTER_TOKEN_TYPE]: period = DEFAULT_PERIOD_FILTER,
     [OPERATION_FILTER_TOKEN_TYPE]: operation,
     [TRACE_ID_FILTER_TOKEN_TYPE]: traceId,
@@ -96,7 +96,7 @@ export function filterTokensToFilterObj(tokens) {
   } = processFilters(tokens);
 
   return {
-    serviceName,
+    service,
     period,
     operation,
     traceId,

@@ -75,7 +75,7 @@ describe('utils', () => {
 
       const query = filterObjToQuery({
         period: '7d',
-        serviceName: 'my_service',
+        service: 'my_service',
         operation: 'my_operation',
         traceId: 'my_trace_id',
         durationMs: '500',
@@ -110,7 +110,7 @@ describe('utils', () => {
 
       const tokens = filterObjToFilterToken({
         period: '7d',
-        serviceName: 'my_service',
+        service: 'my_service',
         operation: 'my_operation',
         traceId: 'my_trace_id',
         durationMs: '500',
@@ -145,7 +145,7 @@ describe('utils', () => {
 
       expect(processFilters).toHaveBeenCalledWith(mockTokens);
       expect(filterObj).toEqual({
-        serviceName: 'my_service',
+        service: 'my_service',
         period: '7d',
         operation: 'my_operation',
         traceId: 'my_trace_id',
