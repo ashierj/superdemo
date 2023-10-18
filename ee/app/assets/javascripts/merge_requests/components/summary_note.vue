@@ -33,6 +33,9 @@ export default {
       // eslint-disable-next-line no-underscore-dangle
       return this.summary.__typename === 'MergeRequestReviewLlmSummary';
     },
+    content() {
+      return this.summary.contentHtml || this.summary.content;
+    },
   },
 };
 </script>
@@ -60,7 +63,7 @@ export default {
         />
       </template>
       <template #content>
-        <p v-safe-html="summary.contentHtml" class="gl-m-0"></p>
+        <p v-safe-html="content" class="gl-m-0"></p>
       </template>
       <template #feedback>
         <user-feedback

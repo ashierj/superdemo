@@ -12,7 +12,7 @@ function createComponent(summary) {
 }
 
 describe('Merge request summary note component', () => {
-  it('renders summary note', () => {
+  it('renders summary note content HTML', () => {
     const contentHtml = '<div>AI</div> content';
     createComponent({
       createdAt: 'created-at',
@@ -20,6 +20,15 @@ describe('Merge request summary note component', () => {
     });
 
     expect(wrapper.find('p').element.innerHTML).toBe(contentHtml);
+  });
+
+  it('renders summary note content', () => {
+    createComponent({
+      createdAt: 'created-at',
+      content: 'Hello world',
+    });
+
+    expect(wrapper.find('p').text()).toBe('Hello world');
   });
 
   it('renders review note', () => {
