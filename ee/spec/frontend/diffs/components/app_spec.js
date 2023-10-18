@@ -1,6 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 
 import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import getMRCodequalityReports from '~/diffs/components/graphql/get_mr_codequality_reports.query.graphql';
 import { TEST_HOST } from 'spec/test_constants';
 import App from '~/diffs/components/app.vue';
 import store from '~/mr_notes/stores';
@@ -8,13 +11,16 @@ import store from '~/mr_notes/stores';
 const TEST_ENDPOINT = `${TEST_HOST}/diff/endpoint`;
 
 jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/stores'));
-
+Vue.use(VueApollo);
 Vue.config.ignoredElements = ['copy-code'];
 
 describe('diffs/components/app', () => {
   let mockDispatch;
+  let fakeApollo;
 
-  const createComponent = (props = {}, baseConfig = {}) => {
+  const codeQualityQueryHandlerSuccess = jest.fn().mockResolvedValue({});
+
+  const createComponent = (props = {}, baseConfig = {}, flags = {}) => {
     store.reset();
     store.getters.isNotesFetched = false;
     store.getters.getNoteableData = {
@@ -47,7 +53,15 @@ describe('diffs/components/app', () => {
 
     mockDispatch = jest.spyOn(store, 'dispatch');
 
+    fakeApollo = createMockApollo([[getMRCodequalityReports, codeQualityQueryHandlerSuccess]]);
+
     return shallowMount(App, {
+      apolloProvider: fakeApollo,
+      provide: {
+        glFeatures: {
+          ...flags,
+        },
+      },
       propsData: {
         endpointCoverage: `${TEST_HOST}/diff/endpointCoverage`,
         endpointCodequality: `${TEST_HOST}/diff/endpointCodequality`,
@@ -62,16 +76,38 @@ describe('diffs/components/app', () => {
   };
 
   describe('EE codequality diff', () => {
-    it('fetches code quality data when endpoint is provided', () => {
-      createComponent({ shouldShow: true });
+    describe('sastReportsInInlineDiff flag off', () => {
+      it('fetches Code Quality data via REST and not via GraphQL when endpoint is provided', () => {
+        createComponent({ shouldShow: true });
+        expect(codeQualityQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith('diffs/fetchCodequality');
+      });
 
-      expect(mockDispatch).toHaveBeenCalledWith('diffs/fetchCodequality');
+      it('does not fetch code quality data when endpoint is blank', () => {
+        createComponent({ shouldShow: true, endpointCodequality: '' });
+
+        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
+        expect(codeQualityQueryHandlerSuccess).not.toHaveBeenCalled();
+      });
     });
 
-    it('does not fetch code quality data when endpoint is blank', () => {
-      createComponent({ shouldShow: true, endpointCodequality: '' });
+    describe('sastReportsInInlineDiff flag on', () => {
+      it('fetches Code Quality data via GraphQL and not rest when endpoint is provided', () => {
+        createComponent({ shouldShow: true }, {}, { sastReportsInInlineDiff: true });
 
-      expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
+        expect(codeQualityQueryHandlerSuccess).toHaveBeenCalledTimes(1);
+        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
+      });
+
+      it('does not fetch code quality data when endpoint is blank', () => {
+        createComponent(
+          { shouldShow: false, endpointCodequality: '' },
+          {},
+          { sastReportsInInlineDiff: true },
+        );
+        expect(codeQualityQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
+      });
     });
   });
 });
