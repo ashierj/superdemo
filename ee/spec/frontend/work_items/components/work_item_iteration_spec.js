@@ -78,13 +78,13 @@ describe('WorkItemIteration component', () => {
       ]),
       propsData: {
         canUpdate,
+        fullPath: 'test-project-path',
         iteration,
         workItemId,
         workItemIid,
         workItemType,
       },
       provide: {
-        fullPath: 'test-project-path',
         hasIterationsFeature: true,
       },
       stubs: { GlDropdown, GlSearchBoxByType },

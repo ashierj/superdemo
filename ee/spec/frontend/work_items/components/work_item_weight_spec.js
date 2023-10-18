@@ -40,7 +40,6 @@ describe('WorkItemWeight component', () => {
         workItemType,
       },
       provide: {
-        fullPath: 'group/project',
         hasIssueWeightsFeature,
       },
     });

@@ -43,6 +43,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
         confidentialityMock,
       ]),
       propsData: {
+        fullPath: 'group/project',
         workItem,
       },
       provide: {
@@ -51,7 +52,6 @@ describe('EE WorkItemAttributesWrapper component', () => {
         hasOkrsFeature: true,
         hasIssuableHealthStatusFeature: true,
         projectNamespace: 'namespace',
-        fullPath: 'group/project',
       },
     });
   };

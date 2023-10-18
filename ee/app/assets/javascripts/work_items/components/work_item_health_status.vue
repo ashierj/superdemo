@@ -30,7 +30,7 @@ export default {
     IssueHealthStatus,
   },
   mixins: [Tracking.mixin()],
-  inject: ['fullPath', 'hasIssuableHealthStatusFeature'],
+  inject: ['hasIssuableHealthStatusFeature'],
   props: {
     healthStatus: {
       type: String,

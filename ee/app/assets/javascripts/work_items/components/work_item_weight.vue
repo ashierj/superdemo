@@ -48,7 +48,7 @@ export default {
     GlFormInput,
   },
   mixins: [Tracking.mixin()],
-  inject: ['fullPath', 'hasIssueWeightsFeature'],
+  inject: ['hasIssueWeightsFeature'],
   props: {
     canUpdate: {
       type: Boolean,
