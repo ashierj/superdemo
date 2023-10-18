@@ -53,7 +53,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
         update_epic(opts)
 
         expect(epic).to be_valid
-        expect(epic).to have_attributes(opts.except(:due_date_fixed, :start_date_fixed))
+        expect(epic).to have_attributes(opts.except(:due_date_fixed, :start_date_fixed, :state_event))
         expect(epic).to have_attributes(
           start_date_fixed: Date.strptime(opts[:start_date_fixed]),
           due_date_fixed: Date.strptime(opts[:due_date_fixed]),
