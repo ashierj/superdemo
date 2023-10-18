@@ -4,6 +4,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_section.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
+  ANY_MERGE_REQUEST,
   DEFAULT_SCAN_RESULT_POLICY,
   SCAN_RESULT_POLICY_SETTINGS_POLICY,
   getInvalidBranches,
@@ -256,6 +257,70 @@ describe('EditorComponent', () => {
         await findAllRuleBuilders().at(0).vm.$emit('remove', 0);
 
         expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
+      });
+
+      describe('settings', () => {
+        it('does not update the settings with the "scanResultPolicySettings" ff enabled and the "scanResultAnyMergeRequest" ff enabled', () => {
+          const newValue = { type: ANY_MERGE_REQUEST };
+          factory({
+            glFeatures: { scanResultPolicySettings: true, scanResultAnyMergeRequest: true },
+          });
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({
+              approval_settings: { block_protected_branch_modification: { enabled: true } },
+            }),
+          );
+          findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({
+              approval_settings: {
+                block_protected_branch_modification: { enabled: true },
+                prevent_approval_by_merge_request_author: { enabled: true },
+                prevent_approval_by_anyone_who_added_commit: { enabled: true },
+                remove_all_approvals_when_commit_added: { enabled: true },
+                require_user_password_to_approve: { enabled: true },
+              },
+            }),
+          );
+        });
+
+        it('does not update the settings with the "scanResultPolicySettings" ff enabled and the "scanResultAnyMergeRequest" ff disabled', () => {
+          const newValue = { type: ANY_MERGE_REQUEST };
+          factory({
+            glFeatures: { scanResultPolicySettings: true, scanResultAnyMergeRequest: false },
+          });
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({
+              approval_settings: { block_protected_branch_modification: { enabled: true } },
+            }),
+          );
+          findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({
+              approval_settings: { block_protected_branch_modification: { enabled: true } },
+            }),
+          );
+        });
+
+        it('does not update the settings with the "scanResultPolicySettings" ff disabled and the "scanResultAnyMergeRequest" ff enabled', () => {
+          const newValue = { type: ANY_MERGE_REQUEST };
+          factory({
+            glFeatures: { scanResultPolicySettings: false, scanResultAnyMergeRequest: true },
+          });
+          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
+          findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
+        });
+
+        it('does not update the settings with the "scanResultPolicySettings" ff disabled and the "scanResultAnyMergeRequest" ff disabled', () => {
+          const newValue = { type: ANY_MERGE_REQUEST };
+          factory({
+            glFeatures: { scanResultPolicySettings: false, scanResultAnyMergeRequest: false },
+          });
+          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
+          findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
+        });
       });
     });
 
