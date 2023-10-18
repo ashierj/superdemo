@@ -25,6 +25,12 @@ module GitlabSubscriptions
           add_on_purchase.delete_ineligible_user_assignments_in_batches!
         end
 
+        # #update_column used to skip validations and callbacks.
+        #
+        # See https://api.rubyonrails.org/v7.0.8/classes/ActiveRecord/Persistence.html#method-i-update_columns
+        # for more information.
+        add_on_purchase.update_column(:last_assigned_users_refreshed_at, Time.current)
+
         log_event(deleted_assignments_count) if deleted_assignments_count > 0
       end
 

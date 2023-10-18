@@ -29,6 +29,16 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
       end
     end
 
+    shared_examples 'updates last_assigned_users_refreshed_at attribute' do
+      specify do
+        freeze_time do
+          expect do
+            subject.perform(root_namespace_id)
+          end.to change { add_on_purchase.reload.last_assigned_users_refreshed_at }.from(nil).to(Time.current)
+        end
+      end
+    end
+
     context 'when root_namespace_id does not exists' do
       let(:root_namespace_id) { nil }
 
@@ -71,6 +81,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
       end
     end
 
+    it_behaves_like 'updates last_assigned_users_refreshed_at attribute'
+
     it 'logs an info about assignments refreshed' do
       expect(Gitlab::AppLogger).to receive(:info).with(
         message: 'AddOnPurchase user assignments refreshed in bulk',
@@ -87,6 +99,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
         namespace.add_guest(user_1)
         namespace.add_guest(user_2)
       end
+
+      it_behaves_like 'updates last_assigned_users_refreshed_at attribute'
 
       it 'does not log any info about assignments refreshed' do
         expect(Gitlab::AppLogger).not_to receive(:info)
