@@ -5491,6 +5491,9 @@ msgstr ""
 msgid "Analytics|Custom dashboards"
 msgstr ""
 
+msgid "Analytics|Custom events"
+msgstr ""
+
 msgid "Analytics|Dashboard not found"
 msgstr ""
 
@@ -5531,6 +5534,12 @@ msgid "Analytics|Error while saving dashboard"
 msgstr ""
 
 msgid "Analytics|Error while saving visualization."
+msgstr ""
+
+msgid "Analytics|Event Name"
+msgstr ""
+
+msgid "Analytics|Event Props"
 msgstr ""
 
 msgid "Analytics|Failed to fetch data"
@@ -5636,6 +5645,12 @@ msgid "Analytics|Updating visualization %{visualizationName}"
 msgstr ""
 
 msgid "Analytics|Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard."
+msgstr ""
+
+msgid "Analytics|User Id"
+msgstr ""
+
+msgid "Analytics|User Props"
 msgstr ""
 
 msgid "Analytics|Users"
