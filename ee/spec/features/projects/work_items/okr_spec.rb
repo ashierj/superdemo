@@ -8,10 +8,11 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   let(:user) { create(:user, :no_super_sidebar, name: 'Sherlock Holmes') }
   let(:user2) { create(:user, :no_super_sidebar, name: 'John') }
   let(:group) { create(:group, :public) }
-  let(:project) { create(:project, namespace: group) }
+  let(:project) { create(:project, :public, namespace: group) }
   let(:objective) { create(:work_item, :objective, project: project) }
   let!(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
   let(:key_result) { create(:work_item, :key_result, project: project) }
+  let(:label) { create(:label, project: project, title: "testing-label") }
 
   before do
     group.add_developer(user)
@@ -106,11 +107,12 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   end
 
   context 'for objective' do
-    before do
-      visit project_work_item_path(project, objective.iid)
-    end
-
     let(:work_item) { objective }
+    let(:work_items_path) { project_work_item_path(project, objective.iid) }
+
+    before do
+      visit work_items_path
+    end
 
     it 'assigns to multiple users' do
       find_by_testid('work-item-assignees-input').fill_in(with: user.username)
@@ -129,25 +131,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
       expect(work_item.reload.assignees).to include(user)
       expect(work_item.reload.assignees).to include(user2)
-    end
-
-    it 'updates the assignee in real-time' do
-      Capybara::Session.new(:other_session)
-
-      using_session :other_session do
-        visit project_work_item_path(project, objective.iid)
-        expect(work_item.reload.assignees).not_to include(user)
-      end
-
-      find_by_testid('work-item-assignees-input').hover
-      find_by_testid('assign-self').click
-      wait_for_requests
-
-      expect(work_item.reload.assignees).to include(user)
-
-      using_session :other_session do
-        expect(work_item.reload.assignees).to include(user)
-      end
     end
 
     it_behaves_like 'work items toggle status button'
@@ -281,7 +264,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
         click_button 'Close'
       end
 
-      visit project_work_item_path(project, objective.iid)
+      visit work_items_path
       wait_for_all_requests
 
       within_testid('work-item-tree') do
@@ -340,11 +323,12 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   end
 
   context 'for keyresult' do
-    before do
-      visit project_work_item_path(project, key_result.iid)
-    end
-
     let(:work_item) { key_result }
+    let(:work_items_path) { project_work_item_path(project, key_result.iid) }
+
+    before do
+      visit work_items_path
+    end
 
     it 'assigns to multiple users' do
       find_by_testid('work-item-assignees-input').fill_in(with: user.username)
