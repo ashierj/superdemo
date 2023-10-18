@@ -94,6 +94,11 @@ RSpec.describe SnippetsFinder do
       context 'when user cannot read_cross_project' do
         before do
           project.add_maintainer(user)
+
+          allow(Ability).to receive(:allowed?)
+                          .with(user, :read_all_resources)
+                          .and_return(false)
+
           allow(Ability).to receive(:allowed?)
                           .with(user, :read_cross_project)
                           .and_return(false)
