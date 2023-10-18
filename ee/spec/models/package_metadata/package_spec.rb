@@ -74,9 +74,24 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
           end
         end
 
-        context 'and the given version is a semver_dialects parse error' do
+        context 'and the given version causes semver_dialects to raise an exception while parsing' do
+          let(:input_version) { "1.0\n2.0" }
+
           it 'returns an empty array' do
-            expect(package.license_ids_for(version: "1.0\n2.0")).to be_empty
+            expect(package.license_ids_for(version: input_version)).to be_empty
+          end
+
+          it 'logs the exception' do
+            log_params = {
+              id: package.id, version: input_version, message: "semver_dialects parse error",
+              error: a_string_including("undefined method")
+            }
+
+            expect(Gitlab::ErrorTracking).to receive(:log_exception)
+              .with(an_instance_of(NoMethodError), **log_params)
+              .and_call_original
+
+            package.license_ids_for(version: input_version)
           end
         end
       end
