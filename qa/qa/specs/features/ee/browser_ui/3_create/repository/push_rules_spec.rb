@@ -2,8 +2,8 @@
 
 module QA
   RSpec.describe 'Create' do
-    context 'Push Rules' do
-      describe 'using non signed commits', product_group: :source_code do
+    describe 'Push Rules', product_group: :source_code do
+      context 'using non signed commits' do
         before(:context) do
           prepare
 
@@ -104,7 +104,7 @@ module QA
         end
       end
 
-      describe 'with commits restricted by author email to existing GitLab users' do
+      context 'with commits restricted by author email to existing GitLab users' do
         before do
           prepare
 
@@ -131,7 +131,7 @@ module QA
         end
       end
 
-      describe 'with commits restricted to verified emails' do
+      context 'with commits restricted to verified emails' do
         before do
           prepare
 
@@ -152,7 +152,7 @@ module QA
         end
       end
 
-      describe 'using signed commits' do
+      context 'using signed commits' do
         before do
           prepare
 

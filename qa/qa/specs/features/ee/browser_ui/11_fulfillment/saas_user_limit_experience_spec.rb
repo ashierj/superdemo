@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging },
-    product_group: :billing_and_subscription_management do
+    product_group: :subscription_management do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: group_owner) }

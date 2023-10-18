@@ -12,7 +12,7 @@ module QA
   RSpec.describe(
     'ModelOps',
     only: { pipeline: %w[staging-canary staging canary production] },
-    product_group: :ai_assisted
+    product_group: :code_creation
   ) do
     include Support::API
 
