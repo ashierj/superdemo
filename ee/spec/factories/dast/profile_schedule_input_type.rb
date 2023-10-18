@@ -20,7 +20,7 @@ FactoryBot.define do
 
       ruby_kwargs = arguments.transform_keys { |key| key.to_s.underscore.to_sym }
 
-      ::Types::Dast::ProfileScheduleInputType.new(ruby_kwargs: ruby_kwargs, defaults_used: [], context: context)
+      ::Types::Dast::ProfileScheduleInputType.new(nil, ruby_kwargs: ruby_kwargs, defaults_used: [], context: context)
     end
   end
 end
