@@ -7,6 +7,8 @@ module Types
       graphql_name 'DoraPerformanceScoreCount'
       description 'Aggregated DORA score counts for projects for the last complete month.'
 
+      connection_type_class Types::Dora::PerformanceScoreConnectionType
+
       field :metric_name, GraphQL::Types::String,
         null: false,
         description: 'Name of the DORA metric.'
@@ -25,7 +27,7 @@ module Types
 
       field :no_data_projects_count, GraphQL::Types::Int,
         null: true,
-        description: 'Number of projects with no data.'
+        description: 'Number of projects with no data for the metric.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end
