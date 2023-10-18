@@ -50046,7 +50046,16 @@ msgstr ""
 msgid "Tracing|Operation"
 msgstr ""
 
+msgid "Tracing|Select a service to load suggestions"
+msgstr ""
+
 msgid "Tracing|Service"
+msgstr ""
+
+msgid "Tracing|Something went wrong while fetching the operations"
+msgstr ""
+
+msgid "Tracing|Something went wrong while fetching the services"
 msgstr ""
 
 msgid "Tracing|Span Details"
