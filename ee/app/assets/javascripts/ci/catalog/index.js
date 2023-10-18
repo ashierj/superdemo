@@ -3,9 +3,10 @@ import VueApollo from 'vue-apollo';
 
 import { s__ } from '~/locale';
 import createDefaultClient from '~/lib/graphql';
+import { createRouter } from '~/ci/catalog/router';
+import { cacheConfig, resolvers } from '~/ci/catalog/graphql/settings';
 import CiNamespaceCatalogApp from './ci_namespace_catalog_app.vue';
-import { createRouter } from './router';
-import { cacheConfig, resolvers } from './graphql/settings';
+import CiResourcesPage from './components/pages/ci_resources_page.vue';
 
 export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
   const el = document.querySelector(selector);
@@ -27,7 +28,7 @@ export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
     el,
     name: 'CiCatalogRoot',
     apolloProvider,
-    router: createRouter(ciCatalogPath),
+    router: createRouter(ciCatalogPath, CiResourcesPage),
     provide: {
       ciCatalogPath,
       projectFullPath,

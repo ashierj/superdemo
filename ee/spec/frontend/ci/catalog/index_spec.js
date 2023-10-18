@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { initNamespaceCatalog } from 'ee/ci/catalog/index';
-import * as Router from 'ee/ci/catalog/router';
+import * as Router from '~/ci/catalog/router';
+import CiResourcesPage from 'ee/ci/catalog/components/pages/ci_resources_page.vue';
 
 describe('ee/ci/catalog/index', () => {
   describe('initNamespaceCatalog', () => {
@@ -32,9 +33,9 @@ describe('ee/ci/catalog/index', () => {
         expect(component).toBeInstanceOf(Vue);
       });
 
-      it('creates a router with the received base path', () => {
+      it('creates a router with the received base path and component', () => {
         expect(Router.createRouter).toHaveBeenCalledTimes(1);
-        expect(Router.createRouter).toHaveBeenCalledWith(baseRoute);
+        expect(Router.createRouter).toHaveBeenCalledWith(baseRoute, CiResourcesPage);
       });
     });
 

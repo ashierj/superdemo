@@ -1,9 +1,9 @@
 import { GlAvatar, GlAvatarLink, GlBadge } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CiResourceHeader from 'ee/ci/catalog/components/details/ci_resource_header.vue';
+import CiResourceHeader from '~/ci/catalog/components/details/ci_resource_header.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
-import CiResourceAbout from 'ee/ci/catalog/components/details/ci_resource_about.vue';
+import CiResourceAbout from '~/ci/catalog/components/details/ci_resource_about.vue';
 import { catalogSharedDataMock, catalogAdditionalDetailsMock } from '../../mock';
 
 describe('CiResourceHeader', () => {

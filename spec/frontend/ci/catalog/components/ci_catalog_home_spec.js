@@ -1,13 +1,16 @@
 import { shallowMount } from '@vue/test-utils';
-import { createRouter } from 'ee/ci/catalog/router';
-import ciResourceDetailsPage from 'ee/ci/catalog/components/pages/ci_resource_details_page.vue';
-import ciResourcesPage from 'ee/ci/catalog/components/pages/ci_resources_page.vue';
-import CiCatalogHome from 'ee/ci/catalog/components/ci_catalog_home.vue';
+import { createRouter } from '~/ci/catalog/router';
+import ciResourceDetailsPage from '~/ci/catalog/components/pages/ci_resource_details_page.vue';
+import CiCatalogHome from '~/ci/catalog/components/ci_catalog_home.vue';
 
 describe('CiCatalogHome', () => {
   const defaultProps = {};
   const baseRoute = '/';
-  const router = createRouter(baseRoute);
+  const resourcesPageComponentStub = {
+    name: 'page-component',
+    template: '<div>Hello</div>',
+  };
+  const router = createRouter(baseRoute, resourcesPageComponentStub);
 
   const createComponent = ({ props = {} } = {}) => {
     shallowMount(CiCatalogHome, {
@@ -27,7 +30,7 @@ describe('CiCatalogHome', () => {
     describe('router', () => {
       it.each`
         path         | component
-        ${baseRoute} | ${ciResourcesPage}
+        ${baseRoute} | ${resourcesPageComponentStub}
         ${'/1'}      | ${ciResourceDetailsPage}
       `('when route is $path it renders the right component', async ({ path, component }) => {
         if (path !== '/') {

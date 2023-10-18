@@ -1,6 +1,6 @@
-#import "../fragments/catalog_resource.fragment.graphql"
+#import "~/ci/catalog/graphql/fragments/catalog_resource.fragment.graphql"
 
-query getCiCatalogResources(
+query getNamespaceCatalogResources(
   $after: String
   $before: String
   $first: Int = 20

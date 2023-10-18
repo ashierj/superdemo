@@ -11,8 +11,8 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
   let_it_be(:project) { create(:project, :public, namespace: namespace) }
   let_it_be(:current_user) { create(:user) }
 
-  query_name = 'ci_catalog_resources'
-  get_ci_catalog_resources = "ci/catalog/graphql/queries/get_#{query_name}.query.graphql"
+  query_name = 'namespace_catalog_resources'
+  get_namespace_catalog_resources = "ci/catalog/graphql/queries/get_#{query_name}.query.graphql"
 
   before_all do
     namespace.add_developer(current_user)
@@ -24,7 +24,7 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
 
   context 'when there are no CI Catalog resources' do
     it "graphql/ci/catalog/#{query_name}_empty.json" do
-      query = get_graphql_query_as_string(get_ci_catalog_resources, ee: true)
+      query = get_graphql_query_as_string(get_namespace_catalog_resources, ee: true)
 
       post_graphql(query, current_user: current_user, variables: { fullPath: project.full_path })
 
@@ -49,7 +49,7 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
     end
 
     it "graphql/ci/catalog/#{query_name}_single_page.json" do
-      query = get_graphql_query_as_string(get_ci_catalog_resources, ee: true)
+      query = get_graphql_query_as_string(get_namespace_catalog_resources, ee: true)
 
       post_graphql(query, current_user: current_user, variables: { fullPath: project.full_path })
 
@@ -77,7 +77,7 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
     end
 
     it "graphql/ci/catalog/#{query_name}.json" do
-      query = get_graphql_query_as_string(get_ci_catalog_resources, ee: true)
+      query = get_graphql_query_as_string(get_namespace_catalog_resources, ee: true)
 
       post_graphql(query, current_user: current_user, variables: { fullPath: project.full_path })
 

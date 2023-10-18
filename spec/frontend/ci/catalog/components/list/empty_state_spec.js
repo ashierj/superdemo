@@ -1,6 +1,6 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import EmptyState from 'ee/ci/catalog/components/list/empty_state.vue';
+import EmptyState from '~/ci/catalog/components/list/empty_state.vue';
 
 describe('EmptyState', () => {
   let wrapper;
