@@ -20,7 +20,7 @@ export default {
   computed: {
     spans() {
       const root = mapTraceToTreeRoot(this.trace);
-      return [root];
+      return root ? [root] : [];
     },
     traceDurationMs() {
       return durationNanoToMs(this.trace.duration_nano);

@@ -45,6 +45,11 @@ export default {
       required: true,
       type: Array,
     },
+    highlightedTraceId: {
+      required: false,
+      type: String,
+      default: () => null,
+    },
   },
   computed: {
     formattedTraces() {
@@ -61,6 +66,11 @@ export default {
         this.$emit('trace-selected', { traceId: items[0].trace_id });
       }
     },
+    rowClass(item, type) {
+      if (!item || type !== 'row') return '';
+      if (item.trace_id === this.highlightedTraceId) return 'gl-bg-t-gray-a-08';
+      return '';
+    },
   },
 };
 </script>
@@ -75,7 +85,7 @@ export default {
       show-empty
       fixed
       stacked="md"
-      tbody-tr-class="table-row"
+      :tbody-tr-class="rowClass"
       selectable
       select-mode="single"
       selected-variant=""
@@ -90,8 +100,10 @@ export default {
       </template>
 
       <template #empty>
-        {{ $options.i18n.emptyText }}
-        <gl-link @click="$emit('reload')">{{ $options.i18n.emptyLinkText }}</gl-link>
+        <div class="gl-text-center">
+          {{ $options.i18n.emptyText }}
+          <gl-link @click="$emit('reload')">{{ $options.i18n.emptyLinkText }}</gl-link>
+        </div>
       </template>
     </gl-table>
   </div>

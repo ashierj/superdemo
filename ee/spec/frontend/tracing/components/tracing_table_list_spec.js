@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import { GlTable } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import TracingTableList from 'ee/tracing/components/tracing_table_list.vue';
 
@@ -10,24 +11,27 @@ describe('TracingTableList', () => {
       service_name: 'tracegen',
       operation: 'lets-go',
       duration_nano: 1500000,
+      trace_id: 'trace-1',
     },
     {
       timestamp: '2023-08-11T16:03:40.577538Z',
       service_name: 'tracegen-2',
       operation: 'lets-go-2',
       duration_nano: 2000000,
+      trace_id: 'trace-2',
     },
   ];
 
-  const mountComponent = ({ traces = mockTraces } = {}) => {
+  const mountComponent = ({ traces = mockTraces, highlightedTraceId } = {}) => {
     wrapper = mountExtended(TracingTableList, {
       propsData: {
         traces,
+        highlightedTraceId,
       },
     });
   };
 
-  const getRows = () => wrapper.findComponent({ name: 'GlTable' }).find('tbody').findAll('tr');
+  const getRows = () => wrapper.findComponent(GlTable).find('tbody').findAll('tr');
   const getRow = (idx) => getRows().at(idx);
   const getCells = (trIdx) => getRows().at(trIdx).findAll('td');
 
@@ -65,7 +69,7 @@ describe('TracingTableList', () => {
 
     await selectRow(0);
     expect(wrapper.emitted('trace-selected')).toHaveLength(1);
-    expect(wrapper.emitted('trace-selected')[0][0]).toEqual({ trace_id: mockTraces[0].trace_id });
+    expect(wrapper.emitted('trace-selected')[0][0]).toEqual({ traceId: mockTraces[0].trace_id });
   });
 
   it('renders the empty state when no traces are provided', () => {
@@ -77,5 +81,12 @@ describe('TracingTableList', () => {
 
     link.trigger('click');
     expect(wrapper.emitted('reload')).toHaveLength(1);
+  });
+
+  it('sets the correct variant when a trace is highlighted', () => {
+    mountComponent({ highlightedTraceId: 'trace-2' });
+
+    expect(getRow(1).classes()).toContain('gl-bg-t-gray-a-08');
+    expect(getRow(0).classes()).not.toContain('gl-bg-t-gray-a-08');
   });
 });

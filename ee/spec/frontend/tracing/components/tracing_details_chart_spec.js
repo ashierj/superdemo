@@ -33,17 +33,21 @@ describe('TracingDetailsChart', () => {
     ],
   };
 
-  beforeEach(() => {
-    mapTraceToTreeRoot.mockReturnValue(mockTrace.spans[0]);
-    assignColorToServices.mockReturnValue({ tracegen: 'red' });
-    durationNanoToMs.mockReturnValue(100);
-
+  const mountComponent = () => {
     wrapper = shallowMountExtended(TracingDetailsChart, {
       propsData: {
         trace: mockTrace,
         selectedSpanId: 'foo',
       },
     });
+  };
+
+  beforeEach(() => {
+    mapTraceToTreeRoot.mockReturnValue(mockTrace.spans[0]);
+    assignColorToServices.mockReturnValue({ tracegen: 'red' });
+    durationNanoToMs.mockReturnValue(100);
+
+    mountComponent();
   });
 
   const getTracingDetailsSpansChart = () => wrapper.findComponent(TracingDetailsSpansChart);
@@ -67,5 +71,14 @@ describe('TracingDetailsChart', () => {
     getTracingDetailsSpansChart().vm.$emit('span-selected', { spanId: 'foo' });
 
     expect(wrapper.emitted('span-selected')).toStrictEqual([[{ spanId: 'foo' }]]);
+  });
+
+  it('handles undefined root gracefully', () => {
+    mapTraceToTreeRoot.mockReturnValueOnce(undefined);
+
+    mountComponent();
+
+    expect(getTracingDetailsSpansChart().props('spans')).toEqual([]);
+    expect(getTracingDetailsSpansChart().props('spans').length).toEqual(0);
   });
 });
