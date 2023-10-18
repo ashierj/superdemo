@@ -266,6 +266,7 @@ export default {
       :request-path="namespaceRequestPath"
       :is-project="isProject"
       :now="$options.now"
+      :filter-labels="filterLabels"
     />
   </div>
 </template>
