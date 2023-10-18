@@ -96,7 +96,11 @@ module PackageMetadata
       !range.overlaps_with?(interval)
       # semver_dialects may throw on parse errors
       # https://gitlab.com/gitlab-org/gitlab/-/issues/428251
-    rescue NoMethodError
+    rescue NoMethodError => err
+      ::Gitlab::ErrorTracking.log_exception(err, id: id, version: input_version,
+        message: "semver_dialects parse error", error: err.message
+      )
+
       false
     end
   end
