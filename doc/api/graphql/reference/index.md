@@ -11285,6 +11285,29 @@ The edge type for [`PackageTag`](#packagetag).
 | <a id="packagetagedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="packagetagedgenode"></a>`node` | [`PackageTag`](#packagetag) | The item at the end of the edge. |
 
+#### `PackagesProtectionRuleConnection`
+
+The connection type for [`PackagesProtectionRule`](#packagesprotectionrule).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagesprotectionruleconnectionedges"></a>`edges` | [`[PackagesProtectionRuleEdge]`](#packagesprotectionruleedge) | A list of edges. |
+| <a id="packagesprotectionruleconnectionnodes"></a>`nodes` | [`[PackagesProtectionRule]`](#packagesprotectionrule) | A list of nodes. |
+| <a id="packagesprotectionruleconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `PackagesProtectionRuleEdge`
+
+The edge type for [`PackagesProtectionRule`](#packagesprotectionrule).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagesprotectionruleedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="packagesprotectionruleedgenode"></a>`node` | [`PackagesProtectionRule`](#packagesprotectionrule) | The item at the end of the edge. |
+
 #### `PagesDeploymentRegistryConnection`
 
 The connection type for [`PagesDeploymentRegistry`](#pagesdeploymentregistry).
@@ -22389,6 +22412,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectonlyallowmergeifpipelinesucceeds"></a>`onlyAllowMergeIfPipelineSucceeds` | [`Boolean`](#boolean) | Indicates if merge requests of the project can only be merged with successful jobs. |
 | <a id="projectopenissuescount"></a>`openIssuesCount` | [`Int`](#int) | Number of open issues for the project. |
 | <a id="projectpackagescleanuppolicy"></a>`packagesCleanupPolicy` | [`PackagesCleanupPolicy`](#packagescleanuppolicy) | Packages cleanup policy for the project. |
+| <a id="projectpackagesprotectionrules"></a>`packagesProtectionRules` | [`PackagesProtectionRuleConnection`](#packagesprotectionruleconnection) | Packages protection rules for the project. (see [Connections](#connections)) |
 | <a id="projectpath"></a>`path` | [`String!`](#string) | Path of the project. |
 | <a id="projectpathlocks"></a>`pathLocks` | [`PathLockConnection`](#pathlockconnection) | The project's path locks. (see [Connections](#connections)) |
 | <a id="projectpipelineanalytics"></a>`pipelineAnalytics` | [`PipelineAnalytics`](#pipelineanalytics) | Pipeline analytics. |
