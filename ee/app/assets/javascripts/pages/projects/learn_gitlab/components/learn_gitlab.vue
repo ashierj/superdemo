@@ -7,9 +7,16 @@ import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
 import eventHubNav from '~/super_sidebar/event_hub';
 import { ACTION_LABELS, INVITE_MODAL_OPEN_COOKIE } from '../constants';
 import LearnGitlabSectionCard from './learn_gitlab_section_card.vue';
+import UltimateTrialBenefitModal from './ultimate_trial_benefit_modal.vue';
 
 export default {
-  components: { GlProgressBar, GlSprintf, GlAlert, LearnGitlabSectionCard },
+  components: {
+    GlProgressBar,
+    GlSprintf,
+    GlAlert,
+    LearnGitlabSectionCard,
+    UltimateTrialBenefitModal,
+  },
   i18n: {
     title: s__('LearnGitLab|Learn GitLab'),
     description: s__(
@@ -61,7 +68,11 @@ export default {
   },
   mounted() {
     if (this.getCookieForInviteMembers()) {
-      this.openInviteMembersModal('celebrate', ON_CELEBRATION_TRACK_LABEL);
+      if (this.project.showUltimateTrialBenefitModal) {
+        this.$refs.ultimateTrialBenefitModal.show();
+      } else {
+        this.openInviteMembersModal('celebrate', ON_CELEBRATION_TRACK_LABEL);
+      }
     }
 
     eventHub.$on('showSuccessfulInvitationsAlert', this.handleShowSuccessfulInvitationsAlert);
@@ -189,5 +200,6 @@ export default {
         />
       </div>
     </div>
+    <ultimate-trial-benefit-modal ref="ultimateTrialBenefitModal" />
   </div>
 </template>
