@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::NamespaceAccessCacheResetWorker, feature_category: :ai_abstraction_layer do
-  let_it_be(:group) { create(:group) }
+RSpec.describe Llm::NamespaceAccessCacheResetWorker, :saas, feature_category: :ai_abstraction_layer do
+  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:sub_group) { create(:group, parent: group) }
 
@@ -11,57 +11,91 @@ RSpec.describe Llm::NamespaceAccessCacheResetWorker, feature_category: :ai_abstr
   let_it_be(:sub_group_member) { create(:group_member, group: sub_group, user: create(:user)) }
   let_it_be(:project_member) { create(:project_member, project: project, user: create(:user)) }
 
-  let(:data) { { group_id: group.id } }
-  let(:subscription_started_event) { NamespaceSettings::AiRelatedSettingsChangedEvent.new(data: data) }
-
-  it_behaves_like 'subscribes to event' do
-    let(:event) { subscription_started_event }
-  end
+  let(:source_id) { group.id }
 
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :delayed
 
-  context 'when group can not be found' do
-    let(:data) { { group_id: non_existing_record_id } }
+  shared_examples 'success' do
+    context 'when namespace has AI features' do
+      before do
+        stub_licensed_features(ai_features: true)
+      end
 
-    it 'does not call Rails.cache' do
-      expect(Rails.cache).not_to receive(:delete_multi)
+      context 'when namespace can not be found' do
+        let(:source_id) { non_existing_record_id }
 
-      consume_event(subscriber: described_class, event: subscription_started_event)
+        it 'does not clear cache' do
+          expect(User).not_to receive(:clear_group_with_ai_available_cache)
+
+          consume_event(subscriber: described_class, event: event)
+        end
+      end
+
+      context 'when namespace can be found' do
+        it 'clears cache for affected users' do
+          expect(User).to receive(:clear_group_with_ai_available_cache).with(affected_user_ids)
+
+          consume_event(subscriber: described_class, event: event)
+        end
+      end
+
+      context 'when user is member multiple times', :use_clean_rails_redis_caching do
+        let_it_be(:group_member2) { create(:group_member, group: sub_group, user: project_member.user) }
+
+        it 'calls cache deletion only once for a user' do
+          expect(User).to receive(:clear_group_with_ai_available_cache).with(affected_user_ids)
+
+          consume_event(subscriber: described_class, event: event)
+        end
+      end
+    end
+
+    context 'when namespace has no AI features' do
+      before do
+        stub_licensed_features(ai_features: false)
+      end
+
+      it 'does not clear cache for any user' do
+        expect(User).not_to receive(:clear_group_with_ai_available_cache)
+
+        consume_event(subscriber: described_class, event: event)
+      end
     end
   end
 
-  context 'when cache is already set', :use_clean_rails_redis_caching do
-    before do
-      group_member.user.any_group_with_ai_available?
-      sub_group_member.user.any_group_with_ai_available?
-      project_member.user.any_group_with_ai_available?
-    end
+  context 'when AiRelatedSettingsChangedEvent' do
+    let(:data) { { group_id: source_id } }
+    let(:event) { NamespaceSettings::AiRelatedSettingsChangedEvent.new(data: data) }
+    let(:affected_user_ids) { [group_member.user.id, sub_group_member.user.id, project_member.user.id] }
 
-    it 'deletes cache from all users of the group' do
-      expect(Rails.cache.fetch(['users', group_member.user.id, 'group_with_ai_enabled'])).to eq(false)
-      expect(Rails.cache.fetch(['users', sub_group_member.user.id, 'group_with_ai_enabled'])).to eq(false)
-      expect(Rails.cache.fetch(['users', project_member.user.id, 'group_with_ai_enabled'])).to eq(false)
-
-      consume_event(subscriber: described_class, event: subscription_started_event)
-
-      expect(Rails.cache.fetch(['users', group_member.user.id, 'group_with_ai_enabled'])).to be_nil
-      expect(Rails.cache.fetch(['users', sub_group_member.user.id, 'group_with_ai_enabled'])).to be_nil
-      expect(Rails.cache.fetch(['users', project_member.user.id, 'group_with_ai_enabled'])).to be_nil
-    end
+    it_behaves_like 'subscribes to event'
+    it_behaves_like 'success'
   end
 
-  context 'when user is member multiple times', :use_clean_rails_redis_caching do
-    let_it_be(:project_member2) { create(:project_member, project: project, user: sub_group_member.user) }
+  context 'when MembersAddedEvent for a group' do
+    let(:data) { { source_id: source_id, source_type: group.class.to_s } }
+    let(:event) { Members::MembersAddedEvent.new(data: data) }
+    let(:affected_user_ids) { [group_member.user.id] }
 
-    it 'calls cache deletion only once per user' do
-      expect(Rails.cache).to receive(:delete_multi)
-        .with(match_array([
-          ['users', group_member.user.id, 'group_with_ai_enabled'],
-          ['users', sub_group_member.user.id, 'group_with_ai_enabled'],
-          ['users', project_member.user.id, 'group_with_ai_enabled']
-        ]))
-
-      consume_event(subscriber: described_class, event: subscription_started_event)
+    let_it_be(:existing_member) do
+      create(:group_member, group: group, user: create(:user), created_at: (1.hour + 1.minute).ago)
     end
+
+    it_behaves_like 'subscribes to event'
+    it_behaves_like 'success'
+  end
+
+  context 'when MembersAddedEvent for a project' do
+    let(:source_id) { project.id }
+    let(:data) { { source_id: source_id, source_type: project.class.to_s } }
+    let(:event) { Members::MembersAddedEvent.new(data: data) }
+    let(:affected_user_ids) { [project_member.user.id] }
+
+    let_it_be(:existing_member) do
+      create(:project_member, project: project, user: create(:user), created_at: (1.hour + 1.minute).ago)
+    end
+
+    it_behaves_like 'subscribes to event'
+    it_behaves_like 'success'
   end
 end

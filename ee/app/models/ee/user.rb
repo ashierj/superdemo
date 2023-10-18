@@ -234,6 +234,14 @@ module EE
       def use_separate_indices?
         true
       end
+
+      def clear_group_with_ai_available_cache(ids)
+        cache_keys = Array.wrap(ids).map { |id| ["users", id, GROUP_WITH_AI_ENABLED_CACHE_KEY] }
+
+        ::Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
+          Rails.cache.delete_multi(cache_keys)
+        end
+      end
     end
 
     def cannot_be_admin_and_auditor

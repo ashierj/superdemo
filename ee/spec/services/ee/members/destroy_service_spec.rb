@@ -282,6 +282,32 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
           destroy_service.execute(member)
         end
       end
+
+      context 'when destroying member related data' do
+        context 'when AI features are available' do
+          before do
+            stub_licensed_features(ai_features: true)
+          end
+
+          it 'clears AI access cache' do
+            expect(User).to receive(:clear_group_with_ai_available_cache).with(member_user.id)
+
+            destroy_service.execute(member)
+          end
+        end
+
+        context 'when AI features are not available' do
+          before do
+            stub_licensed_features(ai_features: false)
+          end
+
+          it 'does not clear the AI access cache' do
+            expect(User).not_to receive(:clear_group_with_ai_available_cache)
+
+            destroy_service.execute(member)
+          end
+        end
+      end
     end
   end
 
