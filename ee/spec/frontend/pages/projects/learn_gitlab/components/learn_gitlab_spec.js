@@ -1,29 +1,48 @@
 import { GlProgressBar, GlAlert } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import Vue from 'vue';
 import Cookies from '~/lib/utils/cookies';
 import LearnGitlab from 'ee/pages/projects/learn_gitlab/components/learn_gitlab.vue';
+import UltimateTrialBenefitModal from 'ee/pages/projects/learn_gitlab/components/ultimate_trial_benefit_modal.vue';
 import eventHub from '~/invite_members/event_hub';
 import { INVITE_MODAL_OPEN_COOKIE } from 'ee/pages/projects/learn_gitlab/constants';
 import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
 import eventHubNav from '~/super_sidebar/event_hub';
-import { testActions, testSections, testProject } from './mock_data';
+import { stubComponent } from 'helpers/stub_component';
+import {
+  testActions,
+  testSections,
+  testProject,
+  testProjectShowUltimateTrialBenefitModal,
+} from './mock_data';
+
+Vue.config.ignoredElements = ['gl-emoji'];
 
 describe('Learn GitLab', () => {
   let wrapper;
   let sidebar;
+  let showModal;
 
-  const createWrapper = () => {
+  const createWrapper = ({ project = testProject } = {}) => {
     wrapper = mount(LearnGitlab, {
       propsData: {
         actions: testActions,
         sections: testSections,
-        project: testProject,
+        project,
+      },
+      stubs: {
+        UltimateTrialBenefitModal: stubComponent(UltimateTrialBenefitModal, {
+          methods: {
+            show: showModal,
+          },
+        }),
       },
     });
   };
 
   describe('Initial rendering concerns', () => {
     beforeEach(() => {
+      showModal = jest.fn();
       createWrapper();
     });
 
@@ -75,6 +94,30 @@ describe('Learn GitLab', () => {
 
       expect(spy).not.toHaveBeenCalled();
       expect(cookieSpy).toHaveBeenCalledWith(INVITE_MODAL_OPEN_COOKIE);
+    });
+  });
+
+  describe('Ultimate Trial Benefit Modal', () => {
+    let cookieSpy;
+
+    beforeEach(() => {
+      cookieSpy = jest.spyOn(Cookies, 'remove');
+    });
+
+    it('calls show method when in experiment candidate with cookie set', async () => {
+      Cookies.set(INVITE_MODAL_OPEN_COOKIE, true);
+
+      await createWrapper({ project: testProjectShowUltimateTrialBenefitModal });
+
+      expect(cookieSpy).toHaveBeenCalledWith(INVITE_MODAL_OPEN_COOKIE);
+      expect(showModal).toHaveBeenCalled();
+    });
+
+    it('does not call show method in ultimate_trial_benefit_modal when in experiment candidate and cookie is not set', async () => {
+      await createWrapper({ project: testProjectShowUltimateTrialBenefitModal });
+
+      expect(cookieSpy).toHaveBeenCalledWith(INVITE_MODAL_OPEN_COOKIE);
+      expect(showModal).not.toHaveBeenCalled();
     });
   });
 

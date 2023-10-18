@@ -52,8 +52,8 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
       end
 
       it 'has all project data', :aggregate_failures do
-        expect(onboarding_project_data.keys).to contain_exactly(:name)
-        expect(onboarding_project_data.values).to match_array([project.name])
+        expect(onboarding_project_data.keys).to contain_exactly(:name, :show_ultimate_trial_benefit_modal)
+        expect(onboarding_project_data.values).to match_array([project.name, nil])
       end
     end
 
@@ -204,6 +204,30 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           }
 
           expect(onboarding_actions_data).to include(result)
+        end
+      end
+    end
+
+    context 'when ultimate_trial_benefit_modal experiment is enabled' do
+      let(:onboarding_project_data) do
+        Gitlab::Json.parse(helper.learn_gitlab_data(project)[:project]).deep_symbolize_keys
+      end
+
+      where(:experiment_behavior, :active_trial, :show_ultimate_trial_benefit_modal) do
+        [
+          [:control, false, nil],
+          [:candidate, false, nil],
+          [:control, true, nil],
+          [:candidate, true, true]
+        ]
+      end
+
+      with_them do
+        it 'sets correct value for show_ultimate_trial_benefit_modal in onboarding_project_data' do
+          stub_experiments(ultimate_trial_benefit_modal: experiment_behavior)
+          allow(namespace).to receive(:trial_active?).and_return(active_trial)
+
+          expect(onboarding_project_data.values).to match_array([project.name, show_ultimate_trial_benefit_modal])
         end
       end
     end
