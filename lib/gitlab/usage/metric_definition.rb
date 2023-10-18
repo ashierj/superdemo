@@ -112,19 +112,6 @@ module Gitlab
           @metrics_yaml ||= definitions.values.map(&:to_h).map(&:deep_stringify_keys).to_yaml
         end
 
-        def metric_definitions_changed?
-          return false unless Rails.env.development?
-
-          return false if @last_change_check && @last_change_check > 3.seconds.ago
-
-          @last_change_check = Time.current
-
-          last_change = Dir.glob(paths).map { |f| File.mtime(f) }.max
-          did_change = @last_metric_update != last_change
-          @last_metric_update = last_change
-          did_change
-        end
-
         private
 
         def load_all!
