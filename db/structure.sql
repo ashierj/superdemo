@@ -11855,7 +11855,6 @@ CREATE TABLE application_settings (
     gitlab_shell_operation_limit integer DEFAULT 600,
     elasticsearch_requeue_workers boolean DEFAULT false NOT NULL,
     elasticsearch_worker_number_of_shards integer DEFAULT 2 NOT NULL,
-    relay_state_domain_allowlist text[] DEFAULT '{}'::text[] NOT NULL,
     protected_paths_for_get_request text[] DEFAULT '{}'::text[] NOT NULL,
     namespace_storage_forks_cost_factor double precision DEFAULT 1.0 NOT NULL,
     package_registry_allow_anyone_to_pull_option boolean DEFAULT true NOT NULL,
@@ -22659,8 +22658,7 @@ CREATE TABLE saml_providers (
     enforced_group_managed_accounts boolean DEFAULT false NOT NULL,
     prohibited_outer_forks boolean DEFAULT true NOT NULL,
     default_membership_role smallint DEFAULT 10 NOT NULL,
-    git_check_enforced boolean DEFAULT false NOT NULL,
-    relay_state_domain_allowlist text[] DEFAULT '{}'::text[] NOT NULL
+    git_check_enforced boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE saml_providers_id_seq
