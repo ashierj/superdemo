@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-class Oauth::GeoAuthController < BaseActionController
+# rubocop:disable Rails/ApplicationController
+class Oauth::GeoAuthController < ActionController::Base
   rescue_from Gitlab::Geo::OauthApplicationUndefinedError, with: :undefined_oauth_application
   rescue_from OAuth2::Error, with: :auth
 
@@ -85,3 +86,4 @@ class Oauth::GeoAuthController < BaseActionController
     render :error, layout: 'errors'
   end
 end
+# rubocop:enable Rails/ApplicationController
