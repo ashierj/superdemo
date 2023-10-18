@@ -10,7 +10,7 @@ RSpec.describe Resolvers::Clusters::AgentsResolver do
   end
 
   specify do
-    expect(described_class.field_options).to include(extras: include(:lookahead))
+    expect(described_class.extras).to include(:lookahead)
   end
 
   describe '#resolve' do

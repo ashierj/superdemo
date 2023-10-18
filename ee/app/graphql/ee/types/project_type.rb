@@ -323,7 +323,7 @@ module EE
       def requirement_states_count
         return unless Ability.allowed?(current_user, :read_requirement, object)
 
-        Hash.new(0).merge(object.requirements.counts_by_state)
+        object.requirements.counts_by_state
       end
 
       def security_dashboard_path
