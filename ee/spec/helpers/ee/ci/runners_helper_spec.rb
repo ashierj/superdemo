@@ -47,8 +47,8 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
     end
 
     context 'with a project and namespace' do
-      context 'when not on dot com' do
-        let(:com) { false }
+      context 'without purchases/additional_minutes feature' do
+        let(:saas_feature_enabled) { false }
 
         it { is_expected.to be_falsey }
       end
@@ -132,15 +132,15 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
   end
 
   context 'with notifications' do
-    let(:com) { true }
+    let(:saas_feature_enabled) { true }
 
     describe '.show_buy_pipeline_minutes?' do
       subject { helper.show_buy_pipeline_minutes?(project, namespace) }
 
-      context 'when on dot com' do
+      context 'with purchases/additional_minutes feature' do
         it_behaves_like 'minutes notification' do
           before do
-            allow(::Gitlab).to receive(:com?).and_return(com)
+            stub_saas_features('purchases/additional_minutes' => saas_feature_enabled)
           end
         end
       end
@@ -150,7 +150,7 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
       subject { helper.show_pipeline_minutes_notification_dot?(project, namespace) }
 
       before do
-        allow(::Gitlab).to receive(:com?).and_return(com)
+        stub_saas_features('purchases/additional_minutes' => saas_feature_enabled)
       end
 
       it_behaves_like 'minutes notification'
@@ -177,7 +177,7 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
       subject { helper.show_buy_pipeline_with_subtext?(project, namespace) }
 
       before do
-        allow(::Gitlab).to receive(:com?).and_return(com)
+        stub_saas_features('purchases/additional_minutes' => saas_feature_enabled)
       end
 
       context 'when the notification dot has not been acknowledged' do
