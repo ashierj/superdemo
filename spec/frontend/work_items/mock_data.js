@@ -3566,3 +3566,6 @@ export const updateWorkItemNotificationsMutationResponse = (subscribed) => ({
     },
   },
 });
+
+export const generateWorkItemsListWithId = (count) =>
+  Array.from({ length: count }, (_, i) => ({ id: `gid://gitlab/WorkItem/${i + 1}` }));
