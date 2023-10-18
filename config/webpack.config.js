@@ -437,7 +437,7 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        exclude: /icons\.svg$/,
+        exclude: /(icons|@gitlab\/svgs\/.+)\.svg$/,
         resourceQuery: /url/,
         loader: 'file-loader',
         options: {
