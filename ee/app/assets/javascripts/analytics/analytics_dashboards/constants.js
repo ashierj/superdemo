@@ -51,6 +51,10 @@ export const ANALYTICS_FIELD_CATEGORIES = [
     name: s__('Analytics|Users'),
     category: 'users',
   },
+  {
+    name: s__('Analytics|Custom events'),
+    category: 'custom',
+  },
 ];
 
 export const ANALYTICS_FIELDS = [
@@ -124,6 +128,30 @@ export const ANALYTICS_FIELDS = [
     name: s__('Analytics|OS Version'),
     category: 'users',
     dbField: ['osName', 'osVersion'],
+    icon: 'user',
+  },
+  {
+    name: s__('Analytics|User Id'),
+    category: 'users',
+    dbField: 'userId',
+    icon: 'user',
+  },
+  {
+    name: s__('Analytics|Event Name'),
+    category: 'custom',
+    dbField: 'customEventName',
+    icon: 'documents',
+  },
+  {
+    name: s__('Analytics|Event Props'),
+    category: 'custom',
+    dbField: 'customEventProps',
+    icon: 'documents',
+  },
+  {
+    name: s__('Analytics|User Props'),
+    category: 'custom',
+    dbField: 'customUserProps',
     icon: 'user',
   },
 ];
