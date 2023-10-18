@@ -6,12 +6,16 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
   let_it_be(:group) { create(:group) }
   let_it_be(:topic1) { create(:topic, name: "topic1") }
   let_it_be(:topic2) { create(:topic, name: "topic2") }
+  let_it_be(:topic3) { create(:topic, name: "topic3") }
   let_it_be(:project_1) { create(:project, group: group, topics: [topic1]) }
   let_it_be(:project_2) { create(:project, group: group, topics: [topic2]) }
   let_it_be(:project_3) { create(:project, group: group, topics: [topic1, topic2]) }
-  let_it_be(:project_4) { create(:project, group: group, name: "Project with no data ever") }
+  let_it_be(:project_4) { create(:project, group: group) }
+  let_it_be(:project_5) { create(:project, group: group, name: "Project with no data ever") }
+  let_it_be(:project_6) { create(:project, group: group, name: "Project with data in other month") }
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:guest) { create(:user) }
+  let_it_be(:beginning_of_last_month) { Time.current.last_month.beginning_of_month }
 
   let(:service) do
     described_class.new(
@@ -70,17 +74,19 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
       it 'returns empty data' do
         expect(subject[:status]).to eq(:success)
         expect(subject.payload[:aggregations]).to match_array([
-          counts_by_metric(:lead_time_for_changes, low: nil, med: nil, high: nil, no_data: 4),
-          counts_by_metric(:deployment_frequency, low: nil, med: nil, high: nil, no_data: 4),
-          counts_by_metric(:change_failure_rate, low: nil, med: nil, high: nil, no_data: 4),
-          counts_by_metric(:time_to_restore_service, low: nil, med: nil, high: nil, no_data: 4)
+          counts_by_metric(:lead_time_for_changes, low: nil, med: nil, high: nil, no_data: 6),
+          counts_by_metric(:deployment_frequency, low: nil, med: nil, high: nil, no_data: 6),
+          counts_by_metric(:change_failure_rate, low: nil, med: nil, high: nil, no_data: 6),
+          counts_by_metric(:time_to_restore_service, low: nil, med: nil, high: nil, no_data: 6)
         ])
+      end
+
+      it 'returns the correct aggregated count' do
+        expect(subject.payload[:projects_without_dora_data_count]).to eq(6)
       end
     end
 
     context 'when there is data for the target month' do
-      let_it_be(:beginning_of_last_month) { Time.current.last_month.beginning_of_month }
-
       let_it_be(:project_1_scores) do
         create(:dora_performance_score, project: project_1, date: beginning_of_last_month,
           deployment_frequency: 'high', lead_time_for_changes: 'high', time_to_restore_service: 'medium',
@@ -117,6 +123,12 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
           change_failure_rate: 'high')
       end
 
+      let_it_be(:project_6_scores_from_wrong_month) do
+        create(:dora_performance_score, project: project_6, date: (beginning_of_last_month - 3.months),
+          deployment_frequency: nil, lead_time_for_changes: nil, time_to_restore_service: 'medium',
+          change_failure_rate: 'medium')
+      end
+
       it 'returns the aggregated data' do
         expect(subject[:status]).to eq(:success)
         expect(subject.payload[:aggregations]).to match_array([
@@ -127,19 +139,30 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
         ])
       end
 
+      it 'returns the correct aggregated count' do
+        expect(subject.payload[:projects_without_dora_data_count]).to eq(2)
+      end
+
       context 'when filtering by topic' do
+        # Some projects have been filtered out via the topic filter,
+        # so even though these projects with data exist,
+        # they are not in the scope of this query.
+
         context 'when single topic' do
           let(:params) { { topic: topic1.name } }
 
           it 'returns the aggregated data' do
             expect(subject[:status]).to eq(:success)
-
             expect(subject.payload[:aggregations]).to match_array([
               counts_by_metric(:deployment_frequency, low: 1, med: 0, high: 1, no_data: 0),
               counts_by_metric(:lead_time_for_changes, low: 0, med: 1, high: 1, no_data: 0),
               counts_by_metric(:time_to_restore_service, low: 0, med: 1, high: 1, no_data: 0),
               counts_by_metric(:change_failure_rate, low: 1, med: 0, high: 1, no_data: 0)
             ])
+          end
+
+          it 'returns the correct aggregated count' do
+            expect(subject.payload[:projects_without_dora_data_count]).to eq(0)
           end
         end
 
@@ -148,13 +171,16 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
 
           it 'returns the aggregated data' do
             expect(subject[:status]).to eq(:success)
-
             expect(subject.payload[:aggregations]).to match_array([
               counts_by_metric(:deployment_frequency, low: 1, med: 0, high: 0, no_data: 0),
               counts_by_metric(:lead_time_for_changes, low: 0, med: 1, high: 0, no_data: 0),
               counts_by_metric(:time_to_restore_service, low: 0, med: 0, high: 1, no_data: 0),
               counts_by_metric(:change_failure_rate, low: 0, med: 0, high: 1, no_data: 0)
             ])
+          end
+
+          it 'returns the correct aggregated count' do
+            expect(subject.payload[:projects_without_dora_data_count]).to eq(0)
           end
         end
       end
@@ -167,6 +193,7 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
         end
 
         expect(subject[:status]).to eq(:success)
+        expect(subject.payload[:projects_without_dora_data_count]).to eq(0)
         expect(subject.payload[:aggregations]).to match_array([
           counts_by_metric(:lead_time_for_changes, low: nil, med: nil, high: nil, no_data: 0),
           counts_by_metric(:deployment_frequency, low: nil, med: nil, high: nil, no_data: 0),

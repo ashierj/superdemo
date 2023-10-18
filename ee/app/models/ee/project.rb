@@ -158,6 +158,8 @@ module EE
         security_policy_bot.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/422405")
       }, through: :project_members, source: :user
 
+      has_many :dora_performance_scores, class_name: 'Dora::PerformanceScore'
+
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :issues, on_change: :archived, depends_on_finished_migration: :add_archived_to_issues
       elastic_index_dependant_association :work_items, on_change: :archived, depends_on_finished_migration: :add_archived_to_issues
@@ -328,6 +330,10 @@ module EE
         joins('LEFT JOIN index_statuses ON projects.id = index_statuses.project_id')
            .where(index_statuses: { project_id: nil })
       }
+
+      scope :with_dora_scores_for_date, -> (date) do
+        joins(:dora_performance_scores).where(dora_performance_scores: { date: date })
+      end
 
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 

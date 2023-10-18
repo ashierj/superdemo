@@ -23,10 +23,15 @@ module Resolvers
 
         filter_params = args[:project_filters].to_h
 
-        result = ::Dora::AggregateScoresService.new(container: group,
-          current_user: current_user, params: filter_params).execute
+        service = ::Dora::AggregateScoresService.new(container: group,
+          params: filter_params, current_user: current_user)
+
+        result = service.execute
 
         raise Gitlab::Graphql::Errors::ArgumentError, result[:message] unless result[:status] == :success
+
+        context[:authorized_projects_count] = service.authorized_projects.count
+        context[:projects_without_dora_data_count] = result[:projects_without_dora_data_count]
 
         result.payload[:aggregations]
       end

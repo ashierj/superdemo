@@ -9921,8 +9921,10 @@ The connection type for [`DoraPerformanceScoreCount`](#doraperformancescorecount
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="doraperformancescorecountconnectionedges"></a>`edges` | [`[DoraPerformanceScoreCountEdge]`](#doraperformancescorecountedge) | A list of edges. |
+| <a id="doraperformancescorecountconnectionnodoradataprojectscount"></a>`noDoraDataProjectsCount` | [`Int!`](#int) | Count of projects without any DORA scores within the scope. |
 | <a id="doraperformancescorecountconnectionnodes"></a>`nodes` | [`[DoraPerformanceScoreCount]`](#doraperformancescorecount) | A list of nodes. |
 | <a id="doraperformancescorecountconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+| <a id="doraperformancescorecountconnectiontotalprojectscount"></a>`totalProjectsCount` | [`Int!`](#int) | Count of total projects. |
 
 #### `DoraPerformanceScoreCountEdge`
 
@@ -16562,7 +16564,7 @@ Aggregated DORA score counts for projects for the last complete month.
 | <a id="doraperformancescorecountlowprojectscount"></a>`lowProjectsCount` | [`Int`](#int) | Number of projects that score "low" on the metric. |
 | <a id="doraperformancescorecountmediumprojectscount"></a>`mediumProjectsCount` | [`Int`](#int) | Number of projects that score "medium" on the metric. |
 | <a id="doraperformancescorecountmetricname"></a>`metricName` | [`String!`](#string) | Name of the DORA metric. |
-| <a id="doraperformancescorecountnodataprojectscount"></a>`noDataProjectsCount` | [`Int`](#int) | Number of projects with no data. |
+| <a id="doraperformancescorecountnodataprojectscount"></a>`noDataProjectsCount` | [`Int`](#int) | Number of projects with no data for the metric. |
 
 ### `EgressNode`
 

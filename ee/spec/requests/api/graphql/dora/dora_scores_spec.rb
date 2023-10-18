@@ -12,10 +12,12 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
   let_it_be(:project_1) { create(:project, group: group, topics: [ruby_topic]) }
   let_it_be(:project_2) { create(:project, group: group) }
   let_it_be(:project_3) { create(:project, group: group) }
-  let_it_be(:project_4) { create(:project, group: subgroup) }
+  let_it_be(:project_4) { create(:project, group: group) }
+  let_it_be(:project_5) { create(:project, group: group, name: "Project with no data ever") }
   let_it_be(:unrelated_project) { create(:project) }
   let_it_be(:reporter) { create(:user) }
   let_it_be(:other_user) { create(:user) }
+  let_it_be(:beginning_of_last_month) { Time.current.last_month.beginning_of_month }
 
   let(:post_query) { post_graphql(query, current_user: current_user) }
   let(:path_prefix) { [:group, :doraPerformanceScoreCounts, :nodes] }
@@ -29,6 +31,8 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
   let(:current_user) { reporter }
   let(:query_body) do
     <<~QUERY
+      totalProjectsCount
+      noDoraDataProjectsCount
       nodes {
         metricName
         lowProjectsCount
@@ -105,37 +109,98 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
             "lowProjectsCount" => nil,
             "mediumProjectsCount" => nil,
             "highProjectsCount" => nil,
-            "noDataProjectsCount" => 4
+            "noDataProjectsCount" => 5
           },
           {
             "metricName" => "deployment_frequency",
             "lowProjectsCount" => nil,
             "mediumProjectsCount" => nil,
             "highProjectsCount" => nil,
-            "noDataProjectsCount" => 4
+            "noDataProjectsCount" => 5
           },
           {
             "metricName" => "change_failure_rate",
             "lowProjectsCount" => nil,
             "mediumProjectsCount" => nil,
             "highProjectsCount" => nil,
-            "noDataProjectsCount" => 4
+            "noDataProjectsCount" => 5
           },
           {
             "metricName" => "time_to_restore_service",
             "lowProjectsCount" => nil,
             "mediumProjectsCount" => nil,
             "highProjectsCount" => nil,
-            "noDataProjectsCount" => 4
+            "noDataProjectsCount" => 5
           }
         ])
+      end
+
+      it 'returns a count of projects with no DORA scores in given time frame' do
+        path_prefix = [:group, :doraPerformanceScoreCounts, :noDoraDataProjectsCount]
+        no_dora_data_projects_count = graphql_data_at(*path_prefix)
+
+        expect(no_dora_data_projects_count).to eq(5)
+      end
+    end
+  end
+
+  context 'when there is partial data for the target month' do
+    let_it_be(:project_score) do
+      create(:dora_performance_score, project: create(:project, group: group), date: beginning_of_last_month,
+        deployment_frequency: 'high', lead_time_for_changes: nil, time_to_restore_service: nil,
+        change_failure_rate: nil)
+    end
+
+    describe 'working query' do
+      before do
+        post_query
+      end
+
+      it_behaves_like 'a working graphql query'
+
+      it 'returns partial data' do
+        expect(data).to match_array([
+          {
+            "metricName" => "lead_time_for_changes",
+            "lowProjectsCount" => 0,
+            "mediumProjectsCount" => 0,
+            "highProjectsCount" => 0,
+            "noDataProjectsCount" => 1
+          },
+          {
+            "metricName" => "deployment_frequency",
+            "lowProjectsCount" => 0,
+            "mediumProjectsCount" => 0,
+            "highProjectsCount" => 1,
+            "noDataProjectsCount" => 0
+          },
+          {
+            "metricName" => "change_failure_rate",
+            "lowProjectsCount" => 0,
+            "mediumProjectsCount" => 0,
+            "highProjectsCount" => 0,
+            "noDataProjectsCount" => 1
+          },
+          {
+            "metricName" => "time_to_restore_service",
+            "lowProjectsCount" => 0,
+            "mediumProjectsCount" => 0,
+            "highProjectsCount" => 0,
+            "noDataProjectsCount" => 1
+          }
+        ])
+      end
+
+      it 'returns a count of projects with no DORA scores in given time frame' do
+        path_prefix = [:group, :doraPerformanceScoreCounts, :noDoraDataProjectsCount]
+        no_dora_data_projects_count = graphql_data_at(*path_prefix)
+
+        expect(no_dora_data_projects_count).to eq(5)
       end
     end
   end
 
   context 'when there is data for the target month' do
-    let_it_be(:beginning_of_last_month) { Time.current.last_month.beginning_of_month }
-
     let_it_be(:project_1_scores_from_wrong_month) do
       create(:dora_performance_score, project: project_1, date: (beginning_of_last_month - 2.months),
         deployment_frequency: 'low', lead_time_for_changes: 'medium', time_to_restore_service: 'high',
@@ -257,6 +322,13 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
               "noDataProjectsCount" => 0
             }
           ])
+        end
+
+        it 'returns a count of projects with no DORA scores in given time frame' do
+          path_prefix = [:group, :doraPerformanceScoreCounts, :noDoraDataProjectsCount]
+          no_dora_data_projects_count = graphql_data_at(*path_prefix)
+
+          expect(no_dora_data_projects_count).to eq(0)
         end
       end
 
