@@ -15,29 +15,25 @@ module QA
                 include Page::Component::SecureReport
 
                 view 'ee/app/views/projects/settings/merge_requests/_merge_pipelines_settings.html.haml' do
-                  element :merged_results_pipeline_checkbox
+                  element 'merged-results-pipeline-checkbox'
                 end
 
                 view 'ee/app/views/projects/settings/merge_requests/_merge_request_settings.html.haml' do
-                  element :default_merge_request_template_field
+                  element 'default-merge-request-template-field'
                 end
 
                 view 'ee/app/views/projects/settings/merge_requests/_merge_trains_settings.html.haml' do
-                  element :merge_trains_checkbox
-                end
-
-                view 'ee/app/assets/javascripts/merge_checks/components/merge_checks_app.vue' do
-                  element :only_allow_merge_if_all_discussions_are_resolved_checkbox
+                  element 'merge-trains-checkbox'
                 end
               end
             end
 
             def click_pipelines_for_merged_results_checkbox
-              check_element(:merged_results_pipeline_checkbox, true)
+              check_element('merged-results-pipeline-checkbox', true)
             end
 
             def click_merge_trains_checkbox
-              check_element(:merge_trains_checkbox, true)
+              check_element('merge-trains-checkbox', true)
             end
 
             def enable_merge_train
@@ -47,7 +43,7 @@ module QA
             end
 
             def set_default_merge_request_template(template)
-              fill_element(:default_merge_request_template_field, template)
+              fill_element('default-merge-request-template-field', template)
               click_save_changes
 
               wait_for_requests

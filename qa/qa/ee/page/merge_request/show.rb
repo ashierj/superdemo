@@ -36,11 +36,11 @@ module QA
               end
 
               view 'app/assets/javascripts/vue_merge_request_widget/components/approvals/approvals.vue' do
-                element :approve_button
+                element 'approve-button'
               end
 
               view 'app/assets/javascripts/vue_merge_request_widget/components/approvals/approvals_summary.vue' do
-                element :approvals_summary_content
+                element 'approvals-summary-content'
               end
 
               view 'ee/app/assets/javascripts/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue' do
@@ -104,9 +104,9 @@ module QA
           end
 
           def click_approve
-            click_element :approve_button
+            click_element 'approve-button'
 
-            find_element :approve_button, text: "Revoke approval"
+            find_element 'approve-button', text: "Revoke approval"
           end
 
           def expand_license_report
@@ -268,7 +268,7 @@ module QA
 
             text = nil
             wait_until(reload: false, sleep_interval: 1) do
-              text = find_element(:approvals_summary_content).text
+              text = find_element('approvals-summary-content').text
               text =~ /requires|approved/i
             end
 
