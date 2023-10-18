@@ -107,6 +107,16 @@ module EE
         enqueue_cleanup_group_protected_branch_rules(member)
       end
 
+      override :destroy_data_related_to_member
+      def destroy_data_related_to_member(member, skip_subresources, skip_saml_identity)
+        super
+
+        return unless member.user
+        return unless member.source.licensed_feature_available?(:ai_features)
+
+        ::User.clear_group_with_ai_available_cache(member.user.id)
+      end
+
       def enqueue_cleanup_add_on_seat_assignments(member)
         return unless ::Feature.enabled?(:hamilton_seat_management)
 

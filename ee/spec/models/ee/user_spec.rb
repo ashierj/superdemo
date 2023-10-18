@@ -3496,6 +3496,34 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe '.clear_group_with_ai_available_cache', :use_clean_rails_redis_caching do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:other_user) { create(:user) }
+
+    before do
+      user.any_group_with_ai_available?
+      other_user.any_group_with_ai_available?
+    end
+
+    it 'clears cache from users with the given ids' do
+      expect(Rails.cache.fetch(['users', user.id, 'group_with_ai_enabled'])).to eq(false)
+      expect(Rails.cache.fetch(['users', other_user.id, 'group_with_ai_enabled'])).to eq(false)
+
+      described_class.clear_group_with_ai_available_cache([user.id])
+
+      expect(Rails.cache.fetch(['users', user.id, 'group_with_ai_enabled'])).to be_nil
+      expect(Rails.cache.fetch(['users', other_user.id, 'group_with_ai_enabled'])).to eq(false)
+    end
+
+    it 'clears cache when given a single id' do
+      expect(Rails.cache.fetch(['users', user.id, 'group_with_ai_enabled'])).to eq(false)
+
+      described_class.clear_group_with_ai_available_cache(user.id)
+
+      expect(Rails.cache.fetch(['users', user.id, 'group_with_ai_enabled'])).to be_nil
+    end
+  end
+
   describe '#unlock_access!' do
     let_it_be_with_reload(:user) { create(:user) }
 
