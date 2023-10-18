@@ -7146,10 +7146,13 @@ msgstr ""
 msgid "AutoRemediation| 1 Merge Request"
 msgstr ""
 
-msgid "AutoRemediation|%{mrsCount} ready for review"
+msgid "AutoRemediation|!%{mergeRequestIid}"
 msgstr ""
 
-msgid "AutoRemediation|Auto-fix"
+msgid "AutoRemediation|!%{mergeRequestIid}: Auto-fix"
+msgstr ""
+
+msgid "AutoRemediation|%{mrsCount} ready for review"
 msgstr ""
 
 msgid "AutoRemediation|Auto-fix solutions"

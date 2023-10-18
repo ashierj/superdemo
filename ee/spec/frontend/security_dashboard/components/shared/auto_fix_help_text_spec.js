@@ -1,3 +1,4 @@
+import { GlPopover, GlIcon, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import AutoFixHelpText from 'ee/security_dashboard/components/shared/auto_fix_help_text.vue';
 
@@ -10,11 +11,10 @@ const TEST_MERGE_REQUEST_DATA = {
 
 describe('AutoFix Help Text component', () => {
   let wrapper;
-  const createWrapper = ({ props = {} } = {}) => {
+  const createWrapper = (mergeRequestProps) => {
     return mount(AutoFixHelpText, {
       propsData: {
-        mergeRequest: TEST_MERGE_REQUEST_DATA,
-        ...props,
+        mergeRequest: { ...TEST_MERGE_REQUEST_DATA, ...mergeRequestProps },
       },
       stubs: {
         GlPopover: true,
@@ -26,51 +26,30 @@ describe('AutoFix Help Text component', () => {
     wrapper = createWrapper();
   });
 
-  const findByTestId = (id) => wrapper.find(`[data-testid="${id}"]`);
+  const findPopover = () => wrapper.findComponent(GlPopover);
+  const findLink = () => wrapper.findComponent(GlLink);
 
   it('popover should have wrapping div as target', () => {
-    expect(
-      findByTestId('vulnerability-solutions-popover')
-        .props()
-        .target()
-        .isSameNode(wrapper.find('[data-testid="vulnerability-solutions-bulb"]').element),
-    ).toBe(true);
+    expect(findPopover().props('target')()).toBe(wrapper.element);
   });
 
   it('popover should contain Icon with passed status', () => {
-    expect(findByTestId('vulnerability-solutions-popover-icon').props().name).toBe('merge');
+    expect(findPopover().findComponent(GlIcon).props('name')).toBe('merge');
   });
 
   it('popover should contain Link with passed href', () => {
-    expect(findByTestId('vulnerability-solutions-popover-link').attributes('href')).toBe(
-      TEST_MERGE_REQUEST_DATA.webUrl,
-    );
+    expect(findLink().attributes('href')).toBe(TEST_MERGE_REQUEST_DATA.webUrl);
   });
 
-  it('popover should contain passed MergeRequest ID', () => {
-    expect(findByTestId('vulnerability-solutions-popover-link-id').text()).toContain(
-      `!${TEST_MERGE_REQUEST_DATA.iid}`,
-    );
-  });
-
-  it('popover should contain Autofix Indicator when available', () => {
-    expect(findByTestId('vulnerability-solutions-popover-link-autofix').text()).toBe(': Auto-fix');
-  });
-
-  describe('with autofix not available', () => {
-    beforeEach(() => {
-      wrapper = createWrapper({
-        props: {
-          mergeRequest: {
-            ...TEST_MERGE_REQUEST_DATA,
-            securityAutoFix: false,
-          },
-        },
-      });
-    });
-
-    it('popover should not contain Autofix Indicator', () => {
-      expect(findByTestId('vulnerability-solutions-popover-link-autofix').exists()).toBe(false);
-    });
-  });
+  it.each`
+    securityAutoFix | expectedText
+    ${true}         | ${'!48820: Auto-fix'}
+    ${false}        | ${'!48820'}
+  `(
+    'popover should contain merge request ID with text "$expectedText"',
+    ({ securityAutoFix, expectedText }) => {
+      wrapper = createWrapper({ securityAutoFix });
+      expect(findLink().text()).toBe(expectedText);
+    },
+  );
 });
