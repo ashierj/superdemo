@@ -39,15 +39,22 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::CreateDbEmbeddingsPerDocFile
 
       where(:openai_experimentation_enabled, :vertex_embeddings_enabled, :feature_available) do
         false | false | false
+
         false | false | true
         false | true  | false
         true  | false | false
+
+        false | true  | true
+        true  | false | true
+        true  | true  | false
       end
 
       with_them do
         before do
           stub_feature_flags(openai_experimentation: openai_experimentation_enabled)
-          stub_feature_flags(create_embeddings_with_vertex_ai: vertex_embeddings_enabled)
+          allow(Gitlab::Saas).to receive(:feature_available?).with(described_class::FEATURE_NAME).and_return(
+            vertex_embeddings_enabled
+          )
           allow(License).to receive(:feature_available?).with(:ai_chat).and_return(feature_available)
         end
 
@@ -61,6 +68,7 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::CreateDbEmbeddingsPerDocFile
 
     context 'with the feature available' do
       before do
+        allow(Gitlab::Saas).to receive(:feature_available?).with(described_class::FEATURE_NAME).and_return(true)
         allow(License).to receive(:feature_available?).with(:ai_chat).and_return(true)
       end
 

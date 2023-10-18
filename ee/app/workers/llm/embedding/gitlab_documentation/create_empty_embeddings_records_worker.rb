@@ -16,8 +16,8 @@ module Llm
         sidekiq_options retry: 3
 
         def perform
+          return unless Gitlab::Saas.feature_available?(FEATURE_NAME)
           return unless Feature.enabled?(:openai_experimentation) # this is legacy global AI toggle FF
-          return unless Feature.enabled?(:create_embeddings_with_vertex_ai) # file_embeddings supported by vertex FF
           return unless ::License.feature_available?(:ai_chat) # license check
 
           embeddings_sources = extract_embedding_sources

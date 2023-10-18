@@ -6,6 +6,7 @@ module Llm
       class CleanupPreviousVersionsRecordsWorker
         include ApplicationWorker
         include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
+        include EmbeddingsWorkerContext
 
         idempotent!
         data_consistency :always # rubocop: disable SidekiqLoadBalancing/WorkerDataConsistency
@@ -16,8 +17,8 @@ module Llm
         TIME_LIMIT = 3.minutes
 
         def perform
+          return unless Gitlab::Saas.feature_available?(FEATURE_NAME)
           return unless Feature.enabled?(:openai_experimentation) # this is legacy global AI toggle FF
-          return unless Feature.enabled?(:create_embeddings_with_vertex_ai) # embeddings supported by vertex FF
           return unless ::License.feature_available?(:ai_chat) # license check
 
           ::Embedding::Vertex::GitlabDocumentation.previous.limit(BATCH_SIZE).delete_all

@@ -12,6 +12,7 @@ module Llm
         EMBEDDINGS_PER_SECOND = 7
         RATE_LIMITER_PERIOD = 10.seconds
         EMBEDDINGS_PER_RATE_LIMITER_PERIOD = (RATE_LIMITER_PERIOD * EMBEDDINGS_PER_SECOND).to_i
+        FEATURE_NAME = :ai_vertex_embeddings
 
         def embedding_delay(key:, start_in: RATE_LIMITER_PERIOD, rate_per_second: EMBEDDINGS_PER_SECOND, ttl: 2.hours)
           ::Gitlab::Redis::SharedState.with do |redis|
