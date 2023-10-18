@@ -19,10 +19,6 @@ class SubscriptionsController < ApplicationController
 
   before_action :load_eligible_groups, only: :new
 
-  before_action only: [:new] do
-    push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-  end
-
   feature_category :purchase
   urgency :low
 

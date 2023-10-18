@@ -39,12 +39,9 @@ const generateProductInfo = (sku, quantity) => {
   return productInfo;
 };
 
-const isSupported = () => Boolean(window.dataLayer) && gon.features?.gitlabGtmDatalayer;
-// gon.features.gitlabGtmDatalayer is set by writing
-// `push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)`
-// to the appropriate controller
+const isSupported = () => Boolean(window.dataLayer);
 // window.dataLayer is set by adding partials to the appropriate view found in
-// views/layouts/_google_tag_manager_body.html.haml and _google_tag_manager_head.html.haml
+// ee/app/views/layouts/_google_tag_manager_body.html.haml and _google_tag_manager_head.html.haml
 
 const pushEvent = (event, args = {}) => {
   if (!window.dataLayer) {

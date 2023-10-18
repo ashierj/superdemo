@@ -10,9 +10,6 @@ module Projects
     before_action :authenticate_user! # since it is skipped in inherited controller
     before_action :owner_access!, only: :onboarding
     before_action :verify_learn_gitlab_available!, only: :show
-    before_action only: :onboarding do
-      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    end
 
     helper_method :onboarding_status
 

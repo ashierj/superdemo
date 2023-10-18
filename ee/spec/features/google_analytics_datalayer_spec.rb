@@ -12,7 +12,6 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :saas, :js, feature_cate
 
   before do
     stub_application_setting(require_admin_approval_after_user_signup: false)
-    stub_feature_flags(gitlab_gtm_datalayer: true)
     stub_config(extra: { google_tag_manager_id: google_tag_manager_id, google_tag_manager_nonce_id: google_tag_manager_id })
   end
 

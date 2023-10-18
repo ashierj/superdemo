@@ -13,9 +13,6 @@ module Registrations
     before_action :verify_onboarding_enabled!
     before_action :authenticate_user!
     feature_category :onboarding
-    before_action only: [:new] do
-      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    end
 
     helper_method :onboarding_status
 

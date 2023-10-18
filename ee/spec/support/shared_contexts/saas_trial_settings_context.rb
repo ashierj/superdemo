@@ -11,8 +11,6 @@ RSpec.shared_context 'with saas settings for in-app trial flows', shared_context
   include Features::TrialHelpers
 
   before do
-    stub_feature_flags(gitlab_gtm_datalayer: true)
-
     stub_config(extra: { 'google_tag_manager_nonce_id' => 'key' })
   end
 end
