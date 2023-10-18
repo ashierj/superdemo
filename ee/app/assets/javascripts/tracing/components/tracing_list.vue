@@ -1,10 +1,12 @@
 <script>
 import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
+import { debounce } from 'lodash';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { contentTop } from '~/lib/utils/common_utils';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import {
   queryToFilterObj,
   filterObjToQuery,
@@ -50,6 +52,7 @@ export default {
       nextPageToken: null,
       chartRangeMin: null,
       chartRangeMax: null,
+      highlightedTraceId: null,
     };
   },
   computed: {
@@ -68,6 +71,7 @@ export default {
     },
   },
   created() {
+    this.debouncedChartItemOver = debounce(this.chartItemOver, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
     this.checkEnabled();
   },
   methods: {
@@ -145,6 +149,23 @@ export default {
     chartItemSelected({ traceId }) {
       this.selectTrace({ traceId });
     },
+    chartItemOver({ traceId }) {
+      const index = this.traces.findIndex((x) => x.trace_id === traceId);
+      if (index >= 0) {
+        this.highlightedTraceId = traceId;
+        this.scrollToRow(index);
+      }
+    },
+    scrollToRow(index) {
+      const tbody = this.$refs.tableList.$el.querySelector('tbody');
+      const row = tbody.querySelectorAll('tr')[index];
+      if (row) {
+        this.$refs.infiniteScroll.scrollTo({ top: row.offsetTop, behavior: 'smooth' });
+      }
+    },
+    chartItemOut() {
+      this.highlightedTraceId = null;
+    },
   },
   CHART_HEIGHT,
 };
@@ -172,17 +193,22 @@ export default {
           :range-max="chartRangeMax"
           :traces="traces"
           @chart-item-selected="chartItemSelected"
+          @chart-item-over="debouncedChartItemOver"
+          @chart-item-out="chartItemOut"
           @reload-data="fetchTraces"
         />
 
         <gl-infinite-scroll
+          ref="infiniteScroll"
           :max-list-height="listHeight"
           :fetched-items="traces.length"
           @bottomReached="bottomReached"
         >
           <template #items>
             <tracing-table-list
+              ref="tableList"
               :traces="traces"
+              :highlighted-trace-id="highlightedTraceId"
               @reload="fetchTraces"
               @trace-selected="selectTrace"
             />

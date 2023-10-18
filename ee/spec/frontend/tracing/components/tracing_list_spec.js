@@ -282,6 +282,12 @@ describe('TracingList', () => {
       });
 
       await mountComponent();
+
+      wrapper.vm.$refs.tableList.$el.querySelector = jest
+        .fn()
+        .mockReturnValue({ querySelectorAll: jest.fn().mockReturnValue([]) });
+
+      wrapper.vm.$refs.infiniteScroll.scrollTo = jest.fn();
     });
 
     it('renders the chart', () => {
@@ -327,6 +333,31 @@ describe('TracingList', () => {
 
       expect(visitUrlMock).toHaveBeenCalledTimes(1);
       expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id');
+    });
+
+    it('highlight and scroll to the trace row when over a chart point', async () => {
+      wrapper.vm.$refs.tableList.$el.querySelector.mockReturnValueOnce({
+        querySelectorAll: jest.fn().mockReturnValue([{ offsetTop: 1234 }]),
+      });
+      await findScatterChart().vm.$emit('chart-item-over', {
+        traceId: mockResponse.traces[0].trace_id,
+      });
+
+      expect(findTableList().props('highlightedTraceId')).toBe(mockResponse.traces[0].trace_id);
+      expect(wrapper.vm.$refs.infiniteScroll.scrollTo).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        top: 1234,
+      });
+    });
+
+    it('stop highlighting the trace row when not over a chart point', async () => {
+      await findScatterChart().vm.$emit('chart-item-over', {
+        traceId: mockResponse.traces[1].trace_id,
+      });
+
+      await findScatterChart().vm.$emit('chart-item-out');
+
+      expect(findTableList().props('highlightedTraceId')).toBeNull();
     });
 
     it('calls fetchTraces method when the chart emits reload event', () => {
