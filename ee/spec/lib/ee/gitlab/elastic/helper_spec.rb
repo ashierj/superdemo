@@ -741,6 +741,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
   end
 
   describe '#remove_wikis_from_the_standalone_index' do
+    include ElasticsearchHelpers
+    before do
+      set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: true
+      allow(Wiki).to receive(:use_separate_indices?).and_return true
+    end
+
     context 'container_type is other than Group or Project' do
       it 'not calls delete_by_query' do
         expect(helper.client).not_to receive(:delete_by_query)
@@ -749,89 +755,54 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
     end
 
     context 'Wiki does not use separate indices' do
-      let_it_be(:project) { create(:project) }
+      before do
+        allow(Wiki).to receive(:use_separate_indices?).and_return false
+      end
 
       it 'not calls delete_by_query' do
         expect(helper.client).not_to receive(:delete_by_query)
-        helper.remove_wikis_from_the_standalone_index(project.id, project.class.name)
+        helper.remove_wikis_from_the_standalone_index(1, 'Project')
       end
     end
 
-    context 'Wiki uses separate indices' do
-      include ElasticsearchHelpers
+    context 'Wiki uses separate indices and container_type is either Project or Group' do
       let(:body) do
         { query: { bool: { filter: { term: { rid: rid } } } } }
       end
 
       let(:index) { Elastic::Latest::WikiConfig.index_name }
 
-      before do
-        allow(Wiki).to receive(:use_separate_indices?).and_return true
+      context 'namespace_routing_id is passed' do
+        let(:container_id) { 1 }
+        let(:container_type) { 'Group' }
+        let(:namespace_routing_id) { 0 }
+        let(:rid) { "wiki_#{container_type.downcase}_#{container_id}" }
+
+        it 'calls delete_by_query with passed namespace_routing_id as routing' do
+          expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{namespace_routing_id}" })
+          helper.remove_wikis_from_the_standalone_index(container_id, container_type, namespace_routing_id)
+        end
+
+        context 'migration reindex_wikis_to_fix_routing is not finished' do
+          before do
+            set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: false
+          end
+
+          it 'calls delete_by_query without routing' do
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed' })
+            helper.remove_wikis_from_the_standalone_index(container_id, container_type, namespace_routing_id)
+          end
+        end
       end
 
-      context 'container not found' do
-        let(:rid) { "wiki_project_#{non_existing_record_id}" }
+      context 'namespace_routing_id is not passed' do
+        let(:container_id) { 1 }
+        let(:container_type) { 'Project' }
+        let(:rid) { "wiki_#{container_type.downcase}_#{container_id}" }
 
         it 'calls delete_by_query without routing' do
           expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed' })
-          helper.remove_wikis_from_the_standalone_index(non_existing_record_id, 'Project')
-        end
-      end
-
-      context 'container found is Group' do
-        let_it_be(:group) { create :group }
-        let(:rid) { "wiki_group_#{group.id}" }
-
-        context 'migration reindex_wikis_to_fix_routing is finished' do
-          before do
-            set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: true
-          end
-
-          context 'namespace_routing_id is passed' do
-            let(:namespace_routing_id) { 0 }
-
-            it 'calls delete_by_query with passed namespace_routing_id as routing' do
-              expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{namespace_routing_id}" })
-              helper.remove_wikis_from_the_standalone_index(group.id, group.class.name, namespace_routing_id)
-            end
-          end
-
-          context 'namespace_routing_id is not passed' do
-            it 'calls delete_by_query with group root_ancestor_id as routing' do
-              expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{group.root_ancestor.id}" })
-              helper.remove_wikis_from_the_standalone_index(group.id, group.class.name)
-            end
-          end
-        end
-
-        context 'migration reindex_wikis_to_fix_routing is not finished' do
-          it 'calls delete_by_query without routing' do
-            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed' })
-            helper.remove_wikis_from_the_standalone_index(group.id, group.class.name)
-          end
-        end
-      end
-
-      context 'container found is Project' do
-        let_it_be(:project) { create :project }
-        let(:rid) { "wiki_project_#{project.id}" }
-
-        context 'migration reindex_wikis_to_fix_routing is finished' do
-          before do
-            set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: true
-          end
-
-          it 'calls delete_by_query with routing' do
-            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{project.root_ancestor.id}" })
-            helper.remove_wikis_from_the_standalone_index(project.id, project.class.name)
-          end
-        end
-
-        context 'migration reindex_wikis_to_fix_routing is not finished' do
-          it 'calls delete_by_query without routing' do
-            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed' })
-            helper.remove_wikis_from_the_standalone_index(project.id, project.class.name)
-          end
+          helper.remove_wikis_from_the_standalone_index(container_id, container_type)
         end
       end
     end
