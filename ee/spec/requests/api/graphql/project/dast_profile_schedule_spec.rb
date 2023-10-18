@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Query.project(fullPath).dastProfiles.dastProfileSchedule',
-feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
   let_it_be(:plan_limits) { create(:plan_limits, :default_plan) }
   let_it_be(:project) { create(:project, :repository) }
@@ -28,9 +28,11 @@ feature_category: :dynamic_application_security_testing do
   end
 
   def run_query(query)
-    run_with_clean_state(query,
-                         context: { current_user: current_user },
-                         variables: {})
+    run_with_clean_state(
+      query,
+      context: { current_user: current_user },
+      variables: {}
+    )
   end
 
   subject { post_graphql(query, current_user: current_user) }

@@ -31,12 +31,14 @@ RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportSummary', fe
       scan = create(:security_scan, scan_type: artifact.job.name, build: artifact.job)
 
       report.findings.each_with_index do |finding, index|
-        create(:security_finding,
-              severity: finding.severity,
-              confidence: finding.confidence,
-              project_fingerprint: finding.project_fingerprint,
-              deduplicated: true,
-              scan: scan)
+        create(
+          :security_finding,
+          severity: finding.severity,
+          confidence: finding.confidence,
+          project_fingerprint: finding.project_fingerprint,
+          deduplicated: true,
+          scan: scan
+        )
       end
     end
   end

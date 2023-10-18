@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Query.project(fullPath).pipelines.dastProfile',
-feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }
