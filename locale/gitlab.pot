@@ -1134,6 +1134,12 @@ msgstr ""
 msgid "%{source_project_path}:%{source_branch}"
 msgstr ""
 
+msgid "%{source_type} cannot be related to %{type_type}"
+msgstr ""
+
+msgid "%{source_type} cannot block %{type_type}"
+msgstr ""
+
 msgid "%{source} %{copyButton} into %{target}"
 msgstr ""
 
