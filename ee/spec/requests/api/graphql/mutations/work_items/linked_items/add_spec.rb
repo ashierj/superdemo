@@ -8,7 +8,7 @@ RSpec.describe "Add linked items to a work item", feature_category: :portfolio_m
 
   let_it_be(:project) { create(:project, :private) }
   let_it_be(:reporter) { create(:user).tap { |user| project.add_reporter(user) } }
-  let_it_be(:work_item) { create(:work_item, project: project) }
+  let_it_be(:work_item) { create(:work_item, :issue, project: project) }
   let_it_be(:work_item2) { create(:work_item, project: project) }
 
   let(:current_user) { reporter }
@@ -84,6 +84,46 @@ RSpec.describe "Add linked items to a work item", feature_category: :portfolio_m
         expect(mutation_response['errors'])
           .to contain_exactly('Blocked work items are not available for the current subscription tier')
       end
+    end
+  end
+
+  context 'when type cannot be blocked by given type' do
+    let_it_be(:objective) { create(:work_item, :objective, project: project) }
+
+    let(:input) do
+      {
+        'id' => work_item.to_global_id.to_s,
+        'workItemsIds' => [objective.to_global_id.to_s],
+        'linkType' => 'BLOCKED_BY'
+      }
+    end
+
+    it 'returns an error message' do
+      post_graphql_mutation(mutation, current_user: current_user)
+
+      expect(mutation_response["errors"]).to eq([
+        "#{objective.to_reference} cannot be added: objectives cannot block issues"
+      ])
+    end
+  end
+
+  context 'when type cannot block given type' do
+    let_it_be(:req) { create(:work_item, :requirement, project: project) }
+
+    let(:input) do
+      {
+        'id' => work_item.to_global_id.to_s,
+        'workItemsIds' => [req.to_global_id.to_s],
+        'linkType' => 'BLOCKS'
+      }
+    end
+
+    it 'returns an error message' do
+      post_graphql_mutation(mutation, current_user: current_user)
+
+      expect(mutation_response["errors"]).to eq([
+        "#{req.to_reference} cannot be added: issues cannot block requirements"
+      ])
     end
   end
 end
