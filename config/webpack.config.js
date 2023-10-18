@@ -428,8 +428,8 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'graphql-tag/loader',
       },
-      {
-        test: /(icons|@gitlab\/svgs\/.+)\.svg$/,
+     {
+        test: /@gitlab\/svgs\/.+\.svg$/,
         loader: 'file-loader',
         options: {
           name: '[name].[contenthash:8].[ext]',
@@ -437,10 +437,14 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        exclude: /(icons|@gitlab\/svgs\/.+)\.svg$/,
+        exclude: /@gitlab\/svgs\/.+\.svg$/,
         resourceQuery: /url/,
         loader: 'file-loader',
         options: {
+          name: '[name].[contenthash:8].[ext]',
+          esModule: false,
+        },
+      },
           name: '[name].[contenthash:8].[ext]',
           esModule: false,
         },
