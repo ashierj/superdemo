@@ -7,6 +7,12 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
+          field :compute_minutes,
+            GraphQL::Types::Float,
+            null: true,
+            method: :total_ci_minutes_consumed,
+            description: "Total minutes consumed by the pipeline."
+
           field :security_report_summary,
             ::Types::SecurityReportSummaryType,
             null: true,
