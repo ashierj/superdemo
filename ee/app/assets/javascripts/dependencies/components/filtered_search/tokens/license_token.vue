@@ -121,16 +121,18 @@ export default {
           :key="license.spdxIdentifier"
           :value="license.spdxIdentifier"
         >
-          <gl-icon
-            v-if="config.multiSelect"
-            data-testid="check-icon"
-            name="check"
-            class="gl-mr-3 gl-text-gray-700"
-            :class="{
-              'gl-visibility-hidden': !selectedLicenseSpdxIds.includes(license.spdxIdentifier),
-            }"
-          />
-          {{ license.name }}
+          <div class="gl-display-flex gl-align-items-center">
+            <gl-icon
+              v-if="config.multiSelect"
+              data-testid="check-icon"
+              name="check"
+              class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
+              :class="{
+                'gl-visibility-hidden': !selectedLicenseSpdxIds.includes(license.spdxIdentifier),
+              }"
+            />
+            <span>{{ license.name }}</span>
+          </div>
         </gl-filtered-search-suggestion>
       </template>
     </template>
