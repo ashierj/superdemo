@@ -81,14 +81,22 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
     end
 
     context 'any_approver rules' do
-      let(:rule) { build(:approval_merge_request_rule, merge_request: merge_request, rule_type: :any_approver) }
+      let(:rule) do
+        build(:approval_merge_request_rule, merge_request: merge_request, rule_type: :any_approver,
+          applicable_post_merge: true)
+      end
 
-      it 'creating only one any_approver rule is allowed' do
-        create(:approval_merge_request_rule, merge_request: merge_request, rule_type: :any_approver)
+      it 'only allows one rule per any_approver rule and applicable_post_merge' do
+        create(:approval_merge_request_rule, merge_request: merge_request, rule_type: :any_approver, applicable_post_merge: false)
 
         expect(rule).not_to be_valid
-        expect(rule.errors.messages).to eq(rule_type: ['any-approver for the merge request already exists'])
         expect { rule.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
+
+        dup_rule = build(:approval_merge_request_rule, merge_request: merge_request, rule_type: :any_approver, applicable_post_merge: true)
+
+        expect(dup_rule).not_to be_valid
+        expect(dup_rule.errors.messages).to eq(rule_type: ['any-approver for the merge request already exists'])
+        expect { dup_rule.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
       end
     end
   end
