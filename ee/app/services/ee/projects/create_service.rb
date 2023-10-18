@@ -64,6 +64,10 @@ module EE
       end
 
       def log_geo_event(project)
+        # Creates a Geo::Event which triggers secondaries to replicate the project repo in SSF
+        # See https://gitlab.com/gitlab-org/gitlab/-/issues/427339
+        return project&.geo_handle_after_update if ::Geo::ProjectRepositoryReplicator.enabled?
+
         ::Geo::RepositoryCreatedEventStore.new(project).create!
       end
 

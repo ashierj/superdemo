@@ -412,17 +412,45 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
       stub_current_geo_node(primary)
     end
 
-    it 'logs an event to the Geo event log' do
-      expect { create_project(user, opts) }.to change(Geo::RepositoryCreatedEvent, :count).by(1)
+    context 'when geo_project_repository_replication is enabled' do
+      it 'creates a Geo::Event', :sidekiq_inline do
+        expect { create_project(user, opts) }
+          .to change { ::Geo::Event.where(replicable_name: 'project_repository', event_name: :updated).count }.by(1)
+      end
+
+      it 'does not create a Geo::Event if project creation fails', :sidekiq_inline do
+        failing_opts = {
+          name: nil,
+          namespace: user.namespace
+        }
+
+        expect { create_project(user, failing_opts) }
+          .not_to change { ::Geo::Event.where(replicable_name: 'project_repository', event_name: :updated).count }
+      end
     end
 
-    it 'does not log event to the Geo log if project creation fails' do
-      failing_opts = {
-        name: nil,
-        namespace: user.namespace
-      }
+    context 'when geo_project_repository_replication is disabled' do
+      before do
+        stub_feature_flags(geo_project_repository_replication: false)
+      end
 
-      expect { create_project(user, failing_opts) }.not_to change(Geo::RepositoryCreatedEvent, :count)
+      it 'does not create a Geo::Event', :sidekiq_inline do
+        expect { create_project(user, opts) }
+          .not_to change { ::Geo::Event.where(replicable_name: 'project_repository', event_name: :updated).count }
+      end
+
+      it 'creates a Geo::RepositoryCreatedEvent' do
+        expect { create_project(user, opts) }.to change(Geo::RepositoryCreatedEvent, :count).by(1)
+      end
+
+      it 'does not create a Geo::RepositoryCreatedEvent if project creation fails' do
+        failing_opts = {
+          name: nil,
+          namespace: user.namespace
+        }
+
+        expect { create_project(user, failing_opts) }.not_to change(Geo::RepositoryCreatedEvent, :count)
+      end
     end
   end
 
