@@ -203,7 +203,9 @@ export default {
     },
     updateRule(ruleIndex, rule) {
       this.policy.rules.splice(ruleIndex, 1, rule);
-      this.updateSettings(this.settings);
+      if (this.glFeatures.scanResultPolicySettings && this.glFeatures.scanResultAnyMergeRequest) {
+        this.updateSettings(this.settings);
+      }
       this.updateYamlEditorValue(this.policy);
     },
     handleError(error) {
