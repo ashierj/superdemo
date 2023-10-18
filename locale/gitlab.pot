@@ -17425,9 +17425,6 @@ msgstr[1] ""
 msgid "Display"
 msgstr ""
 
-msgid "Display %{viewer_type}"
-msgstr ""
-
 msgid "Display alerts from all configured monitoring tools."
 msgstr ""
 
