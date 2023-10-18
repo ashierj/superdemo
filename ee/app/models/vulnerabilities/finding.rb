@@ -176,7 +176,7 @@ module Vulnerabilities
     end
 
     def self.related_dismissal_feedback
-      Feedback.where('vulnerability_occurrences.uuid::uuid = vulnerability_feedback.finding_uuid::uuid')
+      Feedback.where('vulnerability_occurrences.uuid = vulnerability_feedback.finding_uuid')
               .for_dismissal
     end
     private_class_method :related_dismissal_feedback
