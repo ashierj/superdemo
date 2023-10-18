@@ -231,10 +231,16 @@ RSpec.describe Resolvers::ProjectIssuesResolver do
         end
 
         describe "filtering by negated health_status" do
+          let(:on_track) { Issue.health_statuses[:on_track] }
           let(:at_risk) { Issue.health_statuses[:at_risk] }
+          let(:needs_attention) { Issue.health_statuses[:needs_attention] }
 
-          it "only returns issues that do not have the specified health_status assigned" do
-            expect(resolve_issues(not: { health_status_filter: at_risk })).to contain_exactly(issue2, issue3, issue4)
+          it 'only returns issues that do not have the specified health_status assigned' do
+            expect(resolve_issues(not: { health_status_filter: [on_track] })).to contain_exactly(issue1, issue2, issue4)
+          end
+
+          it 'only returns issues that do not have the specified multiple health_statuses assigned' do
+            expect(resolve_issues(not: { health_status_filter: [at_risk, needs_attention] })).to contain_exactly(issue2, issue3)
           end
         end
       end
