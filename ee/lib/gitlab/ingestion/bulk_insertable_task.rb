@@ -53,12 +53,12 @@ module Gitlab
         end
 
         def remove_validation_if_necessary(klass, validator)
-          return unless uniqunesss_validator?(validator) || presence_of_association_validator?(klass, validator)
+          return unless uniquness_validator?(validator) || presence_of_association_validator?(klass, validator)
 
           klass.skip_callback(:validate, :before, validator)
         end
 
-        def uniqunesss_validator?(validator)
+        def uniquness_validator?(validator)
           validator.instance_of?(ActiveRecord::Validations::UniquenessValidator)
         end
 
