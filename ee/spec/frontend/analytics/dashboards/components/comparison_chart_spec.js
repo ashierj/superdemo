@@ -241,6 +241,10 @@ describe('Comparison chart', () => {
     it('will filter merge request data using filterLabels', () => {
       expectMergeRequestsRequests(allTimePeriods, { labelNames: filterLabels });
     });
+
+    it('will pass filterLabels to the table', () => {
+      expect(findComparisonTable().props('filterLabels')).toEqual(filterLabels);
+    });
   });
 
   describe('excludeMetrics set', () => {

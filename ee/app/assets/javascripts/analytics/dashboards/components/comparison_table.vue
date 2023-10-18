@@ -37,6 +37,11 @@ export default {
       type: Date,
       required: true,
     },
+    filterLabels: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   computed: {
     dashboardTableFields() {
@@ -94,6 +99,7 @@ export default {
         :identifier="identifier"
         :request-path="requestPath"
         :is-project="isProject"
+        :filter-labels="filterLabels"
       />
     </template>
 

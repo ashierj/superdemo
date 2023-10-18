@@ -1,6 +1,6 @@
 <script>
 import { GlIcon, GlLink, GlPopover } from '@gitlab/ui';
-import { joinPaths } from '~/lib/utils/url_utility';
+import { joinPaths, mergeUrlParams } from '~/lib/utils/url_utility';
 import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
 import { s__ } from '~/locale';
 import { TABLE_METRICS, CLICK_METRIC_DRILLDOWN_LINK_ACTION } from '../constants';
@@ -25,6 +25,11 @@ export default {
       type: Boolean,
       required: true,
     },
+    filterLabels: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   computed: {
     metric() {
@@ -35,12 +40,16 @@ export default {
     },
     link() {
       const { groupLink, projectLink } = this.tooltip;
-      return joinPaths(
+      const url = joinPaths(
         '/',
         gon.relative_url_root,
         this.requestPath,
         this.isProject ? projectLink : groupLink,
       );
+
+      if (!this.filterLabels.length) return url;
+
+      return mergeUrlParams({ label_name: this.filterLabels }, url, { spreadArrays: true });
     },
     popoverTarget() {
       return `${this.requestPath}__${this.identifier}`.replace('/', '_');

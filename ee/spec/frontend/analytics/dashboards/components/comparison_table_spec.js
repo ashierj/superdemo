@@ -13,6 +13,7 @@ describe('Comparison table', () => {
 
   const now = new Date();
   const mockMetric = { identifier: 'lead_time', value: 'Lead Time' };
+  const filterLabels = ['test::one', 'test::two'];
 
   const createWrapper = (props = {}) => {
     wrapper = mountExtended(ComparisonTable, {
@@ -24,6 +25,7 @@ describe('Comparison table', () => {
         requestPath: 'groups/test',
         isProject: false,
         now,
+        filterLabels,
         ...props,
       },
     });
@@ -39,7 +41,10 @@ describe('Comparison table', () => {
   it.each(Object.keys(TABLE_METRICS))('renders table cell for %s metric', (identifier) => {
     createWrapper();
     expect(findMetricTableCell(identifier).exists()).toBe(true);
-    expect(findMetricTableCell(identifier).props('identifier')).toBe(identifier);
+    expect(findMetricTableCell(identifier).props()).toMatchObject({
+      identifier,
+      filterLabels,
+    });
   });
 
   it('shows loading skeletons for each metric comparison cell', () => {
