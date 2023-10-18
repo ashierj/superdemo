@@ -13886,12 +13886,12 @@ CREATE TABLE ci_pipeline_variables (
     encrypted_value text,
     encrypted_value_salt character varying,
     encrypted_value_iv character varying,
-    pipeline_id integer NOT NULL,
+    pipeline_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     variable_type smallint DEFAULT 1 NOT NULL,
     partition_id bigint NOT NULL,
     raw boolean DEFAULT false NOT NULL,
     id bigint NOT NULL,
-    pipeline_id_convert_to_bigint bigint DEFAULT 0 NOT NULL
+    pipeline_id bigint NOT NULL
 );
 
 CREATE SEQUENCE ci_pipeline_variables_id_seq
