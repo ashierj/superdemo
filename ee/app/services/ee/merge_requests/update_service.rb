@@ -33,10 +33,8 @@ module EE
         end
       end
 
-      override :create_branch_change_note
-      def create_branch_change_note(merge_request, branch_type, event_type, old_branch, new_branch)
-        super
-
+      override :delete_approvals_on_target_branch_change
+      def delete_approvals_on_target_branch_change(merge_request)
         delete_approvals(merge_request) if reset_approvals?(merge_request, nil)
       end
 
