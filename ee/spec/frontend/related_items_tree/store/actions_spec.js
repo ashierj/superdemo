@@ -353,22 +353,7 @@ describe('RelatedItemTree', () => {
       });
 
       describe('fetchItems', () => {
-        it('should dispatch `requestItems` action', () => {
-          testAction(
-            actions.fetchItems,
-            { parentItem: mockParentItem, isSubItem: false },
-            {},
-            [],
-            [
-              {
-                type: 'requestItems',
-                payload: { parentItem: mockParentItem, isSubItem: false },
-              },
-            ],
-          );
-        });
-
-        it('should dispatch `receiveItemsSuccess`, `setItemChildren`, `setItemChildrenFlags`, `setEpicPageInfo` and `setIssuePageInfo` on request success', () => {
+        it('should dispatch `receiveItemsSuccess`, `setItemChildren`, `setItemChildrenFlags`, `setEpicPageInfo` and `setIssuePageInfo` on request `requestItems` success', () => {
           jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
             Promise.resolve({
               data: mockQueryResponse.data,
