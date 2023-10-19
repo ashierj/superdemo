@@ -55,7 +55,7 @@ module CodeSuggestions
         )
       end
 
-      CodeSuggestions::Tasks::CodeGeneration::FromComment.new(
+      CodeSuggestions::Tasks::CodeGeneration.new(
         params: code_generation_params(result),
         unsafe_passthrough_params: unsafe_passthrough_params
       )
