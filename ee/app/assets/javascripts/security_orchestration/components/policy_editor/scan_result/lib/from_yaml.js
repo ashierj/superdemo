@@ -1,7 +1,8 @@
 import { safeLoad } from 'js-yaml';
+import { isBoolean, isEqual } from 'lodash';
 import { hasInvalidKey, isValidPolicy } from '../../utils';
 import { PRIMARY_POLICY_KEYS } from '../../constants';
-import { VALID_APPROVAL_SETTINGS } from './settings';
+import { VALID_APPROVAL_SETTINGS, PERMITTED_INVALID_SETTINGS } from './settings';
 
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
@@ -19,7 +20,10 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
        */
       const primaryKeys = [
         ...PRIMARY_POLICY_KEYS,
-        ...(glFeatures?.scanResultPolicySettings ? [`approval_settings`] : []),
+        ...(glFeatures?.scanResultPolicySettings ||
+        isEqual(policy.approval_settings, PERMITTED_INVALID_SETTINGS) // Temporary workaround to allow the rule builder to load with wrongly persisted settings
+          ? [`approval_settings`]
+          : []),
       ];
       const rulesKeys = [
         'type',
@@ -47,21 +51,16 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
         'role_approvers',
       ];
 
-      const hasValidStructure = (object) => {
-        const keys = Object.keys(object || {});
-
-        return keys.length === 1 && keys[0] === 'enabled' && typeof object[keys[0]] === 'boolean';
-      };
-
       const { approval_settings: settings = {} } = policy;
 
       const hasInvalidApprovalSettings = glFeatures?.scanResultPolicySettings
         ? hasInvalidKey(settings, VALID_APPROVAL_SETTINGS)
         : false;
 
-      const hasInvalidSettingStructure = glFeatures?.scanResultPolicySettings
-        ? !Object.values(settings).every((setting) => hasValidStructure(setting))
-        : false;
+      const hasInvalidSettingStructure =
+        glFeatures?.scanResultPolicySettings && !isEqual(settings, PERMITTED_INVALID_SETTINGS)
+          ? !Object.values(settings).every((setting) => isBoolean(setting))
+          : false;
 
       return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
         !hasInvalidApprovalSettings &&

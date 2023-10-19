@@ -81,6 +81,13 @@ export const VALID_APPROVAL_SETTINGS = [
   ...Object.keys(protectedBranchesConfiguration),
   ...Object.keys(mergeRequestConfiguration),
 ];
+
+export const PERMITTED_INVALID_SETTINGS = {
+  [BLOCK_PROTECTED_BRANCH_MODIFICATION]: {
+    enabled: true,
+  },
+};
+
 /**
  * Build settings based on provided flags, scalable for more flags in future
  * @param hasAnyMergeRequestRule
