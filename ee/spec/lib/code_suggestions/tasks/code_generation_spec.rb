@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe CodeSuggestions::Tasks::CodeGeneration::FromComment, feature_category: :code_suggestions do
+RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_suggestions do
   let(:prefix) { 'some text' }
   let(:instruction) { 'Add code for validating function' }
   let(:model_family) { CodeSuggestions::TaskFactory::VERTEX_AI }
