@@ -50,7 +50,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   end
 
   subject do
-    described_class.update(value) # rubocop:disable Rails/SaveBang - This is not an ActiveRecord model
+    described_class.update(value) # rubocop:disable Rails/SaveBang -- This is not an ActiveRecord model
   end
 
   # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543

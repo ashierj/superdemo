@@ -2,7 +2,7 @@
 
 module Types
   module Geo
-    # rubocop:disable Graphql/AuthorizeTypes because it is included
+    # rubocop:disable Graphql/AuthorizeTypes -- because it is included
     class TerraformStateVersionRegistryType < BaseObject
       graphql_name 'TerraformStateVersionRegistry'
       description 'Represents the Geo sync and verification state of a terraform state version'

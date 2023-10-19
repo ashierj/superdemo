@@ -40,7 +40,7 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
 
     stub_licensed_features(remote_development: true)
 
-    # rubocop:disable RSpec/AnyInstanceOf - It's NOT the next instance...
+    # rubocop:disable RSpec/AnyInstanceOf -- It's NOT the next instance...
     allow_any_instance_of(Gitlab::Auth::AuthFinders)
       .to receive(:cluster_agent_token_from_authorization_token).and_return(agent_token)
     # rubocop:enable RSpec/AnyInstanceOf

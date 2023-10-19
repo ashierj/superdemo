@@ -40,7 +40,7 @@ RSpec.describe ExternalStatusChecks::RetryService, feature_category: :groups_and
           let(:data) { merge_request.to_hook_data(user) }
 
           it 'updates `retried_at` field for the last status check response and async executes with data' do
-            expect_any_instance_of(::MergeRequests::ExternalStatusCheck).to receive(:async_execute).with(data) # rubocop:disable RSpec/AnyInstanceOf - It's not the next instance
+            expect_any_instance_of(::MergeRequests::ExternalStatusCheck).to receive(:async_execute).with(data) # rubocop:disable RSpec/AnyInstanceOf -- It's not the next instance
 
             subject
 
@@ -55,7 +55,7 @@ RSpec.describe ExternalStatusChecks::RetryService, feature_category: :groups_and
 
         context 'when rule retry operation fails' do
           before do
-            allow_any_instance_of(::MergeRequests::StatusCheckResponse).to receive(:update).and_return(false) # rubocop:disable RSpec/AnyInstanceOf - It's not the next instance
+            allow_any_instance_of(::MergeRequests::StatusCheckResponse).to receive(:update).and_return(false) # rubocop:disable RSpec/AnyInstanceOf -- It's not the next instance
           end
 
           it 'does not update and has an appropriate error' do

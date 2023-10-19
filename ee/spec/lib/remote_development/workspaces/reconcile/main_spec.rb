@@ -10,7 +10,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, feature_category:
   let(:error_details) { 'some error details' }
   let(:err_message_context) { { details: error_details } }
 
-  # rubocop:disable Layout/LineLength - keep all the class and method fixtures as single-liners easier scanning/editing
+  # rubocop:disable Layout/LineLength -- keep all the class and method fixtures as single-liners easier scanning/editing
   # Classes
 
   let(:params_validator_class) { RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator }

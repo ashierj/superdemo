@@ -67,7 +67,7 @@ module RemoteDevelopment
             return err(
               format(
                 _("Multiple components '%{name}' have 'gl/inject-editor' attribute"),
-                name: inject_editor_components.pluck('name') # rubocop:disable CodeReuse/ActiveRecord - this pluck isn't from ActiveRecord, it's from ActiveSupport
+                name: inject_editor_components.pluck('name') # rubocop:disable CodeReuse/ActiveRecord -- this pluck isn't from ActiveRecord, it's from ActiveSupport
               )
             )
           end

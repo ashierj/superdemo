@@ -2,7 +2,7 @@
 
 module Types
   module Geo
-    # rubocop:disable Graphql/AuthorizeTypes because it is included
+    # rubocop:disable Graphql/AuthorizeTypes -- because it is included
     class CiSecureFileRegistryType < BaseObject
       graphql_name 'CiSecureFileRegistry'
       description 'Represents the Geo replication and verification state of a ci_secure_file.'

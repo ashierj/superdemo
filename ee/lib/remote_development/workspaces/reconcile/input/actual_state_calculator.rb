@@ -114,7 +114,7 @@ module RemoteDevelopment
             # - All of the replicas associated with the Deployment are available.
             # - No old replicas for the Deployment are running.
             if DEPLOYMENT_PROGRESSING_STATUS_COMPLETE.include?(progressing_reason)
-              # rubocop:disable Layout/MultilineOperationIndentation - Currently can't override default RubyMine formatting
+              # rubocop:disable Layout/MultilineOperationIndentation -- Currently can't override default RubyMine formatting
 
               # If a deployment is complete and the desired and available replicas are 0, the workspace is stopped
               if available_reason == AVAILABLE_CONDITION_REASON_MINIMUM_REPLICAS_AVAILABLE &&
