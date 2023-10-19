@@ -86,11 +86,11 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
           applicable_post_merge: true)
       end
 
-      it 'only allows one rule per any_approver rule and applicable_post_merge' do
+      it 'only allows one rule for every any_approver rule type and applicable_post_merge value' do
         create(:approval_merge_request_rule, merge_request: merge_request, rule_type: :any_approver, applicable_post_merge: false)
 
-        expect(rule).not_to be_valid
-        expect { rule.save!(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
+        expect(rule).to be_valid
+        expect { rule.save!(validate: false) }.not_to raise_error
 
         dup_rule = build(:approval_merge_request_rule, merge_request: merge_request, rule_type: :any_approver, applicable_post_merge: true)
 
