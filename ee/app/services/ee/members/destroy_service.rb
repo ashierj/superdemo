@@ -118,11 +118,13 @@ module EE
       end
 
       def enqueue_cleanup_add_on_seat_assignments(member)
-        return unless ::Feature.enabled?(:hamilton_seat_management)
+        namespace = member.source.root_ancestor
+
+        return unless ::Feature.enabled?(:hamilton_seat_management, namespace)
 
         member.run_after_commit_or_now do
           GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker.perform_async(
-            member.source.root_ancestor.id,
+            namespace.id,
             member.user_id
           )
         end

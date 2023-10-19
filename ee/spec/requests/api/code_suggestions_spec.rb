@@ -667,9 +667,9 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
       end
 
-      context 'when the hamilton_seat_management FF is disabled' do
+      context 'when the code_suggestions_user_assignments FF is disabled' do
         before do
-          stub_feature_flags(hamilton_seat_management: false)
+          stub_feature_flags(code_suggestions_user_assignments: false)
         end
 
         context 'when user has active code suggestions purchase' do

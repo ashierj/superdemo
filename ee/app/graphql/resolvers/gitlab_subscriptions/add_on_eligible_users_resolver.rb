@@ -23,7 +23,7 @@ module Resolvers
       def resolve(add_on_type:, search: nil)
         authorize!(namespace)
 
-        return [] unless Feature.enabled?(:hamilton_seat_management)
+        return [] unless Feature.enabled?(:hamilton_seat_management, namespace)
 
         ::GitlabSubscriptions::AddOnEligibleUsersFinder.new(
           namespace,

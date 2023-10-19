@@ -39,10 +39,12 @@ module EE
         end
 
         def enqueue_refresh_add_on_assignments_worker(link)
-          return unless ::Feature.enabled?(:hamilton_seat_management)
+          namespace = link.shared_group.root_ancestor
+
+          return unless ::Feature.enabled?(:hamilton_seat_management, namespace)
 
           GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
-            .perform_async(link.shared_group.root_ancestor.id)
+            .perform_async(namespace.id)
         end
       end
     end
