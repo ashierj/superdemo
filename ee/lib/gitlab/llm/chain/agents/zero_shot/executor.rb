@@ -164,8 +164,9 @@ module Gitlab
             end
 
             def available_resources_names
-              tools.map { |tool_class| tool_class::Executor::RESOURCE_NAME.pluralize }
-                   .join(', ')
+              tools.filter_map do |tool_class|
+                tool_class::Executor::RESOURCE_NAME.pluralize if tool_class::Executor::RESOURCE_NAME.present?
+              end.join(', ')
             end
             strong_memoize_attr :available_resources_names
 

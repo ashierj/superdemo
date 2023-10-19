@@ -161,6 +161,28 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   end
 
   describe '#prompt' do
+    let(:tools) do
+      [
+        Gitlab::Llm::Chain::Tools::JsonReader,
+        Gitlab::Llm::Chain::Tools::IssueIdentifier,
+        Gitlab::Llm::Chain::Tools::EpicIdentifier
+      ]
+    end
+
+    let(:prompt_options) do
+      {
+        prompt_version: described_class::PROMPT_TEMPLATE,
+        self_discoverability_prompt: <<~PROMPT
+          You have access to the following GitLab resources: issues, epics.
+          At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
+          When there is no available tool, not enough context or resource is not available to accurately answer the question you must tell it to the user using phrase:
+          "The question you are asking requires data that is not available to GitLab Duo Chat. Please share your feedback below.".
+          Avoid asking for more details if you cannot provide an answer anyway.
+          Ask user to leave feedback.
+        PROMPT
+      }
+    end
+
     before do
       allow(agent).to receive(:provider_prompt_class)
                         .and_return(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
@@ -204,10 +226,9 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       agent.prompt
     end
 
-    it 'includes the prompt' do
+    it 'includes the prompt options' do
       expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-        .to receive(:prompt).once.with(a_hash_including(prompt_version:
-                                                          described_class::PROMPT_TEMPLATE))
+        .to receive(:prompt).once.with(a_hash_including(prompt_options))
 
       agent.prompt
     end
