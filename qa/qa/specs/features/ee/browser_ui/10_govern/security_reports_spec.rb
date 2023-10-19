@@ -85,24 +85,24 @@ module QA
         Page::Project::Pipeline::Show.perform do |pipeline|
           pipeline.click_on_security
 
-          filter_report_and_perform(page: pipeline, filter_report: "Dependency Scanning", project_filter: false) do
+          filter_report_and_perform(page: pipeline, filter_report: "Dependency Scanning") do
             expect(pipeline).to have_vulnerability_info_content dependency_scan_example_vuln
           end
 
-          filter_report_and_perform(page: pipeline, filter_report: "Container Scanning", project_filter: false) do
+          filter_report_and_perform(page: pipeline, filter_report: "Container Scanning") do
             expect(pipeline).to have_vulnerability_info_content container_scan_example_vuln
           end
 
-          filter_report_and_perform(page: pipeline, filter_report: "SAST", project_filter: false) do
+          filter_report_and_perform(page: pipeline, filter_report: "SAST") do
             expect(pipeline).to have_vulnerability_info_content sast_scan_example_vuln
             expect(pipeline).to have_vulnerability_info_content sast_scan_fp_example_vuln
           end
 
-          filter_report_and_perform(page: pipeline, filter_report: "DAST", project_filter: false) do
+          filter_report_and_perform(page: pipeline, filter_report: "DAST") do
             expect(pipeline).to have_vulnerability_info_content dast_scan_example_vuln
           end
 
-          filter_report_and_perform(page: pipeline, filter_report: "Secret Detection", project_filter: false) do
+          filter_report_and_perform(page: pipeline, filter_report: "Secret Detection") do
             expect(pipeline).to have_vulnerability_info_content secret_detection_vuln
           end
         end
@@ -119,25 +119,25 @@ module QA
         EE::Page::Project::Secure::SecurityDashboard.perform(&:wait_for_vuln_report_to_load)
 
         EE::Page::Project::Secure::Show.perform do |dashboard|
-          filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning", project_filter: true) do
+          filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning") do
             expect(dashboard).to have_vulnerability dependency_scan_example_vuln
           end
 
-          filter_report_and_perform(page: dashboard, filter_report: "Container Scanning", project_filter: true) do
+          filter_report_and_perform(page: dashboard, filter_report: "Container Scanning") do
             expect(dashboard).to have_vulnerability container_scan_example_vuln
           end
 
-          filter_report_and_perform(page: dashboard, filter_report: "SAST", project_filter: true) do
+          filter_report_and_perform(page: dashboard, filter_report: "SAST") do
             expect(dashboard).to have_vulnerability sast_scan_example_vuln
             expect(dashboard).to have_vulnerability sast_scan_fp_example_vuln
             expect(dashboard).to have_false_positive_vulnerability
           end
 
-          filter_report_and_perform(page: dashboard, filter_report: "DAST", project_filter: true) do
+          filter_report_and_perform(page: dashboard, filter_report: "DAST") do
             expect(dashboard).to have_vulnerability dast_scan_example_vuln
           end
 
-          filter_report_and_perform(page: dashboard, filter_report: "Secret Detection", project_filter: true) do
+          filter_report_and_perform(page: dashboard, filter_report: "Secret Detection") do
             expect(dashboard).to have_vulnerability secret_detection_vuln
           end
         end
@@ -168,23 +168,23 @@ module QA
         EE::Page::Group::Secure::Show.perform do |dashboard|
           dashboard.filter_project(project.id)
 
-          filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning", project_filter: false) do
+          filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning") do
             expect(dashboard).to have_vulnerability dependency_scan_example_vuln
           end
 
-          filter_report_and_perform(page: dashboard, filter_report: "Container Scanning", project_filter: false) do
+          filter_report_and_perform(page: dashboard, filter_report: "Container Scanning") do
             expect(dashboard).to have_vulnerability container_scan_example_vuln
           end
 
-          filter_report_and_perform(page: dashboard, filter_report: "SAST", project_filter: false) do
+          filter_report_and_perform(page: dashboard, filter_report: "SAST") do
             expect(dashboard).to have_vulnerability sast_scan_example_vuln
           end
 
-          filter_report_and_perform(page: dashboard, filter_report: "DAST", project_filter: false) do
+          filter_report_and_perform(page: dashboard, filter_report: "DAST") do
             expect(dashboard).to have_vulnerability dast_scan_example_vuln
           end
 
-          filter_report_and_perform(page: dashboard, filter_report: "Secret Detection", project_filter: false) do
+          filter_report_and_perform(page: dashboard, filter_report: "Secret Detection") do
             expect(dashboard).to have_vulnerability secret_detection_vuln
           end
         end
@@ -256,10 +256,10 @@ module QA
         end
       end
 
-      def filter_report_and_perform(page:, filter_report:, project_filter: true)
-        page.filter_report_type(filter_report, project_filter)
+      def filter_report_and_perform(page:, filter_report:)
+        page.filter_report_type(filter_report)
         yield
-        page.filter_report_type(filter_report, project_filter) # Disable filter to avoid combining
+        page.filter_report_type(filter_report) # Disable filter to avoid combining
       end
 
       def push_security_reports
