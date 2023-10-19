@@ -14,7 +14,10 @@ module QA
 
         # Group cannot be deleted until subscription is deleted in Zuora
         let(:group) do
-          create(:sandbox, path: "test-group-fulfillment-#{hash}", api_client: Runtime::API::Client.as_admin)
+          Resource::Sandbox.fabricate_via_browser_ui! do |sandbox|
+            sandbox.path = "test-group-fulfillment#{hash}"
+            sandbox.api_client = Runtime::API::Client.as_admin
+          end
         end
 
         before do
