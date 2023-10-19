@@ -95,7 +95,6 @@ export default {
       :checked="hasOnlyAllowMergeIfAllResolved"
       :locked="onlyAllowMergeIfAllResolved.locked"
       :locked-text="lockedText"
-      checkbox-qa-selector="only_allow_merge_if_all_discussions_are_resolved_checkbox"
       data-testid="allow_merge_if_all_discussions_are_resolved_checkbox"
       @input="toggleChecked('hasOnlyAllowMergeIfAllResolved')"
     />
