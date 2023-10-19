@@ -41,7 +41,7 @@ module Security
 
     attr_reader :pipeline, :params
 
-    delegate :project, :has_security_findings?, to: :pipeline, private: true
+    delegate :project, :has_security_findings?, :security_findings_partition_number, to: :pipeline, private: true
 
     def findings
       security_findings.map { |finding| build_vulnerability_finding(finding) }
@@ -96,6 +96,7 @@ module Security
               .with_state_transitions
               .with_issue_links
               .with_merge_request_links
+              .by_partition_number(security_findings_partition_number)
               .deduplicated
               .ordered
               .merge(::Security::Scan.latest_successful)
@@ -135,6 +136,7 @@ module Security
       lateral_relation = Security::Finding
         .where('"security_findings"."scan_id" = "security_scans"."id"') # rubocop:disable CodeReuse/ActiveRecord
         .where('"security_findings"."severity" = "severities"."severity"') # rubocop:disable CodeReuse/ActiveRecord
+        .by_partition_number(security_findings_partition_number)
         .deduplicated
         .ordered
         .then { |relation| by_uuid(relation) }
