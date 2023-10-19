@@ -1,8 +1,8 @@
 import { GlSprintf, GlModal } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import DeleteModal from 'ee/groups/settings/compliance_frameworks/components/delete_modal.vue';
 import deleteComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql/mutations/delete_compliance_framework.mutation.graphql';

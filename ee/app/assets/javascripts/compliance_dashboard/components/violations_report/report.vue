@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlKeysetPagination, GlLoadingIcon, GlTable } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { __, s__ } from '~/locale';
 import { sortObjectToString, sortStringToObject, thWidthClass } from '~/lib/utils/table_utility';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';

@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlAlert, GlFormGroup, GlFormInput } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { isEqual, isNumber } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { isSafeURL } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';

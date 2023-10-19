@@ -1,7 +1,7 @@
 import Vue, { nextTick } from 'vue';
-import * as Sentry from '@sentry/browser';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Component from 'ee/subscriptions/new/components/app.vue';
 import OrderSummary from 'ee/subscriptions/new/components/order_summary.vue';

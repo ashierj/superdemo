@@ -1,6 +1,6 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
 import {

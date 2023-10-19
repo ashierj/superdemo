@@ -1,7 +1,7 @@
 <script>
 import { GlLink } from '@gitlab/ui';
 import { partition, isString, invert } from 'lodash';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
 import apolloProvider from '../provider';

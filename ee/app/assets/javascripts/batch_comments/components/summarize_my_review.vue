@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { v4 as uuidv4 } from 'uuid';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { __ } from '~/locale';
 import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';

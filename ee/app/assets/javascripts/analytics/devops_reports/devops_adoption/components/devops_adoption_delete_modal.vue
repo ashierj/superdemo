@@ -1,6 +1,6 @@
 <script>
 import { GlModal, GlSprintf, GlAlert } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import {
   I18N_DELETE_MODAL_TITLE,
   I18N_DELETE_MODAL_CONFIRMATION_MESSAGE,

@@ -1,8 +1,8 @@
 import { GlDropdown, GlFormInput } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import SidebarDropdown from '~/sidebar/components/sidebar_dropdown.vue';
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
 import { IssuableAttributeType } from 'ee/sidebar/constants';

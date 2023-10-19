@@ -1,7 +1,7 @@
-import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import FormStatus from 'ee/groups/settings/compliance_frameworks/components/form_status.vue';

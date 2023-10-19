@@ -1,6 +1,6 @@
-import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
 import ConfigurationForm from 'ee/security_configuration/sast/components/configuration_form.vue';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated

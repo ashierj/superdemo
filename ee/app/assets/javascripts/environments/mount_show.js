@@ -1,7 +1,7 @@
-import * as Sentry from '@sentry/browser';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlToast } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createDefaultClient from '~/lib/graphql';
 import EnvironmentApproval from './components/environment_approval.vue';
 

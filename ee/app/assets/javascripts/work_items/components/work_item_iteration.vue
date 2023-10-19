@@ -9,8 +9,8 @@ import {
   GlSearchBoxByType,
   GlDropdownText,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { debounce } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Tracking from '~/tracking';
 import { s__ } from '~/locale';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';

@@ -1,9 +1,9 @@
 import { GlAlert } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { shallowMount, mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import ExternalIssuesListRoot from 'ee/external_issues_list/components/external_issues_list_root.vue';
 import jiraIssuesResolver from 'ee/integrations/jira/issues_list/graphql/resolvers/jira_issues';

@@ -1,8 +1,8 @@
 import { GlAlert, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import * as Sentry from '@sentry/browser';
 import { mount } from '@vue/test-utils';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ComplianceStandardsAdherenceTable from 'ee/compliance_dashboard/components/standards_adherence_report/standards_adherence_table.vue';
 import FixSuggestionsSidebar from 'ee/compliance_dashboard/components/standards_adherence_report/fix_suggestions_sidebar.vue';

@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlBadge, GlModal, GlModalDirective, GlSkeletonLoader, GlLink } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_USER, TYPENAME_MERGE_REQUEST } from '~/graphql_shared/constants';

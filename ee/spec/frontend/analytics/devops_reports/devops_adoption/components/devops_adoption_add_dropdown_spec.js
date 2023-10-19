@@ -1,7 +1,7 @@
 import { GlDropdown, GlLoadingIcon, GlSearchBoxByType } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import DevopsAdoptionAddDropdown from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_add_dropdown.vue';
 import {
   I18N_GROUP_DROPDOWN_TEXT,

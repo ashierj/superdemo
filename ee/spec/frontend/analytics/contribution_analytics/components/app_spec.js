@@ -1,9 +1,9 @@
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
-import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import App from 'ee/analytics/contribution_analytics/components/app.vue';
@@ -11,7 +11,7 @@ import GroupMembersTable from 'ee/analytics/contribution_analytics/components/gr
 import contributionsQuery from 'ee/analytics/contribution_analytics/graphql/contributions.query.graphql';
 import { contributionAnalyticsFixture } from '../mock_data';
 
-jest.mock('@sentry/browser');
+jest.mock('~/sentry/sentry_browser_wrapper');
 
 Vue.use(VueApollo);
 

@@ -15,7 +15,7 @@ import StaleRunnerCleanupToggle from 'ee/group_settings/components/stale_runner_
 
 Vue.use(VueApollo);
 
-jest.mock('@sentry/browser');
+jest.mock('~/sentry/sentry_browser_wrapper');
 jest.mock('~/alert');
 jest.mock('~/ci/runner/sentry_utils');
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');

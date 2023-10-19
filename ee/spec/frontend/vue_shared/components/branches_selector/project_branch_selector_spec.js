@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import MockAdapter from 'axios-mock-adapter';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import ProjectBranchSelector from 'ee/vue_shared/components/branches_selector/project_branch_selector.vue';

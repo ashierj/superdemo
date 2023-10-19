@@ -1,5 +1,4 @@
 import { nextTick } from 'vue';
-import * as Sentry from '@sentry/browser';
 import {
   GlButton,
   GlDisclosureDropdown,
@@ -7,6 +6,7 @@ import {
   GlLoadingIcon,
   GlPopover,
 } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';

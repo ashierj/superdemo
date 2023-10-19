@@ -1,7 +1,7 @@
 <script>
-import * as Sentry from '@sentry/browser';
 import { GlToggle } from '@gitlab/ui';
 import produce from 'immer';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { __ } from '~/locale';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import {

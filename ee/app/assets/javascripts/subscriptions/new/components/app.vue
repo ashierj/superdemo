@@ -1,5 +1,5 @@
 <script>
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import Checkout from 'jh_else_ee/subscriptions/new/components/checkout.vue';
 import ConfirmOrder from 'ee/subscriptions/new/components/checkout/confirm_order.vue';

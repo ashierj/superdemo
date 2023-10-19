@@ -1,8 +1,8 @@
 import { GlButton, GlCollapsibleListbox } from '@gitlab/ui';
 import { mount, ErrorWrapper } from '@vue/test-utils';
-import { captureException } from '@sentry/browser';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { captureException } from '~/sentry/sentry_browser_wrapper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
@@ -12,7 +12,7 @@ import FrameworkSelectionBox from 'ee/compliance_dashboard/components/projects_r
 
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 
-jest.mock('@sentry/browser');
+jest.mock('~/sentry/sentry_browser_wrapper');
 jest.mock('~/alert');
 
 Vue.use(VueApollo);

@@ -8,7 +8,7 @@ import {
   GlSprintf,
   GlLink,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import { addEscalationPolicyModalId } from '../constants';
 import getEscalationPoliciesQuery from '../graphql/queries/get_escalation_policies.query.graphql';

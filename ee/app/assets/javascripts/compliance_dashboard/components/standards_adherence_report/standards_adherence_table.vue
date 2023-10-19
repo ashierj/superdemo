@@ -8,7 +8,7 @@ import {
   GlLoadingIcon,
   GlKeysetPagination,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import getProjectComplianceStandardsAdherence from '../../graphql/compliance_standards_adherence.query.graphql';
 import { DEFAULT_PAGINATION_CURSORS, GRAPHQL_PAGE_SIZE } from '../../constants';

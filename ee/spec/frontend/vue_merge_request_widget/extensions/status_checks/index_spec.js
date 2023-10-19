@@ -1,7 +1,7 @@
-import * as Sentry from '@sentry/browser';
 import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import {
   approvedAndPendingChecks,

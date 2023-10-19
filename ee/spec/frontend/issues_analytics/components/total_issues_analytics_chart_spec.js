@@ -1,8 +1,8 @@
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
-import * as Sentry from '@sentry/browser';
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import TotalIssuesAnalyticsChart from 'ee/issues_analytics/components/total_issues_analytics_chart.vue';
@@ -21,7 +21,7 @@ import {
 } from '../mock_data';
 import { mockGraphqlIssuesAnalyticsCountsResponse } from '../helpers';
 
-jest.mock('@sentry/browser');
+jest.mock('~/sentry/sentry_browser_wrapper');
 
 Vue.use(VueApollo);
 

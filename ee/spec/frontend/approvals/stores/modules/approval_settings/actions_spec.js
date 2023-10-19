@@ -1,5 +1,5 @@
-import * as Sentry from '@sentry/browser';
 import MockAdapter from 'axios-mock-adapter';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import actionsFactory from 'ee/approvals/stores/modules/approval_settings/actions';
 import * as types from 'ee/approvals/stores/modules/approval_settings/mutation_types';
 import getInitialState from 'ee/approvals/stores/modules/approval_settings/state';

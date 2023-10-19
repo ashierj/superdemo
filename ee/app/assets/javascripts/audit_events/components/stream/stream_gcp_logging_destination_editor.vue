@@ -1,8 +1,8 @@
 <script>
 import { GlAlert, GlButton, GlForm, GlFormGroup, GlFormInput, GlFormTextarea } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import * as Sentry from '@sentry/browser';
 import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import googleCloudLoggingConfigurationCreate from '../../graphql/mutations/create_gcp_logging_destination.mutation.graphql';
 import googleCloudLoggingConfigurationUpdate from '../../graphql/mutations/update_gcp_logging_destination.mutation.graphql';
