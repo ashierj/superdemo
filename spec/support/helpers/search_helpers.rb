@@ -11,11 +11,16 @@ module SearchHelpers
   end
 
   def submit_search(query)
-    if has_testid?('super-sidebar-search-button')
+    # Forms directly on the search page
+    if page.has_css?('.search-page-form')
+      search_form = '.search-page-form'
+    # Open search modal from super sidebar
+    elsif has_testid?('super-sidebar-search-button')
       find_by_testid('super-sidebar-search-button').click
       search_form = '#super-sidebar-search-modal'
+    # Open legacy search dropdown in navigation
     else
-      search_form = '.header-search-form, .search-page-form'
+      search_form = '.header-search-form'
     end
 
     page.within(search_form) do
