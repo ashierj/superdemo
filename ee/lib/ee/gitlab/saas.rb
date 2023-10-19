@@ -7,7 +7,7 @@ module EE
 
       MissingFeatureError = Class.new(StandardError)
 
-      FEATURES = %w[marketing/google_tag_manager purchases/additional_minutes onboarding search/indexing_status].freeze
+      FEATURES = %i[marketing_google_tag_manager purchases_additional_minutes onboarding search_indexing_status].freeze
       CONFIG_FILE_ROOT = 'ee/config/saas_features'
 
       class_methods do
@@ -25,7 +25,7 @@ module EE
         end
 
         def feature_file_path(feature)
-          Rails.root.join(CONFIG_FILE_ROOT, "#{feature.tr('/', '_')}.yml")
+          Rails.root.join(CONFIG_FILE_ROOT, "#{feature}.yml")
         end
       end
     end

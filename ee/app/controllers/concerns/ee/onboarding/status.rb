@@ -18,7 +18,7 @@ module EE
 
       module ClassMethods
         def enabled?
-          ::Gitlab::Saas.feature_available?('onboarding')
+          ::Gitlab::Saas.feature_available?(:onboarding)
         end
       end
 

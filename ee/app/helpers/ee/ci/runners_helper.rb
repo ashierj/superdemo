@@ -26,20 +26,20 @@ module EE
       end
 
       def show_buy_pipeline_minutes?(project, namespace)
-        return false unless ::Gitlab::Saas.feature_available?('purchases/additional_minutes')
+        return false unless ::Gitlab::Saas.feature_available?(:purchases_additional_minutes)
 
         show_out_of_pipeline_minutes_notification?(project, namespace)
       end
 
       def show_pipeline_minutes_notification_dot?(project, namespace)
-        return false unless ::Gitlab::Saas.feature_available?('purchases/additional_minutes')
+        return false unless ::Gitlab::Saas.feature_available?(:purchases_additional_minutes)
         return false if notification_dot_acknowledged?
 
         show_out_of_pipeline_minutes_notification?(project, namespace)
       end
 
       def show_buy_pipeline_with_subtext?(project, namespace)
-        return false unless ::Gitlab::Saas.feature_available?('purchases/additional_minutes')
+        return false unless ::Gitlab::Saas.feature_available?(:purchases_additional_minutes)
         return false unless notification_dot_acknowledged?
 
         show_out_of_pipeline_minutes_notification?(project, namespace)

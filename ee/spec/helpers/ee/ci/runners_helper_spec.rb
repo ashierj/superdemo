@@ -47,7 +47,7 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
     end
 
     context 'with a project and namespace' do
-      context 'without purchases/additional_minutes feature' do
+      context 'without purchases_additional_minutes feature' do
         let(:saas_feature_enabled) { false }
 
         it { is_expected.to be_falsey }
@@ -137,10 +137,10 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
     describe '.show_buy_pipeline_minutes?' do
       subject { helper.show_buy_pipeline_minutes?(project, namespace) }
 
-      context 'with purchases/additional_minutes feature' do
+      context 'with purchases_additional_minutes: feature' do
         it_behaves_like 'minutes notification' do
           before do
-            stub_saas_features('purchases/additional_minutes' => saas_feature_enabled)
+            stub_saas_features(purchases_additional_minutes: saas_feature_enabled)
           end
         end
       end
@@ -150,7 +150,7 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
       subject { helper.show_pipeline_minutes_notification_dot?(project, namespace) }
 
       before do
-        stub_saas_features('purchases/additional_minutes' => saas_feature_enabled)
+        stub_saas_features(purchases_additional_minutes: saas_feature_enabled)
       end
 
       it_behaves_like 'minutes notification'
@@ -177,7 +177,7 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
       subject { helper.show_buy_pipeline_with_subtext?(project, namespace) }
 
       before do
-        stub_saas_features('purchases/additional_minutes' => saas_feature_enabled)
+        stub_saas_features(purchases_additional_minutes: saas_feature_enabled)
       end
 
       context 'when the notification dot has not been acknowledged' do

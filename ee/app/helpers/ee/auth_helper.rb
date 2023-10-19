@@ -56,7 +56,7 @@ module EE
     end
 
     def google_tag_manager_enabled?
-      return false unless ::Gitlab::Saas.feature_available?('marketing/google_tag_manager')
+      return false unless ::Gitlab::Saas.feature_available?(:marketing_google_tag_manager)
 
       extra_config.has_key?('google_tag_manager_nonce_id') &&
         extra_config.google_tag_manager_nonce_id.present?
