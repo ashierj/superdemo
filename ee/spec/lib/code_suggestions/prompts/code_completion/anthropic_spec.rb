@@ -21,7 +21,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
   it_behaves_like 'code suggestion prompt' do
     let(:request_params) do
       {
-        model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
+        model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
         prompt_version: 2,
         prompt: <<~PROMPT
           Human: We want to fill in new Python code between existing code.
@@ -71,7 +71,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
     it_behaves_like 'code suggestion prompt' do
       let(:request_params) do
         {
-          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: We want to fill in new Python code between existing code.
@@ -122,7 +122,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
     it_behaves_like 'code suggestion prompt' do
       let(:request_params) do
         {
-          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: We want to fill in new Python code between existing code.
@@ -173,7 +173,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
     it_behaves_like 'code suggestion prompt' do
       let(:request_params) do
         {
-          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
             Human: We want to fill in new  code between existing code.

@@ -2,21 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestions do
+RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions do
   using RSpec::Parameterized::TableSyntax
 
   describe '.task' do
+    let_it_be(:current_user) { create(:user) }
     let(:intent) { nil }
     let(:override_type) { false }
     let(:params) do
       {
-        skip_generate_comment_prefix: skip_comment,
         current_file: { file_name: file_name, content_above_cursor: prefix },
         intent: intent
       }
     end
 
-    subject { described_class.task(params: params) }
+    subject { described_class.new(current_user, params: params).task }
 
     shared_examples 'correct task detector' do
       context 'with the prefix, suffix produces the correct type' do
@@ -125,7 +125,10 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         ext = CodeSuggestions::ProgrammingLanguage::SUPPORTED_LANGUAGES[lang].first
 
         context "for language #{lang} (#{prefix}) without skip prefix" do
-          let(:skip_comment) { false }
+          before do
+            stub_feature_flags(code_generation_no_comment_prefix: false)
+          end
+
           let(:generate_prefix) { 'GitLab Duo Generate: ' }
           let(:case_insensitive_prefixes) do
             [
@@ -143,7 +146,10 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         end
 
         context "for language #{lang} (#{prefix}) with skip prefix" do
-          let(:skip_comment) { true }
+          before do
+            stub_feature_flags(code_generation_no_comment_prefix: current_user)
+          end
+
           let(:generate_prefix) { '' }
           let(:case_insensitive_prefixes) { Array.new(4, '') }
 
@@ -156,7 +162,9 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
     end
 
     context 'with intent param' do
-      let(:skip_comment) { false }
+      before do
+        stub_feature_flags(code_generation_no_comment_prefix: false)
+      end
 
       context 'with the generation intent' do
         let(:intent) { 'generation' }
@@ -193,7 +201,10 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
     end
 
     context 'when prefix from result is empty' do
-      let(:skip_comment) { false }
+      before do
+        stub_feature_flags(code_generation_no_comment_prefix: false)
+      end
+
       let(:prefix) { 'prefix to set' }
       let(:intent) { 'generation' }
       let(:file_name) { "file.py" }
@@ -211,21 +222,13 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
     end
 
     context 'when selecting model family' do
-      let(:code_completion_model_family) { CodeSuggestions::AiModels::VERTEX_AI }
-      let(:code_generation_model_family) { CodeSuggestions::AiModels::VERTEX_AI }
-      let(:code_completion_model_family_split_by_language) { false }
-      let(:code_generation_model_family_split_by_language) { false }
       let(:file_name) { 'python.py' }
       let(:prefix) { "# A function that outputs the first 20 fibonacci numbers" }
 
       let(:params) do
         {
           skip_generate_comment_prefix: true,
-          current_file: { file_name: file_name, content_above_cursor: prefix },
-          code_completion_model_family: code_completion_model_family,
-          code_generation_model_family: code_generation_model_family,
-          code_completion_model_family_split_by_language: code_completion_model_family_split_by_language,
-          code_generation_model_family_split_by_language: code_generation_model_family_split_by_language
+          current_file: { file_name: file_name, content_above_cursor: prefix }
         }
       end
 
@@ -236,8 +239,10 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           allow(CodeSuggestions::InstructionsExtractor).to receive(:extract).and_return({})
         end
 
-        context 'when code_completion_split_by_language is true' do
-          let(:code_completion_model_family_split_by_language) { true }
+        context 'when code_completion_split_by_language feature flag is on' do
+          before do
+            stub_feature_flags(code_completion_split_by_language: current_user)
+          end
 
           context 'when language is from Anthropic set' do
             let(:file_name) { 'ruby.rb' }
@@ -245,7 +250,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
             it 'calls CodeCompletion.new with code_completion_model_family :anthropic' do
               expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
                 .with(
-                  params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::ANTHROPIC),
+                  params: hash_including(code_completion_model_family: described_class::ANTHROPIC),
                   unsafe_passthrough_params: kind_of(Hash)
                 ).and_call_original
 
@@ -259,7 +264,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
             it 'calls CodeCompletion.new with code_completion_model_family :vertex_ai' do
               expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
                 .with(
-                  params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::VERTEX_AI),
+                  params: hash_including(code_completion_model_family: described_class::VERTEX_AI),
                   unsafe_passthrough_params: kind_of(Hash)
                 ).and_call_original
 
@@ -268,17 +273,41 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           end
         end
 
-        context 'when code_completion_split_by_language is false' do
-          let(:code_completion_model_family_split_by_language) { false }
+        context 'when code_completion_split_by_language feature flag is off' do
+          before do
+            stub_feature_flags(code_completion_split_by_language: false)
+          end
 
-          it 'calls CodeCompletion.new with unchanged code_completion_model_family' do
-            expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
-              .with(
-                params: hash_including(code_completion_model_family: code_completion_model_family),
-                unsafe_passthrough_params: kind_of(Hash)
-              ).and_call_original
+          context 'when code_completion_anthropic feature flag is on' do
+            before do
+              stub_feature_flags(code_completion_anthropic: current_user)
+            end
 
-            subject
+            it 'calls CodeCompletion.new with code_completion_model_family :anthropic' do
+              expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
+                .with(
+                  params: hash_including(code_completion_model_family: described_class::ANTHROPIC),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
+
+              subject
+            end
+          end
+
+          context 'when code_completion_anthropic feature flag is ff' do
+            before do
+              stub_feature_flags(code_completion_anthropic: false)
+            end
+
+            it 'calls CodeCompletion.new with code_completion_model_family :vertex_ai' do
+              expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
+                .with(
+                  params: hash_including(code_completion_model_family: described_class::VERTEX_AI),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
+
+              subject
+            end
           end
         end
       end
@@ -287,6 +316,10 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         let(:prefix) { "# A function that outputs the first 20 fibonacci numbers" }
 
         context 'when code_generation_split_by_language is true' do
+          before do
+            stub_feature_flags(code_generation_split_by_language: current_user)
+          end
+
           let(:code_generation_model_family_split_by_language) { true }
 
           context 'when language is from Anthropic set' do
@@ -295,7 +328,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
             it 'calls CodeGeneration::FromComment.new with code_generation_model_family :anthropic' do
               expect(::CodeSuggestions::Tasks::CodeGeneration::FromComment).to receive(:new)
                 .with(
-                  params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::ANTHROPIC),
+                  params: hash_including(code_generation_model_family: described_class::ANTHROPIC),
                   unsafe_passthrough_params: kind_of(Hash)
                 ).and_call_original
 
@@ -309,7 +342,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
             it 'calls CodeGeneration::FromComment.new with code_generation_model_family :vertex_ai' do
               expect(::CodeSuggestions::Tasks::CodeGeneration::FromComment).to receive(:new)
                 .with(
-                  params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::VERTEX_AI),
+                  params: hash_including(code_generation_model_family: described_class::VERTEX_AI),
                   unsafe_passthrough_params: kind_of(Hash)
                 ).and_call_original
 
@@ -318,17 +351,41 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           end
         end
 
-        context 'when code_generation_split_by_language is false' do
-          let(:code_generation_model_family_split_by_language) { false }
+        context 'when code_generation_split_by_language feature flag is off' do
+          before do
+            stub_feature_flags(code_generation_split_by_language: false)
+          end
 
-          it 'calls CodeGeneration::FromComment.new with unchanged code_generation_model_family' do
-            expect(::CodeSuggestions::Tasks::CodeGeneration::FromComment).to receive(:new)
-              .with(
-                params: hash_including(code_generation_model_family: code_generation_model_family),
-                unsafe_passthrough_params: kind_of(Hash)
-              ).and_call_original
+          context 'when code_generation_anthropic feature flag is on' do
+            before do
+              stub_feature_flags(code_generation_anthropic: current_user)
+            end
 
-            subject
+            it 'calls CodeGeneration::FromComment.new with code_generation_model_family: :anthropic' do
+              expect(::CodeSuggestions::Tasks::CodeGeneration::FromComment).to receive(:new)
+                .with(
+                  params: hash_including(code_generation_model_family: described_class::ANTHROPIC),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
+
+              subject
+            end
+          end
+
+          context 'when code_generation_anthropic feature flag is off' do
+            before do
+              stub_feature_flags(code_generation_anthropic: false)
+            end
+
+            it 'calls CodeGeneration::FromComment.new with code_generation_model_family: :vertex_ai' do
+              expect(::CodeSuggestions::Tasks::CodeGeneration::FromComment).to receive(:new)
+                .with(
+                  params: hash_including(code_generation_model_family: described_class::VERTEX_AI),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
+
+              subject
+            end
           end
         end
       end

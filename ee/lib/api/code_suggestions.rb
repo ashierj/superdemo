@@ -113,8 +113,8 @@ module API
           end
           optional :intent, type: String, values:
             [
-              ::CodeSuggestions::TaskSelector::INTENT_COMPLETION,
-              ::CodeSuggestions::TaskSelector::INTENT_GENERATION
+              ::CodeSuggestions::TaskFactory::INTENT_COMPLETION,
+              ::CodeSuggestions::TaskFactory::INTENT_GENERATION
             ],
             desc: 'The intent of the completion request, current options are "completion" or "generation"'
         end
@@ -134,22 +134,11 @@ module API
             token = code_suggestions_token.token
           end
 
-          vertex_ai = ::CodeSuggestions::AiModels::VERTEX_AI
-          anthropic = ::CodeSuggestions::AiModels::ANTHROPIC
-
-          # rubocop:disable Layout/LineLength
-          safe_params = declared_params(params).merge(
-            skip_generate_comment_prefix: Feature.enabled?(:code_generation_no_comment_prefix, current_user),
-            code_completion_model_family: Feature.enabled?(:code_completion_anthropic, current_user) ? anthropic : vertex_ai,
-            code_generation_model_family: Feature.enabled?(:code_generation_anthropic, current_user) ? anthropic : vertex_ai,
-            code_completion_model_family_split_by_language: Feature.enabled?(:code_completion_split_by_language, current_user),
-            code_generation_model_family_split_by_language: Feature.enabled?(:code_generation_split_by_language, current_user)
-          )
-          # rubocop:enable Layout/LineLength
-          task = ::CodeSuggestions::TaskSelector.task(
-            params: safe_params,
+          task = ::CodeSuggestions::TaskFactory.new(
+            current_user,
+            params: declared_params(params),
             unsafe_passthrough_params: params.except(:private_token)
-          )
+          ).task
 
           body = task.body
           file_too_large! if body.size > MAX_BODY_SIZE

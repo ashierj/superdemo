@@ -20,7 +20,7 @@ module CodeSuggestions
         private
 
         def prompt
-          if params[:code_generation_model_family] == CodeSuggestions::AiModels::ANTHROPIC
+          if params[:code_generation_model_family] == CodeSuggestions::TaskFactory::ANTHROPIC
             CodeSuggestions::Prompts::CodeGeneration::Anthropic.new(params)
           else
             CodeSuggestions::Prompts::CodeGeneration::VertexAi.new(params)

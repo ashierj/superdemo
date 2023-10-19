@@ -9,7 +9,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     end
 
     let(:default_instruction) { 'Create more new code for this file.' }
-    let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, true) }
+    let(:first_line_regex) { CodeSuggestions::TaskFactory.first_comment_regex(language, nil, true) }
 
     subject { described_class.extract(language, content, first_line_regex) }
 
@@ -285,7 +285,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       end
 
       context "with GitLab Duo Generate prefix" do
-        let(:first_line_regex) { CodeSuggestions::TaskSelector.first_comment_regex(language, nil, false) }
+        let(:first_line_regex) { CodeSuggestions::TaskFactory.first_comment_regex(language, nil, false) }
 
         context 'when no prefix in the first line of the comment' do
           let(:content) do
