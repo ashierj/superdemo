@@ -1349,7 +1349,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
         end
 
         def value_of_key
-          key_expired = Time.current > redis_key_expiry_at
+          key_expired = redis_key_expiry_at.past?
           return if key_expired
 
           true
