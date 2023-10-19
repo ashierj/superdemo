@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe CodeSuggestions::Tasks::CodeGeneration::FromComment, feature_category: :code_suggestions do
   let(:prefix) { 'some text' }
   let(:instruction) { 'Add code for validating function' }
-  let(:model_family) { CodeSuggestions::AiModels::VERTEX_AI }
+  let(:model_family) { CodeSuggestions::TaskFactory::VERTEX_AI }
 
   let(:unsafe_params) do
     {
@@ -61,7 +61,7 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration::FromComment, feature_cate
     end
 
     context 'with anthropic model family' do
-      let(:model_family) { CodeSuggestions::AiModels::ANTHROPIC }
+      let(:model_family) { CodeSuggestions::TaskFactory::ANTHROPIC }
 
       it_behaves_like 'code suggestion task' do
         let(:endpoint) { 'https://codesuggestions.gitlab.com/v2/code/generations' }

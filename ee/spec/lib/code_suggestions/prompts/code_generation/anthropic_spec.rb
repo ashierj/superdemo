@@ -40,7 +40,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
     context 'when prefix is present' do
       it 'returns expected request params' do
         request_params = {
-          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
 
@@ -88,7 +88,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
       it 'returns expected request params' do
         request_params = {
-          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
 
@@ -128,7 +128,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
       it 'returns expected request params' do
         request_params = {
-          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
 
@@ -176,7 +176,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
       it 'returns expected request params' do
         request_params = {
-          model_provider: ::CodeSuggestions::AiModels::ANTHROPIC,
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
 

@@ -25,7 +25,7 @@ RSpec.describe CodeSuggestions::Tasks::CodeCompletion, feature_category: :code_s
   let(:task) { described_class.new(params: params, unsafe_passthrough_params: unsafe_params) }
 
   context 'when using Vertex' do
-    let(:model_family) { CodeSuggestions::AiModels::VERTEX_AI }
+    let(:model_family) { CodeSuggestions::TaskFactory::VERTEX_AI }
 
     before do
       allow_next_instance_of(CodeSuggestions::Prompts::CodeCompletion::VertexAi) do |prompt|
@@ -39,7 +39,7 @@ RSpec.describe CodeSuggestions::Tasks::CodeCompletion, feature_category: :code_s
   end
 
   context 'when using Anthropic' do
-    let(:model_family) { CodeSuggestions::AiModels::ANTHROPIC }
+    let(:model_family) { CodeSuggestions::TaskFactory::ANTHROPIC }
 
     before do
       allow_next_instance_of(CodeSuggestions::Prompts::CodeCompletion::Anthropic) do |prompt|

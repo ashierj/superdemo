@@ -349,176 +349,17 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
         end
 
-        context 'when code_generation_no_comment_prefix feature flag enabled' do
-          before do
-            stub_feature_flags(code_generation_no_comment_prefix: current_user)
-          end
-
-          it 'passes skip_generate_comment_prefix: true into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(skip_generate_comment_prefix: true),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_generation_no_comment_prefix feature flag disabled' do
-          before do
-            stub_feature_flags(code_generation_no_comment_prefix: false)
-          end
-
-          it 'passes skip_generate_comment_prefix: false into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(skip_generate_comment_prefix: false),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_completion_anthropic feature flag enabled' do
-          before do
-            stub_feature_flags(code_completion_anthropic: current_user)
-          end
-
-          it 'passes code_completion_model_family: :anthropic into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::ANTHROPIC),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_completion_anthropic feature flag disabled' do
-          before do
-            stub_feature_flags(code_completion_anthropic: false)
-          end
-
-          it 'passes code_completion_model_family: :vertex_ai into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(code_completion_model_family: CodeSuggestions::AiModels::VERTEX_AI),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_generation_anthropic feature flag enabled' do
-          before do
-            stub_feature_flags(code_generation_anthropic: current_user)
-          end
-
-          it 'passes code_generation_model_family: :anthropic into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::ANTHROPIC),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_generation_anthropic feature flag disabled' do
-          before do
-            stub_feature_flags(code_generation_anthropic: false)
-          end
-
-          it 'passes code_generation_model_family: :vertex_ai into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(code_generation_model_family: CodeSuggestions::AiModels::VERTEX_AI),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_completion_split_by_language feature flag enabled' do
-          before do
-            stub_feature_flags(code_completion_split_by_language: current_user)
-          end
-
-          it 'passes code_completion_model_family_split_by_language: true into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(code_completion_model_family_split_by_language: true),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_completion_split_by_language feature flag disabled' do
-          before do
-            stub_feature_flags(code_completion_split_by_language: false)
-          end
-
-          it 'passes code_completion_model_family_split_by_language: false into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(code_completion_model_family_split_by_language: false),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_generation_split_by_language feature flag enabled' do
-          before do
-            stub_feature_flags(code_generation_split_by_language: current_user)
-          end
-
-          it 'passes code_generation_model_family_split_by_language: true into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(code_generation_model_family_split_by_language: true),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
-        context 'when code_generation_split_by_language feature flag disabled' do
-          before do
-            stub_feature_flags(code_generation_split_by_language: false)
-          end
-
-          it 'passes code_generation_model_family_split_by_language: false into TaskSelector.task' do
-            expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(
-                params: hash_including(code_generation_model_family_split_by_language: false),
-                unsafe_passthrough_params: kind_of(Hash)
-              )
-
-            post_api
-          end
-        end
-
         context 'when passing intent parameter' do
           context 'with completion intent' do
             let(:additional_params) { { intent: 'completion' } }
 
-            it 'passes completion intent into TaskSelector.task' do
-              expect(::CodeSuggestions::TaskSelector).to receive(:task)
-               .with(
-                 params: hash_including(intent: 'completion'),
-                 unsafe_passthrough_params: kind_of(Hash)
-               ).and_call_original
+            it 'passes completion intent into TaskFactory.new' do
+              expect(::CodeSuggestions::TaskFactory).to receive(:new)
+                .with(
+                  current_user,
+                  params: hash_including(intent: 'completion'),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
 
               post_api
             end
@@ -527,12 +368,13 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           context 'with generation intent' do
             let(:additional_params) { { intent: 'generation' } }
 
-            it 'passes generation intent into TaskSelector.task' do
-              expect(::CodeSuggestions::TaskSelector).to receive(:task)
-               .with(
-                 params: hash_including(intent: 'generation'),
-                 unsafe_passthrough_params: kind_of(Hash)
-               ).and_call_original
+            it 'passes generation intent into TaskFactory.new' do
+              expect(::CodeSuggestions::TaskFactory).to receive(:new)
+                .with(
+                  current_user,
+                  params: hash_including(intent: 'generation'),
+                  unsafe_passthrough_params: kind_of(Hash)
+                ).and_call_original
 
               post_api
             end
