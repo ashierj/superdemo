@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, feature_category: :global_search do
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:user) { create(:user) }
 
   let(:project) { create(:project, :repository, :wiki_repo, namespace: user.namespace) }
 
@@ -180,7 +180,11 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
     end
 
     it 'sets tab count to 0' do
-      expect(page.find('[data-testid="search-filter"] .active')).to have_text('0')
+      within_testid('search-filter') do
+        link = find_link 'Code'
+
+        expect(link).to have_text('0')
+      end
     end
   end
 end
