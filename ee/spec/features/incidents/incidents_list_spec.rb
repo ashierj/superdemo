@@ -31,17 +31,29 @@ RSpec.describe 'Incident Management index', :js, feature_category: :incident_man
       expect(table).not_to have_content('Published')
     end
 
-    context 'with SLA feature available' do
-      before do
-        stub_licensed_features(incident_sla: true)
-      end
-
+    shared_examples 'enabled SLA feature' do
       it 'includes the SLA column' do
         visit project_incidents_path(project)
         wait_for_requests
 
         expect(page.find('.gl-table')).to have_content('Time to SLA')
       end
+    end
+
+    context 'with SLA feature available through license' do
+      before do
+        stub_licensed_features(incident_sla: true)
+      end
+
+      it_behaves_like 'enabled SLA feature'
+    end
+
+    context 'with SLA feature available through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it_behaves_like 'enabled SLA feature'
     end
 
     context 'with Status Page feature available' do
