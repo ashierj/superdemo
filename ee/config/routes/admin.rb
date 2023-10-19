@@ -3,8 +3,8 @@
 namespace :admin do
   resources :users, only: [], constraints: { id: %r{[a-zA-Z./0-9_\-]+} } do
     member do
-      post :identity_verification_phone_exemption
-      delete :destroy_identity_verification_phone_exemption
+      post :identity_verification_exemption
+      delete :destroy_identity_verification_exemption
       post :reset_runners_minutes
       get :card_match
     end

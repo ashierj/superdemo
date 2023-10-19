@@ -127,61 +127,61 @@ RSpec.describe Admin::UsersController, feature_category: :user_management do
     end
   end
 
-  describe 'POST #identity_verification_phone_exemption' do
+  describe 'POST #identity_verification_exemption' do
     before do
       allow(controller).to receive(:find_routable!).and_return(user)
     end
 
-    subject { post :identity_verification_phone_exemption, params: { id: user.to_param } }
+    subject { post :identity_verification_exemption, params: { id: user.to_param } }
 
     context 'when it is successful' do
-      it 'calls create_phone_number_exemption! and redirects with a success notice' do
-        expect(user).to receive(:create_phone_number_exemption!).once.and_call_original
+      it 'calls create_identity_verification_exemption and redirects with a success notice' do
+        expect(user).to receive(:create_identity_verification_exemption).once.and_call_original
 
         subject
 
-        expect(controller).to set_flash[:notice].to(_('Phone verification exemption has been created.'))
+        expect(controller).to set_flash[:notice].to(_('Identity verification exemption has been created.'))
         expect(response).to redirect_to(admin_user_path(user))
       end
     end
 
     context 'when it fails' do
-      it 'calls create_phone_number_exemption! and redirects with an alert' do
-        expect(user).to receive(:create_phone_number_exemption!).once.and_raise
+      it 'calls create_identity_verification_exemption and redirects with an alert' do
+        expect(user).to receive(:create_identity_verification_exemption).once.and_return(false)
 
         subject
 
-        expect(controller).to set_flash[:alert].to(_('Something went wrong. Unable to create phone exemption.'))
+        expect(controller).to set_flash[:alert].to(_('Something went wrong. Unable to create identity verification exemption.'))
         expect(response).to redirect_to(admin_user_path(user))
       end
     end
   end
 
-  describe 'DELETE #destroy_identity_verification_phone_exemption' do
+  describe 'DELETE #destroy_identity_verification_exemption' do
     before do
       allow(controller).to receive(:find_routable!).and_return(user)
     end
 
-    subject { delete :destroy_identity_verification_phone_exemption, params: { id: user.to_param } }
+    subject { delete :destroy_identity_verification_exemption, params: { id: user.to_param } }
 
     context 'when it is successful' do
-      it 'calls destroy_phone_number_exemption and redirects with a success notice' do
-        expect(user).to receive(:destroy_phone_number_exemption).once.and_return(instance_double(UserCustomAttribute))
+      it 'calls destroy_identity_verification_exemption and redirects with a success notice' do
+        expect(user).to receive(:destroy_identity_verification_exemption).once.and_return(instance_double(UserCustomAttribute))
 
         subject
 
-        expect(controller).to set_flash[:notice].to(_('Phone verification exemption has been removed.'))
+        expect(controller).to set_flash[:notice].to(_('Identity verification exemption has been removed.'))
         expect(response).to redirect_to(admin_user_path(user))
       end
     end
 
     context 'when it fails' do
-      it 'calls destroy_phone_number_exemption and redirects with an alert' do
-        expect(user).to receive(:destroy_phone_number_exemption).once.and_return(false)
+      it 'calls destroy_identity_verification_exemption and redirects with an alert' do
+        expect(user).to receive(:destroy_identity_verification_exemption).once.and_return(false)
 
         subject
 
-        expect(controller).to set_flash[:alert].to(_('Something went wrong. Unable to remove phone exemption.'))
+        expect(controller).to set_flash[:alert].to(_('Something went wrong. Unable to remove identity verification exemption.'))
         expect(response).to redirect_to(admin_user_path(user))
       end
     end

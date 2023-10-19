@@ -31,13 +31,6 @@ module Users
       end
     end
 
-    def has_medium_or_high_risk_band?(user)
-      user.arkose_risk_band.in?([
-        Arkose::VerifyResponse::RISK_BAND_HIGH.downcase,
-        Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase
-      ])
-    end
-
     def rate_limited_error_message(limit)
       interval_in_seconds = ::Gitlab::ApplicationRateLimiter.rate_limits[limit][:interval]
       interval = distance_of_time_in_words(interval_in_seconds)

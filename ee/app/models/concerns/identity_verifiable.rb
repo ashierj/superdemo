@@ -60,6 +60,8 @@ module IdentityVerifiable
   def required_identity_verification_methods
     methods = [VERIFICATION_METHODS[:EMAIL]]
 
+    return methods if exempt_from_identity_verification?
+
     if exempt_from_phone_number_verification?
       methods.prepend VERIFICATION_METHODS[:CREDIT_CARD] if credit_card_verification_enabled?
 
@@ -117,6 +119,18 @@ module IdentityVerifiable
     clear_memoization(:identity_verification_state)
   end
 
+  def create_identity_verification_exemption
+    custom_attributes.create(key: UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT, value: true)
+  end
+
+  def destroy_identity_verification_exemption
+    identity_verification_exemption_attribute&.destroy
+  end
+
+  def exempt_from_identity_verification?
+    identity_verification_exemption_attribute.present?
+  end
+
   def offer_phone_number_exemption?
     return false unless credit_card_verification_enabled?
 
@@ -168,4 +182,8 @@ module IdentityVerifiable
     custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT).first
   end
   strong_memoize_attr :phone_number_exemption_attribute
+
+  def identity_verification_exemption_attribute
+    custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT).first
+  end
 end
