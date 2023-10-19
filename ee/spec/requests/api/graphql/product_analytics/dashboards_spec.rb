@@ -17,70 +17,32 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
     )
   end
 
-  shared_examples 'list dashboards graphql query' do
-    context 'when current user is a developer' do
-      before do
-        resource_parent.add_developer(user)
-      end
-
-      it 'returns dashboards' do
-        post_graphql(query, current_user: user)
-
-        expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes, 3,
-          :title)).to eq('Dashboard Example 1')
-        expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes, 3,
-          :slug)).to eq('dashboard_example_1')
-      end
-
-      it 'returns three gitlab provided dashboards' do
-        post_graphql(query, current_user: user)
-
-        expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('userDefined'))
-          .to match_array([false, false, false, true])
-      end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(product_analytics_dashboards: false)
-        end
-
-        it 'returns nil' do
-          post_graphql(query, current_user: user)
-
-          expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes)).to be_nil
-        end
-      end
+  shared_examples 'list dashboards as guest' do
+    before do
+      resource_parent.add_guest(user)
     end
 
-    context 'when current user is a guest' do
-      before do
-        resource_parent.add_guest(user)
-      end
+    it 'returns no dashboards' do
+      post_graphql(query, current_user: user)
 
-      it 'returns no dashboards' do
-        post_graphql(query, current_user: user)
+      expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes)).to be_nil
+    end
+  end
 
-        expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes)).to be_nil
-      end
+  shared_examples 'list dashboards without analytics dashboards license' do
+    before do
+      stub_licensed_features(
+        product_analytics: true,
+        project_level_analytics_dashboard: false,
+        group_level_analytics_dashboard: false
+      )
     end
 
-    context 'without analytics dashboards license' do
-      before do
-        stub_licensed_features(
-          product_analytics: true,
-          project_level_analytics_dashboard: false,
-          group_level_analytics_dashboard: false
-        )
+    it 'does not return the Value stream dashboard' do
+      post_graphql(query, current_user: user)
 
-        resource_parent.add_developer(user)
-      end
-
-      it 'does not return the Value stream dashboard' do
-        post_graphql(query, current_user: user)
-
-        expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('slug'))
-          .not_to include('value_stream_dashboard')
-      end
+      expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('slug'))
+        .not_to include('value_stream_dashboard')
     end
   end
 
@@ -92,11 +54,58 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
 
     before do
       stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: true)
+      resource_parent.project_setting.update!(product_analytics_instrumentation_key: "key")
+      allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
+        allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
+          'results' => [{ "data" => [{ "TrackedEvents.count" => "1" }] }]
+        }))
+      end
 
       resource_parent.reload
     end
 
-    it_behaves_like 'list dashboards graphql query'
+    it_behaves_like 'list dashboards as guest'
+
+    context 'when current user is a developer' do
+      before do
+        resource_parent.add_developer(user)
+      end
+
+      it 'returns all dashboards' do
+        post_graphql(query, current_user: user)
+
+        expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
+          .to match_array(["Behavior", "Audience", "Value Stream Dashboard", "Dashboard Example 1"])
+      end
+
+      context 'when product analytics onboarding is incomplete' do
+        before do
+          resource_parent.project_setting.update!(product_analytics_instrumentation_key: nil)
+        end
+
+        it 'returns value stream and custom dashboards' do
+          post_graphql(query, current_user: user)
+
+          expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
+            .to match_array(["Value Stream Dashboard", "Dashboard Example 1"])
+        end
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(product_analytics_dashboards: false)
+        end
+
+        it 'returns value stream and custom dashboards' do
+          post_graphql(query, current_user: user)
+
+          expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
+            .to match_array(["Value Stream Dashboard", "Dashboard Example 1"])
+        end
+      end
+
+      it_behaves_like 'list dashboards without analytics dashboards license'
+    end
   end
 
   context 'when resource parent is a group' do
@@ -112,6 +121,21 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
       stub_licensed_features(product_analytics: true, group_level_analytics_dashboard: true)
     end
 
-    it_behaves_like 'list dashboards graphql query'
+    it_behaves_like 'list dashboards as guest'
+
+    context 'when current user is a developer' do
+      before do
+        resource_parent.add_developer(user)
+      end
+
+      it 'returns value stream and custom dashboards' do
+        post_graphql(query, current_user: user)
+
+        expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
+          .to match_array(["Value Stream Dashboard", "Dashboard Example 1"])
+      end
+
+      it_behaves_like 'list dashboards without analytics dashboards license'
+    end
   end
 end

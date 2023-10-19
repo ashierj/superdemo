@@ -8,7 +8,7 @@ RSpec.describe Resolvers::ProductAnalytics::VisualizationResolver do
   describe '#resolve' do
     subject do
       resolve(
-        described_class, obj: project.product_analytics_dashboards.first.panels.first, ctx: { current_user: user }
+        described_class, obj: project.product_analytics_dashboards(user).first.panels.first, ctx: { current_user: user }
       )
     end
 

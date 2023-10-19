@@ -9,7 +9,9 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     )
   end
 
-  let(:dashboards) { project.product_analytics_dashboards }
+  let_it_be(:user) { create(:user) }
+
+  let(:dashboards) { project.product_analytics_dashboards(user) }
   let(:num_builtin_visualizations) { 15 }
 
   before do
@@ -18,6 +20,12 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       project_level_analytics_dashboard: true,
       group_level_analytics_dashboard: true
     )
+    project.project_setting.update!(product_analytics_instrumentation_key: "key")
+    allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
+      allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
+        'results' => [{ "data" => [{ "TrackedEvents.count" => "1" }] }]
+      }))
+    end
   end
 
   shared_examples_for 'a valid visualization' do

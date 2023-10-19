@@ -7,6 +7,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
 
   let_it_be(:group) { create(:group) }
   let_it_be_with_refind(:project) { create(:project, group: group) }
+  let_it_be(:user) { create(:user) }
 
   describe '#product_analytics_enabled?' do
     subject { project.product_analytics_enabled? }
@@ -31,7 +32,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   describe '#product_analytics_dashboards' do
     it 'returns nothing if product analytics disabled' do
       stub_licensed_features(product_analytics: false)
-      expect(project.product_analytics_dashboards).to be_empty
+      expect(project.product_analytics_dashboards(user)).to be_empty
     end
 
     context 'with configuration project' do
@@ -43,18 +44,34 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       end
 
       it 'includes configuration project dashboards' do
-        expect(project.product_analytics_dashboards).not_to be_empty
+        expect(project.product_analytics_dashboards(user)).not_to be_empty
       end
     end
 
     context 'without configuration project' do
       before do
         stub_licensed_features(product_analytics: true)
+        project.project_setting.update!(product_analytics_instrumentation_key: "key")
+        allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
+          allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
+            'results' => [{ "data" => [{ "TrackedEvents.count" => "1" }] }]
+          }))
+        end
       end
 
       it 'includes built in dashboards' do
-        expect(project.product_analytics_dashboards.map(&:title))
+        expect(project.product_analytics_dashboards(user).map(&:title))
           .to match_array(%w[Audience Behavior])
+      end
+
+      context 'when product analytics onboarding is incomplete' do
+        before do
+          project.project_setting.update!(product_analytics_instrumentation_key: nil)
+        end
+
+        it 'is empty' do
+          expect(project.product_analytics_dashboards(user)).to be_empty
+        end
       end
     end
   end
@@ -98,7 +115,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       end
 
       it 'returns nil' do
-        expect(project.product_analytics_dashboard('test')).to be_nil
+        expect(project.product_analytics_dashboard('test', user)).to be_nil
       end
     end
 
@@ -119,8 +136,8 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
           let(:slug) { 'dashboard_example_1' }
 
           it 'returns the dashboard with the given slug' do
-            expect(project.product_analytics_dashboard(slug).container).to eq(project)
-            expect(project.product_analytics_dashboard(slug).config_project).to eq(configuration_project)
+            expect(project.product_analytics_dashboard(slug, user).container).to eq(project)
+            expect(project.product_analytics_dashboard(slug, user).config_project).to eq(configuration_project)
           end
         end
 
@@ -128,7 +145,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
           let(:slug) { 'Dashboard Example 1800' }
 
           it 'returns nil' do
-            expect(project.product_analytics_dashboard(slug)).to be_nil
+            expect(project.product_analytics_dashboard(slug, user)).to be_nil
           end
         end
       end

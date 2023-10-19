@@ -20,10 +20,9 @@ module Resolvers
                default_value: ::Types::ProductAnalytics::StateEnum.values['ANALYTICS']
 
       def resolve(slug: nil, category: 'analytics')
-        return unless object.product_analytics_enabled?
-        return object.product_analytics_dashboards unless slug.present?
+        return object.product_analytics_dashboards(current_user) unless slug.present?
 
-        category.nil? || category == 'analytics' ? [object.product_analytics_dashboard(slug)] : []
+        category.nil? || category == 'analytics' ? [object.product_analytics_dashboard(slug, current_user)] : []
       end
     end
   end
