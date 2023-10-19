@@ -1,8 +1,8 @@
 <script>
 import { GridStack } from 'gridstack';
-import * as Sentry from '@sentry/browser';
 import { GlButton, GlFormInput, GlFormGroup, GlLink, GlIcon } from '@gitlab/ui';
 import { isEqual } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import { cloneWithoutReferences } from '~/lib/utils/common_utils';
 import { loadCSSFile } from '~/lib/utils/css_utils';

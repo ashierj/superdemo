@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlForm, GlModal } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
 

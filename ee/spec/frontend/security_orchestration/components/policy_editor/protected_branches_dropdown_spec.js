@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
-import * as Sentry from '@sentry/browser';
 import { GlCollapsibleListbox, GlLoadingIcon, GlListboxItem } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProtectedBranchesDropdown from 'ee/security_orchestration/components/policy_editor/protected_branches_dropdown.vue';
 import axios from '~/lib/utils/axios_utils';

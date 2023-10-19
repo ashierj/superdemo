@@ -1,6 +1,6 @@
 <script>
 import { GlModal, GlSprintf, GlAlert, GlLink, GlIcon } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, s__ } from '~/locale';
 import { DAST_SITE_VALIDATION_REVOKE_MODAL_ID } from '../constants';

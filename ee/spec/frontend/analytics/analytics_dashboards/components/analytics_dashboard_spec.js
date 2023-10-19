@@ -1,7 +1,7 @@
-import * as Sentry from '@sentry/browser';
 import { GlSkeletonLoader, GlEmptyState } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import {
   HTTP_STATUS_CREATED,
   HTTP_STATUS_FORBIDDEN,
@@ -34,7 +34,7 @@ import {
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
 
-jest.mock('@sentry/browser');
+jest.mock('~/sentry/sentry_browser_wrapper');
 
 const mockAlertDismiss = jest.fn();
 jest.mock('~/alert', () => ({

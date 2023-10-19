@@ -11,7 +11,7 @@ import {
   GlLabel,
   GlToast,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';

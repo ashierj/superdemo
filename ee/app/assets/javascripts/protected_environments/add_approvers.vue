@@ -9,8 +9,8 @@ import {
   GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { uniqueId } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Api from 'ee/api';
 import { getUser } from '~/rest_api';
 import { s__ } from '~/locale';

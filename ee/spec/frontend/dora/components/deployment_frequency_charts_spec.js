@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/browser';
 import { mount, shallowMount } from '@vue/test-utils';
 import { GlAlert, GlBadge, GlLink } from '@gitlab/ui';
 import { DATA_VIZ_BLUE_500, GRAY_50 } from '@gitlab/ui/dist/tokens/js/tokens';
@@ -11,6 +10,7 @@ import * as utils from 'ee_component/dora/components/util';
 import waitForPromises from 'helpers/wait_for_promises';
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { createAlert } from '~/alert';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';

@@ -1,8 +1,8 @@
-import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { GlToggle } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
@@ -18,7 +18,7 @@ import {
 
 Vue.use(VueApollo);
 
-jest.mock('@sentry/browser');
+jest.mock('~/sentry/sentry_browser_wrapper');
 
 describe('CodeSuggestionsAddonAssignment', () => {
   let wrapper;

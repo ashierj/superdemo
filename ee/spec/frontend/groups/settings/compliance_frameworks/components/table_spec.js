@@ -1,8 +1,8 @@
 import { GlAlert, GlLabel, GlLoadingIcon, GlTableLite, GlModal } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import Table from 'ee/groups/settings/compliance_frameworks/components/table.vue';
 import EmptyState from 'ee/groups/settings/compliance_frameworks/components/table_empty_state.vue';

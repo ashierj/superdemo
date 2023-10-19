@@ -1,6 +1,6 @@
 <script>
 import { produce } from 'immer';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getPipelineEditorAiChat from 'ee/ci/pipeline_editor/graphql/queries/pipeline_editor_get_chat_history.query.graphql';
 import sendChatMessage from 'ee/ci/pipeline_editor/graphql/mutations/pipeline_editor_send_chat.mutation.graphql';
 import { s__ } from '~/locale';

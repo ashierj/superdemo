@@ -1,5 +1,5 @@
-import * as Sentry from '@sentry/browser';
 import Vue from 'vue';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import GroupProtectedEnvironment from './group_protected_environment.vue';
 
 export const initGroupProtectedEnvironmentList = () => {

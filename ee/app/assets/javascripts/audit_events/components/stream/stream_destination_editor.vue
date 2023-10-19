@@ -12,8 +12,8 @@ import {
   GlTableLite,
 } from '@gitlab/ui';
 import { isEqual } from 'lodash';
-import * as Sentry from '@sentry/browser';
 import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import externalAuditEventDestinationCreate from '../../graphql/mutations/create_external_destination.mutation.graphql';

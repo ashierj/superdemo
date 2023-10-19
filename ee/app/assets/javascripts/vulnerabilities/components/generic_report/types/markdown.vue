@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlSkeletonLoader } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { getMarkdown } from '~/rest_api';
 

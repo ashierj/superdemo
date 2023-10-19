@@ -1,8 +1,8 @@
 import { GlEmptyState } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { pick } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { logError } from '~/lib/logger';
 import {
   I18N_API_ERROR,

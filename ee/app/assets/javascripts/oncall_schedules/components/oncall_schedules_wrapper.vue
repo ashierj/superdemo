@@ -9,7 +9,7 @@ import {
   GlTooltipDirective,
   GlSprintf,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import getOncallSchedulesWithRotationsQuery from '../graphql/queries/get_oncall_schedules.query.graphql';
 import AddScheduleModal from './add_edit_schedule_modal.vue';

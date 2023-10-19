@@ -1,6 +1,6 @@
-import * as Sentry from '@sentry/browser';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   SUPPORTED_DORA_METRICS,
@@ -50,7 +50,7 @@ const mockProps = { requestPath: 'exec-group', isProject: false };
 const groupPath = 'exec-group';
 const allTimePeriods = [...MOCK_TABLE_TIME_PERIODS, ...MOCK_CHART_TIME_PERIODS];
 
-jest.mock('@sentry/browser');
+jest.mock('~/sentry/sentry_browser_wrapper');
 jest.mock('~/alert');
 jest.mock('~/analytics/shared/utils', () => ({
   toYmd: jest.requireActual('~/analytics/shared/utils').toYmd,

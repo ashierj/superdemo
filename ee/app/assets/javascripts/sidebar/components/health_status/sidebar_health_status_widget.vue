@@ -1,6 +1,6 @@
 <script>
 import { GlIcon, GlLoadingIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import { STATUS_OPEN, STATUS_REOPENED } from '~/issues/constants';
 import { s__, sprintf } from '~/locale';

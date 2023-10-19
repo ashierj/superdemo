@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlButton, GlFormCheckbox, GlForm, GlTableLite } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { sprintf } from '~/locale';
 import { createAlert } from '~/alert';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';

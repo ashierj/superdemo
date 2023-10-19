@@ -1,8 +1,8 @@
-import * as Sentry from '@sentry/browser';
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { GlAlert } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';

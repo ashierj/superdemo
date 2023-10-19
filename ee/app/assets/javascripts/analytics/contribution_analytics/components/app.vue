@@ -1,6 +1,6 @@
 <script>
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import {
   filterIssues,

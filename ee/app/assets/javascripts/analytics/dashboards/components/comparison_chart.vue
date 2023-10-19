@@ -1,6 +1,6 @@
 <script>
 import { GlAlert } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { toYmd } from '~/analytics/shared/utils';
 import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';

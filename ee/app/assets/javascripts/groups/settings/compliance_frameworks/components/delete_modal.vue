@@ -1,6 +1,6 @@
 <script>
 import { GlModal, GlSprintf } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import { __, s__, sprintf } from '~/locale';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';

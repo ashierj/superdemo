@@ -1,6 +1,6 @@
 <script>
-import * as Sentry from '@sentry/browser';
 import { GlFilteredSearchSuggestion, GlFilteredSearchToken, GlLoadingIcon } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK } from '../../../constants';
 

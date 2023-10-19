@@ -11,8 +11,8 @@ import {
   GlModalDirective,
   GlTooltipDirective,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { capitalize } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import {
   getStartOfWeek,
   formatDate,

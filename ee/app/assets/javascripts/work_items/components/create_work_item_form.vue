@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlForm, GlFormCheckbox, GlFormGroup, GlFormInput } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createWorkItemMutation from '~/work_items/graphql/create_work_item.mutation.graphql';
 import groupWorkItemTypesQuery from '~/work_items/graphql/group_work_item_types.query.graphql';
 import projectWorkItemTypesQuery from '~/work_items/graphql/project_work_item_types.query.graphql';

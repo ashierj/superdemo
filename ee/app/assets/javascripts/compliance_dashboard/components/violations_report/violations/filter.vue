@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlDaterangePicker, GlSearchBoxByClick } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
 import { pikadayToString, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';

@@ -2,7 +2,7 @@ import { GlAlert, GlButton, GlKeysetPagination, GlLink, GlLoadingIcon, GlTable }
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ComplianceViolationsReport from 'ee/compliance_dashboard/components/violations_report/report.vue';
 import MergeRequestDrawer from 'ee/compliance_dashboard/components/violations_report/drawer.vue';

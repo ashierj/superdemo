@@ -1,7 +1,7 @@
 <script>
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { GlStackedColumnChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__, n__, sprintf, __ } from '~/locale';
 import { isValidDate } from '~/lib/utils/datetime_utility';
 import issuesAnalyticsCountsQueryBuilder from '../graphql/issues_analytics_counts_query_builder';

@@ -1,5 +1,5 @@
 <script>
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import { __, s__, sprintf } from '~/locale';
 import axios from '~/lib/utils/axios_utils';

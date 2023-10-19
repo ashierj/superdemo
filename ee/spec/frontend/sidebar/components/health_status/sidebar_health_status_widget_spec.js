@@ -1,7 +1,7 @@
-import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
@@ -19,7 +19,7 @@ import { mockTracking } from 'helpers/tracking_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getHealthStatusMutationResponse, getHealthStatusQueryResponse } from '../../mock_data';
 
-jest.mock('@sentry/browser');
+jest.mock('~/sentry/sentry_browser_wrapper');
 jest.mock('~/alert');
 
 describe('SidebarHealthStatusWidget component', () => {

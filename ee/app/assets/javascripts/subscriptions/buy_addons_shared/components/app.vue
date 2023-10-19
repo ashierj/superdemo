@@ -1,7 +1,7 @@
 <script>
 import emptySvg from '@gitlab/svgs/dist/illustrations/security-dashboard-empty-state.svg?raw';
 import { GlEmptyState } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { logError } from '~/lib/logger';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import OrderSummary from 'jh_else_ee/subscriptions/buy_addons_shared/components/order_summary.vue';

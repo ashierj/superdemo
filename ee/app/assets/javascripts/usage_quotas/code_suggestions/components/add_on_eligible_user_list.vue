@@ -7,7 +7,7 @@ import {
   GlTooltipDirective,
   GlKeysetPagination,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
 import { thWidthPercent } from '~/lib/utils/table_utility';

@@ -1,6 +1,6 @@
 <script>
-import * as Sentry from '@sentry/browser';
 import { GlToggle, GlBadge, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { BASE_FORECAST_SERIES_OPTIONS } from 'ee/analytics/shared/constants';
 import * as DoraApi from 'ee/api/dora_api';
 import SafeHtml from '~/vue_shared/directives/safe_html';

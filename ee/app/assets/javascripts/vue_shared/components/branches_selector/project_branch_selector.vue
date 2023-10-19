@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { debounce } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Api from 'ee/api';
 import { __ } from '~/locale';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';

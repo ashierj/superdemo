@@ -1,5 +1,4 @@
 <script>
-import * as Sentry from '@sentry/browser';
 import {
   GlDisclosureDropdown,
   GlIcon,
@@ -12,6 +11,7 @@ import {
 } from '@gitlab/ui';
 import uniqueId from 'lodash/uniqueId';
 import isString from 'lodash/isString';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';

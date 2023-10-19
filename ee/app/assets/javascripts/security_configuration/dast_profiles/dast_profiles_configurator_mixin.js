@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getSharedStateQuery from 'ee/vue_shared/security_configuration/graphql/client/queries/shared_drawer_state.query.graphql';
 import goFirstStepMutation from 'ee/vue_shared/security_configuration/graphql/client/mutations/go_first_history_step.mutation.graphql';
 import goForwardMutation from 'ee/vue_shared/security_configuration/graphql/client/mutations/go_forward_history.mutation.graphql';

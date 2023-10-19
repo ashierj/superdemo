@@ -1,5 +1,5 @@
 <script>
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 
 import { s__ } from '~/locale';
 

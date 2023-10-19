@@ -1,8 +1,8 @@
 import { nextTick } from 'vue';
 import { GridStack } from 'gridstack';
-import * as Sentry from '@sentry/browser';
 import { RouterLinkStub } from '@vue/test-utils';
 import { GlLink } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';

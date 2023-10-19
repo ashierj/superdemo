@@ -1,6 +1,6 @@
-import * as Sentry from '@sentry/browser';
 import Vue from 'vue';
 import { GlToast } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import ProtectedEnvironmentEdit from './protected_environment_edit.vue';
 
 Vue.use(GlToast);

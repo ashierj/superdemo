@@ -1,7 +1,7 @@
 <script>
 import { GlAlert, GlButton } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { cloneDeep } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { __, s__ } from '~/locale';

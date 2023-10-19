@@ -7,7 +7,7 @@ import {
   GlCollapse,
   GlCollapsibleListbox,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Api from 'ee/api';
 import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';

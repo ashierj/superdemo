@@ -1,7 +1,7 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput, GlIcon, GlPopover } from '@gitlab/ui';
 import { isNumber } from 'lodash';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';

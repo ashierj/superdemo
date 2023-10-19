@@ -1,9 +1,9 @@
 <script>
-import * as Sentry from '@sentry/browser';
 import { GlCard, GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { unescape, isEmpty } from 'lodash';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout } from 'ee/google_tag_manager';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
