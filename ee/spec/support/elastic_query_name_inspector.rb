@@ -12,11 +12,17 @@ class ElasticQueryNameInspector
     @names += query.deep_find_all("_name")
   end
 
-  def has_named_query?(*expected_names)
+  def query_with?(expected_names:, unexpected_names:)
+    has_named_query?(expected_names) && excludes_named_query?(unexpected_names)
+  end
+
+  private
+
+  def has_named_query?(expected_names)
     @names.superset?(expected_names.to_set)
   end
 
-  def excludes_named_query?(*unexpected_names)
+  def excludes_named_query?(unexpected_names)
     unexpected_names.all? { |name| @names.exclude?(name) }
   end
 end
