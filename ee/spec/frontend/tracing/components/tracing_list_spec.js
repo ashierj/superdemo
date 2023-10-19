@@ -98,14 +98,29 @@ describe('TracingList', () => {
       expect(observabilityClientMock.fetchTraces).toHaveBeenCalledTimes(1);
     });
 
-    it('on trace selection it redirects to the details url', () => {
-      setWindowLocation('base_path');
-      const visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
+    describe('on trace-clicked', () => {
+      let visitUrlMock;
+      beforeEach(() => {
+        setWindowLocation('base_path');
+        visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
+      });
 
-      findTableList().vm.$emit('trace-selected', { traceId: 'test-trace-id' });
+      it('redirects to the details url', () => {
+        findTableList().vm.$emit('trace-clicked', { traceId: 'test-trace-id' });
 
-      expect(visitUrlMock).toHaveBeenCalledTimes(1);
-      expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id');
+        expect(visitUrlMock).toHaveBeenCalledTimes(1);
+        expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id', false);
+      });
+
+      it('opens a new tab if clicked with meta key', () => {
+        findTableList().vm.$emit('trace-clicked', {
+          traceId: 'test-trace-id',
+          clickEvent: { metaKey: true },
+        });
+
+        expect(visitUrlMock).toHaveBeenCalledTimes(1);
+        expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id', true);
+      });
     });
   });
 
@@ -332,7 +347,7 @@ describe('TracingList', () => {
       findScatterChart().vm.$emit('chart-item-selected', { traceId: 'test-trace-id' });
 
       expect(visitUrlMock).toHaveBeenCalledTimes(1);
-      expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id');
+      expect(visitUrlMock).toHaveBeenCalledWith('/base_path/test-trace-id', false);
     });
 
     it('highlight and scroll to the trace row when over a chart point', async () => {

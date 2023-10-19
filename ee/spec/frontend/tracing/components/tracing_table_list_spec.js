@@ -39,7 +39,7 @@ describe('TracingTableList', () => {
     return getCells(trIdx).at(tdIdx);
   };
 
-  const selectRow = async (idx) => {
+  const clickRow = async (idx) => {
     getRow(idx).trigger('click');
     await nextTick();
   };
@@ -64,12 +64,13 @@ describe('TracingTableList', () => {
     expect(getCell(1, 3).text()).toBe(`2.00 ms`);
   });
 
-  it('emits trace-selected on row selection', async () => {
+  it('emits trace-clicked on row-clicked', async () => {
     mountComponent();
 
-    await selectRow(0);
-    expect(wrapper.emitted('trace-selected')).toHaveLength(1);
-    expect(wrapper.emitted('trace-selected')[0][0]).toEqual({ traceId: mockTraces[0].trace_id });
+    await clickRow(0);
+    expect(wrapper.emitted('trace-clicked')[0]).toEqual([
+      { traceId: mockTraces[0].trace_id, clickEvent: expect.any(MouseEvent) },
+    ]);
   });
 
   it('renders the empty state when no traces are provided', () => {

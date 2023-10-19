@@ -61,10 +61,8 @@ export default {
     },
   },
   methods: {
-    onSelect(items) {
-      if (items[0]) {
-        this.$emit('trace-selected', { traceId: items[0].trace_id });
-      }
+    onRowClicked(item, _index, event) {
+      this.$emit('trace-clicked', { traceId: item.trace_id, clickEvent: event });
     },
     rowClass(item, type) {
       if (!item || type !== 'row') return '';
@@ -89,7 +87,7 @@ export default {
       selectable
       select-mode="single"
       selected-variant=""
-      @row-selected="onSelect"
+      @row-clicked="onRowClicked"
     >
       <template #cell(service_name)="{ item }">
         <gl-truncate :text="item.service_name" with-tooltip />
