@@ -9,104 +9,108 @@ RSpec.describe SearchController, :elastic, feature_category: :global_search do
     sign_in(user)
   end
 
-  describe 'GET #show' do
-    context 'unique users tracking' do
-      before do
-        stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+  shared_examples 'unique_users tracking' do |controller_action, tracked_action|
+    let_it_be(:group) { create(:group) }
+
+    before do
+      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+    end
+
+    describe 'Snowplow event tracking', :snowplow do
+      let(:category) { described_class.to_s }
+
+      subject { get controller_action, params: request_params }
+
+      it 'emits all search events' do
+        subject
+
+        expect_snowplow_event(
+          category: category, action: tracked_action, namespace: group, user: user,
+          context: context('i_search_total'),
+          property: 'i_search_total',
+          label: 'redis_hll_counters.search.search_total_unique_counts_monthly'
+        )
+        expect_snowplow_event(
+          category: category, action: tracked_action, namespace: group, user: user,
+          context: context('i_search_paid'),
+          property: 'i_search_paid',
+          label: 'redis_hll_counters.search.i_search_paid_monthly'
+        )
+        expect_snowplow_event(
+          category: category, action: tracked_action, namespace: group, user: user,
+          context: context('i_search_advanced'),
+          property: 'i_search_advanced',
+          label: 'redis_hll_counters.search.search_total_unique_counts_monthly'
+        )
       end
+    end
 
-      describe 'Snowplow event tracking', :snowplow do
-        let_it_be(:namespace) { create(:group) }
+    context 'i_search_advanced' do
+      let(:target_event) { 'i_search_advanced' }
 
-        let(:category) { described_class.to_s }
+      subject(:request) { get controller_action, params: request_params }
 
-        subject { get :show, params: { group_id: namespace.id, scope: 'blobs', search: 'term' } }
+      it_behaves_like 'tracking unique hll events' do
+        let(:expected_value) { instance_of(String) }
+      end
+    end
 
-        it 'emits all search events' do
-          action = 'executed'
-          subject
+    context 'i_search_paid' do
+      let(:target_event) { 'i_search_paid' }
 
-          expect_snowplow_event(
-            category: category, action: action, namespace: namespace, user: user,
-            context: context('i_search_total'),
-            property: 'i_search_total',
-            label: 'redis_hll_counters.search.search_total_unique_counts_monthly'
-          )
-          expect_snowplow_event(
-            category: category, action: action, namespace: namespace, user: user,
-            context: context('i_search_paid'),
-            property: 'i_search_paid',
-            label: 'redis_hll_counters.search.i_search_paid_monthly'
-          )
-          expect_snowplow_event(
-            category: category, action: action, namespace: namespace, user: user,
-            context: context('i_search_advanced'),
-            property: 'i_search_advanced',
-            label: 'redis_hll_counters.search.search_total_unique_counts_monthly'
-          )
+      context 'on Gitlab.com', :snowplow do
+        subject(:request) { get controller_action, params: request_params }
+
+        before do
+          allow(::Gitlab).to receive(:com?).and_return(true)
+          stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
         end
-      end
-
-      context 'i_search_advanced' do
-        let_it_be(:group) { create(:group) }
-
-        let(:target_event) { 'i_search_advanced' }
-
-        subject(:request) { get :show, params: { group_id: group.id, scope: 'projects', search: 'term' } }
 
         it_behaves_like 'tracking unique hll events' do
           let(:expected_value) { instance_of(String) }
         end
       end
 
-      context 'i_search_paid' do
-        let_it_be(:group) { create(:group) }
+      context 'self-managed instance' do
+        before do
+          allow(::Gitlab).to receive(:com?).and_return(false)
+        end
 
-        let(:request_params) { { group_id: group.id, scope: 'blobs', search: 'term' } }
-        let(:target_event) { 'i_search_paid' }
-
-        context 'on Gitlab.com', :snowplow do
-          subject(:request) { get :show, params: request_params }
-
+        context 'license is available' do
           before do
-            allow(::Gitlab).to receive(:com?).and_return(true)
-            stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+            stub_licensed_features(elastic_search: true)
           end
 
           it_behaves_like 'tracking unique hll events' do
+            subject(:request) { get controller_action, params: request_params }
+
             let(:expected_value) { instance_of(String) }
           end
         end
 
-        context 'self-managed instance' do
-          before do
-            allow(::Gitlab).to receive(:com?).and_return(false)
-          end
+        it 'does not track if there is no license available' do
+          stub_licensed_features(elastic_search: false)
+          expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event).with(target_event, values: instance_of(String))
 
-          context 'license is available' do
-            before do
-              stub_licensed_features(elastic_search: true)
-            end
-
-            it_behaves_like 'tracking unique hll events' do
-              subject(:request) { get :show, params: request_params }
-
-              let(:expected_value) { instance_of(String) }
-            end
-          end
-
-          it 'does not track if there is no license available' do
-            stub_licensed_features(elastic_search: false)
-            expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event).with(target_event, values: instance_of(String))
-
-            get :show, params: request_params, format: :html
-          end
+          get controller_action, params: request_params, format: :html
         end
       end
     end
+  end
+
+  describe 'GET #show' do
+    it_behaves_like 'unique_users tracking', :show, 'executed' do
+      let(:request_params) { { group_id: group.id, scope: 'blobs', search: 'term' } }
+    end
 
     it_behaves_like 'support for elasticsearch timeouts', :show, { search: 'hello' }, :search_objects, :html
+  end
+
+  describe 'GET #autocomplete' do
+    it_behaves_like 'unique_users tracking', :autocomplete, 'autocomplete' do
+      let(:request_params) { { group_id: group.id, term: 'term' } }
+    end
   end
 
   describe 'GET #aggregations' do
