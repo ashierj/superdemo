@@ -7,10 +7,9 @@ module QA
       let(:secret_detection_report_mr) { "gl-secret-detection-report-mr.json" }
 
       let!(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-with-vulnerabilities'
-          project.description = 'To test dismissed vulnerabilities in MR widget'
-        end
+        create(:project,
+          name: 'project-with-vulnerabilities',
+          description: 'To test dismissed vulnerabilities in MR widget')
       end
 
       let!(:artefacts_directory) do

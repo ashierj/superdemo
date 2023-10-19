@@ -4,16 +4,13 @@ module QA
   RSpec.describe 'Govern', :runner, product_group: :security_policies do
     describe 'Scan result policy' do
       let!(:project) do
-        Resource::Project.fabricate_via_api! do |resource|
-          resource.name = "project-with-scan-result-policy"
-          resource.description = 'Project to test scan result policy with secure'
-          resource.auto_devops_enabled = false
-          resource.initialize_with_readme = true
-        end
+        create(:project,
+          :with_readme,
+          name: 'project-with-scan-result-policy',
+          description: 'Project to test scan result policy with secure')
       end
 
       let(:tag_name) { "secure_report_#{project.name}" }
-
       let!(:runner) do
         create(:project_runner, project: project, name: "runner-for-#{project.name}", tags: [tag_name])
       end
@@ -25,11 +22,10 @@ module QA
       end
 
       let!(:policy_project) do
-        Resource::Project.fabricate_via_api! do |resource|
-          resource.group = project.group
-          resource.add_name_uuid = false
-          resource.name = Pathname.new(scan_result_policy_project.api_response[:full_path]).basename.to_s
-        end
+        create(:project,
+          add_name_uuid: false,
+          group: project.group,
+          name: Pathname.new(scan_result_policy_project.api_response[:full_path]).basename.to_s)
       end
 
       let(:scan_result_policy_name) { 'greyhound' }

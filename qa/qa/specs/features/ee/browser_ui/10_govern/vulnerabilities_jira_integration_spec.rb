@@ -6,11 +6,10 @@ module QA
       testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
       let(:jira_project_key) { 'JITP' }
       let!(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'vulnerabilities-jira-integration'
-          project.description = 'Project with vulnerabilities for JIRA integration test'
-          project.initialize_with_readme = true
-        end
+        create(:project,
+          :with_readme,
+          name: 'vulnerabilities-jira-integration',
+          description: 'Project with vulnerabilities for JIRA integration test')
       end
 
       let(:vulnerabilities) do

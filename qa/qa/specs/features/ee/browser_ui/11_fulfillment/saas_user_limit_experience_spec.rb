@@ -20,27 +20,15 @@ module QA
       let(:user_7) { create(:user, api_client: admin_api_client) }
 
       let(:private_group) do
-        Resource::Sandbox.fabricate! do |sandbox|
-          sandbox.path = "fulfillment-private-group-#{hash}"
-          sandbox.api_client = owner_api_client
-          sandbox.visibility = 'private'
-        end
+        create(:sandbox, :private, path: "fulfillment-private-group-#{hash}", api_client: owner_api_client)
       end
 
       let(:invitee_group) do
-        Resource::Sandbox.fabricate! do |sandbox|
-          sandbox.path = "invitee-group-#{hash}"
-          sandbox.api_client = owner_api_client
-          sandbox.visibility = 'private'
-        end
+        create(:sandbox, :private, path: "invitee-group-#{hash}", api_client: owner_api_client)
       end
 
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.api_client = owner_api_client
-          project.name = "test-project-#{hash}"
-          project.group = private_group
-        end
+        create(:project, api_client: owner_api_client, name: "test-project-#{hash}", group: private_group)
       end
 
       before do

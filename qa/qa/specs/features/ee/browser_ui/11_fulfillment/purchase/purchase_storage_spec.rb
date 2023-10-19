@@ -32,21 +32,13 @@ module QA
     end
 
     let(:group) do
-      Resource::Sandbox.fabricate! do |sandbox|
-        sandbox.path = "test-group-fulfillment-#{hash}"
-        sandbox.api_client = owner_api_client
-      end
+      create(:sandbox, path: "test-group-fulfillment-#{hash}", api_client: owner_api_client)
     end
 
     before do
       Flow::Login.sign_in(as: user)
 
-      Resource::Project.fabricate_via_api! do |project|
-        project.name = 'storage'
-        project.group = group
-        project.initialize_with_readme = true
-        project.api_client = owner_api_client
-      end
+      create(:project, :with_readme, name: 'storage', group: group, api_client: owner_api_client)
 
       group.visit!
     end

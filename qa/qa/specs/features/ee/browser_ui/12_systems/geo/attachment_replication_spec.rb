@@ -5,10 +5,7 @@ module QA
     describe 'GitLab Geo attachment replication' do
       let(:file_to_attach) { Runtime::Path.fixture('designs', 'banana_sample.gif') }
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-for-issues'
-          project.description = 'project for adding issues'
-        end
+        create(:project, name: 'project-for-issues', description: 'project for adding issues')
       end
 
       let(:issue) { create(:issue, title: 'My geo issue', project: project) }

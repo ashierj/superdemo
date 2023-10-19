@@ -8,19 +8,8 @@ module QA
       let(:pipeline_job_name) { 'test-artifacts' }
       let(:executor) { "qa-runner-#{Time.now.to_i}" }
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'geo-project-with-artifacts'
-        end
-      end
-
-      let!(:runner) do
-        Resource::ProjectRunner.fabricate! do |runner|
-          runner.project = project
-          runner.name = executor
-          runner.tags = [executor]
-        end
-      end
+      let(:project) { create(:project, name: 'geo-project-with-artifacts') }
+      let!(:runner) { create(:project_runner, project: project, name: executor, tags: [executor]) }
 
       before do
         Resource::Repository::Commit.fabricate_via_api! do |commit|

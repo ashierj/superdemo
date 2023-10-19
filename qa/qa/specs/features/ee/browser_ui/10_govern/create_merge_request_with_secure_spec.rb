@@ -19,18 +19,13 @@ module QA
 
         Flow::Login.sign_in
 
-        @project = Resource::Project.fabricate_via_api! do |p|
-          p.name = Runtime::Env.auto_devops_project_name || 'project-with-secure'
-          p.description = 'Project with Secure'
-          p.auto_devops_enabled = false
-          p.initialize_with_readme = true
-        end
+        @project = create(:project,
+          :with_readme,
+          add_name_uuid: false,
+          name: Runtime::Env.auto_devops_project_name || 'project-with-secure',
+          description: 'Project with Secure')
 
-        @runner = Resource::ProjectRunner.fabricate! do |runner|
-          runner.project = @project
-          runner.name = @executor
-          runner.tags = ['secure_report']
-        end
+        @runner = create(:project_runner, project: @project, name: @executor, tags: %w[secure_report])
 
         # Push fixture to generate Secure reports
         @source = Resource::Repository::ProjectPush.fabricate! do |push|

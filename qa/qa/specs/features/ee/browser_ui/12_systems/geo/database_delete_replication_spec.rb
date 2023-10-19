@@ -11,15 +11,9 @@ module QA
       before do
         # Need to have at least one project to remain after project deletion,
         # to make sure dashboard shows the project list
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'keep-this-project'
-          project.description = 'Geo project to keep'
-        end
+        create(:project, name: 'keep-this-project', description: 'Geo project to keep')
 
-        project_to_delete = Resource::Project.fabricate_via_api! do |project|
-          project.name = 'delete-this-project'
-          project.description = 'Geo project to be deleted'
-        end
+        project_to_delete = create(:project, name: 'delete-this-project', description: 'Geo project to be deleted')
 
         deleted_project_name = project_to_delete.name
         deleted_project_id = project_to_delete.id

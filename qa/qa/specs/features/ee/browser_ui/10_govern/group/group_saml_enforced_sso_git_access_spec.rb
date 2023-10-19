@@ -5,16 +5,9 @@ module QA
     describe 'Group SAML SSO - Enforced SSO', product_group: :authentication_and_authorization do
       include Support::API
 
-      let!(:group) do
-        Resource::Sandbox.fabricate_via_api! do |sandbox_group|
-          sandbox_group.path = "saml_sso_group_#{SecureRandom.hex(8)}"
-        end
-      end
-
+      let!(:group) { create(:sandbox, path: "saml_sso_group_#{SecureRandom.hex(8)}") }
       let!(:saml_idp_service) { Flow::Saml.run_saml_idp_service(group.path) }
-
       let!(:developer_user) { create(:user) }
-
       let!(:project) do
         Resource::Project.fabricate! do |project|
           project.name = 'project-in-saml-enforced-group'

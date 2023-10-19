@@ -16,10 +16,7 @@ module QA
 
           QA::Flow::Login.while_signed_in(address: :geo_primary) do
             # Create a new Project
-            project = Resource::Project.fabricate_via_api! do |project|
-              project.name = 'geo-project'
-              project.description = 'Geo test project for http push to 2nd'
-            end
+            project = create(:project, name: 'geo-project', description: 'Geo test project for http push to 2nd')
 
             # Perform a git push over HTTP directly to the primary
             #
@@ -80,10 +77,7 @@ module QA
 
           QA::Flow::Login.while_signed_in(address: :geo_primary) do
             # Create a new Project
-            project = Resource::Project.fabricate_via_api! do |project|
-              project.name = 'geo-project'
-              project.description = 'Geo test project for http lfs push to 2nd'
-            end
+            project = create(:project, name: 'geo-project', description: 'Geo test project for http lfs push to 2nd')
 
             # Perform a git push over HTTP directly to the primary
             #

@@ -20,18 +20,10 @@ module QA
         end
 
         let(:parent_group) do
-          QA::Resource::Group.fabricate_via_api! do |group|
-            group.path = "parent-group-to-test-remote-development-#{SecureRandom.hex(8)}"
-          end
+          create(:group, path: "parent-group-to-test-remote-development-#{SecureRandom.hex(8)}")
         end
 
-        let(:agent_project) do
-          Resource::Project.fabricate_via_api! do |project|
-            project.group = parent_group
-            project.name = "agent-project"
-          end
-        end
-
+        let(:agent_project) { create(:project, group: parent_group, name: 'agent-project') }
         let(:kubernetes_agent) do
           Resource::Clusters::Agent.fabricate_via_api! do |agent|
             agent.name = "remotedev-#{SecureRandom.hex(4)}"
@@ -56,13 +48,7 @@ module QA
           end
         end
 
-        let(:devfile_project) do
-          Resource::Project.fabricate_via_api! do |project|
-            project.group = parent_group
-            project.name = "devfile-project"
-          end
-        end
-
+        let(:devfile_project) { create(:project, group: parent_group, name: 'devfile-project') }
         let!(:devfile_file) do
           Resource::Repository::Commit.fabricate_via_api! do |commit|
             devfile_yaml = ERB.new(read_ee_fixture('remote_development', 'devfile.yaml.erb')).result(binding)

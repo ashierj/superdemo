@@ -4,18 +4,11 @@ module QA
   RSpec.describe 'Govern', :runner, product_group: :threat_insights do
     describe 'Security Dashboard in a Project' do
       let!(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-with-secure'
-          project.description = 'Project with secure'
-          project.auto_devops_enabled = false
-          project.initialize_with_readme = true
-        end
+        create(:project, :with_readme, name: 'project-with-secure', description: 'Project with Secure')
       end
 
       let!(:label) { create(:project_label, project: project, title: "test severity 3") }
-
       let(:vuln_severity) { :CRITICAL }
-
       let(:vulnerabilities) do
         { "Gryffindor vulnerability": "Brave courageous and pompous vulnerability",
           "Ravenclaw vulnerability": "Witty and intelligent vulnerability",

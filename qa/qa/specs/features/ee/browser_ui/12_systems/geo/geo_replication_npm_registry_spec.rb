@@ -12,10 +12,7 @@ module QA
       let(:version) { "1.0.0" }
 
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'geo-npm-package-project'
-          project.description = 'Geo project for npm package replication test'
-        end
+        create(:project, name: 'geo-npm-package-project', description: 'Geo project for npm package replication test')
       end
 
       let(:auth_token) do

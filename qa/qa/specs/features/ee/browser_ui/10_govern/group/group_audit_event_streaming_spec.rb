@@ -13,9 +13,7 @@ module QA
   ) do
     describe 'Group audit event streaming' do
       let(:root_group) do
-        Resource::Sandbox.fabricate_via_api! do |sandbox_group|
-          sandbox_group.path = "gitlab-qa-event-stream-#{Faker::Alphanumeric.alphanumeric(number: 8)}"
-        end
+        create(:sandbox, path: "gitlab-qa-event-stream-#{Faker::Alphanumeric.alphanumeric(number: 8)}")
       end
 
       before(:context) do
@@ -133,17 +131,16 @@ module QA
 
         context 'when a group is created' do
           let(:entity_path) do
-            Resource::Group.fabricate_via_api! do |group|
-              group.sandbox = root_group
-              group.name = "audit-event-streaming-#{Faker::Alphanumeric.alphanumeric(number: 8)}"
-            end.full_path
+            create(:group,
+              sandbox: root_group,
+              name: "audit-event-streaming-#{Faker::Alphanumeric.alphanumeric(number: 8)}").full_path
           end
 
           include_examples 'streamed events', 'group_created', 'Group', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/422984'
         end
 
         context 'when a project is shared with a group' do
-          let(:project) { Resource::Project.fabricate_via_api! }
+          let(:project) { create(:project) }
           let(:target_details) { project.full_path }
           let(:entity_path) { root_group.full_path }
 
