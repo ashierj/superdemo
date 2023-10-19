@@ -2916,6 +2916,37 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
     end
 
+    context "with the same component in the same project" do
+      let_it_be(:group) { create(:group) }
+
+      let_it_be(:npm_project) { create(:project, namespace: group) }
+      let_it_be(:yarn_project) { create(:project, namespace: group) }
+      let_it_be(:mono_repo_project) { create(:project, namespace: group) }
+      let_it_be(:other_project) { create(:project) }
+
+      let_it_be(:webpack) { create(:sbom_component, :webpack) }
+      let_it_be(:webpack_v4) { create(:sbom_component_version, component: webpack, version: "4.46.0") }
+
+      let_it_be(:webpack_npm_project) { create(:sbom_occurrence, :npm, project: npm_project, component: webpack, component_version: webpack_v4) }
+      let_it_be(:webpack_yarn_project) { create(:sbom_occurrence, :yarn, project: yarn_project, component: webpack, component_version: webpack_v4) }
+      let_it_be(:webpack_mono_repo_npm) { create(:sbom_occurrence, :npm, project: mono_repo_project, component: webpack, component_version: webpack_v4) }
+      let_it_be(:webpack_mono_repo_yarn) { create(:sbom_occurrence, :yarn, project: mono_repo_project, component: webpack, component_version: webpack_v4) }
+      let_it_be(:other_occurrence) { create(:sbom_occurrence, :yarn, project: other_project, component: webpack, component_version: webpack_v4) }
+      let_it_be(:another_webpack_npm_project) { create(:sbom_occurrence, :npm, project: npm_project, component: webpack, component_version: webpack_v4) }
+
+      it 'returns the project count for each component' do
+        expect(subject.pluck(:component_name, :component_version_id, :project_count)).to match_array([
+          [webpack.name, webpack_v4.id, 3]
+        ])
+      end
+
+      it 'returns the occurrence count for each component' do
+        expect(subject.pluck(:component_name, :component_version_id, :occurrence_count)).to match_array([
+          [webpack.name, webpack_v4.id, 5]
+        ])
+      end
+    end
+
     context 'with multiple sub groups' do
       let_it_be(:group) { create(:group) }
       let_it_be(:group_a) { create(:group, parent: group) }

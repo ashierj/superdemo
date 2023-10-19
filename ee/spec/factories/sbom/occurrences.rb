@@ -25,6 +25,10 @@ FactoryBot.define do
       packager_name { 'nuget' }
     end
 
+    trait :yarn do
+      packager_name { 'yarn' }
+    end
+
     trait :apache_2 do
       after(:build) do |occurrence|
         occurrence.licenses.push({
