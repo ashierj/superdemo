@@ -24,29 +24,8 @@ module CodeSuggestions
             Review the existing code to understand existing logic and format.
             Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-
-            Do not repeat code that is already included in <existing_code></existing_code>.
-            Here is an example of response which doesn't repeat existing code:
-
-            <examples>
-              <example>
-                H: <existing_code>
-                     def hello_world
-                       <cursor>
-                     end
-                  </existing_code>
-                A: puts "Hello, world!"
-              </example>
-              <example>
-                H: <existing_code>
-                     def hello_world
-                       puts "Hello, <cursor>
-                     end
-                  </existing_code>
-                A: world!"
-              </example>
-            </examples>
-
+            Do not repeat code that already exists.
+            #{examples_section}
             The new code has to be fully functional and complete. Let's start, here is the existing code:
 
             <existing_code>
@@ -55,6 +34,29 @@ module CodeSuggestions
 
             Assistant: <new_code>
           PROMPT
+        end
+
+        def examples_section
+          examples_template = <<~EXAMPLES
+          You got example scenarios between <examples> XML tag.
+
+          <examples>
+          <% examples_array.each do |use_case| %>
+            <example>
+              H: <existing_code>
+                   <%= use_case['example'] %>
+                 </existing_code>
+
+              A: <new_code> <%= use_case['response'] %>
+            </example>
+          <% end %>
+          </examples>
+          EXAMPLES
+
+          examples_array = language.examples
+          return if examples_array.empty?
+
+          ERB.new(examples_template).result(binding)
         end
       end
     end
