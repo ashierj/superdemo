@@ -79,7 +79,7 @@ module CodeSuggestions
     CODE_COMPLETIONS_EXAMPLES_URI = 'ee/lib/code_suggestions/prompts/code_completion/examples.yml'
 
     LANGUAGE_CODE_COMPLETION_EXAMPLES = YAML.safe_load(
-      File.read(CODE_COMPLETIONS_EXAMPLES_URI)
+      File.read(Rails.root.join(CODE_COMPLETIONS_EXAMPLES_URI))
     ).freeze
 
     DEFAULT_NAME = ''
