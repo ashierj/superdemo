@@ -14,8 +14,7 @@ module ElasticsearchHelpers
       inspector = ElasticQueryNameInspector.new
 
       inspector.inspect(query)
-      inspector.has_named_query?(*expected_names)
-      inspector.excludes_named_query?(*without)
+      inspector.query_with?(expected_names: expected_names, unexpected_names: without)
     rescue ::JSON::ParserError
       false
     end
