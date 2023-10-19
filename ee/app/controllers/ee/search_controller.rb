@@ -23,6 +23,13 @@ module EE
         action: 'executed',
         destinations: [:redis_hll, :snowplow]
 
+      track_event :autocomplete,
+        name: 'i_search_advanced',
+        conditions: -> { track_search_advanced? },
+        label: 'redis_hll_counters.search.search_total_unique_counts_monthly',
+        action: 'autocomplete',
+        destinations: [:redis_hll, :snowplow]
+
       # track unique paid users (users who already use elasticsearch and users who could use it if they enable
       # elasticsearch integration)
       # for gitlab.com we check if the search uses elasticsearch
@@ -32,6 +39,13 @@ module EE
         conditions: -> { track_search_paid? },
         label: 'redis_hll_counters.search.i_search_paid_monthly',
         action: 'executed',
+        destinations: [:redis_hll, :snowplow]
+
+      track_event :autocomplete,
+        name: 'i_search_paid',
+        conditions: -> { track_search_paid? },
+        label: 'redis_hll_counters.search.i_search_paid_monthly',
+        action: 'autocomplete',
         destinations: [:redis_hll, :snowplow]
 
       rescue_from Elastic::TimeoutError, with: :render_timeout
