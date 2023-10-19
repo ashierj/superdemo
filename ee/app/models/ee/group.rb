@@ -859,13 +859,13 @@ module EE
       sql = <<-SQL
       DISTINCT ON (sbom_occurrences.component_version_id) sbom_occurrences.*,
       COUNT(sbom_occurrences.id) OVER (PARTITION BY sbom_occurrences.component_version_id) AS occurrence_count,
-      COUNT(sbom_occurrences.project_id) OVER (PARTITION BY sbom_occurrences.component_version_id, sbom_occurrences.project_id) AS project_count
+      DENSE_RANK() OVER (PARTITION BY sbom_occurrences.component_version_id ORDER BY project_id) AS project_count
       SQL
       our_occurrences = ::Gitlab::SQL::CTE.new(:our_occurrences, Sbom::Occurrence
         .where(project_id: all_projects_except_soft_deleted.select(:id))
         .where.not(component_version_id: nil)
         .select(sql)
-        .order(component_version_id: :desc, id: :desc)
+        .order(component_version_id: :desc, project_count: :desc, id: :desc)
       )
 
       Sbom::Occurrence
