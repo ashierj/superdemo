@@ -8,6 +8,8 @@ import {
   mockDefaultBranchesScanResultObject,
   mockApprovalSettingsScanResultManifest,
   mockApprovalSettingsScanResultObject,
+  mockApprovalSettingsPermittedInvalidScanResultManifest,
+  mockApprovalSettingsPermittedInvalidScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 import {
   unsupportedManifest,
@@ -27,9 +29,11 @@ describe('fromYaml', () => {
 
   describe('feature flag', () => {
     it.each`
-      title                                                                                                               | input                                                                                                                           | output
-      ${'returns the policy object for a manifest with `approval_settings` and the `scan_result_policy` feature flag on'} | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true, glFeatures: { scanResultPolicySettings: true } }} | ${mockApprovalSettingsScanResultObject}
-      ${'returns the error object for a manifest with `approval_settings` and the `scan_result_policy` feature flag off'} | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true }}                                                 | ${{ error: true }}
+      title                                                                                                                                                      | input                                                                                                                                           | output
+      ${'returns the policy object for a manifest with `approval_settings` and the `scan_result_policy` feature flag on'}                                        | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true, glFeatures: { scanResultPolicySettings: true } }}                 | ${mockApprovalSettingsScanResultObject}
+      ${'returns the policy object for a manifest with `approval_settings` containing permitted invalid settings and the `scan_result_policy` feature flag on'}  | ${{ manifest: mockApprovalSettingsPermittedInvalidScanResultManifest, validateRuleMode: true, glFeatures: { scanResultPolicySettings: true } }} | ${mockApprovalSettingsPermittedInvalidScanResultObject}
+      ${'returns the policy object for a manifest with `approval_settings` containing permitted invalid settings and the `scan_result_policy` feature flag off'} | ${{ manifest: mockApprovalSettingsPermittedInvalidScanResultManifest, validateRuleMode: true }}                                                 | ${mockApprovalSettingsPermittedInvalidScanResultObject}
+      ${'returns the error object for a manifest with `approval_settings` and the `scan_result_policy` feature flag off'}                                        | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true }}                                                                 | ${{ error: true }}
     `('$title', ({ input, output }) => {
       expect(fromYaml(input)).toStrictEqual(output);
     });
@@ -48,9 +52,11 @@ describe('createPolicyObject', () => {
 
   describe('feature flag', () => {
     it.each`
-      title                                                                                                               | input                                                                           | output
-      ${'returns the policy object for a manifest with `approval_settings` and the `scan_result_policy` feature flag on'} | ${[mockApprovalSettingsScanResultManifest, { scanResultPolicySettings: true }]} | ${{ policy: mockApprovalSettingsScanResultObject, hasParsingError: false }}
-      ${'returns the error object for a manifest with `approval_settings` and the `scan_result_policy` feature flag off'} | ${[mockApprovalSettingsScanResultManifest]}                                     | ${{ policy: { error: true }, hasParsingError: true }}
+      title                                                                                                                                                      | input                                                                                           | output
+      ${'returns the policy object for a manifest with `approval_settings` and the `scan_result_policy` feature flag on'}                                        | ${[mockApprovalSettingsScanResultManifest, { scanResultPolicySettings: true }]}                 | ${{ policy: mockApprovalSettingsScanResultObject, hasParsingError: false }}
+      ${'returns the policy object for a manifest with `approval_settings` containing permitted invalid settings and the `scan_result_policy` feature flag on'}  | ${[mockApprovalSettingsPermittedInvalidScanResultManifest, { scanResultPolicySettings: true }]} | ${{ policy: mockApprovalSettingsPermittedInvalidScanResultObject, hasParsingError: false }}
+      ${'returns the policy object for a manifest with `approval_settings` containing permitted invalid settings and the `scan_result_policy` feature flag off'} | ${[mockApprovalSettingsPermittedInvalidScanResultManifest]}                                     | ${{ policy: mockApprovalSettingsPermittedInvalidScanResultObject, hasParsingError: false }}
+      ${'returns the error object for a manifest with `approval_settings` and the `scan_result_policy` feature flag off'}                                        | ${[mockApprovalSettingsScanResultManifest]}                                                     | ${{ policy: { error: true }, hasParsingError: true }}
     `('$title', ({ input, output }) => {
       expect(createPolicyObject(...input)).toStrictEqual(output);
     });

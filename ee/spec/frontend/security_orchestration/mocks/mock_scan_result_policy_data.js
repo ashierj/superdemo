@@ -105,11 +105,61 @@ actions:
     user_approvers:
       - the.one
 approval_settings:
+  block_protected_branch_modification: true
+`;
+
+export const mockApprovalSettingsPermittedInvalidScanResultManifest = `type: scan_result_policy
+name: critical vulnerability CS approvals
+description: This policy enforces critical vulnerability CS approvals
+enabled: true
+rules:
+  - type: scan_finding
+    branches: []
+    scanners:
+      - container_scanning
+    vulnerabilities_allowed: 1
+    severity_levels:
+      - critical
+    vulnerability_states:
+      - newly_detected
+actions:
+  - type: require_approval
+    approvals_required: 1
+    user_approvers:
+      - the.one
+approval_settings:
   block_protected_branch_modification:
     enabled: true
 `;
 
 export const mockApprovalSettingsScanResultObject = {
+  type: 'scan_result_policy',
+  name: 'critical vulnerability CS approvals',
+  description: 'This policy enforces critical vulnerability CS approvals',
+  enabled: true,
+  rules: [
+    {
+      type: 'scan_finding',
+      branches: [],
+      scanners: ['container_scanning'],
+      vulnerabilities_allowed: 1,
+      severity_levels: ['critical'],
+      vulnerability_states: ['newly_detected'],
+    },
+  ],
+  actions: [
+    {
+      type: 'require_approval',
+      approvals_required: 1,
+      user_approvers: ['the.one'],
+    },
+  ],
+  approval_settings: {
+    block_protected_branch_modification: true,
+  },
+};
+
+export const mockApprovalSettingsPermittedInvalidScanResultObject = {
   type: 'scan_result_policy',
   name: 'critical vulnerability CS approvals',
   description: 'This policy enforces critical vulnerability CS approvals',
