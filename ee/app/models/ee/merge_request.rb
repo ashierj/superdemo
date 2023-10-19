@@ -381,10 +381,6 @@ module EE
       project_rules.find_each do |project_rule|
         project_rule.apply_report_approver_rules_to(self)
       end
-
-      if ::Feature.enabled?(:scan_result_any_merge_request, target_project) && project_rules.any_merge_request.any?
-        ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(id)
-      end
     end
 
     def sync_project_approval_rules_for_policy_configuration(configuration_id)

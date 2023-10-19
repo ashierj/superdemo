@@ -17,6 +17,7 @@ module EE
         update_approvers_for_target_branch_merge_requests
         reset_approvals_for_merge_requests(push.ref, push.newrev)
         trigger_suggested_reviewers_fetch
+        sync_any_merge_request_approval_rules
       end
 
       def trigger_suggested_reviewers_fetch
@@ -53,6 +54,16 @@ module EE
         if project.feature_available?(:code_owners) && branch_protected? && code_owners_updated?
           merge_requests_for_target_branch.each do |merge_request|
             ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute unless merge_request.on_train?
+          end
+        end
+      end
+
+      def sync_any_merge_request_approval_rules
+        return unless ::Feature.enabled?(:scan_result_any_merge_request, project)
+
+        merge_requests_for_source_branch.each do |merge_request|
+          if merge_request.approval_rules.any_merge_request.any?
+            ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)
           end
         end
       end
