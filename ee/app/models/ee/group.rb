@@ -786,7 +786,7 @@ module EE
 
       members = members.not_banned_in(root_ancestor)
       users_without_bots(members).with_state(:active)
-        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417455")
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417464")
     end
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups
@@ -902,7 +902,13 @@ module EE
     private
 
     def active_project_tokens_of_root_ancestor
-      ::PersonalAccessToken.active.joins(:user).merge(root_ancestor.project_users_with_descendants.project_bot)
+      root_ancestor_and_descendants_project_bots = ::User
+        .joins(projects: :group)
+        .where(namespaces: { id: root_ancestor.self_and_descendants.select(:id) })
+        .project_bot
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/428542")
+
+      ::PersonalAccessToken.active.joins(:user).merge(root_ancestor_and_descendants_project_bots)
     end
 
     override :post_create_hook
