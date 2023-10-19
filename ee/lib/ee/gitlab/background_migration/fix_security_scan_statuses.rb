@@ -62,7 +62,7 @@ module EE
           end
 
           def artifacts_expired?
-            artifacts_expire_at && artifacts_expire_at < Time.current
+            artifacts_expire_at && artifacts_expire_at.past?
           end
         end
 

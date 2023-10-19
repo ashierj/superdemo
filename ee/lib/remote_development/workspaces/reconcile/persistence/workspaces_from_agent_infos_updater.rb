@@ -55,7 +55,7 @@ module RemoteDevelopment
             # to replace this with some mechanism to detect workspace activity and only shut down inactive workspaces.
             # Until then, this is the workaround to ensure workspaces don't live indefinitely.
             # See https://gitlab.com/gitlab-org/gitlab/-/issues/390597
-            if persisted_workspace.created_at + persisted_workspace.max_hours_before_termination.hours < Time.current
+            if (persisted_workspace.created_at + persisted_workspace.max_hours_before_termination.hours).past?
               persisted_workspace.desired_state = States::TERMINATED
             end
 

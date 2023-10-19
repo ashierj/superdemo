@@ -61,7 +61,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     end
   end
 
-  context "when persisted workspace created_at + max_hours_before_termination.hours < Time.current" do
+  context "when persisted workspace created_at + max_hours_before_termination.hours is in the past" do
     before do
       workspace.update!(created_at: 2.days.ago, max_hours_before_termination: 1)
     end
