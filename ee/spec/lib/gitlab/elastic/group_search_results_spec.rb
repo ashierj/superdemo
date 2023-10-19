@@ -55,7 +55,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     end
 
     include_examples 'search results filtered by state'
-    include_examples 'search results filtered by archived', 'search_merge_requests_hide_archived_projects'
+    include_examples 'search results filtered by archived'
   end
 
   context 'blobs', :sidekiq_inline do

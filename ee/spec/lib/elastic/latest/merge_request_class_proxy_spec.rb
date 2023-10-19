@@ -62,18 +62,6 @@ RSpec.describe Elastic::Latest::MergeRequestClassProxy, :elastic, :sidekiq_inlin
             )
           end
 
-          context 'when search_merge_requests_hide_archived_projects is disabled' do
-            before do
-              stub_feature_flags(search_merge_requests_hide_archived_projects: false)
-            end
-
-            it 'does not have a filter for archived' do
-              result.response
-
-              assert_named_queries('merge_request:match:search_terms', without: ['merge_request:archived:non_archived'])
-            end
-          end
-
           context 'when include_archived is set' do
             let(:options) { { include_archived: true } }
 
