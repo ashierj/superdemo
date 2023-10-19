@@ -8,7 +8,6 @@ import TotalIssuesAnalyticsChart from 'ee/issues_analytics/components/total_issu
 import IssuesAnalyticsTable from 'ee/issues_analytics/components/issues_analytics_table.vue';
 import { createStore } from 'ee/issues_analytics/stores';
 import { useFakeDate } from 'helpers/fake_date';
-import { mockFilters, mockOriginalFilters } from '../mock_data';
 
 const mockFilterManagerSetup = jest.fn();
 jest.mock('ee/issues_analytics/filtered_search_issues_analytics', () =>
@@ -20,7 +19,12 @@ jest.mock('ee/issues_analytics/filtered_search_issues_analytics', () =>
 Vue.use(Vuex);
 
 describe('IssuesAnalytics', () => {
-  useFakeDate(2023, 7, 1);
+  useFakeDate(2023, 7, 18);
+
+  const TEST_END_DATE = new Date(2023, 7, 18);
+  const TEST_START_DATE = new Date('2022-08-01T00:00:00.000Z');
+  const TEST_MONTHS_BACK_START_DATE = new Date('2023-05-01T00:00:00.000Z');
+  const TEST_MONTHS_BACK = 3;
 
   let wrapper;
   let store;
@@ -55,6 +59,44 @@ describe('IssuesAnalytics', () => {
     });
   };
 
+  const mockOriginalFilters = {
+    label_name: [],
+    assignee_username: [],
+    author_username: 'bob',
+    'not[assignee_username]': [],
+  };
+  const mockFilters = {
+    assigneeUsernames: [],
+    authorUsername: 'bob',
+    not: { assigneeUsernames: [] },
+  };
+
+  describe('default', () => {
+    describe('table', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('renders the Issues Analytics table', () => {
+        expect(findIssuesAnalyticsTable().props()).toEqual({
+          endDate: TEST_END_DATE,
+          filters: {},
+          hasCompletedIssues: false,
+          startDate: TEST_START_DATE,
+        });
+      });
+
+      it('passes transformed global page filters to the `filters` prop', async () => {
+        await store.dispatch('issueAnalytics/setFilters', mockOriginalFilters);
+
+        expect(findIssuesAnalyticsTable().props('filters')).toEqual({
+          labelName: [],
+          ...mockFilters,
+        });
+      });
+    });
+  });
+
   describe('chart', () => {
     it.each`
       hasIssuesCompletedFeature | issuesCompletedAnalyticsFeatureFlag | shouldShowTotalIssuesAnalyticsChart | shouldShowIssuesAnalyticsChart
@@ -79,50 +121,53 @@ describe('IssuesAnalytics', () => {
         expect(findIssuesAnalyticsChart().exists()).toBe(shouldShowIssuesAnalyticsChart);
       },
     );
+  });
 
-    describe('Total Issues Analytics chart', () => {
-      beforeEach(() => {
-        createComponent({
-          hasIssuesCompletedFeature: true,
-          issuesCompletedAnalyticsFeatureFlag: true,
+  describe('when completed issues analytics are supported', () => {
+    beforeEach(() => {
+      createComponent({
+        hasIssuesCompletedFeature: true,
+        issuesCompletedAnalyticsFeatureFlag: true,
+      });
+    });
+
+    it('sets table `hasCompletedIssues` prop to true', () => {
+      expect(findIssuesAnalyticsTable().props('hasCompletedIssues')).toBe(true);
+    });
+
+    describe('chart', () => {
+      it('renders Total Issues Analytics chart', () => {
+        expect(findTotalIssuesAnalyticsChart().props()).toEqual({
+          endDate: TEST_END_DATE,
+          filters: {},
+          startDate: TEST_START_DATE,
         });
       });
 
       it('passes transformed global page filters to the `filters` prop', async () => {
         await store.dispatch('issueAnalytics/setFilters', mockOriginalFilters);
 
-        expect(findTotalIssuesAnalyticsChart().props('filters')).toEqual(mockFilters);
-      });
-
-      it('passes correct default end date to `endDate` prop', () => {
-        const expectedEndDate = new Date();
-
-        expect(findTotalIssuesAnalyticsChart().props('endDate')).toEqual(expectedEndDate);
-      });
-
-      it('passes correct default date twelve months in the past to `startDate` prop', () => {
-        const expectedStartDate = new Date('2022-08-01T00:00:00.000Z');
-
-        expect(findTotalIssuesAnalyticsChart().props('startDate')).toEqual(expectedStartDate);
-      });
-
-      it('passes correct date to `startDate` prop when `months_back` filter is defined', async () => {
-        const expectedStartDate = new Date('2023-05-01T00:00:00.000Z');
-
-        await store.dispatch('issueAnalytics/setFilters', { months_back: 3 });
-
-        expect(findTotalIssuesAnalyticsChart().props('startDate')).toEqual(expectedStartDate);
+        expect(findTotalIssuesAnalyticsChart().props('filters')).toEqual({
+          labelNames: [],
+          ...mockFilters,
+        });
       });
     });
-  });
 
-  describe('table', () => {
-    beforeEach(() => {
-      createComponent();
-    });
+    describe('when `months_back` filter is applied', () => {
+      beforeEach(async () => {
+        await store.dispatch('issueAnalytics/setFilters', { months_back: TEST_MONTHS_BACK });
+      });
 
-    it('renders the Issues Analytics table', () => {
-      expect(findIssuesAnalyticsTable().exists()).toBe(true);
+      it('updates `startDate` for table', () => {
+        expect(findIssuesAnalyticsTable().props('startDate')).toEqual(TEST_MONTHS_BACK_START_DATE);
+      });
+
+      it('updates `startDate` for chart', () => {
+        expect(findTotalIssuesAnalyticsChart().props('startDate')).toEqual(
+          TEST_MONTHS_BACK_START_DATE,
+        );
+      });
     });
   });
 });

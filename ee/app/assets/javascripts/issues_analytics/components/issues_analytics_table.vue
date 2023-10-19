@@ -28,9 +28,14 @@ const MAX_VISIBLE_ASSIGNEES = 2;
 
 const TH_TEST_ID = { 'data-testid': 'header' };
 
+const ISSUABLE_STATE_OPENED = 'opened';
+const ISSUABLE_STATE_CLOSED = 'closed';
+const ISSUABLE_STATE_LOCKED = 'locked';
+const ISSUABLE_STATE_ALL = 'all';
+
 const ISSUE_STATE_I18N_MAP = {
-  opened: __('Opened'),
-  closed: __('Closed'),
+  [ISSUABLE_STATE_OPENED]: __('Opened'),
+  [ISSUABLE_STATE_CLOSED]: __('Closed'),
 };
 
 export default {
@@ -50,6 +55,26 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   inject: ['fullPath', 'type', 'issuesPageEndpoint'],
+  props: {
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
+    filters: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
+    hasCompletedIssues: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   tableHeaderFields: [
     {
       key: 'issueDetails',
@@ -112,14 +137,25 @@ export default {
     issues: {
       query: issueAnalyticsQuery,
       variables() {
+        const state = this.hasCompletedIssues ? ISSUABLE_STATE_ALL : ISSUABLE_STATE_OPENED;
+
         return {
           fullPath: this.fullPath,
           isGroup: this.type === WORKSPACE_GROUP,
           isProject: this.type === WORKSPACE_PROJECT,
+          createdAfter: this.startDate,
+          createdBefore: this.endDate,
+          state,
+          ...this.filters,
         };
       },
       update(data) {
-        return data.project?.issues.nodes || data.group?.issues.nodes || [];
+        const issues = data.project?.issues.nodes || data.group?.issues.nodes || [];
+
+        return issues.filter(({ state }) => state !== ISSUABLE_STATE_LOCKED);
+      },
+      skip() {
+        return !this.fullPath || !this.type;
       },
       error() {
         createAlert({

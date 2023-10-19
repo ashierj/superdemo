@@ -7,12 +7,20 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import IssuesAnalyticsTable from 'ee/issues_analytics/components/issues_analytics_table.vue';
 import getIssuesAnalyticsData from 'ee/issues_analytics/graphql/queries/issues_analytics.query.graphql';
-import { mockIssuesApiResponse, tableHeaders, getQueryIssuesAnalyticsResponse } from '../mock_data';
+import { useFakeDate } from 'helpers/fake_date';
+import {
+  mockIssuesApiResponse,
+  tableHeaders,
+  getQueryIssuesAnalyticsResponse,
+  mockFilters,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 jest.mock('~/alert');
 
 describe('IssuesAnalyticsTable', () => {
+  useFakeDate(2020, 0, 8);
+
   let wrapper;
   let fakeApollo;
 
@@ -20,8 +28,13 @@ describe('IssuesAnalyticsTable', () => {
     .fn()
     .mockResolvedValue(getQueryIssuesAnalyticsResponse);
   const issuesPageEndpoint = `${TEST_HOST}/issues/page`;
+  const mockStartDate = new Date('2020-01-02');
+  const mockEndDate = new Date('2020-01-08');
 
   const createComponent = ({
+    props = {},
+    startDate = mockStartDate,
+    endDate = mockEndDate,
     apolloHandlers = [getIssuesAnalyticsData, getQueryIssuesAnalyticsSuccess],
     type = 'group',
   } = {}) => {
@@ -30,6 +43,11 @@ describe('IssuesAnalyticsTable', () => {
     wrapper = mount(IssuesAnalyticsTable, {
       apolloProvider: fakeApollo,
       provide: { fullPath: 'gitlab-org', type, issuesPageEndpoint },
+      propsData: {
+        startDate,
+        endDate,
+        ...props,
+      },
     });
   };
 
@@ -43,11 +61,9 @@ describe('IssuesAnalyticsTable', () => {
 
   const findAgeCol = (rowIndex) => findTable().findAll('[data-testid="ageCol"]').at(rowIndex);
 
-  const findStatusCol = (rowIndex) => findTable().findAll('[data-testid="statusCol"]').at(rowIndex);
+  const findStatusCells = () => findTable().findAll('[data-testid="statusCol"]');
 
-  beforeEach(() => {
-    jest.spyOn(Date, 'now').mockImplementation(() => new Date('2020-01-08'));
-  });
+  const findStatusCellAt = (rowIndex) => findStatusCells().at(rowIndex);
 
   afterEach(() => {
     fakeApollo = null;
@@ -121,24 +137,57 @@ describe('IssuesAnalyticsTable', () => {
       });
 
       it('capitalizes the status', () => {
-        expect(findStatusCol(0).text()).toBe('Closed');
+        expect(findStatusCellAt(0).text()).toBe('Closed');
+      });
+
+      it('should only display supported issue states', () => {
+        expect(mockIssuesApiResponse.map(({ state }) => state)).toEqual([
+          'closed',
+          'opened',
+          'opened',
+          'locked',
+        ]);
+
+        const statusCells = findStatusCells().wrappers.map((statusCell) => statusCell.text());
+
+        expect(statusCells).toEqual(['Closed', 'Opened', 'Opened']);
       });
     });
   });
 
-  describe('query', () => {
-    it.each(['group', 'project'])(
-      'calls the query with the correct variables when the the type is "%s"',
-      (type) => {
-        createComponent({ type });
+  describe.each(['group', 'project'])('%s issues analytics query', (type) => {
+    const defaultVariables = {
+      fullPath: 'gitlab-org',
+      isGroup: type === 'group',
+      isProject: type === 'project',
+      createdAfter: mockStartDate,
+      createdBefore: mockEndDate,
+      state: 'opened',
+    };
 
-        expect(getQueryIssuesAnalyticsSuccess).toHaveBeenCalledWith({
-          fullPath: 'gitlab-org',
-          isGroup: type === 'group',
-          isProject: type === 'project',
-        });
-      },
-    );
+    it('calls the query with the correct default variables', () => {
+      createComponent({ type });
+
+      expect(getQueryIssuesAnalyticsSuccess).toHaveBeenCalledWith(defaultVariables);
+    });
+
+    it('calls the query with the correct variables when filters have been applied', () => {
+      createComponent({ props: { filters: mockFilters }, type });
+
+      expect(getQueryIssuesAnalyticsSuccess).toHaveBeenCalledWith({
+        ...defaultVariables,
+        ...mockFilters,
+      });
+    });
+
+    it('calls the query with the correct variables when completed issues are supported', () => {
+      createComponent({ props: { hasCompletedIssues: true }, type });
+
+      expect(getQueryIssuesAnalyticsSuccess).toHaveBeenCalledWith({
+        ...defaultVariables,
+        state: 'all',
+      });
+    });
   });
 
   describe('error fetching data', () => {
