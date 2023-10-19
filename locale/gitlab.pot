@@ -57148,6 +57148,9 @@ msgstr ""
 msgid "must contain only a discord user ID."
 msgstr ""
 
+msgid "must contain only a mastodon username."
+msgstr ""
+
 msgid "must have a repository"
 msgstr ""
 
