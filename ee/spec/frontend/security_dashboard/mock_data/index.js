@@ -133,19 +133,10 @@ export const mockInstanceVulnerabilityGrades = () => ({
   },
 });
 
-export const mockProjectSecurityChartsWithoutData = () => ({
-  data: {
-    project: {
-      vulnerabilitiesCountByDay: {
-        edges: [],
-      },
-    },
-  },
-});
-
 export const mockProjectSecurityChartsWithData = () => ({
   data: {
     project: {
+      __typename: 'Project',
       id: 'project-1',
       vulnerabilitiesCountByDay: {
         nodes: [
@@ -203,7 +194,34 @@ export const mockProjectSecurityChartsWithData = () => ({
             medium: 2,
             unknown: 1,
           },
+          {
+            date: '2021-04-11',
+            critical: 2,
+            high: 3,
+            info: 2,
+            low: 10,
+            medium: 2,
+            unknown: 1,
+          },
         ],
+      },
+    },
+  },
+});
+
+export const mockSeverityCountsWithData = () => ({
+  data: {
+    project: {
+      __typename: 'Project',
+      id: 'project-1',
+      vulnerabilitySeveritiesCount: {
+        __typename: 'VulnerabilitySeveritiesCount',
+        critical: 100,
+        high: 100,
+        info: 100,
+        low: 100,
+        medium: 100,
+        unknown: 100,
       },
     },
   },
