@@ -52,74 +52,58 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
     end
   end
 
-  context 'when the CI Namespace Catalog feature is available' do
-    before do
-      stub_licensed_features(ci_namespace_catalog: true)
+  context 'when the current user has permission to read the namespace catalog' do
+    before_all do
+      namespace.add_developer(user)
     end
 
-    context 'when the current user has permission to read the namespace catalog' do
-      before_all do
-        namespace.add_developer(user)
-      end
+    it 'returns the resource with the expected data' do
+      post_query
 
-      it 'returns the resource with the expected data' do
+      expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+        a_graphql_entity_for(
+          resource1, :name, :description,
+          icon: project1.avatar_path,
+          webPath: "/#{project1.full_path}",
+          starCount: project1.star_count,
+          forksCount: project1.forks_count,
+          readmeHtml: a_string_including('Test</strong>'),
+          latestReleasedAt: resource1.latest_released_at
+        )
+      )
+    end
+
+    context 'when there are two resources visible to the current user in the namespace' do
+      it 'returns both resources with the expected data' do
+        resource2 = create(:ci_catalog_resource, project: project2)
+
         post_query
 
         expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+          a_graphql_entity_for(resource1),
           a_graphql_entity_for(
-            resource1, :name, :description,
-            icon: project1.avatar_path,
-            webPath: "/#{project1.full_path}",
-            starCount: project1.star_count,
-            forksCount: project1.forks_count,
-            readmeHtml: a_string_including('Test</strong>'),
-            latestReleasedAt: resource1.latest_released_at
+            resource2, :name, :description,
+            icon: project2.avatar_path,
+            webPath: "/#{project2.full_path}",
+            starCount: project2.star_count,
+            forksCount: project2.forks_count,
+            readmeHtml: '',
+            latestReleasedAt: resource2.latest_released_at
           )
         )
       end
 
-      context 'when there are two resources visible to the current user in the namespace' do
-        it 'returns both resources with the expected data' do
-          resource2 = create(:ci_catalog_resource, project: project2)
-
-          post_query
-
-          expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
-            a_graphql_entity_for(resource1),
-            a_graphql_entity_for(
-              resource2, :name, :description,
-              icon: project2.avatar_path,
-              webPath: "/#{project2.full_path}",
-              starCount: project2.star_count,
-              forksCount: project2.forks_count,
-              readmeHtml: '',
-              latestReleasedAt: resource2.latest_released_at
-            )
-          )
-        end
-
-        it_behaves_like 'avoids N+1 queries'
-      end
-    end
-
-    context 'when the current user does not have permission to read the namespace catalog' do
-      it 'returns nil' do
-        namespace.add_guest(user)
-
-        post_query
-
-        expect(graphql_data_at(:ciCatalogResources)).to be_nil
-      end
+      it_behaves_like 'avoids N+1 queries'
     end
   end
 
-  context 'when the CI Namespace Catalog feature is not available' do
-    it 'returns nil' do
-      namespace.add_developer(user)
+  context 'when the current user does not have permission to read the namespace catalog' do
+    it 'returns no resources' do
+      namespace.add_guest(user)
 
       post_query
 
-      expect(graphql_data_at(:ciCatalogResources)).to be_nil
+      expect(graphql_data_at(:ciCatalogResources, :nodes)).to be_empty
     end
   end
 
@@ -458,9 +442,12 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
   end
 
   describe 'openIssuesCount' do
+    before_all do
+      namespace.add_developer(user)
+    end
+
     before do
       stub_licensed_features(ci_namespace_catalog: true)
-      namespace.add_developer(user)
     end
 
     context 'when open_issues_count is requested' do
@@ -501,9 +488,12 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
   end
 
   describe 'openMergeRequestsCount' do
+    before_all do
+      namespace.add_developer(user)
+    end
+
     before do
       stub_licensed_features(ci_namespace_catalog: true)
-      namespace.add_developer(user)
     end
 
     context 'when open_merge_requests_count is requested' do

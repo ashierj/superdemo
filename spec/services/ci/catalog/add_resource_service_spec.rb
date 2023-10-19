@@ -20,7 +20,7 @@ RSpec.describe Ci::Catalog::AddResourceService, feature_category: :pipeline_comp
     end
 
     context 'with an authorized user' do
-      before do
+      before_all do
         project.add_owner(user)
       end
 
@@ -34,6 +34,10 @@ RSpec.describe Ci::Catalog::AddResourceService, feature_category: :pipeline_comp
 
       context 'with an invalid project' do
         let_it_be(:project) { create(:project, :repository) }
+
+        before_all do
+          project.add_owner(user)
+        end
 
         it 'does not create a catalog resource' do
           response = service.execute

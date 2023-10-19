@@ -17,8 +17,6 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
 
     context 'when user is not an owner' do
       before do
-        stub_licensed_features(ci_namespace_catalog: true)
-
         project.add_maintainer(user)
       end
 
@@ -32,24 +30,8 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
         project.add_owner(user)
       end
 
-      context 'when license for namespace catalog is enabled' do
-        before do
-          stub_licensed_features(ci_namespace_catalog: true)
-        end
-
-        it 'returns true' do
-          expect(subject).to be true
-        end
-      end
-
-      context 'when license for namespace catalog is not enabled' do
-        before do
-          stub_licensed_features(ci_namespace_catalog: false)
-        end
-
-        it 'returns false' do
-          expect(subject).to be false
-        end
+      it 'returns true' do
+        expect(subject).to be true
       end
     end
   end
