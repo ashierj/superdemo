@@ -512,6 +512,7 @@ class ProjectPolicy < BasePolicy
   rule { can?(:developer_access) & user_confirmed? }.policy do
     enable :create_pipeline
     enable :update_pipeline
+    enable :cancel_pipeline
     enable :create_pipeline_schedule
   end
 
@@ -652,6 +653,7 @@ class ProjectPolicy < BasePolicy
   #   - We prevent the user from accessing Pipelines
   rule { (builds_disabled & ~internal_builds_disabled) | repository_disabled }.policy do
     prevent(*create_read_update_admin_destroy(:pipeline))
+    prevent :cancel_pipeline
     prevent(*create_read_update_admin_destroy(:commit_status))
   end
 
