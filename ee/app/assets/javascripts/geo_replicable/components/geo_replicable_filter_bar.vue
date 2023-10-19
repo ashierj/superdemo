@@ -1,8 +1,7 @@
 <script>
 import {
   GlSearchBoxByType,
-  GlDropdown,
-  GlDropdownItem,
+  GlCollapsibleListbox,
   GlButton,
   GlModal,
   GlSprintf,
@@ -27,7 +26,6 @@ export default {
     resyncAll: s__('Geo|Resync all'),
     reverifyAll: s__('Geo|Reverify all'),
     modalTitle: s__('Geo|%{action} %{replicableType}'),
-    dropdownTitle: s__('Geo|Filter by status'),
     searchPlaceholder: s__('Geo|Filter by name'),
     modalBody: s__(
       'Geo|This will %{action} %{replicableType}. It may take some time to complete. Are you sure you want to continue?',
@@ -35,8 +33,7 @@ export default {
   },
   components: {
     GlSearchBoxByType,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlButton,
     GlModal,
     GlSprintf,
@@ -61,6 +58,15 @@ export default {
         this.setSearch(val);
         this.fetchReplicableItems();
       },
+    },
+    dropdownItems() {
+      return FILTER_OPTIONS.map((option) => {
+        if (option.value === FILTER_STATES.ALL.value) {
+          return { ...option, text: `${option.label} ${this.replicableTypeName}` };
+        }
+
+        return { ...option, text: option.label };
+      });
     },
     hasReplicableItems() {
       return this.replicableItems.length > 0;
@@ -98,8 +104,6 @@ export default {
     },
   },
   actionTypes: ACTION_TYPES,
-  filterStates: FILTER_STATES,
-  filterOptions: FILTER_OPTIONS,
   debounce: DEFAULT_SEARCH_DELAY,
   GEO_BULK_ACTION_MODAL_ID,
 };
@@ -111,19 +115,13 @@ export default {
       <div
         class="gl-display-flex gl-align-items-center gl-flex-direction-column gl-sm-flex-direction-row"
       >
-        <gl-dropdown :text="$options.i18n.dropdownTitle" class="gl-w-half">
-          <gl-dropdown-item
-            v-for="filter in $options.filterOptions"
-            :key="filter.value"
-            :class="{ 'gl-bg-gray-50': filter.value === statusFilter }"
-            @click="filterChange(filter.value)"
-          >
-            <span v-if="filter === $options.filterStates.ALL"
-              >{{ filter.label }} {{ replicableTypeName }}</span
-            >
-            <span v-else>{{ filter.label }}</span>
-          </gl-dropdown-item>
-        </gl-dropdown>
+        <gl-collapsible-listbox
+          class="gl-w-half"
+          :items="dropdownItems"
+          :selected="statusFilter"
+          block
+          @select="filterChange"
+        />
         <gl-search-box-by-type
           v-if="showSearch"
           v-model="search"

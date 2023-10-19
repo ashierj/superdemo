@@ -1,10 +1,10 @@
-import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlModal, GlSprintf } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlSearchBoxByType, GlModal, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoReplicableFilterBar from 'ee/geo_replicable/components/geo_replicable_filter_bar.vue';
-import { FILTER_OPTIONS, ACTION_TYPES } from 'ee/geo_replicable/constants';
+import { FILTER_OPTIONS, FILTER_STATES, ACTION_TYPES } from 'ee/geo_replicable/constants';
 import { createMockDirective } from 'helpers/vue_mock_directive';
 import { MOCK_REPLICABLE_TYPE, MOCK_BASIC_GRAPHQL_DATA } from '../mock_data';
 
@@ -45,21 +45,19 @@ describe('GeoReplicableFilterBar', () => {
   };
 
   const findNavContainer = () => wrapper.find('nav');
-  const findGlDropdown = () => findNavContainer().findComponent(GlDropdown);
-  const findGlDropdownItems = () => findNavContainer().findAllComponents(GlDropdownItem);
-  const findDropdownItemsText = () => findGlDropdownItems().wrappers.map((w) => w.text());
+  const findGlCollapsibleListbox = () => findNavContainer().findComponent(GlCollapsibleListbox);
   const findGlSearchBox = () => findNavContainer().findComponent(GlSearchBoxByType);
   const findResyncAllButton = () => wrapper.findByTestId('geo-resync-all');
   const findReverifyAllButton = () => wrapper.findByTestId('geo-reverify-all');
   const findGlModal = () => findNavContainer().findComponent(GlModal);
 
-  const getFilterLabels = (filters) => {
+  const getFilterItems = (filters) => {
     return filters.map((filter) => {
-      if (!filter.value) {
-        return `${filter.label} ${MOCK_REPLICABLE_TYPE}`;
+      if (filter.value === FILTER_STATES.ALL.value) {
+        return { ...filter, text: `${filter.label} ${MOCK_REPLICABLE_TYPE}` };
       }
 
-      return filter.label;
+      return { ...filter, text: filter.label };
     });
   };
 
@@ -72,12 +70,14 @@ describe('GeoReplicableFilterBar', () => {
       expect(findNavContainer().exists()).toBe(true);
     });
 
-    it('renders the filter dropdown', () => {
-      expect(findGlDropdown().exists()).toBe(true);
+    it('renders the GlCollapsibleListbox', () => {
+      expect(findGlCollapsibleListbox().exists()).toBe(true);
     });
 
-    it('renders the correct filter options', () => {
-      expect(findDropdownItemsText()).toStrictEqual(getFilterLabels(FILTER_OPTIONS));
+    it('properly formats the dropdownItems', () => {
+      expect(findGlCollapsibleListbox().props('items')).toStrictEqual(
+        getFilterItems(FILTER_OPTIONS),
+      );
     });
 
     it('does not render search box', () => {
@@ -115,14 +115,14 @@ describe('GeoReplicableFilterBar', () => {
     );
   });
 
-  describe('Status filter actions', () => {
+  describe('Filter Selected', () => {
     beforeEach(() => {
       createComponent();
     });
 
     it('clicking a filter item calls setStatusFilter with value and fetchReplicableItems', () => {
       const index = 1;
-      findGlDropdownItems().at(index).vm.$emit('click');
+      findGlCollapsibleListbox().vm.$emit('select', FILTER_OPTIONS[index].value);
 
       expect(actionSpies.setStatusFilter).toHaveBeenCalledWith(
         expect.any(Object),
