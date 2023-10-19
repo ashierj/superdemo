@@ -179,7 +179,7 @@ describe('TracingList', () => {
     it('fetches traces with filters', () => {
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: mockFilterObj,
-        pageSize: 50,
+        pageSize: 500,
         pageToken: null,
       });
 
@@ -187,7 +187,7 @@ describe('TracingList', () => {
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: mockUpdatedFilterObj,
-        pageSize: 50,
+        pageSize: 500,
         pageToken: null,
       });
     });
@@ -219,7 +219,7 @@ describe('TracingList', () => {
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {},
-        pageSize: 50,
+        pageSize: 500,
         pageToken: 'page-2',
       });
 
@@ -241,7 +241,7 @@ describe('TracingList', () => {
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {},
-        pageSize: 50,
+        pageSize: 500,
         pageToken: 'page-2',
       });
     });
@@ -278,7 +278,7 @@ describe('TracingList', () => {
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {},
-        pageSize: 50,
+        pageSize: 500,
         pageToken: null,
       });
 

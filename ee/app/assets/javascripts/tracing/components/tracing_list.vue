@@ -19,7 +19,7 @@ import FilteredSearch from './tracing_list_filtered_search.vue';
 import ScatterChart from './tracing_scatter_chart.vue';
 import { periodFilterToDate } from './trace_utils';
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 500;
 const CHART_HEIGHT = 300;
 const TRACING_LIST_VERTICAL_PADDING = 120; // Accounts for the search bar height + the legend height + some more v padding
 
