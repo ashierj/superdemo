@@ -146,7 +146,7 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
     end
   end
 
-  describe '#exampels' do
+  describe '#examples' do
     context 'when there is no examples defined' do
       let(:language_name) { 'noExamplesLanguage' }
 
@@ -180,7 +180,7 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
       # return array containing hashes
       # with keys: example and response
       it 'returns array of hashes with example and response' do
-        expect(described_class.new(language_name).examples).to all(include(:example, :response))
+        expect(described_class.new(language_name).examples).to all(include('example', 'response'))
       end
     end
   end

@@ -24,7 +24,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
   # that has string keys example and response
   let(:examples) do
     [
-      { 'example' => 'def hello():', 'response' => 'print("hello")' }
+      { 'example' => 'def hello():', 'response' => '<new_code>print("hello")' }
     ]
   end
 
@@ -54,13 +54,16 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
         model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
         prompt_version: 2,
         prompt: <<~PROMPT
-          Human: We want to fill in new Python code between existing code.
-          Here is the content of a Python file in the path 'test.py' enclosed
-          in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
-          Review the existing code to understand existing logic and format.
-          Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+          Human: We want to fill in new Python code inside the file 'test.py'.
+          The existing code is provided in <existing_code></existing_code> tags.
+          The new code belongs at the cursor, which is currently at the position of the <cursor> tag.
+          Review the existing code to understand it's logic and format then try to determine the most likely new code at the cursor.
+          Review the new code step by step to ensure the following
+          1. When inserted at the cursor it is valid Python code.
+          2. It matches the existing code's variable, parameter and function names.
+          3. It does not repeat any existing code, if code has been repeated, discard it and try again.
+          Return new code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
           If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-          Do not repeat code that already exists.
           You got example scenarios between <examples> XML tag.
 
           <examples>
@@ -70,18 +73,16 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
                    def hello():
                  </existing_code>
 
-              A: <new_code> print("hello")
+              A: <new_code>print("hello")</new_code>
             </example>
 
           </examples>
-
-          The new code has to be fully functional and complete. Let's start, here is the existing code:
 
           <existing_code>
             prefix<cursor>suffix
           </existing_code>
 
-          Assistant: <new_code>
+          Assistant: prefix<new_code>
         PROMPT
       }
     end
@@ -98,15 +99,16 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: We want to fill in new Python code between existing code.
-            Here is the content of a Python file in the path 'test.py' enclosed
-            in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
-            Review the existing code to understand existing logic and format.
-            Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
-            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-            Do not repeat code that already exists.
-
-            The new code has to be fully functional and complete. Let's start, here is the existing code:
+          Human: We want to fill in new Python code inside the file 'test.py'.
+          The existing code is provided in <existing_code></existing_code> tags.
+          The new code belongs at the cursor, which is currently at the position of the <cursor> tag.
+          Review the existing code to understand it's logic and format then try to determine the most likely new code at the cursor.
+          Review the new code step by step to ensure the following
+          1. When inserted at the cursor it is valid Python code.
+          2. It matches the existing code's variable, parameter and function names.
+          3. It does not repeat any existing code, if code has been repeated, discard it and try again.
+          Return new code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+          If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
             <existing_code>
               <cursor>suffix
@@ -130,21 +132,22 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: We want to fill in new Python code between existing code.
-            Here is the content of a Python file in the path 'test.py' enclosed
-            in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
-            Review the existing code to understand existing logic and format.
-            Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
-            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-            Do not repeat code that already exists.
-
-            The new code has to be fully functional and complete. Let's start, here is the existing code:
+          Human: We want to fill in new Python code inside the file 'test.py'.
+          The existing code is provided in <existing_code></existing_code> tags.
+          The new code belongs at the cursor, which is currently at the position of the <cursor> tag.
+          Review the existing code to understand it's logic and format then try to determine the most likely new code at the cursor.
+          Review the new code step by step to ensure the following
+          1. When inserted at the cursor it is valid Python code.
+          2. It matches the existing code's variable, parameter and function names.
+          3. It does not repeat any existing code, if code has been repeated, discard it and try again.
+          Return new code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+          If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
             <existing_code>
               prefix<cursor>
             </existing_code>
 
-            Assistant: <new_code>
+            Assistant: prefix<new_code>
           PROMPT
         }
       end
@@ -161,21 +164,22 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: We want to fill in new  code between existing code.
-            Here is the content of a  file in the path '' enclosed
-            in <existing_code></existing_code> tags. The cursor is currently at the position of the <cursor/> tag.
-            Review the existing code to understand existing logic and format.
-            Return valid code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
-            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-            Do not repeat code that already exists.
-
-            The new code has to be fully functional and complete. Let's start, here is the existing code:
+          Human: We want to fill in new  code inside the file ''.
+          The existing code is provided in <existing_code></existing_code> tags.
+          The new code belongs at the cursor, which is currently at the position of the <cursor> tag.
+          Review the existing code to understand it's logic and format then try to determine the most likely new code at the cursor.
+          Review the new code step by step to ensure the following
+          1. When inserted at the cursor it is valid  code.
+          2. It matches the existing code's variable, parameter and function names.
+          3. It does not repeat any existing code, if code has been repeated, discard it and try again.
+          Return new code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+          If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
             <existing_code>
               prefix<cursor>suffix
             </existing_code>
 
-            Assistant: <new_code>
+            Assistant: prefix<new_code>
           PROMPT
         }
       end
