@@ -7,7 +7,7 @@ RSpec.describe Ci::Catalog::Resource, feature_category: :pipeline_composition do
   let_it_be(:yesterday) { today - 1.day }
   let_it_be(:tomorrow) { today + 1.day }
 
-  let_it_be(:project) { create(:project, name: 'A') }
+  let_it_be_with_reload(:project) { create(:project, name: 'A') }
   let_it_be(:project_2) { build(:project, name: 'Z') }
   let_it_be(:project_3) { build(:project, name: 'L') }
   let_it_be_with_reload(:resource) { create(:ci_catalog_resource, project: project, latest_released_at: tomorrow) }
@@ -23,8 +23,6 @@ RSpec.describe Ci::Catalog::Resource, feature_category: :pipeline_composition do
   it { is_expected.to have_many(:versions).class_name('Ci::Catalog::Resources::Version') }
 
   it { is_expected.to delegate_method(:avatar_path).to(:project) }
-  it { is_expected.to delegate_method(:description).to(:project) }
-  it { is_expected.to delegate_method(:name).to(:project) }
   it { is_expected.to delegate_method(:star_count).to(:project) }
   it { is_expected.to delegate_method(:forks_count).to(:project) }
 
@@ -116,6 +114,35 @@ RSpec.describe Ci::Catalog::Resource, feature_category: :pipeline_composition do
 
         expect(resource.reload.state).to eq('draft')
       end
+    end
+  end
+
+  describe 'sync with project' do
+    shared_examples 'name and description of the catalog resource matches the project' do
+      it do
+        expect(resource.reload.name).to eq(project.name)
+        expect(resource.reload.description).to eq(project.description)
+      end
+    end
+
+    context 'when the catalog resource is created' do
+      it_behaves_like 'name and description of the catalog resource matches the project'
+    end
+
+    context 'when the project name is updated' do
+      before do
+        project.update!(name: 'My new project name')
+      end
+
+      it_behaves_like 'name and description of the catalog resource matches the project'
+    end
+
+    context 'when the project description is updated' do
+      before do
+        project.update!(description: 'My new description')
+      end
+
+      it_behaves_like 'name and description of the catalog resource matches the project'
     end
   end
 end
