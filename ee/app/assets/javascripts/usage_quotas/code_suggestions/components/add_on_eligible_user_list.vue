@@ -194,6 +194,7 @@ export default {
       :show-empty="true"
       :empty-text="emptyText"
       primary-key="id"
+      data-testid="add-on-eligible-users-table"
     >
       <template #table-busy>
         <div class="gl-ml-n4 gl-pt-3">
