@@ -10,7 +10,7 @@ module ProductAnalytics
     PRODUCT_ANALYTICS_DASHBOARDS_LIST = %w[audience behavior].freeze
     VALUE_STREAM_DASHBOARD_LIST = %w[value_stream_dashboard].freeze
 
-    def self.for(container:)
+    def self.for(container:, user:)
       unless container.is_a?(Group) || container.is_a?(Project)
         raise ArgumentError,
           "A group or project must be provided. Given object is #{container.class.name} type"
@@ -24,7 +24,7 @@ module ProductAnalytics
 
       root_trees = config_project&.repository&.tree(:head, DASHBOARD_ROOT_LOCATION)
 
-      dashboards << builtin_dashboards(container, config_project)
+      dashboards << builtin_dashboards(container, config_project, user)
       dashboards << local_dashboards(container, config_project, root_trees.trees) if root_trees&.trees
 
       dashboards.flatten
@@ -75,8 +75,9 @@ module ProductAnalytics
       )
     end
 
-    def self.product_analytics_dashboards(container, config_project)
+    def self.product_analytics_dashboards(container, config_project, user)
       return [] unless container.product_analytics_enabled?
+      return [] unless container.product_analytics_onboarded?(user)
 
       PRODUCT_ANALYTICS_DASHBOARDS_LIST.map do |name|
         config = load_yaml_dashboard_config(name, 'ee/lib/gitlab/analytics/product_analytics/dashboards')
@@ -113,16 +114,16 @@ module ProductAnalytics
       end
     end
 
-    def self.has_dashboards?(container)
+    def self.has_builtin_dashboards?(container)
       container.product_analytics_enabled? || container.value_streams_dashboard_available?
     end
 
-    def self.builtin_dashboards(container, config_project)
-      return [] unless has_dashboards?(container)
+    def self.builtin_dashboards(container, config_project, user)
+      return [] unless has_builtin_dashboards?(container)
 
       builtin = []
 
-      builtin << product_analytics_dashboards(container, config_project)
+      builtin << product_analytics_dashboards(container, config_project, user)
       builtin << value_stream_dashboard(container, config_project)
 
       builtin
