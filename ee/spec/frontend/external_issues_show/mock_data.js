@@ -41,5 +41,3 @@ export const mockExternalIssueComment = {
   },
   id: 10000,
 };
-
-export const mockExternalIssueStatuses = [{ title: 'In Progress' }, { title: 'Done' }];

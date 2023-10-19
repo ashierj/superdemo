@@ -2,7 +2,6 @@
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { __ } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
-import IssueFieldDropdown from './issue_field_dropdown.vue';
 
 export default {
   directives: {
@@ -10,53 +9,15 @@ export default {
   },
   components: {
     GlIcon,
-    IssueFieldDropdown,
     SidebarEditableItem,
   },
-  inject: {
-    // In this context, `canUpdate` means: "can a user update any part of the sidebar?"
-    // `canUpdate` is also injected into `sidebar-editable-item`. Here, it's used, in
-    // conjunction with with its `canEdit` prop, to conditionally display the
-    // "edit" button.
-    canUpdate: {
-      default: false,
-    },
+  provide: {
+    canUpdate: false,
   },
   props: {
-    // In this context, `canEditField` means: "can a user edit this specific field?"
-    canEditField: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    dropdownEmpty: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    dropdownTitle: {
-      type: String,
-      required: false,
-      default: null,
-    },
     icon: {
       type: String,
       required: true,
-    },
-    items: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    loading: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    updating: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     title: {
       type: String,
@@ -77,7 +38,7 @@ export default {
       };
     },
     valueWithFallback() {
-      return this.value || this.$options.i18n.none;
+      return this.value || __('None');
     },
     valueClass() {
       return {
@@ -85,19 +46,9 @@ export default {
       };
     },
   },
-  i18n: {
-    none: __('None'),
-  },
   methods: {
-    showDropdown() {
-      this.$refs.dropdown.showDropdown();
-      this.$emit('issue-field-fetch');
-    },
-    expandSidebarAndOpenDropdown() {
+    expandSidebar() {
       this.$emit('expand-sidebar', this.$refs.editableItem);
-    },
-    onIssueFieldUpdated(value) {
-      this.$emit('issue-field-updated', value);
     },
   },
 };
@@ -105,19 +56,13 @@ export default {
 
 <template>
   <div class="block">
-    <sidebar-editable-item
-      ref="editableItem"
-      :loading="updating"
-      :title="title"
-      :can-edit="canEditField"
-      @open="showDropdown"
-    >
+    <sidebar-editable-item ref="editableItem" :title="title" :can-edit="false">
       <template #collapsed>
         <div
           v-gl-tooltip="tooltipProps"
           class="sidebar-collapsed-icon"
           data-testid="field-collapsed"
-          @click="expandSidebarAndOpenDropdown"
+          @click="expandSidebar"
         >
           <gl-icon :name="icon" />
         </div>
@@ -127,19 +72,6 @@ export default {
             <span :class="valueClass">{{ valueWithFallback }}</span>
           </div>
         </div>
-      </template>
-
-      <template #default>
-        <issue-field-dropdown
-          v-if="canEditField && canUpdate"
-          ref="dropdown"
-          :empty-text="dropdownEmpty"
-          :items="items"
-          :loading="loading"
-          :text="valueWithFallback"
-          :title="dropdownTitle"
-          @issue-field-updated="onIssueFieldUpdated"
-        />
       </template>
     </sidebar-editable-item>
   </div>

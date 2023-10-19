@@ -1,30 +1,18 @@
 import { GlButton, GlIcon } from '@gitlab/ui';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { stubComponent } from 'helpers/stub_component';
 import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
-import IssueFieldDropdown from 'ee/external_issues_show/components/sidebar/issue_field_dropdown.vue';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 
 describe('IssueField', () => {
   let wrapper;
-  let showDropdownMock;
 
   const defaultProps = {
     icon: 'calendar',
     title: 'Field Title',
   };
 
-  const createComponent = ({ props = {}, provide = {} } = {}) => {
-    showDropdownMock = jest.fn();
-
-    const IssueFieldDropdownStub = stubComponent(IssueFieldDropdown, {
-      template: '<select />',
-      methods: {
-        showDropdown: showDropdownMock,
-      },
-    });
-
+  const createComponent = ({ props = {} } = {}) => {
     wrapper = shallowMountExtended(IssueField, {
       directives: {
         GlTooltip: createMockDirective('gl-tooltip'),
@@ -32,11 +20,6 @@ describe('IssueField', () => {
       propsData: { ...defaultProps, ...props },
       stubs: {
         SidebarEditableItem,
-        IssueFieldDropdown: IssueFieldDropdownStub,
-      },
-      provide: {
-        canUpdate: true,
-        ...provide,
       },
     });
   };
@@ -47,7 +30,6 @@ describe('IssueField', () => {
   const findFieldCollapsedTooltip = () => getBinding(findFieldCollapsed().element, 'gl-tooltip');
   const findFieldValue = () => wrapper.findByTestId('field-value');
   const findGlIcon = () => wrapper.findComponent(GlIcon);
-  const findEditableItemDropdown = () => wrapper.findComponent(IssueFieldDropdown);
 
   describe('template', () => {
     beforeEach(() => {
@@ -104,43 +86,4 @@ describe('IssueField', () => {
       expect(tooltip.value.title).toBe(value);
     });
   });
-
-  describe.each`
-    canUpdate | canEditField | expectEditButton
-    ${false}  | ${false}     | ${false}
-    ${false}  | ${true}      | ${false}
-    ${true}   | ${false}     | ${false}
-    ${true}   | ${true}      | ${true}
-  `(
-    'when `canUpdate` is `$canUpdate` and `canEditField` is `$canEditField`',
-    ({ canUpdate, canEditField, expectEditButton }) => {
-      beforeEach(() => {
-        createComponent({
-          props: { canEditField },
-          provide: {
-            canUpdate,
-          },
-        });
-      });
-
-      it('renders "Edit" button correctly', () => {
-        expect(findEditButton().exists()).toBe(expectEditButton);
-      });
-
-      it('renders dropdown in sidebar-editable-item', () => {
-        expect(findEditableItemDropdown().exists()).toBe(expectEditButton);
-      });
-
-      if (expectEditButton) {
-        describe('when sidebar-editable-item emits "open" event', () => {
-          it('emits "issue-field-fetch" event', () => {
-            findEditableItem().vm.$emit('open');
-
-            expect(showDropdownMock).toHaveBeenCalled();
-            expect(wrapper.emitted('issue-field-fetch')).toHaveLength(1);
-          });
-        });
-      }
-    },
-  );
 });
