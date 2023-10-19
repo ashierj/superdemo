@@ -62,7 +62,7 @@ RSpec.describe Elastic::Latest::MergeRequestClassProxy, :elastic, :sidekiq_inlin
             )
           end
 
-          context 'when search_issues_hide_archived_projects is disabled' do
+          context 'when search_merge_requests_hide_archived_projects is disabled' do
             before do
               stub_feature_flags(search_merge_requests_hide_archived_projects: false)
             end
