@@ -20,11 +20,19 @@ module QA
       let(:user_7) { create(:user, api_client: admin_api_client) }
 
       let(:private_group) do
-        create(:sandbox, :private, path: "fulfillment-private-group-#{hash}", api_client: owner_api_client)
+        Resource::Sandbox.fabricate_via_browser_ui! do |sandbox|
+          sandbox.path = "fulfillment-private-group-#{hash}"
+          sandbox.api_client = owner_api_client
+          sandbox.visibility = 'private'
+        end
       end
 
       let(:invitee_group) do
-        create(:sandbox, :private, path: "invitee-group-#{hash}", api_client: owner_api_client)
+        Resource::Sandbox.fabricate_via_browser_ui! do |sandbox|
+          sandbox.path = "invitee-group-#{hash}"
+          sandbox.api_client = owner_api_client
+          sandbox.visibility = 'private'
+        end
       end
 
       let(:project) do
