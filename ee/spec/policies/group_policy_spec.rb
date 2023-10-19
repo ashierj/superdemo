@@ -224,14 +224,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
         it { is_expected.not_to be_allowed(:modify_value_stream_dashboard_settings) }
       end
-
-      context 'when the value_stream_dashboard_on_off_setting FF is off' do
-        before do
-          stub_feature_flags(value_stream_dashboard_on_off_setting: false)
-        end
-
-        it { is_expected.not_to be_allowed(:modify_value_stream_dashboard_settings) }
-      end
     end
 
     context 'when analytics dashboard is not available' do

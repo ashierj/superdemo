@@ -169,10 +169,6 @@ module EE
         @subject.feature_available?(:group_level_compliance_dashboard)
       end
 
-      condition(:value_stream_dashboard_setting_enabled, scope: :subject) do
-        ::Feature.enabled?(:value_stream_dashboard_on_off_setting, @subject)
-      end
-
       condition(:service_accounts_available, scope: :subject) do
         @subject.feature_available?(:service_accounts)
       end
@@ -280,7 +276,7 @@ module EE
         enable :modify_product_analytics_settings
       end
 
-      rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent & value_stream_dashboard_setting_enabled }.policy do
+      rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent }.policy do
         enable :modify_value_stream_dashboard_settings
       end
 

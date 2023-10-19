@@ -32,8 +32,6 @@ module Analytics
         end
 
         batch.each do |aggregation|
-          next unless feature_flag_enabled_for_aggregation?(aggregation)
-
           unless licensed?(aggregation)
             aggregation.update!(enabled: false)
             next
@@ -72,10 +70,6 @@ module Analytics
         else
           Gitlab::Redis::SharedState.with { |redis| redis.set(CURSOR_KEY, Gitlab::Json.dump(cursor.dump)) }
         end
-      end
-
-      def feature_flag_enabled_for_aggregation?(aggregation)
-        Feature.enabled?(:value_stream_dashboard_on_off_setting, aggregation.namespace)
       end
 
       def licensed?(aggregation)
