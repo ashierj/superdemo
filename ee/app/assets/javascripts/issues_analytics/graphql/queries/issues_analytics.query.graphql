@@ -38,14 +38,40 @@ fragment Issue on Issue {
   }
 }
 
-query getProjectIssuesAnalyticsData(
+query getIssuesAnalyticsTableData(
   $fullPath: ID!
   $isGroup: Boolean = false
   $isProject: Boolean = false
+  $assigneeUsernames: [String!]
+  $authorUsername: String
+  $labelName: [String]
+  $milestoneTitle: [String]
+  $myReactionEmoji: String
+  $epicId: String
+  $weight: String
+  $iterationId: [ID]
+  $state: IssuableState
+  $not: NegatedIssueFilterInput
+  $createdAfter: Time
+  $createdBefore: Time
 ) {
   group(fullPath: $fullPath) @include(if: $isGroup) {
     id
-    issues {
+    issues(
+      includeSubgroups: true
+      assigneeUsernames: $assigneeUsernames
+      authorUsername: $authorUsername
+      labelName: $labelName
+      milestoneTitle: $milestoneTitle
+      myReactionEmoji: $myReactionEmoji
+      epicId: $epicId
+      weight: $weight
+      iterationId: $iterationId
+      state: $state
+      not: $not
+      createdAfter: $createdAfter
+      createdBefore: $createdBefore
+    ) {
       count
       nodes {
         ...Issue
@@ -54,7 +80,20 @@ query getProjectIssuesAnalyticsData(
   }
   project(fullPath: $fullPath) @include(if: $isProject) {
     id
-    issues {
+    issues(
+      assigneeUsernames: $assigneeUsernames
+      authorUsername: $authorUsername
+      labelName: $labelName
+      milestoneTitle: $milestoneTitle
+      myReactionEmoji: $myReactionEmoji
+      epicId: $epicId
+      weight: $weight
+      iterationId: $iterationId
+      state: $state
+      not: $not
+      createdAfter: $createdAfter
+      createdBefore: $createdBefore
+    ) {
       count
       nodes {
         ...Issue

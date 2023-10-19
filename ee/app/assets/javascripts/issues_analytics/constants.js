@@ -17,3 +17,13 @@ export const TOTAL_ISSUES_ANALYTICS_CHART_SERIES_NAMES = {
 };
 
 export const TOTAL_ISSUES_ANALYTICS_CHART_COLOR_PALETTE = [green400, blue400];
+
+export const RENAMED_FILTER_KEYS_DEFAULT = {
+  assigneeUsername: 'assigneeUsernames',
+  'not[assigneeUsername]': 'not[assigneeUsernames]',
+};
+
+export const RENAMED_FILTER_KEYS_CHART = {
+  labelName: 'labelNames',
+  ...RENAMED_FILTER_KEYS_DEFAULT,
+};

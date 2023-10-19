@@ -21,7 +21,7 @@ const mockLabels = {
 
 const createIssue = (values) => {
   return {
-    state: 'closed',
+    state: values.state ?? 'closed',
     epic: {
       iid: 12345,
       __typename: 'Epic',
@@ -58,8 +58,27 @@ const createIssue = (values) => {
 
 export const mockIssuesApiResponse = [
   createIssue({ iid: 12345, title: 'Issue-1', createdAt: '2020-01-08' }),
-  createIssue({ iid: 23456, title: 'Issue-2', createdAt: '2020-01-07', labels: mockLabels }),
-  createIssue({ iid: 34567, title: 'Issue-3', createdAt: '2020-01-6', iteration: mockIteration }),
+  createIssue({
+    iid: 23456,
+    state: 'opened',
+    title: 'Issue-2',
+    createdAt: '2020-01-07',
+    labels: mockLabels,
+  }),
+  createIssue({
+    iid: 34567,
+    state: 'opened',
+    title: 'Issue-3',
+    createdAt: '2020-01-6',
+    iteration: mockIteration,
+  }),
+  createIssue({
+    iid: 34567,
+    state: 'locked',
+    title: 'Issue-3',
+    createdAt: '2020-01-6',
+    iteration: mockIteration,
+  }),
 ];
 
 export const tableHeaders = [
@@ -238,7 +257,7 @@ export const mockOriginalFilters = {
 export const mockFilters = {
   authorUsername: 'root',
   assigneeUsernames: ['bob', 'smith'],
-  labelNames: ['Brest', 'DLT'],
+  labelName: ['Brest', 'DLT'],
   milestoneTitle: '16.4',
   monthsBack: '15',
 };
@@ -246,7 +265,7 @@ export const mockFilters = {
 export const mockEmptyFilters = {
   authorUsername: null,
   assigneeUsernames: null,
-  labelNames: null,
+  labelName: null,
   milestoneTitle: null,
   monthsBack: null,
 };

@@ -1,10 +1,14 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
-import { nMonthsBefore, getStartOfDay, dateAtFirstDayOfMonth } from '~/lib/utils/datetime_utility';
+import {
+  nMonthsBefore,
+  getCurrentUtcDate,
+  dateAtFirstDayOfMonth,
+} from '~/lib/utils/datetime_utility';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import FilteredSearchIssueAnalytics from '../filtered_search_issues_analytics';
-import { DEFAULT_MONTHS_BACK } from '../constants';
+import { RENAMED_FILTER_KEYS_CHART, DEFAULT_MONTHS_BACK } from '../constants';
 import { transformFilters } from '../utils';
 import IssuesAnalyticsTable from './issues_analytics_table.vue';
 import IssuesAnalyticsChart from './issues_analytics_chart.vue';
@@ -34,19 +38,22 @@ export default {
       return this.hasIssuesCompletedFeature && this.glFeatures?.issuesCompletedAnalyticsFeatureFlag;
     },
     monthsBack() {
-      const { monthsBack } = this.filters ?? {};
+      const { months_back: monthsBack } = this.appliedFilters ?? {};
 
       return monthsBack ?? DEFAULT_MONTHS_BACK;
     },
     startDate() {
-      return nMonthsBefore(this.endDate, Number(this.monthsBack), { utc: true });
+      const monthsBeforeDate = nMonthsBefore(this.endDate, Number(this.monthsBack), { utc: true });
+
+      return dateAtFirstDayOfMonth(monthsBeforeDate, { utc: true });
     },
     endDate() {
-      const now = new Date();
-
-      return getStartOfDay(dateAtFirstDayOfMonth(now), { utc: true });
+      return getCurrentUtcDate();
     },
-    filters() {
+    chartFilters() {
+      return transformFilters(this.appliedFilters, RENAMED_FILTER_KEYS_CHART);
+    },
+    tableFilters() {
       return transformFilters(this.appliedFilters);
     },
   },
@@ -74,7 +81,7 @@ export default {
         data-testid="issues-analytics-graph"
         :start-date="startDate"
         :end-date="endDate"
-        :filters="filters"
+        :filters="chartFilters"
         @hideFilteredSearchBar="hideFilteredSearchBar"
       />
       <issues-analytics-chart
@@ -83,6 +90,12 @@ export default {
         @hasNoData="hideFilteredSearchBar"
       />
     </div>
-    <issues-analytics-table class="gl-mt-6" />
+    <issues-analytics-table
+      :start-date="startDate"
+      :end-date="endDate"
+      :filters="tableFilters"
+      :has-completed-issues="supportsIssuesCompletedAnalytics"
+      class="gl-mt-6"
+    />
   </div>
 </template>
