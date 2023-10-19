@@ -22,7 +22,7 @@ RSpec.describe Resolvers::Ci::Catalog::VersionsResolver, feature_category: :pipe
   let(:args) { { sort: :released_at_desc } }
   let(:all_releases) { [version1, version2, version3] }
 
-  before do
+  before_all do
     project.add_developer(developer)
   end
 

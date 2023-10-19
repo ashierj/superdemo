@@ -6,7 +6,7 @@ module Resolvers
       class ResourceResolver < BaseResolver
         include Gitlab::Graphql::Authorize::AuthorizeResource
 
-        authorize :read_namespace_catalog
+        authorize :read_code
 
         type ::Types::Ci::Catalog::ResourceType, null: true
 
@@ -17,7 +17,6 @@ module Resolvers
         def resolve(id:)
           catalog_resource = ::Gitlab::Graphql::Lazy.force(GitlabSchema.find_by_gid(id))
 
-          # this permission will be changed after resolving https://gitlab.com/gitlab-org/gitlab/-/issues/412948
           authorize!(catalog_resource&.project)
 
           catalog_resource

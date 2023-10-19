@@ -33,46 +33,30 @@ RSpec.describe 'Query.ciCatalogResource', feature_category: :pipeline_compositio
 
   subject(:post_query) { post_graphql(query, current_user: user) }
 
-  context 'when the CI Namespace Catalog feature is available' do
-    before do
-      stub_licensed_features(ci_namespace_catalog: true)
-    end
+  context 'when the current user has permission to read the namespace catalog' do
+    it 'returns the resource with the expected data' do
+      namespace.add_developer(user)
 
-    context 'when the current user has permission to read the namespace catalog' do
-      it 'returns the resource with the expected data' do
-        namespace.add_developer(user)
+      post_query
 
-        post_query
-
-        expect(graphql_data_at(:ciCatalogResource)).to match(
-          a_graphql_entity_for(
-            resource, :name, :description,
-            icon: project.avatar_path,
-            webPath: "/#{project.full_path}",
-            starCount: project.star_count,
-            forksCount: project.forks_count,
-            readmeHtml: a_string_including(
-              "#{project.full_path}/-/blob/#{project.default_branch}/README.md"
-            )
+      expect(graphql_data_at(:ciCatalogResource)).to match(
+        a_graphql_entity_for(
+          resource, :name, :description,
+          icon: project.avatar_path,
+          webPath: "/#{project.full_path}",
+          starCount: project.star_count,
+          forksCount: project.forks_count,
+          readmeHtml: a_string_including(
+            "#{project.full_path}/-/blob/#{project.default_branch}/README.md"
           )
         )
-      end
-    end
-
-    context 'when the current user does not have permission to read the namespace catalog' do
-      it 'returns nil' do
-        namespace.add_guest(user)
-
-        post_query
-
-        expect(graphql_data_at(:ciCatalogResource)).to be_nil
-      end
+      )
     end
   end
 
-  context 'when the CI Namespace Catalog feature is not available' do
+  context 'when the current user does not have permission to read the namespace catalog' do
     it 'returns nil' do
-      namespace.add_developer(user)
+      namespace.add_guest(user)
 
       post_query
 
