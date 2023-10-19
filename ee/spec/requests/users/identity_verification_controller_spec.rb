@@ -596,16 +596,18 @@ feature_category: :system_access do
       end
     end
 
-    it 'accepts pending invitations' do
-      expect(member_invite.reload).not_to be_invite
-    end
+    context 'when verified' do
+      it 'accepts pending invitations' do
+        expect(member_invite.reload).not_to be_invite
+      end
 
-    it 'signs in the user' do
-      expect(request.env['warden']).to be_authenticated
-    end
+      it 'signs in the user' do
+        expect(request.env['warden']).to be_authenticated
+      end
 
-    it 'deletes the verification_user_id from the session' do
-      expect(request.session.has_key?(:verification_user_id)).to eq(false)
+      it 'deletes the verification_user_id from the session' do
+        expect(request.session.has_key?(:verification_user_id)).to eq(false)
+      end
     end
 
     it 'renders the template with the after_sign_in_path_for variable', :aggregate_failures do
