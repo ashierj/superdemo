@@ -35,19 +35,27 @@ module QA
             end
           end
 
-          def filter_report_type(report, project_filter = true)
+          def filter_report_type(report)
             wait_until(max_duration: 20, sleep_interval: 3, message: "Wait for tool dropdown to appear") do
               has_element?('filter-tool-dropdown')
             end
             click_element('filter-tool-dropdown')
 
-            if project_filter
-              find("[data-testid='listbox-item-GitLab.#{report.upcase.tr(" ", "_")}']").click
+            if has_css?(status_listbox_item_selector_old(report))
+              find(status_listbox_item_selector_old(report)).click
             else
-              find("[data-testid='listbox-item-#{report.upcase.tr(" ", "_")}']").click
+              find(status_listbox_item_selector_new(report)).click
             end
             # Click the dropdown to close the modal and ensure it isn't open if this function is called again
             click_element('filter-tool-dropdown')
+          end
+
+          def status_listbox_item_selector_old(report)
+            "[data-testid='listbox-item-GitLab.#{report.upcase.tr(" ", "_")}']"
+          end
+
+          def status_listbox_item_selector_new(report)
+            "[data-testid='listbox-item-#{report.upcase.tr(" ", "_")}']"
           end
 
           def filter_by_status(statuses)
