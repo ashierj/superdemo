@@ -278,5 +278,26 @@ RSpec.describe Resolvers::VulnerabilitiesResolver, feature_category: :vulnerabil
         end
       end
     end
+
+    context 'when given value for has_remediations argument' do
+      let(:params) { { has_remediations: has_remediations } }
+      let_it_be(:vulnerability_read_with_remediations) { create(:vulnerability_read, :with_remediations, project: project) }
+
+      context 'when has_remediations is set to true' do
+        let(:has_remediations) { true }
+
+        it 'only returns vulnerabilities that have remediations' do
+          is_expected.to contain_exactly(vulnerability_read_with_remediations.vulnerability)
+        end
+      end
+
+      context 'when has_remediations is set to false' do
+        let(:has_remediations) { false }
+
+        it 'only returns vulnerabilities that does not have remediations' do
+          is_expected.to contain_exactly(low_vulnerability, critical_vulnerability, high_vulnerability)
+        end
+      end
+    end
   end
 end

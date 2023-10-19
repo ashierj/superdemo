@@ -70,6 +70,10 @@ module Resolvers
       required: false,
       description: "Filter by dismissal reason. Only dismissed Vulnerabilities will be included with the filter."
 
+    argument :has_remediations, GraphQL::Types::Boolean,
+             required: false,
+             description: 'Returns only the vulnerabilities which have remediations.'
+
     def resolve_with_lookahead(**args)
       return Vulnerability.none unless vulnerable
 
