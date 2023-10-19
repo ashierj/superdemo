@@ -37,7 +37,7 @@ const fakeStore = ({ initialState, initialGetters }) =>
     },
     state: {
       hasError: false,
-      namespaceId: 1,
+      namespaceId: '1',
       members: [...mockDataSeats.data],
       total: 300,
       page: 1,
