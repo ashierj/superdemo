@@ -145,4 +145,43 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
       end
     end
   end
+
+  describe '#exampels' do
+    context 'when there is no examples defined' do
+      let(:language_name) { 'noExamplesLanguage' }
+
+      # GitLab Duo code generation instruction see:
+      # https://docs.gitlab.com/ee/user/project/repository/code_suggestions/
+      # stub SUPPORTED_LANGUAGES constant on described_class
+      # to return { language_name => %w[.noex] }
+      before do
+        stub_const("#{described_class}::SUPPORTED_LANGUAGES", { language_name => %w[.noex] })
+      end
+
+      # GitLab Duo code generation instruction see:
+      # https://docs.gitlab.com/ee/user/project/repository/code_suggestions/
+      # generate rspec test case for #examples instance method
+      # that return empty array
+      it 'returns empty array when there are no examples' do
+        expect(described_class.new(language_name).examples).to eq([])
+      end
+    end
+
+    # GitLab Duo code generation instruction see:
+    # https://docs.gitlab.com/ee/user/project/repository/code_suggestions/
+    # generate context where there is an examples for
+    # language defined with language_name
+    context 'when there are examples defined' do
+      let(:language_name) { 'Ruby' }
+
+      # GitLab Duo code generation instruction see:
+      # https://docs.gitlab.com/ee/user/project/repository/code_suggestions/
+      # generate one line assertion with expect that examples method
+      # return array containing hashes
+      # with keys: example and response
+      it 'returns array of hashes with example and response' do
+        expect(described_class.new(language_name).examples).to all(include(:example, :response))
+      end
+    end
+  end
 end

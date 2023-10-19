@@ -1,0 +1,92 @@
+TypeScript:
+  - example: "function usernamesToEmails(usernames: string[]): string[] {
+              <cursor>
+            }"
+    response: "usernames.map(username => `${username}@domain.com`);"
+  - example: "const filterBlcokedDomain = (users: any[]) => <cursor>"  
+    response: "{
+              return users.filter(user => !user.email.includes('@blocked.com'));
+            };"
+  - example: "class GitLabAPI {
+                   static async fetchPipelines(projectId: string) {
+                     const api_url= `https://gitlab.com/api/v4/projects/${projectId}/pipelines`;
+                     <cursor>"
+    response: "   const response = await fetch(api_url);
+                      return await response.json();
+                    }
+                  }"
+Python:
+- example: "def process_data(data):
+                 <cursor>"
+  response: |-
+    cleaned_data = []
+                  for row in data:
+                    cleaned_row = clean_row(row)
+                    if cleaned_row:
+                      cleaned_data.append(cleaned_row)
+                  return cleaned_data
+- example: "import pandas as pd
+  
+             df = pd.read_csv('data.csv')
+             <cursor>"
+  response: |-
+    df.dropna(inplace=True)
+             df = df[df['column'] > 0]
+             print(df.shape)
+- example: "class Model():
+              def __init__(self):
+                self.loss = 0
+              
+              def train_step(self, x, y):
+                <cursor>"
+  response: |-
+    y_pred = self.predict(x)
+              loss = self.loss_fn(y_pred, y)
+              self.loss += loss
+              
+              return loss
+Go:
+- example: |
+    package main
+    
+    import "fmt"
+    
+    func main() {
+      <cursor>
+    }
+  response: |
+    fmt.Println("Hello World")
+- example: |
+    package main
+      
+    import "net/http"
+      
+    func main() {
+      http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        <cursor>
+      })
+    
+      http.ListenAndServe(":8080", nil)
+    }
+  response: |  
+    w.Write([]byte("Hello World"))
+- example: |  
+    package main
+      
+    import "fmt"
+      
+    type User struct {
+      Name string
+      Email string
+    }
+
+    func main() {
+      user := User{Name: "John Doe", Email: "john@doe.com"}
+
+      fmt.Println(user)
+
+      <cursor>
+    }
+  response: |
+    fmt.Println("User Name:", user.Name)
+    fmt.Println("User Email:", user.Email)

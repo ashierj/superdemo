@@ -76,6 +76,12 @@ module CodeSuggestions
         }
     }.freeze
 
+    CODE_COMPLETIONS_EXAMPLES_URI = 'ee/lib/code_suggestions/prompts/code_completion/examples.yml'
+
+    LANGUAGE_CODE_COMPLETION_EXAMPLES = YAML.safe_load(
+      File.read(CODE_COMPLETIONS_EXAMPLES_URI)
+    ).freeze
+
     DEFAULT_NAME = ''
     DEFAULT_FORMAT = {
       single_regexp: %r{^[ \t]*//|#|--}
@@ -108,6 +114,10 @@ module CodeSuggestions
       else
         line.strip.starts_with?(single_line_comment_format)
       end
+    end
+
+    def examples
+      LANGUAGE_CODE_COMPLETION_EXAMPLES[name] || []
     end
 
     private
