@@ -5,7 +5,7 @@ import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
-import { contentTop } from '~/lib/utils/common_utils';
+import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import {
   queryToFilterObj,
@@ -134,8 +134,9 @@ export default {
         this.loading = false;
       }
     },
-    selectTrace({ traceId }) {
-      visitUrl(joinPaths(window.location.pathname, traceId));
+    onTraceClicked({ traceId, clickEvent = {} }) {
+      const external = isMetaClick(clickEvent);
+      visitUrl(joinPaths(window.location.pathname, traceId), external);
     },
     handleFilters(filterTokens) {
       this.filters = filterTokensToFilterObj(filterTokens);
@@ -147,7 +148,7 @@ export default {
       this.fetchTraces({ skipUpdatingChartRange: true });
     },
     chartItemSelected({ traceId }) {
-      this.selectTrace({ traceId });
+      this.onTraceClicked({ traceId });
     },
     chartItemOver({ traceId }) {
       const index = this.traces.findIndex((x) => x.trace_id === traceId);
@@ -210,7 +211,7 @@ export default {
               :traces="traces"
               :highlighted-trace-id="highlightedTraceId"
               @reload="fetchTraces"
-              @trace-selected="selectTrace"
+              @trace-clicked="onTraceClicked"
             />
           </template>
 
