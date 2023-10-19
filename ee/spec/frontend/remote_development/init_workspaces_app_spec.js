@@ -1,19 +1,19 @@
 import { createWrapper } from '@vue/test-utils';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { initWorkspacesApp } from 'ee/remote_development/init_workspaces_app';
 import WorkspaceList from 'ee/remote_development/pages/list.vue';
+
+jest.mock('~/lib/logger');
 
 describe('ee/remote_development/init_workspaces_app', () => {
   let wrapper;
 
   beforeEach(() => {
-    document.body.innerHTML = '<div id="js-workspaces"></div>';
+    setHTMLFixture(`<div id='js-workspaces'></div>`);
   });
 
   afterEach(() => {
-    document.body.innerHTML = '';
-    // Wrapper is not created from mount or shallowMount which is why it isn't auto destroyed
-    // eslint-disable-next-line @gitlab/vtu-no-explicit-wrapper-destroy
-    wrapper.destroy();
+    resetHTMLFixture();
   });
 
   describe('initWorkspacesApp - integration', () => {

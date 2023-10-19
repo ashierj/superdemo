@@ -355,23 +355,30 @@ describe('Roadmap Vuex Actions', () => {
   describe('toggleEpic', () => {
     const parentItem = mockFormattedEpic;
 
-    it('should dispatch `requestChildrenEpics` action when parent is not expanded and does not have children in state', () => {
+    it('should dispatch `requestChildrenEpics` action when parent is not expanded and does not have children in state', async () => {
+      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
+        Promise.resolve({
+          data: mockEpicChildEpicsQueryResponse.data,
+        }),
+      );
+
       state.childrenFlags[parentItem.id] = {
         itemExpanded: false,
       };
 
-      testAction(
-        actions.toggleEpic,
-        { parentItem },
-        state,
-        [],
-        [
-          {
-            type: 'requestChildrenEpics',
-            payload: { parentItemId: parentItem.id },
-          },
-        ],
-      );
+      await actions.toggleEpic({ state, dispatch: jest.fn() }, { parentItem });
+
+      expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
+        query: epicChildEpics,
+        variables: {
+          fullPath: '/groups/gitlab-org/',
+          iid: parentItem.iid,
+          sort: state.sortedBy,
+          state: state.epicsState,
+          withColor: false,
+          milestoneTitle: '',
+        },
+      });
     });
 
     describe('with successful child epics query response', () => {
