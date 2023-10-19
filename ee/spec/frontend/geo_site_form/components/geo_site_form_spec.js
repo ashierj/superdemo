@@ -129,65 +129,24 @@ describe('GeoSiteForm', () => {
       });
     });
 
-    describe('addSyncOption', () => {
+    describe('updateSyncOptions', () => {
       beforeEach(() => {
         createComponent();
       });
 
-      it('should add value to siteData', () => {
-        expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual(
-          [],
-        );
+      it('should update value of siteData', () => {
+        expect(
+          findGeoSiteFormSelectiveSyncField().props('siteData')[SELECTIVE_SYNC_NAMESPACES],
+        ).toStrictEqual([]);
 
-        findGeoSiteFormSelectiveSyncField().vm.$emit('addSyncOption', {
-          key: 'selectiveSyncShards',
-          value: MOCK_SYNC_SHARDS[0].value,
+        findGeoSiteFormSelectiveSyncField().vm.$emit('updateSyncOptions', {
+          key: SELECTIVE_SYNC_NAMESPACES,
+          value: MOCK_SYNC_NAMESPACE_IDS,
         });
 
-        expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual([
-          MOCK_SYNC_SHARDS[0].value,
-        ]);
-      });
-    });
-
-    describe('removeSyncOption', () => {
-      beforeEach(() => {
-        createComponent({ site: { selectiveSyncShards: [MOCK_SYNC_SHARDS[0].value] } });
-      });
-
-      it('should remove value from siteData', () => {
-        expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual([
-          MOCK_SYNC_SHARDS[0].value,
-        ]);
-        findGeoSiteFormSelectiveSyncField().vm.$emit('removeSyncOption', {
-          key: 'selectiveSyncShards',
-          index: 0,
-        });
-
-        expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual(
-          [],
-        );
-      });
-
-      describe('updateSyncOptions', () => {
-        beforeEach(() => {
-          createComponent();
-        });
-
-        it('should update value of siteData', () => {
-          expect(
-            findGeoSiteFormSelectiveSyncField().props('siteData')[SELECTIVE_SYNC_NAMESPACES],
-          ).toStrictEqual([]);
-
-          findGeoSiteFormSelectiveSyncField().vm.$emit('updateSyncOptions', {
-            key: SELECTIVE_SYNC_NAMESPACES,
-            value: MOCK_SYNC_NAMESPACE_IDS,
-          });
-
-          expect(
-            findGeoSiteFormSelectiveSyncField().props('siteData')[SELECTIVE_SYNC_NAMESPACES],
-          ).toStrictEqual(MOCK_SYNC_NAMESPACE_IDS);
-        });
+        expect(
+          findGeoSiteFormSelectiveSyncField().props('siteData')[SELECTIVE_SYNC_NAMESPACES],
+        ).toStrictEqual(MOCK_SYNC_NAMESPACE_IDS);
       });
     });
   });

@@ -1,7 +1,8 @@
-import { GlIcon, GlDropdown } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { GlCollapsibleListbox } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import GeoSiteFormShards from 'ee/geo_site_form/components/geo_site_form_shards.vue';
-import { MOCK_SYNC_SHARDS } from '../mock_data';
+import { SELECTIVE_SYNC_SHARDS } from 'ee/geo_site_form/constants';
+import { MOCK_SYNC_SHARDS, MOCK_SYNC_SHARD_VALUES } from '../mock_data';
 
 describe('GeoSiteFormShards', () => {
   let wrapper;
@@ -12,7 +13,7 @@ describe('GeoSiteFormShards', () => {
   };
 
   const createComponent = (props = {}) => {
-    wrapper = mount(GeoSiteFormShards, {
+    wrapper = shallowMount(GeoSiteFormShards, {
       propsData: {
         ...defaultProps,
         ...props,
@@ -20,166 +21,94 @@ describe('GeoSiteFormShards', () => {
     });
   };
 
-  const findGlDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownItems = () => findGlDropdown().findAll('li');
+  const findGlCollapsibleListbox = () => wrapper.findComponent(GlCollapsibleListbox);
 
   describe('template', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('renders GlDropdown', () => {
-      expect(findGlDropdown().exists()).toBe(true);
+    it('renders GlCollapsibleListbox', () => {
+      expect(findGlCollapsibleListbox().exists()).toBe(true);
     });
+  });
 
-    describe('DropdownItems', () => {
+  describe('events', () => {
+    describe('select', () => {
       beforeEach(() => {
-        createComponent({
-          selectedShards: [MOCK_SYNC_SHARDS[0].value],
-        });
+        createComponent();
+        findGlCollapsibleListbox().vm.$emit('select', MOCK_SYNC_SHARD_VALUES);
       });
 
-      it('renders an instance for each shard', () => {
-        const dropdownItems = findDropdownItems();
-
-        dropdownItems.wrappers.forEach((dI, index) => {
-          expect(dI.html()).toContain(wrapper.vm.syncShardsOptions[index].label);
-        });
-      });
-
-      it('hides GlIcon if shard not in selectedShards', () => {
-        const dropdownItems = findDropdownItems();
-
-        dropdownItems.wrappers.forEach((dI, index) => {
-          const dropdownItemIcon = dI.findComponent(GlIcon);
-
-          expect(dropdownItemIcon.classes('invisible')).toBe(
-            !wrapper.vm.isSelected(wrapper.vm.syncShardsOptions[index]),
-          );
-        });
+      it('emits updateSyncOptions with selected options', () => {
+        expect(wrapper.emitted('updateSyncOptions')).toStrictEqual([
+          [{ key: SELECTIVE_SYNC_SHARDS, value: MOCK_SYNC_SHARD_VALUES }],
+        ]);
       });
     });
   });
 
-  describe('methods', () => {
-    describe('toggleShard', () => {
-      describe('when shard is in selectedShards', () => {
+  describe('GlCollapsibleListbox props', () => {
+    describe('items', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('properly formats the dropdown items for the list box', () => {
+        const expectedArray = MOCK_SYNC_SHARDS.map((item) => {
+          return { ...item, text: item.label };
+        });
+
+        expect(findGlCollapsibleListbox().props('items')).toStrictEqual(expectedArray);
+      });
+    });
+
+    describe('dropdownTitle', () => {
+      describe('when selectedShards is empty', () => {
         beforeEach(() => {
           createComponent({
-            selectedShards: [MOCK_SYNC_SHARDS[0].value],
+            selectedShards: [],
           });
         });
 
-        it('emits `removeSyncOption`', () => {
-          wrapper.vm.toggleShard(MOCK_SYNC_SHARDS[0]);
-          expect(wrapper.emitted()).toHaveProperty('removeSyncOption');
+        it('returns `Select shards to replicate`', () => {
+          expect(findGlCollapsibleListbox().props('toggleText')).toBe('Select shards to replicate');
         });
       });
 
-      describe('when shard is not in selectedShards', () => {
+      describe('when selectedShards length === 1', () => {
         beforeEach(() => {
           createComponent({
             selectedShards: [MOCK_SYNC_SHARDS[0].value],
           });
         });
 
-        it('emits `addSyncOption`', () => {
-          wrapper.vm.toggleShard(MOCK_SYNC_SHARDS[1]);
-          expect(wrapper.emitted()).toHaveProperty('addSyncOption');
+        it('returns 1 shard selected', () => {
+          expect(findGlCollapsibleListbox().props('toggleText')).toBe('1 shard selected');
+        });
+      });
+
+      describe('when selectedShards length > 1', () => {
+        beforeEach(() => {
+          createComponent({
+            selectedShards: [MOCK_SYNC_SHARDS[0].value, MOCK_SYNC_SHARDS[1].value],
+          });
+        });
+
+        it('returns 2 shards selected', () => {
+          expect(findGlCollapsibleListbox().props('toggleText')).toBe('2 shards selected');
         });
       });
     });
 
-    describe('isSelected', () => {
-      describe('when shard is in selectedShards', () => {
+    describe('noResultsText', () => {
+      describe('when selectedShards is empty', () => {
         beforeEach(() => {
-          createComponent({
-            selectedShards: [MOCK_SYNC_SHARDS[0].value],
-          });
+          createComponent();
         });
 
-        it('returns `true`', () => {
-          expect(wrapper.vm.isSelected(MOCK_SYNC_SHARDS[0])).toBe(true);
-        });
-      });
-
-      describe('when shard is not in selectedShards', () => {
-        beforeEach(() => {
-          createComponent({
-            selectedShards: [MOCK_SYNC_SHARDS[0].value],
-          });
-        });
-
-        it('returns `false`', () => {
-          expect(wrapper.vm.isSelected(MOCK_SYNC_SHARDS[1])).toBe(false);
-        });
-      });
-    });
-
-    describe('computed', () => {
-      describe('dropdownTitle', () => {
-        describe('when selectedShards is empty', () => {
-          beforeEach(() => {
-            createComponent({
-              selectedShards: [],
-            });
-          });
-
-          it('returns `Select shards to replicate`', () => {
-            expect(wrapper.vm.dropdownTitle).toBe(GeoSiteFormShards.i18n.noSelectedDropdownTitle);
-          });
-        });
-
-        describe('when selectedShards length === 1', () => {
-          beforeEach(() => {
-            createComponent({
-              selectedShards: [MOCK_SYNC_SHARDS[0].value],
-            });
-          });
-
-          it('returns `this.selectedShards.length` shard selected', () => {
-            expect(wrapper.vm.dropdownTitle).toBe(
-              `${wrapper.vm.selectedShards.length} shard selected`,
-            );
-          });
-        });
-
-        describe('when selectedShards length > 1', () => {
-          beforeEach(() => {
-            createComponent({
-              selectedShards: [MOCK_SYNC_SHARDS[0].value, MOCK_SYNC_SHARDS[1].value],
-            });
-          });
-
-          it('returns `this.selectedShards.length` shards selected', () => {
-            expect(wrapper.vm.dropdownTitle).toBe(
-              `${wrapper.vm.selectedShards.length} shards selected`,
-            );
-          });
-        });
-      });
-
-      describe('noSyncShards', () => {
-        describe('when syncShardsOptions.length > 0', () => {
-          beforeEach(() => {
-            createComponent();
-          });
-
-          it('returns `false`', () => {
-            expect(wrapper.vm.noSyncShards).toBe(false);
-          });
-        });
-      });
-
-      describe('when syncShardsOptions.length === 0', () => {
-        beforeEach(() => {
-          createComponent({
-            syncShardsOptions: [],
-          });
-        });
-
-        it('returns `true`', () => {
-          expect(wrapper.vm.noSyncShards).toBe(true);
+        it('is set to `Nothing found…`', () => {
+          expect(findGlCollapsibleListbox().props('noResultsText')).toBe('Nothing found…');
         });
       });
     });

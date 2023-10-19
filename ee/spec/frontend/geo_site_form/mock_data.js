@@ -46,6 +46,8 @@ export const MOCK_SYNC_NAMESPACES = [
   },
 ];
 
+export const MOCK_SYNC_SHARD_VALUES = MOCK_SYNC_SHARDS.map(({ value }) => value);
+
 export const MOCK_SYNC_NAMESPACE_IDS = MOCK_SYNC_NAMESPACES.map(({ id }) => id);
 
 export const STRING_OVER_255 =

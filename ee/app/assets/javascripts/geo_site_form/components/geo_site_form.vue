@@ -68,12 +68,6 @@ export default {
     redirect() {
       visitUrl(this.sitesPath);
     },
-    addSyncOption({ key, value }) {
-      this.siteData[key].push(value);
-    },
-    removeSyncOption({ key, index }) {
-      this.siteData[key].splice(index, 1);
-    },
     updateSyncOptions({ key, value }) {
       this.siteData[key] = value;
     },
@@ -93,8 +87,6 @@ export default {
       :site-data="siteData"
       :selective-sync-types="selectiveSyncTypes"
       :sync-shards-options="syncShardsOptions"
-      @addSyncOption="addSyncOption"
-      @removeSyncOption="removeSyncOption"
       @updateSyncOptions="updateSyncOptions"
     />
     <geo-site-form-capacities :site-data="siteData" />

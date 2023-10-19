@@ -61,14 +61,6 @@ export default {
       return this.siteData.selectiveSyncType === this.selectiveSyncTypes.SHARDS.value;
     },
   },
-  methods: {
-    addSyncOption({ key, value }) {
-      this.$emit('addSyncOption', { key, value });
-    },
-    removeSyncOption({ key, index }) {
-      this.$emit('removeSyncOption', { key, index });
-    },
-  },
   SELECTIVE_SYNC_MORE_INFO,
   OBJECT_STORAGE_MORE_INFO,
 };
@@ -141,8 +133,7 @@ export default {
         id="site-synchronization-shards-field"
         :selected-shards="siteData.selectiveSyncShards"
         :sync-shards-options="syncShardsOptions"
-        @addSyncOption="addSyncOption"
-        @removeSyncOption="removeSyncOption"
+        @updateSyncOptions="$emit('updateSyncOptions', arguments[0])"
       />
     </gl-form-group>
     <gl-form-group

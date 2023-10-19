@@ -135,31 +135,7 @@ describe('GeoSiteFormSelectiveSync', () => {
     });
   });
 
-  describe('methods', () => {
-    describe('addSyncOption', () => {
-      beforeEach(() => {
-        createComponent();
-      });
-
-      it('emits `addSyncOption`', () => {
-        wrapper.vm.addSyncOption({ key: 'selectiveSyncShards', value: MOCK_SYNC_SHARDS[0].value });
-        expect(wrapper.emitted('addSyncOption')).toHaveLength(1);
-      });
-    });
-
-    describe('removeSyncOption', () => {
-      beforeEach(() => {
-        createComponent({
-          siteData: { ...defaultProps.siteData, selectiveSyncShards: [MOCK_SYNC_SHARDS[0].value] },
-        });
-      });
-
-      it('should remove value from siteData', () => {
-        wrapper.vm.removeSyncOption({ key: 'selectiveSyncShards', index: 0 });
-        expect(wrapper.emitted('removeSyncOption')).toHaveLength(1);
-      });
-    });
-
+  describe('events', () => {
     describe('updateSyncOptions', () => {
       beforeEach(() => {
         createComponent({
