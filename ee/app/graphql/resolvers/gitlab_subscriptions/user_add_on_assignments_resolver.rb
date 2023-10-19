@@ -19,8 +19,6 @@ module Resolvers
       alias_method :user, :object
 
       def resolve_with_lookahead(**args)
-        return [] unless Feature.enabled?(:hamilton_seat_management)
-
         BatchLoader::GraphQL.for(user.id).batch do |user_ids, loader|
           query = ::GitlabSubscriptions::UserAddOnAssignment
                     .for_user_ids(user_ids)

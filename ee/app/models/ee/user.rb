@@ -564,7 +564,7 @@ module EE
     end
 
     def code_suggestions_add_on_available?
-      if ::Feature.enabled?(:hamilton_seat_management)
+      if ::Feature.enabled?(:code_suggestions_user_assignments, self)
         GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_code_suggestions_purchase.any?
       else
         GitlabSubscriptions::AddOnPurchase.for_user(self).for_code_suggestions.active.any?

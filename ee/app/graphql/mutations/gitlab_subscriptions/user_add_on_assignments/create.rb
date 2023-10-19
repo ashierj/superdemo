@@ -53,7 +53,7 @@ module Mutations
         attr_reader :add_on_purchase, :user_to_be_assigned
 
         def feature_enabled?
-          Feature.enabled?(:hamilton_seat_management)
+          Feature.enabled?(:hamilton_seat_management, add_on_purchase&.namespace)
         end
       end
     end

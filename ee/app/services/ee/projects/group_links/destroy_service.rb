@@ -38,10 +38,11 @@ module EE
         end
 
         def enqueue_refresh_add_on_assignments_woker(link)
-          return unless ::Feature.enabled?(:hamilton_seat_management)
+          namespace = link.project.root_ancestor
 
-          GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
-            .perform_async(link.project.root_ancestor.id)
+          return unless ::Feature.enabled?(:hamilton_seat_management, namespace)
+
+          GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker.perform_async(namespace.id)
         end
       end
     end

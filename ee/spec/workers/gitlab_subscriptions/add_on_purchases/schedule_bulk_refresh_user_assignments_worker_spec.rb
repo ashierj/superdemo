@@ -32,7 +32,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::ScheduleBulkRefreshUserAssig
       end
     end
 
-    context 'when feature flag hamilton_seat_management is disabled' do
+    context 'when feature flag bulk_add_on_assignment_refresh_worker is disabled' do
       before do
         stub_feature_flags(bulk_add_on_assignment_refresh_worker: false)
       end

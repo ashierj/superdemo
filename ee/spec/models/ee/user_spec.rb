@@ -2780,11 +2780,11 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
 
-    context 'when the hamilton_seat_assignment FF is disabled' do
+    context 'when the code_suggestions_user_assignments FF is disabled' do
       using RSpec::Parameterized::TableSyntax
 
       before do
-        stub_feature_flags(hamilton_seat_management: false)
+        stub_feature_flags(code_suggestions_user_assignments: false)
       end
 
       context 'with code suggestion purchases' do
