@@ -10,7 +10,7 @@ module Mutations
 
           include FindsNamespace
 
-          authorize :modify_value_stream
+          authorize :admin_value_stream
 
           argument :name, GraphQL::Types::String,
             required: true,

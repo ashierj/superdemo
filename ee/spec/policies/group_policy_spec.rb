@@ -322,6 +322,46 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     it { is_expected.not_to be_allowed(:read_dora4_analytics) }
   end
 
+  describe 'analytics value streams' do
+    context 'when feature is not available' do
+      context 'and user is admin', :enable_admin_mode do
+        let(:current_user) { admin }
+
+        it { is_expected.not_to be_allowed(:admin_value_stream) }
+      end
+
+      context 'and user is reporter' do
+        let(:current_user) { reporter }
+
+        it { is_expected.not_to be_allowed(:admin_value_stream) }
+      end
+    end
+
+    context 'when user feature is available' do
+      before do
+        stub_licensed_features(cycle_analytics_for_groups: true)
+      end
+
+      context 'and user is guest' do
+        let(:current_user) { guest }
+
+        it { is_expected.not_to be_allowed(:admin_value_stream) }
+      end
+
+      context 'and user is reporter' do
+        let(:current_user) { reporter }
+
+        it { is_expected.to be_allowed(:admin_value_stream) }
+      end
+
+      context 'and user is admin', :enable_admin_mode do
+        let(:current_user) { admin }
+
+        it { is_expected.to be_allowed(:admin_value_stream) }
+      end
+    end
+  end
+
   context 'export group memberships' do
     let(:current_user) { owner }
 

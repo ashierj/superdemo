@@ -8,7 +8,7 @@ module Mutations
           graphql_name 'ValueStreamDestroy'
           description "Destroy a value stream."
 
-          authorize :modify_value_stream
+          authorize :admin_value_stream
 
           field :value_stream,
             Types::Analytics::CycleAnalytics::ValueStreamType,
