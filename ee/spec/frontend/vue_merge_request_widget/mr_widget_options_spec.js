@@ -45,6 +45,7 @@ import readyToMergeQuery from 'ee_else_ce/vue_merge_request_widget/queries/state
 import mergeQuery from '~/vue_merge_request_widget/queries/states/new_ready_to_merge.query.graphql';
 import approvalsQuery from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
 import approvedBySubscription from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.subscription.graphql';
+import blockingMergeRequestsQuery from 'ee/vue_merge_request_widget/queries/blocking_merge_requests.query.graphql';
 
 import mockData from './mock_data';
 
@@ -75,6 +76,12 @@ describe('ee merge request widget options', () => {
           data: {
             project: { id: 1, mergeRequest: { id: 1, userPermissions: { canMerge: true } } },
           },
+        }),
+      ],
+      [
+        blockingMergeRequestsQuery,
+        jest.fn().mockResolvedValue({
+          data: { project: { id: 1, mergeRequest: { id: 1, blockingMergeRequests: null } } },
         }),
       ],
     ];
