@@ -1,12 +1,11 @@
 <script>
-import { GlFormGroup, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlFormGroup, GlCollapsibleListbox } from '@gitlab/ui';
 
 export default {
   name: 'CustomStageEventField',
   components: {
     GlFormGroup,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
   },
   props: {
     index: {
@@ -25,7 +24,7 @@ export default {
       type: String,
       required: true,
     },
-    selectedEventName: {
+    defaultDropdownText: {
       type: String,
       required: true,
     },
@@ -45,10 +44,25 @@ export default {
       default: '',
     },
   },
+  data() {
+    return { selectedValue: null };
+  },
   computed: {
     fieldName() {
       const { eventType, index } = this;
       return `custom-stage-${eventType}-${index}`;
+    },
+    selectedEvent() {
+      return this.eventsList.find(({ value }) => value === this.selectedValue);
+    },
+    toggleText() {
+      return this.selectedEvent?.text || this.defaultDropdownText;
+    },
+  },
+  methods: {
+    itemSelected(value) {
+      this.selectedValue = value;
+      this.$emit('update-identifier', value);
     },
   },
 };
@@ -61,21 +75,13 @@ export default {
     :state="hasIdentifierError"
     :invalid-feedback="identifierError"
   >
-    <gl-dropdown
-      toggle-class="gl-mb-0"
-      :text="selectedEventName"
-      :name="fieldName"
+    <gl-collapsible-listbox
+      :items="eventsList"
+      :selected="selectedValue"
       :disabled="disabled"
-      menu-class="gl-overflow-hidden!"
+      :toggle-text="toggleText"
       block
-    >
-      <gl-dropdown-item
-        v-for="{ text, value } in eventsList"
-        :key="`${eventType}-${value}`"
-        :value="value"
-        @click="$emit('update-identifier', value)"
-        >{{ text }}</gl-dropdown-item
-      >
-    </gl-dropdown>
+      @select="itemSelected"
+    />
   </gl-form-group>
 </template>

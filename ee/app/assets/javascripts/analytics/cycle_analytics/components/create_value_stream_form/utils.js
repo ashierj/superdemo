@@ -2,7 +2,6 @@ import { isEqual, pick } from 'lodash';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { isStartEvent, getAllowedEndEvents, eventToOption, eventsByIdentifier } from '../../utils';
 import {
-  i18n,
   ERRORS,
   defaultErrors,
   defaultFields,
@@ -31,10 +30,7 @@ import {
  * @param {CustomStageEvents[]} events
  * @returns {DropdownData[]} array of start events formatted for dropdowns
  */
-export const startEventOptions = (eventsList) => [
-  { value: null, text: i18n.SELECT_START_EVENT },
-  ...eventsList.filter(isStartEvent).map(eventToOption),
-];
+export const startEventOptions = (eventsList) => eventsList.filter(isStartEvent).map(eventToOption);
 
 /**
  * Takes an array of custom stage events to return only the
@@ -46,10 +42,7 @@ export const startEventOptions = (eventsList) => [
  */
 export const endEventOptions = (eventsList, startEventIdentifier) => {
   const endEvents = getAllowedEndEvents(eventsList, startEventIdentifier);
-  return [
-    { value: null, text: i18n.SELECT_END_EVENT },
-    ...eventsByIdentifier(eventsList, endEvents).map(eventToOption),
-  ];
+  return eventsByIdentifier(eventsList, endEvents).map(eventToOption);
 };
 
 /**

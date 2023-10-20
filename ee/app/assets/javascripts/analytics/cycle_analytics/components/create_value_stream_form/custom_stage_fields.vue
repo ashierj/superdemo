@@ -75,12 +75,6 @@ export default {
     hasMultipleStages() {
       return this.totalStages > 1;
     },
-    selectedStartEventName() {
-      return this.eventName(this.stage.startEventIdentifier, 'SELECT_START_EVENT');
-    },
-    selectedEndEventName() {
-      return this.eventName(this.stage.endEventIdentifier, 'SELECT_END_EVENT');
-    },
     startEventLabelNames() {
       return findLabelNames(this.defaultGroupLabels, this.stage.startEventLabelId);
     },
@@ -98,13 +92,6 @@ export default {
     },
     fieldErrorMessage(key) {
       return this.errors[key]?.join('\n');
-    },
-    eventNameByIdentifier(identifier) {
-      const ev = this.stageEvents.find((e) => e.identifier === identifier);
-      return ev?.name || null;
-    },
-    eventName(eventId, textKey) {
-      return eventId ? this.eventNameByIdentifier(eventId) : this.$options.i18n[textKey];
     },
   },
   i18n,
@@ -135,7 +122,7 @@ export default {
             event-type="start-event"
             :index="index"
             :field-label="$options.i18n.FORM_FIELD_START_EVENT"
-            :selected-event-name="selectedStartEventName"
+            :default-dropdown-text="$options.i18n.SELECT_START_EVENT"
             :events-list="startEvents"
             :identifier-error="fieldErrorMessage('startEventIdentifier')"
             :has-identifier-error="hasFieldErrors('startEventIdentifier')"
@@ -158,7 +145,7 @@ export default {
             :index="index"
             :disabled="!hasStartEvent"
             :field-label="$options.i18n.FORM_FIELD_END_EVENT"
-            :selected-event-name="selectedEndEventName"
+            :default-dropdown-text="$options.i18n.SELECT_END_EVENT"
             :events-list="endEvents"
             :identifier-error="fieldErrorMessage('endEventIdentifier')"
             :has-identifier-error="hasFieldErrors('endEventIdentifier')"
