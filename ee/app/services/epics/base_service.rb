@@ -153,7 +153,7 @@ module Epics
 
     def can_link_epics?(epic, parent)
       can?(current_user, :admin_epic_tree_relation, epic) &&
-        can?(current_user, :admin_epic_tree_relation, parent)
+        can?(current_user, :create_epic_tree_relation, parent)
     end
 
     def handle_parent_epic_change(epic, options)

@@ -81,7 +81,14 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
         context 'when a single epic is given' do
           subject { add_epic([valid_reference]) }
 
-          context 'when a user does not have permissions to add an epic' do
+          context 'when user does not have create_epic_tree_relation access for the parent' do
+            before do
+              group.add_guest(user)
+              allow(Ability).to receive(:allowed?).and_call_original
+              allow(Ability).to receive(:allowed?)
+                                  .with(user, :create_epic_tree_relation, epic).and_return(false)
+            end
+
             include_examples 'returns an error'
           end
 
@@ -109,11 +116,6 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
               end
 
               context 'when subepics feature is not available for child group' do
-                let(:expected_code) { 409 }
-                let(:expected_error) do
-                  "This epic cannot be added. You don't have access to perform this action."
-                end
-
                 before do
                   other_group.add_guest(user)
                   stub_licensed_features(epics: true)
@@ -234,7 +236,14 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
             )
           end
 
-          context 'when a user dos not have permissions to add an epic' do
+          context 'when user does not have create_epic_tree_relation access for the parent' do
+            before do
+              group.add_guest(user)
+              allow(Ability).to receive(:allowed?).and_call_original
+              allow(Ability).to receive(:allowed?)
+                                  .with(user, :create_epic_tree_relation, epic).and_return(false)
+            end
+
             include_examples 'returns an error'
           end
 

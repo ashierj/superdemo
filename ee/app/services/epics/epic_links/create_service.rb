@@ -4,7 +4,7 @@ module Epics
   module EpicLinks
     class CreateService < IssuableLinks::CreateService
       def execute
-        unless can?(current_user, :admin_epic_tree_relation, issuable)
+        unless can?(current_user, :create_epic_tree_relation, issuable)
           return error(issuables_not_found_message, 404)
         end
 
@@ -26,7 +26,7 @@ module Epics
       def create_single_link
         child_epic = referenced_issuables.first
 
-        unless can?(current_user, :read_epic, child_epic)
+        unless can?(current_user, :admin_epic_tree_relation, child_epic)
           return error(issuables_not_found_message, 404)
         end
 
@@ -104,7 +104,6 @@ module Epics
       end
 
       def can_link_epic?(epic)
-        return true if issuable.group == epic.group
         return true if can?(current_user, :admin_epic_tree_relation, epic)
 
         epic.errors.add(:parent, _("This epic cannot be added. You don't have access to perform this action."))

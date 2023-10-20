@@ -77,12 +77,14 @@ class EpicPolicy < BasePolicy
     # 3. To add a related epic we also need to check that related epics feature is available,
     # i.e. `related_epics_available`
     enable :admin_epic_relation
+    enable :read_epic_relation
     enable :read_epic_link_relation
   end
 
   # Used to check permissions of subepics (child-parent relation)
   rule { can?(:admin_epic_relation) & subepics_available }.policy do
     enable :admin_epic_tree_relation
+    enable :create_epic_tree_relation
   end
 
   # Used to check permissions of related epic links (related/blocked/blocking relation)
@@ -117,5 +119,10 @@ class EpicPolicy < BasePolicy
 
   rule { relations_for_non_members_available & ~anonymous & can?(:read_epic) }.policy do
     enable :read_epic_link_relation
+    enable :read_epic_relation
+  end
+
+  rule { can?(:read_epic_relation) & subepics_available }.policy do
+    enable :create_epic_tree_relation
   end
 end
