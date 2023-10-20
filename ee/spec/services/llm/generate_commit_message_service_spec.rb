@@ -21,7 +21,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
       project.root_ancestor.namespace_settings.update!(
         third_party_ai_features_enabled: true,
         experiment_features_enabled: true)
-      allow(Llm::CompletionWorker).to receive(:perform_async)
+      allow(Llm::CompletionWorker).to receive(:perform_for)
     end
 
     context 'when the user is permitted to view the merge request' do
@@ -42,7 +42,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
       it 'returns an error' do
         expect(subject.execute).to be_error
 
-        expect(Llm::CompletionWorker).not_to have_received(:perform_async)
+        expect(Llm::CompletionWorker).not_to have_received(:perform_for)
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
       it 'returns an error' do
         expect(subject.execute).to be_error
 
-        expect(Llm::CompletionWorker).not_to have_received(:perform_async)
+        expect(Llm::CompletionWorker).not_to have_received(:perform_for)
       end
     end
   end

@@ -21,7 +21,7 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
       group.namespace_settings.update!(
         third_party_ai_features_enabled: true,
         experiment_features_enabled: true)
-      allow(Llm::CompletionWorker).to receive(:perform_async)
+      allow(Llm::CompletionWorker).to receive(:perform_for)
     end
 
     context 'when member of the group' do
@@ -43,7 +43,7 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
         it 'returns an error' do
           expect(subject.execute).to be_error
 
-          expect(Llm::CompletionWorker).not_to have_received(:perform_async)
+          expect(Llm::CompletionWorker).not_to have_received(:perform_for)
         end
       end
     end
@@ -52,7 +52,7 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
       it 'returns an error' do
         expect(subject.execute).to be_error
 
-        expect(Llm::CompletionWorker).not_to have_received(:perform_async)
+        expect(Llm::CompletionWorker).not_to have_received(:perform_for)
       end
     end
   end

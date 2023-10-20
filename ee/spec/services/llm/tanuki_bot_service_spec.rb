@@ -30,7 +30,7 @@ RSpec.describe Llm::TanukiBotService, :saas, feature_category: :global_search do
       end
 
       it 'returns an error' do
-        expect(Llm::CompletionWorker).not_to receive(:perform_async)
+        expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
         expect(subject.execute).to be_error
       end
@@ -42,7 +42,7 @@ RSpec.describe Llm::TanukiBotService, :saas, feature_category: :global_search do
       end
 
       it 'returns an error' do
-        expect(Llm::CompletionWorker).not_to receive(:perform_async)
+        expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
         expect(subject.execute).to be_error
       end

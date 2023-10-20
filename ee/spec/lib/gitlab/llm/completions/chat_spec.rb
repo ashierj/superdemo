@@ -41,7 +41,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   let(:stream_response_handler) { nil }
 
   let(:prompt_message) do
-    build(:ai_chat_message, user: user, resource: resource, request_id: 'uuid')
+    build(:ai_chat_message, user: user, resource: resource, request_id: 'uuid', content: content)
   end
 
   subject { described_class.new(prompt_message, nil, **options).execute }
@@ -95,7 +95,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
 
     context 'when client_subscription_id is set' do
       let(:prompt_message) do
-        build(:ai_chat_message, user: user, resource: resource, request_id: 'uuid', client_subscription_id: 'someid')
+        build(:ai_chat_message, user: user, resource: resource,
+          request_id: 'uuid', client_subscription_id: 'someid', content: content)
       end
 
       let(:stream_response_handler) { instance_double(Gitlab::Llm::ResponseService) }

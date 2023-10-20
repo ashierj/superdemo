@@ -40,19 +40,18 @@ RSpec.describe 'AiAction for Fill In Merge Request Template', :saas, feature_cat
   end
 
   it 'successfully performs an explain code request' do
-    expect(Llm::CompletionWorker).to receive(:perform_async).with(
-      current_user.id,
-      project.id,
-      'Project',
-      :fill_in_merge_request_template,
-      {
-        request_id: an_instance_of(String),
+    expect(Llm::CompletionWorker).to receive(:perform_for).with(
+      an_object_having_attributes(
+        user: current_user,
+        resource: project,
+        ai_action: :fill_in_merge_request_template,
+        content: 'This is content'),
+      hash_including(
         source_project_id: project.id.to_s,
         source_branch: 'feature',
         target_branch: 'master',
-        title: 'A merge request',
-        content: 'This is content'
-      }
+        title: 'A merge request'
+      )
     )
 
     post_graphql_mutation(mutation, current_user: current_user)
@@ -66,7 +65,7 @@ RSpec.describe 'AiAction for Fill In Merge Request Template', :saas, feature_cat
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
 
@@ -80,7 +79,7 @@ RSpec.describe 'AiAction for Fill In Merge Request Template', :saas, feature_cat
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
     end
@@ -92,7 +91,7 @@ RSpec.describe 'AiAction for Fill In Merge Request Template', :saas, feature_cat
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
     end

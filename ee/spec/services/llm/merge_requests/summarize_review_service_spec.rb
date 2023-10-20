@@ -12,6 +12,7 @@ RSpec.describe Llm::MergeRequests::SummarizeReviewService, :saas, feature_catego
   let_it_be(:merge_request_note) { create(:note, noteable: merge_request, project: project, author: user) }
   let!(:draft_note_by_current_user) { create(:draft_note, merge_request: merge_request, author: user) }
   let!(:draft_note_by_random_user) { create(:draft_note, merge_request: merge_request) }
+  let(:options) { {} }
 
   describe "#perform" do
     before do
@@ -23,15 +24,15 @@ RSpec.describe Llm::MergeRequests::SummarizeReviewService, :saas, feature_catego
       group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
     end
 
-    subject { described_class.new(user, merge_request, {}).execute }
+    subject { described_class.new(user, merge_request, options) }
 
     context "when testing validity" do
       shared_examples "returns an error" do
-        it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
+        it { expect(subject.execute).to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
       end
 
       context "when resource is not a merge request" do
-        subject { described_class.new(user, create(:issue), {}).execute }
+        subject { described_class.new(user, create(:issue), options) }
 
         it_behaves_like "returns an error"
       end
@@ -53,16 +54,9 @@ RSpec.describe Llm::MergeRequests::SummarizeReviewService, :saas, feature_catego
       end
     end
 
-    it "enqueues a new worker" do
-      expect(Llm::CompletionWorker).to receive(:perform_async).with(
-        user.id,
-        merge_request.id,
-        merge_request.class.name,
-        :summarize_review,
-        { request_id: an_instance_of(String) }
-      )
-
-      expect(subject).to be_success
+    it_behaves_like 'schedules completion worker' do
+      let(:resource) { merge_request }
+      let(:action_name) { :summarize_review }
     end
   end
 end

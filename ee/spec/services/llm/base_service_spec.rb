@@ -39,15 +39,8 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer 
       end.new(user, resource, options)
     end
 
-    it 'runs the worker' do
-      expected_options = [request_id: 'uuid']
-
-      allow(SecureRandom).to receive(:uuid).and_return('uuid')
-      expect(::Llm::CompletionWorker)
-        .to receive(:perform_async)
-        .with(user.id, expected_resource_id, expected_resource_class, :test, *expected_options)
-
-      expect(subject.execute).to be_success
+    it_behaves_like 'schedules completion worker' do
+      let(:action_name) { :test }
     end
 
     context 'when resource is nil' do
@@ -90,9 +83,6 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer 
     end
 
     context 'when ai features are enabled' do
-      let(:expected_resource_id) { resource.id }
-      let(:expected_resource_class) { resource.class.name.to_s }
-
       include_context 'with ai features enabled for group'
 
       it_behaves_like 'raises a NotImplementedError'
@@ -111,8 +101,6 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer 
 
       context 'when resource is nil' do
         let_it_be(:resource) { nil }
-        let(:expected_resource_id) { nil }
-        let(:expected_resource_class) { nil }
 
         it_behaves_like 'success when implemented'
       end

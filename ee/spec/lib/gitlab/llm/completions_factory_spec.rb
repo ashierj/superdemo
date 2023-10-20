@@ -15,7 +15,7 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
     end
   end
 
-  describe ".completion" do
+  describe ".completion!" do
     let(:prompt_message) { build(:ai_message, ai_action: completion_name) }
 
     context 'with existing completion' do
@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
         expect(completion_class).to receive(:new).with(prompt_message, template_class,
           expected_params).and_call_original
 
-        completion = described_class.completion(prompt_message, params)
+        completion = described_class.completion!(prompt_message, params)
 
         expect(completion).to be_a(completion_class)
       end
@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
           expect(completion_class).to receive(:new).with(prompt_message, template_class,
             expected_params).and_call_original
 
-          completion = described_class.completion(prompt_message, params)
+          completion = described_class.completion!(prompt_message, params)
 
           expect(completion).to be_a(completion_class)
         end
@@ -56,10 +56,10 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
     context 'with invalid completion' do
       let(:completion_name) { :invalid_name }
 
-      it 'returns completion service' do
-        completion = described_class.completion(prompt_message)
-
-        expect(completion).to be_nil
+      it 'raises name error completion service' do
+        expect do
+          described_class.completion!(prompt_message)
+        end.to raise_error(NameError, "completion class for action invalid_name not found")
       end
     end
   end

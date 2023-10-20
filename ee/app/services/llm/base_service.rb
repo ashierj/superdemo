@@ -72,8 +72,6 @@ module Llm
     def schedule_completion_worker(job_options = options)
       message = prompt_message
 
-      job_options = job_options.merge(request_id: message.request_id)
-
       logger.debug(
         message: "Enqueuing CompletionWorker",
         user_id: message.user.id,
@@ -84,8 +82,7 @@ module Llm
         options: job_options
       )
 
-      ::Llm::CompletionWorker.perform_async(
-        message.user.id, message.resource&.id, message.resource&.class&.name, message.ai_action, job_options)
+      ::Llm::CompletionWorker.perform_for(message, job_options)
     end
 
     def success(payload)

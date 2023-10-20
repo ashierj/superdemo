@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::CategorizeQuestion, feature_
     let(:response) {  { 'completion' => answer.to_s } }
 
     let(:prompt_message) do
-      build(:ai_chat_message, :categorize_question, user: user, resource: user, request_id: 'uuid')
+      build(:ai_message, :categorize_question, user: user, resource: user, request_id: 'uuid')
     end
 
     let(:options) { { question: 'What is the pipeline?' } }
