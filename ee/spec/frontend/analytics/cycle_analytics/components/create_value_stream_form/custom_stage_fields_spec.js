@@ -14,19 +14,15 @@ import {
 } from '../../mock_data';
 import { emptyState, emptyErrorsState, firstLabel } from './mock_data';
 
-const formatStartEventOpts = (_events) => [
-  { text: 'Select start event', value: null },
-  ..._events
+const formatStartEventOpts = (_events) =>
+  _events
     .filter((ev) => ev.canBeStartEvent)
-    .map(({ name: text, identifier: value }) => ({ text, value })),
-];
+    .map(({ name: text, identifier: value }) => ({ text, value }));
 
-const formatEndEventOpts = (_events) => [
-  { text: 'Select end event', value: null },
-  ..._events
+const formatEndEventOpts = (_events) =>
+  _events
     .filter((ev) => !ev.canBeStartEvent)
-    .map(({ name: text, identifier: value }) => ({ text, value })),
-];
+    .map(({ name: text, identifier: value }) => ({ text, value }));
 
 const startEventOptions = formatStartEventOpts(stageEvents);
 const endEventOptions = formatEndEventOpts(stageEvents);

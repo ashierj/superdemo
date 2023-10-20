@@ -168,7 +168,7 @@ module QA
         def select_custom_event(event_type, stage_index, event_name)
           within_element(:"custom-stage-#{event_type}-event-#{stage_index}") do
             click_element('chevron-down-icon')
-            click_element("button[value=#{event_name.downcase.tr(' ', '_')}]")
+            click_element("li[data-testid=listbox-item-#{event_name.downcase.tr(' ', '_')}]")
           end
         end
 
