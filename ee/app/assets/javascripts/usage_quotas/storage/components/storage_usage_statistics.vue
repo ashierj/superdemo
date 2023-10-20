@@ -172,14 +172,13 @@ export default {
         </template>
       </gl-sprintf>
     </p>
-    <div class="gl-display-flex gl-sm-flex-direction-column gl-gap-5 gl-py-4">
+    <div class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5 gl-py-4">
       <storage-statistics-card
         :plan-storage-description="enforcementTypei18n.title"
         :used-storage="usedStorage"
         :total-storage="totalStorage"
         :loading="loading"
         data-testid="namespace-usage-total"
-        class="gl-w-full"
       />
       <template v-if="namespacePlanName">
         <excess-storage-breakdown-card
