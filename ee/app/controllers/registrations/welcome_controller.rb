@@ -29,6 +29,7 @@ module Registrations
 
       if result.success?
         track_event('successfully_submitted_form')
+        track_joining_a_project_event
         successful_update_hooks
 
         redirect_to update_success_path
@@ -114,12 +115,18 @@ module Registrations
       end
     end
 
-    def track_event(action)
+    def track_joining_a_project_event
+      return unless onboarding_status.joining_a_project?
+
+      track_event('select_button', label: 'join_a_project')
+    end
+
+    def track_event(action, label: onboarding_status.tracking_label)
       ::Gitlab::Tracking.event(
         helpers.body_data_page,
         action,
         user: current_user,
-        label: onboarding_status.tracking_label
+        label: label
       )
     end
 
