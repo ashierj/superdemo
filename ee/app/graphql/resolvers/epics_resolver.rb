@@ -143,6 +143,9 @@ module Resolvers
       params[:not] = params[:not].to_h if params[:not]
       params[:or] = params[:or].to_h if params[:or]
 
+      rewrite_param_name(params[:or], :author_usernames, :author_username)
+      rewrite_param_name(params[:or], :label_names, :label_name)
+
       super(params)
     end
 
@@ -150,6 +153,10 @@ module Resolvers
       return {} unless parent
 
       { parent_id: parent.id }
+    end
+
+    def rewrite_param_name(params, old_name, new_name)
+      params[new_name] = params.delete(old_name) if params && params[old_name].present?
     end
 
     # `resolver_object` refers to the object we're currently querying on, and is usually a `Group`
