@@ -66,14 +66,14 @@ module QA
       end
 
       let!(:repository_commit) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.start_branch = project.default_branch
-          commit.branch = commit_branch
-          commit.commit_message = 'Add dependency scan files and .gitlab-ci.yml'
-          commit.add_directory(dependency_scan_fixtures)
-          commit.add_files([ci_file])
-        end
+        build(:commit,
+          project: project,
+          start_branch: project.default_branch,
+          branch: commit_branch,
+          commit_message: 'Add dependency scan files and .gitlab-ci.yml') do |commit|
+            commit.add_directory(dependency_scan_fixtures)
+            commit.add_files([ci_file])
+          end.fabricate_via_api!
       end
 
       before do

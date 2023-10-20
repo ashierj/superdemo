@@ -44,19 +44,12 @@ module QA
         # Overwrite the added file to create a system note as required to
         # trigger the bug described here: https://gitlab.com/gitlab-org/gitlab/issues/32157
         commit_message = 'Update file'
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = commit_message
-          commit.branch = merge_request.source_branch
-          commit.update_files(
-            [
-              {
-                file_path: merge_request.file_name,
-                content: "File updated"
-              }
-            ]
-          )
-        end
+        create(:commit,
+          project: project,
+          commit_message: commit_message,
+          branch: merge_request.source_branch, actions: [
+            { action: 'update', file_path: merge_request.file_name, content: "File updated" }
+          ])
         project.wait_for_push(commit_message)
 
         Page::MergeRequest::Show.perform do |show|

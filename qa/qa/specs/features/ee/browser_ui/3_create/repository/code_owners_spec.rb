@@ -39,15 +39,11 @@ module QA
         project.add_member(user)
         project.add_member(user2)
 
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Add CODEOWNERS and test files'
-          commit.add_files([
-            { file_path: 'file.txt', content: 'foo' },
-            { file_path: 'README.md', content: 'bar' },
-            { file_path: 'CODEOWNERS', content: codeowners_file_content }
-          ])
-        end
+        create(:commit, project: project, commit_message: 'Add CODEOWNERS and test files', actions: [
+          { action: 'create', file_path: 'file.txt', content: 'foo' },
+          { action: 'create', file_path: 'README.md', content: 'bar' },
+          { action: 'create', file_path: 'CODEOWNERS', content: codeowners_file_content }
+        ])
       end
 
       it 'displays owners specified in CODEOWNERS file',

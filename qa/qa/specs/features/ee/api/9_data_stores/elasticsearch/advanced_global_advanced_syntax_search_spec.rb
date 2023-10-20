@@ -22,14 +22,9 @@ module QA
       end
 
       before do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.add_files(
-            [{
-              file_path: 'elasticsearch.rb', content: "elasticsearch: #{SecureRandom.hex(8)}"
-            }]
-          )
-        end
+        create(:commit, project: project, actions: [
+          { action: 'create', file_path: 'elasticsearch.rb', content: "elasticsearch: #{SecureRandom.hex(8)}" }
+        ])
       end
 
       context 'when searching for projects using advanced syntax' do

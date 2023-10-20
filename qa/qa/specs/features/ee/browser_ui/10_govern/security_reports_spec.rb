@@ -263,22 +263,20 @@ module QA
       end
 
       def push_security_reports
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Create Secure compatible application to serve premade reports'
-          commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('dismissed_security_findings_mr_widget')))
-          commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_premade_reports')))
-          commit.update_files([ci_file])
-        end
+        build(:commit,
+          project: project,
+          commit_message: 'Create Secure compatible application to serve premade reports') do |commit|
+            commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('dismissed_security_findings_mr_widget')))
+            commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_premade_reports')))
+            commit.update_files([ci_file])
+          end.fabricate_via_api!
       end
 
       def commit_scan_files(fixture_json:, ci_yaml_content:)
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Commit dependency scanning files'
-          commit.add_files([{ file_path: File.basename(fixture_json), content: File.read(fixture_json) }])
-          commit.add_files([{ file_path: '.gitlab-ci.yml', content: ci_yaml_content }])
-        end
+        create(:commit, project: project, commit_message: 'Commit dependency scanning files', actions: [
+          { action: 'create', file_path: File.basename(fixture_json), content: File.read(fixture_json) },
+          { action: 'create', file_path: '.gitlab-ci.yml', content: ci_yaml_content }
+        ])
       end
 
       def wait_for_pipeline_success

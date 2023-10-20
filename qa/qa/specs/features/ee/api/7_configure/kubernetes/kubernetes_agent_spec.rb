@@ -57,38 +57,20 @@ module QA
       end
 
       def creates_agent_config(project)
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          agent_config_template = read_agent_fixture("agentk-config.yaml.erb")
-          agent_config = ERB.new(agent_config_template).result(binding)
+        agent_config_template = read_agent_fixture("agentk-config.yaml.erb")
+        agent_config = ERB.new(agent_config_template).result(binding)
 
-          commit.project = project
-          commit.commit_message = 'Creates agent config'
-          commit.add_files(
-            [
-              {
-                file_path: '.gitlab/agents/my-agent/config.yaml',
-                content: agent_config
-              }
-            ]
-          )
-        end
+        create(:commit, project: project, commit_message: 'Creates agent config', actions: [
+          { action: 'create', file_path: '.gitlab/agents/my-agent/config.yaml', content: agent_config }
+        ])
       end
 
       def deploy_manifest(project)
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          galatic_empire_manifest = read_agent_fixture("galatic-empire-manifest.yaml")
+        galatic_empire_manifest = read_agent_fixture("galatic-empire-manifest.yaml")
 
-          commit.project = project
-          commit.commit_message = 'Deploys the Galatic Empire!'
-          commit.add_files(
-            [
-              {
-                file_path: 'manifest.yaml',
-                content: galatic_empire_manifest
-              }
-            ]
-          )
-        end
+        create(:commit, project: project, commit_message: 'Deploys the Galactic Empire!', actions: [
+          { action: 'create', file_path: 'manifest.yaml', content: galatic_empire_manifest }
+        ])
       end
     end
   end

@@ -36,18 +36,13 @@ module QA
         endpoint = QA::Runtime::API::Request.new(admin_api_client, '/application/settings').url
         put endpoint, { namespace_aggregation_schedule_lease_duration_in_seconds: 120 }
 
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.api_client = owner_api_client
-          commit.project = project
-          commit.commit_message = 'Add large file'
-          commit.add_files([{ file_path: 'test.rb', content: SecureRandom.hex(10000) }]) # 10.2 KiB
-        end
+        create(:commit, api_client: owner_api_client, project: project, commit_message: 'Add large file', actions: [
+          { action: 'create', file_path: 'test.rb', content: SecureRandom.hex(10000) } # 10.2 KiB
+        ])
 
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.api_client = owner_api_client
-          commit.project = project
-          commit.commit_message = 'Add CI config file'
-          commit.add_files([{
+        create(:commit, api_client: owner_api_client, project: project, commit_message: 'Add CI file', actions: [
+          {
+            action: 'create',
             file_path: '.gitlab-ci.yml',
             content: <<~YAML
               container-registry:
@@ -72,8 +67,8 @@ module QA
                   - docker build -t $IMAGE_TAG .
                   - docker push $IMAGE_TAG
             YAML
-          }])
-        end
+          }
+        ])
 
         create(:project_wiki_page,
           api_client: owner_api_client,

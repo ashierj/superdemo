@@ -38,25 +38,23 @@ module QA
         end
 
         let!(:agent_config_file) do
-          Resource::Repository::Commit.fabricate_via_api! do |commit|
-            agent_config_yaml = ERB.new(read_ee_fixture('remote_development', 'agent-config.yaml.erb')).result(binding)
-
-            commit.project = agent_project
-            commit.commit_message = 'Add remote dev agent configuration'
-            commit.add_files([{ file_path: ".gitlab/agents/#{kubernetes_agent.name}/config.yaml",
-                                content: agent_config_yaml }])
-          end
+          agent_config_yaml = ERB.new(read_ee_fixture('remote_development', 'agent-config.yaml.erb')).result(binding)
+          create(:commit, project: agent_project, commit_message: 'Add remote dev agent configuration', actions: [
+            {
+              action: 'create',
+              file_path: ".gitlab/agents/#{kubernetes_agent.name}/config.yaml",
+              content: agent_config_yaml
+            }
+          ])
         end
 
         let(:devfile_project) { create(:project, group: parent_group, name: 'devfile-project') }
         let!(:devfile_file) do
-          Resource::Repository::Commit.fabricate_via_api! do |commit|
-            devfile_yaml = ERB.new(read_ee_fixture('remote_development', 'devfile.yaml.erb')).result(binding)
+          devfile_yaml = ERB.new(read_ee_fixture('remote_development', 'devfile.yaml.erb')).result(binding)
 
-            commit.project = devfile_project
-            commit.commit_message = 'Add .devfile.yaml'
-            commit.add_files([{ file_path: '.devfile.yaml', content: devfile_yaml }])
-          end
+          create(:commit, project: devfile_project, commit_message: 'Add .devfile.yaml', actions: [
+            { action: 'create', file_path: '.devfile.yaml', content: devfile_yaml }
+          ])
         end
 
         before do

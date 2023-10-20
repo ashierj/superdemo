@@ -12,30 +12,25 @@ module QA
       let!(:runner) { create(:project_runner, project: project, name: executor, tags: [executor]) }
 
       before do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Add .gitlab-ci.yml'
-          commit.add_files(
-            [
-              {
-                file_path: '.gitlab-ci.yml',
-                content: <<~YAML
-                  test-artifacts:
-                    tags:
-                      - '#{executor}'
-                    artifacts:
-                      paths:
-                        - '#{directory_name}'
-                      expire_in: 1000 seconds
-                    script:
-                      - |
-                        mkdir #{directory_name}
-                        echo "CONTENTS" > #{directory_name}/#{file_name}
-                YAML
-              }
-            ]
-          )
-        end
+        create(:commit, project: project, commit_message: 'Add .gitlab-ci.yml', actions: [
+          {
+            action: 'create',
+            file_path: '.gitlab-ci.yml',
+            content: <<~YAML
+              test-artifacts:
+                tags:
+                  - '#{executor}'
+                artifacts:
+                  paths:
+                    - '#{directory_name}'
+                  expire_in: 1000 seconds
+                script:
+                  - |
+                    mkdir #{directory_name}
+                    echo "CONTENTS" > #{directory_name}/#{file_name}
+            YAML
+          }
+        ])
       end
 
       after do

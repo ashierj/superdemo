@@ -17,12 +17,9 @@ module QA
       let(:project_file_content) { "File content for blob index test #{SecureRandom.hex(8)}" }
 
       before do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.add_files([
-                             { file_path: 'README.md', content: project_file_content }
-                           ])
-        end
+        create(:commit, project: project, actions: [
+          { action: 'create', file_path: 'README.md', content: project_file_content }
+        ])
       end
 
       it(

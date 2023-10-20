@@ -21,29 +21,24 @@ module QA
       end
 
       let!(:repository) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Add report files'
+        build(:commit, project: project, commit_message: 'Add report files') do |commit|
           commit.add_directory(artefacts_directory)
-        end
+        end.fabricate_via_api!
       end
 
       let!(:ci_yaml_commit) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.commit_message = 'Add .gitlab-ci.yml'
-          commit.add_files([ci_file(secret_detection_report)])
-        end
+        create(:commit, project: project, commit_message: 'Add .gitlab-ci.yml', actions: [
+          ci_file(secret_detection_report).merge(action: 'create')
+        ])
       end
 
       let(:source_mr_repository) do
-        Resource::Repository::Commit.fabricate_via_api! do |commit|
-          commit.project = project
-          commit.branch = 'test-dismissed-vulnerabilities'
-          commit.start_branch = project.default_branch
-          commit.commit_message = 'New secrete detection findings report in yml file'
-          commit.update_files([ci_file(secret_detection_report_mr)])
-        end
+        create(:commit,
+          project: project,
+          branch: 'test-dismissed-vulnerabilities',
+          start_branch: project.default_branch,
+          commit_message: 'new secret detection findings report in yml file',
+          actions: [ci_file(secret_detection_report_mr).merge(action: 'update')])
       end
 
       let(:merge_request) do
