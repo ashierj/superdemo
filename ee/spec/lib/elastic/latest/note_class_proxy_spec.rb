@@ -47,17 +47,6 @@ RSpec.describe Elastic::Latest::NoteClassProxy, feature_category: :global_search
         end
       end
 
-      context 'when feature_flag search_notes_hide_archived_projects is disabled' do
-        before do
-          stub_feature_flags(search_notes_hide_archived_projects: false)
-        end
-
-        it 'does not add archived filter query and includes the archived notes with results from all projects' do
-          expect(elasticsearch_hit_ids(result)).to match_array [note.id, note2.id, archived_note.id]
-          assert_named_queries('note:match:search_terms', without: ['note:archived:non_archived'])
-        end
-      end
-
       context 'when options contains include_archived as true' do
         let(:options) do
           { current_user: user, project_ids: [], public_and_internal_projects: true, include_archived: true }
