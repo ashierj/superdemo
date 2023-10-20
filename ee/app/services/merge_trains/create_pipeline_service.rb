@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module MergeTrains
   class CreatePipelineService < BaseService
     def execute(merge_request, previous_ref, create_mergeable_ref)
