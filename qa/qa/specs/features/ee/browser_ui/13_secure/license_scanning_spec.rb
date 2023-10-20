@@ -31,7 +31,7 @@ module QA
           actions: [
             {
               action: 'create',
-              file_path: 'gitlab-ci.yml',
+              file_path: '.gitlab-ci.yml',
               content: File.read(
                 File.join(
                   EE::Runtime::Path.fixtures_path, 'secure_license_scanning_files',
