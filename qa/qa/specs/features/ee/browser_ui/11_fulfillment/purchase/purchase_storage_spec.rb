@@ -32,7 +32,10 @@ module QA
     end
 
     let(:group) do
-      create(:sandbox, path: "test-group-fulfillment-#{hash}", api_client: owner_api_client)
+      Resource::Sandbox.fabricate_via_browser_ui! do |sandbox|
+        sandbox.path = "test-group-fulfillment-#{hash}"
+        sandbox.api_client = owner_api_client
+      end
     end
 
     before do
