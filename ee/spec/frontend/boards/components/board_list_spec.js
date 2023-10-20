@@ -45,10 +45,10 @@ const componentConfig = {
     BoardCardMoveToPosition,
   },
   provide: {
-    allowSubEpics: true,
+    allowSubEpics: false,
     scopedLabelsAvailable: true,
-    isEpicBoard: true,
-    issuableType: TYPE_EPIC,
+    isEpicBoard: false,
+    issuableType: TYPE_ISSUE,
     isGroupBoard: true,
     isProjectBoard: false,
     isApolloBoard: false,
