@@ -7,6 +7,8 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
 
+  let(:options) { {} }
+  let(:action_name) { :summarize_comments }
   let(:summarize_notes_enabled) { true }
   let(:current_user) { user }
 
@@ -48,10 +50,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
       let_it_be(:resource) { create(:issue, project: project) }
 
       context 'with notes' do
-        let(:action_name) { :summarize_comments }
-        let(:options) { { ai_provider: :vertex_ai } }
-        let(:content) { 'Summarize comments' }
-
         before do
           create_pair(:note_on_issue, project: resource.project, noteable: resource)
         end
@@ -68,10 +66,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
       let_it_be(:resource) { create(:work_item, project: project) }
 
       context 'with notes' do
-        let(:action_name) { :summarize_comments }
-        let(:options) { { ai_provider: :vertex_ai } }
-        let(:content) { 'Summarize comments' }
-
         before do
           create_pair(:note_on_work_item, project: resource.project, noteable: resource)
         end
@@ -85,9 +79,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
     end
 
     context 'for an epic' do
-      let(:action_name) { :summarize_comments }
-      let(:options) { { ai_provider: :vertex_ai } }
-      let(:content) { 'Summarize comments' }
       let_it_be(:resource) { create(:epic, group: group) }
 
       context 'with notes' do

@@ -3,20 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category: :duo_chat do
+  let(:template_class) { nil }
   let(:ai_response) { "some ai response text" }
   let(:prompt_message) do
     build(:ai_message, :summarize_comments, user: user, resource: issuable, request_id: 'uuid')
-  end
-
-  let(:template_class) { nil }
-  let(:ai_options) do
-    {
-      messages: [
-        { role: "system", content: "You are a helpful assistant that summarizes comments in markdown format." },
-        { role: "user", content: "Some content" }
-      ],
-      temperature: 0.2
-    }
   end
 
   RSpec.shared_examples 'performs completion' do
@@ -73,7 +63,7 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
   describe "#execute", :saas do
     let(:ai_request_class) { ::Gitlab::Llm::Anthropic::Client }
     let(:completion_method) { :stream }
-    let(:options) { { ai_provider: :anthropic } }
+    let(:options) { {} }
 
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
@@ -102,15 +92,6 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
 
         specify { expect(summarize_comments).to be_nil }
       end
-
-      context 'with invalid ai provider' do
-        let_it_be(:issuable) { create(:issue, project: project) }
-        let(:options) { { ai_provider: :some_provider } }
-
-        it 'raises an error' do
-          expect { subject }.to raise_error(StandardError, 'unknown ai_provider some_provider')
-        end
-      end
     end
 
     context 'with valid params' do
@@ -119,22 +100,17 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
         let_it_be(:notes) { create_pair(:note_on_issue, project: project, noteable: issuable) }
         let_it_be(:system_note) { create(:note_on_issue, :system, project: project, noteable: issuable) }
 
+        # anthropic as provider as summarize_notes_with_anthropic is enabled by default.
         it_behaves_like 'performs completion'
 
         context 'with vertex_ai provider' do
-          let(:options) { { ai_provider: :vertex_ai } }
           let(:completion_method) { :text }
           let(:ai_request_class) { ::Gitlab::Llm::VertexAi::Client }
           let(:ai_response) { { "predictions" => [{ "content" => "some ai response text" }] } }
 
-          it_behaves_like 'performs completion'
-        end
-
-        context 'with open_ai provider' do
-          let(:options) { { ai_provider: :open_ai } }
-          let(:completion_method) { :completions }
-          let(:ai_request_class) { ::Gitlab::Llm::OpenAi::Client }
-          let(:ai_response) { { "choices" => [{ "text" => "some ai response text" }] } }
+          before do
+            stub_feature_flags(summarize_notes_with_anthropic: false)
+          end
 
           it_behaves_like 'performs completion'
         end
