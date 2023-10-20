@@ -667,11 +667,11 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
           it_behaves_like 'updates epic without changing parent'
         end
 
-        context 'when user lacks admin_epic_tree_relation permissions' do
+        context 'when user lacks create_epic_tree_relation permissions' do
           before do
             allow(Ability).to receive(:allowed?).and_call_original
             allow(Ability).to receive(:allowed?)
-              .with(user, :admin_epic_tree_relation, new_parent).and_return(false)
+              .with(user, :create_epic_tree_relation, new_parent).and_return(false)
           end
 
           it_behaves_like 'updates epic without changing parent'

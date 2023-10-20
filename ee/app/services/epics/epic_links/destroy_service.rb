@@ -27,7 +27,7 @@ module Epics
       def permission_to_remove_relation?
         child_epic.present? &&
           parent_epic.present? &&
-          can?(current_user, :admin_epic_relation, parent_epic) &&
+          can?(current_user, :read_epic_relation, parent_epic) &&
           can?(current_user, :admin_epic_relation, child_epic)
       end
 
