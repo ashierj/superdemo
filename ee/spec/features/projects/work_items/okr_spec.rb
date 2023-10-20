@@ -280,10 +280,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it 'removes direct child of objective with undoing' do
       create_okr('objective', 'Objective 2')
 
+      find_by_testid('links-child').hover
       within_testid('links-child') do
-        find_by_testid('work_items_links_menu').click
-        click_button 'Remove'
-
+        find_by_testid('remove-work-item-link').click
         wait_for_all_requests
       end
 
@@ -333,8 +332,8 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       end
 
       within_testid('tree-children') do
-        find_by_testid('work_items_links_menu').click
-        click_button 'Remove'
+        find_by_testid('links-child').hover
+        find_by_testid('remove-work-item-link').click
 
         wait_for_all_requests
 
