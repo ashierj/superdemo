@@ -8573,6 +8573,9 @@ msgstr ""
 msgid "Branches"
 msgstr ""
 
+msgid "Branches matching this string are retargeted. Wildcards are supported."
+msgstr ""
+
 msgid "Branches: %{source_branch} to %{target_branch}"
 msgstr ""
 
@@ -31433,6 +31436,9 @@ msgstr ""
 msgid "No available branches"
 msgstr ""
 
+msgid "No branch selected"
+msgstr ""
+
 msgid "No branches found"
 msgstr ""
 
@@ -47497,6 +47503,9 @@ msgid "The branch for this project has no active pipeline configuration."
 msgstr ""
 
 msgid "The branch or tag does not exist"
+msgstr ""
+
+msgid "The branch to merge into."
 msgstr ""
 
 msgid "The character highlighter helps you keep the subject line to %{titleLength} characters and wrap the body at %{bodyLength} so they are readable in git."

@@ -18,7 +18,7 @@ RSpec.describe 'Project settings > Merge Requests > Target branch rules', :js, f
 
     fill_in 'projects_target_branch_rule_name', with: 'dev/*'
 
-    click_button 'No ref selected'
+    click_button 'No branch selected'
 
     find('.gl-new-dropdown-item', text: 'spooky-stuff').click
 
