@@ -73,6 +73,11 @@ module Gitlab
           service_class: ::Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest,
           prompt_class: ::Gitlab::Llm::Templates::SummarizeMergeRequest,
           feature_category: :code_review_workflow
+        },
+        categorize_question: {
+          service_class: ::Gitlab::Llm::Anthropic::Completions::CategorizeQuestion,
+          prompt_class: ::Gitlab::Llm::Templates::CategorizeQuestion,
+          feature_category: :duo_chat
         }
       }.freeze
 

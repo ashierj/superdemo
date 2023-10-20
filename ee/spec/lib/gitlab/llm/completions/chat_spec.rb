@@ -28,6 +28,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
     )
   end
 
+  let(:categorize_service) { instance_double(::Llm::ExecuteMethodService) }
+
   let(:answer) do
     ::Gitlab::Llm::Chain::Answer.new(
       status: :ok, context: context, content: content, tool: nil, is_final: true
@@ -72,6 +74,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
           extra_resource: extra_resource)
         .and_return(context)
+      expect(categorize_service).to receive(:execute)
+      expect(::Llm::ExecuteMethodService).to receive(:new)
+        .with(user, user, :categorize_question, { question: content, request_id: 'uuid' })
+        .and_return(categorize_service)
 
       subject
 
@@ -115,6 +121,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
           an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid', ai_action: :chat,
 client_subscription_id: 'someid' }
         ).and_return(stream_response_handler)
+        expect(categorize_service).to receive(:execute)
+        expect(::Llm::ExecuteMethodService).to receive(:new)
+          .with(user, user, :categorize_question, { question: content, request_id: 'uuid' })
+          .and_return(categorize_service)
 
         subject
       end
@@ -133,6 +143,10 @@ client_subscription_id: 'someid' }
         end
 
         allow(::Gitlab::Llm::Chain::GitlabContext).to receive(:new).and_return(context)
+        expect(categorize_service).to receive(:execute)
+        expect(::Llm::ExecuteMethodService).to receive(:new)
+         .with(user, user, :categorize_question, { question: content, request_id: 'uuid' })
+         .and_return(categorize_service)
 
         subject
 
@@ -203,6 +217,10 @@ client_subscription_id: 'someid' }
           .with(current_user: user, container: expected_container, resource: resource,
             ai_request: ai_request, extra_resource: extra_resource)
           .and_return(context)
+        expect(categorize_service).to receive(:execute)
+        expect(Llm::ExecuteMethodService).to receive(:new)
+          .with(user, user, :categorize_question, { question: content, request_id: 'uuid' })
+          .and_return(categorize_service)
 
         subject
       end
