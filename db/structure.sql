@@ -25322,7 +25322,6 @@ CREATE TABLE workspaces (
     deployment_resource_version text,
     personal_access_token_id bigint,
     config_version integer DEFAULT 1 NOT NULL,
-    force_full_reconciliation boolean DEFAULT false NOT NULL,
     force_include_all_resources boolean DEFAULT true NOT NULL,
     CONSTRAINT check_15543fb0fa CHECK ((char_length(name) <= 64)),
     CONSTRAINT check_157d5f955c CHECK ((char_length(namespace) <= 64)),
