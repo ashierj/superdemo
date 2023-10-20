@@ -4,10 +4,9 @@ RSpec.shared_examples 'a redacted search results page' do |include_anonymous: tr
   let(:public_group) { create(:group, :public) }
   let(:public_restricted_project) { create(:project, :repository, :public, :wiki_repo, namespace: public_group, name: 'The Project searchabletext') }
   let(:issue_access_level) { ProjectFeature::PRIVATE }
-  let(:user_not_in_project) { create(:user, :no_super_sidebar) }
+  let(:user_not_in_project) { create(:user) }
 
   before do
-    stub_feature_flags(super_sidebar_logged_out: false)
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
     Sidekiq::Testing.inline! do
