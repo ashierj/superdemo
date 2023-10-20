@@ -32234,8 +32234,10 @@ A time-frame defined as a closed inclusive range of two dates.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="unionedepicfilterinputauthorusername"></a>`authorUsername` | [`[String!]`](#string) | Filters epics that are authored by one of the given users. |
-| <a id="unionedepicfilterinputlabelname"></a>`labelName` | [`[String!]`](#string) | Filters epics that have at least one of the given labels. |
+| <a id="unionedepicfilterinputauthorusername"></a>`authorUsername` **{warning-solid}** | [`[String!]`](#string) | **Deprecated:** Use authorUsernames instead. Deprecated in 16.6. |
+| <a id="unionedepicfilterinputauthorusernames"></a>`authorUsernames` | [`[String!]`](#string) | Filters epics that are authored by one of the given users. |
+| <a id="unionedepicfilterinputlabelname"></a>`labelName` **{warning-solid}** | [`[String!]`](#string) | **Deprecated:** Use labelNames instead. Deprecated in 16.6. |
+| <a id="unionedepicfilterinputlabelnames"></a>`labelNames` | [`[String!]`](#string) | Filters epics that have at least one of the given labels. |
 
 ### `UnionedIssueFilterInput`
 

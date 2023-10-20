@@ -240,10 +240,26 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
 
         let(:params) { { or: { label_name: [label1.title, label2.title] } } }
 
-        it 'returns items that have at least one of the given labels' do
-          post_graphql(query(params), current_user: user)
+        context 'when queried using valid label names' do
+          let(:expected_epics) { [label_epic2.to_global_id.to_s, label_epic1.to_global_id.to_s] }
 
-          expect_array_response([label_epic2.to_global_id.to_s, label_epic1.to_global_id.to_s])
+          context 'when using labelName argument' do
+            it 'returns items that have at least one of the given labels' do
+              post_graphql(query(params), current_user: user)
+
+              expect_array_response(expected_epics)
+            end
+          end
+
+          context 'when using labelNames argument' do
+            let(:params) { { or: { label_names: [label1.title, label2.title] } } }
+
+            it 'returns items that have at least one of the given labels' do
+              post_graphql(query(params), current_user: user)
+
+              expect_array_response(expected_epics)
+            end
+          end
         end
 
         context 'when queried label names are empty' do
@@ -277,14 +293,30 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
 
         let(:params) { { or: { author_username: [epic3.author.username, epic4.author.username] } } }
 
-        it 'returns items that have at least one of the given author names' do
-          post_graphql(query(params), current_user: user)
+        context 'when queried using valid author usernames' do
+          let(:expected_epics) { [epic4.to_global_id.to_s, epic3.to_global_id.to_s] }
 
-          expect_array_response([epic4.to_global_id.to_s, epic3.to_global_id.to_s])
+          context 'when using authorUsername argument' do
+            it 'returns items that have at least one of the given labels' do
+              post_graphql(query(params), current_user: user)
+
+              expect_array_response(expected_epics)
+            end
+          end
+
+          context 'when using authorUsernames argument' do
+            let(:params) { { or: { author_usernames: [epic3.author.username, epic4.author.username] } } }
+
+            it 'returns items that have at least one of the given labels' do
+              post_graphql(query(params), current_user: user)
+
+              expect_array_response(expected_epics)
+            end
+          end
         end
 
-        context 'when queried label names are empty' do
-          let(:params) { { or: { label_name: [] } } }
+        context 'when queried author usernames are empty' do
+          let(:params) { { or: { author_usernames: [] } } }
 
           it 'returns all items' do
             post_graphql(query(params), current_user: user)
