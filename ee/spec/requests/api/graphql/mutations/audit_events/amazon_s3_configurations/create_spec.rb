@@ -13,8 +13,8 @@ RSpec.describe 'Create Amazon S3 configuration', feature_category: :audit_events
   let_it_be(:bucket_name) { 'test-bucket' }
   let_it_be(:aws_region) { 'us-east-1' }
 
-  let(:mutation) { graphql_mutation(:amazon_s3_configuration_create, input) }
-  let(:mutation_response) { graphql_mutation_response(:amazon_s3_configuration_create) }
+  let(:mutation) { graphql_mutation(:audit_events_amazon_s3_configuration_create, input) }
+  let(:mutation_response) { graphql_mutation_response(:audit_events_amazon_s3_configuration_create) }
 
   let(:input) do
     {

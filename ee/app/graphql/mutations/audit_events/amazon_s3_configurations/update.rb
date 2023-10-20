@@ -4,14 +4,12 @@ module Mutations
   module AuditEvents
     module AmazonS3Configurations
       class Update < Base
-        graphql_name 'AmazonS3ConfigurationUpdate'
+        graphql_name 'AuditEventsAmazonS3ConfigurationUpdate'
 
         include ::Audit::Changes
 
         UPDATE_EVENT_NAME = 'amazon_s3_configuration_updated'
         AUDIT_EVENT_COLUMNS = [:access_key_xid, :secret_access_key, :bucket_name, :aws_region, :name].freeze
-
-        authorize :admin_external_audit_events
 
         argument :id, ::Types::GlobalIDType[::AuditEvents::AmazonS3Configuration],
           required: true,
@@ -71,10 +69,6 @@ module Mutations
               event_type: UPDATE_EVENT_NAME
             )
           end
-        end
-
-        def find_object(config_gid)
-          GitlabSchema.object_from_id(config_gid, expected_type: ::AuditEvents::AmazonS3Configuration).sync
         end
       end
     end

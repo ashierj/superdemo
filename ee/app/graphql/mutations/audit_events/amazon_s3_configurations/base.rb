@@ -4,6 +4,8 @@ module Mutations
   module AuditEvents
     module AmazonS3Configurations
       class Base < BaseMutation
+        authorize :admin_external_audit_events
+
         private
 
         def audit(config, action:)
@@ -17,6 +19,10 @@ module Mutations
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
+
+        def find_object(config_gid)
+          GitlabSchema.object_from_id(config_gid, expected_type: ::AuditEvents::AmazonS3Configuration)
         end
       end
     end
