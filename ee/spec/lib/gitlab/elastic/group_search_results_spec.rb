@@ -313,16 +313,6 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
       end
     end
 
-    context 'when feature_flag search_notes_hide_archived_projects is disabled' do
-      before do
-        stub_feature_flags(search_notes_hide_archived_projects: false)
-      end
-
-      it 'includes the archived notes in the search results' do
-        expect(subject.objects('notes')).to match_array([note, note_on_archived_project])
-      end
-    end
-
     context 'when filters contains include_archived as true' do
       let(:filters) do
         { include_archived: true }
