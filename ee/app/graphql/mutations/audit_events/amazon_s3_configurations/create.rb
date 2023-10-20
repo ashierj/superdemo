@@ -4,9 +4,7 @@ module Mutations
   module AuditEvents
     module AmazonS3Configurations
       class Create < Base
-        graphql_name 'AmazonS3ConfigurationCreate'
-
-        authorize :admin_external_audit_events
+        graphql_name 'AuditEventsAmazonS3ConfigurationCreate'
 
         argument :name, GraphQL::Types::String,
           required: false,

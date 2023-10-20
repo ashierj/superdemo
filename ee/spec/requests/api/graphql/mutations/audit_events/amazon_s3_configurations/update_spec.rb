@@ -16,8 +16,8 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
   let_it_be(:updated_destination_name) { 'updated_destination_name' }
   let_it_be(:config_gid) { global_id_of(config) }
 
-  let(:mutation) { graphql_mutation(:amazon_s3_configuration_update, input) }
-  let(:mutation_response) { graphql_mutation_response(:amazon_s3_configuration_update) }
+  let(:mutation) { graphql_mutation(:audit_events_amazon_s3_configuration_update, input) }
+  let(:mutation_response) { graphql_mutation_response(:audit_events_amazon_s3_configuration_update) }
 
   let(:input) do
     {
