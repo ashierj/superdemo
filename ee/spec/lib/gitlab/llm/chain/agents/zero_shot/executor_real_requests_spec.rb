@@ -171,17 +171,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
 
       context 'with chat history' do
-        let_it_be(:issue2) do
-          create(
-            :issue,
-            project: project,
-            title: 'AI chat - send websocket subscription message also for user messages',
-            description: 'To make sure that new messages are propagated to all chat windows ' \
-                         '(e.g. if user has chat window open in multiple windows) we should send subscription ' \
-                         'message for user messages too (currently we send messages only for AI responses)'
-          )
-        end
-
         let(:history) do
           [
             { role: 'user', content: "What is issue #{issue.to_reference(full: true)} about?" },
@@ -199,6 +188,17 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           history.each do |message|
             create(:ai_chat_message, message.merge(request_id: uuid, user: user))
           end
+
+          create(:note_on_issue, author: user, project: project, noteable: issue,
+            note: 'I would like a provider that is good at writing unit tests')
+          create(:note_on_issue, author: user, project: project, noteable: issue,
+            note: 'My company would use this to write test for our code')
+          create(:note_on_issue, author: user, project: project, noteable: issue,
+            note: 'We are interested in using this for project management')
+          create(:note_on_issue, author: user, project: project, noteable: issue,
+            note: 'I would suggest a provider that handles creating issue summaries, which is what we\'ll use it for')
+          create(:note_on_issue, author: user, project: project, noteable: issue,
+            note: '+1, our company will also use this to manage our projects!')
         end
 
         # rubocop: disable Layout/LineLength
@@ -211,16 +211,48 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           'Can you provide more details about that issue?' | %w[IssueIdentifier ResourceReader] | /(reliability|providers)/
           'Can you reword your answer?' | [] | /provider/i
           'Can you simplify your answer?' | [] | /provider|simplify/i
+          'Can you expand on your last paragraph?' | [] | /provider/i
+          'Can you identify the unique use cases the commenters have raised on this issue?' | %w[IssueIdentifier ResourceReader] | /test|manage/
         end
         # rubocop: enable Layout/LineLength
 
         with_them do
-          let(:input) do
-            format(input_template, issue_identifier: issue.to_reference(full: true),
-              issue_identifier2: issue2.to_reference(full: true))
-          end
+          let(:input) { format(input_template) }
 
           it_behaves_like 'successful prompt processing'
+        end
+
+        context 'with additional history' do
+          let(:history) do
+            [
+              { role: 'user', content: "What is issue #{issue.to_reference(full: true)} about?" },
+              {
+                role: 'assistant', content: "The summary of issue is:\n\n## Provider Comparison\n" \
+                                            "- Difficulty in evaluating which provider is better \n" \
+                                            "- Both providers have pros and cons"
+              },
+              {
+                role: 'user', content: "Can you identify the unique use cases the commenters have raised on this issue?"
+              },
+              {
+                role: 'assistant', content: "Based on the issue comments, some of the unique use cases raised are:\n" \
+                                            "- Writing unit tests\n- Project management \n" \
+                                            "- Creating issue summaries\n- Low latency/high reliability"
+              }
+            ]
+          end
+
+          # rubocop: disable Layout/LineLength
+          where(:input_template, :tools, :answer_match) do
+            'Can you sort this list by the number of users that have requested the use case and include the number for each use case? Can you include a verbatim for the two most requested use cases that reflect the general opinion of commenters for these two use cases?' | %w[] | /test|manage/
+          end
+          # rubocop: enable Layout/LineLength
+
+          with_them do
+            let(:input) { format(input_template) }
+
+            it_behaves_like 'successful prompt processing'
+          end
         end
       end
     end
@@ -316,24 +348,14 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
 
       context 'with chat history' do
-        let_it_be(:epic2) do
-          create(
-            :epic,
-            group: group,
-            title: 'AI chat - send websocket subscription message also for user messages',
-            description: 'To make sure that new messages are propagated to all chat windows ' \
-                         '(e.g. if user has chat window open in multiple windows) we should send subscription ' \
-                         'message for user messages too (currently we send messages only for AI responses)'
-          )
-        end
-
         let(:history) do
           [
             { role: 'user', content: "What is epic #{epic.to_reference(full: true)} about?" },
             {
               role: 'assistant', content: "The summary of epic is:\n\n## Provider Comparison\n" \
                                           "- Difficulty in evaluating which provider is better \n" \
-                                          "- Both providers have pros and cons"
+                                          "- Both providers have pros and cons\n" \
+                                          "- Consider using objective measure to compare the providers\n"
             }
           ]
         end
@@ -353,18 +375,16 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           # EpicIdentifier overrides context.resource
           # JsonReader takes resource from context
           # So JsonReader twice with different action input
-          'Can you provide more details about that epic' | %w[EpicIdentifier ResourceReader] | /(reliability|providers)/
+          'Can you provide more details about that epic?' | %w[EpicIdentifier ResourceReader] | /(reliability|providers)/
           # Translation would have to be explicitly allowed in prompt rules first
           # 'Can you translate your last answer to German?' | [] | /Anbieter/ # Anbieter == provider
           'Can you reword your answer?' | [] | /provider/i
+          'Can you explain your third point in different words?' | [] | /provider/i
         end
         # rubocop: enable Layout/LineLength
 
         with_them do
-          let(:input) do
-            format(input_template, epic_identifier: epic.to_reference(full: true),
-              epic_identifier2: epic2.to_reference(full: true))
-          end
+          let(:input) { format(input_template) }
 
           it_behaves_like 'successful prompt processing'
         end
