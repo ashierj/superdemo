@@ -1,5 +1,5 @@
 import {
-  PREVENT_APPROVAL_BY_MR_AUTHOR,
+  PREVENT_APPROVAL_BY_AUTHOR,
   buildSettingsList,
   mergeRequestConfiguration,
   protectedBranchesConfiguration,
@@ -19,34 +19,22 @@ describe('approval_settings', () => {
     });
 
     it('can update merge request settings', () => {
-      mergeRequestConfiguration[PREVENT_APPROVAL_BY_MR_AUTHOR].enabled = true;
-      expect(
-        buildSettingsList({
-          approvalSettings: mergeRequestConfiguration,
-          hasAnyMergeRequestRule: true,
-        }),
-      ).toEqual({
-        ...protectedBranchesConfiguration,
+      const settings = {
         ...mergeRequestConfiguration,
-        [PREVENT_APPROVAL_BY_MR_AUTHOR]: {
-          enabled: true,
-        },
+        [PREVENT_APPROVAL_BY_AUTHOR]: false,
+      };
+      expect(buildSettingsList({ settings, hasAnyMergeRequestRule: true })).toEqual({
+        ...protectedBranchesConfiguration,
+        ...settings,
       });
     });
 
     it('has fall back values for approval settings', () => {
-      const newOption = {
-        [PREVENT_APPROVAL_BY_MR_AUTHOR]: undefined,
-      };
-
       const settings = {
-        ...mergeRequestConfiguration,
-        ...newOption,
+        [PREVENT_APPROVAL_BY_AUTHOR]: true,
       };
 
-      expect(
-        buildSettingsList({ approvalSettings: settings, hasAnyMergeRequestRule: true }),
-      ).toEqual({
+      expect(buildSettingsList({ settings, hasAnyMergeRequestRule: true })).toEqual({
         ...protectedBranchesConfiguration,
         ...mergeRequestConfiguration,
       });

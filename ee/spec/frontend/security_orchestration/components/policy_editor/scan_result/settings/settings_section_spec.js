@@ -1,4 +1,8 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import {
+  BLOCK_UNPROTECTING_BRANCHES,
+  PREVENT_APPROVAL_BY_AUTHOR,
+} from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_section.vue';
 import SettingsItem from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_item.vue';
 
@@ -20,20 +24,18 @@ describe('SettingsSection', () => {
   const findMergeRequestSettingsItem = () => wrapper.findByTestId('merge-request-setting');
 
   describe('settings modification', () => {
-    const createSettings = (value, key = 'block_protected_branch_modification') => ({
+    const createSettings = (value, key = BLOCK_UNPROTECTING_BRANCHES) => ({
       settings: {
-        [key]: {
-          enabled: value,
-        },
+        [key]: value,
       },
     });
 
     it.each`
-      description                                                   | propsData                                                            | protectedBranchSettingVisible | mergeRequestSettingVisible
-      ${'disable block_protected_branch_modification setting'}      | ${createSettings(false)}                                             | ${true}                       | ${false}
-      ${'enable block_protected_branch_modification setting'}       | ${createSettings(true)}                                              | ${true}                       | ${false}
-      ${'disable prevent_approval_by_merge_request_author setting'} | ${createSettings(false, 'prevent_approval_by_merge_request_author')} | ${false}                      | ${true}
-      ${'enable prevent_approval_by_merge_request_author setting'}  | ${createSettings(true, 'prevent_approval_by_merge_request_author')}  | ${false}                      | ${true}
+      description                                         | propsData                                            | protectedBranchSettingVisible | mergeRequestSettingVisible
+      ${`disable ${BLOCK_UNPROTECTING_BRANCHES} setting`} | ${createSettings(false)}                             | ${true}                       | ${false}
+      ${`enable ${BLOCK_UNPROTECTING_BRANCHES} setting`}  | ${createSettings(true)}                              | ${true}                       | ${false}
+      ${`disable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}  | ${createSettings(false, PREVENT_APPROVAL_BY_AUTHOR)} | ${false}                      | ${true}
+      ${`enable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}   | ${createSettings(true, PREVENT_APPROVAL_BY_AUTHOR)}  | ${false}                      | ${true}
     `(
       '$description',
       ({ propsData, protectedBranchSettingVisible, mergeRequestSettingVisible }) => {
@@ -49,7 +51,7 @@ describe('SettingsSection', () => {
 
       await findAllSettingsItem()
         .at(0)
-        .vm.$emit('update', { key: 'block_protected_branch_modification', value: false });
+        .vm.$emit('update', { key: BLOCK_UNPROTECTING_BRANCHES, value: false });
       expect(wrapper.emitted('changed')).toEqual([[createSettings(false).settings]]);
     });
 
@@ -57,12 +59,8 @@ describe('SettingsSection', () => {
       createComponent({
         propsData: {
           settings: {
-            block_protected_branch_modification: {
-              enabled: true,
-            },
-            prevent_approval_by_merge_request_author: {
-              enabled: true,
-            },
+            [BLOCK_UNPROTECTING_BRANCHES]: true,
+            [PREVENT_APPROVAL_BY_AUTHOR]: true,
           },
         },
       });

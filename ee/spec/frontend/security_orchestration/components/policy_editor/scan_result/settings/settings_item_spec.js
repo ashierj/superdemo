@@ -3,7 +3,7 @@ import SettingsItem from 'ee/security_orchestration/components/policy_editor/sca
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { ALL_PROTECTED_BRANCHES } from 'ee/security_orchestration/components/policy_editor/constants';
-import { BLOCK_PROTECTED_BRANCH_MODIFICATION } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
+import { BLOCK_UNPROTECTING_BRANCHES } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
 describe('SettingsItem', () => {
   let wrapper;
@@ -14,8 +14,8 @@ describe('SettingsItem', () => {
         title: 'Test title',
         link: 'test-path',
         settings: {
-          test: { enabled: true },
-          test1: { enabled: false },
+          test: true,
+          test1: false,
         },
         ...propsData,
       },
@@ -34,7 +34,7 @@ describe('SettingsItem', () => {
   const findDescriptionText = () => wrapper.findByTestId('settings-group-text');
   const findDescriptionLink = () => wrapper.findComponent(GlLink);
   const findBlockBranchModificationSettingPopover = () =>
-    wrapper.findByTestId('block_protected_branch_modification-popover');
+    wrapper.findByTestId('block_unprotecting_branches-popover');
 
   beforeEach(() => {
     createComponent();
@@ -93,7 +93,7 @@ describe('SettingsItem', () => {
           propsData: {
             rules: [{ branch_type: 'default' }],
             settings: {
-              [BLOCK_PROTECTED_BRANCH_MODIFICATION]: { enabled: false },
+              [BLOCK_UNPROTECTING_BRANCHES]: false,
             },
           },
         });
@@ -104,7 +104,7 @@ describe('SettingsItem', () => {
           propsData: {
             rules: [{ branch_type: 'default' }],
             settings: {
-              [BLOCK_PROTECTED_BRANCH_MODIFICATION]: { enabled: true },
+              [BLOCK_UNPROTECTING_BRANCHES]: true,
             },
           },
         });
@@ -115,7 +115,7 @@ describe('SettingsItem', () => {
           propsData: {
             rules: [{ branch_type: ALL_PROTECTED_BRANCHES.value }],
             settings: {
-              [BLOCK_PROTECTED_BRANCH_MODIFICATION]: { enabled: true },
+              [BLOCK_UNPROTECTING_BRANCHES]: true,
             },
           },
         });
@@ -126,7 +126,7 @@ describe('SettingsItem', () => {
           propsData: {
             rules: [{ branch_type: ALL_PROTECTED_BRANCHES.value }],
             settings: {
-              [BLOCK_PROTECTED_BRANCH_MODIFICATION]: { enabled: true },
+              [BLOCK_UNPROTECTING_BRANCHES]: true,
             },
           },
         });
@@ -138,7 +138,7 @@ describe('SettingsItem', () => {
           propsData: {
             rules: [{ branch_type: ALL_PROTECTED_BRANCHES.value }],
             settings: {
-              [BLOCK_PROTECTED_BRANCH_MODIFICATION]: { enabled: false },
+              [BLOCK_UNPROTECTING_BRANCHES]: false,
             },
           },
         });
@@ -149,7 +149,7 @@ describe('SettingsItem', () => {
           propsData: {
             rules: [{ branch_type: ALL_PROTECTED_BRANCHES.value }],
             settings: {
-              [BLOCK_PROTECTED_BRANCH_MODIFICATION]: { enabled: false },
+              [BLOCK_UNPROTECTING_BRANCHES]: false,
             },
           },
         });

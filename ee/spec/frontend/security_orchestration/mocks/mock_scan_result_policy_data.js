@@ -105,7 +105,7 @@ actions:
     user_approvers:
       - the.one
 approval_settings:
-  block_protected_branch_modification: true
+  block_unprotecting_branches: true
 `;
 
 export const mockApprovalSettingsPermittedInvalidScanResultManifest = `type: scan_result_policy
@@ -155,7 +155,7 @@ export const mockApprovalSettingsScanResultObject = {
     },
   ],
   approval_settings: {
-    block_protected_branch_modification: true,
+    block_unprotecting_branches: true,
   },
 };
 

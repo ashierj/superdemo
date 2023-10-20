@@ -1,7 +1,7 @@
 <script>
 import { GlAccordionItem, GlFormCheckbox, GlTooltipDirective, GlLink, GlSprintf } from '@gitlab/ui';
 import {
-  BLOCK_PROTECTED_BRANCH_MODIFICATION,
+  BLOCK_UNPROTECTING_BRANCHES,
   SETTINGS_HUMANIZED_STRINGS,
   SETTINGS_LINKS,
   SETTINGS_POPOVER_STRINGS,
@@ -75,11 +75,11 @@ export default {
   },
   methods: {
     getSettingValue(setting) {
-      return this.settings[setting]?.enabled || false;
+      return this.settings[setting] || false;
     },
     showPopover(setting) {
       switch (setting) {
-        case BLOCK_PROTECTED_BRANCH_MODIFICATION:
+        case BLOCK_UNPROTECTING_BRANCHES:
         default:
           return this.isProtectedBranchesSelected && !this.getSettingValue(setting);
       }
@@ -104,8 +104,8 @@ export default {
       </gl-sprintf>
     </p>
 
-    <div v-for="({ enabled }, key) in settings" :key="key">
-      <gl-form-checkbox :id="key" :checked="enabled" @change="updateSetting(key, $event)">
+    <div v-for="(value, key) in settings" :key="key">
+      <gl-form-checkbox :id="key" :checked="value" @change="updateSetting(key, $event)">
         <span v-gl-tooltip.viewport.right :title="$options.SETTINGS_TOOLTIP[key]">
           {{ $options.SETTINGS_HUMANIZED_STRINGS[key] }}
         </span>
