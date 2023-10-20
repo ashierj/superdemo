@@ -52,6 +52,8 @@ class EpicPolicy < BasePolicy
 
   rule { can?(:create_note) }.enable :award_emoji
 
+  rule { ~can?(:read_epic) }.prevent :award_emoji
+
   rule { can?(:owner_access) | can?(:maintainer_access) }.enable :admin_note
 
   desc 'User cannot read confidential epics'
