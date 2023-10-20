@@ -4,19 +4,11 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import labelSearchQuery from '~/sidebar/components/labels/labels_select_widget/graphql/project_labels.query.graphql';
-import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import WorkItemLabels from '~/work_items/components/work_item_labels.vue';
-import {
-  projectLabelsResponse,
-  workItemByIidResponseFactory,
-  updateWorkItemMutationResponse,
-} from 'jest/work_items/mock_data';
+import { workItemByIidResponseFactory } from 'jest/work_items/mock_data';
 
 Vue.use(VueApollo);
-
-const workItemId = 'gid://gitlab/WorkItem/1';
 
 describe('WorkItemLabels component', () => {
   let wrapper;
@@ -24,30 +16,18 @@ describe('WorkItemLabels component', () => {
   const findScopedLabel = () =>
     wrapper.findAllComponents(GlLabel).filter((label) => label.props('scoped'));
 
-  const workItemQuerySuccess = jest.fn().mockResolvedValue(workItemByIidResponseFactory());
-  const successSearchQueryHandler = jest.fn().mockResolvedValue(projectLabelsResponse);
-  const successUpdateWorkItemMutationHandler = jest
-    .fn()
-    .mockResolvedValue(updateWorkItemMutationResponse);
-
   const createComponent = ({
     canUpdate = true,
-    workItemQueryHandler = workItemQuerySuccess,
-    searchQueryHandler = successSearchQueryHandler,
-    updateWorkItemMutationHandler = successUpdateWorkItemMutationHandler,
+    workItemQueryHandler = jest.fn().mockResolvedValue(workItemByIidResponseFactory()),
   } = {}) => {
     wrapper = mount(WorkItemLabels, {
-      apolloProvider: createMockApollo([
-        [workItemByIidQuery, workItemQueryHandler],
-        [labelSearchQuery, searchQueryHandler],
-        [updateWorkItemMutation, updateWorkItemMutationHandler],
-      ]),
+      apolloProvider: createMockApollo([[workItemByIidQuery, workItemQueryHandler]]),
       provide: {
         isGroup: false,
       },
       propsData: {
         fullPath: 'test-project-path',
-        workItemId,
+        workItemId: 'gid://gitlab/WorkItem/1',
         workItemIid: '1',
         canUpdate,
       },
@@ -59,9 +39,7 @@ describe('WorkItemLabels component', () => {
       const workItemQueryHandler = jest
         .fn()
         .mockResolvedValue(workItemByIidResponseFactory({ allowsScopedLabels }));
-
       createComponent({ workItemQueryHandler });
-
       await waitForPromises();
 
       expect(findScopedLabel().exists()).toBe(allowsScopedLabels);
