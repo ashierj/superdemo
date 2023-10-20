@@ -15,7 +15,7 @@ class PrepareJobArtifactRegistryForSsf < ActiveRecord::Migration[6.0]
     add_column :job_artifact_registry, :verification_checksum, :binary
     add_column :job_artifact_registry, :verification_checksum_mismatched, :binary
     add_column :job_artifact_registry, :checksum_mismatch, :boolean, default: false, null: false
-    add_column :job_artifact_registry, :verification_failure, :string, limit: 255 # rubocop:disable Migration/PreventStrings see https://gitlab.com/gitlab-org/gitlab/-/issues/323806
-    add_column :job_artifact_registry, :last_sync_failure, :string, limit: 255 # rubocop:disable Migration/PreventStrings see https://gitlab.com/gitlab-org/gitlab/-/issues/323806
+    add_column :job_artifact_registry, :verification_failure, :string, limit: 255 # rubocop:disable Migration/PreventStrings -- See https://gitlab.com/gitlab-org/gitlab/-/issues/323806
+    add_column :job_artifact_registry, :last_sync_failure, :string, limit: 255 # rubocop:disable Migration/PreventStrings -- See https://gitlab.com/gitlab-org/gitlab/-/issues/323806
   end
 end

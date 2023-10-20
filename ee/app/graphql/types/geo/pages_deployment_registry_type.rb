@@ -2,7 +2,7 @@
 
 module Types
   module Geo
-    # rubocop:disable Graphql/AuthorizeTypes because it is included
+    # rubocop:disable Graphql/AuthorizeTypes -- because it is included
     class PagesDeploymentRegistryType < BaseObject
       graphql_name 'PagesDeploymentRegistry'
       description 'Represents the Geo replication and verification state of a pages_deployment'

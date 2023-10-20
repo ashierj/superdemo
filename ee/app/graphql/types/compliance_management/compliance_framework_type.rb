@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-# rubocop: disable Graphql/AuthorizeTypes because ComplianceFrameworkType is, and should only be, accessible via ProjectType
+
+# rubocop: disable Graphql/AuthorizeTypes -- because ComplianceFrameworkType is, and should only be, accessible via ProjectType
 
 module Types
   module ComplianceManagement
@@ -37,3 +38,4 @@ module Types
     end
   end
 end
+# rubocop: enable Graphql/AuthorizeTypes

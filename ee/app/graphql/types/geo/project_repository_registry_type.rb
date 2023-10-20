@@ -2,7 +2,7 @@
 
 module Types
   module Geo
-    # rubocop:disable Graphql/AuthorizeTypes because it is included
+    # rubocop:disable Graphql/AuthorizeTypes -- because it is included
     class ProjectRepositoryRegistryType < BaseObject
       graphql_name 'ProjectRepositoryRegistry'
 

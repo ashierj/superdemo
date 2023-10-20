@@ -2,7 +2,7 @@
 
 module Types
   module Geo
-    # rubocop:disable Graphql/AuthorizeTypes because it is included
+    # rubocop:disable Graphql/AuthorizeTypes -- because it is included
     class ContainerRepositoryRegistryType < BaseObject
       graphql_name 'ContainerRepositoryRegistry'
       description 'Represents the Geo replication and verification state of an Container Repository.'

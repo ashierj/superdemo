@@ -28,7 +28,7 @@ module RemoteDevelopment
               .map(ProjectClonerComponentInjector.method(:inject))
               .and_then(Creator.method(:create))
 
-          # rubocop:disable Lint/DuplicateBranch - Rubocop doesn't know the branches are different due to destructuring
+          # rubocop:disable Lint/DuplicateBranch -- Rubocop doesn't know the branches are different due to destructuring
           case result
           in { err: Unauthorized => message }
             generate_error_response_from_message(message: message, reason: :unauthorized)

@@ -2,7 +2,7 @@
 
 module Types
   module Geo
-    # rubocop:disable Graphql/AuthorizeTypes because it is included
+    # rubocop:disable Graphql/AuthorizeTypes -- because it is included
     class MergeRequestDiffRegistryType < BaseObject
       graphql_name 'MergeRequestDiffRegistry'
       description 'Represents the Geo sync and verification state of a Merge Request diff'

@@ -3,7 +3,7 @@
 module Types
   module Security
     module FindingReportsComparer
-      # rubocop: disable Graphql/AuthorizeTypes (Parent node applies authorization)
+      # rubocop: disable Graphql/AuthorizeTypes -- Parent node applies authorization
       class FindingType < BaseObject
         graphql_name 'ComparedSecurityReportFinding'
 

@@ -2,7 +2,7 @@
 
 module Types
   module Geo
-    # rubocop:disable Graphql/AuthorizeTypes because it is included
+    # rubocop:disable Graphql/AuthorizeTypes -- because it is included
     class PackageFileRegistryType < BaseObject
       graphql_name 'PackageFileRegistry'
       description 'Represents the Geo sync and verification state of a package file'

@@ -34,7 +34,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
   end
 
   subject(:result) do
-    described_class.update(agent: agent, config: config) # rubocop:disable Rails/SaveBang - this isn't ActiveRecord
+    described_class.update(agent: agent, config: config) # rubocop:disable Rails/SaveBang -- this isn't ActiveRecord
   end
 
   context 'when config passed is empty' do
