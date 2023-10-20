@@ -155,7 +155,7 @@ module EE
           null: true,
           description: 'Flow metrics for value stream analytics.',
           method: :itself,
-          authorize: :read_group_cycle_analytics,
+          authorize: :read_cycle_analytics,
           alpha: { milestone: '15.10' }
         field :project_compliance_standards_adherence,
           ::Types::Projects::ComplianceStandards::AdherenceType.connection_type,

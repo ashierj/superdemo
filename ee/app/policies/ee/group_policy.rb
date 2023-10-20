@@ -285,7 +285,7 @@ module EE
         enable :view_group_devops_adoption
         enable :read_group_repository_analytics
         enable :read_group_contribution_analytics
-        enable :read_group_cycle_analytics
+        enable :read_cycle_analytics
         enable :read_cluster # Deprecated as certificate-based cluster integration (`Clusters::Cluster`).
         enable :read_cluster_agent
         enable :read_dependency_proxy
@@ -335,7 +335,7 @@ module EE
       end
 
       rule { reporter & cycle_analytics_available }.policy do
-        enable :read_group_cycle_analytics, :create_group_stage, :read_group_stage, :update_group_stage, :delete_group_stage, :modify_value_stream
+        enable :read_cycle_analytics, :create_group_stage, :read_group_stage, :update_group_stage, :delete_group_stage, :modify_value_stream
       end
 
       rule { reporter & group_ci_cd_analytics_available }.policy do

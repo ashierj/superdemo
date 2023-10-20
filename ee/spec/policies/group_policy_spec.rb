@@ -440,19 +440,19 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     context 'for guests' do
       let(:current_user) { guest }
 
-      it { is_expected.not_to be_allowed(:read_group_cycle_analytics) }
+      it { is_expected.not_to be_allowed(:read_cycle_analytics) }
     end
 
     context 'for reporter+' do
       let(:current_user) { reporter }
 
-      it { is_expected.to be_allowed(:read_group_cycle_analytics) }
+      it { is_expected.to be_allowed(:read_cycle_analytics) }
     end
 
     context 'for auditor' do
       let(:current_user) { auditor }
 
-      it { is_expected.to be_allowed(:read_group_cycle_analytics) }
+      it { is_expected.to be_allowed(:read_cycle_analytics) }
     end
   end
 
@@ -463,7 +463,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       stub_licensed_features(cycle_analytics_for_groups: false)
     end
 
-    it { is_expected.not_to be_allowed(:read_group_cycle_analytics) }
+    it { is_expected.not_to be_allowed(:read_cycle_analytics) }
   end
 
   context 'when group coverage reports is available' do
