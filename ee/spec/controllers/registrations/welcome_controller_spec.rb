@@ -216,6 +216,36 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
             )
           end
 
+          context 'with joining_project selection' do
+            context 'when creating a new project' do
+              it 'does not track join a project event' do
+                patch_update
+
+                expect_no_snowplow_event(
+                  category: 'registrations:welcome:update',
+                  action: 'select_button',
+                  user: user,
+                  label: 'join_a_project'
+                )
+              end
+            end
+
+            context 'when joining a project' do
+              let(:joining_project) { 'true' }
+
+              it 'tracks join a project event' do
+                patch_update
+
+                expect_snowplow_event(
+                  category: 'registrations:welcome:update',
+                  action: 'select_button',
+                  user: user,
+                  label: 'join_a_project'
+                )
+              end
+            end
+          end
+
           context 'when the new user already has any accepted group membership' do
             let!(:member1) { create(:group_member, user: user) }
 
@@ -511,7 +541,9 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
         end
 
         context 'when failed request' do
-          subject(:patch_update) { patch :update, params: { user: { role: 'software_developer' } } }
+          subject(:patch_update) do
+            patch :update, params: { user: { role: 'software_developer' }, joining_project: 'true' }
+          end
 
           before do
             allow_next_instance_of(::Users::SignupService) do |service|
@@ -527,6 +559,17 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
               action: 'successfully_submitted_form',
               user: user,
               label: 'free_registration'
+            )
+          end
+
+          it 'does not track join a project event' do
+            patch_update
+
+            expect_no_snowplow_event(
+              category: 'registrations:welcome:update',
+              action: 'select_button',
+              user: user,
+              label: 'join_a_project'
             )
           end
         end
