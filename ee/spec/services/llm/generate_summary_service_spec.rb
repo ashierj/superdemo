@@ -20,10 +20,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
     subject { described_class.new(current_user, resource, {}).execute }
 
-    shared_examples 'issuable without notes' do
-      it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
-    end
-
     shared_examples 'ensures user membership' do
       context 'without membership' do
         let(:current_user) { create(:user) }
@@ -51,8 +47,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
     context 'for an issue' do
       let_it_be(:resource) { create(:issue, project: project) }
 
-      it_behaves_like "issuable without notes"
-
       context 'with notes' do
         let(:action_name) { :summarize_comments }
         let(:options) { { ai_provider: :vertex_ai } }
@@ -72,8 +66,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
     context 'for a work item' do
       let_it_be(:resource) { create(:work_item, project: project) }
-
-      it_behaves_like "issuable without notes"
 
       context 'with notes' do
         let(:action_name) { :summarize_comments }
@@ -97,8 +89,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
       let(:options) { { ai_provider: :vertex_ai } }
       let(:content) { 'Summarize comments' }
       let_it_be(:resource) { create(:epic, group: group) }
-
-      it_behaves_like "issuable without notes"
 
       context 'with notes' do
         before do

@@ -75,6 +75,7 @@ module Gitlab
 
             def notes_to_summarize(notes)
               notes_content = +""
+              input_content_limit = provider_prompt_class::INPUT_CONTENT_LIMIT - PROMPT_TEMPLATE.size
               notes.each_batch do |batch|
                 batch.pluck(:id, :note).each do |note| # rubocop: disable CodeReuse/ActiveRecord
                   input_content_limit = provider_prompt_class::INPUT_CONTENT_LIMIT
