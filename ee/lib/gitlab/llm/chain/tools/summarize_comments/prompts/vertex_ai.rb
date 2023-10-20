@@ -7,8 +7,10 @@ module Gitlab
         module SummarizeComments
           module Prompts
             class VertexAi
-              INPUT_TOKEN_LIMIT = 8192
-              # approximate that one token is ~4 characters.
+              TOTAL_MODEL_TOKEN_LIMIT = 8192
+              # leave a 10% for cases where 1 token does not exactly match to 4 characters
+              INPUT_TOKEN_LIMIT = (TOTAL_MODEL_TOKEN_LIMIT * 0.9).to_i.freeze
+              # approximate that one token is ~4 characters
               INPUT_CONTENT_LIMIT = INPUT_TOKEN_LIMIT * 4
               OUTPUT_TOKEN_LIMIT = 1024
 

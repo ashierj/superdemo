@@ -17,8 +17,7 @@ module Llm
     def valid?
       super &&
         SUPPORTED_ISSUABLE_TYPES.include?(resource.to_ability_name) &&
-        Ability.allowed?(user, :summarize_notes, resource) &&
-        !notes.empty?
+        Ability.allowed?(user, :summarize_notes, resource)
     end
 
     def notes
