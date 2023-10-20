@@ -18,6 +18,10 @@ module Llm
       fill_in_merge_request_template: Llm::FillInMergeRequestTemplateService
     }.freeze
 
+    INTERNAL_METHODS = {
+      categorize_question: Llm::Internal::CategorizeChatQuestionService
+    }.freeze
+
     def initialize(user, resource, method, options = {})
       super(user, resource, options)
 
@@ -25,9 +29,10 @@ module Llm
     end
 
     def execute
-      return error('Unknown method') unless METHODS.key?(method)
+      full_methods_list = METHODS.merge(INTERNAL_METHODS)
+      return error('Unknown method') unless full_methods_list.key?(method)
 
-      result = METHODS[method].new(user, resource, options).execute
+      result = full_methods_list[method].new(user, resource, options).execute
 
       track_snowplow_event(result)
 

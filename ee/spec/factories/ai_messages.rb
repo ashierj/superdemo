@@ -83,5 +83,9 @@ FactoryBot.define do
     trait :summarize_comments do
       ai_action { :summarize_comments }
     end
+
+    trait :categorize_question do
+      ai_action { :categorize_question }
+    end
   end
 end
