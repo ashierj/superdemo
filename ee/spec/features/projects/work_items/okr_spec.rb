@@ -14,6 +14,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   let!(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
   let(:key_result) { create(:work_item, :key_result, project: project) }
   let(:label) { create(:label, project: project, title: "testing-label") }
+  let(:child_objective) { create(:work_item, :objective, project: project) }
 
   before do
     group.add_developer(user)
@@ -244,6 +245,29 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
         within_testid('work-item-detail-modal') do
           expect(page).to have_content('0%')
         end
+      end
+    end
+
+    it 'adds existing child item with proper link', :aggregate_failures do
+      within_testid('work-item-tree') do
+        click_button 'Add'
+        click_button 'Existing objective'
+
+        find_by_testid('work-item-token-select-input').set(child_objective.title)
+
+        wait_for_all_requests
+        click_button child_objective.title
+
+        send_keys :escape
+
+        click_button('Add objective')
+
+        wait_for_all_requests
+
+        child_objective_link = find('[data-testid="links-child"] a.gl-link')
+
+        # Only part of the link is checked which is group/project/work-items/-/iid
+        expect(child_objective_link['href']).to have_content(project_work_item_path(project, child_objective.iid))
       end
     end
 
