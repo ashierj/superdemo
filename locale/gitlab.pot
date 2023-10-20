@@ -10184,6 +10184,9 @@ msgstr ""
 msgid "CiCatalog|CI/CD Catalog resource"
 msgstr ""
 
+msgid "CiCatalog|CI/CD catalog resource"
+msgstr ""
+
 msgid "CiCatalog|Component ID not found, or you do not have permission to access component."
 msgstr ""
 
