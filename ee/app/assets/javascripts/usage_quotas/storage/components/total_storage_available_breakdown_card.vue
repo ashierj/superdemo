@@ -53,7 +53,7 @@ export default {
 </script>
 
 <template>
-  <gl-card class="gl-w-full" data-testid="storage-detail-card">
+  <gl-card data-testid="storage-detail-card">
     <gl-skeleton-loader v-if="loading" :height="64">
       <rect width="140" height="30" x="5" y="0" rx="4" />
       <rect width="240" height="10" x="5" y="40" rx="4" />

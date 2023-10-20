@@ -15,6 +15,8 @@ const meta = {
 
 export default meta;
 
+const MEBIBYTE = 1024 * 1024; // bytes in a mebibyte
+
 const createTemplate = (config = {}) => {
   let { provide, apolloProvider } = config;
 
@@ -39,7 +41,7 @@ const createTemplate = (config = {}) => {
       userNamespace: false,
       defaultPerPage: 20,
       namespacePlanName: 'free',
-      namespacePlanStorageIncluded: '40',
+      namespacePlanStorageIncluded: 10 * MEBIBYTE,
       purchaseStorageUrl: '//purchase-storage-url',
       buyAddonTargetAttr: 'buyAddonTargetAttr',
       enforcementType: 'namespace_storage_limit',
@@ -52,20 +54,11 @@ const createTemplate = (config = {}) => {
   });
 };
 
-export const NamespaceTypeStorageLimits = {
+export const SaasWithNamespaceLimits = {
   render: createTemplate(),
 };
 
-export const ProjectTypeStorageLimits = {
-  render: createTemplate({
-    provide: {
-      enforcementType: 'project_repository_limit',
-      isUsingProjectEnforcement: true,
-    },
-  }),
-};
-
-export const Loading = {
+export const SaasWithNamespaceLimitsLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [getNamespaceStorageQuery, () => new Promise(() => {})],
@@ -74,11 +67,42 @@ export const Loading = {
 
     return createTemplate({
       apolloProvider,
+      provide: {
+        isUsingProjectEnforcement: false,
+      },
     })(...args);
   },
 };
 
-export const LoadingError = {
+export const SaasWithProjectLimits = {
+  render: createTemplate({
+    provide: {
+      enforcementType: 'project_repository_limit',
+      isUsingProjectEnforcement: true,
+      totalRepositorySizeExcess: MEBIBYTE,
+    },
+  }),
+};
+
+export const SaasWithProjectLimitsLoading = {
+  render: (...args) => {
+    const apolloProvider = createMockApollo([
+      [getNamespaceStorageQuery, () => new Promise(() => {})],
+      [getDependencyProxyTotalSizeQuery, () => new Promise(() => {})],
+    ]);
+
+    return createTemplate({
+      apolloProvider,
+      provide: {
+        enforcementType: 'project_repository_limit',
+        isUsingProjectEnforcement: true,
+        totalRepositorySizeExcess: MEBIBYTE,
+      },
+    })(...args);
+  },
+};
+
+export const SaasLoadingError = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [getNamespaceStorageQuery, () => Promise.reject()],
@@ -87,6 +111,39 @@ export const LoadingError = {
 
     return createTemplate({
       apolloProvider,
+    })(...args);
+  },
+};
+
+const selfManagedDefaultProvide = {
+  isUsingProjectEnforcement: false,
+  namespacePlanName: null,
+  namespaceStorageIncluded: '',
+  namespacePlanStorageIncluded: 0,
+  purchaseStorageUrl: null,
+  buyAddonTargetAttr: null,
+};
+
+export const SelfManaged = {
+  render: createTemplate({
+    provide: {
+      ...selfManagedDefaultProvide,
+    },
+  }),
+};
+
+export const SelfManagedLoading = {
+  render: (...args) => {
+    const apolloProvider = createMockApollo([
+      [getNamespaceStorageQuery, () => new Promise(() => {})],
+      [getDependencyProxyTotalSizeQuery, () => new Promise(() => {})],
+    ]);
+
+    return createTemplate({
+      apolloProvider,
+      provide: {
+        ...selfManagedDefaultProvide,
+      },
     })(...args);
   },
 };
