@@ -23,8 +23,8 @@ import {
 import { unsupportedManifest } from 'ee_jest/security_orchestration/mocks/mock_data';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
+  BLOCK_UNPROTECTING_BRANCHES,
   mergeRequestConfiguration,
-  protectedBranchesConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -260,6 +260,8 @@ describe('EditorComponent', () => {
       });
 
       describe('settings', () => {
+        const defaultProjectApprovalConfiguration = { [BLOCK_UNPROTECTING_BRANCHES]: true };
+
         it('does not update the settings with the "scanResultPolicySettings" ff enabled and the "scanResultAnyMergeRequest" ff enabled', () => {
           const newValue = { type: ANY_MERGE_REQUEST };
           factory({
@@ -267,18 +269,15 @@ describe('EditorComponent', () => {
           });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: { block_protected_branch_modification: { enabled: true } },
+              approval_settings: defaultProjectApprovalConfiguration,
             }),
           );
           findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
               approval_settings: {
-                block_protected_branch_modification: { enabled: true },
-                prevent_approval_by_merge_request_author: { enabled: true },
-                prevent_approval_by_anyone_who_added_commit: { enabled: true },
-                remove_all_approvals_when_commit_added: { enabled: true },
-                require_user_password_to_approve: { enabled: true },
+                ...defaultProjectApprovalConfiguration,
+                ...mergeRequestConfiguration,
               },
             }),
           );
@@ -291,13 +290,13 @@ describe('EditorComponent', () => {
           });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: { block_protected_branch_modification: { enabled: true } },
+              approval_settings: defaultProjectApprovalConfiguration,
             }),
           );
           findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: { block_protected_branch_modification: { enabled: true } },
+              approval_settings: defaultProjectApprovalConfiguration,
             }),
           );
         });
@@ -592,21 +591,20 @@ describe('EditorComponent', () => {
         factory({ glFeatures: { scanResultPolicySettings: true } });
 
         expect(findSettingsSection().exists()).toBe(true);
-        expect(findSettingsSection().props('settings')).toEqual(protectedBranchesConfiguration);
+        expect(findSettingsSection().props('settings')).toEqual({
+          block_unprotecting_branches: true,
+        });
       });
 
       it('updates the policy when a change is emitted', async () => {
         factory({ glFeatures: { scanResultPolicySettings: true } });
 
         await findSettingsSection().vm.$emit('changed', {
-          block_protected_branch_modification: {
-            enabled: false,
-          },
+          block_unprotecting_branches: false,
         });
 
         expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
-          `block_protected_branch_modification:
-    enabled: false`,
+          `block_unprotecting_branches: false`,
         );
       });
 
@@ -625,7 +623,7 @@ describe('EditorComponent', () => {
         await findAllRuleBuilders().at(0).vm.$emit('changed', scanRule);
 
         expect(findSettingsSection().props('settings')).toEqual({
-          ...protectedBranchesConfiguration,
+          block_unprotecting_branches: true,
         });
 
         const anyMergeRequestRule = {
@@ -637,7 +635,7 @@ describe('EditorComponent', () => {
         await findAllRuleBuilders().at(0).vm.$emit('changed', anyMergeRequestRule);
 
         expect(findSettingsSection().props('settings')).toEqual({
-          ...protectedBranchesConfiguration,
+          block_unprotecting_branches: true,
           ...mergeRequestConfiguration,
         });
       });

@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     updateSetting({ key, value }) {
-      const updates = { [key]: { enabled: value } };
+      const updates = { [key]: value };
       this.updatePolicy(updates);
     },
     updatePolicy(updates = {}) {
