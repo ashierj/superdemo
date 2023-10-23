@@ -9104,6 +9104,9 @@ msgstr ""
 msgid "CI/CD Analytics"
 msgstr ""
 
+msgid "CI/CD Catalog"
+msgstr ""
+
 msgid "CI/CD Settings"
 msgstr ""
 
@@ -10173,9 +10176,6 @@ msgid "CiCatalogComponent|There was an error fetching this resource's components
 msgstr ""
 
 msgid "CiCatalog|Back to the CI/CD Catalog"
-msgstr ""
-
-msgid "CiCatalog|CI/CD Catalog"
 msgstr ""
 
 msgid "CiCatalog|CI/CD Catalog resource"

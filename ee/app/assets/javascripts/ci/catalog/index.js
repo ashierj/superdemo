@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import createDefaultClient from '~/lib/graphql';
 import { createRouter } from '~/ci/catalog/router';
 import { cacheConfig, resolvers } from '~/ci/catalog/graphql/settings';
@@ -32,7 +32,7 @@ export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
     provide: {
       ciCatalogPath,
       projectFullPath,
-      pageTitle: s__('CiCatalog|CI/CD Catalog'),
+      pageTitle: __('CI/CD Catalog'),
       pageDescription: s__(
         'CiCatalog|Repositories of pipeline components available in this namespace.',
       ),
