@@ -37,7 +37,6 @@ RSpec.describe 'Merge requests > User merges immediately', :js, feature_category
 
   context 'when the merge request is on the merge train' do
     before do
-      stub_feature_flags(disable_merge_trains: false)
       stub_licensed_features(merge_pipelines: true, merge_trains: true)
       stub_ci_pipeline_yaml_file(YAML.dump(ci_yaml))
 

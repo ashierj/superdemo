@@ -3,8 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe 'User adds a merge request to a merge train', :js, feature_category: :merge_trains do
-  let(:project) { create(:project, :repository) }
-  let(:user) { create(:user) }
+  include ContentEditorHelpers
+
+  let_it_be_with_refind(:project) { create(:project, :repository) }
+  let(:user) { project.owner }
 
   let!(:merge_request) do
     create(:merge_request, :with_merge_request_pipeline,
@@ -18,9 +20,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
 
   before do
     allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(200)
-    stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
-    project.add_maintainer(user)
     project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
     merge_request.all_pipelines.first.succeed!
     merge_request.update_head_pipeline
@@ -64,6 +64,8 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
     end
 
     context 'when pipeline for merge train succeeds', :sidekiq_might_not_need_inline do
+      let(:project) { create(:project, :repository) }
+
       before do
         visit project_merge_request_path(project, merge_request)
         merge_request.merge_train_car.pipeline.builds.map(&:success!)
@@ -83,6 +85,8 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
     end
 
     context "when user clicks 'Remove from merge train' button" do
+      let(:project) { create(:project, :repository) }
+
       before do
         click_button 'Remove from merge train'
       end
@@ -98,6 +102,8 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
   end
 
   context 'when the merge request is not the first queue on the train' do
+    let(:project) { create(:project, :repository) }
+
     before do
       create(:merge_request, :on_train,
         source_project: project, source_branch: 'signed-commits',

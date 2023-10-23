@@ -11,7 +11,6 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
   let(:expected_create_mergeable_ref) { true }
 
   before do
-    stub_feature_flags(disable_merge_trains: false)
     project.add_maintainer(maintainer)
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
     project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true) unless project.merge_pipelines_enabled == true && project.merge_trains_enabled == true

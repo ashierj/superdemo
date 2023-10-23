@@ -12,7 +12,6 @@ RSpec.describe MergeRequestPollWidgetEntity, feature_category: :merge_trains do
   let(:request) { double('request', current_user: user) }
 
   before do
-    stub_feature_flags(disable_merge_trains: false)
     project.add_developer(user)
   end
 
@@ -31,16 +30,6 @@ RSpec.describe MergeRequestPollWidgetEntity, feature_category: :merge_trains do
     it 'has merge train entity' do
       expect(entity).to include(:merge_trains_count)
       expect(entity).to include(:merge_train_index)
-    end
-
-    context 'when the merge train feature is disabled' do
-      before do
-        stub_feature_flags(disable_merge_trains: true)
-      end
-
-      it 'does not have merge trains count' do
-        expect(entity).not_to include(:merge_trains_count)
-      end
     end
 
     context 'when the merge request is not on a merge train' do

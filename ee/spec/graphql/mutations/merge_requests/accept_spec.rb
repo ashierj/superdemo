@@ -31,7 +31,6 @@ RSpec.describe Mutations::MergeRequests::Accept do
     before do
       project.add_maintainer(user)
       stub_licensed_features(merge_pipelines: true, merge_trains: true)
-      stub_feature_flags(disable_merge_trains: false)
       project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
     end
 

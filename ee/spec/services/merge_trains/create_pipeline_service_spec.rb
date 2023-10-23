@@ -12,7 +12,6 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
 
     before do
       project.add_maintainer(maintainer)
-      stub_feature_flags(disable_merge_trains: false)
       stub_licensed_features(merge_pipelines: true, merge_trains: true)
       project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true) unless project.merge_pipelines_enabled == true && project.merge_trains_enabled == true
     end
@@ -37,16 +36,6 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
         specify do
           expect(subject[:status]).to eq(:error)
           expect(subject[:message]).to match(/^#{expected_reason}/)
-        end
-      end
-
-      context 'when merge trains flag is disabled' do
-        before do
-          stub_feature_flags(disable_merge_trains: true)
-        end
-
-        it_behaves_like 'returns an error' do
-          let(:expected_reason) { 'merge trains is disabled' }
         end
       end
 
