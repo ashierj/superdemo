@@ -38,7 +38,7 @@ RSpec.describe ::Mutations::Boards::EpicBoards::EpicMoveList do
 
     it 'has the correct arguments' do
       expect(subject).to have_graphql_arguments(
-        :boardId, :epicId, :fromListId, :toListId, :moveBeforeId, :moveAfterId, :positionInList
+        :clientMutationId, :boardId, :epicId, :fromListId, :toListId, :moveBeforeId, :moveAfterId, :positionInList
       )
     end
   end

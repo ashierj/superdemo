@@ -28,7 +28,7 @@ RSpec.describe Mutations::Boards::Epics::Create do
   context 'field tests' do
     subject { described_class }
 
-    it { is_expected.to have_graphql_arguments(:boardId, :listId, :title, :groupPath) }
+    it { is_expected.to have_graphql_arguments(:clientMutationId, :boardId, :listId, :title, :groupPath) }
     it { is_expected.to have_graphql_fields(:epic).at_least }
   end
 
