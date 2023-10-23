@@ -269,24 +269,35 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     end
 
     context 'with predefined epic' do
-      let_it_be(:label) { create(:label, group: group, title: 'ai-framework') }
+      let_it_be(:label) { create(:group_label, group: group, title: 'ai-framework') }
       let_it_be(:epic) do
         create(:epic, group: group, title: 'A testing epic for AI reliability',
           description: 'This epic is about evaluating reliability of different AI prompts in chat',
           labels: [label], created_at: 5.days.ago)
       end
 
-      # rubocop: disable Layout/LineLength
-      where(:input_template, :tools, :answer_match) do
-        'Please summarize %<epic_identifier>s'                    | %w[EpicIdentifier ResourceReader] | //
-        'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicIdentifier ResourceReader] | /ai-framework/
-        'How old is %<epic_identifier>s?' | %w[EpicIdentifier ResourceReader] | /5 days/
-        'How many days ago was %<epic_identifier>s epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
+      before do
+        stub_licensed_features(epics: true)
+      end
 
-        let(:input) { format(input_template, epic_identifier: epic.to_reference(full: true)) }
+      context 'with predefined tools' do
+        context 'with epic reference' do
+          let(:input) { format(input_template, epic_identifier: "the epic #{epic.to_reference(full: true)}") }
 
-        it_behaves_like 'successful prompt processing'
-        context 'with epic as resource' do
+          # rubocop: disable Layout/LineLength
+          where(:input_template, :tools, :answer_match) do
+            'Please summarize %<epic_identifier>s'                    | %w[EpicIdentifier ResourceReader] | //
+            'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicIdentifier ResourceReader] | /ai-framework/
+            'How old is %<epic_identifier>s?' | %w[EpicIdentifier ResourceReader] | /5 days/
+            'How many days ago was %<epic_identifier>s epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
+          end
+
+          with_them do
+            it_behaves_like 'successful prompt processing'
+          end
+        end
+
+        context 'with `this epic`' do
           let(:resource) { epic }
 
           # rubocop: disable Layout/LineLength
@@ -302,60 +313,60 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
             it_behaves_like 'successful prompt processing'
           end
         end
+      end
 
-        context 'with chat history' do
-          let_it_be(:epic2) do
-            create(
-              :epic,
-              group: group,
-              title: 'AI chat - send websocket subscription message also for user messages',
-              description: 'To make sure that new messages are propagated to all chat windows ' \
-                           '(e.g. if user has chat window open in multiple windows) we should send subscription ' \
-                           'message for user messages too (currently we send messages only for AI responses)'
-            )
+      context 'with chat history' do
+        let_it_be(:epic2) do
+          create(
+            :epic,
+            group: group,
+            title: 'AI chat - send websocket subscription message also for user messages',
+            description: 'To make sure that new messages are propagated to all chat windows ' \
+                         '(e.g. if user has chat window open in multiple windows) we should send subscription ' \
+                         'message for user messages too (currently we send messages only for AI responses)'
+          )
+        end
+
+        let(:history) do
+          [
+            { role: 'user', content: "What is epic #{epic.to_reference(full: true)} about?" },
+            {
+              role: 'assistant', content: "The summary of epic is:\n\n## Provider Comparison\n" \
+                                          "- Difficulty in evaluating which provider is better \n" \
+                                          "- Both providers have pros and cons"
+            }
+          ]
+        end
+
+        before do
+          uuid = SecureRandom.uuid
+
+          history.each do |message_data|
+            build(:ai_chat_message, message_data.merge(user: user, request_id: uuid)).save!
+          end
+        end
+
+        # rubocop: disable Layout/LineLength
+        where(:input_template, :tools, :answer_match) do
+          # evaluation of questions which involve processing of other resources is not reliable yet
+          # because both EpicIdentifier and JsonReader tools assume we work with single resource:
+          # EpicIdentifier overrides context.resource
+          # JsonReader takes resource from context
+          # So JsonReader twice with different action input
+          'Can you provide more details about that epic' | %w[EpicIdentifier ResourceReader] | /(reliability|providers)/
+          # Translation would have to be explicitly allowed in prompt rules first
+          # 'Can you translate your last answer to German?' | [] | /Anbieter/ # Anbieter == provider
+          'Can you reword your answer?' | [] | /provider/i
+        end
+        # rubocop: enable Layout/LineLength
+
+        with_them do
+          let(:input) do
+            format(input_template, epic_identifier: epic.to_reference(full: true),
+              epic_identifier2: epic2.to_reference(full: true))
           end
 
-          let(:history) do
-            [
-              { role: 'user', content: "What is epic #{epic.to_reference(full: true)} about?" },
-              {
-                role: 'assistant', content: "The summary of epic is:\n\n## Provider Comparison\n" \
-                                            "- Difficulty in evaluating which provider is better \n" \
-                                            "- Both providers have pros and cons"
-              }
-            ]
-          end
-
-          before do
-            uuid = SecureRandom.uuid
-
-            history.each do |message_data|
-              build(:ai_chat_message, message_data.merge(user: user, request_id: uuid)).save!
-            end
-          end
-
-          # rubocop: disable Layout/LineLength
-          where(:input_template, :tools, :answer_match) do
-            # evaluation of questions which involve processing of other resources is not reliable yet
-            # because both EpicIdentifier and JsonReader tools assume we work with single resource:
-            # EpicIdentifier overrides context.resource
-            # JsonReader takes resource from context
-            # So JsonReader twice with different action input
-            'Can you provide more details about that epic' | %w[EpicIdentifier ResourceReader] | /(reliability|providers)/
-            # Translation would have to be explicitly allowed in prompt rules first
-            # 'Can you translate your last answer to German?' | [] | /Anbieter/ # Anbieter == provider
-            'Can you reword your answer?' | [] | /provider/i
-          end
-          # rubocop: enable Layout/LineLength
-
-          with_them do
-            let(:input) do
-              format(input_template, epic_identifier: epic.to_reference(full: true),
-                epic_identifier2: epic2.to_reference(full: true))
-            end
-
-            it_behaves_like 'successful prompt processing'
-          end
+          it_behaves_like 'successful prompt processing'
         end
       end
     end

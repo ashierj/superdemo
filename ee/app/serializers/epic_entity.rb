@@ -13,6 +13,8 @@ class EpicEntity < IssuableEntity
     epic.group.full_path
   end
 
+  expose :created_at
+  expose :updated_at
   expose :start_date
   expose :start_date_is_fixed?, as: :start_date_is_fixed
   expose :start_date_fixed, :start_date_from_milestones
