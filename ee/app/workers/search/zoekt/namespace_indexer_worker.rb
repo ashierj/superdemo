@@ -12,7 +12,7 @@ module Search
       idempotent!
       pause_control :zoekt
 
-      def perform(namespace_id, operation, shard_id = nil)
+      def perform(namespace_id, operation, node_id = nil)
         return unless ::Feature.enabled?(:index_code_with_zoekt)
 
         namespace = Namespace.find(namespace_id)
@@ -22,7 +22,7 @@ module Search
         when :index
           index_projects(namespace)
         when :delete
-          remove_projects(namespace, shard_id: shard_id)
+          remove_projects(namespace, node_id: node_id)
         end
       end
 
@@ -40,7 +40,7 @@ module Search
         end
       end
 
-      def remove_projects(namespace, shard_id:)
+      def remove_projects(namespace, node_id:)
         namespace.all_projects.find_in_batches do |batch|
           ::Search::Zoekt::DeleteProjectWorker.bulk_perform_async_with_contexts(
             batch,
@@ -48,7 +48,7 @@ module Search
               [
                 project.root_namespace&.id,
                 project.id,
-                shard_id
+                node_id
               ]
             end,
             context_proc: ->(project) { { project: project } }

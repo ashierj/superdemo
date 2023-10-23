@@ -10,7 +10,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
   let(:project_id) { project.id }
   let(:namespace_id) { namespace.id }
   let(:params) { {} }
-  let(:shard) { ::Zoekt::Shard.first }
+  let(:shard) { ::Search::Zoekt::Node.first }
   let(:shard_id) { shard.id }
 
   shared_examples 'an API that returns 400 when the index_code_with_zoekt feature flag is disabled' do |verb|
@@ -66,7 +66,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
   describe 'GET /admin/zoekt/shards' do
     let(:path) { '/admin/zoekt/shards' }
     let!(:another_shard) do
-      create(:zoekt_shard, index_base_url: 'http://111.111.111.111/', search_base_url: 'http://111.111.111.112/')
+      create(:zoekt_node, index_base_url: 'http://111.111.111.111/', search_base_url: 'http://111.111.111.112/')
     end
 
     it_behaves_like "GET request permissions for admin mode"
@@ -95,7 +95,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     let(:path) { "/admin/zoekt/shards/#{shard_id}/indexed_namespaces" }
     let!(:indexed_namespace) { create(:zoekt_indexed_namespace, shard: shard, namespace: namespace) }
     let!(:another_shard) do
-      create(:zoekt_shard, index_base_url: 'http://111.111.111.198/', search_base_url: 'http://111.111.111.199/')
+      create(:zoekt_node, index_base_url: 'http://111.111.111.198/', search_base_url: 'http://111.111.111.199/')
     end
 
     let!(:indexed_namespace_for_another_shard) do

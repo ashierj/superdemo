@@ -10,8 +10,8 @@ module Zoekt
       end
 
       def update_zoekt_index!
-        shard_id = ::Zoekt::IndexedNamespace.find_by_namespace_id(project.root_ancestor.id).zoekt_shard_id
-        ::Gitlab::Search::Zoekt::Client.index(project, shard_id)
+        node_id = ::Zoekt::IndexedNamespace.find_by_namespace_id(project.root_ancestor.id).zoekt_node_id
+        ::Gitlab::Search::Zoekt::Client.index(project, node_id)
       end
 
       def async_update_zoekt_index

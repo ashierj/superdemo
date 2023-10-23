@@ -58,7 +58,7 @@ module API
               ]
             end
             get do
-              present ::Zoekt::Shard.all, with: ::API::Entities::Search::Zoekt::Shard
+              present ::Search::Zoekt::Node.all, with: ::API::Entities::Search::Zoekt::Shard
             end
 
             resources ':shard_id/indexed_namespaces' do
@@ -76,14 +76,14 @@ module API
                   desc: 'The id of the Zoekt::Shard'
               end
               get do
-                shard = ::Zoekt::Shard.find(params[:shard_id])
-                indexed_namespaces = shard.indexed_namespaces.recent.with_limit(MAX_RESULTS)
+                node = ::Search::Zoekt::Node.find(params[:shard_id])
+                indexed_namespaces = node.indexed_namespaces.recent.with_limit(MAX_RESULTS)
 
                 present indexed_namespaces, with: ::API::Entities::Search::Zoekt::IndexedNamespace
               end
 
               resources ':namespace_id' do
-                desc 'Add a namespace to a shard for Zoekt indexing' do
+                desc 'Add a namespace to a node for Zoekt indexing' do
                   success ::API::Entities::Search::Zoekt::IndexedNamespace
                   failure [
                     { code: 401, message: '401 Unauthorized' },
@@ -94,22 +94,22 @@ module API
                 params do
                   requires :shard_id,
                     type: Integer,
-                    desc: 'The id of the Zoekt::Shard'
+                    desc: 'The id of the Search::Zoekt::Node'
                   requires :namespace_id,
                     type: Integer,
-                    desc: 'The id of the namespace you want to index in this shard'
+                    desc: 'The id of the namespace you want to index in this node'
                 end
                 put do
                   ensure_zoekt_indexing_enabled!
-                  shard = ::Zoekt::Shard.find(params[:shard_id])
+                  node = ::Search::Zoekt::Node.find(params[:shard_id])
                   namespace = Namespace.find(params[:namespace_id])
 
                   indexed_namespace = ::Zoekt::IndexedNamespace
-                    .find_or_create_for_shard_and_namespace!(shard: shard, namespace: namespace)
+                    .find_or_create_for_node_and_namespace!(node: node, namespace: namespace)
                   present indexed_namespace, with: ::API::Entities::Search::Zoekt::IndexedNamespace
                 end
 
-                desc 'Remove a namespace from a shard for Zoekt indexing' do
+                desc 'Remove a namespace from a node for Zoekt indexing' do
                   failure [
                     { code: 401, message: '401 Unauthorized' },
                     { code: 403, message: '403 Forbidden' },
@@ -119,17 +119,17 @@ module API
                 params do
                   requires :shard_id,
                     type: Integer,
-                    desc: 'The id of the Zoekt::Shard'
+                    desc: 'The id of the Search::Zoekt::Node'
                   requires :namespace_id,
                     type: Integer,
-                    desc: 'The id of the namespace you want to index in this shard'
+                    desc: 'The id of the namespace you want to index in this node'
                 end
                 delete do
-                  shard = ::Zoekt::Shard.find(params[:shard_id])
+                  node = ::Search::Zoekt::Node.find(params[:shard_id])
                   namespace = Namespace.find(params[:namespace_id])
 
                   indexed_namespace = ::Zoekt::IndexedNamespace
-                    .for_shard_and_namespace!(shard: shard, namespace: namespace)
+                    .for_node_and_namespace!(node: node, namespace: namespace)
                   indexed_namespace.destroy!
 
                   ''

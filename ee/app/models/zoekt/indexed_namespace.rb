@@ -6,8 +6,14 @@ module Zoekt
       'zoekt_'
     end
 
-    belongs_to :shard, foreign_key: :zoekt_shard_id, inverse_of: :indexed_namespaces
+    belongs_to :node, foreign_key: :zoekt_shard_id, inverse_of: :indexed_namespaces, class_name: '::Search::Zoekt::Node'
     belongs_to :namespace
+
+    # TODO
+    # Both `zoekt_node_id` and `shard` can be removed once Zoekt::Shard has schema outlined in
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/424456
+    alias_attribute :zoekt_node_id, :zoekt_shard_id
+    alias_attribute :shard, :node
 
     validates :search, inclusion: [true, false]
     validate :only_root_namespaces_can_be_indexed
@@ -18,12 +24,12 @@ module Zoekt
     after_commit :index, on: :create
     after_commit :delete_from_index, on: :destroy
 
-    def self.for_shard_and_namespace!(shard:, namespace:)
-      find_by!(shard: shard, namespace: namespace)
+    def self.for_node_and_namespace!(node:, namespace:)
+      find_by!(node: node, namespace: namespace)
     end
 
-    def self.find_or_create_for_shard_and_namespace!(shard:, namespace:)
-      find_or_create_by!(shard: shard, namespace: namespace)
+    def self.find_or_create_for_node_and_namespace!(node:, namespace:)
+      find_or_create_by!(node: node, namespace: namespace)
     end
 
     def self.enabled_for_project?(project)
@@ -63,7 +69,7 @@ module Zoekt
     end
 
     def delete_from_index
-      ::Search::Zoekt::NamespaceIndexerWorker.perform_async(namespace_id, :delete, zoekt_shard_id)
+      ::Search::Zoekt::NamespaceIndexerWorker.perform_async(namespace_id, :delete, zoekt_node_id)
     end
   end
 end

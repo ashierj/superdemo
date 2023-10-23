@@ -1,5 +1,5 @@
 {
-  "description": "Zoekt shard metadata",
+  "description": "Zoekt node metadata",
   "type": "object",
   "properties": {
     "name": {

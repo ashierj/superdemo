@@ -51,16 +51,16 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
     end
 
     context 'for delete operation' do
-      subject { described_class.new.perform(namespace.id, 'delete', zoekt_shard.id) }
+      subject { described_class.new.perform(namespace.id, 'delete', zoekt_node.id) }
 
       let_it_be(:projects) { create_list :project, 3, namespace: namespace }
 
       it 'deletes all projects belonging to the namespace' do
         expect(::Search::Zoekt::DeleteProjectWorker).to receive(:bulk_perform_async)
           .with(a_collection_containing_exactly(
-            [projects[0].root_namespace.id, projects[0].id, zoekt_shard.id],
-            [projects[1].root_namespace.id, projects[1].id, zoekt_shard.id],
-            [projects[2].root_namespace.id, projects[2].id, zoekt_shard.id]
+            [projects[0].root_namespace.id, projects[0].id, zoekt_node.id],
+            [projects[1].root_namespace.id, projects[1].id, zoekt_node.id],
+            [projects[2].root_namespace.id, projects[2].id, zoekt_node.id]
           ))
 
         subject
@@ -86,9 +86,9 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
         it 'deletes index files' do
           expect(::Search::Zoekt::DeleteProjectWorker).to receive(:bulk_perform_async)
             .with(a_collection_containing_exactly(
-              [projects[0].root_namespace.id, projects[0].id, zoekt_shard.id],
-              [projects[1].root_namespace.id, projects[1].id, zoekt_shard.id],
-              [projects[2].root_namespace.id, projects[2].id, zoekt_shard.id]
+              [projects[0].root_namespace.id, projects[0].id, zoekt_node.id],
+              [projects[1].root_namespace.id, projects[1].id, zoekt_node.id],
+              [projects[2].root_namespace.id, projects[2].id, zoekt_node.id]
             ))
 
           subject

@@ -15,7 +15,7 @@ module Gitlab
           delegate :search, :index, :delete, :truncate, to: :instance
         end
 
-        def search(query, num:, project_ids:, shard_id:)
+        def search(query, num:, project_ids:, node_id:)
           start = Time.current
 
           payload = {
@@ -33,11 +33,11 @@ module Gitlab
 
           payload[:RepoIDs] = project_ids
           path = '/api/search'
-          target_shard = shard(shard_id)
-          raise 'Shard can not be found' unless target_shard
+          target_node = node(node_id)
+          raise 'Node can not be found' unless target_node
 
           response = post(
-            URI.join(target_shard.search_base_url, path),
+            URI.join(target_node.search_base_url, path),
             payload,
             allow_local_requests: true,
             basic_auth: basic_auth_params
@@ -52,8 +52,8 @@ module Gitlab
           add_request_details(start_time: start, path: path, body: payload)
         end
 
-        def index(project, shard_id)
-          response = zoekt_indexer_post('/indexer/index', indexing_payload(project), shard_id)
+        def index(project, node_id)
+          response = zoekt_indexer_post('/indexer/index', indexing_payload(project), node_id)
 
           raise response['Error'] if response['Error']
           raise "Request failed with: #{response.inspect}" unless response.success?
@@ -61,11 +61,11 @@ module Gitlab
           response
         end
 
-        def delete(shard_id:, project_id:)
-          target_shard = shard(shard_id)
-          raise 'Shard can not be found' unless target_shard
+        def delete(node_id:, project_id:)
+          target_node = node(node_id)
+          raise 'Node can not be found' unless target_node
 
-          response = delete_request(URI.join(target_shard.index_base_url, "/indexer/index/#{project_id}"))
+          response = delete_request(URI.join(target_node.index_base_url, "/indexer/index/#{project_id}"))
 
           raise "Request failed with: #{response.inspect}" unless response.success?
           raise response['Error'] if response['Error']
@@ -74,7 +74,7 @@ module Gitlab
         end
 
         def truncate
-          ::Zoekt::Shard.find_each { |shard| post(URI.join(shard.index_base_url, '/indexer/truncate')) }
+          ::Search::Zoekt::Node.find_each { |node| post(URI.join(node.index_base_url, '/indexer/truncate')) }
         end
 
         private
@@ -103,12 +103,12 @@ module Gitlab
           )
         end
 
-        def zoekt_indexer_post(path, payload, shard_id)
-          target_shard = shard(shard_id)
-          raise 'Shard can not be found' unless target_shard
+        def zoekt_indexer_post(path, payload, node_id)
+          target_node = node(node_id)
+          raise 'Node can not be found' unless target_node
 
           post(
-            URI.join(target_shard.index_base_url, path),
+            URI.join(target_node.index_base_url, path),
             payload,
             timeout: INDEXING_TIMEOUT_S
           )
@@ -146,9 +146,9 @@ module Gitlab
           }
         end
 
-        def shard(shard_id)
-          strong_memoize(:shard) do
-            ::Zoekt::Shard.find_by_id(shard_id)
+        def node(node_id)
+          strong_memoize(:node) do
+            ::Search::Zoekt::Node.find_by_id(node_id)
           end
         end
 

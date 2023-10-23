@@ -12,19 +12,19 @@ RSpec.describe ::Zoekt::IndexedNamespace, feature_category: :global_search do
   let_it_be(:unindexed_project) { create(:project, namespace: unindexed_namespace) }
   let_it_be(:indexed_project_of_parent_namespace) { create(:project, namespace: indexed_parent_namespace) }
   let_it_be(:indexed_project_of_child_namespace) { create(:project, namespace: indexed_child_namespace) }
-  let_it_be(:shard) { create(:zoekt_shard, index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
+  let_it_be(:node) { create(:zoekt_node, index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
   let(:search_enabled) { true }
 
   before do
-    described_class.create!(shard: shard, namespace: indexed_namespace1, search: search_enabled)
-    described_class.create!(shard: shard, namespace: indexed_namespace2, search: search_enabled)
-    described_class.create!(shard: shard, namespace: indexed_parent_namespace, search: search_enabled)
+    described_class.create!(node: node, namespace: indexed_namespace1, search: search_enabled)
+    described_class.create!(node: node, namespace: indexed_namespace2, search: search_enabled)
+    described_class.create!(node: node, namespace: indexed_parent_namespace, search: search_enabled)
   end
 
   context 'with validations' do
     it 'does not allow you to mark a subgroup as indexed' do
       expect do
-        described_class.create!(shard: shard, namespace: indexed_child_namespace)
+        described_class.create!(node: node, namespace: indexed_child_namespace)
       end.to raise_error(/Only root namespaces can be indexed/)
     end
 
@@ -134,17 +134,17 @@ RSpec.describe ::Zoekt::IndexedNamespace, feature_category: :global_search do
       expect(::Search::Zoekt::NamespaceIndexerWorker).to receive(:perform_async)
         .with(newly_indexed_namespace.id, :index)
 
-      described_class.create!(shard: shard, namespace: newly_indexed_namespace)
+      described_class.create!(node: node, namespace: newly_indexed_namespace)
     end
   end
 
   describe '#destroy!' do
     let_it_be(:newly_indexed_namespace) { create(:namespace) }
-    let_it_be(:indexed_namespace_record) { described_class.create!(shard: shard, namespace: newly_indexed_namespace) }
+    let_it_be(:indexed_namespace_record) { described_class.create!(node: node, namespace: newly_indexed_namespace) }
 
     it 'removes index for the namespace' do
       expect(::Search::Zoekt::NamespaceIndexerWorker).to receive(:perform_async)
-        .with(newly_indexed_namespace.id, :delete, shard.id)
+        .with(newly_indexed_namespace.id, :delete, node.id)
 
       indexed_namespace_record.destroy!
     end
