@@ -17,53 +17,104 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
   describe 'source validation' do
     subject { build(:sbom_source, source: source_attributes) }
 
-    context 'when source is valid' do
-      let(:source_attributes) do
-        {
-          'category' => 'development',
-          'input_file' => { 'path' => 'package-lock.json' },
-          'source_file' => { 'path' => 'package.json' },
-          'package_manager' => { 'name' => 'npm' },
-          'language' => { 'name' => 'JavaScript' }
-        }
+    context 'with dependency scanning source' do
+      context 'when source is valid' do
+        let(:source_attributes) do
+          {
+            'category' => 'development',
+            'input_file' => { 'path' => 'package-lock.json' },
+            'source_file' => { 'path' => 'package.json' },
+            'package_manager' => { 'name' => 'npm' },
+            'language' => { 'name' => 'JavaScript' }
+          }
+        end
+
+        it { is_expected.to be_valid }
       end
 
-      it { is_expected.to be_valid }
+      context 'when optional attributes are missing' do
+        let(:source_attributes) do
+          {
+            'input_file' => { 'path' => 'package-lock.json' }
+          }
+        end
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when required attribute input_file is missing' do
+        let(:source_attributes) do
+          {
+            'package_manager' => { 'name' => 'npm' },
+            'language' => { 'name' => 'JavaScript' }
+          }
+        end
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when attributes have wrong type' do
+        let(:source_attributes) do
+          {
+            'category' => 'development',
+            'input_file' => { 'path' => 1 },
+            'source_file' => { 'path' => 'package.json' },
+            'package_manager' => { 'name' => 2 },
+            'language' => { 'name' => 3 }
+          }
+        end
+
+        it { is_expected.to be_invalid }
+      end
     end
 
-    context 'when optional attributes are missing' do
-      let(:source_attributes) do
-        {
-          'input_file' => { 'path' => 'package-lock.json' }
-        }
+    context 'with container scanning source' do
+      context 'when source is valid' do
+        let(:source_attributes) do
+          {
+            'category' => 'development',
+            'image' => {
+              'name' => 'photon',
+              'tag' => '5.0-20231007'
+            },
+            'operating_system' => {
+              'name' => 'Photon OS',
+              'version' => '5.0'
+            }
+          }
+        end
+
+        it { is_expected.to be_valid }
       end
 
-      it { is_expected.to be_valid }
-    end
+      context 'when operating system data is missing' do
+        let(:source_attributes) do
+          {
+            'image' => {
+              'name' => 'photon',
+              'tag' => '5.0-20231007'
+            }
+          }
+        end
 
-    context 'when input_file is missing' do
-      let(:source_attributes) do
-        {
-          'package_manager' => { 'name' => 'npm' },
-          'language' => { 'name' => 'JavaScript' }
-        }
+        it { is_expected.to be_valid }
       end
 
-      it { is_expected.to be_invalid }
-    end
+      context 'when operating system version is missing' do
+        let(:source_attributes) do
+          {
+            'image' => {
+              'name' => 'photon',
+              'tag' => '5.0-20231007'
+            },
+            'operating_system' => {
+              'name' => 'Photon OS'
+            }
+          }
+        end
 
-    context 'when attributes have wrong type' do
-      let(:source_attributes) do
-        {
-          'category' => 'development',
-          'input_file' => { 'path' => 1 },
-          'source_file' => { 'path' => 'package.json' },
-          'package_manager' => { 'name' => 2 },
-          'language' => { 'name' => 3 }
-        }
+        it { is_expected.to be_invalid }
       end
-
-      it { is_expected.to be_invalid }
     end
   end
 

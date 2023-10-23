@@ -2,39 +2,110 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Information about where an sbom component originated from",
   "type": "object",
-  "properties": {
-    "category": { "type": "string" },
-    "input_file": {
-      "type": "object",
+  "definitions": {
+    "dependency_scanning_source": {
       "properties": {
-        "path": { "type": "string" }
+        "category": {
+          "type": "string"
+        },
+        "input_file": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        },
+        "source_file": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "path"
+          ]
+        },
+        "package_manager": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "language": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
       },
-      "required": ["path"]
+      "required": [
+        "input_file"
+      ],
+      "additionalProperties": false
     },
-    "source_file": {
-      "type": "object",
+    "container_scanning_source": {
       "properties": {
-        "path": { "type": "string" }
+        "category": {
+          "type": "string"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "tag"
+          ]
+        },
+        "operating_system": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "version"
+          ]
+        }
       },
-      "required": ["path"]
-    },
-    "package_manager": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" }
-      },
-      "required": ["name"]
-    },
-    "language": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" }
-      },
-      "required": ["name"]
+      "required": [
+        "image"
+      ],
+      "additionalProperties": false
     }
   },
-  "required": [
-    "input_file"
-  ],
-  "additionalProperties": false
+  "oneOf": [
+    {
+      "$ref": "#/definitions/dependency_scanning_source"
+    },
+    {
+      "$ref": "#/definitions/container_scanning_source"
+    }
+  ]
 }
