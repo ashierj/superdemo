@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Email::Handler::ServiceDeskHandler do
+RSpec.describe Gitlab::Email::Handler::ServiceDeskHandler, feature_category: :service_desk do
   include ServiceDeskHelper
   include_context 'email shared context'
 
