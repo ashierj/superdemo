@@ -297,6 +297,10 @@ module EE
                        'Requires the packages and dependency proxy to be enabled in the config. ' \
                        'Requires the packages feature to be enabled at the project level. ' \
                        'Returns `null` if `packages_dependency_proxy_maven` feature flag is disabled.'
+        field :member_roles, ::Types::MemberRoles::MemberRoleType.connection_type,
+          null: true, description: 'Member roles available for the group.',
+          resolver: ::Resolvers::MemberRoles::RolesResolver,
+          alpha: { milestone: '16.5' }
       end
 
       def tracking_key
