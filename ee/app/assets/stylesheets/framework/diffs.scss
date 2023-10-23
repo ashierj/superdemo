@@ -114,10 +114,14 @@
 }
 
 .findings-drawer {
+  .drawer-heading-severity {
+    text-transform: capitalize;
+  }
+
   .drawer-body {
     line-height: $gl-line-height-20;
 
-    h2 {
+    .drawer-heading {
       font-size: $gl-font-size-large;
     }
   }

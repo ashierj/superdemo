@@ -19,6 +19,11 @@ export const fileLineSast = (state) => (file, line) => {
         line: startLine,
         description: e.description,
         severity: e.severity.toLowerCase(),
+        location: e.location,
+        foundByPipelineIid: e.foundByPipelineIid,
+        identifiers: e.identifiers,
+        state: e.state.toLowerCase(),
+        title: e.title,
       });
     }
     return e;
