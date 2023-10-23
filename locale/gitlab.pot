@@ -16807,9 +16807,6 @@ msgstr ""
 msgid "Descriptive label"
 msgstr ""
 
-msgid "Deselect"
-msgstr ""
-
 msgid "Deselect all"
 msgstr ""
 
@@ -50757,6 +50754,9 @@ msgid "Unresolved"
 msgstr ""
 
 msgid "Unschedule job"
+msgstr ""
+
+msgid "Unselect"
 msgstr ""
 
 msgid "Unselect \"Expand variable reference\" if you want to use the variable value as a raw string."

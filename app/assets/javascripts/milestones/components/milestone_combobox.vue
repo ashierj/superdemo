@@ -47,7 +47,7 @@ export default {
     noMilestone: s__('MilestoneCombobox|No milestone'),
     projectMilestones: s__('MilestoneCombobox|Project milestones'),
     groupMilestones: s__('MilestoneCombobox|Group milestones'),
-    deselect: __('Deselect'),
+    unselect: __('Unselect'),
   },
   computed: {
     ...mapState(['matches', 'selectedMilestones']),
@@ -143,7 +143,7 @@ export default {
   <gl-collapsible-listbox
     :header-text="$options.translations.selectMilestone"
     :items="allMilestones"
-    :reset-button-label="$options.translations.deselect"
+    :reset-button-label="$options.translations.unselect"
     :searching="isLoading"
     :selected="selectedMilestones"
     :toggle-text="selectedMilestonesLabel"
