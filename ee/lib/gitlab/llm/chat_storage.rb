@@ -85,8 +85,6 @@ module Gitlab
       def load_message(data)
         data['extras'] = ::Gitlab::Json.parse(data['extras']) if data['extras']
         data['errors'] = ::Gitlab::Json.parse(data['errors']) if data['errors']
-        # compatibility code for a while until we get rid of cached messages
-        data['errors'] = Array.wrap(data.delete('error')) if data['error']
         data['timestamp'] = Time.zone.parse(data['timestamp']) if data['timestamp']
         data['ai_action'] = 'chat'
         data['user'] = user
