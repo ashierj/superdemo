@@ -27,18 +27,19 @@ Feature flags can be used for different purposes:
 
 - De-risking GitLab.com deployments (most feature flags): Allows to quickly enable/disable
   a feature flag in production in the event of a production incident.
+- Work-in-progress feature: Some features are complex and need to be implemented through several MRs. Until they're fully implemented, it needs
+  to be hidden from anyone. In that case, the feature flag allows to merge all the changes to the main branch without actually using
+  the feature yet.
 - Beta features: We might
   [not be confident we'll be able to scale, support, and maintain a feature](https://about.gitlab.com/handbook/product/gitlab-the-product/#experiment-beta-ga)
   in its current form for every designed use case ([example](https://gitlab.com/gitlab-org/gitlab/-/issues/336070#note_1523983444)).
   There are also scenarios where a feature is not complete enough to be considered an MVC.
   Providing a flag in this case allows customers to disable the new feature until it's performant enough.
-- Future setting: It's tempting to use a feature flag instead of a proper instance
-  setting (no database migration, no backend/frontend/UI change), but it's almost
-  always a bad idea and
-  [these kind of feature flags should be ported to an instance/group/project/user setting at some point](https://gitlab.com/gitlab-org/gitlab/-/issues/395931).
 - Operations: Site reliability engineer or Support engineer can use these flags to
   disable potentially resource-heavy features in order to the instance back to a
-  more stable and available state.
+  more stable and available state. Another example is SaaS-only features.
+- Experiment: A/B testing on GitLab.com.
+- Worker (special `ops` feature flag): Used for controlling Sidekiq workers behavior, such as deferring Sidekiq jobs.
 
 We need to better categorize our feature flags.
 
@@ -83,7 +84,7 @@ The feature flag rollout process is currently:
 
 ### Technical debt and codebase complexity
 
-[The challenges from the Development Feature Flags Architecture blueprint still stands](../feature_flags_development/index.md#challenges).
+[The challenges from the Development Feature Flags Architecture blueprint still stand](../feature_flags_development/index.md#challenges).
 
 Additionally, there are new challenges:
 
@@ -138,10 +139,10 @@ This leads to confusion for almost all feature flag stakeholders (Development en
 
 It's clear that the `development` feature flag type actually includes several use-cases:
 
-- Deployment de-risking. YAML value: `deploy_derisk`.
+- Deployment de-risking. YAML value: `auto`.
+- Work-in-progress feature. YAML value: `wip`. Once the feature is complete, the feature flag type can be changed to `beta`
+  if there still are some doubts on the scalability of the feature.
 - Beta features. YAML value: `beta`.
-- Future setting. YAML value: `future_setting`.
-  Note that `ops` feature flags can be used if the setting isn't meant to be changed through the UI.
 
 Notes:
 
@@ -153,7 +154,7 @@ Notes:
 Each feature flag type will be assigned specific constraints regarding:
 
 - Allowed values for the `default_enabled` attribute
-- Maximum Life Span (MLS): the duration starting on the introduction of the feature flag (i.e. when it's merged into `master`).
+- Maximum Lifespan (MLS): the duration starting on the introduction of the feature flag (i.e. when it's merged into `master`).
   We don't introduce a life span that would start on the global GitLab.com enablement (or `default_enabled: true` when
   applicable) so that there's incentive to rollout and delete feature flags as quickly as possible.
 
@@ -161,25 +162,27 @@ The MLS will be enforced through automation, reporting & regular review meetings
 
 Following are the constraints for each feature flag type:
 
-- `deploy_derisk`
+- `auto`
   - `default_enabled` **must not** be set to `true`. This kind of feature flag is meant to lower the risk on GitLab.com, thus
     there's no need to keep the flag in the codebase after it's been enabled on GitLab.com.
     **`default_enabled: true` will not have any effect for this type of feature flag.**
-  - Maximum Life Span: 2 months.
+  - Maximum Lifespan: 2 months.
   - Additional note: This type of feature flag won't be documented in the [All feature flags in GitLab](../../../user/feature_flags.md)
     page given they're short-lived and deployment-related.
+- `wip`
+  - `default_enabled` **must not** be set to `true`. If needed, this type can be changed to `beta` once the feature is complete.
+  - Maximum Lifespan: 4 months.
 - `beta`
   - `default_enabled` can be set to `true` so that a feature can be "released" to everyone in Beta with the possibility to disable
     it in the case of scalability issues (ideally it should only be disabled for this reason on specific on-premise installations).
-  - Maximum Life Span: 6 months.
-- `future_setting`
-  - `default_enabled` can be set to `true`. In that case, the setting to replace the feature flag should default to be enabled.
-  - Maximum Life Span: 12 months
-  - Additional note: Remember that this type should only be used to save time before introducing a proper instance setting.
+  - Maximum Lifespan: 6 months.
 - `ops`
   - `default_enabled` can be set to `true`.
-  - Maximum Life Span: Unlimited
+  - Maximum Lifespan: Unlimited.
   - Additional note: Remember that using this type should follow a conscious decision not to introduce an instance setting.
+- `experiment`
+  - `default_enabled` **must not** be set to `true`.
+  - Maximum Lifespan: 6 months.
 
 ### Introduce a new `feature_issue_url` field
 
@@ -195,7 +198,7 @@ feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/12345
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/678910
 rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/9876
 milestone: '16.5'
-type: deploy_derisk
+type: auto
 group: group::pipeline execution
 ```
 
@@ -223,11 +226,13 @@ default_enabled: true
 1. (Automation) Automate most rollout steps, such as:
      - (Done) [Let the author know that their feature has been deployed to staging / canary / production environments](https://gitlab.com/gitlab-org/quality/triage-ops/-/issues/1403)
      - (Done) [Cross-link actual feature flag state change (from Chatops project) to rollout issues](https://gitlab.com/gitlab-org/gitlab/-/issues/290770)
-     - [Let the author know that their `default_enabled: true` MR has been deployed to production and that the feature flag can be removed from production](https://gitlab.com/gitlab-org/quality/triage-ops/-/merge_requests/2482)
+     - (Done) [Let the author know that their `default_enabled: true` MR has been deployed to production and that the feature flag can be removed from production](https://gitlab.com/gitlab-org/quality/triage-ops/-/merge_requests/2482)
+     - Stop creating issues in [`gitlab-com/gl-infra/feature-flag-log`](https://gitlab.com/gitlab-com/gl-infra/feature-flag-log/-/issues) as it's redundant
+       with the notifications posted in the rollout issues.
      - Ping DRI and their group on Slack upon feature flag state change
-     - 7 days before the Maximumn Life Span of a feature flag is reached, automatically create a "cleanup MR" with the group label set, and
+     - 7 days before the Maximum Lifespan of a feature flag is reached, automatically create a "cleanup MR" with the group label set, and
        assigned to the feature flag author (if they're still with GitLab). We could take advantage of the [automation of repetitive developer tasks](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134487).
-     - Enforce Maximum Life Span of feature flags through automated reporting & regular review at the section level.
+     - Enforce Maximum Lifespan of feature flags through automated reporting & regular review at the section level.
 1. (Documentation/process) Ensure the rollout DRI stays online for a few hours after enabling a feature flag (ideally they'd enable the flag at the
    beginning of their day) in case of any issue with the feature flag
 1. (Process) Provide a standardized set of rollout steps. Trade-offs to consider include:
@@ -261,7 +266,7 @@ default_enabled: true
 **GitLab Engineering and Product managers**
 
 - ["Feature flags requiring attention" monthly reports](https://gitlab.com/gitlab-org/quality/triage-reports/-/issues/?sort=created_date&state=opened&search=Feature%20flags&in=TITLE&assignee_id=None&first_page_size=100):
-  Make the current reports more actionable by improving documentation and best-practices around feature flags.
+  Make the current reports more actionable by linking to automatically created MRs for removing feature flags as well as improving documentation and best-practices around feature flags.
 
 ## Iterations
 
