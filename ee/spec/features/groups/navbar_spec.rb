@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
+RSpec.describe 'Group navbar', :js, feature_category: :groups_and_projects do
   include NavbarStructureHelper
   include WaitForRequests
   include WikiHelpers
 
   include_context 'group navbar structure'
 
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
   context 'for maintainers' do
@@ -18,8 +18,8 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
       stub_group_wikis(false)
       sign_in(user)
 
-      insert_package_nav(_('Kubernetes'))
-      insert_after_nav_item(_('Analytics'), new_nav_item: settings_for_maintainer_nav_item)
+      create_package_nav(_('Operate'))
+      insert_after_nav_item(_('Analyze'), new_nav_item: settings_for_maintainer_nav_item)
     end
 
     context 'when devops adoption analytics is available' do
@@ -27,8 +27,8 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
         stub_licensed_features(group_level_devops_adoption: true)
 
         insert_after_sub_nav_item(
-          _('Contribution'),
-          within: _('Analytics'),
+          _('Contribution analytics'),
+          within: _('Analyze'),
           new_sub_nav_item_name: _('DevOps adoption')
         )
 
@@ -43,9 +43,9 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
         stub_licensed_features(productivity_analytics: true)
 
         insert_after_sub_nav_item(
-          _('Contribution'),
-          within: _('Analytics'),
-          new_sub_nav_item_name: _('Productivity')
+          _('Contribution analytics'),
+          within: _('Analyze'),
+          new_sub_nav_item_name: _('Productivity analytics')
         )
 
         visit group_path(group)
@@ -59,41 +59,35 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
         stub_licensed_features(cycle_analytics_for_groups: true)
 
         insert_before_sub_nav_item(
-          _('Contribution'),
-          within: _('Analytics'),
-          new_sub_nav_item_name: _('Value stream')
+          _('Contribution analytics'),
+          within: _('Analyze'),
+          new_sub_nav_item_name: _('Value stream analytics')
         )
 
         visit group_path(group)
       end
 
       it_behaves_like 'verified navigation bar'
-
-      it 'redirects to value stream when Analytics item is clicked' do
-        page.within('.sidebar-top-level-items') do
-          find('.shortcuts-analytics').click
-        end
-
-        wait_for_requests
-
-        expect(page).to have_current_path(group_analytics_cycle_analytics_path(group))
-      end
     end
 
     context 'when epics are available' do
       before do
         stub_licensed_features(epics: true)
 
-        insert_after_nav_item(
-          _('Group information'),
-          new_nav_item: {
-            nav_item: _('Epics'),
-            nav_sub_items: [
-              _('List'),
-              _('Boards'),
-              _('Roadmap')
-            ]
-          }
+        insert_after_sub_nav_item(
+          _('Issues'),
+          within: _('Plan'),
+          new_sub_nav_item_name: _('Epics')
+        )
+        insert_after_sub_nav_item(
+          _('Issue board'),
+          within: _('Plan'),
+          new_sub_nav_item_name: _('Epic boards')
+        )
+        insert_after_sub_nav_item(
+          _('Epic boards'),
+          within: _('Plan'),
+          new_sub_nav_item_name: _('Roadmap')
         )
 
         visit group_path(group)
@@ -115,7 +109,7 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
 
           insert_after_sub_nav_item(
             _('Package Registry'),
-            within: _('Packages and registries'),
+            within: _('Deploy'),
             new_sub_nav_item_name: _('Container Registry')
           )
 
@@ -129,7 +123,7 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
         let(:group) { create(:group, :crm_enabled) }
 
         before do
-          insert_customer_relations_nav(_('Analytics'))
+          insert_customer_relations_nav(_('Iterations'))
 
           visit group_path(group)
         end
@@ -162,12 +156,10 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
       before do
         stub_group_wikis(true)
 
-        insert_after_nav_item(
-          _('Analytics'),
-          new_nav_item: {
-            nav_item: _('Wiki'),
-            nav_sub_items: []
-          }
+        insert_after_sub_nav_item(
+          _('Iterations'),
+          within: _('Plan'),
+          new_sub_nav_item_name: _('Wiki')
         )
         visit group_path(group)
       end
@@ -181,7 +173,7 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
       before do
         group.update!(harbor_integration: harbor_integration)
 
-        insert_harbor_registry_nav(_('Package Registry'))
+        insert_harbor_registry_nav(_('Kubernetes'))
 
         visit group_path(group)
       end
@@ -196,12 +188,12 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
       stub_group_wikis(false)
       stub_licensed_features(domain_verification: true)
       sign_in(user)
-      insert_package_nav(_('Kubernetes'))
+      create_package_nav(_('Operate'))
     end
 
     describe 'structure' do
       before do
-        insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
+        insert_after_nav_item(_('Analyze'), new_nav_item: settings_nav_item)
 
         visit group_path(group)
       end
@@ -213,7 +205,7 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
       before do
         stub_licensed_features(group_saml: true, domain_verification: true)
 
-        insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
+        insert_after_nav_item(_('Analyze'), new_nav_item: settings_nav_item)
         insert_after_sub_nav_item(
           s_('UsageQuota|Usage Quotas'),
           within: _('Settings'),
@@ -227,15 +219,15 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
     end
 
     context 'when security dashboard is available' do
-      let(:security_and_compliance_nav_item) do
+      let(:secure_nav_item) do
         {
-          nav_item: _('Security and Compliance'),
+          nav_item: _('Secure'),
           nav_sub_items: [
             _('Security dashboard'),
             _('Vulnerability report'),
             _('Dependency list'),
-            _('Compliance center'),
-            _('Audit events')
+            _('Audit events'),
+            _('Compliance center')
           ]
         }
       end
@@ -247,7 +239,7 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
           domain_verification: true
         )
 
-        insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
+        insert_after_nav_item(_('Analyze'), new_nav_item: settings_nav_item)
 
         visit group_path(group)
       end

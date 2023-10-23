@@ -2,12 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project navbar', feature_category: :navigation do
+RSpec.describe 'Project navbar', :js, feature_category: :navigation do
   include NavbarStructureHelper
 
   include_context 'project navbar structure'
 
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, namespace: user.namespace) }
 
   before do
@@ -18,7 +18,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
     stub_config(registry: { enabled: false })
     stub_feature_flags(ml_experiment_tracking: false)
     stub_feature_flags(remove_monitor_metrics: false)
-    insert_package_nav(_('Deployments'))
+    insert_package_nav
     insert_infrastructure_registry_nav
     insert_infrastructure_google_cloud_nav
     insert_infrastructure_aws_nav
@@ -46,7 +46,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
 
         insert_after_sub_nav_item(
           _('Milestones'),
-          within: _('Issues'),
+          within: _('Plan'),
           new_sub_nav_item_name: _('Iterations')
         )
 
@@ -62,9 +62,9 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
       stub_licensed_features(issues_analytics: true)
 
       insert_after_sub_nav_item(
-        _('Code review'),
-        within: _('Analytics'),
-        new_sub_nav_item_name: _('Issue')
+        _('Merge request analytics'),
+        within: _('Analyze'),
+        new_sub_nav_item_name: _('Issue analytics')
       )
 
       visit project_path(project)
@@ -74,14 +74,14 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
   end
 
   context 'when security dashboard is available' do
-    let(:security_and_compliance_nav_item) do
+    let(:secure_nav_item) do
       {
-        nav_item: _('Security and Compliance'),
+        nav_item: _('Secure'),
         nav_sub_items: [
           _('Security dashboard'),
           _('Vulnerability report'),
-          s_('OnDemandScans|On-demand scans'),
           _('Audit events'),
+          s_('OnDemandScans|On-demand scans'),
           _('Security configuration')
         ]
       }
@@ -96,9 +96,9 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
     it_behaves_like 'verified navigation bar'
 
     context 'when FIPS mode is enabled' do
-      let(:security_and_compliance_nav_item) do
+      let(:secure_nav_item) do
         {
-          nav_item: _('Security and Compliance'),
+          nav_item: _('Secure'),
           nav_sub_items: [
             _('Security dashboard'),
             _('Vulnerability report'),
@@ -109,7 +109,8 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
       end
 
       before do
-        allow(::Gitlab::FIPS).to receive(:enabled?).exactly(3).times.and_return(true)
+        # When the Javascript driver is enabled ::Gitlab::FIPS.enabled? is called a 4th time
+        allow(::Gitlab::FIPS).to receive(:enabled?).exactly(4).times.and_return(true)
         stub_licensed_features(security_dashboard: true, security_on_demand_scans: true)
 
         visit project_path(project)
@@ -147,7 +148,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
     before do
       project.update!(harbor_integration: harbor_integration)
 
-      insert_harbor_registry_nav(_('Terraform modules'))
+      insert_harbor_registry_nav(_('AWS'))
 
       visit project_path(project)
     end
@@ -161,8 +162,8 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
       stub_licensed_features(combined_project_analytics_dashboards: true)
 
       insert_before_sub_nav_item(
-        _('Value stream'),
-        within: _('Analytics'),
+        _('Value stream analytics'),
+        within: _('Analyze'),
         new_sub_nav_item_name: _('Analytics dashboards')
       )
 
@@ -176,7 +177,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
     before do
       stub_feature_flags(ml_experiment_tracking: true)
 
-      insert_model_experiments_nav(_('Terraform modules'))
+      insert_model_experiments_nav(_('Merge request analytics'))
 
       visit project_path(project)
     end
