@@ -24,10 +24,10 @@ RSpec.describe Gitlab::InstrumentationHelper do
 
     context 'when Zoekt calls are made', :zoekt do
       let_it_be(:project) { create(:project, :public, :repository) }
-      let(:shard_id) { Zoekt::Shard.last.id }
+      let(:node_id) { ::Search::Zoekt::Node.last.id }
 
       it 'adds Zoekt data' do
-        search_results = Gitlab::Zoekt::SearchResults.new(nil, 'query', [project.id], shard_id: shard_id)
+        search_results = Gitlab::Zoekt::SearchResults.new(nil, 'query', [project.id], node_id: node_id)
         search_results.objects('blobs')
 
         subject

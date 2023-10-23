@@ -24,10 +24,10 @@ module API
               end
 
               get "/:uuid/tasks", urgency: :medium do
-                shard = ::Zoekt::Shard.find_or_initialize_by_task_request(params)
+                node = ::Search::Zoekt::Node.find_or_initialize_by_task_request(params)
 
-                if shard.save
-                  { id: shard.id }
+                if node.save
+                  { id: node.id }
                 else
                   unprocessable_entity!
                 end

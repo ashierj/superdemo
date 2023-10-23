@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :zoekt_shard, class: '::Zoekt::Shard' do
+  factory :zoekt_node, class: '::Search::Zoekt::Node' do
     index_base_url { "http://#{SecureRandom.hex(4)}.example.com" }
     search_base_url { "http://#{SecureRandom.hex(4)}.example.com" }
     uuid { SecureRandom.uuid }

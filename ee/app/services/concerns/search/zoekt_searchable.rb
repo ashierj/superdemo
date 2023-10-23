@@ -21,9 +21,9 @@ module Search
       raise NotImplementedError
     end
 
-    def zoekt_shard_id
-      @zoekt_shard_id ||= ::Zoekt::IndexedNamespace.find_by_namespace_id(
-        zoekt_searchable_scope.root_ancestor.id).zoekt_shard_id
+    def zoekt_node_id
+      @zoekt_node_id ||= ::Zoekt::IndexedNamespace.find_by_namespace_id(
+        zoekt_searchable_scope.root_ancestor.id).zoekt_node_id
     end
 
     def zoekt_search_results
@@ -31,7 +31,7 @@ module Search
         current_user,
         params[:search],
         zoekt_projects,
-        shard_id: zoekt_shard_id,
+        node_id: zoekt_node_id,
         order_by: params[:order_by],
         sort: params[:sort],
         filters: { language: params[:language] }

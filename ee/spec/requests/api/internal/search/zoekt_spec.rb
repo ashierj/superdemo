@@ -32,22 +32,24 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
 
     context 'with valid auth' do
       context 'when a task request is received with valid params' do
-        it 'returns shard ID for task request' do
-          shard = instance_double(::Zoekt::Shard, id: 123)
-          expect(::Zoekt::Shard).to receive(:find_or_initialize_by_task_request).with(valid_params).and_return(shard)
-          expect(shard).to receive(:save).and_return(true)
+        it 'returns node ID for task request' do
+          node = instance_double(::Search::Zoekt::Node, id: 123)
+          expect(::Search::Zoekt::Node).to receive(:find_or_initialize_by_task_request)
+            .with(valid_params).and_return(node)
+          expect(node).to receive(:save).and_return(true)
 
           get api(endpoint), params: valid_params, headers: gitlab_shell_internal_api_request_header
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response).to eq({ 'id' => shard.id })
+          expect(json_response).to eq({ 'id' => node.id })
         end
       end
 
-      context 'when a heartbeat has valid params but a shard validation error occurs' do
+      context 'when a heartbeat has valid params but a node validation error occurs' do
         it 'returns 422' do
-          shard = ::Zoekt::Shard.new(search_base_url: nil) # null attributes makes this invalid
-          expect(::Zoekt::Shard).to receive(:find_or_initialize_by_task_request).with(valid_params).and_return(shard)
+          node = ::Search::Zoekt::Node.new(search_base_url: nil) # null attributes makes this invalid
+          expect(::Search::Zoekt::Node).to receive(:find_or_initialize_by_task_request)
+            .with(valid_params).and_return(node)
           get api(endpoint), params: valid_params, headers: gitlab_shell_internal_api_request_header
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
         end

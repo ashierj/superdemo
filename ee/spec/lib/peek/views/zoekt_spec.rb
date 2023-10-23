@@ -13,7 +13,7 @@ RSpec.describe Peek::Views::Zoekt, :zoekt, :request_store, feature_category: :gl
 
   describe '#results' do
     let_it_be(:project) { create(:project, :repository) }
-    let(:shard_id) { Zoekt::Shard.last.id }
+    let(:node_id) { ::Search::Zoekt::Node.last.id }
 
     let(:results) { described_class.new.results }
     let(:timeout) { '30s' }
@@ -21,7 +21,7 @@ RSpec.describe Peek::Views::Zoekt, :zoekt, :request_store, feature_category: :gl
     it 'includes performance details' do
       ::Gitlab::SafeRequestStore.clear!
 
-      search_results = Gitlab::Zoekt::SearchResults.new(nil, 'query', [project.id], shard_id: shard_id)
+      search_results = Gitlab::Zoekt::SearchResults.new(nil, 'query', [project.id], node_id: node_id)
       search_results.objects('blobs')
 
       expect(results[:calls]).to be > 0

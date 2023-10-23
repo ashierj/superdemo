@@ -7,6 +7,7 @@ module API
         class IndexedNamespace < Grape::Entity
           expose :id, documentation: { type: :int, example: 1234 }
           expose :zoekt_shard_id, documentation: { type: :int, example: 1234 }
+          expose :zoekt_node_id, documentation: { type: :int, example: 1234 }
           expose :namespace_id, documentation: { type: :int, example: 1234 }
         end
 
