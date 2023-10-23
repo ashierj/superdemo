@@ -49,7 +49,7 @@ module AppSec
         def fetch_from_project_gitlab_ci_yml
           return unless project.repository_exists?
 
-          yml_dump = project.repository.gitlab_ci_yml_for(project.default_branch)
+          yml_dump = project.ci_config_for(project.default_branch)
 
           result = ::Gitlab::Ci::YamlProcessor
             .new(yml_dump, project: project, user: current_user, sha: project.repository&.commit&.sha)
