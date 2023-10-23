@@ -10,6 +10,7 @@ export const REQUIRE_PASSWORD_TO_APPROVE = 'require_password_to_approve';
 export const protectedBranchesConfiguration = {
   [BLOCK_UNPROTECTING_BRANCHES]: false,
 };
+
 export const PROTECTED_BRANCHES_CONFIGURATION_KEYS = [BLOCK_UNPROTECTING_BRANCHES];
 
 export const MERGE_REQUEST_CONFIGURATION_KEYS = [
@@ -57,12 +58,14 @@ export const SETTINGS_LINKS = {
 };
 
 export const VALID_APPROVAL_SETTINGS = [
-  ...Object.keys(protectedBranchesConfiguration),
-  ...Object.keys(mergeRequestConfiguration),
+  ...PROTECTED_BRANCHES_CONFIGURATION_KEYS,
+  ...MERGE_REQUEST_CONFIGURATION_KEYS,
 ];
 
+export const PERMITTED_INVALID_SETTINGS_KEY = 'block_protected_branch_modification';
+
 export const PERMITTED_INVALID_SETTINGS = {
-  block_protected_branch_modification: {
+  [PERMITTED_INVALID_SETTINGS_KEY]: {
     enabled: true,
   },
 };
@@ -72,8 +75,10 @@ export const PERMITTED_INVALID_SETTINGS = {
  * @param hasAnyMergeRequestRule
  * @returns {Object} final settings
  */
-export const buildConfig = ({ hasAnyMergeRequestRule } = { hasAnyMergeRequestRule: false }) => {
-  let configuration = { ...protectedBranchesConfiguration };
+const buildConfig = ({ hasAnyMergeRequestRule } = { hasAnyMergeRequestRule: false }) => {
+  let configuration = gon.features?.scanResultPoliciesBlockUnprotectingBranches
+    ? { ...protectedBranchesConfiguration }
+    : {};
 
   const extendConfiguration = (predicate, extension) => {
     if (predicate) {

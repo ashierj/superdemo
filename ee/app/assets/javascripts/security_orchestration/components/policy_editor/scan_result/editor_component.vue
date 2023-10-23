@@ -100,13 +100,13 @@ export default {
     },
   },
   data() {
-    const DEFAULT_POLICY = this.glFeatures.scanResultPolicySettings
+    const DEFAULT_POLICY = this.glFeatures.scanResultPoliciesBlockUnprotectingBranches
       ? SCAN_RESULT_POLICY_SETTINGS_POLICY
       : DEFAULT_SCAN_RESULT_POLICY;
 
     const yamlEditorValue = this.existingPolicy ? toYaml(this.existingPolicy) : DEFAULT_POLICY;
 
-    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue, this.glFeatures);
+    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
 
     return {
       errors: { action: [] },
@@ -159,7 +159,10 @@ export default {
       return this.policy.rules.some(this.ruleHasBranchesProperty);
     },
     shouldShowSettings() {
-      return this.glFeatures.scanResultPolicySettings;
+      return (
+        this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
+        this.glFeatures.scanResultAnyMergeRequest
+      );
     },
   },
   watch: {
@@ -203,7 +206,10 @@ export default {
     },
     updateRule(ruleIndex, rule) {
       this.policy.rules.splice(ruleIndex, 1, rule);
-      if (this.glFeatures.scanResultPolicySettings && this.glFeatures.scanResultAnyMergeRequest) {
+      if (
+        this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
+        this.glFeatures.scanResultAnyMergeRequest
+      ) {
         this.updateSettings(this.settings);
       }
       this.updateYamlEditorValue(this.policy);
@@ -249,9 +255,7 @@ export default {
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name:
-            this.originalName ||
-            fromYaml({ manifest: this.yamlEditorValue, glFeatures: this.glFeatures })?.name,
+          name: this.originalName || fromYaml({ manifest: this.yamlEditorValue })?.name,
           namespacePath: this.namespacePath,
           yamlEditorValue: this.yamlEditorValue,
         });
@@ -284,7 +288,7 @@ export default {
       );
     },
     updateYaml(manifest) {
-      const { policy, hasParsingError } = createPolicyObject(manifest, this.glFeatures);
+      const { policy, hasParsingError } = createPolicyObject(manifest);
 
       this.yamlEditorValue = manifest;
       this.hasParsingError = hasParsingError;

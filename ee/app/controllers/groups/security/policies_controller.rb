@@ -10,7 +10,7 @@ module Groups
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
-        push_frontend_feature_flag(:scan_result_policy_settings, group)
+        push_frontend_feature_flag(:scan_result_policies_block_unprotecting_branches, group)
         push_frontend_feature_flag(:scan_result_any_merge_request, group)
       end
 

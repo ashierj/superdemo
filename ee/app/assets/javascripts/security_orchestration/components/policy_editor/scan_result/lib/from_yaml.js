@@ -2,12 +2,16 @@ import { safeLoad } from 'js-yaml';
 import { isBoolean, isEqual } from 'lodash';
 import { hasInvalidKey, isValidPolicy } from '../../utils';
 import { PRIMARY_POLICY_KEYS } from '../../constants';
-import { VALID_APPROVAL_SETTINGS, PERMITTED_INVALID_SETTINGS } from './settings';
+import {
+  VALID_APPROVAL_SETTINGS,
+  PERMITTED_INVALID_SETTINGS,
+  PERMITTED_INVALID_SETTINGS_KEY,
+} from './settings';
 
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
 */
-export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }) => {
+export const fromYaml = ({ manifest, validateRuleMode = false }) => {
   try {
     const policy = safeLoad(manifest, { json: true });
     if (validateRuleMode) {
@@ -18,10 +22,13 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
        * schema. These values should not be retrieved from the backend schema because
        * the UI for new attributes may not be available.
        */
+      const hasApprovalSettings =
+        gon.features?.scanResultPoliciesBlockUnprotectingBranches ||
+        gon.features?.scanResultAnyMergeRequest;
+
       const primaryKeys = [
         ...PRIMARY_POLICY_KEYS,
-        ...(glFeatures?.scanResultPolicySettings ||
-        isEqual(policy.approval_settings, PERMITTED_INVALID_SETTINGS) // Temporary workaround to allow the rule builder to load with wrongly persisted settings
+        ...(hasApprovalSettings || isEqual(policy.approval_settings, PERMITTED_INVALID_SETTINGS) // Temporary workaround to allow the rule builder to load with wrongly persisted settings
           ? [`approval_settings`]
           : []),
       ];
@@ -53,12 +60,12 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
 
       const { approval_settings: settings = {} } = policy;
 
-      const hasInvalidApprovalSettings = glFeatures?.scanResultPolicySettings
-        ? hasInvalidKey(settings, VALID_APPROVAL_SETTINGS)
+      const hasInvalidApprovalSettings = hasApprovalSettings
+        ? hasInvalidKey(settings, [...VALID_APPROVAL_SETTINGS, PERMITTED_INVALID_SETTINGS_KEY])
         : false;
 
       const hasInvalidSettingStructure =
-        glFeatures?.scanResultPolicySettings && !isEqual(settings, PERMITTED_INVALID_SETTINGS)
+        hasApprovalSettings && !isEqual(settings, PERMITTED_INVALID_SETTINGS)
           ? !Object.values(settings).every((setting) => isBoolean(setting))
           : false;
 
@@ -81,11 +88,10 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
 /**
  * Converts a security policy from yaml to an object
  * @param {String} manifest a security policy in yaml form
- * @param {Object} glFeatures build yaml based on feature flags
  * @returns {Object} security policy object and any errors
  */
-export const createPolicyObject = (manifest, glFeatures = {}) => {
-  const policy = fromYaml({ manifest, validateRuleMode: true, glFeatures });
+export const createPolicyObject = (manifest) => {
+  const policy = fromYaml({ manifest, validateRuleMode: true });
 
   return { policy, hasParsingError: Boolean(policy.error) };
 };

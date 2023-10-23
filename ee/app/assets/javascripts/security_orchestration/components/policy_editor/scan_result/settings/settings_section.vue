@@ -7,10 +7,12 @@ import {
   MERGE_REQUEST_CONFIGURATION_KEYS,
   PROTECTED_BRANCHES_CONFIGURATION_KEYS,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SettingsItem from './settings_item.vue';
 
 export default {
   i18n: {
+    emptyMessage: s__('ScanResultPolicy|No settings available for this policy'),
     protectedBranchTitle: s__('ScanResultPolicy|Protected branch settings'),
     mergeRequestTitle: s__('ScanResultPolicy|Merge request approval settings'),
     protectedBranchesDescription: s__(
@@ -27,6 +29,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespacePath'],
   props: {
     rules: {
@@ -42,7 +45,11 @@ export default {
   },
   computed: {
     protectedBranchSettings() {
-      return this.groupSettingsBy(PROTECTED_BRANCHES_CONFIGURATION_KEYS);
+      if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
+        return this.groupSettingsBy(PROTECTED_BRANCHES_CONFIGURATION_KEYS);
+      }
+
+      return [];
     },
     mergeRequestSettings() {
       return this.groupSettingsBy(MERGE_REQUEST_CONFIGURATION_KEYS);
@@ -81,6 +88,12 @@ export default {
 <template>
   <div class="gl-mb-3">
     <gl-accordion :header-level="3">
+      <div
+        v-if="isSettingsEmpty(protectedBranchSettings) && isSettingsEmpty(mergeRequestSettings)"
+        data-testid="empty-state"
+      >
+        {{ $options.i18n.emptyMessage }}
+      </div>
       <settings-item
         v-if="!isSettingsEmpty(protectedBranchSettings)"
         data-testid="protected-branches-setting"
