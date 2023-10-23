@@ -14,21 +14,23 @@ RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService, featu
   describe "#execute" do
     let(:result) { check_blocked_by_other_mrs.execute }
 
-    context "when blocking_merge_requests feature is unavailable" do
-      before do
-        stub_licensed_features(blocking_merge_requests: false)
-      end
+    before do
+      allow(merge_request)
+        .to receive(:blocking_merge_requests_feature_available?)
+        .and_return(blocking_merge_requests_feature_available?)
+    end
 
-      it "returns a check result with status success" do
+    context "when blocking_merge_requests feature is unavailable" do
+      let(:blocking_merge_requests_feature_available?) { false }
+
+      it "returns a check result with status inactive" do
         expect(result.status)
-          .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
+          .to eq Gitlab::MergeRequests::Mergeability::CheckResult::INACTIVE_STATUS
       end
     end
 
     context "when blocking_merge_requests feature is available" do
-      before do
-        stub_licensed_features(blocking_merge_requests: true)
-      end
+      let(:blocking_merge_requests_feature_available?) { true }
 
       context "when there are no blocking MRs" do
         it "returns a check result with status success" do

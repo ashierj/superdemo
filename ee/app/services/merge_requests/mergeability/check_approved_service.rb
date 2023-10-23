@@ -8,7 +8,7 @@ module MergeRequests
       end
 
       def execute
-        return success unless merge_request.approval_feature_available?
+        return inactive unless merge_request.approval_feature_available?
 
         if merge_request.approved? && !merge_request.approval_state.temporarily_unapproved?
           success

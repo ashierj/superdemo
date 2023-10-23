@@ -8,6 +8,8 @@ module MergeRequests
       end
 
       def execute
+        return inactive unless merge_request.license_scanning_feature_available?
+
         if merge_request.has_denied_policies?
           failure(reason: failure_reason)
         else
