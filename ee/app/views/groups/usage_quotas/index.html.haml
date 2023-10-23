@@ -33,6 +33,9 @@
     - if Feature.enabled?(:data_transfer_monitoring, @group)
       = gl_tab_link_to '#transfer-quota-tab' do
         = s_('UsageQuota|Transfer')
+    - if show_product_analytics_usage_quota_tab?(@group)
+      = gl_tab_link_to '#product-analytics-usage-quota-tab' do
+        = s_('UsageQuota|Product analytics')
 
   .tab-content
     .tab-pane.active#seats-quota-tab
@@ -55,3 +58,6 @@
     - if Feature.enabled?(:data_transfer_monitoring, @group)
       .tab-pane#transfer-quota-tab
         #js-group-transfer-app{ data: group_transfer_app_data(@group) }
+    - if show_product_analytics_usage_quota_tab?(@group)
+      .tab-pane#product-analytics-usage-quota-tab
+        #js-product-analytics-usage-quota-app

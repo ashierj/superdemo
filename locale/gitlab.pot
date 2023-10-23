@@ -51089,6 +51089,9 @@ msgstr ""
 msgid "UsageQuota|Precise calculation of Container Registry storage size is delayed because it is too large for synchronous estimation. Precise evaluation will be scheduled within 24 hours."
 msgstr ""
 
+msgid "UsageQuota|Product analytics"
+msgstr ""
+
 msgid "UsageQuota|Projects under this namespace have %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}"
 msgstr ""
 

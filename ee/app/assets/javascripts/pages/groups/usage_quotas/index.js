@@ -3,6 +3,7 @@ import initSeatUsageApp from 'ee/usage_quotas/seats';
 import initCodeSuggestionsUsageApp from 'ee/usage_quotas/code_suggestions';
 import initPipelineUsageApp from 'ee/usage_quotas/pipelines';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
+import initProductAnalyticsUsageQuotaApp from 'ee/usage_quotas/product_analytics';
 import { GlTabsBehavior, HISTORY_TYPE_HASH, TAB_SHOWN_EVENT } from '~/tabs';
 import { trackAddToCartUsageTab } from 'ee/google_tag_manager';
 import { createAlert } from '~/alert';
@@ -30,6 +31,10 @@ const legacyInitUsageQuotas = () => {
     'storage-quota-tab': {
       wasInited: false,
       init: initNamespaceStorage,
+    },
+    'product-analytics-usage-quota-tab': {
+      wasInited: false,
+      init: initProductAnalyticsUsageQuotaApp,
     },
   };
 

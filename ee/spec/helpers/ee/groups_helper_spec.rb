@@ -413,6 +413,26 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
   end
 
+  describe '#show_product_analytics_usage_quota_tab?' do
+    where(:feature_flag_enabled, :user_can_read_product_analytics, :expected_result) do
+      true  | true  | true
+      true  | false | false
+      false | true  | false
+      false | false | false
+    end
+
+    with_them do
+      before do
+        stub_feature_flags(product_analytics_usage_quota: feature_flag_enabled)
+        allow(helper).to receive(:can?).with(current_user, :read_product_analytics, group).and_return(user_can_read_product_analytics)
+      end
+
+      it 'returns the expected result' do
+        expect(helper.show_product_analytics_usage_quota_tab?(group)).to eq(expected_result)
+      end
+    end
+  end
+
   describe '#saml_sso_settings_generate_helper_text' do
     let(:text) { 'some text' }
     let(:result) { "<span class=\"js-helper-text gl-clearfix\">#{text}</span>" }
