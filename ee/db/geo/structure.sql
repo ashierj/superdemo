@@ -426,56 +426,6 @@ CREATE SEQUENCE pipeline_artifact_registry_id_seq
 
 ALTER SEQUENCE pipeline_artifact_registry_id_seq OWNED BY pipeline_artifact_registry.id;
 
-CREATE TABLE project_registry (
-    id integer NOT NULL,
-    project_id integer NOT NULL,
-    last_repository_synced_at timestamp without time zone,
-    last_repository_successful_sync_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL,
-    resync_repository boolean DEFAULT true NOT NULL,
-    resync_wiki boolean DEFAULT true NOT NULL,
-    last_wiki_synced_at timestamp without time zone,
-    last_wiki_successful_sync_at timestamp without time zone,
-    repository_retry_count integer,
-    repository_retry_at timestamp without time zone,
-    force_to_redownload_repository boolean,
-    wiki_retry_count integer,
-    wiki_retry_at timestamp without time zone,
-    force_to_redownload_wiki boolean,
-    last_repository_sync_failure character varying,
-    last_wiki_sync_failure character varying,
-    last_repository_verification_failure character varying,
-    last_wiki_verification_failure character varying,
-    repository_verification_checksum_sha bytea,
-    wiki_verification_checksum_sha bytea,
-    repository_checksum_mismatch boolean DEFAULT false NOT NULL,
-    wiki_checksum_mismatch boolean DEFAULT false NOT NULL,
-    last_repository_check_failed boolean,
-    last_repository_check_at timestamp with time zone,
-    resync_repository_was_scheduled_at timestamp with time zone,
-    resync_wiki_was_scheduled_at timestamp with time zone,
-    repository_missing_on_primary boolean,
-    wiki_missing_on_primary boolean,
-    repository_verification_retry_count integer,
-    wiki_verification_retry_count integer,
-    last_repository_verification_ran_at timestamp with time zone,
-    last_wiki_verification_ran_at timestamp with time zone,
-    repository_verification_checksum_mismatched bytea,
-    wiki_verification_checksum_mismatched bytea,
-    primary_repository_checksummed boolean DEFAULT false NOT NULL,
-    primary_wiki_checksummed boolean DEFAULT false NOT NULL
-);
-
-CREATE SEQUENCE project_registry_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE project_registry_id_seq OWNED BY project_registry.id;
-
 CREATE TABLE project_repository_registry (
     id bigint NOT NULL,
     project_id bigint NOT NULL,
@@ -651,8 +601,6 @@ ALTER TABLE ONLY pages_deployment_registry ALTER COLUMN id SET DEFAULT nextval('
 
 ALTER TABLE ONLY pipeline_artifact_registry ALTER COLUMN id SET DEFAULT nextval('pipeline_artifact_registry_id_seq'::regclass);
 
-ALTER TABLE ONLY project_registry ALTER COLUMN id SET DEFAULT nextval('project_registry_id_seq'::regclass);
-
 ALTER TABLE ONLY project_repository_registry ALTER COLUMN id SET DEFAULT nextval('project_repository_registry_id_seq'::regclass);
 
 ALTER TABLE ONLY project_wiki_repository_registry ALTER COLUMN id SET DEFAULT nextval('project_wiki_repository_registry_id_seq'::regclass);
@@ -710,9 +658,6 @@ ALTER TABLE ONLY pages_deployment_registry
 
 ALTER TABLE ONLY pipeline_artifact_registry
     ADD CONSTRAINT pipeline_artifact_registry_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY project_registry
-    ADD CONSTRAINT project_registry_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY project_repository_registry
     ADD CONSTRAINT project_repository_registry_pkey PRIMARY KEY (id);
@@ -776,29 +721,7 @@ CREATE INDEX group_wiki_repository_registry_pending_verification ON group_wiki_r
 
 CREATE UNIQUE INDEX i_dependency_proxy_blob_registry_on_dependency_proxy_blob_id ON dependency_proxy_blob_registry USING btree (dependency_proxy_blob_id);
 
-CREATE INDEX idx_project_registry_failed_repositories_partial ON project_registry USING btree (repository_retry_count) WHERE ((repository_retry_count > 0) OR (last_repository_verification_failure IS NOT NULL) OR repository_checksum_mismatch);
-
-CREATE INDEX idx_project_registry_on_repo_checksums_and_failure_partial ON project_registry USING btree (project_id) WHERE ((repository_verification_checksum_sha IS NULL) AND (last_repository_verification_failure IS NULL));
-
-CREATE INDEX idx_project_registry_on_repository_checksum_sha_partial ON project_registry USING btree (repository_verification_checksum_sha) WHERE (repository_verification_checksum_sha IS NULL);
-
-CREATE INDEX idx_project_registry_on_repository_failure_partial ON project_registry USING btree (project_id) WHERE (last_repository_verification_failure IS NOT NULL);
-
-CREATE INDEX idx_project_registry_on_wiki_checksum_sha_partial ON project_registry USING btree (wiki_verification_checksum_sha) WHERE (wiki_verification_checksum_sha IS NULL);
-
-CREATE INDEX idx_project_registry_on_wiki_checksums_and_failure_partial ON project_registry USING btree (project_id) WHERE ((wiki_verification_checksum_sha IS NULL) AND (last_wiki_verification_failure IS NULL));
-
-CREATE INDEX idx_project_registry_on_wiki_failure_partial ON project_registry USING btree (project_id) WHERE (last_wiki_verification_failure IS NOT NULL);
-
-CREATE INDEX idx_project_registry_pending_repositories_partial ON project_registry USING btree (repository_retry_count) WHERE ((repository_retry_count IS NULL) AND (last_repository_successful_sync_at IS NOT NULL) AND ((resync_repository = true) OR ((repository_verification_checksum_sha IS NULL) AND (last_repository_verification_failure IS NULL))));
-
-CREATE INDEX idx_project_registry_synced_repositories_partial ON project_registry USING btree (last_repository_successful_sync_at) WHERE ((resync_repository = false) AND (repository_retry_count IS NULL) AND (repository_verification_checksum_sha IS NOT NULL));
-
 CREATE UNIQUE INDEX idx_project_wiki_repository_registry_project_wiki_repository_id ON project_wiki_repository_registry USING btree (project_wiki_repository_id);
-
-CREATE INDEX idx_repository_checksum_mismatch ON project_registry USING btree (project_id) WHERE (repository_checksum_mismatch = true);
-
-CREATE INDEX idx_wiki_checksum_mismatch ON project_registry USING btree (project_id) WHERE (wiki_checksum_mismatch = true);
 
 CREATE UNIQUE INDEX index_ci_secure_file_registry_on_ci_secure_file_id ON ci_secure_file_registry USING btree (ci_secure_file_id);
 
@@ -869,20 +792,6 @@ CREATE UNIQUE INDEX index_pipeline_artifact_registry_on_pipeline_artifact_id ON 
 CREATE INDEX index_pipeline_artifact_registry_on_retry_at ON pipeline_artifact_registry USING btree (retry_at);
 
 CREATE INDEX index_pipeline_artifact_registry_on_state ON pipeline_artifact_registry USING btree (state);
-
-CREATE INDEX index_project_registry_on_last_repository_successful_sync_at ON project_registry USING btree (last_repository_successful_sync_at);
-
-CREATE INDEX index_project_registry_on_last_repository_synced_at ON project_registry USING btree (last_repository_synced_at);
-
-CREATE UNIQUE INDEX index_project_registry_on_project_id ON project_registry USING btree (project_id);
-
-CREATE INDEX index_project_registry_on_repository_retry_at ON project_registry USING btree (repository_retry_at);
-
-CREATE INDEX index_project_registry_on_resync_repository ON project_registry USING btree (resync_repository);
-
-CREATE INDEX index_project_registry_on_resync_wiki ON project_registry USING btree (resync_wiki);
-
-CREATE INDEX index_project_registry_on_wiki_retry_at ON project_registry USING btree (wiki_retry_at);
 
 CREATE UNIQUE INDEX index_project_repository_registry_on_project_id ON project_repository_registry USING btree (project_id);
 
