@@ -10,9 +10,9 @@ module Gitlab
             NAME = "EpicIdentifier"
             HUMAN_NAME = 'Epic Search'
             DESCRIPTION = 'Useful tool when you need to identify a specific epic. ' \
-                          'Do not use this tool if you have already identified the epic.' \
+                          'Do not use this tool if you have already identified the epic. ' \
                           'In this context, word `epic` means high-level building block in GitLab that encapsulates ' \
-                          'high-level plans and discussions. Epic can contain multiple issues .' \
+                          'high-level plans and discussions. Epic can contain multiple issues. ' \
                           'Action Input for this tool should be the original question or epic identifier.'
 
             EXAMPLE =
