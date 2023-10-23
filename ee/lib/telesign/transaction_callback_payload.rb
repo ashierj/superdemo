@@ -32,5 +32,10 @@ module Telesign
         [error['code'], error['description']].compact.join(' - ')
       end.join(', ')
     end
+
+    def failed_delivery?
+      code = payload.dig('status', 'code')
+      code != 200
+    end
   end
 end
