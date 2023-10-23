@@ -36,6 +36,7 @@ export default {
         class="list-item gl-py-0! gl-border-0!"
       >
         <resource-link-item
+          data-testid="resource-link-item"
           :id-key="link.id"
           :icon-name="link.linkType"
           :link-text="link.linkText"

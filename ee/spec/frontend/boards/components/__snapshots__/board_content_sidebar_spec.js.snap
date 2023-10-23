@@ -138,6 +138,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   </sidebarlabelswidget-stub>
   <div
     class="block"
+    data-testid="severity-block-container"
   >
     <div>
       <div
@@ -191,6 +192,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
         </div>
         <div
           class="hide-collapsed"
+          data-testid="incident-severity"
         >
           <div
             class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
