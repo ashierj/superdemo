@@ -41787,6 +41787,9 @@ msgstr ""
 msgid "ScanResultPolicy|Newly Detected"
 msgstr ""
 
+msgid "ScanResultPolicy|No settings available for this policy"
+msgstr ""
+
 msgid "ScanResultPolicy|Only 1 age criteria is allowed"
 msgstr ""
 
