@@ -2,18 +2,16 @@
 
 module Zoekt
   class IndexedNamespace < ApplicationRecord
+    include IgnorableColumns
+
     def self.table_name_prefix
       'zoekt_'
     end
 
-    belongs_to :node, foreign_key: :zoekt_shard_id, inverse_of: :indexed_namespaces, class_name: '::Search::Zoekt::Node'
-    belongs_to :namespace
+    ignore_column :zoekt_shard_id, remove_with: '16.8', remove_after: '2024-01-18'
 
-    # TODO
-    # Both `zoekt_node_id` and `shard` can be removed once Zoekt::Shard has schema outlined in
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/424456
-    alias_attribute :zoekt_node_id, :zoekt_shard_id
-    alias_attribute :shard, :node
+    belongs_to :node, foreign_key: :zoekt_node_id, inverse_of: :indexed_namespaces, class_name: '::Search::Zoekt::Node'
+    belongs_to :namespace
 
     validates :search, inclusion: [true, false]
     validate :only_root_namespaces_can_be_indexed

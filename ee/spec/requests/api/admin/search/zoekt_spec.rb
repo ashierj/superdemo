@@ -10,8 +10,8 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
   let(:project_id) { project.id }
   let(:namespace_id) { namespace.id }
   let(:params) { {} }
-  let(:shard) { ::Search::Zoekt::Node.first }
-  let(:shard_id) { shard.id }
+  let(:node) { ::Search::Zoekt::Node.first }
+  let(:node_id) { node.id }
 
   shared_examples 'an API that returns 400 when the index_code_with_zoekt feature flag is disabled' do |verb|
     before do
@@ -65,25 +65,25 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
   describe 'GET /admin/zoekt/shards' do
     let(:path) { '/admin/zoekt/shards' }
-    let!(:another_shard) do
+    let!(:another_node) do
       create(:zoekt_node, index_base_url: 'http://111.111.111.111/', search_base_url: 'http://111.111.111.112/')
     end
 
     it_behaves_like "GET request permissions for admin mode"
     it_behaves_like "an API that returns 401 for unauthenticated requests", :get
 
-    it 'returns all shards' do
+    it 'returns all nodes' do
       get api(path, admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response).to match_array([
         hash_including(
-          'id' => shard.id,
-          'index_base_url' => shard.index_base_url,
-          'search_base_url' => shard.search_base_url
+          'id' => node.id,
+          'index_base_url' => node.index_base_url,
+          'search_base_url' => node.search_base_url
         ),
         hash_including(
-          'id' => another_shard.id,
+          'id' => another_node.id,
           'index_base_url' => 'http://111.111.111.111/',
           'search_base_url' => 'http://111.111.111.112/'
         )
@@ -91,37 +91,39 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     end
   end
 
-  describe 'GET /admin/zoekt/shards/:shard_id/indexed_namespaces' do
-    let(:path) { "/admin/zoekt/shards/#{shard_id}/indexed_namespaces" }
-    let!(:indexed_namespace) { create(:zoekt_indexed_namespace, shard: shard, namespace: namespace) }
-    let!(:another_shard) do
+  describe 'GET /admin/zoekt/shards/:node_id/indexed_namespaces' do
+    let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces" }
+    let!(:indexed_namespace) { create(:zoekt_indexed_namespace, node: node, namespace: namespace) }
+    let!(:another_node) do
       create(:zoekt_node, index_base_url: 'http://111.111.111.198/', search_base_url: 'http://111.111.111.199/')
     end
 
-    let!(:indexed_namespace_for_another_shard) do
-      create(:zoekt_indexed_namespace, shard: another_shard, namespace: create(:namespace))
+    let!(:indexed_namespace_for_another_node) do
+      create(:zoekt_indexed_namespace, node: another_node, namespace: create(:namespace))
     end
 
     let!(:another_indexed_namespace) do
-      create(:zoekt_indexed_namespace, shard: shard, namespace: create(:namespace))
+      create(:zoekt_indexed_namespace, node: node, namespace: create(:namespace))
     end
 
     it_behaves_like "GET request permissions for admin mode"
     it_behaves_like "an API that returns 401 for unauthenticated requests", :get
 
-    it 'returns all indexed namespaces for this shard' do
+    it 'returns all indexed namespaces for this node' do
       get api(path, admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response).to match_array([
         hash_including(
           'id' => indexed_namespace.id,
-          'zoekt_shard_id' => shard.id,
+          'zoekt_shard_id' => node.id,
+          'zoekt_node_id' => node.id,
           'namespace_id' => namespace.id
         ),
         hash_including(
           'id' => another_indexed_namespace.id,
-          'zoekt_shard_id' => shard.id,
+          'zoekt_shard_id' => node.id,
+          'zoekt_node_id' => node.id,
           'namespace_id' => another_indexed_namespace.namespace_id
         )
       ])
@@ -136,36 +138,37 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
       expect(json_response).to match_array([
         hash_including(
           'id' => another_indexed_namespace.id,
-          'zoekt_shard_id' => shard.id,
+          'zoekt_shard_id' => node.id,
+          'zoekt_node_id' => node.id,
           'namespace_id' => another_indexed_namespace.namespace_id
         )
       ])
     end
 
     it_behaves_like 'an API that returns 404 for missing ids', :get do
-      let(:shard_id) { non_existing_record_id }
+      let(:node_id) { non_existing_record_id }
     end
   end
 
-  describe 'PUT /admin/zoekt/shards/:shard_id/indexed_namespaces/:namespace_id' do
-    let(:path) { "/admin/zoekt/shards/#{shard_id}/indexed_namespaces/#{namespace_id}" }
+  describe 'PUT /admin/zoekt/shards/:node_id/indexed_namespaces/:namespace_id' do
+    let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces/#{namespace_id}" }
 
     it_behaves_like "PUT request permissions for admin mode"
     it_behaves_like "an API that returns 401 for unauthenticated requests", :put
     it_behaves_like "an API that returns 400 when the index_code_with_zoekt feature flag is disabled", :put
 
-    it 'creates a Zoekt::IndexedNamespace for this shard and namespace pair' do
+    it 'creates a Zoekt::IndexedNamespace for this node and namespace pair' do
       expect do
         put api(path, admin, admin_mode: true)
       end.to change { ::Zoekt::IndexedNamespace.count }.from(0).to(1)
 
       expect(response).to have_gitlab_http_status(:ok)
-      expect(json_response['id']).to eq(::Zoekt::IndexedNamespace.find_by(shard: shard, namespace: namespace).id)
+      expect(json_response['id']).to eq(::Zoekt::IndexedNamespace.find_by(node: node, namespace: namespace).id)
     end
 
     context 'when it already exists' do
       it 'returns the existing one' do
-        id = create(:zoekt_indexed_namespace, shard: shard, namespace: namespace).id
+        id = create(:zoekt_indexed_namespace, node: node, namespace: namespace).id
 
         put api(path, admin, admin_mode: true)
 
@@ -173,9 +176,9 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
       end
     end
 
-    context 'with missing shard_id' do
+    context 'with missing node_id' do
       it_behaves_like 'an API that returns 404 for missing ids', :put do
-        let(:shard_id) { non_existing_record_id }
+        let(:node_id) { non_existing_record_id }
       end
     end
 
@@ -186,17 +189,17 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     end
   end
 
-  describe 'DELETE /admin/zoekt/shards/:shard_id/indexed_namespaces/:namespace_id' do
-    let(:path) { "/admin/zoekt/shards/#{shard_id}/indexed_namespaces/#{namespace_id}" }
+  describe 'DELETE /admin/zoekt/shards/:node_id/indexed_namespaces/:namespace_id' do
+    let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces/#{namespace_id}" }
 
     before do
-      create(:zoekt_indexed_namespace, shard: shard, namespace: namespace)
+      create(:zoekt_indexed_namespace, node: node, namespace: namespace)
     end
 
     it_behaves_like "DELETE request permissions for admin mode"
     it_behaves_like "an API that returns 401 for unauthenticated requests", :delete
 
-    it 'removes the Zoekt::IndexedNamespace for this shard and namespace pair' do
+    it 'removes the Zoekt::IndexedNamespace for this node and namespace pair' do
       expect do
         delete api(path, admin, admin_mode: true)
       end.to change { ::Zoekt::IndexedNamespace.count }.from(1).to(0)
@@ -204,9 +207,9 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
       expect(response).to have_gitlab_http_status(:no_content)
     end
 
-    context 'with missing shard_id' do
+    context 'with missing node_id' do
       it_behaves_like 'an API that returns 404 for missing ids', :delete do
-        let(:shard_id) { non_existing_record_id }
+        let(:node_id) { non_existing_record_id }
       end
     end
 

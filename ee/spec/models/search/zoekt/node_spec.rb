@@ -6,7 +6,9 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
   let_it_be(:indexed_namespace1) { create(:namespace) }
   let_it_be(:indexed_namespace2) { create(:namespace) }
   let_it_be(:unindexed_namespace) { create(:namespace) }
-  let(:node) { described_class.create!(index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
+  let(:node) do
+    create(:zoekt_node, index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/')
+  end
 
   before do
     create(:zoekt_indexed_namespace, node: node, namespace: indexed_namespace1)
