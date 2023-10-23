@@ -283,6 +283,7 @@ export default {
         </p>
         <template v-if="hasResourceLinks">
           <resource-links-list
+            data-testid="resource-links-list"
             :can-admin="canAddResourceLinks"
             :resource-links="resourceLinks"
             :is-form-visible="isFormVisible"
