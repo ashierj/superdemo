@@ -62,7 +62,7 @@ describe('EE Diffs Module Getters', () => {
             severity: 'low',
             location: {
               file: 'index.js',
-              start_line: 1,
+              startLine: '1',
             },
           },
           {
@@ -71,7 +71,7 @@ describe('EE Diffs Module Getters', () => {
             severity: 'medium',
             location: {
               file: 'index.js',
-              start_line: 3,
+              startLine: '3',
             },
           },
         ],

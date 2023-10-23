@@ -16,9 +16,6 @@ export default {
   [types.SET_GENERATE_TEST_FILE_PATH](state, path) {
     state.generateTestFilePath = path;
   },
-  [types.SET_SAST_ENDPOINT](state, endpoint) {
-    Object.assign(state, { endpointSast: endpoint });
-  },
 
   [types.SET_SAST_DATA](state, sastDiffData) {
     Object.assign(state, { sastDiff: sastDiffData });

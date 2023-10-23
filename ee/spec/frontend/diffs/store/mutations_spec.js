@@ -13,17 +13,6 @@ describe('EE DiffsStoreMutations', () => {
     });
   });
 
-  describe('SET_SAST_ENDPOINT', () => {
-    it('sets the endpoint into state', () => {
-      const state = {};
-      const endpoint = '/sast_mr_diff.json';
-
-      mutations[types.SET_SAST_ENDPOINT](state, endpoint);
-
-      expect(state.endpointSast).toEqual(endpoint);
-    });
-  });
-
   describe('SET_CODEQUALITY_DATA', () => {
     it('should set codequality data', () => {
       const state = { codequalityDiff: {} };
