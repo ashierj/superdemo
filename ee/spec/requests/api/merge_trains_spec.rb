@@ -12,7 +12,6 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
   let(:user) { developer }
 
   before do
-    stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
   end
 

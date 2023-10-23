@@ -21,7 +21,6 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
     allow(AutoMergeProcessWorker).to receive(:perform_async) {}
 
-    stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_trains: true, merge_pipelines: true)
   end
 
@@ -398,10 +397,6 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
     end
 
     context 'when merge train ci setting is disabled' do
-      before do
-        stub_feature_flags(disable_merge_trains: true)
-      end
-
       it { is_expected.to be_falsy }
     end
 

@@ -14,7 +14,6 @@ RSpec.describe Mutations::Ci::ProjectCiCdSettingsUpdate, feature_category: :cont
 
   before do
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
-    stub_feature_flags(disable_merge_trains: false)
     project.update!(
       merge_pipelines_enabled: nil,
       merge_trains_enabled: false,

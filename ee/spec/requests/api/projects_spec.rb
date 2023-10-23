@@ -356,7 +356,6 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
       before do
         stub_licensed_features(merge_pipelines: true, merge_trains: true)
         project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
-        stub_feature_flags(disable_merge_trains: false)
       end
 
       it 'returns merge trains enabled flag' do
@@ -1126,7 +1125,6 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
       before do
         stub_licensed_features(merge_pipelines: true, merge_trains: true)
         project.update!(merge_pipelines_enabled: true, merge_trains_enabled: false)
-        stub_feature_flags(disable_merge_trains: false)
       end
 
       let(:project_params) { { merge_trains_enabled: true } }

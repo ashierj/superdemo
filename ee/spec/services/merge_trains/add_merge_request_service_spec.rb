@@ -22,8 +22,6 @@ RSpec.describe MergeTrains::AddMergeRequestService, feature_category: :continuou
 
   before do
     allow(AutoMergeProcessWorker).to receive(:perform_async)
-
-    stub_feature_flags(disable_merge_trains: false)
     stub_licensed_features(merge_trains: true, merge_pipelines: true)
 
     create(:ci_pipeline, pipeline_status, ref: merge_request.source_branch,
