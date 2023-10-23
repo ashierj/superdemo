@@ -6,7 +6,7 @@ RSpec.describe 'admin Geo Sidebar', :js, :geo, feature_category: :geo_replicatio
   include ::EE::GeoHelpers
   include StubENV
 
-  let_it_be(:admin) { create(:admin, :no_super_sidebar) }
+  let_it_be(:admin) { create(:admin) }
   let_it_be(:primary_node) { create(:geo_node, :primary) }
 
   before do
@@ -24,8 +24,9 @@ RSpec.describe 'admin Geo Sidebar', :js, :geo, feature_category: :geo_replicatio
     end
 
     it 'has active class' do
-      sidebar_link = page.find("a[title=\"#{link_name}\"]").find(:xpath, '..')
-      expect(sidebar_link[:class]).to include('active')
+      within_testid('super-sidebar') do
+        expect(page).to have_css('a[aria-current="page"]', text: link_name)
+      end
     end
   end
 
