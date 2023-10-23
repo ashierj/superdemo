@@ -22,6 +22,9 @@ module Gitlab
 
             Write a summary of the changes in couple sentences, the way an expert engineer would summarize the
             changes using simple - generally non-technical - terms.
+
+            You MUST ensure that it is no longer than 1800 characters. A character is considered anything, not only
+            letters.
           PROMPT
         end
 
