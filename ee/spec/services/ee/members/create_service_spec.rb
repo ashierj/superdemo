@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
   let_it_be(:user) { create(:user) }
-  let_it_be(:root_ancestor) { create(:group) }
+  let_it_be(:root_ancestor, reload: true) { create(:group) }
   let_it_be(:project, reload: true) { create(:project, group: root_ancestor) }
   let_it_be(:subgroup) { create(:group, parent: root_ancestor) }
   let_it_be(:subgroup_project) { create(:project, group: subgroup) }
@@ -178,6 +178,91 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       it 'allows updating existing invited member' do
         expect(execute_service[:status]).to eq(:success)
         expect(invited_member.reset.access_level).to eq Gitlab::Access::GUEST
+      end
+    end
+  end
+
+  context 'when group membership is locked' do
+    before do
+      root_ancestor.update_attribute(:membership_lock, true)
+    end
+
+    context 'with invitations_member_role_id feature flag enabled' do
+      before do
+        stub_feature_flags(invitations_member_role_id: true)
+      end
+
+      it 'does not add the given users to the team' do
+        expect { execute_service }.not_to change { project.members.count }
+      end
+    end
+
+    context 'with invitations_member_role_id feature flag disabled' do
+      before do
+        stub_feature_flags(invitations_member_role_id: false)
+      end
+
+      it 'does not add the given users to the team' do
+        expect { execute_service }.not_to change { project.members.count }
+      end
+    end
+  end
+
+  context 'when assigning a member role' do
+    let_it_be(:member_role) { create(:member_role, :guest, namespace: root_ancestor) }
+
+    before do
+      params[:member_role_id] = member_role.id
+    end
+
+    context 'with custom_roles feature' do
+      before do
+        stub_licensed_features(custom_roles: true)
+      end
+
+      context 'with invitations_member_role_id feature flag enabled' do
+        before do
+          stub_feature_flags(invitations_member_role_id: true)
+        end
+
+        it 'adds a user to members with custom role assigned' do
+          expect { execute_service }.to change { project.members.count }.by(2)
+
+          member = Member.last
+
+          expect(member.member_role).to eq(member_role)
+          expect(member.access_level).to eq(Member::GUEST)
+        end
+      end
+
+      context 'with invitations_member_role_id feature flag disabled' do
+        before do
+          stub_feature_flags(invitations_member_role_id: false)
+        end
+
+        it 'adds a user to members without custom role assigned' do
+          expect { execute_service }.to change { project.members.count }.by(2)
+
+          member = Member.last
+
+          expect(member.member_role).to be_nil
+          expect(member.access_level).to eq(Member::GUEST)
+        end
+      end
+    end
+
+    context 'without custom_roles feature' do
+      before do
+        stub_licensed_features(custom_roles: false)
+      end
+
+      it 'adds a user to members without custom role assigned' do
+        expect { execute_service }.to change { project.members.count }.by(2)
+
+        member = Member.last
+
+        expect(member.member_role).to be_nil
+        expect(member.access_level).to eq(Member::GUEST)
       end
     end
   end

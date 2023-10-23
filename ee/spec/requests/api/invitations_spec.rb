@@ -195,6 +195,58 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         end
       end
     end
+
+    context 'when assigning a member role' do
+      let_it_be(:member_role) { create(:member_role, :guest, namespace: group) }
+
+      let(:params) do
+        { email: invite_email, access_level: Member::GUEST, member_role_id: member_role.id }
+      end
+
+      subject(:invite_custom_member) { post api(url, admin, admin_mode: true), params: params }
+
+      context 'with custom_roles feature' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it 'returns success' do
+          invite_custom_member
+
+          expect(response).to have_gitlab_http_status(:created)
+        end
+
+        it 'creates a new member correctly' do
+          expect { invite_custom_member }.to change { group.members.count }.by(1)
+
+          member = Member.last
+
+          expect(member.member_role).to eq(member_role)
+          expect(member.access_level).to eq(Member::GUEST)
+        end
+      end
+
+      context 'without custom_roles feature' do
+        before do
+          stub_licensed_features(custom_roles: false)
+        end
+
+        it 'returns success' do
+          invite_custom_member
+
+          expect(response).to have_gitlab_http_status(:created)
+        end
+
+        it 'creates a new member without the member role' do
+          expect { invite_custom_member }.to change { group.members.count }.by(1)
+
+          member = Member.last
+
+          expect(member.member_role).to be_nil
+          expect(member.access_level).to eq(Member::GUEST)
+        end
+      end
+    end
   end
 
   describe 'POST /projects/:id/invitations' do

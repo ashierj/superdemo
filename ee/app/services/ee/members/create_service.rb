@@ -5,6 +5,14 @@ module EE
     module CreateService
       private
 
+      def create_params
+        top_level_group = source.root_ancestor
+
+        return super unless top_level_group.custom_roles_enabled?
+
+        super.merge(member_role_id: params[:member_role_id])
+      end
+
       def validate_invitable!
         super
 
