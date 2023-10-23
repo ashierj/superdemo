@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GridStack } from 'gridstack';
 import { RouterLinkStub } from '@vue/test-utils';
-import { GlLink } from '@gitlab/ui';
+import { GlLink, GlSprintf } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -87,6 +87,7 @@ describe('CustomizableDashboard', () => {
       },
       stubs: {
         RouterLink: RouterLinkStub,
+        GlSprintf,
       },
       mocks: {
         $router,
@@ -110,6 +111,7 @@ describe('CustomizableDashboard', () => {
   const findAddVisualizationButton = () => wrapper.findByTestId('add-visualization-button');
   const findTitleInput = () => wrapper.findByTestId('dashboard-title-input');
   const findTitleFormGroup = () => wrapper.findByTestId('dashboard-title-form-group');
+  const findDescriptionInput = () => wrapper.findByTestId('dashboard-description-input');
   const findSaveButton = () => wrapper.findByTestId('dashboard-save-btn');
   const findCancelButton = () => wrapper.findByTestId('dashboard-cancel-edit-btn');
   const findFilters = () => wrapper.findByTestId('dashboard-filters');
@@ -117,10 +119,15 @@ describe('CustomizableDashboard', () => {
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findVisualizationDrawer = () => wrapper.findComponent(AvailableVisualizationsDrawer);
   const findDashboardDescription = () => wrapper.findByTestId('dashboard-description');
+  const findDashboardHelpLink = () => wrapper.findByTestId('dashboard-help-link');
 
   const enterDashboardTitle = async (title, titleValidationError = '') => {
     await findTitleInput().vm.$emit('input', title);
     await wrapper.setProps({ titleValidationError });
+  };
+
+  const enterDashboardDescription = async (description) => {
+    await findDescriptionInput().vm.$emit('input', description);
   };
 
   describe('when being created and an error occurs while loading the CSS', () => {
@@ -214,6 +221,10 @@ describe('CustomizableDashboard', () => {
       expect(findDashboardTitle().text()).toBe('Analytics Overview');
     });
 
+    it('shows the dashboard description', () => {
+      expect(findDashboardDescription().text()).toBe('This is a dashboard');
+    });
+
     it('does not show the edit mode page title', () => {
       expect(findEditModeTitle().exists()).toBe(false);
     });
@@ -227,6 +238,10 @@ describe('CustomizableDashboard', () => {
       expect(findTitleInput().exists()).toBe(false);
     });
 
+    it('does not show the description input', () => {
+      expect(findDescriptionInput().exists()).toBe(false);
+    });
+
     it('does not show the filters', () => {
       expect(findFilters().exists()).toBe(false);
     });
@@ -235,37 +250,35 @@ describe('CustomizableDashboard', () => {
       expect(findUrlSync().exists()).toBe(false);
     });
 
-    it('does not show a dashboard description', () => {
+    it('does not show a dashboard documentation link', () => {
+      expect(findDashboardDescription().findComponent(GlLink).exists()).toBe(false);
+    });
+  });
+
+  describe('when a dashboard has no description', () => {
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper({}, { ...dashboard, description: undefined });
+    });
+
+    it('does not show the dashboard description', () => {
       expect(findDashboardDescription().exists()).toBe(false);
     });
   });
 
-  describe('when the dashboard has a description loaded', () => {
-    const description = 'This is a description of the greatest dashboard';
+  describe('when the slug is "value_stream_dashboard"', () => {
     beforeEach(() => {
       loadCSSFile.mockResolvedValue();
+
+      createWrapper({}, { ...builtinDashboard, slug: 'value_stream_dashboard' });
     });
 
-    it('shows the dashboard description', () => {
-      createWrapper({}, { ...builtinDashboard, description });
-
-      expect(findDashboardDescription().text()).toBe(description);
-    });
-
-    it('does not show a dashboard documentation link', () => {
-      createWrapper({}, { ...builtinDashboard, description });
-
-      expect(findDashboardDescription().findComponent(GlLink).exists()).toBe(false);
-    });
-
-    describe('when a documentation link exists', () => {
-      it('shows the dashboard documentation link', () => {
-        createWrapper({}, { ...builtinDashboard, description, slug: 'value_stream_dashboard' });
-
-        expect(findDashboardDescription().findComponent(GlLink).attributes('href')).toBe(
-          '/help/user/analytics/value_streams_dashboard',
-        );
-      });
+    it('shows a "Learn more" link to the VSD user docs', () => {
+      expect(findDashboardHelpLink().text()).toBe('Learn more');
+      expect(findDashboardHelpLink().attributes('href')).toBe(
+        '/help/user/analytics/value_streams_dashboard',
+      );
     });
   });
 
@@ -365,6 +378,10 @@ describe('CustomizableDashboard', () => {
             value: 'Analytics Overview',
             required: '',
           });
+        });
+
+        it('shows an input element with the description as value', () => {
+          expect(findDescriptionInput().attributes('value')).toBe('This is a dashboard');
         });
 
         it('emits an event when title is edited', async () => {
@@ -767,6 +784,32 @@ describe('CustomizableDashboard', () => {
                 slug: 'new_title',
                 title: 'New Title',
                 description: '',
+                panels: [expect.any(Object)],
+                userDefined: true,
+              },
+            ],
+          ]);
+        });
+      });
+
+      describe('and there is a title, visualizations and a description', () => {
+        beforeEach(async () => {
+          await enterDashboardTitle('New Title');
+          await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+
+          await enterDashboardDescription('New description');
+
+          await findSaveButton().vm.$emit('click');
+        });
+
+        it('saves the dashboard with a new description', () => {
+          expect(wrapper.emitted('save')).toStrictEqual([
+            [
+              'new_title',
+              {
+                slug: 'new_title',
+                title: 'New Title',
+                description: 'New description',
                 panels: [expect.any(Object)],
                 userDefined: true,
               },
