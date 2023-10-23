@@ -4,7 +4,7 @@ export const FEATURE_PRODUCT_ANALYTICS = 'productAnalytics';
 
 export const PRODUCT_ANALYTICS_FEATURE_DASHBOARDS = ['audience', 'behavior'];
 
-export const EVENTS_TYPES = ['pageViews', 'clickEvents', 'events'];
+export const EVENTS_TYPES = ['pageViews', 'linkClickEvents', 'events'];
 
 export function isTrackedEvent(eventType) {
   return EVENTS_TYPES.includes(eventType);
@@ -50,6 +50,10 @@ export const ANALYTICS_FIELD_CATEGORIES = [
   {
     name: s__('Analytics|Users'),
     category: 'users',
+  },
+  {
+    name: s__('Analytics|Link clicks'),
+    category: 'linkClicks',
   },
   {
     name: s__('Analytics|Custom events'),
@@ -135,6 +139,18 @@ export const ANALYTICS_FIELDS = [
     category: 'users',
     dbField: 'userId',
     icon: 'user',
+  },
+  {
+    name: s__('Analytics|Target URL'),
+    category: 'linkClicks',
+    dbField: ['targetUrl'],
+    icon: 'link',
+  },
+  {
+    name: s__('Analytics|Element ID'),
+    category: 'linkClicks',
+    dbField: ['elementId'],
+    icon: 'link',
   },
   {
     name: s__('Analytics|Event Name'),
