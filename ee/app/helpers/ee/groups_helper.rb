@@ -117,6 +117,12 @@ module EE
       ::Gitlab.com? && !group.has_free_or_no_subscription?
     end
 
+    def show_product_analytics_usage_quota_tab?(group)
+      return false unless ::Feature.enabled?(:product_analytics_usage_quota, group)
+
+      can?(current_user, :read_product_analytics, group)
+    end
+
     def saml_sso_settings_generate_helper_text(display_none:, text:)
       content_tag(:span, text, class: ['js-helper-text', 'gl-clearfix', ('gl-display-none' if display_none)])
     end
