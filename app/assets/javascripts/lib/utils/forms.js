@@ -72,7 +72,7 @@ export const isIntegerGreaterThan = (value, greaterThan) =>
  * Regexp that matches service desk setting email structure.
  * Taken from app/models/service_desk_setting.rb custom_email
  */
-export const SERVICE_DESK_SETTING_EMAIL_REGEXP = /^[\w\-._]+@[\w\-.]+\.[a-zA-Z]{2,}$/;
+const SERVICE_DESK_SETTING_EMAIL_REGEXP = /^[\w\-._]+@[\w\-.]+\.[a-zA-Z]{2,}$/;
 
 /**
  * Checks if the input is a valid service desk setting email address
@@ -86,7 +86,7 @@ export const isServiceDeskSettingEmail = (value) => SERVICE_DESK_SETTING_EMAIL_R
  * Regexp that matches user email structure.
  * Taken from DeviseEmailValidator
  */
-export const USER_EMAIL_REGEXP = /^[^@\s]+@[^@\s]+$/;
+const USER_EMAIL_REGEXP = /^[^@\s]+@[^@\s]+$/;
 
 /**
  * Checks if the input is a valid user email address
