@@ -6,31 +6,32 @@ RSpec.describe 'User sees experimental marketing header', feature_category: :onb
   let_it_be(:project) { create(:project, :public) }
 
   context 'when not logged in' do
-    before do
-      stub_feature_flags(super_sidebar_logged_out: false)
-    end
+    subject { page.find('.super-sidebar-logged-out') }
 
     it 'does not show marketing header links', :aggregate_failures do
       visit project_path(project)
 
-      expect(page).not_to have_text "About GitLab"
-      expect(page).not_to have_text "Pricing"
-      expect(page).not_to have_text "Talk to an expert"
-      expect(page).not_to have_text "Get a free trial"
-      expect(page).not_to have_text "Sign up"
-      expect(page).to have_text "Register"
-      expect(page).to have_text "Sign in"
+      expect(subject).not_to have_text "Why GitLab"
+      expect(subject).not_to have_text "Pricing"
+      expect(subject).not_to have_text "Contact Sales"
+      expect(subject).not_to have_text "Get free trial"
+
+      expect(subject).to have_text "Explore"
+      expect(subject).to have_text "Sign in"
+      expect(subject).to have_text "Register"
     end
 
     context 'when SaaS', :saas do
       it 'shows marketing header links', :aggregate_failures do
         visit project_path(project)
 
-        expect(page).to have_text "About GitLab"
-        expect(page).to have_text "Pricing"
-        expect(page).to have_text "Talk to an expert"
-        expect(page).to have_text "Register"
-        expect(page).to have_text "Sign in"
+        expect(subject).to have_text "Why GitLab"
+        expect(subject).to have_text "Pricing"
+        expect(subject).to have_text "Contact Sales"
+        expect(subject).to have_text "Get free trial"
+        expect(subject).to have_text "Explore"
+        expect(subject).to have_text "Sign in"
+        expect(subject).not_to have_text "Register"
       end
     end
   end
@@ -41,6 +42,7 @@ RSpec.describe 'User sees experimental marketing header', feature_category: :onb
 
       visit project_path(project)
 
+      expect(page).not_to have_selector('.super-sidebar-logged-out')
       expect(page).not_to have_text "About GitLab"
       expect(page).not_to have_text "Pricing"
       expect(page).not_to have_text "Talk to an expert"
