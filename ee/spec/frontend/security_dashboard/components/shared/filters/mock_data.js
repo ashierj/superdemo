@@ -1,4 +1,4 @@
-const MOCK_SCANNERS_WITH_CUSTOM_VENDOR = [
+export const MOCK_SCANNERS_WITH_CUSTOM_VENDOR = [
   {
     id: 558,
     vendor: 'SamScan',
