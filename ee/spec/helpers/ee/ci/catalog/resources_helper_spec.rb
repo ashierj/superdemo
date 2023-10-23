@@ -12,30 +12,6 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
     allow(helper).to receive(:current_user).and_return(user)
   end
 
-  describe '#can_add_catalog_resource?' do
-    subject { helper.can_add_catalog_resource?(project) }
-
-    context 'when user is not an owner' do
-      before do
-        project.add_maintainer(user)
-      end
-
-      it 'returns false' do
-        expect(subject).to be false
-      end
-    end
-
-    context 'when user is an owner' do
-      before do
-        project.add_owner(user)
-      end
-
-      it 'returns true' do
-        expect(subject).to be true
-      end
-    end
-  end
-
   describe '#can_view_namespace_catalog?' do
     subject { helper.can_view_namespace_catalog?(project) }
 
