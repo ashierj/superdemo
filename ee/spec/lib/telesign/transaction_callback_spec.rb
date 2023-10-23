@@ -81,7 +81,7 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
     let(:callback_valid) { true }
     let(:request_params) { {} }
     let(:reference_id) { 'ref_id' }
-    let(:status) { 'sent' }
+    let(:status) { '200 - Sent' }
     let(:status_updated_on) { 'today' }
     let(:errors) { 'errors' }
 
@@ -99,6 +99,7 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
         expect(response).to receive(:status).and_return(status)
         expect(response).to receive(:status_updated_on).and_return(status_updated_on)
         expect(response).to receive(:errors).and_return(errors)
+        expect(response).to receive(:failed_delivery?).and_return(false)
       end
 
       expect(Gitlab::AppJsonLogger).to receive(:info).with(
@@ -114,6 +115,37 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
       )
 
       log
+
+      expect_no_snowplow_event(
+        category: 'IdentityVerification::Phone',
+        action: 'telesign_sms_delivery_failed'
+      )
+    end
+
+    context 'when delivery failed' do
+      let_it_be(:phone_number_validation) { create(:phone_number_validation, telesign_reference_xid: 'ref_id') }
+
+      let(:status) { '207 - Error delivering SMS to handset (reason unknown)' }
+
+      it 'tracks the event with the correct payload' do
+        expect_next_instance_of(Telesign::TransactionCallbackPayload, request_params) do |response|
+          ref_id = phone_number_validation.telesign_reference_xid
+          expect(response).to receive(:reference_id).and_return(ref_id, ref_id)
+          expect(response).to receive(:status).and_return(status, status)
+          expect(response).to receive(:status_updated_on).and_return(status_updated_on)
+          expect(response).to receive(:errors).and_return(errors)
+          expect(response).to receive(:failed_delivery?).and_return(true)
+        end
+
+        log
+
+        expect_snowplow_event(
+          category: 'IdentityVerification::Phone',
+          action: 'telesign_sms_delivery_failed',
+          user: phone_number_validation.user,
+          extra: { country_code: phone_number_validation.country, status: status }
+        )
+      end
     end
 
     context 'when callback is not valid' do

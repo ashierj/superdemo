@@ -80,4 +80,16 @@ RSpec.describe Telesign::TransactionCallbackPayload, feature_category: :instance
       it { is_expected.to eq '' }
     end
   end
+
+  describe '#failed_delivery?' do
+    subject { response.failed_delivery? }
+
+    it { is_expected.to eq false }
+
+    context 'when status code is not 200' do
+      let(:json) { { status: { code: 207 } }.deep_stringify_keys }
+
+      it { is_expected.to eq true }
+    end
+  end
 end
