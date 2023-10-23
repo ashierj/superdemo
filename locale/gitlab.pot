@@ -5530,6 +5530,9 @@ msgstr ""
 msgid "Analytics|Edit your dashboard"
 msgstr ""
 
+msgid "Analytics|Element ID"
+msgstr ""
+
 msgid "Analytics|Enter a dashboard description"
 msgstr ""
 
@@ -5564,6 +5567,9 @@ msgid "Analytics|Language"
 msgstr ""
 
 msgid "Analytics|Line chart"
+msgstr ""
+
+msgid "Analytics|Link clicks"
 msgstr ""
 
 msgid "Analytics|New dashboard"
@@ -5639,6 +5645,9 @@ msgid "Analytics|Start by choosing a metric"
 msgstr ""
 
 msgid "Analytics|Tables"
+msgstr ""
+
+msgid "Analytics|Target URL"
 msgstr ""
 
 msgid "Analytics|To create your own dashboards, first configure a project to store your dashboards."
@@ -35919,10 +35928,10 @@ msgstr ""
 msgid "ProductAnalytics|After your application has been instrumented and data is being collected, you can visualize and monitor behaviors in your %{linkStart}analytics dashboards%{linkEnd}."
 msgstr ""
 
-msgid "ProductAnalytics|All Clicks Compared"
+msgid "ProductAnalytics|All Events Compared"
 msgstr ""
 
-msgid "ProductAnalytics|All Events Compared"
+msgid "ProductAnalytics|All Link Clicks"
 msgstr ""
 
 msgid "ProductAnalytics|All Pages"
@@ -35935,9 +35944,6 @@ msgid "ProductAnalytics|An error occurred while fetching data. Refresh the page 
 msgstr ""
 
 msgid "ProductAnalytics|Analyze your product with Product Analytics"
-msgstr ""
-
-msgid "ProductAnalytics|Any Click on elements"
 msgstr ""
 
 msgid "ProductAnalytics|Audience"
@@ -35955,16 +35961,13 @@ msgstr ""
 msgid "ProductAnalytics|Back to dashboards"
 msgstr ""
 
-msgid "ProductAnalytics|Click Events"
-msgstr ""
-
 msgid "ProductAnalytics|Compares all events against each other"
 msgstr ""
 
 msgid "ProductAnalytics|Compares all user sessions against each other"
 msgstr ""
 
-msgid "ProductAnalytics|Compares click events against each other"
+msgid "ProductAnalytics|Compares link click events against each other"
 msgstr ""
 
 msgid "ProductAnalytics|Compares page views of all pages against each other"
@@ -36009,10 +36012,16 @@ msgstr ""
 msgid "ProductAnalytics|Instrument your application"
 msgstr ""
 
+msgid "ProductAnalytics|Link Click Events"
+msgstr ""
+
 msgid "ProductAnalytics|Loading instance"
 msgstr ""
 
 msgid "ProductAnalytics|Measure All tracked Events"
+msgstr ""
+
+msgid "ProductAnalytics|Measure all link click events"
 msgstr ""
 
 msgid "ProductAnalytics|Measure all or specific Page Views"

@@ -80,17 +80,17 @@ describe('ProductAnalyticsMeasureSelector', () => {
   });
 
   it.each`
-    startbutton             | showAllbutton               | eventType  | summaryString
-    ${'clickevents-button'} | ${'clickevents-all-button'} | ${'click'} | ${'clickEvents::all'}
-    ${'events-button'}      | ${'events-all-button'}      | ${''}      | ${'events::all'}
+    startButton                 | showAllButton                   | eventType       | field                | summaryString
+    ${'linkclickevents-button'} | ${'linkclickevents-all-button'} | ${'link_click'} | ${'linkClicksCount'} | ${'linkClickEvents::all'}
+    ${'events-button'}          | ${'events-all-button'}          | ${''}           | ${'count'}           | ${'events::all'}
   `(
     'navigates from overview to event subpage $summaryString',
-    async ({ startbutton, showAllbutton, eventType, summaryString }) => {
+    async ({ startButton, showAllButton, eventType, field, summaryString }) => {
       createWrapper();
 
-      await navigateToSubPage(startbutton);
+      await navigateToSubPage(startButton);
 
-      const showAllEventsButton = findAllEventsButton(showAllbutton);
+      const showAllEventsButton = findAllEventsButton(showAllButton);
       expect(showAllEventsButton.exists()).toBe(true);
       expect(findBackButton().exists()).toBe(true);
 
@@ -99,11 +99,11 @@ describe('ProductAnalyticsMeasureSelector', () => {
       const summarySubValues = summaryString.split('::');
       expect(wrapper.emitted('measureSelected')).toEqual([[summarySubValues[0]], summarySubValues]);
 
-      await checkFinalStep(`${EVENTS_TABLE_NAME}.count`, summaryString);
+      await checkFinalStep(`${EVENTS_TABLE_NAME}.${field}`, summaryString);
 
       if (eventType) {
         expect(addFilters).toHaveBeenCalledWith({
-          member: `${EVENTS_TABLE_NAME}.event`,
+          member: `${EVENTS_TABLE_NAME}.eventName`,
           operator: 'equals',
           values: [eventType],
         });
@@ -112,16 +112,16 @@ describe('ProductAnalyticsMeasureSelector', () => {
   );
 
   it.each`
-    startbutton           | showAllbutton             | summaryString
+    startButton           | showAllButton             | summaryString
     ${'pageviews-button'} | ${'pageviews-all-button'} | ${'pageViews::all'}
   `(
     'navigates from overview to event subpage $summaryString',
-    async ({ startbutton, showAllbutton, summaryString }) => {
+    async ({ startButton, showAllButton, summaryString }) => {
       createWrapper();
 
-      await navigateToSubPage(startbutton);
+      await navigateToSubPage(startButton);
 
-      const showAllEventsButton = findAllEventsButton(showAllbutton);
+      const showAllEventsButton = findAllEventsButton(showAllButton);
 
       expect(showAllEventsButton.exists()).toBe(true);
       expect(findBackButton().exists()).toBe(true);
@@ -136,14 +136,14 @@ describe('ProductAnalyticsMeasureSelector', () => {
   );
 
   it.each`
-    startbutton       | summaryString
+    startButton       | summaryString
     ${'users-button'} | ${'uniqueUsers::all'}
   `(
     'navigates from overview to users subpage $summaryString',
-    async ({ startbutton, summaryString }) => {
+    async ({ startButton, summaryString }) => {
       createWrapper();
 
-      await navigateToSubPage(startbutton);
+      await navigateToSubPage(startButton);
 
       const summarySubValues = summaryString.split('::');
       expect(wrapper.emitted('measureSelected')).toEqual([
@@ -155,14 +155,14 @@ describe('ProductAnalyticsMeasureSelector', () => {
   );
 
   it.each`
-    startbutton                      | measureName                 | summaryString
+    startButton                      | measureName                 | summaryString
     ${'sessions-count-button'}       | ${'count'}                  | ${'sessions::count'}
     ${'sessions-avgduration-button'} | ${'averageDurationMinutes'} | ${'sessions::averageDurationMinutes'}
     ${'sessions-avgperuser-button'}  | ${'averagePerUser'}         | ${'sessions::averagePerUser'}
     ${'sessions-repeat-button'}      | ${'repeatPercent'}          | ${'sessions::repeatPercent'}
   `(
     'navigates from overview to sessions subpage $measureName',
-    async ({ startbutton, measureName, summaryString }) => {
+    async ({ startButton, measureName, summaryString }) => {
       createWrapper();
 
       const summarySubValues = summaryString.split('::');
@@ -172,7 +172,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
 
       await nextTick();
 
-      const selectTypeButton = wrapper.findByTestId(startbutton);
+      const selectTypeButton = wrapper.findByTestId(startButton);
       expect(selectTypeButton.exists()).toBe(true);
       expect(findBackButton().exists()).toBe(true);
 
