@@ -10,7 +10,7 @@ module Subscriptions
     layout 'minimal'
 
     skip_before_action :set_confirm_warning
-    before_action :check_if_gl_com_or_dev
+    before_action :check_feature_available!
     before_action :authenticate_user!
 
     feature_category :purchase
@@ -90,6 +90,10 @@ module Subscriptions
 
     def discover_group_security_flow?
       %w[discover-group-security discover-project-security].include?(params[:glm_content])
+    end
+
+    def check_feature_available!
+      render_404 unless ::Gitlab::Saas.feature_available?(:subscriptions_trials)
     end
   end
 end

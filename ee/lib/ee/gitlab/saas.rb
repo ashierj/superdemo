@@ -7,13 +7,16 @@ module EE
 
       MissingFeatureError = Class.new(StandardError)
 
-      FEATURES = %i[
-        marketing_google_tag_manager
-        purchases_additional_minutes
-        onboarding
-        search_indexing_status
-        ai_vertex_embeddings
-      ].freeze
+      FEATURES =
+        %i[
+          ai_vertex_embeddings
+          marketing_google_tag_manager
+          purchases_additional_minutes
+          onboarding
+          search_indexing_status
+          subscriptions_trials
+        ].freeze
+
       CONFIG_FILE_ROOT = 'ee/config/saas_features'
 
       class_methods do

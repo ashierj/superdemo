@@ -1063,7 +1063,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     subject { namespace.eligible_for_trial? }
 
     where(
-      on_dot_com: [true, false],
+      subscriptions_trials_enabled: [true, false],
       has_parent: [true, false],
       never_had_trial: [true, false],
       plan_eligible_for_trial: [true, false]
@@ -1071,20 +1071,15 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
 
     with_them do
       before do
-        allow(Gitlab).to receive(:com?).and_return(on_dot_com)
+        stub_saas_features(subscriptions_trials: subscriptions_trials_enabled)
         allow(namespace).to receive(:has_parent?).and_return(has_parent)
         allow(namespace).to receive(:never_had_trial?).and_return(never_had_trial)
         allow(namespace).to receive(:plan_eligible_for_trial?).and_return(plan_eligible_for_trial)
       end
 
-      context "when#{' not' unless params[:on_dot_com]} on .com" do
-        context "and the namespace #{params[:has_parent] ? 'has' : 'is'} a parent namespace" do
-          context "and the namespace has#{' not yet' if params[:never_had_trial]} been trialed" do
-            context "and the namespace is#{' not' unless params[:plan_eligible_for_trial]} eligible for a trial" do
-              it { is_expected.to eq(on_dot_com && !has_parent && never_had_trial && plan_eligible_for_trial) }
-            end
-          end
-        end
+      it do
+        is_expected
+          .to eq(subscriptions_trials_enabled && !has_parent && never_had_trial && plan_eligible_for_trial)
       end
     end
   end

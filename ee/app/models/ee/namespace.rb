@@ -347,7 +347,7 @@ module EE
     end
 
     def eligible_for_trial?
-      ::Gitlab.com? &&
+      ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
         !has_parent? &&
         never_had_trial? &&
         plan_eligible_for_trial?
