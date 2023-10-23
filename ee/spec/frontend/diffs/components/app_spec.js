@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import getMRCodequalityReports from '~/diffs/components/graphql/get_mr_codequality_reports.query.graphql';
+import getMRCodequalityAndSecurityReports from '~/diffs/components/graphql/get_mr_codequality_and_security_reports.query.graphql';
 import { TEST_HOST } from 'spec/test_constants';
 import App from '~/diffs/components/app.vue';
 import store from '~/mr_notes/stores';
@@ -18,7 +18,7 @@ describe('diffs/components/app', () => {
   let mockDispatch;
   let fakeApollo;
 
-  const codeQualityQueryHandlerSuccess = jest.fn().mockResolvedValue({});
+  const codeQualityAndSastQueryHandlerSuccess = jest.fn().mockResolvedValue({});
 
   const createComponent = (props = {}, baseConfig = {}, flags = {}) => {
     store.reset();
@@ -53,7 +53,9 @@ describe('diffs/components/app', () => {
 
     mockDispatch = jest.spyOn(store, 'dispatch');
 
-    fakeApollo = createMockApollo([[getMRCodequalityReports, codeQualityQueryHandlerSuccess]]);
+    fakeApollo = createMockApollo([
+      [getMRCodequalityAndSecurityReports, codeQualityAndSastQueryHandlerSuccess],
+    ]);
 
     return shallowMount(App, {
       apolloProvider: fakeApollo,
@@ -64,7 +66,8 @@ describe('diffs/components/app', () => {
       },
       propsData: {
         endpointCoverage: `${TEST_HOST}/diff/endpointCoverage`,
-        endpointCodequality: `${TEST_HOST}/diff/endpointCodequality`,
+        endpointCodequality: '',
+        sastReportAvailable: false,
         currentUser: {},
         changesEmptyStateIllustration: '',
         ...props,
@@ -78,8 +81,11 @@ describe('diffs/components/app', () => {
   describe('EE codequality diff', () => {
     describe('sastReportsInInlineDiff flag off', () => {
       it('fetches Code Quality data via REST and not via GraphQL when endpoint is provided', () => {
-        createComponent({ shouldShow: true });
-        expect(codeQualityQueryHandlerSuccess).not.toHaveBeenCalled();
+        createComponent({
+          shouldShow: true,
+          endpointCodequality: `${TEST_HOST}/diff/endpointCodequality`,
+        });
+        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
         expect(mockDispatch).toHaveBeenCalledWith('diffs/fetchCodequality');
       });
 
@@ -87,15 +93,19 @@ describe('diffs/components/app', () => {
         createComponent({ shouldShow: true, endpointCodequality: '' });
 
         expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
-        expect(codeQualityQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
       });
     });
 
     describe('sastReportsInInlineDiff flag on', () => {
       it('fetches Code Quality data via GraphQL and not rest when endpoint is provided', () => {
-        createComponent({ shouldShow: true }, {}, { sastReportsInInlineDiff: true });
+        createComponent(
+          { shouldShow: true, endpointCodequality: `${TEST_HOST}/diff/endpointCodequality` },
+          {},
+          { sastReportsInInlineDiff: true },
+        );
 
-        expect(codeQualityQueryHandlerSuccess).toHaveBeenCalledTimes(1);
+        expect(codeQualityAndSastQueryHandlerSuccess).toHaveBeenCalledTimes(1);
         expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
       });
 
@@ -105,8 +115,40 @@ describe('diffs/components/app', () => {
           {},
           { sastReportsInInlineDiff: true },
         );
-        expect(codeQualityQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
         expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
+      });
+    });
+  });
+
+  describe('EE SAST diff', () => {
+    describe('sastReportsInInlineDiff flag off', () => {
+      it('does not fetch SAST data when sastReportAvailable is true', () => {
+        createComponent({ shouldShow: true, sastReportAvailable: true });
+        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
+      });
+
+      it('does not fetch SAST data when sastReportAvailable is false', () => {
+        createComponent({ shouldShow: false, sastReportAvailable: false });
+
+        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('sastReportsInInlineDiff flag on', () => {
+      it('fetches SAST data when sastReportAvailable is true', () => {
+        createComponent(
+          { shouldShow: true, sastReportAvailable: true },
+          {},
+          { sastReportsInInlineDiff: true },
+        );
+
+        expect(codeQualityAndSastQueryHandlerSuccess).toHaveBeenCalledTimes(1);
+      });
+
+      it('does not fetch SAST data when sastReportAvailable is false', () => {
+        createComponent({ shouldShow: false }, {}, { sastReportsInInlineDiff: true });
+        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
       });
     });
   });

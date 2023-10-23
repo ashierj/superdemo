@@ -11,12 +11,14 @@ export const fileLineCodequality = (state) => (file, line) => {
 // Returns the SAST degradations for a specific line of a given file
 export const fileLineSast = (state) => (file, line) => {
   const lineDiff = [];
+
   state?.sastDiff?.added?.map((e) => {
-    if (e.location.file === file && e.location.start_line === line) {
+    const startLine = parseInt(e.location.startLine, 10);
+    if (e.location.file === file && startLine === line) {
       lineDiff.push({
-        line: e.location.start_line,
+        line: startLine,
         description: e.description,
-        severity: e.severity,
+        severity: e.severity.toLowerCase(),
       });
     }
     return e;

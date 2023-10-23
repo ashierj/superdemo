@@ -5386,9 +5386,6 @@ msgstr ""
 msgid "An unexpected error occurred while communicating with the Web Terminal."
 msgstr ""
 
-msgid "An unexpected error occurred while loading the Sast diff."
-msgstr ""
-
 msgid "An unexpected error occurred while loading the code quality diff."
 msgstr ""
 
@@ -45049,7 +45046,7 @@ msgstr ""
 msgid "Something went wrong"
 msgstr ""
 
-msgid "Something went wrong fetching the CodeQuality Findings. Please try again!"
+msgid "Something went wrong fetching the Scanner Findings. Please try again!"
 msgstr ""
 
 msgid "Something went wrong on our end"
