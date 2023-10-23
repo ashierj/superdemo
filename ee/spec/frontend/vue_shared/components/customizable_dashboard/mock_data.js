@@ -28,6 +28,7 @@ export const dashboard = {
   id: 'analytics_overview',
   slug: 'analytics_overview',
   title: 'Analytics Overview',
+  description: 'This is a dashboard',
   userDefined: true,
   panels: [
     {
@@ -69,6 +70,7 @@ export const invalidVisualization = {
 
 export const builtinDashboard = {
   title: 'Analytics Overview',
+  description: 'This is a built-in description',
   panels: [
     {
       title: __('Test A'),

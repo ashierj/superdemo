@@ -5497,6 +5497,12 @@ msgstr ""
 msgid "Analytics|Custom events"
 msgstr ""
 
+msgid "Analytics|Dashboard description"
+msgstr ""
+
+msgid "Analytics|Dashboard description (optional)"
+msgstr ""
+
 msgid "Analytics|Dashboard not found"
 msgstr ""
 
@@ -5525,6 +5531,9 @@ msgid "Analytics|Edit"
 msgstr ""
 
 msgid "Analytics|Edit your dashboard"
+msgstr ""
+
+msgid "Analytics|Enter a dashboard description"
 msgstr ""
 
 msgid "Analytics|Enter a dashboard title"

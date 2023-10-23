@@ -1,6 +1,6 @@
 <script>
 import { GridStack } from 'gridstack';
-import { GlButton, GlFormInput, GlFormGroup, GlLink, GlIcon } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlFormGroup, GlLink, GlIcon, GlSprintf } from '@gitlab/ui';
 import { isEqual } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
@@ -38,6 +38,7 @@ export default {
     GlIcon,
     GlLink,
     GlFormGroup,
+    GlSprintf,
     PanelsBase,
     UrlSync,
     AvailableVisualizationsDrawer,
@@ -404,12 +405,14 @@ export default {
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
+  FORM_GROUP_CLASS: 'gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full',
+  FORM_INPUT_CLASS: 'form-control gl-mr-4 gl-border-gray-200',
 };
 </script>
 
 <template>
   <div>
-    <section class="gl-display-flex gl-align-items-center gl-py-6">
+    <section class="gl-display-flex gl-align-items-center gl-my-6">
       <div class="gl-display-flex gl-flex-direction-column gl-w-full">
         <h2 v-if="showEditControls" data-testid="edit-mode-title" class="gl-mt-0 gl-mb-6">
           {{
@@ -426,17 +429,25 @@ export default {
         >
           <p class="gl-mb-0">
             {{ dashboardDescription }}
-            <gl-link v-if="documentationLink" :href="documentationLink" rel="noopener">
-              {{ __('Learn more') }}
-            </gl-link>
+            <gl-sprintf
+              v-if="documentationLink"
+              :message="__('%{linkStart} Learn more%{linkEnd}.')"
+            >
+              <template #link="{ content }">
+                <gl-link data-testid="dashboard-help-link" :href="documentationLink">{{
+                  content
+                }}</gl-link>
+              </template>
+            </gl-sprintf>
           </p>
         </div>
 
-        <div v-if="showEditControls" class="gl-display-flex flex-fill">
+        <div v-if="showEditControls" class="gl-display-flex flex-fill gl-flex-direction-column">
           <gl-form-group
             :label="s__('Analytics|Dashboard title')"
             label-for="title"
-            class="gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full"
+            :class="$options.FORM_GROUP_CLASS"
+            class="gl-mb-4"
             data-testid="dashboard-title-form-group"
             :invalid-feedback="titleValidationError"
             :state="!titleValidationError"
@@ -449,11 +460,27 @@ export default {
               type="text"
               :placeholder="s__('Analytics|Enter a dashboard title')"
               :aria-label="s__('Analytics|Dashboard title')"
-              class="form-control gl-mr-4 gl-border-gray-200"
+              :class="$options.FORM_INPUT_CLASS"
               data-testid="dashboard-title-input"
               :state="!titleValidationError"
               required
               @input="onTitleInput"
+            />
+          </gl-form-group>
+          <gl-form-group
+            :label="s__('Analytics|Dashboard description (optional)')"
+            label-for="description"
+            :class="$options.FORM_GROUP_CLASS"
+          >
+            <gl-form-input
+              id="description"
+              v-model="dashboard.description"
+              dir="auto"
+              type="text"
+              :placeholder="s__('Analytics|Enter a dashboard description')"
+              :aria-label="s__('Analytics|Dashboard description')"
+              :class="$options.FORM_INPUT_CLASS"
+              data-testid="dashboard-description-input"
             />
           </gl-form-group>
         </div>
