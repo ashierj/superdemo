@@ -74,7 +74,7 @@ export default {
           </span>
         </div>
         <div class="gl-display-flex gl-align-items-stretch gl-mt-2">
-          <gl-progress-bar :value="percentageComplete" class="gl-flex-grow-1" />
+          <gl-progress-bar :value="percentageComplete" class="gl-flex-grow-1" aria-hidden="true" />
         </div>
       </div>
       <div v-else class="gl-display-flex gl-gap-5 gl-w-full gl-px-2">
