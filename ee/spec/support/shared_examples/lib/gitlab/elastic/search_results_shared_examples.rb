@@ -68,3 +68,14 @@ RSpec.shared_examples 'loads expected aggregations' do
     end
   end
 end
+
+RSpec.shared_examples 'namespace ancestry_filter for aggregations' do
+  before do
+    group.add_developer(user)
+  end
+
+  it 'includes authorized:namespace:ancestry_filter:descendants name query' do
+    results.aggregations(scope)
+    assert_named_queries("#{scope.singularize}:authorized:namespace:ancestry_filter:descendants")
+  end
+end

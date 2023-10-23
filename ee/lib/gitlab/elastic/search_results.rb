@@ -322,7 +322,8 @@ module Gitlab
                         current_user.authorized_groups.pluck(:id) # rubocop:disable CodeReuse/ActiveRecord
                       end
 
-          base_options.merge(group_ids: group_ids)
+          # group_ids is already added in GroupSearchResults so use reverse_merge to avoid overwriting
+          base_options.reverse_merge(group_ids: group_ids)
         else
           base_options
         end

@@ -35,6 +35,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     include_examples 'search results filtered by state'
     include_examples 'search results filtered by confidential'
     include_examples 'search results filtered by labels'
+    it_behaves_like 'namespace ancestry_filter for aggregations'
   end
 
   context 'merge_requests search', :sidekiq_inline do
@@ -59,11 +60,15 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
   end
 
   context 'blobs', :sidekiq_inline do
+    let(:scope) { 'blobs' }
+
     context 'filter by language' do
       let_it_be(:project) { create(:project, :public, :repository, group: group) }
 
       it_behaves_like 'search results filtered by language'
     end
+
+    it_behaves_like 'namespace ancestry_filter for aggregations'
 
     context 'filter by archived' do
       before do
@@ -86,8 +91,6 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
 
       let(:unarchived_result) { instance_double(Gitlab::Search::FoundBlob, project: unarchived_project) }
       let(:archived_result) { instance_double(Gitlab::Search::FoundBlob, project: archived_project) }
-
-      let(:scope) { 'blobs' }
       let(:query) { 'something went wrong' }
 
       include_examples 'search results filtered by archived', nil, 'backfill_archived_field_in_blob'
