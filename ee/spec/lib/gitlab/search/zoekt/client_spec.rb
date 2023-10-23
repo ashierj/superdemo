@@ -36,6 +36,35 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
     end
   end
 
+  shared_examples 'with relative base_url' do |method|
+    let(:base_url) { [zoekt_node.index_base_url, 'nodes', 'zoekt-2'].join('/') }
+    let(:custom_node) { create(:zoekt_node, index_base_url: base_url, search_base_url: base_url) }
+    let(:body) { {} }
+    let(:response) { instance_double(Net::HTTPResponse, body: body.to_json) }
+    let(:success) do
+      instance_double(HTTParty::Response,
+        code: 200, success?: true, parsed_response: body, response: response, body: response.body
+      )
+    end
+
+    it 'send request to the correct URL' do
+      case method
+      when :post
+        expect(client).to receive(:post)
+          .with((custom_node.index_base_url + expected_path), anything, anything)
+          .and_return(success)
+      when :delete
+        expect(client).to receive(:delete_request)
+          .with((custom_node.index_base_url + expected_path))
+          .and_return(success)
+      else
+        raise "Unknown method"
+      end
+
+      make_request
+    end
+  end
+
   describe '#search' do
     let(:project_ids) { [project_1.id, project_2.id] }
     let(:query) { 'use.*egex' }
@@ -90,10 +119,26 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
     it_behaves_like 'an authenticated zoekt request' do
       let(:make_request) { subject }
     end
+
+    it_behaves_like 'with relative base_url', :post do
+      let(:make_request) { subject }
+      let(:expected_path) { '/api/search' }
+    end
   end
 
   describe '#index' do
     let(:node_id) { ::Search::Zoekt::Node.last.id }
+    let(:successful_response) { true }
+    let(:response_body) { {} }
+    let(:response) do
+      instance_double(HTTParty::Response,
+        code: 200,
+        success?: successful_response,
+        parsed_response: response_body,
+        response: instance_double(Net::HTTPResponse, body: response_body.to_json),
+        body: response_body.to_json
+      )
+    end
 
     it 'indexes the project to make it searchable' do
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id)
@@ -105,35 +150,43 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
       expect(search_results[:Result][:Files].to_a.size).to be > 0
     end
 
-    it 'raises an exception when indexing errors out' do
-      allow(::Gitlab::HTTP).to receive(:post).and_return({ 'Error' => 'command failed: exit status 128' })
+    context 'with an error in the response' do
+      let(:response_body) { { 'Error' => 'command failed: exit status 128' } }
 
-      expect do
-        client.index(project_1, node_id)
-      end.to raise_error(RuntimeError, 'command failed: exit status 128')
+      it 'raises an exception when indexing errors out' do
+        allow(::Gitlab::HTTP).to receive(:post).and_return(response)
+
+        expect do
+          client.index(project_1, node_id)
+        end.to raise_error(RuntimeError, 'command failed: exit status 128')
+      end
     end
 
-    it 'raises an exception when response is not successful' do
-      response = {}
-      allow(response).to receive(:success?).and_return(false)
+    context 'with a failed resposne' do
+      let(:successful_response) { false }
 
-      allow(::Gitlab::HTTP).to receive(:post).and_return(response)
+      it 'raises an exception when response is not successful' do
+        allow(::Gitlab::HTTP).to receive(:post).and_return(response)
 
-      expect { client.index(project_1, node_id) }.to raise_error(RuntimeError, /Request failed with/)
+        expect { client.index(project_1, node_id) }.to raise_error(RuntimeError, /Request failed with/)
+      end
     end
 
     it 'sets http the correct timeout' do
-      response = {}
-      allow(response).to receive(:success?).and_return(true)
-
       expect(::Gitlab::HTTP).to receive(:post)
                                 .with(anything, hash_including(timeout: described_class::INDEXING_TIMEOUT_S))
                                 .and_return(response)
+
       client.index(project_1, node_id)
     end
 
     it_behaves_like 'an authenticated zoekt request' do
       let(:make_request) { client.index(project_1, node_id) }
+    end
+
+    it_behaves_like 'with relative base_url', :post do
+      let(:make_request) { client.index(project_1, custom_node.id) }
+      let(:expected_path) { '/indexer/index' }
     end
   end
 
@@ -173,6 +226,11 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
         expect { subject }.to raise_error(StandardError, /Request failed/)
       end
     end
+
+    it_behaves_like 'with relative base_url', :delete do
+      let(:make_request) { client.delete(node_id: custom_node.id, project_id: project_1.id) }
+      let(:expected_path) { "/indexer/index/#{project_1.id}" }
+    end
   end
 
   describe '#truncate' do
@@ -200,8 +258,8 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
     it 'calls post on ::Gitlab::HTTP for all nodes' do
       node2 = create(:zoekt_node)
       zoekt_truncate_path = '/indexer/truncate'
-      expect(::Gitlab::HTTP).to receive(:post).with(URI.join(node.index_base_url, zoekt_truncate_path), anything)
-      expect(::Gitlab::HTTP).to receive(:post).with(URI.join(node2.index_base_url, zoekt_truncate_path), anything)
+      expect(::Gitlab::HTTP).to receive(:post).with(URI.join(node.index_base_url, zoekt_truncate_path).to_s, anything)
+      expect(::Gitlab::HTTP).to receive(:post).with(URI.join(node2.index_base_url, zoekt_truncate_path).to_s, anything)
       client.truncate
     end
 

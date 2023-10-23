@@ -37,7 +37,7 @@ module Gitlab
           raise 'Node can not be found' unless target_node
 
           response = post(
-            URI.join(target_node.search_base_url, path),
+            join_url(target_node.search_base_url, path),
             payload,
             allow_local_requests: true,
             basic_auth: basic_auth_params
@@ -47,7 +47,7 @@ module Gitlab
             logger.error(message: 'Zoekt search failed', status: response.code, response: response.body)
           end
 
-          ::Gitlab::Json.parse(response.body, symbolize_names: true)
+          parse_response(response)
         ensure
           add_request_details(start_time: start, path: path, body: payload)
         end
@@ -55,8 +55,10 @@ module Gitlab
         def index(project, node_id)
           response = zoekt_indexer_post('/indexer/index', indexing_payload(project), node_id)
 
-          raise response['Error'] if response['Error']
           raise "Request failed with: #{response.inspect}" unless response.success?
+
+          parsed_response = parse_response(response)
+          raise parsed_response['Error'] if parsed_response['Error']
 
           response
         end
@@ -65,16 +67,18 @@ module Gitlab
           target_node = node(node_id)
           raise 'Node can not be found' unless target_node
 
-          response = delete_request(URI.join(target_node.index_base_url, "/indexer/index/#{project_id}"))
+          response = delete_request(join_url(target_node.index_base_url, "/indexer/index/#{project_id}"))
 
           raise "Request failed with: #{response.inspect}" unless response.success?
-          raise response['Error'] if response['Error']
+
+          parsed_response = parse_response(response)
+          raise parsed_response['Error'] if parsed_response['Error']
 
           response
         end
 
         def truncate
-          ::Search::Zoekt::Node.find_each { |node| post(URI.join(node.index_base_url, '/indexer/truncate')) }
+          ::Search::Zoekt::Node.find_each { |node| post(join_url(node.index_base_url, '/indexer/truncate')) }
         end
 
         private
@@ -108,7 +112,7 @@ module Gitlab
           raise 'Node can not be found' unless target_node
 
           post(
-            URI.join(target_node.index_base_url, path),
+            join_url(target_node.index_base_url, path),
             payload,
             timeout: INDEXING_TIMEOUT_S
           )
@@ -147,9 +151,18 @@ module Gitlab
         end
 
         def node(node_id)
-          strong_memoize(:node) do
-            ::Search::Zoekt::Node.find_by_id(node_id)
-          end
+          ::Search::Zoekt::Node.find_by_id(node_id)
+        end
+
+        def join_url(base_url, path)
+          # We can't use URI.join because it doesn't work properly with something like
+          # URI.join('http://example.com/api', 'index') => #<URI::HTTP http://example.com/index>
+          url = [base_url, path].join('/')
+          url.gsub(%r{(?<!:)/+}, '/') # Remove duplicate slashes
+        end
+
+        def parse_response(response)
+          ::Gitlab::Json.parse(response.body).with_indifferent_access
         end
 
         def add_request_details(start_time:, path:, body:)
