@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :skip_live_env, product_group: :compliance do
+  RSpec.describe 'Govern', :skip_live_env, product_group: :compliance, quarantine: {
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/428979',
+    type: :flaky
+  } do
     describe 'compliance dashboard' do
       let!(:approver1) { create(:user, name: "user1-compliance-dashboard-#{SecureRandom.hex(8)}") }
       let!(:approver1_api_client) { Runtime::API::Client.new(:gitlab, user: approver1) }
