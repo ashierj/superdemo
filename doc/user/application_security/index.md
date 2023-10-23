@@ -177,6 +177,9 @@ By default, the application security jobs are configured to run for branch pipel
 To use them with [merge request pipelines](../../ci/pipelines/merge_request_pipelines.md),
 you must reference the [`latest` templates](../../development/cicd/templates.md).
 
+The latest version of the template may include breaking changes. Use the stable template unless you
+need a feature provided only in the latest template.
+
 All `latest` security templates support merge request pipelines.
 
 For example, to run both SAST and Dependency Scanning, the following template is used:
@@ -192,6 +195,9 @@ Mixing `latest` and `stable` security templates can cause both MR and branch pip
 
 NOTE:
 Latest templates can receive breaking changes in any release.
+
+For more information about template versioning, see the
+[CI/CD documentation](../../development/cicd/templates.md#latest-version).
 
 ## Default behavior of GitLab security scanning tools
 
