@@ -205,7 +205,7 @@ module EE
     override :merge_blocked_by_other_mrs?
     def merge_blocked_by_other_mrs?
       strong_memoize(:merge_blocked_by_other_mrs) do
-        project.feature_available?(:blocking_merge_requests) &&
+        blocking_merge_requests_feature_available? &&
           blocking_merge_requests.any? { |mr| !mr.merged? }
       end
     end
@@ -249,7 +249,7 @@ module EE
     end
 
     def has_denied_policies?
-      return false unless project.feature_available?(:license_scanning)
+      return false unless license_scanning_feature_available?
 
       return false unless actual_head_pipeline
 
@@ -484,6 +484,14 @@ module EE
       return super unless security_comparision_and_checks_multiple_pipelines?(service_class)
 
       find_merge_base_pipeline_with_security_reports || find_base_pipeline_with_security_reports
+    end
+
+    def blocking_merge_requests_feature_available?
+      project.licensed_feature_available?(:blocking_merge_requests)
+    end
+
+    def license_scanning_feature_available?
+      project.licensed_feature_available?(:license_scanning)
     end
 
     private

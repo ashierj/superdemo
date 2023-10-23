@@ -1580,6 +1580,10 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
 
     context 'when running license_scanning ci job' do
+      before do
+        stub_licensed_features(license_scanning: true)
+      end
+
       context 'when merge request has denied policies' do
         before do
           allow(merge_request).to receive(:has_denied_policies?).and_return(true)
@@ -2204,6 +2208,50 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
           end
         end
       end
+    end
+  end
+
+  describe '#blocking_merge_requests_feature_available?' do
+    let(:merge_request) { build_stubbed(:merge_request) }
+
+    subject(:result) { merge_request.blocking_merge_requests_feature_available? }
+
+    before do
+      stub_licensed_features(blocking_merge_requests: blocking_merge_requests_enabled)
+    end
+
+    context 'when blocking_merge_requests feature is enabled' do
+      let(:blocking_merge_requests_enabled) { true }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when blocking_merge_requests feature is disabled' do
+      let(:blocking_merge_requests_enabled) { false }
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#license_scanning_feature_available?' do
+    let(:merge_request) { build_stubbed(:merge_request) }
+
+    subject(:result) { merge_request.license_scanning_feature_available? }
+
+    before do
+      stub_licensed_features(license_scanning: license_scanning_enabled)
+    end
+
+    context 'when license_scanning feature is enabled' do
+      let(:license_scanning_enabled) { true }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when license_scanning feature is disabled' do
+      let(:license_scanning_enabled) { false }
+
+      it { is_expected.to eq(false) }
     end
   end
 end

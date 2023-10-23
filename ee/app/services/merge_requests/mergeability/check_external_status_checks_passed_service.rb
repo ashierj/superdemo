@@ -8,6 +8,8 @@ module MergeRequests
       end
 
       def execute
+        return inactive unless only_allow_merge_if_all_status_checks_passed_enabled?(merge_request.project)
+
         if prevent_merge_unless_status_checks_passed?
           failure(reason: failure_reason)
         else

@@ -15,11 +15,16 @@ RSpec.describe MergeRequests::Mergeability::CheckExternalStatusChecksPassedServi
   describe "#execute" do
     let(:result) { check_external_status_checks_passed_service.execute }
 
-    where(:only_allow_merge_if_all_status_checks_passed_enabled?, :any_external_status_checks_not_passed?, :prevent?) do
-      true  | false | false
-      false | true  | false
-      false | false | false
-      true  | true  | true
+    where(
+      :only_allow_merge_if_all_status_checks_passed_enabled?,
+      :any_external_status_checks_not_passed?,
+      :expected_status,
+      :expected_reason
+    ) do
+      true  | false | Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS | nil
+      false | true  | Gitlab::MergeRequests::Mergeability::CheckResult::INACTIVE_STATUS | nil
+      false | false | Gitlab::MergeRequests::Mergeability::CheckResult::INACTIVE_STATUS | nil
+      true  | true  | Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS | :status_checks_must_pass
     end
 
     with_them do
@@ -31,13 +36,8 @@ RSpec.describe MergeRequests::Mergeability::CheckExternalStatusChecksPassedServi
       end
 
       it "returns correct status" do
-        if prevent?
-          expect(result.status)
-            .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
-          expect(result.payload[:reason]).to eq(:status_checks_must_pass)
-        else
-          expect(result.status).to eq(Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS)
-        end
+        expect(result.status).to eq(expected_status)
+        expect(result.payload[:reason]).to eq(expected_reason)
       end
     end
   end

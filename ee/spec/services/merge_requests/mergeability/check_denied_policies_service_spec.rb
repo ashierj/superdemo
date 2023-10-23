@@ -11,25 +11,44 @@ RSpec.describe MergeRequests::Mergeability::CheckDeniedPoliciesService, feature_
     let(:result) { check_denied_policies.execute }
 
     before do
-      expect(merge_request).to receive(:has_denied_policies?).and_return(has_denied_policies)
+      allow(merge_request)
+        .to receive(:license_scanning_feature_available?)
+        .and_return(license_scanning_feature_available?)
     end
 
-    context "when the merge request has denied policies" do
-      let(:has_denied_policies) { true }
+    context "when license_scanning feature is unavailable" do
+      let(:license_scanning_feature_available?) { false }
 
-      it "returns a check result with status failed" do
+      it "returns a check result with status inactive" do
         expect(result.status)
-          .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
-        expect(result.payload[:reason]).to eq(:policies_denied)
+          .to eq Gitlab::MergeRequests::Mergeability::CheckResult::INACTIVE_STATUS
       end
     end
 
-    context "when the merge request does not have denied policies" do
-      let(:has_denied_policies) { false }
+    context "when license_scanning feature is available" do
+      let(:license_scanning_feature_available?) { true }
 
-      it "returns a check result with status success" do
-        expect(result.status)
-          .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
+      before do
+        expect(merge_request).to receive(:has_denied_policies?).and_return(has_denied_policies)
+      end
+
+      context "when the merge request has denied policies" do
+        let(:has_denied_policies) { true }
+
+        it "returns a check result with status failed" do
+          expect(result.status)
+            .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
+          expect(result.payload[:reason]).to eq(:policies_denied)
+        end
+      end
+
+      context "when the merge request does not have denied policies" do
+        let(:has_denied_policies) { false }
+
+        it "returns a check result with status success" do
+          expect(result.status)
+            .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
+        end
       end
     end
   end
