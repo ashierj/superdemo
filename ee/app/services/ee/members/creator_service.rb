@@ -4,12 +4,29 @@ module EE
   module Members
     module CreatorService
       extend ::Gitlab::Utils::Override
+      extend ActiveSupport::Concern
 
       private
 
+      class_methods do
+        extend ::Gitlab::Utils::Override
+
+        def parsed_args(args)
+          super.merge(member_role_id: args[:member_role_id])
+        end
+      end
+
       override :member_attributes
       def member_attributes
-        super.merge(ldap: ldap)
+        attributes = super.merge(ldap: ldap)
+
+        return attributes unless ::Feature.enabled?(:invitations_member_role_id, source)
+
+        top_level_group = source.root_ancestor
+
+        return attributes unless top_level_group.custom_roles_enabled?
+
+        attributes.merge(member_role_id: args[:member_role_id])
       end
 
       override :after_commit_tasks

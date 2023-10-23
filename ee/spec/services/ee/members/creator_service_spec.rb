@@ -4,8 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Members::CreatorService, feature_category: :groups_and_projects do
   describe '.add_member' do
+    let_it_be(:user) { create(:user) }
+
     context 'for onboarding concerns', :saas do
-      let_it_be(:user) { create(:user) }
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
       before do
@@ -78,6 +79,66 @@ RSpec.describe Members::CreatorService, feature_category: :groups_and_projects d
           expect(subject.errors.messages).to include(
             base: ['security policy bot users cannot be added to other projects']
           )
+        end
+      end
+    end
+
+    context 'when assigning a member role' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:member_role) { create(:member_role, :guest, namespace: group) }
+
+      subject(:add_member) do
+        described_class.add_member(group, user, :guest, member_role_id: member_role.id)
+      end
+
+      context 'with custom_roles feature' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        context 'with invitations_member_role_id feature flag enabled' do
+          before do
+            stub_feature_flags(invitations_member_role_id: true)
+          end
+
+          it 'adds a user to members with custom role assigned' do
+            expect { add_member }.to change { group.members.count }.by(1)
+
+            member = Member.last
+
+            expect(member.member_role).to eq(member_role)
+            expect(member.access_level).to eq(Member::GUEST)
+          end
+        end
+
+        context 'with invitations_member_role_id feature flag disabled' do
+          before do
+            stub_feature_flags(invitations_member_role_id: false)
+          end
+
+          it 'adds a user to members without custom role assigned' do
+            expect { add_member }.to change { group.members.count }.by(1)
+
+            member = Member.last
+
+            expect(member.member_role).to be_nil
+            expect(member.access_level).to eq(Member::GUEST)
+          end
+        end
+      end
+
+      context 'without custom_roles feature' do
+        before do
+          stub_licensed_features(custom_roles: false)
+        end
+
+        it 'adds a user to members without custom role assigned' do
+          expect { add_member }.to change { group.members.count }.by(1)
+
+          member = Member.last
+
+          expect(member.member_role).to be_nil
+          expect(member.access_level).to eq(Member::GUEST)
         end
       end
     end
