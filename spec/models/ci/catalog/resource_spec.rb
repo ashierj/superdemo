@@ -46,6 +46,14 @@ RSpec.describe Ci::Catalog::Resource, feature_category: :pipeline_composition do
     end
   end
 
+  describe '.order_by_created_at_asc' do
+    it 'returns catalog resources sorted by ascending created at' do
+      ordered_resources = described_class.order_by_created_at_asc
+
+      expect(ordered_resources.to_a).to eq([resource, resource_2, resource_3])
+    end
+  end
+
   describe '.order_by_name_desc' do
     it 'returns catalog resources sorted by descending name' do
       ordered_resources = described_class.order_by_name_desc
