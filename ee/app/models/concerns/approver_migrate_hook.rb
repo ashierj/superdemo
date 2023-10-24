@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # Sync up old models (Approver and ApproverGroup)
 # to new models (ApprovalMergeRequestRule and ApprovalProjectRule)
