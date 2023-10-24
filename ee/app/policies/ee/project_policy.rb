@@ -316,6 +316,11 @@ module EE
           @subject.licensed_feature_available?(:tracing)
       end
 
+      condition(:observability_metrics_enabled) do
+        ::Feature.enabled?(:observability_metrics, @subject.root_namespace) &&
+          @subject.licensed_feature_available?(:metrics_observability)
+      end
+
       # We are overriding the already defined condition in CE version
       # to allow Guest users with member roles to access the merge requests.
       condition(:merge_requests_disabled) do
@@ -756,6 +761,10 @@ module EE
 
       rule { can?(:reporter_access) & tracing_enabled }.policy do
         enable :read_tracing
+      end
+
+      rule { can?(:reporter_access) & observability_metrics_enabled }.policy do
+        enable :read_observability_metrics
       end
     end
 

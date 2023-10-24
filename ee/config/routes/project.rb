@@ -152,6 +152,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         end
 
         resources :tracing, only: [:index, :show], controller: :tracing
+
+        resources :metrics, only: [:index], controller: :metrics
       end
       # End of the /-/ scope.
 

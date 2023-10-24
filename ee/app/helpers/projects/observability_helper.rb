@@ -2,6 +2,10 @@
 
 module Projects
   module ObservabilityHelper
+    def observability_metrics_view_model(project)
+      generate_model(project)
+    end
+
     def observability_tracing_view_model(project)
       generate_model(project)
     end
