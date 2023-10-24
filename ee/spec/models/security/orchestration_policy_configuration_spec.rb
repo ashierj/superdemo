@@ -501,12 +501,55 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
     end
 
+    shared_examples "policy_scope" do
+      context 'with empty object' do
+        let(:policy_scope) { {} }
+
+        specify { expect(errors).to be_empty }
+      end
+
+      context 'with allowed properties' do
+        let(:policy_scope) do
+          {
+            compliance_frameworks: [
+              { id: 1 },
+              { id: 2 }
+            ],
+            projects: {
+              including: [
+                { id: 1 }
+              ],
+              excluding: [
+                { id: 2 }
+              ]
+            }
+          }
+        end
+
+        specify { expect(errors).to be_empty }
+      end
+
+      context 'with invalid properties' do
+        let(:policy_scope) do
+          {
+            compliance_frameworks: {},
+            projects: [
+              { id: 3 }
+            ]
+          }
+        end
+
+        specify { expect(errors).not_to be_empty }
+      end
+    end
+
     describe "scan execution policies" do
-      let(:scan_execution_policy) { build(:scan_execution_policy, rules: rules, actions: actions) }
+      let(:scan_execution_policy) { build(:scan_execution_policy, rules: rules, actions: actions, policy_scope: policy_scope) }
       let(:rules) { [rule].compact }
       let(:rule) { nil }
       let(:actions) { [action].compact }
       let(:action) { nil }
+      let(:policy_scope) { {} }
 
       %i[name enabled rules actions].each do |key|
         context "without #{key}" do
@@ -675,14 +718,17 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           end
         end
       end
+
+      it_behaves_like "policy_scope"
     end
 
     describe "scan result policies" do
       let(:scan_execution_policy) { nil }
-      let(:scan_result_policy) { build(:scan_result_policy, rules: rules, actions: actions) }
+      let(:scan_result_policy) { build(:scan_result_policy, rules: rules, actions: actions, policy_scope: policy_scope) }
       let(:rules) { [rule].compact }
       let(:actions) { [action].compact }
       let(:action) { nil }
+      let(:policy_scope) { {} }
 
       shared_examples "scan result policy" do |required_rule_keys|
         %i[name enabled rules].each do |key|
@@ -744,6 +790,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
             end
           end
         end
+
+        it_behaves_like "policy_scope"
 
         describe "approval_settings" do
           let(:scan_result_policy) do
