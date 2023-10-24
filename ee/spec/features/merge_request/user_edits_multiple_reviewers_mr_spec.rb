@@ -68,7 +68,6 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers', feature_
 
     before do
       stub_licensed_features(suggested_reviewers: true)
-      stub_feature_flags(suggested_reviewers_control: merge_request.project)
 
       target_project.project_setting.update!(suggested_reviewers_enabled: true)
 

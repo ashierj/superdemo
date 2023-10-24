@@ -413,7 +413,6 @@ module EE
       def suggested_reviewers_available?
         strong_memoize(:suggested_reviewers_available) do
           ::Gitlab.com? &&
-            ::Feature.enabled?(:suggested_reviewers_control, self) &&
             licensed_feature_available?(:suggested_reviewers)
         end
       end
