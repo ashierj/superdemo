@@ -1228,6 +1228,9 @@ msgid_plural "%{strong_start}%{errors}%{strong_end} %{prefix} findings"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%{strong_start}%{human_size}%{strong_end} Forked Project"
+msgstr ""
+
 msgid "%{strong_start}%{human_size}%{strong_end} Project Storage"
 msgstr ""
 
