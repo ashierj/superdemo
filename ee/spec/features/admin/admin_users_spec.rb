@@ -71,7 +71,7 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
     end
 
     describe 'user permission export' do
-      context 'when `export_user_permissions` feature is available' do
+      context 'when `export_user_permissions` feature is available through license' do
         before do
           stub_licensed_features(export_user_permissions: true)
         end
@@ -92,6 +92,18 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
           visit admin_users_path
 
           expect(page).not_to have_link(href: admin_user_permission_exports_path(format: :csv))
+        end
+      end
+
+      context 'when `export_user_permissions` feature is available through usage ping features' do
+        before do
+          stub_usage_ping_features(true)
+        end
+
+        it "shows the 'Export Permissions' link" do
+          visit admin_users_path
+
+          expect(page).to have_link(href: admin_user_permission_exports_path(format: :csv))
         end
       end
     end
