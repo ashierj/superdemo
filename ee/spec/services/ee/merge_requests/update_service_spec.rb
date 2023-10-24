@@ -383,5 +383,54 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
         it_behaves_like 'not capturing suggested_reviewer_ids'
       end
     end
+
+    describe '#sync_any_merge_request_approval_rules' do
+      let(:opts) { { target_branch: 'feature-2' } }
+      let!(:any_merge_request_approval_rule) do
+        create(:report_approver_rule, :any_merge_request, merge_request: merge_request)
+      end
+
+      subject(:execute) { update_merge_request(opts) }
+
+      it 'enqueues SyncAnyMergeRequestApprovalRulesWorker' do
+        expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to(
+          receive(:perform_async).with(merge_request.id)
+        )
+
+        execute
+      end
+
+      context 'when target_branch is not changing' do
+        let(:opts) { {} }
+
+        it 'does not enqueue SyncAnyMergeRequestApprovalRulesWorker' do
+          expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to receive(:perform_async)
+
+          execute
+        end
+      end
+
+      context 'without any_merge_request rule' do
+        let!(:any_merge_request_approval_rule) { nil }
+
+        it 'does not enqueue SyncAnyMergeRequestApprovalRulesWorker' do
+          expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to receive(:perform_async)
+
+          execute
+        end
+      end
+
+      context 'when feature flag "scan_result_any_merge_request" is disabled' do
+        before do
+          stub_feature_flags(scan_result_any_merge_request: false)
+        end
+
+        it 'does not enqueue SyncAnyMergeRequestApprovalRulesWorker' do
+          expect(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).not_to receive(:perform_async)
+
+          execute
+        end
+      end
+    end
   end
 end

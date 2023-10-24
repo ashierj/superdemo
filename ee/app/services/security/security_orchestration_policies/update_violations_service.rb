@@ -9,13 +9,13 @@ module Security
 
       def initialize(merge_request)
         @merge_request = merge_request
-        @violated_policy_ids = []
-        @unviolated_policy_ids = []
+        @violated_policy_ids = Set.new
+        @unviolated_policy_ids = Set.new
       end
 
       def add(violated_ids, unviolated_ids)
-        violated_policy_ids.concat(violated_ids)
-        unviolated_policy_ids.concat(unviolated_ids)
+        violated_policy_ids.merge(violated_ids)
+        unviolated_policy_ids.merge(unviolated_ids)
       end
 
       def execute

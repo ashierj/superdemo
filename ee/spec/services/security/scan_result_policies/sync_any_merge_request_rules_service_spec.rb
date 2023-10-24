@@ -19,12 +19,17 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
     let(:approvals_required) { 1 }
     let(:signed_commit) { instance_double(Commit, has_signature?: true) }
     let(:unsigned_commit) { instance_double(Commit, has_signature?: false) }
+    let_it_be(:protected_branch) do
+      create(:protected_branch, name: merge_request.target_branch, project: project)
+    end
+
     let_it_be(:scan_result_policy_read, reload: true) do
       create(:scan_result_policy_read, project: project)
     end
 
     let!(:approval_project_rule) do
       create(:approval_project_rule, :any_merge_request, project: project, approvals_required: approvals_required,
+        applies_to_all_protected_branches: true, protected_branches: [protected_branch],
         scan_result_policy_read: scan_result_policy_read)
     end
 
@@ -43,6 +48,12 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
     shared_examples_for 'sets approvals_required to 0' do
       it 'sets approvals_required to 0' do
         expect { execute }.to change { approver_rule.reload.approvals_required }.to(0)
+      end
+    end
+
+    shared_examples_for 'creates no violation records' do
+      it 'creates no violation records' do
+        expect { execute }.not_to change { merge_request.scan_result_policy_violations.count }
       end
     end
 
@@ -65,15 +76,34 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
 
           it_behaves_like 'sets approvals_required to 0'
           it_behaves_like 'triggers policy bot comment', :any_merge_request, false
-
-          it 'creates no violation records' do
-            expect { execute }.not_to change { merge_request.scan_result_policy_violations.count }
-          end
+          it_behaves_like 'creates no violation records'
 
           it 'does not create a log' do
             expect(Gitlab::AppJsonLogger).not_to receive(:info)
 
             execute
+          end
+        end
+
+        context 'when target branch is not protected' do
+          before do
+            scan_result_policy_read.update!(commits: :any)
+            merge_request.update!(target_branch: 'non-protected')
+          end
+
+          it_behaves_like 'sets approvals_required to 0'
+          it_behaves_like 'triggers policy bot comment', :any_merge_request, false
+          it_behaves_like 'creates no violation records'
+
+          context 'with previous violation record' do
+            let!(:unrelated_violation) do
+              create(:scan_result_policy_violation, scan_result_policy_read: scan_result_policy_read,
+                merge_request: merge_request)
+            end
+
+            it 'removes the violation record' do
+              expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(-1)
+            end
           end
         end
       end
@@ -156,7 +186,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
 
         context 'when policies target commits' do
           let_it_be(:scan_result_policy_read_with_commits, reload: true) do
-            create(:scan_result_policy_read, project: project, commits: :any)
+            create(:scan_result_policy_read, project: project, commits: :unsigned)
           end
 
           it 'creates violations for policies that have no approval rules' do
@@ -164,6 +194,21 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
             expect(merge_request.scan_result_policy_violations.first.scan_result_policy_read).to(
               eq scan_result_policy_read_with_commits
             )
+          end
+
+          context 'with previous violation for policy that is now unviolated' do
+            let!(:unrelated_violation) do
+              create(:scan_result_policy_violation, scan_result_policy_read: scan_result_policy_read_with_commits,
+                merge_request: merge_request)
+            end
+
+            before do
+              allow(merge_request).to receive(:commits).and_return([signed_commit])
+            end
+
+            it 'removes the violation record' do
+              expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(-1)
+            end
           end
 
           context 'when there are other approval rules' do
