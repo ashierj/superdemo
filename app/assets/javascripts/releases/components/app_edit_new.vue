@@ -185,7 +185,7 @@ export default {
           class="form-control"
         />
       </gl-form-group>
-      <gl-form-group data-testid="milestones-field" class="gl-w-30" :label="__('Milestones')">
+      <gl-form-group :label="__('Milestones')" class="gl-w-30" data-testid="milestones-field">
         <milestone-combobox
           v-model="releaseMilestones"
           :project-id="projectId"
@@ -210,7 +210,7 @@ export default {
         </template>
         <gl-datepicker id="release-released-at" v-model="releasedAt" :default-date="releasedAt" />
       </gl-form-group>
-      <gl-form-group data-testid="release-notes" :label="__('Release notes')">
+      <gl-form-group :label="__('Release notes')" data-testid="release-notes">
         <div class="common-note-form">
           <markdown-field
             :can-attach-file="true"
