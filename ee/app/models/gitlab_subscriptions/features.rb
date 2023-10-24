@@ -135,6 +135,7 @@ module GitlabSubscriptions
       admin_merge_request_approvers_rules
       merge_trains
       metrics_reports
+      metrics_observability
       multiple_alert_http_integrations
       multiple_approval_rules
       multiple_group_issue_boards
