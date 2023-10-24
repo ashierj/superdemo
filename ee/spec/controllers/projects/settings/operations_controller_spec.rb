@@ -115,7 +115,7 @@ RSpec.describe Projects::Settings::OperationsController, feature_category: :inci
 
     context 'with a license' do
       before do
-        stub_licensed_features(status_page: true, incident_sla: true)
+        stub_licensed_features(status_page: true)
       end
 
       context 'with non maintainer roles' do
@@ -219,20 +219,38 @@ RSpec.describe Projects::Settings::OperationsController, feature_category: :inci
           end
         end
 
-        context 'without existing incident management setting' do
-          it { is_expected.to be_a(IncidentManagement::ProjectIncidentManagementSetting) }
+        shared_examples 'enabled sla settings' do
+          context 'without existing incident management setting' do
+            it { is_expected.to be_a(IncidentManagement::ProjectIncidentManagementSetting) }
 
-          it_behaves_like 'can set the sla timer settings'
-        end
-
-        context 'with existing incident management setting' do
-          before do
-            create(:project_incident_management_setting, project: project)
+            it_behaves_like 'can set the sla timer settings'
           end
 
-          it { is_expected.to be_a(IncidentManagement::ProjectIncidentManagementSetting) }
+          context 'with existing incident management setting' do
+            before do
+              create(:project_incident_management_setting, project: project)
+            end
 
-          it_behaves_like 'can set the sla timer settings'
+            it { is_expected.to be_a(IncidentManagement::ProjectIncidentManagementSetting) }
+
+            it_behaves_like 'can set the sla timer settings'
+          end
+        end
+
+        context 'enabled through license' do
+          before do
+            stub_licensed_features(incident_sla: true)
+          end
+
+          it_behaves_like 'enabled sla settings'
+        end
+
+        context 'enabled through usage ping features' do
+          before do
+            stub_usage_ping_features(true)
+          end
+
+          it_behaves_like 'enabled sla settings'
         end
       end
     end

@@ -126,7 +126,6 @@ module GitlabSubscriptions
       group_scoped_ci_variables
       ide_schema_config
       incident_metric_upload
-      incident_sla
       instance_level_scim
       jira_issues_integration
       ldap_group_sync_filter
@@ -281,6 +280,7 @@ module GitlabSubscriptions
       group_wikis
       email_additional_text
       custom_file_templates_for_namespace
+      incident_sla
     ].freeze
 
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[
