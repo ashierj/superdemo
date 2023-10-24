@@ -1,6 +1,6 @@
 import { GlPopover, GlIcon, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import AutoFixHelpText from 'ee/security_dashboard/components/shared/auto_fix_help_text.vue';
+import MergeRequestBadge from 'ee/security_dashboard/components/shared/merge_request_badge.vue';
 
 const TEST_MERGE_REQUEST_DATA = {
   webUrl: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/48820',
@@ -9,10 +9,10 @@ const TEST_MERGE_REQUEST_DATA = {
   iid: 48820,
 };
 
-describe('AutoFix Help Text component', () => {
+describe('Merge Request Badge component', () => {
   let wrapper;
   const createWrapper = (mergeRequestProps) => {
-    return mount(AutoFixHelpText, {
+    return mount(MergeRequestBadge, {
       propsData: {
         mergeRequest: { ...TEST_MERGE_REQUEST_DATA, ...mergeRequestProps },
       },

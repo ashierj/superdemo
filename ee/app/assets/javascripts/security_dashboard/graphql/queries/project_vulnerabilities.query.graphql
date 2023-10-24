@@ -55,13 +55,6 @@ query projectVulnerabilities(
             }
           }
         }
-        mergeRequest {
-          id
-          webUrl
-          state
-          securityAutoFix
-          iid
-        }
       }
       pageInfo {
         ...PageInfo
