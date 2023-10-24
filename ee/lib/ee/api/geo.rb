@@ -114,10 +114,8 @@ module EE
               optional :replication_slots_max_retained_wal_bytes, type: Integer, desc: 'Maximum number of bytes retained in the WAL on the primary'
               optional :version, type: String, desc: 'Gitlab version'
               optional :revision, type: String, desc: 'Gitlab revision'
-              optional :lfs_objects_synced_missing_on_primary_count, type: Integer, desc: 'LFS objects synced and missing on primary count'
               optional :status, type: Hash do
                 # GeoNodeStatus::RESOURCE_STATUS_FIELDS
-                optional :job_artifacts_synced_missing_on_primary_count, type: Integer, desc: 'Job artifacts synced and missing on primary count'
                 optional :projects_count, type: Integer, desc: 'Projects count'
                 optional :container_repositories_replication_enabled, type: Grape::API::Boolean, desc: 'Container repositories replication enabled'
                 optional :lfs_objects_count, type: Integer, desc: 'LFS objects count'

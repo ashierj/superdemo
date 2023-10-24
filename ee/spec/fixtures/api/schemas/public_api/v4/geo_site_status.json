@@ -20,7 +20,6 @@
     "job_artifacts_count",
     "job_artifacts_failed_count",
     "job_artifacts_synced_count",
-    "job_artifacts_synced_missing_on_primary_count",
     "job_artifacts_checksum_total_count",
     "job_artifacts_checksummed_count",
     "job_artifacts_checksum_failed_count",
@@ -275,12 +274,6 @@
         "null"
       ]
     },
-    "lfs_objects_synced_missing_on_primary_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
     "lfs_objects_synced_in_percentage": {
       "type": "string"
     },
@@ -339,12 +332,6 @@
       ]
     },
     "job_artifacts_synced_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "job_artifacts_synced_missing_on_primary_count": {
       "type": [
         "integer",
         "null"

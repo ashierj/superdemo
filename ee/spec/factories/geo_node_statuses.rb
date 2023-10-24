@@ -7,7 +7,6 @@ FactoryBot.define do
 
     trait :healthy do
       status_message { nil }
-      job_artifacts_synced_missing_on_primary_count { 91 }
       projects_count { 10 }
       repositories_count { 10 }
       repositories_checked_failed_count { 1 }

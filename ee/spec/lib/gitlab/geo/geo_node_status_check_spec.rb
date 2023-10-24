@@ -21,19 +21,6 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_rep
       allow(Gitlab.config.geo.registry_replication).to receive(:enabled).and_return(true)
     end
 
-    context 'with legacy replication' do
-      it 'prints messages for all legacy replication and verification checks' do
-        checks = [
-          /Uploads: /,
-          /Container repositories: /
-        ]
-
-        checks.each do |text|
-          expect { subject.print_replication_verification_status }.to output(text).to_stdout
-        end
-      end
-    end
-
     context 'replicators' do
       context 'replication' do
         let(:replicators) { Gitlab::Geo.enabled_replicator_classes }
@@ -87,9 +74,6 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_rep
 
       it 'returns true when some replicables does not have data to sync' do
         geo_node_status.update!(
-          container_repositories_count: 0,
-          lfs_objects_count: 0,
-          package_files_count: 0,
           repositories_count: 0
         )
 
@@ -99,7 +83,7 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_rep
 
     context 'when replication is not up-to-date' do
       it 'returns false when not all replicables were synced' do
-        geo_node_status.update!(job_artifacts_synced_count: 5)
+        geo_node_status.update!(repositories_count: 5)
 
         expect(subject.replication_verification_complete?).to be_falsy
       end
