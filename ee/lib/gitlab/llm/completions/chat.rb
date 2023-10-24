@@ -7,7 +7,8 @@ module Gitlab
         TOOLS = [
           ::Gitlab::Llm::Chain::Tools::JsonReader,
           ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-          ::Gitlab::Llm::Chain::Tools::GitlabDocumentation
+          ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
+          ::Gitlab::Llm::Chain::Tools::EpicIdentifier
         ].freeze
 
         def execute
@@ -62,7 +63,6 @@ module Gitlab
 
         def tools(user)
           tools = TOOLS.dup
-          tools << ::Gitlab::Llm::Chain::Tools::EpicIdentifier
           tools << ::Gitlab::Llm::Chain::Tools::CiEditorAssistant if Feature.enabled?(:ci_editor_assistant_tool, user)
           tools
         end
