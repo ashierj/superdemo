@@ -9,7 +9,7 @@ module QA
             extend QA::Page::PageConcern
 
             def go_to_epics
-              click_element(:nav_item_link, submenu_item: 'Epics')
+              click_element('nav-item-link', submenu_item: 'Epics')
             end
           end
         end
