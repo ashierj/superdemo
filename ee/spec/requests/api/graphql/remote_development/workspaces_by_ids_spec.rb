@@ -1,13 +1,18 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require_relative 'shared'
 
 RSpec.describe 'Query.workspaces(ids: [RemoteDevelopmentWorkspaceID!])', feature_category: :remote_development do
   include GraphqlHelpers
 
   let_it_be(:workspace) { create(:workspace) }
-  let_it_be(:current_user) { workspace.user }
+
+  # create workspace with different ID but still owned by user, to ensure it is not returned by the query
+  let_it_be(:non_matching_workspace) { create(:workspace, user: workspace.user) }
+
   let(:ids) { [workspace.to_global_id.to_s] }
+  let(:args) { { ids: ids } }
   let(:fields) do
     <<~QUERY
       nodes {
@@ -16,41 +21,9 @@ RSpec.describe 'Query.workspaces(ids: [RemoteDevelopmentWorkspaceID!])', feature
     QUERY
   end
 
-  let(:query) do
-    graphql_query_for('workspaces', { ids: ids }, fields)
-  end
+  let(:query) { graphql_query_for('workspaces', args, fields) }
 
   subject { graphql_data.dig('workspaces', 'nodes') }
 
-  context 'when licensed and remote_development_feature_flag feature flag is enabled' do
-    before do
-      stub_licensed_features(remote_development: true)
-
-      post_graphql(query, current_user: current_user)
-    end
-
-    it_behaves_like 'a working graphql query'
-
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
-    it { is_expected.to match_array(a_hash_including('name' => workspace.name)) }
-
-    context 'when the user requests a workspace that they are not authorized for' do
-      let_it_be(:other_workspace) { create(:workspace) }
-
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
-      let(:ids) do
-        [
-          workspace.to_global_id.to_s,
-          other_workspace.to_global_id.to_s
-        ]
-      end
-
-      it 'does not contain fields for the other workspace' do
-        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
-        expect(subject).to match_array(a_hash_including('name' => workspace.name))
-      end
-    end
-  end
-
-  it_behaves_like 'workspaces query in unlicensed environment and with feature flag off'
+  it_behaves_like 'multiple workspaces query'
 end
