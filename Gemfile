@@ -334,7 +334,7 @@ gem 'terser', '1.0.2' # rubocop:todo Gemfile/MissingFeatureCategory
 
 gem 'click_house-client', path: 'gems/click_house-client', require: 'click_house/client' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'addressable', '~> 2.8' # rubocop:todo Gemfile/MissingFeatureCategory
-gem 'tanuki_emoji', '~> 0.7' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'tanuki_emoji', '~> 0.9' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'gon', '~> 6.4.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'request_store', '~> 1.5.1' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'base32', '~> 0.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
