@@ -106,6 +106,7 @@ RSpec.describe BackfillWikiPermissionsInMainIndex, :elastic_delete_by_query, :si
         end
 
         it 'logs failure when project is not found and schedules ElasticDeleteProjectWorker' do
+          migration.set_migration_state(projects_in_progress: [])
           expect(migration).to receive(:log).with(/Enqueuing projects having wiki_blobs with missing permissions/).once
           expect(migration).to receive(:log).with(/Project not found/).once
           expect(migration).to receive(:log).with(/Setting migration_state to/).once
@@ -148,7 +149,7 @@ RSpec.describe BackfillWikiPermissionsInMainIndex, :elastic_delete_by_query, :si
             let(:update_by_query_response) { { 'failures' => ['failed'] } }
 
             it 'removes entry from projects_in_progress in migration_state' do
-              migration.set_migration_state({}) # simulate first run
+              migration.set_migration_state(projects_in_progress: []) # simulate first run
 
               expect { migration.migrate }.not_to raise_error
               expect(migration.migration_state).to match(projects_in_progress: [])
@@ -178,6 +179,7 @@ RSpec.describe BackfillWikiPermissionsInMainIndex, :elastic_delete_by_query, :si
     end
 
     it 'updates documents in batches' do
+      migration.set_migration_state(projects_in_progress: [])
       # calculate how many files are in each project in the index
       query = { bool: { must: [{ term: { project_id: projects.first.id } }, { term: { type: 'wiki_blob' } }] } }
       file_count = helper.client.count(index: helper.target_name, body: { query: query })['count']
