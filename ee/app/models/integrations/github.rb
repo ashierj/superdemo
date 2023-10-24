@@ -37,18 +37,21 @@ module Integrations
       self.static_context = true
     end
 
-    def title
+    def self.title
       'GitHub'
     end
 
-    def description
+    def self.description
       s_("GithubIntegration|Obtain statuses for commits and pull requests.")
     end
 
     def help
       return unless project
 
-      docs_link = ActionController::Base.helpers.link_to _('What is repository mirroring?'), help_page_url('user/project/repository/repository_mirroring')
+      docs_link = ActionController::Base.helpers.link_to(
+        _('What is repository mirroring?'),
+        Rails.application.routes.url_helpers.help_page_url('user/project/repository/repository_mirroring')
+      )
       s_("GithubIntegration|This requires mirroring your GitHub repository to this project. %{docs_link}" % { docs_link: docs_link }).html_safe
     end
 
