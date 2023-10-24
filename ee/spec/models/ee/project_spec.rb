@@ -3848,21 +3848,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           stub_licensed_features(suggested_reviewers: true)
         end
 
-        context 'when feature flag is enabled', :saas do
-          before do
-            stub_feature_flags(suggested_reviewers_control: true)
-          end
-
-          it { is_expected.to eq true }
-        end
-
-        context 'when feature flag is disabled', :saas do
-          before do
-            stub_feature_flags(suggested_reviewers_control: false)
-          end
-
-          it { is_expected.to eq false }
-        end
+        it { is_expected.to eq true }
       end
 
       context 'when licensed features are unavailable', :saas do
@@ -3870,13 +3856,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           stub_licensed_features(suggested_reviewers: false)
         end
 
-        context 'when feature flag is enabled', :saas do
-          before do
-            stub_feature_flags(suggested_reviewers_control: true)
-          end
-
-          it { is_expected.to eq false }
-        end
+        it { is_expected.to eq false }
       end
     end
 
@@ -3886,13 +3866,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           stub_licensed_features(suggested_reviewers: true)
         end
 
-        context 'when feature flag is enabled' do
-          before do
-            stub_feature_flags(suggested_reviewers_control: true)
-          end
-
-          it { is_expected.to eq false }
-        end
+        it { is_expected.to eq false }
       end
     end
   end

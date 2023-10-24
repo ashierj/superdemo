@@ -7,7 +7,6 @@ Pact.provider_states_for "MergeRequests#show" do
       allow(::Gitlab).to receive(:com?).and_return(true)
 
       stub_licensed_features(suggested_reviewers: true)
-      stub_feature_flags(suggested_reviewers_control: true)
 
       user = User.find_by(name: Provider::UsersHelper::CONTRACT_USER_NAME)
       namespace = create(:namespace, name: 'gitlab-org')

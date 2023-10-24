@@ -71,7 +71,6 @@ RSpec.describe API::Internal::SuggestedReviewers, feature_category: :code_review
 
         context 'when project is allowed to suggest reviewers', :saas do
           before do
-            stub_feature_flags(suggested_reviewers_control: true)
             stub_licensed_features(suggested_reviewers: true)
             project.project_setting.update!(suggested_reviewers_enabled: true)
           end

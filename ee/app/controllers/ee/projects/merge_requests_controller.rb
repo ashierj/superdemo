@@ -11,7 +11,6 @@ module EE
 
         before_action only: [:show] do
           push_frontend_feature_flag(:anonymous_visual_review_feedback)
-          push_frontend_feature_flag(:suggested_reviewers_control, @project)
           push_frontend_feature_flag(:standalone_finding_modal_merge_request_widget, @project)
         end
 
