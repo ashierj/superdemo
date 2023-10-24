@@ -9,7 +9,7 @@ import {
   GlSkeletonLoader,
   GlTruncate,
 } from '@gitlab/ui';
-import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
+import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DAST_SHORT_NAME } from '~/security_configuration/components/constants';
 import { __, s__ } from '~/locale';
@@ -45,7 +45,7 @@ export default {
     GlAlert,
     GlSkeletonLoader,
     GlTruncate,
-    CiBadgeLink,
+    CiIcon,
     TimeAgoTooltip,
     Actions,
     EmptyState,
@@ -262,7 +262,7 @@ export default {
 
         <template #cell(status)="{ value }">
           <div class="gl-my-3">
-            <ci-badge-link :status="value" />
+            <ci-icon :status="value" show-status-text />
           </div>
         </template>
 

@@ -2,7 +2,7 @@
 import { GlLink } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__ } from '~/locale';
-import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
+import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import { getTypeFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_CI_BUILD } from '~/graphql_shared/constants';
@@ -14,7 +14,7 @@ export default {
   components: {
     GlLink,
     TimeAgo,
-    CiBadgeLink,
+    CiIcon,
     RunnerFullName,
   },
   directives: {
@@ -43,7 +43,7 @@ export default {
   <div>
     <time-ago v-if="job.finishedAt" :time="job.finishedAt" class="gl-text-secondary gl-font-sm" />
     <div class="gl-mt-1 gl-mb-3">
-      <ci-badge-link v-if="job.detailedStatus" :status="job.detailedStatus" size="sm" />
+      <ci-icon v-if="job.detailedStatus" :status="job.detailedStatus" show-status-text />
       <gl-link v-if="runner" :href="runner.adminUrl" data-testid="runner-link">
         <runner-full-name :runner="runner" />
       </gl-link>

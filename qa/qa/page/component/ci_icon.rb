@@ -3,10 +3,12 @@
 module QA
   module Page
     module Component
-      module CiBadgeLink
+      module CiIcon
         extend QA::Page::PageConcern
 
+        # rubocop:disable Layout/LineLength
         COMPLETED_STATUSES = %w[Passed Failed Canceled Blocked Skipped Manual].freeze # excludes Created, Pending, Running
+        # rubocop:enable Layout/LineLength
         INCOMPLETE_STATUSES = %w[Pending Created Running].freeze
 
         # e.g. def passed?(timeout: nil); status_badge == 'Passed'; end
@@ -31,14 +33,14 @@ module QA
         def self.included(base)
           super
 
-          base.view 'app/assets/javascripts/vue_shared/components/ci_badge_link.vue' do
-            element 'ci-badge-text'
+          base.view 'app/assets/javascripts/vue_shared/components/ci_icon.vue' do
+            element 'ci-icon-text'
           end
         end
 
         def status_badge
           # There are more than 1 on job details page
-          all_elements('ci-badge-text', minimum: 1).first.text
+          all_elements('ci-icon-text', minimum: 1).first.text
         end
 
         def completed?(timeout: 60)

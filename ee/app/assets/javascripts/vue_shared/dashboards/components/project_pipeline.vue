@@ -1,12 +1,10 @@
 <script>
 import { GlLink, GlTooltip, GlIcon } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
-import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 
 export default {
   components: {
-    CiBadgeLink,
     CiIcon,
     GlIcon,
     GlLink,
@@ -76,10 +74,7 @@ export default {
         :href="upstreamPipeline.details.status.details_path"
         class="d-inline-block align-middle"
       >
-        <ci-icon
-          class="d-flex js-upstream-pipeline-status"
-          :status="upstreamPipeline.details.status"
-        />
+        <ci-icon :status="upstreamPipeline.details.status" class="js-upstream-pipeline-status" />
       </gl-link>
       <gl-tooltip :target="() => $refs.upstreamStatus">
         <div class="bold">{{ $options.relations.upstream }}</div>
@@ -90,11 +85,11 @@ export default {
       <gl-icon name="arrow-right" class="dashboard-card-footer-arrow align-middle mx-1" />
     </template>
 
-    <ci-badge-link
+    <ci-icon
       ref="status"
-      class="d-inline-block align-middle py-0"
       :status="lastPipeline.details.status"
-      :show-text="true"
+      show-status-text
+      class="gl-display-inline-block align-middle"
     />
     <gl-tooltip :target="() => $refs.status">
       <div class="bold">{{ $options.relations.current }}</div>
@@ -115,7 +110,7 @@ export default {
           :href="pipeline.details.status.details_path"
           class="d-inline-block align-middle"
         >
-          <ci-icon class="d-flex js-downstream-pipeline-status" :status="pipeline.details.status" />
+          <ci-icon :status="pipeline.details.status" class="js-downstream-pipeline-status" />
         </gl-link>
         <gl-tooltip :target="() => $refs.downstreamStatus[index]">
           <div class="bold">{{ $options.relations.downstream }}</div>
