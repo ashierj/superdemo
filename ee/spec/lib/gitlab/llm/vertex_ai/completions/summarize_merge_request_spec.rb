@@ -19,7 +19,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
   end
 
   let(:prompt_message) do
-    build(:ai_chat_message, :summarize_merge_request, user: user, resource: merge_request, request_id: 'uuid')
+    build(:ai_message, :summarize_merge_request, user: user, resource: merge_request, request_id: 'uuid')
   end
 
   subject { described_class.new(prompt_message, prompt_class, options) }

@@ -53,7 +53,7 @@ RSpec.describe GraphqlTriggers, feature_category: :shared do
 
   describe '.ai_completion_response' do
     let_it_be(:user) { create(:user) }
-    let(:message) { build(:ai_chat_message, user: user, resource: user) }
+    let(:message) { build(:ai_message, user: user, resource: user) }
 
     subject { described_class.ai_completion_response(message) }
 
@@ -82,7 +82,7 @@ RSpec.describe GraphqlTriggers, feature_category: :shared do
     end
 
     context 'with client_subscription_id' do
-      let(:message) { build(:ai_chat_message, user: user, resource: user, role: role, client_subscription_id: 'foo') }
+      let(:message) { build(:ai_message, user: user, resource: user, role: role, client_subscription_id: 'foo') }
       let(:role) { 'assistant' }
 
       it 'triggers ai_completion_response with client subscription id' do

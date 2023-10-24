@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category: :duo_chat do
   let(:ai_response) { "some ai response text" }
   let(:prompt_message) do
-    build(:ai_chat_message, :summarize_comments, user: user, resource: issuable, request_id: 'uuid')
+    build(:ai_message, :summarize_comments, user: user, resource: issuable, request_id: 'uuid')
   end
 
   let(:template_class) { nil }

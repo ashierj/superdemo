@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::AnalyzeCiJobFailure, feature_
   let(:ai_response) { { 'predictions' => [{ 'content' => 'world' }] } }
 
   let(:prompt_message) do
-    build(:ai_chat_message, :analyze_ci_job_failure, user: user, resource: job, request_id: 'uuid')
+    build(:ai_message, :analyze_ci_job_failure, user: user, resource: job, request_id: 'uuid')
   end
 
   subject { described_class.new(prompt_message, nil, options) }

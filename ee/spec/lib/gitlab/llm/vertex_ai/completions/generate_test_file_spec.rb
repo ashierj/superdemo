@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateTestFile, feature_cat
   end
 
   let(:prompt_message) do
-    build(:ai_chat_message, :generate_test_file, user: user, resource: merge_request, request_id: 'uuid')
+    build(:ai_message, :generate_test_file, user: user, resource: merge_request, request_id: 'uuid')
   end
 
   subject { described_class.new(prompt_message, prompt_class, options) }

@@ -28,7 +28,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeReview, feature_catego
   end
 
   let(:prompt_message) do
-    build(:ai_chat_message, :summarize_review, user: user, resource: merge_request, request_id: 'uuid')
+    build(:ai_message, :summarize_review, user: user, resource: merge_request, request_id: 'uuid')
   end
 
   subject(:summarize_review) do
@@ -39,7 +39,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeReview, feature_catego
     context "with invalid params" do
       context "without merge_request" do
         let(:prompt_message) do
-          build(:ai_chat_message, :summarize_review, user: user, resource: nil, request_id: 'uuid')
+          build(:ai_message, :summarize_review, user: user, resource: nil, request_id: 'uuid')
         end
 
         it "returns nil" do

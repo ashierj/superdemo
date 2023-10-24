@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateDescription, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let(:prompt_message) do
-    build(:ai_chat_message, :generate_description, user: user, resource: issuable, request_id: uuid)
+    build(:ai_message, :generate_description, user: user, resource: issuable, request_id: uuid)
   end
 
   let_it_be(:project) { create(:project, :public) }

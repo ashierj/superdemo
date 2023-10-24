@@ -15,7 +15,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
   end
 
   let(:prompt_message) do
-    build(:ai_chat_message, :tanuki_bot, user: user, resource: user, request_id: 'uuid')
+    build(:ai_message, :tanuki_bot, user: user, resource: user, request_id: 'uuid')
   end
 
   subject(:tanuki_bot) { described_class.new(prompt_message, template_class, options).execute }
