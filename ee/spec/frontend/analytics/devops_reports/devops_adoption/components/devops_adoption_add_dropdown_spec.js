@@ -1,4 +1,4 @@
-import { GlDropdown, GlLoadingIcon, GlSearchBoxByType } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
@@ -16,6 +16,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import {
   groupNodes,
   groupGids,
@@ -68,37 +69,33 @@ describe('DevopsAdoptionAddDropdown', () => {
         GlTooltip: createMockDirective('gl-tooltip'),
       },
       stubs: {
-        GlDropdown,
+        GlCollapsibleListbox,
       },
     });
   };
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
 
-  const clickFirstRow = () => wrapper.findByTestId('group-row').trigger('click');
-
-  describe('default behaviour', () => {
+  describe('default behavior', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('displays a dropdown component', () => {
-      expect(findDropdown().exists()).toBe(true);
+    it('displays a listbox component', () => {
+      expect(findListbox().exists()).toBe(true);
     });
 
     it('displays the correct text', () => {
-      const dropdown = findDropdown();
-
-      expect(dropdown.props('text')).toBe(I18N_ADMIN_DROPDOWN_TEXT);
-      expect(dropdown.props('headerText')).toBe(I18N_ADMIN_DROPDOWN_HEADER);
+      expect(findListbox().props('toggleText')).toBe(I18N_ADMIN_DROPDOWN_TEXT);
+      expect(findListbox().props('headerText')).toBe(I18N_ADMIN_DROPDOWN_HEADER);
     });
 
     it('is disabled', () => {
-      expect(findDropdown().props('disabled')).toBe(true);
+      expect(findListbox().props('disabled')).toBe(true);
     });
 
     it('displays a tooltip', () => {
-      const tooltip = getBinding(findDropdown().element, 'gl-tooltip');
+      const tooltip = getBinding(findListbox().element, 'gl-tooltip');
 
       expect(tooltip).toBeDefined();
       expect(tooltip.value).toBe(I18N_NO_SUB_GROUPS);
@@ -109,10 +106,8 @@ describe('DevopsAdoptionAddDropdown', () => {
     it('displays the correct text', () => {
       createComponent({ provide: { isGroup: true } });
 
-      const dropdown = findDropdown();
-
-      expect(dropdown.props('text')).toBe(I18N_GROUP_DROPDOWN_TEXT);
-      expect(dropdown.props('headerText')).toBe(I18N_GROUP_DROPDOWN_HEADER);
+      expect(findListbox().props('toggleText')).toBe(I18N_GROUP_DROPDOWN_TEXT);
+      expect(findListbox().props('headerText')).toBe(I18N_GROUP_DROPDOWN_HEADER);
     });
   });
 
@@ -123,45 +118,41 @@ describe('DevopsAdoptionAddDropdown', () => {
       });
 
       it('is enabled', () => {
-        expect(findDropdown().props('disabled')).toBe(false);
+        expect(findListbox().props('disabled')).toBe(false);
       });
 
       it('does not display a tooltip', () => {
-        const tooltip = getBinding(findDropdown().element, 'gl-tooltip');
+        const tooltip = getBinding(findListbox().element, 'gl-tooltip');
 
         expect(tooltip.value).toBe(false);
       });
 
       it('displays the no results message', () => {
-        const noResultsRow = wrapper.findByTestId('no-results');
-
-        expect(noResultsRow.exists()).toBe(true);
-        expect(noResultsRow.text()).toBe('No results…');
+        expect(findListbox().text()).toContain('No results…');
       });
     });
 
     describe('with group data', () => {
-      it('displays the corrent number of rows', () => {
+      it('displays the correct number of groups', () => {
         createComponent({ props: { hasSubgroups: true, groups: groupNodes } });
 
-        expect(wrapper.findAllByTestId('group-row')).toHaveLength(groupNodes.length);
+        expect(findListbox().props('items')).toHaveLength(groupNodes.length);
       });
 
-      describe('on row click', () => {
+      describe('on select', () => {
         describe.each`
-          level      | groupGid        | enabledNamespaces
-          ${'group'} | ${groupGids[0]} | ${undefined}
-          ${'group'} | ${groupGids[0]} | ${devopsAdoptionNamespaceData}
-          ${'admin'} | ${null}         | ${undefined}
-          ${'admin'} | ${null}         | ${devopsAdoptionNamespaceData}
-        `('$level level sucessful request', ({ groupGid, enabledNamespaces }) => {
+          level      | enabledNamespaces
+          ${'group'} | ${undefined}
+          ${'group'} | ${devopsAdoptionNamespaceData}
+          ${'admin'} | ${undefined}
+          ${'admin'} | ${devopsAdoptionNamespaceData}
+        `('$level level successful request', ({ groupGid, enabledNamespaces }) => {
           beforeEach(() => {
             createComponent({
               props: { hasSubgroups: true, groups: groupNodes, enabledNamespaces },
               provide: { groupGid },
             });
-
-            clickFirstRow();
+            findListbox().vm.$emit('select', [getIdFromGraphQLId(groupGids[0])]);
           });
 
           if (!enabledNamespaces) {
@@ -174,22 +165,49 @@ describe('DevopsAdoptionAddDropdown', () => {
 
             it('emits the enabledNamespacesAdded event', () => {
               const [params] = wrapper.emitted().enabledNamespacesAdded[0];
-
               expect(params).toEqual([devopsAdoptionNamespaceData.nodes[0]]);
             });
           } else {
             it('makes a request to disable the selected group', () => {
               expect(mutateDisable).toHaveBeenCalledWith({
-                id: devopsAdoptionNamespaceData.nodes[0].id,
+                id: [devopsAdoptionNamespaceData.nodes[1].id],
               });
             });
 
             it('emits the enabledNamespacesRemoved event', () => {
               const [params] = wrapper.emitted().enabledNamespacesRemoved[0];
 
-              expect(params).toBe(devopsAdoptionNamespaceData.nodes[0].id);
+              expect(params).toEqual([devopsAdoptionNamespaceData.nodes[1].id]);
             });
           }
+        });
+
+        describe('when multiple values are selected', () => {
+          const groupGid = 'gid://gitlab/Group/1';
+          beforeEach(() => {
+            createComponent({
+              props: {
+                hasSubgroups: true,
+                groups: groupNodes,
+                enabledNamespaces: devopsAdoptionNamespaceData,
+              },
+              provide: { groupGid },
+            });
+            findListbox().vm.$emit('select', [getIdFromGraphQLId(groupGids[0]), 12]);
+          });
+
+          it('makes a request to enable the newly selected group', () => {
+            expect(mutateAdd).toHaveBeenCalledWith({
+              displayNamespaceId: groupGid,
+              namespaceIds: ['gid://gitlab/Group/12'],
+            });
+          });
+
+          it('makes a request to disable the newly deselected group', () => {
+            expect(mutateDisable).toHaveBeenCalledWith({
+              id: [devopsAdoptionNamespaceData.nodes[1].id],
+            });
+          });
         });
 
         describe('on error', () => {
@@ -201,7 +219,7 @@ describe('DevopsAdoptionAddDropdown', () => {
               props: { hasSubgroups: true, groups: groupNodes },
             });
 
-            clickFirstRow();
+            findListbox().vm.$emit('select', [groupGids[0]]);
             await waitForPromises();
           });
 
@@ -225,11 +243,11 @@ describe('DevopsAdoptionAddDropdown', () => {
       });
 
       it('displays a loading icon', () => {
-        expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
+        expect(findListbox().props('loading')).toBe(true);
       });
 
-      it('does not display any rows', () => {
-        expect(wrapper.findAllByTestId('group-row')).toHaveLength(0);
+      it('does not display any items', () => {
+        expect(findListbox().props('items')).toHaveLength(0);
       });
     });
 
@@ -237,7 +255,7 @@ describe('DevopsAdoptionAddDropdown', () => {
       it('emits the fetchGroups event', () => {
         createComponent({ props: { hasSubgroups: true } });
 
-        wrapper.findComponent(GlSearchBoxByType).vm.$emit('input', 'blah');
+        findListbox().vm.$emit('search', 'blah');
 
         jest.runAllTimers();
 

@@ -1,11 +1,6 @@
 <script>
-import {
-  GlDropdown,
-  GlDropdownItem,
-  GlSearchBoxByType,
-  GlLoadingIcon,
-  GlTooltipDirective,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox, GlTooltipDirective } from '@gitlab/ui';
+import { debounce } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -26,12 +21,8 @@ export default {
   i18n: {
     noResults: I18N_NO_RESULTS,
   },
-  debounceDelay: DEBOUNCE_DELAY,
   components: {
-    GlDropdown,
-    GlDropdownItem,
-    GlSearchBoxByType,
-    GlLoadingIcon,
+    GlCollapsibleListbox,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -88,6 +79,14 @@ export default {
         getIdFromGraphQLId(enabledNamespace.namespace.id),
       );
     },
+    groupsItems() {
+      return this.groups?.map((group) => {
+        return {
+          value: group.id,
+          text: group.full_name,
+        };
+      });
+    },
   },
   beforeDestroy() {
     clearTimeout(this.timeout);
@@ -99,21 +98,25 @@ export default {
         (enabledNamespace) => getIdFromGraphQLId(enabledNamespace.namespace.id) === groupId,
       ).id;
     },
-    handleGroupSelect(id) {
-      const groupEnabled = this.isGroupEnabled(id);
+    handleGroupSelect(selected) {
+      const newlySelected = selected.filter((item) => !this.enabledNamespaceIds.includes(item));
+      const newlyRemoved = this.enabledNamespaceIds.filter((item) => !selected.includes(item));
 
-      if (groupEnabled) {
-        this.disableGroup(id);
-      } else {
-        this.enableGroup(id);
-      }
+      this.enableGroup(newlySelected);
+      this.disableGroup(newlyRemoved);
     },
-    enableGroup(id) {
+    enableGroup(ids) {
+      if (!ids?.length) return;
+
+      const preparedIds = ids.map((id) => {
+        return convertToGraphQLId(TYPENAME_GROUP, id);
+      });
+
       this.$apollo
         .mutate({
           mutation: bulkEnableDevopsAdoptionNamespacesMutation,
           variables: {
-            namespaceIds: [convertToGraphQLId(TYPENAME_GROUP, id)],
+            namespaceIds: preparedIds,
             displayNamespaceId: this.groupGid,
           },
           update: (store, { data }) => {
@@ -128,62 +131,50 @@ export default {
           Sentry.captureException(error);
         });
     },
-    disableGroup(id) {
-      const gid = this.namespaceIdByGroupId(id);
+    disableGroup(ids) {
+      if (!ids?.length) return;
+
+      const preparedIds = ids.map((id) => {
+        return this.namespaceIdByGroupId(id);
+      });
 
       this.$apollo
         .mutate({
           mutation: disableDevopsAdoptionNamespaceMutation,
           variables: {
-            id: gid,
+            id: preparedIds,
           },
           update: () => {
-            this.$emit('enabledNamespacesRemoved', gid);
+            this.$emit('enabledNamespacesRemoved', preparedIds);
           },
         })
         .catch((error) => {
           Sentry.captureException(error);
         });
     },
-    isGroupEnabled(groupId) {
-      return this.enabledNamespaceIds.some((namespaceId) => {
-        return namespaceId === groupId;
-      });
-    },
+    debouncedSearch: debounce(async function debouncedSearch($event) {
+      this.$emit('fetchGroups', $event);
+    }, DEBOUNCE_DELAY),
   },
 };
 </script>
 <template>
-  <gl-dropdown
+  <gl-collapsible-listbox
     v-gl-tooltip="tooltipText"
-    :text="dropdownTitle"
+    class="gl-text-left"
+    searchable
+    multiple
+    :toggle-text="dropdownTitle"
     :header-text="dropdownHeader"
+    :search-placeholder="__('Search')"
+    :no-results-text="$options.i18n.noResults"
+    :selected="enabledNamespaceIds"
+    :items="groupsItems"
     :disabled="!hasSubgroups"
-    @show="$emit('trackModalOpenState', true)"
-    @hide="$emit('trackModalOpenState', false)"
-  >
-    <template #header>
-      <gl-search-box-by-type
-        :debounce="$options.debounceDelay"
-        :placeholder="__('Search')"
-        @input="$emit('fetchGroups', $event)"
-      />
-    </template>
-    <gl-loading-icon v-if="isLoadingGroups" size="sm" />
-    <template v-else>
-      <gl-dropdown-item
-        v-for="group in groups"
-        :key="group.id"
-        is-check-item
-        :is-checked="isGroupEnabled(group.id)"
-        data-testid="group-row"
-        @click.native.capture.stop="handleGroupSelect(group.id)"
-      >
-        {{ group.full_name }}
-      </gl-dropdown-item>
-      <gl-dropdown-item v-show="!filteredGroupsLength" data-testid="no-results">{{
-        $options.i18n.noResults
-      }}</gl-dropdown-item>
-    </template>
-  </gl-dropdown>
+    :loading="isLoadingGroups"
+    @select="handleGroupSelect"
+    @search="debouncedSearch"
+    @shown="$emit('trackModalOpenState', true)"
+    @hidden="$emit('trackModalOpenState', false)"
+  />
 </template>
