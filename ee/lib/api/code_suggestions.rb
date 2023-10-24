@@ -113,8 +113,8 @@ module API
           end
           optional :intent, type: String, values:
             [
-              ::CodeSuggestions::TaskFactory::INTENT_COMPLETION,
-              ::CodeSuggestions::TaskFactory::INTENT_GENERATION
+              ::CodeSuggestions::InstructionsExtractor::INTENT_COMPLETION,
+              ::CodeSuggestions::InstructionsExtractor::INTENT_GENERATION
             ],
             desc: 'The intent of the completion request, current options are "completion" or "generation"'
         end

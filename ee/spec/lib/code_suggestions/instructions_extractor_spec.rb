@@ -9,9 +9,10 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     end
 
     let(:default_instruction) { 'Create more new code for this file.' }
-    let(:first_line_regex) { CodeSuggestions::TaskFactory.first_comment_regex(language, nil, true) }
+    let(:intent) { nil }
+    let(:skip_generate_comment_prefix) { true }
 
-    subject { described_class.extract(language, content, first_line_regex) }
+    subject { described_class.new(language, content, intent, skip_generate_comment_prefix).extract }
 
     context 'when content is nil' do
       let(:content) { nil }
@@ -46,7 +47,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         it 'finds instruction' do
           is_expected.to eq({
             instruction: "Generate me a function\nwith 2 arguments",
-            prefix: "full_name()\naddress()\nstreet()\ncity()\nstate()\npincode()\n\n"
+            prefix: "full_name()\naddress()\nstreet()\ncity()\nstate()\npincode()\n"
           })
         end
       end
@@ -56,6 +57,55 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it 'does not find instruction' do
           is_expected.to eq({})
+        end
+      end
+    end
+
+    context 'when there is instruction' do
+      let(:content) do
+        <<~CODE
+          # Generate me a function
+        CODE
+      end
+
+      it 'finds instruction' do
+        is_expected.to eq({
+          instruction: "Generate me a function",
+          prefix: ''
+        })
+      end
+
+      context 'when intent is completion' do
+        let(:intent) { 'completion' }
+
+        it 'ignores the instruction' do
+          is_expected.to be_empty
+        end
+      end
+    end
+
+    context 'when there is not instruction' do
+      let(:content) do
+        <<~CODE
+          full_name()
+          address()
+          street()
+          city()
+          state()
+          pincode()
+        CODE
+      end
+
+      it { is_expected.to be_empty }
+
+      context 'when intent is generation' do
+        let(:intent) { 'generation' }
+
+        it 'returns prefix and nil instruction' do
+          is_expected.to eq({
+            instruction: nil,
+            prefix: "full_name()\naddress()\nstreet()\ncity()\nstate()\npincode()"
+          })
         end
       end
     end
@@ -103,7 +153,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it 'finds the instruction' do
           is_expected.to eq({
-            prefix: "#{comment_sign}A function that outputs the first 20 fibonacci numbers\n\ndef fibonacci(x)\n",
+            prefix: "#{comment_sign}A function that outputs the first 20 fibonacci numbers\n\ndef fibonacci(x)",
             instruction: default_instruction
           })
         end
@@ -121,7 +171,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: "full_name()\naddress()\n\n",
+            prefix: "full_name()\naddress()\n",
             instruction: "Generate me a function"
           )
         end
@@ -141,13 +191,13 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: "full_name()\naddress()\n\n",
+            prefix: "full_name()\naddress()\n",
             instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
           )
         end
       end
 
-      context 'when there are several comment in a row followed by empty line' do
+      context 'when there are several comments in a row followed by empty line' do
         let(:content) do
           # rubocop:disable Layout/TrailingWhitespace
           <<~CODE
@@ -163,13 +213,13 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: "full_name()\naddress()\n\n",
+            prefix: "full_name()\naddress()\n",
             instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
           )
         end
       end
 
-      context 'when there are several comment in a row followed by empty lines' do
+      context 'when there are several comments in a row followed by empty lines' do
         let(:content) do
           <<~CODE
             full_name()
@@ -184,6 +234,26 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             #{comment_sign}first and last
 
 
+          CODE
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when there are several comments in a row followed by other code' do
+        let(:content) do
+          <<~CODE
+            full_name()
+            address()
+            street()
+            city()
+            state()
+            pincode()
+
+            #{comment_sign}Generate me a function
+            #{comment_sign}with 2 arguments
+            #{comment_sign}first and last
+            other_code()
           CODE
         end
 
@@ -214,7 +284,6 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             #{comment_sign}just some comment
             #{comment_sign}explaining something
             another_function()
-
           CODE
 
           is_expected.to eq(
@@ -224,7 +293,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         end
       end
 
-      context 'when the first line of multiline comment is do not met requirements' do
+      context 'when the first line of multiline comment does not meet requirements' do
         let(:content) do
           <<~CODE
             full_name()
@@ -249,7 +318,6 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             #{comment_sign}just some comment
             #{comment_sign}explaining something
             another_function()
-
           CODE
         end
 
@@ -285,7 +353,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       end
 
       context "with GitLab Duo Generate prefix" do
-        let(:first_line_regex) { CodeSuggestions::TaskFactory.first_comment_regex(language, nil, false) }
+        let(:skip_generate_comment_prefix) { false }
 
         context 'when no prefix in the first line of the comment' do
           let(:content) do
@@ -301,7 +369,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
           it 'finds the instruction' do
             is_expected.to eq({
-              prefix: "full_name()\naddress()\n\n",
+              prefix: "full_name()\naddress()\n",
               instruction: default_instruction
             })
           end
@@ -321,7 +389,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
           specify do
             is_expected.to eq(
-              prefix: "full_name()\naddress()\n\n",
+              prefix: "full_name()\naddress()\n",
               instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
             )
           end
@@ -341,7 +409,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
           specify do
             is_expected.to eq(
-              prefix: "full_name()\naddress()\n\n",
+              prefix: "full_name()\naddress()\n",
               instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
             )
           end

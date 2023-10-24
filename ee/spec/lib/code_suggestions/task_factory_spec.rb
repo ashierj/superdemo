@@ -7,385 +7,140 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
 
   describe '.task' do
     let_it_be(:current_user) { create(:user) }
-    let(:intent) { nil }
-    let(:override_type) { false }
+    let(:file_name) { 'python.py' }
+    let(:prefix) { 'some prefix' }
     let(:params) do
       {
-        current_file: { file_name: file_name, content_above_cursor: prefix },
-        intent: intent
+        current_file: { file_name: file_name, content_above_cursor: prefix }
       }
     end
 
     subject { described_class.new(current_user, params: params).task }
 
-    shared_examples 'correct task detector' do
-      context 'with the prefix, suffix produces the correct type' do
-        where(:prefix, :type) do
-          # rubocop:disable Layout/LineLength
-          # Standard code generation comments
-          "#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration
+    shared_examples 'correct task initializer' do
+      it 'creates task with model family param' do
+        expect(expected_class).to receive(:new).with(**expected_params)
 
-          # Line breaks at the end of the comment
-          "#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"  | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment} #{generate_prefix} def index\nend\ndef print\nend\ndef add\nend\ndef sub\nend\ndefine a calculator class that can be called from other functions \n \n\n" | CodeSuggestions::Tasks::CodeCompletion
-
-          # These have characters _before_ the comment
-          "end\n\n#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers"   | CodeSuggestions::Tasks::CodeGeneration
-          "}\n\n\n\n#{single_line_comment} #{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration
-          "    #{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers"       | CodeSuggestions::Tasks::CodeGeneration
-          "   \r\n   #{single_line_comment}#{generate_prefix}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration
-
-          # These rely on case-insensitivity
-          "#{single_line_comment} #{case_insensitive_prefixes[0]}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment} #{case_insensitive_prefixes[1]}A function that outputs the first 20 fibonacci numbers" | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{case_insensitive_prefixes[2]}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{case_insensitive_prefixes[3]}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration
-
-          # Multiline comments
-          "#{single_line_comment} #{generate_prefix}A function that outputs\n#{single_line_comment} the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment} #{generate_prefix}A function that outputs\n#{single_line_comment} the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{generate_prefix}A function that outputs\n#{single_line_comment}the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{generate_prefix} def index\nend\ndef print\nend\ndef add\nend\ndef sub\nend\nA function that outputs fibonacci numbers\nconst hello = () => 'world';\n#{single_line_comment} first 20" | CodeSuggestions::Tasks::CodeCompletion
-
-          # These are too short so create instruction will be appended
-          "#{single_line_comment} #{generate_prefix}A func" | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment} #{generate_prefix}A fun"  | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{generate_prefix}A func"  | CodeSuggestions::Tasks::CodeGeneration
-          "#{single_line_comment}#{generate_prefix}A fu"    | CodeSuggestions::Tasks::CodeGeneration
-
-          # These include no comments at all
-          "def index\nend\ndef print\nend\ndef add\nend\ndef sub\nend\ndef fibonacci(i)" | CodeSuggestions::Tasks::CodeCompletion
-          "# #{generate_prefix} A func that outputs series\nfunction fibonacci(x) {" | CodeSuggestions::Tasks::CodeGeneration
-          # rubocop:enable Layout/LineLength
-        end
-
-        with_them do
-          it { is_expected.to be_an_instance_of(override_type || type) }
-        end
-      end
-
-      context 'when the last comment is a code generation' do
-        let(:single_line_comment) { '#' }
-        let(:prefix) do
-          <<~TEXT
-            # #{generate_prefix}A function that outputs the first 20 fibonacci numbers
-            def fibonacci(x)
-
-            # #{generate_prefix}A function that rounds every number to the nearest 10
-          TEXT
-        end
-
-        let(:file_name) { 'test.py' }
-
-        it 'only takes the last example in to account' do
-          expect(subject).to be_an_instance_of(override_type || CodeSuggestions::Tasks::CodeGeneration)
-        end
-      end
-
-      context 'when the last comment is a code suggestion' do
-        let(:single_line_comment) { '#' }
-        let(:prefix) do
-          <<~TEXT
-            def index
-              return 0
-            end
-
-            def add(x, y)
-              return x + y
-            end
-
-            def sub(x, y)
-              return x - y
-            end
-
-            # #{generate_prefix}A function that outputs the first 20 fibonacci numbers
-
-            def fibonacci(x)
-
-          TEXT
-        end
-
-        let(:file_name) { 'test.py' }
-
-        it 'only takes the last example in to account' do
-          expect(subject).to be_an_instance_of(override_type || CodeSuggestions::Tasks::CodeCompletion)
-        end
+        subject
       end
     end
 
-    context 'when content is a supported language' do
-      include_context 'with comment prefixes'
+    it 'calls instructions extractor with expected params' do
+      expect(CodeSuggestions::InstructionsExtractor)
+        .to receive(:new)
+        .with(an_instance_of(CodeSuggestions::ProgrammingLanguage), prefix, nil, true)
+        .and_call_original
 
-      single_line_comment_prefixes.each do |langs, prefixes|
-        lang = langs.first
-        prefix = prefixes.first
-        ext = CodeSuggestions::ProgrammingLanguage::SUPPORTED_LANGUAGES[lang].first
-
-        context "for language #{lang} (#{prefix}) without skip prefix" do
-          before do
-            stub_feature_flags(code_generation_no_comment_prefix: false)
-          end
-
-          let(:generate_prefix) { 'GitLab Duo Generate: ' }
-          let(:case_insensitive_prefixes) do
-            [
-              'GitLab duo generate: ',
-              'gitLab Duo Generate: ',
-              'gitLab Duo generate: ',
-              'gitLab duo generate: '
-            ]
-          end
-
-          let(:file_name) { "file.#{ext}" }
-          let(:single_line_comment) { prefix }
-
-          it_behaves_like 'correct task detector'
-        end
-
-        context "for language #{lang} (#{prefix}) with skip prefix" do
-          before do
-            stub_feature_flags(code_generation_no_comment_prefix: current_user)
-          end
-
-          let(:generate_prefix) { '' }
-          let(:case_insensitive_prefixes) { Array.new(4, '') }
-
-          let(:file_name) { "file.#{ext}" }
-          let(:single_line_comment) { prefix }
-
-          it_behaves_like 'correct task detector'
-        end
-      end
+      subject
     end
 
-    context 'with intent param' do
-      before do
-        stub_feature_flags(code_generation_no_comment_prefix: false)
-      end
-
-      context 'with the generation intent' do
-        let(:intent) { 'generation' }
-        let(:override_type) { CodeSuggestions::Tasks::CodeGeneration }
-        let(:generate_prefix) { '' }
-        let(:case_insensitive_prefixes) { Array.new(4, '') }
-        let(:file_name) { "file.py" }
-        let(:single_line_comment) { "#" }
-
-        it_behaves_like 'correct task detector'
-
-        context 'when the instructions do not exist for generation' do
-          let(:prefix) { "def fibonacci(i)" }
-
-          it 'will still choose generation and set the prefix to the content' do
-            result = subject
-            expect(result).to be_an_instance_of(CodeSuggestions::Tasks::CodeGeneration)
-
-            expect(result.send(:params)[:prefix]).to eq(prefix)
-          end
-        end
-      end
-
-      context 'with the completion intent' do
-        let(:intent) { 'completion' }
-        let(:override_type) { CodeSuggestions::Tasks::CodeCompletion }
-        let(:generate_prefix) { '' }
-        let(:case_insensitive_prefixes) { Array.new(4, '') }
-        let(:file_name) { "file.py" }
-        let(:single_line_comment) { "#" }
-
-        it_behaves_like 'correct task detector'
-      end
-    end
-
-    context 'when prefix from result is empty' do
-      before do
-        stub_feature_flags(code_generation_no_comment_prefix: false)
-      end
-
-      let(:prefix) { 'prefix to set' }
-      let(:intent) { 'generation' }
-      let(:file_name) { "file.py" }
-
-      it 'will set the content before cursor as prefix' do
-        allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
-          # The +'' is done to avoid `can't modify frozen String: ""` exception in tests
-          allow(instance).to receive(:extract).and_return({ prefix: +'' })
-        end
-
-        result = subject
-
-        expect(result.send(:params)[:prefix]).to eq(prefix)
-      end
-    end
-
-    context 'when selecting model family' do
-      let(:file_name) { 'python.py' }
-      let(:prefix) { "# A function that outputs the first 20 fibonacci numbers" }
-
-      let(:params) do
+    context 'when code completion' do
+      let(:expected_class) { ::CodeSuggestions::Tasks::CodeCompletion }
+      let(:expected_family) { described_class::VERTEX_AI }
+      let(:expected_params) do
         {
-          skip_generate_comment_prefix: true,
-          current_file: { file_name: file_name, content_above_cursor: prefix }
+          params: params.merge(code_completion_model_family: expected_family),
+          unsafe_passthrough_params: {}
         }
       end
 
-      context 'when code completion' do
-        let(:prefix) { "# A func" }
-
-        before do
-          allow(CodeSuggestions::InstructionsExtractor).to receive(:extract).and_return({})
-        end
-
-        context 'when code_completion_split_by_language feature flag is on' do
-          before do
-            stub_feature_flags(code_completion_split_by_language: current_user)
-          end
-
-          context 'when language is from Anthropic set' do
-            let(:file_name) { 'ruby.rb' }
-
-            it 'calls CodeCompletion.new with code_completion_model_family :anthropic' do
-              expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
-                .with(
-                  params: hash_including(code_completion_model_family: described_class::ANTHROPIC),
-                  unsafe_passthrough_params: kind_of(Hash)
-                ).and_call_original
-
-              subject
-            end
-          end
-
-          context 'when language is not from Anthropic set' do
-            let(:file_name) { 'python.py' }
-
-            it 'calls CodeCompletion.new with code_completion_model_family :vertex_ai' do
-              expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
-                .with(
-                  params: hash_including(code_completion_model_family: described_class::VERTEX_AI),
-                  unsafe_passthrough_params: kind_of(Hash)
-                ).and_call_original
-
-              subject
-            end
-          end
-        end
-
-        context 'when code_completion_split_by_language feature flag is off' do
-          before do
-            stub_feature_flags(code_completion_split_by_language: false)
-          end
-
-          context 'when code_completion_anthropic feature flag is on' do
-            before do
-              stub_feature_flags(code_completion_anthropic: current_user)
-            end
-
-            it 'calls CodeCompletion.new with code_completion_model_family :anthropic' do
-              expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
-                .with(
-                  params: hash_including(code_completion_model_family: described_class::ANTHROPIC),
-                  unsafe_passthrough_params: kind_of(Hash)
-                ).and_call_original
-
-              subject
-            end
-          end
-
-          context 'when code_completion_anthropic feature flag is ff' do
-            before do
-              stub_feature_flags(code_completion_anthropic: false)
-            end
-
-            it 'calls CodeCompletion.new with code_completion_model_family :vertex_ai' do
-              expect(::CodeSuggestions::Tasks::CodeCompletion).to receive(:new)
-                .with(
-                  params: hash_including(code_completion_model_family: described_class::VERTEX_AI),
-                  unsafe_passthrough_params: kind_of(Hash)
-                ).and_call_original
-
-              subject
-            end
-          end
+      before do
+        allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
+          allow(instance).to receive(:extract).and_return({})
         end
       end
 
-      context 'when code generation' do
-        let(:prefix) { "# A function that outputs the first 20 fibonacci numbers" }
+      it_behaves_like 'correct task initializer'
 
-        context 'when code_generation_split_by_language is true' do
+      context 'when language is from Anthropic set' do
+        let(:file_name) { 'ruby.rb' }
+
+        it_behaves_like 'correct task initializer' do
+          let(:expected_family) { described_class::ANTHROPIC }
+        end
+      end
+
+      context 'when code_completion_split_by_language feature flag is off' do
+        before do
+          stub_feature_flags(code_completion_split_by_language: false)
+        end
+
+        context 'when code_completion_anthropic feature flag is on' do
           before do
-            stub_feature_flags(code_generation_split_by_language: current_user)
+            stub_feature_flags(code_completion_anthropic: current_user)
           end
 
-          let(:code_generation_model_family_split_by_language) { true }
-
-          context 'when language is from Anthropic set' do
-            let(:file_name) { 'ruby.rb' }
-
-            it 'calls CodeGeneration.new with code_generation_model_family :anthropic' do
-              expect(::CodeSuggestions::Tasks::CodeGeneration).to receive(:new)
-                .with(
-                  params: hash_including(code_generation_model_family: described_class::ANTHROPIC),
-                  unsafe_passthrough_params: kind_of(Hash)
-                ).and_call_original
-
-              subject
-            end
-          end
-
-          context 'when language is not from Anthropic set' do
-            let(:file_name) { 'python.py' }
-
-            it 'calls CodeGeneration.new with code_generation_model_family :vertex_ai' do
-              expect(::CodeSuggestions::Tasks::CodeGeneration).to receive(:new)
-                .with(
-                  params: hash_including(code_generation_model_family: described_class::VERTEX_AI),
-                  unsafe_passthrough_params: kind_of(Hash)
-                ).and_call_original
-
-              subject
-            end
+          it_behaves_like 'correct task initializer' do
+            let(:expected_family) { described_class::ANTHROPIC }
           end
         end
 
-        context 'when code_generation_split_by_language feature flag is off' do
+        context 'when code_completion_anthropic feature flag is off' do
           before do
-            stub_feature_flags(code_generation_split_by_language: false)
+            stub_feature_flags(code_completion_anthropic: false)
           end
 
-          context 'when code_generation_anthropic feature flag is on' do
-            before do
-              stub_feature_flags(code_generation_anthropic: current_user)
-            end
+          it_behaves_like 'correct task initializer' do
+            let(:expected_family) { described_class::VERTEX_AI }
+          end
+        end
+      end
+    end
 
-            it 'calls CodeGeneration.new with code_generation_model_family: :anthropic' do
-              expect(::CodeSuggestions::Tasks::CodeGeneration).to receive(:new)
-                .with(
-                  params: hash_including(code_generation_model_family: described_class::ANTHROPIC),
-                  unsafe_passthrough_params: kind_of(Hash)
-                ).and_call_original
+    context 'when code generation' do
+      let(:expected_class) { ::CodeSuggestions::Tasks::CodeGeneration }
+      let(:expected_family) { described_class::VERTEX_AI }
+      let(:expected_params) do
+        {
+          params: params.merge(
+            code_generation_model_family: expected_family,
+            instruction: 'instruction',
+            prefix: 'trimmed prefix'
+          ),
+          unsafe_passthrough_params: {}
+        }
+      end
 
-              subject
-            end
+      before do
+        allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
+          allow(instance)
+            .to receive(:extract)
+            .and_return({ instruction: 'instruction', prefix: 'trimmed prefix' })
+        end
+      end
+
+      it_behaves_like 'correct task initializer'
+
+      context 'when language is from Anthropic set' do
+        let(:file_name) { 'ruby.rb' }
+
+        it_behaves_like 'correct task initializer' do
+          let(:expected_family) { described_class::ANTHROPIC }
+        end
+      end
+
+      context 'when code_generation_split_by_language feature flag is off' do
+        before do
+          stub_feature_flags(code_generation_split_by_language: false)
+        end
+
+        context 'when code_generation_anthropic feature flag is on' do
+          before do
+            stub_feature_flags(code_generation_anthropic: current_user)
           end
 
-          context 'when code_generation_anthropic feature flag is off' do
-            before do
-              stub_feature_flags(code_generation_anthropic: false)
-            end
+          it_behaves_like 'correct task initializer' do
+            let(:expected_family) { described_class::ANTHROPIC }
+          end
+        end
 
-            it 'calls CodeGeneration.new with code_generation_model_family: :vertex_ai' do
-              expect(::CodeSuggestions::Tasks::CodeGeneration).to receive(:new)
-                .with(
-                  params: hash_including(code_generation_model_family: described_class::VERTEX_AI),
-                  unsafe_passthrough_params: kind_of(Hash)
-                ).and_call_original
+        context 'when code_generation_anthropic feature flag is off' do
+          before do
+            stub_feature_flags(code_generation_anthropic: false)
+          end
 
-              subject
-            end
+          it_behaves_like 'correct task initializer' do
+            let(:expected_family) { described_class::VERTEX_AI }
           end
         end
       end
