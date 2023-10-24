@@ -7,9 +7,11 @@ module EE
         extend ::Gitlab::Utils::Override
 
         override :execute
-        def execute(group_link)
-          super.tap do |link|
-            if link && !link&.persisted?
+        def execute(group_link, skip_authorization: false)
+          super.tap do |result|
+            link = result.payload[:link]
+
+            if link && !link.persisted?
               send_audit_event(link)
 
               enqueue_refresh_add_on_assignments_woker(link)

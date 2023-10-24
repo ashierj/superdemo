@@ -16,6 +16,10 @@ RSpec.describe Projects::GroupLinks::CreateService, '#execute', feature_category
     }
   end
 
+  before do
+    project.add_maintainer(user)
+  end
+
   context 'audit events' do
     include_examples 'audit event logging' do
       let(:operation) { create_group_link(user, project, group, opts) }
@@ -115,6 +119,7 @@ RSpec.describe Projects::GroupLinks::CreateService, '#execute', feature_category
 
       before do
         root_group.add_developer(user)
+        forked_project.add_maintainer(user)
 
         fork_project(project, user, target_project: forked_project)
       end

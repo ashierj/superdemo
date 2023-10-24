@@ -2,13 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::GroupLinks::DestroyService do
+RSpec.describe Projects::GroupLinks::DestroyService, feature_category: :groups_and_projects do
   let!(:user) { create(:user) }
   let!(:group) { create(:group) }
   let!(:project) { create(:project) }
   let!(:group_link) { create(:project_group_link, project: project, group: group) }
 
   subject { described_class.new(project, user, {}) }
+
+  before do
+    project.add_maintainer(user)
+  end
 
   context 'audit events' do
     include_examples 'audit event logging' do

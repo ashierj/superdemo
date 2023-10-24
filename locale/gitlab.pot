@@ -47868,6 +47868,9 @@ msgstr ""
 msgid "The project was successfully imported."
 msgstr ""
 
+msgid "The project-group link could not be removed."
+msgstr ""
+
 msgid "The related CI build failed."
 msgstr ""
 
