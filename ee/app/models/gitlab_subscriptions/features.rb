@@ -50,7 +50,6 @@ module GitlabSubscriptions
       full_codequality_report
       group_activity_analytics
       group_bulk_edit
-      group_webhooks
       issuable_default_templates
       issue_weights
       iterations
@@ -271,6 +270,7 @@ module GitlabSubscriptions
       maintenance_mode
       scoped_issue_board
       contribution_analytics
+      group_webhooks
     ].freeze
 
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[

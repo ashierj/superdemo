@@ -2145,21 +2145,34 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
       let(:data) { { some: 'info' } }
 
-      context 'when group_webhooks feature is enabled' do
-        before do
-          stub_licensed_features(group_webhooks: true)
-        end
-
+      shared_examples 'enabled group hooks' do
         context 'execution' do
           it 'executes the hook for self and ancestor groups by default' do
             expect(WebHookService).to receive(:new)
-                                        .with(group_hook, data, 'member_hooks').and_call_original
+              .with(group_hook, data, 'member_hooks').and_call_original
             expect(WebHookService).to receive(:new)
-                                        .with(parent_group_hook, data, 'member_hooks').and_call_original
+              .with(parent_group_hook, data, 'member_hooks').and_call_original
 
             group.execute_hooks(data, :member_hooks)
           end
         end
+      end
+
+      context 'when group_webhooks feature is enabled through license' do
+        before do
+          stub_licensed_features(group_webhooks: true)
+        end
+
+        it_behaves_like 'enabled group hooks'
+      end
+
+      context 'when group_webhooks feature is enabled through usage ping features' do
+        before do
+          stub_usage_ping_features(true)
+          allow(License).to receive(:current).and_return(nil)
+        end
+
+        it_behaves_like 'enabled group hooks'
       end
 
       context 'when group_webhooks feature is disabled' do

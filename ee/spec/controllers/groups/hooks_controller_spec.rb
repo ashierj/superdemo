@@ -278,6 +278,22 @@ RSpec.describe Groups::HooksController, feature_category: :webhooks do
     end
   end
 
+  context 'with group_webhooks enabled through usage ping features' do
+    before do
+      stub_usage_ping_features(true)
+      allow(License).to receive(:current).and_return(nil)
+      allow(LicenseHelper).to receive(:show_promotions?).and_return(false)
+    end
+
+    describe 'GET #index' do
+      it 'is successful' do
+        get :index, params: { group_id: group.to_param }
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+  end
+
   describe 'DELETE #destroy' do
     let(:hook) { create(:group_hook, group: group) }
     let!(:log) { create(:web_hook_log, web_hook: hook) }
