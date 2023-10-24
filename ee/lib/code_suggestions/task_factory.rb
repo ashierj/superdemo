@@ -4,19 +4,6 @@ module CodeSuggestions
   class TaskFactory
     include Gitlab::Utils::StrongMemoize
 
-    # Regex is looking for something that looks like a _single line_ code comment.
-    # It looks for GitLab Duo Generate and at least 10 characters
-    # afterwards.
-    # It is case-insensitive.
-    # It searches for the last instance of a match by looking for the end
-    # of a text block and an optional line break.
-    FIRST_COMMENT_REGEX = "(?<comment>%{comment_format})[ \\t]?%{generate_prefix}[ \\t]*(?<instruction>[^\\r\\n]{10,})\\s*\\Z" # rubocop:disable Layout/LineLength
-    ALWAYS_GENERATE_PREFIX = %r{.*?}
-    GENERATE_COMMENT_PREFIX = "GitLab Duo Generate:"
-
-    INTENT_COMPLETION = 'completion'
-    INTENT_GENERATION = 'generation'
-
     VERTEX_AI = :vertex_ai
     ANTHROPIC = :anthropic
 
@@ -24,17 +11,6 @@ module CodeSuggestions
     # We're going to iterate on this based on how different AI models performing for these languages.
     ANTHROPIC_CODE_COMPLETION_LANGUAGES = %w[Ruby TypeScript].freeze
     ANTHROPIC_CODE_GENERATION_LANGUAGES = %w[Ruby TypeScript].freeze
-
-    def self.first_comment_regex(language, intent, skip_generate_comment_prefix)
-      return ALWAYS_GENERATE_PREFIX if intent == INTENT_GENERATION
-
-      generate_prefix = GENERATE_COMMENT_PREFIX unless skip_generate_comment_prefix
-      comment_format = language.single_line_comment_format
-      Regexp.new(
-        format(FIRST_COMMENT_REGEX, { comment_format: comment_format, generate_prefix: generate_prefix }),
-        'im'
-      )
-    end
 
     def initialize(current_user, params:, unsafe_passthrough_params: {})
       @current_user = current_user
@@ -46,9 +22,10 @@ module CodeSuggestions
     end
 
     def task
-      result = extract_intructions
+      instructions = CodeSuggestions::InstructionsExtractor
+        .new(language, prefix, intent, skip_generate_comment_prefix?).extract
 
-      if code_completion?(result)
+      if instructions.empty?
         return CodeSuggestions::Tasks::CodeCompletion.new(
           params: code_completion_params,
           unsafe_passthrough_params: unsafe_passthrough_params
@@ -56,7 +33,7 @@ module CodeSuggestions
       end
 
       CodeSuggestions::Tasks::CodeGeneration.new(
-        params: code_generation_params(result),
+        params: code_generation_params(instructions),
         unsafe_passthrough_params: unsafe_passthrough_params
       )
     end
@@ -69,20 +46,6 @@ module CodeSuggestions
       CodeSuggestions::ProgrammingLanguage.detect_from_filename(params.dig(:current_file, :file_name))
     end
     strong_memoize_attr(:language)
-
-    def extract_intructions
-      return {} if intent == INTENT_COMPLETION
-
-      prefix_regex = self.class.first_comment_regex(language, intent, skip_generate_comment_prefix?)
-
-      CodeSuggestions::InstructionsExtractor.extract(language, prefix, prefix_regex)
-    end
-
-    def code_completion?(instructions)
-      return intent == INTENT_COMPLETION if intent
-
-      instructions.empty?
-    end
 
     # TODO: Remove `skip_generate_comment_prefix` when `code_suggestions_no_comment_prefix` feature flag
     # is removed https://gitlab.com/gitlab-org/gitlab/-/issues/424879
@@ -123,7 +86,7 @@ module CodeSuggestions
 
     def code_generation_params(instructions)
       params.merge(
-        prefix: instructions[:prefix]&.chomp! || prefix,
+        prefix: instructions[:prefix],
         instruction: instructions[:instruction],
         code_generation_model_family: code_generation_model_family
       )
