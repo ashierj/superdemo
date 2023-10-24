@@ -86,9 +86,6 @@ export default {
           isProject: this.boardType === BoardType.project,
         };
       },
-      context: {
-        isSingleRequest: true,
-      },
       skip() {
         return !this.isApolloBoard;
       },

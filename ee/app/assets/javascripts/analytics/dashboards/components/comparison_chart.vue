@@ -174,10 +174,6 @@ export default {
           startDate,
           endDate,
         },
-        context: {
-          // This is an expensive request that consistently exceeds our query complexity of 300 when grouped
-          isSingleRequest: true,
-        },
       });
 
       const metrics = extractQueryResponseFromNamespace({ result, resultKey: 'flowMetrics' });

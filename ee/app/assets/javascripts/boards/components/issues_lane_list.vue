@@ -103,9 +103,6 @@ export default {
       skip() {
         return !this.isApolloBoard || !this.isUnassignedIssuesLane;
       },
-      context: {
-        isSingleRequest: true,
-      },
       update(data) {
         return data[this.boardType]?.board.lists.nodes[0];
       },

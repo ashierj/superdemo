@@ -67,9 +67,6 @@ export default {
             id: this.item.id,
             isInstance: this.isInstance,
           },
-          context: {
-            isSingleRequest: true,
-          },
         });
 
         const errors = this.destinationErrors(data);

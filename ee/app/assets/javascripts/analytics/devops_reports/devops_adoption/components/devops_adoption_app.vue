@@ -74,9 +74,6 @@ export default {
   apollo: {
     devopsAdoptionEnabledNamespaces: {
       query: devopsAdoptionEnabledNamespacesQuery,
-      context: {
-        isSingleRequest: true,
-      },
       variables() {
         return this.enabledNamespaceQueryVariables;
       },
@@ -97,9 +94,6 @@ export default {
     },
     groups: {
       query: getGroupsQuery,
-      context: {
-        isSingleRequest: true,
-      },
       variables() {
         return {
           search: this.groupsSearchTerm,

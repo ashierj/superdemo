@@ -144,9 +144,6 @@ export default {
       query() {
         return this.destinationQuery;
       },
-      context: {
-        isSingleRequest: true,
-      },
       variables() {
         return {
           fullPath: this.groupPath,
@@ -172,9 +169,6 @@ export default {
     gcpLoggingAuditEventDestinations: {
       query() {
         return this.gcpLoggingDestinationQuery;
-      },
-      context: {
-        isSingleRequest: true,
       },
       variables() {
         return {
