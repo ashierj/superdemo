@@ -166,6 +166,32 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
       expect(assigns[:data_collector].totals[:total_events].values.sum).to eq(6)
     end
 
+    describe 'data source instance variable' do
+      context 'when clickhouse data collection is enabled for that group' do
+        before do
+          stub_feature_flags(clickhouse_data_collection: true)
+        end
+
+        specify do
+          get :show, params: { group_id: group.path }
+
+          expect(assigns[:data_source_clickhouse]).to eq(true)
+        end
+      end
+
+      context 'when clickhouse data collection is not enabled' do
+        before do
+          stub_feature_flags(clickhouse_data_collection: false)
+        end
+
+        specify do
+          get :show, params: { group_id: group.path }
+
+          expect(assigns[:data_source_clickhouse]).to eq(false)
+        end
+      end
+    end
+
     shared_examples 'correct data is returned' do
       it "returns member contributions JSON when format is JSON" do
         get :show, params: { group_id: group.path }, format: :json

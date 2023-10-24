@@ -19,6 +19,9 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
 
   def show
     @start_date = data_collector.from
+    # Replace with better ClickHouse availability check
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/428585
+    @data_source_clickhouse = Feature.enabled?(:clickhouse_data_collection, group)
 
     respond_to do |format|
       format.html
