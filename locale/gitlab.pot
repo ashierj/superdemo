@@ -17470,6 +17470,9 @@ msgstr ""
 msgid "Display as:"
 msgstr ""
 
+msgid "Display blame info"
+msgstr ""
+
 msgid "Display milestones"
 msgstr ""
 
