@@ -12,6 +12,8 @@ const EXPECTATION_STATUS = {
   id: 1,
   text: 'some check: %{small_start}https://example.com%{small_end}',
   supportingText: '%{small_start}Status Check ID: 1%{small_end}',
+  tooltipText:
+    'URL parameters are hidden for security reasons. For details of URL parameters, see the configuration for the status check service.',
 };
 
 describe('status checks widget extension mappers', () => {

@@ -45903,6 +45903,9 @@ msgstr ""
 msgid "StatusCheck|Target branch"
 msgstr ""
 
+msgid "StatusCheck|URL parameters are hidden for security reasons. For details of URL parameters, see the configuration for the status check service."
+msgstr ""
+
 msgid "StatusCheck|Update status check"
 msgstr ""
 
