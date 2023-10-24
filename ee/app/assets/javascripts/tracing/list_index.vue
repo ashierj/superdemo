@@ -1,10 +1,10 @@
 <script>
-import ObservabilityContainer from '~/observability/components/observability_container.vue';
+import ProvisionedObservabilityContainer from '~/observability/components/provisioned_observability_container.vue';
 import TracingList from './components/tracing_list.vue';
 
 export default {
   components: {
-    ObservabilityContainer,
+    ProvisionedObservabilityContainer,
     TracingList,
   },
   props: {
@@ -33,7 +33,7 @@ export default {
 </script>
 
 <template>
-  <observability-container
+  <provisioned-observability-container
     :oauth-url="oauthUrl"
     :tracing-url="tracingUrl"
     :provisioning-url="provisioningUrl"
@@ -43,5 +43,5 @@ export default {
     <template #default="{ observabilityClient }">
       <tracing-list :observability-client="observabilityClient" />
     </template>
-  </observability-container>
+  </provisioned-observability-container>
 </template>

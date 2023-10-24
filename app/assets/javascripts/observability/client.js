@@ -237,11 +237,6 @@ export function buildClient({ provisioningUrl, tracingUrl, servicesUrl, operatio
   return {
     enableObservability: () => enableObservability(provisioningUrl),
     isObservabilityEnabled: () => isObservabilityEnabled(provisioningUrl),
-
-    // deprecated. removed in next iteration
-    enableTraces: () => enableObservability(provisioningUrl),
-    isTracingEnabled: () => isObservabilityEnabled(provisioningUrl),
-
     fetchTraces: (filters) => fetchTraces(tracingUrl, filters),
     fetchTrace: (traceId) => fetchTrace(tracingUrl, traceId),
     fetchServices: () => fetchServices(servicesUrl),

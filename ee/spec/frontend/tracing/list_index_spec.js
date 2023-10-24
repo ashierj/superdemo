@@ -1,7 +1,7 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ListIndex from 'ee/tracing/list_index.vue';
 import TracingList from 'ee/tracing/components/tracing_list.vue';
-import ObservabilityContainer from '~/observability/components/observability_container.vue';
+import ProvisionedObservabilityContainer from '~/observability/components/provisioned_observability_container.vue';
 
 describe('ListIndex', () => {
   const props = {
@@ -20,10 +20,10 @@ describe('ListIndex', () => {
     });
   };
 
-  it('renders ObservabilityContainer component', () => {
+  it('renders provisioned-observability-container component', () => {
     mountComponent();
 
-    const observabilityContainer = wrapper.findComponent(ObservabilityContainer);
+    const observabilityContainer = wrapper.findComponent(ProvisionedObservabilityContainer);
     expect(observabilityContainer.exists()).toBe(true);
     expect(observabilityContainer.props('oauthUrl')).toBe(props.oauthUrl);
     expect(observabilityContainer.props('tracingUrl')).toBe(props.tracingUrl);
@@ -32,10 +32,10 @@ describe('ListIndex', () => {
     expect(observabilityContainer.props('operationsUrl')).toBe(props.operationsUrl);
   });
 
-  it('renders TracingList component inside ObservabilityContainer', () => {
+  it('renders TracingList component inside ProvisionedObservabilityContainer', () => {
     mountComponent();
 
-    const observabilityContainer = wrapper.findComponent(ObservabilityContainer);
+    const observabilityContainer = wrapper.findComponent(ProvisionedObservabilityContainer);
     expect(observabilityContainer.findComponent(TracingList).exists()).toBe(true);
   });
 });

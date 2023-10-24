@@ -50021,15 +50021,6 @@ msgstr ""
 msgid "Tracing|Duration (ms)"
 msgstr ""
 
-msgid "Tracing|Enable"
-msgstr ""
-
-msgid "Tracing|Failed to enable tracing."
-msgstr ""
-
-msgid "Tracing|Failed to load page."
-msgstr ""
-
 msgid "Tracing|Failed to load trace details."
 msgstr ""
 
@@ -50037,9 +50028,6 @@ msgid "Tracing|Failed to load traces."
 msgstr ""
 
 msgid "Tracing|Filter Traces"
-msgstr ""
-
-msgid "Tracing|Get started with Tracing"
 msgstr ""
 
 msgid "Tracing|Last 1 hour"
@@ -50070,9 +50058,6 @@ msgid "Tracing|Last 5 minutes"
 msgstr ""
 
 msgid "Tracing|Last 7 days"
-msgstr ""
-
-msgid "Tracing|Monitor your applications with GitLab Distributed Tracing."
 msgstr ""
 
 msgid "Tracing|No traces to display."

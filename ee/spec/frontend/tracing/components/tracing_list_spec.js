@@ -2,7 +2,6 @@ import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingList from 'ee/tracing/components/tracing_list.vue';
-import TracingEmptyState from 'ee/tracing/components/tracing_empty_state.vue';
 import TracingTableList from 'ee/tracing/components/tracing_table_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
@@ -27,7 +26,6 @@ describe('TracingList', () => {
   let observabilityClientMock;
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findEmptyState = () => wrapper.findComponent(TracingEmptyState);
   const findTableList = () => wrapper.findComponent(TracingTableList);
   const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
@@ -54,8 +52,6 @@ describe('TracingList', () => {
 
   beforeEach(() => {
     observabilityClientMock = {
-      isTracingEnabled: jest.fn().mockResolvedValue(true),
-      enableTraces: jest.fn().mockResolvedValue(true),
       fetchTraces: jest.fn().mockResolvedValue(mockResponse),
     };
     queryToFilterObj.mockReturnValue({});
@@ -63,27 +59,14 @@ describe('TracingList', () => {
     filterTokensToFilterObj.mockReturnValue({});
   });
 
-  it('renders the loading indicator while checking if tracing is enabled', () => {
-    mountComponent();
-    expect(findLoadingIcon().exists()).toBe(true);
-    expect(findEmptyState().exists()).toBe(false);
-    expect(findTableList().exists()).toBe(false);
-    expect(findFilteredSearch().exists()).toBe(false);
-    expect(findUrlSync().exists()).toBe(false);
-    expect(findInfiniteScrolling().exists()).toBe(false);
-    expect(observabilityClientMock.isTracingEnabled).toHaveBeenCalled();
-  });
-
-  describe('when tracing is enabled', () => {
+  describe('fetching traces', () => {
     beforeEach(async () => {
       await mountComponent();
     });
 
     it('fetches the traces and renders the trace list with filtered search', () => {
-      expect(observabilityClientMock.isTracingEnabled).toHaveBeenCalled();
       expect(observabilityClientMock.fetchTraces).toHaveBeenCalled();
       expect(findLoadingIcon().exists()).toBe(false);
-      expect(findEmptyState().exists()).toBe(false);
       expect(findTableList().exists()).toBe(true);
       expect(findFilteredSearch().exists()).toBe(true);
       expect(findUrlSync().exists()).toBe(true);
@@ -384,60 +367,15 @@ describe('TracingList', () => {
     });
   });
 
-  describe('when tracing is not enabled', () => {
-    beforeEach(async () => {
-      observabilityClientMock.isTracingEnabled.mockResolvedValue(false);
-
-      await mountComponent();
-    });
-
-    it('renders TracingEmptyState', () => {
-      expect(findEmptyState().exists()).toBe(true);
-    });
-
-    it('calls enableTracing when TracingEmptyState emits enable-tracing', () => {
-      findEmptyState().vm.$emit('enable-tracing');
-
-      expect(observabilityClientMock.enableTraces).toHaveBeenCalled();
-    });
-  });
-
   describe('error handling', () => {
-    it('if isTracingEnabled fails, it renders an alert and empty page', async () => {
-      observabilityClientMock.isTracingEnabled.mockRejectedValue('error');
-
-      await mountComponent();
-
-      expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load page.' });
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findEmptyState().exists()).toBe(false);
-      expect(findTableList().exists()).toBe(false);
-    });
-
     it('if fetchTraces fails, it renders an alert and empty list', async () => {
       observabilityClientMock.fetchTraces.mockRejectedValue('error');
-      observabilityClientMock.isTracingEnabled.mockReturnValueOnce(true);
 
       await mountComponent();
 
       expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load traces.' });
       expect(findTableList().exists()).toBe(true);
       expect(findTableList().props('traces')).toEqual([]);
-    });
-
-    it('if enableTraces fails, it renders an alert and empty-state', async () => {
-      observabilityClientMock.isTracingEnabled.mockReturnValueOnce(false);
-      observabilityClientMock.enableTraces.mockRejectedValue('error');
-
-      await mountComponent();
-
-      findEmptyState().vm.$emit('enable-tracing');
-      await waitForPromises();
-
-      expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to enable tracing.' });
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findEmptyState().exists()).toBe(true);
-      expect(findTableList().exists()).toBe(false);
     });
   });
 });
