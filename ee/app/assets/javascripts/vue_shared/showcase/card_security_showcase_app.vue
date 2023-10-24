@@ -1,6 +1,6 @@
 <script>
 import { helpPagePath } from '~/helpers/help_page_helper';
-import CardShowcase from './card_showcase.vue';
+import CardShowcase from 'jh_else_ee/vue_shared/showcase/card_showcase.vue';
 import { SHOWCASE_CARDS, SHOWCASE_SECTIONS } from './constants';
 
 export default {
