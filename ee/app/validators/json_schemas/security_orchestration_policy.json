@@ -40,6 +40,55 @@
             "description": "Specifies the longer description of the policy.",
             "type": "string"
           },
+          "policy_scope": {
+            "type": "object",
+            "properties": {
+              "compliance_frameworks": {
+                "description": "Specifies for which compliance frameworks this policy should be applied to.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "projects": {
+                "type": "object",
+                "description": "Specifies for which projects this policy should be applied to.",
+                "properties": {
+                  "including": {
+                    "type": "array",
+                    "description": "Specifies projects where this policy should be applied to.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Specifies the ID of the project."
+                        }
+                      }
+                    }
+                  },
+                  "excluding": {
+                    "type": "array",
+                    "description": "Specifies projects where this policy should not be applied to.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Specifies the ID of the project."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "enabled": {
             "description": "Whether to enforce this policy or not.",
             "type": "boolean"
@@ -356,6 +405,55 @@
           "enabled": {
             "description": "Whether to enforce this policy or not.",
             "type": "boolean"
+          },
+          "policy_scope": {
+            "type": "object",
+            "properties": {
+              "compliance_frameworks": {
+                "description": "Specifies for which compliance frameworks this policy should be applied to.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "projects": {
+                "type": "object",
+                "description": "Specifies for which projects this policy should be applied to.",
+                "properties": {
+                  "including": {
+                    "type": "array",
+                    "description": "Specifies projects where this policy should be applied to.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Specifies the ID of the project."
+                        }
+                      }
+                    }
+                  },
+                  "excluding": {
+                    "type": "array",
+                    "description": "Specifies projects where this policy should not be applied to.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Specifies the ID of the project."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "rules": {
             "description": "Specifies conditions when a this policy should be applied.",

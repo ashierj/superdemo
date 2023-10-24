@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :scan_execution_policy, class: Struct.new(:name, :description, :enabled, :actions, :rules) do
+  factory :scan_execution_policy, class: Struct.new(:name, :description, :enabled, :actions, :rules, :policy_scope) do
     skip_create
 
     initialize_with do
@@ -10,8 +10,9 @@ FactoryBot.define do
       enabled = attributes[:enabled]
       actions = attributes[:actions]
       rules = attributes[:rules]
+      policy_scope = attributes[:policy_scope]
 
-      new(name, description, enabled, actions, rules).to_h
+      new(name, description, enabled, actions, rules, policy_scope).to_h
     end
 
     transient do
@@ -24,6 +25,7 @@ FactoryBot.define do
     enabled { true }
     rules { [{ type: 'pipeline', branches: %w[master] }] }
     actions { [{ scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }] }
+    policy_scope { {} }
 
     trait :with_schedule do
       rules { [{ type: 'schedule', branches: %w[master], cadence: '*/15 * * * *' }] }
@@ -33,10 +35,29 @@ FactoryBot.define do
       rules { [{ type: 'schedule', agents: { agent.name => { namespaces: namespaces } }, cadence: '30 2 * * *' }] }
       actions { [{ scan: 'container_scanning' }] }
     end
+
+    trait :with_policy_scope do
+      policy_scope do
+        {
+          compliance_frameworks: [
+            { id: 1 },
+            { id: 2 }
+          ],
+          projects: {
+            including: [
+              { id: 1 }
+            ],
+            excluding: [
+              { id: 2 }
+            ]
+          }
+        }
+      end
+    end
   end
 
   factory :scan_result_policy,
-    class: Struct.new(:name, :description, :enabled, :actions, :rules, :approval_settings) do
+    class: Struct.new(:name, :description, :enabled, :actions, :rules, :approval_settings, :policy_scope) do
     skip_create
 
     initialize_with do
@@ -46,8 +67,9 @@ FactoryBot.define do
       actions = attributes[:actions]
       rules = attributes[:rules]
       approval_settings = attributes[:approval_settings]
+      policy_scope = attributes[:policy_scope]
 
-      new(name, description, enabled, actions, rules, approval_settings).to_h
+      new(name, description, enabled, actions, rules, approval_settings, policy_scope).to_h
     end
 
     transient do
@@ -75,6 +97,7 @@ FactoryBot.define do
 
     actions { [{ type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }] }
     approval_settings { {} }
+    policy_scope { {} }
 
     trait :license_finding do
       rules do
@@ -110,6 +133,25 @@ FactoryBot.define do
           remove_approvals_with_new_commit: true,
           require_password_to_approve: true,
           block_unprotecting_branches: true
+        }
+      end
+    end
+
+    trait :with_policy_scope do
+      policy_scope do
+        {
+          compliance_frameworks: [
+            { id: 1 },
+            { id: 2 }
+          ],
+          projects: {
+            including: [
+              { id: 1 }
+            ],
+            excluding: [
+              { id: 2 }
+            ]
+          }
         }
       end
     end
