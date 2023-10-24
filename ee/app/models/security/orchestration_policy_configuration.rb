@@ -49,8 +49,6 @@ module Security
     end
 
     def policy_hash
-      return policy_yaml unless cached_security_policies_enabled?
-
       Rails.cache.fetch(policy_cache_key, expires_in: CACHE_DURATION) do
         policy_yaml
       end
@@ -62,12 +60,6 @@ module Security
 
     def policy_configuration_exists?
       policy_hash.present?
-    end
-
-    def cached_security_policies_enabled?
-      return Feature.enabled?(:cached_security_policies, project) if project?
-
-      Feature.enabled?(:cached_security_policies, namespace)
     end
 
     def policy_configuration_valid?(policy = policy_hash)

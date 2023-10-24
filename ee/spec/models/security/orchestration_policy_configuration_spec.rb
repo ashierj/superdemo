@@ -174,18 +174,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
     it_behaves_like 'captures git errors', :blob_data_at
 
-    context 'with cached_security_policies disabled' do
-      before do
-        stub_feature_flags(cached_security_policies: false)
-      end
-
-      it 'does not fetch from cache' do
-        expect(Rails.cache).not_to receive(:fetch).with(cache_key, { expires_in: described_class::CACHE_DURATION })
-
-        subject
-      end
-    end
-
     context 'with cache enabled' do
       it 'fetches from cache' do
         expect(Rails.cache).to receive(:fetch).with(cache_key, { expires_in: described_class::CACHE_DURATION }).and_call_original
