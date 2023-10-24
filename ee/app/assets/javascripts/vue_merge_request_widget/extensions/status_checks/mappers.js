@@ -34,6 +34,9 @@ function mapStatusCheck(statusCheck, iconName) {
       statusCheck.id
     }%{small_end}`,
     icon: { name: iconName },
+    tooltipText: s__(
+      'StatusCheck|URL parameters are hidden for security reasons. For details of URL parameters, see the configuration for the status check service.',
+    ),
   };
 }
 
