@@ -1,5 +1,5 @@
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
-import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
+import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import RunnerJobFailure from 'ee/ci/runner/components/runner_job_failure.vue';
@@ -16,7 +16,7 @@ describe('RunnerJobFailure', () => {
   let wrapper;
 
   const findTimeAgo = () => wrapper.findComponent(TimeAgo);
-  const findCiBadgeLink = () => wrapper.findComponent(CiBadgeLink);
+  const findCiIcon = () => wrapper.findComponent(CiIcon);
   const findRunnerLink = () => wrapper.findByTestId('runner-link');
   const findLog = () => wrapper.find('pre');
 
@@ -52,8 +52,7 @@ describe('RunnerJobFailure', () => {
     it('shows status badge', () => {
       createComponent();
 
-      expect(findCiBadgeLink().props('status')).toBe(mockFailedJob.detailedStatus);
-      expect(findCiBadgeLink().props('size')).toBe('sm');
+      expect(findCiIcon().props('status')).toBe(mockFailedJob.detailedStatus);
     });
 
     it('when data is not present, shows no status badge', () => {
@@ -61,7 +60,7 @@ describe('RunnerJobFailure', () => {
         job: { detailedStatus: null },
       });
 
-      expect(findCiBadgeLink().exists()).toBe(false);
+      expect(findCiIcon().exists()).toBe(false);
     });
   });
 

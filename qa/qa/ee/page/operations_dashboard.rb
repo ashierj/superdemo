@@ -5,7 +5,7 @@ module QA
     module Page
       class OperationsDashboard < QA::Page::Base
         include QA::Page::Component::ProjectSelector
-        include QA::Page::Component::CiBadgeLink
+        include QA::Page::Component::CiIcon
 
         view 'ee/app/assets/javascripts/operations/components/dashboard/dashboard.vue' do
           element 'add-projects-button'
@@ -43,7 +43,7 @@ module QA
 
         def pipeline_status(project_card)
           within(project_card) do
-            find_element('ci-badge-text')
+            find_element('ci-icon-text')
           end.text
         end
 
