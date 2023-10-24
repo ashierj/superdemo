@@ -13,6 +13,7 @@ module Groups
 
       before_action do
         push_frontend_feature_flag(:activity_filter_has_mr, @project)
+        push_frontend_feature_flag(:activity_filter_has_remediations, @project)
       end
 
       def index

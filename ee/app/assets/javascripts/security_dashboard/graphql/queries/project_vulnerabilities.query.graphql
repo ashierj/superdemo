@@ -17,6 +17,7 @@ query projectVulnerabilities(
   $hasIssues: Boolean
   $hasResolution: Boolean
   $hasMergeRequest: Boolean
+  $hasRemediations: Boolean
   $includeExternalIssueLinks: Boolean = false
   $vetEnabled: Boolean = false
   $clusterAgentId: [ClustersAgentID!]
@@ -39,6 +40,7 @@ query projectVulnerabilities(
       hasIssues: $hasIssues
       hasResolution: $hasResolution
       hasMergeRequest: $hasMergeRequest
+      hasRemediations: $hasRemediations
       clusterAgentId: $clusterAgentId
       image: $image
     ) {

@@ -32,12 +32,26 @@ export const ITEMS = {
     value: 'DOES_NOT_HAVE_MERGE_REQUEST',
     text: s__('SecurityReports|Does not have merge request'),
   },
+  IS_AVAILABLE: {
+    value: 'IS_AVAILABLE',
+    text: s__('SecurityReports|Is available'),
+  },
+  IS_NOT_AVAILABLE: {
+    value: 'IS_NOT_AVAILABLE',
+    text: s__('SecurityReports|Is not available'),
+  },
 };
 
 export const GROUPS_MR = {
   text: s__('SecurityReports|Merge Request'),
   options: [ITEMS.HAS_MERGE_REQUEST, ITEMS.DOES_NOT_HAVE_MERGE_REQUEST],
   icon: 'git-merge',
+};
+
+export const GROUPS_SOLUTION = {
+  text: s__('SecurityReports|Solution available'),
+  options: [ITEMS.IS_AVAILABLE, ITEMS.IS_NOT_AVAILABLE],
+  icon: 'bulb',
 };
 
 export const GROUPS = [
@@ -90,40 +104,27 @@ export default {
       if (this.glFeatures.activityFilterHasMr) {
         groups.push(GROUPS_MR);
       }
+      if (this.glFeatures.activityFilterHasRemediations) {
+        groups.push(GROUPS_SOLUTION);
+      }
       return groups;
     },
   },
   watch: {
     selected() {
-      let hasResolution;
-      let hasIssues;
-      let hasMergeRequest;
-      // The above variables can be true, false, or unset, so we need to use if/else-if here instead
-      // of if/else.
-      if (this.selected.includes(ITEMS.NO_LONGER_DETECTED.value)) {
-        hasResolution = true;
-      } else if (this.selected.includes(ITEMS.STILL_DETECTED.value)) {
-        hasResolution = false;
-      }
-
-      if (this.selected.includes(ITEMS.HAS_ISSUE.value)) {
-        hasIssues = true;
-      } else if (this.selected.includes(ITEMS.DOES_NOT_HAVE_ISSUE.value)) {
-        hasIssues = false;
-      }
-
-      if (this.glFeatures.activityFilterHasMr) {
-        if (this.selected.includes(ITEMS.HAS_MERGE_REQUEST.value)) {
-          hasMergeRequest = true;
-        } else if (this.selected.includes(ITEMS.DOES_NOT_HAVE_MERGE_REQUEST.value)) {
-          hasMergeRequest = false;
-        }
-      }
+      const hasResolution = this.setSelectedValue('NO_LONGER_DETECTED', 'STILL_DETECTED');
+      const hasIssues = this.setSelectedValue('HAS_ISSUE', 'DOES_NOT_HAVE_ISSUE');
+      const hasMergeRequest = this.setSelectedValue(
+        'HAS_MERGE_REQUEST',
+        'DOES_NOT_HAVE_MERGE_REQUEST',
+      );
+      const hasRemediations = this.setSelectedValue('IS_AVAILABLE', 'IS_NOT_AVAILABLE');
 
       this.$emit('filter-changed', {
         hasResolution,
         hasIssues,
         ...(this.glFeatures.activityFilterHasMr ? { hasMergeRequest } : {}),
+        ...(this.glFeatures.activityFilterHasMr ? { hasRemediations } : {}),
       });
     },
   },
@@ -157,6 +158,13 @@ export default {
       else {
         this.selected = selectedWithoutAll;
       }
+    },
+    setSelectedValue(keyWhenTrue, keyWhenFalse) {
+      // The variables can be true, false, or unset, so we need to use if/else-if here instead
+      // of if/else.
+      if (this.selected.includes(ITEMS[keyWhenTrue].value)) return true;
+      if (this.selected.includes(ITEMS[keyWhenFalse].value)) return false;
+      return undefined;
     },
   },
   i18n: {
