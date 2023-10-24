@@ -741,9 +741,6 @@ msgstr ""
 msgid "%{emailPrefix}@company.com"
 msgstr ""
 
-msgid "%{enable_service_ping_link_start}Enable%{enable_service_ping_link_end} or %{generate_manually_link_start}generate%{generate_manually_link_end} Service Ping to preview and download service usage data payload."
-msgstr ""
-
 msgid "%{extra} more downstream pipelines"
 msgstr ""
 
@@ -3417,6 +3414,9 @@ msgstr ""
 msgid "AdminProjects|Delete Project %{projectName}?"
 msgstr ""
 
+msgid "AdminSettings|%{generate_manually_link_start}Generate%{generate_manually_link_end} Service Ping to preview and download service usage data payload."
+msgstr ""
+
 msgid "AdminSettings|%{setting_name} value used by both Rails and Browser JavaScript SDKs."
 msgstr ""
 
@@ -3493,6 +3493,9 @@ msgid "AdminSettings|Display a banner on merge requests in projects with no pipe
 msgstr ""
 
 msgid "AdminSettings|Domain verification is an essential security measure for public GitLab sites. Users are required to demonstrate they control a domain before it is enabled. %{link_start}Learn more.%{link_end}"
+msgstr ""
+
+msgid "AdminSettings|Download payload"
 msgstr ""
 
 msgid "AdminSettings|Elasticsearch indexing"
@@ -3691,6 +3694,9 @@ msgid "AdminSettings|Send email to maintainers after project is inactive for"
 msgstr ""
 
 msgid "AdminSettings|Send warning email"
+msgstr ""
+
+msgid "AdminSettings|Service Ping payload not found in the application cache"
 msgstr ""
 
 msgid "AdminSettings|Service ping is disabled in your configuration file, and cannot be enabled through this form. For more information, see the documentation on %{link_start}deactivating service ping%{link_end}."
@@ -17633,9 +17639,6 @@ msgid "Download export"
 msgstr ""
 
 msgid "Download image"
-msgstr ""
-
-msgid "Download payload"
 msgstr ""
 
 msgid "Download raw data (.csv)"
@@ -43772,9 +43775,6 @@ msgstr ""
 msgid "Service Desk allows people to create issues in your GitLab instance without their own user account. It provides a unique email address for end users to create issues in a project. Replies can be sent either through the GitLab interface or by email. End users only see threads through email."
 msgstr ""
 
-msgid "Service Ping payload not found in the application cache"
-msgstr ""
-
 msgid "Service account"
 msgstr ""
 
@@ -43782,9 +43782,6 @@ msgid "Service account generated successfully"
 msgstr ""
 
 msgid "Service accounts"
-msgstr ""
-
-msgid "Service usage data"
 msgstr ""
 
 msgid "ServiceAccount|No more seats are available to create Service Account User"
