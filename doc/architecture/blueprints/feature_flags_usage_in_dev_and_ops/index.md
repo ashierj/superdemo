@@ -139,7 +139,7 @@ This leads to confusion for almost all feature flag stakeholders (Development en
 
 It's clear that the `development` feature flag type actually includes several use-cases:
 
-- Deployment de-risking. YAML value: `auto`.
+- GitLab.com deployment de-risking. YAML value: `gitlab_com_derisk`.
 - Work-in-progress feature. YAML value: `wip`. Once the feature is complete, the feature flag type can be changed to `beta`
   if there still are some doubts on the scalability of the feature.
 - Beta features. YAML value: `beta`.
@@ -162,7 +162,7 @@ The MLS will be enforced through automation, reporting & regular review meetings
 
 Following are the constraints for each feature flag type:
 
-- `auto`
+- `gitlab_com_derisk`
   - `default_enabled` **must not** be set to `true`. This kind of feature flag is meant to lower the risk on GitLab.com, thus
     there's no need to keep the flag in the codebase after it's been enabled on GitLab.com.
     **`default_enabled: true` will not have any effect for this type of feature flag.**
@@ -198,7 +198,7 @@ feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/12345
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/678910
 rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/9876
 milestone: '16.5'
-type: auto
+type: gitlab_com_derisk
 group: group::pipeline execution
 ```
 
