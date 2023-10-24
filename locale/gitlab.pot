@@ -26676,7 +26676,7 @@ msgstr ""
 msgid "JiraConnect|Groups are the GitLab groups and subgroups you link to this Jira instance."
 msgstr ""
 
-msgid "JiraConnect|In order to complete the set up, you’ll need to complete a few steps in GitLab."
+msgid "JiraConnect|In order to complete the set up, you’ll need to complete a few steps in GitLab:"
 msgstr ""
 
 msgid "JiraConnect|Jira Connect Application ID"
@@ -26704,6 +26704,15 @@ msgid "JiraConnect|Not seeing your groups? Only groups you have access to appear
 msgstr ""
 
 msgid "JiraConnect|Not seeing your groups? Only groups you have at least the Maintainer role for appear here."
+msgstr ""
+
+msgid "JiraConnect|Prerequisites"
+msgstr ""
+
+msgid "JiraConnect|Set up OAuth authentication"
+msgstr ""
+
+msgid "JiraConnect|Set up your instance"
 msgstr ""
 
 msgid "JiraConnect|Setting up this integration is only possible if you're a GitLab administrator."
