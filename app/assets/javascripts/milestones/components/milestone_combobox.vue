@@ -51,20 +51,30 @@ export default {
   },
   computed: {
     ...mapState(['matches', 'selectedMilestones']),
-    ...mapGetters(['isLoading', 'groupMilestonesEnabled']),
+    ...mapGetters(['isLoading']),
     allMilestones() {
-      return [
-        {
+      const { groupMilestones, projectMilestones } = this.matches || {};
+      const milestones = [];
+
+      if (projectMilestones?.totalCount) {
+        milestones.push({
           id: 'project-milestones',
           text: this.$options.translations.projectMilestones,
-          options: this.matches?.projectMilestones?.list || [],
-        },
-        {
+          options: projectMilestones.list,
+          totalCount: projectMilestones.totalCount,
+        });
+      }
+
+      if (groupMilestones?.totalCount) {
+        milestones.push({
           id: 'group-milestones',
           text: this.$options.translations.groupMilestones,
-          options: this.matches?.groupMilestones?.list || [],
-        },
-      ];
+          options: groupMilestones.list,
+          totalCount: groupMilestones.totalCount,
+        });
+      }
+
+      return milestones;
     },
     selectedMilestonesLabel() {
       const { selectedMilestones } = this;
@@ -156,7 +166,7 @@ export default {
   >
     <template #group-label="{ group }">
       <span :data-testid="`${group.id}-section`"
-        >{{ group.text }} <gl-badge size="sm">{{ group.options.length }}</gl-badge></span
+        >{{ group.text }} <gl-badge size="sm">{{ group.totalCount }}</gl-badge></span
       >
     </template>
     <template #footer>
