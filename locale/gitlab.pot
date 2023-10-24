@@ -29979,6 +29979,9 @@ msgstr ""
 msgid "Metrics:"
 msgstr ""
 
+msgid "Metrics|Check again"
+msgstr ""
+
 msgid "Metrics|Create metric"
 msgstr ""
 
@@ -29988,7 +29991,13 @@ msgstr ""
 msgid "Metrics|Delete metric?"
 msgstr ""
 
+msgid "Metrics|Description"
+msgstr ""
+
 msgid "Metrics|Edit metric"
+msgstr ""
+
+msgid "Metrics|Failed to load metrics."
 msgstr ""
 
 msgid "Metrics|For grouping similar metrics"
@@ -30000,10 +30009,19 @@ msgstr ""
 msgid "Metrics|Legend label (optional)"
 msgstr ""
 
+msgid "Metrics|Metrics"
+msgstr ""
+
 msgid "Metrics|Must be a valid PromQL query."
 msgstr ""
 
+msgid "Metrics|Name"
+msgstr ""
+
 msgid "Metrics|New metric"
+msgstr ""
+
+msgid "Metrics|No metrics to display."
 msgstr ""
 
 msgid "Metrics|PromQL query is valid"
@@ -30013,6 +30031,9 @@ msgid "Metrics|Prometheus Query Documentation"
 msgstr ""
 
 msgid "Metrics|There was an error trying to validate your query"
+msgstr ""
+
+msgid "Metrics|Type"
 msgstr ""
 
 msgid "Metrics|Unit label"
