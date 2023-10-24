@@ -63,9 +63,6 @@ export default {
           variables: {
             projectPath: this.namespaceFullPath,
           },
-          context: {
-            isSingleRequest: true,
-          },
         });
 
         const [error] = data?.projectInitializeProductAnalytics?.errors || [];

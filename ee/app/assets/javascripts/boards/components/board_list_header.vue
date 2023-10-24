@@ -20,9 +20,6 @@ export default {
       variables() {
         return this.countQueryVariables;
       },
-      context: {
-        isSingleRequest: true,
-      },
       update(data) {
         return this.isEpicBoard ? data.epicBoardList : data.boardList;
       },

@@ -453,9 +453,6 @@ describe('fetchItemsForList', () => {
         first: 10,
       },
       fetchPolicy: fetchPolicies.NO_CACHE,
-      context: {
-        isSingleRequest: true,
-      },
     });
   });
 });
@@ -1600,9 +1597,6 @@ describe('addListNewIssue', () => {
           variables: {
             fullPath: state.fullPath,
             isGroup: state.boardType === WORKSPACE_GROUP,
-          },
-          context: {
-            isSingleRequest: true,
           },
         });
 

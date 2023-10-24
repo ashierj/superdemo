@@ -258,9 +258,6 @@ export default {
           fullPath: this.groupPath,
           name: this.destinationName,
         },
-        context: {
-          isSingleRequest: true,
-        },
         update(cache, { data: updateData }) {
           const errors = isInstance
             ? updateData.instanceExternalAuditEventDestinationCreate.errors
@@ -297,9 +294,6 @@ export default {
           fullPath: this.groupPath,
           id: destinationId,
           name: this.destinationName,
-        },
-        context: {
-          isSingleRequest: true,
         },
       });
 
@@ -393,9 +387,6 @@ export default {
         mutation: this.destinationVariables.destinationDestroyMutation,
         variables: {
           id: destinationId,
-        },
-        context: {
-          isSingleRequest: true,
         },
         update(cache, { data }) {
           const errors = isInstance

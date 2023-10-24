@@ -166,9 +166,6 @@ export default {
             privateKey: this.privateKey,
             logIdName: this.logIdName,
           },
-          context: {
-            isSingleRequest: true,
-          },
           update(cache, { data: updateData }, args) {
             const errors = isInstance
               ? updateData.instanceGoogleCloudLoggingConfigurationCreate.errors
@@ -221,9 +218,6 @@ export default {
             clientEmail: this.clientEmail,
             privateKey: this.privateKey,
             logIdName: this.logIdName,
-          },
-          context: {
-            isSingleRequest: true,
           },
         });
 

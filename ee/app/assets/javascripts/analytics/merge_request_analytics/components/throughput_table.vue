@@ -149,9 +149,6 @@ export default {
       error() {
         this.hasError = true;
       },
-      context: {
-        isSingleRequest: true,
-      },
     },
   },
   computed: {

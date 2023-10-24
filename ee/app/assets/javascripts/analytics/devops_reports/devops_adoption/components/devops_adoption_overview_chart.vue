@@ -53,9 +53,6 @@ export default {
           endDate: this.getMonthAgo(0),
         };
       },
-      context: {
-        isSingleRequest: true,
-      },
     },
   },
   computed: {

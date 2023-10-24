@@ -65,9 +65,6 @@ const fetchAndFormatListIssues = (state, { fetchPolicy, ...extraVariables }) => 
   return gqlClient
     .query({
       query: listsIssuesQuery,
-      context: {
-        isSingleRequest: true,
-      },
       variables,
       fetchPolicy,
     })
@@ -92,9 +89,6 @@ const fetchAndFormatListEpics = (state, { fetchPolicy, ...extraVariables }) => {
   return gqlClient
     .query({
       query,
-      context: {
-        isSingleRequest: true,
-      },
       variables,
       fetchPolicy,
     })
@@ -147,9 +141,6 @@ export default {
     const getCurrentIteration = async (bType, fPath) => {
       const { data = {} } = await gqlClient.query({
         query: currentIterationQuery,
-        context: {
-          isSingleRequest: true,
-        },
         variables: {
           isGroup: bType === WORKSPACE_GROUP,
           fullPath: fPath,
