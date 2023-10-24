@@ -22,13 +22,13 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
       ensure_onboarding { expect_to_see_company_form }
 
       # failure
-      fill_in_company_form(success: false)
+      fill_in_company_form(success: false, trial: true)
       click_on 'Continue'
 
       expect_to_see_company_form_failure
 
       # success
-      fill_in_company_form(success: true)
+      fill_in_company_form(success: true, trial: true)
       click_on 'Continue'
 
       ensure_onboarding { expect_to_see_group_and_project_creation_form }
@@ -62,7 +62,7 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
       expect(page).to have_native_text_validation_message('last_name')
 
       # success
-      fill_in_company_form(with_last_name: true, glm: false, opt_in_email: true)
+      fill_in_company_form(with_last_name: true, glm: false, opt_in_email: true, trial: true)
       click_on 'Continue'
 
       ensure_onboarding { expect_to_see_group_and_project_creation_form }

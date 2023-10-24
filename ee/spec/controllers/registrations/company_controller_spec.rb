@@ -76,6 +76,7 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
   describe '#create' do
     using RSpec::Parameterized::TableSyntax
 
+    let(:trial_registration) { 'false' }
     let(:glm_params) do
       {
         glm_source: 'some_source',
@@ -91,7 +92,8 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
         country: 'US',
         state: 'CA',
         website_url: 'gitlab.com',
-        opt_in: 'true'
+        opt_in: 'true',
+        trial: trial_registration
       }.merge(glm_params)
     end
 
@@ -109,7 +111,8 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
           GitlabSubscriptions::CreateCompanyLeadService,
           user: user,
           params: ActionController::Parameters.new(params.merge(
-            trial_onboarding_flow: true
+            trial_onboarding_flow: true,
+            trial: false
           )).permit!
         ) do |service|
           expect(service).to receive(:execute).and_return(ServiceResponse.success)
@@ -119,6 +122,25 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
 
         expect(response).to have_gitlab_http_status(:redirect)
         expect(response).to redirect_to(new_users_sign_up_group_path(redirect_params))
+      end
+
+      context 'when it is a trial registration' do
+        let(:trial_registration) { 'true' }
+
+        it 'creates trial and redirects to the correct path' do
+          expect_next_instance_of(
+            GitlabSubscriptions::CreateCompanyLeadService,
+            user: user,
+            params: ActionController::Parameters.new(params.merge(
+              trial_onboarding_flow: true,
+              trial: true
+            )).permit!
+          ) do |service|
+            expect(service).to receive(:execute).and_return(ServiceResponse.success)
+          end
+
+          post :create, params: params
+        end
       end
 
       context 'when saving onboarding_step_url' do

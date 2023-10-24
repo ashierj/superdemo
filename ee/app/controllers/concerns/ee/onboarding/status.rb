@@ -6,6 +6,7 @@ module EE
       PRODUCT_INTERACTION = {
         free: 'Personal SaaS Registration',
         trial: 'SaaS Trial',
+        automatic_trial: 'SaaS Trial - defaulted',
         invite: 'Invited User',
         lead: 'SaaS Registration'
       }.freeze
@@ -99,6 +100,14 @@ module EE
           PRODUCT_INTERACTION[:invite]
         else
           PRODUCT_INTERACTION[:free]
+        end
+      end
+
+      def company_lead_product_interaction
+        if trial?
+          PRODUCT_INTERACTION[:trial]
+        else
+          PRODUCT_INTERACTION[:automatic_trial]
         end
       end
 

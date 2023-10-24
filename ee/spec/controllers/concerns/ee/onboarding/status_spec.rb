@@ -324,6 +324,26 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
   end
 
+  describe '#company_lead_product_interaction' do
+    let(:params) { { trial: true } }
+
+    before do
+      stub_saas_features(onboarding: true)
+    end
+
+    subject { described_class.new(params, nil, nil).company_lead_product_interaction }
+
+    context 'with a trial registration' do
+      it { is_expected.to eq('SaaS Trial') }
+    end
+
+    context 'with automatic trial' do
+      let(:params) { { trial: false } }
+
+      it { is_expected.to eq('SaaS Trial - defaulted') }
+    end
+  end
+
   describe '#eligible_for_iterable_trigger?' do
     let(:params) { {} }
     let(:current_user) { nil }
