@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::GroupLinks::UpdateService do
+RSpec.describe Projects::GroupLinks::UpdateService, feature_category: :groups_and_projects do
   let_it_be(:user) { create :user }
   let_it_be(:group) { create :group }
   let_it_be(:project) { create :project }
@@ -18,7 +18,7 @@ RSpec.describe Projects::GroupLinks::UpdateService do
   subject(:execute_update_service) { described_class.new(link, user).execute(group_link_params) }
 
   before do
-    group.add_maintainer(user)
+    project.add_maintainer(user)
   end
 
   context 'audit events' do

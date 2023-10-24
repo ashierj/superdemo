@@ -8,9 +8,9 @@ module EE
 
         override :execute
         def execute(group_link_params)
-          super
-
-          send_audit_event
+          super.tap do
+            send_audit_event
+          end
         end
 
         private
