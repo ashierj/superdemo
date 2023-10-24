@@ -23,26 +23,6 @@ RSpec.describe Mutations::Geo::Registries::BulkUpdate, feature_category: :geo_re
 
     specify { expect(described_class).to require_graphql_authorizations(:read_geo_registry) }
 
-    context 'when feature flag `geo_registries_update_mutation` is disabled' do
-      before do
-        stub_feature_flags(geo_registries_update_mutation: false)
-      end
-
-      let(:arguments) { { registry_class: registry_class_argument, action: 'RESYNC_ALL' } }
-
-      let(:fields) do
-        <<-FIELDS
-          registryClass
-          errors
-        FIELDS
-      end
-
-      let(:mutation) { graphql_mutation(mutation_name, arguments, fields) }
-
-      it_behaves_like 'a mutation that returns top-level errors',
-        errors: ['`geo_registries_update_mutation` feature flag is disabled.']
-    end
-
     context 'when geo licensed feature is not available' do
       let_it_be(:current_user) { create(:user) }
 

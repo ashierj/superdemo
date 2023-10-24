@@ -5,8 +5,7 @@ module Mutations
     module Registries
       class Update < BaseMutation
         graphql_name 'GeoRegistriesUpdate'
-        description 'Mutates a Geo registry. Does not mutate the registry entry if ' \
-                    '`geo_registries_update_mutation` feature flag is disabled.'
+        description 'Mutates a Geo registry.'
 
         extend ::Gitlab::Utils::Override
 
@@ -34,10 +33,6 @@ module Mutations
         # and it is `required: false`, expecting to be removed entirely.
         # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/424563
         def resolve(action:, registry_id:, registry_class:)  # rubocop:disable Lint/UnusedMethodArgument
-          if Feature.disabled?(:geo_registries_update_mutation)
-            raise_resource_not_available_error!('`geo_registries_update_mutation` feature flag is disabled.')
-          end
-
           registry = authorized_find!(registry_id)
 
           result = ::Geo::RegistryUpdateService.new(action, registry).execute

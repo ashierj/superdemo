@@ -72,7 +72,7 @@ export default {
       return this.replicableItems.length > 0;
     },
     showBulkActions() {
-      return this.glFeatures.geoRegistriesUpdateMutation && this.hasReplicableItems;
+      return this.hasReplicableItems;
     },
     showSearch() {
       // To be implemented via https://gitlab.com/gitlab-org/gitlab/-/issues/411982

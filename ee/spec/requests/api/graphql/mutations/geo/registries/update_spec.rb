@@ -41,28 +41,6 @@ RSpec.describe Mutations::Geo::Registries::Update, feature_category: :geo_replic
       graphql_mutation_response(mutation_name)
     end
 
-    context 'when feature flag `geo_registries_update_mutation` is disabled' do
-      before do
-        stub_feature_flags(geo_registries_update_mutation: false)
-      end
-
-      let(:arguments) { { registry_id: registry_global_id, action: 'RESYNC' } }
-
-      let(:fields) do
-        <<-FIELDS
-        registry {
-          #{query_graphql_fragment(registry_fragment_name)}
-        }
-        errors
-        FIELDS
-      end
-
-      let(:mutation) { graphql_mutation(mutation_name, arguments, fields) }
-
-      it_behaves_like 'a mutation that returns top-level errors',
-        errors: ['`geo_registries_update_mutation` feature flag is disabled.']
-    end
-
     context 'when geo licensed feature is not available' do
       let_it_be(:current_user) { create(:user) }
 

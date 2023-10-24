@@ -59,46 +59,36 @@ describe('GeoReplicableItem', () => {
     findReplicableItemTimeAgos().wrappers.map((w) => w.props('defaultText'));
 
   describe.each`
-    geoRegistriesUpdateMutation | verificationEnabled | showResyncAction | showReverifyAction
-    ${false}                    | ${false}            | ${false}         | ${false}
-    ${false}                    | ${true}             | ${false}         | ${false}
-    ${true}                     | ${false}            | ${true}          | ${false}
-    ${true}                     | ${true}             | ${true}          | ${true}
-  `(
-    'template',
-    ({
-      geoRegistriesUpdateMutation,
-      verificationEnabled,
-      showResyncAction,
-      showReverifyAction,
-    }) => {
-      describe(`when verificationEnabled is ${verificationEnabled} and feature flag geoRegistriesUpdateMutation is ${geoRegistriesUpdateMutation}`, () => {
-        beforeEach(() => {
-          createComponent(null, { verificationEnabled }, { geoRegistriesUpdateMutation });
-        });
-
-        it('renders GeoReplicableStatus', () => {
-          expect(findReplicableItemSyncStatus().exists()).toBe(true);
-        });
-
-        it('renders title as plain text', () => {
-          expect(findReplicableItemNoLinkText().text()).toBe(mockReplicable.name);
-        });
-
-        it(`${showResyncAction ? 'does' : 'does not'} render Resync Button`, () => {
-          expect(findResyncButton().exists()).toBe(showResyncAction);
-        });
-
-        it(`${showReverifyAction ? 'does' : 'does not'} render Reverify Button`, () => {
-          expect(findReverifyButton().exists()).toBe(showReverifyAction);
-        });
+    verificationEnabled | showResyncAction | showReverifyAction
+    ${false}            | ${true}          | ${false}
+    ${true}             | ${true}          | ${true}
+  `('template', ({ verificationEnabled, showResyncAction, showReverifyAction }) => {
+    describe(`when verificationEnabled is ${verificationEnabled}`, () => {
+      beforeEach(() => {
+        createComponent(null, { verificationEnabled });
       });
-    },
-  );
+
+      it('renders GeoReplicableStatus', () => {
+        expect(findReplicableItemSyncStatus().exists()).toBe(true);
+      });
+
+      it('renders title as plain text', () => {
+        expect(findReplicableItemNoLinkText().text()).toBe(mockReplicable.name);
+      });
+
+      it(`${showResyncAction ? 'does' : 'does not'} render Resync Button`, () => {
+        expect(findResyncButton().exists()).toBe(showResyncAction);
+      });
+
+      it(`${showReverifyAction ? 'does' : 'does not'} render Reverify Button`, () => {
+        expect(findReverifyButton().exists()).toBe(showReverifyAction);
+      });
+    });
+  });
 
   describe('Resync button action', () => {
     beforeEach(() => {
-      createComponent(null, null, { geoRegistriesUpdateMutation: true });
+      createComponent(null, null);
     });
 
     it('calls initiateReplicableAction when clicked', () => {
@@ -114,7 +104,7 @@ describe('GeoReplicableItem', () => {
 
   describe('Reverify button action', () => {
     beforeEach(() => {
-      createComponent(null, { verificationEnabled: true }, { geoRegistriesUpdateMutation: true });
+      createComponent(null, { verificationEnabled: true });
     });
 
     it('calls initiateReplicableAction when clicked', () => {

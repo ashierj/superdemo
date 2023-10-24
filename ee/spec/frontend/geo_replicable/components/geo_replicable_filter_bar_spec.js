@@ -85,23 +85,16 @@ describe('GeoReplicableFilterBar', () => {
     });
 
     describe.each`
-      featureFlag | replicableItems            | verificationEnabled | showResyncAll | showReverifyAll
-      ${false}    | ${[]}                      | ${false}            | ${false}      | ${false}
-      ${false}    | ${[]}                      | ${true}             | ${false}      | ${false}
-      ${false}    | ${MOCK_BASIC_GRAPHQL_DATA} | ${false}            | ${false}      | ${false}
-      ${false}    | ${MOCK_BASIC_GRAPHQL_DATA} | ${true}             | ${false}      | ${false}
-      ${true}     | ${[]}                      | ${false}            | ${false}      | ${false}
-      ${true}     | ${[]}                      | ${true}             | ${false}      | ${false}
-      ${true}     | ${MOCK_BASIC_GRAPHQL_DATA} | ${false}            | ${true}       | ${false}
-      ${true}     | ${MOCK_BASIC_GRAPHQL_DATA} | ${true}             | ${true}       | ${true}
+      replicableItems            | verificationEnabled | showResyncAll | showReverifyAll
+      ${[]}                      | ${false}            | ${false}      | ${false}
+      ${MOCK_BASIC_GRAPHQL_DATA} | ${false}            | ${true}       | ${false}
+      ${[]}                      | ${true}             | ${false}      | ${false}
+      ${MOCK_BASIC_GRAPHQL_DATA} | ${true}             | ${true}       | ${true}
     `(
-      'Bulk Actions when geoRegistriesUpdateMutation FF is $featureFlag',
-      ({ featureFlag, replicableItems, verificationEnabled, showResyncAll, showReverifyAll }) => {
+      'Bulk Actions',
+      ({ replicableItems, verificationEnabled, showResyncAll, showReverifyAll }) => {
         beforeEach(() => {
-          createComponent(
-            { replicableItems, verificationEnabled },
-            { geoRegistriesUpdateMutation: featureFlag },
-          );
+          createComponent({ replicableItems, verificationEnabled });
         });
 
         it(`does ${showResyncAll ? '' : 'not '}render Resync All Button`, () => {
@@ -146,7 +139,7 @@ describe('GeoReplicableFilterBar', () => {
   describe('Bulk actions modal', () => {
     describe('Resync All', () => {
       beforeEach(() => {
-        createComponent({}, { geoRegistriesUpdateMutation: true });
+        createComponent({});
         findResyncAllButton().vm.$emit('click');
       });
 
@@ -166,7 +159,7 @@ describe('GeoReplicableFilterBar', () => {
 
     describe('Reverify All', () => {
       beforeEach(() => {
-        createComponent({}, { geoRegistriesUpdateMutation: true });
+        createComponent({});
         findReverifyAllButton().vm.$emit('click');
       });
 

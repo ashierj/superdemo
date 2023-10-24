@@ -3898,7 +3898,7 @@ Input type: `ExternalAuditEventDestinationUpdateInput`
 
 ### `Mutation.geoRegistriesBulkUpdate`
 
-Mutates multiple Geo registries for a given registry class. Does not mutate the registries if `geo_registries_update_mutation` feature flag is disabled.
+Mutates multiple Geo registries for a given registry class.
 
 WARNING:
 **Introduced** in 16.4.
@@ -3924,7 +3924,7 @@ Input type: `GeoRegistriesBulkUpdateInput`
 
 ### `Mutation.geoRegistriesUpdate`
 
-Mutates a Geo registry. Does not mutate the registry entry if `geo_registries_update_mutation` feature flag is disabled.
+Mutates a Geo registry.
 
 WARNING:
 **Introduced** in 16.1.

@@ -5,8 +5,7 @@ module Mutations
     module Registries
       class BulkUpdate < BaseMutation
         graphql_name 'GeoRegistriesBulkUpdate'
-        description 'Mutates multiple Geo registries for a given registry class. ' \
-                    'Does not mutate the registries if `geo_registries_update_mutation` feature flag is disabled.'
+        description 'Mutates multiple Geo registries for a given registry class.'
 
         extend ::Gitlab::Utils::Override
 
@@ -25,10 +24,6 @@ module Mutations
         field :registry_class, ::Types::Geo::RegistryClassEnum, null: true, description: 'Updated Geo registry class.'
 
         def resolve(action:, registry_class:)
-          if Feature.disabled?(:geo_registries_update_mutation)
-            raise_resource_not_available_error!('`geo_registries_update_mutation` feature flag is disabled.')
-          end
-
           raise_resource_not_available_error! unless current_user.can?(:read_all_geo, :global)
 
           result = ::Geo::RegistryBulkUpdateService.new(action, registry_class).execute

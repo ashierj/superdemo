@@ -67,9 +67,6 @@ export default {
         },
       ];
     },
-    showActions() {
-      return this.glFeatures.geoRegistriesUpdateMutation;
-    },
   },
   methods: {
     ...mapActions(['initiateReplicableAction']),
@@ -86,7 +83,7 @@ export default {
     >
       <geo-replicable-status :status="syncStatus" />
       <span class="gl-font-weight-bold">{{ name }}</span>
-      <div v-if="showActions">
+      <div>
         <gl-button
           data-testid="geo-resync-item"
           size="small"
