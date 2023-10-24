@@ -18961,6 +18961,9 @@ msgstr ""
 msgid "Error creating vulnerability finding: %{errors}"
 msgstr ""
 
+msgid "Error deleting the value stream"
+msgstr ""
+
 msgid "Error fetching branches"
 msgstr ""
 
