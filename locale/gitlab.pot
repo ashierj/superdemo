@@ -32501,6 +32501,21 @@ msgstr ""
 msgid "ObservabilityMetrics|Metrics"
 msgstr ""
 
+msgid "Observability|Enable"
+msgstr ""
+
+msgid "Observability|Failed to enable GitLab Observability."
+msgstr ""
+
+msgid "Observability|Failed to load page."
+msgstr ""
+
+msgid "Observability|Get started with GitLab Observability"
+msgstr ""
+
+msgid "Observability|Monitor your applications with GitLab Observability."
+msgstr ""
+
 msgid "Oct"
 msgstr ""
 
