@@ -292,7 +292,7 @@ module EE
 
             check_ssh_certificate_available_to_group(group)
 
-            response = ::Groups::SshCertificates::CreateService.new(group, params).execute
+            response = ::Groups::SshCertificates::CreateService.new(group, params, current_user).execute
             if response.success?
               present response.payload, with: EE::API::Entities::SshCertificate
             else
@@ -316,7 +316,7 @@ module EE
 
             check_ssh_certificate_available_to_group(group)
 
-            response = ::Groups::SshCertificates::DestroyService.new(group, params).execute
+            response = ::Groups::SshCertificates::DestroyService.new(group, params, current_user).execute
 
             if response.success?
               no_content!
