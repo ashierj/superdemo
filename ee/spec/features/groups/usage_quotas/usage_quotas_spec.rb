@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas', :saas, feature_category: :consumables_cost_management do
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+RSpec.describe 'Groups > Usage Quotas', :js, :saas, feature_category: :consumables_cost_management do
+  let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
   let!(:project) do
@@ -21,7 +21,7 @@ RSpec.describe 'Groups > Usage Quotas', :saas, feature_category: :consumables_co
     it 'is linked within the group settings dropdown' do
       visit edit_group_path(group)
 
-      page.within('.nav-sidebar') do
+      within_testid('super-sidebar') do
         expect(page).to have_link('Usage Quotas')
       end
     end
@@ -34,7 +34,7 @@ RSpec.describe 'Groups > Usage Quotas', :saas, feature_category: :consumables_co
       it 'is linked within the group settings dropdown' do
         visit edit_group_path(group)
 
-        page.within('.nav-sidebar') do
+        within_testid('super-sidebar') do
           expect(page).to have_link('Usage Quotas')
         end
       end
@@ -48,7 +48,7 @@ RSpec.describe 'Groups > Usage Quotas', :saas, feature_category: :consumables_co
       it 'is not linked within the group settings dropdown' do
         visit edit_group_path(group)
 
-        page.within('.nav-sidebar') do
+        within_testid('super-sidebar') do
           expect(page).not_to have_link('Usage Quotas')
         end
       end
@@ -56,7 +56,7 @@ RSpec.describe 'Groups > Usage Quotas', :saas, feature_category: :consumables_co
       it 'renders a 404' do
         visit_usage_quotas_page
 
-        expect(page).to have_gitlab_http_status(:not_found)
+        expect(page).to have_title('Not Found')
       end
     end
   end
@@ -68,7 +68,7 @@ RSpec.describe 'Groups > Usage Quotas', :saas, feature_category: :consumables_co
     it 'does not show subproject' do
       visit_usage_quotas_page
 
-      expect(page).to have_gitlab_http_status(:not_found)
+      expect(page).to have_title('Not Found')
     end
   end
 

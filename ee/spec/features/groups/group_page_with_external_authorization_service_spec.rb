@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'The group page', feature_category: :groups_and_projects do
+RSpec.describe 'The group page', :js, feature_category: :groups_and_projects do
   include ExternalAuthorizationServiceHelpers
 
-  let(:user) { create(:user, :no_super_sidebar) }
+  let(:user) { create(:user) }
   let(:group) { create(:group) }
 
   before do
@@ -17,8 +17,9 @@ RSpec.describe 'The group page', feature_category: :groups_and_projects do
     it 'shows the link to contribution analytics' do
       visit group_path(group)
 
-      within('.nav-sidebar') do
-        expect(page).to have_link('Contribution')
+      within_testid('super-sidebar') do
+        click_button 'Analyze'
+        expect(page).to have_link('Contribution analytics')
       end
     end
 
@@ -30,7 +31,7 @@ RSpec.describe 'The group page', feature_category: :groups_and_projects do
       it 'shows the link to epics' do
         visit group_path(group)
 
-        within('.nav-sidebar') do
+        within_testid('super-sidebar') do
           expect(page).to have_link('Epics')
         end
       end
@@ -39,7 +40,7 @@ RSpec.describe 'The group page', feature_category: :groups_and_projects do
         enable_external_authorization_service_check
         visit group_path(group)
 
-        within('.nav-sidebar') do
+        within_testid('super-sidebar') do
           expect(page).not_to have_link('Epics')
         end
       end

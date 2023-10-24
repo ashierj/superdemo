@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
+RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_projects do
   include ListboxHelpers
 
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
-  let_it_be(:developer) { create(:user, :no_super_sidebar) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:developer) { create(:user) }
   let_it_be(:group, refind: true) { create(:group, name: 'Foo bar', path: 'foo') }
 
   before_all do
@@ -30,7 +30,9 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
       it 'is able to navigate to LDAP group section' do
         visit edit_group_path(group)
 
-        expect(find('.nav-sidebar')).to have_content('LDAP Synchronization')
+        within_testid('super-sidebar') do
+          expect(page).to have_content('LDAP Synchronization')
+        end
       end
 
       context 'with owners not being able to manage LDAP' do
@@ -39,7 +41,9 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
 
           visit edit_group_path(group)
 
-          expect(find('.nav-sidebar')).not_to have_content('LDAP Synchronization')
+          within_testid('super-sidebar') do
+            expect(page).not_to have_content('LDAP Synchronization')
+          end
         end
       end
     end
@@ -51,7 +55,7 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
 
       visit edit_group_path(group)
 
-      within('.nav-sidebar') do
+      within_testid('super-sidebar') do
         expect(page).to have_link('Webhooks')
       end
     end
@@ -63,7 +67,7 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
 
       visit edit_group_path(group)
 
-      within('.nav-sidebar') do
+      within_testid('super-sidebar') do
         expect(page).not_to have_link('Webhooks')
       end
     end
