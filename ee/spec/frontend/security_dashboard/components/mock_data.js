@@ -177,6 +177,7 @@ export const generateVulnerabilities = () => [
     detectedAt: '2020-07-22T19:31:24Z',
     resolvedOnDefaultBranch: false,
     issueLinks: [],
+    mergeRequest: null,
     identifiers: [
       {
         externalType: 'gemnasium',
@@ -208,6 +209,7 @@ export const generateVulnerabilities = () => [
     detectedAt: '2020-08-22T20:00:12Z',
     resolvedOnDefaultBranch: false,
     issueLinks: [],
+    mergeRequest: null,
     identifiers: [],
     dismissalReason: null,
     title: 'Vulnerability 2',
@@ -235,6 +237,7 @@ export const generateVulnerabilities = () => [
     detectedAt: new Date(),
     resolvedOnDefaultBranch: true,
     issueLinks: [],
+    mergeRequest: null,
     identifiers: [],
     dismissalReason: null,
     reportType: '',
@@ -260,6 +263,7 @@ export const generateVulnerabilities = () => [
     detectedAt: new Date(),
     resolvedOnDefaultBranch: true,
     issueLinks: [],
+    mergeRequest: null,
     identifiers: [],
     dismissalReason: null,
     reportType: 'DAST',
@@ -281,6 +285,7 @@ export const generateVulnerabilities = () => [
     detectedAt: new Date(),
     resolvedOnDefaultBranch: false,
     issueLinks: [],
+    mergeRequest: null,
     identifiers: [],
     dismissalReason: null,
     reportType: 'DEPENDENCY_SCANNING',
@@ -304,6 +309,7 @@ export const generateVulnerabilities = () => [
     detectedAt: new Date(),
     resolvedOnDefaultBranch: false,
     issueLinks: [],
+    mergeRequest: null,
     identifiers: [],
     dismissalReason: null,
     reportType: 'DEPENDENCY_SCANNING',
@@ -323,62 +329,3 @@ export const generateVulnerabilities = () => [
 ];
 
 export const vulnerabilities = generateVulnerabilities();
-
-const generateVulnerabilityScanners = () => [
-  {
-    id: 'gid://gitlab/Vulnerabilities::Scanner/155',
-    externalId: 'eslint',
-    name: 'ESLint',
-    vendor: 'GitLab',
-    reportType: 'SAST',
-    __typename: 'VulnerabilityScanner',
-  },
-  {
-    id: 'gid://gitlab/Vulnerabilities::Scanner/156',
-    externalId: 'find_sec_bugs',
-    name: 'Find Security Bugs',
-    vendor: 'GitLab',
-    reportType: 'SAST',
-    __typename: 'VulnerabilityScanner',
-  },
-  {
-    id: 'gid://gitlab/Vulnerabilities::Scanner/247',
-    externalId: 'gitlab-manual-vulnerability-report',
-    name: 'manually-created-vulnerability',
-    vendor: 'GitLab',
-    reportType: 'GENERIC',
-    __typename: 'VulnerabilityScanner',
-  },
-];
-
-export const projectVulnerabilityScanners = {
-  data: {
-    project: {
-      id: 'gid://gitlab/Project/26',
-      vulnerabilityScanners: {
-        nodes: generateVulnerabilityScanners(),
-      },
-    },
-  },
-};
-
-export const groupVulnerabilityScanners = {
-  data: {
-    group: {
-      id: 'gid://gitlab/Group/22',
-      vulnerabilityScanners: {
-        nodes: generateVulnerabilityScanners(),
-      },
-    },
-  },
-};
-
-export const instanceVulnerabilityScanners = {
-  data: {
-    instanceSecurityDashboard: {
-      vulnerabilityScanners: {
-        nodes: generateVulnerabilityScanners(),
-      },
-    },
-  },
-};
