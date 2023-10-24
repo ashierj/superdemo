@@ -16462,6 +16462,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="designversiondesignsatversionfilenames"></a>`filenames` | [`[String!]`](#string) | Filters designs by their filename. |
 | <a id="designversiondesignsatversionids"></a>`ids` | [`[DesignManagementDesignID!]`](#designmanagementdesignid) | Filters designs by their ID. |
 
+### `DetailedImportStatus`
+
+Details of the import status of a project.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="detailedimportstatusid"></a>`id` | [`ProjectImportStateID`](#projectimportstateid) | ID of the import state. |
+| <a id="detailedimportstatuslasterror"></a>`lastError` | [`String`](#string) | Last error of the import. |
+| <a id="detailedimportstatuslastsuccessfulupdateat"></a>`lastSuccessfulUpdateAt` | [`Time`](#time) | Time of the last successful update. |
+| <a id="detailedimportstatuslastupdateat"></a>`lastUpdateAt` | [`Time`](#time) | Time of the last update. |
+| <a id="detailedimportstatuslastupdatestartedat"></a>`lastUpdateStartedAt` | [`Time`](#time) | Time of the start of the last update. |
+| <a id="detailedimportstatusstatus"></a>`status` | [`String`](#string) | Current status of the import. |
+| <a id="detailedimportstatusurl"></a>`url` | [`String`](#string) | Import url. |
+
 ### `DetailedStatus`
 
 #### Fields
@@ -22466,6 +22482,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectdependencyproxypackagessetting"></a>`dependencyProxyPackagesSetting` **{warning-solid}** | [`DependencyProxyPackagesSetting`](#dependencyproxypackagessetting) | **Introduced** in 16.5. This feature is an Experiment. It can be changed or removed at any time. Packages Dependency Proxy settings for the project. Requires the packages and dependency proxy to be enabled in the config. Requires the packages feature to be enabled at the project level. Returns `null` if `packages_dependency_proxy_maven` feature flag is disabled. |
 | <a id="projectdescription"></a>`description` | [`String`](#string) | Short description of the project. |
 | <a id="projectdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `description`. |
+| <a id="projectdetailedimportstatus"></a>`detailedImportStatus` | [`DetailedImportStatus`](#detailedimportstatus) | Detailed import status of the project. |
 | <a id="projectdora"></a>`dora` | [`Dora`](#dora) | Project's DORA metrics. |
 | <a id="projectflowmetrics"></a>`flowMetrics` **{warning-solid}** | [`ProjectValueStreamAnalyticsFlowMetrics`](#projectvaluestreamanalyticsflowmetrics) | **Introduced** in 15.10. This feature is an Experiment. It can be changed or removed at any time. Flow metrics for value stream analytics. |
 | <a id="projectforkscount"></a>`forksCount` | [`Int!`](#int) | Number of times the project has been forked. |
@@ -30640,6 +30657,12 @@ String or integer.
 A `ProjectID` is a global ID. It is encoded as a string.
 
 An example `ProjectID` is: `"gid://gitlab/Project/1"`.
+
+### `ProjectImportStateID`
+
+A `ProjectImportStateID` is a global ID. It is encoded as a string.
+
+An example `ProjectImportStateID` is: `"gid://gitlab/ProjectImportState/1"`.
 
 ### `ReleaseID`
 
