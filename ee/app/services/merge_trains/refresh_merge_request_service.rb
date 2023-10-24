@@ -95,15 +95,15 @@ module MergeTrains
       raise ProcessError, result[:message] unless result[:status] == :success
 
       pipeline = result[:pipeline]
-      cancel_pipeline!(merge_train_car.pipeline, pipeline.id)
+      cancel_pipeline!(merge_train_car.pipeline, pipeline)
       merge_train_car.refresh_pipeline!(pipeline.id)
 
       pipeline
     end
 
-    def cancel_pipeline!(pipeline, new_pipeline_id)
+    def cancel_pipeline!(pipeline, new_pipeline)
       ::Ci::CancelPipelineService
-        .new(pipeline: pipeline, current_user: nil, auto_canceled_by_pipeline_id: new_pipeline_id)
+        .new(pipeline: pipeline, current_user: nil, auto_canceled_by_pipeline: new_pipeline)
         .force_execute
     rescue ActiveRecord::StaleObjectError
       # Often the pipeline has already been canceled by the auto-cancellation
