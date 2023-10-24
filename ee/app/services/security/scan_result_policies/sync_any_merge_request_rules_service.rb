@@ -25,34 +25,47 @@ module Security
         related_policies = merge_request.project.scan_result_policy_reads.targeting_commits
         return if related_policies.empty?
 
-        violated_policies, unviolated_policies = partition_policies(related_policies)
+        violated_policies_ids, unviolated_policies_ids = evaluate_policy_violations(related_policies)
 
-        violated_rules, _unviolated_rules = update_required_approvals(violated_policies, unviolated_policies)
+        violated_rules, unviolated_rules = rules_for_violated_policies(violated_policies_ids)
+        violated_rules, unviolated_rules = update_required_approvals(violated_rules, unviolated_rules)
+
         generate_policy_bot_comment(merge_request, violated_rules, :any_merge_request)
         log_violated_rules(violated_rules)
-        violations.add(violated_policies.pluck(:id), unviolated_policies.pluck(:id)) # rubocop:disable CodeReuse/ActiveRecord
+        # rubocop:disable CodeReuse/ActiveRecord
+        violations.add(
+          violated_policies_ids - unviolated_rules.pluck(:scan_result_policy_id),
+          unviolated_policies_ids + unviolated_rules.pluck(:scan_result_policy_id)
+        )
+        # rubocop:enable CodeReuse/ActiveRecord
       end
 
-      def partition_policies(scan_result_policy_reads)
+      def evaluate_policy_violations(scan_result_policy_reads)
         has_unsigned_commits = !merge_request.commits(load_from_gitaly: true).all?(&:has_signature?)
-        scan_result_policy_reads.partition do |scan_result_policy_read|
+        violated, unviolated = scan_result_policy_reads.partition do |scan_result_policy_read|
           scan_result_policy_read.commits_any? ||
             (scan_result_policy_read.commits_unsigned? && has_unsigned_commits)
         end
+        [violated.pluck(:id), unviolated.pluck(:id)] # rubocop:disable CodeReuse/ActiveRecord
       end
 
-      def update_required_approvals(violated_policies, unviolated_policies)
+      def rules_for_violated_policies(violated_policies_ids)
         approval_rules = merge_request.approval_rules.any_merge_request
-        violated_rules = approval_rules_for_policies(approval_rules, violated_policies)
-        unviolated_rules = approval_rules_for_policies(approval_rules, unviolated_policies)
+        approval_rules_for_target_branch = approval_rules.applicable_to_branch(merge_request.target_branch)
 
+        violated_rules = approval_rules_for_policies(approval_rules_for_target_branch, violated_policies_ids)
+        unviolated_rules = approval_rules - violated_rules
+
+        [violated_rules, unviolated_rules]
+      end
+
+      def update_required_approvals(violated_rules, unviolated_rules)
         updated_violated_rules = merge_request.reset_required_approvals(violated_rules)
         ApprovalMergeRequestRule.remove_required_approved(unviolated_rules) if unviolated_rules.any?
         [updated_violated_rules, unviolated_rules]
       end
 
-      def approval_rules_for_policies(approval_rules, policies)
-        policies_ids = policies.pluck(:id) # rubocop:disable CodeReuse/ActiveRecord
+      def approval_rules_for_policies(approval_rules, policies_ids)
         approval_rules.select { |rule| policies_ids.include? rule.scan_result_policy_id }
       end
 
