@@ -14422,6 +14422,9 @@ msgstr ""
 msgid "Creating epic"
 msgstr ""
 
+msgid "Creation of member role is allowed only for root groups"
+msgstr ""
+
 msgid "Creator"
 msgstr ""
 

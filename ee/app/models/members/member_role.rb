@@ -94,6 +94,10 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     end
   end
 
+  def enabled_permissions
+    MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.keys.filter { |perm| attributes[perm.to_s] }
+  end
+
   private
 
   def belongs_to_top_level_namespace

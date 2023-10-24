@@ -204,4 +204,12 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
           *described_class::NON_PERMISSION_COLUMNS)
     end
   end
+
+  describe '#enabled_permissions' do
+    it 'returns the list of enabled abilities' do
+      member_role = build_stubbed(:member_role, read_code: true, read_vulnerability: true, read_dependency: false)
+
+      expect(member_role.enabled_permissions).to match_array([:read_code, :read_vulnerability])
+    end
+  end
 end

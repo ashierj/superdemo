@@ -7,17 +7,9 @@ module Mutations
 
       authorize :admin_group_member
 
-      argument :description,
-        GraphQL::Types::String,
-        required: false,
-        description: 'Description of the member role.'
       argument :id, ::Types::GlobalIDType[::MemberRole],
         required: true,
         description: 'ID of the member role to mutate.'
-      argument :name,
-        GraphQL::Types::String,
-        required: false,
-        description: 'Name of the member role.'
 
       def ready?(**args)
         if args.except(:id).blank?
