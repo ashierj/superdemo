@@ -13,7 +13,6 @@ import {
   filterObjToFilterToken,
   filterTokensToFilterObj,
 } from '../filters';
-import TracingEmptyState from './tracing_empty_state.vue';
 import TracingTableList from './tracing_table_list.vue';
 import FilteredSearch from './tracing_list_filtered_search.vue';
 import ScatterChart from './tracing_scatter_chart.vue';
@@ -27,7 +26,6 @@ export default {
   components: {
     GlLoadingIcon,
     TracingTableList,
-    TracingEmptyState,
     FilteredSearch,
     UrlSync,
     GlInfiniteScroll,
@@ -41,12 +39,7 @@ export default {
   },
   data() {
     return {
-      loading: true,
-      /**
-       * tracingEnabled: boolean | null.
-       * null identifies a state where we don't know if tracing is enabled or not (e.g. when fetching the status from the API fails)
-       */
-      tracingEnabled: null,
+      loading: false,
       traces: [],
       filters: queryToFilterObj(window.location.search),
       nextPageToken: null,
@@ -72,38 +65,9 @@ export default {
   },
   created() {
     this.debouncedChartItemOver = debounce(this.chartItemOver, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
-    this.checkEnabled();
+    this.fetchTraces();
   },
   methods: {
-    async checkEnabled() {
-      this.loading = true;
-      try {
-        this.tracingEnabled = await this.observabilityClient.isTracingEnabled();
-        if (this.tracingEnabled) {
-          await this.fetchTraces();
-        }
-      } catch (e) {
-        createAlert({
-          message: s__('Tracing|Failed to load page.'),
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-    async enableTracing() {
-      this.loading = true;
-      try {
-        await this.observabilityClient.enableTraces();
-        this.tracingEnabled = true;
-        await this.fetchTraces();
-      } catch (e) {
-        createAlert({
-          message: s__('Tracing|Failed to enable tracing.'),
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
     async fetchTraces({ skipUpdatingChartRange = false } = {}) {
       this.loading = true;
 
@@ -178,51 +142,47 @@ export default {
       <gl-loading-icon size="lg" />
     </div>
 
-    <template v-else-if="tracingEnabled !== null">
-      <tracing-empty-state v-if="tracingEnabled === false" @enable-tracing="enableTracing" />
+    <template v-else>
+      <url-sync :query="query" />
+      <filtered-search
+        :initial-filters="initialFilterValue"
+        :observability-client="observabilityClient"
+        @submit="handleFilters"
+      />
+      <scatter-chart
+        :height="$options.CHART_HEIGHT"
+        :range-min="chartRangeMin"
+        :range-max="chartRangeMax"
+        :traces="traces"
+        @chart-item-selected="chartItemSelected"
+        @chart-item-over="debouncedChartItemOver"
+        @chart-item-out="chartItemOut"
+        @reload-data="fetchTraces"
+      />
 
-      <template v-else>
-        <url-sync :query="query" />
-        <filtered-search
-          :initial-filters="initialFilterValue"
-          :observability-client="observabilityClient"
-          @submit="handleFilters"
-        />
-        <scatter-chart
-          :height="$options.CHART_HEIGHT"
-          :range-min="chartRangeMin"
-          :range-max="chartRangeMax"
-          :traces="traces"
-          @chart-item-selected="chartItemSelected"
-          @chart-item-over="debouncedChartItemOver"
-          @chart-item-out="chartItemOut"
-          @reload-data="fetchTraces"
-        />
+      <gl-infinite-scroll
+        ref="infiniteScroll"
+        :max-list-height="listHeight"
+        :fetched-items="traces.length"
+        @bottomReached="bottomReached"
+      >
+        <template #items>
+          <tracing-table-list
+            ref="tableList"
+            :traces="traces"
+            :highlighted-trace-id="highlightedTraceId"
+            @reload="fetchTraces"
+            @trace-clicked="onTraceClicked"
+          />
+        </template>
 
-        <gl-infinite-scroll
-          ref="infiniteScroll"
-          :max-list-height="listHeight"
-          :fetched-items="traces.length"
-          @bottomReached="bottomReached"
-        >
-          <template #items>
-            <tracing-table-list
-              ref="tableList"
-              :traces="traces"
-              :highlighted-trace-id="highlightedTraceId"
-              @reload="fetchTraces"
-              @trace-clicked="onTraceClicked"
-            />
-          </template>
-
-          <template #default>
-            <gl-loading-icon v-if="loading" size="md" />
-            <span v-else data-testid="tracing-infinite-scrolling-legend">{{
-              infiniteScrollLegend
-            }}</span>
-          </template>
-        </gl-infinite-scroll>
-      </template>
+        <template #default>
+          <gl-loading-icon v-if="loading" size="md" />
+          <span v-else data-testid="tracing-infinite-scrolling-legend">{{
+            infiniteScrollLegend
+          }}</span>
+        </template>
+      </gl-infinite-scroll>
     </template>
   </div>
 </template>
