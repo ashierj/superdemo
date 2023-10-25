@@ -34805,9 +34805,6 @@ msgstr ""
 msgid "PipelineStatusTooltip|Pipeline: %{ciStatus}"
 msgstr ""
 
-msgid "PipelineStatusTooltip|Pipeline: %{ci_status}"
-msgstr ""
-
 msgid "PipelineWizardDefaultCommitMessage|Add %{filename}"
 msgstr ""
 
@@ -57356,9 +57353,6 @@ msgid "personal access token"
 msgstr ""
 
 msgid "personal access tokens"
-msgstr ""
-
-msgid "pipeline"
 msgstr ""
 
 msgid "pipelineEditorWalkthrough|Let's do this!"
