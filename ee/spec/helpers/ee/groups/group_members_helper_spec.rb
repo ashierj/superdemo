@@ -13,20 +13,20 @@ RSpec.describe Groups::GroupMembersHelper do
     allow(helper).to receive(:current_user).and_return(current_user)
   end
 
+  subject do
+    helper.group_members_app_data(
+      group,
+      members: [],
+      invited: [],
+      access_requests: [],
+      banned: banned,
+      include_relations: [:inherited, :direct],
+      search: nil
+    )
+  end
+
   describe '#group_members_app_data' do
     let(:banned) { [] }
-
-    subject do
-      helper.group_members_app_data(
-        group,
-        members: [],
-        invited: [],
-        access_requests: [],
-        banned: banned,
-        include_relations: [:inherited, :direct],
-        search: nil
-      )
-    end
 
     before do
       allow(helper).to receive(:override_group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id/override')
@@ -89,6 +89,16 @@ RSpec.describe Groups::GroupMembersHelper do
       it 'contains expected text' do
         expect(helper.group_member_header_subtext(group)).to match(subtext)
       end
+    end
+  end
+
+  context 'when member has custom role' do
+    let(:member_role) { create(:member_role, :guest, name: 'guest plus', namespace: group, read_code: true) }
+    let(:user) { create(:user) }
+    let(:banned) { present_members(create_list(:group_member, 1, :guest, group: group, user: user, member_role: member_role)) }
+
+    it 'returns `members` property that matches json schema' do
+      expect(subject[:banned][:members].to_json).to match_schema('members')
     end
   end
 end
