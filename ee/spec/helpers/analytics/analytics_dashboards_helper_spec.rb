@@ -60,6 +60,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
         def expected_data(has_permission)
           {
             is_project: 'true',
+            is_group: 'false',
             namespace_id: project.id,
             dashboard_project: {
               id: pointer.target_project.id,
@@ -91,12 +92,58 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
       end
     end
 
+    context 'for sub group' do
+      let_it_be(:sub_group) { create(:group, parent: group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+
+      subject(:data) { helper.analytics_dashboards_list_app_data(sub_group) }
+
+      def expected_data(collector_host)
+        {
+          is_project: 'false',
+          is_group: 'true',
+          namespace_id: sub_group.id,
+          dashboard_project: nil,
+          can_configure_dashboards_project: 'false',
+          tracking_key: nil,
+          collector_host: collector_host ? 'https://new-collector.example.com' : nil,
+          chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
+          dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
+          analytics_settings_path: "/groups/#{sub_group.full_path}/-/edit#js-analytics-dashboards-settings",
+          namespace_name: sub_group.name,
+          namespace_full_path: sub_group.full_path,
+          features: [].to_json,
+          router_base: "/groups/#{sub_group.full_path}/-/analytics/dashboards"
+        }
+      end
+
+      context 'when user does not have permission' do
+        before do
+          allow(helper).to receive(:can?).with(user, :read_product_analytics, sub_group).and_return(false)
+        end
+
+        it 'returns the expected data' do
+          expect(data).to eq(expected_data(false))
+        end
+      end
+
+      context 'when user has permission' do
+        before do
+          allow(helper).to receive(:can?).with(user, :read_product_analytics, sub_group).and_return(true)
+        end
+
+        it 'returns the expected data' do
+          expect(data).to eq(expected_data(true))
+        end
+      end
+    end
+
     context 'for group' do
       subject(:data) { helper.analytics_dashboards_list_app_data(group) }
 
       def expected_data(collector_host)
         {
           is_project: 'false',
+          is_group: 'true',
           namespace_id: group.id,
           dashboard_project: {
             id: group_pointer.target_project.id,

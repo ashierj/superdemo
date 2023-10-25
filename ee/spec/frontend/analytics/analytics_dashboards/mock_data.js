@@ -14,6 +14,12 @@ export const TEST_CUSTOM_DASHBOARDS_PROJECT = {
   name: 'test-dashboards',
 };
 
+export const TEST_CUSTOM_DASHBOARDS_GROUP = {
+  fullPath: 'test-namespace',
+  id: 12,
+  name: 'test-dashboards-namespace',
+};
+
 export const TEST_VISUALIZATION = () => ({
   version: 1,
   type: 'LineChart',
@@ -187,6 +193,25 @@ export const TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
         __typename: 'CustomizableDashboardConnection',
       },
       __typename: 'Project',
+    },
+  },
+};
+
+export const TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      customizableDashboards: {
+        nodes: [
+          getGraphQLDashboard({
+            slug: 'value_streams_dashboard',
+            title: 'Value Streams Dashboard',
+            userDefined: false,
+          }),
+        ],
+        __typename: 'CustomizableDashboardConnection',
+      },
+      __typename: 'Group',
     },
   },
 };
