@@ -18,17 +18,6 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
     wait_for_requests if respond_to?(:wait_for_requests)
   end
 
-  def update_user_email
-    fill_in 'user_email', with: 'new-email@example.com'
-    click_button 'Update profile settings'
-  end
-
-  def confirm_password(password)
-    fill_in 'password-confirmation', with: password
-    click_button 'Confirm password'
-    wait_for_requests if respond_to?(:wait_for_requests)
-  end
-
   def visit_user
     visit user_path(user)
     wait_for_requests
@@ -119,6 +108,18 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
   end
 
   describe 'when I change my email', :js do
+    def update_user_email
+      fill_in 'user_email', with: '' # Clearing the email field
+      fill_in 'user_email', with: 'new-email@example.com'
+      submit_settings
+    end
+
+    def confirm_password(password)
+      fill_in 'password-confirmation', with: password
+      click_button 'Confirm password'
+      wait_for_requests if respond_to?(:wait_for_requests)
+    end
+
     before do
       user.send_reset_password_instructions
     end
@@ -192,6 +193,13 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
       toggle_button.click
       emoji_button = find("gl-emoji[data-name=\"#{emoji_name}\"]")
       emoji_button.click
+    end
+
+    after do
+      if user.status
+        user.status.destroy!
+        user.reload_status
+      end
     end
 
     context 'profile edit form' do
@@ -478,8 +486,6 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
       end
 
       context 'Remove status button' do
-        let(:user) { create(:user, :no_super_sidebar) }
-
         before do
           user.status = UserStatus.new(message: 'Eating bread', emoji: 'stuffed_flatbread')
 
@@ -520,30 +526,30 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
         expect(page).to have_emoji('speech_balloon')
       end
     end
+  end
 
-    context 'User time preferences', :js do
-      let(:issue) { create(:issue, project: project) }
-      let(:project) { create(:project) }
+  context 'User time preferences', :js do
+    let(:issue) { create(:issue, project: project) }
+    let(:project) { create(:project) }
 
-      it 'shows the user time preferences form' do
-        expect(page).to have_content('Time settings')
-      end
+    it 'shows the user time preferences form' do
+      expect(page).to have_content('Time settings')
+    end
 
-      it 'allows the user to select a time zone from a dropdown list of options' do
-        expect(page).not_to have_selector('.user-time-preferences [data-testid="base-dropdown-menu"]')
+    it 'allows the user to select a time zone from a dropdown list of options' do
+      expect(page).not_to have_selector('.user-time-preferences [data-testid="base-dropdown-menu"]')
 
-        page.find('.user-time-preferences .gl-new-dropdown-toggle').click
+      page.find('.user-time-preferences .gl-new-dropdown-toggle').click
 
-        expect(page.find('.user-time-preferences [data-testid="base-dropdown-menu"]')).to be_visible
+      expect(page.find('.user-time-preferences [data-testid="base-dropdown-menu"]')).to be_visible
 
-        page.find("li", text: "Arizona").click
+      page.find("li", text: "Arizona").click
 
-        expect(page).to have_field(:user_timezone, with: 'America/Phoenix', type: :hidden)
-      end
+      expect(page).to have_field(:user_timezone, with: 'America/Phoenix', type: :hidden)
+    end
 
-      it 'timezone defaults to empty' do
-        expect(page).to have_field(:user_timezone, with: '', type: :hidden)
-      end
+    it 'timezone defaults to empty' do
+      expect(page).to have_field(:user_timezone, with: '', type: :hidden)
     end
   end
 
