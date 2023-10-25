@@ -365,6 +365,34 @@ describe('EditorComponent', () => {
         });
       });
 
+      describe('remove', () => {
+        it('removes the initial action', async () => {
+          factory();
+          expect(findPolicyActionBuilder().exists()).toBe(true);
+          expect(findPolicyEditorLayout().props('policy')).toHaveProperty('actions');
+          await findPolicyActionBuilder().vm.$emit('remove');
+          expect(findPolicyActionBuilder().exists()).toBe(false);
+          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('actions');
+        });
+
+        it('removes the action approvers when the action is removed', async () => {
+          factory();
+          await findPolicyActionBuilder().vm.$emit(
+            'changed',
+            mockDefaultBranchesScanResultObject.actions[0],
+          );
+          await findPolicyActionBuilder().vm.$emit('remove');
+          await findAddActionButton().vm.$emit('click');
+          expect(findPolicyEditorLayout().props('policy').actions).toEqual([
+            {
+              approvals_required: 1,
+              type: 'require_approval',
+            },
+          ]);
+          expect(findPolicyActionBuilder().props('existingApprovers')).toEqual({});
+        });
+      });
+
       describe('update', () => {
         beforeEach(() => {
           factory();

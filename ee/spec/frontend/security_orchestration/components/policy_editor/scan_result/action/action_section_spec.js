@@ -5,6 +5,7 @@ import { GROUP_TYPE, USER_TYPE, ROLE_TYPE } from 'ee/security_orchestration/cons
 import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
 import ActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_approvers.vue';
 import { APPROVER_TYPE_LIST_ITEMS } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/actions';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 
 describe('ActionSection', () => {
   let wrapper;
@@ -73,6 +74,7 @@ describe('ActionSection', () => {
   const findActionApprover = () => wrapper.findComponent(ActionApprovers);
   const findAllActionApprovers = () => wrapper.findAllComponents(ActionApprovers);
   const findAllAlerts = () => wrapper.findAllComponents(GlAlert);
+  const findSectionLayout = () => wrapper.findComponent(SectionLayout);
 
   const emit = async (event, value) => {
     findActionApprover().vm.$emit(event, value);
@@ -208,6 +210,14 @@ describe('ActionSection', () => {
         await changeApproverType();
         expect(wrapper.emitted('updateApprovers')[2]).toEqual([{}]);
       });
+    });
+  });
+
+  describe('remove action', () => {
+    it('emits "remove" when the remove icon is clicked', () => {
+      createWrapper();
+      findSectionLayout().vm.$emit('remove');
+      expect(wrapper.emitted('remove')).toHaveLength(1);
     });
   });
 

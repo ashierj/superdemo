@@ -130,13 +130,15 @@ export default {
 
 <template>
   <section-layout
-    class="gl-py-0 gl-rounded-0"
+    class="gl-w-full gl-py-0 gl-pr-0 gl-rounded-0 gl-bg-white"
     :show-remove-button="showRemoveButton"
     @remove="handleRemoveApprover"
   >
     <template #content>
-      <gl-form class="gl-display-flex gl-align-items-center" @submit.prevent>
-        <div class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-30">
+      <gl-form class="gl-display-block gl-md-display-flex! gl-align-items-center" @submit.prevent>
+        <div
+          class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-30 gl-mb-3 gl-md-mb-0!"
+        >
           <gl-sprintf :message="actionText">
             <template #require="{ content }">
               <strong>{{ content }}</strong>
@@ -161,7 +163,7 @@ export default {
         </div>
 
         <gl-collapsible-listbox
-          class="gl-mx-3"
+          class="gl-mx-0 gl-md-ml-3 gl-md-mr-3"
           :items="availableTypes"
           :selected="selected"
           :toggle-text="approverTypeToggleText"
