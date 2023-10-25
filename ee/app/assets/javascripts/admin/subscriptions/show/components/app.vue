@@ -98,11 +98,11 @@ export default {
     subscriptionHistory() {
       return [...this.futureLicenseHistoryEntries, ...this.pastLicenseHistoryEntries];
     },
-  },
-  created() {
-    this.$options.activationListeners = {
-      [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.displayActivationNotification,
-    };
+    activationListeners() {
+      return {
+        [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.displayActivationNotification,
+      };
+    },
   },
   methods: {
     displayActivationNotification(license) {
@@ -184,12 +184,12 @@ export default {
       v-if="canShowSubscriptionDetails"
       :subscription="currentSubscription"
       :subscription-list="subscriptionHistory"
-      v-on="$options.activationListeners"
+      v-on="activationListeners"
     />
     <no-active-subscription
       v-else
       :subscription-list="subscriptionHistory"
-      v-on="$options.activationListeners"
+      v-on="activationListeners"
     />
   </div>
 </template>
