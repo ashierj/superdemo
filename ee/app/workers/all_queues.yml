@@ -480,24 +480,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: cronjob:llm_tanuki_bot_recreate_records
-  :worker_name: Llm::TanukiBot::RecreateRecordsWorker
-  :feature_category: :duo_chat
-  :has_external_dependencies: false
-  :urgency: :throttled
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
-- :name: cronjob:llm_tanuki_bot_remove_previous_records
-  :worker_name: Llm::TanukiBot::RemovePreviousRecordsWorker
-  :feature_category: :duo_chat
-  :has_external_dependencies: false
-  :urgency: :throttled
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: cronjob:okrs_checkin_reminder_emails_cron
   :worker_name: Okrs::CheckinReminderEmailsCronWorker
   :feature_category: :team_planning
@@ -1691,15 +1673,6 @@
   :feature_category: :ai_abstraction_layer
   :has_external_dependencies: false
   :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
-- :name: llm_tanuki_bot_update
-  :worker_name: Llm::TanukiBot::UpdateWorker
-  :feature_category: :ai_abstraction_layer
-  :has_external_dependencies: false
-  :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true

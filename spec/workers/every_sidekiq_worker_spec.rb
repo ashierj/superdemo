@@ -351,8 +351,6 @@ RSpec.describe 'Every Sidekiq worker', feature_category: :shared do
         'Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker' => 5,
         'Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecordsWorker' => 3,
         'Llm::Embedding::GitlabDocumentation::CreateDbEmbeddingsPerDocFileWorker' => 5,
-        'Llm::TanukiBot::UpdateWorker' => 1,
-        'Llm::TanukiBot::RecreateRecordsWorker' => 3,
         'MailScheduler::IssueDueWorker' => 3,
         'MailScheduler::NotificationServiceWorker' => 3,
         'MembersDestroyer::UnassignIssuablesWorker' => 3,
