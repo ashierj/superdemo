@@ -273,7 +273,6 @@ export default {
               type="number"
               required
               autocomplete="off"
-              data-qa-selector="workspace_cluster_max_hours_before_termination"
               width="xs"
             />
             <template #append>

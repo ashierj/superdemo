@@ -311,7 +311,6 @@ export default {
           v-gl-tooltip.hover
           icon="ellipsis_v"
           category="tertiary"
-          data-qa-selector="design_discussion_actions_ellipsis_dropdown"
           text-sr-only
           :title="$options.i18n.moreActionsLabel"
           :aria-label="$options.i18n.moreActionsLabel"

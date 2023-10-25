@@ -38,7 +38,6 @@ export default {
       icon="external-link"
       target="_blank"
       data-testid="catalog-repo-link"
-      data-qa-selector="catalog_repo_link"
       @click="trackCatalogBrowsing"
     >
       {{ $options.i18n.browseCatalog }}

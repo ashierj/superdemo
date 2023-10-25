@@ -71,7 +71,6 @@ export default {
           :target="openInNewTab ? '_blank' : '_self'"
           :href="value.url"
           data-testid="uncompleted-learn-gitlab-link"
-          data-qa-selector="uncompleted_learn_gitlab_link"
           data-track-action="click_link"
           :data-track-label="actionLabelValue('trackLabel')"
           @click="openModalIfIsInviteLink"
