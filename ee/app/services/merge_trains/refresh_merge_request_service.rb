@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module MergeTrains
   class RefreshMergeRequestService < BaseService
     include Gitlab::Utils::StrongMemoize
