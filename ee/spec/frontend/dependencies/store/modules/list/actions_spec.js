@@ -8,6 +8,7 @@ import {
   FETCH_ERROR_MESSAGE,
   FETCH_EXPORT_ERROR_MESSAGE,
   DEPENDENCIES_FILENAME,
+  LICENSES_FETCH_ERROR_MESSAGE,
 } from 'ee/dependencies/store/modules/list/constants';
 import * as types from 'ee/dependencies/store/modules/list/mutation_types';
 import getInitialState from 'ee/dependencies/store/modules/list/state';
@@ -502,5 +503,163 @@ describe('Dependencies actions', () => {
           },
         ],
       ));
+  });
+
+  describe('setSearchFilterParameters', () => {
+    it('takes an array of filter objects, generates a fetch-parameter object and commits it to SET_SEARCH_FILTER_PARAMETERS', () => {
+      const filters = [
+        {
+          type: 'packager',
+          value: { data: 'bundler' },
+        },
+        {
+          type: 'project',
+          value: { data: ['GitLab', 'Gnome'] },
+        },
+      ];
+
+      const expected = {
+        project: ['GitLab', 'Gnome'],
+        packager: 'bundler',
+      };
+
+      return testAction(
+        actions.setSearchFilterParameters,
+        filters,
+        getInitialState(),
+        [
+          {
+            type: types.SET_SEARCH_FILTER_PARAMETERS,
+            payload: expected,
+          },
+        ],
+        [],
+      );
+    });
+
+    describe('with a license filter', () => {
+      it('maps the given license names to their corresponding SPDX identifiers', () => {
+        const initialStateWithLicenses = {
+          ...getInitialState(),
+          licenses: [
+            { name: 'BSD Zero Clause License', spdxIdentifier: '0BSD' },
+            { name: 'Apache 2.0', spdxIdentifier: 'Apache-2.0' },
+          ],
+        };
+
+        const filters = [
+          {
+            type: 'licenses',
+            value: { data: ['BSD Zero Clause License', 'Apache 2.0'] },
+          },
+        ];
+
+        const expected = {
+          licenses: ['0BSD', 'Apache-2.0'],
+        };
+
+        return testAction(
+          actions.setSearchFilterParameters,
+          filters,
+          initialStateWithLicenses,
+          [
+            {
+              type: types.SET_SEARCH_FILTER_PARAMETERS,
+              payload: expected,
+            },
+          ],
+          [],
+        );
+      });
+    });
+  });
+
+  describe('fetchLicenses', () => {
+    let mock;
+    const licensesEndpoint = `${TEST_HOST}/licenses`;
+
+    beforeEach(() => {
+      mock = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    describe('when the given endpoint is empty', () => {
+      it('does nothing', () => {
+        testAction(actions.fetchLicenses, undefined, getInitialState(), [], []);
+      });
+    });
+
+    describe('on success', () => {
+      it('correctly sets the loading state and the fetched licenses transformed to camelCased', () => {
+        const licenses = [
+          {
+            name: 'BSD Zero Clause License',
+            spdx_Identifier: '0BSD',
+            web_url: 'https://spdx.org/licenses/0BSD.html',
+          },
+        ];
+        const camelCasedLicenses = [
+          {
+            name: 'BSD Zero Clause License',
+            spdxIdentifier: '0BSD',
+            webUrl: 'https://spdx.org/licenses/0BSD.html',
+          },
+        ];
+
+        mock.onGet(licensesEndpoint).replyOnce(HTTP_STATUS_OK, { licenses });
+
+        testAction(
+          actions.fetchLicenses,
+          licensesEndpoint,
+          getInitialState(),
+          [
+            {
+              type: types.SET_FETCHING_LICENSES_IN_PROGRESS,
+              payload: true,
+            },
+            {
+              type: types.SET_LICENSES,
+              payload: camelCasedLicenses,
+            },
+            {
+              type: types.SET_FETCHING_LICENSES_IN_PROGRESS,
+              payload: false,
+            },
+          ],
+          [],
+        );
+      });
+    });
+
+    describe('on error', () => {
+      it('creates an alert and sets the loading state to be "false"', async () => {
+        mock.onGet(licensesEndpoint).replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+
+        await testAction(
+          actions.fetchLicenses,
+          licensesEndpoint,
+          getInitialState(),
+          [
+            {
+              type: types.SET_FETCHING_LICENSES_IN_PROGRESS,
+              payload: true,
+            },
+            {
+              type: types.SET_FETCHING_LICENSES_IN_PROGRESS,
+              payload: false,
+            },
+          ],
+          [],
+        );
+
+        expect(createAlert).toHaveBeenCalledTimes(1);
+        expect(createAlert).toHaveBeenCalledWith({
+          message: LICENSES_FETCH_ERROR_MESSAGE,
+        });
+      });
+    });
   });
 });

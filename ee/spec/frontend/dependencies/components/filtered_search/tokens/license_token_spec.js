@@ -1,6 +1,4 @@
 import { nextTick } from 'vue';
-import axios from 'axios';
-import AxiosMockAdapter from 'axios-mock-adapter';
 import {
   GlFilteredSearchSuggestion,
   GlFilteredSearchToken,
@@ -11,9 +9,9 @@ import {
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { trimText } from 'helpers/text_helper';
+import createStore from 'ee/dependencies/store';
 import LicenseToken from 'ee/dependencies/components/filtered_search/tokens/license_token.vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 const TEST_GROUP_LICENSES_ENDPOINT = 'https://gitlab.com/api/v4/group/123/-/licenses';
 const TEST_LICENSES = [
@@ -29,17 +27,16 @@ const TEST_LICENSES = [
 
 describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', () => {
   let wrapper;
-  let axiosMock;
+  let store;
 
-  const createAxiosMock = () => {
-    axiosMock = new AxiosMockAdapter(axios);
-    axiosMock.onGet(TEST_GROUP_LICENSES_ENDPOINT).reply(() => {
-      return [HTTP_STATUS_OK, { licenses: TEST_LICENSES }];
-    });
+  const createVuexStore = () => {
+    store = createStore();
+    jest.spyOn(store, 'dispatch').mockImplementation();
   };
 
   const createComponent = () => {
     wrapper = shallowMountExtended(LicenseToken, {
+      store,
       propsData: {
         config: {
           multiSelect: true,
@@ -59,85 +56,86 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
   };
 
   beforeEach(() => {
-    createAxiosMock();
-    createComponent();
-  });
-
-  afterEach(() => {
-    axiosMock.restore();
+    createVuexStore();
   });
 
   const findFilteredSearchToken = () => wrapper.findComponent(GlFilteredSearchToken);
   const isLoadingSuggestions = () => wrapper.findComponent(GlLoadingIcon).exists();
   const selectLicense = (license) => {
-    findFilteredSearchToken().vm.$emit('select', license.spdx_identifier);
+    findFilteredSearchToken().vm.$emit('select', license.name);
     return nextTick();
   };
   const searchForLicense = (searchTerm = '') => {
     findFilteredSearchToken().vm.$emit('input', { data: searchTerm });
     return waitForPromises();
   };
-  // this is just an alias for waitForPromises, but it makes the test more readable
-  const waitForLicensesToBeFetched = () => waitForPromises();
 
   describe('when the component is initially rendered', () => {
     it('shows a loading indicator while fetching the list of licenses', () => {
+      store.state.allDependencies.fetchingLicensesInProgress = true;
+      createComponent();
+
       expect(isLoadingSuggestions()).toBe(true);
     });
 
-    it('shows the full list of licenses once the fetch is completed', async () => {
-      searchForLicense();
-      await waitForLicensesToBeFetched();
+    it('fetches the list of licenses from the correct endpoint', () => {
+      createComponent();
+
+      expect(store.dispatch).toHaveBeenCalledWith(
+        'allDependencies/fetchLicenses',
+        TEST_GROUP_LICENSES_ENDPOINT,
+      );
+    });
+
+    it('shows the full list of licenses once the fetch is completed', () => {
+      store.state.allDependencies.licenses = TEST_LICENSES;
+      createComponent();
 
       expect(wrapper.text()).toContain(TEST_LICENSES[0].name);
       expect(wrapper.text()).toContain(TEST_LICENSES[1].name);
     });
   });
 
-  describe('when a user enters a search term', () => {
-    it('shows a loading indicator while fetching the list of licenses', async () => {
-      searchForLicense(TEST_LICENSES[0].name);
-      await nextTick();
-
-      expect(isLoadingSuggestions()).toBe(true);
-
-      await waitForLicensesToBeFetched();
-
-      expect(isLoadingSuggestions()).toBe(false);
+  describe('once the licenses have been fetched', () => {
+    beforeEach(() => {
+      store.state.allDependencies.licenses = TEST_LICENSES;
+      createComponent();
     });
 
-    it('shows the filtered list of suggestions', async () => {
-      await searchForLicense(TEST_LICENSES[0].name);
+    describe('when a user enters a search term', () => {
+      it('shows the filtered list of suggestions', async () => {
+        await searchForLicense(TEST_LICENSES[0].name);
 
-      expect(wrapper.text()).toContain(TEST_LICENSES[0].name);
-      expect(wrapper.text()).not.toContain(TEST_LICENSES[1].name);
-    });
-  });
-
-  describe('when a user selects licenses to be filtered', () => {
-    beforeEach(async () => {
-      await searchForLicense();
+        expect(wrapper.text()).toContain(TEST_LICENSES[0].name);
+        expect(wrapper.text()).not.toContain(TEST_LICENSES[1].name);
+      });
     });
 
-    it('displays a check-icon next to the selected license', async () => {
-      const findFirstSearchSuggestionIcon = () =>
-        wrapper.findAllComponents(GlFilteredSearchSuggestion).at(0).findComponent(GlIcon);
-      const hiddenClassName = 'gl-visibility-hidden';
+    describe('when a user selects licenses to be filtered', () => {
+      beforeEach(async () => {
+        await searchForLicense();
+      });
 
-      expect(findFirstSearchSuggestionIcon().classes()).toContain(hiddenClassName);
+      it('displays a check-icon next to the selected license', async () => {
+        const findFirstSearchSuggestionIcon = () =>
+          wrapper.findAllComponents(GlFilteredSearchSuggestion).at(0).findComponent(GlIcon);
+        const hiddenClassName = 'gl-visibility-hidden';
 
-      await selectLicense(TEST_LICENSES[0]);
+        expect(findFirstSearchSuggestionIcon().classes()).toContain(hiddenClassName);
 
-      expect(findFirstSearchSuggestionIcon().classes()).not.toContain(hiddenClassName);
-    });
+        await selectLicense(TEST_LICENSES[0]);
 
-    it('shows a comma seperated list of selected licenses', async () => {
-      await selectLicense(TEST_LICENSES[0]);
-      await selectLicense(TEST_LICENSES[1]);
+        expect(findFirstSearchSuggestionIcon().classes()).not.toContain(hiddenClassName);
+      });
 
-      expect(trimText(wrapper.findByTestId('selected-licenses').text())).toBe(
-        `${TEST_LICENSES[0].name}, ${TEST_LICENSES[1].name}`,
-      );
+      it('shows a comma seperated list of selected licenses', async () => {
+        await selectLicense(TEST_LICENSES[0]);
+        await selectLicense(TEST_LICENSES[1]);
+
+        expect(trimText(wrapper.findByTestId('selected-licenses').text())).toBe(
+          `${TEST_LICENSES[0].name}, ${TEST_LICENSES[1].name}`,
+        );
+      });
     });
   });
 });

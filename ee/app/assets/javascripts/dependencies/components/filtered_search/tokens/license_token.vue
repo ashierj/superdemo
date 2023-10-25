@@ -1,4 +1,6 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
+import { mapActions, mapState } from 'vuex';
 import {
   GlIcon,
   GlFilteredSearchToken,
@@ -6,10 +8,6 @@ import {
   GlLoadingIcon,
   GlIntersperse,
 } from '@gitlab/ui';
-import axios from '~/lib/utils/axios_utils';
-import { createAlert } from '~/alert';
-import { s__ } from '~/locale';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 
 export default {
   components: {
@@ -33,64 +31,43 @@ export default {
   },
   data() {
     return {
-      licenses: [],
       searchTerm: '',
-      selectedLicenseSpdxIds: this.value.data ? this.value.data.split(',') : [],
-      isLoadingLicenses: false,
+      selectedLicenseNames: this.value.data ? this.value.data.split(',') : [],
+      isActive: false,
     };
   },
   computed: {
+    ...mapState('allDependencies', ['licenses', 'fetchingLicensesInProgress']),
     filteredLicenses() {
+      if (!this.searchTerm) {
+        return this.licenses;
+      }
+
+      const nameIncludesSearchTerm = (license) =>
+        license.name.toLowerCase().includes(this.searchTerm);
+      const isSelected = (license) => this.selectedLicenseNames.includes(license.name);
+
       return this.licenses.filter(
-        (license) =>
-          license.name.toLowerCase().includes(this.searchTerm) ||
-          this.selectedLicenseSpdxIds.includes(license.spdxIdentifier),
-      );
-    },
-    selectedLicenses() {
-      return this.licenses.filter((license) =>
-        this.selectedLicenseSpdxIds.includes(license.spdxIdentifier),
+        (license) => nameIncludesSearchTerm(license) || isSelected(license),
       );
     },
   },
   created() {
-    this.fetchLicenses();
+    this.fetchLicenses(this.licensesEndpoint);
   },
   methods: {
-    setSearchTerm({ data }) {
+    ...mapActions('allDependencies', ['setLicensesEndpoint', 'fetchLicenses', 'setSearchFilters']),
+    setSearchTerm(token) {
       // the data can be either a string or an array, in which case we don't want to perform the search
-      if (typeof data === 'string') {
-        this.searchTerm = data.toLowerCase();
+      if (typeof token.data === 'string') {
+        this.searchTerm = token.data.toLowerCase();
       }
     },
-    async fetchLicenses() {
-      this.isLoadingLicenses = true;
-
-      try {
-        const {
-          data: { licenses },
-        } = await axios.get(this.licensesEndpoint);
-
-        // we need to wrap the license names in quotes to mark it as one value
-        // otherwise the filtered search will split the string on spaces
-        this.licenses = licenses.map((license) =>
-          convertObjectPropsToCamelCase(license, { deep: true }),
-        );
-      } catch (e) {
-        createAlert({
-          message: s__('Dependencies|There was a problem fetching the licenses for this group.'),
-        });
-      } finally {
-        this.isLoadingLicenses = false;
-      }
-    },
-    toggleSelectedLicense(spdxIdentifier) {
-      if (this.selectedLicenseSpdxIds.includes(spdxIdentifier)) {
-        this.selectedLicenseSpdxIds = this.selectedLicenseSpdxIds.filter(
-          (v) => v !== spdxIdentifier,
-        );
+    toggleSelectedLicense(name) {
+      if (this.selectedLicenseNames.includes(name)) {
+        this.selectedLicenseNames = this.selectedLicenseNames.filter((v) => v !== name);
       } else {
-        this.selectedLicenseSpdxIds.push(spdxIdentifier);
+        this.selectedLicenseNames.push(name);
       }
     },
   },
@@ -101,25 +78,25 @@ export default {
   <gl-filtered-search-token
     :config="config"
     v-bind="{ ...$props, ...$attrs }"
-    :multi-select-values="selectedLicenseSpdxIds"
+    :multi-select-values="selectedLicenseNames"
     v-on="$listeners"
     @select="toggleSelectedLicense"
     @input="setSearchTerm"
   >
     <template #view>
       <gl-intersperse data-testid="selected-licenses">
-        <span v-for="selectedLicense in selectedLicenses" :key="selectedLicense.spdxIdentifier">{{
-          selectedLicense.name
+        <span v-for="selectedLicense in selectedLicenseNames" :key="selectedLicense">{{
+          selectedLicense
         }}</span>
       </gl-intersperse>
     </template>
     <template #suggestions>
-      <gl-loading-icon v-if="isLoadingLicenses" size="sm" />
+      <gl-loading-icon v-if="fetchingLicensesInProgress" size="sm" />
       <template v-else>
         <gl-filtered-search-suggestion
           v-for="license in filteredLicenses"
           :key="license.spdxIdentifier"
-          :value="license.spdxIdentifier"
+          :value="license.name"
         >
           <div class="gl-display-flex gl-align-items-center">
             <gl-icon
@@ -128,7 +105,7 @@ export default {
               name="check"
               class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
               :class="{
-                'gl-visibility-hidden': !selectedLicenseSpdxIds.includes(license.spdxIdentifier),
+                'gl-visibility-hidden': !selectedLicenseNames.includes(license.name),
               }"
             />
             <span>{{ license.name }}</span>
