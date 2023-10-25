@@ -57,14 +57,14 @@ module EE
     def disabled_lock_link(label, title)
       # Disabled buttons with tooltips should have the tooltip attached
       # to a wrapper element https://bootstrap-vue.org/docs/components/tooltip#disabled-elements
-      button = render Pajamas::ButtonComponent.new(disabled: true, button_options: { class: DEFAULT_CSS_CLASSES, data: { qa_selector: 'disabled_lock_button' } }) do
+      button = render Pajamas::ButtonComponent.new(disabled: true, button_options: { class: DEFAULT_CSS_CLASSES, data: { testid: 'disabled-lock-button' } }) do
         label
       end
       content_tag(:span, button, title: title, class: 'btn-group has-tooltip')
     end
 
     def enabled_lock_link(label, title, state)
-      render Pajamas::ButtonComponent.new(href: '#', button_options: { class: "#{DEFAULT_CSS_CLASSES} has-tooltip", title: title, data: { state: state, toggle: 'tooltip', qa_selector: 'lock_button' } }) do
+      render Pajamas::ButtonComponent.new(href: '#', button_options: { class: "#{DEFAULT_CSS_CLASSES} has-tooltip", title: title, data: { state: state, toggle: 'tooltip', testid: 'lock-button' } }) do
         label
       end
     end

@@ -10,11 +10,11 @@ module QA
               element :deny_delete_tag_checkbox
               element :restrict_author_checkbox
               element :prevent_secrets_checkbox
-              element :commit_message_field
+              element 'commit-message-field'
               element :deny_commit_message_field
               element :branch_name_field
               element :author_email_field
-              element :file_name_field
+              element 'file-name-field'
               element :file_size_field
               element :submit_settings_button
             end
@@ -48,7 +48,7 @@ module QA
             end
 
             def fill_commit_message_rule(message)
-              fill_element :commit_message_field, message
+              fill_element 'commit-message-field', message
             end
 
             def fill_deny_commit_message_rule(message)
@@ -64,7 +64,7 @@ module QA
             end
 
             def fill_file_name(file_name)
-              fill_element :file_name_field, file_name
+              fill_element 'file-name-field', file_name
             end
 
             def fill_file_size(file_size)
