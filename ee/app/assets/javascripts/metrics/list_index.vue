@@ -1,9 +1,11 @@
 <script>
-import ObservabilityContainer from '~/observability/components/observability_container.vue';
+import ProvisionedObservabilityContainer from '~/observability/components/provisioned_observability_container.vue';
+import MetricsList from './list/metrics_list.vue';
 
 export default {
   components: {
-    ObservabilityContainer,
+    ProvisionedObservabilityContainer,
+    MetricsList,
   },
   props: {
     oauthUrl: {
@@ -31,15 +33,15 @@ export default {
 </script>
 
 <template>
-  <observability-container
+  <provisioned-observability-container
     :oauth-url="oauthUrl"
     :tracing-url="tracingUrl"
     :services-url="servicesUrl"
     :provisioning-url="provisioningUrl"
     :operations-url="operationsUrl"
   >
-    <template #default>
-      <!-- TODO Implement List UI -->
+    <template #default="{ observabilityClient }">
+      <metrics-list :observability-client="observabilityClient" />
     </template>
-  </observability-container>
+  </provisioned-observability-container>
 </template>
