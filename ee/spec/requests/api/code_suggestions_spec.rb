@@ -61,7 +61,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       let(:response_body) do
         {
           'access_token' => kind_of(String),
-          'expires_in' => Gitlab::CodeSuggestions::AccessToken::EXPIRES_IN,
+          'expires_in' => Gitlab::Ai::AccessToken::EXPIRES_IN,
           'created_at' => Time.now.to_i
         }
       end
@@ -165,8 +165,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           it_behaves_like 'an endpoint authenticated with token'
 
           it 'sets the access token realm to SaaS' do
-            expect(Gitlab::CodeSuggestions::AccessToken).to receive(:new).with(
-              current_user, gitlab_realm: Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SAAS
+            expect(Gitlab::Ai::AccessToken).to receive(:new).with(
+              current_user,
+              scopes: [:code_suggestions],
+              gitlab_realm: Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS
             )
 
             post_api
@@ -186,8 +188,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             it 'sets the access token realm to self-managed' do
-              expect(Gitlab::CodeSuggestions::AccessToken).to receive(:new).with(
-                current_user, gitlab_realm: Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SELF_MANAGED
+              expect(Gitlab::Ai::AccessToken).to receive(:new).with(
+                current_user,
+                scopes: [:code_suggestions],
+                gitlab_realm: Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED
               )
 
               post_api
@@ -398,7 +402,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       before do
-        allow_next_instance_of(Gitlab::CodeSuggestions::AccessToken) do |instance|
+        allow_next_instance_of(Gitlab::Ai::AccessToken) do |instance|
           allow(instance).to receive(:encoded).and_return(token)
         end
       end
@@ -624,7 +628,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       let(:gitlab_realm) { 'self-managed' }
 
       let_it_be(:token) { 'stored-token' }
-      let_it_be(:service_access_token) { create(:service_access_token, :code_suggestions, :active, token: token) }
+      let_it_be(:service_access_token) { create(:service_access_token, :active, token: token) }
 
       let(:headers) do
         {
@@ -639,7 +643,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
       context 'when there is no active code suggestions token' do
         before do
-          create(:service_access_token, :code_suggestions, :expired, token: token)
+          create(:service_access_token, :expired, token: token)
         end
 
         include_examples 'a response', 'unauthorized' do

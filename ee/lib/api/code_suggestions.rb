@@ -71,11 +71,11 @@ module API
       def gitlab_realm
         # NOTE: This code path is being phased out as part of working towards GA for code suggestions.
         # See https://gitlab.com/groups/gitlab-org/-/epics/11114
-        return Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SELF_MANAGED if proxied?
+        return Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED if proxied?
 
-        return Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SAAS if Gitlab.org_or_com?
+        return Gitlab::Ai::AccessToken::GITLAB_REALM_SAAS if Gitlab.org_or_com?
 
-        Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SELF_MANAGED
+        Gitlab::Ai::AccessToken::GITLAB_REALM_SELF_MANAGED
       end
     end
 
@@ -99,7 +99,7 @@ module API
             label: 'code_suggestions'
           )
 
-          token = Gitlab::CodeSuggestions::AccessToken.new(current_user, gitlab_realm: gitlab_realm)
+          token = Gitlab::Ai::AccessToken.new(current_user, scopes: [:code_suggestions], gitlab_realm: gitlab_realm)
           present token, with: Entities::CodeSuggestionsAccessToken
         end
       end
@@ -123,12 +123,13 @@ module API
             forbidden! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
             not_found! unless active_code_suggestions_purchase?
 
-            token = Gitlab::CodeSuggestions::AccessToken.new(
+            token = Gitlab::Ai::AccessToken.new(
               current_user,
+              scopes: [:code_suggestions],
               gitlab_realm: gitlab_realm
             ).encoded
           else
-            code_suggestions_token = ::Ai::ServiceAccessToken.code_suggestions.active.last
+            code_suggestions_token = ::Ai::ServiceAccessToken.active.last
             unauthorized! if code_suggestions_token.nil?
 
             token = code_suggestions_token.token

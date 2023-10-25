@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Gitlab
-  module CodeSuggestions
+  module Ai
     class AccessToken
-      JWT_AUDIENCE = 'gitlab-code-suggestions'
+      JWT_AUDIENCE = 'gitlab-ai-gateway'
       NOT_BEFORE_TIME = 5.seconds.to_i.freeze
       EXPIRES_IN = 1.hour.to_i.freeze
 
@@ -15,13 +15,14 @@ module Gitlab
 
       attr_reader :issued_at
 
-      def initialize(user, gitlab_realm: GITLAB_REALM_SAAS)
+      def initialize(user, scopes:, gitlab_realm: GITLAB_REALM_SAAS)
         @id = SecureRandom.uuid
         @audience = JWT_AUDIENCE
         @issuer = Doorkeeper::OpenidConnect.configuration.issuer
         @issued_at = Time.now.to_i
         @not_before = @issued_at - NOT_BEFORE_TIME
         @expire_time = @issued_at + EXPIRES_IN
+        @scopes = scopes
         @user = user
         @gitlab_realm = gitlab_realm
       end
@@ -48,7 +49,8 @@ module Gitlab
       def claims
         {
           third_party_ai_features_enabled: @user.third_party_ai_features_enabled?,
-          gitlab_realm: @gitlab_realm
+          gitlab_realm: @gitlab_realm,
+          scopes: @scopes
         }
       end
 

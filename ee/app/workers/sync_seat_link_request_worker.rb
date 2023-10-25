@@ -107,6 +107,6 @@ class SyncSeatLinkRequestWorker
     token = code_suggestions['token']
     expires_at = code_suggestions['expires_at']
 
-    Ai::ServiceAccessTokensStorageService.new(token, expires_at, :code_suggestions).execute
+    Ai::ServiceAccessTokensStorageService.new(token, expires_at).execute
   end
 end
