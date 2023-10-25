@@ -76,6 +76,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       end
 
       it_behaves_like 'triggers policy bot comment', :license_scanning, false
+      it_behaves_like 'merge request without scan result violations'
 
       context 'with violations' do
         let(:license) { create(:software_license, name: 'GPL v3') }
@@ -93,6 +94,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         end
 
         it_behaves_like 'triggers policy bot comment', :license_scanning, true
+        it_behaves_like 'merge request with scan result violations'
 
         context 'when no approvals are required' do
           let(:approvals_required) { 0 }

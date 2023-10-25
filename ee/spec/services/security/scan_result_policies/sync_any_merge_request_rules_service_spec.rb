@@ -52,12 +52,6 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
       end
     end
 
-    shared_examples_for 'creates no violation records' do
-      it 'creates no violation records' do
-        expect { execute }.not_to change { merge_request.scan_result_policy_violations.count }
-      end
-    end
-
     context 'when merge_request is merged' do
       before do
         merge_request.update!(state: 'merged')
@@ -77,7 +71,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
 
           it_behaves_like 'sets approvals_required to 0'
           it_behaves_like 'triggers policy bot comment', :any_merge_request, false
-          it_behaves_like 'creates no violation records'
+          it_behaves_like 'merge request without scan result violations'
 
           it 'does not create a log' do
             expect(Gitlab::AppJsonLogger).not_to receive(:info)
@@ -94,33 +88,13 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
 
           it_behaves_like 'sets approvals_required to 0'
           it_behaves_like 'triggers policy bot comment', :any_merge_request, false
-          it_behaves_like 'creates no violation records'
-
-          context 'with previous violation record' do
-            let!(:unrelated_violation) do
-              create(:scan_result_policy_violation, scan_result_policy_read: scan_result_policy_read,
-                merge_request: merge_request)
-            end
-
-            it 'removes the violation record' do
-              expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(-1)
-            end
-          end
+          it_behaves_like 'merge request without scan result violations'
         end
       end
 
       context 'with violations' do
         let(:policy_commits) { :any }
         let(:merge_request_commits) { [unsigned_commit] }
-
-        let_it_be(:scan_result_policy_read_2, reload: true) do
-          create(:scan_result_policy_read, project: project)
-        end
-
-        let_it_be(:unrelated_scan_result_violation) do
-          create(:scan_result_policy_violation, merge_request: merge_request,
-            scan_result_policy_read: scan_result_policy_read_2, project: project)
-        end
 
         before do
           scan_result_policy_read.update!(commits: policy_commits)
@@ -163,16 +137,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
         with_them do
           it_behaves_like 'does not update approval rules'
           it_behaves_like 'triggers policy bot comment', :any_merge_request, true
-
-          it 'creates violation records' do
-            expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(1)
-          end
-
-          it 'does not delete unrelated violation records from other policies' do
-            execute
-
-            expect(merge_request.scan_result_policy_violations).to include unrelated_scan_result_violation
-          end
+          it_behaves_like 'merge request with scan result violations'
 
           it 'logs violated rules' do
             expect(Gitlab::AppJsonLogger).to receive(:info).with(hash_including(message: 'Updating MR approval rule'))
@@ -233,17 +198,8 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
             end
 
             it_behaves_like 'triggers policy bot comment', :any_merge_request, false
-            it_behaves_like 'creates no violation records'
-
-            context 'with previous violation record' do
-              let!(:unrelated_violation) do
-                create(:scan_result_policy_violation, scan_result_policy_read: scan_result_policy_read_with_commits,
-                  merge_request: merge_request)
-              end
-
-              it 'removes the violation record' do
-                expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(-1)
-              end
+            it_behaves_like 'merge request without scan result violations' do
+              let(:scan_result_policy_read) { scan_result_policy_read_with_commits }
             end
           end
 
@@ -286,9 +242,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
             scan_result_policy_read.update!(commits: nil)
           end
 
-          it 'does not create any violations' do
-            expect { subject }.not_to change { merge_request.scan_result_policy_violations.count }
-          end
+          it_behaves_like 'merge request without scan result violations', previous_violation: false
         end
       end
     end
