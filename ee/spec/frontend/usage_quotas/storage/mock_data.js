@@ -17,6 +17,7 @@ export const defaultNamespaceProvideValues = {
   namespacePlanStorageIncluded: 1002321,
   totalRepositorySizeExcess: '0',
   isUsingProjectEnforcement: true,
+  isUsingNamespaceEnforcement: false,
   helpLinks: storageTypeHelpPaths,
 };
 

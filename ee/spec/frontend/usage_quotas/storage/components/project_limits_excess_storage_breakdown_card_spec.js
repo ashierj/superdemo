@@ -2,12 +2,12 @@ import { GlButton, GlSkeletonLoader, GlProgressBar, GlLink } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
-import ExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/excess_storage_breakdown_card.vue';
+import ProjectLimitsExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/project_limits_excess_storage_breakdown_card.vue';
 import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { defaultNamespaceProvideValues } from '../mock_data';
 
-describe('ExcessStorageBreakdownCard', () => {
+describe('ProjectLimitsExcessStorageBreakdownCard', () => {
   /** @type { import('helpers/vue_test_utils_helper').ExtendedWrapper } */
   let wrapper;
 
@@ -18,7 +18,7 @@ describe('ExcessStorageBreakdownCard', () => {
   };
 
   const createComponent = ({ props = {}, provide = {} } = {}) => {
-    wrapper = shallowMountExtended(ExcessStorageBreakdownCard, {
+    wrapper = shallowMountExtended(ProjectLimitsExcessStorageBreakdownCard, {
       propsData: { ...defaultProps, ...props },
       provide: {
         ...defaultNamespaceProvideValues,
@@ -78,6 +78,14 @@ describe('ExcessStorageBreakdownCard', () => {
       createComponent({ props: { loading: false } });
       expect(findSkeletonLoader().exists()).toBe(false);
     });
+  });
+
+  it('renders the card subtitle related to the storage included', () => {
+    createComponent();
+    expect(wrapper.text()).toContain(
+      numberToHumanSize(defaultNamespaceProvideValues.namespacePlanStorageIncluded, 1),
+    );
+    expect(wrapper.text()).toContain('Storage per project included in Free subscription');
   });
 
   describe('card title', () => {

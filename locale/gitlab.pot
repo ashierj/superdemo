@@ -51284,6 +51284,9 @@ msgstr ""
 msgid "UsageQuota|Group settings %{gt} Usage quotas"
 msgstr ""
 
+msgid "UsageQuota|How are limits applied?"
+msgstr ""
+
 msgid "UsageQuota|Included in %{planName} subscription"
 msgstr ""
 
@@ -51341,7 +51344,7 @@ msgstr ""
 msgid "UsageQuota|Product analytics"
 msgstr ""
 
-msgid "UsageQuota|Projects under this namespace have %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}"
+msgid "UsageQuota|Projects under this namespace have %{planLimit} of storage."
 msgstr ""
 
 msgid "UsageQuota|Recalculate repository usage"
@@ -51398,7 +51401,7 @@ msgstr ""
 msgid "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} of namespace storage. View and manage your usage from %{strong_start}%{usage_quotas_nav_instruction}%{strong_end}. %{docs_link_start}Learn more%{link_end} about how to reduce your storage."
 msgstr ""
 
-msgid "UsageQuota|This namespace has %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}"
+msgid "UsageQuota|This namespace has %{planLimit} of storage."
 msgstr ""
 
 msgid "UsageQuota|This namespace has no projects which used shared runners in the current period"

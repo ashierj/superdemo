@@ -14,7 +14,7 @@ import { STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE, BUY_STORAGE } from '../const
 import NumberToHumanSize from './number_to_human_size.vue';
 
 /**
- * ExcessStorageBreakdownCard
+ * ProjectLimitsExcessStorageBreakdownCard
  *
  * This card is used on Namespace Usage Quotas
  * when the namespace has Project-level storage limits
@@ -23,7 +23,7 @@ import NumberToHumanSize from './number_to_human_size.vue';
  */
 
 export default {
-  name: 'ExcessStorageBreakdownCard',
+  name: 'ProjectLimitsExcessStorageBreakdownCard',
   components: {
     GlIcon,
     GlLink,
@@ -36,7 +36,13 @@ export default {
   directives: {
     GlModalDirective,
   },
-  inject: ['purchaseStorageUrl', 'buyAddonTargetAttr', 'totalRepositorySizeExcess'],
+  inject: [
+    'purchaseStorageUrl',
+    'buyAddonTargetAttr',
+    'totalRepositorySizeExcess',
+    'namespacePlanStorageIncluded',
+    'namespacePlanName',
+  ],
   props: {
     loading: {
       type: Boolean,
@@ -67,6 +73,15 @@ export default {
 
       return sprintf(s__('UsageQuota|%{percentageRemaining}%% purchased storage remaining.'), {
         percentageRemaining,
+      });
+    },
+    planStorageDescription() {
+      const projectEnforcementTypeTitle = s__(
+        'UsageQuota|Storage per project included in %{planName} subscription',
+      );
+
+      return sprintf(projectEnforcementTypeTitle, {
+        planName: this.namespacePlanName,
       });
     },
   },
@@ -149,6 +164,11 @@ export default {
       </template>
       <hr class="gl-my-4" />
       <p>{{ $options.i18n.PROJECT_ENFORCEMENT_PURCHASE_CARD_SUBTITLE }}</p>
+      <p v-if="namespacePlanStorageIncluded">
+        <strong><number-to-human-size :value="namespacePlanStorageIncluded" /></strong>
+
+        {{ planStorageDescription }}
+      </p>
     </div>
   </gl-card>
 </template>

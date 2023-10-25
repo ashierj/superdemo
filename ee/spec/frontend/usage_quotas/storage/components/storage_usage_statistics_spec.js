@@ -1,9 +1,10 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlButton, GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
-import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
-import TotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/total_storage_available_breakdown_card.vue';
-import ExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/excess_storage_breakdown_card.vue';
+import StorageUsageOverviewCard from 'ee/usage_quotas/storage/components/storage_usage_overview_card.vue';
+import NamespaceLimitsStorageUsageOverviewCard from 'ee/usage_quotas/storage/components/namespace_limits_storage_usage_overview_card.vue';
+import NamespaceLimitsTotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/namespace_limits_total_storage_available_breakdown_card.vue';
+import ProjectLimitsExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/project_limits_excess_storage_breakdown_card.vue';
 import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
@@ -12,7 +13,6 @@ import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
-
 import { withRootStorageStatistics, defaultNamespaceProvideValues } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -55,7 +55,7 @@ describe('StorageUsageStatistics', () => {
       },
       apolloProvider: mockApollo,
       stubs: {
-        StorageStatisticsCard,
+        StorageUsageOverviewCard,
         NumberToHumanSize,
         GlSprintf,
         GlButton,
@@ -65,10 +65,13 @@ describe('StorageUsageStatistics', () => {
     });
   };
 
-  const findNamespaceStorageCard = () => wrapper.findComponent(StorageStatisticsCard);
-  const findTotalStorageAvailableBreakdownCard = () =>
-    wrapper.findComponent(TotalStorageAvailableBreakdownCard);
-  const findExcessStorageBreakdownCard = () => wrapper.findComponent(ExcessStorageBreakdownCard);
+  const findStorageUsageOverviewCard = () => wrapper.findComponent(StorageUsageOverviewCard);
+  const findNamespaceLimitsStorageUsageOverviewCard = () =>
+    wrapper.findComponent(NamespaceLimitsStorageUsageOverviewCard);
+  const findNamespaceLimitsTotalStorageAvailableBreakdownCard = () =>
+    wrapper.findComponent(NamespaceLimitsTotalStorageAvailableBreakdownCard);
+  const findProjectLimitsExcessStorageBreakdownCard = () =>
+    wrapper.findComponent(ProjectLimitsExcessStorageBreakdownCard);
   const findOverviewSubtitle = () => wrapper.findByTestId('overview-subtitle');
   const findPurchaseButton = () => wrapper.findComponent(GlButton);
   const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
@@ -158,6 +161,7 @@ describe('StorageUsageStatistics', () => {
         createComponent({
           provide: {
             isUsingProjectEnforcement: false,
+            isUsingNamespaceEnforcement: true,
           },
         });
 
@@ -172,9 +176,22 @@ describe('StorageUsageStatistics', () => {
     it('passes the correct props to StorageStatisticsCard', () => {
       createComponent();
 
-      expect(findNamespaceStorageCard().props()).toEqual({
+      expect(findStorageUsageOverviewCard().props()).toEqual({
         usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
-        planStorageDescription: 'Storage per project included in Free subscription',
+        loading: false,
+      });
+    });
+
+    it('passes the correct props to NamespaceLimitsStorageStatisticsCard', () => {
+      createComponent({
+        provide: {
+          isUsingProjectEnforcement: false,
+          isUsingNamespaceEnforcement: true,
+        },
+      });
+
+      expect(findNamespaceLimitsStorageUsageOverviewCard().props()).toEqual({
+        usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
         totalStorage:
           withRootStorageStatistics.actualRepositorySizeLimit +
           withRootStorageStatistics.additionalPurchasedStorageSize,
@@ -183,21 +200,20 @@ describe('StorageUsageStatistics', () => {
     });
   });
 
-  describe('TotalStorageAvailableBreakdownCard', () => {
-    it('does not render TotalStorageAvailableBreakdownCard when namespace is using project enforcement', () => {
+  describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
+    it('does not render NamespaceLimitsTotalStorageAvailableBreakdownCard when namespace is using project enforcement', () => {
       createComponent();
-      expect(findTotalStorageAvailableBreakdownCard().exists()).toBe(false);
+      expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().exists()).toBe(false);
     });
 
-    it('passes the correct props to TotalStorageAvailableBreakdownCard when namespace is NOT using project enforcement', () => {
+    it('passes the correct props to NamespaceLimitsTotalStorageAvailableBreakdownCard when namespace is NOT using project enforcement', () => {
       createComponent({
         provide: {
           isUsingProjectEnforcement: false,
         },
       });
 
-      expect(findTotalStorageAvailableBreakdownCard().props()).toEqual({
-        planStorageDescription: 'Included in Free subscription',
+      expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().props()).toEqual({
         includedStorage: withRootStorageStatistics.actualRepositorySizeLimit,
         purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
         totalStorage:
@@ -214,24 +230,24 @@ describe('StorageUsageStatistics', () => {
         },
       });
 
-      expect(findTotalStorageAvailableBreakdownCard().exists()).toBe(false);
+      expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().exists()).toBe(false);
     });
   });
 
-  describe('ExcessStorageBreakdownCard', () => {
-    it('does not render ExcessStorageBreakdownCard when namespace is NOT using project enforcement', () => {
+  describe('ProjectLimitsExcessStorageBreakdownCard', () => {
+    it('does not render ProjectLimitsExcessStorageBreakdownCard when namespace is NOT using project enforcement', () => {
       createComponent({
         provide: {
           isUsingProjectEnforcement: false,
         },
       });
-      expect(findExcessStorageBreakdownCard().exists()).toBe(false);
+      expect(findProjectLimitsExcessStorageBreakdownCard().exists()).toBe(false);
     });
 
-    it('passes the correct props to ExcessStorageBreakdownCard when namespace is using project enforcement', () => {
+    it('passes the correct props to ProjectLimitsExcessStorageBreakdownCard when namespace is using project enforcement', () => {
       createComponent();
 
-      expect(findExcessStorageBreakdownCard().props()).toEqual({
+      expect(findProjectLimitsExcessStorageBreakdownCard().props()).toEqual({
         purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
         limitedAccessModeEnabled: false,
         loading: false,
@@ -245,7 +261,7 @@ describe('StorageUsageStatistics', () => {
         },
       });
 
-      expect(findExcessStorageBreakdownCard().exists()).toBe(false);
+      expect(findProjectLimitsExcessStorageBreakdownCard().exists()).toBe(false);
     });
   });
 });
