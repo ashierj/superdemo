@@ -2,7 +2,7 @@
 - return unless @project.suggested_reviewers_available?
 
 - if current_user.can?(:create_resource_access_tokens, @project)
-  %section.settings.merge-requests-feature.no-animate#js-merge-request-suggested-reviewers-settings.expanded{ data: { qa_selector: 'merge_request_suggested_reviewers' } }
+  %section.settings.merge-requests-feature.no-animate#js-merge-request-suggested-reviewers-settings.expanded
     .settings-header
       %h4.gl-display-inline-block= s_('SuggestedReviewers|Suggested reviewers')
       %p.gl-text-secondary
