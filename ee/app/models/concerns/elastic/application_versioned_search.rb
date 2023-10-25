@@ -58,7 +58,7 @@ module Elastic
     end
 
     def maintain_elasticsearch_update(updated_attributes: previous_changes.keys)
-      updated_attributes = updated_attributes.map(&:to_s) # Allow caller to provide symbols but keep consistent to using strings
+      updated_attributes = updated_attributes.map(&:to_sym)
       ::Elastic::ProcessBookkeepingService.track!(self)
 
       associations_to_update = associations_needing_elasticsearch_update(updated_attributes)
@@ -78,7 +78,7 @@ module Elastic
         association_name = dependant[:association_name]
         on_change = dependant[:on_change]
 
-        next if updated_attributes.exclude?(on_change.to_s)
+        next if updated_attributes.exclude?(on_change)
 
         next if dependant[:depends_on_finished_migration].present? &&
           !::Elastic::DataMigrationService.migration_has_finished?(dependant[:depends_on_finished_migration])
