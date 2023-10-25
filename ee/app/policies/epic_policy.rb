@@ -27,11 +27,11 @@ class EpicPolicy < BasePolicy
   end
 
   condition(:ai_available, scope: :subject) do
-    ::Feature.enabled?(:openai_experimentation)
+    ::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)
   end
 
   condition(:summarize_notes_enabled, scope: :subject) do
-    ::Feature.enabled?(:openai_experimentation) &&
+    (::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)) &&
       @subject.group.licensed_feature_available?(:summarize_notes) &&
       Gitlab::Llm::StageCheck.available?(@subject.group, :summarize_notes)
   end

@@ -17,7 +17,7 @@ module Llm
 
         def perform(filename, update_version)
           return unless Gitlab::Saas.feature_available?(FEATURE_NAME)
-          return unless Feature.enabled?(:openai_experimentation) # this is legacy global AI toggle FF
+          return unless Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)
           return unless ::License.feature_available?(:ai_chat) # license check
           # if this job gets rescheduled for a late enough run it may so happen the file is not there anymore
           return unless File.exist?(filename)

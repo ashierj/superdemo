@@ -14,7 +14,7 @@ module Gitlab
       def self.enabled_for?(user:)
         return false unless user
         return false unless ::License.feature_available?(:ai_tanuki_bot)
-        return false unless Feature.enabled?(:openai_experimentation)
+        return false unless Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)
         return false unless ai_feature_enabled?(user)
 
         true
