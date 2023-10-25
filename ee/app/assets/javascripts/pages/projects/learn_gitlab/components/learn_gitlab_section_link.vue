@@ -97,7 +97,7 @@ export default {
           data-testid="contact-admin-popover"
         >
           <p>{{ popoverText }}</p>
-          <gl-link :href="value.url" class="font-size-inherit">
+          <gl-link :href="value.url">
             {{ $options.i18n.viewAdminList }}
           </gl-link>
         </gl-popover>
