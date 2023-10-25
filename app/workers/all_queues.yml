@@ -2539,7 +2539,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent: false
+  :idempotent: true
   :tags: []
 - :name: bulk_imports_entity
   :worker_name: BulkImports::EntityWorker
@@ -2593,7 +2593,7 @@
   :urgency: :low
   :resource_boundary: :memory
   :weight: 1
-  :idempotent: false
+  :idempotent: true
   :tags: []
 - :name: bulk_imports_pipeline_batch
   :worker_name: BulkImports::PipelineBatchWorker
@@ -2602,7 +2602,7 @@
   :urgency: :low
   :resource_boundary: :memory
   :weight: 1
-  :idempotent: false
+  :idempotent: true
   :tags: []
 - :name: bulk_imports_relation_batch_export
   :worker_name: BulkImports::RelationBatchExportWorker
