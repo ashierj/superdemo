@@ -82,13 +82,27 @@ RSpec.describe MemberEntity, feature_category: :system_access do
     let(:member) { GroupMemberPresenter.new(create(:group_member, group: group, created_by: current_user), current_user: current_user) }
 
     it_behaves_like 'member.json'
+
+    context 'with custom role' do
+      let(:member_role) { create(:member_role, :guest, name: 'guest plus', namespace: group, read_code: true) }
+      let(:member) { GroupMemberPresenter.new(create(:group_member, :guest, group: group, member_role: member_role, user: current_user), current_user: current_user) }
+
+      it_behaves_like 'member.json'
+    end
   end
 
   context 'project member' do
-    let(:project) { create(:project) }
-    let(:group) { project.group }
-    let(:member) { ProjectMemberPresenter.new(create(:project_member, project: project), current_user: current_user) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:member) { ProjectMemberPresenter.new(create(:project_member, project: project), current_user: current_user) }
 
     it_behaves_like 'member.json'
+
+    context 'with custom role' do
+      let_it_be(:member_role) { create(:member_role, :guest, name: 'guest plus', namespace: group, read_code: true) }
+      let_it_be(:member) { ProjectMemberPresenter.new(create(:project_member, :guest, project: project, member_role: member_role, user: current_user), current_user: current_user) }
+
+      it_behaves_like 'member.json'
+    end
   end
 end

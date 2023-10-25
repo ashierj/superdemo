@@ -16,9 +16,31 @@ module EE
 
     delegator_override :human_access
     def human_access
-      return format(s_("MemberRole|%{role} - custom"), role: super) if member_role
+      return member_role.name if member_role
 
       super
+    end
+
+    delegator_override :valid_member_roles
+    def valid_member_roles
+      return super unless ::Feature.enabled?(:custom_roles_in_members_page, group)
+
+      root_group = member.source&.root_ancestor
+      member_roles = root_group.member_roles
+
+      if member.highest_group_member
+        member_roles = member_roles.select do |role|
+          role.base_access_level >= member.highest_group_member.access_level
+        end
+      end
+
+      member_roles.map do |member_role|
+        {
+          base_access_level: member_role.base_access_level,
+          member_role_id: member_role.id,
+          name: member_role.name
+        }
+      end
     end
 
     private

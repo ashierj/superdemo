@@ -2,11 +2,17 @@
 
 require 'spec_helper'
 
+# Creation is necessary due to relations and the need to check in the presenter
+#
+# rubocop:disable RSpec/FactoryBot/AvoidCreate
 RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
-  let_it_be(:user) { build_stubbed(:user) }
-  let_it_be(:group) { build_stubbed(:group) }
-  let_it_be(:member) { build_stubbed(:group_member, :guest, source: group, user: user) }
-  let(:presenter) { described_class.new(member, current_user: user) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:root_group) { create(:group) }
+  let_it_be(:subgroup) { create(:group, parent: root_group) }
+  let_it_be(:member_root) { create(:group_member, :reporter, group: root_group, user: user) }
+  let_it_be(:member_subgroup) { create(:group_member, :reporter, group: subgroup, user: user) }
+
+  let(:presenter) { described_class.new(member_root, current_user: user) }
 
   describe '#human_access' do
     context 'when user has static role' do
@@ -20,20 +26,62 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
         }
 
         access_levels.each do |human_name, access_level|
-          member.access_level = access_level
+          member_root.access_level = access_level
           expect(presenter.human_access).to eq human_name
         end
       end
 
       context 'when user has a custom role' do
         it 'returns custom roles' do
-          member_role = build_stubbed(:member_role, :guest, namespace: group)
-          member.member_role = member_role
-          member.access_level = Gitlab::Access::GUEST
+          member_role = create(:member_role, :guest, namespace: root_group)
+          member_root.member_role = member_role
+          member_root.access_level = Gitlab::Access::GUEST
 
-          expect(presenter.human_access).to eq format(s_("MemberRole|%{role} - custom"), role: "Guest")
+          expect(presenter.human_access).to eq('Custom')
         end
       end
     end
   end
+
+  describe '#valid_member_roles' do
+    let_it_be(:member_role_guest) { create(:member_role, :guest, name: 'guest plus', namespace: root_group) }
+    let_it_be(:member_role_reporter) { create(:member_role, :reporter, name: 'reporter plus', namespace: root_group) }
+
+    context 'when custom_roles_in_members_page feature flag is enabled' do
+      before do
+        stub_feature_flags(custom_roles_in_members_page: true)
+      end
+
+      it 'returns only roles with higher base_access_level than user highest membership in the hierarchy' do
+        expect(described_class.new(member_subgroup).valid_member_roles).to match_array(
+          [
+            { base_access_level: Gitlab::Access::REPORTER, member_role_id: member_role_reporter.id,
+              name: 'reporter plus' }
+          ]
+        )
+      end
+
+      it 'returns all roles for the root group' do
+        expect(described_class.new(member_root).valid_member_roles).to match_array(
+          [
+            { base_access_level: Gitlab::Access::REPORTER, member_role_id: member_role_reporter.id,
+              name: 'reporter plus' },
+            { base_access_level: Gitlab::Access::GUEST, member_role_id: member_role_guest.id,
+              name: 'guest plus' }
+          ]
+        )
+      end
+    end
+
+    context 'when custom_roles_in_members_page feature flag is disabled' do
+      before do
+        stub_feature_flags(custom_roles_in_members_page: false)
+      end
+
+      it 'returns an empty array' do
+        expect(presenter.valid_member_roles).to be_empty
+      end
+    end
+  end
 end
+# rubocop:enable RSpec/FactoryBot/AvoidCreate
