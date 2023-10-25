@@ -26,7 +26,7 @@
   .settings-content
     = render 'ip_limits'
 
-%section.settings.as-packages-limits.no-animate#js-packages-limits-settings{ class: ('expanded' if expanded_by_default?), data: { qa_selector: 'packages_limits_content' } }
+%section.settings.as-packages-limits.no-animate#js-packages-limits-settings{ class: ('expanded' if expanded_by_default?) }
   .settings-header
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Package registry rate limits')
