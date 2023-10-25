@@ -44,7 +44,7 @@ RSpec.shared_examples_for 'unlimited members during trial alert' do
 
     wait_for_all_requests
 
-    expect(page).to have_content('Subgroups and projects').or have_content('Project information')
+    expect(page).to have_selector('a[aria-current="page"]', text: current_page_label)
     expect(page).not_to have_selector(alert_selector)
   end
 
