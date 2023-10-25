@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Data Stores', product_group: :global_search, quarantine: {
-    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/385927',
-    type: :stale
-  } do
+  RSpec.describe 'Data Stores', product_group: :global_search do
     describe(
       'Search using Elasticsearch',
       :orchestrated,
@@ -33,21 +30,28 @@ module QA
         end.project.visit!
       end
 
+      after do
+        project.remove_via_api!
+      end
+
       it(
         'tests reindexing after push',
         retry: 3,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348040'
       ) do
         expect { Runtime::Search.find_code(project_file_name, project_file_content) }.not_to raise_error
+        Page::Main::Menu.perform(&:go_to_groups)
 
         QA::Page::Main::Menu.perform do |menu|
           menu.search_for(project_file_content)
         end
 
+        file_path = "#{project.group.sandbox.path} /
+        #{project.group.path} / #{project.name}: #{project_file_name}"
+
         Page::Search::Results.perform do |search|
           search.switch_to_code
-
-          expect(search).to have_file_with_content project_file_name, project_file_content
+          expect(search).to have_file_in_project_with_content project_file_content, file_path
         end
       end
 
@@ -58,35 +62,39 @@ module QA
       ) do
         template = {
           file_name: 'LICENSE',
-          name: 'Mozilla Public License 2.0',
-          api_path: 'licenses',
-          api_key: 'mpl-2.0'
+          name: 'ElasticsearchIndexingtest with IDE'
         }
-        content = fetch_template_from_api(template[:api_path], template[:api_key])
 
         Page::Project::Show.perform(&:open_web_ide!)
-        Page::Project::WebIDE::Edit.perform do |ide|
+        Page::Project::WebIDE::VSCode.perform do |ide|
+          ide.wait_for_ide_to_load
           ide.create_new_file_from_template template[:file_name], template[:name]
-          ide.commit_changes
+          ide.wait_for_ide_to_load
+          ide.commit_toggle template[:file_name]
+          ide.push_to_existing_branch
+          ide.wait_for_ide_to_load
+          ide.switch_to_original_window
         end
-
-        expect { Runtime::Search.find_code(template[:file_name], content[0..33]) }.not_to raise_error
-
+        expect { Runtime::Search.find_code(template[:file_name], template[:name]) }.not_to raise_error
         Page::Main::Menu.perform(&:go_to_groups)
-
-        QA::Page::Main::Menu.perform do |menu|
-          menu.search_for content[0..33]
-        end
 
         QA::Support::Retrier
           .retry_on_exception(
             max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL
           ) do
+          QA::Page::Main::Menu.perform do |menu|
+            menu.search_for template[:name]
+          end
           Page::Search::Results.perform do |search|
             search.switch_to_code
+
+            file_path = "#{project.group.sandbox.path} /
+            #{project.group.path} / #{project.name}: #{template[:file_name]}"
+
             aggregate_failures "testing expectations" do
+              expect(search).to have_project_in_search_result project.name
               expect(search).to have_file_in_project template[:file_name], project.name
-              expect(search).to have_file_with_content template[:file_name], content[0..33]
+              expect(search).to have_file_in_project_with_content template[:name], file_path
             end
           end
         end
