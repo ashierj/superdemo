@@ -906,4 +906,46 @@ describe('CustomizableDashboard', () => {
       ]);
     });
   });
+
+  // TODO: Move this along with all the dialog logic to analytics dashboard.
+  // This is planned as part of the larger refactor to simplify this component.
+  // https://gitlab.com/gitlab-org/gitlab/-/issues/426550
+  describe('confirmDiscardIfChanged', () => {
+    beforeAll(() => {
+      confirmAction.mockResolvedValue(false);
+    });
+
+    afterAll(() => {
+      confirmAction.mockReset();
+    });
+
+    describe.each`
+      isSaving | changesMade | expected
+      ${true}  | ${true}     | ${true}
+      ${false} | ${true}     | ${false}
+      ${true}  | ${false}    | ${true}
+      ${false} | ${false}    | ${true}
+    `(
+      'when isSaving=$isSaving and changesMade=$changesMade',
+      ({ isSaving, changesMade, expected }) => {
+        beforeEach(async () => {
+          loadCSSFile.mockResolvedValue();
+
+          createWrapper({ isSaving }, dashboard, {
+            glFeatures: { combinedAnalyticsDashboardsEditor: true },
+          });
+
+          await findEditButton().vm.$emit('click');
+
+          if (changesMade) await enterDashboardTitle('New Title');
+        });
+
+        it(`it returns ${expected}`, async () => {
+          // This only gets called from AnalyticsDashboard so we need to test
+          // the method directly here since it's not called in the component.
+          expect(await wrapper.vm.confirmDiscardIfChanged()).toBe(expected);
+        });
+      },
+    );
+  });
 });
