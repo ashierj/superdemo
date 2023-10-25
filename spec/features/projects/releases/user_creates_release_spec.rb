@@ -52,7 +52,7 @@ RSpec.describe 'User creates release', :js, feature_category: :continuous_delive
       fill_out_form_and_submit
     end
 
-    it 'creates a new release when "Create release" is clicked and redirects to the release\'s dedicated page', :sidekiq_inline do
+    it 'creates a new release when "Create release" is clicked and redirects to the release\'s dedicated page', :aggregate_failures, :sidekiq_inline do
       release = project.releases.last
 
       expect(release.tag).to eq(tag_name)

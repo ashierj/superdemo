@@ -1,4 +1,4 @@
-import { GlLoadingIcon, GlCollapsibleListbox, GlListboxItem, GlBadge } from '@gitlab/ui';
+import { GlLoadingIcon, GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -223,7 +223,7 @@ describe('Milestone combobox component', () => {
         });
 
         it('renders the "Project milestones" heading with a total number indicator', () => {
-          expect(findProjectMilestonesSection().text()).toBe('Project milestones  6');
+          expect(findProjectMilestonesSection().text()).toBe('Project milestones 6');
         });
 
         it('renders each project milestones as a selectable item', () => {
@@ -246,12 +246,8 @@ describe('Milestone combobox component', () => {
           return waitForRequests();
         });
 
-        it('renders the project milestones section in the dropdown', () => {
-          expect(findProjectMilestonesSection().exists()).toBe(true);
-        });
-
-        it('shows no results in project milestones section', () => {
-          expect(findProjectMilestonesSection().findComponent(GlBadge).text()).toBe('0');
+        it('does not render the project milestones section in the dropdown', () => {
+          expect(findProjectMilestonesSection().exists()).toBe(false);
         });
       });
 
@@ -267,12 +263,8 @@ describe('Milestone combobox component', () => {
           return waitForRequests();
         });
 
-        it('renders the project milestones section in the dropdown', () => {
-          expect(findProjectMilestonesSection().exists()).toBe(true);
-        });
-
-        it('shows no results in project milestones section', () => {
-          expect(findProjectMilestonesSection().findComponent(GlBadge).text()).toBe('0');
+        it('does not render the project milestones section in the dropdown', () => {
+          expect(findProjectMilestonesSection().exists()).toBe(false);
         });
       });
 
@@ -320,7 +312,7 @@ describe('Milestone combobox component', () => {
         });
 
         it('renders the "Group milestones" heading with a total number indicator', () => {
-          expect(findGroupMilestonesSection().text()).toBe('Group milestones  6');
+          expect(findGroupMilestonesSection().text()).toBe('Group milestones 6');
         });
 
         it('renders each group milestones as a selectable item', () => {
@@ -343,12 +335,8 @@ describe('Milestone combobox component', () => {
           return waitForRequests();
         });
 
-        it('renders the group milestones section in the dropdown', () => {
-          expect(findGroupMilestonesSection().exists()).toBe(true);
-        });
-
-        it('shows no results in group milestones section', () => {
-          expect(findGroupMilestonesSection().findComponent(GlBadge).text()).toBe('0');
+        it('does not render the group milestones section in the dropdown', () => {
+          expect(findGroupMilestonesSection().exists()).toBe(false);
         });
       });
 
@@ -364,12 +352,8 @@ describe('Milestone combobox component', () => {
           return waitForRequests();
         });
 
-        it('renders the group milestones section in the dropdown', () => {
-          expect(findGroupMilestonesSection().exists()).toBe(true);
-        });
-
-        it('shows no results in group milestones section', () => {
-          expect(findGroupMilestonesSection().findComponent(GlBadge).text()).toBe('0');
+        it('does not render the group milestones section', () => {
+          expect(findGroupMilestonesSection().exists()).toBe(false);
         });
       });
     });
