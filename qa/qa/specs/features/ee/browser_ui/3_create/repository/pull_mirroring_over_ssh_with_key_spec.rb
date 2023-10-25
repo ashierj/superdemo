@@ -22,12 +22,7 @@ module QA
       end
 
       it 'configures and syncs a (pull) mirrored repository', :aggregate_failures,
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347736',
-        quarantine: {
-          only: { subdomain: %i[staging staging-canary] },
-          type: :test_environment,
-          issue: 'https://gitlab.com/gitlab-com/gl-infra/production/-/issues/6621'
-        } do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347736' do
         # Configure the target project to pull from the source project
         # And get the public key to be used as a deploy key
         Page::Project::Menu.perform(&:go_to_repository_settings)
