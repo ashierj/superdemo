@@ -7,7 +7,7 @@ describe('Metric table cell', () => {
   let wrapper;
 
   const identifier = 'issues';
-  const metricLabel = 'New issues';
+  const metricLabel = 'Issues created';
   const groupRequestPath = 'groups/test';
   const groupMetricPath = '-/issues_analytics';
   const projectRequestPath = 'test/project';

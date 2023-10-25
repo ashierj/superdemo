@@ -297,7 +297,7 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
-      value: 'New issues',
+      value: 'Issues created',
       identifier: 'issues',
     },
     lastMonth: {
@@ -315,7 +315,7 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
-      value: 'Closed issues',
+      value: 'Issues closed',
       identifier: 'issues_completed',
     },
     valueLimit: {

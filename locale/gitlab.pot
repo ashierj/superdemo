@@ -14912,9 +14912,6 @@ msgstr ""
 msgid "DORA4Metrics|Change failure rate (percentage)"
 msgstr ""
 
-msgid "DORA4Metrics|Closed issues"
-msgstr ""
-
 msgid "DORA4Metrics|Critical Vulnerabilities over time"
 msgstr ""
 
@@ -14986,6 +14983,12 @@ msgstr ""
 msgid "DORA4Metrics|High Vulnerabilities over time"
 msgstr ""
 
+msgid "DORA4Metrics|Issues closed"
+msgstr ""
+
+msgid "DORA4Metrics|Issues created"
+msgstr ""
+
 msgid "DORA4Metrics|Lead Time for Changes"
 msgstr ""
 
@@ -15038,9 +15041,6 @@ msgid "DORA4Metrics|Metrics comparison for %{name} project"
 msgstr ""
 
 msgid "DORA4Metrics|Month to date"
-msgstr ""
-
-msgid "DORA4Metrics|New issues"
 msgstr ""
 
 msgid "DORA4Metrics|No data available for Namespace: %{fullPath}"
