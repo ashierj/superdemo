@@ -37,7 +37,7 @@ module Llm
     end
 
     def ai_integration_enabled?
-      Feature.enabled?(:openai_experimentation)
+      Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)
     end
 
     # https://gitlab.com/gitlab-org/gitlab/-/issues/413520

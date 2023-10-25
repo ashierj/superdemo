@@ -23,7 +23,7 @@ module Llm
         action_name: ai_action_name
       )
 
-      return unless Feature.enabled?(:openai_experimentation)
+      return unless Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)
 
       options.symbolize_keys!
 

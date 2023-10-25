@@ -49,7 +49,7 @@ module Mutations
       private
 
       def check_feature_flag_enabled!
-        return if Feature.enabled?(:openai_experimentation)
+        return if Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)
 
         raise Gitlab::Graphql::Errors::ResourceNotAvailable, '`openai_experimentation` feature flag is disabled.'
       end
