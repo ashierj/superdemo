@@ -21,9 +21,11 @@ module Ci
       scope :order_by_latest_released_at_desc, -> { reorder(arel_table[:latest_released_at].desc.nulls_last) }
       scope :order_by_latest_released_at_asc, -> { reorder(arel_table[:latest_released_at].asc.nulls_last) }
 
-      delegate :avatar_path, :description, :name, :star_count, :forks_count, to: :project
+      delegate :avatar_path, :star_count, :forks_count, to: :project
 
       enum state: { draft: 0, published: 1 }
+
+      before_create :sync_with_project
 
       def versions
         project.releases.order_released_desc
@@ -35,6 +37,18 @@ module Ci
 
       def unpublish!
         update!(state: :draft)
+      end
+
+      def sync_with_project!
+        sync_with_project
+        save!
+      end
+
+      private
+
+      def sync_with_project
+        self.name = project.name
+        self.description = project.description
       end
     end
   end
