@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'User edit profile', feature_category: :user_profile do
   include Features::NotesHelpers
 
-  let_it_be_with_reload(:user) { create(:user, :no_super_sidebar) }
+  let_it_be_with_reload(:user) { create(:user) }
 
   before do
     stub_feature_flags(edit_user_profile_vue: false)
@@ -327,9 +327,9 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
       let(:project) { create(:project) }
 
       def open_modal(button_text)
-        find('.header-user-dropdown-toggle').click
+        find_by_testid('user-dropdown').click
 
-        page.within ".header-user" do
+        within_testid('user-dropdown') do
           find('.js-set-status-modal-trigger.ready')
 
           click_button button_text
@@ -356,9 +356,9 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
       end
 
       it 'shows the "Set status" menu item in the user menu' do
-        find('.header-user-dropdown-toggle').click
+        find_by_testid('user-dropdown').click
 
-        page.within ".header-user" do
+        within_testid('user-dropdown') do
           expect(page).to have_content('Set status')
         end
       end
@@ -367,9 +367,9 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
         user_status = create(:user_status, user: user, message: 'Eating bread', emoji: 'stuffed_flatbread')
         visit root_path(user)
 
-        find('.header-user-dropdown-toggle').click
+        find_by_testid('user-dropdown').click
 
-        page.within ".header-user" do
+        within_testid('user-dropdown') do
           expect(page).to have_emoji(user_status.emoji)
           expect(page).to have_content user_status.message
           expect(page).to have_content('Edit status')
@@ -510,9 +510,9 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
         it 'shows the "Set status" menu item in the user menu' do
           visit root_path(user)
 
-          find('.header-user-dropdown-toggle').click
+          find_by_testid('user-dropdown').click
 
-          page.within ".header-user" do
+          within_testid('user-dropdown') do
             expect(page).to have_content('Set status')
           end
         end
