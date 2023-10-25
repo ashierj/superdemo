@@ -50704,6 +50704,9 @@ msgstr ""
 msgid "Unauthorized to create an environment"
 msgstr ""
 
+msgid "Unauthorized to delete a package protection rule"
+msgstr ""
+
 msgid "Unauthorized to update the environment"
 msgstr ""
 
