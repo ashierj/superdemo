@@ -18,6 +18,10 @@ module EE
       with_scope :global
       condition(:license_block) { License.block_changes? }
 
+      desc "User is security policy bot"
+      with_options scope: :user, score: 0
+      condition(:security_policy_bot) { @user&.security_policy_bot? }
+
       rule { auditor }.enable :read_all_resources
 
       with_scope :global
