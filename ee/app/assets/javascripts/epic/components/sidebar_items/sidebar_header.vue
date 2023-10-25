@@ -21,7 +21,7 @@ export default {
 </script>
 
 <template>
-  <div class="block issuable-sidebar-header">
+  <div class="issuable-sidebar-header gl-pb-4!">
     <toggle-sidebar
       :collapsed="sidebarCollapsed"
       css-classes="float-right"
