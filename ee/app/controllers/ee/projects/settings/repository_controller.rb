@@ -34,6 +34,13 @@ module EE
             selected_create_access_levels: @protected_tag.create_access_levels.map { |access_level| access_level.user_id || access_level.access_level }
           )
         end
+
+        override :define_protected_refs
+        def define_protected_refs
+          super
+
+          @branches_protected_from_force_push = fetch_branches_protected_from_force_push(@project)
+        end
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
         def render_show
@@ -47,6 +54,15 @@ module EE
           return super unless group_protected_branches_feature_available?(project.group)
 
           project.all_protected_branches.sorted_by_namespace_and_name.page(params[:page])
+        end
+
+        def fetch_branches_protected_from_force_push(project)
+          return [] unless ::Feature.enabled?(:scan_result_policies_block_force_push, project) &&
+            project.licensed_feature_available?(:security_orchestration_policies)
+
+          ::Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePushService
+            .new(project: project)
+            .execute
         end
 
         def group_protected_branches_feature_available?(group)
