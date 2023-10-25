@@ -140,6 +140,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Update
         mount_mutation ::Mutations::DependencyProxy::Packages::Settings::Update, alpha: { milestone: '16.5' }
         mount_mutation ::Mutations::Analytics::CycleAnalytics::ValueStreams::Create, alpha: { milestone: '16.6' }
+        mount_mutation ::Mutations::Analytics::CycleAnalytics::ValueStreams::Update, alpha: { milestone: '16.6' }
         mount_mutation ::Mutations::Analytics::CycleAnalytics::ValueStreams::Destroy, alpha: { milestone: '16.6' }
 
         prepend(Types::DeprecatedMutations)

@@ -9,12 +9,10 @@ module Mutations
           description "Creates a value stream."
 
           include FindsNamespace
+          include SharedValueStreamArguments
 
           authorize :admin_value_stream
 
-          argument :name, GraphQL::Types::String,
-            required: true,
-            description: 'Value stream description.'
           argument :namespace_path, GraphQL::Types::ID,
             required: true,
             description: 'Full path of the namespace(project or group) the value stream is created in.'
