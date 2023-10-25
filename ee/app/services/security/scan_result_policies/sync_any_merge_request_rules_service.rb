@@ -3,6 +3,7 @@
 module Security
   module ScanResultPolicies
     class SyncAnyMergeRequestRulesService
+      include Gitlab::Utils::StrongMemoize
       include ::Security::ScanResultPolicies::PolicyViolationCommentGenerator
 
       def initialize(merge_request)
@@ -21,8 +22,11 @@ module Security
 
       attr_reader :merge_request, :violations
 
+      delegate :project, to: :merge_request, private: true
+
       def remove_required_approvals
         related_policies = merge_request.project.scan_result_policy_reads.targeting_commits
+                                        .including_approval_merge_request_rules
         return if related_policies.empty?
 
         violated_policies_ids, unviolated_policies_ids = evaluate_policy_violations(related_policies)
@@ -43,18 +47,48 @@ module Security
       def evaluate_policy_violations(scan_result_policy_reads)
         has_unsigned_commits = !merge_request.commits(load_from_gitaly: true).all?(&:has_signature?)
         violated, unviolated = scan_result_policy_reads.partition do |scan_result_policy_read|
-          scan_result_policy_read.commits_any? ||
+          next false unless scan_result_policy_read.commits_any? ||
             (scan_result_policy_read.commits_unsigned? && has_unsigned_commits)
+
+          policy_affected_by_target_branch?(scan_result_policy_read)
         end
         [violated.pluck(:id), unviolated.pluck(:id)] # rubocop:disable CodeReuse/ActiveRecord
       end
 
+      def active_policies
+        configurations = project.all_security_orchestration_policy_configurations
+        return [] if configurations.empty?
+
+        configurations.flat_map(&:active_scan_result_policies)
+      end
+      strong_memoize_attr :active_policies
+
+      def policy_branch_service
+        ::Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: project)
+      end
+      strong_memoize_attr :policy_branch_service
+
+      def policy_affected_by_target_branch?(policy)
+        # If there are approval rules, they are already filtered for target branch and we don't have to invoke gitaly
+        return true if policy.approval_merge_request_rules.any?
+
+        rule = active_policies.dig(policy.orchestration_policy_idx, :rules, policy.rule_idx)
+        return true if rule.blank?
+
+        affected_branches = policy_branch_service.scan_result_branches([rule])
+        affected_branches.include? merge_request.target_branch
+      end
+
+      def any_merge_request_rules
+        merge_request.approval_rules.any_merge_request
+      end
+      strong_memoize_attr :any_merge_request_rules
+
       def rules_for_violated_policies(violated_policies_ids)
-        approval_rules = merge_request.approval_rules.any_merge_request
-        approval_rules_for_target_branch = approval_rules.applicable_to_branch(merge_request.target_branch)
+        approval_rules_for_target_branch = any_merge_request_rules.applicable_to_branch(merge_request.target_branch)
 
         violated_rules = approval_rules_for_policies(approval_rules_for_target_branch, violated_policies_ids)
-        unviolated_rules = approval_rules - violated_rules
+        unviolated_rules = any_merge_request_rules - violated_rules
 
         [violated_rules, unviolated_rules]
       end
