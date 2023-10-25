@@ -1,4 +1,4 @@
-import { GlAlert, GlBadge, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlAlert, GlBadge, GlCollapsibleListbox } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { mount, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
@@ -43,9 +43,9 @@ describe('JiraIssueCreationVulnerabilities', () => {
   const findHiddenInput = (name) => wrapper.find(`input[name="service[${name}]"]`);
   const findEnableJiraVulnerabilities = () => wrapper.findByTestId('enable-jira-vulnerabilities');
   const findIssueTypeSection = () => wrapper.findByTestId('issue-type-section');
-  const findIssueTypeDropdown = () => wrapper.findComponent(GlDropdown);
+  const findIssueTypeListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findIssueTypeLabel = () => wrapper.findComponent('label');
   const findGlBadge = () => wrapper.findComponent(GlBadge);
-  const findAllIssueDropdownItems = () => findIssueTypeDropdown().findAllComponents(GlDropdownItem);
   const findFetchIssueTypeButton = () => wrapper.findByTestId('fetch-issue-types');
   const findFetchErrorAlert = () => wrapper.findComponent(GlAlert);
   const setEnableJiraVulnerabilitiesChecked = (isChecked) =>
@@ -119,7 +119,7 @@ describe('JiraIssueCreationVulnerabilities', () => {
     });
   });
 
-  describe('Jira issue type dropdown', () => {
+  describe('Jira issue type listbox', () => {
     describe('with no Jira issues fetched', () => {
       beforeEach(async () => {
         wrapper = createShallowComponent();
@@ -127,15 +127,25 @@ describe('JiraIssueCreationVulnerabilities', () => {
       });
 
       it('receives the correct props', () => {
-        expect(findIssueTypeDropdown().props()).toMatchObject({
+        expect(findIssueTypeListbox().props()).toMatchObject({
           disabled: true,
           loading: false,
-          text: i18n.issueTypeSelect.defaultText,
+          toggleText: i18n.issueTypeSelect.defaultText,
         });
       });
 
-      it('does not contain any dropdown-items', () => {
-        expect(findAllIssueDropdownItems()).toHaveLength(0);
+      it('does not contain any listbox items', () => {
+        expect(findIssueTypeListbox().props('items')).toHaveLength(0);
+      });
+
+      it('sets the correct initial value to a hidden issuetype field', () => {
+        expect(findHiddenInput('vulnerabilities_issuetype').attributes('value')).toBe(
+          defaultProps.initialIssueTypeId,
+        );
+      });
+
+      it('renders the label for the issue type listbox', () => {
+        expect(findIssueTypeLabel().text()).toBe('Jira issue type');
       });
     });
 
@@ -147,7 +157,7 @@ describe('JiraIssueCreationVulnerabilities', () => {
       });
 
       it('receives the correct props', () => {
-        expect(findIssueTypeDropdown().props()).toMatchObject({
+        expect(findIssueTypeListbox().props()).toMatchObject({
           disabled: true,
           loading: true,
         });
@@ -162,22 +172,43 @@ describe('JiraIssueCreationVulnerabilities', () => {
       });
 
       it('receives the correct props', () => {
-        expect(findIssueTypeDropdown().props()).toMatchObject({
+        expect(findIssueTypeListbox().props()).toMatchObject({
           disabled: false,
           loading: false,
         });
       });
 
-      it('contains a dropdown-item for each issue type', () => {
-        expect(findAllIssueDropdownItems()).toHaveLength(TEST_JIRA_ISSUE_TYPES.length);
+      it('sets the correct initial value to a hidden issuetype field', () => {
+        expect(findHiddenInput('vulnerabilities_issuetype').attributes('value')).toBe(
+          defaultProps.initialIssueTypeId,
+        );
       });
 
-      it.each(TEST_JIRA_ISSUE_TYPES)('shows the selected issue name', async (issue) => {
-        const issueIndex = TEST_JIRA_ISSUE_TYPES.indexOf(issue);
-        findAllIssueDropdownItems().at(issueIndex).vm.$emit('click');
-        await nextTick();
-        expect(findIssueTypeDropdown().props('text')).toBe(issue.name);
+      it('contains a listbox item for each issue type', () => {
+        expect(findIssueTypeListbox().props('items')).toHaveLength(TEST_JIRA_ISSUE_TYPES.length);
       });
+
+      it("doesn't set the initial item if it doesn't exist in the listbox", () => {
+        expect(findIssueTypeListbox().props('selected')).toBe(null);
+      });
+
+      it('selects the correct item if it exists in the listbox', async () => {
+        const defaultIssueType = { id: defaultProps.initialIssueTypeId, name: 'default' };
+        store.state.jiraIssueTypes = [...TEST_JIRA_ISSUE_TYPES, defaultIssueType];
+        await nextTick();
+        expect(findIssueTypeListbox().props('selected')).toBe(defaultIssueType.id);
+        expect(findIssueTypeListbox().props('toggleText')).toBe(defaultIssueType.name);
+      });
+
+      it.each(TEST_JIRA_ISSUE_TYPES)(
+        'shows the selected issue name and updates the hidden input',
+        async (issue) => {
+          findIssueTypeListbox().vm.$emit('select', issue.id);
+          await nextTick();
+          expect(findHiddenInput('vulnerabilities_issuetype').attributes('value')).toBe(issue.id);
+          expect(findIssueTypeListbox().props('toggleText')).toBe(issue.name);
+        },
+      );
     });
 
     describe('with Jira issue fetch failure', () => {
