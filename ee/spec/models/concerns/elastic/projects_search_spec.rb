@@ -38,11 +38,28 @@ RSpec.describe Elastic::ProjectsSearch, feature_category: :global_search do
   end
 
   describe '#maintain_elasticsearch_update' do
-    it 'initiates repository reindexing when permissions change' do
-      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).and_return(true)
-      expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).and_return(true)
+    using RSpec::Parameterized::TableSyntax
 
-      subject.maintain_elasticsearch_update(updated_attributes: %i[visibility_level])
+    where(:attribute_updated, :indexing_expected) do
+      :archived         | true
+      :name             | false
+      :visibility_level | true
+    end
+
+    with_them do
+      it 'initiates repository reindexing when attributes change for when indexing is expected' do
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once.and_return(true)
+
+        if indexing_expected
+          expect(::ElasticCommitIndexerWorker).to receive(:perform_async).and_return(true)
+          expect(::ElasticWikiIndexerWorker).to receive(:perform_async).and_return(true)
+        else
+          expect(::ElasticCommitIndexerWorker).not_to receive(:perform_async)
+          expect(::ElasticWikiIndexerWorker).not_to receive(:perform_async)
+        end
+
+        subject.maintain_elasticsearch_update(updated_attributes: [attribute_updated])
+      end
     end
   end
 

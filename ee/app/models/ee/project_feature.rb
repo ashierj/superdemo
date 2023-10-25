@@ -30,9 +30,19 @@ module EE
           associations_to_update << 'issues' if elasticsearch_project_issues_need_updating?
           associations_to_update << 'merge_requests' if elasticsearch_project_merge_requests_need_updating?
           associations_to_update << 'notes' if elasticsearch_project_notes_need_updating?
-          associations_to_update << 'milestones' if elasticsearch_project_milestone_need_updating?
+          associations_to_update << 'milestones' if elasticsearch_project_milestones_need_updating?
 
-          ElasticAssociationIndexerWorker.perform_async(self.project.class.name, project_id, associations_to_update) if associations_to_update.any?
+          if associations_to_update.any?
+            ElasticAssociationIndexerWorker.perform_async(project.class.name, project_id, associations_to_update)
+          end
+
+          if elasticsearch_project_blobs_need_updating?
+            ElasticCommitIndexerWorker.perform_async(project.id, false, { force: true })
+          end
+
+          if elasticsearch_project_wikis_need_updating?
+            ElasticWikiIndexerWorker.perform_async(project.id, project.class.name, { force: true })
+          end
         end
       end
 
@@ -40,20 +50,28 @@ module EE
 
       private
 
-      def elasticsearch_project_milestone_need_updating?
-        self.previous_changes.keys.any? { |key| MILESTONE_PERMISSION_TRACKED_FIELDS.include?(key) }
+      def elasticsearch_project_milestones_need_updating?
+        previous_changes.keys.any? { |key| MILESTONE_PERMISSION_TRACKED_FIELDS.include?(key) }
       end
 
       def elasticsearch_project_notes_need_updating?
-        self.previous_changes.keys.any? { |key| NOTES_PERMISSION_TRACKED_FIELDS.include?(key) }
+        previous_changes.keys.any? { |key| NOTES_PERMISSION_TRACKED_FIELDS.include?(key) }
       end
 
       def elasticsearch_project_issues_need_updating?
-        self.previous_changes.key?(:issues_access_level)
+        previous_changes.key?(:issues_access_level)
       end
 
       def elasticsearch_project_merge_requests_need_updating?
-        self.previous_changes.key?(:merge_requests_access_level)
+        previous_changes.key?(:merge_requests_access_level)
+      end
+
+      def elasticsearch_project_blobs_need_updating?
+        previous_changes.key?(:repository_access_level)
+      end
+
+      def elasticsearch_project_wikis_need_updating?
+        previous_changes.key?(:wiki_access_level)
       end
     end
   end
