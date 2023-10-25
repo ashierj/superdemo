@@ -21,17 +21,10 @@ module EE
           private
 
           def branch_name_affected_by_policy?
-            configurations = project.all_security_orchestration_policy_configurations
-            return if configurations.empty?
+            affected_branches = ::Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePushService
+              .new(project: project).execute
 
-            active_policies = configurations.flat_map(&:active_scan_result_policies)
-            return if active_policies.empty?
-
-            rules = active_policies.pluck(:rules).flatten # rubocop: disable CodeReuse/ActiveRecord
-            service = ::Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: project)
-            affected_branches = service.scan_result_branches(rules)
-
-            branch_name.in?(affected_branches)
+            branch_name.in? affected_branches
           end
 
           def force_push?

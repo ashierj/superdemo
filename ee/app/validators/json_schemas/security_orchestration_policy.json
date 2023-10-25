@@ -850,6 +850,9 @@
               },
               "block_unprotecting_branches": {
                 "type": "boolean"
+              },
+              "prevent_force_pushing" : {
+                "type": "boolean"
               }
             }
           }

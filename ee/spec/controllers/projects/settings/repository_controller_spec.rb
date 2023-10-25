@@ -72,6 +72,41 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
       end
     end
 
+    describe '#fetch_branches_protected_from_force_push' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:feature_flag, :licensed_feature, :branches_protected_from_force_push, :expected_result) do
+        false            | false           | []                       | []
+        false            | true            | []                       | []
+        true             | false           | []                       | []
+        true             | true            | [ref(:protected_branch)] | [ref(:protected_branch)]
+      end
+
+      let!(:protected_branch) { create(:protected_branch, project: project) }
+      let(:base_params) { { namespace_id: project.namespace, project_id: project } }
+
+      subject { get :show, params: base_params }
+
+      with_them do
+        before do
+          stub_feature_flags(scan_result_policies_block_force_push: feature_flag)
+          stub_licensed_features(security_orchestration_policies: licensed_feature)
+
+          allow_next_instance_of(
+            ::Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePushService
+          ) do |instance|
+            allow(instance).to receive(:execute).and_return(branches_protected_from_force_push)
+          end
+        end
+
+        it 'assigns the list of protected branches' do
+          subject
+
+          expect(assigns[:branches_protected_from_force_push]).to eq(expected_result)
+        end
+      end
+    end
+
     describe 'avoid N+1 sql queries' do
       subject { get :show, params: { namespace_id: project.namespace, project_id: project } }
 
