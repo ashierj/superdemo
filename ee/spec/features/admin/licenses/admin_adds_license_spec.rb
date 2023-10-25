@@ -5,7 +5,7 @@ require "spec_helper"
 RSpec.describe "Admin add license", :js, feature_category: :sm_provisioning do
   include StubENV
 
-  let_it_be(:admin) { create(:admin, :no_super_sidebar) }
+  let_it_be(:admin) { create(:admin) }
 
   before do
     # It's important to set this variable so that we don't save a memoized
@@ -54,8 +54,9 @@ RSpec.describe "Admin add license", :js, feature_category: :sm_provisioning do
 
     shared_examples 'active navigation item' do
       it 'activates the "Settings General" navigation item' do
-        expect(find('.sidebar-top-level-items > li.active')).to have_content('Settings')
-        expect(find('.sidebar-top-level-items > li.active')).to have_content('General')
+        within_testid('super-sidebar') do
+          expect(page).to have_css('a[aria-current="page"]', text: 'General')
+        end
       end
     end
 
