@@ -8,6 +8,7 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
   describe '#execute' do
     using RSpec::Parameterized::TableSyntax
 
+    let(:trial_registration) { true }
     let(:base_params) do
       {
         uid: user.id,
@@ -30,13 +31,14 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
       end
 
       let(:service_params) do
-        params.merge({ glm_source: 'some_source', glm_content: 'some_content' })
+        params.merge({ trial: trial_registration, glm_source: 'some_source', glm_content: 'some_content' })
       end
 
       before do
         subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
 
         stub_request(:post, "#{subscription_portal_url}/trials#{path}")
+        stub_saas_features(onboarding: true)
       end
 
       it do
@@ -46,6 +48,21 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
           .and_call_original
 
         described_class.new(user: user, params: service_params).execute
+      end
+    end
+
+    context 'when creating an automatic trial' do
+      let(:path) { '' }
+      let(:trial_registration) { false }
+
+      it_behaves_like 'correct client attributes' do
+        let(:client_params) do
+          {
+            product_interaction: 'SaaS Trial - defaulted',
+            glm_source: 'some_source',
+            glm_content: 'some_content'
+          }
+        end
       end
     end
 
@@ -65,7 +82,7 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
 
     it 'successfully creates a trial' do
       allow(Gitlab::SubscriptionPortal::Client).to receive(:generate_trial)
-        .with(base_params.merge(product_interaction: 'SaaS Trial', trial_onboarding_flow: true))
+        .with(base_params.merge(product_interaction: 'SaaS Trial - defaulted', trial_onboarding_flow: true))
         .and_return({ success: true })
 
       result = described_class.new(user: user, params: {

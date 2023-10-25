@@ -56,7 +56,7 @@ module Registrations
     end
 
     def service_params
-      permitted_params.merge(trial_onboarding_flow: true)
+      permitted_params.merge(trial_onboarding_flow: true, trial: onboarding_status.trial?)
     end
 
     def redirect_params

@@ -41,7 +41,8 @@ RSpec.describe 'Company Information', :js, :saas, feature_category: :activation 
         country: 'US',
         state: 'FL',
         website_url: 'https://gitlab.com',
-        trial_onboarding_flow: true
+        trial_onboarding_flow: true,
+        trial: false
       }.merge(extra_params)
     end
 
