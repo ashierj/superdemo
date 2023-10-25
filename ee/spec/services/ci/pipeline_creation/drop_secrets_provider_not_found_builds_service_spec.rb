@@ -31,27 +31,12 @@ RSpec.describe Ci::PipelineCreation::DropSecretsProviderNotFoundBuildsService, f
       end
     end
 
-    shared_examples 'feature flag is disabled' do
-      context 'and feature flag is disabled'
-      before do
-        stub_feature_flags(drop_job_on_secrets_provider_not_found: false)
-      end
-
-      it 'does not check pipeline builds' do
-        expect(pipeline).not_to receive(:builds)
-
-        service.execute
-      end
-    end
-
     context 'when build has no secrets' do
       before do
         stub_licensed_features(ci_secrets_management: true)
       end
 
       it_behaves_like 'does not drop the build'
-
-      it_behaves_like 'feature flag is disabled'
     end
 
     context 'when build has secrets' do
@@ -80,8 +65,6 @@ RSpec.describe Ci::PipelineCreation::DropSecretsProviderNotFoundBuildsService, f
         end
 
         it_behaves_like 'does not drop the build'
-
-        it_behaves_like 'feature flag is disabled'
       end
 
       context 'and secrets provider is not defined' do
@@ -92,8 +75,6 @@ RSpec.describe Ci::PipelineCreation::DropSecretsProviderNotFoundBuildsService, f
 
           service.execute
         end
-
-        it_behaves_like 'feature flag is disabled'
 
         context 'and build has status different from created' do
           let_it_be(:build_status) { :pending }

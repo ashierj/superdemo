@@ -239,14 +239,6 @@ RSpec.describe Ci::RegisterJobService, '#execute', feature_category: :continuous
           end
 
           it_behaves_like 'it injects to JWT an expiry time eq', 3699
-
-          context 'when feature flag is disabled' do
-            before do
-              stub_feature_flags(drop_job_on_secrets_provider_not_found: false)
-            end
-
-            it_behaves_like 'it injects to JWT an expiry time eq', ::Gitlab::Ci::Jwt::DEFAULT_EXPIRE_TIME
-          end
         end
       end
 
