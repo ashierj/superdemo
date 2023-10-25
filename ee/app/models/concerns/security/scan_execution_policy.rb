@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Security
   module ScanExecutionPolicy
     extend ActiveSupport::Concern
