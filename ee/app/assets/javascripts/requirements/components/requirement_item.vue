@@ -194,12 +194,9 @@ export default {
         <gl-sprintf :message="$options.i18n.legacyReferencePopoverText">
           <template #id>{{ reference }}</template>
           <template #link="{ content }">
-            <gl-link
-              class="gl-font-size-inherit"
-              :href="$options.legacyReferenceDeprecationUrl"
-              target="_blank"
-              >{{ content }}</gl-link
-            >
+            <gl-link :href="$options.legacyReferenceDeprecationUrl" target="_blank">{{
+              content
+            }}</gl-link>
           </template>
         </gl-sprintf>
       </span>

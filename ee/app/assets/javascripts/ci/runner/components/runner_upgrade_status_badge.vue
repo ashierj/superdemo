@@ -94,20 +94,10 @@ export default {
     <gl-popover triggers="focus" :target="() => $refs.badgeRef.$el" :title="badge.label">
       <gl-sprintf :message="badge.popover">
         <template #versionLink="{ content }">
-          <gl-link
-            class="gl-reset-font-size"
-            target="_blank"
-            :href="$options.RUNNER_VERSION_HELP_PATH"
-            >{{ content }}</gl-link
-          >
+          <gl-link target="_blank" :href="$options.RUNNER_VERSION_HELP_PATH">{{ content }}</gl-link>
         </template>
         <template #installLink="{ content }">
-          <gl-link
-            class="gl-reset-font-size"
-            target="_blank"
-            :href="$options.RUNNER_INSTALL_HELP_PATH"
-            >{{ content }}</gl-link
-          >
+          <gl-link target="_blank" :href="$options.RUNNER_INSTALL_HELP_PATH">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
     </gl-popover>

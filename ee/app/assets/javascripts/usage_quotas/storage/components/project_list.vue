@@ -124,12 +124,7 @@ export default {
           :help-links="helpLinks"
         /><storage-type-warning v-if="field.key == 'containerRegistry'">
           {{ $options.containerRegistryPopover.content }}
-
-          <gl-link
-            :href="$options.containerRegistryPopover.docsLink"
-            target="_blank"
-            class="gl-reset-font-size"
-          >
+          <gl-link :href="$options.containerRegistryPopover.docsLink" target="_blank">
             {{ __('Learn more.') }}
           </gl-link>
         </storage-type-warning>
@@ -165,11 +160,7 @@ export default {
               <number-to-human-size :value="project.statistics.storageSize" />
             </template>
           </gl-sprintf>
-          <gl-link
-            :href="$options.forksCostFactorHelpLink"
-            target="_blank"
-            class="gl-reset-font-size"
-          >
+          <gl-link :href="$options.forksCostFactorHelpLink" target="_blank">
             <gl-icon name="question-o" :size="12" />
           </gl-link>
         </div>

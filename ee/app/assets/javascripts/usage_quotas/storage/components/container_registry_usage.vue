@@ -44,7 +44,7 @@ export default {
     <template #left-secondary-text>
       <span>
         {{ $options.i18n.containerRegistryDescription }}
-        <help-page-link class="gl-reset-font-size" path="user/packages/container_registry/index">
+        <help-page-link path="user/packages/container_registry/index">
           {{ __('More information') }}
         </help-page-link>
       </span>
@@ -56,11 +56,7 @@ export default {
       <number-to-human-size :value="containerRegistrySize" data-testid="total-size-section" />
       <storage-type-warning v-if="containerRegistrySizeIsEstimated">
         {{ $options.i18n.estimatedWarningTooltip }}
-        <help-page-link
-          class="gl-reset-font-size"
-          path="user/usage_quotas"
-          anchor="delayed-refresh"
-        >
+        <help-page-link path="user/usage_quotas" anchor="delayed-refresh">
           {{ __('Learn more.') }}
         </help-page-link>
       </storage-type-warning>
