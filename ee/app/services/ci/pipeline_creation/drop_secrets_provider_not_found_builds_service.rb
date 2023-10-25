@@ -8,7 +8,6 @@ module Ci
       end
 
       def execute
-        return if ::Feature.disabled?(:drop_job_on_secrets_provider_not_found, pipeline.project)
         return unless pipeline.project&.feature_available?(:ci_secrets_management)
 
         pipeline.builds.each do |build|
