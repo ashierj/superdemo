@@ -5,9 +5,9 @@ module QA
   include Support::Helpers::Zuora
 
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
-    describe 'Purchase CI minutes' do
+    describe 'Purchase compute minutes' do
       let(:purchase_quantity) { 5 }
-      let(:expected_initial_minutes) { CI_MINUTES[:ci_minutes] * purchase_quantity }
+      let(:expected_initial_minutes) { COMPUTE_MINUTES[:compute_minutes] * purchase_quantity }
       let(:hash) { SecureRandom.hex(4) }
       let(:user) do
         create(:user, :hard_delete, email: "test-user-#{hash}@gitlab.com", api_client: Runtime::API::Client.as_admin)
@@ -41,9 +41,9 @@ module QA
 
         it 'adds additional minutes to group namespace',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347622' do
-          Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
+          Flow::Purchase.purchase_compute_minutes(quantity: purchase_quantity)
 
-          expect_additional_ci_minutes(expected_initial_minutes.to_s)
+          expect_additional_compute_minutes(expected_initial_minutes.to_s)
         end
       end
 
@@ -58,21 +58,21 @@ module QA
             billing.wait_for_subscription(ULTIMATE[:name])
           end
 
-          Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
+          Flow::Purchase.purchase_compute_minutes(quantity: purchase_quantity)
 
-          expect_additional_ci_minutes(expected_initial_minutes.to_s)
+          expect_additional_compute_minutes(expected_initial_minutes.to_s)
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-            expect(usage_quota.plan_ci_limits).to eq(ULTIMATE[:ci_minutes].to_s)
+            expect(usage_quota.plan_ci_limits).to eq(ULTIMATE[:compute_minutes].to_s)
           end
         end
       end
 
-      context 'with existing CI minutes packs' do
+      context 'with existing compute minutes packs' do
         let(:expected_total_minutes) { expected_initial_minutes * 2 }
 
         before do
-          Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
+          Flow::Purchase.purchase_compute_minutes(quantity: purchase_quantity)
         end
 
         after do
@@ -81,24 +81,24 @@ module QA
 
         it 'adds additional minutes to group namespace',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
-          expect_additional_ci_minutes(expected_initial_minutes.to_s)
+          expect_additional_compute_minutes(expected_initial_minutes.to_s)
 
-          Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
+          Flow::Purchase.purchase_compute_minutes(quantity: purchase_quantity)
 
-          expect_additional_ci_minutes(expected_total_minutes.to_s)
+          expect_additional_compute_minutes(expected_total_minutes.to_s)
         end
       end
     end
 
     private
 
-    def expect_additional_ci_minutes(expected_minutes)
+    def expect_additional_compute_minutes(expected_minutes)
       Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
         expect { usage_quota.ci_purchase_successful_alert? }
           .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT)
 
-        usage_quota.wait_for_additional_ci_minutes_available
-        usage_quota.wait_for_additional_ci_minute_limits(expected_minutes)
+        usage_quota.wait_for_additional_compute_minutes_available
+        usage_quota.wait_for_additional_compute_minute_limits(expected_minutes)
       end
     end
   end

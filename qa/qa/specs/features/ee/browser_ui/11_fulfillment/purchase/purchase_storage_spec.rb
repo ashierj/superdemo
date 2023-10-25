@@ -68,16 +68,16 @@ module QA
       it_behaves_like 'Purchase storage', 20
     end
 
-    context 'with existing CI minutes packs',
+    context 'with existing compute minutes packs',
       testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348470' do
       let(:ci_purchase_quantity) { 5 }
 
       before do
-        Flow::Purchase.purchase_ci_minutes(quantity: ci_purchase_quantity)
+        Flow::Purchase.purchase_compute_minutes(quantity: ci_purchase_quantity)
 
         Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-          usage_quota.wait_for_additional_ci_minute_limits(
-            (CI_MINUTES[:ci_minutes] * ci_purchase_quantity).to_s
+          usage_quota.wait_for_additional_compute_minute_limits(
+            (COMPUTE_MINUTES[:compute_minutes] * ci_purchase_quantity).to_s
           )
         end
       end
