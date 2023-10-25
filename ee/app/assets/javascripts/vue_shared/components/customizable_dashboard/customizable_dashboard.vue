@@ -350,6 +350,9 @@ export default {
       // Implicityly confirm if no changes were made
       if (!this.changesMade) return true;
 
+      // No need to confirm while saving
+      if (this.isSaving) return true;
+
       return this.confirmDiscardChanges();
     },
     async cancelEdit() {
