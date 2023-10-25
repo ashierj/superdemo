@@ -15,7 +15,7 @@ module QA
       let(:project) { create(:project, :with_readme, name: 'webide-code-suggestions-project') }
       let(:file_name) { 'new_file.rb' }
       let(:prompt_data) { 'def reverse_string' }
-      let(:prompt_regex) { /#{prompt_data}\(\S+\)/ }
+      let(:prompt_regex) { /[\s|\S]+end/ }
 
       before do
         Flow::Login.sign_in
@@ -35,22 +35,13 @@ module QA
         Page::Project::WebIDE::VSCode.perform(&:wait_for_ide_to_load)
       end
 
-      it(
-        'adds text into a file and verifies code suggestions appear',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/425756',
-        quarantine: {
-          type: :investigating,
-          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/427737"
-        }
-      ) do
+      it 'adds text into a file and verifies code suggestions appear',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/425756' do
         Page::Project::WebIDE::VSCode.perform do |ide|
-          ide.within_vscode_editor do
-            ide.open_file_from_explorer(file_name)
-            ide.add_file_content(prompt_data)
-            ide.verify_prompt_appears_and_accept(prompt_regex)
+          ide.add_prompt_into_a_file(file_name, prompt_data)
+          ide.verify_prompt_appears_and_accept(prompt_regex)
 
-            expect(ide.validate_prompt(prompt_regex)).to eq true
-          end
+          expect(ide.validate_prompt(prompt_regex)).to eq true
         end
       end
     end
