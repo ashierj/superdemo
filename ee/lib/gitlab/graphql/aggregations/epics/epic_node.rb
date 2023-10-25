@@ -15,7 +15,7 @@ module Gitlab
 
           attr_accessor :children, :calculated_count_totals, :calculated_weight_sum_totals
 
-          AggregateStruct = Struct.new(:opened_issues, :closed_issues, :opened_epics, :closed_epics)
+          AggregateStruct = Struct.new(:opened_issues, :opened_issues_total, :closed_issues, :closed_issues_total, :opened_epics, :closed_epics, keyword_init: true)
           HealthStatusStruct = Struct.new(:issues_at_risk, :issues_needing_attention, :issues_on_track)
 
           def initialize(epic_id, flat_info_list)
@@ -34,10 +34,12 @@ module Gitlab
           def aggregate_count
             strong_memoize(:count_aggregate) do
               AggregateStruct.new(
-                sum_objects(COUNT, OPENED_ISSUE_STATE, ISSUE_TYPE),
-                sum_objects(COUNT, CLOSED_ISSUE_STATE, ISSUE_TYPE),
-                sum_objects(COUNT, OPENED_EPIC_STATE, EPIC_TYPE),
-                sum_objects(COUNT, CLOSED_EPIC_STATE, EPIC_TYPE)
+                opened_issues: sum_objects(COUNT, OPENED_ISSUE_STATE, ISSUE_TYPE),
+                opened_issues_total: sum_objects(COUNT, OPENED_ISSUE_STATE, ISSUE_TYPE),
+                closed_issues: sum_objects(COUNT, CLOSED_ISSUE_STATE, ISSUE_TYPE),
+                closed_issues_total: sum_objects(COUNT, CLOSED_ISSUE_STATE, ISSUE_TYPE),
+                opened_epics: sum_objects(COUNT, OPENED_EPIC_STATE, EPIC_TYPE),
+                closed_epics: sum_objects(COUNT, CLOSED_EPIC_STATE, EPIC_TYPE)
               )
             end
           end
@@ -45,8 +47,10 @@ module Gitlab
           def aggregate_weight_sum
             strong_memoize(:weight_sum_aggregate) do
               AggregateStruct.new(
-                sum_objects(WEIGHT_SUM, OPENED_ISSUE_STATE, ISSUE_TYPE),
-                sum_objects(WEIGHT_SUM, CLOSED_ISSUE_STATE, ISSUE_TYPE)
+                opened_issues: sum_objects(WEIGHT_SUM, OPENED_ISSUE_STATE, ISSUE_TYPE),
+                opened_issues_total: sum_objects(WEIGHT_SUM, OPENED_ISSUE_STATE, ISSUE_TYPE),
+                closed_issues: sum_objects(WEIGHT_SUM, CLOSED_ISSUE_STATE, ISSUE_TYPE),
+                closed_issues_total: sum_objects(WEIGHT_SUM, CLOSED_ISSUE_STATE, ISSUE_TYPE)
               )
             end
           end
