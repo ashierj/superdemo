@@ -20153,6 +20153,7 @@ CREATE TABLE packages_nuget_symbols (
     file_path text NOT NULL,
     signature text NOT NULL,
     object_storage_key text NOT NULL,
+    file_sha256 bytea,
     CONSTRAINT check_0e93ca58b7 CHECK ((char_length(file) <= 255)),
     CONSTRAINT check_28b82b08fa CHECK ((char_length(object_storage_key) <= 255)),
     CONSTRAINT check_30b0ef2ca2 CHECK ((char_length(file_path) <= 255)),
