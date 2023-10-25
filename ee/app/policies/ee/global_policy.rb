@@ -132,6 +132,10 @@ module EE
       rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
 
       rule { runner_upgrade_management_available | user_belongs_to_paid_namespace }.enable :read_runner_upgrade_status
+
+      rule { security_policy_bot }.policy do
+        enable :access_git
+      end
     end
   end
 end

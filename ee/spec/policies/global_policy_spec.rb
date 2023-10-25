@@ -9,6 +9,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
   let_it_be(:admin) { create(:admin) }
   let_it_be(:current_user) { create(:user) }
   let_it_be(:user) { create(:user) }
+  let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
 
   subject { described_class.new(current_user, [user]) }
 
@@ -544,6 +545,14 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
 
         it { is_expected.to cs_matcher }
       end
+    end
+  end
+
+  describe 'git access' do
+    context 'security policy bot' do
+      let(:current_user) { security_policy_bot }
+
+      it { is_expected.to be_allowed(:access_git) }
     end
   end
 end

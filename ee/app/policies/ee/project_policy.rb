@@ -8,6 +8,9 @@ module EE
     prepended do
       include ReadonlyAbilities
 
+      desc "User is a security policy bot on the project"
+      condition(:security_policy_bot) { user&.security_policy_bot? && team_member? }
+
       with_scope :subject
       condition(:auto_fix_enabled) { @subject.security_setting&.auto_fix_enabled? }
 

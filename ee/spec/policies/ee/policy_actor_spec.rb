@@ -13,11 +13,9 @@ RSpec.describe PolicyActor, feature_category: :shared do
     stub_const('PolicyActorTestClass', policy_actor_test_class)
   end
 
-  it 'implements all the methods from user' do
-    methods = subject.instance_methods
+  describe '#security_policy_bot?' do
+    subject { PolicyActorTestClass.new.security_policy_bot? }
 
-    # User.instance_methods do not return all methods until an instance is
-    # initialized. So here we just use an instance
-    expect(build(:user).methods).to include(*methods)
+    it { is_expected.to eq(false) }
   end
 end
