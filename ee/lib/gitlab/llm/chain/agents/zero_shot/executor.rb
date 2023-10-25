@@ -121,7 +121,7 @@ module Gitlab
                 conversation: conversation,
                 prompt_version: prompt_version,
                 current_code: current_code,
-                self_discoverability_prompt: self_discoverability_prompt
+                resources: available_resources_names
               }
             end
 
@@ -146,21 +146,6 @@ module Gitlab
                   type: RESPONSE_TYPE_TOOL
                 }
               )
-            end
-
-            def self_discoverability_prompt
-              return '' unless Feature.enabled?(:ai_self_discover, context.current_user)
-
-              prompt = <<~PROMPT
-                You have access to the following GitLab resources: %<resources>s.
-                At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
-                When there is no available tool, not enough context or resource is not available to accurately answer the question you must tell it to the user using phrase:
-                "The question you are asking requires data that is not available to GitLab Duo Chat. Please share your feedback below.".
-                Avoid asking for more details if you cannot provide an answer anyway.
-                Ask user to leave feedback.
-              PROMPT
-
-              format(prompt, resources: available_resources_names)
             end
 
             def available_resources_names
@@ -225,7 +210,12 @@ module Gitlab
                   %<current_code>s
                   If no tool is needed, give a final answer with "Action: DirectAnswer" for the Action parameter and skip writing an Observation.
 
-                  %<self_discoverability_prompt>s
+                  You have access to the following GitLab resources: %<resources>s.
+                  At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
+                  When there is no available tool, not enough context or resource is not available to accurately answer the question you must tell it to the user using phrase:
+                  "The question you are asking requires data that is not available to GitLab Duo Chat. Please share your feedback below.".
+                  Avoid asking for more details if you cannot provide an answer anyway.
+                  Ask user to leave feedback.
 
                   Begin!
                 PROMPT

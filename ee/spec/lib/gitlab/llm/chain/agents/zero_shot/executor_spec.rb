@@ -172,14 +172,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     let(:prompt_options) do
       {
         prompt_version: described_class::PROMPT_TEMPLATE,
-        self_discoverability_prompt: <<~PROMPT
-          You have access to the following GitLab resources: issues, epics.
-          At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
-          When there is no available tool, not enough context or resource is not available to accurately answer the question you must tell it to the user using phrase:
-          "The question you are asking requires data that is not available to GitLab Duo Chat. Please share your feedback below.".
-          Avoid asking for more details if you cannot provide an answer anyway.
-          Ask user to leave feedback.
-        PROMPT
+        resources: 'issues, epics'
       }
     end
 
@@ -233,21 +226,11 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       agent.prompt
     end
 
-    context 'with ai_self_discover feature flag' do
-      let_it_be(:self_discoverability_prompt) { "you do not have access to the following GitLab resources" }
+    context 'with self discover part' do
+      let_it_be(:self_discoverability_prompt) { "You have access to the following GitLab resources: issues, epics" }
 
       it 'includes self-discoverability part in the prompt' do
         expect(agent.prompt[:prompt]).to include self_discoverability_prompt
-      end
-
-      context 'without the feature flag do' do
-        before do
-          stub_feature_flags(ai_self_discover: false)
-        end
-
-        it 'does not include self-discoverability part in the prompt' do
-          expect(agent.prompt[:prompt]).not_to include self_discoverability_prompt
-        end
       end
     end
 
