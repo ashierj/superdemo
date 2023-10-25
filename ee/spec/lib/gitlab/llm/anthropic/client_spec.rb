@@ -105,12 +105,15 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
 
     context 'when feature flag and API key is set' do
       it 'returns response' do
+        expect(Gitlab::HTTP).to receive(:post)
+          .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
+          .and_call_original
         expect(complete.parsed_response).to eq(expected_response)
       end
     end
 
     context 'when using options' do
-      let(:options) { { temperature: 0.1 } }
+      let(:options) { { temperature: 0.1, timeout: 50.seconds } }
 
       let(:expected_request_body) do
         {
@@ -122,6 +125,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
       end
 
       it 'returns response' do
+        expect(Gitlab::HTTP).to receive(:post).with(anything, hash_including(timeout: 50.seconds)).and_call_original
         expect(complete.parsed_response).to eq(expected_response)
       end
     end
@@ -170,7 +174,23 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         end
 
         it 'returns response' do
+          expect(Gitlab::HTTP).to receive(:post)
+            .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
+            .and_call_original
+
           expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("Hello")
+        end
+
+        context 'when setting a timeout' do
+          let(:options) { { timeout: 50.seconds } }
+
+          it 'uses the timeout for the request' do
+            expect(Gitlab::HTTP).to receive(:post)
+              .with(anything, hash_including(timeout: 50.seconds))
+              .and_call_original
+
+            described_class.new(user).stream(prompt: 'anything', **options)
+          end
         end
 
         it_behaves_like 'tracks events for AI requests', 2, 1
