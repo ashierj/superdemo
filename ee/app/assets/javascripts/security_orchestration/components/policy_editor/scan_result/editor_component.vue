@@ -182,6 +182,12 @@ export default {
       this.policy.actions = [{ type: 'require_approval', approvals_required: 1 }];
       this.updateYamlEditorValue(this.policy);
     },
+    removeAction() {
+      const { actions, ...newPolicy } = this.policy;
+      this.policy = newPolicy;
+      this.updateYamlEditorValue(this.policy);
+      this.updatePolicyApprovers({});
+    },
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
       this.$set(this.errors, 'action', []);
@@ -403,6 +409,7 @@ export default {
             @error="handleParsingError"
             @updateApprovers="updatePolicyApprovers"
             @changed="updateAction(index, $event)"
+            @remove="removeAction"
           />
         </div>
 
