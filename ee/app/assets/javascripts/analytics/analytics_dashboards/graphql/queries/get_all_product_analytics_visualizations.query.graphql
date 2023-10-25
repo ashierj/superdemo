@@ -1,12 +1,23 @@
-query getAllProductAnalyticsVisualizations($projectPath: ID!) {
-  project(fullPath: $projectPath) {
+#import "../fragments/customizable_dashboard_visualization.fragment.graphql"
+
+query getAllProductAnalyticsVisualizations(
+  $fullPath: ID!
+  $isGroup: Boolean = false
+  $isProject: Boolean = false
+) {
+  project(fullPath: $fullPath) @include(if: $isProject) {
     id
     customizableDashboardVisualizations {
       nodes {
-        slug
-        type
-        data
-        options
+        ...CustomizableDashboardVisualizationFragment
+      }
+    }
+  }
+  group(fullPath: $fullPath) @include(if: $isGroup) {
+    id
+    customizableDashboardVisualizations {
+      nodes {
+        ...CustomizableDashboardVisualizationFragment
       }
     }
   }

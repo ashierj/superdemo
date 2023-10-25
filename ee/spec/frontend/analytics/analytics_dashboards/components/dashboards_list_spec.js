@@ -67,6 +67,7 @@ describe('DashboardsList', () => {
       },
       provide: {
         isProject: true,
+        isGroup: false,
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
@@ -134,7 +135,7 @@ describe('DashboardsList', () => {
   describe('for groups', () => {
     describe('when `groupAnalyticsDashboards` FF is disabled', () => {
       beforeEach(() => {
-        createWrapper({ isProject: false });
+        createWrapper({ isProject: false, isGroup: true });
       });
 
       it('should render the page description', () => {
@@ -152,6 +153,7 @@ describe('DashboardsList', () => {
       beforeEach(() => {
         createWrapper({
           isProject: false,
+          isGroup: true,
           glFeatures: { groupAnalyticsDashboards: true },
         });
       });
