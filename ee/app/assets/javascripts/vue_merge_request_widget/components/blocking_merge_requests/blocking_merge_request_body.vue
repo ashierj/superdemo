@@ -1,6 +1,7 @@
 <script>
 import { GlIcon } from '@gitlab/ui';
 import { n__ } from '~/locale';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import RelatedIssuableItem from '~/issuable/components/related_issuable_item.vue';
 import { STATUS_MERGED } from '~/issues/constants';
 
@@ -32,6 +33,9 @@ export default {
     isMerged() {
       return this.issue.state === STATUS_MERGED;
     },
+    mergeRequestId() {
+      return getIdFromGraphQLId(this.issue.id);
+    },
   },
 };
 </script>
@@ -43,18 +47,18 @@ export default {
   </div>
   <related-issuable-item
     v-else
-    :id-key="issue.id"
+    :id-key="mergeRequestId"
     :display-reference="issue.reference"
     :title="issue.title"
     :milestone="issue.milestone"
-    :assignees="issue.assignees"
-    :created-at="issue.created_at"
-    :closed-at="issue.closed_at"
-    :merged-at="issue.merged_at"
-    :path="issue.web_url"
+    :assignees="issue.assignees.nodes"
+    :created-at="issue.createdAt"
+    :closed-at="issue.closedAt"
+    :merged-at="issue.mergedAt"
+    :path="issue.webUrl"
     :state="issue.state"
     :is-merge-request="true"
-    :pipeline-status="issue.head_pipeline && issue.head_pipeline.detailed_status"
+    :pipeline-status="issue.headPipeline && issue.headPipeline.detailedStatus"
     path-id-separator="!"
     :class="{ 'mr-merged': isMerged }"
     :grey-link-when-merged="true"

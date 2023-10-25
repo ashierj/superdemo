@@ -40,8 +40,6 @@ export default class MergeRequestStore extends CEMergeRequestStore {
 
     this.enabledReports = convertObjectPropsToCamelCase(data.enabled_reports);
 
-    this.blockingMergeRequests = data.blocking_merge_requests;
-
     this.apiApprovalSettingsPath = data.api_approval_settings_path;
   }
 

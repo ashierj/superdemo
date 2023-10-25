@@ -8,7 +8,6 @@ import {
   MT_MERGE_STRATEGY,
   PIPELINE_FAILED_STATE,
 } from '~/vue_merge_request_widget/constants';
-import base from '~/vue_merge_request_widget/mixins/ready_to_merge';
 
 export const MERGE_DISABLED_TEXT_UNAPPROVED = s__(
   'mrWidget|Merge blocked: all required approvals must be given.',
@@ -39,22 +38,6 @@ export default {
           this.isMakingRequest ||
           this.mr.preventMerge,
       );
-    },
-    hasBlockingMergeRequests() {
-      return (
-        (this.mr.blockingMergeRequests?.visible_merge_requests?.merged?.length || 0) !==
-        (this.mr.blockingMergeRequests?.total_count || 0)
-      );
-    },
-    mergeDisabledText() {
-      if (this.mr.isApprovalNeeded) {
-        return MERGE_DISABLED_TEXT_UNAPPROVED;
-      }
-      if (this.hasBlockingMergeRequests) {
-        return MERGE_DISABLED_DEPENDENCIES_TEXT;
-      }
-
-      return base.computed.mergeDisabledText.call(this);
     },
     pipelineMustSucceedConflictText() {
       return PIPELINE_MUST_SUCCEED_CONFLICT_TEXT;
