@@ -547,6 +547,10 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     context 'when the name is updated' do
       let(:attributes) { { name: 'Foo' } }
 
+      before do
+        allow(namespace).to receive(:skip_sync_with_customers_dot).and_return(false)
+      end
+
       context 'when not on Gitlab.com?' do
         before do
           allow(Gitlab).to receive(:com?).and_return(false)
@@ -644,6 +648,38 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
 
         context 'when the owner is not privatized by abuse automation' do
           include_examples 'no sync'
+        end
+      end
+    end
+
+    describe 'multiple name updates' do
+      before do
+        allow(namespace.actual_plan).to receive(:paid?).and_return(true)
+      end
+
+      context 'when two name updates for the same namespace happen during the same minute' do
+        it 'does not trigger a CustomersDot update the second time around' do
+          travel_to 2.minutes.from_now do
+            expect(::Namespaces::SyncNamespaceNameWorker).to receive(:perform_async).with(namespace.id)
+            namespace.update!(name: 'new name')
+
+            expect(::Namespaces::SyncNamespaceNameWorker).not_to receive(:perform_async)
+            namespace.update!(name: 'new name 2')
+          end
+        end
+      end
+
+      context 'when two name updates for the same namespace happen more than a minute apart' do
+        it 'triggers a CustomersDot update each time' do
+          travel_to 2.minutes.from_now do
+            expect(::Namespaces::SyncNamespaceNameWorker).to receive(:perform_async).with(namespace.id)
+            namespace.update!(name: 'new name')
+          end
+
+          travel_to 4.minutes.from_now do
+            expect(::Namespaces::SyncNamespaceNameWorker).to receive(:perform_async).with(namespace.id)
+            namespace.update!(name: 'new name 2')
+          end
         end
       end
     end
