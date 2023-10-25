@@ -250,7 +250,7 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
       let(:body) { { success: true, license: license_key, service_tokens: { code_suggestions: { token: 'token1', expires_at: expires_at } } }.to_json }
 
       it 'calls Ai::ServiceAccessTokensStorageService' do
-        expect_next_instance_of(Ai::ServiceAccessTokensStorageService, 'token1', expires_at, :code_suggestions) do |instance|
+        expect_next_instance_of(Ai::ServiceAccessTokensStorageService, 'token1', expires_at) do |instance|
           expect(instance).to receive(:execute)
         end
 
