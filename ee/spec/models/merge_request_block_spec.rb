@@ -33,6 +33,16 @@ RSpec.describe MergeRequestBlock, feature_category: :code_review_workflow do
       expect(another_block).to be_valid
     end
 
+    it 'limits the number of blocking MRs to MAX_BLOCKED_BY_COUNT' do
+      expect(block).to receive(:blocked_by_count).and_return(MergeRequestBlock::MAX_BLOCKED_BY_COUNT)
+      expect(block).not_to be_valid
+    end
+
+    it 'limits the number of blocked MRs to MAX_BLOCKS_COUNT' do
+      expect(block).to receive(:blocks_count).and_return(MergeRequestBlock::MAX_BLOCKS_COUNT)
+      expect(block).not_to be_valid
+    end
+
     it 'allows an MR to be blocked by multiple MRs' do
       another_block = described_class.new(
         blocking_merge_request: another_mr,
@@ -56,16 +66,34 @@ RSpec.describe MergeRequestBlock, feature_category: :code_review_workflow do
       expect(new_block).not_to be_valid
     end
 
-    it 'forbids blocking MR from becoming blocked' do
+    it 'allows a blocking MR to become blocked' do
       new_block = build(:merge_request_block, blocked_merge_request: block.blocking_merge_request)
 
-      expect(new_block).not_to be_valid
+      expect(new_block).to be_valid
     end
 
-    it 'forbids blocked MR from becoming a blocker' do
+    it 'allows a blocked MR to become a blocker' do
       new_block = build(:merge_request_block, blocking_merge_request: block.blocked_merge_request)
 
-      expect(new_block).not_to be_valid
+      expect(new_block).to be_valid
+    end
+
+    context 'when :remove_mr_blocking_constraints FF is disabled' do
+      before do
+        stub_feature_flags(remove_mr_blocking_constraints: false)
+      end
+
+      it 'forbids blocking MR from becoming blocked' do
+        new_block = build(:merge_request_block, blocked_merge_request: block.blocking_merge_request)
+
+        expect(new_block).not_to be_valid
+      end
+
+      it 'forbids blocked MR from becoming a blocker' do
+        new_block = build(:merge_request_block, blocking_merge_request: block.blocked_merge_request)
+
+        expect(new_block).not_to be_valid
+      end
     end
   end
 
