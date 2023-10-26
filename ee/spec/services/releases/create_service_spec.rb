@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Releases::CreateService do
+RSpec.describe Releases::CreateService, feature_category: :release_orchestration do
   let(:group) { create :group }
   let(:project) { create(:project, :repository, group: group) }
   let(:user) { create(:user, maintainer_projects: [project]) }
@@ -53,6 +53,39 @@ RSpec.describe Releases::CreateService do
         expect(result[:status]).to eq(:error)
         expect(result[:message]).to eq("Milestone(s) not found: sg1")
         expect(release).to be_nil
+      end
+    end
+  end
+
+  describe 'audit events' do
+    before do
+      project.add_developer(user)
+    end
+
+    include_examples 'audit event logging' do
+      let(:operation) { service.execute }
+      let(:group_milestone) { create(:milestone, group: group, title: 'g1') }
+      let(:params_with_milestones) { params.merge({ milestones: [group_milestone.title] }) }
+      let(:event_type) { 'release_created' }
+      let(:licensed_features_to_stub) { { group_milestone_project_releases: true } }
+      # rubocop:disable RSpec/AnyInstanceOf -- It's not the next instance
+      let(:fail_condition!) { allow_any_instance_of(Release).to receive(:save!).and_raise('save failed') }
+      # rubocop:enable RSpec/AnyInstanceOf
+
+      let(:attributes) do
+        {
+          author_id: user.id,
+          entity_id: project.id,
+          entity_type: 'Project',
+          details: {
+            author_name: user.name,
+            author_class: 'User',
+            target_id: release.id,
+            target_type: 'Release',
+            target_details: release.name,
+            custom_message: "Created release #{release.tag} with Milestone #{group_milestone.title}"
+          }
+        }
       end
     end
   end
