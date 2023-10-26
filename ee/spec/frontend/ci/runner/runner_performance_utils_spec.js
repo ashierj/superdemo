@@ -1,11 +1,28 @@
 import {
+  formatSeconds,
   runnerWaitTimeQueryData,
   runnerWaitTimeHistoryQueryData,
 } from 'ee/ci/runner/runner_performance_utils';
 
 import { I18N_MEDIAN, I18N_P75, I18N_P90, I18N_P99 } from 'ee/ci/runner/constants';
 
+const mockSecondValues = [
+  [null, '-'],
+  [0.119, '0.12'],
+  [0.99, '0.99'],
+  [0.991, '0.99'],
+  [0.999, '1.00'],
+  [1, '1.00'],
+  [1000, '1,000.00'],
+];
+
 describe('runner_performance_utils', () => {
+  describe('formatSeconds', () => {
+    it.each(mockSecondValues)('single stat, %p formatted as %p', (value, formatted) => {
+      expect(formatSeconds(value)).toEqual(formatted);
+    });
+  });
+
   describe('runnerWaitTimeQueryData', () => {
     it('empty data returns placeholders', () => {
       expect(runnerWaitTimeQueryData(undefined)).toEqual([
@@ -22,17 +39,10 @@ describe('runner_performance_utils', () => {
           p50: 50,
           __typename: 'CiJobsDurationStatistics',
         }),
-      ).toEqual([{ key: 'p50', title: I18N_MEDIAN, value: '50' }]);
+      ).toEqual([{ key: 'p50', title: I18N_MEDIAN, value: '50.00' }]);
     });
 
-    it.each([
-      [null, '-'],
-      [0.99, '0.99'],
-      [0.991, '0.99'],
-      [0.999, '1'],
-      [1, '1'],
-      [1000, '1,000'],
-    ])('single stat, %p formatted as %p', (value, formatted) => {
+    it.each(mockSecondValues)('single stat, %p formatted as %p', (value, formatted) => {
       expect(
         runnerWaitTimeQueryData({
           p50: value,
@@ -60,10 +70,10 @@ describe('runner_performance_utils', () => {
           __typename: 'CiJobsDurationStatistics',
         }),
       ).toEqual([
-        { key: 'p50', title: I18N_MEDIAN, value: '50' },
-        { key: 'p75', title: I18N_P75, value: '75' },
-        { key: 'p90', title: I18N_P90, value: '90' },
-        { key: 'p99', title: I18N_P99, value: '99' },
+        { key: 'p50', title: I18N_MEDIAN, value: '50.00' },
+        { key: 'p75', title: I18N_P75, value: '75.00' },
+        { key: 'p90', title: I18N_P90, value: '90.00' },
+        { key: 'p99', title: I18N_P99, value: '99.00' },
       ]);
     });
   });

@@ -10,11 +10,11 @@ const I18N_PERCENTILES = {
 
 const EMPTY_PLACEHOLDER = '-';
 
-const formatSeconds = (value) => {
+export const formatSeconds = (value) => {
   if (value === null) {
     return EMPTY_PLACEHOLDER;
   }
-  return formatNumber(value, { maximumFractionDigits: 2 });
+  return formatNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const emptyWaitTimeQueryData = {
