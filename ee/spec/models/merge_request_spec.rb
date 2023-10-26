@@ -2132,16 +2132,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
           it 'returns the latest merge base pipeline with security reports' do
             expect(pipeline).to eq(old_merge_base_pipeline)
           end
-
-          context 'when the `check_multiple_pipelines_for_security_reports` FF is disabled' do
-            before do
-              stub_feature_flags(check_multiple_pipelines_for_security_reports: false)
-            end
-
-            it 'returns the most recent merge base pipeline' do
-              expect(pipeline).to eq(most_recent_merge_base_pipeline)
-            end
-          end
         end
       end
 
@@ -2195,16 +2185,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
           it 'returns the latest base pipeline with security reports' do
             expect(pipeline).to eq(old_base_pipeline)
-          end
-
-          context 'when the `check_multiple_pipelines_for_security_reports` FF is disabled' do
-            before do
-              stub_feature_flags(check_multiple_pipelines_for_security_reports: false)
-            end
-
-            it 'returns the most recent base pipeline' do
-              expect(pipeline).to eq(most_recent_base_pipeline)
-            end
           end
         end
       end

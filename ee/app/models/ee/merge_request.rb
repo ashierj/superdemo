@@ -481,7 +481,7 @@ module EE
 
     override :comparison_base_pipeline
     def comparison_base_pipeline(service_class)
-      return super unless security_comparision_and_checks_multiple_pipelines?(service_class)
+      return super unless security_comparision?(service_class)
 
       find_merge_base_pipeline_with_security_reports || find_base_pipeline_with_security_reports
     end
@@ -496,9 +496,8 @@ module EE
 
     private
 
-    def security_comparision_and_checks_multiple_pipelines?(service_class)
-      service_class == ::Ci::CompareSecurityReportsService &&
-        ::Feature.enabled?(:check_multiple_pipelines_for_security_reports, project)
+    def security_comparision?(service_class)
+      service_class == ::Ci::CompareSecurityReportsService
     end
 
     def find_merge_base_pipeline_with_security_reports
