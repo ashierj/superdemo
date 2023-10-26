@@ -10,11 +10,13 @@ module EE
 
       override :admin_runners_data_attributes
       def admin_runners_data_attributes
-        dashboard_available = ::Feature.enabled?(:runners_dashboard) &&
-          License.feature_available?(:runner_performance_insights)
-        return super.merge(runner_dashboard_path: dashboard_admin_runners_path) if dashboard_available
+        attributes = super
 
-        super
+        if License.feature_available?(:runner_performance_insights)
+          attributes = attributes.merge(runner_dashboard_path: dashboard_admin_runners_path)
+        end
+
+        attributes
       end
 
       override :toggle_shared_runners_settings_data

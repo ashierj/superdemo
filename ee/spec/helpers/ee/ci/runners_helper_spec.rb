@@ -12,28 +12,20 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
   end
 
   describe '#admin_runners_data_attributes' do
-    using RSpec::Parameterized::TableSyntax
-
     subject { helper.admin_runners_data_attributes }
 
-    where(:runner_performance_insights, :runners_dashboard, :runner_dashboard_path) do
-      true  | true  | ::Gitlab::Routing.url_helpers.dashboard_admin_runners_path
-      false | true  | nil
-      true  | false | nil
-      false | false | nil
+    it 'has no runner_dashboard_path if runner_performance_insights feature is not licensed' do
+      expect(subject[:runner_dashboard_path]).to eq(nil)
     end
 
-    with_them do
+    context 'when runner_performance_insights feature is licensed' do
       before do
-        stub_licensed_features(runner_performance_insights: runner_performance_insights)
-        stub_feature_flags(runners_dashboard: runners_dashboard)
+        stub_licensed_features(runner_performance_insights: true)
       end
 
       it 'returns dashboard path' do
-        expect(subject[:runner_dashboard_path]).to eq(runner_dashboard_path)
+        expect(subject[:runner_dashboard_path]).to eq(::Gitlab::Routing.url_helpers.dashboard_admin_runners_path)
       end
-
-      it_behaves_like 'admin_runners_data_attributes contains data'
     end
   end
 
