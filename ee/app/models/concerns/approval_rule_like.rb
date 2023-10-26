@@ -22,6 +22,8 @@ module ApprovalRuleLike
     has_and_belongs_to_many :groups,
       class_name: 'Group', join_table: "#{self.table_name}_groups",
       after_add: :audit_add, after_remove: :audit_remove
+
+    has_many :group_members, through: :groups
     has_many :group_users, -> { distinct.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457") },
       through: :groups, source: :users
 
@@ -81,6 +83,14 @@ module ApprovalRuleLike
     @approvers ||= filter_inactive_approvers(with_role_approvers)
   end
 
+  def approvers_include_user?(user)
+    return false if filter_inactive_approvers([user]).empty?
+
+    relation_exists?(users, column: :id, value: user.id) ||
+      relation_exists?(role_approvers, column: :id, value: user.id) ||
+      relation_exists?(group_members, column: :user_id, value: user.id)
+  end
+
   def code_owner?
     raise NotImplementedError
   end
@@ -126,6 +136,12 @@ module ApprovalRuleLike
     else
       User.from_union([users, group_users])
     end
+  end
+
+  def relation_exists?(relation, column:, value:)
+    return relation.exists?({ column => value }) unless relation.loaded?
+
+    relation.detect { |item| item.read_attribute(column) == value }
   end
 
   def with_role_approvers
