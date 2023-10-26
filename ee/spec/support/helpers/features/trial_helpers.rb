@@ -6,9 +6,11 @@ module Features
   module TrialHelpers
     include ListboxHelpers
 
-    def expect_to_be_on_group_page(path: 'gitlab')
+    def expect_to_be_on_group_page(path: 'gitlab', name: 'gitlab')
       expect(page).to have_current_path("/#{path}?trial=true")
-      expect(page).to have_link('Group information')
+      within_testid('super-sidebar') do
+        expect(page).to have_selector('a[aria-current="page"]', text: name)
+      end
     end
 
     def expect_to_be_on_namespace_selection_with_errors
@@ -38,7 +40,9 @@ module Features
 
     def expect_to_be_on_group_security_dashboard(group_for_path: group)
       expect(page).to have_current_path(group_security_dashboard_path(group_for_path, { trial: true }))
-      expect(page).to have_link('Group information')
+      within_testid('super-sidebar') do
+        expect(page).to have_link(group_for_path.name)
+      end
     end
 
     def fill_in_trial_selection_form(from: 'Please select a group', group_select: true)
