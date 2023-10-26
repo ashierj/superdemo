@@ -262,7 +262,6 @@ export default {
         </section>
       </div>
     </div>
-    <slot name="bottom"></slot>
     <div
       class="gl-display-flex gl-flex-direction-column gl-align-items-baseline"
       :class="{
