@@ -47,4 +47,11 @@ RSpec.configure do |config|
   config.around(:each, :geo_tracking_db) do |example|
     example.run if Gitlab::Geo.geo_database_configured?
   end
+
+  config.before do |example|
+    if example.metadata.fetch(:stub_feature_flags, true)
+      # disable the ai_global_switch so that it does not affect specs where openai_experimentation FF is disabled
+      stub_feature_flags(ai_global_switch: false)
+    end
+  end
 end
