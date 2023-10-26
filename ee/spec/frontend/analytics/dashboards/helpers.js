@@ -102,16 +102,16 @@ export const expectTimePeriodRequests = ({ requestHandler, timePeriods, paramsFn
 
 export const mockGraphqlDoraPerformanceScoreCountsResponse = ({
   mockDataResponse = mockDoraPerformersScoreResponseData,
-  projectsCount = 0,
+  totalProjectsCount = 0,
+  noDoraDataProjectsCount = 0,
 } = {}) =>
   jest.fn().mockResolvedValue({
     data: {
       namespace: {
         id: 'fake-dora-performance-score-counts-request',
-        projects: {
-          count: projectsCount,
-        },
         doraPerformanceScoreCounts: {
+          totalProjectsCount,
+          noDoraDataProjectsCount,
           nodes: mockDataResponse,
         },
       },

@@ -1,8 +1,9 @@
 <script>
 import { GlStackedColumnChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
-import { GlCard, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
+import { GlCard, GlSkeletonLoader, GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { initial } from 'lodash';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import { sprintf, __ } from '~/locale';
+import { sprintf, __, n__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import getGroupOrProject from 'ee/analytics/dashboards/graphql/get_group_or_project.query.graphql';
@@ -29,6 +30,10 @@ export default {
     ChartSkeletonLoader,
     GlSkeletonLoader,
     GlAlert,
+    GlIcon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
@@ -75,11 +80,16 @@ export default {
         return !this.fullPath || !this.shouldDisplayPanel || this.isProjectNamespace;
       },
       update(data) {
-        const { namespace } = data;
+        const {
+          noDoraDataProjectsCount = null,
+          nodes: items = [],
+          totalProjectsCount: projectsCount = null,
+        } = data?.namespace?.doraPerformanceScoreCounts || {};
 
         return {
-          projectsCount: namespace?.projects?.count ?? null,
-          items: namespace?.doraPerformanceScoreCounts?.nodes ?? [],
+          projectsCount,
+          noDoraDataProjectsCount,
+          items,
         };
       },
       error() {
@@ -118,7 +128,7 @@ export default {
         return this.$options.i18n.defaultPanelTitle;
       }
 
-      const projectsCount = this.groupDoraPerformanceScoreCounts?.projectsCount ?? 0;
+      const projectsCount = this.groupDoraPerformanceScoreCounts?.projectsCount;
 
       return sprintf(this.$options.i18n.panelTitleWithProjectsCount, {
         groupName: this.namespace?.name,
@@ -138,8 +148,16 @@ export default {
 
       return '';
     },
+    hasNoProjectsWithDoraData() {
+      const { noDoraDataProjectsCount, projectsCount } = this.groupDoraPerformanceScoreCounts || {};
+
+      return noDoraDataProjectsCount >= projectsCount; // handle edge case where noDoraDataProjectsCount could be higher than projectsCount
+    },
     hasData() {
-      return this.chartData.some(({ data }) => data.some((val) => val));
+      return (
+        !this.hasNoProjectsWithDoraData &&
+        initial(this.chartData).some(({ data }) => data.some((val) => val)) // ignore the "Not included" series – we are only interested in checking if any projects have high/medium/low score counts
+      );
     },
     noDataMessage() {
       return sprintf(this.$options.i18n.noData, {
@@ -157,6 +175,18 @@ export default {
     },
     shouldDisplayPanel() {
       return this.glFeatures?.doraPerformersScorePanel;
+    },
+    excludedProjectsMessage() {
+      const { noDoraDataProjectsCount } = this.groupDoraPerformanceScoreCounts || {};
+
+      if (this.shouldDisplayDefaultPanelTitle || !this.hasData || !noDoraDataProjectsCount)
+        return '';
+
+      return n__(
+        'Excluding 1 project with no DORA metrics',
+        'Excluding %d projects with no DORA metrics',
+        noDoraDataProjectsCount,
+      );
     },
   },
   beforeDestroy() {
@@ -241,8 +271,17 @@ export default {
   >
     <template #header>
       <gl-skeleton-loader v-if="isLoading" :lines="1" :width="450" />
-      <h5 v-else data-testid="dora-performers-score-panel-title" class="gl-my-0">
+      <h5
+        v-else
+        data-testid="dora-performers-score-panel-title"
+        class="gl-my-0 gl-display-flex gl-gap-3 gl-align-items-center"
+      >
         {{ panelTitle }}
+        <gl-icon
+          v-if="excludedProjectsMessage"
+          v-gl-tooltip="excludedProjectsMessage"
+          name="information-o"
+        />
       </h5>
     </template>
 

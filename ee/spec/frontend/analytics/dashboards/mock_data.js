@@ -710,7 +710,7 @@ export const mockEmptyDoraPerformersScoreResponseData = [
     lowProjectsCount: null,
     mediumProjectsCount: null,
     highProjectsCount: null,
-    noDataProjectsCount: 0,
+    noDataProjectsCount: 70,
   },
   {
     __typename: 'DoraPerformanceScoreCount',
@@ -718,7 +718,7 @@ export const mockEmptyDoraPerformersScoreResponseData = [
     lowProjectsCount: null,
     mediumProjectsCount: null,
     highProjectsCount: null,
-    noDataProjectsCount: 0,
+    noDataProjectsCount: 70,
   },
   {
     __typename: 'DoraPerformanceScoreCount',
@@ -726,7 +726,7 @@ export const mockEmptyDoraPerformersScoreResponseData = [
     lowProjectsCount: null,
     mediumProjectsCount: null,
     highProjectsCount: null,
-    noDataProjectsCount: 0,
+    noDataProjectsCount: 70,
   },
   {
     __typename: 'DoraPerformanceScoreCount',
@@ -734,7 +734,7 @@ export const mockEmptyDoraPerformersScoreResponseData = [
     lowProjectsCount: null,
     mediumProjectsCount: null,
     highProjectsCount: null,
-    noDataProjectsCount: 0,
+    noDataProjectsCount: 70,
   },
 ];
 
