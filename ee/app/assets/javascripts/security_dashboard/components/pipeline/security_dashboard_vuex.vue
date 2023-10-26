@@ -57,7 +57,7 @@ export default {
       'isDismissingVulnerability',
       'isCreatingMergeRequest',
     ]),
-    ...mapState('pipelineJobs', ['projectId']),
+    ...mapState('pipelineJobs', { projectUniqueId: 'projectId' }),
     ...mapState('filters', ['filters']),
     ...mapGetters('vulnerabilities', ['loadingVulnerabilitiesFailedWithRecognizedErrorCode']),
     canCreateIssue() {
