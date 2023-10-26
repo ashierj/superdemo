@@ -60,7 +60,7 @@ module Registrations
     end
 
     def redirect_params
-      glm_tracking_params.merge(trial_onboarding_flow: true)
+      glm_tracking_params.merge(trial_onboarding_flow: true, trial: params[:trial])
     end
 
     def track_event(action)
