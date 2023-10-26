@@ -7,10 +7,11 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
 
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:reporter) { create(:user).tap { |user| project.add_reporter(user) } }
-  let_it_be(:guest) { create(:user).tap { |user| project.add_guest(user) } }
-  let_it_be(:work_item, refind: true) { create(:work_item, project: project) }
+  let_it_be(:reporter) { create(:user).tap { |user| group.add_reporter(user) } }
+  let_it_be(:guest) { create(:user).tap { |user| group.add_guest(user) } }
+  let_it_be(:project_work_item, refind: true) { create(:work_item, project: project) }
 
+  let(:work_item) { project_work_item }
   let(:mutation) { graphql_mutation(:workItemUpdate, input.merge('id' => work_item.to_global_id.to_s), fields) }
 
   let(:mutation_response) { graphql_mutation_response(:work_item_update) }
@@ -222,6 +223,12 @@ RSpec.describe 'Update a work item', feature_category: :team_planning do
 
             it_behaves_like 'work item is not updated'
           end
+        end
+
+        context 'when the work item is directly associated with a group' do
+          let(:work_item) { create(:work_item, :group_level, namespace: group) }
+
+          it_behaves_like 'update work item weight widget'
         end
       end
 
