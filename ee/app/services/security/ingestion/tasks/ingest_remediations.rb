@@ -93,28 +93,36 @@ module Security
           unfound_remediations.delete_all
         end
 
+        def finding_maps_vul_finding_remediations
+          @finding_maps_vul_finding_remediations ||= Vulnerabilities::FindingRemediation.by_finding_id(finding_maps.map(&:finding_id))
+        end
+
         # When a new pipeline is run and the new findings set doesn't include some of the older findings,
         # the remediation associated with the older findings should be corrected.
         def unfound_remediations
-          @unfound_remediations ||= Vulnerabilities::FindingRemediation.by_finding_id(finding_maps.map(&:finding_id))
-                                        .id_not_in(return_data.flatten)
+          @unfound_remediations ||= finding_maps_vul_finding_remediations.id_not_in(return_data.flatten)
+        end
+
+        def found_remediations
+          @found_remediations ||= finding_maps_vul_finding_remediations.id_in(return_data.flatten)
+        end
+
+        def vulnerability_ids_for_remediations(remediations)
+          finding_ids = remediations.select(:vulnerability_occurrence_id)
+
+          Vulnerabilities::Finding
+            .id_in(finding_ids)
+            .select(:vulnerability_id)
         end
 
         def update_vulnerability_reads
-          finding_ids = finding_maps.map(&:finding_id)
-          vulnerability_ids = Vulnerabilities::Finding.id_in(finding_ids).pluck_vulnerability_ids
+          Vulnerabilities::Read
+            .by_vulnerabilities(vulnerability_ids_for_remediations(unfound_remediations))
+            .update_all(has_remediations: false)
 
-          if unfound_remediations.present?
-            unfound_remediations_finding_ids = unfound_remediations.map(&:vulnerability_occurrence_id)
-            unfound_remediations_vulnerability_ids = Vulnerabilities::Finding.id_in(unfound_remediations_finding_ids)
-                                                      .pluck_vulnerability_ids
-
-            Vulnerabilities::Read.by_vulnerabilities(unfound_remediations_vulnerability_ids).update_all(has_remediations: false)
-
-            vulnerability_ids -= unfound_remediations_vulnerability_ids
-          end
-
-          Vulnerabilities::Read.by_vulnerabilities(vulnerability_ids).update_all(has_remediations: true)
+          Vulnerabilities::Read
+            .by_vulnerabilities(vulnerability_ids_for_remediations(found_remediations))
+            .update_all(has_remediations: true)
         end
 
         def new_report_remediations
