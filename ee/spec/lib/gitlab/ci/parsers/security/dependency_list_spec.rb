@@ -76,6 +76,18 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
         expect(vuln_nokogiri[0][:name]).to eq('Vulnerabilities in libxml2')
       end
 
+      context 'when severity is not part of metadata' do
+        let_it_be(:vuln2) { create(:vulnerability, report_type: :dependency_scanning) }
+        let_it_be(:finding2) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vuln2, raw_severity: nil) }
+        let_it_be(:finding_pipeline2) { create(:vulnerabilities_finding_pipeline, finding: finding2, pipeline: pipeline) }
+
+        it 'returns the correct severity' do
+          dependency_for_vuln2 = report.dependencies.flat_map { |dep| dep[:vulnerabilities] }.find { |dep| dep[:id] == vuln2.id }
+
+          expect(dependency_for_vuln2[:severity]).to eq('high')
+        end
+      end
+
       context 'with newfound dependency' do
         let_it_be(:other_finding) { create(:vulnerabilities_finding, :with_dependency_scanning_metadata, vulnerability: vulnerability, package: 'giri') }
         let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: other_finding, pipeline: pipeline) }
