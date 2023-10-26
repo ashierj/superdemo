@@ -52,7 +52,7 @@ export default {
       }
       this.loading = true;
       try {
-        const enabled = await this.observabilityClient.isTracingEnabled();
+        const enabled = await this.observabilityClient.isObservabilityEnabled();
         if (enabled) {
           await this.fetchTrace();
         } else {

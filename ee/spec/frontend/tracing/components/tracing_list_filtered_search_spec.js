@@ -3,6 +3,7 @@ import OperationToken from 'ee/tracing/components/operation_search_token.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ServiceToken from 'ee/tracing/components/service_search_token.vue';
 import TracingListFilteredSearch from 'ee/tracing/components/tracing_list_filtered_search.vue';
+import { createMockClient } from 'helpers/mock_observability_client';
 
 describe('TracingListFilteredSearch', () => {
   let wrapper;
@@ -14,10 +15,7 @@ describe('TracingListFilteredSearch', () => {
   ];
 
   beforeEach(() => {
-    observabilityClientMock = {
-      fetchServices: jest.fn(),
-      fetchOperations: jest.fn(),
-    };
+    observabilityClientMock = createMockClient();
 
     wrapper = shallowMountExtended(TracingListFilteredSearch, {
       propsData: {
