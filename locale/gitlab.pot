@@ -55182,6 +55182,9 @@ msgstr[1] ""
 msgid "YouTube"
 msgstr ""
 
+msgid "Your %{changes_link} have been committed successfully."
+msgstr ""
+
 msgid "Your %{group} membership will now expire in %{days}."
 msgstr ""
 
@@ -55880,6 +55883,9 @@ msgid "change"
 msgid_plural "changes"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "changes"
+msgstr ""
 
 msgid "check"
 msgid_plural "checks"
