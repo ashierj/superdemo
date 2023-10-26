@@ -1,4 +1,5 @@
 import { GlLoadingIcon } from '@gitlab/ui';
+import { createMockClient } from 'helpers/mock_observability_client';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingDetails from 'ee/tracing/components/tracing_details.vue';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -45,30 +46,27 @@ describe('TracingDetails', () => {
   beforeEach(() => {
     isSafeURL.mockReturnValue(true);
 
-    observabilityClientMock = {
-      isTracingEnabled: jest.fn(),
-      fetchTrace: jest.fn(),
-    };
+    observabilityClientMock = createMockClient();
   });
 
   it('renders the loading indicator while checking if tracing is enabled', () => {
     mountComponent();
 
     expect(findLoadingIcon().exists()).toBe(true);
-    expect(observabilityClientMock.isTracingEnabled).toHaveBeenCalled();
+    expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
   });
 
   describe('when tracing is enabled', () => {
     const mockTrace = { traceId: 'test-trace-id', spans: [{ span_id: 'span-1' }] };
     beforeEach(async () => {
-      observabilityClientMock.isTracingEnabled.mockResolvedValueOnce(true);
+      observabilityClientMock.isObservabilityEnabled.mockResolvedValueOnce(true);
       observabilityClientMock.fetchTrace.mockResolvedValueOnce(mockTrace);
 
       await mountComponent();
     });
 
     it('fetches the trace and renders the trace details', () => {
-      expect(observabilityClientMock.isTracingEnabled).toHaveBeenCalled();
+      expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
       expect(observabilityClientMock.fetchTrace).toHaveBeenCalled();
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findTraceDetails().exists()).toBe(true);
@@ -126,7 +124,7 @@ describe('TracingDetails', () => {
 
   describe('when tracing is not enabled', () => {
     beforeEach(async () => {
-      observabilityClientMock.isTracingEnabled.mockResolvedValueOnce(false);
+      observabilityClientMock.isObservabilityEnabled.mockResolvedValueOnce(false);
 
       await mountComponent();
     });
@@ -137,8 +135,8 @@ describe('TracingDetails', () => {
   });
 
   describe('error handling', () => {
-    it('if isTracingEnabled fails, it renders an alert and empty page', async () => {
-      observabilityClientMock.isTracingEnabled.mockRejectedValueOnce('error');
+    it('if isObservabilityEnabled fails, it renders an alert and empty page', async () => {
+      observabilityClientMock.isObservabilityEnabled.mockRejectedValueOnce('error');
 
       await mountComponent();
 
@@ -148,7 +146,7 @@ describe('TracingDetails', () => {
     });
 
     it('if fetchTrace fails, it renders an alert and empty page', async () => {
-      observabilityClientMock.isTracingEnabled.mockReturnValueOnce(true);
+      observabilityClientMock.isObservabilityEnabled.mockReturnValueOnce(true);
       observabilityClientMock.fetchTrace.mockRejectedValueOnce('error');
 
       await mountComponent();

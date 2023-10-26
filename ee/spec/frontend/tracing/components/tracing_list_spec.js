@@ -17,6 +17,7 @@ import ScatterChart from 'ee/tracing/components/tracing_scatter_chart.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import * as traceUtils from 'ee/tracing/components/trace_utils';
+import { createMockClient } from 'helpers/mock_observability_client';
 
 jest.mock('~/alert');
 jest.mock('ee/tracing/filters');
@@ -51,9 +52,10 @@ describe('TracingList', () => {
   };
 
   beforeEach(() => {
-    observabilityClientMock = {
-      fetchTraces: jest.fn().mockResolvedValue(mockResponse),
-    };
+    observabilityClientMock = createMockClient();
+
+    observabilityClientMock.fetchTraces.mockResolvedValue(mockResponse);
+
     queryToFilterObj.mockReturnValue({});
     filterObjToQuery.mockReturnValue({});
     filterTokensToFilterObj.mockReturnValue({});
