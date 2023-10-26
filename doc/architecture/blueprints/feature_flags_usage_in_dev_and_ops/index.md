@@ -34,7 +34,7 @@ Feature flags can be used for different purposes:
   [not be confident we'll be able to scale, support, and maintain a feature](https://about.gitlab.com/handbook/product/gitlab-the-product/#experiment-beta-ga)
   in its current form for every designed use case ([example](https://gitlab.com/gitlab-org/gitlab/-/issues/336070#note_1523983444)).
   There are also scenarios where a feature is not complete enough to be considered an MVC.
-  Providing a flag in this case allows customers to disable the new feature until it's performant enough.
+  Providing a flag in this case allows engineers and customers to disable the new feature until it's performant enough.
 - Operations: Site reliability engineer or Support engineer can use these flags to
   disable potentially resource-heavy features in order to the instance back to a
   more stable and available state. Another example is SaaS-only features.
@@ -239,7 +239,7 @@ default_enabled: true
     - Likelihood of errors occurring
     - Total actors (users / requests / projects / groups) affected by the feature flag rollout,
       e.g. it will be bad if 100,000 users cannot log in when we roll out for 1%
-    - How long to wait between each step. Some FF only need to wait 10 minutes per step, some
+    - How long to wait between each step. Some feature flags only need to wait 10 minutes per step, some
       flags should wait 24 hours. Ideally there should be automation to actively verify there
       is no adverse effect for each step.
 
