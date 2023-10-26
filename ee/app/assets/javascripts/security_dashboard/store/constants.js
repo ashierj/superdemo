@@ -13,8 +13,8 @@ export const SEVERITY_LEVELS = {
   high: s__('severity|High'),
   medium: s__('severity|Medium'),
   low: s__('severity|Low'),
-  unknown: s__('severity|Unknown'),
   info: s__('severity|Info'),
+  unknown: s__('severity|Unknown'),
 };
 
 // The GraphQL type (`VulnerabilitySeverity`) for severities is an enum with uppercase values

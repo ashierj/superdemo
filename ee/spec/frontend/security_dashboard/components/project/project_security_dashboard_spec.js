@@ -67,7 +67,7 @@ describe('Project Security Dashboard component', () => {
       expect(findLineChart().props('data')).toMatchSnapshot();
     });
 
-    it.each(['critical', 'high', 'medium', 'unknown', 'info'])(
+    it.each(['critical', 'high', 'medium', 'info', 'unknown'])(
       'should use the up-to-date vulnerability count for the latest date for "%s" severity findings',
       (severity) => {
         const series = findLineChart()

@@ -166,46 +166,6 @@ Array [
     "data": Array [
       Array [
         "2020-07-22",
-        1,
-      ],
-      Array [
-        "2020-07-23",
-        1,
-      ],
-      Array [
-        "2020-07-24",
-        1,
-      ],
-      Array [
-        "2020-07-25",
-        1,
-      ],
-      Array [
-        "2020-07-26",
-        1,
-      ],
-      Array [
-        "2020-07-27",
-        1,
-      ],
-      Array [
-        "2021-04-11",
-        100,
-      ],
-    ],
-    "itemStyle": Object {
-      "color": "#868686",
-    },
-    "key": "unknown",
-    "lineStyle": Object {
-      "color": "#868686",
-    },
-    "name": "Unknown",
-  },
-  Object {
-    "data": Array [
-      Array [
-        "2020-07-22",
         2,
       ],
       Array [
@@ -241,6 +201,46 @@ Array [
       "color": "#428fdc",
     },
     "name": "Info",
+  },
+  Object {
+    "data": Array [
+      Array [
+        "2020-07-22",
+        1,
+      ],
+      Array [
+        "2020-07-23",
+        1,
+      ],
+      Array [
+        "2020-07-24",
+        1,
+      ],
+      Array [
+        "2020-07-25",
+        1,
+      ],
+      Array [
+        "2020-07-26",
+        1,
+      ],
+      Array [
+        "2020-07-27",
+        1,
+      ],
+      Array [
+        "2021-04-11",
+        100,
+      ],
+    ],
+    "itemStyle": Object {
+      "color": "#868686",
+    },
+    "key": "unknown",
+    "lineStyle": Object {
+      "color": "#868686",
+    },
+    "name": "Unknown",
   },
 ]
 `;
