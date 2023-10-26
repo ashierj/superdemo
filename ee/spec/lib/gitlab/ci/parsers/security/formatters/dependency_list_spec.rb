@@ -85,6 +85,40 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Formatters::DependencyList do
         expect(vulnerability[:name]).to eq('Vulnerabilities in libxml2')
         expect(vulnerability[:severity]).to eq('high')
       end
+
+      context 'with vulnerability_data as hash' do
+        let(:vulnerability_data) do
+          create(
+            :vulnerabilities_finding,
+            :with_dependency_scanning_metadata,
+            vulnerability: standalone_vulnerability
+          )
+          .as_json
+          .merge(vulnerability_id: standalone_vulnerability.id)
+        end
+
+        it 'merge vulnerabilities data' do
+          vulnerability = data[:vulnerabilities].first
+          path = "/security/vulnerabilities/#{standalone_vulnerability.id}"
+
+          expect(vulnerability[:id]).to eq(standalone_vulnerability.id)
+          expect(vulnerability[:url]).to end_with(path)
+          expect(vulnerability[:name]).to eq('Vulnerabilities in libxml2')
+          expect(vulnerability[:severity]).to eq('high')
+        end
+
+        context 'with severity set to nil' do
+          before do
+            vulnerability_data['severity'] = nil
+          end
+
+          it 'returns severity equal to nil' do
+            vulnerability = data[:vulnerabilities].first
+
+            expect(vulnerability[:severity]).to be_nil
+          end
+        end
+      end
     end
   end
 

@@ -38,7 +38,7 @@ module Gitlab
 
               next unless dependency
 
-              additional_attrs = { vulnerability_id: finding.vulnerability_id }
+              additional_attrs = { vulnerability_id: finding.vulnerability_id, 'severity' => finding.severity }
 
               additional_attrs['name'] = finding.name unless finding.metadata['name']
 

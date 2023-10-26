@@ -8,9 +8,9 @@ RSpec.describe Security::DependencyListService, feature_category: :vulnerability
     let_it_be(:nokogiri_finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, :with_pipeline, raw_severity: 'High') }
     let_it_be(:nokogiri_pipeline) { create(:vulnerabilities_finding_pipeline, finding: nokogiri_finding, pipeline: pipeline) }
 
-    let_it_be(:unknown_severity_finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, package: 'saml2-js', file: 'yarn/yarn.lock', version: '1.5.0', raw_severity: 'Unknown') }
-    let_it_be(:medium_severity_finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, package: 'saml2-js', file: 'yarn/yarn.lock',  version: '1.5.0', raw_severity: 'Medium') }
-    let_it_be(:critical_severity_finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, package: 'saml2-js', file: 'yarn/yarn.lock', version: '1.5.0', raw_severity: 'Critical') }
+    let_it_be(:unknown_severity_finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, package: 'saml2-js', file: 'yarn/yarn.lock', version: '1.5.0', severity: :unknown) }
+    let_it_be(:medium_severity_finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, package: 'saml2-js', file: 'yarn/yarn.lock',  version: '1.5.0', severity: :medium) }
+    let_it_be(:critical_severity_finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, package: 'saml2-js', file: 'yarn/yarn.lock', version: '1.5.0', severity: :critical) }
 
     let_it_be(:unknown_severity_pipeline) { create(:vulnerabilities_finding_pipeline, finding: unknown_severity_finding, pipeline: pipeline) }
     let_it_be(:medium_severity_pipeline) { create(:vulnerabilities_finding_pipeline, finding: medium_severity_finding, pipeline: pipeline) }
