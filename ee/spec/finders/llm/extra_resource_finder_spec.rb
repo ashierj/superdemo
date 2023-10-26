@@ -2,16 +2,18 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::ExtraResourceFinder, feature_category: :ai_abstraction_layer do
-  let_it_be(:project) { create(:project, :repository) }
+RSpec.describe Llm::ExtraResourceFinder, :saas, feature_category: :duo_chat do
+  let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
+  let(:current_user) { developer }
+  let(:blob_url) { Gitlab::Routing.url_helpers.project_blob_url(project, project.default_branch) }
+  let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:other_project) { create(:project, :repository) }
   let_it_be(:developer) { create(:user).tap { |u| project.add_developer(u) } }
   let_it_be(:other_developer) { create(:user).tap { |u| other_project.add_developer(u) } }
   let_it_be(:guest) { create(:user).tap { |u| project.add_guest(u) } }
   let_it_be(:issue) { create(:issue, project: project) }
 
-  let(:current_user) { developer }
-  let(:blob_url) { Gitlab::Routing.url_helpers.project_blob_url(project, project.default_branch) }
+  include_context 'with ai features enabled for group'
 
   describe '.execute' do
     subject(:execute) { described_class.new(current_user, referer_url).execute }
@@ -71,6 +73,14 @@ RSpec.describe Llm::ExtraResourceFinder, feature_category: :ai_abstraction_layer
               it 'returns an empty hash' do
                 expect(execute).to be_empty
               end
+            end
+          end
+
+          context 'when project is in group that does not allow AI' do
+            include_context 'with third party features disabled for group'
+
+            it 'returns an empty hash' do
+              expect(execute).to be_empty
             end
           end
         end
