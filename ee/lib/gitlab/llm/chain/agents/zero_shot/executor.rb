@@ -74,6 +74,12 @@ module Gitlab
               end
 
               Answer.default_final_answer(context: context)
+            rescue Net::ReadTimeout => error
+              Gitlab::ErrorTracking.track_exception(error)
+              Answer.error_answer(
+                context: context,
+                content: _("GitLab Duo didn't respond. Try again? If it fails again, your request might be too large.")
+              )
             end
 
             private
