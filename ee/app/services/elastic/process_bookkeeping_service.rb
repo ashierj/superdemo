@@ -79,7 +79,11 @@ module Elastic
           Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
             keys = SHARDS.map { |m| [redis_set_key(m), redis_score_key(m)] }.flatten
 
-            redis.unlink(*keys)
+            if Gitlab::Redis::ClusterUtil.cluster?(redis)
+              Gitlab::Redis::ClusterUtil.batch_unlink(keys, redis)
+            else
+              redis.unlink(*keys)
+            end
           end
         end
       end
