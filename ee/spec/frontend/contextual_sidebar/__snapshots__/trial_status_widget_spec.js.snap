@@ -37,6 +37,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
         class="gl-align-items-stretch gl-display-flex gl-mt-2"
       >
         <gl-progress-bar-stub
+          aria-hidden="true"
           class="gl-flex-grow-1"
           value="10"
         />
