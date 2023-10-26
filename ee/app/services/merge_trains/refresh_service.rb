@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module MergeTrains
   # This class is to refresh all merge requests on the merge train that
   # the given merge request belongs to.

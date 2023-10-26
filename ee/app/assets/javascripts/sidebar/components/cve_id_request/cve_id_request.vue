@@ -111,7 +111,6 @@ export default {
           target="_blank"
           class="btn btn-default btn-block js-cve-id-request-button"
           data-testid="request-button"
-          data-qa-selector="cve_id_request_button"
           >{{ $options.i18n.createRequest }}</gl-link
         >
       </div>
@@ -133,7 +132,6 @@ export default {
                 :href="helpHref"
                 target="_blank"
                 class="btn btn-default js-cve-id-request-learn-more-link"
-                data-qa-selector="cve_id_request_learn_more_link"
                 >{{ $options.i18n.learnMore }}</gl-link
               >
             </div>

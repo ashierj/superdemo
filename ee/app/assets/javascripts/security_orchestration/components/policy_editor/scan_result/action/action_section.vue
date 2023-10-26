@@ -9,12 +9,14 @@ import {
   createActionFromApprovers,
   actionHasType,
 } from '../lib/actions';
+import SectionLayout from '../../section_layout.vue';
 import PolicyActionApprovers from './action_approvers.vue';
 
 export default {
   components: {
     GlAlert,
     PolicyActionApprovers,
+    SectionLayout,
   },
   inject: ['namespaceId'],
   props: {
@@ -133,26 +135,26 @@ export default {
     >
       {{ error.message }}
     </gl-alert>
-    <div
-      class="security-policies-bg-gray-10 gl-display-flex gl-flex-direction-column gl-gap-3 gl-rounded-base gl-py-5"
-    >
-      <policy-action-approvers
-        v-for="({ id, type }, i) in approverTypeTracker"
-        :key="id"
-        :approver-index="i"
-        :available-types="availableApproverTypes"
-        :approver-type="type"
-        :errors="errors"
-        :num-of-approver-types="approverTypeTracker.length"
-        :approvals-required="initAction.approvals_required"
-        :existing-approvers="existingApprovers"
-        @addApproverType="handleAddApproverType"
-        @error="$emit('error')"
-        @updateApprovers="handleUpdateApprovers"
-        @updateApproverType="handleUpdateApproverType(i, $event)"
-        @updateApprovalsRequired="handleUpdateApprovalsRequired"
-        @removeApproverType="handleRemoveApproverType(i, $event)"
-      />
-    </div>
+    <section-layout content-classes="gl-py-5 gl-pr-5 gl-bg-white" @remove="$emit('remove')">
+      <template #content>
+        <policy-action-approvers
+          v-for="({ id, type }, i) in approverTypeTracker"
+          :key="id"
+          :approver-index="i"
+          :available-types="availableApproverTypes"
+          :approver-type="type"
+          :errors="errors"
+          :num-of-approver-types="approverTypeTracker.length"
+          :approvals-required="initAction.approvals_required"
+          :existing-approvers="existingApprovers"
+          @addApproverType="handleAddApproverType"
+          @error="$emit('error')"
+          @updateApprovers="handleUpdateApprovers"
+          @updateApproverType="handleUpdateApproverType(i, $event)"
+          @updateApprovalsRequired="handleUpdateApprovalsRequired"
+          @removeApproverType="handleRemoveApproverType(i, $event)"
+        />
+      </template>
+    </section-layout>
   </div>
 </template>

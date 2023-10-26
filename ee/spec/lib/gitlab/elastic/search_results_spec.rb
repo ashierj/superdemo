@@ -1258,7 +1258,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
     end
   end
 
-  describe 'visibility levels' do
+  describe 'visibility levels', :sidekiq_inline do
     let(:internal_project) { create(:project, :internal, :repository, :wiki_repo, description: "Internal project") }
     let(:private_project1) { create(:project, :private, :repository, :wiki_repo, description: "Private project") }
     let(:private_project2) { create(:project, :private, :repository, :wiki_repo, description: "Private project where I'm a member") }

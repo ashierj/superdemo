@@ -4,14 +4,14 @@ module Security
   class DependencyListService
     SORT_BY_VALUES = %w[name packager severity].freeze
     SORT_VALUES = %w[asc desc].freeze
-    FILTER_PACKAGE_MANAGERS_VALUES = %w[bundler yarn npm pnpm maven composer pip conan go nuget sbt gradle pipenv setuptools].freeze
+    FILTER_PACKAGE_MANAGERS_VALUES = %w[bundler yarn npm pnpm maven composer pip conan go nuget sbt gradle pipenv poetry setuptools].freeze
     FILTER_VALUES = %w[all vulnerable].freeze
 
     # @param pipeline [Ci::Pipeline]
     # @param [Hash] params to sort and filter dependencies
     # @option params ['asc', 'desc'] :sort ('asc') Order
     # @option params ['name', 'packager', 'severity'] :sort_by ('name') Field to sort
-    # @option params ['bundler', 'yarn', 'npm', 'maven', 'composer', 'pip', 'conan', 'go', 'nuget', 'sbt', 'gradle', 'pipenv', 'setuptools'] :package_manager ('bundler') Field to filter
+    # @option params ['bundler', 'yarn', 'npm', `pnpm`, 'maven', 'composer', 'pip', 'conan', 'go', 'nuget', 'sbt', 'gradle', 'pipenv', 'poetry', 'setuptools'] :package_manager ('bundler') Field to filter
     # @option params ['all', 'vulnerable'] :filter ('all') Field to filter
     def initialize(pipeline:, params: {})
       @pipeline = pipeline

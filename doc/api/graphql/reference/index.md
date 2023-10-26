@@ -157,7 +157,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="querycicatalogresourcesprojectpath"></a>`projectPath` | [`ID`](#id) | Project with the namespace catalog. |
-| <a id="querycicatalogresourcessort"></a>`sort` | [`CiCatalogResourceSort`](#cicatalogresourcesort) | Sort Catalog Resources by given criteria. |
+| <a id="querycicatalogresourcessearch"></a>`search` | [`String`](#string) | Search term to filter the catalog resources by name or description. |
+| <a id="querycicatalogresourcessort"></a>`sort` | [`CiCatalogResourceSort`](#cicatalogresourcesort) | Sort catalog resources by given criteria. |
 
 ### `Query.ciConfig`
 
@@ -3032,6 +3033,31 @@ Input type: `DeleteAnnotationInput`
 | ---- | ---- | ----------- |
 | <a id="mutationdeleteannotationclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationdeleteannotationerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
+### `Mutation.deletePackagesProtectionRule`
+
+Deletes a protection rule for packages. Available only when feature flag `packages_protected_packages` is enabled.
+
+WARNING:
+**Introduced** in 16.6.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `DeletePackagesProtectionRuleInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationdeletepackagesprotectionruleclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationdeletepackagesprotectionruleid"></a>`id` | [`PackagesProtectionRuleID!`](#packagesprotectionruleid) | Global ID of the package protection rule to delete. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationdeletepackagesprotectionruleclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationdeletepackagesprotectionruleerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationdeletepackagesprotectionrulepackageprotectionrule"></a>`packageProtectionRule` | [`PackagesProtectionRule`](#packagesprotectionrule) | Packages protection rule that was deleted successfully. |
 
 ### `Mutation.designManagementDelete`
 
@@ -17102,8 +17128,10 @@ Total weight of open and closed descendant issues.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="epicdescendantweightsclosedissues"></a>`closedIssues` | [`Int`](#int) | Total weight of completed (closed) issues in this epic, including epic descendants. |
-| <a id="epicdescendantweightsopenedissues"></a>`openedIssues` | [`Int`](#int) | Total weight of opened issues in this epic, including epic descendants. |
+| <a id="epicdescendantweightsclosedissues"></a>`closedIssues` **{warning-solid}** | [`Int`](#int) | **Deprecated** in 16.6. Use `closedIssuesTotal`. |
+| <a id="epicdescendantweightsclosedissuestotal"></a>`closedIssuesTotal` | [`BigInt`](#bigint) | Total weight of completed (closed) issues in this epic, including epic descendants, encoded as a string. |
+| <a id="epicdescendantweightsopenedissues"></a>`openedIssues` **{warning-solid}** | [`Int`](#int) | **Deprecated** in 16.6. Use `OpenedIssuesTotal`. |
+| <a id="epicdescendantweightsopenedissuestotal"></a>`openedIssuesTotal` | [`BigInt`](#bigint) | Total weight of opened issues in this epic, including epic descendants, encoded as a string. |
 
 ### `EpicHealthStatus`
 
@@ -27663,18 +27691,12 @@ Values for sorting catalog resources.
 
 | Value | Description |
 | ----- | ----------- |
-| <a id="cicatalogresourcesortcreated_asc"></a>`CREATED_ASC` | Created at ascending order. |
-| <a id="cicatalogresourcesortcreated_desc"></a>`CREATED_DESC` | Created at descending order. |
+| <a id="cicatalogresourcesortcreated_asc"></a>`CREATED_ASC` | Created date by ascending order. |
+| <a id="cicatalogresourcesortcreated_desc"></a>`CREATED_DESC` | Created date by descending order. |
 | <a id="cicatalogresourcesortlatest_released_at_asc"></a>`LATEST_RELEASED_AT_ASC` | Latest release date by ascending order. |
 | <a id="cicatalogresourcesortlatest_released_at_desc"></a>`LATEST_RELEASED_AT_DESC` | Latest release date by descending order. |
 | <a id="cicatalogresourcesortname_asc"></a>`NAME_ASC` | Name by ascending order. |
 | <a id="cicatalogresourcesortname_desc"></a>`NAME_DESC` | Name by descending order. |
-| <a id="cicatalogresourcesortupdated_asc"></a>`UPDATED_ASC` | Updated at ascending order. |
-| <a id="cicatalogresourcesortupdated_desc"></a>`UPDATED_DESC` | Updated at descending order. |
-| <a id="cicatalogresourcesortcreated_asc"></a>`created_asc` **{warning-solid}** | **Deprecated** in 13.5. This was renamed. Use: `CREATED_ASC`. |
-| <a id="cicatalogresourcesortcreated_desc"></a>`created_desc` **{warning-solid}** | **Deprecated** in 13.5. This was renamed. Use: `CREATED_DESC`. |
-| <a id="cicatalogresourcesortupdated_asc"></a>`updated_asc` **{warning-solid}** | **Deprecated** in 13.5. This was renamed. Use: `UPDATED_ASC`. |
-| <a id="cicatalogresourcesortupdated_desc"></a>`updated_desc` **{warning-solid}** | **Deprecated** in 13.5. This was renamed. Use: `UPDATED_DESC`. |
 
 ### `CiConfigIncludeType`
 
@@ -29222,6 +29244,7 @@ Values for package manager.
 | <a id="packagemanagerpip"></a>`PIP` | Package manager: pip. |
 | <a id="packagemanagerpipenv"></a>`PIPENV` | Package manager: pipenv. |
 | <a id="packagemanagerpnpm"></a>`PNPM` | Package manager: pnpm. |
+| <a id="packagemanagerpoetry"></a>`POETRY` | Package manager: poetry. |
 | <a id="packagemanagersbt"></a>`SBT` | Package manager: sbt. |
 | <a id="packagemanagersetuptools"></a>`SETUPTOOLS` | Package manager: setuptools. |
 | <a id="packagemanageryarn"></a>`YARN` | Package manager: yarn. |
@@ -30748,6 +30771,12 @@ An example `PackagesPackageFileID` is: `"gid://gitlab/Packages::PackageFile/1"`.
 A `PackagesPackageID` is a global ID. It is encoded as a string.
 
 An example `PackagesPackageID` is: `"gid://gitlab/Packages::Package/1"`.
+
+### `PackagesProtectionRuleID`
+
+A `PackagesProtectionRuleID` is a global ID. It is encoded as a string.
+
+An example `PackagesProtectionRuleID` is: `"gid://gitlab/Packages::Protection::Rule/1"`.
 
 ### `PackagesPypiMetadatumID`
 

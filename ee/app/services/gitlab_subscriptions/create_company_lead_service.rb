@@ -8,8 +8,10 @@ module GitlabSubscriptions
     end
 
     def execute
+      build_product_interaction
+
       GitlabSubscriptions::CreateLeadService.new.execute(
-        @params.merge(product_interaction: ::Onboarding::Status::PRODUCT_INTERACTION[:trial])
+        @params.merge(product_interaction: @product_interaction)
       )
     end
 
@@ -36,6 +38,11 @@ module GitlabSubscriptions
       params[:jtbd] = params.delete(:registration_objective)
       params[:comment] ||= params.delete(:jobs_to_be_done_other)
       params
+    end
+
+    def build_product_interaction
+      @product_interaction = ::Onboarding::Status.new(@params, nil, nil).company_lead_product_interaction
+      @params.delete(:trial)
     end
   end
 end

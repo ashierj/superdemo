@@ -6,6 +6,9 @@ module Elastic
 
     include ApplicationVersionedSearch
 
+    BLOB_AND_COMMIT_TRACKED_FIELDS = %i[archived visibility_level].freeze
+    WIKI_TRACKED_FIELDS = %i[archived visibility_level].freeze
+
     included do
       extend ::Gitlab::Utils::Override
 
@@ -24,12 +27,12 @@ module Elastic
         return if pending_delete?
 
         updated_attributes = updated_attributes.map(&:to_sym)
-        # repository_access_level wiki_access_level are the attributes on project_feature
-        # So we have to check the previous_changes on project_feature
-        updated_attributes.concat(project_feature.previous_changes.keys.map(&:to_sym))
+        if (updated_attributes & BLOB_AND_COMMIT_TRACKED_FIELDS).any?
+          ElasticCommitIndexerWorker.perform_async(self.id, false, { force: true })
+        end
 
-        if (updated_attributes & %i[visibility_level repository_access_level wiki_access_level archived]).any?
-          maintain_elasticsearch_values
+        if (updated_attributes & WIKI_TRACKED_FIELDS).any?
+          ElasticWikiIndexerWorker.perform_async(self.id, self.class.name, { force: true })
         end
 
         super
@@ -43,12 +46,6 @@ module Elastic
 
       def invalidate_elasticsearch_indexes_cache!
         ::Gitlab::CurrentSettings.invalidate_elasticsearch_indexes_cache_for_project!(self.id)
-      end
-
-      private
-
-      def maintain_elasticsearch_values
-        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(self)
       end
     end
   end

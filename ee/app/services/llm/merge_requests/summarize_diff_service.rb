@@ -22,7 +22,7 @@ module Llm
       end
 
       def self.enabled?(user:, group:)
-        Feature.enabled?(:openai_experimentation, user) &&
+        (Feature.enabled?(:openai_experimentation, user) || Feature.enabled?(:ai_global_switch, type: :ops)) &&
           Gitlab::Llm::StageCheck.available?(group, :summarize_diff) &&
           ::License.feature_available?(:summarize_mr_changes)
       end

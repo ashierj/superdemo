@@ -108,7 +108,7 @@ export default {
     searchable
     is-check-centered
     multiple
-    :toggle-class="['gl-max-w-26', { 'gl-inset-border-1-red-500!': !state }]"
+    :toggle-class="['gl-max-w-15', { 'gl-inset-border-1-red-500!': !state }]"
     :searching="$apollo.loading"
     :selected="selectedUsersValues"
     :toggle-text="toggleText"

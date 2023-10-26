@@ -662,7 +662,6 @@ export default {
               <template v-if="showAutoMergeHelperText">
                 <div
                   class="gl-ml-4 gl-text-gray-500 gl-font-sm"
-                  data-qa-selector="auto_merge_helper_text"
                   data-testid="auto-merge-helper-text"
                 >
                   {{ autoMergeHelperText }}
@@ -739,6 +738,7 @@ export default {
         </div>
       </div>
       <merge-immediately-confirmation-dialog
+        v-if="mr.mergeImmediatelyDocsPath"
         ref="confirmationDialog"
         :docs-url="mr.mergeImmediatelyDocsPath"
         @mergeImmediately="onMergeImmediatelyConfirmation"

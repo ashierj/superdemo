@@ -7,6 +7,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
 import { PRODUCT_ANALYTICS_FEATURE_DASHBOARDS, FEATURE_PRODUCT_ANALYTICS } from '../constants';
 import getAllProductAnalyticsDashboardsQuery from '../graphql/queries/get_all_product_analytics_dashboards.query.graphql';
+import { extractNamespaceData } from '../graphql/utils';
 import DashboardListItem from './list/dashboard_list_item.vue';
 
 const ONBOARDING_FEATURE_COMPONENTS = {
@@ -26,6 +27,9 @@ export default {
   mixins: [glFeatureFlagsMixin(), InternalEvents.mixin()],
   inject: {
     isProject: {
+      type: Boolean,
+    },
+    isGroup: {
       type: Boolean,
     },
     customDashboardsProject: {
@@ -102,11 +106,14 @@ export default {
       query: getAllProductAnalyticsDashboardsQuery,
       variables() {
         return {
-          projectPath: this.namespaceFullPath,
+          fullPath: this.namespaceFullPath,
+          isProject: this.isProject,
+          isGroup: this.isGroup,
         };
       },
       update(data) {
-        return data?.project?.customizableDashboards?.nodes
+        const namespaceData = extractNamespaceData(data);
+        return namespaceData?.customizableDashboards?.nodes
           .map((dashboard) => {
             // TODO: Simplify checks when backend returns dashboards only for onboarded features
             // https://gitlab.com/gitlab-org/gitlab/-/issues/411608

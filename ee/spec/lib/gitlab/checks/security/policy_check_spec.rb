@@ -38,20 +38,18 @@ RSpec.describe Gitlab::Checks::Security::PolicyCheck, '#validate!', feature_cate
   end
 
   context 'when affected by active scan result policy' do
-    let(:scan_result_policy) { build(:scan_result_policy, branches: [branch_name]) }
-    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_result_policy: [scan_result_policy]) }
-
-    before do
-      create_file_in_repo(
-        policy_project,
-        project.default_branch,
-        project.default_branch,
-        Security::OrchestrationPolicyConfiguration::POLICY_PATH,
-        policy_yaml)
-    end
+    include_context 'with scan result policy preventing force pushing'
 
     it 'raises' do
       expect { policy_check! }.to raise_error(Gitlab::GitAccess::ForbiddenError, described_class::ERROR_MESSAGE)
+    end
+
+    context 'when prevent_force_pushing setting is disabled' do
+      let(:prevent_force_pushing) { false }
+
+      it 'does not raise' do
+        expect { policy_check! }.not_to raise_error
+      end
     end
 
     context 'when branch is unprotected' do

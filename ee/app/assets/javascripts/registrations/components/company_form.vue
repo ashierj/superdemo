@@ -146,7 +146,6 @@ export default {
           id="company_name"
           :value="companyName"
           name="company_name"
-          data-qa-selector="company_name_field"
           data-testid="company_name"
           required
         />
@@ -164,19 +163,12 @@ export default {
           :options="companySizeOptionsWithDefault"
           value-field="id"
           text-field="name"
-          data-qa-selector="company_size_field"
           data-testid="company_size"
           required
         />
       </gl-form-group>
     </div>
-    <country-or-region-selector
-      :country="country"
-      :state="state"
-      data-qa-selector="country_option"
-      data-testid="country"
-      required
-    />
+    <country-or-region-selector :country="country" :state="state" data-testid="country" required />
     <gl-form-group
       :label="$options.i18n.phoneNumberLabel"
       :optional-text="$options.i18n.optional"
@@ -190,7 +182,6 @@ export default {
         :value="phoneNumber"
         name="phone_number"
         type="tel"
-        data-qa-selector="phone_number_field"
         data-testid="phone_number"
         pattern="^(\+)*[0-9-\s]+$"
       />
@@ -206,11 +197,10 @@ export default {
         id="website_url"
         :value="websiteUrl"
         name="website_url"
-        data-qa-selector="website_url_field"
         data-testid="website_url"
       />
     </gl-form-group>
-    <gl-button type="submit" variant="confirm" data-qa-selector="confirm_button">
+    <gl-button type="submit" variant="confirm">
       {{ submitButtonText }}
     </gl-button>
     <gl-form-text

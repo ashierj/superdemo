@@ -35,11 +35,13 @@ export default {
       error: null,
     };
   },
-  created() {
-    this.$options.activationListeners = {
-      [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT]: this.handleActivationFailure,
-      [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.handleActivationSuccess,
-    };
+  computed: {
+    activationListeners() {
+      return {
+        [SUBSCRIPTION_ACTIVATION_FAILURE_EVENT]: this.handleActivationFailure,
+        [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.handleActivationSuccess,
+      };
+    },
   },
   methods: {
     handleActivationFailure(error) {
@@ -72,6 +74,6 @@ export default {
         </template>
       </gl-sprintf>
     </p>
-    <subscription-activation-form class="gl-p-5" v-on="$options.activationListeners" />
+    <subscription-activation-form class="gl-p-5" v-on="activationListeners" />
   </gl-card>
 </template>

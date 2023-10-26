@@ -202,9 +202,9 @@ describe('updateApolloCache', () => {
   let apolloClient;
   let mockReadQuery;
   let mockWriteQuery;
-  const projectId = '1';
   const dashboardSlug = 'analytics_overview';
-  const projectFullpath = TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath;
+  const { fullPath } = TEST_CUSTOM_DASHBOARDS_PROJECT;
+  const isProject = true;
 
   const setMockCache = (mockDashboardDetails, mockDashboardsList) => {
     mockReadQuery.mockImplementation(({ query }) => {
@@ -244,16 +244,16 @@ describe('updateApolloCache', () => {
 
       setMockCache(existingDetailsCache, null);
 
-      updateApolloCache(
+      updateApolloCache({
         apolloClient,
-        projectId,
-        existingDashboard.slug,
-        {
+        slug: existingDashboard.slug,
+        dashboard: {
           ...existingDashboard,
           title: 'some new title',
         },
-        projectFullpath,
-      );
+        fullPath,
+        isProject,
+      });
 
       expect(mockWriteQuery).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -276,7 +276,13 @@ describe('updateApolloCache', () => {
     it('does not update for new dashboards where cache is empty', () => {
       setMockCache(null, TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data);
 
-      updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard, projectFullpath);
+      updateApolloCache({
+        apolloClient,
+        slug: dashboardSlug,
+        dashboard,
+        fullPath,
+        isProject,
+      });
 
       expect(mockWriteQuery).not.toHaveBeenCalledWith(
         expect.objectContaining({ query: getProductAnalyticsDashboardQuery }),
@@ -288,7 +294,13 @@ describe('updateApolloCache', () => {
     it('adds a new dashboard to the dashboards list', () => {
       setMockCache(null, TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data);
 
-      updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard, projectFullpath);
+      updateApolloCache({
+        apolloClient,
+        slug: dashboardSlug,
+        dashboard,
+        fullPath,
+        isProject,
+      });
 
       expect(mockWriteQuery).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -319,7 +331,13 @@ describe('updateApolloCache', () => {
         title: 'some new title',
       };
 
-      updateApolloCache(apolloClient, projectId, dashboardSlug, updatedDashboard, projectFullpath);
+      updateApolloCache({
+        apolloClient,
+        slug: dashboardSlug,
+        dashboard: updatedDashboard,
+        fullPath,
+        isProject,
+      });
 
       expect(mockWriteQuery).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -342,7 +360,13 @@ describe('updateApolloCache', () => {
     it('does not update dashboard list cache when it has not yet been populated', () => {
       setMockCache(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE.data, null);
 
-      updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard, projectFullpath);
+      updateApolloCache({
+        apolloClient,
+        slug: dashboardSlug,
+        dashboard,
+        fullPath,
+        isProject,
+      });
 
       expect(mockWriteQuery).not.toHaveBeenCalledWith(
         expect.objectContaining({ query: getAllProductAnalyticsDashboardsQuery }),

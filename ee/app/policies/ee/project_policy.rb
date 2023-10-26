@@ -8,6 +8,9 @@ module EE
     prepended do
       include ReadonlyAbilities
 
+      desc "User is a security policy bot on the project"
+      condition(:security_policy_bot) { user&.security_policy_bot? && team_member? }
+
       with_scope :subject
       condition(:auto_fix_enabled) { @subject.security_setting&.auto_fix_enabled? }
 
@@ -274,7 +277,7 @@ module EE
 
       with_scope :subject
       condition(:ai_features_enabled) do
-        ::Feature.enabled?(:openai_experimentation)
+        ::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)
       end
 
       with_scope :subject
@@ -286,7 +289,7 @@ module EE
 
       with_scope :subject
       condition(:generate_description_enabled) do
-        ::Feature.enabled?(:openai_experimentation) &&
+        (::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)) &&
           subject.group&.licensed_feature_available?(:generate_description) &&
           ::Gitlab::Llm::StageCheck.available?(subject, :generate_description)
       end

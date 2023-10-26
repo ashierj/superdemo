@@ -19,7 +19,7 @@ module Llm
     private
 
     def vertex_enabled?
-      Feature.enabled?(:openai_experimentation) &&
+      (Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)) &&
         ::Gitlab::CurrentSettings.vertex_ai_project.present?
     end
   end

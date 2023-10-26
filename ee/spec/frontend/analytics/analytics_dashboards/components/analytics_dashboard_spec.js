@@ -25,12 +25,14 @@ import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/
 import { stubComponent } from 'helpers/stub_component';
 import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
+  TEST_CUSTOM_DASHBOARDS_GROUP,
   TEST_EMPTY_DASHBOARD_SVG_PATH,
   TEST_ROUTER_BACK_HREF,
   TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_DASHBOARD_GRAPHQL_404_RESPONSE,
   TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
+  TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
 
@@ -100,6 +102,11 @@ describe('AnalyticsDashboard', () => {
 
   const breadcrumbState = { updateName: jest.fn() };
 
+  const mockNamespace = {
+    namespaceId,
+    namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+  };
+
   const createWrapper = ({
     props = {},
     routeSlug = '',
@@ -107,6 +114,7 @@ describe('AnalyticsDashboard', () => {
       combinedAnalyticsDashboardsEditor: false,
     },
     stubs = {},
+    provide = {},
   } = {}) => {
     const mocks = {
       $toast: {
@@ -141,12 +149,14 @@ describe('AnalyticsDashboard', () => {
       },
       mocks,
       provide: {
-        namespaceId,
+        ...mockNamespace,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         dashboardEmptyStateIllustrationPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
-        namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         glFeatures,
         breadcrumbState,
+        isGroup: false,
+        isProject: true,
+        ...provide,
       },
     });
   };
@@ -162,8 +172,10 @@ describe('AnalyticsDashboard', () => {
       await waitForPromises();
 
       expect(mockAnalyticsDashboardsHandler).toHaveBeenCalledWith({
-        projectPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        fullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         slug: '',
+        isGroup: false,
+        isProject: true,
       });
 
       expect(findDashboard().props()).toMatchObject({
@@ -198,8 +210,10 @@ describe('AnalyticsDashboard', () => {
       await waitForPromises();
 
       expect(mockAnalyticsDashboardsHandler).toHaveBeenCalledWith({
-        projectPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        fullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         slug: 'audience',
+        isGroup: false,
+        isProject: true,
       });
 
       expect(breadcrumbState.updateName).toHaveBeenCalledWith('Audience');
@@ -283,7 +297,9 @@ describe('AnalyticsDashboard', () => {
       await setupDashboard(TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
 
       expect(mockAvailableVisualizationsHandler).toHaveBeenCalledWith({
-        projectPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        fullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        isGroup: false,
+        isProject: true,
       });
 
       const visualizations =
@@ -300,7 +316,9 @@ describe('AnalyticsDashboard', () => {
       await setupDashboard(TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE, NEW_DASHBOARD);
 
       expect(mockAvailableVisualizationsHandler).toHaveBeenCalledWith({
-        projectPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        fullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        isGroup: false,
+        isProject: true,
       });
     });
 
@@ -509,17 +527,18 @@ describe('AnalyticsDashboard', () => {
         await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
         await waitForPromises();
 
-        expect(updateApolloCache).toHaveBeenCalledWith(
-          expect.any(Object),
-          namespaceId,
-          dashboard.slug,
-          expect.objectContaining({
+        expect(updateApolloCache).toHaveBeenCalledWith({
+          apolloClient: expect.any(Object),
+          slug: dashboard.slug,
+          dashboard: expect.objectContaining({
             slug: 'analytics_overview',
             title: 'Analytics Overview',
             userDefined: true,
           }),
-          TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
-        );
+          fullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+          isGroup: false,
+          isProject: true,
+        });
       });
     });
 
@@ -576,6 +595,32 @@ describe('AnalyticsDashboard', () => {
           },
           showDateRangeFilter: false,
         });
+      });
+    });
+  });
+
+  describe('with a group namespace', () => {
+    beforeEach(async () => {
+      mockDashboardResponse(TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+      createWrapper({
+        routeSlug: 'value_streams_dashboard',
+        provide: {
+          namespaceId: TEST_CUSTOM_DASHBOARDS_GROUP.id,
+          namespaceFullPath: TEST_CUSTOM_DASHBOARDS_GROUP.fullPath,
+          isGroup: true,
+          isProject: false,
+        },
+      });
+      await waitForPromises();
+    });
+
+    it('will fetch the group data', () => {
+      expect(mockAnalyticsDashboardsHandler).toHaveBeenCalledWith({
+        fullPath: TEST_CUSTOM_DASHBOARDS_GROUP.fullPath,
+        slug: 'value_streams_dashboard',
+        isGroup: true,
+        isProject: false,
       });
     });
   });

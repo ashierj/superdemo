@@ -108,24 +108,6 @@ module EE
       expose :merge_immediately_docs_path do |merge_request|
         presenter(merge_request).merge_immediately_docs_path
       end
-
-      expose :blocking_merge_requests, if: -> (mr, _) { mr&.target_project&.feature_available?(:blocking_merge_requests) }
-
-      private
-
-      def blocking_merge_requests
-        hidden_blocking_count = object.hidden_blocking_merge_requests_count(current_user)
-        visible_mrs = object.visible_blocking_merge_requests(current_user)
-        visible_mrs_by_state = visible_mrs
-          .map { |mr| represent_blocking_mr(mr) }
-          .group_by { |blocking_mr| blocking_mr.object.state_id_name }
-
-        {
-          total_count: visible_mrs.count + hidden_blocking_count,
-          hidden_count: hidden_blocking_count,
-          visible_merge_requests: visible_mrs_by_state
-        }
-      end
     end
 
     def represent_blocking_mr(blocking_mr)

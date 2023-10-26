@@ -55,15 +55,23 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
       end
     end
 
-    context 'for endpoint_sast' do
+    context 'for sast_report_available' do
       before do
         allow(merge_request).to receive(:has_sast_reports?).and_return(true)
       end
 
       it 'returns expected value' do
-        expect(
-          subject[:endpoint_sast]
-        ).to eq("/#{project.full_path}/-/merge_requests/#{merge_request.iid}/security_reports?type=sast")
+        expect(subject[:sast_report_available]).to eq('true')
+      end
+
+      context 'when merge request does not have SAST reports' do
+        before do
+          allow(merge_request).to receive(:has_sast_reports?).and_return(false)
+        end
+
+        it 'returns expected value' do
+          expect(subject[:sast_report_available]).to eq('false')
+        end
       end
 
       context 'when feature flag is disabled' do
@@ -71,8 +79,8 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
           stub_feature_flags(sast_reports_in_inline_diff: false)
         end
 
-        it 'does not return endpoint' do
-          expect(subject).not_to have_key(:endpoint_sast)
+        it 'does not return the variable' do
+          expect(subject).not_to have_key(:sast_report_available)
         end
       end
     end

@@ -17,5 +17,9 @@ module EE
     def group_sso?(_)
       false
     end
+
+    def security_policy_bot?
+      false
+    end
   end
 end

@@ -20,7 +20,7 @@ module Llm
 
         def perform(id, update_version)
           return unless Gitlab::Saas.feature_available?(FEATURE_NAME)
-          return unless Feature.enabled?(:openai_experimentation) # this is legacy global AI toggle FF
+          return unless Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)
           return unless ::License.feature_available?(:ai_chat) # license check
 
           @update_version = update_version

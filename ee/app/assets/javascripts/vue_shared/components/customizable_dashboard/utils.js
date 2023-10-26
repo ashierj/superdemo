@@ -112,17 +112,21 @@ export const getDashboardConfig = (hydratedDashboard) => {
 /**
  * Updates a dashboard detail in cache from getProductAnalyticsDashboard:{slug}
  */
-const updateDashboardDetailsApolloCache = (
+const updateDashboardDetailsApolloCache = ({
   apolloClient,
   dashboard,
-  dashboardSlug,
-  namespaceFullPath,
-) => {
+  slug,
+  fullPath,
+  isProject,
+  isGroup,
+}) => {
   const getDashboardDetailsQuery = {
     query: getProductAnalyticsDashboardQuery,
     variables: {
-      projectPath: namespaceFullPath,
-      slug: dashboardSlug,
+      fullPath,
+      slug,
+      isProject,
+      isGroup,
     },
   };
   const sourceData = apolloClient.readQuery(getDashboardDetailsQuery);
@@ -132,8 +136,10 @@ const updateDashboardDetailsApolloCache = (
   }
 
   const data = produce(sourceData, (draftState) => {
-    const { nodes } = draftState.project.customizableDashboards;
-    const updateIndex = nodes.findIndex(({ slug }) => slug === dashboardSlug);
+    const { nodes } = isProject
+      ? draftState.project.customizableDashboards
+      : draftState.group.customizableDashboards;
+    const updateIndex = nodes.findIndex((node) => node.slug === slug);
 
     if (updateIndex < 0) return;
 
@@ -162,16 +168,20 @@ const updateDashboardDetailsApolloCache = (
 /**
  * Adds/updates a newly created dashboard to the dashboards list cache from getAllProductAnalyticsDashboards
  */
-const updateDashboardsListApolloCache = (
+const updateDashboardsListApolloCache = ({
   apolloClient,
   dashboardSlug,
   dashboard,
-  namespaceFullPath,
-) => {
+  fullPath,
+  isProject,
+  isGroup,
+}) => {
   const getDashboardListQuery = {
     query: getAllProductAnalyticsDashboardsQuery,
     variables: {
-      projectPath: namespaceFullPath,
+      fullPath,
+      isProject,
+      isGroup,
     },
   };
   const sourceData = apolloClient.readQuery(getDashboardListQuery);
@@ -182,7 +192,9 @@ const updateDashboardsListApolloCache = (
 
   const data = produce(sourceData, (draftState) => {
     const { panels, ...dashboardWithoutPanels } = dashboard;
-    const { nodes } = draftState.project.customizableDashboards;
+    const { nodes } = isProject
+      ? draftState.project.customizableDashboards
+      : draftState.group.customizableDashboards;
 
     const updateIndex = nodes.findIndex(({ slug }) => slug === dashboardSlug);
 
@@ -204,14 +216,22 @@ const updateDashboardsListApolloCache = (
   });
 };
 
-export const updateApolloCache = (
+export const updateApolloCache = ({
   apolloClient,
-  projectId,
-  dashboardSlug,
+  slug,
   dashboard,
-  namespaceFullPath,
-) => {
+  fullPath,
+  isProject,
+  isGroup,
+}) => {
   // TODO: modify to support removing dashboards from cache https://gitlab.com/gitlab-org/gitlab/-/issues/425513
-  updateDashboardDetailsApolloCache(apolloClient, dashboard, dashboardSlug, namespaceFullPath);
-  updateDashboardsListApolloCache(apolloClient, dashboardSlug, dashboard, namespaceFullPath);
+  updateDashboardDetailsApolloCache({
+    apolloClient,
+    dashboard,
+    slug,
+    fullPath,
+    isProject,
+    isGroup,
+  });
+  updateDashboardsListApolloCache({ apolloClient, slug, dashboard, fullPath, isProject, isGroup });
 };

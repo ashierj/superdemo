@@ -4,11 +4,13 @@ module Analytics
   module AnalyticsDashboardsHelper
     def analytics_dashboards_list_app_data(namespace)
       is_project = project?(namespace)
+      is_group = group?(namespace)
       can_read_product_analytics = can?(current_user, :read_product_analytics, namespace)
 
       {
         namespace_id: namespace.id,
         is_project: is_project.to_s,
+        is_group: is_group.to_s,
         dashboard_project: analytics_dashboard_pointer_project(namespace)&.to_json,
         can_configure_dashboards_project: can_configure_dashboards_project?(namespace).to_s,
         tracking_key: can_read_product_analytics && is_project ? tracking_key(namespace) : nil,
@@ -37,6 +39,10 @@ module Analytics
 
     def project?(namespace)
       namespace.is_a?(Project)
+    end
+
+    def group?(namespace)
+      namespace.is_a?(Group)
     end
 
     def collector_host(project)

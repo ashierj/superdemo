@@ -54,7 +54,6 @@ module GitlabSubscriptions
       issue_weights
       iterations
       ldap_group_sync
-      member_lock
       merge_request_approvers
       milestone_charts
       multiple_issue_assignees
@@ -271,6 +270,7 @@ module GitlabSubscriptions
       scoped_issue_board
       contribution_analytics
       group_webhooks
+      member_lock
     ].freeze
 
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[

@@ -48,7 +48,7 @@ module EE
 
       with_scope :subject
       condition(:ai_features_enabled) do
-        ::Feature.enabled?(:openai_experimentation)
+        ::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)
       end
 
       with_scope :subject

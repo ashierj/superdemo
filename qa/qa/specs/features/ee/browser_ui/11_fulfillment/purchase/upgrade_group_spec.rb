@@ -44,22 +44,22 @@ module QA
           end
         end
 
-        context 'with existing CI minutes pack' do
-          let(:ci_minutes_quantity) { 5 }
-          let(:expected_minutes) { CI_MINUTES[:ci_minutes] * ci_minutes_quantity }
-          let(:plan_limits) { PREMIUM[:ci_minutes] }
+        context 'with existing compute minutes pack' do
+          let(:compute_minutes_quantity) { 5 }
+          let(:expected_minutes) { COMPUTE_MINUTES[:compute_minutes] * compute_minutes_quantity }
+          let(:plan_limits) { PREMIUM[:compute_minutes] }
 
           before do
             create(:project, :with_readme, name: 'ci-minutes', group: group, api_client: Runtime::API::Client.as_admin)
 
-            Flow::Purchase.purchase_ci_minutes(quantity: ci_minutes_quantity)
+            Flow::Purchase.purchase_compute_minutes(quantity: compute_minutes_quantity)
           end
 
-          it 'upgrades from free to premium with correct CI minutes',
+          it 'upgrades from free to premium with correct compute minutes',
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349085' do
             Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
               usage_quota.pipelines_tab
-              usage_quota.wait_for_additional_ci_minutes_available
+              usage_quota.wait_for_additional_compute_minutes_available
 
               expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
             end
@@ -79,7 +79,7 @@ module QA
 
             Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
               usage_quota.pipelines_tab
-              usage_quota.wait_for_additional_ci_minutes_available
+              usage_quota.wait_for_additional_compute_minutes_available
 
               aggregate_failures do
                 expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)

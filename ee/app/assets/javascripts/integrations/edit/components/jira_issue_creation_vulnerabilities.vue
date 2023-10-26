@@ -4,8 +4,7 @@ import {
   GlBadge,
   GlButton,
   GlButtonGroup,
-  GlDropdown,
-  GlDropdownItem,
+  GlCollapsibleListbox,
   GlFormCheckbox,
   GlIcon,
   GlTooltipDirective,
@@ -24,9 +23,10 @@ export const i18n = {
     ),
   },
   issueTypeSelect: {
-    description: s__('JiraService|Define the type of Jira issue to create from a vulnerability.'),
+    description: s__('JiraService|Create Jira issues of this type from vulnerabilities.'),
     defaultText: s__('JiraService|Select issue type'),
   },
+  issueTypeLabel: s__('JiraService|Jira issue type'),
   fetchIssueTypesButtonLabel: s__('JiraService|Fetch issue types for this Jira project'),
   fetchIssueTypesErrorMessage: s__('JiraService|An error occurred while fetching issue list'),
   projectKeyWarnings: {
@@ -42,8 +42,7 @@ export default {
     GlBadge,
     GlButton,
     GlButtonGroup,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlFormCheckbox,
     GlIcon,
   },
@@ -74,10 +73,10 @@ export default {
   },
   data() {
     return {
-      isLoadingErrorAlertDimissed: false,
+      isLoadingErrorAlertDismissed: false,
       projectKeyForCurrentIssues: '',
       isJiraVulnerabilitiesEnabled: this.initialIsEnabled,
-      selectedJiraIssueType: null,
+      selectedJiraIssueTypeId: null,
     };
   },
   computed: {
@@ -86,17 +85,11 @@ export default {
     checkboxDisabled() {
       return !this.showFullFeature || this.isInheriting;
     },
-    initialJiraIssueType() {
-      return this.jiraIssueTypes?.find(({ id }) => id === this.initialIssueTypeId) || {};
-    },
-    checkedIssueType() {
-      return this.selectedJiraIssueType || this.initialJiraIssueType;
-    },
     hasProjectKeyChanged() {
       return this.projectKeyForCurrentIssues && this.projectKey !== this.projectKeyForCurrentIssues;
     },
     shouldShowLoadingErrorAlert() {
-      return !this.isLoadingErrorAlertDimissed && this.loadingJiraIssueTypesErrorMessage;
+      return !this.isLoadingErrorAlertDismissed && this.loadingJiraIssueTypesErrorMessage;
     },
     projectKeyWarning() {
       const {
@@ -116,6 +109,32 @@ export default {
     ultimateBadgeText() {
       return billingPlanNames[billingPlans.ULTIMATE];
     },
+    initialJiraIssueType() {
+      return this.jiraIssueTypes?.find(({ id }) => {
+        return id === this.initialIssueTypeId;
+      });
+    },
+    jiraIssueTypesList() {
+      return this.jiraIssueTypes.map((item) => {
+        return {
+          value: item.id,
+          text: item.name,
+        };
+      });
+    },
+    jiraIssueTypesToggleText() {
+      return (
+        this.jiraIssueTypes.find(({ id }) => id === this.selectedJiraIssueTypeId)?.name ||
+        this.$options.i18n.issueTypeSelect.defaultText
+      );
+    },
+  },
+  watch: {
+    jiraIssueTypes() {
+      if (!this.selectedJiraIssueTypeId) {
+        this.selectedJiraIssueTypeId = this.initialJiraIssueType ? this.initialIssueTypeId : null;
+      }
+    },
   },
   mounted() {
     if (this.initialIsEnabled) {
@@ -129,7 +148,7 @@ export default {
     handleLoadJiraIssueTypesClick() {
       this.requestJiraIssueTypes();
       this.projectKeyForCurrentIssues = this.projectKey;
-      this.isLoadingErrorAlertDimissed = false;
+      this.isLoadingErrorAlertDismissed = false;
     },
   },
 };
@@ -170,42 +189,40 @@ export default {
         class="gl-mt-3 gl-ml-6"
         data-testid="issue-type-section"
       >
+        <label id="issue-type-label" class="gl-mb-0">{{ $options.i18n.issueTypeLabel }}</label>
         <p class="gl-mb-3">{{ $options.i18n.issueTypeSelect.description }}</p>
         <gl-alert
           v-if="shouldShowLoadingErrorAlert"
           class="gl-mb-5"
           variant="danger"
           :title="$options.i18n.fetchIssueTypesErrorMessage"
-          @dismiss="isLoadingErrorAlertDimissed = true"
+          @dismiss="isLoadingErrorAlertDismissed = true"
         >
           {{ loadingJiraIssueTypesErrorMessage }}
         </gl-alert>
-        <div class="row gl-display-flex gl-align-items-center">
-          <gl-button-group class="col-md-5">
-            <input
-              name="service[vulnerabilities_issuetype]"
-              type="hidden"
-              :value="checkedIssueType.id || initialIssueTypeId"
-            />
-            <gl-dropdown
-              class="gl-w-full"
+        <div class="gl-display-flex gl-align-items-center gl-flex-wrap gl-gap-3 gl-mb-5">
+          <input
+            name="service[vulnerabilities_issuetype]"
+            type="hidden"
+            :value="selectedJiraIssueTypeId || initialIssueTypeId"
+          />
+          <gl-button-group>
+            <gl-collapsible-listbox
+              v-model="selectedJiraIssueTypeId"
+              :items="jiraIssueTypesList"
               :disabled="!jiraIssueTypes.length"
               :loading="isLoadingJiraIssueTypes"
-              :text="checkedIssueType.name || $options.i18n.issueTypeSelect.defaultText"
+              :toggle-text="jiraIssueTypesToggleText"
+              class="btn-group"
               data-qa-selector="service_jira_select_issue_type_dropdown"
+              toggle-aria-labelled-by="issue-type-label"
             >
-              <gl-dropdown-item
-                v-for="jiraIssueType in jiraIssueTypes"
-                :key="jiraIssueType.id"
-                :is-checked="checkedIssueType.id === jiraIssueType.id"
-                is-check-item
-                data-qa-selector="service_jira_type"
-                :data-qa-service-type="jiraIssueType.name"
-                @click="selectedJiraIssueType = jiraIssueType"
-              >
-                {{ jiraIssueType.name }}
-              </gl-dropdown-item>
-            </gl-dropdown>
+              <template #list-item="{ item }">
+                <span data-qa-selector="service_jira_type" :data-qa-service-type="item.text">{{
+                  item.text
+                }}</span>
+              </template>
+            </gl-collapsible-listbox>
             <gl-button
               v-gl-tooltip.hover
               :title="$options.i18n.fetchIssueTypesButtonLabel"

@@ -29,6 +29,7 @@ module Security
       allow_blank: true
 
     scope :targeting_commits, -> { where.not(commits: nil) }
+    scope :including_approval_merge_request_rules, -> { includes(:approval_merge_request_rules) }
 
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)

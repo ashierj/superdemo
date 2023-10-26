@@ -72,7 +72,7 @@ RSpec.describe Elastic::ApplicationVersionedSearch, feature_category: :global_se
     context 'when updated_attributes contains on_change attribute' do
       it 'returns an array with widgets' do
         klass.elastic_index_dependant_association :widgets, on_change: :title
-        expect(klass.new.associations_needing_elasticsearch_update(['title'])).to match_array ['widgets']
+        expect(klass.new.associations_needing_elasticsearch_update([:title])).to match_array ['widgets']
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Elastic::ApplicationVersionedSearch, feature_category: :global_se
         last_migration = Elastic::DataMigrationService.migrations.last.name_for_key.to_sym
         klass.elastic_index_dependant_association :widgets, on_change: :title, depends_on_finished_migration: last_migration
         set_elasticsearch_migration_to last_migration, including: false
-        expect(klass.new.associations_needing_elasticsearch_update(['title'])).to match_array []
+        expect(klass.new.associations_needing_elasticsearch_update([:title])).to match_array []
       end
     end
 
@@ -90,7 +90,7 @@ RSpec.describe Elastic::ApplicationVersionedSearch, feature_category: :global_se
         last_migration = Elastic::DataMigrationService.migrations.last.name_for_key.to_sym
         klass.elastic_index_dependant_association :widgets, on_change: :title, depends_on_finished_migration: last_migration
         set_elasticsearch_migration_to last_migration, including: true
-        expect(klass.new.associations_needing_elasticsearch_update(['title'])).to match_array ['widgets']
+        expect(klass.new.associations_needing_elasticsearch_update([:title])).to match_array ['widgets']
       end
     end
   end

@@ -70,6 +70,8 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
   end
 
   describe 'Member Lock setting' do
+    let(:membership_lock_text) { 'Users cannot be added to projects in this group' }
+
     context 'without a license key' do
       before do
         License.destroy_all # rubocop: disable Cop/DestroyAll
@@ -78,7 +80,31 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
       it 'is not visible' do
         visit edit_group_path(group)
 
-        expect(page).not_to have_content('Users cannot be added to projects in this group')
+        expect(page).not_to have_content(membership_lock_text)
+      end
+
+      context 'available through usage ping features' do
+        before do
+          stub_usage_ping_features(true)
+        end
+
+        it 'is visible' do
+          visit edit_group_path(group)
+
+          expect(page).to have_content(membership_lock_text)
+        end
+
+        context 'when current user is not the Owner' do
+          before do
+            sign_in(developer)
+          end
+
+          it 'is not visible' do
+            visit edit_group_path(group)
+
+            expect(page).not_to have_content(membership_lock_text)
+          end
+        end
       end
     end
 
@@ -86,7 +112,7 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
       it 'is visible' do
         visit edit_group_path(group)
 
-        expect(page).to have_content('Users cannot be added to projects in this group')
+        expect(page).to have_content(membership_lock_text)
       end
 
       context 'when current user is not the Owner' do
@@ -97,7 +123,7 @@ RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
         it 'is not visible' do
           visit edit_group_path(group)
 
-          expect(page).not_to have_content('Member lock')
+          expect(page).not_to have_content(membership_lock_text)
         end
       end
     end

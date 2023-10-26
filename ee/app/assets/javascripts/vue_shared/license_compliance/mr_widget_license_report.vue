@@ -138,7 +138,6 @@ export default {
       track-action="users_expanding_testing_license_compliance_report"
       :always-open="alwaysOpen"
       class="license-report-widget mr-report"
-      data-qa-selector="license_report_widget"
     >
       <template #body>
         <smart-virtual-list
@@ -203,7 +202,6 @@ export default {
           data-testid="manage-licenses-button"
           :class="{ 'gl-mr-3': isCollapsible }"
           :href="securityPoliciesPath"
-          data-qa-selector="manage_licenses_button"
           @click="trackVisitedPath('users_visiting_testing_manage_license_compliance')"
         >
           {{ s__('ciReport|Manage licenses') }}

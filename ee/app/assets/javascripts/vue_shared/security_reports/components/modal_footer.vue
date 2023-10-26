@@ -140,7 +140,6 @@ export default {
       variant="confirm"
       category="secondary"
       data-testid="create-issue-button"
-      data-qa-selector="create_issue_button"
       @click="$emit(actionButtons[0].action)"
     >
       {{ actionButtons[0].name }}

@@ -30,7 +30,7 @@ module Gitlab
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
             return unless response_modifier.response_body
 
-            analysis = Ai::JobFailureAnalysis.new(job)
+            analysis = ::Ai::JobFailureAnalysis.new(job)
             analysis.save_content(response_modifier.response_body)
 
             response_modifier

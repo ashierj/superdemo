@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, feature_category: :security_policy_management do
+  include RepoHelpers
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:project) { create(:project, :repository) }
@@ -186,7 +187,7 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
 
         context 'when policies target commits' do
           let_it_be(:scan_result_policy_read_with_commits, reload: true) do
-            create(:scan_result_policy_read, project: project, commits: :unsigned)
+            create(:scan_result_policy_read, project: project, commits: :unsigned, rule_idx: 0)
           end
 
           it 'creates violations for policies that have no approval rules' do
@@ -208,6 +209,41 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
 
             it 'removes the violation record' do
               expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(-1)
+            end
+          end
+
+          context 'when target branch is not protected' do
+            let_it_be(:policy_project) { create(:project, :repository) }
+            let_it_be(:policy_configuration) do
+              create(:security_orchestration_policy_configuration,
+                project: project,
+                security_policy_management_project: policy_project)
+            end
+
+            let(:scan_result_policy) { build(:scan_result_policy, :any_merge_request, branches: ['protected']) }
+            let(:policy_yaml) do
+              build(:orchestration_policy_yaml, scan_result_policy: [scan_result_policy])
+            end
+
+            before do
+              merge_request.update!(target_branch: 'non-protected')
+              allow_next_instance_of(Repository) do |repository|
+                allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
+              end
+            end
+
+            it_behaves_like 'triggers policy bot comment', :any_merge_request, false
+            it_behaves_like 'creates no violation records'
+
+            context 'with previous violation record' do
+              let!(:unrelated_violation) do
+                create(:scan_result_policy_violation, scan_result_policy_read: scan_result_policy_read_with_commits,
+                  merge_request: merge_request)
+              end
+
+              it 'removes the violation record' do
+                expect { execute }.to change { merge_request.scan_result_policy_violations.count }.by(-1)
+              end
             end
           end
 

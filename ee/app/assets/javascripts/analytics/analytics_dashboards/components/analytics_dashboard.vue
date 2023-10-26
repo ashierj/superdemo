@@ -14,6 +14,7 @@ import {
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { FILE_ALREADY_EXISTS_SERVER_RESPONSE, NEW_DASHBOARD } from '../constants';
+import { extractNamespaceData } from '../graphql/utils';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
 
@@ -38,6 +39,12 @@ export default {
     },
     namespaceId: {
       type: String,
+    },
+    isProject: {
+      type: Boolean,
+    },
+    isGroup: {
+      type: Boolean,
     },
     dashboardEmptyStateIllustrationPath: {
       type: String,
@@ -108,15 +115,18 @@ export default {
       query: getProductAnalyticsDashboardQuery,
       variables() {
         return {
-          projectPath: this.namespaceFullPath,
+          fullPath: this.namespaceFullPath,
           slug: this.$route?.params.slug,
+          isProject: this.isProject,
+          isGroup: this.isGroup,
         };
       },
       skip() {
         return this.isNewDashboard;
       },
       update(data) {
-        const dashboard = data?.project?.customizableDashboards?.nodes[0];
+        const namespaceData = extractNamespaceData(data);
+        const [dashboard] = namespaceData?.customizableDashboards?.nodes || [];
 
         if (!dashboard) {
           this.showEmptyState = true;
@@ -151,7 +161,9 @@ export default {
       query: getAvailableVisualizations,
       variables() {
         return {
-          projectPath: this.namespaceFullPath,
+          fullPath: this.namespaceFullPath,
+          isProject: this.isProject,
+          isGroup: this.isGroup,
         };
       },
       skip() {
@@ -160,7 +172,8 @@ export default {
         );
       },
       update(data) {
-        const visualizations = data?.project?.customizableDashboardVisualizations?.nodes;
+        const namespaceData = extractNamespaceData(data);
+        const visualizations = namespaceData?.customizableDashboardVisualizations?.nodes || [];
         return {
           loading: false,
           hasError: false,
@@ -203,14 +216,15 @@ export default {
 
           this.$toast.show(s__('Analytics|Dashboard was saved successfully'));
 
-          const client = this.$apollo.getClient();
-          updateApolloCache(
-            client,
-            this.namespaceId,
-            dashboardSlug,
+          const apolloClient = this.$apollo.getClient();
+          updateApolloCache({
+            apolloClient,
+            slug: dashboardSlug,
             dashboard,
-            this.namespaceFullPath,
-          );
+            fullPath: this.namespaceFullPath,
+            isProject: this.isProject,
+            isGroup: this.isGroup,
+          });
 
           if (this.isNewDashboard) {
             // We redirect now to the new route

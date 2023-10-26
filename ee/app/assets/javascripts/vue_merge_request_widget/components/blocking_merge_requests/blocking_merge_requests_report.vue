@@ -1,29 +1,49 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
+import mergeRequestQueryVariablesMixin from '~/vue_merge_request_widget/mixins/merge_request_query_variables';
 import { STATUS_CLOSED, STATUS_MERGED } from '~/issues/constants';
 import { n__, sprintf } from '~/locale';
 import ReportSection from '~/ci/reports/components/report_section.vue';
 import { status as reportStatus } from '~/ci/reports/constants';
+import blockingMergeRequestsQuery from '../../queries/blocking_merge_requests.query.graphql';
 
 export default {
   name: 'BlockingMergeRequestsReport',
+  apollo: {
+    blockingMergeRequests: {
+      query: blockingMergeRequestsQuery,
+      variables() {
+        return this.mergeRequestQueryVariables;
+      },
+      update: (data) => data.project?.mergeRequest?.blockingMergeRequests,
+    },
+  },
   components: { ReportSection, GlSprintf },
+  mixins: [mergeRequestQueryVariablesMixin],
   props: {
     mr: {
       type: Object,
       required: true,
     },
   },
+  data() {
+    return {
+      blockingMergeRequests: {},
+    };
+  },
   computed: {
-    blockingMergeRequests() {
-      return this.mr.blockingMergeRequests || {};
-    },
     visibleMergeRequests() {
-      return this.blockingMergeRequests.visible_merge_requests || {};
+      return this.blockingMergeRequests.visibleMergeRequests?.reduce((acc, mr) => {
+        if (!acc[mr.state]) acc[mr.state] = [];
+
+        acc[mr.state].push(mr);
+
+        return acc;
+      }, {});
     },
     shouldRenderBlockingMergeRequests() {
-      return this.blockingMergeRequests.total_count > 0;
+      return this.blockingMergeRequests?.totalCount > 0;
     },
     openBlockingMergeRequests() {
       return this.visibleMergeRequests.opened || [];
@@ -46,23 +66,23 @@ export default {
         );
     },
     unresolvedIssues() {
-      return this.blockingMergeRequests.hidden_count > 0
+      return this.blockingMergeRequests.hiddenCount > 0
         ? [
-            { hiddenCount: this.blockingMergeRequests.hidden_count },
+            { hiddenCount: this.blockingMergeRequests.hiddenCount },
             ...this.unmergedBlockingMergeRequests,
           ]
         : this.unmergedBlockingMergeRequests;
     },
     isBlocked() {
       return (
-        this.blockingMergeRequests.hidden_count > 0 || this.unmergedBlockingMergeRequests.length > 0
+        this.blockingMergeRequests.hiddenCount > 0 || this.unmergedBlockingMergeRequests.length > 0
       );
     },
     closedCount() {
       return this.closedBlockingMergeRequests.length;
     },
     unmergedCount() {
-      return this.unmergedBlockingMergeRequests.length + this.blockingMergeRequests.hidden_count;
+      return this.unmergedBlockingMergeRequests.length + this.blockingMergeRequests.hiddenCount;
     },
     blockedByText() {
       if (this.closedCount > 0 && this.closedCount === this.unmergedCount) {

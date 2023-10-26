@@ -89,6 +89,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
             get_show
 
             expect(response.body).to have_pushed_frontend_feature_flags(openaiExperimentation: true)
+            expect(response.body).to have_pushed_frontend_feature_flags(aiGlobalSwitch: false)
             expect(response.body).to have_pushed_licensed_features(summarizeNotes: true)
           end
         end
