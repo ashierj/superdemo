@@ -1,5 +1,5 @@
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
-import { GlAlert, GlCard, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlCard, GlSkeletonLoader, GlIcon } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
@@ -11,6 +11,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE } from 'ee/analytics/dashboards/constants';
 import getGroupOrProject from 'ee/analytics/dashboards/graphql/get_group_or_project.query.graphql';
 import { TYPENAME_GROUP, TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { mockGraphqlDoraPerformanceScoreCountsResponse } from '../helpers';
 import {
   mockDoraPerformersScoreChartData,
@@ -37,13 +38,19 @@ describe('DoraPerformersScore', () => {
     webUrl: 'gdk.test/toolbox/hammer',
   };
   const doraPerformanceScoreCountsSuccess = mockGraphqlDoraPerformanceScoreCountsResponse({
-    projectsCount: mockProjectsCount,
+    totalProjectsCount: mockProjectsCount,
   });
-  const doraPerformanceScoreCountsEmpty = mockGraphqlDoraPerformanceScoreCountsResponse({
+  const nullDoraPerformanceScoreCounts = mockGraphqlDoraPerformanceScoreCountsResponse({
+    totalProjectsCount: mockProjectsCount,
     mockDataResponse: mockEmptyDoraPerformersScoreResponseData,
   });
-  const doraPerformanceScoreCountsEmptyDataset = mockGraphqlDoraPerformanceScoreCountsResponse({
-    mockDataResponse: [],
+  const noProjectsWithDoraData = mockGraphqlDoraPerformanceScoreCountsResponse({
+    totalProjectsCount: mockProjectsCount,
+    noDoraDataProjectsCount: mockProjectsCount,
+  });
+  const higherNoDoraDataProjectsCount = mockGraphqlDoraPerformanceScoreCountsResponse({
+    totalProjectsCount: mockProjectsCount,
+    noDoraDataProjectsCount: mockProjectsCount + 1,
   });
   const queryError = jest.fn().mockRejectedValueOnce(new Error('Something went wrong'));
   const loadingErrorMessage = `Failed to load DORA performance scores for Namespace: ${fullPath}`;
@@ -56,7 +63,7 @@ describe('DoraPerformersScore', () => {
     'Change Failure Rate (Quality)',
   ];
   const defaultGlFeatures = { doraPerformersScorePanel: true };
-  const panelTitleWithProjectsCount = (projectsCount = 0) =>
+  const panelTitleWithProjectsCount = (projectsCount = mockProjectsCount) =>
     `Total projects (${projectsCount}) by DORA performers score for ${groupName} group`;
 
   let wrapper;
@@ -80,6 +87,9 @@ describe('DoraPerformersScore', () => {
         data: mockData,
         ...props,
       },
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       stubs: {
         GlCard,
       },
@@ -98,43 +108,63 @@ describe('DoraPerformersScore', () => {
   const findChartSkeletonLoader = () => wrapper.findComponent(ChartSkeletonLoader);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findPanelTitleHelpIcon = () => wrapper.findComponent(GlIcon);
+  const findExcludedProjectsTooltip = () =>
+    getBinding(findPanelTitleHelpIcon().element, 'gl-tooltip');
+
+  afterEach(() => {
+    mockApollo = null;
+  });
 
   describe('default', () => {
     beforeEach(async () => {
       await createWrapper();
     });
 
-    afterEach(() => {
-      mockApollo = null;
+    it('renders panel title with total project count', () => {
+      expect(findDoraPerformersScorePanelTitle().text()).toBe(panelTitleWithProjectsCount());
     });
 
-    it('displays panel title with total project count', () => {
-      expect(findDoraPerformersScorePanelTitle().text()).toBe(
-        panelTitleWithProjectsCount(mockProjectsCount),
-      );
+    it('does not render panel title tooltip', () => {
+      expect(findPanelTitleHelpIcon().exists()).toBe(false);
     });
 
+    it('renders the chart', () => {
+      expect(findDoraPerformersScoreChart().props()).toMatchObject({
+        bars: mockDoraPerformersScoreChartData,
+        customPalette: DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE,
+        groupBy: mockGroupBy,
+        presentation: 'tiled',
+        xAxisType: 'category',
+        xAxisTitle: '',
+        yAxisTitle: '',
+      });
+    });
+  });
+
+  describe('when projects with no DORA data have been excluded', () => {
     it.each`
-      prop               | propValue
-      ${'bars'}          | ${mockDoraPerformersScoreChartData}
-      ${'presentation'}  | ${'tiled'}
-      ${'groupBy'}       | ${mockGroupBy}
-      ${'xAxisType'}     | ${'category'}
-      ${'xAxisTitle'}    | ${''}
-      ${'yAxisTitle'}    | ${''}
-      ${'customPalette'} | ${DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE}
-    `("sets '$prop' prop to '$propValue' in the chart", ({ prop, propValue }) => {
-      expect(findDoraPerformersScoreChart().props(prop)).toStrictEqual(propValue);
-    });
+      noDoraDataProjectsCount | tooltipText
+      ${10}                   | ${'Excluding 10 projects with no DORA metrics'}
+      ${1}                    | ${'Excluding 1 project with no DORA metrics'}
+    `(
+      'renders tooltip in panel title with correct number of excluded projects',
+      async ({ noDoraDataProjectsCount, tooltipText }) => {
+        await createWrapper({
+          doraPerformanceScoreCountsHandler: mockGraphqlDoraPerformanceScoreCountsResponse({
+            totalProjectsCount: mockProjectsCount,
+            noDoraDataProjectsCount,
+          }),
+        });
+
+        expect(findExcludedProjectsTooltip().value).toBe(tooltipText);
+      },
+    );
   });
 
   describe('when fetching data', () => {
     beforeEach(() => {
       createWrapper();
-    });
-
-    afterEach(() => {
-      mockApollo = null;
     });
 
     it('renders chart skeleton loader', () => {
@@ -148,6 +178,34 @@ describe('DoraPerformersScore', () => {
   });
 
   describe.each`
+    emptyState                                     | response
+    ${'high/medium/low score counts are null'}     | ${nullDoraPerformanceScoreCounts}
+    ${'noDoraDataProjectsCount === projectsCount'} | ${noProjectsWithDoraData}
+    ${'noDoraDataProjectsCount > projectsCount'}   | ${higherNoDoraDataProjectsCount}
+  `('when $emptyState', ({ response }) => {
+    beforeEach(async () => {
+      await createWrapper({ doraPerformanceScoreCountsHandler: response });
+    });
+
+    it('renders empty state message', () => {
+      const noDataMessage = `No data available for Namespace: ${fullPath}`;
+      expect(wrapper.findByText(noDataMessage).exists()).toBe(true);
+    });
+
+    it('renders panel title with total project count', () => {
+      expect(findDoraPerformersScorePanelTitle().text()).toBe(panelTitleWithProjectsCount());
+    });
+
+    it('does not render panel title tooltip', () => {
+      expect(findPanelTitleHelpIcon().exists()).toBe(false);
+    });
+
+    it('does not render chart', () => {
+      expect(findDoraPerformersScoreChart().exists()).toBe(false);
+    });
+  });
+
+  describe.each`
     error                                         | props                                                | expectedErrorMessage
     ${'it fails to fetch DORA performers scores'} | ${{ doraPerformanceScoreCountsHandler: queryError }} | ${loadingErrorMessage}
     ${'namespace is `null`'}                      | ${{ group: null }}                                   | ${loadingErrorMessage}
@@ -157,41 +215,21 @@ describe('DoraPerformersScore', () => {
       await createWrapper(props);
     });
 
-    afterEach(() => {
-      mockApollo = null;
-    });
-
-    it('displays default panel title', () => {
-      const panelTitle = 'Total projects by DORA performers score';
-      expect(findDoraPerformersScorePanelTitle().text()).toBe(panelTitle);
-    });
-
     it('renders alert component', () => {
       expect(findAlert().exists()).toBe(true);
       expect(findAlert().text()).toBe(expectedErrorMessage);
     });
-  });
 
-  describe.each`
-    noData                                              | response
-    ${'there are no DORA performance score counts'}     | ${doraPerformanceScoreCountsEmpty}
-    ${'DORA performance score counts dataset is empty'} | ${doraPerformanceScoreCountsEmptyDataset}
-  `('when $noData', ({ response }) => {
-    beforeEach(async () => {
-      await createWrapper({ doraPerformanceScoreCountsHandler: response });
+    it('renders default panel title', () => {
+      expect(wrapper.findByText('Total projects by DORA performers score').exists()).toBe(true);
     });
 
-    afterEach(() => {
-      mockApollo = null;
+    it('does not render panel title tooltip', () => {
+      expect(findPanelTitleHelpIcon().exists()).toBe(false);
     });
 
-    it('displays panel title with `0` total projects', () => {
-      expect(findDoraPerformersScorePanelTitle().text()).toBe(panelTitleWithProjectsCount());
-    });
-
-    it('displays empty state message', () => {
-      const noDataMessage = `No data available for Namespace: ${fullPath}`;
-      expect(wrapper.findByText(noDataMessage).exists()).toBe(true);
+    it('does not render chart', () => {
+      expect(findDoraPerformersScoreChart().exists()).toBe(false);
     });
   });
 
