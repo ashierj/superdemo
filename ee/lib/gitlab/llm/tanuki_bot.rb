@@ -44,7 +44,7 @@ module Gitlab
         return empty_response unless question.present?
         return empty_response unless self.class.enabled_for?(user: current_user)
 
-        unless embeddings_model_class.any?
+        unless ::Embedding::Vertex::GitlabDocumentation.any?
           logger.debug(message: "Need to query docs but no embeddings are found")
           return empty_response
         end
@@ -60,20 +60,13 @@ module Gitlab
 
       # Note: a Rake task is using this method to extract embeddings for a test fixture.
       def embedding_for_question(question)
-        if Feature.enabled?(:use_embeddings_with_vertex, current_user)
-          embeddings_result = vertex_client.text_embeddings(content: question)
-
-          embeddings_result['predictions'].first['embeddings']['values']
-        else
-          embeddings_result = openai_client.embeddings(input: question, moderated: false)
-
-          embeddings_result['data'].first["embedding"]
-        end
+        embeddings_result = vertex_client.text_embeddings(content: question)
+        embeddings_result['predictions'].first['embeddings']['values']
       end
 
       # Note: a Rake task is using this method to extract embeddings for a test fixture.
       def get_nearest_neighbors(embedding)
-        embeddings_model_class.current.neighbor_for(
+        ::Embedding::Vertex::GitlabDocumentation.current.neighbor_for(
           embedding,
           limit: RECORD_LIMIT
         ).map do |item|
@@ -91,28 +84,12 @@ module Gitlab
 
       attr_reader :current_user, :question, :logger, :correlation_id, :tracking_context
 
-      def embeddings_model_class
-        if Feature.enabled?(:use_embeddings_with_vertex, current_user)
-          ::Embedding::Vertex::GitlabDocumentation
-        else
-          ::Embedding::TanukiBotMvc
-        end
-      end
-
       def vertex_client
         @vertex_client ||= ::Gitlab::Llm::VertexAi::Client.new(current_user, tracking_context: tracking_context)
       end
 
       def anthropic_client
         @anthropic_client ||= ::Gitlab::Llm::Anthropic::Client.new(current_user, tracking_context: tracking_context)
-      end
-
-      def openai_client
-        @openai_client ||= ::Gitlab::Llm::OpenAi::Client.new(
-          current_user,
-          request_timeout: REQUEST_TIMEOUT,
-          tracking_context: tracking_context
-        )
       end
 
       def get_completions(search_documents)

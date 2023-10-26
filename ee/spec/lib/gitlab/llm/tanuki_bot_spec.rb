@@ -13,7 +13,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:answer) { 'The answer.' }
     let(:logger) { instance_double('Logger') }
     let(:instance) { described_class.new(current_user: user, question: question, logger: logger) }
-    let(:openai_client) { ::Gitlab::Llm::OpenAi::Client.new(user) }
+    let(:vertex_model) { ::Embedding::Vertex::GitlabDocumentation }
+    let(:vertex_args) { { content: question } }
     let(:vertex_client) { ::Gitlab::Llm::VertexAi::Client.new(user) }
     let(:anthropic_client) { ::Gitlab::Llm::Anthropic::Client.new(user) }
     let(:embedding) { Array.new(1536, 0.5) }
@@ -136,103 +137,22 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
       end
 
       context 'with the tanuki_bot license available' do
-        using RSpec::Parameterized::TableSyntax
-
-        let(:vertex_model) { ::Embedding::Vertex::GitlabDocumentation }
-        let(:openai_model) { ::Embedding::TanukiBotMvc }
-
-        let(:vertex_client_class) { ::Gitlab::Llm::VertexAi::Client }
-        let(:openai_client_class) { ::Gitlab::Llm::OpenAi::Client }
-
-        let(:vertex_args) { { content: question } }
-        let(:openai_args) { { input: question, moderated: false } }
-
-        # rubocop:disable Layout/LineLength
-        where(:use_embeddings_with_vertex, :api_endpoint, :endpoint_args, :client_class, :model_class, :embeddings_client, :embedding_response) do
-          true  | :text_embeddings | ref(:vertex_args) | ref(:vertex_client_class) | ref(:vertex_model) | ref(:vertex_client) | ref(:vertex_response)
-          false | :embeddings      | ref(:openai_args) | ref(:openai_client_class) | ref(:openai_model) | ref(:openai_client) | ref(:openai_response)
-        end
-        # rubocop:enable Layout/LineLength
-
-        with_them do
+        context 'when on Gitlab.com' do
           before do
-            stub_feature_flags(use_embeddings_with_vertex: use_embeddings_with_vertex)
+            allow(::Gitlab).to receive(:com?).and_return(true)
           end
 
-          context 'when on Gitlab.com' do
-            before do
-              allow(::Gitlab).to receive(:com?).and_return(true)
-            end
+          context 'when no user is provided' do
+            let(:user) { nil }
 
-            context 'when no user is provided' do
-              let(:user) { nil }
-
-              it 'returns an empty response message' do
-                expect(execute.response_body).to eq(empty_response_message)
-              end
-            end
-
-            context 'when #ai_feature_enabled is false' do
-              before do
-                allow(described_class).to receive(:ai_feature_enabled?).and_return(false)
-              end
-
-              it 'returns an empty response message' do
-                expect(execute.response_body).to eq(empty_response_message)
-              end
-            end
-
-            context 'when #ai_feature_enabled is true' do
-              before do
-                allow(client_class).to receive(:new).and_return(embeddings_client)
-                allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
-                allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
-              end
-
-              context 'when `tanuki_bot_mvc` table is empty (no embeddings are stored in the table)' do
-                it 'returns an empty response message' do
-                  model_class.connection.execute("truncate #{model_class.table_name}")
-
-                  expect(execute.response_body).to eq(empty_response_message)
-                end
-              end
-
-              it 'executes calls through to anthropic' do
-                embeddings
-
-                expect(anthropic_client).to receive(:stream).once.and_return(completion_response)
-                expect(embeddings_client).to receive(api_endpoint).with(**endpoint_args).and_return(embedding_response)
-
-                execute
-              end
-
-              it 'yields the streamed response to the given block' do
-                embeddings
-
-                allow(anthropic_client).to receive(:stream).once
-                  .and_yield({ "completion" => answer })
-                  .and_return(completion_response)
-
-                expect(embeddings_client).to receive(api_endpoint).with(**endpoint_args).and_return(embedding_response)
-
-                expect { |b| instance.execute(&b) }.to yield_with_args(answer)
-              end
-
-              it 'raises an error when request failed' do
-                embeddings
-
-                expect(logger).to receive(:info).with(message: "Streaming error", error: { "message" => "some error" })
-                expect(embeddings_client).to receive(api_endpoint).with(**endpoint_args).and_return(embedding_response)
-                allow(anthropic_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
-
-                execute
-              end
+            it 'returns an empty response message' do
+              expect(execute.response_body).to eq(empty_response_message)
             end
           end
 
-          context 'when openai_experimentation FF is disabled' do
+          context 'when #ai_feature_enabled is false' do
             before do
-              stub_feature_flags(openai_experimentation: false)
+              allow(described_class).to receive(:ai_feature_enabled?).and_return(false)
             end
 
             it 'returns an empty response message' do
@@ -240,30 +160,87 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             end
           end
 
-          context 'when the feature flags are enabled' do
+          context 'when #ai_feature_enabled is true' do
             before do
-              allow(client_class).to receive(:new).and_return(embeddings_client)
+              allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
               allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
-              allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+              allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
             end
 
-            context 'when the question is not provided' do
-              let(:question) { nil }
-
+            context 'when embeddings table is empty (no embeddings are stored in the table)' do
               it 'returns an empty response message' do
+                vertex_model.connection.execute("truncate #{vertex_model.table_name}")
+
                 expect(execute.response_body).to eq(empty_response_message)
               end
             end
 
-            context 'when no neighbors are found' do
-              before do
-                allow(model_class).to receive(:neighbor_for).and_return(model_class.none)
-                allow(embeddings_client).to receive(api_endpoint).with(**endpoint_args).and_return(embedding_response)
-              end
+            it 'executes calls through to anthropic' do
+              embeddings
 
-              it 'returns an i do not know' do
-                expect(execute.response_body).to eq(empty_response_message)
-              end
+              expect(anthropic_client).to receive(:stream).once.and_return(completion_response)
+              expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+
+              execute
+            end
+
+            it 'yields the streamed response to the given block' do
+              embeddings
+
+              allow(anthropic_client).to receive(:stream).once
+                                           .and_yield({ "completion" => answer })
+                                           .and_return(completion_response)
+
+              expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+
+              expect { |b| instance.execute(&b) }.to yield_with_args(answer)
+            end
+
+            it 'raises an error when request failed' do
+              embeddings
+
+              expect(logger).to receive(:info).with(message: "Streaming error", error: { "message" => "some error" })
+              expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+              allow(anthropic_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
+
+              execute
+            end
+          end
+        end
+
+        context 'when openai_experimentation FF is disabled' do
+          before do
+            stub_feature_flags(openai_experimentation: false)
+          end
+
+          it 'returns an empty response message' do
+            expect(execute.response_body).to eq(empty_response_message)
+          end
+        end
+
+        context 'when the feature flags are enabled' do
+          before do
+            allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
+            allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
+            allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+          end
+
+          context 'when the question is not provided' do
+            let(:question) { nil }
+
+            it 'returns an empty response message' do
+              expect(execute.response_body).to eq(empty_response_message)
+            end
+          end
+
+          context 'when no neighbors are found' do
+            before do
+              allow(vertex_model).to receive(:neighbor_for).and_return(vertex_model.none)
+              allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+            end
+
+            it 'returns an i do not know' do
+              expect(execute.response_body).to eq(empty_response_message)
             end
           end
         end
