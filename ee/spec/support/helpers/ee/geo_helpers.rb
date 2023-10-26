@@ -59,7 +59,7 @@ module EE
         Geo::MergeRequestDiffRegistry => :external_merge_request_diff,
         Geo::PackageFileRegistry => :package_file,
         Geo::UploadRegistry => :upload,
-        Geo::JobArtifactRegistry => :ci_job_artifact,
+        Geo::JobArtifactRegistry => :ee_ci_job_artifact,
         Geo::CiSecureFileRegistry => :ci_secure_file,
         Geo::ProjectWikiRepositoryRegistry => :project_wiki_repository,
         Geo::ProjectRepositoryRegistry => :project

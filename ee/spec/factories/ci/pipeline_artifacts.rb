@@ -1,17 +1,23 @@
 # frozen_string_literal: true
 
 FactoryBot.modify do
-  factory :pages_deployment do
-    trait(:verification_succeeded) do
-      with_file
+  factory :ci_pipeline_artifact do
+    trait :checksummed do
       verification_checksum { 'abc' }
-      verification_state { PagesDeployment.verification_state_value(:verification_succeeded) }
+    end
+
+    trait :checksum_failure do
+      verification_failure { 'Could not calculate the checksum' }
+    end
+
+    trait(:verification_succeeded) do
+      verification_checksum { 'abc' }
+      verification_state { ::Ci::PipelineArtifact.verification_state_value(:verification_succeeded) }
     end
 
     trait(:verification_failed) do
-      with_file
       verification_failure { 'Could not calculate the checksum' }
-      verification_state { PagesDeployment.verification_state_value(:verification_failed) }
+      verification_state { ::Ci::PipelineArtifact.verification_state_value(:verification_failed) }
 
       #
       # Geo::VerifiableReplicator#after_verifiable_update tries to verify

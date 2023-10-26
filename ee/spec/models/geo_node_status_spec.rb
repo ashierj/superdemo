@@ -543,8 +543,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
 
           context 'when verification is enabled' do
             before do
-              skip "#{replicator.model} does not include the VerificationState concern yet" unless replicator.model.respond_to?(:verification_state)
-
               allow(replicator).to receive(:verification_enabled?).and_return(true)
             end
 
@@ -613,16 +611,14 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
 
           context 'when verification is enabled' do
             before do
-              skip "#{replicator.registry_class} does not include the VerificationState concern yet" unless replicator.registry_class.respond_to?(:verification_state)
-
               allow(replicator).to receive(:verification_enabled?).and_return(true)
             end
 
             context 'when there are replicables' do
               before do
-                create(model_factory, :verification_succeeded)
-                create(model_factory, :verification_succeeded)
-                create(model_factory, :verification_failed)
+                create(registry_factory, :verification_succeeded)
+                create(registry_factory, :verification_succeeded)
+                create(registry_factory, :verification_failed)
               end
 
               describe '#<replicable_name>_verified_count' do
