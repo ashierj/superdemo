@@ -60,9 +60,9 @@ RSpec.describe Ci::Llm::AsyncGenerateConfigService, feature_category: :pipeline_
           it_behaves_like 'feature not avalible'
         end
 
-        context 'when openai_experimentation is off' do
+        context 'when ai_global_switch is off' do
           before do
-            stub_feature_flags(openai_experimentation: false)
+            stub_feature_flags(ai_global_switch: false)
           end
 
           it_behaves_like 'feature not avalible'

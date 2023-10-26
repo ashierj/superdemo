@@ -25,7 +25,7 @@ RSpec.describe Llm::VertexAiAccessTokenRefreshWorker, feature_category: :ai_abst
   context 'when AI feature flag not enabled' do
     it 'is a no-op' do
       stub_ee_application_setting(vertex_ai_credentials: 'sekret')
-      stub_feature_flags(openai_experimentation: false)
+      stub_feature_flags(ai_global_switch: false)
       token_loader = instance_double(Gitlab::Llm::VertexAi::TokenLoader)
       allow(Gitlab::Llm::VertexAi::TokenLoader).to receive(:new).and_return(token_loader)
       allow(token_loader).to receive(:refresh_token!)

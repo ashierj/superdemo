@@ -7,19 +7,19 @@ module EE
     prepended do
       with_scope :subject
       condition(:ai_available) do
-        ::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)
+        ::Feature.enabled?(:ai_global_switch, type: :ops)
       end
 
       with_scope :subject
       condition(:summarize_notes_enabled) do
-        (::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)) &&
+        ::Feature.enabled?(:ai_global_switch, type: :ops) &&
           subject_container.licensed_feature_available?(:summarize_notes) &&
           ::Gitlab::Llm::StageCheck.available?(subject_container, :summarize_notes)
       end
 
       with_scope :subject
       condition(:generate_description_enabled) do
-        (::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)) &&
+        ::Feature.enabled?(:ai_global_switch, type: :ops) &&
           subject_container.licensed_feature_available?(:generate_description) &&
           ::Gitlab::Llm::StageCheck.available?(subject_container, :generate_description)
       end

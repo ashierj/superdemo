@@ -42,7 +42,7 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
     describe 'checks' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:openai_experimentation_enabled, :vertex_embeddings_enabled, :feature_available) do
+      where(:ai_global_switch_enabled, :vertex_embeddings_enabled, :feature_available) do
         false | false | false
 
         false | false | true
@@ -56,7 +56,7 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
 
       with_them do
         before do
-          stub_feature_flags(openai_experimentation: openai_experimentation_enabled)
+          stub_feature_flags(ai_global_switch: ai_global_switch_enabled)
           allow(Gitlab::Saas).to receive(:feature_available?).with(described_class::FEATURE_NAME).and_return(
             vertex_embeddings_enabled
           )

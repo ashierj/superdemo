@@ -65,7 +65,7 @@ RSpec.describe IssuePolicy, :saas, feature_category: :team_planning do
 
           context 'when feature flag is not set' do
             before do
-              stub_feature_flags(openai_experimentation: false)
+              stub_feature_flags(ai_global_switch: false)
             end
 
             it { is_expected.to be_disallowed(:summarize_notes) }

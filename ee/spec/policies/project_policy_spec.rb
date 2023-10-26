@@ -2937,7 +2937,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       )
 
       stub_feature_flags(
-        openai_experimentation: true,
+        ai_global_switch: true,
         fill_in_mr_template: true
       )
 
@@ -2951,7 +2951,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'when global AI feature flag is disabled' do
       before do
-        stub_feature_flags(openai_experimentation: false)
+        stub_feature_flags(ai_global_switch: false)
       end
 
       it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
@@ -2960,7 +2960,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     context 'when fill_in_mr_template feature flag is disabled' do
       before do
         stub_feature_flags(
-          openai_experimentation: true,
+          ai_global_switch: true,
           fill_in_mr_template: false
         )
       end

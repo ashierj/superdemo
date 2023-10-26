@@ -76,7 +76,7 @@ module EE
 
       def ai_settings_allowed?
         ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          (::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)) &&
+          ::Feature.enabled?(:ai_global_switch, type: :ops) &&
           namespace.licensed_feature_available?(:ai_features) &&
           namespace.root?
       end

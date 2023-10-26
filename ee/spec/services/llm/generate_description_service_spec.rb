@@ -35,7 +35,7 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
     shared_examples 'ensures license and feature flag checks' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:generate_description_license_enabled, :openai_experimentation_ff, :result) do
+      where(:generate_description_license_enabled, :ai_global_switch_ff, :result) do
         true  | true  | true
         true  | false | false
         false | true  | false
@@ -44,7 +44,7 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
 
       with_them do
         it 'checks validity' do
-          stub_feature_flags(openai_experimentation: openai_experimentation_ff)
+          stub_feature_flags(ai_global_switch: ai_global_switch_ff)
 
           expect(service.valid?).to be(result)
           is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) unless result

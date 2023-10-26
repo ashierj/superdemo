@@ -11,7 +11,7 @@ RSpec.describe Ai::Project::Conversations, feature_category: :shared do
   subject { described_class.new(project, user) }
 
   describe '#ci_config_chat_enabled?' do
-    where(:licensed_feature_available, :feature_enabled, :ai_experiments_enabled, :expected_result) do
+    where(:licensed_feature_available, :feature_enabled, :ai_global_switch, :expected_result) do
       true   | true  | true  | true
       true   | true  | false | false
       true   | false | true  | false
@@ -25,7 +25,7 @@ RSpec.describe Ai::Project::Conversations, feature_category: :shared do
     with_them do
       before do
         stub_licensed_features(ai_config_chat: licensed_feature_available)
-        stub_feature_flags(ai_ci_config_generator: feature_enabled, openai_experimentation: ai_experiments_enabled)
+        stub_feature_flags(ai_ci_config_generator: feature_enabled, ai_global_switch: ai_global_switch)
       end
 
       it 'returns the features availability' do

@@ -69,9 +69,9 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer 
       group.add_developer(user)
     end
 
-    context 'when openai_experimentation feature flag is not enabled' do
+    context 'when ai_global_switch feature flag is not enabled' do
       before do
-        stub_feature_flags(openai_experimentation: false)
+        stub_feature_flags(ai_global_switch: false)
       end
 
       it_behaves_like 'returns an error'

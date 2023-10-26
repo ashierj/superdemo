@@ -49,9 +49,9 @@ module Mutations
       private
 
       def check_feature_flag_enabled!
-        return if Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)
+        return if Feature.enabled?(:ai_global_switch, type: :ops)
 
-        raise Gitlab::Graphql::Errors::ResourceNotAvailable, '`openai_experimentation` feature flag is disabled.'
+        raise Gitlab::Graphql::Errors::ResourceNotAvailable, '`ai_global_switch` feature flag is disabled.'
       end
 
       def verify_rate_limit!

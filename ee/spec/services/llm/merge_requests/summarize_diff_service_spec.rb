@@ -64,9 +64,9 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
     end
 
     context "when the feature is not enabled" do
-      context 'when the openai_experimentation flag is false' do
+      context 'when the ai_global_switch flag is false' do
         before do
-          stub_feature_flags(openai_experimentation: false)
+          stub_feature_flags(ai_global_switch: false)
         end
 
         it "returns without attempting to summarize" do

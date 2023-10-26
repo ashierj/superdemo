@@ -487,7 +487,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
       )
 
       stub_feature_flags(
-        openai_experimentation: true,
+        ai_global_switch: true,
         automatically_summarize_mr_review: true
       )
 
@@ -501,7 +501,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
 
     context 'when global AI feature flag is disabled' do
       before do
-        stub_feature_flags(openai_experimentation: false)
+        stub_feature_flags(ai_global_switch: false)
       end
 
       it { is_expected.to be_disallowed(:summarize_submitted_review) }
@@ -510,7 +510,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     context 'when automatically_summarize_mr_review feature flag is disabled' do
       before do
         stub_feature_flags(
-          openai_experimentation: true,
+          ai_global_switch: true,
           automatically_summarize_mr_review: false
         )
       end
@@ -607,7 +607,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
       )
 
       stub_feature_flags(
-        openai_experimentation: true,
+        ai_global_switch: true,
         summarize_diff_automatically: true
       )
 
@@ -621,7 +621,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
 
     context 'when global AI feature flag is disabled' do
       before do
-        stub_feature_flags(openai_experimentation: false)
+        stub_feature_flags(ai_global_switch: false)
       end
 
       it { is_expected.to be_disallowed(:summarize_merge_request) }
@@ -630,7 +630,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     context 'when summarize_diff_automatically feature flag is disabled' do
       before do
         stub_feature_flags(
-          openai_experimentation: true,
+          ai_global_switch: true,
           summarize_diff_automatically: false
         )
       end

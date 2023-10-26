@@ -89,7 +89,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
 
     context 'when the feature flag is disabled' do
       before do
-        stub_feature_flags(openai_experimentation: false)
+        stub_feature_flags(ai_global_switch: false)
       end
 
       it { is_expected.to be_nil }
@@ -359,7 +359,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
   end
 
   describe '#messages_chat' do
-    stub_feature_flags(openai_experimentation: true)
+    stub_feature_flags(ai_global_switch: true)
 
     subject(:messages_chat) do
       described_class.new(user, tracking_context: tracking_context).messages_chat(
