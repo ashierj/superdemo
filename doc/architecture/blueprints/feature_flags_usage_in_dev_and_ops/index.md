@@ -220,19 +220,22 @@ default_enabled: true
    [Production issue tracker](https://gitlab.com/gitlab-com/gl-infra/production/-/issues)** and adapt the
    template to be closer to the
    [Change management issue template](https://gitlab.com/gitlab-com/gl-infra/production/-/blob/master/.gitlab/issue_templates/change_management.md)
-   (see [this issue](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/2780) for inspiration).
+   (see [this issue](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/2780) for inspiration)
    That way, the rollout issue would only concern the actual production changes (i.e. enablement/disablement
    of the flag on production) and should be closed as soon as the production change is confirmed to work as expected.
 1. (Automation) Automate most rollout steps, such as:
      - (Done) [Let the author know that their feature has been deployed to staging / canary / production environments](https://gitlab.com/gitlab-org/quality/triage-ops/-/issues/1403)
      - (Done) [Cross-link actual feature flag state change (from Chatops project) to rollout issues](https://gitlab.com/gitlab-org/gitlab/-/issues/290770)
      - (Done) [Let the author know that their `default_enabled: true` MR has been deployed to production and that the feature flag can be removed from production](https://gitlab.com/gitlab-org/quality/triage-ops/-/merge_requests/2482)
-     - Stop creating issues in [`gitlab-com/gl-infra/feature-flag-log`](https://gitlab.com/gitlab-com/gl-infra/feature-flag-log/-/issues) as it's redundant
-       with the notifications posted in the rollout issues.
-     - Ping DRI and their group on Slack upon feature flag state change
+     - Automate the creation of rollout issues when a feature flag is first introduced in a merge request,
+       and provide an diff suggestion to fill the `rollout_issue_url` field (Danger)
+     - Check and enforce feature flag definition constraints in merge requests (Danger)
+     - Provide a diff suggestion to correct the `milestone` field when it's not the same value as
+       the MR milestone (Danger)
+     - Upon feature flag state change, notify on Slack the group responsible for it (chatops)
      - 7 days before the Maximum Lifespan of a feature flag is reached, automatically create a "cleanup MR" with the group label set, and
-       assigned to the feature flag author (if they're still with GitLab). We could take advantage of the [automation of repetitive developer tasks](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134487).
-     - Enforce Maximum Lifespan of feature flags through automated reporting & regular review at the section level.
+       assigned to the feature flag author (if they're still with GitLab). We could take advantage of the [automation of repetitive developer tasks](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134487)
+     - Enforce Maximum Lifespan of feature flags through automated reporting & regular review at the section level
 1. (Documentation/process) Ensure the rollout DRI stays online for a few hours after enabling a feature flag (ideally they'd enable the flag at the
    beginning of their day) in case of any issue with the feature flag
 1. (Process) Provide a standardized set of rollout steps. Trade-offs to consider include:
@@ -253,10 +256,11 @@ default_enabled: true
 
 **Site reliability and Delivery engineers**
 
-- [Internal GitLab.com feature flag state change issues](https://gitlab.com/gitlab-com/gl-infra/feature-flag-log/-/issues):
-  Ensure this issue tracker is useful and used by the relevant stakeholders.
-- [Internal GitLab.com feature flag state change logs](https://nonprod-log.gitlab.net):
-  Ensure this issue tracker is useful and used by the relevant stakeholders.
+We [assessed the usefulness of feature flag state change logging strategies](https://gitlab.com/gitlab-org/quality/engineering-productivity/team/-/issues/309)
+and it appears that both
+[internal GitLab.com feature flag state change issues](https://gitlab.com/gitlab-com/gl-infra/feature-flag-log/-/issues)
+and [internal GitLab.com feature flag state change logs](https://nonprod-log.gitlab.net) are useful for different
+audiences.
 
 **GitLab Engineering & Infra/Quality Directors / VPs, and CTO**
 
