@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group domain verification settings', :saas, feature_category: :system_access do
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+RSpec.describe 'Group domain verification settings', :js, :saas, feature_category: :system_access do
+  let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
 
@@ -25,7 +25,7 @@ RSpec.describe 'Group domain verification settings', :saas, feature_category: :s
   it 'displays the side bar menu item' do
     visit_domain_verification_page
 
-    page.within('.shortcuts-settings') do
+    within_testid('super-sidebar') do
       expect(page).to have_link _('Domain Verification'), href: group_settings_domain_verification_index_path(group)
     end
   end

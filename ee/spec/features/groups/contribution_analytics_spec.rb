@@ -3,19 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_stream_management do
-  let(:user) { create(:user, :no_super_sidebar) }
+  let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:empty_project) { create(:project, namespace: group) }
 
   def visit_contribution_analytics
     visit group_path(group)
 
-    within('.nav-sidebar') do
-      find('a', text: 'Analytics').click
-
-      within('.sidebar-sub-level-items') do
-        find('a', text: 'Contribution').click
-      end
+    within_testid('super-sidebar') do
+      click_button 'Analyze'
+      click_link 'Contribution analytics'
     end
   end
 

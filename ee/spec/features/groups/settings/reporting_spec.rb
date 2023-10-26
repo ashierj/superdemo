@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Group reporting settings', :js, feature_category: :insider_threat do
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
   let(:feature_flag_enabled) { true }
@@ -28,7 +28,7 @@ RSpec.describe 'Group reporting settings', :js, feature_category: :insider_threa
   end
 
   it 'displays the side bar menu item' do
-    page.within('.shortcuts-settings') do
+    within_testid('super-sidebar') do
       expect(page).to have_link 'Reporting', href: group_settings_reporting_path(group)
     end
   end
@@ -59,7 +59,9 @@ RSpec.describe 'Group reporting settings', :js, feature_category: :insider_threa
 
     wait_for_requests
 
-    click_button user.name
+    within_testid('allowed-users-group') do
+      click_button user.name
+    end
     find('[data-testid="auto-ban-users-toggle"] .gl-toggle').click
 
     click_button _('Save changes')
