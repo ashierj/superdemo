@@ -11,6 +11,7 @@ module Gitlab
         DEFAULT_MODEL = 'claude-2'
         DEFAULT_TEMPERATURE = 0
         DEFAULT_MAX_TOKENS = 2048
+        DEFAULT_TIMEOUT = 30.seconds
 
         def initialize(user, tracking_context: {})
           @user = user
@@ -56,11 +57,13 @@ module Gitlab
 
         def perform_completion_request(prompt:, options:)
           logger.info(message: "Performing request to Anthropic", options: options)
+          timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
 
           response = Gitlab::HTTP.post(
             URI.join(URL, '/v1/complete'),
             headers: request_headers,
             body: request_body(prompt: prompt, options: options).to_json,
+            timeout: timeout,
             stream_body: options.fetch(:stream, false)
           ) do |fragment|
             parse_sse_events(fragment).each do |parsed_event|
