@@ -62,7 +62,7 @@ module EE
         if user
           user.can?(:read_group, group)
         else
-          Guest.can?(:read_group, group)
+          ::Users::Anonymous.can?(:read_group, group)
         end
       end
     end
