@@ -1,6 +1,7 @@
 <script>
 import Vue from 'vue';
-import { GlEmptyState, GlButton } from '@gitlab/ui';
+import { isEmpty } from 'lodash';
+import { GlAlert, GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -63,9 +64,18 @@ export default {
     settingsTitle: s__('ScanResultPolicy|Override project approval settings'),
     yamlPreview: s__('SecurityOrchestration|.yaml preview'),
     ACTIONS_LABEL,
+    settingWarningTitle: s__('SecurityOrchestration|Only overriding settings will take effect'),
+    settingWarningDescription: s__(
+      "SecurityOrchestration|For any MR that matches this policy's rules, only the override project approval settings apply. No additional approvals are required.",
+    ),
+    settingErrorTitle: s__('SecurityOrchestration|Cannot create an empty policy'),
+    settingErrorDescription: s__(
+      "SecurityOrchestration|This policy doesn't contain any actions or override project approval settings. You cannot create an empty policy.",
+    ),
   },
   components: {
     DimDisableContainer,
+    GlAlert,
     GlButton,
     GlEmptyState,
     PolicyActionBuilder,
@@ -143,8 +153,22 @@ export default {
     isWithinLimit() {
       return this.policy.rules?.length < MAX_ALLOWED_RULES_LENGTH;
     },
+    hasEmptyActions() {
+      return !this.policy.actions?.length;
+    },
     hasEmptyRules() {
       return this.policy.rules?.length === 0 || this.policy.rules?.at(0)?.type === '';
+    },
+    hasEmptySettings() {
+      return (
+        isEmpty(this.policy.approval_settings) ||
+        Object.values(this.policy.approval_settings).every((value) => {
+          if (typeof value === 'boolean') {
+            return !value;
+          }
+          return true;
+        })
+      );
     },
     hasMergeRequestRule() {
       return this.policy.rules?.some(({ type }) => type === ANY_MERGE_REQUEST);
@@ -164,6 +188,20 @@ export default {
         this.glFeatures.scanResultAnyMergeRequest
       );
     },
+    settingAlert() {
+      if (this.hasEmptySettings) {
+        return {
+          variant: 'danger',
+          title: this.$options.i18n.settingErrorTitle,
+          description: this.$options.i18n.settingErrorDescription,
+        };
+      }
+      return {
+        variant: 'warning',
+        title: this.$options.i18n.settingWarningTitle,
+        description: this.$options.i18n.settingWarningDescription,
+      };
+    },
   },
   watch: {
     invalidBranches(branches) {
@@ -179,7 +217,7 @@ export default {
       return BRANCHES_KEY in rule;
     },
     addAction() {
-      this.policy.actions = [{ type: 'require_approval', approvals_required: 1 }];
+      this.$set(this.policy, 'actions', [{ type: 'require_approval', approvals_required: 1 }]);
       this.updateYamlEditorValue(this.policy);
     },
     removeAction() {
@@ -324,7 +362,7 @@ export default {
       this.existingApprovers = values;
     },
     invalidForRuleMode() {
-      const invalidApprovers = approversOutOfSync(this.policy.actions[0], this.existingApprovers);
+      const invalidApprovers = approversOutOfSync(this.policy.actions?.[0], this.existingApprovers);
       const { rules } = this.policy;
 
       return (
@@ -346,6 +384,7 @@ export default {
   <editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
+    :disable-update="hasEmptyActions && hasEmptySettings"
     :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
@@ -432,6 +471,16 @@ export default {
 
         <settings-section :rules="policy.rules" :settings="settings" @changed="updateSettings" />
       </dim-disable-container>
+      <gl-alert
+        v-if="hasEmptyActions"
+        data-testid="empty-actions-alert"
+        class="gl-mb-5"
+        :title="settingAlert.title"
+        :variant="settingAlert.variant"
+        :dismissible="false"
+      >
+        {{ settingAlert.description }}
+      </gl-alert>
     </template>
   </editor-layout>
   <gl-empty-state

@@ -42651,6 +42651,9 @@ msgstr ""
 msgid "SecurityOrchestration|Branch types don't match any existing branches."
 msgstr ""
 
+msgid "SecurityOrchestration|Cannot create an empty policy"
+msgstr ""
+
 msgid "SecurityOrchestration|Choose a project"
 msgstr ""
 
@@ -42724,6 +42727,9 @@ msgid "SecurityOrchestration|Failed to load cluster agents."
 msgstr ""
 
 msgid "SecurityOrchestration|Failed to load images."
+msgstr ""
+
+msgid "SecurityOrchestration|For any MR that matches this policy's rules, only the override project approval settings apply. No additional approvals are required."
 msgstr ""
 
 msgid "SecurityOrchestration|For any merge request on %{branches}%{commitType}%{branchExceptionsString}"
@@ -42805,6 +42811,9 @@ msgid "SecurityOrchestration|On runners with tag:"
 msgid_plural "SecurityOrchestration|On runners with the tags:"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "SecurityOrchestration|Only overriding settings will take effect"
+msgstr ""
 
 msgid "SecurityOrchestration|Only owners can update Security Policy Project"
 msgstr ""
@@ -42969,6 +42978,9 @@ msgid "SecurityOrchestration|This is a group-level policy"
 msgstr ""
 
 msgid "SecurityOrchestration|This is a project-level policy"
+msgstr ""
+
+msgid "SecurityOrchestration|This policy doesn't contain any actions or override project approval settings. You cannot create an empty policy."
 msgstr ""
 
 msgid "SecurityOrchestration|This policy is inherited"

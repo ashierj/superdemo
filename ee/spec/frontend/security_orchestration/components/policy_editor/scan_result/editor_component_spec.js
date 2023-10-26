@@ -132,6 +132,7 @@ describe('EditorComponent', () => {
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
   const findSettingsSection = () => wrapper.findComponent(SettingsSection);
+  const findEmptyActionsAlert = () => wrapper.findByTestId('empty-actions-alert');
 
   const changesToRuleMode = () =>
     findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
@@ -156,7 +157,6 @@ describe('EditorComponent', () => {
     describe('with "scanResultPoliciesBlockUnprotectingBranches" feature flag enabled', () => {
       it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
         factory({ glFeatures: { scanResultPoliciesBlockUnprotectingBranches: true } });
-
         expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
           SCAN_RESULT_POLICY_SETTINGS_POLICY,
         );
@@ -697,6 +697,82 @@ describe('EditorComponent', () => {
         await findAllRuleBuilders().at(0).vm.$emit('changed', anyMergeRequestRule);
 
         expect(findSettingsSection().props('settings')).toEqual({ ...mergeRequestConfiguration });
+      });
+    });
+
+    describe('empty policy alert', () => {
+      const features = { scanResultPoliciesBlockUnprotectingBranches: true };
+      const policy = { approval_settings: { [BLOCK_UNPROTECTING_BRANCHES]: true } };
+      describe('when there are actions and settings', () => {
+        beforeEach(() => {
+          window.gon = { features };
+          factoryWithExistingPolicy({
+            glFeatures: features,
+            policy,
+          });
+        });
+
+        it('does not display the alert', () => {
+          expect(findEmptyActionsAlert().exists()).toBe(false);
+        });
+
+        it('does not disable the save button', () => {
+          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
+        });
+      });
+
+      describe('when there are actions and no settings', () => {
+        beforeEach(() => {
+          factoryWithExistingPolicy();
+        });
+
+        it('does not display the alert', () => {
+          expect(findEmptyActionsAlert().exists()).toBe(false);
+        });
+
+        it('does not disable the save button', () => {
+          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
+        });
+      });
+
+      describe('when there are settings and no actions', () => {
+        beforeEach(() => {
+          window.gon = { features };
+          factoryWithExistingPolicy({
+            glFeatures: features,
+            hasActions: false,
+            policy,
+          });
+        });
+
+        it('displays the alert', () => {
+          expect(findEmptyActionsAlert().exists()).toBe(true);
+          expect(findEmptyActionsAlert().props('variant')).toBe('warning');
+        });
+
+        it('does not disable the save button', () => {
+          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
+        });
+      });
+
+      describe('displays the danger alert when there are no actions and no settings', () => {
+        beforeEach(() => {
+          window.gon = { features };
+          factoryWithExistingPolicy({
+            glFeatures: features,
+            hasActions: false,
+            policy: { approval_settings: { [BLOCK_UNPROTECTING_BRANCHES]: false } },
+          });
+        });
+
+        it('displays the danger alert', () => {
+          expect(findEmptyActionsAlert().exists()).toBe(true);
+          expect(findEmptyActionsAlert().props('variant')).toBe('danger');
+        });
+
+        it('disabled the update button', () => {
+          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(true);
+        });
       });
     });
   });
