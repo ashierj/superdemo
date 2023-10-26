@@ -15,20 +15,56 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
   let(:subject_traits) { [] }
 
   shared_examples 'approval rule like' do
-    describe '#approvers' do
-      let(:group1_user) { create(:user) }
-      let(:group2_user) { create(:user) }
+    let(:group1_user) { create(:user) }
+    let(:group2_user) { create(:user) }
 
-      before do
-        subject.users << user1
-        subject.users << user2
-        subject.groups << group1
-        subject.groups << group2
+    before do
+      subject.users << user1
+      subject.users << user2
+      subject.groups << group1
+      subject.groups << group2
 
-        group1.add_guest(group1_user)
-        group2.add_guest(group2_user)
+      group1.add_guest(group1_user)
+      group2.add_guest(group2_user)
+    end
+
+    describe '#approvers_include_user?' do
+      let(:rule) { subject.class.find(subject.id) }
+
+      it 'returns true for a contained user' do
+        expect(rule.approvers_include_user?(user1)).to be_truthy
       end
 
+      it 'returns true for a group user' do
+        expect(rule.approvers_include_user?(group1_user)).to be_truthy
+      end
+
+      it 'returns false for a missing user' do
+        expect(rule.approvers_include_user?(user3)).to be_falsey
+      end
+
+      context 'when the user relations are already loaded' do
+        it 'returns true for a contained user' do
+          rule.users.to_a
+
+          expect(rule.approvers_include_user?(user1)).to be_truthy
+        end
+
+        it 'returns true for a group user' do
+          rule.group_members.to_a
+
+          expect(rule.approvers_include_user?(group1_user)).to be_truthy
+        end
+
+        it 'returns false for a missing user' do
+          rule.users.to_a
+
+          expect(rule.approvers_include_user?(user3)).to be_falsey
+        end
+      end
+    end
+
+    describe '#approvers' do
       shared_examples 'approvers contains the right users' do
         it 'contains users as direct members and group members' do
           rule = subject.class.find(subject.id)

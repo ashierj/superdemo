@@ -749,11 +749,9 @@ module EE
       super
     end
 
-    def applicable_approval_rules_for_user(user_id, target_branch = nil)
+    def applicable_approval_rules_for_user(user, target_branch = nil)
       visible_approval_rules(target_branch: target_branch).select do |rule|
-        rule.approvers
-          .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417461")
-          .pluck(:id).include?(user_id)
+        rule.approvers_include_user?(user)
       end
     end
 
