@@ -12,6 +12,15 @@ module ComplianceManagement
     has_many :project_settings, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings'
     has_many :projects, through: :project_settings
 
+    has_many :compliance_framework_security_policies,
+      class_name: 'ComplianceManagement::ComplianceFramework::SecurityPolicy'
+
+    has_many :security_orchestration_policy_configurations,
+      -> { distinct },
+      class_name: 'Security::OrchestrationPolicyConfiguration',
+      through: :compliance_framework_security_policies,
+      source: :policy_configuration
+
     validates :namespace, presence: true
     validates :name, presence: true, length: { maximum: 255 }
     validates :description, presence: true, length: { maximum: 255 }
@@ -29,6 +38,8 @@ module ComplianceManagement
     private
 
     def namespace_is_root_level_group
+      return unless namespace
+
       errors.add(:namespace, 'must be a group, user namespaces are not supported.') unless namespace.group_namespace?
       errors.add(:namespace, 'must be a root group.') if namespace.has_parent?
     end

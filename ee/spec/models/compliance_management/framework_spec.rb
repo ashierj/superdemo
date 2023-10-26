@@ -2,7 +2,27 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::Framework do
+RSpec.describe ComplianceManagement::Framework, models: true, feature_category: :compliance_management do
+  describe 'associations' do
+    it { is_expected.to belong_to(:namespace) }
+    it { is_expected.to have_many(:projects).through(:project_settings) }
+
+    it {
+      is_expected.to have_many(:project_settings)
+        .class_name('ComplianceManagement::ComplianceFramework::ProjectSettings')
+    }
+
+    it {
+      is_expected.to have_many(:compliance_framework_security_policies)
+          .class_name('ComplianceManagement::ComplianceFramework::SecurityPolicy')
+    }
+
+    it {
+      is_expected.to have_many(:security_orchestration_policy_configurations)
+        .class_name('Security::OrchestrationPolicyConfiguration').through(:compliance_framework_security_policies)
+    }
+  end
+
   describe 'validations' do
     let_it_be(:framework) { create(:compliance_framework) }
 
@@ -43,6 +63,28 @@ RSpec.describe ComplianceManagement::Framework do
           expect(framework).not_to be_valid
           expect(framework.errors[:namespace]).to include('must be a root group.')
         end
+      end
+    end
+  end
+
+  describe '#security_orchestration_policy_configurations' do
+    let_it_be(:framework) { create(:compliance_framework) }
+
+    context 'when the framework has many same policy configuration with different index' do
+      let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
+
+      let_it_be(:compliance_framework_security_policy1) do
+        create(:compliance_framework_security_policy, framework: framework,
+          policy_configuration: policy_configuration, policy_index: 0)
+      end
+
+      let_it_be(:compliance_framework_security_policy2) do
+        create(:compliance_framework_security_policy, framework: framework,
+          policy_configuration: policy_configuration, policy_index: 1)
+      end
+
+      it 'returns distinct policy configurations' do
+        expect(framework.security_orchestration_policy_configurations).to match_array([policy_configuration])
       end
     end
   end

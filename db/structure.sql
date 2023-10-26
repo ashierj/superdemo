@@ -14771,6 +14771,24 @@ CREATE SEQUENCE commit_user_mentions_id_seq
 
 ALTER SEQUENCE commit_user_mentions_id_seq OWNED BY commit_user_mentions.id;
 
+CREATE TABLE compliance_framework_security_policies (
+    id bigint NOT NULL,
+    framework_id bigint NOT NULL,
+    policy_configuration_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    policy_index smallint NOT NULL
+);
+
+CREATE SEQUENCE compliance_framework_security_policies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE compliance_framework_security_policies_id_seq OWNED BY compliance_framework_security_policies.id;
+
 CREATE TABLE compliance_management_frameworks (
     id bigint NOT NULL,
     name text NOT NULL,
@@ -26270,6 +26288,8 @@ ALTER TABLE ONLY clusters_kubernetes_namespaces ALTER COLUMN id SET DEFAULT next
 
 ALTER TABLE ONLY commit_user_mentions ALTER COLUMN id SET DEFAULT nextval('commit_user_mentions_id_seq'::regclass);
 
+ALTER TABLE ONLY compliance_framework_security_policies ALTER COLUMN id SET DEFAULT nextval('compliance_framework_security_policies_id_seq'::regclass);
+
 ALTER TABLE ONLY compliance_management_frameworks ALTER COLUMN id SET DEFAULT nextval('compliance_management_frameworks_id_seq'::regclass);
 
 ALTER TABLE ONLY container_registry_protection_rules ALTER COLUMN id SET DEFAULT nextval('container_registry_protection_rules_id_seq'::regclass);
@@ -28277,6 +28297,9 @@ ALTER TABLE ONLY clusters
 
 ALTER TABLE ONLY commit_user_mentions
     ADD CONSTRAINT commit_user_mentions_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY compliance_framework_security_policies
+    ADD CONSTRAINT compliance_framework_security_policies_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY compliance_management_frameworks
     ADD CONSTRAINT compliance_management_frameworks_pkey PRIMARY KEY (id);
@@ -31155,6 +31178,8 @@ CREATE INDEX idx_award_emoji_on_user_emoji_name_awardable_type_awardable_id ON a
 CREATE INDEX idx_build_artifacts_size_refreshes_state_updated_at ON project_build_artifacts_size_refreshes USING btree (state, updated_at);
 
 CREATE INDEX idx_ci_pipelines_artifacts_locked ON ci_pipelines USING btree (ci_ref_id, id) WHERE (locked = 1);
+
+CREATE INDEX idx_compliance_security_policies_on_policy_configuration_id ON compliance_framework_security_policies USING btree (policy_configuration_id);
 
 CREATE INDEX idx_container_exp_policies_on_project_id_next_run_at ON container_expiration_policies USING btree (project_id, next_run_at) WHERE (enabled = true);
 
@@ -35130,6 +35155,8 @@ CREATE UNIQUE INDEX unique_batched_background_migrations_queued_migration_versio
 
 CREATE UNIQUE INDEX unique_ci_builds_token_encrypted_and_partition_id ON ci_builds USING btree (token_encrypted, partition_id) WHERE (token_encrypted IS NOT NULL);
 
+CREATE UNIQUE INDEX unique_compliance_framework_security_policies_framework_id ON compliance_framework_security_policies USING btree (framework_id, policy_configuration_id, policy_index);
+
 CREATE UNIQUE INDEX unique_external_audit_event_destination_namespace_id_and_name ON audit_events_external_audit_event_destinations USING btree (namespace_id, name);
 
 CREATE UNIQUE INDEX unique_google_cloud_logging_configurations_on_namespace_id ON audit_events_google_cloud_logging_configurations USING btree (namespace_id, google_project_id_name, log_id_name);
@@ -37637,6 +37664,9 @@ ALTER TABLE ONLY issues
 ALTER TABLE ONLY protected_tag_create_access_levels
     ADD CONSTRAINT fk_b4eb82fe3c FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY compliance_framework_security_policies
+    ADD CONSTRAINT fk_b5df066d8f FOREIGN KEY (framework_id) REFERENCES compliance_management_frameworks(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY catalog_resource_versions
     ADD CONSTRAINT fk_b670eae96b FOREIGN KEY (catalog_resource_id) REFERENCES catalog_resources(id) ON DELETE CASCADE;
 
@@ -37765,6 +37795,9 @@ ALTER TABLE ONLY todos
 
 ALTER TABLE ONLY dast_site_profiles_pipelines
     ADD CONSTRAINT fk_cf05cf8fe1 FOREIGN KEY (dast_site_profile_id) REFERENCES dast_site_profiles(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY compliance_framework_security_policies
+    ADD CONSTRAINT fk_cf3c0ac207 FOREIGN KEY (policy_configuration_id) REFERENCES security_orchestration_policy_configurations(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY issue_assignment_events
     ADD CONSTRAINT fk_cfd2073177 FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
