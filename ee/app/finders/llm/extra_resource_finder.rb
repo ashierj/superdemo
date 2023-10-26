@@ -39,7 +39,7 @@ module Llm
 
     def find_project(project_fullpath)
       project = Project.find_by_full_path(project_fullpath)
-      return unless project && @current_user.can?(:read_code, project) && project.repository
+      return unless project && @current_user.can?(:read_code, project) && project.repository && ai_allowed?(project)
 
       project
     end
@@ -65,6 +65,10 @@ module Llm
       return if resource_path.empty?
 
       ExtractsRef::RefExtractor.new(@project, {}).extract_ref(resource_path)
+    end
+
+    def ai_allowed?(project)
+      Gitlab::Llm::Chain::Utils::Authorizer.container_authorized?(container: project.root_ancestor)
     end
   end
 end
