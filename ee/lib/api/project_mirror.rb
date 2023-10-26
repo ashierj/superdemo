@@ -10,7 +10,7 @@ module API
       end
 
       def render_invalid_github_signature!
-        if Guest.can?(:read_project, project)
+        if ::Users::Anonymous.can?(:read_project, project)
           unauthorized!
         else
           not_found!
