@@ -73,7 +73,7 @@ module Resolvers
         return {} unless result.count == 1
 
         result[0].symbolize_keys
-                 .transform_values { |interval| interval ? ActiveSupport::Duration.parse(interval) : nil }
+                 .transform_values { |interval| interval&.round(3)&.seconds }
       end
 
       def percentile_disc_sql(selection, percentile)
@@ -81,7 +81,8 @@ module Resolvers
 
         return unless selection.selects?(percentile_id.to_sym)
 
-        "PERCENTILE_CONT(#{percentile / 100.0}) WITHIN GROUP (ORDER BY builds.duration) AS #{percentile_id}"
+        "EXTRACT('EPOCH' FROM PERCENTILE_CONT(#{percentile / 100.0}) " \
+          "WITHIN GROUP (ORDER BY builds.duration)) AS #{percentile_id}"
       end
     end
   end

@@ -96,6 +96,17 @@ RSpec.describe Resolvers::Ci::RunnersJobsStatisticsResolver, feature_category: :
             expect(response.object).to match(expected_job_statistics)
           end
 
+          context 'when intervalstyle setting is configured to "postgres"' do
+            it 'hadles durations properly' do
+              # ActiveRecord cannot parse the 'postgres' intervalstyle, it returns nil
+              # The setting is rolled back after the test case.
+              Ci::Build.connection.execute("SET LOCAL intervalstyle='postgres'")
+
+              expect(response).to be_an_instance_of(Types::Ci::JobsStatisticsType)
+              expect(response.object).to match(expected_job_statistics)
+            end
+          end
+
           context 'with JOBS_LIMIT set to one lower than dataset size' do
             before do
               stub_const(
