@@ -21,7 +21,7 @@ module EE
 
     override :todo_target_path_anchor
     def todo_target_path_anchor(todo)
-      if todo.review_requested? && summarize_llm_enabled?(todo.target.project, current_user) &&
+      if todo.review_requested? && summarize_llm_enabled?(todo.target.project) &&
           diff_llm_summary(todo.target).present?
         return "diff-summary"
       end

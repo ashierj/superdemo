@@ -1,4 +1,4 @@
-<% if summarize_llm_enabled?(@merge_request.project, @recipient) -%>
+<% if summarize_llm_enabled?(@merge_request.project) -%>
 <% diff_llm_summary = diff_llm_summary(@merge_request) -%>
 <% if diff_llm_summary.present? -%>
 

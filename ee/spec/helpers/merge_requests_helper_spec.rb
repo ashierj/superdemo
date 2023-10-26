@@ -92,9 +92,9 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
     let_it_be(:project) { build_stubbed(:project, namespace: group) }
 
     it 'calls Llm::MergeRequests::SummarizeDiffService enabled? method' do
-      expect(Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).with(group: group, user: user)
+      expect(Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).with(group: group)
 
-      summarize_llm_enabled?(project, user)
+      summarize_llm_enabled?(project)
     end
   end
 

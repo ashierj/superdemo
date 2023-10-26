@@ -1,6 +1,6 @@
 - diff_llm_summary = diff_llm_summary(@merge_request)
 
-- if summarize_llm_enabled?(@merge_request.project, current_user) && diff_llm_summary.present?
+- if summarize_llm_enabled?(@merge_request.project) && diff_llm_summary.present?
   .mr-section-container.gl-mt-4.js-toggle-container
     .gl-display-flex.gl-align-items-center.gl-pl-5.gl-pr-4.gl-py-4
       .gl-w-6.gl-h-6.gl-display-flex.gl-align-self-center.gl-mr-1
