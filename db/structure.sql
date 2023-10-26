@@ -18915,6 +18915,7 @@ CREATE TABLE ml_candidates (
     project_id bigint,
     internal_id bigint,
     ci_build_id bigint,
+    model_version_id bigint,
     CONSTRAINT check_25e6c65051 CHECK ((char_length(name) <= 255)),
     CONSTRAINT check_cd160587d4 CHECK ((eid IS NOT NULL))
 );
@@ -33261,6 +33262,8 @@ CREATE INDEX index_ml_candidates_on_ci_build_id ON ml_candidates USING btree (ci
 
 CREATE UNIQUE INDEX index_ml_candidates_on_experiment_id_and_eid ON ml_candidates USING btree (experiment_id, eid);
 
+CREATE UNIQUE INDEX index_ml_candidates_on_model_version_id ON ml_candidates USING btree (model_version_id);
+
 CREATE INDEX index_ml_candidates_on_package_id ON ml_candidates USING btree (package_id);
 
 CREATE INDEX index_ml_candidates_on_project_id ON ml_candidates USING btree (project_id);
@@ -37861,6 +37864,9 @@ ALTER TABLE ONLY namespaces
 
 ALTER TABLE ONLY fork_networks
     ADD CONSTRAINT fk_e7b436b2b5 FOREIGN KEY (root_project_id) REFERENCES projects(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY ml_candidates
+    ADD CONSTRAINT fk_e86e0bfa5a FOREIGN KEY (model_version_id) REFERENCES ml_model_versions(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY integrations
     ADD CONSTRAINT fk_e8fe908a34 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
