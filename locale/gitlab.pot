@@ -21704,6 +21704,9 @@ msgstr ""
 msgid "GitLab Community Edition"
 msgstr ""
 
+msgid "GitLab Duo didn't respond. Try again? If it fails again, your request might be too large."
+msgstr ""
+
 msgid "GitLab Enterprise Edition"
 msgstr ""
 

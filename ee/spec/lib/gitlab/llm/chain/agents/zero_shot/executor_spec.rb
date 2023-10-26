@@ -244,5 +244,46 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         expect(agent.prompt[:prompt]).to include("puts \"hello world\"")
       end
     end
+
+    context 'when times out error is raised' do
+      let(:error) { Net::ReadTimeout.new }
+
+      before do
+        allow(Gitlab::ErrorTracking).to receive(:track_exception)
+      end
+
+      context 'when streamed request times out' do
+        it 'returns an error' do
+          allow(ai_request_double).to receive(:request).and_raise(error)
+
+          answer = agent.execute
+
+          expect(answer.is_final).to eq(true)
+          expect(answer.content).to include("GitLab Duo didn't respond")
+          expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(error)
+        end
+      end
+
+      context 'when tool times out out' do
+        it 'returns an error' do
+          allow(ai_request_double).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+          allow_next_instance_of(Gitlab::Llm::Chain::Answer) do |answer|
+            allow(answer).to receive(:tool).and_return(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
+          end
+
+          allow_next_instance_of(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) do |instance|
+            allow(instance).to receive(:execute).and_raise(error)
+          end
+
+          allow(response_service_double).to receive(:execute)
+
+          answer = agent.execute
+
+          expect(answer.is_final).to eq(true)
+          expect(answer.content).to include("GitLab Duo didn't respond")
+          expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(error)
+        end
+      end
+    end
   end
 end
