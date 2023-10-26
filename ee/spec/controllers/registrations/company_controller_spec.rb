@@ -99,7 +99,8 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
 
     let(:redirect_params) do
       {
-        trial_onboarding_flow: true
+        trial_onboarding_flow: true,
+        trial: false
       }.merge(glm_params)
     end
 
