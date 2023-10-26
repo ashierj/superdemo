@@ -283,10 +283,6 @@
         "description": "Job artifacts synced count",
         "type": "number"
       },
-      "job_artifacts_synced_missing_on_primary_count": {
-        "description": "Job artifacts synced missing on primary count",
-        "type": "number"
-      },
       "job_artifacts_verification_failed_count": {
         "description": "Job artifacts verification failed count",
         "type": "number"

@@ -45,7 +45,6 @@ module Gitlab
 
       def replication_verification_complete?
         checks_status =
-          legacy_replication_and_verification_checks_status +
           replication_and_verification_checks_status +
           conditional_replication_and_verification_checks_status
 
@@ -53,26 +52,6 @@ module Gitlab
       end
 
       private
-
-      # rubocop:disable GitlabSecurity/PublicSend
-      def legacy_replication_and_verification_checks_status
-        replicables = [
-          ["job_artifacts", false]
-        ]
-
-        [].tap do |status|
-          replicables.each do |replicable_name, verification_enabled|
-            next unless current_node_status.public_send("#{replicable_name}_count").to_i > 0
-
-            status.push current_node_status.public_send("#{replicable_name}_synced_in_percentage")
-
-            if verification_enabled
-              status.push current_node_status.public_send("#{replicable_name}_verified_in_percentage")
-            end
-          end
-        end
-      end
-      # rubocop:enable GitlabSecurity/PublicSend
 
       def replication_and_verification_checks_status
         [].tap do |status|

@@ -18,17 +18,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
       status_message: nil,
       db_replication_lag_seconds: 0,
       projects_count: 10,
-      lfs_objects_count: 100,
-      lfs_objects_synced_count: 50,
-      lfs_objects_failed_count: 12,
-      lfs_objects_synced_missing_on_primary_count: 4,
-      job_artifacts_count: 100,
-      job_artifacts_synced_count: 50,
-      job_artifacts_failed_count: 12,
-      job_artifacts_synced_missing_on_primary_count: 5,
-      container_repositories_count: 100,
-      container_repositories_synced_count: 50,
-      container_repositories_failed_count: 12,
       last_event_id: 2,
       last_event_date: event_date,
       cursor_last_event_id: 1,
@@ -41,9 +30,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
     {
       status_message: nil,
       projects_count: 10,
-      lfs_objects_count: 100,
-      job_artifacts_count: 100,
-      container_repositories_count: 100,
       last_event_id: 2,
       last_event_date: event_date,
       event_log_max_id: 555
@@ -124,13 +110,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
         subject.execute
 
         expect(metric_value(:geo_db_replication_lag_seconds)).to eq(0)
-        expect(metric_value(:geo_lfs_objects)).to eq(100)
-        expect(metric_value(:geo_lfs_objects_synced)).to eq(50)
-        expect(metric_value(:geo_lfs_objects_failed)).to eq(12)
-        expect(metric_value(:geo_job_artifacts)).to eq(100)
-        expect(metric_value(:geo_job_artifacts_synced)).to eq(50)
-        expect(metric_value(:geo_job_artifacts_failed)).to eq(12)
-        expect(metric_value(:geo_job_artifacts_synced_missing_on_primary)).to eq(5)
         expect(metric_value(:geo_last_event_id)).to eq(2)
         expect(metric_value(:geo_last_event_timestamp)).to eq(event_date.to_i)
         expect(metric_value(:geo_cursor_last_event_id)).to eq(1)

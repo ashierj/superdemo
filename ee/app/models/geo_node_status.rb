@@ -38,6 +38,25 @@ class GeoNodeStatus < ApplicationRecord
     remove_after: '2023-10-22'
   )
 
+  ignore_columns(
+    %i[
+      container_repositories_count
+      container_repositories_failed_count
+      container_repositories_registry_count
+      container_repositories_synced_count
+      job_artifacts_count
+      job_artifacts_failed_count
+      job_artifacts_synced_count
+      job_artifacts_synced_missing_on_primary_count
+      lfs_objects_count
+      lfs_objects_failed_count
+      lfs_objects_synced_count
+      lfs_objects_synced_missing_on_primary_count
+    ],
+    remove_with: '16.7',
+    remove_after: '2023-11-22'
+  )
+
   belongs_to :geo_node
 
   delegate :selective_sync_type, to: :geo_node
@@ -48,9 +67,7 @@ class GeoNodeStatus < ApplicationRecord
   attr_accessor :storage_shards
 
   # Prometheus metrics, no need to store them in the database
-  attr_accessor :event_log_max_id, :lfs_objects_registry_count,
-    :job_artifacts_registry_count, :repositories_checked_count,
-    :repositories_checked_failed_count
+  attr_accessor :event_log_max_id, :repositories_checked_count, :repositories_checked_failed_count
 
   sha_attribute :storage_configuration_digest
 
@@ -91,7 +108,6 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   RESOURCE_STATUS_FIELDS = (%w[
-    job_artifacts_synced_missing_on_primary_count
     projects_count
     container_repositories_replication_enabled
   ] + replicator_class_status_fields + usage_data_fields).freeze
@@ -107,7 +123,6 @@ class GeoNodeStatus < ApplicationRecord
   PROMETHEUS_METRICS = {
     db_replication_lag_seconds: 'Database replication lag (seconds)',
     repositories_count: 'Total number of repositories available on primary',
-    job_artifacts_synced_missing_on_primary_count: 'Number of job artifacts marked as synced due to the file missing on the primary',
     replication_slots_count: 'Total number of replication slots on the primary',
     replication_slots_used_count: 'Number of replication slots in use on the primary',
     replication_slots_max_retained_wal_bytes: 'Maximum number of bytes retained in the WAL on the primary',
@@ -154,9 +169,7 @@ class GeoNodeStatus < ApplicationRecord
     return unless current_node
 
     status = current_node.find_or_build_status
-
     status.load_data_from_current_node
-
     status.save if Gitlab::Geo.primary?
 
     status
