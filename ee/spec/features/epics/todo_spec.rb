@@ -6,6 +6,7 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
   let(:group) { create(:group) }
   let(:epic) { create(:epic, group: group) }
   let(:user) { create(:user, :no_super_sidebar) }
+  let(:todo_selector) { '[data-testid="sidebar-todo"]' }
 
   context 'with notifications_todos_buttons feature flag disabled' do
     before do
@@ -44,6 +45,10 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
 
       expect(page).to have_selector(".header-content span[aria-label='#{_('Todos count')}']", visible: false)
     end
+
+    it 'passes axe automated accessibility testing for todo' do
+      expect(page).to be_axe_clean.within(todo_selector)
+    end
   end
 
   context 'with notifications_todos_buttons feature flag enabled' do
@@ -67,6 +72,10 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
       page.within ".header-content span[aria-label='#{_('Todos count')}']" do
         expect(page).to have_content '1'
       end
+    end
+
+    it 'passes axe automated accessibility testing for todo' do
+      expect(page).to be_axe_clean.within(todo_selector)
     end
   end
 end
