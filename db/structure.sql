@@ -298,6 +298,22 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_10ee1357e825() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."auto_canceled_by_id_convert_to_bigint" := NEW."auto_canceled_by_id";
+  NEW."commit_id_convert_to_bigint" := NEW."commit_id";
+  NEW."erased_by_id_convert_to_bigint" := NEW."erased_by_id";
+  NEW."project_id_convert_to_bigint" := NEW."project_id";
+  NEW."runner_id_convert_to_bigint" := NEW."runner_id";
+  NEW."trigger_request_id_convert_to_bigint" := NEW."trigger_request_id";
+  NEW."upstream_pipeline_id_convert_to_bigint" := NEW."upstream_pipeline_id";
+  NEW."user_id_convert_to_bigint" := NEW."user_id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_1bd97da9c1a4() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13379,6 +13395,14 @@ CREATE TABLE p_ci_builds (
     stage_id bigint,
     partition_id bigint NOT NULL,
     auto_canceled_by_partition_id bigint DEFAULT 100 NOT NULL,
+    auto_canceled_by_id_convert_to_bigint bigint,
+    commit_id_convert_to_bigint bigint,
+    erased_by_id_convert_to_bigint bigint,
+    project_id_convert_to_bigint bigint,
+    runner_id_convert_to_bigint bigint,
+    trigger_request_id_convert_to_bigint bigint,
+    upstream_pipeline_id_convert_to_bigint bigint,
+    user_id_convert_to_bigint bigint,
     CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL))
 )
 PARTITION BY LIST (partition_id);
@@ -13429,6 +13453,14 @@ CREATE TABLE ci_builds (
     stage_id bigint,
     partition_id bigint NOT NULL,
     auto_canceled_by_partition_id bigint DEFAULT 100 NOT NULL,
+    auto_canceled_by_id_convert_to_bigint bigint,
+    commit_id_convert_to_bigint bigint,
+    erased_by_id_convert_to_bigint bigint,
+    project_id_convert_to_bigint bigint,
+    runner_id_convert_to_bigint bigint,
+    trigger_request_id_convert_to_bigint bigint,
+    upstream_pipeline_id_convert_to_bigint bigint,
+    user_id_convert_to_bigint bigint,
     CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL))
 );
 
@@ -36746,6 +36778,8 @@ CREATE TRIGGER push_rules_loose_fk_trigger AFTER DELETE ON push_rules REFERENCIN
 CREATE TRIGGER tags_loose_fk_trigger AFTER DELETE ON tags REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER trigger_07bc3c48f407 BEFORE INSERT OR UPDATE ON ci_stages FOR EACH ROW EXECUTE FUNCTION trigger_07bc3c48f407();
+
+CREATE TRIGGER trigger_10ee1357e825 BEFORE INSERT OR UPDATE ON p_ci_builds FOR EACH ROW EXECUTE FUNCTION trigger_10ee1357e825();
 
 CREATE TRIGGER trigger_1bd97da9c1a4 BEFORE INSERT OR UPDATE ON ci_pipelines FOR EACH ROW EXECUTE FUNCTION trigger_1bd97da9c1a4();
 
