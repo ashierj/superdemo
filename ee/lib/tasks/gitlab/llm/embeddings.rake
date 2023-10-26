@@ -3,45 +3,6 @@
 namespace :gitlab do
   namespace :llm do
     namespace :embeddings do
-      desc 'Extract the embeddings for selected questions into a fixture'
-      task :extract_embeddings, [] => [:environment] do |_t, _args|
-        ff_state = Feature.enabled?(:use_embeddings_with_vertex)
-        Feature.disable(:use_embeddings_with_vertex) if ff_state
-
-        embedding_ids = extract_embeddings_to_fixture
-
-        ff_state ? Feature.enable(:use_embeddings_with_vertex) : Feature.disable(:use_embeddings_with_vertex)
-
-        sql = ::Embedding::TanukiBotMvc.select("*").where(id: embedding_ids).to_sql
-        fixture_path = Rails.root.join("ee/spec/fixtures/openai_embeddings")
-        ::Embedding::TanukiBotMvc.connection.execute("COPY (#{sql}) TO '#{fixture_path}'")
-
-        puts "Don't forget to commit the generated `ee/spec/fixtures/openai_embeddings`."
-      end
-
-      # Warning: the task will TRUNCATE the embeddings table.
-      desc 'Seed embeddings test database with pre-generated embeddings'
-      task :seed_pre_generated, [] => [:environment] do |_t, _args|
-        number_of_rows = 12739
-        filename = "tanuki_bot_mvc.json"
-        sha = 'f7bfb0bd48fbb33c620146f5df5a88d54e489127'
-        url = "https://gitlab.com/gitlab-org/enablement-section/tanuki-bot/-/raw/#{sha}/pgvector/#{filename}?inline=false"
-
-        Dir.mktmpdir do |dir|
-          embeddings_model = ::Embedding::TanukiBotMvc
-
-          file_path = download_embeddings_file(dir, filename, url)
-          create_embeddings(embeddings_model, file_path, number_of_rows)
-
-          # Delete records with no meaningful content
-          embeddings_model.where.not("content ~ ?", '\w').delete_all
-          # Delete records without titles as these likely no longer exist
-          embeddings_model.where("metadata -> 'title' IS NULL").delete_all
-
-          puts "Number of records: #{embeddings_model.count}"
-        end
-      end
-
       namespace :vertex do
         desc 'Seed embeddings test database with pre-generated embeddings'
         task :seed, [] => [:environment] do |_t, _args|
@@ -60,13 +21,7 @@ namespace :gitlab do
 
         desc 'Extract the embeddings for selected questions into a fixture'
         task :extract_embeddings, [] => [:environment] do |_t, _args|
-          ff_state = Feature.enabled?(:use_embeddings_with_vertex)
-          Feature.enable(:use_embeddings_with_vertex) unless ff_state
-
           embedding_ids = extract_embeddings_to_fixture
-
-          ff_state ? Feature.enable(:use_embeddings_with_vertex) : Feature.disable(:use_embeddings_with_vertex)
-
           sql = ::Embedding::Vertex::GitlabDocumentation.select("*").where(id: embedding_ids).to_sql
           fixture_path = Rails.root.join("ee/spec/fixtures/vertex_embeddings")
           ::Embedding::Vertex::GitlabDocumentation.connection.execute("COPY (#{sql}) TO '#{fixture_path}'")

@@ -55,18 +55,10 @@ module Gitlab
             return [] if source_ids.blank?
 
             ids = source_ids.match(CONTENT_ID_REGEX).captures.map(&:to_i)
-            documents = embeddings_model_class.id_in(ids).select(:url, :metadata)
+            documents = ::Embedding::Vertex::GitlabDocumentation.id_in(ids).select(:url, :metadata)
             documents.map do |doc|
               { source_url: doc.url }.merge(doc.metadata)
             end.uniq
-          end
-
-          def embeddings_model_class
-            if Feature.enabled?(:use_embeddings_with_vertex, current_user)
-              ::Embedding::Vertex::GitlabDocumentation
-            else
-              ::Embedding::TanukiBotMvc
-            end
           end
         end
       end
