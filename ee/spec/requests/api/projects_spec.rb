@@ -1258,7 +1258,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
           subject
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
-          expect(json_response['message']).to eq("#{import_url} is not a valid HTTP Git repository")
+          expect(json_response['message']).to eq("#{import_url} endpoint error: 301")
         end
       end
 
