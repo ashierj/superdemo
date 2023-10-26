@@ -23,11 +23,11 @@ module EE
       def check_quota!
         return unless invite_quota_exceeded?
 
-        raise ::Members::CreateService::TooManyInvitesError,
-              format(
-                s_("AddMember|Invite limit of %{daily_invites} per day exceeded."),
-                daily_invites: source.actual_limits.daily_invites
-              )
+        message = format(
+          s_("AddMember|Invite limit of %{daily_invites} per day exceeded."),
+          daily_invites: source.actual_limits.daily_invites
+        )
+        raise ::Members::CreateService::TooManyInvitesError, message
       end
 
       def check_membership_lock!

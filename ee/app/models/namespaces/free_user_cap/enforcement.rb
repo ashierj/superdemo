@@ -60,7 +60,7 @@ module Namespaces
       end
 
       def qualified_namespace?
-        return false unless ::Gitlab::CurrentSettings.dashboard_limit_enabled?
+        return false unless Namespaces::FreeUserCap.dashboard_limit_enabled?
         return false unless root_namespace.group_namespace?
 
         !root_namespace.public?
@@ -79,7 +79,7 @@ module Namespaces
       end
 
       def database_limit
-        ::Gitlab::CurrentSettings.dashboard_limit + 1
+        limit + 1
       end
 
       def enforceable_subscription?
