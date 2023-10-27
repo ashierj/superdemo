@@ -37,7 +37,7 @@ RSpec.describe(
   let(:vulnerability_state_transitions) { table(:vulnerability_state_transitions) }
   let(:security_scans) { table(:security_scans) }
   let(:security_findings) { table(:security_findings) }
-  let(:ci_builds) { table(:ci_builds, database: :ci) { |model| model.primary_key = :id } }
+  let(:ci_builds) { table(:p_ci_builds, database: :ci) { |model| model.primary_key = :id } }
   let(:ci_job_artifacts) { table(:ci_job_artifacts, database: :ci) }
   let(:ci_pipelines) { table(:ci_pipelines, database: :ci) }
 

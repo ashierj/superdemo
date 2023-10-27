@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::PurgeStaleSecurityScans,
-               :suppress_gitlab_schemas_validate_connection, schema: 20220407163559 do
+    :suppress_partitioning_routing_analyzer, :suppress_gitlab_schemas_validate_connection,
+    schema: 20220407163559 do
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }
   let(:pipelines) { table(:ci_pipelines) }
