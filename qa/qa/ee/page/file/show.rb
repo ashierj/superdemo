@@ -15,13 +15,13 @@ module QA
 
               # These two lock button elements are used for locking at directory level
               view 'ee/app/helpers/ee/lock_helper.rb' do
-                element :lock_button
-                element :disabled_lock_button
+                element 'lock-button'
+                element 'disabled-lock-button'
               end
 
               view 'app/assets/javascripts/repository/components/blob_button_group.vue' do
-                element :lock_button, /data-qa-selector="lockBtnQASelector"/ # rubocop:disable QA/ElementWithPattern
-                element :disabled_lock_button, /data-qa-selector="lockBtnQASelector"/ # rubocop:disable QA/ElementWithPattern
+                element 'lock-button', /data-testid="lockBtnTestId"/ # rubocop:disable QA/ElementWithPattern
+                element 'disabled-lock-button', /data-testid="lockBtnTestId"/ # rubocop:disable QA/ElementWithPattern
               end
 
               view 'ee/app/assets/javascripts/vue_shared/components/code_owners/code_owners.vue' do
@@ -31,25 +31,25 @@ module QA
           end
 
           def lock
-            click_element(:lock_button)
+            click_element('lock-button')
             click_confirmation_ok_button
 
-            unless has_element?(:lock_button, text: 'Unlock')
+            unless has_element?('lock-button', text: 'Unlock')
               raise QA::Page::Base::ElementNotFound, %q(Button did not show expected state)
             end
           end
 
           def unlock
-            click_element(:lock_button)
+            click_element('lock-button')
             click_confirmation_ok_button
 
-            unless has_element?(:lock_button, text: 'Lock')
+            unless has_element?('lock-button', text: 'Lock')
               raise QA::Page::Base::ElementNotFound, %q(Button did not show expected state)
             end
           end
 
           def has_lock_button_disabled?
-            has_element?(:disabled_lock_button)
+            has_element?('disabled-lock-button')
           end
 
           def reveal_code_owners
