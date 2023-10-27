@@ -647,6 +647,11 @@ module Types
       description: 'Detailed import status of the project.',
       method: :import_state
 
+    field :value_streams,
+      description: 'Value streams available to the project.',
+      null: true,
+      resolver: Resolvers::Analytics::CycleAnalytics::ValueStreamsResolver
+
     def timelog_categories
       object.project_namespace.timelog_categories if Feature.enabled?(:timelog_categories)
     end
