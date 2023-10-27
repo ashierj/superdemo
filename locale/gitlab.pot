@@ -10232,6 +10232,9 @@ msgstr ""
 msgid "Ci config already present"
 msgstr ""
 
+msgid "CiCatalogComponent|Component details not available"
+msgstr ""
+
 msgid "CiCatalogComponent|Default Value"
 msgstr ""
 
@@ -10245,6 +10248,9 @@ msgid "CiCatalogComponent|Parameters"
 msgstr ""
 
 msgid "CiCatalogComponent|There was an error fetching this resource's components"
+msgstr ""
+
+msgid "CiCatalogComponent|This tab displays auto-collected information about the components in the repository, but no information was found."
 msgstr ""
 
 msgid "CiCatalog|Back to the CI/CD Catalog"
