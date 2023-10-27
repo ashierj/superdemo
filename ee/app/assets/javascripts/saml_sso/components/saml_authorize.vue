@@ -34,9 +34,7 @@ export default {
     <h4 class="gl-mt-0">
       <gl-sprintf :message="$options.i18n.signInTitle">
         <template #groupName>
-          <gl-link :href="groupUrl" class="gl-font-size-inherit" target="_blank">{{
-            groupName
-          }}</gl-link>
+          <gl-link :href="groupUrl" target="_blank">{{ groupName }}</gl-link>
         </template>
       </gl-sprintf>
     </h4>

@@ -121,9 +121,7 @@ export default {
             "
           >
             <template #link="{ content }">
-              <gl-link class="gl-reset-font-size" :href="$options.jobDurationHelpPagePath">{{
-                content
-              }}</gl-link>
+              <gl-link :href="$options.jobDurationHelpPagePath">{{ content }}</gl-link>
             </template>
           </gl-sprintf>
         </help-popover>
