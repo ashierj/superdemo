@@ -25,7 +25,7 @@ RSpec.describe Sidebars::YourWork::Menus::SecurityDashboardMenu, feature_categor
       [
         {
           active_routes: { path: "security/dashboard#show" },
-          item_id: :security_dashboard,
+          item_id: :security_dashboard_menu,
           link: "/-/security/dashboard",
           title: _("Security dashboard")
         },
