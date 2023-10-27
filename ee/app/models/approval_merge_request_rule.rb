@@ -31,7 +31,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
 
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section] }, unless: :scan_finding?
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section, :security_orchestration_policy_configuration_id, :orchestration_policy_idx] }, if: :scan_finding?
-  validates :rule_type, uniqueness: { scope: :merge_request_id, message: proc { _('any-approver for the merge request already exists') } }, if: :any_approver?
+  validates :rule_type, uniqueness: { scope: [:merge_request_id, :applicable_post_merge], message: proc { _('any-approver for the merge request already exists') } }, if: :any_approver?
 
   belongs_to :merge_request, inverse_of: :approval_rules
 
