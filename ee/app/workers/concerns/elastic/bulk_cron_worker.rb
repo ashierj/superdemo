@@ -18,12 +18,16 @@ module Elastic
       return false unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
       if Elastic::IndexingControl.non_cached_pause_indexing?
-        logger.info(message: "elasticsearch_pause_indexing setting is enabled. #{self.class} execution is skipped.")
+        log "elasticsearch_pause_indexing setting is enabled. #{self.class} execution is skipped."
         return false
       end
 
       return if legacy_lock_exists? # skip execution if legacy lease is still obtained
-      return false unless Search::ClusterHealthCheck::Elastic.healthy?
+
+      unless Search::ClusterHealthCheck::Elastic.healthy?
+        log "advanced search cluster is unhealthy. #{self.class} execution is skipped."
+        return false
+      end
 
       if shard_number
         process_shard(shard_number)
@@ -35,6 +39,10 @@ module Elastic
     end
 
     private
+
+    def log(message)
+      logger.info(structured_payload(message: message))
+    end
 
     def process_shard(shard_number)
       in_lock("#{self.class.name.underscore}/shard/#{shard_number}", ttl: 10.minutes, retries: 10, sleep_sec: 1) do

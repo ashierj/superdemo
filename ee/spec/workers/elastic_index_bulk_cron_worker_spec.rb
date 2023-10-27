@@ -66,6 +66,7 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
 
         it 'does nothing if cluster is not healthy' do
           expect(::Elastic::ProcessBookkeepingService).not_to receive(:new)
+          expect(worker).to receive(:log).with(/advanced search cluster is unhealthy/)
 
           expect(worker.perform).to eq(false)
         end
