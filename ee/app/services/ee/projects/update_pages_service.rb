@@ -9,7 +9,7 @@ module EE
       def pages_deployment_attributes(file, build)
         return super unless ::Gitlab::Pages.multiple_versions_enabled_for?(build.project)
 
-        super.merge(path_prefix: build.pages_path_prefix)
+        super.merge(path_prefix: CGI.escape(build.pages[:path_prefix]))
       end
     end
   end
