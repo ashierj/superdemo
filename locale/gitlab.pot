@@ -15199,10 +15199,10 @@ msgstr ""
 msgid "DORA4Metrics|Took more than 7 days to restore service when a service incident or a defect that impacts users occurs."
 msgstr ""
 
-msgid "DORA4Metrics|Total projects (%{count}) by DORA performers score for %{groupName} group"
+msgid "DORA4Metrics|Total projects (%{count}) with DORA performers score for %{groupName} group"
 msgstr ""
 
-msgid "DORA4Metrics|Total projects by DORA performers score"
+msgid "DORA4Metrics|Total projects with DORA performers score"
 msgstr ""
 
 msgid "DORA4Metrics|Value Streams Dashboard"
