@@ -9,6 +9,8 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
   let(:gl_auth) { described_class }
 
   describe '.find_for_git_client' do
+    let(:request) { instance_double(ActionDispatch::Request, ip: 'ip') }
+
     context 'when using personal access token as password' do
       shared_examples 'successfully authenticates' do
         it 'successfully authenticates' do
@@ -17,7 +19,7 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
               personal_access_token.user.username,
               personal_access_token.token,
               project: project,
-              ip: 'ip'
+              request: request
             )
           ).to have_attributes(
             actor: personal_access_token.user,
@@ -35,7 +37,7 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
               personal_access_token.user.username,
               personal_access_token.token,
               project: project,
-              ip: 'ip'
+              request: request
             )
           ).to have_attributes(auth_failure)
         end
@@ -106,7 +108,7 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
     end
 
     context 'when using build token as password' do
-      subject { gl_auth.find_for_git_client(username, build.token, project: project, ip: 'ip') }
+      subject { gl_auth.find_for_git_client(username, build.token, project: project, request: request) }
 
       let(:username) { 'gitlab-ci-token' }
 
