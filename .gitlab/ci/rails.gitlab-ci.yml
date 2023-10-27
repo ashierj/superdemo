@@ -948,39 +948,6 @@ rspec-ee system pg14 clusterwide-db:
 ##########################################
 # EE/FOSS: default branch nightly scheduled jobs #
 
-# PG12
-rspec migration pg12:
-  extends:
-    - .rspec-base-pg12
-    - .rspec-base-migration
-    - .rails:rules:rspec-on-pg12
-    - .rspec-migration-parallel
-
-rspec background_migration pg12:
-  extends:
-    - .rspec-base-pg12
-    - .rspec-base-migration
-    - .rails:rules:rspec-on-pg12
-    - .rspec-background-migration-parallel
-
-rspec unit pg12:
-  extends:
-    - .rspec-base-pg12
-    - .rails:rules:rspec-on-pg12
-    - .rspec-unit-parallel
-
-rspec integration pg12:
-  extends:
-    - .rspec-base-pg12
-    - .rails:rules:rspec-on-pg12
-    - .rspec-integration-parallel
-
-rspec system pg12:
-  extends:
-    - .rspec-base-pg12
-    - .rails:rules:rspec-on-pg12
-    - .rspec-system-parallel
-
 # PG13
 rspec migration pg13:
   extends:
@@ -1051,39 +1018,6 @@ rspec system pg15:
 
 #####################################
 # EE: default branch nightly scheduled jobs #
-
-# PG12
-rspec-ee migration pg12:
-  extends:
-    - .rspec-ee-base-pg12
-    - .rspec-base-migration
-    - .rails:rules:default-branch-schedule-nightly--code-backstage-ee-only
-    - .rspec-ee-migration-parallel
-
-rspec-ee background_migration pg12:
-  extends:
-    - .rspec-ee-base-pg12
-    - .rspec-base-migration
-    - .rails:rules:default-branch-schedule-nightly--code-backstage-ee-only
-    - .rspec-ee-background-migration-parallel
-
-rspec-ee unit pg12:
-  extends:
-    - .rspec-ee-base-pg12
-    - .rails:rules:default-branch-schedule-nightly--code-backstage-ee-only
-    - .rspec-ee-unit-parallel
-
-rspec-ee integration pg12:
-  extends:
-    - .rspec-ee-base-pg12
-    - .rails:rules:default-branch-schedule-nightly--code-backstage-ee-only
-    - .rspec-ee-integration-parallel
-
-rspec-ee system pg12:
-  extends:
-    - .rspec-ee-base-pg12
-    - .rails:rules:default-branch-schedule-nightly--code-backstage-ee-only
-    - .rspec-ee-system-parallel
 
 # PG13
 rspec-ee unit pg13 opensearch1:
