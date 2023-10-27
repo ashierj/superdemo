@@ -106,7 +106,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
         expect(container_repository).to receive(:push_blob).with('sha256:3333', anything, anything)
         expect(container_repository).not_to receive(:push_blob).with('sha256:4444', anything, anything)
         expect(container_repository).not_to receive(:push_blob).with('sha256:5555', anything, anything)
-        expect(container_repository).to receive(:delete_tag_by_digest).with('sha256:2222')
+        expect(container_repository).to receive(:delete_tag).with('sha256:2222')
 
         subject.execute
       end
@@ -116,7 +116,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
           stub_repository_tags_requests(primary_repository_url, {})
           stub_repository_tags_requests(secondary_repository_url, { 'tag-to-remove' => 'sha256:2222' })
 
-          expect(container_repository).to receive(:delete_tag_by_digest).with('sha256:2222')
+          expect(container_repository).to receive(:delete_tag).with('sha256:2222')
 
           subject.execute
         end
