@@ -56,12 +56,14 @@ export const guestOverageConfirmAction = async ({
   currentRoleValue,
   newRoleValue,
   newRoleName,
+  newMemberRoleId,
   group,
   memberId,
   memberType,
 } = {}) => {
   if (
     !gon.features.showOverageOnRolePromotion ||
+    newMemberRoleId !== null || // TODO: this function doesn't support member role assignment yet.
     !shouldShowOverageModal(currentRoleValue, newRoleValue)
   ) {
     return true;
