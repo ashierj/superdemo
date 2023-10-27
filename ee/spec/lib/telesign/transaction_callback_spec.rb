@@ -78,9 +78,11 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
   end
 
   describe '#log' do
+    let_it_be(:phone_number_validation) { create(:phone_number_validation, telesign_reference_xid: 'ref_id') }
+
     let(:callback_valid) { true }
     let(:request_params) { {} }
-    let(:reference_id) { 'ref_id' }
+    let(:reference_id) { phone_number_validation.telesign_reference_xid }
     let(:status) { '200 - Sent' }
     let(:status_updated_on) { 'today' }
     let(:errors) { 'errors' }
@@ -95,8 +97,8 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
 
     it 'logs with the correct payload' do
       expect_next_instance_of(Telesign::TransactionCallbackPayload, request_params) do |response|
-        expect(response).to receive(:reference_id).and_return(reference_id)
-        expect(response).to receive(:status).and_return(status)
+        expect(response).to receive(:reference_id).and_return(reference_id, reference_id)
+        expect(response).to receive(:status).and_return(status, status)
         expect(response).to receive(:status_updated_on).and_return(status_updated_on)
         expect(response).to receive(:errors).and_return(errors)
         expect(response).to receive(:failed_delivery?).and_return(false)
@@ -116,21 +118,20 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
 
       log
 
-      expect_no_snowplow_event(
+      expect_snowplow_event(
         category: 'IdentityVerification::Phone',
-        action: 'telesign_sms_delivery_failed'
+        action: 'telesign_sms_delivery_success',
+        user: phone_number_validation.user,
+        extra: { country_code: phone_number_validation.country, status: status }
       )
     end
 
-    context 'when delivery failed' do
-      let_it_be(:phone_number_validation) { create(:phone_number_validation, telesign_reference_xid: 'ref_id') }
-
+    context 'when status is not 200' do
       let(:status) { '207 - Error delivering SMS to handset (reason unknown)' }
 
       it 'tracks the event with the correct payload' do
         expect_next_instance_of(Telesign::TransactionCallbackPayload, request_params) do |response|
-          ref_id = phone_number_validation.telesign_reference_xid
-          expect(response).to receive(:reference_id).and_return(ref_id, ref_id)
+          expect(response).to receive(:reference_id).and_return(reference_id, reference_id)
           expect(response).to receive(:status).and_return(status, status)
           expect(response).to receive(:status_updated_on).and_return(status_updated_on)
           expect(response).to receive(:errors).and_return(errors)
@@ -155,6 +156,8 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
         expect(Gitlab::AppJsonLogger).not_to receive(:info)
 
         log
+
+        expect_no_snowplow_event
       end
     end
   end
