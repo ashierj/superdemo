@@ -22,6 +22,13 @@ module EE
             iteration
           ].freeze
 
+          PROTECTED_ACCESS_LEVEL_RELATION_NAMES = %i[
+            ProtectedBranch::MergeAccessLevel
+            ProtectedBranch::PushAccessLevel
+            ProtectedBranch::UnprotectAccessLevel
+            ProtectedTag::CreateAccessLevel
+          ].freeze
+
           class_methods do
             extend ::Gitlab::Utils::Override
 
@@ -38,7 +45,23 @@ module EE
 
           override :invalid_relation?
           def invalid_relation?
-            super || iteration_relation_without_group?
+            super || iteration_relation_without_group? || protected_access_level?
+          end
+
+          # ProtectedBranch merge and push access levels cannot be assigned to
+          # users without project administration permissions as they may gain
+          # access to sensitive data like group CI/CD variables.
+          def protected_access_level?
+            user_access_level_relation? && !user_can_admin_importable?
+          end
+
+          def user_access_level_relation?
+            relation_name.in?(PROTECTED_ACCESS_LEVEL_RELATION_NAMES) &&
+              relation_hash['user_id'].present?
+          end
+
+          def user_can_admin_importable?
+            user.can_admin_all_resources? || user.can?(:owner_access, importable)
           end
 
           override :generate_imported_object
