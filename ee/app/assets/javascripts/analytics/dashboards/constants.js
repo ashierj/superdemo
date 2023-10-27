@@ -68,11 +68,11 @@ export const TABLE_METRICS = {
     units: UNITS.DAYS,
   },
   [FLOW_METRICS.ISSUES]: {
-    label: s__('DORA4Metrics|New issues'),
+    label: s__('DORA4Metrics|Issues created'),
     units: UNITS.COUNT,
   },
   [FLOW_METRICS.ISSUES_COMPLETED]: {
-    label: s__('DORA4Metrics|Closed issues'),
+    label: s__('DORA4Metrics|Issues closed'),
     units: UNITS.COUNT,
     valueLimit: {
       max: 10001,
