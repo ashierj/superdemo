@@ -4797,6 +4797,9 @@ msgstr ""
 msgid "All protected branches"
 msgstr ""
 
+msgid "All required approvals must be given."
+msgstr ""
+
 msgid "All threads resolved!"
 msgstr ""
 
@@ -16122,6 +16125,9 @@ msgid "Denied"
 msgstr ""
 
 msgid "Denied authorization of chat nickname %{user_name}."
+msgstr ""
+
+msgid "Denied licenses must be removed or approved."
 msgstr ""
 
 msgid "Deny"
@@ -29610,6 +29616,9 @@ msgid "Merge request dependencies"
 msgstr ""
 
 msgid "Merge request events"
+msgstr ""
+
+msgid "Merge request is blocked by another merge request."
 msgstr ""
 
 msgid "Merge request must be open."
@@ -45873,6 +45882,9 @@ msgid "Status"
 msgstr ""
 
 msgid "Status (optional)"
+msgstr ""
+
+msgid "Status checks must pass."
 msgstr ""
 
 msgid "Status was retried."
