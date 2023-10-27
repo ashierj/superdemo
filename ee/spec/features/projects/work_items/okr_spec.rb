@@ -10,7 +10,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   let(:group) { create(:group, :public) }
   let(:project) { create(:project, :public, namespace: group) }
   let(:objective) { create(:work_item, :objective, project: project) }
-  let(:objective2) { create(:work_item, :objective, project: project) }
   let!(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
   let(:key_result) { create(:work_item, :key_result, project: project) }
   let(:label) { create(:label, project: project, title: "testing-label") }
@@ -93,35 +92,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
   end
 
-  shared_examples 'work items parent' do
-    def set_parent(parent_dropdown, parent_text)
-      parent_dropdown.click
-
-      find('[data-testid="listbox-search-input"] .gl-listbox-search-input',
-        visible: true).send_keys "\"#{parent_text}\""
-      wait_for_requests
-
-      find('.gl-new-dropdown-item').click
-      wait_for_requests
-    end
-
-    let(:parent_dropdown_selector) { 'work-item-parent-listbox' }
-
-    it 'searches and sets or removes parent for the work item' do
-      within_testid('work-item-parent-form') do
-        set_parent(find_by_testid(parent_dropdown_selector), objective2.title)
-
-        expect(find_by_testid(parent_dropdown_selector)).to have_text(objective2.title)
-
-        find_by_testid(parent_dropdown_selector).click
-
-        click_button('Unassign')
-
-        expect(find_by_testid(parent_dropdown_selector)).to have_text('None')
-      end
-    end
-  end
-
   describe 'creating objective from issues list' do
     before do
       visit project_issues_path(project)
@@ -173,7 +143,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it_behaves_like 'work items description'
     it_behaves_like 'work items todos'
     it_behaves_like 'work items award emoji'
-    it_behaves_like 'work items parent'
+    it_behaves_like 'work items parent', :objective
 
     context 'in hierarchy' do
       it 'shows no children', :aggregate_failures do
@@ -410,7 +380,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it_behaves_like 'work items health status'
     it_behaves_like 'work items comments', :key_result
     it_behaves_like 'work items description'
-    it_behaves_like 'work items parent'
+    it_behaves_like 'work items parent', :objective
   end
 
   context 'for guest users' do
