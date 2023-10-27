@@ -10,7 +10,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
       { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false', 'SECRET_DETECTION_DISABLED' => nil }
     end
 
-    subject { service.execute(action, ci_variables, 0) }
+    let(:ci_context) { Gitlab::Ci::Config::External::Context.new(user: user) }
+    let(:user) { create(:user) }
+
+    subject { service.execute(action, ci_variables, ci_context, 0) }
 
     shared_examples 'with template name for scan type' do
       it 'fetches template content using ::TemplateFinder' do
@@ -223,8 +226,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
       end
 
       context 'when scan type is custom', :aggregate_failures do
-        let(:action) { { scan: 'custom', ci_configuration: ci_configuration } }
-
         let(:ci_configuration) do
           <<~CI_CONFIG
           image: busybox:latest
@@ -235,43 +236,118 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           CI_CONFIG
         end
 
-        it {
-          is_expected.to eq(
-            {
-              custom: {
-                script: [
-                  "echo \"Defined in security policy\""
-                ],
-                stage: "build"
-              },
-              image: "busybox:latest"
-            }
-          )
-        }
+        context 'with ci_configuration' do
+          let(:action) { { scan: 'custom', ci_configuration: ci_configuration } }
 
-        context 'with invalid ci_configuration' do
-          let(:ci_configuration) do
-            <<~CI_CONFIG
-            image: busybox:latest
-            custom:
-              stage: build
-              script:
-                - echo "Defined in security policy"
-              sdfsdfsdfsdf
-            CI_CONFIG
-          end
-
-          let(:expected_ci_config) do
-            {
-              'security-policy-ci-0': {
-                'script' => "echo \"Error parsing security policy CI configuration: (<unknown>): could "\
-                            "not find expected ':' while scanning a simple key at line 6 column 3\" && false",
-                'allow_failure' => true
+          it {
+            is_expected.to eq(
+              {
+                custom: {
+                  script: [
+                    "echo \"Defined in security policy\""
+                  ],
+                  stage: "build"
+                },
+                image: "busybox:latest"
               }
+            )
+          }
+
+          context 'with invalid ci_configuration' do
+            let(:ci_configuration) do
+              <<~CI_CONFIG
+              image: busybox:latest
+              custom:
+                stage: build
+                script:
+                  - echo "Defined in security policy"
+                sdfsdfsdfsdf
+              CI_CONFIG
+            end
+
+            let(:expected_ci_config) do
+              {
+                'security-policy-ci-0': {
+                  'script' => "echo \"Error parsing security policy CI configuration: (<unknown>): could "\
+                              "not find expected ':' while scanning a simple key at line 6 column 3\" && false",
+                  'allow_failure' => true
+                }
+              }
+            end
+
+            it { is_expected.to eq(expected_ci_config) }
+          end
+        end
+
+        context 'with ci_configuration_path' do
+          let(:project) do
+            create(
+              :project,
+              :custom_repo,
+              :public,
+              files: {
+                'ci-file.yaml' => ci_configuration.to_s
+              }
+            )
+          end
+
+          let(:action) do
+            {
+              scan: 'custom',
+              ci_configuration_path: { project: project.full_path, file: 'ci-file.yaml', ref: 'master' }
             }
           end
 
-          it { is_expected.to eq(expected_ci_config) }
+          it {
+            is_expected.to eq(
+              {
+                custom: {
+                  script: [
+                    "echo \"Defined in security policy\""
+                  ],
+                  stage: "build"
+                },
+                image: "busybox:latest"
+              }
+            )
+          }
+        end
+
+        context 'when project is private' do
+          let(:project) do
+            create(
+              :project,
+              :custom_repo,
+              files: {
+                'ci-file.yaml' => ci_configuration.to_s
+              }
+            )
+          end
+
+          let(:action) do
+            {
+              scan: 'custom',
+              ci_configuration_path: { project: project.full_path, file: 'ci-file.yaml', ref: 'master' }
+            }
+          end
+
+          before do
+            project.add_owner(user)
+          end
+
+          it do
+            is_expected.to eq(
+              {
+                custom: {
+                  script: [
+                    "echo \"Defined in security policy\""
+                  ],
+                  stage: "build"
+                },
+                image: "busybox:latest"
+              }
+            )
+          end
         end
       end
     end

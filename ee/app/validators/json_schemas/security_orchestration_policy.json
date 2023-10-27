@@ -277,6 +277,20 @@
                 },
                 "ci_configuration": {
                   "type": "string"
+                },
+                "ci_configuration_path": {
+                  "type": "object",
+                  "properties": {
+                    "project": {
+                      "type": "string"
+                    },
+                    "file": {
+                      "type": "string"
+                    },
+                    "ref": {
+                      "type": "string"
+                    }
+                  }
                 }
               },
               "allOf": [
@@ -289,8 +303,17 @@
                     }
                   },
                   "then": {
-                    "required": [
-                      "ci_configuration"
+                    "anyOf": [
+                      {
+                        "required": [
+                          "ci_configuration"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "ci_configuration_path"
+                        ]
+                      }
                     ],
                     "maxProperties": 2
                   }

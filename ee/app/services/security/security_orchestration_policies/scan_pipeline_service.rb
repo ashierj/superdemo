@@ -9,10 +9,11 @@ module Security
         }
       }.freeze
 
-      attr_reader :project, :base_variables
+      attr_reader :project, :base_variables, :context
 
-      def initialize(project = nil, base_variables = SCAN_VARIABLES)
-        @project = project
+      def initialize(context, base_variables = SCAN_VARIABLES)
+        @project = context.project
+        @context = context
         @base_variables = base_variables
       end
 
@@ -51,7 +52,7 @@ module Security
       end
 
       def custom_scan?(action)
-        custom_ci_yaml_enabled? && action[:ci_configuration].present? && action[:scan] == 'custom'
+        custom_ci_yaml_enabled? && action[:scan] == 'custom'
       end
 
       def prepare_on_demand_policy_configuration(actions)
@@ -69,7 +70,7 @@ module Security
 
         ::Security::SecurityOrchestrationPolicies::CiConfigurationService
           .new
-          .execute(action, scan_variables(action).merge(action_variables), index)
+          .execute(action, scan_variables(action).merge(action_variables), context, index)
           .deep_symbolize_keys
       end
 

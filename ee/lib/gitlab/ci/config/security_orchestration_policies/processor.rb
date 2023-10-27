@@ -12,9 +12,10 @@ module Gitlab
           DEFAULT_SCAN_POLICY_STAGE = 'scan-policies'
           DEFAULT_STAGES = Gitlab::Ci::Config::Entry::Stages.default
 
-          def initialize(config, project, ref, source)
+          def initialize(config, context, ref, source)
             @config = config
-            @project = project
+            @context = context
+            @project = context.project
             @ref = ref
             @source = source
             @start = Time.current
@@ -34,8 +35,7 @@ module Gitlab
 
           private
 
-          attr_reader :project,
-            :ref
+          attr_reader :project, :ref, :context
 
           def valid_security_orchestration_policy_configurations
             @valid_security_orchestration_policy_configurations ||= ::Gitlab::Security::Orchestration::ProjectPolicyConfigurations.new(@project).all
@@ -50,7 +50,7 @@ module Gitlab
           end
 
           def scan_templates
-            @scan_templates ||= ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(project).execute(active_scan_actions)
+            @scan_templates ||= ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(context).execute(active_scan_actions)
           end
 
           ## Add `dast` to the end of stages if `dast` is not in stages already
