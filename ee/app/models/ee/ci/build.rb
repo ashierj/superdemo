@@ -218,15 +218,19 @@ module EE
         project
       end
 
-      override :pages_path_prefix
-      def pages_path_prefix
-        return unless pages_generator?
-        return unless options[:pages_path_prefix].present?
-        return unless ::Gitlab::Pages.multiple_versions_enabled_for?(project)
+      def pages
+        return {} unless pages_generator?
 
-        ExpandVariables.expand(options[:pages_path_prefix], -> { simple_variables })
+        (options&.dig(:pages) || {}).tap do |pages_options|
+          if ::Gitlab::Pages.multiple_versions_enabled_for?(project)
+            pages_options[:path_prefix] = ExpandVariables.expand(pages_options[:path_prefix], -> {
+              variables.sort_and_expand_all
+            })
+          else
+            pages_options.delete(:path_prefix)
+          end
+        end
       end
-      strong_memoize_attr :pages_path_prefix
 
       private
 

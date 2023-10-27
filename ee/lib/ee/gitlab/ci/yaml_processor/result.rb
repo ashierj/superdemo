@@ -16,8 +16,7 @@ module EE
             super.deep_merge(
               {
                 options: {
-                  dast_configuration: job[:dast_configuration],
-                  pages_path_prefix: job[:pages_path_prefix]
+                  dast_configuration: job[:dast_configuration]
                 }.compact,
                 secrets: job[:secrets]
               }.compact
