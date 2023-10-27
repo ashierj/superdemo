@@ -6537,7 +6537,7 @@ Input type: `SecurityPolicyProjectAssignInput`
 
 ### `Mutation.securityPolicyProjectCreate`
 
-Creates and assigns a security policy project for the given project (`full_path`).
+Creates and assigns a security policy project for the given project or group (`full_path`).
 
 Input type: `SecurityPolicyProjectCreateInput`
 
