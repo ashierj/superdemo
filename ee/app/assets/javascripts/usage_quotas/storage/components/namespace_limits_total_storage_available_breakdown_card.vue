@@ -1,6 +1,7 @@
 <script>
 import { GlIcon, GlLink, GlCard, GlSkeletonLoader } from '@gitlab/ui';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
+import { sprintf, s__ } from '~/locale';
 import {
   STORAGE_STATISTICS_PURCHASED_STORAGE,
   STORAGE_STATISTICS_TOTAL_STORAGE,
@@ -9,7 +10,7 @@ import {
 import NumberToHumanSize from './number_to_human_size.vue';
 
 /**
- * TotalStorageAvailableBreakdownCard
+ * NamespaceLimitsTotalStorageAvailableBreakdownCard
  *
  * This card is used on Namespace Usage Quotas
  * when the namespace has Namespace-level storage limits
@@ -18,14 +19,10 @@ import NumberToHumanSize from './number_to_human_size.vue';
  */
 
 export default {
-  name: 'TotalStorageAvailableBreakdownCard',
+  name: 'NamespaceLimitsTotalStorageAvailableBreakdownCard',
   components: { GlIcon, GlLink, GlCard, GlSkeletonLoader, NumberToHumanSize },
   inject: ['namespacePlanName'],
   props: {
-    planStorageDescription: {
-      type: String,
-      required: true,
-    },
     includedStorage: {
       type: Number,
       required: true,
@@ -41,6 +38,13 @@ export default {
     loading: {
       type: Boolean,
       required: true,
+    },
+  },
+  computed: {
+    planStorageDescription() {
+      return sprintf(s__('UsageQuota|Included in %{planName} subscription'), {
+        planName: this.namespacePlanName,
+      });
     },
   },
   i18n: {

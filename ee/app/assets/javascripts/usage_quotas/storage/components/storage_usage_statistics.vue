@@ -1,15 +1,15 @@
 <script>
 import { GlSprintf, GlLink, GlButton, GlModalDirective } from '@gitlab/ui';
-import { sprintf, s__ } from '~/locale';
-import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
 import { BUY_STORAGE, NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from '../constants';
 import LimitedAccessModal from '../../components/limited_access_modal.vue';
-import StorageStatisticsCard from './storage_statistics_card.vue';
-import TotalStorageAvailableBreakdownCard from './total_storage_available_breakdown_card.vue';
-import ExcessStorageBreakdownCard from './excess_storage_breakdown_card.vue';
+import NamespaceLimitsStorageUsageOverviewCard from './namespace_limits_storage_usage_overview_card.vue';
+import NamespaceLimitsTotalStorageAvailableBreakdownCard from './namespace_limits_total_storage_available_breakdown_card.vue';
+import StorageUsageOverviewCard from './storage_usage_overview_card.vue';
+import ProjectLimitsExcessStorageBreakdownCard from './project_limits_excess_storage_breakdown_card.vue';
+import NumberToHumanSize from './number_to_human_size.vue';
 
 export default {
   components: {
@@ -17,9 +17,11 @@ export default {
     GlLink,
     GlButton,
     LimitedAccessModal,
-    StorageStatisticsCard,
-    TotalStorageAvailableBreakdownCard,
-    ExcessStorageBreakdownCard,
+    NamespaceLimitsStorageUsageOverviewCard,
+    NamespaceLimitsTotalStorageAvailableBreakdownCard,
+    StorageUsageOverviewCard,
+    ProjectLimitsExcessStorageBreakdownCard,
+    NumberToHumanSize,
   },
   directives: {
     GlModalDirective,
@@ -29,6 +31,7 @@ export default {
     'buyAddonTargetAttr',
     'namespacePlanName',
     'isUsingProjectEnforcement',
+    'isUsingNamespaceEnforcement',
     'namespacePlanStorageIncluded',
     'namespaceId',
   ],
@@ -73,48 +76,12 @@ export default {
       isLimitedAccessModalShown: false,
     };
   },
+  usageQuotasHelpPaths,
   i18n: {
     purchaseButtonText: BUY_STORAGE,
     namespaceStorageOverviewSubtitle: NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
   },
   computed: {
-    enforcementTypei18n() {
-      const namespaceEnforcementTypeTitle = s__('UsageQuota|Included in %{planName} subscription');
-      const namespaceEnforcementTypeSubtitle = s__(
-        'UsageQuota|This namespace has %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}',
-      );
-      const projectEnforcementTypeTitle = s__(
-        'UsageQuota|Storage per project included in %{planName} subscription',
-      );
-      const projectEnforcementTypeSubtitle = s__(
-        'UsageQuota|Projects under this namespace have %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}',
-      );
-
-      const i18nObject = this.isUsingProjectEnforcement
-        ? {
-            title: sprintf(projectEnforcementTypeTitle, {
-              planName: this.namespacePlanName,
-            }),
-            subtitle: sprintf(projectEnforcementTypeSubtitle, {
-              planLimit: numberToHumanSize(this.namespacePlanStorageIncluded, 1),
-            }),
-            learnMoreUrl: usageQuotasHelpPaths.usageQuotasProjectStorageLimit,
-          }
-        : {
-            title: sprintf(namespaceEnforcementTypeTitle, {
-              planName: this.namespacePlanName,
-            }),
-            subtitle: sprintf(namespaceEnforcementTypeSubtitle, {
-              planLimit: numberToHumanSize(this.namespacePlanStorageIncluded, 1),
-            }),
-            learnMoreUrl: usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit,
-          };
-
-      return {
-        ...i18nObject,
-        subtitle: this.namespacePlanStorageIncluded ? i18nObject.subtitle : '',
-      };
-    },
     totalStorage() {
       return this.namespacePlanStorageIncluded + this.additionalPurchasedStorageSize;
     },
@@ -166,30 +133,55 @@ export default {
       </template>
     </div>
     <p class="gl-mb-0">
-      <gl-sprintf :message="enforcementTypei18n.subtitle">
-        <template #link="{ content }">
-          <gl-link :href="enforcementTypei18n.learnMoreUrl">{{ content }}</gl-link>
-        </template>
-      </gl-sprintf>
+      <template v-if="namespacePlanStorageIncluded && isUsingNamespaceEnforcement">
+        <gl-sprintf :message="s__('UsageQuota|This namespace has %{planLimit} of storage.')">
+          <template #planLimit
+            ><number-to-human-size :value="namespacePlanStorageIncluded"
+          /></template>
+        </gl-sprintf>
+        <gl-link :href="$options.usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit">{{
+          s__('UsageQuota|How are limits applied?')
+        }}</gl-link>
+      </template>
+
+      <template v-if="namespacePlanStorageIncluded && isUsingProjectEnforcement">
+        <gl-sprintf
+          :message="s__('UsageQuota|Projects under this namespace have %{planLimit} of storage.')"
+        >
+          <template #planLimit
+            ><number-to-human-size :value="namespacePlanStorageIncluded"
+          /></template>
+        </gl-sprintf>
+        <gl-link :href="$options.usageQuotasHelpPaths.usageQuotasProjectStorageLimit">{{
+          s__('UsageQuota|How are limits applied?')
+        }}</gl-link>
+      </template>
     </p>
     <div class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5 gl-py-4">
-      <storage-statistics-card
-        :plan-storage-description="enforcementTypei18n.title"
+      <namespace-limits-storage-usage-overview-card
+        v-if="isUsingNamespaceEnforcement"
         :used-storage="usedStorage"
         :total-storage="totalStorage"
         :loading="loading"
         data-testid="namespace-usage-total"
       />
+
+      <storage-usage-overview-card
+        v-else
+        :used-storage="usedStorage"
+        :loading="loading"
+        data-testid="namespace-usage-total"
+      />
+
       <template v-if="namespacePlanName">
-        <excess-storage-breakdown-card
+        <project-limits-excess-storage-breakdown-card
           v-if="isUsingProjectEnforcement"
           :purchased-storage="additionalPurchasedStorageSize"
           :limited-access-mode-enabled="shouldShowLimitedAccessModal"
           :loading="loading"
         />
-        <total-storage-available-breakdown-card
+        <namespace-limits-total-storage-available-breakdown-card
           v-else
-          :plan-storage-description="enforcementTypei18n.title"
           :included-storage="namespacePlanStorageIncluded"
           :purchased-storage="additionalPurchasedStorageSize"
           :total-storage="totalStorage"

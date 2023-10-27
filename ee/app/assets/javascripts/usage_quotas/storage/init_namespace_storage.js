@@ -3,7 +3,7 @@ import VueApollo from 'vue-apollo';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import { storageTypeHelpPaths as helpLinks } from '~/usage_quotas/storage/constants';
 import apolloProvider from 'ee/usage_quotas/shared/provider';
-import { PROJECT_ENFORCEMENT_TYPE } from './constants';
+import { NAMESPACE_ENFORCEMENT_TYPE, PROJECT_ENFORCEMENT_TYPE } from './constants';
 import NamespaceStorageApp from './components/namespace_storage_app.vue';
 
 Vue.use(VueApollo);
@@ -46,6 +46,7 @@ export default () => {
       enforcementType,
       totalRepositorySizeExcess: totalRepositorySizeExcess && Number(totalRepositorySizeExcess),
       isUsingProjectEnforcement: enforcementType === PROJECT_ENFORCEMENT_TYPE,
+      isUsingNamespaceEnforcement: enforcementType === NAMESPACE_ENFORCEMENT_TYPE,
       helpLinks,
     },
     render(createElement) {
