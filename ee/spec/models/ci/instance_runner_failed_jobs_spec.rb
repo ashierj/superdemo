@@ -148,6 +148,22 @@ RSpec.describe Ci::InstanceRunnerFailedJobs, :freeze_time, :clean_gitlab_redis_s
             end
           end
         end
+
+        context 'when job with deleted runner is added' do
+          before do
+            deleted_runner.destroy!
+
+            described_class.track(job_without_runner.reload)
+          end
+
+          let_it_be(:deleted_runner) { create(:ci_runner, :instance) }
+          let_it_be(:job_without_runner) do
+            create(:ci_build, created_at: 5.minutes.ago, finished_at: 5.minutes.ago,
+              **job_args.merge(runner: deleted_runner))
+          end
+
+          it { is_expected.to be_empty }
+        end
       end
     end
 
