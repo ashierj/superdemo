@@ -53,7 +53,7 @@ module EE
         end
 
         class CiBuild < ::Ci::ApplicationRecord # rubocop:disable Style/Documentation
-          self.table_name = 'ci_builds'
+          self.table_name = 'p_ci_builds'
           self.inheritance_column = :_type_disabled
           self.primary_key = :id
 

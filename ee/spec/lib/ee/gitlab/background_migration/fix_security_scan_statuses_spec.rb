@@ -6,7 +6,7 @@ RSpec.describe Gitlab::BackgroundMigration::FixSecurityScanStatuses, feature_cat
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }
   let(:pipelines) { table(:ci_pipelines, database: :ci) }
-  let(:builds) { table(:ci_builds, database: :ci) { |model| model.primary_key = :id } }
+  let(:builds) { table(:p_ci_builds, database: :ci) { |model| model.primary_key = :id } }
   let(:security_scans) { table(:security_scans) }
 
   let(:namespace) { namespaces.create!(name: "foo", path: "bar") }
