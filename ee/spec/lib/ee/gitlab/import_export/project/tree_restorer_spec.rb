@@ -163,6 +163,135 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
     end
   end
 
+  describe 'protected branches' do
+    let_it_be(:project) { create(:project, :in_group, name: 'project', path: 'project') }
+    let(:user) { create(:user) }
+
+    subject(:protected_branch) { project.protected_branches.find_by(name: "master") }
+
+    context 'when user is admin', :enable_admin_mode do
+      before do
+        user.update!(admin: true)
+        setup_import_export_config('complex', 'ee')
+        restored_project_json
+      end
+
+      it 'creates all access levels' do
+        expect(project.protected_branches.count).to eq(1)
+
+        expect(protected_branch.merge_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.merge_access_levels.by_user(user).count).to eq(1)
+
+        expect(protected_branch.push_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.push_access_levels.by_user(user).count).to eq(1)
+
+        expect(protected_branch.unprotect_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.unprotect_access_levels.by_user(user).count).to eq(1)
+      end
+    end
+
+    context 'when user is the group owner' do
+      before do
+        project.group.add_owner(user)
+        setup_import_export_config('complex', 'ee')
+        restored_project_json
+      end
+
+      it 'creates all access levels' do
+        expect(project.protected_branches.count).to eq(1)
+
+        expect(protected_branch.merge_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.merge_access_levels.by_user(user).count).to eq(1)
+
+        expect(protected_branch.push_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.push_access_levels.by_user(user).count).to eq(1)
+
+        expect(protected_branch.unprotect_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.unprotect_access_levels.by_user(user).count).to eq(1)
+      end
+    end
+
+    context 'when user is maintainer' do
+      before do
+        project.group.add_maintainer(user)
+        setup_import_export_config('complex', 'ee')
+        restored_project_json
+      end
+
+      it 'excludes access levels assigned to users' do
+        expect(project.protected_branches.count).to eq(1)
+
+        expect(protected_branch.merge_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.merge_access_levels.for_user.count).to eq(0)
+
+        expect(protected_branch.push_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.push_access_levels.for_user.count).to eq(0)
+
+        expect(protected_branch.unprotect_access_levels.for_role.count).to eq(1)
+        expect(protected_branch.unprotect_access_levels.for_user.count).to eq(0)
+      end
+    end
+  end
+
+  describe 'protected tags' do
+    let_it_be(:project) { create(:project, :in_group, name: 'project', path: 'project') }
+    let(:user) { create(:user) }
+
+    context 'when user is admin', :enable_admin_mode do
+      before do
+        user.update!(admin: true)
+        setup_import_export_config('complex', 'ee')
+        restored_project_json
+      end
+
+      it 'creates all access levels' do
+        project = Project.find_by_path('project')
+
+        protected_tag = project.protected_tags.find_by(name: "v*")
+
+        expect(project.protected_tags.count).to eq(1)
+        expect(protected_tag.create_access_levels.for_role.count).to eq(1)
+        expect(protected_tag.create_access_levels.by_user(user).count).to eq(1)
+      end
+    end
+
+    context 'when user is the group owner' do
+      before do
+        project.group.add_owner(user)
+        setup_import_export_config('complex', 'ee')
+        restored_project_json
+      end
+
+      it 'creates all access levels' do
+        project = Project.find_by_path('project')
+
+        protected_tag = project.protected_tags.find_by(name: "v*")
+
+        expect(project.protected_tags.count).to eq(1)
+        expect(protected_tag.create_access_levels.for_role.count).to eq(1)
+        expect(protected_tag.create_access_levels.by_user(user).count).to eq(1)
+      end
+    end
+
+    context 'when user is maintainer' do
+      before do
+        project.group.add_maintainer(user)
+        setup_import_export_config('complex', 'ee')
+        restored_project_json
+      end
+
+      it 'excludes access levels assigned to users' do
+        project = Project.find_by_path('project')
+
+        protected_tag = project.protected_tags.find_by(name: "v*")
+
+        expect(project.protected_tags.count).to eq(1)
+        expect(protected_tag.create_access_levels.for_role.count).to eq(1)
+        expect(protected_tag.create_access_levels.for_user.count).to eq(0)
+      end
+    end
+  end
+
   describe 'boards' do
     let_it_be(:project) { create(:project, :builds_enabled, :issues_disabled, name: 'project', path: 'project') }
 
