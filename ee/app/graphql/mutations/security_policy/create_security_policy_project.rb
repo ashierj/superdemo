@@ -4,7 +4,7 @@ module Mutations
   module SecurityPolicy
     class CreateSecurityPolicyProject < BaseMutation
       graphql_name 'SecurityPolicyProjectCreate'
-      description 'Creates and assigns a security policy project for the given project (`full_path`)'
+      description 'Creates and assigns a security policy project for the given project or group (`full_path`)'
 
       include FindsProjectOrGroupForSecurityPolicies
 
