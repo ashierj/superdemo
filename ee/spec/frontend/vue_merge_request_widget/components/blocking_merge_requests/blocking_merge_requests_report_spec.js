@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { GlSprintf } from '@gitlab/ui';
 import { shallowMount, config } from '@vue/test-utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -83,6 +84,9 @@ describe('BlockingMergeRequestsReport', () => {
         mr: {},
       },
       apolloProvider,
+      stubs: {
+        ReportSection,
+      },
     });
   };
 
@@ -140,9 +144,10 @@ describe('BlockingMergeRequestsReport', () => {
 
       await waitForPromises();
 
-      expect(wrapper.vm.blockedByText).toBe(
-        'Depends on 2 merge requests being merged %{strongStart}(1 closed)%{strongEnd}',
+      expect(wrapper.findComponent(GlSprintf).attributes('message')).toContain(
+        'Depends on 2 merge requests being merged',
       );
+      expect(wrapper.findComponent(GlSprintf).attributes('message')).toContain('(1 closed)');
     });
 
     it('does not contain closed information if no blocking MRs are closed', async () => {
@@ -151,7 +156,7 @@ describe('BlockingMergeRequestsReport', () => {
 
       await waitForPromises();
 
-      expect(wrapper.vm.blockedByText).not.toContain('closed');
+      expect(wrapper.findComponent(GlSprintf).attributes('message')).not.toContain('closed');
     });
 
     it('states when all blocking mrs are closed', async () => {
@@ -160,9 +165,19 @@ describe('BlockingMergeRequestsReport', () => {
 
       await waitForPromises();
 
-      expect(wrapper.vm.blockedByText).toEqual(
+      expect(wrapper.findComponent(GlSprintf).attributes('message')).toContain(
         'Depends on %{strongStart}1 closed%{strongEnd} merge request.',
       );
+    });
+
+    it('when all blocking mrs are merged', async () => {
+      blockingMergeRequests.visibleMergeRequests = [createMergeRequest({ state: 'merged' })];
+      createComponent();
+
+      await waitForPromises();
+
+      expect(wrapper.text()).toContain('All merge request dependencies have been merged');
+      expect(wrapper.text()).toContain('(3 merged)');
     });
   });
 
