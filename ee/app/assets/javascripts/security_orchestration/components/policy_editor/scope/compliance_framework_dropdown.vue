@@ -11,6 +11,7 @@ export default {
     complianceFrameworkCreateButton: s__('SecurityOrchestration|Create new framework label'),
     complianceFrameworkHeader: s__('SecurityOrchestration|Select frameworks'),
     complianceFrameworkPlaceholder: s__('SecurityOrchestration|Choose framework labels'),
+    errorMessage: s__('SecurityOrchestration|At least one framework label should be selected'),
     noFrameworksText: s__('SecurityOrchestration|No compliance frameworks'),
     selectAllLabel: __('Select all'),
     clearAllLabel: __('Clear all'),
@@ -54,6 +55,11 @@ export default {
       type: Array,
       required: false,
       default: () => [],
+    },
+    showError: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -100,6 +106,12 @@ export default {
     loading() {
       return this.$apollo.queries.complianceFrameworks?.loading;
     },
+    listBoxCategory() {
+      return this.showError ? 'secondary' : 'primary';
+    },
+    listBoxVariant() {
+      return this.showError ? 'danger' : 'default';
+    },
   },
   created() {
     this.debouncedSearch = debounce(this.setSearchTerm, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
@@ -131,11 +143,13 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="gl-relative">
     <gl-collapsible-listbox
       block
       multiple
       searchable
+      :category="listBoxCategory"
+      :variant="listBoxVariant"
       :header-text="$options.i18n.complianceFrameworkHeader"
       :loading="loading"
       :no-results-text="$options.i18n.noFrameworksText"
@@ -172,6 +186,14 @@ export default {
         </div>
       </template>
     </gl-collapsible-listbox>
+
+    <p
+      v-if="showError"
+      class="gl-text-red-600 gl-absolute gl-white-space-nowrap"
+      data-testid="error-message"
+    >
+      {{ $options.i18n.errorMessage }}
+    </p>
 
     <compliance-framework-form-modal ref="formModal" @change="onComplianceFrameworkCreated" />
   </div>
