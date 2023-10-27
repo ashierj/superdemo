@@ -235,11 +235,11 @@ export const DORA_PERFORMERS_SCORE_METRICS = [
 ];
 
 export const DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE = s__(
-  'DORA4Metrics|Total projects by DORA performers score',
+  'DORA4Metrics|Total projects with DORA performers score',
 );
 
 export const DORA_PERFORMERS_SCORE_PANEL_TITLE_WITH_PROJECTS_COUNT = s__(
-  'DORA4Metrics|Total projects (%{count}) by DORA performers score for %{groupName} group',
+  'DORA4Metrics|Total projects (%{count}) with DORA performers score for %{groupName} group',
 );
 
 export const DORA_PERFORMERS_SCORE_TOOLTIP_PROJECTS_COUNT_TITLE = (count) =>
