@@ -34,8 +34,8 @@ module Telesign
     end
 
     def failed_delivery?
-      code = payload.dig('status', 'code')
-      code != 200
+      status_code = payload.dig('status', 'code')
+      status_code != 200
     end
   end
 end

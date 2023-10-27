@@ -37,17 +37,18 @@ module Telesign
         telesign_errors: payload.errors
       )
 
-      track_delivery_failure if payload.failed_delivery?
+      track_status_update_event
     end
 
-    def track_delivery_failure
+    def track_status_update_event
       record = Users::PhoneNumberValidation.by_reference_id(payload.reference_id)
-
       return unless record
+
+      event = payload.failed_delivery? ? 'telesign_sms_delivery_failed' : 'telesign_sms_delivery_success'
 
       Gitlab::Tracking.event(
         'IdentityVerification::Phone',
-        'telesign_sms_delivery_failed',
+        event,
         user: record.user,
         extra: { country_code: record.country, status: payload.status }
       )

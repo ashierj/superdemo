@@ -450,6 +450,18 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
         end
       end
     end
+
+    context 'when feature is enabled through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it 'enqueues a worker job' do
+        expect(::Groups::ExportMembershipsWorker).to receive(:perform_async).once
+
+        get :export_csv, params: { group_id: group }
+      end
+    end
   end
 
   describe 'POST #resend_invite' do

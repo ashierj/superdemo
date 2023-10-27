@@ -163,7 +163,6 @@ module GitlabSubscriptions
       incident_timeline_view
       oncall_schedules
       escalation_policies
-      export_user_permissions
       zentao_issues_integration
       coverage_check_approval_rule
       issuable_resource_links
@@ -281,6 +280,7 @@ module GitlabSubscriptions
       email_additional_text
       custom_file_templates_for_namespace
       incident_sla
+      export_user_permissions
     ].freeze
 
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[

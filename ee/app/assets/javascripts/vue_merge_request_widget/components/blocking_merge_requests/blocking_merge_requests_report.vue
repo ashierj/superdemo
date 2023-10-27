@@ -137,7 +137,7 @@ export default {
       <span class="text-secondary gl-ml-1">
         {{
           sprintf(__('(%{mrCount} merged)'), {
-            mrCount: blockingMergeRequests.total_count - unmergedBlockingMergeRequests.length,
+            mrCount: blockingMergeRequests.totalCount - unmergedBlockingMergeRequests.length,
           })
         }}
       </span>
