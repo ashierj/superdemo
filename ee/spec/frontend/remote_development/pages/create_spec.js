@@ -19,10 +19,10 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { logError } from '~/lib/logger';
 import { createAlert } from '~/alert';
 import workspaceCreateMutation from 'ee/remote_development/graphql/mutations/workspace_create.mutation.graphql';
-import userWorkspacesQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
+import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 import {
   GET_PROJECT_DETAILS_QUERY_RESULT,
-  USER_WORKSPACES_QUERY_RESULT,
+  USER_WORKSPACES_LIST_QUERY_RESULT,
   WORKSPACE_QUERY_RESULT,
   WORKSPACE_CREATE_MUTATION_RESULT,
 } from '../mock_data';
@@ -60,7 +60,7 @@ describe('remote_development/pages/create.vue', () => {
   const readCachedWorkspaces = () => {
     const apolloClient = mockApollo.clients.defaultClient;
     const result = apolloClient.readQuery({
-      query: userWorkspacesQuery,
+      query: userWorkspacesListQuery,
       variables: {
         before: null,
         after: null,
@@ -74,7 +74,7 @@ describe('remote_development/pages/create.vue', () => {
   const writeCachedWorkspaces = (workspaces) => {
     const apolloClient = mockApollo.clients.defaultClient;
     apolloClient.writeQuery({
-      query: userWorkspacesQuery,
+      query: userWorkspacesListQuery,
       variables: {
         before: null,
         after: null,
@@ -82,10 +82,10 @@ describe('remote_development/pages/create.vue', () => {
       },
       data: {
         currentUser: {
-          ...USER_WORKSPACES_QUERY_RESULT.data.currentUser,
+          ...USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser,
           workspaces: {
             nodes: workspaces,
-            pageInfo: USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.pageInfo,
+            pageInfo: USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.pageInfo,
           },
         },
       },

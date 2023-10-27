@@ -14,7 +14,7 @@ import userWorkspacesProjectsNamesQuery from 'ee/remote_development/graphql/quer
 import { ROUTES } from 'ee/remote_development/constants';
 import { populateWorkspacesWithProjectNames } from 'ee/remote_development/services/utils';
 import {
-  USER_WORKSPACES_QUERY_RESULT,
+  USER_WORKSPACES_LIST_QUERY_RESULT,
   USER_WORKSPACES_QUERY_EMPTY_RESULT,
   USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
 } from '../mock_data';
@@ -32,7 +32,9 @@ describe('remote_development/pages/list.vue', () => {
   let userWorkspacesProjectNamesQueryHandler;
 
   const buildMockApollo = () => {
-    userWorkspacesListQueryHandler = jest.fn().mockResolvedValueOnce(USER_WORKSPACES_QUERY_RESULT);
+    userWorkspacesListQueryHandler = jest
+      .fn()
+      .mockResolvedValueOnce(USER_WORKSPACES_LIST_QUERY_RESULT);
     userWorkspacesProjectNamesQueryHandler = jest
       .fn()
       .mockResolvedValueOnce(USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT);
@@ -104,7 +106,7 @@ describe('remote_development/pages/list.vue', () => {
     it('provides workspaces data to the workspaces table', () => {
       expect(findTable(wrapper).props('workspaces')).toEqual(
         populateWorkspacesWithProjectNames(
-          USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes,
+          USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes,
           USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
         ),
       );

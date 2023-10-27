@@ -2,7 +2,7 @@
 
 module Resolvers
   module RemoteDevelopment
-    class WorkspacesResolver < ::Resolvers::BaseResolver
+    class WorkspacesForCurrentUserResolver < ::Resolvers::BaseResolver
       include ResolvesIds
       include Gitlab::Graphql::Authorize::AuthorizeResource
 
@@ -26,9 +26,9 @@ module Resolvers
           raise_resource_not_available_error! "'remote_development' licensed feature is not available"
         end
 
-        ::RemoteDevelopment::WorkspacesFinder.new(
-          current_user,
-          {
+        ::RemoteDevelopment::WorkspacesForUserFinder.new(
+          user: current_user,
+          params: {
             ids: resolve_ids(args[:ids]),
             project_ids: resolve_ids(args[:project_ids]),
             include_actual_states: args[:include_actual_states]
