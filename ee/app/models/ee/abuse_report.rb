@@ -26,7 +26,7 @@ module EE
     def reported_content
       return super unless report_type == :epic
 
-      group.epics.iid_in(route_hash[:id]).pick(:description_html)
+      reported_group.epics.iid_in(route_hash[:id]).pick(:description_html)
     end
 
     private
