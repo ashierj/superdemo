@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Pending group memberships', :js, feature_category: :groups_and_projects do
-  let_it_be(:developer) { create(:user, :no_super_sidebar) }
+  let_it_be(:developer) { create(:user) }
 
   before do
     sign_in(developer)
@@ -144,7 +144,7 @@ RSpec.describe 'Pending group memberships', :js, feature_category: :groups_and_p
       visit project_path(project)
 
       expect(page).to have_content project.name
-      expect(page).to have_content 'Project information'
+      expect(page).to have_content 'Manage'
       expect(page).to have_content 'Issues'
       expect(page).not_to have_content 'Settings'
     end

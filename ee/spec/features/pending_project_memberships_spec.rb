@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Pending project memberships', :js, feature_category: :groups_and_projects do
-  let_it_be(:developer) { create(:user, :no_super_sidebar) }
+  let_it_be(:developer) { create(:user) }
 
   before do
     sign_in(developer)
@@ -58,9 +58,9 @@ RSpec.describe 'Pending project memberships', :js, feature_category: :groups_and
     it 'a pending project member sees a public project as if not a member' do
       visit project_path(project)
 
-      expect(page).to have_content "Project information"
-      expect(page).not_to have_content "Security and Compliance"
-      expect(page).not_to have_content "Infrastructure"
+      expect(page).to have_content "Plan"
+      expect(page).to have_content "Code"
+      expect(page).not_to have_content "Secure"
     end
 
     it "a pending project member sees the project's public group as if not a member" do
