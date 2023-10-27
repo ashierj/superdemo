@@ -41,6 +41,7 @@ const validGuestParams = {
   currentRoleValue: MEMBER_ACCESS_LEVELS.GUEST,
   newRoleValue: 30,
   newRoleName: 'Reporter',
+  newMemberRoleId: null,
   group: {
     name: 'GroupName',
     path: 'GroupPath/',
@@ -56,7 +57,7 @@ const validDevParams = {
 
 describe('guestOverageConfirmAction', () => {
   beforeEach(() => {
-    gon.features = {};
+    gon.features = { showOverageOnRolePromotion: true };
   });
 
   describe('when overage modal should not be shown', () => {
@@ -67,6 +68,17 @@ describe('guestOverageConfirmAction', () => {
 
       it('returns true', async () => {
         const confirmReturn = await guestOverageConfirmAction(validGuestParams);
+
+        expect(confirmReturn).toBe(true);
+      });
+    });
+
+    describe('when a new member role is not null', () => {
+      it('returns true', async () => {
+        const confirmReturn = await guestOverageConfirmAction({
+          ...validGuestParams,
+          newMemberRoleId: 80,
+        });
 
         expect(confirmReturn).toBe(true);
       });
@@ -137,8 +149,6 @@ describe('guestOverageConfirmAction', () => {
 
   describe('when overage modal should be shown', () => {
     beforeEach(() => {
-      gon.features = { showOverageOnRolePromotion: true };
-
       createDefaultClient.default = jest.fn(() => ({
         query: jest.fn().mockResolvedValue(increaseOverageResponse),
       }));
