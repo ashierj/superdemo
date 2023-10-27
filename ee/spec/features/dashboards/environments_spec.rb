@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Environments dashboard', :js, feature_category: :shared do
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:user) { create(:user) }
 
   before do
     stub_licensed_features(operations_dashboard: true)
