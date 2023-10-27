@@ -8,7 +8,7 @@
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p
       = s_('Microsoft|Sync group memberships from Microsoft Azure when SAML response includes an overage claim.')
-      = link_to _('Learn more.'), help_page_path('user/group/saml_sso/group_sync.md'), target: '_blank', rel: 'noopener noreferrer'
+      = link_to _('Learn more.'), help_page_path('user/group/saml_sso/group_sync'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content.microsoft-application
     = gitlab_ui_form_for @microsoft_application, method: :put, url: update_microsoft_application_admin_application_settings_url do |f|
       = render 'shared/system_access/microsoft_application_form', f: f
