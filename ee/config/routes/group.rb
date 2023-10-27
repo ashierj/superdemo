@@ -225,5 +225,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     post '/restore' => '/groups#restore', as: :restore
 
     resources :service_accounts, path: 'service_accounts(/*vueroute)', action: :index
+
+    resources :secrets, path: 'secrets(/*vueroute)', only: [:index]
   end
 end

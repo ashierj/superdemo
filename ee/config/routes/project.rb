@@ -151,6 +151,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           resource :analytics, only: [:show, :update]
         end
 
+        resources :secrets, path: 'secrets(/*vueroute)', only: [:index]
+
         resources :tracing, only: [:index, :show], controller: :tracing
 
         resources :metrics, only: [:index], controller: :metrics
