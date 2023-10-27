@@ -40,17 +40,15 @@ describe('DoraPerformersScore', () => {
   const doraPerformanceScoreCountsSuccess = mockGraphqlDoraPerformanceScoreCountsResponse({
     totalProjectsCount: mockProjectsCount,
   });
-  const nullDoraPerformanceScoreCounts = mockGraphqlDoraPerformanceScoreCountsResponse({
-    totalProjectsCount: mockProjectsCount,
-    mockDataResponse: mockEmptyDoraPerformersScoreResponseData,
-  });
   const noProjectsWithDoraData = mockGraphqlDoraPerformanceScoreCountsResponse({
     totalProjectsCount: mockProjectsCount,
     noDoraDataProjectsCount: mockProjectsCount,
+    mockDataResponse: mockEmptyDoraPerformersScoreResponseData,
   });
   const higherNoDoraDataProjectsCount = mockGraphqlDoraPerformanceScoreCountsResponse({
     totalProjectsCount: mockProjectsCount,
     noDoraDataProjectsCount: mockProjectsCount + 1,
+    mockDataResponse: mockEmptyDoraPerformersScoreResponseData,
   });
   const queryError = jest.fn().mockRejectedValueOnce(new Error('Something went wrong'));
   const loadingErrorMessage = `Failed to load DORA performance scores for Namespace: ${fullPath}`;
@@ -64,7 +62,7 @@ describe('DoraPerformersScore', () => {
   ];
   const defaultGlFeatures = { doraPerformersScorePanel: true };
   const panelTitleWithProjectsCount = (projectsCount = mockProjectsCount) =>
-    `Total projects (${projectsCount}) by DORA performers score for ${groupName} group`;
+    `Total projects (${projectsCount}) with DORA performers score for ${groupName} group`;
 
   let wrapper;
   let mockApollo;
@@ -143,21 +141,31 @@ describe('DoraPerformersScore', () => {
   });
 
   describe('when projects with no DORA data have been excluded', () => {
-    it.each`
-      noDoraDataProjectsCount | tooltipText
-      ${10}                   | ${'Excluding 10 projects with no DORA metrics'}
-      ${1}                    | ${'Excluding 1 project with no DORA metrics'}
+    describe.each`
+      totalProjectsCount | noDoraDataProjectsCount | projectsCountWithDoraData | tooltipText
+      ${20}              | ${10}                   | ${10}                     | ${'Excluding 10 projects with no DORA metrics'}
+      ${5}               | ${1}                    | ${4}                      | ${'Excluding 1 project with no DORA metrics'}
     `(
       'renders tooltip in panel title with correct number of excluded projects',
-      async ({ noDoraDataProjectsCount, tooltipText }) => {
-        await createWrapper({
-          doraPerformanceScoreCountsHandler: mockGraphqlDoraPerformanceScoreCountsResponse({
-            totalProjectsCount: mockProjectsCount,
-            noDoraDataProjectsCount,
-          }),
+      ({ totalProjectsCount, noDoraDataProjectsCount, projectsCountWithDoraData, tooltipText }) => {
+        beforeEach(async () => {
+          await createWrapper({
+            doraPerformanceScoreCountsHandler: mockGraphqlDoraPerformanceScoreCountsResponse({
+              totalProjectsCount,
+              noDoraDataProjectsCount,
+            }),
+          });
         });
 
-        expect(findExcludedProjectsTooltip().value).toBe(tooltipText);
+        it('renders panel title with correct total projects count with DORA data', () => {
+          expect(findDoraPerformersScorePanelTitle().text()).toBe(
+            panelTitleWithProjectsCount(projectsCountWithDoraData),
+          );
+        });
+
+        it('renders tooltip in panel title with correct number of excluded projects', () => {
+          expect(findExcludedProjectsTooltip().value).toBe(tooltipText);
+        });
       },
     );
   });
@@ -178,10 +186,9 @@ describe('DoraPerformersScore', () => {
   });
 
   describe.each`
-    emptyState                                     | response
-    ${'high/medium/low score counts are null'}     | ${nullDoraPerformanceScoreCounts}
-    ${'noDoraDataProjectsCount === projectsCount'} | ${noProjectsWithDoraData}
-    ${'noDoraDataProjectsCount > projectsCount'}   | ${higherNoDoraDataProjectsCount}
+    emptyState                                          | response
+    ${'noDoraDataProjectsCount === totalProjectsCount'} | ${noProjectsWithDoraData}
+    ${'noDoraDataProjectsCount > totalProjectsCount'}   | ${higherNoDoraDataProjectsCount}
   `('when $emptyState', ({ response }) => {
     beforeEach(async () => {
       await createWrapper({ doraPerformanceScoreCountsHandler: response });
@@ -192,8 +199,8 @@ describe('DoraPerformersScore', () => {
       expect(wrapper.findByText(noDataMessage).exists()).toBe(true);
     });
 
-    it('renders panel title with total project count', () => {
-      expect(findDoraPerformersScorePanelTitle().text()).toBe(panelTitleWithProjectsCount());
+    it('renders panel title with `0` projects with DORA data', () => {
+      expect(findDoraPerformersScorePanelTitle().text()).toBe(panelTitleWithProjectsCount(0));
     });
 
     it('does not render panel title tooltip', () => {
@@ -221,7 +228,7 @@ describe('DoraPerformersScore', () => {
     });
 
     it('renders default panel title', () => {
-      expect(wrapper.findByText('Total projects by DORA performers score').exists()).toBe(true);
+      expect(wrapper.findByText('Total projects with DORA performers score').exists()).toBe(true);
     });
 
     it('does not render panel title tooltip', () => {

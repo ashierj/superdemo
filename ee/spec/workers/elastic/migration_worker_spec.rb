@@ -47,6 +47,20 @@ RSpec.describe Elastic::MigrationWorker, :elastic_clean, feature_category: :glob
       end
     end
 
+    context 'cluster is unhealthy' do
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: true)
+        allow(Search::ClusterHealthCheck::Elastic).to receive(:healthy?).and_return(false)
+        allow(::Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger)
+      end
+
+      it 'raises an error and does not execute migration' do
+        expect(subject).not_to receive(:execute_migration)
+        expect(logger).to receive(:error)
+        expect(subject.perform).to be_falsey
+      end
+    end
+
     context 'reindexing task is in progress' do
       let!(:task) { create(:elastic_reindexing_task) }
 

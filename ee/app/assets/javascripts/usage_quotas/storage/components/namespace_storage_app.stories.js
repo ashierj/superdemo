@@ -45,6 +45,7 @@ const createTemplate = (config = {}) => {
       purchaseStorageUrl: '//purchase-storage-url',
       buyAddonTargetAttr: 'buyAddonTargetAttr',
       enforcementType: 'namespace_storage_limit',
+      isUsingNamespaceEnforcement: true,
       isUsingProjectEnforcement: false,
       helpLinks,
       ...provide,
@@ -78,6 +79,7 @@ export const SaasWithProjectLimits = {
   render: createTemplate({
     provide: {
       enforcementType: 'project_repository_limit',
+      isUsingNamespaceEnforcement: false,
       isUsingProjectEnforcement: true,
       totalRepositorySizeExcess: MEBIBYTE,
     },
@@ -95,6 +97,7 @@ export const SaasWithProjectLimitsLoading = {
       apolloProvider,
       provide: {
         enforcementType: 'project_repository_limit',
+        isUsingNamespaceEnforcement: false,
         isUsingProjectEnforcement: true,
         totalRepositorySizeExcess: MEBIBYTE,
       },
@@ -117,6 +120,7 @@ export const SaasLoadingError = {
 
 const selfManagedDefaultProvide = {
   isUsingProjectEnforcement: false,
+  isUsingNamespaceEnforcement: false,
   namespacePlanName: null,
   namespaceStorageIncluded: '',
   namespacePlanStorageIncluded: 0,

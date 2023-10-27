@@ -29,21 +29,33 @@ RSpec.describe Projects::UpdatePagesService, feature_category: :pages do
     end
   end
 
-  context 'when pages_multiple_versions is enabled for project' do
-    it 'saves the given path prefix' do
-      expect(::Gitlab::Pages)
+  context 'when pages_multiple_versions is enabled for project', :aggregate_failures do
+    before do
+      allow(::Gitlab::Pages)
         .to receive(:multiple_versions_enabled_for?)
         .with(build.project)
         .and_return(true)
-        .twice # it's called from within the build.pages_path_prefix as well
+        .twice # it's called from within the build.pages.path_prefix as well
+    end
 
+    it 'succeeds and create a new PagesDeployment' do
       expect do
         expect(service.execute[:status]).to eq(:success)
       end.to change { project.pages_deployments.count }.by(1)
+    end
 
-      deployment = project.pages_deployments.last
+    it 'saves the given path prefix' do
+      service.execute
 
-      expect(deployment.path_prefix).to eq('__pages__prefix__')
+      expect(project.pages_deployments.last.path_prefix).to eq('__pages__prefix__')
+    end
+
+    it 'URL escapes the path prefix value' do
+      allow(build).to receive(:pages).and_return({ path_prefix: '!' })
+
+      service.execute
+
+      expect(project.pages_deployments.last.path_prefix).to eq('%21')
     end
   end
 
@@ -53,7 +65,11 @@ RSpec.describe Projects::UpdatePagesService, feature_category: :pages do
       name: 'pages',
       pipeline: create(:ci_pipeline, project: project, sha: project.commit('HEAD').sha),
       ref: 'HEAD',
-      options: { pages_path_prefix: '__pages__prefix__' })
+      options: {
+        pages: {
+          path_prefix: '__pages__prefix__'
+        }
+      })
 
     create(
       :ci_job_artifact,

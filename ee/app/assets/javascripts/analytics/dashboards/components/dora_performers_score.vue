@@ -80,14 +80,11 @@ export default {
         return !this.fullPath || !this.shouldDisplayPanel || this.isProjectNamespace;
       },
       update(data) {
-        const {
-          noDoraDataProjectsCount = null,
-          nodes: items = [],
-          totalProjectsCount: projectsCount = null,
-        } = data?.namespace?.doraPerformanceScoreCounts || {};
+        const { noDoraDataProjectsCount = 0, nodes: items = [], totalProjectsCount = 0 } =
+          data?.namespace?.doraPerformanceScoreCounts || {};
 
         return {
-          projectsCount,
+          totalProjectsCount,
           noDoraDataProjectsCount,
           items,
         };
@@ -123,16 +120,20 @@ export default {
     shouldDisplayDefaultPanelTitle() {
       return !this.namespace || this.isProjectNamespace || this.hasDoraPerformanceScoresFetchError;
     },
+    projectsCountWithDoraData() {
+      const { totalProjectsCount, noDoraDataProjectsCount } =
+        this.groupDoraPerformanceScoreCounts || {};
+
+      return Math.max(0, totalProjectsCount - noDoraDataProjectsCount) || 0; // handle edge case where noDoraDataProjectsCount could be higher than totalProjectsCount
+    },
     panelTitle() {
       if (this.shouldDisplayDefaultPanelTitle) {
         return this.$options.i18n.defaultPanelTitle;
       }
 
-      const projectsCount = this.groupDoraPerformanceScoreCounts?.projectsCount;
-
       return sprintf(this.$options.i18n.panelTitleWithProjectsCount, {
         groupName: this.namespace?.name,
-        count: projectsCount,
+        count: this.projectsCountWithDoraData,
       });
     },
     errorMessage() {
@@ -148,14 +149,9 @@ export default {
 
       return '';
     },
-    hasNoProjectsWithDoraData() {
-      const { noDoraDataProjectsCount, projectsCount } = this.groupDoraPerformanceScoreCounts || {};
-
-      return noDoraDataProjectsCount >= projectsCount; // handle edge case where noDoraDataProjectsCount could be higher than projectsCount
-    },
     hasData() {
       return (
-        !this.hasNoProjectsWithDoraData &&
+        this.projectsCountWithDoraData &&
         initial(this.chartData).some(({ data }) => data.some((val) => val)) // ignore the "Not included" series – we are only interested in checking if any projects have high/medium/low score counts
       );
     },
