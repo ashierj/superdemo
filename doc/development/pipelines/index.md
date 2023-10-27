@@ -632,7 +632,7 @@ Our test suite runs against PostgreSQL 14 as GitLab.com runs on PostgreSQL 14 an
 
 We do run our test suite against PostgreSQL 14 on nightly scheduled pipelines.
 
-We also run our test suite against PostgreSQL 12 and PostgreSQL 13 upon specific database library changes in merge requests and `main` pipelines (with the `rspec db-library-code pg12` and `rspec db-library-code pg13` jobs).
+We also run our test suite against PostgreSQL 13 upon specific database library changes in merge requests and `main` pipelines (with the `rspec db-library-code pg13` job).
 
 #### Current versions testing
 
