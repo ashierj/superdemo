@@ -156,7 +156,7 @@ variables:
   DOCKER_VERSION: "24.0.5"
   RUBYGEMS_VERSION: "3.4"
   GO_VERSION: "1.20"
-  RUST_VERSION: "1.65"
+  RUST_VERSION: "1.73"
 
   FLAKY_RSPEC_SUITE_REPORT_PATH: rspec/flaky/report-suite.json
   FRONTEND_FIXTURES_MAPPING_PATH: crystalball/frontend_fixtures_mapping.json
