@@ -40,7 +40,7 @@ module Sidebars
             title: _('Security dashboard'),
             link: security_dashboard_path,
             active_routes: { path: 'security/dashboard#show' },
-            item_id: :security_dashboard
+            item_id: :security_dashboard_menu
           )
         end
 

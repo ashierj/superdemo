@@ -85,7 +85,7 @@ module Geo
     end
 
     def remove_tag(tag)
-      container_repository.delete_tag_by_digest(tag[:digest])
+      container_repository.delete_tag(tag[:digest])
     end
 
     # Lists blobs or nested manifests
