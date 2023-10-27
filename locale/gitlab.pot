@@ -50139,9 +50139,6 @@ msgstr ""
 msgid "Total Score"
 msgstr ""
 
-msgid "Total Spans"
-msgstr ""
-
 msgid "Total cores (CPUs)"
 msgstr ""
 
@@ -50149,6 +50146,9 @@ msgid "Total issue weight"
 msgstr ""
 
 msgid "Total memory (GB)"
+msgstr ""
+
+msgid "Total spans"
 msgstr ""
 
 msgid "Total test time for all commits/merges"
@@ -50172,7 +50172,7 @@ msgstr ""
 msgid "Trace Details"
 msgstr ""
 
-msgid "Trace Start"
+msgid "Trace start"
 msgstr ""
 
 msgid "Tracing"
@@ -50199,7 +50199,7 @@ msgstr ""
 msgid "Tracing|Failed to load traces."
 msgstr ""
 
-msgid "Tracing|Filter Traces"
+msgid "Tracing|Filter traces"
 msgstr ""
 
 msgid "Tracing|Last 1 hour"
@@ -50250,13 +50250,13 @@ msgstr ""
 msgid "Tracing|Something went wrong while fetching the services"
 msgstr ""
 
-msgid "Tracing|Span Details"
-msgstr ""
-
 msgid "Tracing|Span ID"
 msgstr ""
 
-msgid "Tracing|Status Code"
+msgid "Tracing|Span details"
+msgstr ""
+
+msgid "Tracing|Status code"
 msgstr ""
 
 msgid "Tracing|Time range"

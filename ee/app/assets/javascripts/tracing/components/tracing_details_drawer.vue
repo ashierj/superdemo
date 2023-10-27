@@ -10,7 +10,7 @@ export default {
     GlDrawer,
   },
   i18n: {
-    drawerTitle: s__('Tracing|Span Details'),
+    drawerTitle: s__('Tracing|Span details'),
   },
   props: {
     span: {
@@ -43,7 +43,7 @@ export default {
             value: formatTraceDuration(this.span.duration_nano),
           },
           {
-            title: s__('Tracing|Status Code'),
+            title: s__('Tracing|Status code'),
             value: this.span.statusCode,
           },
         ];

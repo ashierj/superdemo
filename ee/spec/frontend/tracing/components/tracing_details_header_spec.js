@@ -24,7 +24,7 @@ describe('TracingDetailsHeader', () => {
 
   it('renders the correct trace date', () => {
     expect(wrapper.findByTestId('trace-date-card').text()).toMatchInterpolatedText(
-      'Trace Start Aug 14, 2023 14:05:37.219 UTC',
+      'Trace start Aug 14, 2023 14:05:37.219 UTC',
     );
   });
 
@@ -36,7 +36,7 @@ describe('TracingDetailsHeader', () => {
 
   it('renders the correct total spans', () => {
     expect(wrapper.findByTestId('trace-spans-card').text()).toMatchInterpolatedText(
-      'Total Spans 10',
+      'Total spans 10',
     );
   });
 });
