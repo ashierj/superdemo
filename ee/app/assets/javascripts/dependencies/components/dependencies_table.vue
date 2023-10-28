@@ -139,12 +139,9 @@ export default {
       >
         {{ $options.i18n.tooltipText }}
         <div class="gl-mt-4">
-          <gl-link
-            :href="$options.DEPENDENCY_PATH_LINK"
-            target="_blank"
-            class="font-size-inherit"
-            >{{ $options.i18n.tooltipMoreText }}</gl-link
-          >
+          <gl-link :href="$options.DEPENDENCY_PATH_LINK" target="_blank">{{
+            $options.i18n.tooltipMoreText
+          }}</gl-link>
         </div>
       </gl-popover>
     </template>

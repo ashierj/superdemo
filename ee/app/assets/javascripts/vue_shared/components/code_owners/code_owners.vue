@@ -202,7 +202,7 @@ export default {
       triggers="hover focus"
     >
       {{ $options.i18n.helpText }}
-      <gl-link :href="$options.codeOwnersHelpPath" class="font-size-inherit">
+      <gl-link :href="$options.codeOwnersHelpPath">
         {{ $options.i18n.learnMore }}
       </gl-link>
     </gl-popover>
