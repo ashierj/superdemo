@@ -38,7 +38,7 @@ module Mutations
           ).execute
 
           if response.error?
-            result(errors: [response.message])
+            result(errors: response.errors)
           else
             result(subscription: response.payload[:subscription])
           end
