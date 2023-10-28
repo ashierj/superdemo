@@ -136,6 +136,9 @@ export default {
     };
   },
   computed: {
+    disableUpdate() {
+      return !this.hasParsingError && this.hasEmptyActions && this.hasEmptySettings;
+    },
     settings() {
       return buildSettingsList({
         settings: this.policy.approval_settings,
@@ -384,7 +387,7 @@ export default {
   <editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
-    :disable-update="hasEmptyActions && hasEmptySettings"
+    :disable-update="disableUpdate"
     :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
@@ -472,7 +475,7 @@ export default {
         <settings-section :rules="policy.rules" :settings="settings" @changed="updateSettings" />
       </dim-disable-container>
       <gl-alert
-        v-if="hasEmptyActions"
+        v-if="!hasParsingError && hasEmptyActions"
         data-testid="empty-actions-alert"
         class="gl-mb-5"
         :title="settingAlert.title"

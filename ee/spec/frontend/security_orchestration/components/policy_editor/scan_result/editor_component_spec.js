@@ -774,6 +774,22 @@ describe('EditorComponent', () => {
           expect(findPolicyEditorLayout().props('disableUpdate')).toBe(true);
         });
       });
+
+      describe('does not display the danger alert when the policy is invalid', () => {
+        beforeEach(() => {
+          factoryWithExistingPolicy({
+            policy: { approval_settings: { invalid_setting: true } },
+          });
+        });
+
+        it('displays the danger alert', () => {
+          expect(findEmptyActionsAlert().exists()).toBe(false);
+        });
+
+        it('disabled the update button', () => {
+          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
+        });
+      });
     });
   });
 });
