@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['ClusterAgent'] do
+RSpec.describe GitlabSchema.types['ClusterAgent'], feature_category: :environment_management do
   it 'includes the ee specific fields' do
     expect(described_class).to have_graphql_fields(
       :vulnerability_images
@@ -34,10 +34,12 @@ RSpec.describe GitlabSchema.types['ClusterAgent'] do
       )
     end
 
+    before_all do
+      project.add_developer(user)
+    end
+
     before do
       stub_licensed_features(security_dashboard: true)
-
-      project.add_developer(user)
     end
 
     subject(:vulnerability_images) do
