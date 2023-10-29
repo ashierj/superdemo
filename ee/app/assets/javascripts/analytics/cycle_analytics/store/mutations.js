@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import {
-  PAGINATION_SORT_FIELD_END_EVENT,
+  PAGINATION_SORT_FIELD_DURATION,
   PAGINATION_SORT_DIRECTION_DESC,
 } from '~/analytics/cycle_analytics/constants';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
@@ -212,7 +212,7 @@ export default {
     Vue.set(state, 'pagination', {
       page,
       hasNextPage,
-      sort: sort || PAGINATION_SORT_FIELD_END_EVENT,
+      sort: sort || PAGINATION_SORT_FIELD_DURATION,
       direction: direction || PAGINATION_SORT_DIRECTION_DESC,
     });
   },

@@ -9,7 +9,7 @@ import {
 } from 'jest/analytics/cycle_analytics/mock_data';
 import {
   PAGINATION_SORT_DIRECTION_DESC,
-  PAGINATION_SORT_FIELD_END_EVENT,
+  PAGINATION_SORT_FIELD_DURATION,
 } from '~/analytics/cycle_analytics/constants';
 import {
   issueStage,
@@ -107,7 +107,7 @@ describe('Value Stream Analytics mutations', () => {
     ${types.RECEIVE_CREATE_VALUE_STREAM_SUCCESS} | ${valueStreams[1]}                                       | ${{ selectedValueStream: valueStreams[1] }}
     ${types.RECEIVE_UPDATE_VALUE_STREAM_SUCCESS} | ${valueStreams[1]}                                       | ${{ selectedValueStream: valueStreams[1] }}
     ${types.RECEIVE_GROUP_LABELS_SUCCESS}        | ${groupLabels}                                           | ${{ defaultGroupLabels: groupLabels }}
-    ${types.SET_PAGINATION}                      | ${pagination}                                            | ${{ pagination: { ...pagination, sort: PAGINATION_SORT_FIELD_END_EVENT, direction: PAGINATION_SORT_DIRECTION_DESC } }}
+    ${types.SET_PAGINATION}                      | ${pagination}                                            | ${{ pagination: { ...pagination, sort: PAGINATION_SORT_FIELD_DURATION, direction: PAGINATION_SORT_DIRECTION_DESC } }}
     ${types.SET_PAGINATION}                      | ${{ ...pagination, sort: 'duration', direction: 'asc' }} | ${{ pagination: { ...pagination, sort: 'duration', direction: 'asc' } }}
     ${types.SET_STAGE_EVENTS}                    | ${rawCustomStageEvents}                                  | ${{ formEvents: camelCasedStageEvents }}
   `(
@@ -233,7 +233,7 @@ describe('Value Stream Analytics mutations', () => {
       createdBefore: '2020-01-01',
       pagination: {
         page: 1,
-        sort: PAGINATION_SORT_FIELD_END_EVENT,
+        sort: PAGINATION_SORT_FIELD_DURATION,
         direction: PAGINATION_SORT_DIRECTION_DESC,
       },
     };
@@ -254,7 +254,7 @@ describe('Value Stream Analytics mutations', () => {
     it.each`
       stateKey       | expectedState
       ${'page'}      | ${1}
-      ${'sort'}      | ${PAGINATION_SORT_FIELD_END_EVENT}
+      ${'sort'}      | ${PAGINATION_SORT_FIELD_DURATION}
       ${'direction'} | ${PAGINATION_SORT_DIRECTION_DESC}
     `('$stateKey will be set to $expectedState', ({ stateKey, expectedState }) => {
       state = {};
