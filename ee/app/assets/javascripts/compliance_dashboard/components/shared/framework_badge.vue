@@ -77,7 +77,6 @@ export default {
     </gl-popover>
     <span ref="label">
       <gl-label
-        data-qa-selector="framework_label"
         :data-testid="frameworkTestId"
         :background-color="framework.color"
         :title="frameworkName"
