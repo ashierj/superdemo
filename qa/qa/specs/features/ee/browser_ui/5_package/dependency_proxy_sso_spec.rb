@@ -14,11 +14,7 @@ module QA
       let(:idp_user) { Struct.new(:username, :password).new('user3', 'user3pass') }
 
       let(:user) do
-        QA::Resource::User.init do |user|
-          user.username = 'user_3'
-          user.email = 'user_3@example.com'
-          user.name = 'User Three'
-        end
+        build(:user, username: 'user_3', email: 'user_3@example.com', name: 'User Three')
       end
 
       # starts a docker Docker container with a plug and play SAML 2.0 Identity Provider (IdP)
@@ -29,12 +25,11 @@ module QA
       let(:project) { create(:project, name: 'dependency-proxy-sso-project', group: group) }
 
       let!(:runner) do
-        Resource::ProjectRunner.fabricate! do |runner|
-          runner.name = "qa-runner-#{Time.now.to_i}"
-          runner.tags = ["runner-for-#{project.name}"]
-          runner.executor = :docker
-          runner.project = project
-        end
+        create(:project_runner,
+          name: "qa-runner-#{Time.now.to_i}",
+          tags: ["runner-for-#{project.name}"],
+          executor: :docker,
+          project: project)
       end
 
       let(:gitlab_host_with_port) { Support::GitlabAddress.host_with_port }

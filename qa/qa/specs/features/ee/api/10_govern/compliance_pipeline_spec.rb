@@ -57,10 +57,7 @@ module QA
             "Expected pipeline with ref #{mr.source_branch} to succeed." \
             "Project pipelines were: #{compliant_project.pipelines}"
 
-          pipeline_resource = Resource::Pipeline.init do |p|
-            p.project = compliant_project
-            p.id = pipeline[:id]
-          end
+          pipeline_resource = build(:pipeline, project: compliant_project, id: pipeline[:id])
 
           expect(pipeline_resource.jobs.first[:name]).to eq(compliance_job_name)
         end

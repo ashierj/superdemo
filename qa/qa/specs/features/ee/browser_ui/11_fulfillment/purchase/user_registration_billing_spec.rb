@@ -8,12 +8,11 @@ module QA
         let(:group) { create(:group) }
 
         let(:user) do
-          Resource::User.init do |user|
-            user.first_name = 'QA'
-            user.last_name = 'Test'
-            user.username = "qa-test-#{SecureRandom.hex(3)}"
-            user.hard_delete_on_api_removal = true
-          end
+          build(:user,
+            :hard_delete,
+            first_name: 'QA',
+            last_name: 'Test',
+            username: "qa-test-#{SecureRandom.hex(3)}")
         end
 
         before do

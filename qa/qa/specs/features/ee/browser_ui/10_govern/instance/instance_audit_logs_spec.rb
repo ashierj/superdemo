@@ -22,10 +22,7 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
         before do
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
-          invalid_user = Resource::User.init do |user|
-            user.username = 'bad_user_name'
-            user.password = 'bad_pasword'
-          end
+          invalid_user = build(:user, username: 'bad_user_name', password: 'bad_pasword')
 
           Page::Main::Login.perform do |login_page|
             login_page.sign_in_using_credentials(user: invalid_user, skip_page_validation: true)
