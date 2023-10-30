@@ -218,11 +218,9 @@ export default {
     />
     <div class="detail-page-header">
       <div class="detail-page-header-body" data-testid="vulnerability-detail-body">
-        <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="mr-2" />
-        <status-badge v-else :state="vulnerability.state" class="gl-mr-4" />
-
+        <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="gl-mr-3" />
+        <status-badge v-else :state="vulnerability.state" class="gl-mr-3" />
         <status-description
-          class="issuable-meta"
           :vulnerability="vulnerability"
           :user="user"
           :is-loading-vulnerability="isLoadingVulnerability"
@@ -231,10 +229,10 @@ export default {
       </div>
 
       <div
-        class="detail-page-header-actions gl-display-flex gl-flex-wrap gl-gap-3 align-items-center"
+        class="detail-page-header-actions gl-display-flex gl-flex-wrap gl-gap-3 gl-align-items-center"
       >
-        <label class="mb-0">{{ __('Status') }}</label>
-        <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="d-inline" />
+        <label class="gl-mb-0">{{ __('Status') }}</label>
+        <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="gl-display-inline" />
         <vulnerability-state-dropdown
           v-else
           :initial-state="vulnerability.state"
@@ -251,7 +249,7 @@ export default {
         />
         <gl-button
           v-else-if="actionButtons.length > 0"
-          class="ml-2"
+          class="gl-ml-2"
           variant="confirm"
           category="secondary"
           :loading="isProcessingAction"
