@@ -290,9 +290,21 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
       end
 
       it 'passes the deploy key to the auditor context' do
+        # new log_git_streaming_audit_events FF will check need_git_audit_event? by new workflow,
+        # so we need set it to be false to confirm the original workflow is used
+        stub_feature_flags(log_git_streaming_audit_events: false)
+
         expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(author: key))
 
         push(key, project)
+      end
+
+      context 'when log_git_streaming_audit_events is enabled' do
+        it 'does not passes the deploy key to the auditor context' do
+          expect(::Gitlab::Audit::Auditor).not_to receive(:audit).with(hash_including(author: key))
+
+          push(key, project)
+        end
       end
     end
 

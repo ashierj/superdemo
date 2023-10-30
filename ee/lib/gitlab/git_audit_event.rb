@@ -10,6 +10,14 @@ module Gitlab
       @user = player.is_a?(::API::Support::GitAccessActor) ? player.user : player
     end
 
+    def enabled?
+      return false if ::Gitlab::Saas.enabled?
+      return false if user.blank? || project&.group.blank?
+
+      ::Feature.enabled?(:log_git_streaming_audit_events, project) &&
+        project.group.external_audit_event_destinations.exists?
+    end
+
     def send_audit_event(msg)
       return if user.blank? || project.blank?
 

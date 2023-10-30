@@ -10,7 +10,7 @@ module EE
       def render_ok
         set_workhorse_internal_api_content_type
 
-        render json: ::Gitlab::Workhorse.git_http_ok(repository, repo_type, user, action_name, show_all_refs: geo_request?)
+        render json: ::Gitlab::Workhorse.git_http_ok(repository, repo_type, user, action_name, show_all_refs: geo_request?, need_audit: need_git_audit_event?)
       end
 
       override :git_receive_pack
@@ -57,6 +57,10 @@ module EE
         authentication_result.geo?
       end
 
+      def need_git_audit_event?
+        ::Gitlab::GitAuditEvent.new(user, project).enabled?
+      end
+
       override :access_actor
       def access_actor
         return super unless geo?
@@ -83,7 +87,7 @@ module EE
 
       override :update_fetch_statistics
       def update_fetch_statistics
-        send_git_audit_streaming_event
+        send_git_audit_streaming_event unless ::Feature.enabled?(:log_git_streaming_audit_events, project)
         super
       end
 
