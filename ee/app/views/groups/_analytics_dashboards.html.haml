@@ -2,7 +2,7 @@
   %h4.warning-title= s_('GroupSettings|Analytics Dashboards')
   %p
     = s_('GroupSettings|Select the project containing Analytics Dashboards configuration files.')
-    = link_to(s_('GroupSettings|What is Analytics Dashboards?'), help_page_path('user/analytics/value_streams_dashboard.md'))
+    = link_to(s_('GroupSettings|What is Analytics Dashboards?'), help_page_path('user/analytics/value_streams_dashboard'))
 
   .settings-content#js-analytics-dashboards-settings
     = gitlab_ui_form_for @group, html: { class: 'fieldset-form', data: { testid: 'analytics-dashboards-settings' } } do |form|

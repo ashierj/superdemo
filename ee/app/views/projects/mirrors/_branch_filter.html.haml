@@ -12,14 +12,14 @@
         = _('Mirror all branches')
         .form-text.text-muted
           = _("If enabled, all branches will be mirrored.")
-          = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/index.md'), target: '_blank', rel: 'noopener noreferrer'
+          = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/index'), target: '_blank', rel: 'noopener noreferrer'
     .form-check
       = radio_button_tag :mirror_branch_setting, :protected, false, class: 'form-check-input js-mirror-branch-setting'
       = label_tag :mirror_branch_setting_protected, class: 'form-check-label' do
         = _('Mirror only protected branches')
         .form-text.text-muted
           = _('If enabled, only protected branches will be mirrored.')
-          = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/index.md', anchor: 'mirror-only-protected-branches'), target: '_blank', rel: 'noopener noreferrer'
+          = link_to _('Learn more.'), help_page_path('user/project/repository/mirror/index', anchor: 'mirror-only-protected-branches'), target: '_blank', rel: 'noopener noreferrer'
     .form-check
       = radio_button_tag :mirror_branch_setting, :regex, false, class: 'form-check-input js-mirror-branch-setting'
       = label_tag :mirror_branch_setting_regex, class: 'form-check-label' do
