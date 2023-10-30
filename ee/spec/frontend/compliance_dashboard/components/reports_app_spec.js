@@ -29,10 +29,10 @@ describe('ComplianceReportsApp component', () => {
   const findViolationsExportButton = () => wrapper.findByTestId('violations-export');
   const findProjectsExportButton = () => wrapper.findByTestId('projects-export');
   const findTabs = () => wrapper.findComponent(GlTabs);
-  const findProjectsTab = () => wrapper.findByTestId('projects-tab');
-  const findFrameworksTab = () => wrapper.findByTestId('frameworks-tab');
-  const findViolationsTab = () => wrapper.findByTestId('violations-tab');
-  const findStandardsAdherenceTab = () => wrapper.findByTestId('standards-adherence-tab');
+  const findProjectsTab = () => wrapper.findByTestId('projects-tab-content');
+  const findFrameworksTab = () => wrapper.findByTestId('frameworks-tab-content');
+  const findViolationsTab = () => wrapper.findByTestId('violations-tab-content');
+  const findStandardsAdherenceTab = () => wrapper.findByTestId('standards-adherence-tab-content');
 
   const createComponent = (props = {}, mountFn = shallowMount, mocks = {}, provide = {}) => {
     return extendedWrapper(

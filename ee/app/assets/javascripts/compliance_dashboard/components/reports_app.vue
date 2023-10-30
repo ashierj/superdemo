@@ -68,6 +68,18 @@ export default {
 
       return currentTabs.indexOf(this.$route.name);
     },
+    standardsAdherenceTabLinkAttributes() {
+      return { 'data-testid': 'standards-adherence-tab' };
+    },
+    violationsTabLinkAttributes() {
+      return { 'data-testid': 'violations-tab' };
+    },
+    frameworksTabLinkAttributes() {
+      return { 'data-testid': 'frameworks-tab' };
+    },
+    projectsTabLinkAttributes() {
+      return { 'data-testid': 'projects-tab' };
+    },
   },
   methods: {
     goTo(name) {
@@ -151,29 +163,27 @@ export default {
       <gl-tab
         v-if="adherenceReportUiEnabled"
         :title="$options.i18n.standardsAdherenceTab"
-        data-testid="standards-adherence-tab"
+        :title-link-attributes="standardsAdherenceTabLinkAttributes"
+        data-testid="standards-adherence-tab-content"
         @click="goTo($options.ROUTE_STANDARDS)"
       />
       <gl-tab
         :title="$options.i18n.violationsTab"
-        data-testid="violations-tab"
+        :title-link-attributes="violationsTabLinkAttributes"
+        data-testid="violations-tab-content"
         @click="goTo($options.ROUTE_VIOLATIONS)"
       />
       <gl-tab
         v-if="complianceFrameworkReportUiEnabled"
         :title="$options.i18n.frameworksTab"
-        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-          'data-qa-selector': 'frameworks_tab',
-        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        data-testid="frameworks-tab"
+        :title-link-attributes="frameworksTabLinkAttributes"
+        data-testid="frameworks-tab-content"
         @click="goTo($options.ROUTE_FRAMEWORKS)"
       />
       <gl-tab
         :title="$options.i18n.projectsTab"
-        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-          'data-qa-selector': 'projects_tab',
-        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        data-testid="projects-tab"
+        :title-link-attributes="projectsTabLinkAttributes"
+        data-testid="projects-tab-content"
         @click="goTo($options.ROUTE_PROJECTS)"
       />
     </gl-tabs>

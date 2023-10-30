@@ -16,7 +16,7 @@ module QA
               end
             end
 
-            def go_to_compliance_report
+            def go_to_compliance_center
               open_secure_submenu('Compliance center')
             end
           end
