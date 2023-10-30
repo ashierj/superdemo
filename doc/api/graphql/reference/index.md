@@ -5989,6 +5989,25 @@ Input type: `ProjectSubscriptionCreateInput`
 | <a id="mutationprojectsubscriptioncreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationprojectsubscriptioncreatesubscription"></a>`subscription` | [`CiSubscriptionsProject`](#cisubscriptionsproject) | Project Subscription created by the mutation. |
 
+### `Mutation.projectSubscriptionDelete`
+
+Input type: `ProjectSubscriptionDeleteInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectsubscriptiondeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectsubscriptiondeletesubscriptionid"></a>`subscriptionId` | [`CiSubscriptionsProjectID!`](#cisubscriptionsprojectid) | ID of the subscription to delete. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectsubscriptiondeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectsubscriptiondeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationprojectsubscriptiondeleteproject"></a>`project` | [`Project`](#project) | Project after mutation. |
+
 ### `Mutation.projectSyncFork`
 
 WARNING:
