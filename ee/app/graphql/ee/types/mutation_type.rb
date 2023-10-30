@@ -8,6 +8,7 @@ module EE
       prepended do
         mount_mutation ::Mutations::Ci::Ai::GenerateConfig, alpha: { milestone: '16.0' }
         mount_mutation ::Mutations::Ci::ProjectSubscriptions::Create
+        mount_mutation ::Mutations::Ci::ProjectSubscriptions::Delete
         mount_mutation ::Mutations::ComplianceManagement::Frameworks::Destroy
         mount_mutation ::Mutations::ComplianceManagement::Frameworks::Update
         mount_mutation ::Mutations::ComplianceManagement::Frameworks::Create
