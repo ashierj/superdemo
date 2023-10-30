@@ -8,8 +8,6 @@
                             group_id: root_namespace_id,
                             defer_links: "true" }}) do |c|
     = c.with_body do
-      = sprite_icon(alert_icon, css_class: "gl-icon gl-alert-icon")
-
       - alert_message.each do |paragraph|
         %p
           = paragraph
