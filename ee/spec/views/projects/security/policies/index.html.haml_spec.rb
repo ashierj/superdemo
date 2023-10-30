@@ -20,6 +20,6 @@ RSpec.describe "projects/security/policies/index", type: :view do
   end
 
   it 'passes documentation URL' do
-    expect(rendered).to include '/help/user/application_security/policies/index.md'
+    expect(rendered).to include '/help/user/application_security/policies/index'
   end
 end

@@ -2,7 +2,7 @@
   %h4.warning-title= _('Insights')
   %p
     = s_('GroupSettings|Select the project containing your custom Insights file.')
-    = link_to(s_('GroupSettings|What is Insights?'), help_page_path('user/group/insights/index.md'), target: '_blank', rel: 'noopener noreferrer')
+    = link_to(s_('GroupSettings|What is Insights?'), help_page_path('user/group/insights/index'), target: '_blank', rel: 'noopener noreferrer')
 
   .settings-content
     = gitlab_ui_form_for @group, html: { class: 'fieldset-form', data: { testid: 'insights-settings' } } do |form|
