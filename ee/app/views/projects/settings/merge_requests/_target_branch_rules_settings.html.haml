@@ -31,7 +31,7 @@
                 .col-sm-6
                   = f.text_field :name, class: 'form-control gl-form-input', placeholder: _('eg. dev/*')
                   .form-text.text-muted
-                    = _('Branches matching this string are retargeted. Wildcards are supported.')
+                    = _('Branches matching this string are retargeted. Wildcards are supported, and names are case-sensitive.')
               .form-group.row
                 = f.label :target_branch, _("Target branch"), class: 'col-sm-12'
                 .col-sm-6
