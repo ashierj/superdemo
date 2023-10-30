@@ -1375,6 +1375,12 @@ msgstr ""
 msgid "'%{value}' days of inactivity must be greater than or equal to 90"
 msgstr ""
 
+msgid "'allow: %{allow}' must be a string"
+msgstr ""
+
+msgid "'except: %{except}' must be an array of string"
+msgstr ""
+
 msgid "'projects' is not yet supported"
 msgstr ""
 
@@ -24186,6 +24192,12 @@ msgid "INFO: Your SSH key has expired. Please generate a new key."
 msgstr ""
 
 msgid "INFO: Your SSH key is expiring soon. Please generate a new key."
+msgstr ""
+
+msgid "IP '%{value}' is not a valid CIDR: %{message}"
+msgstr ""
+
+msgid "IP '%{value}' is not a valid CIDR: IP should be followed by a slash followed by an integer subnet mask (for example: '192.168.1.0/24')"
 msgstr ""
 
 msgid "IP Address"
@@ -57527,6 +57539,18 @@ msgid "must be a value between 0 and 1"
 msgstr ""
 
 msgid "must be after start"
+msgstr ""
+
+msgid "must be an array"
+msgstr ""
+
+msgid "must be an array of CIDR values"
+msgstr ""
+
+msgid "must be an array of hash"
+msgstr ""
+
+msgid "must be an array of hash containing 'allow' attribute of type string"
 msgstr ""
 
 msgid "must be an email you have verified"

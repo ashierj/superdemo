@@ -18,6 +18,11 @@ module RemoteDevelopment
     #       by throwing an `ArgumentError` on `#save`, instead of `#save!`.
     #       See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129708#note_1538946504 for more context.
     validates :enabled, inclusion: { in: [true], message: 'is currently immutable, and must be set to true' }
+
+    validates :network_policy_egress,
+      json_schema: { filename: 'remote_development_agent_configs_network_policy_egress' }
+    validates :network_policy_egress, 'remote_development/network_policy_egress': true
+
     # noinspection RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
     before_validation :prevent_dns_zone_update, if: ->(record) { record.persisted? && record.dns_zone_changed? }
 
