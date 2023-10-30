@@ -8,6 +8,8 @@ Vue.use(VueApollo);
 export const initAdminRunnersDashboard = (selector = '#js-admin-runners-dashboard') => {
   const el = document.querySelector(selector);
 
+  const { adminRunnersPath, newRunnerPath } = el.dataset;
+
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),
   });
@@ -16,7 +18,12 @@ export const initAdminRunnersDashboard = (selector = '#js-admin-runners-dashboar
     el,
     apolloProvider,
     render(h) {
-      return h(AdminRunnersDashboardApp);
+      return h(AdminRunnersDashboardApp, {
+        props: {
+          adminRunnersPath,
+          newRunnerPath,
+        },
+      });
     },
   });
 };

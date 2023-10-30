@@ -1,19 +1,44 @@
 <script>
+import { GlButton } from '@gitlab/ui';
+import RunnerListHeader from '~/ci/runner/components/runner_list_header.vue';
 import RunnerJobFailures from '../components/runner_job_failures.vue';
 import RunnerActiveList from '../components/runner_active_list.vue';
 import RunnerWaitTimes from '../components/runner_wait_times.vue';
 
 export default {
   components: {
+    GlButton,
+    RunnerListHeader,
     RunnerJobFailures,
     RunnerActiveList,
     RunnerWaitTimes,
+  },
+  props: {
+    adminRunnersPath: {
+      type: String,
+      required: true,
+    },
+    newRunnerPath: {
+      type: String,
+      required: true,
+    },
   },
 };
 </script>
 <template>
   <div>
-    <h1 class="gl-font-size-h1">{{ s__('Runners|Fleet dashboard') }}</h1>
+    <runner-list-header>
+      <template #title>{{ s__('Runners|Fleet dashboard') }}</template>
+      <template #actions>
+        <gl-button variant="link" :href="adminRunnersPath">{{
+          s__('Runners|View runners list')
+        }}</gl-button>
+        <gl-button variant="confirm" :href="newRunnerPath">
+          {{ s__('Runners|New instance runner') }}
+        </gl-button>
+      </template>
+    </runner-list-header>
+
     <p>
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
