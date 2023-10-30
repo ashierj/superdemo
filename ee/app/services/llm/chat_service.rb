@@ -14,8 +14,6 @@ module Llm
       schedule_completion_worker unless prompt_message.conversation_reset?
     end
 
-    # We need to broadcast this content over the websocket as well
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/413600
     def content(_action_name)
       options[:content]
     end
