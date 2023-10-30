@@ -40,6 +40,15 @@ RSpec.describe ScimFinder do
     it 'finds user by extern_uid' do
       expect(finder.search(filter: "userName eq \"#{id.extern_uid}\"").first).to eq id
     end
+
+    context 'when email id is invalid' do
+      it 'returns an empty scim identity relation' do
+        expect(User).not_to receive(:find_by_any_email)
+        expect(User).to receive(:find_by_username).once
+
+        expect(finder.search(filter: "userName eq abc@example")).to be_empty
+      end
+    end
   end
 
   describe '#initialize' do
