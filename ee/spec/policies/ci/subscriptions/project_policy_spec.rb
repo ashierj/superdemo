@@ -12,6 +12,10 @@ RSpec.describe ::Ci::Subscriptions::ProjectPolicy, feature_category: :compliance
 
   subject(:policy) { described_class.new(user, subscription) }
 
+  context 'when user does not have maintainer access to project' do
+    it { is_expected.to be_disallowed(:delete_project_subscription) }
+  end
+
   context 'when user has no permissions' do
     it { is_expected.to be_disallowed(:read_project_subscription) }
   end
@@ -22,6 +26,8 @@ RSpec.describe ::Ci::Subscriptions::ProjectPolicy, feature_category: :compliance
     end
 
     it { is_expected.to be_disallowed(:read_project_subscription) }
+
+    it { is_expected.to be_allowed(:delete_project_subscription) }
   end
 
   context 'when user is a developer for the upstream project' do
