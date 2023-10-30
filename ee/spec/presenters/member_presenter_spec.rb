@@ -9,8 +9,8 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
   let_it_be(:user) { create(:user) }
   let_it_be(:root_group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: root_group) }
-  let_it_be(:member_root) { create(:group_member, :reporter, group: root_group, user: user) }
-  let_it_be(:member_subgroup) { create(:group_member, :reporter, group: subgroup, user: user) }
+  let_it_be(:member_root, reload: true) { create(:group_member, :reporter, group: root_group, user: user) }
+  let_it_be(:member_subgroup, reload: true) { create(:group_member, :reporter, group: subgroup, user: user) }
 
   let(:presenter) { described_class.new(member_root, current_user: user) }
 
@@ -80,6 +80,28 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
 
       it 'returns an empty array' do
         expect(presenter.valid_member_roles).to be_empty
+      end
+    end
+  end
+
+  describe '#custom_permissions' do
+    context 'when user has static role' do
+      it 'returns an empty array' do
+        expect(presenter.custom_permissions).to be_empty
+      end
+    end
+
+    context 'when user has custom role' do
+      it 'returns its abilities' do
+        member_role = build_stubbed(
+          :member_role, namespace: root_group, read_vulnerability: true, admin_merge_request: true
+        )
+        member_root.member_role = member_role
+
+        expect(presenter.custom_permissions).to match_array(
+          [{ key: :read_vulnerability, name: 'Read vulnerability' },
+            { key: :admin_merge_request, name: 'Admin merge request' }]
+        )
       end
     end
   end

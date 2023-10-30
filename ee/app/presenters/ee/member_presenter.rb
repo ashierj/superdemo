@@ -43,6 +43,14 @@ module EE
       end
     end
 
+    def custom_permissions
+      return super unless member_role
+
+      member_role.enabled_permissions.each.map do |permission|
+        { key: permission, name: permission.to_s.humanize }
+      end
+    end
+
     private
 
     def override_member_permission
