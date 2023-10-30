@@ -10364,6 +10364,9 @@ msgstr ""
 msgid "CiStatusLabel|skipped"
 msgstr ""
 
+msgid "CiStatusLabel|waiting for callback"
+msgstr ""
+
 msgid "CiStatusLabel|waiting for delayed job"
 msgstr ""
 
