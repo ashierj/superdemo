@@ -8,23 +8,6 @@ RSpec.describe EnvironmentsHelper do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { environment.project }
 
-  describe '#environment_logs_data' do
-    subject { helper.environment_logs_data(project, environment) }
-
-    it 'returns environment parameters data' do
-      expect(subject).to include(
-        "environment_name": environment.name,
-        "environments_path": api_v4_projects_environments_path(id: project.id)
-      )
-    end
-
-    it 'returns parameters for forming the pod logs API URL' do
-      expect(subject).to include(
-        "environment_id": environment.id
-      )
-    end
-  end
-
   describe '#can_approve_deployment?' do
     let_it_be(:protected_environment) do
       create(:protected_environment, name: environment.name, project: project, authorize_user_to_deploy: user)
