@@ -98,7 +98,7 @@ export default {
     qaRowAttributes(project, type) {
       if (type === 'row') {
         return {
-          'data-qa-selector': 'project_frameworks_row',
+          'data-testid': 'project-frameworks-row',
           'data-qa-project-name': project.name,
         };
       }
@@ -223,7 +223,7 @@ export default {
       key: 'projectPath',
       label: __('Project path'),
       thClass: 'gl-vertical-align-middle!',
-      tdAttr: { 'data-qa-selector': 'project_path_content' },
+      tdAttr: { 'data-testid': 'project-path-content' },
       tdClass: 'gl-vertical-align-middle!',
       sortable: false,
     },
@@ -313,7 +313,7 @@ export default {
         </div>
       </template>
       <template #cell(projectName)="{ item }">
-        <gl-link :href="item.webUrl" data-qa-selector="project_name_link">{{ item.name }} </gl-link>
+        <gl-link :href="item.webUrl" data-testid="project-name-link">{{ item.name }} </gl-link>
       </template>
       <template #cell(projectPath)="{ item: { fullPath } }">
         {{ fullPath }}

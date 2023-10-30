@@ -52,7 +52,7 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/396600'
       ) do
         subgroup.sandbox.visit!
-        Page::Group::Menu.perform(&:go_to_compliance_report)
+        Page::Group::Menu.perform(&:go_to_compliance_center)
         QA::EE::Page::Group::Compliance::Show.perform do |report|
           report.click_projects_tab
 
@@ -60,13 +60,13 @@ module QA
             report.project_row(top_level_project) do |project|
               expect(project).to have_name(top_level_project.name)
               expect(project).to have_path(top_level_project.full_path)
-              expect(project).to have_framework(default_compliance_framework.name)
+              expect(project).to have_framework(default_compliance_framework.name, default: true)
             end
 
             report.project_row(subgroup_project) do |project|
               expect(project).to have_name(subgroup_project.name)
               expect(project).to have_path(subgroup_project.full_path)
-              expect(project).to have_framework(another_framework.name)
+              expect(project).to have_framework(another_framework.name, default: false)
             end
 
             report.project_row(project_without_framework) do |project|

@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :skip_live_env, product_group: :compliance, quarantine: {
-    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/428979',
-    type: :flaky
-  } do
+  RSpec.describe 'Govern', :skip_live_env, product_group: :compliance do
     describe 'compliance dashboard' do
       let!(:approver1) { create(:user, name: "user1-compliance-dashboard-#{SecureRandom.hex(8)}") }
       let!(:approver1_api_client) { Runtime::API::Client.new(:gitlab, user: approver1) }
@@ -22,14 +19,6 @@ module QA
           project: project,
           title: "compliance-dashboard-mr-#{SecureRandom.hex(6)}",
           source_branch: "test-compliance-report-branch-#{SecureRandom.hex(8)}")
-      end
-
-      before do
-        Runtime::Feature.disable(:adherence_report_ui, group: group)
-      end
-
-      after do
-        Runtime::Feature.enable(:adherence_report_ui, group: group)
       end
 
       context 'with separation of duties in an MR' do
@@ -50,11 +39,13 @@ module QA
           it 'shows only "less than two approvers" violation', :reliable,
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/390949' do
             group.visit!
-            Page::Group::Menu.perform(&:go_to_compliance_report)
-            QA::EE::Page::Group::Compliance::Show.perform do |compliance_report|
-              expect(compliance_report).to have_violation("Less than 2 approvers", merge_request.title)
-              expect(compliance_report).not_to have_violation(author_approval_violation, merge_request.title)
-              expect(compliance_report).not_to have_violation(committer_approval_violation, merge_request.title)
+            Page::Group::Menu.perform(&:go_to_compliance_center)
+            QA::EE::Page::Group::Compliance::Show.perform do |compliance_center|
+              compliance_center.switch_to_violations_tab
+
+              expect(compliance_center).to have_violation("Less than 2 approvers", merge_request.title)
+              expect(compliance_center).not_to have_violation(author_approval_violation, merge_request.title)
+              expect(compliance_center).not_to have_violation(committer_approval_violation, merge_request.title)
             end
           end
         end
@@ -73,11 +64,13 @@ module QA
           it 'shows only "author approved merge request" and "approved by committer" violations', :reliable,
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/390948' do
             group.visit!
-            Page::Group::Menu.perform(&:go_to_compliance_report)
-            QA::EE::Page::Group::Compliance::Show.perform do |compliance_report|
-              expect(compliance_report).not_to have_violation(number_of_approvals_violation, merge_request.title)
-              expect(compliance_report).to have_violation(author_approval_violation, merge_request.title)
-              expect(compliance_report).to have_violation(committer_approval_violation, merge_request.title)
+            Page::Group::Menu.perform(&:go_to_compliance_center)
+            QA::EE::Page::Group::Compliance::Show.perform do |compliance_center|
+              compliance_center.switch_to_violations_tab
+
+              expect(compliance_center).not_to have_violation(number_of_approvals_violation, merge_request.title)
+              expect(compliance_center).to have_violation(author_approval_violation, merge_request.title)
+              expect(compliance_center).to have_violation(committer_approval_violation, merge_request.title)
             end
           end
         end
