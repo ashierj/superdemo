@@ -20,11 +20,15 @@ module CodeSuggestions
         line.blank? || language.single_line_comment?(line)
       end.take(MIN_LINES_OF_CODE) # rubocop:disable CodeReuse/ActiveRecord
 
-      non_comment_lines.count < MIN_LINES_OF_CODE
+      non_comment_lines.count < MIN_LINES_OF_CODE && lines_below_cursor.count < MIN_LINES_OF_CODE
     end
 
     def lines_above_cursor
       content_above_cursor.to_s.lines
+    end
+
+    def lines_below_cursor
+      content_below_cursor.to_s.lines
     end
   end
 end

@@ -25,7 +25,7 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
       it { is_expected.to be_quite_small }
     end
 
-    context 'when file content is less than 5 lines' do
+    context 'when file content above cursor is less than 5 lines' do
       let(:content_above_cursor) do
         <<~CODE
           # A function that outputs the first 20 fibonacci numbers
@@ -36,6 +36,38 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
       end
 
       it { is_expected.to be_quite_small }
+
+      context 'when file content below cursor more than 5 lines' do
+        let(:content_below_cursor) do
+          <<~CODE
+            end
+
+            # Method to calculate the square root of a number
+            def square_root(number)
+              if number < 0
+                raise ArgumentError, "Square root of a negative number is undefined"
+              else
+                Math.sqrt(number)
+              end
+            end
+          CODE
+        end
+
+        it { is_expected.not_to be_quite_small }
+      end
+
+      context 'when file content below is less than 5 lines' do
+        let(:content_below_cursor) do
+          <<~CODE
+            end
+
+            def square_root(number)
+            end
+          CODE
+        end
+
+        it { is_expected.to be_quite_small }
+      end
     end
 
     context 'when content above cursor is 5 or more lines' do
