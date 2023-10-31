@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :portfolio_management do
   let(:group) { create(:group) }
   let(:epic) { create(:epic, group: group) }
-  let(:user) { create(:user, :no_super_sidebar) }
+  let(:user) { create(:user) }
   let(:todo_selector) { '[data-testid="sidebar-todo"]' }
+  let(:nav_todos_link) { '[data-testid="todos-shortcut-button"]' }
 
   context 'with notifications_todos_buttons feature flag disabled' do
     before do
@@ -24,7 +25,7 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
         expect(page).to have_content 'Mark as done'
       end
 
-      page.within ".header-content span[aria-label='#{_('Todos count')}']" do
+      page.within nav_todos_link do
         expect(page).to have_content '1'
       end
     end
@@ -34,8 +35,8 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
         click_button 'Add a to do'
       end
 
-      expect(page).to have_selector(".header-content span[aria-label='#{_('Todos count')}']", visible: true)
-      page.within ".header-content span[aria-label='#{_('Todos count')}']" do
+      expect(page).to have_selector(nav_todos_link, visible: true)
+      page.within nav_todos_link do
         expect(page).to have_content '1'
       end
 
@@ -43,7 +44,7 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
         click_button 'Mark as done'
       end
 
-      expect(page).to have_selector(".header-content span[aria-label='#{_('Todos count')}']", visible: false)
+      expect(page).to have_selector(nav_todos_link, visible: false)
     end
 
     it 'passes axe automated accessibility testing for todo' do
@@ -69,7 +70,7 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
         expect(page).to have_selector("button[title='Mark as done']")
       end
 
-      page.within ".header-content span[aria-label='#{_('Todos count')}']" do
+      page.within nav_todos_link do
         expect(page).to have_content '1'
       end
     end

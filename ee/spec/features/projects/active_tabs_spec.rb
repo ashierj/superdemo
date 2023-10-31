@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project active tab', feature_category: :groups_and_projects do
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+RSpec.describe 'Project active tab', :js, feature_category: :groups_and_projects do
+  let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, namespace: user.namespace) }
 
   before do
@@ -17,7 +17,7 @@ RSpec.describe 'Project active tab', feature_category: :groups_and_projects do
       visit project_insights_path(project)
     end
 
-    it_behaves_like 'page has active tab', _('Analytics')
+    it_behaves_like 'page has active tab', _('Analyze')
     it_behaves_like 'page has active sub tab', _('Insights')
   end
 
@@ -28,7 +28,7 @@ RSpec.describe 'Project active tab', feature_category: :groups_and_projects do
       visit project_analytics_code_reviews_path(project)
     end
 
-    it_behaves_like 'page has active tab', _('Analytics')
+    it_behaves_like 'page has active tab', _('Analyze')
     it_behaves_like 'page has active sub tab', _('Code review')
   end
 
@@ -41,7 +41,7 @@ RSpec.describe 'Project active tab', feature_category: :groups_and_projects do
           visit security_project_pipeline_path(project, pipeline)
         end
 
-        it_behaves_like 'page has active tab', _('CI/CD')
+        it_behaves_like 'page has active tab', _('Build')
         it_behaves_like 'page has active sub tab', _('Pipelines')
       end
 
@@ -50,7 +50,7 @@ RSpec.describe 'Project active tab', feature_category: :groups_and_projects do
           visit licenses_project_pipeline_path(project, pipeline)
         end
 
-        it_behaves_like 'page has active tab', _('CI/CD')
+        it_behaves_like 'page has active tab', _('Build')
         it_behaves_like 'page has active sub tab', _('Pipelines')
       end
 
@@ -59,7 +59,7 @@ RSpec.describe 'Project active tab', feature_category: :groups_and_projects do
           visit codequality_report_project_pipeline_path(project, pipeline)
         end
 
-        it_behaves_like 'page has active tab', _('CI/CD')
+        it_behaves_like 'page has active tab', _('Build')
         it_behaves_like 'page has active sub tab', _('Pipelines')
       end
     end
