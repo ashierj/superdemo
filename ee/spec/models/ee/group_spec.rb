@@ -31,6 +31,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     it { is_expected.to have_many(:repository_storage_moves) }
     it { is_expected.to have_many(:iterations) }
     it { is_expected.to have_many(:iterations_cadences) }
+    it { is_expected.to have_many(:approval_rules).class_name('ApprovalRules::ApprovalGroupRule').inverse_of(:group) }
     it { is_expected.to have_many(:epic_board_recent_visits).inverse_of(:group) }
     it { is_expected.to have_many(:external_audit_event_destinations) }
     it { is_expected.to have_many(:google_cloud_logging_configurations) }
