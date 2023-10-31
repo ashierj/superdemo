@@ -60,7 +60,13 @@ RSpec.shared_examples 'license scanning report comparison' do |with_report_trait
       subject
 
       expect(response).to have_gitlab_http_status(:bad_request)
-      expect(json_response).to eq({ 'status_reason' => 'Failed to parse license scanning reports' })
+    end
+
+    it 'provides an error status reason' do
+      subject
+
+      expect(json_response['status_reason']).to eq 'Failed to parse license scanning reports'
+      expect(json_response['errors']).to match_array ['Failed to parse license scanning reports']
     end
   end
 
