@@ -3,10 +3,11 @@ import { s__, __ } from '~/locale';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { fromYaml } from '../../policy_editor/scan_result/lib';
 import { SUMMARY_TITLE } from '../constants';
-import PolicyInfoRow from '../info_row.vue';
+import InfoRow from '../info_row.vue';
 import PolicyDrawerLayout from '../drawer_layout.vue';
 import BranchExceptionsToggleList from '../branch_exceptions_toggle_list.vue';
 import Approvals from './policy_approvals.vue';
+import Settings from './policy_settings.vue';
 import { humanizeRules } from './utils';
 
 export default {
@@ -17,8 +18,9 @@ export default {
   components: {
     BranchExceptionsToggleList,
     PolicyDrawerLayout,
-    PolicyInfoRow,
+    InfoRow,
     Approvals,
+    Settings,
   },
   props: {
     policy: {
@@ -55,6 +57,9 @@ export default {
         ...this.policy.userApprovers,
       ];
     },
+    settings() {
+      return this.parsedYaml?.approval_settings || {};
+    },
   },
   methods: {
     capitalizedCriteriaMessage(message) {
@@ -75,7 +80,8 @@ export default {
     :type="$options.i18n.scanResult"
   >
     <template v-if="parsedYaml" #summary>
-      <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
+      <info-row data-testid="policy-summary" :label="$options.i18n.summary">
+        <settings :settings="settings" />
         <approvals :action="requireApproval" :approvers="approvers" />
         <div
           v-for="(
@@ -99,7 +105,7 @@ export default {
             </li>
           </ul>
         </div>
-      </policy-info-row>
+      </info-row>
     </template>
   </policy-drawer-layout>
 </template>
