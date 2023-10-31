@@ -177,7 +177,7 @@ const createProject = ({ id } = {}) => ({
   complianceFrameworks: {
     nodes: [
       {
-        id: 'gid://gitlab/ComplianceManagement::Framework/1',
+        id: `gid://gitlab/ComplianceManagement::Framework/${id}`,
         name: 'some framework',
         default: false,
         description: 'this is a framework',
@@ -263,10 +263,10 @@ export const createComplianceFrameworksTokenResponse = () => {
   };
 };
 
-const createFramework = ({ id } = {}) => ({
+export const createFramework = ({ id, isDefault = false } = {}) => ({
   id: `gid://gitlab/ComplianceManagement::Framework/${id}`,
   name: `Some framework ${id}`,
-  default: false,
+  default: isDefault,
   description: `This is a framework ${id}`,
   color: `#3cb37${id}`,
   pipelineConfigurationFullPath: null,

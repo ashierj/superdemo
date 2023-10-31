@@ -12322,6 +12322,15 @@ msgstr ""
 msgid "Compliance framework"
 msgstr ""
 
+msgid "ComplianceFrameworksReport|Associated Projects"
+msgstr ""
+
+msgid "ComplianceFrameworksReport|Default"
+msgstr ""
+
+msgid "ComplianceFrameworksReport|Edit framework"
+msgstr ""
+
 msgid "ComplianceFrameworks|Active compliance frameworks"
 msgstr ""
 
