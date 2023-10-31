@@ -1,3 +1,14 @@
+/**
+ * Naming convention for mocks:
+ * mock policy yaml => name ends in `ScanResultManifest`
+ * mock parsed yaml => name ends in `ScanResultObject`
+ * mock policy for list/drawer => name ends in `ScanResultPolicy`
+ *
+ * If you have the same policy in multiple forms (e.g. mock yaml and mock parsed yaml that should
+ * match), please name them similarly (e.g. fooBarScanResultManifest and fooBarScanResultObject)
+ * and keep them near each other.
+ */
+
 export const mockBlockUnprotectingBranchesSettingsManifest = `type: scan_result_policy
 name: ''
 description: ''
@@ -91,7 +102,6 @@ export const mockProjectScanResultPolicy = {
   editPath: '/policies/policy-name/edit?type="scan_result_policy"',
   enabled: false,
   userApprovers: [],
-  groupApprovers: [],
   allGroupApprovers: [],
   roleApprovers: [],
   source: {
@@ -110,7 +120,6 @@ export const mockGroupScanResultPolicy = {
   editPath: '/policies/policy-name/edit?type="scan_result_policy"',
   enabled: mockDefaultBranchesScanResultObject.enabled,
   userApprovers: [],
-  groupApprovers: [],
   allGroupApprovers: [],
   roleApprovers: [],
   source: {
@@ -194,8 +203,25 @@ export const mockApprovalSettingsScanResultObject = {
       user_approvers: ['the.one'],
     },
   ],
-  approval_settings: {
-    block_unprotecting_branches: true,
+  approval_settings: { block_unprotecting_branches: true },
+};
+
+export const mockApprovalSettingsScanResultPolicy = {
+  __typename: 'ScanResultPolicy',
+  name: 'low vulnerability SAST approvals',
+  updatedAt: new Date('2021-06-07T00:00:00.000Z'),
+  yaml: mockApprovalSettingsScanResultManifest,
+  editPath: '/policies/policy-name/edit?type="scan_result_policy"',
+  enabled: true,
+  userApprovers: [{ name: 'the.one' }],
+  allGroupApprovers: [],
+  roleApprovers: [],
+  approval_settings: { block_unprotecting_branches: true },
+  source: {
+    __typename: 'ProjectSecurityPolicySource',
+    project: {
+      fullPath: 'project/path/second',
+    },
   },
 };
 
@@ -275,7 +301,6 @@ export const mockProjectWithBranchesScanResultPolicy = {
   editPath: '/policies/policy-name/edit?type="scan_result_policy"',
   enabled: true,
   userApprovers: [{ name: 'the.one' }],
-  groupApprovers: [],
   allGroupApprovers: [],
   roleApprovers: [],
   source: {
@@ -294,7 +319,6 @@ export const mockProjectWithAllApproverTypesScanResultPolicy = {
   editPath: '/policies/policy-name/edit?type="scan_result_policy"',
   enabled: false,
   userApprovers: [{ name: 'the.one' }],
-  groupApprovers: [{ fullPath: 'the.one.group' }],
   allGroupApprovers: [{ fullPath: 'the.one.group' }],
   roleApprovers: ['OWNER'],
   source: {
