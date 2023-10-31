@@ -42,7 +42,7 @@ describe('Compliance report graphql mappers', () => {
         fullPath: 'gitlab-org/gitlab-shell',
         complianceFrameworks: [
           {
-            id: 'gid://gitlab/ComplianceManagement::Framework/1',
+            id: 'gid://gitlab/ComplianceManagement::Framework/0',
             name: 'some framework',
             description: 'this is a framework',
             default: false,

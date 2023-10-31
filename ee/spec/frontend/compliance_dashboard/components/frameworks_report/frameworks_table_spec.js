@@ -1,37 +1,59 @@
-import { GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
-import Vue from 'vue';
+import { GlLoadingIcon, GlTable, GlLink, GlModal } from '@gitlab/ui';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 
+import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import {
   createComplianceFrameworksReportResponse,
   createComplianceFrameworksReportProjectsResponse,
 } from 'ee_jest/compliance_dashboard/mock_data';
 import FrameworksTable from 'ee/compliance_dashboard/components/frameworks_report/frameworks_table.vue';
+import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
+import FrameworkInfoDrawer from 'ee/compliance_dashboard/components/frameworks_report/framework_info_drawer.vue';
 
 Vue.use(VueApollo);
 
 describe('FrameworksTable component', () => {
   let wrapper;
 
-  const groupPath = 'group-path';
+  const frameworksResponse = createComplianceFrameworksReportResponse({ count: 2 });
+  const projectsResponse = createComplianceFrameworksReportProjectsResponse({ count: 2 });
+  const frameworks = frameworksResponse.data.namespace.complianceFrameworks.nodes;
+  const projects = projectsResponse.data.group.projects.nodes;
+  const rowCheckIndex = 0;
+  const GlModalStub = stubComponent(GlModal, { methods: { show: jest.fn(), hide: jest.fn() } });
 
   const findTable = () => wrapper.findComponent(GlTable);
   const findTableHeaders = () => findTable().findAll('th div');
-  const findTableRowData = (idx) => findTable().findAll('tbody > tr').at(idx).findAll('td');
+  const findTableRow = (idx) => findTable().findAll('tbody > tr').at(idx);
+  const findTableRowData = (idx) => findTableRow(idx).findAll('td');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findEmptyState = () => wrapper.findByTestId('frameworks-table-empty-state');
+  const findEmptyState = () => wrapper.findByText('No frameworks found');
   const findTableLinks = () => wrapper.findAllComponents(GlLink);
+  const findFrameworkInfoSidebar = () => wrapper.findComponent(FrameworkInfoDrawer);
+  const findModalByModalId = (modalId) =>
+    wrapper.findAllComponents(GlModal).wrappers.find((w) => w.props('modalId') === modalId);
+  const findEditModal = () => findModalByModalId('edit-framework-form-modal');
+
+  const openSidebar = async () => {
+    findTableRow(rowCheckIndex).trigger('click');
+    await nextTick();
+  };
 
   const createComponent = (props = {}) => {
     return mountExtended(FrameworksTable, {
       propsData: {
-        groupPath,
         frameworks: [],
         projects: [],
         isLoading: true,
         ...props,
+      },
+      stubs: {
+        EditForm: true,
+        GlModal: GlModalStub,
       },
       attachTo: document.body,
     });
@@ -64,10 +86,6 @@ describe('FrameworksTable component', () => {
   });
 
   describe('when there are projects', () => {
-    const frameworksResponse = createComplianceFrameworksReportResponse({ count: 2 });
-    const projectsResponse = createComplianceFrameworksReportProjectsResponse({ count: 2 });
-    const frameworks = frameworksResponse.data.namespace.complianceFrameworks.nodes;
-    const projects = projectsResponse.data.group.projects.nodes;
     beforeEach(() => {
       wrapper = createComponent({
         frameworks,
@@ -77,12 +95,63 @@ describe('FrameworksTable component', () => {
     });
 
     it.each(Object.keys(frameworks))('has the correct data for row %s', (idx) => {
-      const [frameworkName] = findTableRowData(idx).wrappers.map((d) => d.text());
-      expect(frameworkName).toBe(frameworks[idx].name);
+      const [frameworkName, associatedProjects] = findTableRowData(idx).wrappers.map((d) =>
+        d.text(),
+      );
+      expect(frameworkName).toContain(frameworks[idx].name);
+      expect(associatedProjects).toContain(projects[idx].name);
       expect(findTableLinks().wrappers).toHaveLength(2);
       expect(findTableLinks().at(0).attributes('href')).toBe(
         'https://example.com/gitlab-org/gitlab-shell',
       );
+    });
+
+    describe('when edit framework requested from framework badge', () => {
+      beforeEach(() => {
+        findTableRow(rowCheckIndex).findComponent(FrameworkBadge).vm.$emit('edit');
+      });
+
+      it('opens edit modal with correct props', () => {
+        expect(findEditModal().findComponent(EditForm).props('id')).toEqual(
+          frameworks[rowCheckIndex].id,
+        );
+
+        expect(GlModalStub.methods.show).toHaveBeenCalled();
+      });
+
+      it('closes modal on cancel', () => {
+        findEditModal().findComponent(EditForm).vm.$emit('cancel');
+
+        expect(GlModalStub.methods.hide).toHaveBeenCalled();
+      });
+
+      it('closes modal on success', () => {
+        findEditModal().findComponent(EditForm).vm.$emit('success');
+
+        expect(GlModalStub.methods.hide).toHaveBeenCalled();
+      });
+    });
+
+    describe('Sidebar', () => {
+      describe('closing the sidebar', () => {
+        it('has the correct props when closed', async () => {
+          await openSidebar();
+
+          await findFrameworkInfoSidebar().vm.$emit('close');
+
+          expect(findFrameworkInfoSidebar().props('framework')).toBe(null);
+        });
+      });
+
+      describe('opening the sidebar', () => {
+        it('has the correct props when opened', async () => {
+          await openSidebar();
+
+          expect(findFrameworkInfoSidebar().props('framework')).toMatchObject(
+            frameworks[rowCheckIndex],
+          );
+        });
+      });
     });
   });
 });
