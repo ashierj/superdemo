@@ -50268,7 +50268,7 @@ msgstr ""
 msgid "Tracing|Time range"
 msgstr ""
 
-msgid "Tracing|Toggle children spans"
+msgid "Tracing|Toggle child spans"
 msgstr ""
 
 msgid "Tracing|Trace ID"
