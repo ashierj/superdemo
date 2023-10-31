@@ -43,6 +43,7 @@ export default {
         return {
           fullPath: this.projectFullPath,
           isProject: true,
+          state: ['DETECTED', 'CONFIRMED'],
         };
       },
       update({ project }) {
