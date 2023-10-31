@@ -4,6 +4,8 @@ module PackageMetadata
   module Ingestion
     module Advisory
       class AdvisoryIngestionTask
+        Error = Class.new(StandardError)
+
         def initialize(import_data)
           @import_data = import_data
           @advisory_map = {}
@@ -32,11 +34,14 @@ module PackageMetadata
         def valid_advisories
           advisories.map do |advisory|
             if advisory.invalid?
-              Gitlab::AppJsonLogger.error(class: self.class.name,
-                message: "invalid advisory",
+              Gitlab::ErrorTracking.track_exception(
+                Error.new(
+                  "invalid advisory"),
                 source_xid: advisory.source_xid,
                 advisory_xid: advisory.advisory_xid,
-                errors: advisory.errors.to_hash)
+                errors: advisory.errors.to_hash
+              )
+
               next
             end
 

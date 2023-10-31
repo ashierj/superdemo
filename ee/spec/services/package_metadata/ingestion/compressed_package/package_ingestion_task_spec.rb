@@ -90,10 +90,11 @@ RSpec.describe PackageMetadata::Ingestion::CompressedPackage::PackageIngestionTa
       end
 
       it 'logs invalid packages as an error' do
-        expect(::Gitlab::AppJsonLogger)
-          .to receive(:error)
-          .with(class: described_class.name,
-            message: "invalid package #{invalid_package.purl_type}/#{invalid_package.name}",
+        expect(Gitlab::ErrorTracking)
+          .to receive(:track_exception)
+          .with(described_class::Error.new("invalid package"),
+            purl_type: invalid_package.purl_type,
+            name: invalid_package.name,
             errors: { licenses: ['must be a valid json schema'] })
         execute
       end

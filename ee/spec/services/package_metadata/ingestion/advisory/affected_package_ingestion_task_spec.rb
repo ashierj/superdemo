@@ -70,10 +70,9 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::AffectedPackageIngestionTas
       end
 
       it 'logs invalid affected packages as an error' do
-        expect(::Gitlab::AppJsonLogger)
-          .to receive(:error)
-          .with(class: described_class.name,
-            message: "invalid affected_package",
+        expect(Gitlab::ErrorTracking)
+          .to receive(:track_exception)
+          .with(described_class::Error.new("invalid affected_package"),
             purl_type: invalid_affected_package.purl_type,
             package_name: invalid_affected_package.package_name,
             distro_version: invalid_affected_package.distro_version,

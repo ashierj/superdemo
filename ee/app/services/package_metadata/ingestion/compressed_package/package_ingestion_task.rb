@@ -4,6 +4,8 @@ module PackageMetadata
   module Ingestion
     module CompressedPackage
       class PackageIngestionTask
+        Error = Class.new(StandardError)
+
         def initialize(import_data, license_map)
           @import_data = import_data
           @license_map = license_map
@@ -28,8 +30,14 @@ module PackageMetadata
             if package.valid?
               true
             else
-              Gitlab::AppJsonLogger.error(class: self.class.name,
-                message: "invalid package #{package.purl_type}/#{package.name}", errors: package.errors.to_hash)
+              Gitlab::ErrorTracking.track_exception(
+                Error.new(
+                  "invalid package"),
+                purl_type: package.purl_type,
+                name: package.name,
+                errors: package.errors.to_hash
+              )
+
               false
             end
           end.uniq(&:name)

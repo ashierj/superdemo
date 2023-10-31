@@ -4,6 +4,8 @@ module PackageMetadata
   module Ingestion
     module Advisory
       class AffectedPackageIngestionTask
+        Error = Class.new(StandardError)
+
         def initialize(import_data, advisory_map)
           @import_data = import_data
           @advisory_map = advisory_map
@@ -27,12 +29,15 @@ module PackageMetadata
         def valid_affected_packages
           affected_packages.map do |affected_package|
             unless affected_package.valid?
-              Gitlab::AppJsonLogger.error(class: self.class.name,
-                message: "invalid affected_package",
+              Gitlab::ErrorTracking.track_exception(
+                Error.new(
+                  "invalid affected_package"),
                 purl_type: affected_package.purl_type,
                 package_name: affected_package.package_name,
                 distro_version: affected_package.distro_version,
-                errors: affected_package.errors.to_hash)
+                errors: affected_package.errors.to_hash
+              )
+
               next
             end
 

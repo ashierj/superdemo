@@ -6,11 +6,17 @@ module Gitlab
   module PackageMetadata
     module Connector
       class NdjsonDataFile < BaseDataFile
+        Error = Class.new(StandardError)
+
         def parse(text)
           ::Gitlab::Json.parse(text.force_encoding('UTF-8'))
         rescue JSON::ParserError => e
-          Gitlab::AppJsonLogger.warn(class: self.class.name, message: "json parsing error on '#{text}'",
-            error: e.message)
+          Gitlab::ErrorTracking.track_exception(
+            Error.new(
+              "json parsing error on '#{text}'"),
+            errors: e.message
+          )
+
           nil
         end
 
