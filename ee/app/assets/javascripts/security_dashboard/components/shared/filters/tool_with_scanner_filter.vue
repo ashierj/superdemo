@@ -45,15 +45,26 @@ export default {
         text: REPORT_TYPES_WITH_MANUALLY_ADDED.generic,
       };
       const groupedByReport = groupBy(this.scanners, 'report_type');
-      const options = Object.entries(REPORT_TYPES_DEFAULT).map(([reportType, text]) => ({
-        text,
-        options: (groupedByReport[reportType.toUpperCase()] || []).map((scanner) => ({
+      const optionsWithScanners = [];
+
+      // Create the dropdown options for the report types that have scanners
+      Object.entries(REPORT_TYPES_DEFAULT).forEach(([reportType, text]) => {
+        const scanners = groupedByReport[reportType.toUpperCase()];
+
+        // Don't include the report type if there are no scanners for it
+        if (!scanners) {
+          return;
+        }
+
+        const options = scanners.map((scanner) => ({
           value: scanner.external_id,
           text: DEFAULT_VENDORS.includes(scanner.vendor)
             ? scanner.name
             : `${scanner.name} (${scanner.vendor})`,
-        })),
-      }));
+        }));
+
+        optionsWithScanners.push({ text, options });
+      });
 
       return [
         {
@@ -61,7 +72,7 @@ export default {
           textSrOnly: true,
           options: [allOption, manuallyAddedOption],
         },
-        ...options,
+        ...optionsWithScanners,
       ];
     },
   },

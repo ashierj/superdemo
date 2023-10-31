@@ -5,7 +5,11 @@ import ToolWithScannerFilter from 'ee/security_dashboard/components/shared/filte
 import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
-import { MOCK_SCANNERS, MOCK_SCANNERS_WITH_CLUSTER_IMAGE_SCANNING } from './mock_data';
+import {
+  MOCK_SCANNERS,
+  MOCK_SCANNERS_WITH_CLUSTER_IMAGE_SCANNING,
+  MOCK_SCANNERS_WITH_CUSTOM_VENDOR,
+} from './mock_data';
 
 const MANUALLY_ADDED_OPTION = {
   text: 'Manually added',
@@ -154,6 +158,13 @@ describe('Tool With Scanner Filter component', () => {
         });
       },
     );
+
+    it('does not show report types without a scanner', () => {
+      createWrapper({ scanners: MOCK_SCANNERS_WITH_CUSTOM_VENDOR });
+      const itemNames = getItemsExceptAll().map((item) => item.text);
+
+      expect(itemNames).toEqual(['SAST']);
+    });
   });
 
   describe('filter-changed event', () => {
