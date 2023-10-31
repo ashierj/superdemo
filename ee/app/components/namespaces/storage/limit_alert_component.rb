@@ -200,7 +200,7 @@ module Namespaces
           ),
           group_member_link_start: link_start_tag(group_group_members_path(root_namespace)),
           purchase_more_link_start: link_start_tag(
-            help_page_path('subscriptions/gitlab_com/index.md', anchor: 'purchase-more-storage-and-transfer')
+            help_page_path('subscriptions/gitlab_com/index', anchor: 'purchase-more-storage-and-transfer')
           ),
           link_end: "</a>"
         }
