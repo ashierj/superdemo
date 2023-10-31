@@ -23,8 +23,9 @@ module CodeSuggestions
     end
 
     def task
+      file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
       instructions = CodeSuggestions::InstructionsExtractor
-        .new(language, prefix, suffix, intent, skip_generate_comment_prefix?).extract
+        .new(file_content, intent, skip_generate_comment_prefix?).extract
 
       if instructions.empty?
         return CodeSuggestions::Tasks::CodeCompletion.new(

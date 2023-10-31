@@ -16,12 +16,10 @@ module CodeSuggestions
     GENERATE_COMMENT_PREFIX = "GitLab Duo Generate:"
 
     EMPTY_LINES_LIMIT = 1
-    MIN_LINES_OF_CODE = 5
 
-    def initialize(language, content, suffix, intent, skip_generate_comment_prefix)
-      @language = language
-      @content = content
-      @suffix = suffix
+    def initialize(file_content, intent, skip_generate_comment_prefix)
+      @file_content = file_content
+      @language = file_content.language
       @intent = intent
       @skip_generate_comment_prefix = skip_generate_comment_prefix
     end
@@ -29,9 +27,8 @@ module CodeSuggestions
     def extract
       return {} if intent == INTENT_COMPLETION
 
-      lines = content.to_s.lines
-      prefix, comment_block = prefix_and_comment(lines)
-      instruction = get_instruction(lines, comment_block)
+      prefix, comment_block = prefix_and_comment(file_content.lines_above_cursor)
+      instruction = get_instruction(comment_block)
 
       return {} if !instruction && intent != INTENT_GENERATION
 
@@ -43,7 +40,7 @@ module CodeSuggestions
 
     private
 
-    attr_reader :language, :content, :suffix, :intent, :skip_generate_comment_prefix
+    attr_reader :language, :file_content, :intent, :skip_generate_comment_prefix
 
     def prefix_and_comment(lines)
       comment_block = []
@@ -64,7 +61,7 @@ module CodeSuggestions
       [prefix, comment_block]
     end
 
-    def get_instruction(lines, comment_block)
+    def get_instruction(comment_block)
       if comment_block.first&.match(first_line_regex)
         instruction = comment_block
         .map { |line| line.gsub(language.single_line_comment_format, '').strip }
@@ -74,22 +71,17 @@ module CodeSuggestions
         return instruction if instruction
       end
 
-      # Instead of iterating through all lines, we abort when reach `MIN_LINES_OF_CODE`
-      non_comment_lines = lines.lazy.reject do |line|
-        line.blank? || language.single_line_comment?(line)
-      end.take(MIN_LINES_OF_CODE) # rubocop:disable CodeReuse/ActiveRecord
-
-      if non_comment_lines.count < MIN_LINES_OF_CODE
+      if file_content.quite_small?
         return <<~PROMPT
           Create more new code for this file. If the cursor is inside an empty function,
           generate its most likely contents based on the function name and signature.
         PROMPT
       end
 
-      if language.cursor_inside_empty_function?(content, suffix)
+      if language.cursor_inside_empty_function?(file_content.content_above_cursor, file_content.content_below_cursor)
         return <<~PROMPT
-            Complete the empty function and generate contents based on the function name and signature.
-            Do not repeat the code. Only return the method contents.
+          Complete the empty function and generate contents based on the function name and signature.
+          Do not repeat the code. Only return the method contents.
         PROMPT
       end
 

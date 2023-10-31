@@ -8,10 +8,6 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       CodeSuggestions::ProgrammingLanguage.new(CodeSuggestions::ProgrammingLanguage::DEFAULT_NAME)
     end
 
-    let(:intent) { nil }
-    let(:skip_generate_comment_prefix) { true }
-    let(:suffix) { '' }
-
     let(:default_instruction) do
       <<~PROMPT
         Create more new code for this file. If the cursor is inside an empty function,
@@ -19,7 +15,12 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       PROMPT
     end
 
-    subject { described_class.new(language, content, suffix, intent, skip_generate_comment_prefix).extract }
+    let(:suffix) { '' }
+    let(:file_content) { CodeSuggestions::FileContent.new(language, content, suffix) }
+    let(:intent) { nil }
+    let(:skip_generate_comment_prefix) { true }
+
+    subject { described_class.new(file_content, intent, skip_generate_comment_prefix).extract }
 
     context 'when content is nil' do
       let(:content) { nil }
