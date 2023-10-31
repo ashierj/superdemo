@@ -29,11 +29,19 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
       container_repositories_count: 100,
       container_repositories_synced_count: 50,
       container_repositories_failed_count: 12,
+      project_repositories_count: 10,
       last_event_id: 2,
       last_event_date: event_date,
       cursor_last_event_id: 1,
       cursor_last_event_date: event_date,
-      event_log_max_id: 555
+      event_log_max_id: 555,
+      project_repositories_registry_count: 10,
+      project_repositories_checksummed_count: 3,
+      project_repositories_checksum_failed_count: 4,
+      project_repositories_synced_count: 5,
+      project_repositories_failed_count: 6,
+      project_repositories_verified_count: 7,
+      project_repositories_verification_failed_count: 8
     }
   end
 
@@ -137,6 +145,27 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
         expect(metric_value(:geo_cursor_last_event_timestamp)).to eq(event_date.to_i)
         expect(metric_value(:geo_last_successful_status_check_timestamp)).to be_truthy
         expect(metric_value(:geo_event_log_max_id)).to eq(555)
+
+        expect(metric_value(:geo_repositories)).to eq(10)
+        expect(metric_value(:geo_project_repositories)).to eq(10)
+        expect(metric_value(:geo_project_repositories_registry)).to eq(10)
+        expect(metric_value(:geo_project_repositories_checksummed)).to eq(3)
+        expect(metric_value(:geo_project_repositories_checksum_failed)).to eq(4)
+        expect(metric_value(:geo_project_repositories_synced)).to eq(5)
+        expect(metric_value(:geo_project_repositories_failed)).to eq(6)
+        expect(metric_value(:geo_project_repositories_verified)).to eq(7)
+        expect(metric_value(:geo_project_repositories_verification_failed)).to eq(8)
+      end
+
+      it 'adds legacy project repo metrics' do
+        subject.execute
+
+        expect(metric_value(:geo_repositories_checksummed)).to eq(3)
+        expect(metric_value(:geo_repositories_checksum_failed)).to eq(4)
+        expect(metric_value(:geo_repositories_synced)).to eq(5)
+        expect(metric_value(:geo_repositories_failed)).to eq(6)
+        expect(metric_value(:geo_repositories_verified)).to eq(7)
+        expect(metric_value(:geo_repositories_verification_failed)).to eq(8)
       end
 
       it 'increments a counter when metrics fail to retrieve' do
