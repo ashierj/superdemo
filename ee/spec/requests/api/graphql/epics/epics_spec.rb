@@ -10,8 +10,11 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
 
   let(:node_path) { %w[group epics nodes] }
 
-  before do
+  before_all do
     group.add_maintainer(user)
+  end
+
+  before do
     stub_licensed_features(epics: true)
   end
 
@@ -50,7 +53,7 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
     end
 
     def query_epics_which_start_with_iid(iid)
-      post_graphql(epics_query(group, 'iidStartsWith', iid), current_user: user)
+      post_graphql(epics_query(group, 'iidStartsWith' => iid), current_user: user)
     end
   end
 
@@ -61,43 +64,46 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
     let_it_be(:epic4) { create(:epic, group: group, created_at: 15.minutes.ago, updated_at: 14.minutes.ago) }
 
     it 'filters by createdBefore' do
-      post_graphql(epics_query(group, 'createdBefore', 5.days.ago), current_user: user)
+      post_graphql(epics_query(group, 'createdBefore' => 5.days.ago), current_user: user)
 
       expect_epics_response([epic1, epic2], node_path: node_path)
     end
 
     it 'filters by createdAfter' do
-      post_graphql(epics_query(group, 'createdAfter', 5.days.ago), current_user: user)
+      post_graphql(epics_query(group, 'createdAfter' => 5.days.ago), current_user: user)
 
       expect_epics_response([epic3, epic4], node_path: node_path)
     end
 
     it 'filters by updatedBefore' do
-      post_graphql(epics_query(group, 'updatedBefore', 7.minutes.ago), current_user: user)
+      post_graphql(epics_query(group, 'updatedBefore' => 7.minutes.ago), current_user: user)
 
       expect_epics_response([epic3, epic4], node_path: node_path)
     end
 
     it 'filters by updatedAfter' do
-      post_graphql(epics_query(group, 'updatedAfter', 7.minutes.ago), current_user: user)
+      post_graphql(epics_query(group, 'updatedAfter' => 7.minutes.ago), current_user: user)
 
       expect_epics_response([epic1, epic2], node_path: node_path)
     end
 
     it 'filters by a combination of created parameters provided' do
-      post_graphql(epics_query_by_hash(group, { 'createdBefore' => Time.zone.now, 'createdAfter' => 20.minutes.ago }), current_user: user)
+      post_graphql(epics_query(group, { 'createdBefore' => Time.zone.now, 'createdAfter' => 20.minutes.ago }),
+        current_user: user)
 
       expect_epics_response([epic4], node_path: node_path)
     end
 
     it 'filters by a combination of created/updated parameters provided' do
-      post_graphql(epics_query_by_hash(group, { 'updatedBefore' => 3.minutes.ago, 'createdAfter' => 20.minutes.ago }), current_user: user)
+      post_graphql(epics_query(group, { 'updatedBefore' => 3.minutes.ago, 'createdAfter' => 20.minutes.ago }),
+        current_user: user)
 
       expect_epics_response([epic4], node_path: node_path)
     end
 
     it 'returns nothing for impossible parameters' do
-      post_graphql(epics_query_by_hash(group, { 'createdBefore' => 7.minutes.ago, 'createdAfter' => Time.zone.now }), current_user: user)
+      post_graphql(epics_query(group, { 'createdBefore' => 7.minutes.ago, 'createdAfter' => Time.zone.now }),
+        current_user: user)
 
       expect_epics_response([], node_path: node_path) # empty set
     end
@@ -111,7 +117,8 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
 
     context "when `start` and `end` are present" do
       it 'returns epics within timeframe' do
-        post_graphql(epics_query_by_hash(group, "timeframe: {#{field_query({ 'start' => '2019-08-13', 'end' => '2019-08-21' })}}"), current_user: user)
+        post_graphql(epics_query(group, 'timeframe' => { 'start' => '2019-08-13', 'end' => '2019-08-21' }),
+          current_user: user)
 
         expect_epics_response([epic1, epic2], node_path: node_path)
       end
@@ -119,22 +126,24 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
 
     context 'when only start is present' do
       it 'raises error' do
-        post_graphql(epics_query_by_hash(group, "timeframe: {#{field_query({ 'start' => '2019-08-13' })}}"), current_user: user)
+        post_graphql(epics_query(group, 'timeframe' => { 'start' => '2019-08-13' }), current_user: user)
 
-        expect(graphql_errors).to include(a_hash_including('message' => "Argument 'end' on InputObject 'Timeframe' is required. Expected type Date!"))
+        expect(graphql_errors).to include(
+          a_hash_including('message' => "Argument 'end' on InputObject 'Timeframe' is required. Expected type Date!"))
       end
     end
 
     context 'when only end is present' do
       it 'raises error' do
-        post_graphql(epics_query_by_hash(group, "timeframe: {#{field_query({ 'end' => '2019-08-21' })}}"), current_user: user)
+        post_graphql(epics_query(group, 'timeframe' => { 'end' => '2019-08-21' }), current_user: user)
 
-        expect(graphql_errors).to include(a_hash_including('message' => "Argument 'start' on InputObject 'Timeframe' is required. Expected type Date!"))
+        expect(graphql_errors).to include(
+          a_hash_including('message' => "Argument 'start' on InputObject 'Timeframe' is required. Expected type Date!"))
       end
     end
   end
 
-  context 'query for epics with events' do
+  context 'when query for epics with events' do
     let_it_be(:epic) { create(:epic, group: group) }
 
     it 'can lookahead to prevent N+1 queries' do
@@ -157,7 +166,7 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
     end
   end
 
-  context 'query for epics with ancestors' do
+  context 'when query for epics with ancestors' do
     let_it_be(:cross_group) { create(:group, :private) }
     let_it_be(:parent_epic1) { create(:epic, group: group) }
     let_it_be(:parent_epic2) { create(:epic, parent: parent_epic1, group: cross_group) }
@@ -352,40 +361,24 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
     )
   end
 
-  def epics_query(group, field, value)
-    epics_query_by_hash(group, field_query({ field => value }))
-  end
-
-  def epics_query_by_hash(group, args = {})
-    field_queries = field_query(args)
-    field_queries = " ( #{field_queries} ) " if field_queries.present?
-
-    <<~QUERY
-      query {
-        group(fullPath: "#{group.full_path}") {
-          id,
-          epics#{field_queries} {
-            nodes {
-              id
-            }
-          }
-        }
+  def epics_query(group, args = {})
+    fields = <<~QUERY
+      nodes {
+        id
       }
     QUERY
-  end
 
-  def field_query(args)
-    return args if args.is_a?(String)
-
-    args.map do |key, value|
-      "#{key}:" + (value.is_a?(Hash) ? field_query(value) : "\"#{value}\"")
-    end.join(',')
+    graphql_query_for(
+      'group',
+      { 'fullPath' => group.full_path },
+      query_graphql_field('epics', args, fields)
+    )
   end
 
   def expect_epics_response(epics, node_path:)
     epics ||= []
     nodes = graphql_data.dig(*node_path)
-    actual_epics = nodes.map { |epic| epic['id'] }
+    actual_epics = nodes.pluck('id')
     expected_epics = epics.map { |epic| epic.to_global_id.to_s }
 
     expect(actual_epics).to contain_exactly(*expected_epics)
