@@ -24,7 +24,8 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        */
       const hasApprovalSettings =
         gon.features?.scanResultPoliciesBlockUnprotectingBranches ||
-        gon.features?.scanResultAnyMergeRequest;
+        gon.features?.scanResultAnyMergeRequest ||
+        gon.features?.scanResultPoliciesBlockForcePush;
 
       const primaryKeys = [
         ...PRIMARY_POLICY_KEYS,
