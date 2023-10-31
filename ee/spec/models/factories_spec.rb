@@ -42,27 +42,41 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:user_preference, :only_comments],
     [:ci_pipeline_artifact, :remote_store],
     # EE
+    [:ci_secure_file, :verification_failed],
+    [:ci_secure_file, :verification_succeeded],
+    [:container_repository, :remote_store],
+    [:container_repository, :verification_failed],
+    [:container_repository, :verification_succeeded],
     [:dast_profile, :with_dast_site_validation],
     [:dependency_proxy_manifest, :remote_store],
+    [:dependency_proxy_manifest, :verification_failed],
+    [:dependency_proxy_manifest, :verification_succeeded],
+    [:dependency_proxy_blob, :verification_failed],
+    [:dependency_proxy_blob, :verification_succeeded],
     [:ee_ci_build, :dependency_scanning_report],
     [:ee_ci_build, :license_scan_v1],
     [:ee_ci_job_artifact, :v1],
     [:ee_ci_job_artifact, :v1_1],
     [:ee_ci_job_artifact, :v2],
     [:ee_ci_job_artifact, :v2_1],
+    [:ee_ci_job_artifact, :verification_failed],
+    [:ee_ci_job_artifact, :verification_succeeded],
     [:lfs_object, :checksum_failure],
     [:lfs_object, :checksummed],
+    [:lfs_object, :verification_failed],
+    [:lfs_object, :verification_succeeded],
     [:merge_request, :blocked],
-    [:merge_request_diff, :verification_failed],
-    [:merge_request_diff, :verification_succeeded],
+    [:external_merge_request_diff, :verification_failed],
+    [:external_merge_request_diff, :verification_succeeded],
     [:package_file, :verification_failed],
     [:package_file, :verification_succeeded],
+    [:pages_deployment, :verification_failed],
+    [:pages_deployment, :verification_succeeded],
     [:project, :with_vulnerabilities],
     [:scan_execution_policy, :with_schedule_and_agent],
     [:vulnerability, :with_cluster_image_scanning_finding],
     [:vulnerability, :with_findings],
-    [:vulnerability_export, :finished],
-    [:container_repository, :remote_store]
+    [:vulnerability_export, :finished]
   ].freeze
 
   geo_configured = Gitlab.ee? && Gitlab::Geo.geo_database_configured?
@@ -102,7 +116,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
 
         describe "linting :#{trait_name} trait" do
           it 'does not raise error when created' do
-            pending 'Trait skipped linting due to legacy error' if skip_trait
+            skip 'Trait skipped linting due to legacy error' if skip_trait
 
             expect { create(factory.name, trait_name) }.not_to raise_error
           end

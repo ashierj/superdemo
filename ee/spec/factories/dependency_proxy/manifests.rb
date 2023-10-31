@@ -1,17 +1,15 @@
 # frozen_string_literal: true
 
 FactoryBot.modify do
-  factory :pages_deployment do
-    trait(:verification_succeeded) do
-      with_file
+  factory :dependency_proxy_manifest do
+    trait :verification_succeeded do
       verification_checksum { 'abc' }
-      verification_state { PagesDeployment.verification_state_value(:verification_succeeded) }
+      verification_state { DependencyProxy::Manifest.verification_state_value(:verification_succeeded) }
     end
 
-    trait(:verification_failed) do
-      with_file
+    trait :verification_failed do
       verification_failure { 'Could not calculate the checksum' }
-      verification_state { PagesDeployment.verification_state_value(:verification_failed) }
+      verification_state { DependencyProxy::Manifest.verification_state_value(:verification_failed) }
 
       #
       # Geo::VerifiableReplicator#after_verifiable_update tries to verify

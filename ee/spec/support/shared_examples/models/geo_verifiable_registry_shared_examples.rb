@@ -7,7 +7,7 @@ RSpec.shared_examples 'a Geo verifiable registry' do
 
   context 'state machine' do
     context 'when transitioning to synced' do
-      let(:registry) { create(registry_class_factory, :started, :verification_succeeded) }
+      let(:registry) { create(registry_class_factory, :started) }
 
       it 'marks verification as pending' do
         allow(registry).to receive(:ready_to_verify?).and_return(true)
