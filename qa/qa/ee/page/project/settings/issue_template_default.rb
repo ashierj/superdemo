@@ -7,13 +7,13 @@ module QA
         module Settings
           class IssueTemplateDefault < QA::Page::Base
             view 'ee/app/views/projects/settings/_default_issue_template.html.haml' do
-              element :issue_template_field
-              element :save_issue_template_button
+              element 'issue-template-field'
+              element 'save-issue-template-button'
             end
 
             def set_default_issue_template(template)
-              fill_element(:issue_template_field, template)
-              click_element(:save_issue_template_button)
+              fill_element('issue-template-field', template)
+              click_element('save-issue-template-button')
 
               wait_for_requests
             end

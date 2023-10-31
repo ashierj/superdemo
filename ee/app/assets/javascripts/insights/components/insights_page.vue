@@ -65,10 +65,10 @@ export default {
 };
 </script>
 <template>
-  <div class="insights-page" data-qa-selector="insights_page">
+  <div class="insights-page" data-testid="insights-page">
     <div v-if="hasChartsConfigured" class="js-insights-page-container">
       <h4 class="text-center">{{ pageConfig.title }}</h4>
-      <div class="insights-charts" data-qa-selector="insights_charts">
+      <div class="insights-charts" data-testid="insights-charts">
         <insights-chart
           v-for="({ loaded, type, description, data, error }, key, index) in chartData"
           :key="index"

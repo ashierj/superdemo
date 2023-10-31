@@ -1,7 +1,7 @@
 - return unless @project.feature_available?(:merge_requests, current_user)
 - return unless @project.feature_available?(:merge_request_approvers, current_user)
 
-%section.settings.merge-requests-feature.no-animate#js-merge-request-approval-settings.expanded{ data: { qa_selector: 'merge_request_approvals_settings_content' } }
+%section.settings.merge-requests-feature.no-animate#js-merge-request-approval-settings.expanded
   .settings-header
     %h4= _('Merge request approvals')
     %p.gl-text-secondary.gl-mb-0

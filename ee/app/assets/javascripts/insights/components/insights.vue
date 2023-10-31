@@ -159,7 +159,7 @@ export default {
     <div v-else-if="configPresent" class="insights-wrapper">
       <gl-disclosure-dropdown
         class="js-insights-dropdown"
-        data-testid="insights_dashboard_dropdown"
+        data-testid="insights-dashboard-dropdown"
         toggle-class="dropdown-menu-toggle gl-field-error-outline"
         :disabled="pageLoading"
         :items="pages"

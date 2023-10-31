@@ -6,20 +6,20 @@ module QA
       module Insights
         class Show < QA::Page::Base
           view 'ee/app/assets/javascripts/insights/components/insights.vue' do
-            element :insights_dashboard_dropdown
+            element 'insights-dashboard-dropdown'
           end
 
           view 'ee/app/assets/javascripts/insights/components/insights_page.vue' do
-            element :insights_charts
-            element :insights_page
+            element 'insights-charts'
+            element 'insights-page'
           end
 
           def wait_for_insight_charts_to_load
-            has_element?(:insights_charts, wait: QA::Support::Repeater::DEFAULT_MAX_WAIT_TIME)
+            has_element?('insights-charts', wait: QA::Support::Repeater::DEFAULT_MAX_WAIT_TIME)
           end
 
           def select_insights_dashboard(title)
-            click_element :insights_dashboard_dropdown
+            click_element 'insights-dashboard-dropdown'
             within_insights_dropdown do
               has_text?(title)
               click_on title
@@ -35,11 +35,11 @@ module QA
           end
 
           def within_insights_dropdown(&block)
-            within_element :insights_dashboard_dropdown, &block
+            within_element 'insights-dashboard-dropdown', &block
           end
 
           def within_insights_page(&block)
-            within_element :insights_page, &block
+            within_element 'insights-page', &block
           end
         end
       end
