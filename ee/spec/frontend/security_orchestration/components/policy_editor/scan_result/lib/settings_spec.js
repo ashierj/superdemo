@@ -3,6 +3,7 @@ import {
   buildSettingsList,
   mergeRequestConfiguration,
   protectedBranchesConfiguration,
+  forcePushingBranchesConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
 afterEach(() => {
@@ -11,14 +12,31 @@ afterEach(() => {
 
 describe('approval_settings', () => {
   describe('buildSettingsList', () => {
-    it('returns an empty object when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is disabled', () => {
-      window.gon = { features: { scanResultPoliciesBlockUnprotectingBranches: false } };
+    it('returns an empty object by default', () => {
       expect(buildSettingsList()).toEqual({});
     });
 
     it('returns the protected branches settings when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled', () => {
       window.gon = { features: { scanResultPoliciesBlockUnprotectingBranches: true } };
       expect(buildSettingsList()).toEqual(protectedBranchesConfiguration);
+    });
+
+    it('returns the protected branches settings when the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
+      window.gon = { features: { scanResultPoliciesBlockForcePush: true } };
+      expect(buildSettingsList()).toEqual(forcePushingBranchesConfiguration);
+    });
+
+    it('returns the protected branches settings when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled and the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
+      window.gon = {
+        features: {
+          scanResultPoliciesBlockUnprotectingBranches: true,
+          scanResultPoliciesBlockForcePush: true,
+        },
+      };
+      expect(buildSettingsList()).toEqual({
+        ...protectedBranchesConfiguration,
+        ...forcePushingBranchesConfiguration,
+      });
     });
 
     it('returns merge request settings for the merge request rule', () => {

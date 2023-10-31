@@ -7,7 +7,6 @@ import {
   SCAN_FINDING,
   ANY_MERGE_REQUEST,
   DEFAULT_SCAN_RESULT_POLICY,
-  SCAN_RESULT_POLICY_SETTINGS_POLICY,
   getInvalidBranches,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib';
@@ -18,6 +17,9 @@ import {
   USER_TYPE,
 } from 'ee/security_orchestration/constants';
 import {
+  mockBlockUnprotectingBranchesSettingsManifest,
+  mockForcePushSettingsManifest,
+  mockBlockAndForceSettingsManifest,
   mockDefaultBranchesScanResultManifest,
   mockDefaultBranchesScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
@@ -26,6 +28,9 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import {
   PERMITTED_INVALID_SETTINGS,
   BLOCK_UNPROTECTING_BRANCHES,
+  PREVENT_FORCE_PUSHING,
+  PREVENT_APPROVAL_BY_AUTHOR,
+  forcePushingBranchesConfiguration,
   mergeRequestConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
@@ -35,8 +40,6 @@ import {
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
   PARSING_ERROR_MESSAGE,
-  ALL_PROTECTED_BRANCHES,
-  ANY_COMMIT,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
@@ -154,12 +157,37 @@ describe('EditorComponent', () => {
   });
 
   describe('rendering', () => {
-    describe('with "scanResultPoliciesBlockUnprotectingBranches" feature flag enabled', () => {
-      it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
-        factory({ glFeatures: { scanResultPoliciesBlockUnprotectingBranches: true } });
-        expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
-          SCAN_RESULT_POLICY_SETTINGS_POLICY,
-        );
+    describe('feature flags', () => {
+      describe('when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled and the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
+        it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
+          factory({
+            glFeatures: {
+              scanResultPoliciesBlockUnprotectingBranches: true,
+              scanResultPoliciesBlockForcePush: true,
+            },
+          });
+          expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
+            mockBlockAndForceSettingsManifest,
+          );
+        });
+      });
+
+      describe('when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled and the "scanResultPoliciesBlockForcePush" feature flag is disabled', () => {
+        it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
+          factory({ glFeatures: { scanResultPoliciesBlockUnprotectingBranches: true } });
+          expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
+            mockBlockUnprotectingBranchesSettingsManifest,
+          );
+        });
+      });
+
+      describe('when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is disabled and the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
+        it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
+          factory({ glFeatures: { scanResultPoliciesBlockForcePush: true } });
+          expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
+            mockForcePushSettingsManifest,
+          );
+        });
       });
     });
 
@@ -272,12 +300,16 @@ describe('EditorComponent', () => {
       });
 
       describe('settings', () => {
-        const defaultProjectApprovalConfiguration = { [BLOCK_UNPROTECTING_BRANCHES]: true };
+        const defaultProjectApprovalConfiguration = {
+          [BLOCK_UNPROTECTING_BRANCHES]: true,
+          [PREVENT_FORCE_PUSHING]: true,
+        };
 
-        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled and the "scanResultAnyMergeRequest" ff enabled', () => {
+        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled and the "scanResultAnyMergeRequest" ff enabled and the "scanResultPoliciesBlockForcePush" ff enabled', () => {
           const features = {
             scanResultPoliciesBlockUnprotectingBranches: true,
             scanResultAnyMergeRequest: true,
+            scanResultPoliciesBlockForcePush: true,
           };
           window.gon = { features };
           const newValue = { type: ANY_MERGE_REQUEST };
@@ -301,10 +333,8 @@ describe('EditorComponent', () => {
         it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled and the "scanResultAnyMergeRequest" ff disabled', () => {
           const features = {
             scanResultPoliciesBlockUnprotectingBranches: true,
-            scanResultAnyMergeRequest: false,
           };
           window.gon = { features };
-          const newValue = { type: SCAN_FINDING };
           factoryWithExistingPolicy({
             policy: { approval_settings: PERMITTED_INVALID_SETTINGS },
             glFeatures: features,
@@ -314,20 +344,17 @@ describe('EditorComponent', () => {
               approval_settings: PERMITTED_INVALID_SETTINGS,
             }),
           );
-          findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+          findAllRuleBuilders().at(0).vm.$emit('changed', { type: SCAN_FINDING });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({ approval_settings: { block_unprotecting_branches: false } }),
+            expect.objectContaining({
+              approval_settings: { [BLOCK_UNPROTECTING_BRANCHES]: false },
+            }),
           );
         });
 
-        it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff disabled and the "scanResultAnyMergeRequest" ff enabled', () => {
+        it('does update the settings with the "scanResultAnyMergeRequest" ff enabled', () => {
           const newValue = { type: ANY_MERGE_REQUEST };
-          factory({
-            glFeatures: {
-              scanResultPoliciesBlockUnprotectingBranches: false,
-              scanResultAnyMergeRequest: true,
-            },
-          });
+          factory({ glFeatures: { scanResultAnyMergeRequest: true } });
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
           findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).toEqual(
@@ -335,14 +362,27 @@ describe('EditorComponent', () => {
           );
         });
 
-        it('does not update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff disabled and the "scanResultAnyMergeRequest" ff disabled', () => {
-          const newValue = { type: ANY_MERGE_REQUEST };
-          factory({
-            glFeatures: {
-              scanResultPoliciesBlockUnprotectingBranches: false,
-              scanResultAnyMergeRequest: false,
-            },
+        it('does update the settings with the "scanResultPoliciesBlockForcePush" ff enabled', () => {
+          const features = { scanResultPoliciesBlockForcePush: true };
+          window.gon = { features };
+          factoryWithExistingPolicy({
+            policy: { approval_settings: PERMITTED_INVALID_SETTINGS },
+            glFeatures: features,
           });
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({ approval_settings: PERMITTED_INVALID_SETTINGS }),
+          );
+          findAllRuleBuilders().at(0).vm.$emit('changed', { type: SCAN_FINDING });
+          expect(findPolicyEditorLayout().props('policy')).toEqual(
+            expect.objectContaining({
+              approval_settings: forcePushingBranchesConfiguration,
+            }),
+          );
+        });
+
+        it('does not update the settings with no feature flags enabled', () => {
+          const newValue = { type: ANY_MERGE_REQUEST };
+          factory();
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
           findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
@@ -634,69 +674,95 @@ describe('EditorComponent', () => {
     });
   });
 
-  describe('settings', () => {
-    it('does not display the settings section', () => {
-      factory();
-
-      expect(findSettingsSection().exists()).toBe(false);
-    });
-
-    describe('with "scanResultPoliciesBlockUnprotectingBranches" feature flag enabled', () => {
-      it('displays setting section', () => {
-        const features = { scanResultPoliciesBlockUnprotectingBranches: true };
-        window.gon = { features };
-        factory({ glFeatures: features });
-        expect(findSettingsSection().exists()).toBe(true);
-        expect(findSettingsSection().props('settings')).toEqual({
-          [BLOCK_UNPROTECTING_BRANCHES]: true,
-        });
+  describe('settings section', () => {
+    describe('settings', () => {
+      it('does not display the settings', () => {
+        factory();
+        expect(findSettingsSection().exists()).toBe(false);
       });
 
-      it('updates the policy when a change is emitted', async () => {
-        factory({
-          glFeatures: {
-            scanResultPoliciesBlockUnprotectingBranches: true,
-          },
+      describe('feature flags', () => {
+        describe('with "scanResultPoliciesBlockUnprotectingBranches" feature flag enabled', () => {
+          beforeEach(() => {
+            const features = { scanResultPoliciesBlockUnprotectingBranches: true };
+            window.gon = { features };
+            factory({ glFeatures: features });
+          });
+
+          it('displays setting section', () => {
+            expect(findSettingsSection().exists()).toBe(true);
+            expect(findSettingsSection().props('settings')).toEqual({
+              [BLOCK_UNPROTECTING_BRANCHES]: true,
+            });
+          });
+
+          it('updates the policy when a change is emitted', async () => {
+            await findSettingsSection().vm.$emit('changed', {
+              [BLOCK_UNPROTECTING_BRANCHES]: false,
+            });
+            expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
+              `${BLOCK_UNPROTECTING_BRANCHES}: false`,
+            );
+          });
         });
 
-        await findSettingsSection().vm.$emit('changed', {
-          block_unprotecting_branches: false,
+        describe('with "scanResultAnyMergeRequest" feature flag enabled', () => {
+          beforeEach(() => {
+            const features = { scanResultAnyMergeRequest: true };
+            window.gon = { features };
+            factory({ glFeatures: features });
+          });
+
+          it('displays setting section', () => {
+            expect(findSettingsSection().exists()).toBe(true);
+          });
+
+          it('does not show settings for non-merge request rules', async () => {
+            await findAllRuleBuilders().at(0).vm.$emit('changed', { type: 'scan_finding' });
+            expect(findSettingsSection().exists()).toBe(true);
+            expect(findSettingsSection().props('settings')).toEqual({});
+          });
+
+          it('does show the policy for merge request rule', async () => {
+            await findAllRuleBuilders().at(0).vm.$emit('changed', { type: 'any_merge_request' });
+            expect(findSettingsSection().props('settings')).toEqual({
+              ...mergeRequestConfiguration,
+            });
+          });
+
+          it('updates the policy for merge request rule', async () => {
+            findAllRuleBuilders().at(0).vm.$emit('changed', { type: 'any_merge_request' });
+            await findSettingsSection().vm.$emit('changed', {
+              [PREVENT_APPROVAL_BY_AUTHOR]: false,
+            });
+            expect(findSettingsSection().props('settings')).toEqual({
+              ...mergeRequestConfiguration,
+              [PREVENT_APPROVAL_BY_AUTHOR]: false,
+            });
+          });
         });
 
-        expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
-          `block_unprotecting_branches: false`,
-        );
-      });
+        describe('with "scanResultPoliciesBlockForcePush" feature flag enabled', () => {
+          beforeEach(() => {
+            const features = { scanResultPoliciesBlockForcePush: true };
+            window.gon = { features };
+            factory({ glFeatures: features });
+          });
 
-      it('has merge request approval settings for merge request rule', async () => {
-        const features = {
-          scanResultAnyMergeRequest: true,
-        };
-        window.gon = { features };
-        factory({ glFeatures: features });
+          it('displays setting section', () => {
+            expect(findSettingsSection().exists()).toBe(true);
+            expect(findSettingsSection().props('settings')).toEqual({
+              [PREVENT_FORCE_PUSHING]: true,
+            });
+          });
 
-        const scanRule = {
-          type: 'scan_finding',
-          branches: [],
-          scanners: [],
-          vulnerabilities_allowed: 1,
-          severity_levels: [],
-          vulnerability_states: [],
-        };
-
-        await findAllRuleBuilders().at(0).vm.$emit('changed', scanRule);
-
-        expect(findSettingsSection().props('settings')).toEqual({});
-
-        const anyMergeRequestRule = {
-          type: 'any_merge_request',
-          branch_type: ALL_PROTECTED_BRANCHES.value,
-          commits: ANY_COMMIT,
-        };
-
-        await findAllRuleBuilders().at(0).vm.$emit('changed', anyMergeRequestRule);
-
-        expect(findSettingsSection().props('settings')).toEqual({ ...mergeRequestConfiguration });
+          it('updates the policy when a change is emitted', async () => {
+            await findSettingsSection().vm.$emit('changed', { [PREVENT_FORCE_PUSHING]: false });
+            expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
+              `${PREVENT_FORCE_PUSHING}: false`,
+            );
+          });
+        });
       });
     });
 

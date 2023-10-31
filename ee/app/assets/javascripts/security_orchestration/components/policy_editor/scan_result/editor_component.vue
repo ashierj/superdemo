@@ -28,10 +28,11 @@ import PolicyRuleBuilder from './rule/rule_section.vue';
 
 import {
   ANY_MERGE_REQUEST,
+  BLOCK_UNPROTECTING_BRANCHES,
+  PREVENT_FORCE_PUSHING,
   buildSettingsList,
   createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
-  SCAN_RESULT_POLICY_SETTINGS_POLICY,
   getInvalidBranches,
   fromYaml,
   toYaml,
@@ -110,11 +111,24 @@ export default {
     },
   },
   data() {
-    const DEFAULT_POLICY = this.glFeatures.scanResultPoliciesBlockUnprotectingBranches
-      ? SCAN_RESULT_POLICY_SETTINGS_POLICY
-      : DEFAULT_SCAN_RESULT_POLICY;
+    const defaultPolicyObject = fromYaml({ manifest: DEFAULT_SCAN_RESULT_POLICY });
 
-    const yamlEditorValue = this.existingPolicy ? toYaml(this.existingPolicy) : DEFAULT_POLICY;
+    if (
+      this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
+      this.glFeatures.scanResultPoliciesBlockForcePush
+    ) {
+      defaultPolicyObject.approval_settings = {};
+
+      if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
+        defaultPolicyObject.approval_settings[BLOCK_UNPROTECTING_BRANCHES] = true;
+      }
+
+      if (this.glFeatures.scanResultPoliciesBlockForcePush) {
+        defaultPolicyObject.approval_settings[PREVENT_FORCE_PUSHING] = true;
+      }
+    }
+
+    const yamlEditorValue = toYaml(this.existingPolicy || defaultPolicyObject);
 
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
 
@@ -188,7 +202,8 @@ export default {
     shouldShowSettings() {
       return (
         this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
-        this.glFeatures.scanResultAnyMergeRequest
+        this.glFeatures.scanResultAnyMergeRequest ||
+        this.glFeatures.scanResultPoliciesBlockForcePush
       );
     },
     settingAlert() {
@@ -255,7 +270,8 @@ export default {
       this.policy.rules.splice(ruleIndex, 1, rule);
       if (
         this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
-        this.glFeatures.scanResultAnyMergeRequest
+        this.glFeatures.scanResultAnyMergeRequest ||
+        this.glFeatures.scanResultPoliciesBlockForcePush
       ) {
         this.updateSettings(this.settings);
       }
