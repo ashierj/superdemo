@@ -7,6 +7,8 @@ import {
   ADD_GCP_LOGGING,
   DESTINATION_TYPE_HTTP,
   DESTINATION_TYPE_GCP_LOGGING,
+  ADD_AMAZON_S3,
+  DESTINATION_TYPE_AMAZON_S3,
 } from '../../constants';
 
 export default {
@@ -34,6 +36,15 @@ export default {
           },
           extraAttrs: {
             'data-testid': 'add-gcp-destination',
+          },
+        },
+        {
+          text: ADD_AMAZON_S3,
+          action: () => {
+            this.$emit('add', DESTINATION_TYPE_AMAZON_S3);
+          },
+          extraAttrs: {
+            'data-testid': 'add-amazon-s3-destination',
           },
         },
       ];

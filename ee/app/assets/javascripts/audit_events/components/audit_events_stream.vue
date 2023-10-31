@@ -5,24 +5,29 @@ import {
   ADD_STREAM,
   ADD_HTTP,
   ADD_GCP_LOGGING,
+  ADD_AMAZON_S3,
   ADD_STREAM_MESSAGE,
   AUDIT_STREAMS_NETWORK_ERRORS,
   DELETE_STREAM_MESSAGE,
   streamsLabel,
   DESTINATION_TYPE_HTTP,
   DESTINATION_TYPE_GCP_LOGGING,
+  DESTINATION_TYPE_AMAZON_S3,
 } from '../constants';
 import {
   removeAuditEventsStreamingDestination,
   removeGcpLoggingAuditEventsStreamingDestination,
+  removeAmazonS3AuditEventsStreamingDestination,
 } from '../graphql/cache_update';
 import externalDestinationsQuery from '../graphql/queries/get_external_destinations.query.graphql';
 import instanceExternalDestinationsQuery from '../graphql/queries/get_instance_external_destinations.query.graphql';
 import gcpLoggingDestinationsQuery from '../graphql/queries/get_google_cloud_logging_destinations.query.graphql';
 import instanceGcpLoggingDestinationsQuery from '../graphql/queries/get_instance_google_cloud_logging_destinations.query.graphql';
+import amazonS3DestinationsQuery from '../graphql/queries/get_amazon_s3_destinations.query.graphql';
 import StreamEmptyState from './stream/stream_empty_state.vue';
 import StreamDestinationEditor from './stream/stream_destination_editor.vue';
 import StreamGcpLoggingDestinationEditor from './stream/stream_gcp_logging_destination_editor.vue';
+import StreamAmazonS3DestinationEditor from './stream/stream_amazon_s3_destination_editor.vue';
 import StreamItem from './stream/stream_item.vue';
 
 const { FETCHING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
@@ -33,6 +38,7 @@ export default {
     GlDisclosureDropdown,
     StreamDestinationEditor,
     StreamGcpLoggingDestinationEditor,
+    StreamAmazonS3DestinationEditor,
     StreamEmptyState,
     StreamItem,
   },
@@ -41,6 +47,7 @@ export default {
     return {
       externalAuditEventDestinations: null,
       gcpLoggingAuditEventDestinations: null,
+      amazonS3AuditEventDestinations: null,
       isEditorVisible: false,
       successMessage: null,
       editorType: DESTINATION_TYPE_HTTP,
@@ -50,14 +57,20 @@ export default {
     isLoading() {
       return (
         this.$apollo.queries.externalAuditEventDestinations.loading ||
-        this.$apollo.queries.gcpLoggingAuditEventDestinations.loading
+        this.$apollo.queries.gcpLoggingAuditEventDestinations.loading ||
+        this.$apollo.queries.amazonS3AuditEventDestinations.loading
       );
     },
     isInstance() {
       return this.groupPath === 'instance';
     },
     showEmptyState() {
-      return !this.destinationsCount && !this.gcpLoggingDestinationsCount && !this.isEditorVisible;
+      return (
+        !this.destinationsCount &&
+        !this.gcpLoggingDestinationsCount &&
+        !this.amazonS3DestinationsCount &&
+        !this.isEditorVisible
+      );
     },
     destinationsCount() {
       return this.externalAuditEventDestinations?.length ?? 0;
@@ -65,14 +78,22 @@ export default {
     gcpLoggingDestinationsCount() {
       return this.gcpLoggingAuditEventDestinations?.length ?? 0;
     },
+    amazonS3DestinationsCount() {
+      return this.amazonS3AuditEventDestinations?.length ?? 0;
+    },
     totalCount() {
-      return this.destinationsCount + this.gcpLoggingDestinationsCount;
+      return (
+        this.destinationsCount + this.gcpLoggingDestinationsCount + this.amazonS3DestinationsCount
+      );
     },
     destinationQuery() {
       return this.isInstance ? instanceExternalDestinationsQuery : externalDestinationsQuery;
     },
     gcpLoggingDestinationQuery() {
       return this.isInstance ? instanceGcpLoggingDestinationsQuery : gcpLoggingDestinationsQuery;
+    },
+    amazonS3DestinationQuery() {
+      return amazonS3DestinationsQuery;
     },
     destinationOptions() {
       return [
@@ -86,6 +107,12 @@ export default {
           text: ADD_GCP_LOGGING,
           action: () => {
             this.showEditor(DESTINATION_TYPE_GCP_LOGGING);
+          },
+        },
+        {
+          text: ADD_AMAZON_S3,
+          action: () => {
+            this.showEditor(DESTINATION_TYPE_AMAZON_S3);
           },
         },
       ];
@@ -127,6 +154,19 @@ export default {
     },
     async onDeletedGcpLoggingDestination(id) {
       removeGcpLoggingAuditEventsStreamingDestination({
+        store: this.$apollo.provider.defaultClient,
+        fullPath: this.groupPath,
+        destinationId: id,
+      });
+
+      if (this.totalCount > 1) {
+        this.successMessage = DELETE_STREAM_MESSAGE;
+      } else {
+        this.clearSuccessMessage();
+      }
+    },
+    async onDeletedAmazonS3Destination(id) {
+      removeAmazonS3AuditEventsStreamingDestination({
         store: this.$apollo.provider.defaultClient,
         fullPath: this.groupPath,
         destinationId: id,
@@ -192,16 +232,42 @@ export default {
         this.clearSuccessMessage();
       },
     },
+    amazonS3AuditEventDestinations: {
+      query() {
+        return this.amazonS3DestinationQuery;
+      },
+      variables() {
+        return {
+          fullPath: this.groupPath,
+        };
+      },
+      skip() {
+        return this.isInstance;
+      },
+      update(data) {
+        const destinations = data.group.amazonS3Configurations.nodes;
+        return destinations;
+      },
+      error() {
+        createAlert({
+          message: FETCHING_ERROR,
+        });
+
+        this.clearSuccessMessage();
+      },
+    },
   },
   i18n: {
     ADD_STREAM,
     ADD_HTTP,
     ADD_GCP_LOGGING,
+    ADD_AMAZON_S3,
     FETCHING_ERROR,
     streamsLabel,
   },
   DESTINATION_TYPE_HTTP,
   DESTINATION_TYPE_GCP_LOGGING,
+  DESTINATION_TYPE_AMAZON_S3,
 };
 </script>
 
@@ -245,6 +311,12 @@ export default {
         @error="clearSuccessMessage"
         @cancel="hideEditor"
       />
+      <stream-amazon-s3-destination-editor
+        v-else-if="editorType === $options.DESTINATION_TYPE_AMAZON_S3"
+        @added="onAddedDestination"
+        @error="clearSuccessMessage"
+        @cancel="hideEditor"
+      />
     </div>
     <ul class="content-list gl-border-t gl-border-gray-50" data-testid="stream-destinations">
       <stream-item
@@ -262,6 +334,15 @@ export default {
         :item="item"
         :type="$options.DESTINATION_TYPE_GCP_LOGGING"
         @deleted="onDeletedGcpLoggingDestination(item.id)"
+        @updated="onUpdatedDestination"
+        @error="clearSuccessMessage"
+      />
+      <stream-item
+        v-for="item in amazonS3AuditEventDestinations"
+        :key="item.id"
+        :item="item"
+        :type="$options.DESTINATION_TYPE_AMAZON_S3"
+        @deleted="onDeletedAmazonS3Destination(item.id)"
         @updated="onUpdatedDestination"
         @error="clearSuccessMessage"
       />

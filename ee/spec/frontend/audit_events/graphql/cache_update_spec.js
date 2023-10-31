@@ -8,15 +8,19 @@ import {
   removeEventTypeFilters,
   addGcpLoggingAuditEventsStreamingDestination,
   removeGcpLoggingAuditEventsStreamingDestination,
+  addAmazonS3AuditEventsStreamingDestination,
+  removeAmazonS3AuditEventsStreamingDestination,
 } from 'ee/audit_events/graphql/cache_update';
 import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
 import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_external_destinations.query.graphql';
 import gcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_google_cloud_logging_destinations.query.graphql';
 import instanceGcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_google_cloud_logging_destinations.query.graphql';
+import amazonS3DestinationsQuery from 'ee/audit_events/graphql/queries/get_amazon_s3_destinations.query.graphql';
 import {
   mockExternalDestinations,
   destinationDataPopulator,
   gcpLoggingDataPopulator,
+  amazonS3DataPopulator,
   destinationCreateMutationPopulator,
   destinationHeaderCreateMutationPopulator,
   mockInstanceExternalDestinations,
@@ -28,6 +32,8 @@ import {
   mockInstanceGcpLoggingDestinations,
   instanceGcpLoggingDataPopulator,
   instanceGcpLoggingDestinationCreateMutationPopulator,
+  mockAmazonS3Destinations,
+  amazonS3DestinationCreateMutationPopulator,
 } from '../mock_data';
 
 describe('Audit Events GraphQL cache updates', () => {
@@ -37,6 +43,9 @@ describe('Audit Events GraphQL cache updates', () => {
   const GCP_GROUP1_PATH = 'gcp-group-1';
   const GCP_GROUP2_PATH = 'gcp-group-2';
   const GCP_GROUP_NOT_IN_CACHE = 'gcp-other-group';
+  const AMAZON_S3_GROUP1_PATH = 'amazon-group-1';
+  const AMAZON_S3_GROUP2_PATH = 'amazon-group-2';
+  const AMAZON_S3_GROUP_NOT_IN_CACHE = 'amazon-other-group';
   let cache;
 
   const getMockDestination = (id) =>
@@ -62,6 +71,11 @@ describe('Audit Events GraphQL cache updates', () => {
       })),
     );
 
+  const getMockAmazonS3Destination = (id) =>
+    amazonS3DataPopulator(
+      mockAmazonS3Destinations.map((record) => ({ ...record, id: `${record.id}-set-${id}` })),
+    );
+
   const getDestinations = (fullPath) =>
     cache.readQuery({
       query: externalDestinationsQuery,
@@ -83,6 +97,12 @@ describe('Audit Events GraphQL cache updates', () => {
     cache.readQuery({
       query: instanceGcpLoggingDestinationsQuery,
     }).instanceGoogleCloudLoggingConfigurations.nodes;
+
+  const getAmazonS3Destinations = (fullPath) =>
+    cache.readQuery({
+      query: amazonS3DestinationsQuery,
+      variables: { fullPath },
+    }).group.amazonS3Configurations.nodes;
 
   beforeEach(() => {
     cache = new InMemoryCache();
@@ -119,6 +139,18 @@ describe('Audit Events GraphQL cache updates', () => {
     cache.writeQuery({
       query: instanceGcpLoggingDestinationsQuery,
       data: getMockInstanceGcpLoggingDestination().data,
+    });
+
+    cache.writeQuery({
+      query: amazonS3DestinationsQuery,
+      variables: { fullPath: AMAZON_S3_GROUP1_PATH },
+      data: getMockAmazonS3Destination(AMAZON_S3_GROUP1_PATH).data,
+    });
+
+    cache.writeQuery({
+      query: amazonS3DestinationsQuery,
+      variables: { fullPath: AMAZON_S3_GROUP2_PATH },
+      data: getMockAmazonS3Destination(AMAZON_S3_GROUP2_PATH).data,
     });
   });
 
@@ -365,7 +397,85 @@ describe('Audit Events GraphQL cache updates', () => {
         expect(() =>
           removeGcpLoggingAuditEventsStreamingDestination({
             store: cache,
-            fullPath: GROUP_NOT_IN_CACHE,
+            fullPath: GCP_GROUP_NOT_IN_CACHE,
+            destinationId: 'fake-id',
+          }),
+        ).not.toThrow();
+      });
+    });
+
+    describe('addAmazonS3AuditEventsStreamingDestination', () => {
+      const {
+        amazonS3Configuration: newAmazonS3Destination,
+      } = amazonS3DestinationCreateMutationPopulator().data.auditEventsAmazonS3ConfigurationCreate;
+
+      it('adds new amazon S3 configuration to beginning of list of destinations for specific fullPath', () => {
+        const { length: originalDestinationsLengthForGroup1 } = getAmazonS3Destinations(
+          AMAZON_S3_GROUP1_PATH,
+        );
+        const { length: originalDestinationsLengthForGroup2 } = getAmazonS3Destinations(
+          AMAZON_S3_GROUP2_PATH,
+        );
+
+        addAmazonS3AuditEventsStreamingDestination({
+          store: cache,
+          fullPath: AMAZON_S3_GROUP1_PATH,
+          newDestination: newAmazonS3Destination,
+        });
+
+        expect(getAmazonS3Destinations(AMAZON_S3_GROUP1_PATH)).toHaveLength(
+          originalDestinationsLengthForGroup1 + 1,
+        );
+        expect(getAmazonS3Destinations(AMAZON_S3_GROUP1_PATH)[0].id).toBe(
+          newAmazonS3Destination.id,
+        );
+        expect(getAmazonS3Destinations(AMAZON_S3_GROUP2_PATH)).toHaveLength(
+          originalDestinationsLengthForGroup2,
+        );
+      });
+
+      it('does not throw on non-existing fullPath', () => {
+        expect(() =>
+          addAmazonS3AuditEventsStreamingDestination({
+            store: cache,
+            fullPath: AMAZON_S3_GROUP_NOT_IN_CACHE,
+            newDestination: newAmazonS3Destination,
+          }),
+        ).not.toThrow();
+      });
+    });
+
+    describe('removeAmazonS3AuditEventsStreamingDestination', () => {
+      it('removes new destination to list of destinations for specific fullPath', () => {
+        const [firstDestination, ...restDestinations] = getAmazonS3Destinations(
+          AMAZON_S3_GROUP1_PATH,
+        );
+        const { length: originalDestinationsLengthForGroup2 } = getAmazonS3Destinations(
+          AMAZON_S3_GROUP2_PATH,
+        );
+
+        removeAmazonS3AuditEventsStreamingDestination({
+          store: cache,
+          fullPath: AMAZON_S3_GROUP1_PATH,
+          destinationId: firstDestination.id,
+        });
+
+        expect(getAmazonS3Destinations(AMAZON_S3_GROUP1_PATH)).toHaveLength(
+          restDestinations.length,
+        );
+        expect(getAmazonS3Destinations(AMAZON_S3_GROUP1_PATH)).not.toStrictEqual(
+          expect.arrayContaining([expect.objectContaining({ id: firstDestination.id })]),
+        );
+        expect(getAmazonS3Destinations(AMAZON_S3_GROUP2_PATH)).toHaveLength(
+          originalDestinationsLengthForGroup2,
+        );
+      });
+
+      it('does not throw on non-existing fullPath', () => {
+        expect(() =>
+          removeGcpLoggingAuditEventsStreamingDestination({
+            store: cache,
+            fullPath: AMAZON_S3_GROUP_NOT_IN_CACHE,
             destinationId: 'fake-id',
           }),
         ).not.toThrow();

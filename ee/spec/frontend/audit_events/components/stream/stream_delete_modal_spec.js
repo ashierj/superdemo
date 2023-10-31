@@ -8,6 +8,7 @@ import deleteExternalDestination from 'ee/audit_events/graphql/mutations/delete_
 import deleteInstanceExternalDestination from 'ee/audit_events/graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import googleCloudLoggingConfigurationDestroy from 'ee/audit_events/graphql/mutations/delete_gcp_logging_destination.mutation.graphql';
 import instanceGoogleCloudLoggingConfigurationDestroy from 'ee/audit_events/graphql/mutations/delete_instance_gcp_logging_destination.mutation.graphql';
+import amazonS3ConfigurationDestroy from 'ee/audit_events/graphql/mutations/delete_amazon_s3_destination.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -23,6 +24,9 @@ import {
   destinationGcpLoggingDeleteMutationPopulator,
   mockInstanceGcpLoggingDestinations,
   destinationInstanceGcpLoggingDeleteMutationPopulator,
+  mockAmazonS3Destinations,
+  mockAmazonS3Type,
+  destinationAmazonS3DeleteMutationPopulator,
 } from '../../mock_data';
 
 Vue.use(VueApollo);
@@ -33,6 +37,8 @@ describe('StreamDeleteModal', () => {
   const instanceDestination = mockInstanceExternalDestinations[0];
   const gcpLoggingDestination = mockGcpLoggingDestinations[0];
   const instanceGcpLoggingDestination = mockInstanceGcpLoggingDestinations[0];
+  const mockAmazonS3Destination = mockAmazonS3Destinations[0];
+
   const deleteSuccess = jest.fn().mockResolvedValue(destinationDeleteMutationPopulator());
   const deleteInstanceSuccess = jest
     .fn()
@@ -43,6 +49,9 @@ describe('StreamDeleteModal', () => {
   const deleteInstanceGcpLoggingSuccess = jest
     .fn()
     .mockResolvedValue(destinationInstanceGcpLoggingDeleteMutationPopulator());
+  const deleteAmazonS3Success = jest
+    .fn()
+    .mockResolvedValue(destinationAmazonS3DeleteMutationPopulator());
   const deleteError = jest
     .fn()
     .mockResolvedValue(destinationDeleteMutationPopulator(['Random Error message']));
@@ -173,6 +182,60 @@ describe('StreamDeleteModal', () => {
 
     it('emits "delete" event when the destination is successfully deleted', async () => {
       createComponent(deleteGcpLoggingSuccess);
+      clickDeleteFramework();
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('delete')).toHaveLength(1);
+    });
+
+    it('emits "error" event when there is a network error', async () => {
+      createComponent(deleteNetworkError);
+      clickDeleteFramework();
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('error')).toHaveLength(1);
+    });
+
+    it('emits "error" event when there is a graphql error', async () => {
+      createComponent(deleteError);
+      clickDeleteFramework();
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('error')).toHaveLength(1);
+    });
+  });
+
+  describe('Group Amazon S3 clickDeleteDestination', () => {
+    beforeEach(() => {
+      itemProvide = mockAmazonS3Destination;
+      typeProvide = mockAmazonS3Type;
+      deleteExternalDestinationProvide = amazonS3ConfigurationDestroy;
+    });
+
+    it('emits "deleting" event when busy deleting', () => {
+      createComponent();
+      clickDeleteFramework();
+
+      expect(wrapper.emitted('deleting')).toHaveLength(1);
+    });
+
+    it('calls the delete mutation with the destination ID', async () => {
+      createComponent(deleteAmazonS3Success);
+      clickDeleteFramework();
+
+      await waitForPromises();
+
+      expect(deleteAmazonS3Success).toHaveBeenCalledWith({
+        id: mockAmazonS3Destinations[0].id,
+        isInstance: false,
+      });
+    });
+
+    it('emits "delete" event when the destination is successfully deleted', async () => {
+      createComponent(deleteAmazonS3Success);
       clickDeleteFramework();
 
       await waitForPromises();

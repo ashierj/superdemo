@@ -3,6 +3,7 @@ import getExternalDestinationsQuery from './queries/get_external_destinations.qu
 import getInstanceExternalDestinationsQuery from './queries/get_instance_external_destinations.query.graphql';
 import gcpLoggingDestinationsQuery from './queries/get_google_cloud_logging_destinations.query.graphql';
 import instanceGcpLoggingDestinationsQuery from './queries/get_instance_google_cloud_logging_destinations.query.graphql';
+import amazonS3DestinationsQuery from './queries/get_amazon_s3_destinations.query.graphql';
 import ExternalAuditEventDestinationFragment from './fragments/external_audit_event_destination.fragment.graphql';
 import InstanceExternalAuditEventDestinationFragment from './fragments/instance_external_audit_event_destination.fragment.graphql';
 
@@ -205,4 +206,41 @@ export function removeGcpLoggingAuditEventsStreamingDestination({
   });
 
   store.writeQuery({ query: getGcpLoggingDestinationsQuery, variables: { fullPath }, data });
+}
+
+export function addAmazonS3AuditEventsStreamingDestination({ store, fullPath, newDestination }) {
+  const sourceData = store.readQuery({
+    query: amazonS3DestinationsQuery,
+    variables: { fullPath },
+  });
+
+  if (!sourceData) {
+    return;
+  }
+
+  const data = produce(sourceData, (draftData) => {
+    const { nodes } = draftData.group.amazonS3Configurations;
+    nodes.unshift(newDestination);
+  });
+
+  store.writeQuery({ query: amazonS3DestinationsQuery, variables: { fullPath }, data });
+}
+
+export function removeAmazonS3AuditEventsStreamingDestination({ store, fullPath, destinationId }) {
+  const sourceData = store.readQuery({
+    query: amazonS3DestinationsQuery,
+    variables: { fullPath },
+  });
+
+  if (!sourceData) {
+    return;
+  }
+
+  const data = produce(sourceData, (draftData) => {
+    draftData.group.amazonS3Configurations.nodes = draftData.group.amazonS3Configurations.nodes.filter(
+      (node) => node.id !== destinationId,
+    );
+  });
+
+  store.writeQuery({ query: amazonS3DestinationsQuery, variables: { fullPath }, data });
 }

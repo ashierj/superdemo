@@ -5,6 +5,7 @@ import { STREAM_ITEMS_I18N, UPDATE_STREAM_MESSAGE } from 'ee/audit_events/consta
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamGcpLoggingDestinationEditor from 'ee/audit_events/components/stream/stream_gcp_logging_destination_editor.vue';
+import StreamAmazonS3DestinationEditor from 'ee/audit_events/components/stream/stream_amazon_s3_destination_editor.vue';
 import {
   groupPath,
   mockExternalDestinations,
@@ -12,6 +13,7 @@ import {
   mockInstanceExternalDestinations,
   mockHttpType,
   mockGcpLoggingType,
+  mockAmazonS3Type,
 } from '../../mock_data';
 
 describe('StreamItem', () => {
@@ -37,6 +39,8 @@ describe('StreamItem', () => {
       },
       stubs: {
         StreamDestinationEditor: true,
+        StreamGcpLoggingDestinationEditor: true,
+        StreamAmazonS3DestinationEditor: true,
       },
     });
   };
@@ -45,6 +49,7 @@ describe('StreamItem', () => {
   const findEditor = () => wrapper.findComponent(StreamDestinationEditor);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findGcpLoggingEditor = () => wrapper.findComponent(StreamGcpLoggingDestinationEditor);
+  const findAmazonS3Editor = () => wrapper.findComponent(StreamAmazonS3DestinationEditor);
   const findFilterBadge = () => wrapper.findByTestId('filter-badge');
 
   describe('Group http StreamItem', () => {
@@ -54,7 +59,7 @@ describe('StreamItem', () => {
       });
 
       it('should not render the editor', () => {
-        expect(findEditor().exists()).toBe(false);
+        expect(findEditor().isVisible()).toBe(false);
       });
     });
 
@@ -101,7 +106,7 @@ describe('StreamItem', () => {
         findEditor().vm.$emit('cancel');
         await waitForPromises();
 
-        expect(findEditor().exists()).toBe(false);
+        expect(findEditor().isVisible()).toBe(false);
       });
 
       it('clears success message when closing', async () => {
@@ -149,7 +154,7 @@ describe('StreamItem', () => {
       });
 
       it('should not render the editor', () => {
-        expect(findGcpLoggingEditor().exists()).toBe(false);
+        expect(findGcpLoggingEditor().isVisible()).toBe(false);
       });
     });
 
@@ -196,11 +201,81 @@ describe('StreamItem', () => {
         findGcpLoggingEditor().vm.$emit('cancel');
         await waitForPromises();
 
-        expect(findGcpLoggingEditor().exists()).toBe(false);
+        expect(findGcpLoggingEditor().isVisible()).toBe(false);
       });
 
       it('clears success message when closing', async () => {
         await findGcpLoggingEditor().vm.$emit('updated');
+        await findToggleButton().vm.$emit('click');
+
+        expect(findAlert().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('Group Amazon S3 StreamItem', () => {
+    beforeEach(() => {
+      typeProps = mockAmazonS3Type;
+    });
+
+    describe('render', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('should not render the editor', () => {
+        expect(findAmazonS3Editor().isVisible()).toBe(false);
+      });
+    });
+
+    describe('deleting', () => {
+      const id = 1;
+
+      it('bubbles up the "deleted" event', async () => {
+        createComponent();
+        await findToggleButton().vm.$emit('click');
+
+        findAmazonS3Editor().vm.$emit('deleted', id);
+
+        expect(wrapper.emitted('deleted')).toEqual([[id]]);
+      });
+    });
+
+    describe('editing', () => {
+      beforeEach(async () => {
+        createComponent();
+        await findToggleButton().vm.$emit('click');
+      });
+
+      it('should pass the item to the editor', () => {
+        expect(findAmazonS3Editor().exists()).toBe(true);
+        expect(findAmazonS3Editor().props('item')).toStrictEqual(mockExternalDestinations[0]);
+      });
+
+      it('should emit the updated event and show success message when the editor fires its update event', async () => {
+        await findAmazonS3Editor().vm.$emit('updated');
+
+        expect(wrapper.emitted('updated')).toBeDefined();
+        expect(findAlert().text()).toBe(UPDATE_STREAM_MESSAGE);
+        expect(findAmazonS3Editor().exists()).toBe(true);
+      });
+
+      it('should emit the error event when the editor fires its error event', () => {
+        findAmazonS3Editor().vm.$emit('error');
+
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(findAmazonS3Editor().exists()).toBe(true);
+      });
+
+      it('should close the editor when the editor fires its cancel event', async () => {
+        findAmazonS3Editor().vm.$emit('cancel');
+        await waitForPromises();
+
+        expect(findAmazonS3Editor().isVisible()).toBe(false);
+      });
+
+      it('clears success message when closing', async () => {
+        await findAmazonS3Editor().vm.$emit('updated');
         await findToggleButton().vm.$emit('click');
 
         expect(findAlert().exists()).toBe(false);
@@ -221,7 +296,7 @@ describe('StreamItem', () => {
       });
 
       it('should not render the editor', () => {
-        expect(findEditor().exists()).toBe(false);
+        expect(findEditor().isVisible()).toBe(false);
       });
     });
 
@@ -268,7 +343,7 @@ describe('StreamItem', () => {
         findEditor().vm.$emit('cancel');
         await waitForPromises();
 
-        expect(findEditor().exists()).toBe(false);
+        expect(findEditor().isVisible()).toBe(false);
       });
 
       it('clears success message when closing', async () => {
