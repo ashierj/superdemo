@@ -78,7 +78,12 @@ module CodeSuggestions
         line.blank? || language.single_line_comment?(line)
       end.take(MIN_LINES_OF_CODE) # rubocop:disable CodeReuse/ActiveRecord
 
-      return 'Create more new code for this file.' if non_comment_lines.count < MIN_LINES_OF_CODE
+      if non_comment_lines.count < MIN_LINES_OF_CODE
+        return <<~PROMPT
+          Create more new code for this file. If the cursor is inside an empty function,
+          generate its most likely contents based on the function name and signature.
+        PROMPT
+      end
 
       nil
     end
