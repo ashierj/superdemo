@@ -1,13 +1,5 @@
 <script>
-import {
-  GlAlert,
-  GlDropdown,
-  GlDropdownItem,
-  GlEmptyState,
-  GlIcon,
-  GlLoadingIcon,
-  GlModal,
-} from '@gitlab/ui';
+import { GlAlert, GlDisclosureDropdown, GlEmptyState, GlLoadingIcon, GlModal } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import { TYPENAME_ITERATION } from '~/graphql_shared/constants';
@@ -26,9 +18,7 @@ export default {
   components: {
     BurnCharts,
     GlAlert,
-    GlIcon,
-    GlDropdown,
-    GlDropdownItem,
+    GlDisclosureDropdown,
     GlEmptyState,
     GlLoadingIcon,
     GlModal,
@@ -38,6 +28,11 @@ export default {
   },
   directives: {
     SafeHtml,
+  },
+  i18n: {
+    editIterationLabel: __('Edit'),
+    deleteIterationLabel: __('Delete'),
+    iterationActionsDropdownLabel: __('Actions'),
   },
   apollo: {
     iteration: {
@@ -105,12 +100,30 @@ export default {
         name: 'editIteration',
       };
     },
+    editRoute() {
+      return this.$router.resolve({ name: 'editIteration' }).href;
+    },
     iterationPeriod() {
       return getIterationPeriod(this.iteration);
     },
     showDelete() {
       // We only support deleting iterations for manual cadences.
       return !this.iteration.iterationCadence.automatic;
+    },
+    dropdownItems() {
+      const items = [
+        {
+          text: this.$options.i18n.editIterationLabel,
+          href: this.editRoute,
+        },
+      ];
+      if (this.showDelete) {
+        items.push({
+          text: this.$options.i18n.deleteIterationLabel,
+          action: () => this.showModal(),
+        });
+      }
+      return items;
     },
   },
   methods: {
@@ -166,25 +179,19 @@ export default {
       >
         <timebox-status-badge :state="iteration.state" />
         <span class="gl-ml-4">{{ iterationPeriod }}</span>
-        <gl-dropdown
+        <gl-disclosure-dropdown
           v-if="canEdit"
           ref="menu"
           data-testid="actions-dropdown"
-          variant="default"
-          toggle-class="gl-text-decoration-none gl-border-0! gl-shadow-none!"
-          class="gl-ml-auto gl-text-secondary"
+          :items="dropdownItems"
+          icon="ellipsis_v"
+          :toggle-text="$options.i18n.iterationActionsDropdownLabel"
+          text-sr-only
+          category="tertiary"
+          class="gl-ml-auto"
           right
           no-caret
-        >
-          <template #button-content>
-            <span class="gl-sr-only">{{ __('Actions') }}</span
-            ><gl-icon name="ellipsis_v" />
-          </template>
-          <gl-dropdown-item :to="editPage">{{ __('Edit') }}</gl-dropdown-item>
-          <gl-dropdown-item v-if="showDelete" @click="showModal">
-            {{ __('Delete') }}
-          </gl-dropdown-item>
-        </gl-dropdown>
+        />
         <gl-modal
           ref="modal"
           :modal-id="`${iteration.id}-delete-modal`"

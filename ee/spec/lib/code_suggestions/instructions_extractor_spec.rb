@@ -8,9 +8,15 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       CodeSuggestions::ProgrammingLanguage.new(CodeSuggestions::ProgrammingLanguage::DEFAULT_NAME)
     end
 
-    let(:default_instruction) { 'Create more new code for this file.' }
     let(:intent) { nil }
     let(:skip_generate_comment_prefix) { true }
+
+    let(:default_instruction) do
+      <<~PROMPT
+        Create more new code for this file. If the cursor is inside an empty function,
+        generate its most likely contents based on the function name and signature.
+      PROMPT
+    end
 
     subject { described_class.new(language, content, intent, skip_generate_comment_prefix).extract }
 
