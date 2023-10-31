@@ -20,11 +20,13 @@ module Resolvers
           description: 'Filters applied when retrieving compliance standards adherence.'
 
         def resolve(filters: {})
-          ::Projects::ComplianceStandards::AdherenceFinder.new(
+          standards_adherence_records = ::Projects::ComplianceStandards::AdherenceFinder.new(
             group,
             current_user,
             filters.to_h.merge({ include_subgroups: true })
           ).execute
+
+          offset_pagination(standards_adherence_records)
         end
       end
     end
