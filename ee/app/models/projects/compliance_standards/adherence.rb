@@ -22,6 +22,14 @@ module Projects
       scope :for_projects, ->(project_ids) { where(project: project_ids) }
       scope :for_check_name, ->(check_name) { where(check_name: check_name) }
       scope :for_standard, ->(standard) { where(standard: standard) }
+      scope :order_by_project_id, ->(direction) { order(project_id: direction, id: direction) }
+
+      scope :in_optimization_array_mapping_scope, ->(id_expression) {
+                                                    where(arel_table[:namespace_id].eq(id_expression))
+                                                  }
+      scope :in_optimization_finder_query, ->(_project_id_expression, id_expression) {
+                                             where(arel_table[:id].eq(id_expression))
+                                           }
 
       private
 

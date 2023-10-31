@@ -12,12 +12,14 @@ module Projects
       def execute
         return ::Projects::ComplianceStandards::Adherence.none unless allowed?
 
-        items = init_collection
-        items = items.for_projects(params[:project_ids]) if params[:project_ids].present?
-        items = items.for_check_name(params[:check_name]) if params[:check_name].present?
-        items = items.for_standard(params[:standard]) if params[:standard].present?
-
-        items
+        if params[:include_subgroups].present?
+          execute_in_operator_query
+        else
+          items = init_collection
+          items = filter_by_projects(items)
+          items = filter_by_check_name(items)
+          filter_by_standard(items)
+        end
       end
 
       private
@@ -31,9 +33,7 @@ module Projects
       end
 
       def init_collection
-        if params[:include_subgroups].present?
-          ::Projects::ComplianceStandards::Adherence.for_group_and_its_subgroups(group)
-        elsif params[:skip_group_check].present?
+        if params[:skip_group_check].present?
           # group check cannot be skipped unless we have project_ids filter
           if params[:project_ids].present?
             ::Projects::ComplianceStandards::Adherence
@@ -42,6 +42,48 @@ module Projects
           end
         else
           ::Projects::ComplianceStandards::Adherence.for_group(group)
+        end
+      end
+
+      def in_operator_scope
+        base_scope = ::Projects::ComplianceStandards::Adherence
+        base_scope = filter_by_projects(base_scope)
+        base_scope = filter_by_check_name(base_scope)
+        base_scope = filter_by_standard(base_scope)
+
+        base_scope.order_by_project_id(:desc)
+      end
+
+      def execute_in_operator_query
+        Gitlab::Pagination::Keyset::InOperatorOptimization::QueryBuilder.new(
+          scope: in_operator_scope,
+          array_scope: group.self_and_descendant_ids,
+          array_mapping_scope: ::Projects::ComplianceStandards::Adherence.method(:in_optimization_array_mapping_scope),
+          finder_query: ::Projects::ComplianceStandards::Adherence.method(:in_optimization_finder_query)
+        ).execute.limit(50)
+      end
+
+      def filter_by_projects(adherence_records)
+        if params[:project_ids].present?
+          adherence_records.for_projects(params[:project_ids])
+        else
+          adherence_records
+        end
+      end
+
+      def filter_by_check_name(adherence_records)
+        if params[:check_name].present?
+          adherence_records.for_check_name(params[:check_name])
+        else
+          adherence_records
+        end
+      end
+
+      def filter_by_standard(adherence_records)
+        if params[:standard].present?
+          adherence_records.for_standard(params[:standard])
+        else
+          adherence_records
         end
       end
     end

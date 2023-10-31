@@ -31072,6 +31072,8 @@ CREATE UNIQUE INDEX i_bulk_import_trackers_id_batch_number ON bulk_import_batch_
 
 CREATE INDEX i_compliance_frameworks_on_id_and_created_at ON compliance_management_frameworks USING btree (id, created_at, pipeline_configuration_full_path);
 
+CREATE INDEX i_compliance_standards_adherence_on_namespace_id_and_proj_id ON project_compliance_standards_adherence USING btree (namespace_id, project_id DESC, id DESC);
+
 CREATE INDEX i_compliance_violations_for_export ON merge_requests_compliance_violations USING btree (target_project_id, id);
 
 CREATE INDEX i_compliance_violations_on_project_id_merged_at_and_id ON merge_requests_compliance_violations USING btree (target_project_id, merged_at, id);
@@ -33747,8 +33749,6 @@ CREATE UNIQUE INDEX index_project_ci_feature_usages_unique_columns ON project_ci
 CREATE INDEX index_project_compliance_framework_settings_on_framework_id ON project_compliance_framework_settings USING btree (framework_id);
 
 CREATE INDEX index_project_compliance_framework_settings_on_project_id ON project_compliance_framework_settings USING btree (project_id);
-
-CREATE INDEX index_project_compliance_standards_adherence_on_namespace_id ON project_compliance_standards_adherence USING btree (namespace_id);
 
 CREATE INDEX index_project_compliance_standards_adherence_on_project_id ON project_compliance_standards_adherence USING btree (project_id);
 
