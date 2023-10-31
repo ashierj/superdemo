@@ -68,6 +68,9 @@ describe('CreateMemberRole', () => {
     const checkboxOneText = checkboxes.at(0).text();
     const checkboxTwoText = checkboxes.at(1).text();
     const checkboxThreeText = checkboxes.at(2).text();
+    const checkboxFourText = checkboxes.at(3).text();
+    const checkboxFiveText = checkboxes.at(4).text();
+    const checkboSixText = checkboxes.at(5).text();
 
     expect(checkboxOneText).toContain('Read code');
     expect(checkboxOneText).toContain('Allows read-only access to the source code.');
@@ -79,6 +82,15 @@ describe('CreateMemberRole', () => {
     expect(checkboxThreeText).toContain(
       "Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect.",
     );
+
+    expect(checkboxFourText).toContain('Read dependency');
+    expect(checkboxFourText).toContain('Allows read-only access to the dependencies.');
+
+    expect(checkboxFiveText).toContain('Admin group member');
+    expect(checkboxFiveText).toContain('Allows admin access to group members.');
+
+    expect(checkboSixText).toContain('Admin merge requests');
+    expect(checkboSixText).toContain('Allows admin access to the merge requests.');
   });
 
   describe('manage_project_access_token feature flag is on', () => {
