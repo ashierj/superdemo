@@ -21,6 +21,26 @@ RSpec.describe Namespaces::FreeUserCap, feature_category: :measurement_and_locki
     end
   end
 
+  describe '.dashboard_limit_enabled?' do
+    let(:dashboard_limit_enabled) { true }
+
+    subject { described_class.dashboard_limit_enabled? }
+
+    before do
+      stub_ee_application_setting(dashboard_limit_enabled: dashboard_limit_enabled)
+    end
+
+    context 'when set true' do
+      it { is_expected.to be(true) }
+    end
+
+    context 'when set to false' do
+      let(:dashboard_limit_enabled) { false }
+
+      it { is_expected.to be(false) }
+    end
+  end
+
   describe '.owner_access?' do
     let_it_be(:user) { create(:user) }
     let_it_be(:namespace) { create(:group) }

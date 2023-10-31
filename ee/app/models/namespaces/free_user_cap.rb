@@ -9,6 +9,10 @@ module Namespaces
       ::Gitlab::CurrentSettings.dashboard_limit
     end
 
+    def self.dashboard_limit_enabled?
+      ::Gitlab::CurrentSettings.dashboard_limit_enabled?
+    end
+
     def self.owner_access?(user:, namespace:)
       return false unless user
 
