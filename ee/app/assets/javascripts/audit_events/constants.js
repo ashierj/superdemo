@@ -75,6 +75,7 @@ export const streamsLabel = (count) =>
 export const ADD_STREAM = s__('AuditStreams|Add streaming destination');
 export const ADD_HTTP = s__('AuditStreams|HTTP endpoint');
 export const ADD_GCP_LOGGING = s__('AuditStreams|Google Cloud Logging');
+export const ADD_AMAZON_S3 = s__('AuditStreams|AWS S3');
 export const ADD_STREAM_MESSAGE = s__('AuditStreams|Stream added successfully');
 export const UPDATE_STREAM_MESSAGE = s__('AuditStreams|Stream updated successfully');
 export const DELETE_STREAM_MESSAGE = s__('AuditStreams|Stream deleted successfully');
@@ -135,6 +136,23 @@ export const ADD_STREAM_EDITOR_I18N = {
     'AuditStreams|Use the Google Cloud console to view the private key. To change the private key, replace it with a new private key.',
   ),
   GCP_LOGGING_DESTINATION_PASSWORD_SUBTEXT_ADD_BUTTON: s__('AuditStreams|Add a new private key'),
+
+  AMAZON_S3_DESTINATION_NAME_LABEL: s__('AuditStreams|Destination Name'),
+  AMAZON_S3_DESTINATION_NAME_PLACEHOLDER: s__('AuditStreams|Destination Name'),
+  AMAZON_S3_DESTINATION_ACCESS_KEY_XID_LABEL: s__('AuditStreams|Access Key Xid'),
+  AMAZON_S3_DESTINATION_ACCESS_KEY_XID_PLACEHOLDER: s__('AuditStreams|AKIA1231dsdsdsdsds23'),
+  AMAZON_S3_DESTINATION_AWS_REGION_LABEL: s__('AuditStreams|AWS Region'),
+  AMAZON_S3_DESTINATION_AWS_REGION_PLACEHOLDER: s__('AuditStreams|us-east-1'),
+  AMAZON_S3_DESTINATION_BUCKET_NAME_LABEL: s__('AuditStreams|Bucket Name'),
+  AMAZON_S3_DESTINATION_BUCKET_NAME_PLACEHOLDER: s__('AuditStreams|bucket-name'),
+  AMAZON_S3_DESTINATION_SECRET_ACCESS_KEY_LABEL: s__('AuditStreams|Secret Access Key'),
+
+  AMAZON_S3_DESTINATION_SECRET_ACCESS_KEY_SUBTEXT: s__(
+    'AuditStreams|Use the AWS console to view the secret access key. To change the secret access key, replace it with a new secret access key.',
+  ),
+  AMAZON_S3_DESTINATION_SECRET_ACCESS_KEY_SUBTEXT_ADD_BUTTON: s__(
+    'AuditStreams|Add a new secret access key',
+  ),
 };
 
 export const AUDIT_STREAMS_EMPTY_STATE_I18N = {
@@ -177,3 +195,4 @@ export const createBlankHeader = () => ({
 
 export const DESTINATION_TYPE_HTTP = 'http';
 export const DESTINATION_TYPE_GCP_LOGGING = 'gcpLogging';
+export const DESTINATION_TYPE_AMAZON_S3 = 'amazonS3';

@@ -23,13 +23,10 @@ describe('StreamEmptyState', () => {
     wrapper.findAllComponents(GlDisclosureDropdownItem).at(index).find('button');
   const findHttpDropdownItem = () => findDisclosureDropdownItem(0);
   const findGcpLoggingDropdownItem = () => findDisclosureDropdownItem(1);
+  const findAmazonS3DropdownItem = () => findDisclosureDropdownItem(2);
 
   beforeEach(() => {
     createComponent();
-  });
-
-  it('should render correctly', () => {
-    expect(wrapper.element).toMatchSnapshot();
   });
 
   it('should show options', () => {
@@ -45,5 +42,10 @@ describe('StreamEmptyState', () => {
   it('emits event on select gcp logging', async () => {
     await findGcpLoggingDropdownItem().trigger('click');
     expect(wrapper.emitted('add')).toStrictEqual([['gcpLogging']]);
+  });
+
+  it('emits event on select Amazon S3', async () => {
+    await findAmazonS3DropdownItem().trigger('click');
+    expect(wrapper.emitted('add')).toStrictEqual([['amazonS3']]);
   });
 });

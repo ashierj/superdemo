@@ -14,10 +14,12 @@ import {
   STREAM_ITEMS_I18N,
   DESTINATION_TYPE_HTTP,
   DESTINATION_TYPE_GCP_LOGGING,
+  DESTINATION_TYPE_AMAZON_S3,
   UPDATE_STREAM_MESSAGE,
 } from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';
 import StreamGcpLoggingDestinationEditor from './stream_gcp_logging_destination_editor.vue';
+import StreamAmazonS3DestinationEditor from './stream_amazon_s3_destination_editor.vue';
 
 export default {
   components: {
@@ -31,6 +33,7 @@ export default {
     GlIcon,
     StreamDestinationEditor,
     StreamGcpLoggingDestinationEditor,
+    StreamAmazonS3DestinationEditor,
   },
   directives: {
     GlTooltip,
@@ -94,6 +97,7 @@ export default {
   i18n: { ...STREAM_ITEMS_I18N },
   DESTINATION_TYPE_HTTP,
   DESTINATION_TYPE_GCP_LOGGING,
+  DESTINATION_TYPE_AMAZON_S3,
 };
 </script>
 
@@ -147,7 +151,7 @@ export default {
         {{ successMessage }}
       </gl-alert>
       <stream-destination-editor
-        v-if="isEditing && type == $options.DESTINATION_TYPE_HTTP"
+        v-if="type == $options.DESTINATION_TYPE_HTTP"
         :item="item"
         class="gl-pr-0 gl-pl-6 gl-pb-5"
         @updated="onUpdated"
@@ -156,7 +160,16 @@ export default {
         @cancel="toggleEditMode"
       />
       <stream-gcp-logging-destination-editor
-        v-else-if="isEditing && type == $options.DESTINATION_TYPE_GCP_LOGGING"
+        v-else-if="type == $options.DESTINATION_TYPE_GCP_LOGGING"
+        :item="item"
+        class="gl-pr-0 gl-pl-6 gl-pb-5"
+        @updated="onUpdated"
+        @deleted="onDelete"
+        @error="onEditorError"
+        @cancel="toggleEditMode"
+      />
+      <stream-amazon-s3-destination-editor
+        v-else-if="type == $options.DESTINATION_TYPE_AMAZON_S3"
         :item="item"
         class="gl-pr-0 gl-pl-6 gl-pb-5"
         @updated="onUpdated"

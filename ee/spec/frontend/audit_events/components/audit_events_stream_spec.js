@@ -16,6 +16,7 @@ import {
 import AuditEventsStream from 'ee/audit_events/components/audit_events_stream.vue';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamGcpLoggingDestinationEditor from 'ee/audit_events/components/stream/stream_gcp_logging_destination_editor.vue';
+import StreamAmazonS3DestinationEditor from 'ee/audit_events/components/stream/stream_amazon_s3_destination_editor.vue';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamEmptyState from 'ee/audit_events/components/stream/stream_empty_state.vue';
 import {
@@ -56,6 +57,7 @@ describe('AuditEventsStream', () => {
         StreamItem: true,
         StreamDestinationEditor: true,
         StreamGcpLoggingDestinationEditor: true,
+        StreamAmazonS3DestinationEditor: true,
         StreamEmptyState: true,
       },
     });
@@ -67,10 +69,13 @@ describe('AuditEventsStream', () => {
     wrapper.findAllComponents(GlDisclosureDropdownItem).at(index).find('button');
   const findHttpDropdownItem = () => findDisclosureDropdownItem(0);
   const findGcpLoggingDropdownItem = () => findDisclosureDropdownItem(1);
+  const findAmazonS3DropdownItem = () => findDisclosureDropdownItem(2);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findStreamDestinationEditor = () => wrapper.findComponent(StreamDestinationEditor);
   const findStreamGcpLoggingDestinationEditor = () =>
     wrapper.findComponent(StreamGcpLoggingDestinationEditor);
+  const findStreamAmazonS3DestinationEditor = () =>
+    wrapper.findComponent(StreamAmazonS3DestinationEditor);
   const findStreamEmptyState = () => wrapper.findComponent(StreamEmptyState);
   const findStreamItems = () => wrapper.findAllComponents(StreamItem);
 
@@ -206,6 +211,31 @@ describe('AuditEventsStream', () => {
         expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(true);
 
         findStreamGcpLoggingDestinationEditor().vm.$emit('added');
+        await waitForPromises();
+
+        expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+      });
+
+      it('shows amazon s3 editor', async () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamAmazonS3DestinationEditor().exists()).toBe(false);
+
+        expect(findAddDestinationButton().props('toggleText')).toBe('Add streaming destination');
+
+        await findAmazonS3DropdownItem().trigger('click');
+
+        expect(findStreamAmazonS3DestinationEditor().exists()).toBe(true);
+      });
+
+      it('exits edit mode when an external amazon s3 destination is added', async () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamAmazonS3DestinationEditor().exists()).toBe(false);
+
+        await findAmazonS3DropdownItem().trigger('click');
+
+        expect(findStreamAmazonS3DestinationEditor().exists()).toBe(true);
+
+        findStreamAmazonS3DestinationEditor().vm.$emit('added');
         await waitForPromises();
 
         expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
