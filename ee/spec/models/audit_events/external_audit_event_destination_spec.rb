@@ -11,6 +11,8 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
     it 'belongs to a group' do
       expect(subject.group).not_to be_nil
     end
+
+    it { is_expected.to have_one(:namespace_filter) }
   end
 
   describe 'Validations' do

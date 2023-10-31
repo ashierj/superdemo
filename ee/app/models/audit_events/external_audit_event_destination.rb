@@ -14,6 +14,8 @@ module AuditEvents
     has_many :headers, class_name: 'AuditEvents::Streaming::Header'
     has_many :event_type_filters, class_name: 'AuditEvents::Streaming::EventTypeFilter'
 
+    has_one :namespace_filter, class_name: 'AuditEvents::Streaming::HTTP::NamespaceFilter'
+
     validate :root_level_group?
     validates :name, uniqueness: { scope: :namespace_id }
     validates :destination_url, uniqueness: { scope: :namespace_id }, length: { maximum: 255 }
