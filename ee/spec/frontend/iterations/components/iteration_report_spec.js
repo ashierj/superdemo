@@ -1,4 +1,4 @@
-import { GlDropdown, GlEmptyState, GlLoadingIcon, GlTab, GlTabs } from '@gitlab/ui';
+import { GlDisclosureDropdown, GlEmptyState, GlLoadingIcon, GlTab, GlTabs } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
@@ -14,7 +14,6 @@ import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { __ } from '~/locale';
 import {
   mockIterationNode,
   mockManualIterationNode,
@@ -30,6 +29,7 @@ const $router = {
       iterationId: String(getIdFromGraphQLId(mockIterationNode.id)),
     },
   },
+  resolve: jest.fn().mockReturnValue({ href: 'some-link' }),
 };
 const $toast = {
   show: jest.fn(),
@@ -48,8 +48,7 @@ describe('Iterations report', () => {
   const findTopbar = () => wrapper.findComponent({ ref: 'topbar' });
   const findHeading = () => wrapper.findComponent({ ref: 'heading' });
   const findDescription = () => wrapper.findComponent({ ref: 'description' });
-  const findActionsDropdown = () => wrapper.find('[data-testid="actions-dropdown"]');
-  const findDeleteButton = () => wrapper.findByText(__('Delete'));
+  const findActionsDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
@@ -152,19 +151,31 @@ describe('Iterations report', () => {
 
   describe('delete iteration', () => {
     it('does not show delete option when iteration belongs to automatic cadence', async () => {
-      mountComponent({ mockQueryResponse: createMockGroupIterations(mockIterationNode) });
+      mountComponent({
+        props: { ...defaultProps, canEditIteration: true },
+        mockQueryResponse: createMockGroupIterations(mockIterationNode),
+      });
 
       await waitForPromises();
 
-      expect(findDeleteButton().exists()).toBe(false);
+      expect(findActionsDropdown().props('items')).not.toContainEqual({
+        action: expect.any(Function),
+        text: 'Delete',
+      });
     });
 
-    it('shows delete option when iteration belongs to automatic cadence', async () => {
-      mountComponent({ mockQueryResponse: createMockGroupIterations(mockManualIterationNode) });
+    it('shows delete option when iteration belongs to manual cadence', async () => {
+      mountComponent({
+        props: { ...defaultProps, canEditIteration: true },
+        mockQueryResponse: createMockGroupIterations(mockManualIterationNode),
+      });
 
       await waitForPromises();
 
-      expect(findDeleteButton().exists()).toBe(false);
+      expect(findActionsDropdown().props('items')).toContainEqual({
+        action: expect.any(Function),
+        text: 'Delete',
+      });
     });
 
     it('deletes iteration', async () => {
@@ -324,7 +335,7 @@ describe('Iterations report', () => {
           });
 
           it(`${canEditIteration ? 'is shown' : 'is hidden'}`, () => {
-            expect(wrapper.findComponent(GlDropdown).exists()).toBe(canEdit);
+            expect(findActionsDropdown().exists()).toBe(canEdit);
           });
         },
       );
