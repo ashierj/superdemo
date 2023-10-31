@@ -18971,6 +18971,26 @@ CREATE SEQUENCE ml_experiments_id_seq
 
 ALTER SEQUENCE ml_experiments_id_seq OWNED BY ml_experiments.id;
 
+CREATE TABLE ml_model_metadata (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    model_id bigint NOT NULL,
+    name text NOT NULL,
+    value text NOT NULL,
+    CONSTRAINT check_26d3322153 CHECK ((char_length(value) <= 5000)),
+    CONSTRAINT check_36240c80a7 CHECK ((char_length(name) <= 255))
+);
+
+CREATE SEQUENCE ml_model_metadata_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ml_model_metadata_id_seq OWNED BY ml_model_metadata.id;
+
 CREATE TABLE ml_model_versions (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -18999,7 +19019,10 @@ CREATE TABLE ml_models (
     updated_at timestamp with time zone NOT NULL,
     project_id bigint NOT NULL,
     name text NOT NULL,
-    CONSTRAINT check_1fd2cc7d93 CHECK ((char_length(name) <= 255))
+    description text,
+    user_id integer,
+    CONSTRAINT check_1fd2cc7d93 CHECK ((char_length(name) <= 255)),
+    CONSTRAINT check_d0c47d63b5 CHECK ((char_length(description) <= 5000))
 );
 
 CREATE SEQUENCE ml_models_id_seq
@@ -26608,6 +26631,8 @@ ALTER TABLE ONLY ml_experiment_metadata ALTER COLUMN id SET DEFAULT nextval('ml_
 
 ALTER TABLE ONLY ml_experiments ALTER COLUMN id SET DEFAULT nextval('ml_experiments_id_seq'::regclass);
 
+ALTER TABLE ONLY ml_model_metadata ALTER COLUMN id SET DEFAULT nextval('ml_model_metadata_id_seq'::regclass);
+
 ALTER TABLE ONLY ml_model_versions ALTER COLUMN id SET DEFAULT nextval('ml_model_versions_id_seq'::regclass);
 
 ALTER TABLE ONLY ml_models ALTER COLUMN id SET DEFAULT nextval('ml_models_id_seq'::regclass);
@@ -28888,6 +28913,9 @@ ALTER TABLE ONLY ml_experiment_metadata
 
 ALTER TABLE ONLY ml_experiments
     ADD CONSTRAINT ml_experiments_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY ml_model_metadata
+    ADD CONSTRAINT ml_model_metadata_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY ml_model_versions
     ADD CONSTRAINT ml_model_versions_pkey PRIMARY KEY (id);
@@ -33290,6 +33318,8 @@ CREATE INDEX index_ml_models_on_project_id ON ml_models USING btree (project_id)
 
 CREATE UNIQUE INDEX index_ml_models_on_project_id_and_name ON ml_models USING btree (project_id, name);
 
+CREATE INDEX index_ml_models_on_user_id ON ml_models USING btree (user_id);
+
 CREATE UNIQUE INDEX index_mr_blocks_on_blocking_and_blocked_mr_ids ON merge_request_blocks USING btree (blocking_merge_request_id, blocked_merge_request_id);
 
 CREATE INDEX index_mr_cleanup_schedules_timestamps_status ON merge_request_cleanup_schedules USING btree (scheduled_at) WHERE ((completed_at IS NULL) AND (status = 0));
@@ -35105,6 +35135,8 @@ CREATE UNIQUE INDEX unique_idx_namespaces_storage_limit_exclusions_on_namespace_
 CREATE UNIQUE INDEX unique_index_ci_build_pending_states_on_partition_id_build_id ON ci_build_pending_states USING btree (partition_id, build_id);
 
 CREATE UNIQUE INDEX unique_index_for_project_pages_unique_domain ON project_settings USING btree (pages_unique_domain) WHERE (pages_unique_domain IS NOT NULL);
+
+CREATE UNIQUE INDEX unique_index_ml_model_metadata_name ON ml_model_metadata USING btree (model_id, name);
 
 CREATE UNIQUE INDEX unique_index_on_system_note_metadata_id ON resource_link_events USING btree (system_note_metadata_id);
 
@@ -37277,6 +37309,9 @@ ALTER TABLE ONLY ci_pipelines
 
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_6a5165a692 FOREIGN KEY (milestone_id) REFERENCES milestones(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY ml_models
+    ADD CONSTRAINT fk_6c95e61a6e FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY projects
     ADD CONSTRAINT fk_6ca23af0a3 FOREIGN KEY (project_namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -39482,6 +39517,9 @@ ALTER TABLE ONLY packages_rpm_metadata
 
 ALTER TABLE ONLY note_metadata
     ADD CONSTRAINT fk_rails_d853224d37 FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY ml_model_metadata
+    ADD CONSTRAINT fk_rails_d907835e01 FOREIGN KEY (model_id) REFERENCES ml_models(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY merge_request_reviewers
     ADD CONSTRAINT fk_rails_d9fec24b9d FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
