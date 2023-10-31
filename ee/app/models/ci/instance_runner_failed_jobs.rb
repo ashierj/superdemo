@@ -55,7 +55,7 @@ module Ci
       def track_job?(build)
         License.feature_available?(:runner_performance_insights) &&
           SUPPORTED_FAILURE_REASONS.include?(build.failure_reason.to_sym) &&
-          build.runner.instance_type?
+          build.runner&.instance_type?
       end
     end
   end

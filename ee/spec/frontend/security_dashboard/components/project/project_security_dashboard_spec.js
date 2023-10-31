@@ -20,6 +20,7 @@ jest.mock('~/lib/utils/icon_utils', () => ({
 
 describe('Project Security Dashboard component', () => {
   let wrapper;
+  let severitiesCountQueryHandler;
 
   const projectFullPath = 'project/path';
 
@@ -32,14 +33,24 @@ describe('Project Security Dashboard component', () => {
   };
 
   const createWrapper = ({ historyQueryData, severitiesCountQueryData } = {}) => {
+    severitiesCountQueryHandler = jest.fn().mockResolvedValue(severitiesCountQueryData);
+
     wrapper = shallowMount(ProjectSecurityDashboard, {
       apolloProvider: createApolloProvider(
         [projectsHistoryQuery, jest.fn().mockResolvedValue(historyQueryData)],
-        [severitiesCountQuery, jest.fn().mockResolvedValue(severitiesCountQueryData)],
+        [severitiesCountQuery, severitiesCountQueryHandler],
       ),
       propsData: { projectFullPath },
     });
   };
+
+  it('should fetch the latest vulnerability count for "detected" and "confirmed" states', () => {
+    createWrapper();
+
+    expect(severitiesCountQueryHandler).toHaveBeenCalledWith(
+      expect.objectContaining({ state: ['DETECTED', 'CONFIRMED'] }),
+    );
+  });
 
   describe('when query is loading', () => {
     it('should only show the loading icon', () => {

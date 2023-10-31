@@ -7,6 +7,7 @@ RSpec.describe GitlabSchema.types['ApprovalRule'] do
     %i[
       id name type approvals_required approved overridden section contains_hidden_groups source_rule
       eligible_approvers users approved_by groups section commented_by invalid allow_merge_when_invalid
+      scan_result_policies
     ]
   end
 

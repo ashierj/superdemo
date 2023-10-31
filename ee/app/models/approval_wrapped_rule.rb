@@ -101,6 +101,17 @@ class ApprovalWrappedRule
       Security::OrchestrationPolicyConfiguration.policy_management_project?(project)
   end
 
+  def scan_result_policies
+    policy_configuration_id = approval_rule.security_orchestration_policy_configuration_id
+
+    return unless policy_configuration_id
+
+    merge_request
+      .approval_rules.for_policy_configuration(policy_configuration_id)
+      .for_policy_index(approval_rule.orchestration_policy_idx)
+      .select(:report_type, :name, :approvals_required)
+  end
+
   # Number of approvals remaining (excluding existing approvals)
   # before the rule is considered approved.
   #
