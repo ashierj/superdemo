@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       messageContent: this.getContent(),
+      chunksFinished: false,
     };
   },
   computed: {
@@ -59,10 +60,14 @@ export default {
         if (!chunkId) {
           this.$options.messageChunks = [];
           this.messageContent = this.getContent();
+          this.chunksFinished = true;
 
           await this.$nextTick();
           renderGFM(this.$refs.content);
         } else {
+          if (this.chunksFinished) {
+            return;
+          }
           this.$options.messageChunks[chunkId] = content;
           this.messageContent = renderMarkdown(
             concatIndicesUntilEmpty(this.$options.messageChunks),
