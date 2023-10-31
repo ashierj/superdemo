@@ -21,17 +21,28 @@ If you're new to GitLab CI/CD, start by reviewing some of the commonly used term
 
 ### The `.gitlab-ci.yml` file
 
-To use GitLab CI/CD, you start with a `.gitlab-ci.yml` file at the root of your project.
-In this file, you specify the list of things you want to do, like test and deploy your application.
-This file follows the YAML format and has its own special syntax.
+To use GitLab CI/CD, you start with a `.gitlab-ci.yml` file at the root of your project
+which contains the configuration for your CI/CD pipeline. This file follows the YAML format
+and has its own special syntax.
 
 You can name this file anything you want, but `.gitlab-ci.yml` is the most common name.
-Use the pipeline editor to edit the `.gitlab-ci.yml` file and test the syntax before you commit changes.
+
+In the `.gitlab-ci.yml` file, you can define:
+
+- The tasks you want to complete, for example test and deploy your application.
+- Other configuration files and templates you want to include.
+- Dependencies and caches.
+- The commands you want to run in sequence and those you want to run in parallel.
+- The location to deploy your application to.
+- Whether you want to run the scripts automatically or trigger any of them manually.
 
 **Get started:**
 
 - [Create your first `.gitlab-ci.yml` file](quick_start/index.md).
 - [View all the possible keywords that you can use in the `.gitlab-ci.yml` file](yaml/index.md).
+the configuration.
+- Use the [pipeline editor](pipeline_editor/index.md) to edit or [visualize](pipeline_editor/index.md#visualize-ci-configuration)
+  your CI/CD configuration.
 
 ### Runners
 
