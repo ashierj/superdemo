@@ -81,7 +81,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
       end
 
       it 'creates a todo only for mentioned users' do
-        mentioned = create(:user, :no_super_sidebar)
+        mentioned = create(:user)
 
         # Add a trailing space to close mention auto-complete dialog, which might block the save button
         fill_in 'issue-description', with: "FYI #{mentioned.to_reference} "
@@ -98,7 +98,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
 
         visit dashboard_todos_path
 
-        page.within ".header-content span[aria-label='#{_('Todos count')}']" do
+        within_testid('todos-shortcut-button') do
           expect(page).to have_content '1'
         end
         expect(page).to have_selector('.todos-list .todo', count: 1)
