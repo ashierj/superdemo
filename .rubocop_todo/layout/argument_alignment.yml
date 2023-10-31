@@ -1260,7 +1260,6 @@ Layout/ArgumentAlignment:
     - 'lib/api/topics.rb'
     - 'lib/api/usage_data.rb'
     - 'lib/api/users.rb'
-    - 'lib/api/v3/github.rb'
     - 'lib/backup/manager.rb'
     - 'lib/bitbucket_server/connection.rb'
     - 'lib/gem_extensions/active_record/disable_joins/associations/association_scope.rb'
