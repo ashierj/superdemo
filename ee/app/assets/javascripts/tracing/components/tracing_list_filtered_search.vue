@@ -103,7 +103,7 @@ export default {
     <gl-filtered-search
       v-model="value"
       terms-as-tokens
-      :placeholder="s__('Tracing|Filter Traces')"
+      :placeholder="s__('Tracing|Filter traces')"
       :available-tokens="availableTokens"
       @submit="$emit('submit', $event)"
     />

@@ -50,7 +50,7 @@ export default {
         :header-class="$options.HEADER_CLASS"
       >
         <template #header>
-          {{ __('Trace Start') }}
+          {{ __('Trace start') }}
         </template>
 
         <template #default>
@@ -81,7 +81,7 @@ export default {
         :header-class="$options.HEADER_CLASS"
       >
         <template #header>
-          {{ __('Total Spans') }}
+          {{ __('Total spans') }}
         </template>
 
         <template #default>

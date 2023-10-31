@@ -40,7 +40,7 @@ describe('TracingDetailsDrawer', () => {
   });
 
   it('displays the correct title', () => {
-    expect(wrapper.findByTestId('span-title').text()).toBe('Span Details service-1 : operation-1');
+    expect(wrapper.findByTestId('span-title').text()).toBe('Span details service-1 : operation-1');
   });
 
   it('displays the correct content', () => {
@@ -65,7 +65,7 @@ describe('TracingDetailsDrawer', () => {
     expect(labels.at(5).text()).toBe('Duration');
     expect(values.at(5).text()).toBe('1.23 ms');
 
-    expect(labels.at(6).text()).toBe('Status Code');
+    expect(labels.at(6).text()).toBe('Status code');
     expect(values.at(6).text()).toBe('200');
   });
 });
