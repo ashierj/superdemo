@@ -20,8 +20,11 @@ export const BASE_ROLES = Object.freeze(
 
 export const READ_CODE = 'read_code';
 export const READ_VULNERABILITY = 'read_vulnerability';
+export const READ_DEPENDENCY = 'read_dependency';
 export const ADMIN_VULNERABILITY = 'admin_vulnerability';
 export const MANAGE_PROJECT_ACCESS_TOKENS = 'manage_project_access_tokens';
+export const ADMIN_GROUP_MEMBER = 'admin_group_member';
+export const ADMIN_MERGE_REQUEST = 'admin_merge_request';
 
 export const PERMISSIONS = Object.freeze({
   [READ_CODE]: {
@@ -47,6 +50,21 @@ export const PERMISSIONS = Object.freeze({
     ),
     text: s__('MemberRoles|Manage Project Access Tokens'),
     value: MANAGE_PROJECT_ACCESS_TOKENS,
+  },
+  [READ_DEPENDENCY]: {
+    help: s__('MemberRoles|Allows read-only access to the dependencies.'),
+    text: s__('MemberRoles|Read dependency'),
+    value: READ_DEPENDENCY,
+  },
+  [ADMIN_GROUP_MEMBER]: {
+    help: s__('MemberRoles|Allows admin access to group members.'),
+    text: s__('MemberRoles|Admin group member'),
+    value: ADMIN_GROUP_MEMBER,
+  },
+  [ADMIN_MERGE_REQUEST]: {
+    help: s__('MemberRoles|Allows admin access to the merge requests.'),
+    text: s__('MemberRoles|Admin merge requests'),
+    value: ADMIN_MERGE_REQUEST,
   },
 });
 
