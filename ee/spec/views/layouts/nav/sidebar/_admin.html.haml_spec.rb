@@ -35,14 +35,23 @@ RSpec.describe 'layouts/nav/sidebar/_admin', feature_category: :navigation do
   end
 
   context 'on advanced search settings' do
-    before do
-      stub_licensed_features(elastic_search: elastic_search_license)
+    context 'license with elastic_search feature' do
+      before do
+        stub_licensed_features(elastic_search: true)
+        render
+      end
 
-      render
+      it 'includes Advanced Search link' do
+        expect(rendered).to have_link('Advanced Search', href: '/admin/application_settings/advanced_search')
+      end
     end
 
-    context 'license with elastic_search feature' do
-      let(:elastic_search_license) { true }
+    context 'elastic_search feature is available through usage ping features' do
+      before do
+        allow(License).to receive(:current).and_return(nil)
+        stub_usage_ping_features(true)
+        render
+      end
 
       it 'includes Advanced Search link' do
         expect(rendered).to have_link('Advanced Search', href: '/admin/application_settings/advanced_search')
@@ -50,7 +59,10 @@ RSpec.describe 'layouts/nav/sidebar/_admin', feature_category: :navigation do
     end
 
     context 'license without elastic_search feature' do
-      let(:elastic_search_license) { false }
+      before do
+        stub_licensed_features(elastic_search: false)
+        render
+      end
 
       it 'includes Advanced Search link' do
         expect(rendered).not_to have_link('Advanced Search', href: '/admin/application_settings/advanced_search')
