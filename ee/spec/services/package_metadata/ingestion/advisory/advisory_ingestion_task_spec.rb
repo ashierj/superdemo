@@ -52,10 +52,9 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::AdvisoryIngestionTask, feat
       end
 
       it 'logs invalid advisories as an error' do
-        expect(::Gitlab::AppJsonLogger)
-          .to receive(:error)
-          .with(class: described_class.name,
-            message: "invalid advisory",
+        expect(Gitlab::ErrorTracking)
+          .to receive(:track_exception)
+          .with(described_class::Error.new("invalid advisory"),
             source_xid: invalid_advisory.source_xid,
             advisory_xid: invalid_advisory.advisory_xid,
             errors: { identifiers: ['must be a valid json schema'] })

@@ -98,10 +98,10 @@ RSpec.describe ::Gitlab::PackageMetadata::Connector::BaseDataFile, feature_categ
         it { is_expected.to be_empty }
 
         it 'warns about the error' do
-          expect(Gitlab::AppJsonLogger).to receive(:warn)
-            .with(class: 'Gitlab::PackageMetadata::Connector::NdjsonDataFile',
-              message: "json parsing error on '#{io.string}'",
-              error: start_with('expected hash value, not a hash close (after name) at line 1, column 10'))
+          expect(Gitlab::ErrorTracking).to receive(:track_exception)
+            .with(Gitlab::PackageMetadata::Connector::NdjsonDataFile::Error.new(
+              "json parsing error on '#{io.string}'"),
+              errors: start_with('expected hash value, not a hash close (after name) at line 1, column 10'))
           data_file.to_a
         end
       end
