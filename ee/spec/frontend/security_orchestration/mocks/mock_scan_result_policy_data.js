@@ -1,3 +1,43 @@
+export const mockBlockUnprotectingBranchesSettingsManifest = `type: scan_result_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: ''
+actions:
+  - type: require_approval
+    approvals_required: 1
+approval_settings:
+  block_unprotecting_branches: true
+`;
+
+export const mockForcePushSettingsManifest = `type: scan_result_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: ''
+actions:
+  - type: require_approval
+    approvals_required: 1
+approval_settings:
+  prevent_force_pushing: true
+`;
+
+export const mockBlockAndForceSettingsManifest = `type: scan_result_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: ''
+actions:
+  - type: require_approval
+    approvals_required: 1
+approval_settings:
+  block_unprotecting_branches: true
+  prevent_force_pushing: true
+`;
+
 export const mockDefaultBranchesScanResultManifest = `type: scan_result_policy
 name: critical vulnerability CS approvals
 description: This policy enforces critical vulnerability CS approvals

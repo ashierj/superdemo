@@ -5,7 +5,8 @@ import { s__ } from '~/locale';
 import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
 import {
   MERGE_REQUEST_CONFIGURATION_KEYS,
-  PROTECTED_BRANCHES_CONFIGURATION_KEYS,
+  BLOCK_UNPROTECTING_BRANCHES,
+  PREVENT_FORCE_PUSHING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SettingsItem from './settings_item.vue';
@@ -45,11 +46,17 @@ export default {
   },
   computed: {
     protectedBranchSettings() {
+      const settings = [];
+
       if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
-        return this.groupSettingsBy(PROTECTED_BRANCHES_CONFIGURATION_KEYS);
+        settings.push(BLOCK_UNPROTECTING_BRANCHES);
       }
 
-      return [];
+      if (this.glFeatures.scanResultPoliciesBlockForcePush) {
+        settings.push(PREVENT_FORCE_PUSHING);
+      }
+
+      return this.groupSettingsBy(settings);
     },
     mergeRequestSettings() {
       return this.groupSettingsBy(MERGE_REQUEST_CONFIGURATION_KEYS);

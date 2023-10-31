@@ -32,15 +32,51 @@ describe('fromYaml', () => {
   });
 
   describe('feature flag', () => {
-    it.each`
-      title                                                                                                                                                                                | features                                                 | input                                                                                           | output
-      ${'returns the policy object for a manifest with `approval_settings` with the `scanResultPoliciesBlockUnprotectingBranches` feature flag on'}                                        | ${{ scanResultPoliciesBlockUnprotectingBranches: true }} | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true }}                 | ${mockApprovalSettingsScanResultObject}
-      ${'returns the policy object for a manifest with `approval_settings` containing permitted invalid settings and the `scanResultPoliciesBlockUnprotectingBranches ` feature flag on'}  | ${{ scanResultPoliciesBlockUnprotectingBranches: true }} | ${{ manifest: mockApprovalSettingsPermittedInvalidScanResultManifest, validateRuleMode: true }} | ${mockApprovalSettingsPermittedInvalidScanResultObject}
-      ${'returns the policy object for a manifest with `approval_settings` containing permitted invalid settings and the `scanResultPoliciesBlockUnprotectingBranches ` feature flag off'} | ${{}}                                                    | ${{ manifest: mockApprovalSettingsPermittedInvalidScanResultManifest, validateRuleMode: true }} | ${mockApprovalSettingsPermittedInvalidScanResultObject}
-      ${'returns the policy object for a manifest with `approval_settings` with the `scanResultAnyMergeRequest` feature flag on'}                                                          | ${{ scanResultAnyMergeRequest: true }}                   | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true }}                 | ${mockApprovalSettingsScanResultObject}
-      ${'returns the error object for a manifest with `approval_settings` with all feature flags off'}                                                                                     | ${{}}                                                    | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true }}                 | ${{ error: true }}
-    `('$title', ({ features, input, output }) => {
-      window.gon = { features };
+    it('returns the policy object for a manifest with "approval_settings" with the "scanResultPoliciesBlockUnprotectingBranches" feature flag on', () => {
+      const input = { manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true };
+      const output = mockApprovalSettingsScanResultObject;
+      window.gon = { features: { scanResultPoliciesBlockUnprotectingBranches: true } };
+      expect(fromYaml(input)).toStrictEqual(output);
+    });
+
+    it('returns the policy object for a manifest with "approval_settings" containing permitted invalid settings and the "scanResultPoliciesBlockUnprotectingBranches " feature flag on', () => {
+      const input = {
+        manifest: mockApprovalSettingsPermittedInvalidScanResultManifest,
+        validateRuleMode: true,
+      };
+      const output = mockApprovalSettingsPermittedInvalidScanResultObject;
+      window.gon = { features: { scanResultPoliciesBlockUnprotectingBranches: true } };
+      expect(fromYaml(input)).toStrictEqual(output);
+    });
+
+    it('returns the policy object for a manifest with "approval_settings" containing permitted invalid settings and the "scanResultPoliciesBlockUnprotectingBranches " feature flag off', () => {
+      const input = {
+        manifest: mockApprovalSettingsPermittedInvalidScanResultManifest,
+        validateRuleMode: true,
+      };
+      const output = mockApprovalSettingsPermittedInvalidScanResultObject;
+      window.gon = { features: {} };
+      expect(fromYaml(input)).toStrictEqual(output);
+    });
+
+    it('returns the policy object for a manifest with "approval_settings" with the "scanResultAnyMergeRequest" feature flag on', () => {
+      const input = { manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true };
+      const output = mockApprovalSettingsScanResultObject;
+      window.gon = { features: { scanResultAnyMergeRequest: true } };
+      expect(fromYaml(input)).toStrictEqual(output);
+    });
+
+    it('returns the policy object for a manifest with "approval_settings" with the "scanResultPoliciesBlockForcePush" feature flag on', () => {
+      const input = { manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true };
+      const output = mockApprovalSettingsScanResultObject;
+      window.gon = { features: { scanResultPoliciesBlockForcePush: true } };
+      expect(fromYaml(input)).toStrictEqual(output);
+    });
+
+    it('returns the error object for a manifest with "approval_settings" with all feature flags off', () => {
+      const input = { manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true };
+      const output = { error: true };
+      window.gon = { features: {} };
       expect(fromYaml(input)).toStrictEqual(output);
     });
   });
