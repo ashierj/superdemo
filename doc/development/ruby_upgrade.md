@@ -84,6 +84,8 @@ order reversed as described above.
 
 Tracking this work in an epic is useful to get a sense of progress. For larger upgrades, include a
 timeline in the epic description so stakeholders know when the final switch is expected to go live.
+Include the designated [performance testing template](https://gitlab.com/gitlab-org/quality/performance-testing/ruby-rollout-performance-testing)
+to help ensure performance standards on the upgrade.
 
 Break changes to individual repositories into separate issues under this epic.
 
