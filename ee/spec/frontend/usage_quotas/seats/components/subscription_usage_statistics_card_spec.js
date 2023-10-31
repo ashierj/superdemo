@@ -45,7 +45,7 @@ describe('SubscriptionUsageStatisticsCard', () => {
     };
 
     wrapper = shallowMountExtended(SubscriptionUsageStatisticsCard, {
-      store,
+      store: new Vuex.Store(store),
       propsData: { percentage, usageValue, totalValue, ...props },
       stubs: {
         UsageStatistics: {

@@ -13,7 +13,7 @@ import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import { ListType } from '~/boards/constants';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
-import { createStore } from '~/boards/stores';
+import { createStore, storeOptions } from '~/boards/stores';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import issueMoveListMutation from 'ee/boards/graphql/issue_move_list.mutation.graphql';
 import { mockList, boardListQueryResponse } from 'jest/boards/mock_data';
@@ -191,12 +191,10 @@ describe('IssuesLaneList', () => {
   });
 
   describe('drag & drop issue', () => {
-    beforeEach(() => {
-      createComponent({ canAdminEpic: true });
-    });
-
     describe('handleDragOnStart', () => {
       it('adds a class `is-dragging` to document body', () => {
+        createComponent({ canAdminEpic: true });
+
         expect(document.body.classList.contains('is-dragging')).toBe(false);
 
         wrapper.find(`[data-testid="tree-root-wrapper"]`).vm.$emit('start');
@@ -207,6 +205,8 @@ describe('IssuesLaneList', () => {
 
     describe('handleDragOnEnd', () => {
       it('removes class `is-dragging` from document body', () => {
+        createComponent({ canAdminEpic: true });
+
         jest.spyOn(store, 'dispatch').mockImplementation(() => {});
         document.body.classList.add('is-dragging');
 
@@ -230,15 +230,14 @@ describe('IssuesLaneList', () => {
 
     describe('highlighting', () => {
       it('scrolls to column when highlighted', async () => {
-        const defaultStore = createStore();
-        store = {
-          ...defaultStore,
+        const options = {
+          ...storeOptions,
           state: {
-            ...defaultStore.state,
+            ...storeOptions.state(),
             highlightedLists: [mockList.id],
           },
         };
-
+        store = createStore(options);
         createComponent();
 
         await nextTick();
@@ -250,13 +249,7 @@ describe('IssuesLaneList', () => {
 
   describe('max issue count warning', () => {
     beforeEach(() => {
-      const defaultStore = createStore();
-      store = {
-        ...defaultStore,
-        state: {
-          ...defaultStore.state,
-        },
-      };
+      store = createStore();
     });
 
     describe('when issue count exceeds max issue count', () => {
