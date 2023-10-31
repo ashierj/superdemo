@@ -58,7 +58,7 @@ export default {
       return [
         {
           role: 'SYSTEM',
-          content: 'Please, ask the bot to generate .gitlab-ci.yaml file for you',
+          content: 'Please, ask the bot to generate .gitlab-ci.yml file for you',
         },
       ];
     },
