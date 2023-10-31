@@ -12465,6 +12465,23 @@ CREATE SEQUENCE audit_events_streaming_headers_id_seq
 
 ALTER SEQUENCE audit_events_streaming_headers_id_seq OWNED BY audit_events_streaming_headers.id;
 
+CREATE TABLE audit_events_streaming_http_group_namespace_filters (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    external_audit_event_destination_id bigint NOT NULL,
+    namespace_id bigint NOT NULL
+);
+
+CREATE SEQUENCE audit_events_streaming_http_group_namespace_filters_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE audit_events_streaming_http_group_namespace_filters_id_seq OWNED BY audit_events_streaming_http_group_namespace_filters.id;
+
 CREATE TABLE audit_events_streaming_instance_event_type_filters (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -26042,6 +26059,8 @@ ALTER TABLE ONLY audit_events_streaming_event_type_filters ALTER COLUMN id SET D
 
 ALTER TABLE ONLY audit_events_streaming_headers ALTER COLUMN id SET DEFAULT nextval('audit_events_streaming_headers_id_seq'::regclass);
 
+ALTER TABLE ONLY audit_events_streaming_http_group_namespace_filters ALTER COLUMN id SET DEFAULT nextval('audit_events_streaming_http_group_namespace_filters_id_seq'::regclass);
+
 ALTER TABLE ONLY audit_events_streaming_instance_event_type_filters ALTER COLUMN id SET DEFAULT nextval('audit_events_streaming_instance_event_type_filters_id_seq'::regclass);
 
 ALTER TABLE ONLY authentication_events ALTER COLUMN id SET DEFAULT nextval('authentication_events_id_seq'::regclass);
@@ -27880,6 +27899,9 @@ ALTER TABLE ONLY audit_events_streaming_event_type_filters
 
 ALTER TABLE ONLY audit_events_streaming_headers
     ADD CONSTRAINT audit_events_streaming_headers_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY audit_events_streaming_http_group_namespace_filters
+    ADD CONSTRAINT audit_events_streaming_http_group_namespace_filters_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY audit_events_streaming_instance_event_type_filters
     ADD CONSTRAINT audit_events_streaming_instance_event_type_filters_pkey PRIMARY KEY (id);
@@ -35076,6 +35098,10 @@ CREATE UNIQUE INDEX unique_amazon_s3_configurations_namespace_id_and_name ON aud
 
 CREATE UNIQUE INDEX unique_any_approver_merge_request_rule_type_post_merge ON approval_merge_request_rules USING btree (merge_request_id, rule_type, applicable_post_merge) WHERE (rule_type = 4);
 
+CREATE UNIQUE INDEX unique_audit_events_group_namespace_filters_destination_id ON audit_events_streaming_http_group_namespace_filters USING btree (external_audit_event_destination_id);
+
+CREATE UNIQUE INDEX unique_audit_events_group_namespace_filters_namespace_id ON audit_events_streaming_http_group_namespace_filters USING btree (namespace_id);
+
 CREATE UNIQUE INDEX unique_batched_background_migrations_queued_migration_version ON batched_background_migrations USING btree (queued_migration_version);
 
 CREATE UNIQUE INDEX unique_ci_builds_token_encrypted_and_partition_id ON ci_builds USING btree (token_encrypted, partition_id) WHERE (token_encrypted IS NOT NULL);
@@ -38136,6 +38162,9 @@ ALTER TABLE ONLY security_orchestration_policy_rule_schedules
 ALTER TABLE ONLY incident_management_escalation_rules
     ADD CONSTRAINT fk_rails_17dbea07a6 FOREIGN KEY (policy_id) REFERENCES incident_management_escalation_policies(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY audit_events_streaming_http_group_namespace_filters
+    ADD CONSTRAINT fk_rails_17f19c81df FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY cluster_providers_aws
     ADD CONSTRAINT fk_rails_18983d9ea4 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
 
@@ -38786,6 +38815,9 @@ ALTER TABLE ONLY dast_site_profiles
 
 ALTER TABLE ONLY merge_request_context_commit_diff_files
     ADD CONSTRAINT fk_rails_74a00a1787 FOREIGN KEY (merge_request_context_commit_id) REFERENCES merge_request_context_commits(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY audit_events_streaming_http_group_namespace_filters
+    ADD CONSTRAINT fk_rails_74a28d2432 FOREIGN KEY (external_audit_event_destination_id) REFERENCES audit_events_external_audit_event_destinations(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY group_crm_settings
     ADD CONSTRAINT fk_rails_74fdf2f13d FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
