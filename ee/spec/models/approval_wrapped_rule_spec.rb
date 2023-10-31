@@ -206,6 +206,45 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#scan_result_policies' do
+    let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: merge_request.project) }
+    let(:scan_finding_approval_rule) do
+      create(:approval_merge_request_rule,
+        report_type: :scan_finding,
+        merge_request: merge_request,
+        scan_result_policy_read: create(:scan_result_policy_read),
+        orchestration_policy_idx: 0,
+        security_orchestration_policy_configuration: policy_configuration
+      )
+    end
+
+    let(:license_scanning_approval_rule) do
+      create(:approval_merge_request_rule,
+        report_type: :license_scanning,
+        merge_request: merge_request,
+        scan_result_policy_read: create(:scan_result_policy_read),
+        orchestration_policy_idx: 1,
+        security_orchestration_policy_configuration: policy_configuration
+      )
+    end
+
+    let(:code_coverage_approval_rule) do
+      create(:approval_merge_request_rule, report_type: :code_coverage, merge_request: merge_request)
+    end
+
+    subject { described_class.new(merge_request, scan_finding_approval_rule).scan_result_policies }
+
+    it 'returns approval rules matching index' do
+      rules = subject
+      rule = rules.first
+
+      expect(rules.size).to eq(1)
+      expect(rule.report_type).to eq('scan_finding')
+      expect(rule.name).to eq(scan_finding_approval_rule.name)
+      expect(rule.approvals_required).to eq(scan_finding_approval_rule.approvals_required)
+    end
+  end
+
   describe '#approved_approvers' do
     context 'when some approvers has made the approvals' do
       before do

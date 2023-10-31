@@ -97,5 +97,11 @@ module Types
           method: :allow_merge_when_invalid?,
           null: true,
           description: 'Indicates if the rule can be ignored if it is invalid.'
+
+    field :scan_result_policies,
+          type: [Types::SecurityOrchestration::ApprovalScanResultPolicyType],
+          method: :scan_result_policies,
+          null: true,
+          description: 'List of scan result policies associated with the rule.'
   end
 end
