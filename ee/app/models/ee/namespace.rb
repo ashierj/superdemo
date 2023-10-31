@@ -145,6 +145,9 @@ module EE
       # Changing the plan or other details may invalidate this cache
       before_save :clear_feature_available_cache
 
+      attr_accessor :skip_sync_with_customers_dot
+
+      before_update :mark_skip_sync_with_customers_dot, if: -> { name_changed? && !project_namespace? }
       after_commit :sync_name_with_customers_dot, on: :update, if: -> { name_previously_changed? && !project_namespace? }
 
       def temporary_storage_increase_enabled?
@@ -581,7 +584,12 @@ module EE
       clear_memoization(:licensed_feature_available)
     end
 
+    def mark_skip_sync_with_customers_dot
+      self.skip_sync_with_customers_dot = update_within_same_minute?
+    end
+
     def sync_name_with_customers_dot
+      return if skip_sync_with_customers_dot
       return unless ::Gitlab.com?
       return if user_namespace? && owner.privatized_by_abuse_automation?
       return unless root? && (trial? || actual_plan&.paid?)
@@ -658,6 +666,14 @@ module EE
       else
         plan
       end
+    end
+
+    def update_within_same_minute?
+      time_format = '%d/%m/%Y %H:%M'
+      minute_time_was = updated_at_was.strftime(time_format)
+      minute_time_is = updated_at.strftime(time_format)
+
+      minute_time_was == minute_time_is
     end
   end
 end
