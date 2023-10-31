@@ -80,13 +80,17 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
   end
 
   describe '.for_all_branches' do
-    it 'returns approval rules without protected branches' do
+    it 'returns approval rules applied to no protected branches' do
       project = create(:project)
-      rule_without_branches = create(:approval_project_rule, project: project)
-      rule = create(:approval_project_rule, project: project)
-      create(:protected_branch, project: project, approval_project_rules: [rule])
 
-      expect(described_class.for_all_branches).to eq([rule_without_branches])
+      create(:approval_project_rule, project: project, applies_to_all_protected_branches: true)
+      create(:protected_branch, project: project, approval_project_rules: [
+        create(:approval_project_rule, project: project)
+      ])
+
+      rule_for_all_branches = create(:approval_project_rule, project: project)
+
+      expect(described_class.for_all_branches).to eq([rule_for_all_branches])
     end
   end
 
