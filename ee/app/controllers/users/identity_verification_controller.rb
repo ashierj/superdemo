@@ -173,7 +173,6 @@ module Users
 
       return if @user.present?
 
-      log_verification_user_not_found
       redirect_to root_path
     end
 
@@ -221,18 +220,6 @@ module Users
         referer: request.referer
       )
       ::Gitlab::Tracking.event(category, event.to_s, property: reason.to_s, user: user)
-    end
-
-    def log_verification_user_not_found
-      reason = ["signed_in: #{user_signed_in?}"]
-      reason << "verification_user_id: #{session[:verification_user_id]}" if session[:verification_user_id].present?
-
-      if user_signed_in?
-        reason << "state: #{current_user.identity_verification_state}"
-        reason << "verified: #{current_user.identity_verified?}"
-      end
-
-      log_event(:error, :verification_user_not_found, reason.join(', '))
     end
 
     def verify_token
