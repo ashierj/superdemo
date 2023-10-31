@@ -90,6 +90,29 @@ They can be hard-coded in your `.gitlab-ci.yml` file, project settings, or dynam
 
 A [CI/CD component](components/index.md) is a reusable single pipeline configuration unit. Use them to compose an entire pipeline configuration or a small part of a larger pipeline.
 
+## Disable GitLab CI/CD in a project
+
+GitLab CI/CD is enabled by default on all new projects. If you use an external CI/CD server like
+Jenkins or Drone CI, you can disable GitLab CI/CD to avoid conflicts with the commits status API.
+
+You can disable GitLab CI/CD per project or [for all new projects on an instance](../administration/cicd.md).
+
+When you disable GitLab CI/CD:
+
+- The **CI/CD** item in the left sidebar is removed.
+- The `/pipelines` and `/jobs` pages are no longer available.
+- Existing jobs and pipelines are hidden, not removed.
+
+To disable GitLab CI/CD in your project:
+
+1. On the left sidebar, select **Search or go to** and find your project.
+1. Select **Settings > General**.
+1. Expand **Visibility, project features, permissions**.
+1. In the **Repository** section, turn off **CI/CD**.
+1. Select **Save changes**.
+
+These changes do not apply to projects in an [external integration](../user/project/integrations/index.md#available-integrations).
+
 ## Videos
 
 - <i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [GitLab CI/CD demo](https://www.youtube-nocookie.com/embed/ljth1Q5oJoo).
