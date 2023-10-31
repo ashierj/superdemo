@@ -19,13 +19,35 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
     it { is_expected.to validate_presence_of(:add_on) }
     it { is_expected.to validate_presence_of(:expires_on) }
 
-    context 'when validating namespace presence' do
+    context 'when validating namespace' do
       context 'when on .com', :saas do
         before do
           stub_ee_application_setting(should_check_namespace_plan: true)
         end
 
-        it { is_expected.to validate_presence_of(:namespace) }
+        using RSpec::Parameterized::TableSyntax
+
+        let_it_be(:group_namespace) { create(:group) }
+        let_it_be(:sub_group_namespace) { create(:group, parent: group_namespace) }
+        let_it_be(:project_namespace) { create(:project_namespace) }
+        let_it_be(:user_namespace) { create(:user_namespace) }
+
+        where(:namespace, :result) do
+          ref(:group_namespace)     | true
+          ref(:sub_group_namespace) | false
+          ref(:project_namespace)   | false
+          ref(:user_namespace)      | false
+          nil                       | false
+        end
+
+        with_them do
+          it 'validates the namespace correctly' do
+            record = build(:gitlab_subscription_add_on_purchase, namespace: namespace)
+
+            expect(record.valid?).to eq(result)
+            expect(record.errors.of_kind?(:namespace, :invalid)).to eq(!result)
+          end
+        end
       end
 
       context 'when not on .com' do
@@ -317,14 +339,6 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
     context 'when add_on_purchase does not have namespace' do
       before do
         add_on_purchase.update!(namespace: nil)
-      end
-
-      it { is_expected.to eq(0) }
-    end
-
-    context 'when add_on_purchase does not have group namespace' do
-      before do
-        add_on_purchase.update!(namespace: create(:user_namespace))
       end
 
       it { is_expected.to eq(0) }

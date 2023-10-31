@@ -153,22 +153,20 @@ describe('ComplianceFrameworksReport component', () => {
     it('passes results to the table', () => {
       const projectsTable = findProjectsTable();
       expect(projectsTable.props('projects')).toHaveLength(1);
-      expect(projectsTable.props('projects')[0]).toMatchObject(
-        expect.objectContaining({
-          fullPath: 'gitlab-org/gitlab-shell',
-          id: 'gid://gitlab/Project/0',
-          name: 'Gitlab Shell',
-          complianceFrameworks: [
-            expect.objectContaining({
-              color: '#3cb371',
-              default: false,
-              description: 'this is a framework',
-              id: 'gid://gitlab/ComplianceManagement::Framework/1',
-              name: 'some framework',
-            }),
-          ],
-        }),
-      );
+      expect(projectsTable.props('projects')[0]).toMatchObject({
+        fullPath: 'gitlab-org/gitlab-shell',
+        id: 'gid://gitlab/Project/0',
+        name: 'Gitlab Shell',
+        complianceFrameworks: [
+          {
+            color: '#3cb371',
+            default: false,
+            description: 'this is a framework',
+            id: 'gid://gitlab/ComplianceManagement::Framework/0',
+            name: 'some framework',
+          },
+        ],
+      });
     });
 
     describe('when there is more than one page of projects', () => {

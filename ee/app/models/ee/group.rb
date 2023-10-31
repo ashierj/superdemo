@@ -82,6 +82,7 @@ module EE
       belongs_to :file_template_project, class_name: "Project"
 
       belongs_to :push_rule, inverse_of: :group
+      has_many :approval_rules, class_name: 'ApprovalRules::ApprovalGroupRule', inverse_of: :group
 
       delegate :deleting_user, :marked_for_deletion_on, to: :deletion_schedule, allow_nil: true
 
