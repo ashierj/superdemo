@@ -71,16 +71,6 @@ RSpec.describe Gitlab::Checks::ChangesAccess, feature_category: :source_code_man
             end.to raise_error(Gitlab::GitAccess::ForbiddenError,
               /File name #{file_path} was prohibited by the pattern/)
           end
-
-          context 'when feature flag "verify_push_rules_for_first_commit" is disabled' do
-            before do
-              stub_feature_flags(verify_push_rules_for_first_commit: false)
-            end
-
-            it 'does not raise an error' do
-              expect(subject.validate!).to be_truthy
-            end
-          end
         end
 
         context 'when file is permitted' do
