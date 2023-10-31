@@ -1,7 +1,11 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
+import { TYPENAME_MERGE_REQUEST } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import mergeRequestQueryVariablesMixin from '~/vue_merge_request_widget/mixins/merge_request_query_variables';
+import getStateSubscription from '~/vue_merge_request_widget/queries/get_state.subscription.graphql';
+import { DETAILED_MERGE_STATUS } from '~/vue_merge_request_widget/constants';
 import { STATUS_CLOSED, STATUS_MERGED } from '~/issues/constants';
 import { n__, sprintf } from '~/locale';
 import ReportSection from '~/ci/reports/components/report_section.vue';
@@ -11,6 +15,27 @@ import blockingMergeRequestsQuery from '../../queries/blocking_merge_requests.qu
 export default {
   name: 'BlockingMergeRequestsReport',
   apollo: {
+    $subscribe: {
+      state: {
+        query: getStateSubscription,
+        skip() {
+          return !this.mr?.id;
+        },
+        variables() {
+          return {
+            issuableId: convertToGraphQLId(TYPENAME_MERGE_REQUEST, this.mr?.id),
+          };
+        },
+        result({ data: { mergeRequestMergeStatusUpdated } }) {
+          if (
+            mergeRequestMergeStatusUpdated?.detailedMergeStatus ===
+            DETAILED_MERGE_STATUS.BLOCKED_STATUS
+          ) {
+            this.$apollo.queries.blockingMergeRequests.refetch();
+          }
+        },
+      },
+    },
     blockingMergeRequests: {
       query: blockingMergeRequestsQuery,
       variables() {
