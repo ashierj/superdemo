@@ -7,7 +7,7 @@ module GitlabSubscriptions
     has_many :assigned_users, class_name: 'GitlabSubscriptions::UserAddOnAssignment', inverse_of: :add_on_purchase
 
     validates :add_on, :expires_on, presence: true
-    validates :namespace, presence: true, if: :gitlab_com?
+    validate :valid_namespace, if: :gitlab_com?
     validates :subscription_add_on_id, uniqueness: { scope: :namespace_id }
     validates :quantity,
       presence: true,
@@ -53,7 +53,7 @@ module GitlabSubscriptions
     def delete_ineligible_user_assignments_in_batches!(batch_size: 50)
       deleted_assignments_count = 0
 
-      return deleted_assignments_count unless valid_namespace?
+      return deleted_assignments_count unless namespace.present?
 
       assigned_users.each_batch(of: batch_size) do |batch|
         ineligible_user_ids = batch.pluck_user_ids.to_set - eligible_user_ids_for_assignment
@@ -66,19 +66,18 @@ module GitlabSubscriptions
 
     private
 
-    # TODO: Refactor to only check 'namespace.present?', after 'group_namespace?' validation is added
-    # See: https://gitlab.com/gitlab-org/gitlab/-/issues/424085#solution
-    # The method is verbose to make above comment and intention clearer
-    def valid_namespace?
-      namespace.present? && namespace.group_namespace?
-    end
-
     def eligible_user_ids_for_assignment
       @eligible_user_ids ||= namespace.code_suggestions_eligible_user_ids
     end
 
     def gitlab_com?
       ::Gitlab::CurrentSettings.should_check_namespace_plan?
+    end
+
+    def valid_namespace
+      return if namespace.present? && namespace.root? && namespace.group_namespace?
+
+      errors.add(:namespace, :invalid)
     end
   end
 end
