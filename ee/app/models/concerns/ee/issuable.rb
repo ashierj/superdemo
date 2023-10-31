@@ -18,7 +18,7 @@ module EE
     end
 
     def weight_available?
-      supports_weight? && project&.feature_available?(:issue_weights)
+      supports_weight?
     end
 
     def sla_available?

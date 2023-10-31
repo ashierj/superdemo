@@ -198,6 +198,11 @@ module EE
       !work_item_type&.incident?
     end
 
+    override :weight_available?
+    def weight_available?
+      super && resource_parent&.licensed_feature_available?(:issue_weights)
+    end
+
     override :supports_iterations?
     def supports_iterations?
       !work_item_type&.incident?

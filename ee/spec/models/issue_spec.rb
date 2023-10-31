@@ -499,6 +499,62 @@ RSpec.describe Issue, feature_category: :team_planning do
     end
   end
 
+  describe '#weight_available?' do
+    subject { issue.weight_available? }
+
+    context 'when issue belongs to a project' do
+      let(:issue) { build_stubbed(:issue) }
+
+      context 'when weights feature is available' do
+        before do
+          stub_licensed_features(issue_weights: true)
+        end
+
+        it { is_expected.to be_truthy }
+
+        context 'when issue is of type incident' do
+          let(:issue) { build_stubbed(:issue, :incident) }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+
+      context 'when weights feature is not available' do
+        before do
+          stub_licensed_features(issue_weights: false)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context 'when issue belongs to a group' do
+      let(:issue) { build_stubbed(:issue, :group_level) }
+
+      context 'when weights feature is available' do
+        before do
+          stub_licensed_features(issue_weights: true)
+        end
+
+        it { is_expected.to be_truthy }
+
+        context 'when issue is of type incident' do
+          let(:issue) { build_stubbed(:issue, :group_level, :incident) }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+
+      context 'when weights feature is not available' do
+        before do
+          stub_licensed_features(issue_weights: false)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
+
   describe '.simple_sorts' do
     it 'includes weight with other base keys' do
       expect(described_class.simple_sorts.keys).to match_array(
