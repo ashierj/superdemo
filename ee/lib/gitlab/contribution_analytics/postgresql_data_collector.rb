@@ -12,7 +12,10 @@ module Gitlab
       end
 
       def totals_by_author_target_type_action
-        base_query.totals_by_author_target_type_action
+        ::Gitlab::Database.allow_cross_joins_across_databases(url:
+          "https://gitlab.com/gitlab-org/gitlab/-/issues/429805") do
+          base_query.totals_by_author_target_type_action
+        end
       end
 
       private
