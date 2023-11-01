@@ -16,7 +16,7 @@ class Admin::CredentialsController < Admin::ApplicationController
     label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',
     destinations: [:redis_hll, :snowplow]
 
-  feature_category :compliance_management
+  feature_category :user_management
 
   private
 
