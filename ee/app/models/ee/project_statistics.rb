@@ -8,6 +8,30 @@ module EE
       (storage_size * cost_factor).round
     end
 
+    def cost_factored_repository_size
+      (repository_size * cost_factor).round
+    end
+
+    def cost_factored_build_artifacts_size
+      (build_artifacts_size * cost_factor).round
+    end
+
+    def cost_factored_lfs_objects_size
+      (lfs_objects_size * cost_factor).round
+    end
+
+    def cost_factored_packages_size
+      (packages_size * cost_factor).round
+    end
+
+    def cost_factored_snippets_size
+      (snippets_size * cost_factor).round
+    end
+
+    def cost_factored_wiki_size
+      (wiki_size * cost_factor).round
+    end
+
     private
 
     def cost_factor

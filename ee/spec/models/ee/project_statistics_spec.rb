@@ -138,16 +138,57 @@ RSpec.describe ProjectStatistics do
         expect(statistics.reload.cost_factored_storage_size).to eq(31)
       end
     end
+  end
 
-    def create_fork(plan:, fork_visibility:, repository_size:)
-      group = create(:group_with_plan, plan: plan)
-      project_fork = create(:project, fork_visibility, group: group)
-      create(:fork_network_member, project: project_fork,
-        fork_network: fork_network, forked_from_project: project)
-      statistics = project_fork.statistics.reload
-      statistics.update!(repository_size: repository_size)
+  describe "cost factored attributes" do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:fork_network) { create(:fork_network, root_project: project) }
 
-      statistics
+    where(:attribute) do
+      %i[
+        repository_size build_artifacts_size lfs_objects_size
+        packages_size snippets_size wiki_size
+      ]
     end
+
+    with_them do
+      context 'in a saas environment', :saas do
+        before do
+          stub_ee_application_setting(check_namespace_plan: true)
+          stub_ee_application_setting(namespace_storage_forks_cost_factor: 0.1)
+        end
+
+        it 'returns the cost factored attribute' do
+          statistics = create_fork(plan: :free_plan, fork_visibility: :public, attribute => 100)
+
+          expect(statistics.reload.public_send(:"cost_factored_#{attribute}")).to eq(10)
+        end
+
+        it 'rounds the size' do
+          statistics = create_fork(plan: :free_plan, fork_visibility: :public, attribute => 58)
+
+          expect(statistics.reload.public_send(:"cost_factored_#{attribute}")).to eq(6)
+        end
+      end
+
+      context 'in a self-managed environment' do
+        it 'returns the attribute size' do
+          statistics = create_fork(plan: :none, fork_visibility: :public, attribute => 37)
+
+          expect(statistics.reload.public_send(:"cost_factored_#{attribute}")).to eq(37)
+        end
+      end
+    end
+  end
+
+  def create_fork(plan:, fork_visibility:, **attributes)
+    group = plan == :none ? create(:group) : create(:group_with_plan, plan: plan)
+    project_fork = create(:project, fork_visibility, group: group)
+    create(:fork_network_member, project: project_fork,
+      fork_network: fork_network, forked_from_project: project)
+    statistics = project_fork.statistics.reload
+    statistics.update!(attributes)
+
+    statistics
   end
 end
