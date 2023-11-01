@@ -119,7 +119,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
 
     context 'when openai experimentation is unavailable' do
       before do
-        stub_feature_flags(openai_experimentation: false)
+        stub_feature_flags(ai_global_switch: false)
       end
 
       it 'returns bad request' do

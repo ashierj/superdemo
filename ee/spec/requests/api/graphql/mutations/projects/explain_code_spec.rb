@@ -72,9 +72,9 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
     end
   end
 
-  context 'when openai_experimentation feature flag is disabled' do
+  context 'when ai_global_switch feature flag is disabled' do
     before do
-      stub_feature_flags(openai_experimentation: false)
+      stub_feature_flags(ai_global_switch: false)
     end
 
     it 'returns nil' do
@@ -82,7 +82,7 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
 
       post_graphql_mutation(mutation, current_user: current_user)
 
-      expect(fresh_response_data['errors'][0]['message']).to eq("`openai_experimentation` feature flag is disabled.")
+      expect(fresh_response_data['errors'][0]['message']).to eq("`ai_global_switch` feature flag is disabled.")
     end
   end
 end

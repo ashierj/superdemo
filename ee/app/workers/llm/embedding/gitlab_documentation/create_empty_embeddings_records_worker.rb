@@ -17,7 +17,7 @@ module Llm
 
         def perform
           return unless Gitlab::Saas.feature_available?(FEATURE_NAME)
-          return unless Feature.enabled?(:openai_experimentation) || Feature.enabled?(:ai_global_switch, type: :ops)
+          return unless ::Feature.enabled?(:ai_global_switch, type: :ops)
           return unless ::License.feature_available?(:ai_chat) # license check
 
           embeddings_sources = extract_embedding_sources

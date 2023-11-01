@@ -37,7 +37,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
       context 'without the general feature flag enabled' do
         before do
-          stub_feature_flags(openai_experimentation: false)
+          stub_feature_flags(ai_global_switch: false)
         end
 
         it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }

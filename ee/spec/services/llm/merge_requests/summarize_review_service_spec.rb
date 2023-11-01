@@ -36,9 +36,9 @@ RSpec.describe Llm::MergeRequests::SummarizeReviewService, :saas, feature_catego
         it_behaves_like "returns an error"
       end
 
-      context "when :openai_experimentation is disabled" do
+      context "when :ai_global_switch is disabled" do
         before do
-          stub_feature_flags(openai_experimentation: false)
+          stub_feature_flags(ai_global_switch: false)
         end
 
         it_behaves_like "returns an error"

@@ -277,7 +277,7 @@ module EE
 
       with_scope :subject
       condition(:ai_features_enabled) do
-        ::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)
+        ::Feature.enabled?(:ai_global_switch, type: :ops)
       end
 
       with_scope :subject
@@ -289,7 +289,7 @@ module EE
 
       with_scope :subject
       condition(:generate_description_enabled) do
-        (::Feature.enabled?(:openai_experimentation) || ::Feature.enabled?(:ai_global_switch, type: :ops)) &&
+        ::Feature.enabled?(:ai_global_switch, type: :ops) &&
           subject.group&.licensed_feature_available?(:generate_description) &&
           ::Gitlab::Llm::StageCheck.available?(subject, :generate_description)
       end

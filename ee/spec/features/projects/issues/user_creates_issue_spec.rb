@@ -29,7 +29,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
   context "when user can use AI to generate description" do
     before do
       stub_licensed_features(generate_description: true)
-      stub_feature_flags(openai_experimentation: true)
+      stub_feature_flags(ai_global_switch: true)
       project.group.root_ancestor.namespace_settings.update_attribute(:experiment_features_enabled, true)
 
       sign_in(user)
@@ -45,7 +45,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
   context 'when user cannot use AI to generate description' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:generate_description, :openai_experimentation, :experiment_features_enabled) do
+    where(:generate_description, :ai_global_switch, :experiment_features_enabled) do
       true  | false | false
       true  | true  | false
       true  | false | true
@@ -58,7 +58,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
     with_them do
       before do
         stub_licensed_features(generate_description: generate_description)
-        stub_feature_flags(openai_experimentation: openai_experimentation)
+        stub_feature_flags(ai_global_switch: ai_global_switch)
         project.group.root_ancestor.namespace_settings.update_attribute(:experiment_features_enabled,
           experiment_features_enabled)
 

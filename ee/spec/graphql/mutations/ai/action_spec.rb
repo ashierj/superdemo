@@ -106,7 +106,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
 
         context 'when feature flag is disabled' do
           before do
-            stub_feature_flags(openai_experimentation: false)
+            stub_feature_flags(ai_global_switch: false)
           end
 
           it 'raises error' do

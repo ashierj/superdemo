@@ -24,9 +24,9 @@ RSpec.describe Llm::TanukiBotService, :saas, feature_category: :global_search do
 
     it_behaves_like 'schedules completion worker'
 
-    context 'when openai_experimentation feature flag is disabled' do
+    context 'when ai_global_switch feature flag is disabled' do
       before do
-        stub_feature_flags(openai_experimentation: false)
+        stub_feature_flags(ai_global_switch: false)
       end
 
       it 'returns an error' do

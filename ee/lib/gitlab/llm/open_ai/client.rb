@@ -79,8 +79,7 @@ module Gitlab
         end
 
         def enabled?
-          access_token.present? &&
-            (Feature.enabled?(:openai_experimentation, user) || Feature.enabled?(:ai_global_switch, type: :ops))
+          access_token.present? && Feature.enabled?(:ai_global_switch, type: :ops)
         end
 
         def access_token

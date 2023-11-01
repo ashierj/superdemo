@@ -21,8 +21,8 @@ module Llm
         response_modifier.new(response).response_body.presence
       end
 
-      def self.enabled?(user:, group:)
-        (Feature.enabled?(:openai_experimentation, user) || Feature.enabled?(:ai_global_switch, type: :ops)) &&
+      def self.enabled?(user:, group:) # rubocop:disable Lint/UnusedMethodArgument
+        ::Feature.enabled?(:ai_global_switch, type: :ops) &&
           Gitlab::Llm::StageCheck.available?(group, :summarize_diff) &&
           ::License.feature_available?(:summarize_mr_changes)
       end

@@ -17,7 +17,7 @@ RSpec.describe Llm::AnalyzeCiJobFailureService, feature_category: :continuous_in
     shared_context 'with prerequisites' do
       before do
         stub_feature_flags(ai_build_failure_cause: flags_enabled)
-        stub_feature_flags(openai_experimentation: flags_enabled)
+        stub_feature_flags(ai_global_switch: flags_enabled)
         stub_licensed_features(ai_analyze_ci_job_failure: licensed_feature_avalible)
 
         if has_permission

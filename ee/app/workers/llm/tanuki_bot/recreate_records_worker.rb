@@ -19,7 +19,7 @@ module Llm
       FILES_PER_MINUTE = 20
 
       def perform
-        return unless Feature.enabled?(:openai_experimentation)
+        return unless ::Feature.enabled?(:ai_global_switch, type: :ops)
         return unless ::License.feature_available?(:ai_tanuki_bot)
 
         in_lock("#{self.class.name.underscore}/version/#{version}", ttl: 10.minutes, sleep_sec: 1) do

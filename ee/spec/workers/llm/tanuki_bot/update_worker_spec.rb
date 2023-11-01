@@ -34,13 +34,13 @@ RSpec.describe Llm::TanukiBot::UpdateWorker, feature_category: :ai_abstraction_l
     end
 
     describe 'checks' do
-      where(:openai_experimentation_enabled) do
+      where(:ai_global_switch_enabled) do
         [[false], [true]]
       end
 
       with_them do
         before do
-          stub_feature_flags(openai_experimentation: openai_experimentation_enabled)
+          stub_feature_flags(ai_global_switch: ai_global_switch_enabled)
           allow(License).to receive(:feature_available?).with(:ai_tanuki_bot).and_return(false)
         end
 

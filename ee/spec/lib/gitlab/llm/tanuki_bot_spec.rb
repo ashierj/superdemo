@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     subject(:execute) { instance.execute }
 
     describe 'enabled_for?' do
-      describe 'when :openai_experimentation is true' do
+      describe 'when :ai_global_switch is true' do
         where(:feature_available, :ai_feature_enabled, :result) do
           [
             [false, false, false],
@@ -52,12 +52,12 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         end
       end
 
-      describe 'when openai_experimentation is false' do
+      describe 'when ai_global_switch is false' do
         before do
           allow(License).to receive(:feature_available?).and_return(true)
           allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
 
-          stub_feature_flags(openai_experimentation: false)
+          stub_feature_flags(ai_global_switch: false)
         end
 
         it 'returns false' do
@@ -208,9 +208,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           end
         end
 
-        context 'when openai_experimentation FF is disabled' do
+        context 'when ai_global_switch FF is disabled' do
           before do
-            stub_feature_flags(openai_experimentation: false)
+            stub_feature_flags(ai_global_switch: false)
           end
 
           it 'returns an empty response message' do

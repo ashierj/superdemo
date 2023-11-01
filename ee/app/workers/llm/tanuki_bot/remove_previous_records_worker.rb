@@ -17,7 +17,7 @@ module Llm
       TIME_LIMIT = 3.minutes
 
       def perform
-        return unless Feature.enabled?(:openai_experimentation)
+        return unless ::Feature.enabled?(:ai_global_switch, type: :ops)
         return unless ::License.feature_available?(:ai_tanuki_bot)
 
         ::Embedding::TanukiBotMvc.previous.limit(BATCH_SIZE).delete_all
