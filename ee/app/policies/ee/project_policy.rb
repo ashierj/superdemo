@@ -430,9 +430,9 @@ module EE
       end
 
       # If licensed and reporter+, allow access
-      rule { reporter & licensed_cycle_analytics_available }.policy do
+      rule { (reporter | admin) & licensed_cycle_analytics_available }.policy do
         enable :read_cycle_analytics
-        enable :modify_value_stream
+        enable :admin_value_stream
       end
 
       rule { can?(:read_merge_request) & can?(:read_pipeline) }.enable :read_merge_train

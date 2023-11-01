@@ -80,7 +80,7 @@ module EE
         def authorize_modification
           subject = ::Gitlab::Analytics::CycleAnalytics.subject_for_access_check(namespace)
 
-          render_404 unless can?(current_user, :modify_value_stream, subject)
+          render_404 unless can?(current_user, :admin_value_stream, subject)
         end
 
         def create_params

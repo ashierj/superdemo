@@ -14,12 +14,16 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   subject { described_class.new(current_user, project) }
 
   before do
-    stub_licensed_features(license_scanning: true, quality_management: true)
+    stub_licensed_features(
+      license_scanning: true,
+      quality_management: true,
+      cycle_analytics_for_projects: true
+    )
   end
 
   context 'basic permissions' do
     let(:additional_reporter_permissions) do
-      %i[read_software_license_policy]
+      %i[read_software_license_policy admin_value_stream]
     end
 
     let(:additional_developer_permissions) do

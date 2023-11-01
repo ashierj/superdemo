@@ -334,8 +334,8 @@ module EE
         enable :read_group_analytics_dashboards
       end
 
-      rule { reporter & cycle_analytics_available }.policy do
-        enable :read_cycle_analytics, :create_group_stage, :read_group_stage, :update_group_stage, :delete_group_stage, :modify_value_stream
+      rule { (reporter | admin) & cycle_analytics_available }.policy do
+        enable :read_cycle_analytics, :create_group_stage, :read_group_stage, :update_group_stage, :delete_group_stage, :admin_value_stream
       end
 
       rule { reporter & group_ci_cd_analytics_available }.policy do
