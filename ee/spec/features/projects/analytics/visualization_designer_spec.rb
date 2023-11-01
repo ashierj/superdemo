@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :product_analytics_visualization do
-  let_it_be(:current_user) { create(:user, :no_super_sidebar) }
+  let_it_be(:current_user) { create(:user) }
   let_it_be(:user) { current_user }
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:meta_response_with_data) { fixture_file('cube_js/meta_with_data.json', dir: 'ee') }
@@ -119,7 +119,9 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
 
             context 'with the code tab selected' do
               before do
-                click_button 'Code'
+                within_testid 'query-builder' do
+                  click_button 'Code'
+                end
               end
 
               it 'shows the visualization code' do

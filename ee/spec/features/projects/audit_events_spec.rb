@@ -6,8 +6,8 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
   include Features::MembersHelpers
   include ListboxHelpers
 
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
-  let_it_be(:pete) { create(:user, :no_super_sidebar, name: 'Pete') }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:pete) { create(:user, name: 'Pete') }
   let_it_be_with_reload(:project) { create(:project, :repository, namespace: user.namespace) }
 
   before do
@@ -124,8 +124,8 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
         select_from_listbox 'Maintainer', from: 'Developer'
       end
 
-      page.within('.sidebar-top-level-items') do
-        find(:link, text: 'Security and Compliance').click
+      within_testid('super-sidebar') do
+        click_button 'Secure'
         click_link 'Audit events'
       end
 
@@ -154,11 +154,8 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
 
       wait_for_all_requests
 
-      page.within('.sidebar-top-level-items') do
-        click_link 'Security and Compliance'
-
-        wait_for_all_requests
-
+      within_testid('super-sidebar') do
+        click_button 'Secure'
         click_link 'Audit events'
       end
 
