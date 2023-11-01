@@ -8,12 +8,14 @@ import {
 
 import getGroupCurrentAndPrevProductAnalyticsUsageQuery from '../../graphql/queries/get_group_current_and_prev_product_analytics_usage.query.graphql';
 import { mapProjectsUsageResponse } from '../../graphql/utils';
+import ProductAnalyticsProjectsUsageChart from './product_analytics_projects_usage_chart.vue';
 import ProductAnalyticsProjectsUsageTable from './product_analytics_projects_usage_table.vue';
 
 export default {
   name: 'ProductAnalyticsProjectsUsage',
   components: {
     GlAlert,
+    ProductAnalyticsProjectsUsageChart,
     ProductAnalyticsProjectsUsageTable,
   },
   inject: {
@@ -70,10 +72,15 @@ export default {
         )
       }}
     </gl-alert>
-    <product-analytics-projects-usage-table
-      v-else
-      :is-loading="isLoading"
-      :projects-usage-data="projectsUsageData"
-    />
+    <template v-else>
+      <product-analytics-projects-usage-chart
+        :is-loading="isLoading"
+        :projects-usage-data="projectsUsageData"
+      />
+      <product-analytics-projects-usage-table
+        :is-loading="isLoading"
+        :projects-usage-data="projectsUsageData"
+      />
+    </template>
   </section>
 </template>
