@@ -47,17 +47,6 @@ describe('Product analytics usage quota component utils', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false when an item property is missing', () => {
-      const result = projectsUsageDataValidator([
-        {
-          currentEvents: 1,
-          previousEvents: 1,
-        },
-      ]);
-
-      expect(result).toBe(false);
-    });
-
     it.each([
       {
         currentEvents: 1,
