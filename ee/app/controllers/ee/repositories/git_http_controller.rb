@@ -65,7 +65,10 @@ module EE
       def access_actor
         return super unless geo?
         return :geo unless geo_push_proxy_request?
-        return geo_push_user.user if geo_push_user&.user
+
+        # A deploy key access actor must be extracted before checking git access.
+        # This is necessary for proxied requests from secondary sites.
+        return geo_push_user.deploy_key || geo_push_user.user if geo_push_user&.user
 
         raise ::Gitlab::GitAccess::ForbiddenError, 'Geo push user is invalid.'
       end
@@ -77,7 +80,7 @@ module EE
         return render_bad_geo_jwt('Bad token') unless decoded_authorization
         return render_bad_geo_jwt('Unauthorized scope') unless jwt_scope_valid?
 
-        # grant access
+        # Grant access
         @authentication_result = ::Gitlab::Auth::Result.new(nil, project, :geo, [:download_code, :push_code]) # rubocop:disable Gitlab/ModuleWithInstanceVariables
       rescue ::Gitlab::Geo::InvalidDecryptionKeyError
         render_bad_geo_jwt("Invalid decryption key")

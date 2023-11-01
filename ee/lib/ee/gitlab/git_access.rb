@@ -205,7 +205,8 @@ module EE
 
       def containing_group
         return group if group?
-        return project.group if project?
+
+        project.group if project?
       end
     end
   end

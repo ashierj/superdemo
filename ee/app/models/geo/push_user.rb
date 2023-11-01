@@ -11,6 +11,10 @@ class Geo::PushUser
     @user ||= identify_using_ssh_key(gl_id)
   end
 
+  def deploy_key
+    @deploy_key ||= identify_using_deploy_key(gl_id)
+  end
+
   private
 
   attr_reader :gl_id
