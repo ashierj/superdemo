@@ -121,6 +121,10 @@ module EE
           resolver: ::Resolvers::MemberRoles::PermissionListResolver,
           null: true,
           description: 'List of all customizable permissions.'
+        field :member_role, ::Types::MemberRoles::MemberRoleType,
+          null: true, description: 'Finds a single custom role.',
+          resolver: ::Resolvers::MemberRoles::RolesResolver.single,
+          alpha: { milestone: '16.6' }
       end
 
       def vulnerability(id:)

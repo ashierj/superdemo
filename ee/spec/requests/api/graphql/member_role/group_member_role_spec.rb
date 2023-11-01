@@ -27,15 +27,20 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
   let_it_be(:group_member_role_1) { create(:member_role, namespace: root_group, read_code: true) }
   let_it_be(:group_member_role_2) { create(:member_role, namespace: root_group, read_vulnerability: true) }
   let_it_be(:group_2_member_role) { create(:member_role) }
+  let_it_be(:user) { create(:user) }
 
   subject do
     graphql_data.dig('group', 'memberRoles', 'nodes')
   end
 
+  before_all do
+    root_group.add_owner(user)
+  end
+
   shared_examples 'returns member roles' do
     it_behaves_like 'a working graphql query'
 
-    it 'returns all customizable ablities' do
+    it 'returns all member roles' do
       subject
 
       expected_result = [
@@ -54,7 +59,7 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
 
     context 'for a root group' do
       before do
-        post_graphql(member_roles_query(root_group))
+        post_graphql(member_roles_query(root_group), current_user: user)
       end
 
       it_behaves_like 'returns member roles'
@@ -62,7 +67,7 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
 
     context 'for subgroup' do
       before do
-        post_graphql(member_roles_query(sub_group))
+        post_graphql(member_roles_query(sub_group), current_user: user)
       end
 
       it_behaves_like 'returns member roles'
@@ -73,7 +78,7 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
     before do
       stub_licensed_features(custom_roles: false)
 
-      post_graphql(member_roles_query(root_group))
+      post_graphql(member_roles_query(root_group), current_user: user)
     end
 
     it 'does not return any member roles' do
