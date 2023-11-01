@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Issues sub nav EE', feature_category: :team_planning do
-  let(:user) { create(:user, :no_super_sidebar) }
+RSpec.describe 'Issues sub nav EE', :js, feature_category: :team_planning do
+  let(:user) { create(:user) }
   let(:project) { create(:project) }
 
   before do
@@ -13,7 +13,10 @@ RSpec.describe 'Issues sub nav EE', feature_category: :team_planning do
     visit project_issues_path(project)
   end
 
-  it 'has a `Boards` item' do
-    expect(find('.nav-sidebar')).to have_content 'Boards'
+  it 'has a `Issue boards` item' do
+    within_testid 'super-sidebar' do
+      click_button 'Plan'
+      expect(page).to have_link 'Issue boards'
+    end
   end
 end
