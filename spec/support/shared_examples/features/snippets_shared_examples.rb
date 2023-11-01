@@ -52,24 +52,24 @@ RSpec.shared_examples 'tabs with counts' do
 end
 
 RSpec.shared_examples 'does not show New Snippet button' do
-  let(:user) { create(:user, :external, :no_super_sidebar) }
-
   specify do
-    sign_in(user)
-
     subject
 
-    wait_for_requests
-
+    expect(page).to have_link(text: "$#{snippet.id}")
     expect(page).not_to have_link('New snippet')
   end
 end
 
-RSpec.shared_examples 'show and render proper snippet blob' do
-  before do
-    allow_any_instance_of(Snippet).to receive(:blobs).and_return([snippet.repository.blob_at('master', file_path)])
-  end
+RSpec.shared_examples 'does show New Snippet button' do
+  specify do
+    subject
 
+    expect(page).to have_link(text: "$#{snippet.id}")
+    expect(page).to have_link('New snippet')
+  end
+end
+
+RSpec.shared_examples 'show and render proper snippet blob' do
   context 'Ruby file' do
     let(:file_path) { 'files/ruby/popen.rb' }
 
