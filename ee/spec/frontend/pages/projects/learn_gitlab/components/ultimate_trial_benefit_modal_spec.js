@@ -56,7 +56,9 @@ describe('Ultimate Trial Benefit Modal', () => {
       unmockTracking();
     });
 
-    it('should track the render_modal event on mount', () => {
+    it('should track the render_modal event on show', () => {
+      wrapper.findComponent(GlModal).vm.$emit('shown');
+
       expect(trackingSpy).toHaveBeenCalledWith(ULTIMATE_TRIAL_BENEFIT_MODAL, 'render_modal', {
         category,
       });
@@ -66,7 +68,7 @@ describe('Ultimate Trial Benefit Modal', () => {
       wrapper.findComponent(GlButton).vm.$emit('click');
 
       expect(hideMock).toHaveBeenCalled();
-      expect(trackingSpy.mock.calls[1]).toEqual([
+      expect(trackingSpy.mock.calls[0]).toEqual([
         ULTIMATE_TRIAL_BENEFIT_MODAL,
         'click_link',
         { category, label: 'start_learning_gitlab' },
@@ -76,7 +78,7 @@ describe('Ultimate Trial Benefit Modal', () => {
     it('should track the click_x event when modal is closed', () => {
       wrapper.findComponent(GlModal).vm.$emit('close');
 
-      expect(trackingSpy.mock.calls[1]).toEqual([
+      expect(trackingSpy.mock.calls[0]).toEqual([
         ULTIMATE_TRIAL_BENEFIT_MODAL,
         'click_x',
         { category },

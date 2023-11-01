@@ -29,12 +29,12 @@ export default {
     ],
     bulletsLabel: s__('Trials|Trials benefits'),
   },
-  mounted() {
-    this.track('render_modal');
-  },
   methods: {
     show() {
       this.$refs.modal.show();
+    },
+    onShown() {
+      this.track('render_modal');
     },
     onConfirm() {
       this.$refs.modal.hide();
@@ -48,7 +48,13 @@ export default {
 </script>
 
 <template>
-  <gl-modal ref="modal" modal-id="ultimateTrialBenefitModal" size="sm" @close="onClose">
+  <gl-modal
+    ref="modal"
+    modal-id="ultimateTrialBenefitModal"
+    size="sm"
+    @shown="onShown"
+    @close="onClose"
+  >
     <template #modal-title>
       <h2 class="gl-font-size-h2 gl-mt-2">
         <gl-emoji data-name="tada" class="gl-mr-2" />
