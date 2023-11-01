@@ -8,5 +8,11 @@ FactoryBot.define do
     trait(:developer) { base_access_level { Gitlab::Access::DEVELOPER } }
     trait(:reporter) { base_access_level { Gitlab::Access::REPORTER } }
     trait(:guest) { base_access_level { Gitlab::Access::GUEST } }
+
+    trait :admin_vulnerability do
+      guest
+      admin_vulnerability { true }
+      read_vulnerability { true }
+    end
   end
 end
