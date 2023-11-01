@@ -148,4 +148,46 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
       end
     end
   end
+
+  describe 'Components' do
+    describe 'Geo' do
+      context 'when no Geo sites are configured' do
+        it 'does not render the number of sites' do
+          render
+
+          expect(rendered).not_to have_content "site"
+        end
+      end
+
+      context 'when 1 Geo site is configured' do
+        let_it_be(:site1) { create(:geo_node, :primary) }
+
+        it 'renders 1 site' do
+          render
+
+          expect(rendered).to have_content "1 site"
+        end
+
+        context 'when a 2nd Geo site is configured' do
+          let_it_be(:site2) { create(:geo_node, :secondary) }
+
+          it 'renders 2 sites' do
+            render
+
+            expect(rendered).to have_content "2 sites"
+          end
+
+          context 'when a 3rd Geo site is configured' do
+            let_it_be(:site3) { create(:geo_node, :secondary) }
+
+            it 'renders 3 sites' do
+              render
+
+              expect(rendered).to have_content "3 sites"
+            end
+          end
+        end
+      end
+    end
+  end
 end
