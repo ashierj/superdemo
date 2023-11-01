@@ -4,6 +4,7 @@ import ActivityFilter, {
   ITEMS,
   GROUPS,
   GROUPS_MR,
+  GROUPS_SOLUTION,
 } from 'ee/security_dashboard/components/shared/filters/activity_filter.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
@@ -29,6 +30,7 @@ describe('Activity Filter component', () => {
       provide: {
         glFeatures: {
           activityFilterHasMr: true,
+          activityFilterHasRemediations: true,
           ...glFeatures,
         },
       },
@@ -97,7 +99,7 @@ describe('Activity Filter component', () => {
   });
 
   it('passes GROUPS with MR to listbox items', () => {
-    expect(findListbox().props('items')).toEqual([...GROUPS, GROUPS_MR]);
+    expect(findListbox().props('items')).toEqual([...GROUPS, GROUPS_MR, GROUPS_SOLUTION]);
   });
 
   it('selects and unselects an item when clicked on', async () => {
@@ -141,6 +143,7 @@ describe('Activity Filter component', () => {
         hasIssues: undefined,
         hasResolution: undefined,
         hasMergeRequest: undefined,
+        hasRemediations: undefined,
       });
     });
 
@@ -168,10 +171,10 @@ describe('Activity Filter component', () => {
     );
   });
 
-  describe('when feature flag is disabled', () => {
+  describe('when feature flags are disabled', () => {
     beforeEach(() => {
       createWrapper({
-        glFeatures: { activityFilterHasMr: false },
+        glFeatures: { activityFilterHasMr: false, activityFilterHasRemediations: false },
       });
     });
 
