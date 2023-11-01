@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions do
-  describe '#quite_small?' do
+  describe '#small?' do
     subject { described_class.new(language, content_above_cursor, content_below_cursor) }
 
     let(:language) do
@@ -16,13 +16,13 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
     context 'when content above cursor is blank' do
       let(:content_above_cursor) { '' }
 
-      it { is_expected.to be_quite_small }
+      it { is_expected.to be_small }
     end
 
     context 'when content above cursor is nil' do
       let(:content_above_cursor) { nil }
 
-      it { is_expected.to be_quite_small }
+      it { is_expected.to be_small }
     end
 
     context 'when file content above cursor is less than 5 lines' do
@@ -35,7 +35,7 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
         CODE
       end
 
-      it { is_expected.to be_quite_small }
+      it { is_expected.to be_small }
 
       context 'when file content below cursor more than 5 lines' do
         let(:content_below_cursor) do
@@ -53,7 +53,7 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
           CODE
         end
 
-        it { is_expected.not_to be_quite_small }
+        it { is_expected.not_to be_small }
       end
 
       context 'when file content below is less than 5 lines' do
@@ -66,7 +66,7 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
           CODE
         end
 
-        it { is_expected.to be_quite_small }
+        it { is_expected.to be_small }
       end
     end
 
@@ -93,7 +93,7 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
         CODE
       end
 
-      it { is_expected.not_to be_quite_small }
+      it { is_expected.not_to be_small }
     end
   end
 end

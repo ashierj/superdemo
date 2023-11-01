@@ -71,7 +71,7 @@ module CodeSuggestions
         return instruction if instruction
       end
 
-      if file_content.quite_small?
+      if file_content.small?
         return <<~PROMPT
           Create more new code for this file. If the cursor is inside an empty function,
           generate its most likely contents based on the function name and signature.
