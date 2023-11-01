@@ -1,19 +1,12 @@
-const mergeAsObject = (existing = {}, incoming) => {
-  return {
-    ...existing,
-    ...incoming,
-  };
-};
-
 export default {
   typePolicies: {
     Project: {
       fields: {
         ciCdSettings: {
-          merge: mergeAsObject,
+          merge: true,
         },
         ciJobTokenScope: {
-          merge: mergeAsObject,
+          merge: true,
         },
       },
     },
