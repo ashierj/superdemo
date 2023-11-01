@@ -19,6 +19,10 @@ module API
         authorize!(:admin_epic_tree_relation, epic)
       end
 
+      def authorize_create_epic_tree_relation!
+        authorize!(:create_epic_tree_relation, epic)
+      end
+
       def authorize_can_admin_epic!
         authorize!(:admin_epic, epic)
       end

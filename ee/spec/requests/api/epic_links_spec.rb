@@ -121,11 +121,27 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
         stub_licensed_features(epics: true, subepics: true)
       end
 
-      context 'when user is not a member' do
-        it 'returns 403' do
+      context 'and group is public and user is not a member' do
+        it 'returns 201 status' do
+          group.add_guest(user)
+
           subject
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to match_response_schema('public_api/v4/epic', dir: 'ee')
+          expect(epic.reload.children).to include(child_epic)
+        end
+
+        context 'and `epic_relations_for_non_members` feature flag is disabled' do
+          before do
+            stub_feature_flags(epic_relations_for_non_members: false)
+          end
+
+          it 'returns 403' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
       end
 
@@ -326,11 +342,27 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
         stub_licensed_features(epics: true)
       end
 
-      context 'when user is not a member' do
-        it 'returns 403' do
+      context 'and group is public and user is not a member' do
+        it 'returns 201 status' do
+          group.add_guest(user)
+
           subject
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to match_response_schema('public_api/v4/epic', dir: 'ee')
+          expect(epic.reload.children).not_to include(child_epic)
+        end
+
+        context 'and `epic_relations_for_non_members` feature flag is disabled' do
+          before do
+            stub_feature_flags(epic_relations_for_non_members: false)
+          end
+
+          it 'returns 403' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
       end
 
