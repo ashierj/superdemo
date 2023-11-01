@@ -19,6 +19,11 @@ module Types
         required: true,
         validates: { allow_blank: false },
         description: 'Content of the message.'
+
+      argument :current_file, ::Types::Ai::CurrentFileInputType,
+        required: false,
+        description: 'Information about currently selected text which can be passed for additional context.',
+        alpha: { milestone: '16.6' }
     end
   end
 end

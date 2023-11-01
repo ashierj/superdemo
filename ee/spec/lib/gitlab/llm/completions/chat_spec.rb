@@ -16,7 +16,16 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:blob) { fake_blob(path: 'file.md') }
   let(:extra_resource) { { blob: blob } }
-  let(:options) { { content: content, extra_resource: extra_resource } }
+  let(:current_file) do
+    {
+      file_name: 'test.py',
+      selected_text: 'selected',
+      content_above_cursor: 'prefix',
+      content_below_cursor: 'suffix'
+    }
+  end
+
+  let(:options) { { content: content, extra_resource: extra_resource, current_file: current_file } }
   let(:container) { group }
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
@@ -24,7 +33,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       current_user: user,
       resource: resource,
       request_id: 'uuid',
-      ai_request: ai_request
+      ai_request: ai_request,
+      current_file: current_file
     )
   end
 
@@ -72,7 +82,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         .and_return(response_handler)
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
         .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
-          extra_resource: extra_resource, request_id: 'uuid')
+          extra_resource: extra_resource, request_id: 'uuid', current_file: current_file)
         .and_return(context)
       expect(categorize_service).to receive(:execute)
       expect(::Llm::ExecuteMethodService).to receive(:new)
@@ -217,7 +227,8 @@ client_subscription_id: 'someid' }
           .and_return(response_handler)
         expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
           .with(current_user: user, container: expected_container, resource: resource,
-            ai_request: ai_request, extra_resource: extra_resource, request_id: 'uuid')
+            ai_request: ai_request, extra_resource: extra_resource, request_id: 'uuid',
+            current_file: current_file)
           .and_return(context)
         expect(categorize_service).to receive(:execute)
         expect(Llm::ExecuteMethodService).to receive(:new)
