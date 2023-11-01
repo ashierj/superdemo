@@ -141,7 +141,7 @@ module API
     def find_project(id)
       return unless id
 
-      projects = Project.without_deleted.not_hidden
+      projects = find_project_scopes
 
       if id.is_a?(Integer) || id =~ INTEGER_ID_REGEX
         projects.find_by(id: id)
@@ -150,6 +150,11 @@ module API
       end
     end
     # rubocop: enable CodeReuse/ActiveRecord
+
+    # Can be overriden by API endpoints
+    def find_project_scopes
+      Project.without_deleted.not_hidden
+    end
 
     def find_project!(id)
       project = find_project(id)
