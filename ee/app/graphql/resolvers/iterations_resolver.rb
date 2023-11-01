@@ -35,6 +35,9 @@ module Resolvers
     argument :include_ancestors, GraphQL::Types::Boolean,
              required: false,
              description: 'Whether to include ancestor iterations. Defaults to true.'
+    argument :include_descendants, GraphQL::Types::Boolean,
+             required: false,
+             description: 'Whether to include descendant iterations.'
 
     argument :iteration_cadence_ids, [::Types::GlobalIDType[::Iterations::Cadence]],
               required: false,
@@ -84,6 +87,7 @@ module Resolvers
       {
         parent: parent,
         include_ancestors: args[:include_ancestors],
+        include_descendants: args[:include_descendants],
         id: args[:id],
         iid: args[:iid],
         iteration_cadence_ids: args[:iteration_cadence_ids],

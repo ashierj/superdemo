@@ -4,18 +4,24 @@ require 'spec_helper'
 
 RSpec.describe IterationsFinder, feature_category: :team_planning do
   let_it_be(:root) { create(:group, :private) }
-  let_it_be(:group) { create(:group, :private, parent: root) }
+  let_it_be(:ancestor_group) { create(:group, :private, parent: root) }
+  let_it_be(:group) { create(:group, :private, parent: ancestor_group) }
+  let_it_be(:subgroup) { create(:group, :private, parent: group) }
   let_it_be(:project_1) { create(:project, namespace: group) }
   let_it_be(:user) { create(:user) }
   let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 2, title: 'two week iterations') }
   let_it_be(:iteration_cadence3) { create(:iterations_cadence, group: root, active: true, duration_in_weeks: 3, title: 'three week iterations') }
+  let_it_be(:iteration_cadence4) { create(:iterations_cadence, group: subgroup, active: true, duration_in_weeks: 4, title: 'four week iterations') }
+  let_it_be(:iteration_cadence5) { create(:iterations_cadence, group: ancestor_group, active: true, duration_in_weeks: 4, title: 'ancestor iterations') }
 
-  let_it_be(:closed_iteration) { create(:closed_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, start_date: 7.days.ago, due_date: 2.days.ago, updated_at: 10.days.ago) }
-  let_it_be(:started_group_iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, title: 'one test', start_date: 1.day.ago, due_date: Date.today, updated_at: 5.days.ago) }
+  let_it_be(:closed_iteration) { create(:closed_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, start_date: 7.days.ago, due_date: 3.days.ago, updated_at: 10.days.ago) }
+  let_it_be(:started_group_iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, title: 'one test', start_date: 2.days.ago, due_date: Date.today, updated_at: 5.days.ago) }
   let_it_be(:upcoming_group_iteration) { create(:iteration, iterations_cadence: iteration_cadence1, title: 'Iteration 1', start_date: 1.day.from_now, due_date: 3.days.from_now) }
   let_it_be(:root_group_iteration) { create(:current_iteration, iterations_cadence: iteration_cadence3, start_date: 1.day.ago, due_date: 2.days.from_now) }
-  let_it_be(:root_closed_iteration) { create(:closed_iteration, iterations_cadence: iteration_cadence3, start_date: 1.week.ago, due_date: 2.days.ago) }
+  let_it_be(:ancestor_group_iteration) { create(:current_iteration, iterations_cadence: iteration_cadence5, start_date: 1.day.ago, due_date: 2.days.from_now) }
+  let_it_be(:ancestor_closed_iteration) { create(:closed_iteration, iterations_cadence: iteration_cadence5, start_date: 1.week.ago, due_date: 2.days.ago) }
+  let_it_be(:subgroup_iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence4, title: 'subgroup test', start_date: 2.days.ago, due_date: Date.today, updated_at: 5.days.ago) }
 
   let(:parent) { project_1 }
   let(:params) { { parent: parent, include_ancestors: true } }
@@ -40,17 +46,22 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
     end
 
     context 'when skipping authorization' do
-      let(:params) { { parent: parent } }
+      let(:params) { { parent: parent, include_ancestors: true } }
 
       it 'returns iterations' do
-        expect(described_class.new(user, params).execute(skip_authorization: true)).not_to be_empty
+        iterations = described_class.new(user, params).execute(skip_authorization: true)
+
+        expect(iterations).to include(root_group_iteration)
+        expect(iterations).not_to include(subgroup_iteration)
       end
     end
   end
 
   context 'with permissions' do
     before do
+      ancestor_group.add_reporter(user)
       group.add_reporter(user)
+      subgroup.add_reporter(user)
       project_1.add_reporter(user)
     end
 
@@ -71,7 +82,7 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
 
       context 'with filters' do
         context 'by iteration_wildcard_id' do
-          let_it_be(:started_group_iteration2) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence1, group: iteration_cadence1.group, title: 'one test', start_date: 1.day.ago, due_date: Date.today) }
+          let_it_be(:started_group_iteration2) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence1, group: iteration_cadence1.group, title: 'one test', start_date: 2.days.ago, due_date: Date.today) }
 
           before do
             params[:iteration_wildcard_id] = 'CURRENT'
@@ -93,12 +104,22 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
     end
 
     context 'iterations for project with ancestors' do
-      it 'returns iterations for project and ancestor groups' do
-        expect(subject).to contain_exactly(root_closed_iteration, root_group_iteration, closed_iteration, started_group_iteration, upcoming_group_iteration)
+      it 'orders iterations by due date and title' do
+        expect(subject.to_a).to eq([root_group_iteration, closed_iteration, ancestor_closed_iteration, started_group_iteration, ancestor_group_iteration, upcoming_group_iteration].sort_by { |a| [a.due_date, a.title, a.id] })
+      end
+    end
+
+    context 'iterations for group with descendants' do
+      let(:params) { { parent: group, include_ancestors: false, include_descendants: true } }
+
+      it 'returns iterations for descendent groups and projects' do
+        expect(subject.to_a).to eq([closed_iteration, started_group_iteration, upcoming_group_iteration, subgroup_iteration].sort_by { |a| [a.due_date, a.title, a.id] })
       end
 
-      it 'orders iterations by due date and title' do
-        expect(subject.to_a).to eq([closed_iteration, root_closed_iteration, started_group_iteration, root_group_iteration, upcoming_group_iteration].sort_by { |a| [a.due_date, a.title, a.id] })
+      it 'returns iterations for ancestor/descendent groups and projects' do
+        params[:include_ancestors] = true
+
+        expect(subject.to_a).to eq([root_group_iteration, ancestor_closed_iteration, ancestor_group_iteration, closed_iteration, started_group_iteration, upcoming_group_iteration, subgroup_iteration].sort_by { |a| [a.due_date, a.title, a.id] })
       end
     end
 
@@ -106,13 +127,13 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
       it 'filters by all states' do
         params[:state] = 'all'
 
-        expect(subject).to contain_exactly(root_closed_iteration, root_group_iteration, closed_iteration, started_group_iteration, upcoming_group_iteration)
+        expect(subject).to contain_exactly(root_group_iteration, ancestor_closed_iteration, ancestor_group_iteration, closed_iteration, started_group_iteration, upcoming_group_iteration)
       end
 
       it 'filters by current state' do
         params[:state] = 'current'
 
-        expect(subject).to contain_exactly(root_group_iteration, started_group_iteration)
+        expect(subject).to contain_exactly(root_group_iteration, ancestor_group_iteration, started_group_iteration)
       end
 
       it 'filters by invalid state' do
@@ -124,13 +145,13 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
       it 'filters by opened state' do
         params[:state] = 'opened'
 
-        expect(subject).to contain_exactly(upcoming_group_iteration, root_group_iteration, started_group_iteration)
+        expect(subject).to contain_exactly(root_group_iteration, upcoming_group_iteration, ancestor_group_iteration, started_group_iteration)
       end
 
       it 'filters by closed state' do
         params[:state] = 'closed'
 
-        expect(subject).to contain_exactly(root_closed_iteration, closed_iteration)
+        expect(subject).to contain_exactly(ancestor_closed_iteration, closed_iteration)
       end
 
       it 'filters by title' do
@@ -151,7 +172,7 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
         end
 
         context 'filters by title' do
-          let(:all_iterations) { [closed_iteration, started_group_iteration, upcoming_group_iteration, root_group_iteration, root_closed_iteration] }
+          let(:all_iterations) { [closed_iteration, started_group_iteration, upcoming_group_iteration, root_group_iteration, ancestor_group_iteration, ancestor_closed_iteration] }
 
           where(:search, :fields_to_search, :expected_iterations) do
             ''               | []                       | lazy { all_iterations }
@@ -214,8 +235,9 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
           expect(subject).to contain_exactly(
             started_group_iteration,
             upcoming_group_iteration,
+            ancestor_group_iteration,
             root_group_iteration,
-            root_closed_iteration
+            ancestor_closed_iteration
           )
         end
 
@@ -232,7 +254,7 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
         end
 
         it 'returns CURRENT iterations' do
-          expect(subject).to contain_exactly(root_group_iteration, started_group_iteration)
+          expect(subject).to contain_exactly(ancestor_group_iteration, root_group_iteration, started_group_iteration)
         end
 
         it 'returns CURRENT iteration for the specified cadence' do
@@ -246,13 +268,13 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
         it 'returns iterations with start_date and due_date between timeframe' do
           params.merge!(start_date: 1.day.ago, end_date: 3.days.from_now)
 
-          expect(subject).to match_array([started_group_iteration, upcoming_group_iteration, root_group_iteration])
+          expect(subject).to match_array([started_group_iteration, upcoming_group_iteration, ancestor_group_iteration, root_group_iteration])
         end
 
         it 'returns iterations which start before the timeframe' do
-          params.merge!(start_date: 3.days.ago, end_date: 2.days.ago)
+          params.merge!(start_date: 4.days.ago, end_date: 3.days.ago)
 
-          expect(subject).to match_array([closed_iteration, root_closed_iteration])
+          expect(subject).to match_array([closed_iteration, ancestor_closed_iteration])
         end
 
         it 'returns iterations which end after the timeframe' do
@@ -279,11 +301,12 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
       context 'sorting' do
         let(:cadence1_iterations) { [upcoming_group_iteration] }
         let(:cadence2_iterations) { [closed_iteration, started_group_iteration] }
-        let(:cadence3_iterations) { [root_closed_iteration, root_group_iteration] }
+        let(:cadence3_iterations) { [root_group_iteration] }
+        let(:cadence5_iterations) { [ancestor_closed_iteration, ancestor_group_iteration] }
 
         shared_examples 'sorted by the default order' do
           it 'sorts by the default order (due_date, title, id asc)' do
-            expect(subject).to eq([closed_iteration, root_closed_iteration, started_group_iteration, root_group_iteration, upcoming_group_iteration])
+            expect(subject).to eq([closed_iteration, ancestor_closed_iteration, started_group_iteration, root_group_iteration, ancestor_group_iteration, upcoming_group_iteration])
           end
         end
 
@@ -300,13 +323,13 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
         it 'sorts correctly by cadence_and_due_date_asc' do
           params[:sort] = :cadence_and_due_date_asc
 
-          expect(subject).to eq([*cadence1_iterations, *cadence2_iterations, *cadence3_iterations])
+          expect(subject).to eq([*cadence1_iterations, *cadence2_iterations, *cadence3_iterations, *cadence5_iterations])
         end
 
         it 'sorts correctly by cadence_and_due_date_desc' do
           params[:sort] = :cadence_and_due_date_desc
 
-          expect(subject).to eq([*cadence1_iterations.reverse, *cadence2_iterations.reverse, *cadence3_iterations.reverse])
+          expect(subject).to eq([*cadence1_iterations.reverse, *cadence2_iterations.reverse, *cadence3_iterations.reverse, *cadence5_iterations.reverse])
         end
       end
     end

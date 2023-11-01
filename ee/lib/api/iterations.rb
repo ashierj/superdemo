@@ -37,6 +37,11 @@ module API
           default: true,
           desc: 'Include iterations from parent and its ancestors',
           documentation: { example: false }
+        optional :include_descendants,
+          type: Grape::API::Boolean,
+          default: false,
+          desc: 'Include iterations from parent and its descendants',
+          documentation: { example: true }
         optional :updated_before,
           type: DateTime,
           desc: 'Return milestones updated before the specified datetime. Format: ISO 8601 YYYY-MM-DDTHH:MM:SSZ',
@@ -58,6 +63,7 @@ module API
         finder_params = {
           parent: parent,
           include_ancestors: params[:include_ancestors],
+          include_descendants: params[:include_descendants],
           state: params[:state],
           search: nil,
           in: nil,

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::IterationsResolver do
+RSpec.describe Resolvers::IterationsResolver, feature_category: :team_planning do
   include GraphqlHelpers
 
   describe '#resolve' do
@@ -13,6 +13,7 @@ RSpec.describe Resolvers::IterationsResolver do
         id: nil,
         iid: nil,
         iteration_cadence_ids: nil,
+        include_descendants: nil,
         parent: nil,
         state: nil,
         search: nil,
@@ -114,7 +115,7 @@ RSpec.describe Resolvers::IterationsResolver do
           iid = '2'
           iteration_cadence_ids = ['5']
 
-          params = params_list.merge(id: id, iid: iid, iteration_cadence_ids: iteration_cadence_ids, parent: group, include_ancestors: nil, state: 'closed', start_date: start_date, end_date: end_date, search: search, in: [:title])
+          params = params_list.merge(id: id, iid: iid, iteration_cadence_ids: iteration_cadence_ids, parent: group, include_ancestors: nil, include_descendants: nil, state: 'closed', start_date: start_date, end_date: end_date, search: search, in: [:title])
 
           expect(IterationsFinder).to receive(:new).with(current_user, params).and_call_original
 
@@ -124,7 +125,7 @@ RSpec.describe Resolvers::IterationsResolver do
         it 'accepts a raw model id for backward compatibility' do
           id = '1'
           iid = '2'
-          params = params_list.merge(id: id, iid: iid, parent: group, include_ancestors: nil, state: 'all')
+          params = params_list.merge(id: id, iid: iid, parent: group, include_ancestors: nil, include_descendants: nil, state: 'all')
 
           expect(IterationsFinder).to receive(:new).with(current_user, params).and_call_original
 
@@ -157,6 +158,22 @@ RSpec.describe Resolvers::IterationsResolver do
           expect(IterationsFinder).to receive(:new).with(current_user, params).and_call_original
 
           resolve_group_iterations({ include_ancestors: false }, subgroup)
+        end
+
+        it 'accepts include_descendants true' do
+          params = params_list.merge(parent: subgroup, include_ancestors: true, include_descendants: true, state: 'all')
+
+          expect(IterationsFinder).to receive(:new).with(current_user, params).and_call_original
+
+          resolve_group_iterations({ include_descendants: true }, subgroup)
+        end
+
+        it 'accepts include_descendants false' do
+          params = params_list.merge(parent: subgroup, include_ancestors: true, include_descendants: false, state: 'all')
+
+          expect(IterationsFinder).to receive(:new).with(current_user, params).and_call_original
+
+          resolve_group_iterations({ include_descendants: false }, subgroup)
         end
       end
 
