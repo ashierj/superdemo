@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Releases::UpdateService do
+RSpec.describe Releases::UpdateService, feature_category: :release_orchestration do
   let(:group) { create(:group) }
   let(:project) { create(:project, :repository, group: group) }
   let(:user) { create(:user) }
@@ -106,6 +106,34 @@ RSpec.describe Releases::UpdateService do
 
           expect(release.milestones).to match_array([])
         end
+      end
+    end
+  end
+
+  describe 'audit events' do
+    include_examples 'audit event logging' do
+      let(:operation) { service.execute }
+      let(:params_with_milestones) { params.merge({ name: "Updated name" }) }
+      let(:event_type) { 'release_updated' }
+      let(:licensed_features_to_stub) { { group_milestone_project_releases: true } }
+      # rubocop:disable RSpec/AnyInstanceOf -- It's not the next instance
+      let(:fail_condition!) { allow_any_instance_of(Release).to receive(:update).and_return(false) }
+      # rubocop:enable RSpec/AnyInstanceOf
+
+      let(:attributes) do
+        {
+          author_id: user.id,
+          entity_id: project.id,
+          entity_type: 'Project',
+          details: {
+            author_name: user.name,
+            author_class: 'User',
+            target_id: release.id,
+            target_type: 'Release',
+            target_details: "Updated name",
+            custom_message: "Updated release #{release.tag}"
+          }
+        }
       end
     end
   end

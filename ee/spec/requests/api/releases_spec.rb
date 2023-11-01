@@ -41,7 +41,7 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
         release = project.releases.last
 
         expect(subject).to include({
-          custom_message: "Created Release #{release.tag}",
+          custom_message: "Created release #{release.tag}",
           target_type: "Release",
           target_id: release.id,
           target_details: release.name
@@ -59,7 +59,7 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
           release = project.releases.last
 
           expect(subject).to include({
-            custom_message: "Created Release #{release.tag} with Milestone #{milestone.title}",
+            custom_message: "Created release #{release.tag} with Milestone #{milestone.title}",
             target_type: "Release",
             target_id: release.id,
             target_details: release.name
@@ -154,7 +154,7 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
 
       release = project.releases.last
 
-      expect(AuditEvent.last.details[:custom_message]).to eq("Updated Release #{release.tag}")
+      expect(AuditEvent.last.details[:custom_message]).to eq("Updated release #{release.tag}")
     end
 
     shared_examples 'update with milestones' do
@@ -165,7 +165,7 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
 
         release = project.releases.last
 
-        expect(AuditEvent.first.details[:custom_message]).to eq("Updated Release #{release.tag}")
+        expect(AuditEvent.first.details[:custom_message]).to eq("Updated release #{release.tag}")
         expect(AuditEvent.second.details[:custom_message]).to eq(milestone_message)
       end
     end
