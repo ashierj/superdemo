@@ -22237,6 +22237,7 @@ A packages protection rule designed to protect packages from being pushed by use
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="packagesprotectionruleid"></a>`id` | [`PackagesProtectionRuleID!`](#packagesprotectionruleid) | ID of the package protection rule. |
 | <a id="packagesprotectionrulepackagenamepattern"></a>`packageNamePattern` | [`String!`](#string) | Package name protected by the protection rule. For example `@my-scope/my-package-*`. Wildcard character `*` allowed. |
 | <a id="packagesprotectionrulepackagetype"></a>`packageType` | [`PackagesProtectionRulePackageType!`](#packagesprotectionrulepackagetype) | Package type protected by the protection rule. For example `NPM`. |
 | <a id="packagesprotectionrulepushprotecteduptoaccesslevel"></a>`pushProtectedUpToAccessLevel` | [`PackagesProtectionRuleAccessLevel!`](#packagesprotectionruleaccesslevel) | Max GitLab access level unable to push a package. For example `DEVELOPER`, `MAINTAINER`, `OWNER`. |
