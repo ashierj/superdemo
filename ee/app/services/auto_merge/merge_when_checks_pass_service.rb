@@ -4,19 +4,14 @@ module AutoMerge
   class MergeWhenChecksPassService < AutoMerge::MergeWhenPipelineSucceedsService
     extend Gitlab::Utils::Override
 
-    override :skip_draft_check
-    def skip_draft_check(merge_request)
-      Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
-    end
-
-    override :skip_blocked_check
-    def skip_blocked_check(merge_request)
-      Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
-    end
-
-    override :skip_discussions_check
-    def skip_discussions_check(merge_request)
-      Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
+    override :overrideable_available_for_checks
+    def overrideable_available_for_checks(merge_request)
+      if Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
+        # We override here to ignore the draft, blocking and discussions checks
+        true
+      else
+        super
+      end
     end
 
     private
