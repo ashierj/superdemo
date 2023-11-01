@@ -2136,6 +2136,23 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#build_or_assign_import_data' do
+    let(:project) { build(:project) }
+    let(:credentials) { nil }
+
+    subject { project.build_or_assign_import_data(credentials: credentials) }
+
+    context 'with credentials' do
+      let(:user) { 'someuser' }
+      let(:credentials) { { user: user } }
+
+      it 'merges the credentials into the ProjectImportData record' do
+        expect(subject).to be_instance_of(ProjectImportData)
+        expect(subject.user).to eq(user)
+      end
+    end
+  end
+
   describe '#licensed_features', :saas do
     let(:plan_license) { :free }
     let(:global_license) { create(:license) }
