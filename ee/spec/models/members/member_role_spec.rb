@@ -165,6 +165,11 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
   end
 
   describe 'scopes' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:member_role_1) { create(:member_role, name: 'Tester', namespace: group) }
+    let_it_be(:member_role_2) { create(:member_role, name: 'Manager', namespace: group) }
+    let_it_be(:group_2_member_role) { create(:member_role, name: 'Actor') }
+
     describe '.elevating' do
       it 'creates proper query' do
         stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
@@ -185,6 +190,18 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         create(:member_role)
 
         expect(described_class.elevating).to be_empty
+      end
+    end
+
+    describe 'by_namespace' do
+      it 'returns member roles for a group' do
+        expect(described_class.by_namespace(group)).to match_array([member_role_1, member_role_2])
+      end
+    end
+
+    describe 'ordered_by_name' do
+      it 'returns member roles orderd by name' do
+        expect(described_class.ordered_by_name).to eq([group_2_member_role, member_role_2, member_role_1])
       end
     end
   end

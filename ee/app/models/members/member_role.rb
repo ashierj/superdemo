@@ -75,6 +75,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     where(query)
   end
 
+  scope :ordered_by_name, -> { order(:name) }
+  scope :by_namespace, ->(group_ids) { where(namespace_id: group_ids) }
+
   before_destroy :prevent_delete_after_member_associated
 
   def self.levels_sentence
