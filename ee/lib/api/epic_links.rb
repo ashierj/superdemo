@@ -71,7 +71,7 @@ module API
         use :child_epic_id
       end
       post ':id/(-/)epics/:epic_iid/epics/:child_epic_id' do
-        authorize_admin_epic_tree_relation!
+        authorize_create_epic_tree_relation!
 
         target_child_epic = Epic.find_by_id(declared_params[:child_epic_id])
 
@@ -128,7 +128,7 @@ module API
         use :child_epic_id
       end
       delete ':id/(-/)epics/:epic_iid/epics/:child_epic_id' do
-        authorize!(:admin_epic_relation, epic)
+        authorize!(:read_epic_relation, epic)
 
         result = ::Epics::EpicLinks::DestroyService.new(child_epic, current_user).execute
 
