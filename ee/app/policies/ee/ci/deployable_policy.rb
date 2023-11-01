@@ -22,6 +22,7 @@ module EE
           enable :jailbreak
           enable :update_commit_status
           enable :update_build
+          enable :cancel_build
         end
 
         # Authorizing the user to access to protected entities.
@@ -30,6 +31,7 @@ module EE
         rule { ~can?(:jailbreak) & protected_environment }.policy do
           prevent :update_commit_status
           prevent :update_build
+          prevent :cancel_build
           prevent :erase_build
         end
       end
