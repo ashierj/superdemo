@@ -29117,10 +29117,10 @@ msgstr ""
 msgid "Maximum number of %{name} (%{count}) exceeded"
 msgstr ""
 
-msgid "Maximum number of changes (branches or tags) in a single push above which a bulk push event is created (default is `3`). Setting to `0` does not disable throttling."
+msgid "Maximum number of changes (branches or tags) in a single push above which a bulk push event is created (default is 3). Setting to 0 does not disable throttling."
 msgstr ""
 
-msgid "Maximum number of changes (branches or tags) in a single push above which webhooks and integrations are not triggered (default is `3`). Setting to `0` does not disable throttling."
+msgid "Maximum number of changes (branches or tags) in a single push above which webhooks and integrations are not triggered (default is 3). Setting to 0 does not disable throttling."
 msgstr ""
 
 msgid "Maximum number of comments exceeded"
@@ -29141,7 +29141,7 @@ msgstr ""
 msgid "Maximum number of requests per minute for an unauthenticated IP address"
 msgstr ""
 
-msgid "Maximum number of requests per minute for each raw path (default is `300`). Set to `0` to disable throttling."
+msgid "Maximum number of requests per minute for each raw path (default is 300). Set to 0 to disable throttling."
 msgstr ""
 
 msgid "Maximum number of stages per value stream exceeded"
@@ -44205,9 +44205,6 @@ msgstr ""
 msgid "Set a password on your account to pull or push via %{protocol}."
 msgstr ""
 
-msgid "Set any rate limit to %{code_open}0%{code_close} to disable the limit."
-msgstr ""
-
 msgid "Set due date"
 msgstr ""
 
@@ -44311,6 +44308,12 @@ msgid "Set time estimate to %{time_estimate}."
 msgstr ""
 
 msgid "Set to 0 for no size limit."
+msgstr ""
+
+msgid "Set to 0 to disable the limit."
+msgstr ""
+
+msgid "Set to 0 to disable the limits."
 msgstr ""
 
 msgid "Set to 0 to disable timeout."
