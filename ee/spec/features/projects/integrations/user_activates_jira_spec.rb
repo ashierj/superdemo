@@ -26,10 +26,11 @@ RSpec.describe 'User activates Jira', :js, feature_category: :integrations do
       end
 
       it 'adds Jira links to "Issues" sidebar menu' do
-        page.within('.nav-sidebar') do
-          expect(page).to have_link('Jira issues', href: project_integrations_jira_issues_path(project), visible: false)
-          expect(page).to have_link('Open Jira', href: url, visible: false)
-          expect(page).not_to have_link('Jira', href: url)
+        within_testid('super-sidebar') do
+          click_button 'Plan'
+          expect(page).to have_link('Jira issues', href: project_integrations_jira_issues_path(project))
+          expect(page).to have_link('Open Jira', href: url)
+          expect(page).not_to have_link(exact_text: 'Jira')
         end
       end
     end
@@ -44,10 +45,11 @@ RSpec.describe 'User activates Jira', :js, feature_category: :integrations do
       end
 
       it 'does not show Jira links in "Issues" sidebar menu' do
-        page.within('.nav-sidebar') do
-          expect(page).not_to have_link('Jira issues', href: project_integrations_jira_issues_path(project), visible: false)
-          expect(page).not_to have_link('Open Jira', href: url, visible: false)
-          expect(page).to have_link('Jira', href: url)
+        within_testid('super-sidebar') do
+          click_button 'Plan'
+          expect(page).not_to have_link('Jira issues')
+          expect(page).not_to have_link('Open Jira')
+          expect(page).to have_link(exact_text: 'Jira', href: url)
         end
       end
     end
