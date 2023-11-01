@@ -764,6 +764,7 @@ module API
       finder_params[:id_before] = sanitize_id_param(params[:id_before]) if params[:id_before]
       finder_params[:updated_after] = declared_params[:updated_after] if declared_params[:updated_after]
       finder_params[:updated_before] = declared_params[:updated_before] if declared_params[:updated_before]
+      finder_params[:include_pending_delete] = declared_params[:include_pending_delete] if declared_params[:include_pending_delete]
       finder_params
     end
 

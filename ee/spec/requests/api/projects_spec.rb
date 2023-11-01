@@ -80,6 +80,49 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         end.not_to exceed_all_query_limit(control.count)
       end
     end
+
+    context 'when user requests hidden projects' do
+      let_it_be(:hidden) { create(:project, :public, :hidden) }
+      let(:filter_params) { { include_hidden: true } }
+
+      context 'when user is not admin' do
+        before do
+          project.add_owner(user)
+        end
+
+        it 'does not return hidden projects' do
+          get api('/projects', user), params: filter_params
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to be_an Array
+          expect(json_response.map { |p| p['id'] }).not_to include(hidden.id)
+        end
+      end
+
+      context 'when user is an admin' do
+        let_it_be(:admin) { create(:admin) }
+
+        it 'also returns hidden projects' do
+          get api("/projects", admin, admin_mode: true), params: filter_params
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to be_an Array
+          expect(json_response.map { |p| p['id'] }).to include(hidden.id)
+        end
+
+        context 'when include_hidden option is off' do
+          let(:filter_params) { { include_hidden: nil } }
+
+          it 'does not return hidden projects' do
+            get api("/projects", admin, admin_mode: true), params: filter_params
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to be_an Array
+            expect(json_response.map { |p| p['id'] }).not_to include(hidden.id)
+          end
+        end
+      end
+    end
   end
 
   describe 'GET /projects/:id' do
