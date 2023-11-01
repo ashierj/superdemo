@@ -4,6 +4,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { useFakeDate } from 'helpers/fake_date';
+import { stubComponent } from 'helpers/stub_component';
 
 import RunnerWaitTimes from 'ee/ci/runner/components/runner_wait_times.vue';
 import runnerWaitTimesQuery from 'ee/ci/runner/graphql/performance/runner_wait_times.query.graphql';
@@ -36,19 +37,24 @@ describe('RunnerActiveList', () => {
   const getStatData = () =>
     findSingleStats().wrappers.map((w) => [w.props('title'), w.props('value')]);
 
-  const createComponent = ({ glFeatures = {}, mountFn = shallowMountExtended } = {}) => {
+  const createComponent = ({
+    glFeatures = {},
+    mountFn = shallowMountExtended,
+    ...options
+  } = {}) => {
     wrapper = mountFn(RunnerWaitTimes, {
       apolloProvider: createMockApollo([
         [runnerWaitTimesQuery, runnerWaitTimesHandler],
         [runnerWaitTimeHistoryQuery, runnerWaitTimeHistoryHandler],
       ]),
-      stubs: { GlSprintf },
       provide: {
         glFeatures: {
           clickhouseCiAnalytics: true,
           ...glFeatures,
         },
       },
+      stubs: { GlSprintf },
+      ...options,
     });
   };
 
@@ -117,10 +123,10 @@ describe('RunnerActiveList', () => {
 
     it('shows stats', () => {
       expect(getStatData()).toEqual([
-        [I18N_P99, '99'],
-        [I18N_P90, '90'],
-        [I18N_P75, '75'],
-        [I18N_MEDIAN, '50'],
+        [I18N_P99, '99.00'],
+        [I18N_P90, '90.00'],
+        [I18N_P75, '75.00'],
+        [I18N_MEDIAN, '50.00'],
       ]);
     });
 
@@ -133,6 +139,22 @@ describe('RunnerActiveList', () => {
         expect(name).toEqual(expect.any(String));
         expect(data).toHaveLength(2); // 2 sample points
       });
+    });
+
+    it('shows chart formatted tooltip', async () => {
+      createComponent({
+        stubs: {
+          GlLineChart: stubComponent(GlLineChart, {
+            template: `<div>
+                        <slot name="tooltip-value" :value="1234.567"></slot>
+                      </div>`,
+          }),
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findChart().text()).toContain('1,234.57');
     });
   });
 
@@ -150,10 +172,10 @@ describe('RunnerActiveList', () => {
 
     it('shows stats', () => {
       expect(getStatData()).toEqual([
-        [I18N_P99, '99'],
-        [I18N_P90, '90'],
-        [I18N_P75, '75'],
-        [I18N_MEDIAN, '50'],
+        [I18N_P99, '99.00'],
+        [I18N_P90, '90.00'],
+        [I18N_P75, '75.00'],
+        [I18N_MEDIAN, '50.00'],
       ]);
     });
 

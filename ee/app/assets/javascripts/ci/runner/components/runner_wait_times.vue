@@ -14,6 +14,7 @@ import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import runnerWaitTimes from 'ee/ci/runner/graphql/performance/runner_wait_times.query.graphql';
 import runnerWaitTimeHistoryQuery from 'ee/ci/runner/graphql/performance/runner_wait_time_history.query.graphql';
 import {
+  formatSeconds,
   runnerWaitTimeQueryData,
   runnerWaitTimeHistoryQueryData,
 } from 'ee/ci/runner/runner_performance_utils';
@@ -84,6 +85,9 @@ export default {
     },
   },
   methods: {
+    formatSeconds(value) {
+      return formatSeconds(value);
+    },
     handlerError(error) {
       createAlert({ message: error.message });
       captureException({ error, component: this.$options.name });
@@ -155,7 +159,9 @@ export default {
         :include-legend-avg-max="false"
         :data="waitTimeHistoryChartData"
         :option="$options.chartOption"
-      />
+      >
+        <template #tooltip-value="{ value }">{{ formatSeconds(value) }}</template>
+      </gl-line-chart>
     </div>
   </div>
 </template>
