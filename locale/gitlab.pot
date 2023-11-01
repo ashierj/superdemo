@@ -21560,9 +21560,6 @@ msgstr ""
 msgid "Geo|URL must be a valid url (ex: https://gitlab.com)"
 msgstr ""
 
-msgid "Geo|Undefined"
-msgstr ""
-
 msgid "Geo|Unhealthy"
 msgstr ""
 
@@ -57696,6 +57693,9 @@ msgid "show less"
 msgstr ""
 
 msgid "sign in"
+msgstr ""
+
+msgid "site"
 msgstr ""
 
 msgid "smartcn custom analyzer"
