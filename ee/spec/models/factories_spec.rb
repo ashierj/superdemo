@@ -35,6 +35,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:pages_domain, :with_missing_chain],
     [:pages_domain, :with_trusted_chain],
     [:pages_domain, :with_trusted_expired_chain],
+    [:pages_domain, :with_untrusted_root_ca_in_chain],
     [:pages_domain, :explicit_ecdsa],
     [:pages_domain, :extra_long_key], # used to test key length validation
     [:project_member, :blocked],
