@@ -1765,6 +1765,9 @@ msgstr ""
 msgid "A Work Item can be a parent or a child, but not both."
 msgstr ""
 
+msgid "A basic folder structure of Astro Starter Kit, to help you get started."
+msgstr ""
+
 msgid "A basic folder structure of a Laravel application, to help you get started."
 msgstr ""
 
@@ -37843,6 +37846,9 @@ msgid "ProjectTemplates|.NET Core"
 msgstr ""
 
 msgid "ProjectTemplates|Android"
+msgstr ""
+
+msgid "ProjectTemplates|Astro Tailwind"
 msgstr ""
 
 msgid "ProjectTemplates|GitLab Cluster Management"
