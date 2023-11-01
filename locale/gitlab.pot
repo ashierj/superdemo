@@ -20804,7 +20804,13 @@ msgstr ""
 msgid "ForkProject|A fork is a copy of a project."
 msgstr ""
 
+msgid "ForkProject|All branches"
+msgstr ""
+
 msgid "ForkProject|An error occurred while forking the project. Please try again."
+msgstr ""
+
+msgid "ForkProject|Branches to include"
 msgstr ""
 
 msgid "ForkProject|Cancel"
@@ -20820,6 +20826,9 @@ msgid "ForkProject|Forking a repository allows you to make changes without affec
 msgstr ""
 
 msgid "ForkProject|Internal"
+msgstr ""
+
+msgid "ForkProject|Only the default branch %{defaultBranch}"
 msgstr ""
 
 msgid "ForkProject|Please select a namespace"
@@ -55824,6 +55833,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "branch name"
+msgstr ""
+
+msgid "branches"
 msgstr ""
 
 msgid "builds"
