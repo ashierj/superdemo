@@ -4109,7 +4109,6 @@
 - './spec/features/user_opens_link_to_comment_spec.rb'
 - './spec/features/users/active_sessions_spec.rb'
 - './spec/features/users/add_email_to_existing_account_spec.rb'
-- './spec/features/users/anonymous_sessions_spec.rb'
 - './spec/features/users/bizible_csp_spec.rb'
 - './spec/features/users/confirmation_spec.rb'
 - './spec/features/user_sees_revert_modal_spec.rb'
