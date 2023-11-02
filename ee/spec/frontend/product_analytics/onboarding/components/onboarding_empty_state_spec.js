@@ -24,7 +24,7 @@ describe('OnboardingEmptyState', () => {
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findSetupBtn = () => wrapper.findByTestId('setup-btn');
+  const findSetupBtn = () => wrapper.findByTestId('setup-product-analytics-button');
   const findLearnMoreBtn = () => wrapper.findByTestId('learn-more-btn');
 
   const createWrapper = (props = {}, handlers) => {

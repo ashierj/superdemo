@@ -67,7 +67,7 @@ export default {
       </div>
       <div class="gl-float-right">
         <gl-badge v-if="badgeText">{{ badgeText }}</gl-badge>
-        <gl-button :to="to">{{ actionText }}</gl-button>
+        <gl-button data-testid="setup-button" :to="to">{{ actionText }}</gl-button>
       </div>
     </div>
   </li>

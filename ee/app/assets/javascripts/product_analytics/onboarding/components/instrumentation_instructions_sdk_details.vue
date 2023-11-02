@@ -31,12 +31,14 @@ export default {
   <section class="gl-display-flex gl-flex-wrap gl-mb-6">
     <analytics-clipboard-input
       class="gl-mr-6 gl-mb-6 gl-md-mb-0"
+      data-testid="sdk-host-container"
       :label="$options.i18n.sdkHost"
       :description="$options.i18n.sdkHostDescription"
       :value="collectorHost"
     />
 
     <analytics-clipboard-input
+      data-testid="sdk-application-id-container"
       :label="$options.i18n.sdkAppId"
       :description="$options.i18n.sdkAppIdDescription"
       :value="trackingKey"

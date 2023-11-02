@@ -93,7 +93,7 @@ export default {
         <gl-button
           class="gl-mx-2 gl-mb-3"
           variant="confirm"
-          data-testid="setup-btn"
+          data-testid="setup-product-analytics-button"
           @click="onConfirm"
         >
           {{ s__('ProductAnalytics|Set up product analytics') }}
