@@ -65,7 +65,7 @@
 .if-merge-request-labels-run-in-ruby3_1: &if-merge-request-labels-run-in-ruby3_1
   if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_1/'
 
-.if-merge-request-labels-run-in-non-default-ruby: &if-merge-request-labels-run-in-non-default-ruby
+.if-merge-request-labels-run-in-ruby3_2: &if-merge-request-labels-run-in-ruby3_2
   if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_2/'
 
 .if-merge-request-labels-as-if-foss: &if-merge-request-labels-as-if-foss
@@ -2746,7 +2746,7 @@
 
 .setup:rules:verify-default-ruby:
   rules:
-    - <<: *if-merge-request-labels-run-in-non-default-ruby
+    - <<: *if-merge-request-labels-run-in-ruby3_2
 
 .setup:rules:verify-tests-yml:
   rules:
