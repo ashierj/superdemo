@@ -48,7 +48,7 @@ module EE
       def filter_by_enterprise_users(value)
         subquery =
           ::UserDetail.where(
-            ::UserDetail.arel_table[:provisioned_by_group_id].eq(arel_table[:source_id]).and(
+            ::UserDetail.arel_table[:enterprise_group_id].eq(arel_table[:source_id]).and(
               ::UserDetail.arel_table[:user_id].eq(arel_table[:user_id]))
           )
 
@@ -62,6 +62,10 @@ module EE
 
     def provisioned_by_this_group?
       user&.user_detail&.provisioned_by_group_id == source_id
+    end
+
+    def enterprise_user_of_this_group?
+      user&.user_detail&.enterprise_group_id == source_id
     end
 
     private

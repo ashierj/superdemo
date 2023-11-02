@@ -57,6 +57,10 @@ module EE
       false
     end
 
+    def enterprise_user_of_this_group?
+      false
+    end
+
     def group_saml_identity(root_ancestor: false)
       return unless group
 

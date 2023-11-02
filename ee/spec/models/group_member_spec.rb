@@ -158,20 +158,20 @@ RSpec.describe GroupMember, feature_category: :groups_and_projects do
 
   describe '.filter_by_enterprise_users' do
     let_it_be(:group) { create(:group) }
-    let_it_be(:provisioned_member_1_of_group) { group.add_developer(create(:user, provisioned_by_group_id: group.id)) }
-    let_it_be(:provisioned_member_2_of_group) { group.add_developer(create(:user, provisioned_by_group_id: group.id)) }
-    let_it_be(:normal_group_member) { group.add_developer(create(:user)) }
+    let_it_be(:enterprise_user_member_1_of_group) { group.add_developer(create(:user_detail, enterprise_group_id: group.id).user) }
+    let_it_be(:enterprise_user_member_2_of_group) { group.add_developer(create(:user_detail, enterprise_group_id: group.id).user) }
+    let_it_be(:non_enterprise_user_member_of_group) { group.add_developer(create(:user)) }
 
-    it 'returns members that are provisioned by a group when the filter is `true`' do
+    it 'returns members that are enterprise users of a group when the filter is `true`' do
       result = described_class.filter_by_enterprise_users(true)
 
-      expect(result.to_a).to match_array([provisioned_member_1_of_group, provisioned_member_2_of_group])
+      expect(result.to_a).to match_array([enterprise_user_member_1_of_group, enterprise_user_member_2_of_group])
     end
 
-    it 'returns members that are not provisioned by a group when the filter is `false`' do
+    it 'returns members that are not enterprise users of a group when the filter is `false`' do
       result = described_class.filter_by_enterprise_users(false)
 
-      expect(result.to_a).to match_array([normal_group_member])
+      expect(result.to_a).to match_array([non_enterprise_user_member_of_group])
     end
   end
 
@@ -404,6 +404,32 @@ RSpec.describe GroupMember, feature_category: :groups_and_projects do
     end
 
     context 'when user is not provisioned by the group' do
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when member does not have a related user (invited member)' do
+      let(:member) { invited }
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe 'enterprise_user_of_this_group?' do
+    let_it_be(:group) { create(:group) }
+
+    let(:user) { build(:user) }
+    let(:member) { build(:group_member, group: group, user: user) }
+    let(:invited) { build(:group_member, :invited, group: group) }
+
+    subject { member.enterprise_user_of_this_group? }
+
+    context 'when member is an enterprise user of this group' do
+      let!(:user_detail) { build(:user_detail, user: user, enterprise_group_id: group.id) }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when member is not an enterprise user of this group' do
       it { is_expected.to eq(false) }
     end
 

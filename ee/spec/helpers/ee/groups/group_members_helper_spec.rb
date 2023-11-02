@@ -48,9 +48,24 @@ RSpec.describe Groups::GroupMembersHelper do
       expect(subject[:export_csv_path]).not_to be_nil
     end
 
-    it 'adds `can_filter_by_enterprise`' do
-      allow(group.root_ancestor).to receive(:saml_enabled?).and_return(true)
-      expect(subject[:can_filter_by_enterprise]).to eq(true)
+    describe '`can_filter_by_enterprise`', :saas do
+      where(:domain_verification_availabe_for_group, :can_admin_group_member, :expected_value) do
+        true  | true  | true
+        true  | false | false
+        false | true  | false
+        false | false | false
+      end
+
+      with_them do
+        before do
+          stub_licensed_features(domain_verification: domain_verification_availabe_for_group)
+          allow(helper).to receive(:can?).with(current_user, :admin_group_member, group).and_return(can_admin_group_member)
+        end
+
+        it "is set to #{params[:expected_value]}" do
+          expect(subject[:can_filter_by_enterprise]).to eq(expected_value)
+        end
+      end
     end
 
     context 'banned members' do

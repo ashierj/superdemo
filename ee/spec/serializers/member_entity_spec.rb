@@ -38,10 +38,10 @@ RSpec.describe MemberEntity, feature_category: :system_access do
       expect(entity_hash[:can_override]).to be(true)
     end
 
-    it 'correctly exposes `provisioned_by_this_group`' do
-      allow(member).to receive(:provisioned_by_this_group?).and_return(true)
+    it 'correctly exposes `enterprise_user_of_this_group`' do
+      allow(member).to receive(:enterprise_user_of_this_group?).and_return(true)
 
-      expect(entity_hash[:provisioned_by_this_group]).to be(true)
+      expect(entity_hash[:enterprise_user_of_this_group]).to be(true)
     end
 
     it 'correctly exposes `banned`' do

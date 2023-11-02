@@ -92,6 +92,14 @@ RSpec.describe ProjectMember, feature_category: :groups_and_projects do
     it { is_expected.to eq(false) }
   end
 
+  describe '#enterprise_user_of_this_group?' do
+    let_it_be(:member) { build(:project_member) }
+
+    subject { member.enterprise_user_of_this_group? }
+
+    it { is_expected.to eq(false) }
+  end
+
   describe '#state' do
     let!(:group) { create(:group) }
     let!(:project) { create(:project, group: group) }

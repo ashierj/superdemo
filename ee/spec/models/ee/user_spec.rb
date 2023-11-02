@@ -2608,64 +2608,56 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#can_group_owner_disable_two_factor?' do
+  describe '#can_group_owner_disable_two_factor?', :saas do
     let_it_be(:group) { create(:group) }
-    let_it_be(:owner) { create(:user) }
+    let_it_be(:current_user) { create(:user) }
 
-    context 'when current_user is a group owner' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:domain_verification_availabe_for_group, :user_is_enterprise_user_of_the_group, :current_user_is_group_owner, :expected_value) do
+      false | false  | false  | false
+      false | false  | true   | false
+      false | true   | false  | false
+      false | true   | true   | false
+      true  | false  | false  | false
+      true  | false  | true   | false
+      true  | true   | false  | false
+      true  | true   | true   | true
+    end
+
+    with_them do
       before do
-        group.add_owner(owner)
-      end
+        stub_licensed_features(domain_verification: domain_verification_availabe_for_group)
 
-      context 'when user is provisioned by group' do
-        let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
+        user.user_detail.enterprise_group_id = user_is_enterprise_user_of_the_group ? group.id : -42
 
-        context 'when group is root group' do
-          it 'returns true' do
-            expect(user.can_group_owner_disable_two_factor?(group, owner)).to eq true
-          end
-        end
-
-        context 'when group is not root group' do
-          let(:parent) { build(:group) }
-
-          before do
-            group.parent = parent
-            parent.add_owner(create(:user))
-          end
-
-          it 'returns false' do
-            expect(user.can_group_owner_disable_two_factor?(group, owner)).to eq false
-          end
+        if current_user_is_group_owner
+          group.add_owner(current_user)
+        else
+          group.add_maintainer(current_user)
         end
       end
 
-      context 'when user is not provisioned by group' do
-        let_it_be(:user) { create(:user) }
-
-        it 'returns false' do
-          expect(user.can_group_owner_disable_two_factor?(group, owner)).to eq false
-        end
+      it "returns #{params[:expected_value]}" do
+        expect(user.can_group_owner_disable_two_factor?(group, current_user)).to eq expected_value
       end
     end
 
-    context 'when current_user is not a group owner' do
-      let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
-
-      before do
-        group.add_maintainer(owner)
-      end
-
+    context 'when group passed is nil' do
       it 'returns false' do
-        expect(user.can_group_owner_disable_two_factor?(group, owner)).to eq false
+        expect(user.can_group_owner_disable_two_factor?(nil, current_user)).to eq false
       end
     end
 
     context 'when current_user passed is nil' do
-      let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
-
       it 'returns false' do
         expect(user.can_group_owner_disable_two_factor?(group, nil)).to eq false
+      end
+    end
+
+    context 'when group and current_user passed are nil' do
+      it 'returns false' do
+        expect(user.can_group_owner_disable_two_factor?(nil, nil)).to eq false
       end
     end
   end
