@@ -103,7 +103,7 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
           it 'displays toggle off' do
             visit project_settings_repository_path(project)
 
-            page.within('[data-testid="protected-branches-list"]') do
+            within_testid('protected-branches-list') do
               expect(page).not_to have_css('.js-code-owner-toggle button.is-checked')
             end
           end
@@ -208,13 +208,41 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
     let!(:group_protected_branch) { create(:protected_branch, project: nil, group: group) }
 
     let(:visit_page) { project_settings_repository_path(project) }
-    let(:group_level_tr) { find('[data-testid="protected-branch"][data-test-type="group-level"]') }
-    let(:project_level_tr) { find('[data-testid="protected-branch"][data-test-type="project-level"]') }
-    let(:allowed_to_merge_input) { item_tr.find('[data-testid="protected-branch-allowed-to-merge"] .dropdown-toggle') }
-    let(:allowed_to_push_input) { item_tr.find('[data-testid="protected-branch-allowed-to-push"] .dropdown-toggle') }
-    let(:force_push_toggle) { item_tr.find('[data-testid="protected-branch-force-push-toggle"]') }
-    let(:code_owner_toggle) { item_tr.find('[data-testid="protected-branch-code-owner-toggle"]') }
-    let(:action_td) { item_tr.find('[data-testid="protected-branch-action"]') }
+    let(:group_level_tr) { find('[data-test-type="group-level"]') }
+    let(:project_level_tr) { find('[data-test-type="project-level"]') }
+    let(:allowed_to_merge_input) do
+      within(item_tr) do
+        within_testid('protected-branch-allowed-to-merge') do
+          find('.dropdown-toggle')
+        end
+      end
+    end
+
+    let(:allowed_to_push_input) do
+      within(item_tr) do
+        within_testid('protected-branch-allowed-to-push') do
+          find('.dropdown-toggle')
+        end
+      end
+    end
+
+    let(:force_push_toggle) do
+      within(item_tr) do
+        find_by_testid('protected-branch-force-push-toggle')
+      end
+    end
+
+    let(:code_owner_toggle) do
+      within(item_tr) do
+        find_by_testid('protected-branch-code-owner-toggle')
+      end
+    end
+
+    let(:action_td) do
+      within(item_tr) do
+        find_by_testid('protected-branch-action')
+      end
+    end
 
     before do
       stub_feature_flags(group_protected_branches: true)

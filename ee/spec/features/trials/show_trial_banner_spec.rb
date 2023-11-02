@@ -44,7 +44,7 @@ RSpec.describe 'Show trial banner', :js, feature_category: :purchase do
     it 'renders congratulations banner for group in group details page' do
       visit group_path(group, trial: true)
 
-      expect(find('[data-testid="trial-alert"]').text).to have_content('Congratulations, your free trial is activated.')
+      expect(find_by_testid('trial-alert').text).to have_content('Congratulations, your free trial is activated.')
     end
 
     it 'does not render congratulations banner for group in group billing page' do

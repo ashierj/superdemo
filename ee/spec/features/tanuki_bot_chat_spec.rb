@@ -21,7 +21,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
       it 'opens the drawer to chat with GitLab Duo' do
         wait_for_requests
 
-        page.within '[data-testid="chat-component"]' do
+        within_testid('chat-component') do
           expect(page).to have_text('GitLab Duo Chat')
         end
       end
@@ -29,7 +29,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
 
     context "when opening the drawer from the help center" do
       before do
-        page.within '[data-testid="super-sidebar"]' do
+        within_testid('super-sidebar') do
           click_button('Help')
           click_button('GitLab Duo Chat')
         end
@@ -40,7 +40,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
 
     context "when opening the drawer from the breadcrumbs" do
       before do
-        page.within '[data-testid="top-bar"]' do
+        within_testid('top-bar') do
           click_button('GitLab Duo Chat')
         end
       end
@@ -56,7 +56,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
     end
 
     it 'does not show the entry point in the breadcrumbs' do
-      page.within '[data-testid="top-bar"]' do
+      within_testid('top-bar') do
         expect(page).not_to have_button('GitLab Duo Chat')
       end
     end

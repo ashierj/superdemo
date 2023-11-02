@@ -54,7 +54,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
 
         click_link 'New workspace', match: :first
         click_button 'Select a project'
-        page.find("li[data-testid='listbox-item-#{project.full_path}']").click
+        find_by_testid("listbox-item-#{project.full_path}").click
         wait_for_requests
         # noinspection RubyMismatchedArgumentType - Rubymine can't resolve correct #select, probably not a fixable bug
         select agent.name, from: 'Select cluster agent'
@@ -239,7 +239,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
 
       # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       def expect_workspace_state_indicator(state)
-        indicator = page.find("[data-testid='workspace-state-indicator']")
+        indicator = find_by_testid('workspace-state-indicator')
 
         expect(indicator).to have_text(state)
       end

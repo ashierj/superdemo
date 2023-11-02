@@ -11,19 +11,19 @@ RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, fea
   let_it_be(:private_project) { create(:project, :repository, :private, namespace: private_group) }
 
   def choose_group(group)
-    find('[data-testid="group-filter"]').click
+    find_by_testid('group-filter').click
     wait_for_requests
 
-    page.within '[data-testid="group-filter"]' do
+    within_testid('group-filter') do
       click_button group.name
     end
   end
 
   def choose_project(project)
-    find('[data-testid="project-filter"]').click
+    find_by_testid('project-filter').click
     wait_for_requests
 
-    page.within '[data-testid="project-filter"]' do
+    within_testid('project-filter') do
       click_button project.name
     end
   end

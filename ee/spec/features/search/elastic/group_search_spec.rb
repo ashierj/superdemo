@@ -10,10 +10,10 @@ RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, :disable_
   let(:project) { create(:project, :repository, :wiki_repo, namespace: group) }
 
   def choose_group(group)
-    find('[data-testid="group-filter"]').click
+    find_by_testid('group-filter').click
     wait_for_requests
 
-    page.within '[data-testid="group-filter"]' do
+    within_testid('group-filter') do
       click_button group.name
     end
   end
