@@ -48,13 +48,74 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
     }
   end
 
+  let(:successful_response) do
+    {
+      safetyAttributes: { blocked: false },
+      predictions: [candidates: [{ content: "Hello, world" }]],
+      metadata: {
+        tokenMetadata: {
+          inputTokenCount: { totalTokens: 10, totalBillableCharacters: 30 },
+          outputTokenCount: { totalTokens: 20, totalBillableCharacters: 41 }
+        }
+      }
+    }
+  end
+
   let(:client) { described_class.new(user, tracking_context: tracking_context) }
 
-  shared_examples 'forwarding the request correctly' do
-    let(:successful_response) do
-      { safetyAttributes: { blocked: false }, predictions: [candidates: [{ content: "Hello, world" }]] }
+  RSpec.shared_context 'when request is successful' do
+    before do
+      allow_next_instance_of(Gitlab::Llm::VertexAi::Configuration) do |instance|
+        allow(instance).to receive(:model_config).and_return(model_config)
+        allow(instance).to receive(:headers).and_return(headers)
+        allow(instance).to receive(:access_token).and_return(access_token)
+
+        stub_request(:post, url).with(
+          headers: headers,
+          body: request_payload
+        ).to_return(status: 200, body: successful_response.to_json, headers: response_headers)
+      end
+    end
+  end
+
+  RSpec.shared_context 'when a failed response is returned from the API' do
+    let(:too_many_requests_response) do
+      {
+        error: {
+          code: 429,
+          message: 'Rate Limit Exceeded',
+          status: 'RATE_LIMIT_EXCEEDED',
+          details: [
+            {
+              "@type": 'type.googleapis.com/google.rpc.ErrorInfo',
+              reason: 'RATE_LIMIT_EXCEEDED',
+              metadata: {
+                service: 'aiplatform.googleapis.com',
+                method: 'google.cloud.aiplatform.v1.PredictionService.Predict'
+              }
+            }
+          ]
+        }
+      }
     end
 
+    before do
+      allow_next_instance_of(Gitlab::Llm::VertexAi::Configuration) do |instance|
+        allow(instance).to receive(:model_config).and_return(model_config)
+        allow(instance).to receive(:headers).and_return(headers)
+        allow(instance).to receive(:access_token).and_return(access_token)
+      end
+
+      stub_request(:post, url)
+        .to_return(status: 429, body: too_many_requests_response.to_json, headers: response_headers)
+        .then.to_return(status: 429, body: too_many_requests_response.to_json, headers: response_headers)
+        .then.to_return(status: 200, body: successful_response.to_json, headers: response_headers)
+
+      allow(client).to receive(:sleep).and_return(nil)
+    end
+  end
+
+  shared_examples 'forwarding the request correctly' do
     before do
       allow_next_instance_of(Gitlab::Llm::VertexAi::Configuration) do |instance|
         allow(instance).to receive(:model_config).and_return(model_config)
@@ -64,58 +125,22 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
     end
 
     context 'when a successful response is returned from the API' do
-      before do
-        stub_request(:post, url).with(
-          headers: headers,
-          body: request_payload
-        ).to_return(status: 200, body: successful_response.to_json, headers: response_headers)
-      end
+      include_context 'when request is successful'
 
       it 'returns the response' do
         expect(response).to be_present
         expect(::Gitlab::Json.parse(response.body, symbolize_names: true))
           .to match(hash_including(successful_response))
       end
-
-      it_behaves_like 'tracks events for AI requests', 2, 3
     end
 
     context 'when a failed response is returned from the API' do
-      let(:too_many_requests_response) do
-        {
-          error: {
-            code: 429,
-            message: 'Rate Limit Exceeded',
-            status: 'RATE_LIMIT_EXCEEDED',
-            details: [
-              {
-                "@type": 'type.googleapis.com/google.rpc.ErrorInfo',
-                reason: 'RATE_LIMIT_EXCEEDED',
-                metadata: {
-                  service: 'aiplatform.googleapis.com',
-                  method: 'google.cloud.aiplatform.v1.PredictionService.Predict'
-                }
-              }
-            ]
-          }
-        }
-      end
-
-      before do
-        stub_request(:post, url)
-          .to_return(status: 429, body: too_many_requests_response.to_json, headers: response_headers)
-          .then.to_return(status: 429, body: too_many_requests_response.to_json, headers: response_headers)
-          .then.to_return(status: 200, body: successful_response.to_json, headers: response_headers)
-
-        allow(client).to receive(:sleep).and_return(nil)
-      end
+      include_context 'when a failed response is returned from the API'
 
       it 'retries the request' do
         expect(response).to be_present
         expect(response.code).to eq(200)
       end
-
-      it_behaves_like 'tracks events for AI requests', 2, 3
     end
 
     context 'when a content blocked response is returned from the API' do
@@ -164,6 +189,14 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
     subject(:response) { client.chat(content: 'anything', **options) }
 
     it_behaves_like 'forwarding the request correctly'
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when request is successful'
+    end
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when a failed response is returned from the API'
+    end
   end
 
   describe '#messages_chat' do
@@ -178,30 +211,83 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
     subject(:response) { client.messages_chat(content: messages, **options) }
 
     it_behaves_like 'forwarding the request correctly'
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when request is successful'
+    end
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when a failed response is returned from the API'
+    end
   end
 
   describe '#text' do
     subject(:response) { client.text(content: 'anything', **options) }
 
     it_behaves_like 'forwarding the request correctly'
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when request is successful'
+    end
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when a failed response is returned from the API'
+    end
   end
 
   describe '#code' do
     subject(:response) { client.code(content: 'anything', **options) }
 
     it_behaves_like 'forwarding the request correctly'
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when request is successful'
+    end
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when a failed response is returned from the API'
+    end
   end
 
   describe '#code_completion' do
     subject(:response) { client.code_completion(content: { prefix: "any", suffix: "thing" }, **options) }
 
     it_behaves_like 'forwarding the request correctly'
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when request is successful'
+    end
+
+    it_behaves_like 'tracks events for AI requests', 10, 20 do
+      include_context 'when a failed response is returned from the API'
+    end
   end
 
   describe '#text_embeddings' do
     subject(:response) { client.text_embeddings(content: 'anything', **options) }
 
+    let(:successful_response) do
+      {
+        predictions: [
+          {
+            embeddings: {
+              values: [0.01, -0.02, 0.03],
+              statistics: { token_count: 2, truncated: false }
+            }
+          }
+        ],
+        metadata: { billableCharacterCount: 3 }
+      }
+    end
+
     it_behaves_like 'forwarding the request correctly'
+
+    it_behaves_like 'tracks embedding events for AI requests', 2 do
+      include_context 'when request is successful'
+    end
+
+    it_behaves_like 'tracks embedding events for AI requests', 2 do
+      include_context 'when a failed response is returned from the API'
+    end
   end
 
   describe '#request' do

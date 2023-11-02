@@ -27,6 +27,17 @@ module Gitlab
             value: token_size
           )
         end
+
+        def track_embedding_size(token_size)
+          Gitlab::Tracking.event(
+            self.class.to_s,
+            "tokens_per_embedding",
+            label: tracking_context[:action].to_s,
+            property: tracking_context[:request_id],
+            user: user,
+            value: token_size
+          )
+        end
       end
     end
   end
