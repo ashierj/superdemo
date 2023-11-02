@@ -185,4 +185,76 @@ RSpec.describe CodeSuggestions::Prompts::CodeCompletion::Anthropic, feature_cate
       end
     end
   end
+
+  context 'when prefix is bigger than prompt limit' do
+    let(:trimmed_prefix) { 'efix' }
+    let(:examples) { [] }
+
+    before do
+      stub_const("#{described_class}::MAX_INPUT_CHARS", 4)
+    end
+
+    it_behaves_like 'code suggestion prompt' do
+      let(:request_params) do
+        {
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          prompt_version: 2,
+          prompt: <<~PROMPT
+          Human: We want to fill in new  code inside the file 'test.py'.
+          The existing code is provided in <existing_code></existing_code> tags.
+          The new code belongs at the cursor, which is currently at the position of the <cursor> tag.
+          Review the existing code to understand it's logic and format then try to determine the most likely new code at the cursor.
+          Review the new code step by step to ensure the following
+          1. When inserted at the cursor it is valid  code.
+          2. It matches the existing code's variable, parameter and function names.
+          3. It does not repeat any existing code, if code has been repeated, discard it and try again.
+          Return new code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+          If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+
+            <existing_code>
+              #{trimmed_prefix}<cursor>
+            </existing_code>
+
+            Assistant: efix<new_code>
+          PROMPT
+        }
+      end
+    end
+  end
+
+  context 'when prefix together with suffix is bigger than prompt limit' do
+    let(:trimmed_suffix) { 'su' }
+    let(:examples) { [] }
+
+    before do
+      stub_const("#{described_class}::MAX_INPUT_CHARS", 8)
+    end
+
+    it_behaves_like 'code suggestion prompt' do
+      let(:request_params) do
+        {
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          prompt_version: 2,
+          prompt: <<~PROMPT
+          Human: We want to fill in new  code inside the file 'test.py'.
+          The existing code is provided in <existing_code></existing_code> tags.
+          The new code belongs at the cursor, which is currently at the position of the <cursor> tag.
+          Review the existing code to understand it's logic and format then try to determine the most likely new code at the cursor.
+          Review the new code step by step to ensure the following
+          1. When inserted at the cursor it is valid  code.
+          2. It matches the existing code's variable, parameter and function names.
+          3. It does not repeat any existing code, if code has been repeated, discard it and try again.
+          Return new code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+          If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+
+            <existing_code>
+              prefix<cursor>#{trimmed_suffix}
+            </existing_code>
+
+            Assistant: prefix<new_code>
+          PROMPT
+        }
+      end
+    end
+  end
 end

@@ -5,6 +5,9 @@ module CodeSuggestions
     module CodeCompletion
       class Anthropic < CodeSuggestions::Prompts::Base
         GATEWAY_PROMPT_VERSION = 2
+        # claude-instant-1 max_input_tokens is 100K tokens, token =~ 4 characters,
+        # 1000 tokens are left for prompt itself
+        MAX_INPUT_CHARS = 99000 * 4
 
         def request_params
           {
@@ -17,6 +20,9 @@ module CodeSuggestions
         private
 
         def prompt
+          trimmed_prefix = prefix.to_s.last(MAX_INPUT_CHARS)
+          trimmed_suffix = suffix.to_s.first(MAX_INPUT_CHARS - trimmed_prefix.size)
+
           <<~PROMPT
             Human: We want to fill in new #{language.name} code inside the file '#{file_path_info}'.
             The existing code is provided in <existing_code></existing_code> tags.
@@ -32,10 +38,10 @@ module CodeSuggestions
             #{examples_section}
 
             <existing_code>
-              #{prefix}<cursor>#{suffix}
+              #{trimmed_prefix}<cursor>#{trimmed_suffix}
             </existing_code>
 
-            Assistant: #{prefix&.lines&.last}<new_code>
+            Assistant: #{trimmed_prefix&.lines&.last}<new_code>
           PROMPT
         end
 

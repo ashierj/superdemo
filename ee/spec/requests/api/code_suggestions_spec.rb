@@ -467,9 +467,13 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             it 'sends requests to the code generation endpoint' do
               expected_body = body.merge(
                 prompt_version: 2,
-                prompt: prompt
+                prompt: prompt,
+                current_file: {
+                  file_name: file_name,
+                  content_above_cursor: prefix,
+                  content_below_cursor: ''
+                }
               )
-
               expect(Gitlab::Workhorse)
                 .to receive(:send_url)
                 .with(
@@ -560,7 +564,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             it 'sends requests to the code generation endpoint' do
               expected_body = body.merge(
                 prompt_version: 2,
-                prompt: prompt
+                prompt: prompt,
+                current_file: {
+                  file_name: file_name,
+                  content_above_cursor: prefix,
+                  content_below_cursor: ''
+                }
               )
 
               expect(Gitlab::Workhorse)

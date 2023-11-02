@@ -5,6 +5,9 @@ module CodeSuggestions
     module CodeGeneration
       class VertexAi < CodeSuggestions::Prompts::Base
         GATEWAY_PROMPT_VERSION = 2
+        # code-bison max_input_tokens=6144, token =~ 4 characters, 344 tokens are left for prompt itself
+        # https://cloud.google.com/vertex-ai/docs/generative-ai/learn/models
+        MAX_INPUT_CHARS = 5800 * 4
 
         def request_params
           {
@@ -41,7 +44,7 @@ module CodeSuggestions
             Already existing code:
 
             ```#{extension}
-            #{params[:prefix]}
+            #{params[:prefix].last(MAX_INPUT_CHARS)}
             ```
           CODE
         end

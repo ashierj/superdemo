@@ -11,11 +11,6 @@ module CodeSuggestions
         'completions'
       end
 
-      override :body
-      def body
-        unsafe_passthrough_params.merge(prompt.request_params).to_json
-      end
-
       private
 
       def prompt

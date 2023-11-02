@@ -123,6 +123,52 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
       end
     end
 
+    context 'when prefix is bigger than prompt limit' do
+      before do
+        stub_const("#{described_class}::MAX_INPUT_CHARS", 9)
+      end
+
+      it 'returns expected request params' do
+        request_params = {
+          model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+          prompt_version: 2,
+          prompt: <<~PROMPT
+
+
+            Human: You are a code completion AI that writes high-quality code like a senior engineer.
+            You are looking at 'main.go' file. You write code in between tags as in this example:
+
+            <new_code>
+            // Code goes here
+            </new_code>
+
+            This is a task to write new Go code in a file 'main.go', based on a given description.
+            You get the already existing code file in <existing_code> XML tags.
+            You get the description of the code that needs to be created in <instruction> XML tags.
+
+            It is your task to write valid and working Go code.
+            Only return in your response new code.
+            Do not provide any explanation.
+
+            <existing_code>
+            main() {
+
+            </existing_code>
+
+
+            <instruction>
+              Print a hello world message
+            </instruction>
+
+
+            Assistant: <new_code>
+          PROMPT
+        }
+
+        expect(subject.request_params).to eq(request_params)
+      end
+    end
+
     context 'when langauge is unknown' do
       let(:file_name) { 'file_without_extension' }
 
