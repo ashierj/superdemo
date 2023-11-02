@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ScimFinder do
+RSpec.describe ScimFinder, feature_category: :system_access do
   include LoginHelpers
 
   let_it_be(:group) { create(:group) }
@@ -99,8 +99,7 @@ RSpec.describe ScimFinder do
         let_it_be(:id) { create(:scim_identity, user: user) }
 
         before do
-          allow(Gitlab::Auth::Saml::Config).to receive_messages({ options: { name: 'saml', args: {} } })
-          allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
+          stub_basic_saml_config
         end
 
         it_behaves_like 'look up by id available'
@@ -119,7 +118,6 @@ RSpec.describe ScimFinder do
 
         before do
           stub_basic_saml_config
-          allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
         end
 
         it 'returns all related scim_identities' do
