@@ -32,16 +32,6 @@ RSpec.describe 'Update Google Cloud logging configuration', feature_category: :a
 
   subject(:mutate) { post_graphql_mutation(mutation, current_user: owner) }
 
-  shared_examples 'a mutation that does not update the configuration' do
-    it 'does not update the configuration' do
-      expect { mutate }.not_to change { config.reload.attributes }
-    end
-
-    it 'does not create audit event' do
-      expect { mutate }.not_to change { AuditEvent.count }
-    end
-  end
-
   context 'when feature is licensed' do
     before do
       stub_licensed_features(external_audit_events: true)
@@ -53,64 +43,9 @@ RSpec.describe 'Update Google Cloud logging configuration', feature_category: :a
         allow(Gitlab::Audit::Auditor).to receive(:audit)
       end
 
-      it 'updates the configuration' do
-        mutate
-
-        config.reload
-
-        expect(config.google_project_id_name).to eq(updated_google_project_id_name)
-        expect(config.client_email).to eq(updated_client_email)
-        expect(config.private_key).to eq(updated_private_key)
-        expect(config.log_id_name).to eq(updated_log_id_name)
-        expect(config.name).to eq(updated_destination_name)
-      end
-
-      it 'audits the update' do
-        Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Update::AUDIT_EVENT_COLUMNS.each do |column|
-          message = if column == :private_key
-                      "Changed #{column}"
-                    else
-                      "Changed #{column} from #{config[column]} to #{input[column.to_s.camelize(:lower).to_sym]}"
-                    end
-
-          expected_hash = {
-            name: Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Update::UPDATE_EVENT_NAME,
-            author: current_user,
-            scope: group,
-            target: config,
-            message: message
-          }
-
-          expect(Gitlab::Audit::Auditor).to receive(:audit).once.ordered.with(hash_including(expected_hash))
-        end
-
-        subject
-      end
-
-      context 'when the fields are updated with existing values' do
-        let(:input) do
-          {
-            id: config_gid,
-            googleProjectIdName: config.google_project_id_name,
-            name: config.name
-          }
-        end
-
-        it 'does not audit the event' do
-          expect(Gitlab::Audit::Auditor).not_to receive(:audit)
-
-          subject
-        end
-      end
-
-      context 'when no fields are provided for update' do
-        let(:input) do
-          {
-            id: config_gid
-          }
-        end
-
-        it_behaves_like 'a mutation that does not update the configuration'
+      it_behaves_like 'entity owner updating google cloud logging configuration' do
+        let(:audit_scope) { group }
+        let(:audit_event_name) { Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Update::UPDATE_EVENT_NAME }
       end
 
       context 'when there is error while updating' do
@@ -142,7 +77,7 @@ RSpec.describe 'Update Google Cloud logging configuration', feature_category: :a
       end
 
       it_behaves_like 'a mutation on an unauthorized resource'
-      it_behaves_like 'a mutation that does not update the configuration'
+      it_behaves_like 'a mutation that does not update the google cloud logging configuration'
     end
 
     context 'when current user is a group developer' do
@@ -151,7 +86,7 @@ RSpec.describe 'Update Google Cloud logging configuration', feature_category: :a
       end
 
       it_behaves_like 'a mutation on an unauthorized resource'
-      it_behaves_like 'a mutation that does not update the configuration'
+      it_behaves_like 'a mutation that does not update the google cloud logging configuration'
     end
 
     context 'when current user is a group guest' do
@@ -160,7 +95,7 @@ RSpec.describe 'Update Google Cloud logging configuration', feature_category: :a
       end
 
       it_behaves_like 'a mutation on an unauthorized resource'
-      it_behaves_like 'a mutation that does not update the configuration'
+      it_behaves_like 'a mutation that does not update the google cloud logging configuration'
     end
   end
 
@@ -170,6 +105,6 @@ RSpec.describe 'Update Google Cloud logging configuration', feature_category: :a
     end
 
     it_behaves_like 'a mutation on an unauthorized resource'
-    it_behaves_like 'a mutation that does not update the configuration'
+    it_behaves_like 'a mutation that does not update the google cloud logging configuration'
   end
 end
