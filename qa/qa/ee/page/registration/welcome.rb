@@ -19,7 +19,12 @@ module QA
             element 'create-a-new-project-radio'
           end
 
-          def has_get_started_button?(wait: Capybara.default_max_wait_time)
+          view 'ee/app/assets/javascripts/registrations/groups/new/components/group_project_fields.vue' do
+            element 'group-name'
+            element 'project-name'
+          end
+
+          def has_get_started_button?(wait: 0)
             has_element?('get-started-button', wait: wait)
           end
 
@@ -38,8 +43,17 @@ module QA
           def click_get_started_button
             Support::Retrier.retry_until do
               click_element 'get-started-button'
-              has_no_element?('get-started-button')
+
+              wait_until(message: 'Waiting for get started button not to be rendered') do
+                has_no_element?('get-started-button')
+              end
             end
+          end
+
+          def create_initial_project(project: SecureRandom.hex(4), group: SecureRandom.hex(4))
+            fill_element('group-name', group)
+            fill_element('project-name', project)
+            click_button("Create project")
           end
         end
       end
