@@ -1435,6 +1435,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
         it 'includes variable CI_MERGE_REQUEST_APPROVED=true' do
           expect(merge_request.predefined_variables.to_hash).to include('CI_MERGE_REQUEST_APPROVED' => 'true')
         end
+
+        context 'when the mr is temporarily unapproved' do
+          it 'does not include variable CI_MERGE_REQUEST_APPROVED' do
+            expect(merge_request.approval_state).to receive(:temporarily_unapproved?).and_return(true)
+
+            expect(merge_request.predefined_variables.to_hash.keys).not_to include('CI_MERGE_REQUEST_APPROVED')
+          end
+        end
       end
 
       context 'with a rule' do
