@@ -1,15 +1,18 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
+import { GlDuoChat } from '@gitlab/ui';
 import { v4 as uuidv4 } from 'uuid';
 import { __, s__ } from '~/locale';
+import { renderMarkdown } from '~/notes/utils';
+import { renderGFM } from '~/behaviors/markdown/render_gfm';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { helpCenterState } from '~/super_sidebar/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import Tracking from '~/tracking';
 import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
-import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 
 export default {
@@ -30,13 +33,15 @@ export default {
       __('How do I create a template?'),
     ],
   },
+  experimentHelpPagePath: helpPagePath('policy/experiment-beta-support', { anchor: 'experiment' }),
   components: {
-    AiGenieChat,
+    GlDuoChat,
   },
   mixins: [Tracking.mixin()],
   provide() {
     return {
-      trackingEventName: TANUKI_BOT_TRACKING_EVENT_NAME,
+      renderMarkdown,
+      renderGFM,
     };
   },
   props: {
@@ -108,6 +113,7 @@ export default {
     return {
       helpCenterState,
       clientSubscriptionId: uuidv4(),
+      toolName: i18n.GITLAB_DUO,
     };
   },
   computed: {
@@ -115,7 +121,7 @@ export default {
   },
   methods: {
     ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
-    sendMessage(question) {
+    onSendChatPrompt(question) {
       if (question !== GENIE_CHAT_RESET_MESSAGE) {
         this.setLoading();
       }
@@ -144,8 +150,19 @@ export default {
           });
         });
     },
-    closeDrawer() {
+    onChatClose() {
       this.helpCenterState.showTanukiBotChatDrawer = false;
+    },
+    onTrackFeedback({ feedbackOptions, extendedFeedback } = {}) {
+      this.track(TANUKI_BOT_TRACKING_EVENT_NAME, {
+        action: 'click_button',
+        label: 'response_feedback',
+        property: feedbackOptions,
+        extra: {
+          extendedFeedback,
+          prompt_location: 'after_content',
+        },
+      });
     },
   },
 };
@@ -153,19 +170,18 @@ export default {
 
 <template>
   <div>
-    <ai-genie-chat
+    <gl-duo-chat
       v-if="helpCenterState.showTanukiBotChatDrawer"
-      :is-loading="loading"
+      :title="$options.i18n.gitlabChat"
       :messages="messages"
-      :full-screen="true"
+      error=""
+      :is-loading="loading"
       :predefined-prompts="$options.i18n.predefinedPrompts"
-      is-chat-available
-      @send-chat-prompt="sendMessage"
-      @chat-hidden="closeDrawer"
-    >
-      <template #title>
-        {{ $options.i18n.gitlabChat }}
-      </template>
-    </ai-genie-chat>
+      :experiment-help-page-url="$options.experimentHelpPagePath"
+      :tool-name="toolName"
+      @send-chat-prompt="onSendChatPrompt"
+      @chat-hidden="onChatClose"
+      @track-feedback="onTrackFeedback"
+    />
   </div>
 </template>
