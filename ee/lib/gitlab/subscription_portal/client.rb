@@ -67,3 +67,7 @@ module Gitlab
     end
   end
 end
+
+# Added for JiHu
+# Used in https://jihulab.com/gitlab-cn/gitlab/-/blob/main-jh/jh/lib/jh/gitlab/subscription_portal/client.rb
+Gitlab::SubscriptionPortal::Client.prepend_mod
