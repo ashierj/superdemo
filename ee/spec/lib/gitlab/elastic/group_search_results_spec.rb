@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-    stub_licensed_features(epics: true)
+    stub_licensed_features(epics: true, group_wikis: true)
   end
 
   context 'issues search', :sidekiq_inline do
@@ -122,6 +122,69 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     end
 
     include_examples 'search results filtered by archived', nil, :backfill_archived_field_in_commits
+  end
+
+  context 'for wiki_blobs', :sidekiq_inline do
+    let_it_be_with_reload(:owner) { create(:user) }
+    let_it_be_with_reload(:group_wiki) { create(:group_wiki, group: group) }
+    let_it_be_with_reload(:unarchived_project) { create(:project, :wiki_repo, :public, creator: owner) }
+    let_it_be_with_reload(:archived_project) { create(:project, :archived, :wiki_repo, :public, creator: owner) }
+    let(:scope) { 'wiki_blobs' }
+
+    before do
+      # Due to a bug https://gitlab.com/gitlab-org/gitlab/-/issues/423525
+      # anonymous users can not search for group wikis in the public group
+      # TODO: add_member code can be removed after fixing the bug.
+      group.add_member(user, :owner)
+      [unarchived_project, archived_project].each { |p| p.update!(group: group) }
+      [unarchived_project.wiki, archived_project.wiki, group_wiki].each do |wiki|
+        wiki.create_page('test.md', 'foo bar')
+        wiki.index_wiki_blobs
+      end
+      ensure_elasticsearch_index!
+    end
+
+    context 'when include_archived is true' do
+      let(:filters) do
+        { include_archived: true }
+      end
+
+      it 'includes results from the archived project and group' do
+        collection = results.objects(scope)
+        expect(collection.size).to eq 3
+        expect(collection.map(&:project)).to include(archived_project)
+      end
+    end
+
+    context 'when feature_flag search_project_wikis_hide_archived_projects is false' do
+      before do
+        stub_feature_flags(search_project_wikis_hide_archived_projects: false)
+      end
+
+      it 'includes results from the archived project' do
+        collection = results.objects(scope)
+        expect(collection.size).to eq 3
+        expect(collection.map(&:project)).to include(archived_project)
+      end
+    end
+
+    context 'when migration reindex_wikis_to_fix_routing_and_backfill_archived is not finished' do
+      before do
+        set_elasticsearch_migration_to(:reindex_wikis_to_fix_routing_and_backfill_archived, including: false)
+      end
+
+      it 'includes results from the archived project' do
+        collection = results.objects(scope)
+        expect(collection.size).to eq 3
+        expect(collection.map(&:project)).to include(archived_project)
+      end
+    end
+
+    it 'excludes the wikis from the archived project' do
+      collection = results.objects(scope)
+      expect(collection.size).to eq 2
+      expect(collection.map(&:project)).not_to include(archived_project)
+    end
   end
 
   context 'for projects' do

@@ -242,7 +242,12 @@ module Elastic
       end
 
       def archived_filter(query_hash)
-        exclude_archived_query = { term: { archived: { _name: context.name(:non_archived), value: false } } }
+        archived_false_query = { bool: { filter: { term: { archived: { value: false } } } } }
+        archived_missing_query = { bool: { must_not: { exists: { field: 'archived' } } } }
+        exclude_archived_query = { bool: { _name: context.name(:non_archived),
+                                           should: [archived_false_query, archived_missing_query] } }
+        query_hash[:query][:bool] ||= {}
+        query_hash[:query][:bool][:filter] ||= []
         query_hash[:query][:bool][:filter] << exclude_archived_query
 
         query_hash
