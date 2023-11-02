@@ -163,18 +163,6 @@ export default {
       <hr class="gl-mt-6" />
     </div>
 
-    <h2>{{ $options.i18n.notificationsLimitTitle }}</h2>
-    <namespace-limits-section
-      :limit="plan.notification_limit || 0"
-      :label="$options.i18n.notificationsLimitLabel"
-      :description="$options.i18n.notificationsLimitDescription"
-      :error-message="notificationsLimitError"
-      :modal-body="$options.i18n.notificationsLimitModalBody"
-      :changelog-entries="changelog.notification_limit"
-      data-testid="notifications-limit-section"
-      @limit-change="handleNotificationsLimitChange"
-    />
-    <hr />
     <h2>{{ $options.i18n.enforcementLimitTitle }}</h2>
     <namespace-limits-section
       :limit="plan.enforcement_limit || 0"
@@ -185,6 +173,18 @@ export default {
       :changelog-entries="changelog.enforcement_limit"
       data-testid="enforcement-limit-section"
       @limit-change="handleEnforcementLimitChange"
+    />
+    <hr />
+    <h2>{{ $options.i18n.notificationsLimitTitle }}</h2>
+    <namespace-limits-section
+      :limit="plan.notification_limit || 0"
+      :label="$options.i18n.notificationsLimitLabel"
+      :description="$options.i18n.notificationsLimitDescription"
+      :error-message="notificationsLimitError"
+      :modal-body="$options.i18n.notificationsLimitModalBody"
+      :changelog-entries="changelog.notification_limit"
+      data-testid="notifications-limit-section"
+      @limit-change="handleNotificationsLimitChange"
     />
     <hr />
     <h2>{{ $options.i18n.dashboardLimitTitle }}</h2>
