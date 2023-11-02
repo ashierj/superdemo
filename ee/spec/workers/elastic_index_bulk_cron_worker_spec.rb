@@ -157,33 +157,4 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
   end
 
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :sticky
-  it_behaves_like 'an idempotent worker' do
-    before do
-      allow(Elastic::IndexingControl).to receive(:non_cached_pause_indexing?).and_return(false)
-    end
-
-    context 'when executed without arguments' do
-      it 'queues all shards for execution' do
-        shards.each do |shard_number|
-          expect(described_class).to receive(:perform_async).with(shard_number)
-        end
-
-        worker.perform
-      end
-    end
-
-    context 'when executed with a shard number argument' do
-      let(:job_args) { shards.first }
-
-      it 'executes the service under an exclusive lease' do
-        expect_to_obtain_exclusive_lease("#{lease_key}/shard/#{job_args}")
-
-        expect_next_instance_of(::Elastic::ProcessBookkeepingService) do |service|
-          expect(service).to receive(:execute).with(shards: [job_args])
-        end
-
-        worker.perform(job_args)
-      end
-    end
-  end
 end

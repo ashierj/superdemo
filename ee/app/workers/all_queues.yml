@@ -154,7 +154,7 @@
   :urgency: :low
   :resource_boundary: :cpu
   :weight: 1
-  :idempotent: true
+  :idempotent: false
   :tags: []
 - :name: cronjob:elastic_index_initial_bulk_cron
   :worker_name: ElasticIndexInitialBulkCronWorker
@@ -163,7 +163,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent: true
+  :idempotent: false
   :tags: []
 - :name: cronjob:elastic_migration
   :worker_name: Elastic::MigrationWorker
