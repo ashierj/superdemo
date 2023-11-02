@@ -31338,7 +31338,13 @@ msgstr ""
 msgid "Navigation|Plan"
 msgstr ""
 
+msgid "Navigation|Preferences"
+msgstr ""
+
 msgid "Navigation|Primary navigation"
+msgstr ""
+
+msgid "Navigation|Profile"
 msgstr ""
 
 msgid "Navigation|Projects you visit often will appear here."
