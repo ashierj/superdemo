@@ -31,6 +31,23 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
     end
 
     context 'with valid auth' do
+      context 'with feature flag disabled' do
+        before do
+          stub_feature_flags(zoekt_internal_api_register_nodes: false)
+        end
+
+        it 'does not save node and returns :unprocessable_entity' do
+          node = instance_double(::Search::Zoekt::Node, id: 123)
+          expect(::Search::Zoekt::Node).to receive(:find_or_initialize_by_task_request)
+            .with(valid_params).and_return(node)
+          expect(node).not_to receive(:save)
+
+          get api(endpoint), params: valid_params, headers: gitlab_shell_internal_api_request_header
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
+      end
+
       context 'when a task request is received with valid params' do
         it 'returns node ID for task request' do
           node = instance_double(::Search::Zoekt::Node, id: 123)
