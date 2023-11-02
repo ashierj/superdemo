@@ -5,8 +5,6 @@ module Mutations
     class Create < Base
       graphql_name 'MemberRoleCreate'
 
-      authorize :admin_group
-
       include Mutations::ResolvesNamespace
 
       argument :admin_group_member,

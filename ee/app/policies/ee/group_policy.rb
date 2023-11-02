@@ -497,6 +497,10 @@ module EE
         enable :destroy_group_member
       end
 
+      rule { custom_roles_allowed & owner }.policy do
+        enable :admin_member_role
+      end
+
       rule { can?(:read_group_security_dashboard) }.policy do
         enable :create_vulnerability_export
         enable :read_security_resource

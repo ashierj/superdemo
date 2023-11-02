@@ -46,12 +46,12 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
     context 'without a valid license' do
       let(:current_user) { owner }
 
-      it "returns not found error" do
+      it "returns forbidden error" do
         stub_licensed_features(custom_roles: false)
 
         subject
 
-        expect(response).to have_gitlab_http_status(:not_found)
+        expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
   end
