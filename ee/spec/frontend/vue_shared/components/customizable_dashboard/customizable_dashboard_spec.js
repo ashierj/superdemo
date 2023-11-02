@@ -4,6 +4,7 @@ import { RouterLinkStub } from '@vue/test-utils';
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
+import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
@@ -22,7 +23,10 @@ import {
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/available_visualizations_drawer.vue';
-import { NEW_DASHBOARD } from 'ee/analytics/analytics_dashboards/constants';
+import {
+  NEW_DASHBOARD,
+  EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
+} from 'ee/analytics/analytics_dashboards/constants';
 import {
   TEST_VISUALIZATION,
   TEST_EMPTY_DASHBOARD_SVG_PATH,
@@ -60,6 +64,7 @@ jest.mock('~/lib/utils/css_utils', () => ({
 
 describe('CustomizableDashboard', () => {
   let wrapper;
+  let trackingSpy;
 
   const sentryError = new Error('Network error');
 
@@ -129,6 +134,10 @@ describe('CustomizableDashboard', () => {
   const enterDashboardDescription = async (description) => {
     await findDescriptionInput().vm.$emit('input', description);
   };
+
+  beforeEach(() => {
+    trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
+  });
 
   describe('when being created and an error occurs while loading the CSS', () => {
     beforeEach(() => {
@@ -336,6 +345,14 @@ describe('CustomizableDashboard', () => {
 
         afterEach(() => {
           windowDialogSpy.mockRestore();
+        });
+
+        it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER}" event`, () => {
+          expect(trackingSpy).toHaveBeenCalledWith(
+            expect.any(String),
+            EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
+            expect.any(Object),
+          );
         });
 
         it('sets the grid to non-static mode', () => {
@@ -600,6 +617,14 @@ describe('CustomizableDashboard', () => {
         },
         NEW_DASHBOARD(),
         { glFeatures: { combinedAnalyticsDashboardsEditor: true } },
+      );
+    });
+
+    it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER}" event`, () => {
+      expect(trackingSpy).toHaveBeenCalledWith(
+        expect.any(String),
+        EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
+        expect.any(Object),
       );
     });
 

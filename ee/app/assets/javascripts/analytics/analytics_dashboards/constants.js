@@ -180,3 +180,8 @@ export const NEW_DASHBOARD = () => ({
 });
 
 export const FILE_ALREADY_EXISTS_SERVER_RESPONSE = 'A file with this name already exists';
+
+export const EVENT_LABEL_CREATED_DASHBOARD = 'user_created_custom_dashboard';
+export const EVENT_LABEL_EDITED_DASHBOARD = 'user_edited_custom_dashboard';
+export const EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER = 'user_viewed_dashboard_designer';
+export const EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD = 'user_viewed_custom_dashboard';

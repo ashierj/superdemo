@@ -8,9 +8,11 @@ import { cloneWithoutReferences } from '~/lib/utils/common_utils';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
 import { s__, __ } from '~/locale';
+import { InternalEvents } from '~/tracking';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
+import { EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER } from 'ee/analytics/analytics_dashboards/constants';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import PanelsBase from './panels_base.vue';
 import {
@@ -43,7 +45,7 @@ export default {
     UrlSync,
     AvailableVisualizationsDrawer,
   },
-  mixins: [glFeatureFlagsMixin()],
+  mixins: [InternalEvents.mixin(), glFeatureFlagsMixin()],
   props: {
     initialDashboard: {
       type: Object,
@@ -172,11 +174,16 @@ export default {
       },
       immediate: true,
     },
-    editing(editing) {
-      this.grid?.setStatic(!editing);
-      if (!editing) {
-        this.closeVisualizationDrawer();
-      }
+    editing: {
+      handler(editing) {
+        this.grid?.setStatic(!editing);
+        if (!editing) {
+          this.closeVisualizationDrawer();
+        } else {
+          this.trackEvent(EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER);
+        }
+      },
+      immediate: true,
     },
     initialDashboard() {
       this.resetToInitialDashboard();

@@ -8,6 +8,7 @@ import {
   HTTP_STATUS_BAD_REQUEST,
 } from '~/lib/utils/http_status';
 import { createAlert } from '~/alert';
+import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
@@ -19,7 +20,12 @@ import {
   updateApolloCache,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { NEW_DASHBOARD } from 'ee/analytics/analytics_dashboards/constants';
+import {
+  NEW_DASHBOARD,
+  EVENT_LABEL_CREATED_DASHBOARD,
+  EVENT_LABEL_EDITED_DASHBOARD,
+  EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
+} from 'ee/analytics/analytics_dashboards/constants';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 import { stubComponent } from 'helpers/stub_component';
@@ -60,6 +66,8 @@ Vue.use(VueApollo);
 
 describe('AnalyticsDashboard', () => {
   let wrapper;
+  let trackingSpy;
+
   const namespaceId = '1';
 
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
@@ -94,6 +102,10 @@ describe('AnalyticsDashboard', () => {
   const mockAvailableVisualizationsResponse = (response) => {
     mockAvailableVisualizationsHandler = jest.fn().mockResolvedValue(response);
   };
+
+  beforeEach(() => {
+    trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
+  });
 
   afterEach(() => {
     mockAnalyticsDashboardsHandler = jest.fn();
@@ -431,6 +443,14 @@ describe('AnalyticsDashboard', () => {
         it('sets changesSaved to true on the dashboard component', () => {
           expect(findDashboard().props('changesSaved')).toBe(true);
         });
+
+        it(`tracks the "${EVENT_LABEL_EDITED_DASHBOARD}" event`, () => {
+          expect(trackingSpy).toHaveBeenCalledWith(
+            expect.any(String),
+            EVENT_LABEL_EDITED_DASHBOARD,
+            expect.any(Object),
+          );
+        });
       });
 
       describe('with an invalid dashboard', () => {
@@ -542,17 +562,39 @@ describe('AnalyticsDashboard', () => {
       });
     });
 
+    describe('when a dashboard is user defined', () => {
+      beforeEach(() => {
+        mockDashboardResponse(TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+        createWrapper({
+          routeSlug:
+            TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE.data.project.customizableDashboards
+              .nodes[0]?.slug,
+        });
+
+        return waitForPromises();
+      });
+
+      it(`tracks the "${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}" event`, () => {
+        expect(trackingSpy).toHaveBeenCalledWith(
+          expect.any(String),
+          EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
+          expect.any(Object),
+        );
+      });
+    });
+
     describe('when a dashboard is new', () => {
       beforeEach(() => {
         createWrapper({
           props: { isNewDashboard: true },
           glFeatures: { combinedAnalyticsDashboardsEditor: true },
         });
+
+        return waitForPromises();
       });
 
-      it('creates a new dashboard and and disables the filter syncing', async () => {
-        await waitForPromises();
-
+      it('creates a new dashboard and and disables the filter syncing', () => {
         expect(findDashboard().props()).toMatchObject({
           initialDashboard: {
             ...NEW_DASHBOARD,
@@ -563,17 +605,37 @@ describe('AnalyticsDashboard', () => {
         });
       });
 
-      it('saves the dashboard as a new file', async () => {
-        await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+      it(`tracks the "${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}" event`, () => {
+        expect(trackingSpy).toHaveBeenCalledWith(
+          expect.any(String),
+          EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
+          expect.any(Object),
+        );
+      });
 
-        expect(saveCustomDashboard).toHaveBeenCalledWith({
-          dashboardSlug: 'analytics_overview',
-          dashboardConfig: expect.objectContaining({
-            title: 'Analytics Overview',
-            panels: expect.any(Array),
-          }),
-          projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
-          isNewFile: true,
+      describe('when saving', () => {
+        beforeEach(() => {
+          return mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+        });
+
+        it('saves the dashboard as a new file', () => {
+          expect(saveCustomDashboard).toHaveBeenCalledWith({
+            dashboardSlug: 'analytics_overview',
+            dashboardConfig: expect.objectContaining({
+              title: 'Analytics Overview',
+              panels: expect.any(Array),
+            }),
+            projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
+            isNewFile: true,
+          });
+        });
+
+        it(`tracks the "${EVENT_LABEL_CREATED_DASHBOARD}" event`, () => {
+          expect(trackingSpy).toHaveBeenCalledWith(
+            expect.any(String),
+            EVENT_LABEL_CREATED_DASHBOARD,
+            expect.any(Object),
+          );
         });
       });
     });
