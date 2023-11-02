@@ -20,8 +20,8 @@ module QA
               end
 
               view 'app/assets/javascripts/repository/components/blob_button_group.vue' do
-                element 'lock-button', /data-testid="lockBtnTestId"/ # rubocop:disable QA/ElementWithPattern
-                element 'disabled-lock-button', /data-testid="lockBtnTestId"/ # rubocop:disable QA/ElementWithPattern
+                element 'lock-button'
+                element 'disabled-lock-button'
               end
 
               view 'ee/app/assets/javascripts/vue_shared/components/code_owners/code_owners.vue' do
