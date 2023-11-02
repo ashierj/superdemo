@@ -5,6 +5,9 @@
   = render "layouts/one_trust"
   = render "layouts/bizible"
 
+- content_for :footer do
+  = render 'devise/shared/minimal_footer'
+
 = render "layouts/google_tag_manager_body"
 
 - experiment(:free_trial_registration_redesign, user: current_user) do |e|
