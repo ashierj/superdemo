@@ -28,20 +28,6 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           stub_licensed_features(dependency_scanning: true, license_scanning: true, security_dashboard: true)
         end
 
-        context 'when requesting HTML' do
-          let(:user) { developer }
-
-          before do
-            get project_dependencies_path(project, format: :html)
-          end
-
-          it { expect(response).to have_gitlab_http_status(:ok) }
-
-          it 'renders the side navigation with the correct submenu set as active' do
-            expect(response.body).to have_active_sub_navigation('Dependency list')
-          end
-        end
-
         context 'with existing report' do
           let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
 

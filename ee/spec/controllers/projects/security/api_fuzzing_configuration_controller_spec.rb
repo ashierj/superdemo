@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe Projects::Security::ApiFuzzingConfigurationController, feature_category: :fuzz_testing do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, namespace: group) }
-  let_it_be(:developer) { create(:user, :no_super_sidebar) }
-  let_it_be(:guest) { create(:user, :no_super_sidebar) }
+  let_it_be(:developer) { create(:user) }
+  let_it_be(:guest) { create(:user) }
 
   subject(:request) { get :show, params: { namespace_id: project.namespace, project_id: project } }
 
@@ -44,12 +44,6 @@ RSpec.describe Projects::Security::ApiFuzzingConfigurationController, feature_ca
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:show)
-      end
-
-      it 'renders the side navigation with the correct submenu set as active' do
-        request
-
-        expect(response.body).to have_active_sub_navigation('Security configuration')
       end
     end
 
