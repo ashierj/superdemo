@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module BulkImports
-  class PipelineBatchWorker # rubocop:disable Scalability/IdempotentWorker
+  class PipelineBatchWorker
     include ApplicationWorker
     include ExclusiveLeaseGuard
 

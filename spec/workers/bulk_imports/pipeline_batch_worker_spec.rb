@@ -152,13 +152,15 @@ RSpec.describe BulkImports::PipelineBatchWorker, feature_category: :importers do
         end
       end
 
-      context 'when pipeline is not retryable' do
-        it 'fails the batch and raises error' do
+      context 'when pipeline raises an error' do
+        it 'keeps batch status as `started` and lets the error bubble up' do
           allow_next_instance_of(pipeline_class) do |instance|
             allow(instance).to receive(:run).and_raise(StandardError, 'Something went wrong')
           end
 
           expect { worker.perform(batch.id) }.to raise_exception(StandardError)
+
+          expect(batch.reload).to be_started
         end
       end
     end

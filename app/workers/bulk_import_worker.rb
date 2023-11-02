@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BulkImportWorker # rubocop:disable Scalability/IdempotentWorker
+class BulkImportWorker
   include ApplicationWorker
 
   data_consistency :always
