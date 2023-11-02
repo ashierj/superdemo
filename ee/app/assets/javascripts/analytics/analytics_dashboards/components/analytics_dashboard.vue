@@ -5,6 +5,7 @@ import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { InternalEvents } from '~/tracking';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import {
   buildDefaultDashboardFilters,
@@ -13,7 +14,13 @@ import {
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { FILE_ALREADY_EXISTS_SERVER_RESPONSE, NEW_DASHBOARD } from '../constants';
+import {
+  FILE_ALREADY_EXISTS_SERVER_RESPONSE,
+  NEW_DASHBOARD,
+  EVENT_LABEL_CREATED_DASHBOARD,
+  EVENT_LABEL_EDITED_DASHBOARD,
+  EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
+} from '../constants';
 import { extractNamespaceData } from '../graphql/utils';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
@@ -28,7 +35,7 @@ export default {
     GlEmptyState,
     GlSkeletonLoader,
   },
-  mixins: [glFeatureFlagsMixin()],
+  mixins: [InternalEvents.mixin(), glFeatureFlagsMixin()],
   inject: {
     customDashboardsProject: {
       type: Object,
@@ -89,6 +96,13 @@ export default {
   computed: {
     showDateRangeFilter() {
       return !HIDE_DATE_RANGE_FILTER.includes(this.initialDashboard?.slug);
+    },
+  },
+  watch: {
+    initialDashboard(initialDashboard) {
+      if (initialDashboard?.userDefined) {
+        this.trackEvent(EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD);
+      }
     },
   },
   async created() {
@@ -215,6 +229,12 @@ export default {
           this.alert?.dismiss();
 
           this.$toast.show(s__('Analytics|Dashboard was saved successfully'));
+
+          if (this.isNewDashboard) {
+            this.trackEvent(EVENT_LABEL_CREATED_DASHBOARD);
+          } else {
+            this.trackEvent(EVENT_LABEL_EDITED_DASHBOARD);
+          }
 
           const apolloClient = this.$apollo.getClient();
           updateApolloCache({
