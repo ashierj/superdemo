@@ -10,7 +10,7 @@ import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constant
 import { InternalEvents } from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
-import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
+import getAllCustomizableDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_customizable_dashboards.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -18,6 +18,7 @@ import {
   TEST_TRACKING_KEY,
   TEST_CUSTOM_DASHBOARDS_PROJECT,
   TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE,
+  TEST_DASHBOARD_GRAPHQL_EMPTY_SUCCESS_RESPONSE,
 } from '../mock_data';
 
 const mockAlertDismiss = jest.fn();
@@ -54,7 +55,7 @@ describe('DashboardsList', () => {
     trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
 
     const mockApollo = createMockApollo([
-      [getAllProductAnalyticsDashboardsQuery, mockAnalyticsDashboardsHandler],
+      [getAllCustomizableDashboardsQuery, mockAnalyticsDashboardsHandler],
     ]);
 
     wrapper = shallowMountExtended(DashboardsList, {
@@ -158,7 +159,8 @@ describe('DashboardsList', () => {
         });
       });
 
-      it('should render the Value streams dashboards link', () => {
+      it('should render the Value streams dashboards link', async () => {
+        await waitForPromises();
         expect(findListItems()).toHaveLength(1);
         expect(findListItems().at(0).props('dashboard')).toMatchObject(
           VALUE_STREAMS_DASHBOARD_CONFIG,
@@ -190,17 +192,13 @@ describe('DashboardsList', () => {
   describe('when the product analytics feature is enabled', () => {
     const FEATURE = 'productAnalytics';
 
-    beforeEach(() => {
-      mockAnalyticsDashboardsHandler = jest
-        .fn()
-        .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
-
-      createWrapper({
-        features: [FEATURE],
-      });
-    });
-
     describe('and the feature has not been set up', () => {
+      beforeEach(() => {
+        createWrapper({
+          features: [FEATURE],
+        });
+      });
+
       it('renders the feature component', () => {
         expect(findProductAnalyticsOnboarding().exists()).toBe(true);
       });
@@ -220,6 +218,14 @@ describe('DashboardsList', () => {
 
     describe('and the feature has been set up', () => {
       beforeEach(() => {
+        mockAnalyticsDashboardsHandler = jest
+          .fn()
+          .mockResolvedValue(TEST_DASHBOARD_GRAPHQL_EMPTY_SUCCESS_RESPONSE);
+
+        createWrapper({
+          features: [FEATURE],
+        });
+
         findProductAnalyticsOnboarding().vm.$emit('complete');
       });
 
@@ -233,6 +239,16 @@ describe('DashboardsList', () => {
 
       describe('once loaded', () => {
         beforeEach(() => {
+          mockAnalyticsDashboardsHandler = jest
+            .fn()
+            .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
+
+          createWrapper({
+            features: [FEATURE],
+          });
+
+          findProductAnalyticsOnboarding().vm.$emit('complete');
+
           return waitForPromises();
         });
 
@@ -273,6 +289,14 @@ describe('DashboardsList', () => {
       const error = new Error(message);
 
       beforeEach(() => {
+        mockAnalyticsDashboardsHandler = jest
+          .fn()
+          .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
+
+        createWrapper({
+          features: [FEATURE],
+        });
+
         return findProductAnalyticsOnboarding().vm.$emit('error', error, true, message);
       });
 

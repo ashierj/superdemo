@@ -5,9 +5,7 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
-import { PRODUCT_ANALYTICS_FEATURE_DASHBOARDS, FEATURE_PRODUCT_ANALYTICS } from '../constants';
-import getAllProductAnalyticsDashboardsQuery from '../graphql/queries/get_all_product_analytics_dashboards.query.graphql';
-import { extractNamespaceData } from '../graphql/utils';
+import getAllCustomizableDashboardsQuery from '../graphql/queries/get_all_customizable_dashboards.query.graphql';
 import DashboardListItem from './list/dashboard_list_item.vue';
 
 const ONBOARDING_FEATURE_COMPONENTS = {
@@ -92,18 +90,13 @@ export default {
     showCustomDashboardSetupBanner() {
       return !this.customDashboardsProject && this.canConfigureDashboardsProject;
     },
-    unavailableFeatures() {
-      return this.features.filter(this.featureDisabled).filter(this.featureRequiresOnboarding);
-    },
   },
   mounted() {
     this.trackEvent('user_viewed_dashboard_list');
   },
   apollo: {
     userDashboards: {
-      // TODO: Rename once the type is updated to be just AnalyticsDashboards
-      // https://gitlab.com/gitlab-org/gitlab/-/issues/412290
-      query: getAllProductAnalyticsDashboardsQuery,
+      query: getAllCustomizableDashboardsQuery,
       variables() {
         return {
           fullPath: this.namespaceFullPath,
@@ -112,27 +105,9 @@ export default {
         };
       },
       update(data) {
-        const namespaceData = extractNamespaceData(data);
-        return namespaceData?.customizableDashboards?.nodes
-          .map((dashboard) => {
-            // TODO: Simplify checks when backend returns dashboards only for onboarded features
-            // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
-            if (
-              !dashboard.userDefined &&
-              this.unavailableFeatures.includes(FEATURE_PRODUCT_ANALYTICS) &&
-              PRODUCT_ANALYTICS_FEATURE_DASHBOARDS.includes(dashboard.slug)
-            ) {
-              return null;
-            }
+        const namespaceData = this.isProject ? data.project : data.group;
 
-            return dashboard;
-          })
-          .filter(Boolean);
-      },
-      // TODO: Remove when backend returns dashboards only for onboarded features
-      // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
-      skip() {
-        return this.featureRequiresOnboarding([FEATURE_PRODUCT_ANALYTICS]);
+        return namespaceData?.customizableDashboards?.nodes;
       },
       error(err) {
         this.onError(err);
@@ -146,9 +121,6 @@ export default {
     featureEnabled([feature]) {
       return this.features.includes(feature);
     },
-    featureDisabled([feature]) {
-      return !this.features.includes(feature);
-    },
     featureRequiresOnboarding([feature]) {
       return this.requiresOnboarding.includes(feature);
     },
@@ -157,6 +129,8 @@ export default {
     },
     onboardingComplete(feature) {
       this.requiresOnboarding = this.requiresOnboarding.filter((f) => f !== feature);
+
+      this.$apollo.queries.userDashboards.refetch();
     },
     onError(error, captureError = true, message = '') {
       this.alert = createAlert({

@@ -22,8 +22,8 @@ import {
   EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
 } from '../constants';
 import { extractNamespaceData } from '../graphql/utils';
-import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
-import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
+import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
+import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
 
 const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_stream_dashboard';
 const HIDE_DATE_RANGE_FILTER = [BUILT_IN_VALUE_STREAM_DASHBOARD];
@@ -126,7 +126,7 @@ export default {
   },
   apollo: {
     initialDashboard: {
-      query: getProductAnalyticsDashboardQuery,
+      query: getCustomizableDashboardQuery,
       variables() {
         return {
           fullPath: this.namespaceFullPath,

@@ -2,8 +2,8 @@ import produce from 'immer';
 import isEmpty from 'lodash/isEmpty';
 import uniqueId from 'lodash/uniqueId';
 import { TYPENAME_ANALYTICS_DASHBOARD_PANEL } from 'ee/analytics/analytics_dashboards/graphql/constants';
-import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
-import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
+import getCustomizableDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_customizable_dashboard.query.graphql';
+import getAllCustomizableDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_customizable_dashboards.query.graphql';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { formatDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
@@ -121,7 +121,7 @@ const updateDashboardDetailsApolloCache = ({
   isGroup,
 }) => {
   const getDashboardDetailsQuery = {
-    query: getProductAnalyticsDashboardQuery,
+    query: getCustomizableDashboardQuery,
     variables: {
       fullPath,
       slug,
@@ -166,7 +166,7 @@ const updateDashboardDetailsApolloCache = ({
 };
 
 /**
- * Adds/updates a newly created dashboard to the dashboards list cache from getAllProductAnalyticsDashboards
+ * Adds/updates a newly created dashboard to the dashboards list cache from getAllCustomizableDashboardsQuery
  */
 const updateDashboardsListApolloCache = ({
   apolloClient,
@@ -177,7 +177,7 @@ const updateDashboardsListApolloCache = ({
   isGroup,
 }) => {
   const getDashboardListQuery = {
-    query: getAllProductAnalyticsDashboardsQuery,
+    query: getAllCustomizableDashboardsQuery,
     variables: {
       fullPath,
       isProject,
