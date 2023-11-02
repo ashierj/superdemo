@@ -39,8 +39,8 @@ module EE
       super.merge({ target_branch_finder_path: target_branch_finder_path })
     end
 
-    def summarize_llm_enabled?(project, user)
-      ::Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor, user: user)
+    def summarize_llm_enabled?(project)
+      ::Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor)
     end
 
     override :review_bar_data
@@ -60,7 +60,7 @@ module EE
       new_reviewers = merge_request.reviewers - previous_reviewers
 
       new_reviewers.include?(recipient) &&
-        summarize_llm_enabled?(merge_request.project, recipient) &&
+        summarize_llm_enabled?(merge_request.project) &&
         diff_llm_summary(merge_request).present?
     end
 
