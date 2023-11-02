@@ -2,6 +2,7 @@ import { GlFilteredSearch } from '@gitlab/ui';
 import OperationToken from 'ee/tracing/components/operation_search_token.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ServiceToken from 'ee/tracing/components/service_search_token.vue';
+import AttributeSearchToken from 'ee/tracing/components/attribute_search_token.vue';
 import TracingListFilteredSearch from 'ee/tracing/components/tracing_list_filtered_search.vue';
 import { createMockClient } from 'helpers/mock_observability_client';
 
@@ -41,6 +42,14 @@ describe('TracingListFilteredSearch', () => {
     expect(wrapper.emitted('submit')).toHaveLength(1);
     expect(wrapper.emitted('submit')[0][0]).toEqual({
       filters: [{ type: 'period', value: '1h' }],
+    });
+  });
+
+  describe('attribute token', () => {
+    it('configure the attribute token', () => {
+      const tokens = wrapper.findComponent(GlFilteredSearch).props('availableTokens');
+      const attributeToken = tokens.find((t) => t.type === 'attribute');
+      expect(attributeToken.token).toBe(AttributeSearchToken);
     });
   });
 

@@ -11,9 +11,11 @@ import {
   OPERATION_FILTER_TOKEN_TYPE,
   TRACE_ID_FILTER_TOKEN_TYPE,
   DURATION_MS_FILTER_TOKEN_TYPE,
+  ATTRIBUTE_FILTER_TOKEN_TYPE,
 } from '../filters';
 import ServiceToken from './service_search_token.vue';
 import OperationToken from './operation_search_token.vue';
+import AttributeSearchToken from './attribute_search_token.vue';
 
 export default {
   components: {
@@ -91,6 +93,12 @@ export default {
             { value: '>', description: s__('Tracing|longer than') },
             { value: '<', description: s__('Tracing|shorter than') },
           ],
+        },
+        {
+          title: s__('Tracing|Attribute'),
+          type: ATTRIBUTE_FILTER_TOKEN_TYPE,
+          token: AttributeSearchToken,
+          operators: OPERATORS_IS,
         },
       ];
     },

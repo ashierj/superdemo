@@ -259,6 +259,7 @@ describe('buildClient', () => {
               { operator: '=', value: 'trace-id' },
               { operator: '!=', value: 'not-trace-id' },
             ],
+            attribute: [{ operator: '=', value: 'name1=value1' }],
           },
         });
         expect(getQueryParam()).toBe(
@@ -266,7 +267,8 @@ describe('buildClient', () => {
             '&operation=op&not[operation]=not-op' +
             '&service_name=service&not[service_name]=not-service' +
             '&period=5m' +
-            '&trace_id=trace-id&not[trace_id]=not-trace-id',
+            '&trace_id=trace-id&not[trace_id]=not-trace-id' +
+            '&attr_name=name1&attr_value=value1',
         );
       });
 
