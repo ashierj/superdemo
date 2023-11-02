@@ -18,6 +18,10 @@ module EE
         def operations_url(project)
           "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/services/$SERVICE_NAME$/operations"
         end
+
+        def metrics_url(project)
+          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/metrics/autocomplete"
+        end
       end
     end
   end

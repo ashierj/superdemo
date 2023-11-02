@@ -29,11 +29,14 @@ module Projects
 
     def shared_model(project)
       {
-        oauthUrl: ::Gitlab::Observability.oauth_url,
-        provisioningUrl: ::Gitlab::Observability.provisioning_url(project),
-        tracingUrl: ::Gitlab::Observability.tracing_url(project),
-        servicesUrl: ::Gitlab::Observability.services_url(project),
-        operationsUrl: ::Gitlab::Observability.operations_url(project)
+        apiConfig: {
+          oauthUrl: ::Gitlab::Observability.oauth_url,
+          provisioningUrl: ::Gitlab::Observability.provisioning_url(project),
+          tracingUrl: ::Gitlab::Observability.tracing_url(project),
+          servicesUrl: ::Gitlab::Observability.services_url(project),
+          operationsUrl: ::Gitlab::Observability.operations_url(project),
+          metricsUrl: ::Gitlab::Observability.metrics_url(project)
+        }
       }
     end
   end

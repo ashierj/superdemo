@@ -72,11 +72,14 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
         element = Nokogiri::HTML.parse(subject.body).at_css('#js-tracing')
 
         expected_view_model = {
-          oauthUrl: Gitlab::Observability.oauth_url,
-          provisioningUrl: Gitlab::Observability.provisioning_url(project),
-          tracingUrl: Gitlab::Observability.tracing_url(project),
-          servicesUrl: Gitlab::Observability.services_url(project),
-          operationsUrl: Gitlab::Observability.operations_url(project)
+          apiConfig: {
+            oauthUrl: Gitlab::Observability.oauth_url,
+            provisioningUrl: Gitlab::Observability.provisioning_url(project),
+            tracingUrl: Gitlab::Observability.tracing_url(project),
+            servicesUrl: Gitlab::Observability.services_url(project),
+            operationsUrl: Gitlab::Observability.operations_url(project),
+            metricsUrl: Gitlab::Observability.metrics_url(project)
+          }
         }.to_json
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
       end
@@ -97,11 +100,14 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
         element = Nokogiri::HTML.parse(subject.body).at_css('#js-tracing-details')
 
         expected_view_model = {
-          oauthUrl: Gitlab::Observability.oauth_url,
-          provisioningUrl: Gitlab::Observability.provisioning_url(project),
-          tracingUrl: Gitlab::Observability.tracing_url(project),
-          servicesUrl: Gitlab::Observability.services_url(project),
-          operationsUrl: Gitlab::Observability.operations_url(project),
+          apiConfig: {
+            oauthUrl: Gitlab::Observability.oauth_url,
+            provisioningUrl: Gitlab::Observability.provisioning_url(project),
+            tracingUrl: Gitlab::Observability.tracing_url(project),
+            servicesUrl: Gitlab::Observability.services_url(project),
+            operationsUrl: Gitlab::Observability.operations_url(project),
+            metricsUrl: Gitlab::Observability.metrics_url(project)
+          },
           traceId: 'test-trace-id',
           tracingIndexUrl: project_tracing_index_path(project)
         }.to_json
