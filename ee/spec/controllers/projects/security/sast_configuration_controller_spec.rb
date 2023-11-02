@@ -6,8 +6,8 @@ RSpec.describe Projects::Security::SastConfigurationController,
   feature_category: :static_application_security_testing do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, namespace: group) }
-  let_it_be(:developer) { create(:user, :no_super_sidebar) }
-  let_it_be(:guest) { create(:user, :no_super_sidebar) }
+  let_it_be(:developer) { create(:user) }
+  let_it_be(:guest) { create(:user) }
 
   before_all do
     group.add_developer(developer)
@@ -46,12 +46,6 @@ RSpec.describe Projects::Security::SastConfigurationController,
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:show)
-      end
-
-      it 'renders the side navigation with the correct submenu set as active' do
-        request
-
-        expect(response.body).to have_active_sub_navigation('Security configuration')
       end
     end
 

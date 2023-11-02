@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::Analytics::MergeRequestAnalyticsController, feature_category: :value_stream_management do
-  let_it_be(:current_user) { create(:user, :no_super_sidebar) }
+  let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:feature_name) { :project_merge_request_analytics }
@@ -51,18 +51,6 @@ RSpec.describe Projects::Analytics::MergeRequestAnalyticsController, feature_cat
       end
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
-    end
-
-    context 'when requesting HTML' do
-      render_views
-
-      before do
-        get :show, params: { namespace_id: group, project_id: project }, format: :html
-      end
-
-      it 'renders the side navigation with the correct submenu set as active' do
-        expect(response.body).to have_active_sub_navigation('Merge request')
-      end
     end
   end
 end
