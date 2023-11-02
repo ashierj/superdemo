@@ -50286,6 +50286,9 @@ msgstr ""
 msgid "Tracing|%{ms} ms"
 msgstr ""
 
+msgid "Tracing|Attribute"
+msgstr ""
+
 msgid "Tracing|Check again"
 msgstr ""
 
@@ -50379,7 +50382,13 @@ msgstr ""
 msgid "Tracing|longer than"
 msgstr ""
 
+msgid "Tracing|name"
+msgstr ""
+
 msgid "Tracing|shorter than"
+msgstr ""
+
+msgid "Tracing|value"
 msgstr ""
 
 msgid "Track groups of issues that share a theme, across projects and milestones"

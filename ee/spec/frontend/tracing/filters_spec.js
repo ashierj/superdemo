@@ -12,6 +12,7 @@ import {
   OPERATION_FILTER_TOKEN_TYPE,
   TRACE_ID_FILTER_TOKEN_TYPE,
   DURATION_MS_FILTER_TOKEN_TYPE,
+  ATTRIBUTE_FILTER_TOKEN_TYPE,
   queryToFilterObj,
   filterObjToQuery,
   filterObjToFilterToken,
@@ -30,6 +31,7 @@ describe('utils', () => {
         operation: 'my_operation',
         trace_id: 'my_trace_id',
         durationMs: '500',
+        attribute: 'foo=bar',
         [FILTERED_SEARCH_TERM]: 'test',
       });
 
@@ -49,6 +51,7 @@ describe('utils', () => {
         traceId: 'my_trace_id',
         durationMs: '500',
         search: 'test',
+        attribute: 'foo=bar',
       });
     });
 
@@ -64,6 +67,7 @@ describe('utils', () => {
         operation: null,
         traceId: null,
         durationMs: null,
+        attribute: null,
         search: undefined,
       });
     });
@@ -80,6 +84,7 @@ describe('utils', () => {
         traceId: 'my_trace_id',
         durationMs: '500',
         search: 'test',
+        attribute: 'foo=bar',
       });
 
       expect(filterToQueryObject).toHaveBeenCalledWith(
@@ -90,6 +95,7 @@ describe('utils', () => {
           trace_id: 'my_trace_id',
           durationMs: '500',
           'filtered-search-term': 'test',
+          attribute: 'foo=bar',
         },
         {
           customOperators: [
@@ -115,6 +121,7 @@ describe('utils', () => {
         traceId: 'my_trace_id',
         durationMs: '500',
         search: 'test',
+        attribute: 'foo=bar',
       });
 
       expect(prepareTokens).toHaveBeenCalledWith({
@@ -124,6 +131,7 @@ describe('utils', () => {
         [TRACE_ID_FILTER_TOKEN_TYPE]: 'my_trace_id',
         [DURATION_MS_FILTER_TOKEN_TYPE]: '500',
         [FILTERED_SEARCH_TERM]: 'test',
+        [ATTRIBUTE_FILTER_TOKEN_TYPE]: 'foo=bar',
       });
       expect(tokens).toBe(mockTokens);
     });
@@ -139,6 +147,7 @@ describe('utils', () => {
         [TRACE_ID_FILTER_TOKEN_TYPE]: 'my_trace_id',
         [DURATION_MS_FILTER_TOKEN_TYPE]: '500',
         [FILTERED_SEARCH_TERM]: 'test',
+        [ATTRIBUTE_FILTER_TOKEN_TYPE]: 'foo=bar',
       });
 
       const filterObj = filterTokensToFilterObj(mockTokens);
@@ -151,6 +160,7 @@ describe('utils', () => {
         traceId: 'my_trace_id',
         durationMs: '500',
         search: 'test',
+        attribute: 'foo=bar',
       });
     });
 
@@ -167,6 +177,7 @@ describe('utils', () => {
         traceId: undefined,
         durationMs: undefined,
         search: undefined,
+        attribute: undefined,
       });
     });
   });

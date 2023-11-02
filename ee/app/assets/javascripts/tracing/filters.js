@@ -11,6 +11,7 @@ export const SERVICE_NAME_FILTER_TOKEN_TYPE = 'service-name';
 export const OPERATION_FILTER_TOKEN_TYPE = 'operation';
 export const TRACE_ID_FILTER_TOKEN_TYPE = 'trace-id';
 export const DURATION_MS_FILTER_TOKEN_TYPE = 'duration-ms';
+export const ATTRIBUTE_FILTER_TOKEN_TYPE = 'attribute';
 
 const DEFAULT_PERIOD_FILTER = [{ operator: '=', value: '1h' }];
 
@@ -34,6 +35,7 @@ export function queryToFilterObj(url) {
     operation = null,
     trace_id: traceId = null,
     durationMs = null,
+    attribute = null,
   } = filter;
   const search = filter[FILTERED_SEARCH_TERM];
   return {
@@ -43,6 +45,7 @@ export function queryToFilterObj(url) {
     traceId,
     durationMs,
     search,
+    attribute,
   };
 }
 
@@ -54,6 +57,7 @@ export function filterObjToQuery(filters) {
       operation: filters.operation,
       trace_id: filters.traceId,
       durationMs: filters.durationMs,
+      attribute: filters.attribute,
       [FILTERED_SEARCH_TERM]: filters.search,
     },
     {
@@ -81,6 +85,7 @@ export function filterObjToFilterToken(filters) {
     [OPERATION_FILTER_TOKEN_TYPE]: filters.operation,
     [TRACE_ID_FILTER_TOKEN_TYPE]: filters.traceId,
     [DURATION_MS_FILTER_TOKEN_TYPE]: filters.durationMs,
+    [ATTRIBUTE_FILTER_TOKEN_TYPE]: filters.attribute,
     [FILTERED_SEARCH_TERM]: filters.search,
   });
 }
@@ -92,6 +97,7 @@ export function filterTokensToFilterObj(tokens) {
     [OPERATION_FILTER_TOKEN_TYPE]: operation,
     [TRACE_ID_FILTER_TOKEN_TYPE]: traceId,
     [DURATION_MS_FILTER_TOKEN_TYPE]: durationMs,
+    [ATTRIBUTE_FILTER_TOKEN_TYPE]: attribute,
     [FILTERED_SEARCH_TERM]: search,
   } = processFilters(tokens);
 
@@ -101,6 +107,7 @@ export function filterTokensToFilterObj(tokens) {
     operation,
     traceId,
     durationMs,
+    attribute,
     search,
   };
 }

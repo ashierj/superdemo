@@ -70,6 +70,7 @@ const SUPPORTED_FILTERS = {
   serviceName: ['=', '!='],
   period: ['='],
   traceId: ['=', '!='],
+  attribute: ['='],
   // free-text 'search' temporarily ignored https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2309
 };
 
@@ -82,6 +83,7 @@ const FILTER_TO_QUERY_PARAM = {
   serviceName: 'service_name',
   period: 'period',
   traceId: 'trace_id',
+  attribute: 'attribute',
 };
 
 const FILTER_OPERATORS_PREFIX = {
@@ -114,6 +116,25 @@ function getFilterParamName(filterName, operator) {
 }
 
 /**
+ * Process `filterValue` and append the proper query params to the  `searchParams` arg
+ *
+ * It mutates `searchParams`
+ *
+ * @param {String} filterValue The filter value, in the format `attribute_name=attribute_value`
+ * @param {String} filterOperator The filter operator
+ * @param {URLSearchParams} searchParams The URLSearchParams object where to append the proper query params
+ */
+function handleAttributeFilter(filterValue, filterOperator, searchParams) {
+  const [attrName, attrValue] = filterValue.split('=');
+  if (attrName && attrValue) {
+    if (filterOperator === '=') {
+      searchParams.append('attr_name', attrName);
+      searchParams.append('attr_value', attrValue);
+    }
+  }
+}
+
+/**
  * Builds URLSearchParams from a filter object of type { [filterName]: undefined | null | Array<{operator: String, value: any} }
  *  e.g:
  *
@@ -133,20 +154,22 @@ function filterObjToQueryParams(filterObj) {
 
   Object.keys(SUPPORTED_FILTERS).forEach((filterName) => {
     const filterValues = filterObj[filterName] || [];
-    const supportedFilters = filterValues.filter((f) =>
+    const validFilters = filterValues.filter((f) =>
       SUPPORTED_FILTERS[filterName].includes(f.operator),
     );
-    supportedFilters.forEach(({ operator, value: rawValue }) => {
-      const paramName = getFilterParamName(filterName, operator);
-
-      let value = rawValue;
-      if (filterName === 'durationMs') {
-        // converting durationMs to duration_nano
-        value *= 1000000;
-      }
-
-      if (paramName && value) {
-        filterParams.append(paramName, value);
+    validFilters.forEach(({ operator, value: rawValue }) => {
+      if (filterName === 'attribute') {
+        handleAttributeFilter(rawValue, operator, filterParams);
+      } else {
+        const paramName = getFilterParamName(filterName, operator);
+        let value = rawValue;
+        if (filterName === 'durationMs') {
+          // converting durationMs to duration_nano
+          value *= 1000000;
+        }
+        if (paramName && value) {
+          filterParams.append(paramName, value);
+        }
       }
     });
   });
