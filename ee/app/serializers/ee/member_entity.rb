@@ -19,7 +19,7 @@ module EE
 
       expose :override, as: :is_overridden
 
-      expose :provisioned_by_this_group?, as: :provisioned_by_this_group
+      expose :enterprise_user_of_this_group?, as: :enterprise_user_of_this_group
 
       expose :can_ban?, as: :can_ban
       expose :can_unban?, as: :can_unban

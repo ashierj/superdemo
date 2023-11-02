@@ -12,7 +12,12 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
   let_it_be(:user1) { create(:user, name: 'John Doe') }
   let_it_be(:user2) { create(:user, name: 'Mary Jane') }
   let_it_be(:user3) { create(:user, name: 'Peter Parker') }
-  let_it_be(:enterprise_user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
+  let_it_be(:enterprise_user) do
+    create(:user, :two_factor).tap do |user|
+      user.user_detail.update!(enterprise_group_id: group.id)
+    end
+  end
+
   let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
 
   before do
@@ -226,26 +231,32 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
       sign_in(user1)
     end
 
-    it 'can disable two-factor authentication', :js do
-      group.add_owner(user1)
-      group.add_developer(enterprise_user)
-
-      visit group_group_members_path(group)
-
-      page.within find_member_row(enterprise_user) do
-        show_actions
-        click_button s_('Members|Disable two-factor authentication')
+    context 'when domain_verification feature is available for the group' do
+      before do
+        stub_licensed_features(domain_verification: true)
       end
 
-      within_modal do
-        click_button _('Disable')
-      end
+      it 'can disable two-factor authentication', :js do
+        group.add_owner(user1)
+        group.add_developer(enterprise_user)
 
-      wait_for_requests
+        visit group_group_members_path(group)
 
-      page.within find_member_row(enterprise_user) do
-        show_actions
-        expect(page).not_to have_button(s_('Members|Disable two-factor authentication'))
+        page.within find_member_row(enterprise_user) do
+          show_actions
+          click_button s_('Members|Disable two-factor authentication')
+        end
+
+        within_modal do
+          click_button _('Disable')
+        end
+
+        wait_for_requests
+
+        page.within find_member_row(enterprise_user) do
+          show_actions
+          expect(page).not_to have_button(s_('Members|Disable two-factor authentication'))
+        end
       end
     end
   end

@@ -190,22 +190,25 @@ RSpec.describe GroupMembersFinder, feature_category: :groups_and_projects do
       end
     end
 
-    context 'filter by enterprise users' do
-      let_it_be(:saml_provider) { create(:saml_provider, group: group) }
-      let_it_be(:enterprise_member_1_of_root_group) { group.add_developer(create(:user, provisioned_by_group_id: group.id)) }
-      let_it_be(:enterprise_member_2_of_root_group) { group.add_developer(create(:user, provisioned_by_group_id: group.id)) }
+    context 'filter by enterprise users', :saas do
+      let_it_be(:enterprise_user_member_1_of_root_group) { group.add_developer(create(:user_detail, enterprise_group_id: group.id).user) }
+      let_it_be(:enterprise_user_member_2_of_root_group) { group.add_developer(create(:user_detail, enterprise_group_id: group.id).user) }
 
       let(:all_members) do
         [
           group_owner_membership,
           group_member_membership,
           dedicated_member_account_membership,
-          enterprise_member_1_of_root_group,
-          enterprise_member_2_of_root_group
+          enterprise_user_member_1_of_root_group,
+          enterprise_user_member_2_of_root_group
         ]
       end
 
-      context 'the group has SAML enabled' do
+      context 'when domain_verification feature is available for the group' do
+        before do
+          stub_licensed_features(domain_verification: true)
+        end
+
         context 'when requested by owner' do
           let(:current_user) { group_owner_membership.user }
 
@@ -213,7 +216,7 @@ RSpec.describe GroupMembersFinder, feature_category: :groups_and_projects do
             it 'returns Enterprise members when the filter is `true`' do
               result = described_class.new(group, current_user, params: { enterprise: 'true' }).execute
 
-              expect(result.to_a).to match_array([enterprise_member_1_of_root_group, enterprise_member_2_of_root_group])
+              expect(result.to_a).to match_array([enterprise_user_member_1_of_root_group, enterprise_user_member_2_of_root_group])
             end
 
             it 'returns members that are not Enterprise members when the filter is `false`' do
@@ -234,30 +237,6 @@ RSpec.describe GroupMembersFinder, feature_category: :groups_and_projects do
               expect(result.to_a).to match_array(all_members)
             end
           end
-
-          context 'inherited members of the group' do
-            let_it_be(:subgroup) { create(:group, parent: group) }
-            let_it_be(:subgroup_member_membership) { subgroup.add_developer(create(:user)) }
-
-            it 'returns all members including inherited members, that are Enterprise members, when the filter is `true`' do
-              result = described_class.new(subgroup, current_user, params: { enterprise: 'true' }).execute
-
-              expect(result.to_a).to match_array([enterprise_member_1_of_root_group, enterprise_member_2_of_root_group])
-            end
-
-            it 'returns all members including inherited members, that are not Enterprise members, when the filter is `false`' do
-              result = described_class.new(subgroup, current_user, params: { enterprise: 'false' }).execute
-
-              expect(result.to_a).to match_array(
-                [
-                  group_owner_membership,
-                  group_member_membership,
-                  dedicated_member_account_membership,
-                  subgroup_member_membership
-                ]
-              )
-            end
-          end
         end
 
         context 'when requested by non-owner' do
@@ -271,15 +250,15 @@ RSpec.describe GroupMembersFinder, feature_category: :groups_and_projects do
         end
       end
 
-      context 'the group does not have SAML enabled' do
+      context 'when domain_verification feature is not available for the group' do
         before do
-          group.saml_provider.destroy!
+          stub_licensed_features(domain_verification: false)
         end
 
         context 'when requested by owner' do
           let(:current_user) { group_owner_membership.user }
 
-          it 'returns all members, because `Enterprise` filter can only be applied on groups that have SAML enabled' do
+          it 'returns all members, because `Enterprise` filter can only be applied on a paid top-level group with domain_verification feature available' do
             result = described_class.new(group, current_user, params: { enterprise: 'true' }).execute
 
             expect(result.to_a).to match_array(all_members)

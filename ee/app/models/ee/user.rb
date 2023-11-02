@@ -543,12 +543,10 @@ module EE
       namespace_bans.find_by!(namespace: namespace)
     end
 
-    def can_group_owner_disable_two_factor?(group, user)
-      return false unless group && user
+    def can_group_owner_disable_two_factor?(group, current_user)
+      return false unless group && current_user
 
-      group.root? &&
-        group_provisioned_user?(group) &&
-        group.owned_by?(user)
+      group.domain_verification_available? && enterprise_user_of_group?(group) && group.owned_by?(current_user)
     end
 
     def third_party_ai_features_enabled?
@@ -644,10 +642,6 @@ module EE
       ::Gitlab::Com.gitlab_com_group_member?(self)
     end
     strong_memoize_attr :gitlab_com_member?
-
-    def group_provisioned_user?(group)
-      self.provisioned_by_group_id == group.id
-    end
 
     def block_auto_created_users?
       if ldap_user?

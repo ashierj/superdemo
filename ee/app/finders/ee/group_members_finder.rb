@@ -56,7 +56,7 @@ module EE::GroupMembersFinder
   end
 
   def can_filter_by_enterprise?
-    can_manage_members && group.root_ancestor.saml_enabled?
+    group.domain_verification_available? && can_manage_members
   end
 
   override :static_roles_only?

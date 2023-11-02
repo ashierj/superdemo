@@ -40,7 +40,7 @@ export const generateBadges = ({ member, isCurrentUser, canManageMembers }) => [
     variant: 'info',
   },
   {
-    show: member.provisionedByThisGroup,
+    show: member.enterpriseUserOfThisGroup,
     text: __('Enterprise'),
     variant: 'info',
   },
