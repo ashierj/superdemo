@@ -15,8 +15,8 @@ import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashb
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { FILE_ALREADY_EXISTS_SERVER_RESPONSE, NEW_DASHBOARD } from '../constants';
 import { extractNamespaceData } from '../graphql/utils';
-import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
-import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
+import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
+import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
 
 const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_stream_dashboard';
 const HIDE_DATE_RANGE_FILTER = [BUILT_IN_VALUE_STREAM_DASHBOARD];
@@ -112,7 +112,7 @@ export default {
   },
   apollo: {
     initialDashboard: {
-      query: getProductAnalyticsDashboardQuery,
+      query: getCustomizableDashboardQuery,
       variables() {
         return {
           fullPath: this.namespaceFullPath,

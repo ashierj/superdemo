@@ -10,8 +10,8 @@ import {
 import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
-import getAvailableVisualizations from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_visualizations.query.graphql';
+import getCustomizableDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_customizable_dashboard.query.graphql';
+import getAvailableVisualizations from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_customizable_visualizations.query.graphql';
 import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import {
@@ -133,7 +133,7 @@ describe('AnalyticsDashboard', () => {
     };
 
     const mockApollo = createMockApollo([
-      [getProductAnalyticsDashboardQuery, mockAnalyticsDashboardsHandler],
+      [getCustomizableDashboardQuery, mockAnalyticsDashboardsHandler],
       [getAvailableVisualizations, mockAvailableVisualizationsHandler],
     ]);
 

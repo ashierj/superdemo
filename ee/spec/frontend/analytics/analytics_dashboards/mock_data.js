@@ -229,6 +229,19 @@ export const TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
   },
 };
 
+export const TEST_DASHBOARD_GRAPHQL_EMPTY_SUCCESS_RESPONSE = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      customizableDashboards: {
+        nodes: [],
+        __typename: 'CustomizableDashboardConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
     project: {

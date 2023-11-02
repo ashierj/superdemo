@@ -15,8 +15,8 @@ import {
   DATE_RANGE_OPTIONS,
   DEFAULT_SELECTED_OPTION_INDEX,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
-import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
-import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
+import getCustomizableDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_customizable_dashboard.query.graphql';
+import getAllCustomizableDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_customizable_dashboards.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import {
   CATEGORY_SINGLE_STATS,
@@ -208,10 +208,10 @@ describe('updateApolloCache', () => {
 
   const setMockCache = (mockDashboardDetails, mockDashboardsList) => {
     mockReadQuery.mockImplementation(({ query }) => {
-      if (query === getProductAnalyticsDashboardQuery) {
+      if (query === getCustomizableDashboardQuery) {
         return mockDashboardDetails;
       }
-      if (query === getAllProductAnalyticsDashboardsQuery) {
+      if (query === getAllCustomizableDashboardsQuery) {
         return mockDashboardsList;
       }
 
@@ -257,7 +257,7 @@ describe('updateApolloCache', () => {
 
       expect(mockWriteQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: getProductAnalyticsDashboardQuery,
+          query: getCustomizableDashboardQuery,
           data: expect.objectContaining({
             project: expect.objectContaining({
               customizableDashboards: expect.objectContaining({
@@ -285,7 +285,7 @@ describe('updateApolloCache', () => {
       });
 
       expect(mockWriteQuery).not.toHaveBeenCalledWith(
-        expect.objectContaining({ query: getProductAnalyticsDashboardQuery }),
+        expect.objectContaining({ query: getCustomizableDashboardQuery }),
       );
     });
   });
@@ -304,7 +304,7 @@ describe('updateApolloCache', () => {
 
       expect(mockWriteQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: getAllProductAnalyticsDashboardsQuery,
+          query: getAllCustomizableDashboardsQuery,
           data: expect.objectContaining({
             project: expect.objectContaining({
               customizableDashboards: expect.objectContaining({
@@ -341,7 +341,7 @@ describe('updateApolloCache', () => {
 
       expect(mockWriteQuery).toHaveBeenCalledWith(
         expect.objectContaining({
-          query: getAllProductAnalyticsDashboardsQuery,
+          query: getAllCustomizableDashboardsQuery,
           data: expect.objectContaining({
             project: expect.objectContaining({
               customizableDashboards: expect.objectContaining({
@@ -369,7 +369,7 @@ describe('updateApolloCache', () => {
       });
 
       expect(mockWriteQuery).not.toHaveBeenCalledWith(
-        expect.objectContaining({ query: getAllProductAnalyticsDashboardsQuery }),
+        expect.objectContaining({ query: getAllCustomizableDashboardsQuery }),
       );
     });
   });

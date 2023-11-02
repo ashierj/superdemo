@@ -1,6 +1,6 @@
 #import "../fragments/customizable_dashboard.fragment.graphql"
 
-query getProductAnalyticsDashboard(
+query getCustomizableDashboard(
   $fullPath: ID!
   $slug: String
   $isGroup: Boolean = false
