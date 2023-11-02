@@ -2117,20 +2117,14 @@
       when: never
     - if: '$ANTHROPIC_API_KEY == null'
       when: never
-    - <<: *if-merge-request
-      changes: *ai-patterns
-      when: manual
-      allow_failure: true
-
-.rails:rules:ee-gitlab-duo-chat-vertex-ai:
-  rules:
-    - !reference [".rails:rules:ee-gitlab-duo-chat-base", rules]
     - if: '$VERTEX_AI_PROJECT == null'
       when: never
     - if: '$VERTEX_AI_CREDENTIALS == null'
       when: never
-    - if: '$VERTEX_AI_EMBEDDINGS == null'
-      when: never
+    - <<: *if-merge-request
+      changes: *ai-patterns
+      when: manual
+      allow_failure: true
 
 .rails:rules:as-if-foss-migration:
   rules:
