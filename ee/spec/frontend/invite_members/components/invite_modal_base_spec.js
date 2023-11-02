@@ -193,6 +193,7 @@ describe('EEInviteModalBase', () => {
       const actionButton = findActionButton();
 
       expect(actionButton.text()).toBe(OVERAGE_MODAL_CONTINUE_BUTTON);
+      expect(actionButton.attributes('data-qa-selector')).toBe('invite_button');
 
       expect(actionButton.props()).toMatchObject({
         variant: 'confirm',
