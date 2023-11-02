@@ -31,7 +31,7 @@ RSpec.describe 'Update Instance Google Cloud logging configuration', feature_cat
 
   subject(:mutate) { post_graphql_mutation(mutation, current_user: current_user) }
 
-  shared_examples 'a mutation that does not update the configuration' do
+  shared_examples 'a mutation that does not update the google cloud logging configuration' do
     it 'does not update the configuration' do
       expect { mutate }.not_to change { config.reload.attributes }
     end
@@ -51,65 +51,11 @@ RSpec.describe 'Update Instance Google Cloud logging configuration', feature_cat
         allow(Gitlab::Audit::Auditor).to receive(:audit)
       end
 
-      it 'updates the configuration' do
-        mutate
-
-        config.reload
-
-        expect(config.google_project_id_name).to eq(updated_google_project_id_name)
-        expect(config.client_email).to eq(updated_client_email)
-        expect(config.private_key).to eq(updated_private_key)
-        expect(config.log_id_name).to eq(updated_log_id_name)
-        expect(config.name).to eq(updated_destination_name)
-      end
-
-      it 'audits the update' do
-        Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Update::AUDIT_EVENT_COLUMNS.each do |column|
-          message = if column == :private_key
-                      "Changed #{column}"
-                    else
-                      "Changed #{column} from #{config[column]} to #{input[column.to_s.camelize(:lower).to_sym]}"
-                    end
-
-          expected_hash = {
-            name: Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Update::UPDATE_EVENT_NAME,
-            author: current_user,
-            scope: an_instance_of(Gitlab::Audit::InstanceScope),
-            target: config,
-            message: message,
-            target_details: updated_destination_name
-          }
-
-          expect(Gitlab::Audit::Auditor).to receive(:audit).once.ordered.with(hash_including(expected_hash))
+      it_behaves_like 'entity owner updating google cloud logging configuration' do
+        let(:audit_scope) { an_instance_of(Gitlab::Audit::InstanceScope) }
+        let(:audit_event_name) do
+          Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Update::UPDATE_EVENT_NAME
         end
-
-        subject
-      end
-
-      context 'when the fields are updated with existing values' do
-        let(:input) do
-          {
-            id: config_gid,
-            googleProjectIdName: config.google_project_id_name,
-            name: config.name
-          }
-        end
-
-        it 'does not audit the event' do
-          expect(Gitlab::Audit::Auditor).not_to receive(:audit)
-
-          subject
-        end
-      end
-
-      context 'when no fields are provided for update' do
-        let(:input) do
-          {
-            id: config_gid
-          }
-        end
-
-        it_behaves_like 'a mutation that does not update the configuration'
       end
 
       context 'when there is error while updating' do
@@ -141,7 +87,7 @@ RSpec.describe 'Update Instance Google Cloud logging configuration', feature_cat
 
       it_behaves_like 'a mutation that returns top-level errors',
         errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
-      it_behaves_like 'a mutation that does not update the configuration'
+      it_behaves_like 'a mutation that does not update the google cloud logging configuration'
     end
   end
 
@@ -152,6 +98,6 @@ RSpec.describe 'Update Instance Google Cloud logging configuration', feature_cat
 
     it_behaves_like 'a mutation that returns top-level errors',
       errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
-    it_behaves_like 'a mutation that does not update the configuration'
+    it_behaves_like 'a mutation that does not update the google cloud logging configuration'
   end
 end

@@ -26,7 +26,7 @@ module AuditEvents
         format: {
           with: GOOGLE_PROJECT_ID_NAME_REGEX,
           message: 'must only contain lowercase letters, digits, or hyphens, ' \
-                   'and must start and end with a letter or digit'
+                   'and must start with a letter and end with a letter or a digit'
         },
         length: { in: 6..30 }
 
