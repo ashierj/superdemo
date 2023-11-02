@@ -14,7 +14,7 @@ RSpec.describe 'Projects > Snippets > Project snippet', :js, feature_category: :
   let(:anchor) { nil }
   let(:file_path) { 'files/ruby/popen.rb' }
 
-  subject do
+  def visit_page
     visit project_snippet_path(project, snippet, anchor: anchor)
   end
 
@@ -28,6 +28,7 @@ RSpec.describe 'Projects > Snippets > Project snippet', :js, feature_category: :
   context 'when signed in' do
     before do
       sign_in(user)
+      visit_page
     end
 
     context 'as project member' do
@@ -53,6 +54,10 @@ RSpec.describe 'Projects > Snippets > Project snippet', :js, feature_category: :
   end
 
   context 'when unauthenticated' do
+    before do
+      visit_page
+    end
+
     it_behaves_like 'show and render proper snippet blob'
     it_behaves_like 'does not show New Snippet button'
   end

@@ -8,10 +8,6 @@ RSpec.describe 'Snippet', :js, feature_category: :source_code_management do
   let(:anchor) { nil }
   let(:file_path) { 'files/ruby/popen.rb' }
 
-  subject do
-    visit snippet_path(snippet, anchor: anchor)
-  end
-
   before do
     # rubocop: disable RSpec/AnyInstanceOf -- TODO: The usage of let_it_be forces us
     allow_any_instance_of(Snippet).to receive(:blobs)
@@ -19,9 +15,14 @@ RSpec.describe 'Snippet', :js, feature_category: :source_code_management do
     # rubocop: enable RSpec/AnyInstanceOf
   end
 
+  def visit_page
+    visit snippet_path(snippet, anchor: anchor)
+  end
+
   context 'when signed in' do
     before do
       sign_in(user)
+      visit_page
     end
 
     context 'as the snippet owner' do
@@ -50,12 +51,14 @@ RSpec.describe 'Snippet', :js, feature_category: :source_code_management do
   end
 
   context 'when unauthenticated' do
+    before do
+      visit_page
+    end
+
     it_behaves_like 'show and render proper snippet blob'
     it_behaves_like 'does not show New Snippet button'
 
     it 'shows the "Explore" sidebar' do
-      subject
-
       expect(page).to have_css('#super-sidebar-context-header', text: 'Explore')
     end
   end
