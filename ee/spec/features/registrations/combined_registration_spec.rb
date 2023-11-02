@@ -30,22 +30,22 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
   end
 
   it 'A user can create a group and project' do
-    page.within('[data-testid="url-group-path"]') do
+    within_testid('url-group-path') do
       expect(page).to have_content('{group}')
     end
 
-    page.within('[data-testid="url-project-path"]') do
+    within_testid('url-project-path') do
       expect(page).to have_content('{project}')
     end
 
     fill_in 'group_name', with: '@_'
     fill_in 'blank_project_name', with: 'test project'
 
-    page.within('[data-testid="url-group-path"]') do
+    within_testid('url-group-path') do
       expect(page).to have_content('_')
     end
 
-    page.within('[data-testid="url-project-path"]') do
+    within_testid('url-project-path') do
       expect(page).to have_content('test-project')
     end
 
@@ -55,7 +55,7 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
 
     fill_in 'group_name', with: 'test group'
 
-    page.within('[data-testid="url-group-path"]') do
+    within_testid('url-group-path') do
       expect(page).to have_content('test-group')
     end
 
@@ -67,7 +67,7 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
   it 'a user can create a group and import a project' do
     click_on 'Import'
 
-    page.within('[data-testid="url-group-path"]') do
+    within_testid('url-group-path') do
       expect(page).to have_content('{group}')
     end
 
@@ -79,7 +79,7 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
 
     fill_in 'import_group_name', with: 'test group'
 
-    page.within('[data-testid="url-group-path"]') do
+    within_testid('url-group-path') do
       expect(page).to have_content('test-group')
     end
 
@@ -100,8 +100,8 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
   end
 
   def expect_filled_form_and_error_message
-    expect(find('[data-testid="group-name"]').value).to eq('@_')
-    expect(find('[data-testid="project-name"]').value).to eq('test project')
+    expect(find_by_testid('group-name').value).to eq('@_')
+    expect(find_by_testid('project-name').value).to eq('test project')
 
     page.within('#error_explanation') do
       expect(page).to have_content('The Group contains the following errors')

@@ -183,7 +183,7 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
   end
 
   def fill_in_trial_selection_form_for_new_group(name: 'gitlab')
-    within('[data-testid="trial-form"]') do
+    within_testid('trial-form') do
       expect(page).to have_text('New group name')
     end
 
