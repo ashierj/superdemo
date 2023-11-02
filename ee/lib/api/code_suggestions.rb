@@ -13,6 +13,7 @@ module API
     # summary of limits on accepted parameters
     # (https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist#completions)
     MAX_BODY_SIZE = 500_000
+    MAX_CONTENT_SIZE = 400_000
 
     allow_access_with_scope :ai_features
 
@@ -108,8 +109,8 @@ module API
         params do
           requires :current_file, type: Hash do
             requires :file_name, type: String, limit: 255, desc: 'The name of the current file'
-            requires :content_above_cursor, type: String, limit: 100_000, desc: 'The content above cursor'
-            optional :content_below_cursor, type: String, limit: 100_000, desc: 'The content below cursor'
+            requires :content_above_cursor, type: String, limit: MAX_CONTENT_SIZE, desc: 'The content above cursor'
+            optional :content_below_cursor, type: String, limit: MAX_CONTENT_SIZE, desc: 'The content below cursor'
           end
           optional :intent, type: String, values:
             [

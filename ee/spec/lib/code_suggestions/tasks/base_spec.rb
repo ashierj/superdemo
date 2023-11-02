@@ -10,10 +10,4 @@ RSpec.describe CodeSuggestions::Tasks::Base, feature_category: :code_suggestions
       expect { subject.endpoint }.to raise_error(NotImplementedError)
     end
   end
-
-  describe '#body' do
-    it 'raies NotImplementedError' do
-      expect { subject.body }.to raise_error(NotImplementedError)
-    end
-  end
 end

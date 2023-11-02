@@ -5,6 +5,8 @@ module CodeSuggestions
     module CodeGeneration
       class Anthropic < CodeSuggestions::Prompts::Base
         GATEWAY_PROMPT_VERSION = 2
+        # claude-2 max_input_tokens is 100K tokens, token =~ 4 characters, 1000 tokens are left for prompt itself
+        MAX_INPUT_CHARS = 99000 * 4
 
         def request_params
           {
@@ -57,7 +59,7 @@ module CodeSuggestions
 
           <<~CODE
             <existing_code>
-            #{params[:prefix]}
+            #{params[:prefix].last(MAX_INPUT_CHARS)}
             </existing_code>
           CODE
         end
