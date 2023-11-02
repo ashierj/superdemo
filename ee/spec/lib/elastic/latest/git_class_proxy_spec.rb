@@ -34,13 +34,50 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
             current_user: user,
             public_and_internal_projects: true,
             order_by: nil,
-            sort: nil
+            sort: nil,
+            search_scope: 'global'
           }
         end
 
         it 'uses the correct elasticsearch query' do
           subject.elastic_search('*', type: 'wiki_blob', options: search_options)
           assert_named_queries('doc:is_a:wiki_blob', 'blob:authorized:project', 'blob:match:search_terms')
+        end
+
+        context 'for filtering archived projects' do
+          context 'when include_archived is true' do
+            it 'does not adds non_archived filter query' do
+              subject.elastic_search('*', type: 'wiki_blob', options: search_options.merge(include_archived: true))
+              assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', without: ['non_archived'])
+            end
+          end
+
+          context 'when search_project_wikis_hide_archived_projects is false' do
+            before do
+              stub_feature_flags(search_project_wikis_hide_archived_projects: false)
+            end
+
+            it 'does not adds non_archived filter query' do
+              subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+              assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', without: ['non_archived'])
+            end
+          end
+
+          context 'when migration reindex_wikis_to_fix_routing_and_backfill_archived is not finished' do
+            before do
+              set_elasticsearch_migration_to(:reindex_wikis_to_fix_routing_and_backfill_archived, including: false)
+            end
+
+            it 'does not adds non_archived filter query' do
+              subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+              assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', without: ['non_archived'])
+            end
+          end
+
+          it 'adds non_archived filter query' do
+            subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+            assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', 'non_archived')
+          end
         end
       end
 
@@ -52,7 +89,8 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
             group_ids: [project.namespace.id],
             public_and_internal_projects: false,
             order_by: nil,
-            sort: nil
+            sort: nil,
+            search_scope: 'group'
           }
         end
 
@@ -71,23 +109,60 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
           end
         end
 
-        context 'when performing a project search' do
-          let(:search_options) do
-            {
-              current_user: user,
-              project_ids: [project.id],
-              public_and_internal_projects: false,
-              order_by: nil,
-              sort: nil,
-              repository_id: project.id
-            }
+        context 'for filtering archived projects' do
+          context 'when include_archived is true' do
+            it 'does not adds non_archived filter query' do
+              subject.elastic_search('*', type: 'wiki_blob', options: search_options.merge(include_archived: true))
+              assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', without: ['non_archived'])
+            end
           end
 
-          it 'uses the correct elasticsearch query' do
-            subject.elastic_search('*', type: 'wiki_blob', options: search_options)
-            assert_named_queries('doc:is_a:wiki_blob', 'blob:authorized:project', 'blob:match:search_terms',
-              'blob:related:repositories')
+          context 'when search_project_wikis_hide_archived_projects is false' do
+            before do
+              stub_feature_flags(search_project_wikis_hide_archived_projects: false)
+            end
+
+            it 'does not adds non_archived filter query' do
+              subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+              assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', without: ['non_archived'])
+            end
           end
+
+          context 'when migration reindex_wikis_to_fix_routing_and_backfill_archived is not finished' do
+            before do
+              set_elasticsearch_migration_to(:reindex_wikis_to_fix_routing_and_backfill_archived, including: false)
+            end
+
+            it 'does not adds non_archived filter query' do
+              subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+              assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', without: ['non_archived'])
+            end
+          end
+
+          it 'adds non_archived filter query' do
+            subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+            assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', 'non_archived')
+          end
+        end
+      end
+
+      context 'when performing a project search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            project_ids: [project.id],
+            public_and_internal_projects: false,
+            order_by: nil,
+            sort: nil,
+            repository_id: project.id,
+            search_scope: 'project'
+          }
+        end
+
+        it 'uses the correct elasticsearch query' do
+          subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+          assert_named_queries('doc:is_a:wiki_blob', 'blob:authorized:project', 'blob:match:search_terms',
+            'blob:related:repositories', without: ['non_archived'])
         end
       end
 

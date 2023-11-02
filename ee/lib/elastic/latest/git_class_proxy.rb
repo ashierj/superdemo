@@ -378,6 +378,7 @@ module Elastic
           }
         end
 
+        query_hash = archived_filter(query_hash) if type == 'wiki_blob' && archived_filter_applicable_on_wiki?(options)
         # inject the `id` part of repository as project_ids
         repository_ids = [options[:repository_id]].flatten
         if type == 'wiki_blob' && repository_ids.any?
@@ -385,7 +386,7 @@ module Elastic
         end
 
         if type == 'blob' && archived_filter_applicable_for_blob_search?(options)
-          query_hash = context.name(:archived) { archived_filter(query_hash) }
+          query_hash = archived_filter(query_hash)
         end
 
         [query_hash, options]
@@ -413,6 +414,16 @@ module Elastic
 
       def replace_wiki_project_with_wiki_in_rid?
         !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
+      end
+
+      def backfill_archived_on_wikis_finished?
+        ::Elastic::DataMigrationService.migration_has_finished?(:reindex_wikis_to_fix_routing_and_backfill_archived)
+      end
+
+      def archived_filter_applicable_on_wiki?(options)
+        !options[:include_archived] && options[:search_scope] != 'project' &&
+          Feature.enabled?(:search_project_wikis_hide_archived_projects, options[:current_user]) &&
+          backfill_archived_on_wikis_finished?
       end
     end
   end

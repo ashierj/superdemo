@@ -314,7 +314,7 @@ module Gitlab
         when :blobs
           base_options.merge(filters.slice(:language, :include_archived))
         when :wiki_blobs
-          base_options.merge(root_ancestor_ids: root_ancestor_ids, routing_disabled: !reindex_wikis_to_fix_routing_done?)
+          base_options.merge(root_ancestor_ids: root_ancestor_ids, routing_disabled: !reindex_wikis_to_fix_routing_done?).merge(filters.slice(:include_archived))
         when :epics
           group_ids = if current_user.nil? || current_user.can_read_all_resources?
                         []
@@ -392,7 +392,7 @@ module Gitlab
         return Kaminari.paginate_array([]) if query.blank?
 
         strong_memoize(memoize_key(:wiki_blobs, count_only: count_only)) do
-          ProjectWiki.__elasticsearch__.elastic_search_as_wiki_page(
+          Wiki.__elasticsearch__.elastic_search_as_wiki_page(
             query,
             page: (page || 1).to_i,
             per: per_page,
