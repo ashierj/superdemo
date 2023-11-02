@@ -12,28 +12,12 @@ export default {
       type: String,
       required: true,
     },
-    oauthUrl: {
-      type: String,
-      required: true,
-    },
-    tracingUrl: {
-      type: String,
-      required: true,
-    },
-    servicesUrl: {
-      type: String,
-      required: true,
-    },
-    provisioningUrl: {
-      type: String,
-      required: true,
-    },
     tracingIndexUrl: {
       required: true,
       type: String,
     },
-    operationsUrl: {
-      type: String,
+    apiConfig: {
+      type: Object,
       required: true,
     },
   },
@@ -41,13 +25,7 @@ export default {
 </script>
 
 <template>
-  <observability-container
-    :oauth-url="oauthUrl"
-    :tracing-url="tracingUrl"
-    :services-url="servicesUrl"
-    :provisioning-url="provisioningUrl"
-    :operations-url="operationsUrl"
-  >
+  <observability-container :api-config="apiConfig">
     <template #default="{ observabilityClient }">
       <tracing-details
         :trace-id="traceId"

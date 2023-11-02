@@ -246,12 +246,33 @@ async function fetchMetrics() {
   /* eslint-enable @gitlab/require-i18n-strings */
 }
 
-export function buildClient({ provisioningUrl, tracingUrl, servicesUrl, operationsUrl } = {}) {
-  if (!provisioningUrl || !tracingUrl || !servicesUrl || !operationsUrl) {
-    throw new Error(
-      'missing required params. provisioningUrl, tracingUrl, servicesUrl, operationsUrl are required',
-    );
+export function buildClient(options) {
+  if (!options) {
+    throw new Error('No options object provided'); // eslint-disable-line @gitlab/require-i18n-strings
   }
+
+  const { provisioningUrl, tracingUrl, servicesUrl, operationsUrl, metricsUrl } = options;
+
+  if (typeof provisioningUrl !== 'string') {
+    throw new Error('provisioningUrl param must be a string');
+  }
+
+  if (typeof tracingUrl !== 'string') {
+    throw new Error('tracingUrl param must be a string');
+  }
+
+  if (typeof servicesUrl !== 'string') {
+    throw new Error('servicesUrl param must be a string');
+  }
+
+  if (typeof operationsUrl !== 'string') {
+    throw new Error('operationsUrl param must be a string');
+  }
+
+  if (typeof metricsUrl !== 'string') {
+    throw new Error('metricsUrl param must be a string');
+  }
+
   return {
     enableObservability: () => enableObservability(provisioningUrl),
     isObservabilityEnabled: () => isObservabilityEnabled(provisioningUrl),
@@ -259,6 +280,6 @@ export function buildClient({ provisioningUrl, tracingUrl, servicesUrl, operatio
     fetchTrace: (traceId) => fetchTrace(tracingUrl, traceId),
     fetchServices: () => fetchServices(servicesUrl),
     fetchOperations: (serviceName) => fetchOperations(operationsUrl, serviceName),
-    fetchMetrics: () => fetchMetrics(),
+    fetchMetrics: () => fetchMetrics(metricsUrl),
   };
 }

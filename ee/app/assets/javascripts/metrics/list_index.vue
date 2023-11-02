@@ -8,24 +8,8 @@ export default {
     MetricsList,
   },
   props: {
-    oauthUrl: {
-      type: String,
-      required: true,
-    },
-    tracingUrl: {
-      type: String,
-      required: true,
-    },
-    servicesUrl: {
-      type: String,
-      required: true,
-    },
-    provisioningUrl: {
-      type: String,
-      required: true,
-    },
-    operationsUrl: {
-      type: String,
+    apiConfig: {
+      type: Object,
       required: true,
     },
   },
@@ -33,13 +17,7 @@ export default {
 </script>
 
 <template>
-  <provisioned-observability-container
-    :oauth-url="oauthUrl"
-    :tracing-url="tracingUrl"
-    :services-url="servicesUrl"
-    :provisioning-url="provisioningUrl"
-    :operations-url="operationsUrl"
-  >
+  <provisioned-observability-container :api-config="apiConfig">
     <template #default="{ observabilityClient }">
       <metrics-list :observability-client="observabilityClient" />
     </template>

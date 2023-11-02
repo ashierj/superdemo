@@ -5,11 +5,14 @@ import ProvisionedObservabilityContainer from '~/observability/components/provis
 
 describe('ListIndex', () => {
   const props = {
-    oauthUrl: 'https://example.com/oauth',
-    tracingUrl: 'https://example.com/tracing',
-    provisioningUrl: 'https://example.com/provisioning',
-    servicesUrl: 'https://example.com/services',
-    operationsUrl: 'https://example.com/operations',
+    apiConfig: {
+      oauthUrl: 'https://example.com/oauth',
+      tracingUrl: 'https://example.com/tracing',
+      provisioningUrl: 'https://example.com/provisioning',
+      servicesUrl: 'https://example.com/services',
+      operationsUrl: 'https://example.com/operations',
+      metricsUrl: 'https://example.com/metricsUrl',
+    },
   };
 
   let wrapper;
@@ -23,7 +26,9 @@ describe('ListIndex', () => {
   it('renders ProvisionedObservabilityContainer component', () => {
     mountComponent();
 
-    expect(wrapper.findComponent(ProvisionedObservabilityContainer).props()).toMatchObject(props);
+    expect(wrapper.findComponent(ProvisionedObservabilityContainer).props('apiConfig')).toBe(
+      props.apiConfig,
+    );
   });
 
   it('renders MetricsList component inside ProvisionedObservabilityContainer', () => {

@@ -72,11 +72,14 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
         element = Nokogiri::HTML.parse(subject.body).at_css('#js-observability-metrics')
 
         expected_view_model = {
-          oauthUrl: Gitlab::Observability.oauth_url,
-          provisioningUrl: Gitlab::Observability.provisioning_url(project),
-          tracingUrl: Gitlab::Observability.tracing_url(project),
-          servicesUrl: Gitlab::Observability.services_url(project),
-          operationsUrl: Gitlab::Observability.operations_url(project)
+          apiConfig: {
+            oauthUrl: Gitlab::Observability.oauth_url,
+            provisioningUrl: Gitlab::Observability.provisioning_url(project),
+            tracingUrl: Gitlab::Observability.tracing_url(project),
+            servicesUrl: Gitlab::Observability.services_url(project),
+            operationsUrl: Gitlab::Observability.operations_url(project),
+            metricsUrl: Gitlab::Observability.metrics_url(project)
+          }
         }.to_json
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
       end
