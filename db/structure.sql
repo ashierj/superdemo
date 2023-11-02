@@ -23217,6 +23217,7 @@ CREATE TABLE service_desk_custom_email_credentials (
     encrypted_smtp_username_iv bytea,
     encrypted_smtp_password bytea,
     encrypted_smtp_password_iv bytea,
+    smtp_authentication smallint,
     CONSTRAINT check_6dd11e956a CHECK ((char_length(smtp_address) <= 255))
 );
 
