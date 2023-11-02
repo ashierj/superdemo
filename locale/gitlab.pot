@@ -44082,6 +44082,12 @@ msgstr ""
 msgid "ServiceDesk|A verification email has been sent to a sub-address of your custom email address. This can take up to 30 minutes. The screen refreshes automatically."
 msgstr ""
 
+msgid "ServiceDesk|Add email addresses in the %{codeStart}Cc%{codeEnd} header of Service Desk emails to the issue."
+msgstr ""
+
+msgid "ServiceDesk|Add external participants from the %{codeStart}Cc%{codeEnd} header"
+msgstr ""
+
 msgid "ServiceDesk|Cannot create custom email"
 msgstr ""
 
@@ -44155,6 +44161,9 @@ msgid "ServiceDesk|Issues created from Service Desk emails will appear here. Eac
 msgstr ""
 
 msgid "ServiceDesk|Keep custom email"
+msgstr ""
+
+msgid "ServiceDesk|Like the author, external participants receive Service Desk emails and can participate in the discussion."
 msgstr ""
 
 msgid "ServiceDesk|Minimum 8 characters long."
