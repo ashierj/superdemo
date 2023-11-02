@@ -4,7 +4,6 @@ class ElasticIndexInitialBulkCronWorker # rubocop:disable Scalability/Idempotent
   include Elastic::BulkCronWorker
 
   feature_category :global_search
-  idempotent!
   urgency :low
   data_consistency :sticky
 
