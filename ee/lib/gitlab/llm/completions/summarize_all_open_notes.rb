@@ -12,7 +12,7 @@ module Gitlab
             current_user: user,
             container: issuable.resource_parent,
             resource: issuable,
-            ai_request: ai_provider_request(user, options)
+            ai_request: ai_provider_request(user)
           )
 
           answer = ::Gitlab::Llm::Chain::Tools::SummarizeComments::Executor.new(
@@ -29,16 +29,11 @@ module Gitlab
 
         private
 
-        def ai_provider_request(user, options)
-          case options[:ai_provider].to_s
-          when 'anthropic'
+        def ai_provider_request(user)
+          if Feature.enabled?(:summarize_notes_with_anthropic, user)
             ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, tracking_context: tracking_context)
-          when 'vertex_ai'
-            ::Gitlab::Llm::Chain::Requests::VertexAi.new(user, tracking_context: tracking_context)
-          when 'open_ai'
-            ::Gitlab::Llm::Chain::Requests::OpenAi.new(user, tracking_context: tracking_context)
           else
-            raise "unknown ai_provider #{options[:ai_provider]}"
+            ::Gitlab::Llm::Chain::Requests::VertexAi.new(user, tracking_context: tracking_context)
           end
         end
 

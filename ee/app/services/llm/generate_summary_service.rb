@@ -11,7 +11,7 @@ module Llm
     end
 
     def perform
-      schedule_completion_worker(options.merge(ai_provider: :vertex_ai))
+      schedule_completion_worker
     end
 
     def valid?
