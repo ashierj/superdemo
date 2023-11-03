@@ -119,15 +119,11 @@ module SCA
 
     def build_policy_with_denied_licenses(denied_policies, reported_license)
       direct_license_policy = policy_from_licenses(direct_license_policies, reported_license)
-      return build_policy(reported_license, direct_license_policy, nil) if direct_license_policy
 
-      denied_license_policy = policy_from_licenses(denied_policies, reported_license)
-      approval_status = denied_license_policy || base_pipeline_empty_or_without_report? ? 'denied' : nil
-      build_policy(reported_license, denied_license_policy, approval_status)
-    end
+      denied_license_policy = policy_from_licenses(denied_policies, reported_license) unless direct_license_policy
 
-    def base_pipeline_empty_or_without_report?
-      pipeline.blank? || license_scanning_report.blank?
+      approval_status = denied_license_policy ? 'denied' : nil
+      build_policy(reported_license, direct_license_policy || denied_license_policy, approval_status)
     end
 
     # When the license found in the report doesn't match any license
