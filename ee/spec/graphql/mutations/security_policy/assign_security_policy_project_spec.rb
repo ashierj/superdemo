@@ -28,16 +28,24 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject, feature_c
             container.add_owner(owner)
           end
 
-          before_all do
-            policy_project.add_owner(owner)
+          context 'when user is a member of the security project' do
+            before_all do
+              policy_project.add_guest(owner)
+            end
+
+            it 'assigns the security policy project' do
+              result = subject
+
+              expect(result[:errors]).to be_empty
+              expect(container.security_orchestration_policy_configuration).not_to be_nil
+              expect(container.security_orchestration_policy_configuration.security_policy_management_project).to eq(policy_project)
+            end
           end
 
-          it 'assigns the security policy project' do
-            result = subject
-
-            expect(result[:errors]).to be_empty
-            expect(container.security_orchestration_policy_configuration).not_to be_nil
-            expect(container.security_orchestration_policy_configuration.security_policy_management_project).to eq(policy_project)
+          context 'when user is a not a member of the security project' do
+            it 'raises exception' do
+              expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+            end
           end
         end
 

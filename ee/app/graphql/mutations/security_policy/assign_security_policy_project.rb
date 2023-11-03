@@ -29,8 +29,10 @@ module Mutations
         project_or_group = authorized_find!(**args)
 
         policy_project = find_policy_project(args[:security_policy_project_id])
-        raise_resource_not_available_error! unless policy_project.present?
-        authorize!(policy_project)
+
+        unless policy_project.present? && can_access_security_policy?(policy_project)
+          raise_resource_not_available_error!
+        end
 
         result = assign_project(project_or_group, policy_project)
         {
@@ -48,6 +50,10 @@ module Mutations
         ::Security::Orchestration::AssignService
           .new(container: project_or_group, current_user: current_user, params: { policy_project_id: policy_project.id })
           .execute
+      end
+
+      def can_access_security_policy?(policy_project)
+        Ability.allowed?(current_user, :read_security_orchestration_policy_project, policy_project)
       end
     end
   end
