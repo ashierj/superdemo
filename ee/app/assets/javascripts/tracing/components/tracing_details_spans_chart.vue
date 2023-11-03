@@ -11,7 +11,7 @@ export default {
     GlTruncate,
   },
   i18n: {
-    toggleChildrenSpans: s__('Tracing|Toggle children spans'),
+    toggleChildrenSpans: s__('Tracing|Toggle child spans'),
   },
   props: {
     spans: {
