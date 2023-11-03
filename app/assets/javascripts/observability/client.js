@@ -67,7 +67,7 @@ async function fetchTrace(tracingUrl, traceId) {
 const SUPPORTED_FILTERS = {
   durationMs: ['>', '<'],
   operation: ['=', '!='],
-  serviceName: ['=', '!='],
+  service: ['=', '!='],
   period: ['='],
   traceId: ['=', '!='],
   attribute: ['='],
@@ -80,7 +80,7 @@ const SUPPORTED_FILTERS = {
 const FILTER_TO_QUERY_PARAM = {
   durationMs: 'duration_nano',
   operation: 'operation',
-  serviceName: 'service_name',
+  service: 'service_name',
   period: 'period',
   traceId: 'trace_id',
   attribute: 'attribute',
@@ -141,7 +141,7 @@ function handleAttributeFilter(filterValue, filterOperator, searchParams) {
  *  filterObj =  {
  *      durationMs: [{operator: '>', value: '100'}, {operator: '<', value: '1000' }],
  *      operation: [{operator: '=', value: 'someOp' }],
- *      serviceName: [{operator: '!=', value: 'foo' }]
+ *      service: [{operator: '!=', value: 'foo' }]
  *    }
  *
  * It handles converting the filter to the proper supported query params
@@ -186,7 +186,7 @@ function filterObjToQueryParams(filterObj) {
  *    {
  *      durationMs: [ {operator: '>', value: '100'}, {operator: '<', value: '1000'}],
  *      operation: [ {operator: '=', value: 'someOp}],
- *      serviceName: [ {operator: '!=', value: 'foo}]
+ *      service: [ {operator: '!=', value: 'foo}]
  *    }
  *
  * @returns Array<Trace> : A list of traces
