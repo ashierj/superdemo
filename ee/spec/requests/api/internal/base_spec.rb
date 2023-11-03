@@ -984,13 +984,26 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         group.add_developer(user)
       end
 
-      it 'finds the cert and the user' do
-        get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
+      context 'when the user is not an enterprise user of the group' do
+        it 'returns 403' do
+          get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
 
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response['success']).to eq(true)
-        expect(json_response['namespace']).to eq(group.full_path)
-        expect(json_response['username']).to eq(user.username)
+          expect(response).to have_gitlab_http_status(:forbidden)
+          expect(json_response['message']).to eq('403 Forbidden - Not an Enterprise User of the group')
+        end
+      end
+
+      context 'when the user is an enterprise user of the group' do
+        let(:user) { create(:user, :enterprise_user, enterprise_group: group) }
+
+        it 'finds the cert and the user' do
+          get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['success']).to eq(true)
+          expect(json_response['namespace']).to eq(group.full_path)
+          expect(json_response['username']).to eq(user.username)
+        end
       end
 
       context 'when cert is not found' do

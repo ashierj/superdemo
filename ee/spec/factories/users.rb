@@ -18,8 +18,15 @@ FactoryBot.modify do
     end
 
     trait :enterprise_user do
+      transient do
+        enterprise_group { association(:group) }
+      end
+
       after(:create) do |user, evaluator|
-        user.user_detail.update!(enterprise_group_id: create(:group).id, enterprise_group_associated_at: Time.current)
+        user.user_detail.update!(
+          enterprise_group_id: evaluator.enterprise_group.id,
+          enterprise_group_associated_at: Time.current
+        )
       end
     end
 
