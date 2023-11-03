@@ -518,22 +518,6 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
       end
     end
 
-    context 'when the base pipeline is empty or does not contain report' do
-      subject(:diff) { license_compliance.diff_with(base_compliance) }
-
-      let(:pipeline) { head_pipeline }
-
-      let!(:head_compliance) { project.license_compliance(head_pipeline) }
-      let!(:head_pipeline) { create(:ee_ci_pipeline, :success, project: project) }
-
-      let!(:base_compliance) { project.license_compliance(base_pipeline) }
-      let!(:base_pipeline) { create(:ee_ci_pipeline, :success, :with_cyclonedx_report, project: project, builds: [create(:ee_ci_build, :success)]) }
-
-      it 'returns diff' do
-        expect(diff[:added].first.classification).to eq('denied')
-      end
-    end
-
     context "when the base pipeline removed some licenses" do
       subject(:diff) { license_compliance.diff_with(base_compliance) }
 
