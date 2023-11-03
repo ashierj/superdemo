@@ -28,11 +28,11 @@ module Elastic
 
         updated_attributes = updated_attributes.map(&:to_sym)
         if (updated_attributes & BLOB_AND_COMMIT_TRACKED_FIELDS).any?
-          ElasticCommitIndexerWorker.perform_async(self.id, false, { force: true })
+          ElasticCommitIndexerWorker.perform_async(id, false, { force: true })
         end
 
         if (updated_attributes & WIKI_TRACKED_FIELDS).any?
-          ElasticWikiIndexerWorker.perform_async(self.id, self.class.name, { force: true })
+          ElasticWikiIndexerWorker.perform_async(id, self.class.name, { force: true })
         end
 
         super
@@ -40,12 +40,12 @@ module Elastic
 
       override :maintain_elasticsearch_destroy
       def maintain_elasticsearch_destroy
-        ElasticDeleteProjectWorker.perform_async(self.id, self.es_id)
-        Search::Zoekt::DeleteProjectWorker.perform_async(self.root_namespace&.id, self.id)
+        ElasticDeleteProjectWorker.perform_async(id, es_id)
+        Search::Zoekt::DeleteProjectWorker.perform_async(root_namespace&.id, id)
       end
 
       def invalidate_elasticsearch_indexes_cache!
-        ::Gitlab::CurrentSettings.invalidate_elasticsearch_indexes_cache_for_project!(self.id)
+        ::Gitlab::CurrentSettings.invalidate_elasticsearch_indexes_cache_for_project!(id)
       end
     end
   end
