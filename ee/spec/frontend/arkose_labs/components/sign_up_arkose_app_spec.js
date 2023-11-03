@@ -2,6 +2,7 @@ import { nextTick } from 'vue';
 import { createAlert } from '~/alert';
 import DomElementListener from '~/vue_shared/components/dom_element_listener.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { logError } from '~/lib/logger';
 import SignUpArkoseApp from 'ee/arkose_labs/components/sign_up_arkose_app.vue';
 import { initArkoseLabsScript } from 'ee/arkose_labs/init_arkose_labs_script';
 import {
@@ -11,6 +12,7 @@ import {
 } from 'ee/arkose_labs/constants';
 
 jest.mock('~/alert');
+jest.mock('~/lib/logger');
 jest.mock('ee/arkose_labs/init_arkose_labs_script');
 let onShown;
 let onCompleted;
@@ -55,7 +57,7 @@ describe('SignUpArkoseApp', () => {
     createComponent();
   });
 
-  it("includes Arkose Labs' script", () => {
+  it('includes Arkose Labs script', () => {
     expect(initArkoseLabsScript).toHaveBeenCalledWith({
       publicKey: MOCK_PUBLIC_KEY,
       domain: MOCK_DOMAIN,
@@ -143,6 +145,29 @@ describe('SignUpArkoseApp', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message: VERIFICATION_LOADING_MESSAGE,
         });
+      });
+    });
+
+    describe('when challenge fails to load', () => {
+      const arkoseError = new Error();
+
+      beforeEach(() => {
+        initArkoseLabsScript.mockImplementation(() => {
+          throw arkoseError;
+        });
+
+        createComponent();
+      });
+
+      it('logs the error', () => {
+        expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', arkoseError);
+      });
+
+      it('does not stop the submit event', () => {
+        submitForm(mockSubmitEvent);
+
+        expect(mockSubmitEvent.preventDefault).not.toHaveBeenCalled();
+        expect(mockSubmitEvent.stopPropagation).not.toHaveBeenCalled();
       });
     });
   });

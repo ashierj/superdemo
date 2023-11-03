@@ -23,7 +23,9 @@ module EE
     override :create
     def create
       unless verify_arkose_labs_token
-        flash[:alert] = _('Complete verification to sign up.')
+        flash[:alert] =
+          s_('Session|There was a error loading the user verification challenge. Refresh to try again.')
+
         render action: 'new'
         return
       end
@@ -117,7 +119,19 @@ module EE
 
     def verify_arkose_labs_token
       return true unless arkose_labs_enabled?
-      return false unless params[:arkose_labs_token].present?
+
+      unless params[:arkose_labs_token].present?
+        # if arkose is down, skip challenge
+        arkose_status = Arkose::StatusService.new.execute
+
+        if arkose_status.error?
+          log_arkose_challenge_skipped
+          return true
+        end
+
+        log_arkose_token_missing
+        return false
+      end
 
       arkose_labs_verify_response.present?
     end
@@ -137,6 +151,22 @@ module EE
         response: arkose_labs_verify_response,
         user: resource
       ).execute
+    end
+
+    def log_arkose_token_missing
+      ::Gitlab::AppLogger.info(
+        message: 'Sign-up blocked',
+        reason: 'arkose token is missing in request',
+        username: sign_up_params[:username]
+      )
+    end
+
+    def log_arkose_challenge_skipped
+      ::Gitlab::AppLogger.info(
+        message: 'Sign-up verification skipped',
+        reason: 'arkose is experiencing an outage',
+        username: sign_up_params[:username]
+      )
     end
 
     override :arkose_labs_enabled?

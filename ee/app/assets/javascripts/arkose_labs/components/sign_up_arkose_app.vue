@@ -1,5 +1,6 @@
 <script>
 import { uniqueId } from 'lodash';
+import { logError } from '~/lib/logger';
 import { createAlert } from '~/alert';
 import DomElementListener from '~/vue_shared/components/dom_element_listener.vue';
 import { initArkoseLabsScript } from '../init_arkose_labs_script';
@@ -34,10 +35,15 @@ export default {
       arkoseLabsContainerClass: uniqueId(CHALLENGE_CONTAINER_CLASS),
       arkoseToken: '',
       errorAlert: null,
+      arkoseChallengeBypassed: false,
     };
   },
   async mounted() {
-    await this.initArkoseLabs();
+    try {
+      await this.initArkoseLabs();
+    } catch (error) {
+      this.bypassArkoseOnFailure(error);
+    }
   },
   methods: {
     showVerificationError() {
@@ -64,13 +70,23 @@ export default {
         selector: `.${this.arkoseLabsContainerClass}`,
         onShown: this.onArkoseLabsIframeShown,
         onCompleted: this.passArkoseLabsChallenge,
+        onError: this.bypassArkoseOnFailure,
       });
     },
     passArkoseLabsChallenge(response) {
       this.arkoseToken = response.token;
     },
+    bypassArkoseOnFailure(error) {
+      logError('ArkoseLabs initialization error', error);
+
+      this.arkoseChallengeBypassed = true;
+    },
     onSubmit(e) {
       this.errorAlert?.dismiss();
+
+      if (this.arkoseChallengeBypassed) {
+        return;
+      }
 
       if (!this.arkoseToken) {
         this.showVerificationError();

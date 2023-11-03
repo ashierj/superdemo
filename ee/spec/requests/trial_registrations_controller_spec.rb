@@ -135,7 +135,8 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
         it 'sets name from first and last name' do
           post_create
 
-          expect(User.last.name).to eq full_name(user_params[:first_name], user_params[:last_name])
+          created_user = User.find_by_email(user_params[:email])
+          expect(created_user.name).to eq full_name(user_params[:first_name], user_params[:last_name])
         end
       end
 
@@ -147,7 +148,8 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase 
         it 'marks the account as unconfirmed' do
           post_create
 
-          expect(User.last).not_to be_confirmed
+          created_user = User.find_by_email(user_params[:email])
+          expect(created_user).not_to be_confirmed
         end
       end
 
