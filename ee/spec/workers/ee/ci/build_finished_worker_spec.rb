@@ -192,6 +192,17 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
             .to([an_object_having_attributes(build_id: build.id, build_finished_at: build.finished_at)])
         end
 
+        it 'ignores duplicate calls for same build' do
+          described_class.new.perform(build.id)
+          Ci::FinishedBuildChSyncEvent.pending.first.update!(processed: true)
+
+          perform
+
+          expect(Ci::FinishedBuildChSyncEvent.all).to contain_exactly(
+            an_object_having_attributes(build_id: build.id, build_finished_at: build.finished_at, processed: true)
+          )
+        end
+
         context 'when build is not Ci::Build' do
           let(:build) do
             create(:ci_bridge, :success, finished_at: 1.hour.ago)

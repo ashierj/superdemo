@@ -20,7 +20,11 @@ module EE
         ::Ci::InstanceRunnerFailedJobs.track(build) if build.failed?
 
         if build.is_a?(::Ci::Build) && build.finished_at.present? && generate_finished_builds_sync_events?
-          ::Ci::FinishedBuildChSyncEvent.new(build_id: build.id, build_finished_at: build.finished_at).save
+          # Use upsert since this code can be called more than once for the same build
+          ::Ci::FinishedBuildChSyncEvent.upsert(
+            { build_id: build.id, build_finished_at: build.finished_at },
+            unique_by: [:build_id, :partition]
+          )
         end
       end
 
