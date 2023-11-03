@@ -24,8 +24,8 @@ RSpec.describe API::Ci::Pipelines, feature_category: :continuous_integration do
           stub_licensed_features(extended_audit_events: true, admin_audit_log: true)
         end
 
-        it 'does not log an audit event' do
-          expect { delete api("/projects/#{project.id}/pipelines/#{pipeline.id}", owner) }.not_to change { AuditEvent.count }
+        it 'logs an audit event' do
+          expect { delete api("/projects/#{project.id}/pipelines/#{pipeline.id}", owner) }.to change { AuditEvent.count }.by(1)
         end
       end
     end
