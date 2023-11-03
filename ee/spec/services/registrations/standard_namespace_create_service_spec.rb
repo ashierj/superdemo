@@ -110,7 +110,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
 
         it 'does not call the experiment DSL' do
           allow(service).to receive(:experiment).and_call_original
-          expect(service).not_to receive(:experiment).with(:free_trial_registration_redesign, user: user)
+          expect(service).not_to receive(:experiment).with(:free_trial_registration_redesign, actor: user)
 
           expect(service.execute).to be_success
         end
@@ -255,7 +255,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
 
         it 'tracks experiment assignment event' do
           allow(service).to receive(:experiment).and_call_original
-          expect(service).to receive(:experiment).with(:free_trial_registration_redesign, user: user)
+          expect(service).to receive(:experiment).with(:free_trial_registration_redesign, actor: user)
 
           expect(service.execute).to be_success
         end

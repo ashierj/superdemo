@@ -21,7 +21,7 @@ module Registrations
       experiment(:phone_verification_for_low_risk_users, user: user).track(:assignment, namespace: group)
 
       if onboarding_status.trial?
-        experiment(:free_trial_registration_redesign, user: user).track(:assignment, namespace: group)
+        experiment(:free_trial_registration_redesign, actor: user).track(:assignment, namespace: group)
       end
 
       apply_trial if onboarding_status.trial_onboarding_flow?

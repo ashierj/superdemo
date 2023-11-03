@@ -4,7 +4,7 @@
       = _('Sign up for your free trial with:')
     .gl-display-flex.gl-gap-3
       - popular_enabled_button_based_providers.each do |provider|
-        = button_to omniauth_authorize_path(:user, provider, register_omniauth_params(local_assigns)),
+        = button_to omniauth_authorize_path(:user, provider, register_omniauth_params(trial: true)),
           class: "btn gl-button btn-default gl-w-full gl-mb-4 js-oauth-login #{qa_selector_for_provider(provider)}",
           data: { provider: provider, track_action: "#{provider}_sso",
                   track_label: ::Onboarding::Status::TRACKING_LABEL[:trial] },
