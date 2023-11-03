@@ -351,33 +351,6 @@ RSpec.describe ApplicationHelper do
     end
   end
 
-  describe '#page_class' do
-    let_it_be(:expected_class) { 'logged-out-marketing-header' }
-
-    let(:current_user) { nil }
-
-    subject(:page_class) do
-      helper.page_class.flatten
-    end
-
-    before do
-      stub_feature_flags(super_sidebar_logged_out: false)
-      allow(helper).to receive(:current_user) { current_user }
-    end
-
-    it { is_expected.not_to include(expected_class) }
-
-    context 'when SaaS', :saas do
-      it { is_expected.to include(expected_class) }
-
-      context 'when a user is logged in' do
-        let(:current_user) { build(:user) }
-
-        it { is_expected.not_to include(expected_class) }
-      end
-    end
-  end
-
   describe '#add_page_specific_style' do
     it 'only adds the same style to a page once' do
       expect(helper).to receive(:stylesheet_link_tag).with('a/path', any_args).once
