@@ -3,18 +3,26 @@
 RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup request' do
   let(:arkose_labs_params) { { arkose_labs_token: 'arkose-labs-token' } }
   let(:params) { { user: user_attrs }.merge(arkose_labs_params) }
+
   let(:arkose_verification_response) do
     Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
   end
 
   let(:verify_response) { Arkose::VerifyResponse.new(arkose_verification_response) }
   let(:service_response) { ServiceResponse.success(payload: { response: verify_response }) }
+  let(:arkose_status_response) { ServiceResponse.success }
 
   before do
     stub_feature_flags(arkose_labs_signup_challenge: true)
+
     allow(::Arkose::Settings).to receive(:enabled?).and_return(true)
+
     allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
       allow(instance).to receive(:execute).and_return(service_response)
+    end
+
+    allow_next_instance_of(::Arkose::StatusService) do |instance|
+      allow(instance).to receive(:execute).and_return(arkose_status_response)
     end
   end
 
@@ -33,7 +41,9 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
     it 'renders new action with an alert flash', :aggregate_failures do
       create_user
 
-      expect(flash[:alert]).to include(_('Complete verification to sign up.'))
+      expect(flash[:alert]).to eq(
+        s_('Session|There was a error loading the user verification challenge. Refresh to try again.')
+      )
       expect(response).to render_template(:new)
     end
   end
@@ -126,8 +136,41 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
   context 'when arkose_labs_token param is not present' do
     let(:arkose_labs_params) { {} }
 
-    it_behaves_like 'renders new action with an alert flash'
+    context 'when arkose is operational' do
+      it_behaves_like 'renders new action with an alert flash'
 
-    it_behaves_like 'skips verification and data recording'
+      it_behaves_like 'skips verification and data recording'
+
+      it 'logs the event' do
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            message: 'Sign-up blocked',
+            reason: 'arkose token is missing in request',
+            username: user_attrs[:username]
+          )
+        )
+
+        create_user
+      end
+    end
+
+    context 'when arkose is experiencing an outage' do
+      let(:arkose_status_response) { ServiceResponse.error(message: 'Arkose outage') }
+
+      it_behaves_like 'creates the user'
+
+      it 'logs the event' do
+        allow(Gitlab::AppLogger).to receive(:info)
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            message: 'Sign-up verification skipped',
+            reason: 'arkose is experiencing an outage',
+            username: user_attrs[:username]
+          )
+        )
+
+        create_user
+      end
+    end
   end
 end

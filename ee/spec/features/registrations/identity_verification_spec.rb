@@ -15,6 +15,19 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       telesign_customer_xid: 'customer_id',
       telesign_api_key: 'private_key'
     )
+
+    stub_request(:get, "https://status.arkoselabs.com/api/v2/status.json")
+      .with(
+        headers: {
+          'Accept' => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'User-Agent' => 'Ruby'
+        })
+      .to_return(
+        status: 200,
+        body: '{ "status": { "indicator": "none" }}',
+        headers: { 'Content-Type' => 'application/json' }
+      )
   end
 
   let(:user_email) { 'onboardinguser@example.com' }
