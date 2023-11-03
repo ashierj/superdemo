@@ -7,15 +7,39 @@ RSpec.describe ::Ci::DestroyPipelineService, feature_category: :continuous_integ
   let!(:pipeline) { create(:ci_pipeline, project: project) }
   let(:user) { project.first_owner }
 
-  subject { described_class.new(project, user).execute(pipeline) }
+  subject(:service) { described_class.new(project, user) }
 
-  context 'when audit events is enabled' do
-    before do
-      stub_licensed_features(extended_audit_events: true, admin_audit_log: true)
-    end
+  describe '#execute' do
+    subject(:operation) { service.execute(pipeline) }
 
-    it 'does not log an audit event' do
-      expect { subject }.not_to change { AuditEvent.count }
+    context 'for audit events', :enable_admin_mode do
+      let(:audit_event_name) { "destroy_pipeline" }
+      let(:event_type) { "destroy_pipeline" }
+
+      include_examples 'audit event logging' do
+        let(:operation) { service.execute(pipeline) }
+
+        let(:fail_condition!) do
+          allow(pipeline).to receive(:destroy!).and_raise(ActiveRecord::RecordNotFound)
+        end
+
+        let(:attributes) do
+          {
+            author_id: user.id,
+            entity_id: project.id,
+            entity_type: 'Project',
+            details: {
+              author_class: 'User',
+              author_name: user.name,
+              custom_message: "Deleted pipeline in #{pipeline.ref} with status " \
+                              "#{pipeline.status} and SHA #{pipeline.sha}",
+              target_details: pipeline.id.to_s,
+              target_id: pipeline.id,
+              target_type: 'Ci::Pipeline'
+            }
+          }
+        end
+      end
     end
   end
 end
