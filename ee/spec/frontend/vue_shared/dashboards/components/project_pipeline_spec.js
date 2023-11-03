@@ -1,6 +1,7 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ProjectPipeline from 'ee/vue_shared/dashboards/components/project_pipeline.vue';
 import { mockPipelineData } from 'ee_jest/vue_shared/dashboards/mock_data';
+import CiIcon from '~/vue_shared/components/ci_icon.vue';
 
 describe('project pipeline component', () => {
   let wrapper;
@@ -8,6 +9,9 @@ describe('project pipeline component', () => {
   const mountComponent = (propsData = {}) =>
     mountExtended(ProjectPipeline, {
       propsData,
+      stubs: {
+        CiIcon,
+      },
     });
 
   describe('current pipeline only', () => {
@@ -17,7 +21,7 @@ describe('project pipeline component', () => {
         hasPipelineFailed: false,
       });
 
-      expect(wrapper.findByTestId('status_success-icon').exists()).toBe(true);
+      expect(wrapper.findByTestId('status_success_borderless-icon').exists()).toBe(true);
     });
 
     it('should render failed badge', () => {
@@ -26,7 +30,7 @@ describe('project pipeline component', () => {
         hasPipelineFailed: true,
       });
 
-      expect(wrapper.findByTestId('status_failed-icon').exists()).toBe(true);
+      expect(wrapper.findByTestId('status_failed_borderless-icon').exists()).toBe(true);
     });
 
     it('should render running badge', () => {
@@ -35,7 +39,7 @@ describe('project pipeline component', () => {
         hasPipelineFailed: false,
       });
 
-      expect(wrapper.findByTestId('status_running-icon').exists()).toBe(true);
+      expect(wrapper.findByTestId('status_running_borderless-icon').exists()).toBe(true);
     });
   });
 
@@ -49,7 +53,9 @@ describe('project pipeline component', () => {
       });
 
       expect(
-        wrapper.find('.js-upstream-pipeline-status [data-testid="status_success-icon"]').exists(),
+        wrapper
+          .find('.js-upstream-pipeline-status [data-testid="status_success_borderless-icon"]')
+          .exists(),
       ).toBe(true);
     });
   });
@@ -64,7 +70,9 @@ describe('project pipeline component', () => {
       });
 
       expect(
-        wrapper.find('.js-downstream-pipeline-status [data-testid="status_success-icon"]').exists(),
+        wrapper
+          .find('.js-downstream-pipeline-status [data-testid="status_success_borderless-icon"]')
+          .exists(),
       ).toBe(true);
     });
 
@@ -77,7 +85,9 @@ describe('project pipeline component', () => {
       });
 
       expect(
-        wrapper.find('.js-downstream-pipeline-status [data-testid="status_failed-icon"]').exists(),
+        wrapper
+          .find('.js-downstream-pipeline-status [data-testid="status_failed_borderless-icon"]')
+          .exists(),
       ).toBe(true);
     });
 
@@ -90,7 +100,9 @@ describe('project pipeline component', () => {
       });
 
       expect(
-        wrapper.find('.js-downstream-pipeline-status [data-testid="status_running-icon"]').exists(),
+        wrapper
+          .find('.js-downstream-pipeline-status [data-testid="status_running_borderless-icon"]')
+          .exists(),
       ).toBe(true);
     });
 
