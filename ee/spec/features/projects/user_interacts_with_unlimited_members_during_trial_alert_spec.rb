@@ -6,7 +6,7 @@ RSpec.describe 'Project > Unlimited members alert', :js, :saas, feature_category
   let(:alert_selector) { '[data-testid="unlimited-members-during-trial-alert"]' }
   let_it_be(:group) { create(:group, :private, name: 'unlimited-members-during-trial-alert-group') }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:user) { create(:user) }
 
   context 'when group not in trial' do
     it 'does not display alert' do
@@ -52,12 +52,13 @@ RSpec.describe 'Project > Unlimited members alert', :js, :saas, feature_category
         let_it_be(:members_page_path) { project_project_members_path(project) }
         let_it_be(:billings_page_path) { group_billings_path(group) }
         let_it_be(:page_path) { project_path(project) }
+        let_it_be(:current_page_label) { project.name }
       end
     end
   end
 
   def expect_on_project_index_without_alert
-    expect(page).to have_content('Project information')
+    expect(page).to have_selector('a[aria-current="page"]', text: project.name)
     expect(page).not_to have_selector(alert_selector)
   end
 end

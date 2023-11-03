@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   include DragTo
 
-  let(:user) { create(:user, :no_super_sidebar, name: 'Sherlock Holmes') }
-  let(:user2) { create(:user, :no_super_sidebar, name: 'John') }
+  let(:user) { create(:user, name: 'Sherlock Holmes') }
+  let(:user2) { create(:user, name: 'John') }
   let(:group) { create(:group, :public) }
   let(:project) { create(:project, :public, namespace: group) }
   let(:objective) { create(:work_item, :objective, project: project) }

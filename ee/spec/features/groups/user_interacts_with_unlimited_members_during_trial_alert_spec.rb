@@ -50,6 +50,7 @@ RSpec.describe 'Group > Unlimited members alert', :js, :saas, feature_category: 
         let_it_be(:members_page_path) { group_group_members_path(group) }
         let_it_be(:billings_page_path) { group_billings_path(group) }
         let_it_be(:page_path) { group_path(group) }
+        let_it_be(:current_page_label) { group.name }
       end
     end
 
@@ -65,6 +66,7 @@ RSpec.describe 'Group > Unlimited members alert', :js, :saas, feature_category: 
         let_it_be(:members_page_path) { group_group_members_path(subgroup) }
         let_it_be(:billings_page_path) { group_billings_path(group) }
         let_it_be(:page_path) { group_path(subgroup) }
+        let_it_be(:current_page_label) { subgroup.name }
       end
 
       it 'displays alert with Explore paid plans link and Invite more members button' do
@@ -83,7 +85,7 @@ RSpec.describe 'Group > Unlimited members alert', :js, :saas, feature_category: 
   end
 
   def expect_to_be_on_group_index_without_alert
-    expect(page).to have_content('Subgroups and projects')
+    expect(page).to have_content(group.name)
     expect(page).not_to have_selector(alert_selector)
   end
 end
