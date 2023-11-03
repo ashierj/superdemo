@@ -21,6 +21,11 @@ module Registrations
     def show
       return redirect_to path_for_signed_in_user if completed_welcome_step?
 
+      # We to perform cookie migration for variant assignment from logged out to log in
+      # calling this in the controller layer gives us access to request where the
+      # signed cookie exist with the info we need for migration.
+      experiment(:free_trial_registration_redesign, actor: current_user).run
+
       track_event('render')
     end
 

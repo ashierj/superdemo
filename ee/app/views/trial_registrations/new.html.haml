@@ -10,7 +10,7 @@
 
 = render "layouts/google_tag_manager_body"
 
-- experiment(:free_trial_registration_redesign, user: current_user) do |e|
+- experiment(:free_trial_registration_redesign, actor: current_user) do |e|
   - e.control do
     = render 'new'
   - e.candidate do

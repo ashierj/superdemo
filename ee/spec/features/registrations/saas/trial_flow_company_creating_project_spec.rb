@@ -42,6 +42,42 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
 
       expect_to_be_in_learn_gitlab
     end
+
+    context 'with free_trial_registration_redesign experiment candidate' do
+      it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+        stub_experiments(free_trial_registration_redesign: :candidate)
+
+        sign_up_method.call(glm_params)
+
+        ensure_onboarding { expect_to_see_welcome_form }
+
+        fills_in_welcome_form
+        click_on 'Continue'
+
+        ensure_onboarding { expect_to_see_company_form }
+
+        # failure
+        fill_in_company_form(success: false, trial: true)
+        click_on 'Continue'
+
+        expect_to_see_company_form_failure
+
+        # success
+        fill_in_company_form(success: true, trial: true)
+        click_on 'Continue'
+
+        ensure_onboarding { expect_to_see_group_and_project_creation_form }
+
+        fills_in_group_and_project_creation_form_with_trial
+        click_on 'Create project'
+
+        expect_to_be_in_continuous_onboarding
+
+        click_on 'Ok, let\'s go'
+
+        expect_to_be_in_learn_gitlab
+      end
+    end
   end
 
   context 'when last name is missing for SSO and has to be filled in' do
