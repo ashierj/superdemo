@@ -12,8 +12,8 @@
         = s_('ProtectedEnvironment|Only specified users can execute deployments in a protected environment.')
     .settings-content
       #js-protected-environments{ data: { project_id: @project.id,
-                                      api_link: help_page_path('api/protected_environments.md'),
-                                      docs_link: help_page_path('ci/environments/deployment_approvals.md', anchor: 'multiple-approval-rules') } }
+                                      api_link: help_page_path('api/protected_environments'),
+                                      docs_link: help_page_path('ci/environments/deployment_approvals', anchor: 'add-multiple-approval-rules') } }
 
       = render partial: 'projects/protected_environments/group_environments_list'
       = render 'projects/protected_environments/deployment_approval_options', project: @project
