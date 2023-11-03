@@ -1,10 +1,15 @@
 import { GlCollapsibleListbox, GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
-import { nextTick } from 'vue';
-
+import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
+import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import createStore from 'ee/roadmap/store';
+import * as actions from 'ee/roadmap/store/actions';
+import state from 'ee/roadmap/store/state';
+import mutations from 'ee/roadmap/store/mutations';
 import RoadmapDaterange from 'ee/roadmap/components/roadmap_daterange.vue';
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+
+Vue.use(Vuex);
 
 describe('RoadmapDaterange', () => {
   let wrapper;
@@ -14,7 +19,18 @@ describe('RoadmapDaterange', () => {
   const weeks = { text: 'By week', value: PRESET_TYPES.WEEKS };
 
   const createComponent = ({ timeframeRangeType = DATE_RANGES.CURRENT_QUARTER } = {}) => {
-    const store = createStore();
+    const store = new Vuex.Store({
+      actions: {
+        ...actions,
+        fetchGroupMilestones: jest.fn(),
+        fetchMilestones: jest.fn(),
+      },
+      mutations,
+      state: state(),
+      getters: {
+        isScopedRoadmap: (s) => Boolean(s.epicIid),
+      },
+    });
 
     store.dispatch('setInitialData', {
       presetType: PRESET_TYPES.MONTHS,
@@ -62,5 +78,25 @@ describe('RoadmapDaterange', () => {
         }
       },
     );
+  });
+
+  describe('dropdown behavior', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('changes the date range when the dropdown closes', async () => {
+      expect(findDropdown().props('selected')).toBe(DATE_RANGES.CURRENT_QUARTER);
+
+      findDropdown().vm.$emit('select', DATE_RANGES.CURRENT_YEAR);
+
+      await nextTick();
+
+      findDropdown().vm.$emit('hidden');
+
+      await nextTick();
+
+      expect(findDropdown().props('selected')).toBe(DATE_RANGES.CURRENT_YEAR);
+    });
   });
 });

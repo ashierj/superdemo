@@ -99,6 +99,8 @@ export default {
       class="roadmap-daterange-dropdown"
       data-testid="daterange-dropdown"
       :items="$options.availableDateRanges"
+      @shown="handleDaterangeDropdownOpen"
+      @hidden="handleDaterangeDropdownClose"
     />
     <gl-form-group v-if="availablePresets.length" class="gl-mb-0 gl-mt-3">
       <gl-form-radio-group
