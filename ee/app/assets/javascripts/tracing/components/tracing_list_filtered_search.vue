@@ -1,10 +1,12 @@
 <script>
-import { GlFilteredSearch, GlFilteredSearchToken } from '@gitlab/ui';
+import { GlFilteredSearchToken } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import {
   OPERATORS_IS,
   OPERATORS_IS_NOT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
+import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import { SORTING_OPTIONS } from '~/observability/constants';
 import {
   PERIOD_FILTER_TOKEN_TYPE,
   SERVICE_NAME_FILTER_TOKEN_TYPE,
@@ -19,7 +21,10 @@ import AttributeSearchToken from './attribute_search_token.vue';
 
 export default {
   components: {
-    GlFilteredSearch,
+    FilteredSearch,
+  },
+  i18n: {
+    searchInputPlaceholder: s__('Tracing|Filter traces'),
   },
   props: {
     initialFilters: {
@@ -31,6 +36,10 @@ export default {
       required: true,
       type: Object,
     },
+    initialSort: {
+      required: true,
+      type: String,
+    },
   },
   data() {
     return {
@@ -38,6 +47,26 @@ export default {
     };
   },
   computed: {
+    sortOptions() {
+      return [
+        {
+          id: 1,
+          title: s__('Tracing|Duration'),
+          sortDirection: {
+            ascending: SORTING_OPTIONS.DURATION_ASC,
+            descending: SORTING_OPTIONS.DURATION_DESC,
+          },
+        },
+        {
+          id: 2,
+          title: s__('Tracing|Created date'),
+          sortDirection: {
+            ascending: SORTING_OPTIONS.CREATED_ASC,
+            descending: SORTING_OPTIONS.CREATED_DESC,
+          },
+        },
+      ];
+    },
     availableTokens() {
       const serviceFilters = this.value.filter(
         ({ type, value }) => type === 'service-name' && value.operator === '=',
@@ -108,12 +137,17 @@ export default {
 
 <template>
   <div class="vue-filtered-search-bar-container gl-border-t-none gl-my-6">
-    <gl-filtered-search
-      v-model="value"
+    <filtered-search
+      recent-searches-storage-key="recent-tracing-filter-search"
+      :initial-sort-by="initialSort"
+      namespace="tracing-list-filtered-search"
+      :search-input-placeholder="$options.i18n.searchInputPlaceholder"
+      :tokens="availableTokens"
+      :initial-filter-value="initialFilters"
       terms-as-tokens
-      :placeholder="s__('Tracing|Filter traces')"
-      :available-tokens="availableTokens"
-      @submit="$emit('submit', $event)"
+      :sort-options="sortOptions"
+      @onFilter="$emit('submit', $event)"
+      @onSort="$emit('sort', $event)"
     />
   </div>
 </template>

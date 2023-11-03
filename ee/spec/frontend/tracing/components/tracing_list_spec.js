@@ -112,11 +112,11 @@ describe('TracingList', () => {
   describe('filtered search', () => {
     let mockFilterObj;
     let mockFilterToken;
-    let mockQuery;
+    let mockFilterQuery;
     let mockUpdatedFilterObj;
 
     beforeEach(async () => {
-      setWindowLocation('?trace-id=foo');
+      setWindowLocation('?trace-id=test-trace-id&sortBy=duration_asc');
 
       mockFilterObj = { mock: 'filter-obj' };
       queryToFilterObj.mockReturnValue(mockFilterObj);
@@ -124,10 +124,10 @@ describe('TracingList', () => {
       mockFilterToken = ['mock-token'];
       filterObjToFilterToken.mockReturnValue(mockFilterToken);
 
-      mockQuery = { mock: 'query' };
-      filterObjToQuery.mockReturnValueOnce(mockQuery);
+      mockFilterQuery = { mock: 'filter-query' };
+      filterObjToQuery.mockReturnValueOnce(mockFilterQuery);
 
-      mockUpdatedFilterObj = { mock: 'filter-obj-upd' };
+      mockUpdatedFilterObj = { mock: 'filter-query-upd' };
       filterTokensToFilterObj.mockReturnValue(mockUpdatedFilterObj);
 
       await mountComponent();
@@ -137,43 +137,94 @@ describe('TracingList', () => {
       expect(findFilteredSearch().props('observabilityClient')).toBe(observabilityClientMock);
     });
 
-    it('renders FilteredSeach with initial filters parsed from window.location', () => {
-      expect(queryToFilterObj).toHaveBeenCalledWith('?trace-id=foo');
+    it('renders FilteredSeach with initial filters and sort order parsed from window.location', () => {
+      expect(queryToFilterObj).toHaveBeenCalledWith({ 'trace-id': 'test-trace-id' });
       expect(filterObjToFilterToken).toHaveBeenLastCalledWith(mockFilterObj);
+
       expect(findFilteredSearch().props('initialFilters')).toBe(mockFilterToken);
+      expect(findFilteredSearch().props('initialSort')).toBe('duration_asc');
+    });
+
+    it('sets FilteredSearch initialSort the default sort order if not specified in the query', async () => {
+      setWindowLocation('?trace-id=foo');
+      await mountComponent();
+
+      expect(findFilteredSearch().props('initialSort')).toBe('created_desc');
     });
 
     it('renders UrlSync and sets query prop', () => {
       expect(filterObjToQuery).toHaveBeenLastCalledWith(mockFilterObj);
-      expect(findUrlSync().props('query')).toBe(mockQuery);
+      expect(findUrlSync().props('query')).toEqual({ ...mockFilterQuery, sortBy: 'duration_asc' });
     });
 
-    it('process filters on search submit', async () => {
-      const mockUpdatedQuery = { mock: 'updated-query' };
-      filterObjToQuery.mockReturnValueOnce(mockUpdatedQuery);
-      const mockFilters = { mock: 'some-filter' };
-
-      findFilteredSearch().vm.$emit('submit', mockFilters);
-      await waitForPromises();
-
-      expect(filterTokensToFilterObj).toHaveBeenLastCalledWith(mockFilters);
-      expect(filterObjToQuery).toHaveBeenLastCalledWith(mockUpdatedFilterObj);
-      expect(findUrlSync().props('query')).toBe(mockUpdatedQuery);
-    });
-
-    it('fetches traces with filters', () => {
+    it('fetches traces with filters and sort order', () => {
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: mockFilterObj,
         pageSize: 500,
         pageToken: null,
+        sortBy: 'duration_asc',
+      });
+    });
+
+    describe('on search submit', () => {
+      const mockFilters = { mock: 'some-filter' };
+      const mockUpdatedFilterQuery = { mock: 'updated-query' };
+      const mockUpdatedFilterToken = ['updated-filter-token'];
+
+      beforeEach(async () => {
+        filterObjToQuery.mockReturnValueOnce(mockUpdatedFilterQuery);
+        filterObjToFilterToken.mockReturnValue(mockUpdatedFilterToken);
+
+        findFilteredSearch().vm.$emit('submit', mockFilters);
+        await waitForPromises();
       });
 
-      findFilteredSearch().vm.$emit('submit', {});
+      it('process filters on search submit', () => {
+        expect(filterTokensToFilterObj).toHaveBeenLastCalledWith(mockFilters);
+        expect(filterObjToQuery).toHaveBeenLastCalledWith(mockUpdatedFilterObj);
+      });
 
-      expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
-        filters: mockUpdatedFilterObj,
-        pageSize: 500,
-        pageToken: null,
+      it('updates the query on search submit', () => {
+        expect(findUrlSync().props('query')).toMatchObject(mockUpdatedFilterQuery);
+      });
+
+      it('fetches traces with updated filters', () => {
+        expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
+          filters: mockUpdatedFilterObj,
+          pageSize: 500,
+          pageToken: null,
+          sortBy: 'duration_asc',
+        });
+      });
+
+      it('updates FilteredSearch initialFilters', () => {
+        expect(findFilteredSearch().props('initialFilters')).toEqual(mockUpdatedFilterToken);
+      });
+    });
+
+    describe('on sort order changed', () => {
+      beforeEach(async () => {
+        findFilteredSearch().vm.$emit('sort', 'created_asc');
+        await waitForPromises();
+      });
+
+      it('updates the query on search submit', () => {
+        expect(findUrlSync().props('query')).toMatchObject({
+          sortBy: 'created_asc',
+        });
+      });
+
+      it('fetches traces with new sort order', () => {
+        expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
+          filters: mockFilterObj,
+          pageSize: 500,
+          pageToken: null,
+          sortBy: 'created_asc',
+        });
+      });
+
+      it('updates FilteredSearch initial sort', () => {
+        expect(findFilteredSearch().props('initialSort')).toEqual('created_asc');
       });
     });
   });
@@ -206,6 +257,7 @@ describe('TracingList', () => {
         filters: {},
         pageSize: 500,
         pageToken: 'page-2',
+        sortBy: 'created_desc',
       });
 
       expect(findInfiniteScrolling().props('fetchedItems')).toBe(
@@ -228,6 +280,7 @@ describe('TracingList', () => {
         filters: {},
         pageSize: 500,
         pageToken: 'page-2',
+        sortBy: 'created_desc',
       });
     });
 
@@ -265,6 +318,27 @@ describe('TracingList', () => {
         filters: {},
         pageSize: 500,
         pageToken: null,
+        sortBy: 'created_desc',
+      });
+
+      expect(findTableList().props('traces')).toEqual(mockResponse.traces);
+    });
+
+    it('when sort order is changed, pagination and traces are reset', async () => {
+      observabilityClientMock.fetchTraces.mockReturnValueOnce({
+        traces: [{ trace_id: 'trace-3' }],
+        next_page_token: 'page-3',
+      });
+      await bottomReached();
+
+      findFilteredSearch().vm.$emit('sort', 'duration_desc');
+      await waitForPromises();
+
+      expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
+        filters: {},
+        pageSize: 500,
+        pageToken: null,
+        sortBy: 'duration_desc',
       });
 
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);

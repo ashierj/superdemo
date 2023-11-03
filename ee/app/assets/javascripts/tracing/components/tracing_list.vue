@@ -3,10 +3,11 @@ import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
-import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
+import { visitUrl, joinPaths, queryToObject } from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
+import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
 import {
   queryToFilterObj,
   filterObjToQuery,
@@ -38,19 +39,27 @@ export default {
     },
   },
   data() {
+    const query = window.location.search;
+    const { sortBy, ...filterQuery } = queryToObject(query);
+
     return {
       loading: false,
       traces: [],
-      filters: queryToFilterObj(window.location.search),
+      filters: queryToFilterObj(filterQuery),
       nextPageToken: null,
       chartRangeMin: null,
       chartRangeMax: null,
       highlightedTraceId: null,
+      sortBy: sortBy || DEFAULT_SORTING_OPTION,
     };
   },
   computed: {
     query() {
-      return filterObjToQuery(this.filters);
+      const filterQuery = filterObjToQuery(this.filters);
+      return {
+        ...filterQuery,
+        sortBy: this.sortBy,
+      };
     },
     initialFilterValue() {
       return filterObjToFilterToken(this.filters);
@@ -79,6 +88,7 @@ export default {
           filters: this.filters,
           pageToken: this.nextPageToken,
           pageSize: PAGE_SIZE,
+          sortBy: this.sortBy,
         });
         if (!skipUpdatingChartRange) {
           const { min, max } = periodFilterToDate(this.filters);
@@ -104,6 +114,12 @@ export default {
     },
     handleFilters(filterTokens) {
       this.filters = filterTokensToFilterObj(filterTokens);
+      this.nextPageToken = null;
+      this.traces = [];
+      this.fetchTraces();
+    },
+    onSort(sortBy) {
+      this.sortBy = sortBy;
       this.nextPageToken = null;
       this.traces = [];
       this.fetchTraces();
@@ -147,7 +163,9 @@ export default {
       <filtered-search
         :initial-filters="initialFilterValue"
         :observability-client="observabilityClient"
+        :initial-sort="sortBy"
         @submit="handleFilters"
+        @sort="onSort"
       />
       <scatter-chart
         :height="$options.CHART_HEIGHT"
