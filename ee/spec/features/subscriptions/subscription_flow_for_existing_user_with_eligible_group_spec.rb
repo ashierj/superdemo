@@ -6,7 +6,7 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
   include SaasRegistrationHelpers
   include SubscriptionPortalHelpers
 
-  let_it_be(:user) { create(:user, :no_super_sidebar) }.freeze
+  let_it_be(:user) { create(:user) }.freeze
   let_it_be(:group) { create(:group, name: 'Existing Group').tap { |g| g.add_owner(user) } }.freeze
   let_it_be(:plans_data) { billing_plans_data }.freeze
   let_it_be(:premium_plan) { plans_data.find { |plan_data| plan_data[:id] == 'premium-external-id' } }.freeze
@@ -35,6 +35,7 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
   end
 
   it 'purchases subscription by selecting create a new group' do
+    group_name = 'Test company'
     visit new_subscriptions_path(plan_id: premium_plan[:id])
 
     expect_to_see_checkout_form
@@ -44,7 +45,7 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
     select_gitlab_group('Create a new group')
 
     within_fieldset('Name of company or organization using GitLab') do
-      fill_in with: 'Test company'
+      fill_in with: group_name
     end
 
     fill_in_checkout_form
@@ -55,11 +56,11 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
 
     expect_to_see_group_validation_errors
 
-    fill_in 'Group name (your organization)', with: 'Test Company'
+    fill_in 'Group name (your organization)', with: group_name
 
     click_on 'Get started'
 
-    expect_to_be_on_group_overview
+    expect_to_be_on_group_overview(group_name)
   end
 
   def stub_confirm_purchase
@@ -107,9 +108,11 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
     # rubocop:enable Layout/LineLength
   end
 
-  def expect_to_be_on_group_overview
-    expect(page).to have_content('Subscription successfully applied to "Test Company"')
-    expect(page).to have_content('Group information')
+  def expect_to_be_on_group_overview(group_name)
+    expect(page).to have_content("Subscription successfully applied to \"#{group_name}\"")
+    within_testid('super-sidebar') do
+      expect(page).to have_selector('a[aria-current="page"]', text: group_name)
+    end
     expect(page).to have_content('Subgroups and projects')
   end
 end

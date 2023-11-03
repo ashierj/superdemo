@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Protected Tags', :js, feature_category: :source_code_management do
   include ProtectedTagHelpers
 
-  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, namespace: user.namespace) }
 
   before do

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Trial lead submission and creation with multiple eligible namespaces', :saas_trial, :js, feature_category: :purchase do
-  let_it_be(:user) { create(:user, :no_super_sidebar) } # rubocop:disable Gitlab/RSpec/AvoidSetup
+  let_it_be(:user) { create(:user) } # rubocop:disable Gitlab/RSpec/AvoidSetup
   let_it_be(:group) do # rubocop:disable Gitlab/RSpec/AvoidSetup
     create(:group).tap { |record| record.add_owner(user) }
     create(:group, name: 'gitlab').tap { |record| record.add_owner(user) }
@@ -87,11 +87,12 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
       wait_for_requests
 
       # success
+      group_name = 'gitlab1'
       fill_in_trial_selection_form_for_new_group
 
-      submit_new_group_trial_selection_form(extra_params: new_group_attrs(path: 'gitlab1'))
+      submit_new_group_trial_selection_form(extra_params: new_group_attrs(path: group_name))
 
-      expect_to_be_on_group_page(path: 'gitlab1')
+      expect_to_be_on_group_page(path: group_name)
     end
   end
 
@@ -118,11 +119,12 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
       expect_to_have_namespace_creation_errors
 
       # success when choosing a valid name instead
-      fill_in_trial_selection_form_for_new_group(name: 'valid')
+      group_name = 'valid'
+      fill_in_trial_selection_form_for_new_group(name: group_name)
 
-      submit_new_group_trial_selection_form(extra_params: new_group_attrs(path: 'valid', name: 'valid'))
+      submit_new_group_trial_selection_form(extra_params: new_group_attrs(path: group_name, name: group_name))
 
-      expect_to_be_on_group_page(path: 'valid')
+      expect_to_be_on_group_page(path: group_name, name: group_name)
     end
   end
 
