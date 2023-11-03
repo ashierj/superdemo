@@ -32,7 +32,7 @@ export const mergeRequestConfiguration = {
   [PREVENT_APPROVAL_BY_AUTHOR]: true,
   [PREVENT_APPROVAL_BY_COMMIT_AUTHOR]: true,
   [REMOVE_APPROVALS_WITH_NEW_COMMIT]: true,
-  [REQUIRE_PASSWORD_TO_APPROVE]: true,
+  [REQUIRE_PASSWORD_TO_APPROVE]: false,
 };
 
 export const SETTINGS_HUMANIZED_STRINGS = {
