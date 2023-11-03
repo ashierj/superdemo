@@ -27,20 +27,26 @@ RSpec.describe Security::ScanExecutionPolicies::RuleScheduleWorker, feature_cate
   end
 
   describe '#perform' do
-    subject { described_class.new.perform(project_id, user_id, schedule_id) }
+    it_behaves_like 'when policy is applicable based on the policy scope configuration' do
+      subject { described_class.new.perform(project_id, user_id, schedule_id) }
 
-    context 'when rule_schedule exists' do
-      it 'calls RuleScheduleService' do
-        expect_next_instance_of(
-          Security::SecurityOrchestrationPolicies::RuleScheduleService,
-          project: project,
-          current_user: user
-        ) do |service|
-          expect(service).to receive(:execute).with(schedule).and_call_original
+      context 'when rule_schedule exists' do
+        it 'calls RuleScheduleService' do
+          expect_next_instance_of(
+            Security::SecurityOrchestrationPolicies::RuleScheduleService,
+            project: project,
+            current_user: user
+          ) do |service|
+            expect(service).to receive(:execute).with(schedule).and_call_original
+          end
+
+          subject
         end
-
-        subject
       end
+    end
+
+    it_behaves_like 'when no policy is applicable due to the policy scope' do
+      it_behaves_like 'does not call RuleScheduleService'
     end
 
     context 'when project is marked for deletion' do

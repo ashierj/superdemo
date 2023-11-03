@@ -59,9 +59,20 @@ module Security
         configurations = project.all_security_orchestration_policy_configurations
         return [] if configurations.empty?
 
-        configurations.flat_map(&:active_scan_result_policies)
+        configurations
+          .flat_map(&:active_scan_result_policies)
+          .select { |policy| policy_applicable?(policy) }
       end
       strong_memoize_attr :active_policies
+
+      def policy_scope_service
+        ::Security::SecurityOrchestrationPolicies::PolicyScopeService.new(project: project)
+      end
+      strong_memoize_attr :policy_scope_service
+
+      def policy_applicable?(policy)
+        policy_scope_service.policy_applicable?(policy)
+      end
 
       def policy_branch_service
         ::Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: project)

@@ -26,7 +26,13 @@ module Gitlab
             .new(@project).all
             .to_a
             .flat_map(&:active_scan_execution_policies_for_pipelines)
-            .any?
+            .any? { |policy| policy_applicable?(policy) }
+        end
+
+        def policy_applicable?(policy)
+          ::Security::SecurityOrchestrationPolicies::PolicyScopeService
+            .new(project: @project)
+            .policy_applicable?(policy)
         end
       end
     end

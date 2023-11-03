@@ -16,9 +16,7 @@ module Security
       configuration = Security::OrchestrationPolicyConfiguration.find_by_id(configuration_id)
       return unless project && configuration
 
-      active_scan_result_policies = configuration.active_scan_result_policies
-
-      sync_policies(project, configuration, active_scan_result_policies)
+      sync_policies(project, configuration, applicable_active_policies(configuration, project))
 
       Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService
         .new(project: project, policy_configuration: configuration)
@@ -26,6 +24,14 @@ module Security
     end
 
     private
+
+    def applicable_active_policies(configuration, project)
+      policy_scope_service = Security::SecurityOrchestrationPolicies::PolicyScopeService.new(project: project)
+
+      configuration
+        .active_scan_result_policies
+        .select { |policy| policy_scope_service.policy_applicable?(policy) }
+    end
 
     def sync_policies(project, configuration, active_scan_result_policies)
       configuration.delete_scan_finding_rules_for_project(project.id)

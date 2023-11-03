@@ -1732,6 +1732,22 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
     subject(:active_scan_actions) { security_orchestration_policy_configuration.active_policies_scan_actions_for_project(default_branch, project) }
 
+    context 'with policy scope' do
+      before do
+        allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
+          allow(service).to receive(:scan_execution_branches).and_return(Set[default_branch])
+        end
+
+        allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyScopeService) do |service|
+          allow(service).to receive(:policy_applicable?).and_return(true)
+        end
+      end
+
+      it 'returns active scan policies' do
+        expect(active_scan_actions).to match_array([*dast_policy[:actions], *container_scanning_policy[:actions]])
+      end
+    end
+
     context "with matched branches" do
       before do
         allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|

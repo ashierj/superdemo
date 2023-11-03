@@ -19,9 +19,19 @@ module Security
         schedule = Security::OrchestrationPolicyRuleSchedule.find_by_id(rule_schedule_id)
         return unless schedule
 
+        return unless policy_applicable?(project, schedule.policy)
+
         Security::SecurityOrchestrationPolicies::RuleScheduleService
           .new(project: project, current_user: user)
           .execute(schedule)
+      end
+
+      private
+
+      def policy_applicable?(project, policy)
+        Security::SecurityOrchestrationPolicies::PolicyScopeService
+          .new(project: project)
+          .policy_applicable?(policy)
       end
     end
   end
