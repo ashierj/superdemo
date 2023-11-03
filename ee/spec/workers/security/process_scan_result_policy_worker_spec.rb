@@ -58,27 +58,37 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
   describe '#perform' do
     subject(:worker) { described_class.new }
 
-    it 'calls two services to general merge request approval rules from the policy YAML' do
-      active_scan_result_policies.each_with_index do |policy, policy_index|
-        expect_next_instance_of(
-          Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService,
-          project: configuration.project,
-          policy_configuration: configuration,
-          policy: policy,
-          policy_index: policy_index
-        ) do |service|
-          expect(service).to receive(:execute)
-        end
-        expect_next_instance_of(
-          Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService,
-          project: configuration.project,
-          policy_configuration: configuration
-        ) do |service|
-          expect(service).to receive(:execute)
-        end
-      end
+    it_behaves_like 'when no policy is applicable due to the policy scope' do
+      it 'does not call ProcessScanResultPolicyService to create approval rules' do
+        expect(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService).not_to receive(:new)
 
-      worker.perform(configuration.project_id, configuration.id)
+        worker.perform(configuration.project_id, configuration.id)
+      end
+    end
+
+    it_behaves_like 'when policy is applicable based on the policy scope configuration' do
+      it 'calls two services to general merge request approval rules from the policy YAML' do
+        active_scan_result_policies.each_with_index do |policy, policy_index|
+          expect_next_instance_of(
+            Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService,
+            project: configuration.project,
+            policy_configuration: configuration,
+            policy: policy,
+            policy_index: policy_index
+          ) do |service|
+            expect(service).to receive(:execute)
+          end
+          expect_next_instance_of(
+            Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService,
+            project: configuration.project,
+            policy_configuration: configuration
+          ) do |service|
+            expect(service).to receive(:execute)
+          end
+        end
+
+        worker.perform(configuration.project_id, configuration.id)
+      end
     end
 
     context 'without transaction' do

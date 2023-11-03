@@ -54,10 +54,11 @@ module Security
     end
 
     def active_policies_scan_actions_for_project(ref, project)
-      service = Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: project)
+      branch_service = Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: project)
+      scope_service = Security::SecurityOrchestrationPolicies::PolicyScopeService.new(project: project)
 
       active_scan_execution_policies
-        .select { |policy| applicable_for_ref?(policy, ref, service) }
+        .select { |policy| scope_service.policy_applicable?(policy) && applicable_for_ref?(policy, ref, branch_service) }
         .flat_map { |policy| policy[:actions] }
     end
 

@@ -144,6 +144,10 @@ RSpec.describe Security::ScanResultPolicies::SyncAnyMergeRequestRulesService, fe
 
             execute
           end
+
+          it_behaves_like 'when no policy is applicable due to the policy scope' do
+            it_behaves_like 'does not update approval rules'
+          end
         end
       end
 

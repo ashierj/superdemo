@@ -16,13 +16,20 @@ module Security
       end
 
       def rules
-        project.all_security_orchestration_policy_configurations.flat_map do |config|
-          blocking_policies = config.active_scan_result_policies.select do |rule|
-            rule.dig(:approval_settings, :prevent_force_pushing)
-          end
-
-          blocking_policies.pluck(:rules).flatten # rubocop: disable CodeReuse/ActiveRecord
+        blocking_policies = applicable_active_policies.select do |rule|
+          rule.dig(:approval_settings, :prevent_force_pushing)
         end
+
+        blocking_policies.pluck(:rules).flatten # rubocop: disable CodeReuse/ActiveRecord -- TODO: blocking_policies is a Hash
+      end
+
+      def applicable_active_policies
+        policy_scope_service = ::Security::SecurityOrchestrationPolicies::PolicyScopeService.new(project: project)
+
+        project
+          .all_security_orchestration_policy_configurations
+          .flat_map(&:active_scan_result_policies)
+          .select { |policy| policy_scope_service.policy_applicable?(policy) }
       end
     end
   end

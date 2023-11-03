@@ -22,8 +22,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProtectedBranchesDeletio
     include_context 'with scan result policy blocking protected branches' do
       let(:branch_name) { protected_branch.name }
 
-      it "includes the protected branch" do
-        expect(result).to include(protected_branch)
+      it_behaves_like 'when policy is applicable based on the policy scope configuration' do
+        it "includes the protected branch" do
+          expect(result).to include(protected_branch)
+        end
+      end
+
+      it_behaves_like 'when no policy is applicable due to the policy scope' do
+        it "excludes the protected branch" do
+          expect(result).to exclude(protected_branch)
+        end
       end
     end
 

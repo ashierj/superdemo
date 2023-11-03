@@ -29,6 +29,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePu
       expect(result).to include(branch_name)
     end
 
+    it_behaves_like 'when no policy is applicable due to the policy scope' do
+      it { is_expected.to be_empty }
+    end
+
     context 'with branch is not protected' do
       let(:branch_name) { 'feature-x' }
 
