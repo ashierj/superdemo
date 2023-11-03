@@ -23,7 +23,9 @@ RSpec.shared_examples 'member validations' do
           member = entity.add_member(create(:user), Member::DEVELOPER)
 
           expect(member).not_to be_valid
-          expect(member.errors.messages[:user]).to eq(['is not linked to a SAML account'])
+          expect(member.errors.messages[:user]).to eq([
+            "is not linked to a SAML account or has an inactive SCIM identity. For information on how to resolve this error, see the <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"/help/user/group/saml_sso/troubleshooting_scim\">troubleshooting SCIM documentation</a>."
+          ])
         end
 
         it 'allows adding a project bot as member' do
@@ -55,7 +57,10 @@ RSpec.shared_examples 'member validations' do
             member = entity.add_member(create(:user), ProjectMember::DEVELOPER)
 
             expect(member).not_to be_valid
-            expect(member.errors.messages[:user]).to eq(['is not linked to a SAML account'])
+
+            expect(member.errors.messages[:user]).to eq([
+              "is not linked to a SAML account or has an inactive SCIM identity. For information on how to resolve this error, see the <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"/help/user/group/saml_sso/troubleshooting_scim\">troubleshooting SCIM documentation</a>."
+            ])
           end
         end
       end

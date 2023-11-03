@@ -4,6 +4,7 @@ module EE
   module Member
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+    include SafeFormatHelper
 
     prepended do
       include Elastic::ApplicationVersionedSearch
@@ -100,7 +101,19 @@ module EE
 
     def sso_enforcement
       unless ::Gitlab::Auth::GroupSaml::MembershipEnforcer.new(group).can_add_user?(user)
-        errors.add(:user, 'is not linked to a SAML account')
+        troubleshoot_link_url = ::Gitlab::Routing.url_helpers.help_page_path('user/group/saml_sso/troubleshooting_scim')
+        troubleshoot_link = ActionController::Base.helpers.link_to('', troubleshoot_link_url, target: '_blank',
+          rel: 'noopener noreferrer')
+        msg = safe_format(
+          s_(
+            "is not linked to a SAML account or has an inactive SCIM identity. " \
+            "For information on how to resolve this error, see the " \
+            "%{troubleshoot_link_start}troubleshooting SCIM documentation%{troubleshoot_link_end}."
+          ),
+          tag_pair(troubleshoot_link, :troubleshoot_link_start, :troubleshoot_link_end)
+        )
+
+        errors.add(:user, msg)
       end
     end
 
