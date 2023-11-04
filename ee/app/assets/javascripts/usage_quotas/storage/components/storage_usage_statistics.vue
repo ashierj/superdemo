@@ -10,6 +10,7 @@ import NamespaceLimitsTotalStorageAvailableBreakdownCard from './namespace_limit
 import StorageUsageOverviewCard from './storage_usage_overview_card.vue';
 import ProjectLimitsExcessStorageBreakdownCard from './project_limits_excess_storage_breakdown_card.vue';
 import NumberToHumanSize from './number_to_human_size.vue';
+import NoLimitsPurchasedStorageBreakdownCard from './no_limits_purchased_storage_breakdown_card.vue';
 
 export default {
   components: {
@@ -22,6 +23,7 @@ export default {
     StorageUsageOverviewCard,
     ProjectLimitsExcessStorageBreakdownCard,
     NumberToHumanSize,
+    NoLimitsPurchasedStorageBreakdownCard,
   },
   directives: {
     GlModalDirective,
@@ -82,6 +84,12 @@ export default {
     namespaceStorageOverviewSubtitle: NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
   },
   computed: {
+    isUsingProjectEnforcementWithLimits() {
+      return this.isUsingProjectEnforcement && this.namespacePlanStorageIncluded !== 0;
+    },
+    isUsingProjectEnforcementWithNoLimits() {
+      return this.isUsingProjectEnforcement && this.namespacePlanStorageIncluded === 0;
+    },
     totalStorage() {
       return this.namespacePlanStorageIncluded + this.additionalPurchasedStorageSize;
     },
@@ -174,14 +182,22 @@ export default {
       />
 
       <template v-if="namespacePlanName">
-        <project-limits-excess-storage-breakdown-card
-          v-if="isUsingProjectEnforcement"
+        <no-limits-purchased-storage-breakdown-card
+          v-if="isUsingProjectEnforcementWithNoLimits"
           :purchased-storage="additionalPurchasedStorageSize"
           :limited-access-mode-enabled="shouldShowLimitedAccessModal"
           :loading="loading"
         />
+
+        <project-limits-excess-storage-breakdown-card
+          v-else-if="isUsingProjectEnforcementWithLimits"
+          :purchased-storage="additionalPurchasedStorageSize"
+          :limited-access-mode-enabled="shouldShowLimitedAccessModal"
+          :loading="loading"
+        />
+
         <namespace-limits-total-storage-available-breakdown-card
-          v-else
+          v-else-if="isUsingNamespaceEnforcement"
           :included-storage="namespacePlanStorageIncluded"
           :purchased-storage="additionalPurchasedStorageSize"
           :total-storage="totalStorage"

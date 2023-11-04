@@ -86,6 +86,18 @@ export const SaasWithProjectLimits = {
   }),
 };
 
+export const SaasWithNoLimits = {
+  render: createTemplate({
+    provide: {
+      enforcementType: 'project_repository_limit',
+      isUsingNamespaceEnforcement: false,
+      isUsingProjectEnforcement: true,
+      totalRepositorySizeExcess: 0,
+      namespacePlanStorageIncluded: 0,
+    },
+  }),
+};
+
 export const SaasWithProjectLimitsLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
