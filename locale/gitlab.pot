@@ -39935,6 +39935,9 @@ msgstr ""
 msgid "Reply to this email directly or %{view_it_on_gitlab}."
 msgstr ""
 
+msgid "Reply..."
+msgstr ""
+
 msgid "Reply…"
 msgstr ""
 
