@@ -17,6 +17,7 @@ import {
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
+import PolicyScope from 'ee/security_orchestration/components/policy_editor/scope/policy_scope.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockDastScanExecutionObject } from '../../mocks/mock_scan_execution_policy_data';
 import { mockDefaultBranchesScanResultObject } from '../../mocks/mock_scan_result_policy_data';
@@ -64,6 +65,7 @@ describe('EditorLayout component', () => {
     wrapper.findByTestId('scan-result-policy-run-time-info');
   const findScanResultPolicyRunTimeTooltip = () =>
     findScanResultPolicyRunTimeInfo().findComponent(GlIcon);
+  const findPolicyScope = () => wrapper.findComponent(PolicyScope);
 
   describe('default behavior', () => {
     beforeEach(() => {
@@ -293,5 +295,27 @@ describe('EditorLayout component', () => {
       await nextTick();
       expect(findSavePolicyButton().props('disabled')).toBe(false);
     });
+  });
+
+  describe('policy scope', () => {
+    it.each`
+      flagEnabled | type                       | expectedResult
+      ${true}     | ${NAMESPACE_TYPES.GROUP}   | ${true}
+      ${true}     | ${NAMESPACE_TYPES.PROJECT} | ${false}
+      ${false}    | ${NAMESPACE_TYPES.GROUP}   | ${false}
+      ${false}    | ${NAMESPACE_TYPES.PROJECT} | ${false}
+    `(
+      'renders policy scope conditionally for $namespaceType level based on feature flag',
+      ({ flagEnabled, type, expectedResult }) => {
+        factory({
+          provide: {
+            namespaceType: type,
+            glFeatures: { securityPoliciesPolicyScope: flagEnabled },
+          },
+        });
+
+        expect(findPolicyScope().exists()).toBe(expectedResult);
+      },
+    );
   });
 });
