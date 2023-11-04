@@ -12,7 +12,10 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { __, s__, sprintf } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
+import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
+import PolicyScope from 'ee/security_orchestration/components/policy_editor/scope/policy_scope.vue';
 import { NAMESPACE_TYPES } from '../../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import {
@@ -22,6 +25,7 @@ import {
   EDITOR_MODE_YAML,
   POLICY_RUN_TIME_MESSAGE,
   POLICY_RUN_TIME_TOOLTIP,
+  SCOPE_LABEL,
 } from './constants';
 
 export default {
@@ -29,6 +33,7 @@ export default {
     DELETE_MODAL_CONFIG,
     POLICY_RUN_TIME_MESSAGE,
     POLICY_RUN_TIME_TOOLTIP,
+    SCOPE_LABEL,
     description: __('Description'),
     failedValidationText: __('This field is required'),
     name: __('Name'),
@@ -40,6 +45,8 @@ export default {
     { value: false, text: __('Disabled') },
   ],
   components: {
+    DimDisableContainer,
+    PolicyScope,
     GlAlert,
     GlButton,
     GlFormGroup,
@@ -52,6 +59,7 @@ export default {
     YamlEditor: () => import(/* webpackChunkName: 'policy_yaml_editor' */ '../yaml_editor.vue'),
   },
   directives: { GlModal: GlModalDirective, GlTooltip: GlTooltipDirective },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType', 'policiesPath'],
   props: {
     customSaveButtonText: {
@@ -126,6 +134,12 @@ export default {
     };
   },
   computed: {
+    isGroupLevel() {
+      return this.namespaceType === NAMESPACE_TYPES.GROUP;
+    },
+    shouldShowScope() {
+      return this.glFeatures.securityPoliciesPolicyScope && this.isGroupLevel;
+    },
     deleteModalTitle() {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {
         policy: this.policy.name,
@@ -233,6 +247,18 @@ export default {
                 @change="setPolicyProperty('enabled', $event)"
               />
             </gl-form-group>
+
+            <dim-disable-container v-if="shouldShowScope" :disabled="hasParsingError">
+              <template #title>
+                <h4>{{ $options.i18n.SCOPE_LABEL }}</h4>
+              </template>
+
+              <template #disabled>
+                <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
+              </template>
+
+              <policy-scope />
+            </dim-disable-container>
 
             <slot name="actions-first"></slot>
             <slot name="rules"></slot>

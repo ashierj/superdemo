@@ -82,7 +82,7 @@ export const ACTIONS_LABEL = s__('SecurityOrchestration|Actions');
 
 export const RULE_IF_LABEL = __('if');
 export const RULE_OR_LABEL = __('or');
-
+export const SCOPE_LABEL = s__('SecurityOrchestration|Policy scope');
 export const ACTION_AND_LABEL = __('and');
 
 export const RULE_MODE_SCANNERS = {
