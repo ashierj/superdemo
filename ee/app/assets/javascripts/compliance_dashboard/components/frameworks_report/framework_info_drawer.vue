@@ -1,5 +1,14 @@
 <script>
-import { GlDrawer, GlButton, GlLabel } from '@gitlab/ui';
+import {
+  GlDrawer,
+  GlButton,
+  GlLabel,
+  GlLink,
+  GlAccordion,
+  GlAccordionItem,
+  GlTruncate,
+} from '@gitlab/ui';
+import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 
@@ -9,6 +18,10 @@ export default {
     GlDrawer,
     GlButton,
     GlLabel,
+    GlLink,
+    GlAccordion,
+    GlAccordionItem,
+    GlTruncate,
   },
   props: {
     framework: {
@@ -31,8 +44,17 @@ export default {
     defaultFramework() {
       return Boolean(this.framework.default);
     },
+    associatedProjectsTitle() {
+      return `${this.$options.i18n.associatedProjects} (${this.framework.associatedProjects.length})`;
+    },
   },
   DRAWER_Z_INDEX,
+  i18n: {
+    defaultFramework: s__('ComplianceFrameworksReport|Default'),
+    editFramework: s__('ComplianceFrameworksReport|Edit framework'),
+    frameworkDescription: s__('ComplianceFrameworksReport|Description'),
+    associatedProjects: s__('ComplianceFrameworksReport|Associated Projects'),
+  },
 };
 </script>
 
@@ -44,13 +66,13 @@ export default {
     @close="$emit('close')"
   >
     <template v-if="framework" #title>
-      <div>
+      <div style="max-width: 350px">
         <h2 class="gl-mt-0">
-          {{ framework.name }}
+          <gl-truncate :text="framework.name" with-tooltip />
           <gl-label
             v-if="defaultFramework"
             :background-color="framework.color"
-            :title="s__('ComplianceFrameworksReport|Default')"
+            :title="$options.i18n.defaultFramework"
             size="sm"
           />
         </h2>
@@ -60,16 +82,27 @@ export default {
           variant="confirm"
           @click="$emit('edit', framework)"
         >
-          {{ s__('ComplianceFrameworksReport|Edit framework') }}
+          {{ $options.i18n.editFramework }}
         </gl-button>
       </div>
     </template>
 
     <template v-if="framework" #default>
       <div>
-        <h4 class="gl-mt-0">
-          {{ s__('ComplianceFrameworksReport|Associated Projects') }}
-        </h4>
+        <gl-accordion :auto-collapse="false" :header-level="3">
+          <gl-accordion-item :title="$options.i18n.frameworkDescription" visible :header-level="2">
+            {{ framework.description }}
+          </gl-accordion-item>
+          <gl-accordion-item :title="associatedProjectsTitle">
+            <div
+              v-for="associatedProject in framework.associatedProjects"
+              :key="associatedProject.id"
+              class="gl-m-2"
+            >
+              <gl-link :href="associatedProject.webUrl">{{ associatedProject.name }}</gl-link>
+            </div>
+          </gl-accordion-item>
+        </gl-accordion>
       </div>
     </template>
   </gl-drawer>

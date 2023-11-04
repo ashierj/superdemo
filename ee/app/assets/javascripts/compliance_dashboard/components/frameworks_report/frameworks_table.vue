@@ -86,8 +86,8 @@ export default {
     {
       key: 'associatedProjects',
       label: __('Associated projects'),
-      thClass: 'gl-white-space-nowrap gl-vertical-align-middle!',
-      tdClass: 'gl-white-space-nowrap gl-vertical-align-middle! gl-cursor-pointer',
+      thClass: 'gl-md-max-w-26 gl-white-space-nowrap gl-vertical-align-middle!',
+      tdClass: 'gl-md-max-w-26 gl-vertical-align-middle! gl-cursor-pointer',
       sortable: false,
     },
   ],
@@ -127,9 +127,13 @@ export default {
         <framework-badge :framework="item" @edit="editComplianceFramework(item)" />
       </template>
       <template #cell(associatedProjects)="{ item: { associatedProjects } }">
-        <div v-for="(associatedProject, index) in associatedProjects" :key="associatedProject.id">
+        <div
+          v-for="(associatedProject, index) in associatedProjects"
+          :key="associatedProject.id"
+          class="gl-display-inline-block"
+        >
           <gl-link :href="associatedProject.webUrl">{{ associatedProject.name }}</gl-link
-          ><span v-if="index < associatedProjects.length - 1">,</span>
+          ><span v-if="index < associatedProjects.length - 1">, </span>
         </div>
       </template>
       <template #table-busy>

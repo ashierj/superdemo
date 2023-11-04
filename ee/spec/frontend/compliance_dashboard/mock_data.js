@@ -273,6 +273,19 @@ export const createFramework = ({ id, isDefault = false } = {}) => ({
   __typename: 'ComplianceFramework',
 });
 
+export const createFrameworkReportFramework = ({ id, isDefault = false, projects = 3 } = {}) => ({
+  id: `gid://gitlab/ComplianceManagement::Framework/${id}`,
+  name: `Some framework ${id}`,
+  default: isDefault,
+  description: `This is a framework ${id}`,
+  color: `#3cb37${id}`,
+  pipelineConfigurationFullPath: null,
+  associatedProjects: Array(projects)
+    .fill(null)
+    .map((_, pid) => createProject({ id: pid })),
+  __typename: 'ComplianceFramework',
+});
+
 export const createComplianceFrameworksReportResponse = ({ count = 1 } = {}) => {
   return {
     data: {

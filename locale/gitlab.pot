@@ -12370,6 +12370,9 @@ msgstr ""
 msgid "ComplianceFrameworksReport|Default"
 msgstr ""
 
+msgid "ComplianceFrameworksReport|Description"
+msgstr ""
+
 msgid "ComplianceFrameworksReport|Edit framework"
 msgstr ""
 
