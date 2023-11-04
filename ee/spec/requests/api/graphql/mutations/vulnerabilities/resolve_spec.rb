@@ -26,7 +26,7 @@ RSpec.describe "Mutation.vulnerabilityResolve", feature_category: :vulnerability
     end
 
     context "with `admin_vulnerability` enabled" do
-      let(:role) { create(:member_role, :admin_vulnerability, namespace: project.group) }
+      let(:role) { create(:member_role, :guest, :admin_vulnerability, namespace: project.group) }
 
       it "returns a successful response" do
         post_graphql_mutation(mutation, current_user: current_user)

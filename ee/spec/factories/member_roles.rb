@@ -10,7 +10,6 @@ FactoryBot.define do
     trait(:guest) { base_access_level { Gitlab::Access::GUEST } }
 
     trait :admin_vulnerability do
-      guest
       admin_vulnerability { true }
       read_vulnerability { true }
     end
