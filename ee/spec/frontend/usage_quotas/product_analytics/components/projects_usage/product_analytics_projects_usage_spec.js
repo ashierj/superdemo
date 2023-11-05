@@ -19,6 +19,7 @@ jest.mock('ee/usage_quotas/product_analytics/graphql/utils');
 jest.mock('~/sentry/sentry_browser_wrapper');
 
 describe('ProductAnalyticsProjectsUsage', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findError = () => wrapper.findComponent(GlAlert);

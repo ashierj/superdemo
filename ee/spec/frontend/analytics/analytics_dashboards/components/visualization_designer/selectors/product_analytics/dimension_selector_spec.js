@@ -8,6 +8,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProductAnalyticsDimensionSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/selectors/product_analytics/dimension_selector.vue';
 
 describe('ProductAnalyticsDimensionSelector', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findDimensionSummary = () => wrapper.findByTestId('dimension-summary');

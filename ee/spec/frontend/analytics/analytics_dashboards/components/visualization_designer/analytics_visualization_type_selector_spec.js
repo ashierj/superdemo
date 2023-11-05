@@ -3,6 +3,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import AnalyticsVisualizationTypeSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_type_selector.vue';
 
 describe('AnalyticsVisualizationTypeSelector', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const createWrapper = (selectedVisualizationType = '', state = null) => {

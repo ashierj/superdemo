@@ -4,6 +4,7 @@ import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_help
 import { __ } from '~/locale';
 
 describe('FeatureListItem', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findIcon = () => wrapper.findComponent(GlIcon);

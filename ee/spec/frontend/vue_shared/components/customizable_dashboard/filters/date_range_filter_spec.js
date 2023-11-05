@@ -10,6 +10,7 @@ import {
 import { dateRangeOptionToFilter } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
 describe('DateRangeFilter', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const dateRangeOptionIndex = DATE_RANGE_OPTIONS.findIndex(

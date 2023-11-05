@@ -4,6 +4,7 @@ import ProductAnalyticsProjectsUsageChart from 'ee/usage_quotas/product_analytic
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('ProductAnalyticsProjectsUsageChart', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findLoadingState = () => wrapper.findComponent(GlSkeletonLoader);

@@ -21,6 +21,7 @@ import { TEST_PROJECT_FULL_PATH } from '../mock_data';
 jest.mock('~/alert');
 
 describe('ProductAnalyticsOnboardingView', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const $router = {

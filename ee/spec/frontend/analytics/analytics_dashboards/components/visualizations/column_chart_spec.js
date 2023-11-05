@@ -3,6 +3,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ColumnChart from 'ee/analytics/analytics_dashboards/components/visualizations/column_chart.vue';
 
 describe('ColumnChart Visualization', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findColumnChart = () => wrapper.findComponent(GlColumnChart);

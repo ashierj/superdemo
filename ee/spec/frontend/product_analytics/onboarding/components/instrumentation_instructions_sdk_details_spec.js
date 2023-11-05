@@ -6,6 +6,7 @@ import {
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 
 describe('ProductAnalyticsInstrumentationInstructionsSdkDetails', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findInputByValue = (value) => wrapper.findByDisplayValue(value);

@@ -22,6 +22,7 @@ const REDIRECTED_DASHBOARD = {
 };
 
 describe('DashboardsListItem', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findIcon = () => wrapper.findComponent(GlIcon);

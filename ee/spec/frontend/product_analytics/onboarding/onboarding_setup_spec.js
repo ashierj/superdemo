@@ -19,6 +19,7 @@ const { i18n } = ProductAnalyticsSetupView;
 Vue.use(VueApollo);
 
 describe('ProductAnalyticsSetupView', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const fatalError = new Error('GraphQL networkError');

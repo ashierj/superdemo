@@ -5,6 +5,7 @@ import AnalyticsDashboardsApp from 'ee/analytics/analytics_dashboards/dashboards
 import createRouter from 'ee/analytics/analytics_dashboards/router';
 
 describe('AnalyticsDashboardsApp', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   let router;
 

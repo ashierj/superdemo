@@ -3,6 +3,7 @@ import ProductAnalyticsUsageQuotaApp from 'ee/usage_quotas/product_analytics/com
 import ProductAnalyticsProjectsUsage from 'ee/usage_quotas/product_analytics/components/projects_usage/product_analytics_projects_usage.vue';
 
 describe('ProductAnalyticsUsageQuotaApp', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findProductAnalyticsProjectsUsage = () =>

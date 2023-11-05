@@ -31,6 +31,7 @@ const showToast = jest.fn();
 const routerPush = jest.fn();
 
 describe('AnalyticsVisualizationDesigner', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findTitleFormGroup = () => wrapper.findByTestId('visualization-title-form-group');

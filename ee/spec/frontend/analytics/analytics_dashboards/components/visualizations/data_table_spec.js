@@ -4,6 +4,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';
 
 describe('DataTable Visualization', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findTable = () => wrapper.findComponent(GlTableLite);

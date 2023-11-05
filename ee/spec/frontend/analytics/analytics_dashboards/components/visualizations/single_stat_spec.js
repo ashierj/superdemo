@@ -3,6 +3,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SingleStat from 'ee/analytics/analytics_dashboards/components/visualizations/single_stat.vue';
 
 describe('Single Stat Visualization', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findSingleStat = () => wrapper.findComponent(GlSingleStat);

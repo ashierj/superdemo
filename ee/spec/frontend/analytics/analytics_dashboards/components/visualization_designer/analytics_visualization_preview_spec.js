@@ -8,6 +8,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TEST_VISUALIZATION } from '../../mock_data';
 
 describe('AnalyticsVisualizationPreview', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findDataButton = () => wrapper.findByTestId('select-data-button');
