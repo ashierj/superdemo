@@ -12,6 +12,7 @@ import {
 import { TEST_PROJECT_FULL_PATH } from '../../mock_data';
 
 describe('OnboardingListItem', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findListItem = () => wrapper.findComponent(AnalyticsFeatureListItem);

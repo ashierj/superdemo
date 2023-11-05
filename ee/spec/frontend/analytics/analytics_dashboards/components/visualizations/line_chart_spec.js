@@ -3,6 +3,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 
 describe('LineChart Visualization', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findLineChart = () => wrapper.findComponent(GlLineChart);

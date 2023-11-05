@@ -20,6 +20,7 @@ import { TEST_PROJECT_FULL_PATH, getProductAnalyticsStateResponse } from '../../
 Vue.use(VueApollo);
 
 describe('OnboardingState', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const fatalError = new Error('GraphQL networkError');

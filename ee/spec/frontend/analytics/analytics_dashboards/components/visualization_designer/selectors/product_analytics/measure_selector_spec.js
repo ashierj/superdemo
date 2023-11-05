@@ -8,6 +8,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProductAnalyticsMeasureSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/selectors/product_analytics/measure_selector.vue';
 
 describe('ProductAnalyticsMeasureSelector', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findMeasureSummary = () => wrapper.findByTestId('measure-summary');

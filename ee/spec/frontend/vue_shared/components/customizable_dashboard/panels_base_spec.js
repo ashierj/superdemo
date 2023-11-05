@@ -25,6 +25,7 @@ jest.mock('ee/analytics/analytics_dashboards/data_sources', () => ({
 describe('PanelsBase', () => {
   const panelConfig = dashboard.panels[0];
 
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const createWrapper = (props = {}, mountFn = shallowMountExtended) => {

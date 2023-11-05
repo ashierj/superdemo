@@ -3,6 +3,7 @@ import DoraChart from 'ee/analytics/analytics_dashboards/components/visualizatio
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
 
 describe('LineChart Visualization', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const namespace = {

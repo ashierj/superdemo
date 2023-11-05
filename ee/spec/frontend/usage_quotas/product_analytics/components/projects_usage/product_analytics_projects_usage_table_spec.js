@@ -4,6 +4,7 @@ import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_help
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
 describe('ProductAnalyticsProjectsUsageTable', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findLoadingState = () => wrapper.findComponent(GlSkeletonLoader);

@@ -13,6 +13,7 @@ import { createInstanceResponse, TEST_PROJECT_FULL_PATH } from '../../mock_data'
 Vue.use(VueApollo);
 
 describe('OnboardingEmptyState', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const fatalError = new Error('GraphQL networkError');

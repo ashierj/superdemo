@@ -13,6 +13,7 @@ const TEST_DESCRIPTION = 'The SDK key';
 const TEST_VALUE = 'XyZ';
 
 describe('AnalyticsClipboardInput', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);

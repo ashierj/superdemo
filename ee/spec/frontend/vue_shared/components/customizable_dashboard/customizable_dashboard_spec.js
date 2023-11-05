@@ -63,6 +63,7 @@ jest.mock('~/lib/utils/css_utils', () => ({
 }));
 
 describe('CustomizableDashboard', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   let trackingSpy;
 

@@ -11,6 +11,7 @@ import InstrumentationInstructions from 'ee/product_analytics/onboarding/compone
 import { stubComponent } from 'helpers/stub_component';
 
 describe('ProductAnalyticsSettingsInstrumentationInstructions', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   const dashboardsPath = '/foo/bar/dashboards';
   const onboardingPath = '/foo/bar/dashboards/onboarding';

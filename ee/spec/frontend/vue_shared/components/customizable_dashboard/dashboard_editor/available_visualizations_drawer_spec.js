@@ -12,6 +12,7 @@ jest.mock('~/lib/utils/dom_utils', () => ({
 }));
 
 describe('AvailableVisualizationsDrawer', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const allTypes = ['SingleStat', 'LineChart', 'DataTable', 'BarChart'];

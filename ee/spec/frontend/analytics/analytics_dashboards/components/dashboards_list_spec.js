@@ -31,6 +31,7 @@ jest.mock('~/alert', () => ({
 Vue.use(VueApollo);
 
 describe('DashboardsList', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   let trackingSpy;
 

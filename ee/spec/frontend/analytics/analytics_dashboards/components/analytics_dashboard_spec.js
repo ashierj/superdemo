@@ -65,6 +65,7 @@ const showToast = jest.fn();
 Vue.use(VueApollo);
 
 describe('AnalyticsDashboard', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   let trackingSpy;
 

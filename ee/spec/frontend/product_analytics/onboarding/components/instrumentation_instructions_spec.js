@@ -9,6 +9,7 @@ import {
 import { s__ } from '~/locale';
 
 describe('ProductAnalyticsInstrumentationInstructions', () => {
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
   let trackingSpy;
 
