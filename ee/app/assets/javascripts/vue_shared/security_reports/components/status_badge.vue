@@ -1,5 +1,5 @@
 <script>
-import { GlBadge } from '@gitlab/ui';
+import { GlBadge, GlLoadingIcon } from '@gitlab/ui';
 
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
 
@@ -13,12 +13,18 @@ export const VARIANTS = {
 export default {
   components: {
     GlBadge,
+    GlLoadingIcon,
   },
   props: {
     state: {
       type: String,
       required: true,
       validator: (state) => Object.keys(VARIANTS).includes(state),
+    },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   computed: {
@@ -34,6 +40,7 @@ export default {
 
 <template>
   <gl-badge :variant="stateVariant">
-    {{ stateName }}
+    <gl-loading-icon v-if="loading" size="sm" class="gl-mx-5" />
+    <template v-else>{{ stateName }}</template>
   </gl-badge>
 </template>
