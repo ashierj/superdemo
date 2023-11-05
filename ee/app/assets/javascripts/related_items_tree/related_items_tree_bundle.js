@@ -70,6 +70,7 @@ export default () => {
         userPermissions: {
           canAdmin: initialData.canAdmin,
           canAdminRelation: initialData.canAdminRelation,
+          canReadRelation: initialData.canReadRelation,
         },
       });
 

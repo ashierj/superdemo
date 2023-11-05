@@ -18,8 +18,8 @@ export default {
   },
   computed: {
     ...mapState(['parentItem']),
-    canAdminRelation() {
-      return this.parentItem.userPermissions.canAdminRelation;
+    canReadRelation() {
+      return this.parentItem.userPermissions.canReadRelation;
     },
     epicActionItems() {
       const epicActionItems = [];
@@ -57,7 +57,7 @@ export default {
         },
       ];
 
-      if (this.allowSubEpics && this.canAdminRelation) {
+      if (this.allowSubEpics && this.canReadRelation) {
         actions.push(this.epicActionItems);
       }
 

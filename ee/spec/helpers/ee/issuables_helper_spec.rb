@@ -21,6 +21,7 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
         {
           canAdmin: permission,
           canAdminRelation: permission,
+          canReadRelation: permission,
           canDestroy: permission,
           canUpdate: permission,
           confidential: epic.confidential,

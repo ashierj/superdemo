@@ -142,6 +142,10 @@ export default {
       return this.itemWebPath.length ? this.itemWebPath : null;
     },
     canAdminRelation() {
+      if (this.isEpic) {
+        return this.parentItem.userPermissions.canReadRelation;
+      }
+
       return this.parentItem.userPermissions.canAdminRelation;
     },
     itemActionInProgress() {

@@ -19,7 +19,7 @@ const createComponent = ({ slots, state = {} } = {}) => {
     userPermissions: {
       ...mockParentItem.userPermissions,
       canAdmin: state.canAdmin,
-      canAdminRelation: state.canAdminRelation,
+      canReadRelation: state.canReadRelation,
     },
   });
 
@@ -41,9 +41,9 @@ describe('ee/related_items_tree/components/epic_issue_actions_split_button.vue',
   const findDropdownSections = () => findDisclosureDropdown().props('items');
   const findDropdownItems = () => findDropdownSections().flatMap((x) => x.items);
 
-  describe('default (canAdmin and canAdminRelation)', () => {
+  describe('default (canAdmin and canReadRelation)', () => {
     beforeEach(() => {
-      wrapper = createComponent({ state: { canAdmin: true, canAdminRelation: true } });
+      wrapper = createComponent({ state: { canAdmin: true, canReadRelation: true } });
     });
 
     it('renders section headers', () => {
@@ -82,9 +82,9 @@ describe('ee/related_items_tree/components/epic_issue_actions_split_button.vue',
     });
   });
 
-  describe('when cannot admin relation', () => {
+  describe('when cannot read relation', () => {
     beforeEach(() => {
-      wrapper = createComponent({ state: { canAdminRelation: false } });
+      wrapper = createComponent({ state: { canReadRelation: false } });
     });
 
     it('does not render entire "Epic"', () => {
@@ -96,7 +96,7 @@ describe('ee/related_items_tree/components/epic_issue_actions_split_button.vue',
 
   describe('when cannot admin', () => {
     beforeEach(() => {
-      wrapper = createComponent({ state: { canAdmin: false, canAdminRelation: true } });
+      wrapper = createComponent({ state: { canAdmin: false, canReadRelation: true } });
     });
 
     it('does not render "Add a new epic" action', () => {

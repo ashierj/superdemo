@@ -6,22 +6,23 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
   include NestedEpicsHelper
   include DragTo
 
-  let(:user) { create(:user) }
-  let(:group) { create(:group, :public) }
-  let(:epic) { create(:epic, group: group) }
-  let(:public_project) { create(:project, :public, group: group) }
-  let(:private_project) { create(:project, :private, group: group) }
-  let(:public_issue) { create(:issue, project: public_project) }
-  let(:private_issue) { create(:issue, project: private_project) }
+  let_it_be(:non_member) { create(:user) }
+  let_it_be(:developer) { create(:user) }
+  let_it_be(:group) { create(:group, :public).tap { |g| g.add_developer(developer) } }
+  let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be(:public_project) { create(:project, :public, group: group) }
+  let_it_be(:private_project) { create(:project, :private, group: group) }
+  let_it_be(:public_issue) { create(:issue, project: public_project) }
+  let_it_be(:private_issue) { create(:issue, project: private_project) }
 
-  let!(:epic_issues) do
+  let_it_be(:epic_issues) do
     [
       create(:epic_issue, epic: epic, issue: public_issue, relative_position: 1),
       create(:epic_issue, epic: epic, issue: private_issue, relative_position: 2)
     ]
   end
 
-  let!(:nested_epics) do
+  let_it_be(:nested_epics) do
     [
       create(:epic, group: group, parent_id: epic.id, relative_position: 1),
       create(:epic, group: group, parent_id: epic.id, relative_position: 2)
@@ -51,27 +52,66 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
   end
 
   context 'when user is not a group member of a public group' do
+    let(:user) { non_member }
+    let(:add_child_menu_selector) do
+      '.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]'
+    end
+
     before do
       visit_epic
     end
 
-    it 'user can see issues from public project but cannot delete the associations' do
+    it 'display remove button for child epics but not for issues' do
       within('.related-items-tree-container ul.related-items-list') do
         expect(page).to have_selector('li', count: 3)
         expect(page).to have_content(public_issue.title)
-        expect(page).not_to have_selector('button.js-issue-item-remove-button')
+        expect(page).to have_selector('button.js-issue-item-remove-button', count: 2)
       end
     end
 
-    it 'user cannot add new issues to the epic' do
-      expect(page).not_to have_selector('.related-items-tree-container .js-issue-actions-split-button > button:first-child')
+    it 'displays option to add new and existing issue' do
+      find(".related-items-tree-container .js-add-epics-issues-button").click
+      expect(page).to have_selector(add_child_menu_selector, text: 'Add a new issue')
+      expect(page).to have_selector(add_child_menu_selector, text: 'Add an existing issue')
+    end
+
+    it 'displays option to add an existing epic' do
+      find(".related-items-tree-container .js-add-epics-issues-button").click
+      expect(page).to have_selector(add_child_menu_selector, text: 'Add an existing epic')
+    end
+
+    it 'does not display option to add new epic' do
+      find(".related-items-tree-container .js-add-epics-issues-button").click
+      expect(page).not_to have_selector(add_child_menu_selector, text: 'Add a new epic')
+    end
+
+    context 'when epic_relations_for_non_members feature flag is disabled' do
+      before do
+        stub_feature_flags(epic_relations_for_non_members: false)
+        visit_epic
+      end
+
+      it 'user cannot add existing epic' do
+        find(".related-items-tree-container .js-add-epics-issues-button").click
+        expect(page).not_to have_selector(add_child_menu_selector, text: 'Add an existing epic')
+        expect(page).not_to have_selector(add_child_menu_selector, text: 'Add a new epic')
+      end
+
+      it 'user cannot remove existing epic children' do
+        within('.related-items-tree-container ul.related-items-list') do
+          expect(page).to have_selector('li', count: 3)
+          expect(page).not_to have_selector('button.js-issue-item-remove-button')
+        end
+      end
     end
   end
 
   context 'when user is a group member' do
-    let(:issue_to_add) { create(:issue, project: private_project) }
-    let(:issue_invalid) { create(:issue) }
-    let(:epic_to_add) { create(:epic, group: group) }
+    let_it_be(:issue_to_add) { create(:issue, project: private_project) }
+    let_it_be(:issue_invalid) { create(:issue) }
+    let_it_be(:epic_to_add) { create(:epic, group: group) }
+
+    let(:user) { developer }
 
     def add_issues(references)
       find(".related-items-tree-container .js-add-epics-issues-button").click
@@ -96,7 +136,6 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
     end
 
     before do
-      group.add_developer(user)
       visit_epic
     end
 

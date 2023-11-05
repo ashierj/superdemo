@@ -14,7 +14,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
     sign_in(user)
   end
 
-  shared_examples 'unlicensed subepics action' do
+  shared_examples 'unlicensed action' do |status: :forbidden|
     before do
       stub_licensed_features(features_when_forbidden)
       group.add_developer(user)
@@ -22,8 +22,8 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
       subject
     end
 
-    it 'returns 403 status' do
-      expect(response).to have_gitlab_http_status(:forbidden)
+    it 'returns error response' do
+      expect(response).to have_gitlab_http_status(status)
     end
   end
 
@@ -36,7 +36,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
 
     subject { get group_epic_links_path(group_id: group, epic_id: parent_epic.to_param) }
 
-    it_behaves_like 'unlicensed subepics action'
+    it_behaves_like 'unlicensed action'
 
     context 'when epics are enabled' do
       before do
@@ -141,7 +141,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
       post group_epic_links_path(group_id: group, epic_id: parent_epic.to_param, issuable_references: reference)
     end
 
-    it_behaves_like 'unlicensed subepics action'
+    it_behaves_like 'unlicensed action', status: :not_found
 
     context 'when subepics are enabled' do
       before do
@@ -193,15 +193,40 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
         end
       end
 
-      context 'when user does not have permissions to create requested association' do
-        it 'returns 403 status' do
-          subject
+      context 'when user does not have access to epic' do
+        context 'when `epic_relations_for_non_members` feature flag is disabled' do
+          before do
+            stub_feature_flags(epic_relations_for_non_members: false)
+          end
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          it 'returns 403 status' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
 
-        it 'does not update parent attribute' do
-          expect { subject }.not_to change { epic1.reload.parent }.from(nil)
+        context 'when group is private' do
+          let(:group) { create(:group, :private) }
+
+          it 'returns 404 status' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
+
+        context 'when epic is confidential' do
+          let_it_be(:epic1) { create(:epic, group: group, confidential: true) }
+          let_it_be(:parent_epic) { create(:epic, group: group, confidential: true) }
+
+          it 'returns 403 status when user is a guest' do
+            group.add_guest(user)
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
       end
     end
@@ -221,7 +246,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
                                                      move_before_epic.id })
     end
 
-    it_behaves_like 'unlicensed subepics action'
+    it_behaves_like 'unlicensed action', status: :not_found
 
     context 'when subepics are enabled' do
       before do
@@ -273,7 +298,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
 
     subject { delete group_epic_link_path(group_id: group, epic_id: parent_epic.to_param, id: epic1.id) }
 
-    it_behaves_like 'unlicensed subepics action'
+    it_behaves_like 'unlicensed action'
 
     context 'when epics are enabled' do
       before do
@@ -296,15 +321,40 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
         end
       end
 
-      context 'when user does not have permissions to update the parent epic' do
-        it 'returns status 404' do
-          subject
+      context 'when user does not have access to epic' do
+        context 'when `epic_relations_for_non_members` feature flag is disabled' do
+          before do
+            stub_feature_flags(epic_relations_for_non_members: false)
+          end
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          it 'returns 403 status' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
 
-        it 'does not destroy the link' do
-          expect { subject }.not_to change { epic1.reload.parent }.from(parent_epic)
+        context 'when group is private' do
+          let(:group) { create(:group, :private) }
+
+          it 'returns 404 status' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
+
+        context 'when epic is confidential' do
+          let_it_be(:epic1) { create(:epic, group: group, confidential: true) }
+          let_it_be(:parent_epic) { create(:epic, group: group, confidential: true) }
+
+          it 'returns 403 status when user is a guest' do
+            group.add_guest(user)
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
       end
 
@@ -312,7 +362,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
         it 'returns status 404' do
           delete group_epic_link_path(group_id: group, epic_id: parent_epic.to_param, id: epic2.id)
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          expect(response).to have_gitlab_http_status(:not_found)
         end
       end
     end
