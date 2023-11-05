@@ -1,5 +1,5 @@
 import { mount, shallowMount } from '@vue/test-utils';
-import TasksByTypeChart from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_chart.vue';
+import TasksByTypeChart from 'ee/analytics/cycle_analytics/components/tasks_by_type/chart.vue';
 import { tasksByTypeData } from '../../mock_data';
 
 const { groupBy, data, seriesNames } = tasksByTypeData;
