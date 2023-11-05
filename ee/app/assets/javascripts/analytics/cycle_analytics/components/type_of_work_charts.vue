@@ -7,8 +7,8 @@ import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleto
 import { uniqById, generateFilterTextDescription } from '../utils';
 import { formattedDate } from '../../shared/utils';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE, TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS } from '../constants';
-import TasksByTypeChart from './tasks_by_type/tasks_by_type_chart.vue';
-import TasksByTypeFilters from './tasks_by_type/tasks_by_type_filters.vue';
+import TasksByTypeChart from './tasks_by_type/chart.vue';
+import TasksByTypeFilters from './tasks_by_type/filters.vue';
 import NoDataAvailableState from './no_data_available_state.vue';
 
 export default {

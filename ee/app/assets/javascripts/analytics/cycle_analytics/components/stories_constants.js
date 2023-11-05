@@ -1,5 +1,9 @@
+/* eslint-disable @gitlab/require-i18n-strings */
+
+import { TASKS_BY_TYPE_FILTERS } from '../constants';
+
 export const selectedStage = {
-  title: 'Stage 1', // eslint-disable-line @gitlab/require-i18n-strings
+  title: 'Stage 1',
 };
 
 export const selectedStageData = [
@@ -37,11 +41,11 @@ export const selectedStageData = [
 
 export const durationChartData = [
   {
-    name: 'Stage 1', // eslint-disable-line @gitlab/require-i18n-strings
+    name: 'Stage 1',
     data: selectedStageData,
   },
   {
-    name: 'Stage 2', // eslint-disable-line @gitlab/require-i18n-strings
+    name: 'Stage 2',
     data: [
       ['2023-09-06', null],
       ['2023-09-07', null],
@@ -76,7 +80,7 @@ export const durationChartData = [
     ],
   },
   {
-    name: 'Stage 3', // eslint-disable-line @gitlab/require-i18n-strings
+    name: 'Stage 3',
     data: [
       ['2023-09-06', null],
       ['2023-09-07', null],
@@ -111,7 +115,7 @@ export const durationChartData = [
     ],
   },
   {
-    name: 'Stage 4', // eslint-disable-line @gitlab/require-i18n-strings
+    name: 'Stage 4',
     data: [
       ['2023-09-06', null],
       ['2023-09-07', null],
@@ -146,7 +150,7 @@ export const durationChartData = [
     ],
   },
   {
-    name: 'Stage 5', // eslint-disable-line @gitlab/require-i18n-strings
+    name: 'Stage 5',
     data: [
       ['2023-09-06', null],
       ['2023-09-07', null],
@@ -181,3 +185,64 @@ export const durationChartData = [
     ],
   },
 ];
+
+export const subjectFilter = TASKS_BY_TYPE_FILTERS.SUBJECT;
+
+export const selectedTasksByTypeFilters = {
+  createdAfter: '',
+  createdBefore: '',
+  namespace: { name: 'Some namespace' },
+  selectedProjectIds: [],
+};
+
+export const defaultGroupLabels = [
+  {
+    id: 1,
+    title: 'in-review',
+    color: '#4018cc',
+    project_id: null,
+    text_color: '#FFFFFF',
+  },
+  {
+    id: 2,
+    title: 'ready',
+    color: '#48b29d',
+    project_id: null,
+    text_color: '#FFFFFF',
+  },
+  {
+    id: 3,
+    title: 'done',
+    color: '#4c20e8',
+    project_id: null,
+    text_color: '#FFFFFF',
+  },
+];
+
+const seriesNames = ['in-review', 'ready', 'done'];
+export const tasksByTypeChartData = {
+  data: [
+    {
+      name: 'in-review',
+      data: [0, 0, 3, 1, 0, 0, 1],
+    },
+    {
+      name: 'ready',
+      data: [2, 1, 0, 0, 5, 0, 0],
+    },
+    {
+      name: 'done',
+      data: [1, 2, 5, 0, 0, 0, 1],
+    },
+  ],
+  seriesNames,
+  groupBy: [
+    '2023-10-01',
+    '2023-10-02',
+    '2023-10-03',
+    '2023-10-04',
+    '2023-10-05',
+    '2023-10-06',
+    '2023-10-07',
+  ],
+};
