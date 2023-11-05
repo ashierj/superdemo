@@ -26,9 +26,9 @@ module Groups
       private
 
       def authorize_admin!
-        return super unless action_name == 'destroy'
+        ability_name = action_name == 'update' ? :admin_epic_relation : :read_epic_relation
 
-        render_403 unless can?(current_user, 'admin_epic_relation', epic)
+        render_403 unless can?(current_user, ability_name, epic)
       end
 
       def create_service
@@ -41,10 +41,6 @@ module Groups
 
       def child_epic
         @child_epic ||= Epic.find(params[:id])
-      end
-
-      def authorized_object
-        'epic_tree_relation'
       end
     end
   end

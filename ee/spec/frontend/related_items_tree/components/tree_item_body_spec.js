@@ -447,9 +447,22 @@ describe('RelatedItemsTree', () => {
         expect(findItemAssignees().isVisible()).toBe(true);
       });
 
-      it('renders item remove button when `item.userPermissions.canAdminRelation` is true', () => {
+      it('renders remove button when item is issue and user can admin relation', () => {
+        mockItem = createIssueItem();
+        mockParentItem.userPermissions.canAdminRelation = true;
+
+        createComponent();
+
         expect(findRemoveButton().isVisible()).toBe(true);
-        expect(findRemoveButton().attributes('title')).toBe('Remove');
+      });
+
+      it('renders remove button when item is epic and user can read relation', () => {
+        mockItem = createEpicItem();
+        mockParentItem.userPermissions.canReadRelation = true;
+
+        createComponent();
+
+        expect(findRemoveButton().isVisible()).toBe(true);
       });
 
       describe.each`
