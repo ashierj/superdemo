@@ -134,12 +134,12 @@ describe('Vulnerability Header', () => {
         createWrapper({ apolloProvider });
       });
 
-      it('shows the loading spinner but not the status badge', async () => {
+      it('shows the loading icon and passes the correct "loading" prop to the status badge', async () => {
         changeStatus(action);
         await nextTick();
 
         expect(findGlLoadingIcon().exists()).toBe(true);
-        expect(findStatusBadge().exists()).toBe(false);
+        expect(findStatusBadge().props('loading')).toBe(true);
       });
 
       it(`emits the updated vulnerability properly - ${action}`, async () => {
@@ -158,12 +158,12 @@ describe('Vulnerability Header', () => {
         expect(wrapper.emitted()['vulnerability-state-change']).toHaveLength(1);
       });
 
-      it('hides the loading spinner and shows the status badge', async () => {
+      it('does not show the loading icon and passes the correct "loading" prop to the status badge', async () => {
         changeStatus(action);
         await waitForPromises();
 
         expect(findGlLoadingIcon().exists()).toBe(false);
-        expect(findStatusBadge().exists()).toBe(true);
+        expect(findStatusBadge().props('loading')).toBe(false);
       });
     });
 

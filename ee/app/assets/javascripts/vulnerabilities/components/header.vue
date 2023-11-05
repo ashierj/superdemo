@@ -218,8 +218,11 @@ export default {
     />
     <div class="detail-page-header">
       <div class="detail-page-header-body" data-testid="vulnerability-detail-body">
-        <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="gl-mr-3" />
-        <status-badge v-else :state="vulnerability.state" class="gl-mr-3" />
+        <status-badge
+          :state="vulnerability.state"
+          :loading="isLoadingVulnerability"
+          class="gl-mr-3"
+        />
         <status-description
           :vulnerability="vulnerability"
           :user="user"
