@@ -12,7 +12,7 @@ describe('TracingDetailsHeader', () => {
           operation: 'Operation',
           timestamp: 1692021937219,
           duration_nano: 1000000,
-          totalSpans: 10,
+          total_spans: 10,
         },
       },
     });

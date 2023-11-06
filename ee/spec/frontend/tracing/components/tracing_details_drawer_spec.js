@@ -1,25 +1,35 @@
 import { GlDrawer } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingDetailsDrawer from 'ee/tracing/components/tracing_details_drawer.vue';
+import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
+
+jest.mock('~/lib/utils/dom_utils');
 
 describe('TracingDetailsDrawer', () => {
   let wrapper;
 
   const findDrawer = () => wrapper.findComponent(GlDrawer);
 
-  const mountComponent = () => {
+  const mountComponent = (open = true) => {
     wrapper = shallowMountExtended(TracingDetailsDrawer, {
       propsData: {
         span: {
-          service_name: 'service-1',
-          operation: 'operation-1',
-          span_id: '123',
-          trace_id: '456',
-          timestamp: '2023-09-21T06:40:27.068451Z',
-          duration_nano: 1234567,
-          statusCode: 200,
+          service_name: 'test-service',
+          operation: 'test-operation',
+          emptyVal: '',
+          span_attributes: {
+            'http.status_code': '200',
+            'http.method': 'GET',
+            'http.empty': '',
+          },
+          resource_attributes: {
+            'k8s.namespace.name': 'otel-demo-app',
+            'k8s.deployment.name': 'otel-demo-loadgenerator',
+            'k8s.deployment.empty': '',
+          },
         },
-        open: true,
+        open,
       },
     });
   };
@@ -40,32 +50,88 @@ describe('TracingDetailsDrawer', () => {
   });
 
   it('displays the correct title', () => {
-    expect(wrapper.findByTestId('span-title').text()).toBe('Span details service-1 : operation-1');
+    expect(wrapper.findByTestId('drawer-title').text()).toBe('test-service : test-operation');
   });
 
-  it('displays the correct content', () => {
-    const labels = wrapper.findAll('[data-testid="section-title"]');
-    const values = wrapper.findAll('[data-testid="section-value"]');
+  const findSection = (sectionId) => {
+    const section = wrapper.findByTestId(sectionId);
+    const title = section.find('[data-testid="section-title"]').text();
+    const lines = section.findAll('[data-testid="section-line"]').wrappers.map((w) => ({
+      name: w.find('[data-testid="section-line-name"]').text(),
+      value: w.find('[data-testid="section-line-value"]').text(),
+    }));
+    return {
+      title,
+      lines,
+    };
+  };
 
-    expect(labels.at(0).text()).toBe('Span ID');
-    expect(values.at(0).text()).toBe('123');
+  it.each([
+    [
+      'section-span-details',
+      'Metadata',
+      [
+        { name: 'operation', value: 'test-operation' },
+        { name: 'service_name', value: 'test-service' },
+      ],
+    ],
+    [
+      'section-span-attributes',
+      'Attributes',
+      [
+        { name: 'http.method', value: 'GET' },
+        { name: 'http.status_code', value: '200' },
+      ],
+    ],
+    [
+      'section-resource-attributes',
+      'Resource attributes',
+      [
+        { name: 'k8s.deployment.name', value: 'otel-demo-loadgenerator' },
+        { name: 'k8s.namespace.name', value: 'otel-demo-app' },
+      ],
+    ],
+  ])('displays the %s section in expected order', (sectionId, expectedTitle, expectedLines) => {
+    const { title, lines } = findSection(sectionId);
+    expect(title).toBe(expectedTitle);
+    expect(lines).toEqual(expectedLines);
+  });
 
-    expect(labels.at(1).text()).toBe('Trace ID');
-    expect(values.at(1).text()).toBe('456');
+  describe('with no span', () => {
+    beforeEach(() => {
+      wrapper = shallowMountExtended(TracingDetailsDrawer, {});
+    });
 
-    expect(labels.at(2).text()).toBe('Date');
-    expect(values.at(2).text()).toBe('Sep 21, 2023 06:40:27.068 UTC');
+    it('displays an empty title', () => {
+      expect(wrapper.findByTestId('drawer-title').text()).toBe('');
+    });
 
-    expect(labels.at(3).text()).toBe('Service');
-    expect(values.at(3).text()).toBe('service-1');
+    it('does not render any section', () => {
+      expect(wrapper.findByTestId('section-span-details').exists()).toBe(false);
+      expect(wrapper.findByTestId('section-span-attributes').exists()).toBe(false);
+      expect(wrapper.findByTestId('section-resource-attributes').exists()).toBe(false);
+    });
+  });
 
-    expect(labels.at(4).text()).toBe('Operation');
-    expect(values.at(4).text()).toBe('operation-1');
+  describe('header height', () => {
+    beforeEach(() => {
+      getContentWrapperHeight.mockClear();
+      getContentWrapperHeight.mockReturnValue(`1234px`);
+    });
 
-    expect(labels.at(5).text()).toBe('Duration');
-    expect(values.at(5).text()).toBe('1.23 ms');
+    it('does not set the header height if not open', () => {
+      mountComponent(false);
 
-    expect(labels.at(6).text()).toBe('Status code');
-    expect(values.at(6).text()).toBe('200');
+      expect(findDrawer().props('headerHeight')).toBe('0');
+      expect(getContentWrapperHeight).not.toHaveBeenCalled();
+    });
+
+    it('sets the header height to match contentWrapperHeight if open', async () => {
+      mountComponent(true);
+      await nextTick();
+
+      expect(findDrawer().props('headerHeight')).toBe('1234px');
+      expect(getContentWrapperHeight).toHaveBeenCalled();
+    });
   });
 });

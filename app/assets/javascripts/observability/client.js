@@ -44,18 +44,11 @@ async function fetchTrace(tracingUrl, traceId) {
       throw new Error('traceId is required.');
     }
 
-    const { data } = await axios.get(tracingUrl, {
+    const { data } = await axios.get(`${tracingUrl}/${traceId}`, {
       withCredentials: true,
-      params: {
-        trace_id: traceId,
-      },
     });
 
-    if (!Array.isArray(data.traces) || data.traces.length === 0) {
-      throw new Error('traces are missing/invalid in the response'); // eslint-disable-line @gitlab/require-i18n-strings
-    }
-
-    return data.traces[0];
+    return data;
   } catch (e) {
     return reportErrorAndThrow(e);
   }

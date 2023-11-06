@@ -85,7 +85,7 @@ export default {
         </template>
 
         <template #default>
-          <span>{{ trace.totalSpans }}</span>
+          <span>{{ trace.total_spans }}</span>
         </template>
       </gl-card>
     </div>
