@@ -25,7 +25,7 @@ exports[`Alert integration settings form should match the default snapshot 1`] =
       <gl-form-text-stub
         class="gl-font-base gl-text-gray-400"
         tag="small"
-        textvariant="muted"
+        textvariant="gl-muted"
       >
         When activated, this applies to all new incidents in the project.
       </gl-form-text-stub>
