@@ -178,6 +178,7 @@ export default {
       :is-loading="loading"
       :predefined-prompts="$options.i18n.predefinedPrompts"
       :experiment-help-page-url="$options.experimentHelpPagePath"
+      :badge-help-page-url="$options.experimentHelpPagePath"
       :tool-name="toolName"
       @send-chat-prompt="onSendChatPrompt"
       @chat-hidden="onChatClose"
