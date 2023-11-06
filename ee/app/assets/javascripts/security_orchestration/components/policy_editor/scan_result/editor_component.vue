@@ -29,7 +29,7 @@ import PolicyRuleBuilder from './rule/rule_section.vue';
 import {
   ANY_MERGE_REQUEST,
   BLOCK_UNPROTECTING_BRANCHES,
-  PREVENT_FORCE_PUSHING,
+  PREVENT_PUSHING_AND_FORCE_PUSHING,
   buildSettingsList,
   createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
@@ -124,7 +124,7 @@ export default {
       }
 
       if (this.glFeatures.scanResultPoliciesBlockForcePush) {
-        defaultPolicyObject.approval_settings[PREVENT_FORCE_PUSHING] = true;
+        defaultPolicyObject.approval_settings[PREVENT_PUSHING_AND_FORCE_PUSHING] = true;
       }
     }
 

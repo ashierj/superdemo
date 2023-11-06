@@ -40,7 +40,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePu
     end
 
     context 'when policy is not preventing force pushing' do
-      let(:prevent_force_pushing) { false }
+      let(:prevent_pushing_and_force_pushing) { false }
 
       it { is_expected.to be_empty }
     end

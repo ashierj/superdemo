@@ -133,7 +133,7 @@ FactoryBot.define do
           remove_approvals_with_new_commit: true,
           require_password_to_approve: true,
           block_unprotecting_branches: true,
-          prevent_force_pushing: true
+          prevent_pushing_and_force_pushing: true
         }
       end
     end

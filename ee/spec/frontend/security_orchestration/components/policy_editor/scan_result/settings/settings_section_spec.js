@@ -2,7 +2,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   BLOCK_UNPROTECTING_BRANCHES,
   PREVENT_APPROVAL_BY_AUTHOR,
-  PREVENT_FORCE_PUSHING,
+  PREVENT_PUSHING_AND_FORCE_PUSHING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_section.vue';
 import SettingsItem from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_item.vue';
@@ -39,13 +39,13 @@ describe('SettingsSection', () => {
     });
 
     it.each`
-      description                                                                     | glFeatures                                 | settings                                                                                                                                    | protectedBranchSettingVisible | mergeRequestSettingVisible
-      ${`disable ${BLOCK_UNPROTECTING_BRANCHES} setting`}                             | ${unprotectFeature}                        | ${createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: false })}                                                                       | ${true}                       | ${false}
-      ${`enable ${BLOCK_UNPROTECTING_BRANCHES} setting`}                              | ${unprotectFeature}                        | ${createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: true })}                                                                        | ${true}                       | ${false}
-      ${`enable ${PREVENT_FORCE_PUSHING} setting`}                                    | ${pushFeature}                             | ${createSettings({ key: PREVENT_FORCE_PUSHING, value: true })}                                                                              | ${true}                       | ${false}
-      ${`enable ${BLOCK_UNPROTECTING_BRANCHES} and ${PREVENT_FORCE_PUSHING} setting`} | ${{ ...unprotectFeature, ...pushFeature }} | ${{ ...createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: true }), ...createSettings({ key: PREVENT_FORCE_PUSHING, value: true }) }} | ${true}                       | ${false}
-      ${`disable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}                              | ${{}}                                      | ${createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: false })}                                                                        | ${false}                      | ${true}
-      ${`enable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}                               | ${{}}                                      | ${createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: true })}                                                                         | ${false}                      | ${true}
+      description                                                                                 | glFeatures                                 | settings                                                                                                                                                | protectedBranchSettingVisible | mergeRequestSettingVisible
+      ${`disable ${BLOCK_UNPROTECTING_BRANCHES} setting`}                                         | ${unprotectFeature}                        | ${createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: false })}                                                                                   | ${true}                       | ${false}
+      ${`enable ${BLOCK_UNPROTECTING_BRANCHES} setting`}                                          | ${unprotectFeature}                        | ${createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: true })}                                                                                    | ${true}                       | ${false}
+      ${`enable ${PREVENT_PUSHING_AND_FORCE_PUSHING} setting`}                                    | ${pushFeature}                             | ${createSettings({ key: PREVENT_PUSHING_AND_FORCE_PUSHING, value: true })}                                                                              | ${true}                       | ${false}
+      ${`enable ${BLOCK_UNPROTECTING_BRANCHES} and ${PREVENT_PUSHING_AND_FORCE_PUSHING} setting`} | ${{ ...unprotectFeature, ...pushFeature }} | ${{ ...createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: true }), ...createSettings({ key: PREVENT_PUSHING_AND_FORCE_PUSHING, value: true }) }} | ${true}                       | ${false}
+      ${`disable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}                                          | ${{}}                                      | ${createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: false })}                                                                                    | ${false}                      | ${true}
+      ${`enable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}                                           | ${{}}                                      | ${createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: true })}                                                                                     | ${false}                      | ${true}
     `(
       '$description',
       ({ glFeatures, settings, protectedBranchSettingVisible, mergeRequestSettingVisible }) => {

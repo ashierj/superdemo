@@ -28,9 +28,9 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import {
   PERMITTED_INVALID_SETTINGS,
   BLOCK_UNPROTECTING_BRANCHES,
-  PREVENT_FORCE_PUSHING,
+  PREVENT_PUSHING_AND_FORCE_PUSHING,
   PREVENT_APPROVAL_BY_AUTHOR,
-  forcePushingBranchesConfiguration,
+  pushingBranchesConfiguration,
   mergeRequestConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
@@ -302,7 +302,7 @@ describe('EditorComponent', () => {
       describe('settings', () => {
         const defaultProjectApprovalConfiguration = {
           [BLOCK_UNPROTECTING_BRANCHES]: true,
-          [PREVENT_FORCE_PUSHING]: true,
+          [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
         };
 
         it('does update the settings with the "scanResultPoliciesBlockUnprotectingBranches" ff enabled and the "scanResultAnyMergeRequest" ff enabled and the "scanResultPoliciesBlockForcePush" ff enabled', () => {
@@ -375,7 +375,7 @@ describe('EditorComponent', () => {
           findAllRuleBuilders().at(0).vm.$emit('changed', { type: SCAN_FINDING });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: forcePushingBranchesConfiguration,
+              approval_settings: pushingBranchesConfiguration,
             }),
           );
         });
@@ -752,14 +752,16 @@ describe('EditorComponent', () => {
           it('displays setting section', () => {
             expect(findSettingsSection().exists()).toBe(true);
             expect(findSettingsSection().props('settings')).toEqual({
-              [PREVENT_FORCE_PUSHING]: true,
+              [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
             });
           });
 
           it('updates the policy when a change is emitted', async () => {
-            await findSettingsSection().vm.$emit('changed', { [PREVENT_FORCE_PUSHING]: false });
+            await findSettingsSection().vm.$emit('changed', {
+              [PREVENT_PUSHING_AND_FORCE_PUSHING]: false,
+            });
             expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
-              `${PREVENT_FORCE_PUSHING}: false`,
+              `${PREVENT_PUSHING_AND_FORCE_PUSHING}: false`,
             );
           });
         });

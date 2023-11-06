@@ -32,7 +32,7 @@ actions:
   - type: require_approval
     approvals_required: 1
 approval_settings:
-  prevent_force_pushing: true
+  prevent_pushing_and_force_pushing: true
 `;
 
 export const mockBlockAndForceSettingsManifest = `type: scan_result_policy
@@ -46,7 +46,7 @@ actions:
     approvals_required: 1
 approval_settings:
   block_unprotecting_branches: true
-  prevent_force_pushing: true
+  prevent_pushing_and_force_pushing: true
 `;
 
 export const mockDefaultBranchesScanResultManifest = `type: scan_result_policy

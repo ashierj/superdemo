@@ -17,7 +17,7 @@ module Security
 
       def rules
         blocking_policies = applicable_active_policies.select do |rule|
-          rule.dig(:approval_settings, :prevent_force_pushing)
+          rule.dig(:approval_settings, :prevent_pushing_and_force_pushing)
         end
 
         blocking_policies.pluck(:rules).flatten # rubocop: disable CodeReuse/ActiveRecord -- TODO: blocking_policies is a Hash
