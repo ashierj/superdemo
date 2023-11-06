@@ -637,7 +637,7 @@
 {"name":"terminal-table","version":"3.0.2","platform":"ruby","checksum":"f951b6af5f3e00203fb290a669e0a85c5dd5b051b3b023392ccfd67ba5abae91"},
 {"name":"terser","version":"1.0.2","platform":"ruby","checksum":"80c2e0bc7e2db4e12e8529658f9e0820e13d685ae67d745bf981f269743bb28e"},
 {"name":"test-prof","version":"1.2.3","platform":"ruby","checksum":"c52a40194cb30f399ed3eb6beb4c45b5daad8b8eb418e8ef69089e4dc7e01fd6"},
-{"name":"test_file_finder","version":"0.1.4","platform":"ruby","checksum":"bc36d8339eac4fb9dc36514a7c5f4d389ac2fb6d010716fc715c5c8fbb98eacd"},
+{"name":"test_file_finder","version":"0.2.1","platform":"ruby","checksum":"a5e9b369d80c76aefbb609acf5e11d89a048f35e565de3cc261c20112f0fcdb3"},
 {"name":"text","version":"1.3.1","platform":"ruby","checksum":"2fbbbc82c1ce79c4195b13018a87cbb00d762bda39241bb3cdc32792759dd3f4"},
 {"name":"thor","version":"1.2.2","platform":"ruby","checksum":"2f93c652828cba9fcf4f65f5dc8c306f1a7317e05aad5835a13740122c17f24c"},
 {"name":"thread_safe","version":"0.3.6","platform":"java","checksum":"bb28394cd0924c068981adee71f36a81c85c92e7d74d3f62372bd51489a0e0c2"},
