@@ -68,7 +68,7 @@ module SystemCheck
       end
 
       def needs_migration?
-        (migrations.collect(&:version) - get_all_versions).size > 0 # rubocop:disable Style/ZeroLengthPredicate
+        !(migrations.collect(&:version) - get_all_versions).empty?
       end
 
       def get_all_versions
