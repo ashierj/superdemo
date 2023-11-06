@@ -1,12 +1,5 @@
 <script>
-import {
-  GlIcon,
-  GlLink,
-  GlSkeletonLoader,
-  GlTableLite,
-  GlTooltip,
-  GlTooltipDirective,
-} from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader, GlTableLite, GlTooltipDirective } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { projectsUsageDataValidator } from '../utils';
@@ -14,11 +7,9 @@ import { projectsUsageDataValidator } from '../utils';
 export default {
   name: 'ProductAnalyticsProjectsUsageTable',
   components: {
-    GlIcon,
     GlLink,
     GlSkeletonLoader,
     GlTableLite,
-    GlTooltip,
     ProjectAvatar,
   },
   directives: {
@@ -60,20 +51,6 @@ export default {
     </div>
     <div v-else-if="projectsUsageData" data-testid="projects-usage-table">
       <gl-table-lite :items="projectsUsageData" :fields="$options.TABLE_FIELDS">
-        <template #head(currentEvents)="{ field: { label } }">
-          {{ label }}
-          <gl-icon
-            id="events-update-frequency-tooltip"
-            v-gl-tooltip
-            class="gl-ml-1"
-            name="question-o"
-            tabindex="0"
-            :size="12"
-          />
-          <gl-tooltip target="events-update-frequency-tooltip">
-            {{ s__('Analytics|Event counts update hourly') }}
-          </gl-tooltip>
-        </template>
         <template #cell(name)="{ item: { id, name, avatarUrl, webUrl } }">
           <project-avatar
             :project-id="id"
