@@ -2474,7 +2474,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   context 'subgroup hooks', :sidekiq_inline do
     let_it_be(:grandparent_group) { create(:group) }
     let_it_be(:parent_group) { create(:group, parent: grandparent_group) }
-    let_it_be(:subgroup) { create(:group, parent: parent_group) }
+    let_it_be_with_refind(:subgroup) { create(:group, parent: parent_group) }
     let_it_be(:parent_group_hook) { create(:group_hook, group: parent_group, subgroup_events: true) }
 
     def webhook_body(subgroup:, parent_group:, event_name:)

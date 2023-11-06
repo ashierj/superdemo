@@ -9,7 +9,7 @@ RSpec.describe Issuable::DestroyService, feature_category: :team_planning do
 
   describe '#execute' do
     context 'when destroying an epic' do
-      let_it_be(:issuable) { create(:epic) }
+      let_it_be_with_refind(:issuable) { create(:epic) }
 
       let(:group) { issuable.group }
 
