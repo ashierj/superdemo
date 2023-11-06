@@ -5,14 +5,8 @@ require_relative '../../../fast_spec_helper'
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator, feature_category: :remote_development do
   include ResultMatchers
 
-  let(:update_type) { "full" }
-  let(:workspace_error_details) do
-    {
-      error_type: "applier",
-      error_message: "something has gone wrong"
-    }
-  end
-
+  let(:update_type) { "partial" }
+  let(:workspace_error_details) { nil }
   let(:workspace_agent_infos) do
     [{
       termination_progress: "Terminated",
@@ -34,18 +28,39 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator,
   end
 
   context 'when original_params are valid' do
-    let(:update_type) { "full" }
-
-    it 'returns an ok Result containing the original value which was passed' do
-      expect(result).to eq(Result.ok(value))
-    end
-
-    context "when error_details nil" do
-      let(:workspace_error_details) { nil }
-
-      it 'returns an ok Result containing the original value which was passed' do
+    shared_examples 'success result' do
+      it 'return an ok Result containing the original value which was passed' do
         expect(result).to eq(Result.ok(value))
       end
+    end
+
+    context 'when update_type is "full"' do
+      let(:update_type) { "full" }
+      let(:workspace_agent_infos) { [] }
+
+      it_behaves_like 'success result'
+    end
+
+    context 'when error_details nil' do
+      let(:workspace_error_details) { nil }
+
+      it_behaves_like 'success result'
+    end
+
+    context 'with error_details present' do
+      shared_examples "with valid error_type" do |err_type|
+        let(:workspace_error_details) do
+          {
+            error_type: err_type,
+            error_message: "something has gone wrong"
+          }
+        end
+
+        it_behaves_like 'success result'
+      end
+
+      include_examples "with valid error_type", "applier"
+      include_examples "with valid error_type", "kubernetes"
     end
   end
 
@@ -100,13 +115,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator,
       context 'when error_type has an invalid value' do
         let(:workspace_error_details) do
           {
-            error_type: "unknown",
+            error_type: "INVALID ERROR TYPE",
             error_message: "something has gone wrong"
           }
         end
 
         it_behaves_like 'err result', expected_error_details:
-          %(property '/workspace_agent_infos/0/error_details/error_type' is not one of: ["applier"])
+          %(property '/workspace_agent_infos/0/error_details/error_type' is not one of: ["applier", "kubernetes"])
       end
     end
 

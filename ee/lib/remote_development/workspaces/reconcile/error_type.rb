@@ -4,7 +4,10 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       module ErrorType
+        # NOTE: Do NOT change the values of these constants
+        # to ensure backward compatibility
         APPLIER = "applier"
+        KUBERNETES = "kubernetes"
       end
     end
   end
