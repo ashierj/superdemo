@@ -44,8 +44,8 @@ RSpec.describe Gitlab::Checks::Security::PolicyCheck, '#validate!', feature_cate
       expect { policy_check! }.to raise_error(Gitlab::GitAccess::ForbiddenError, described_class::ERROR_MESSAGE)
     end
 
-    context 'when prevent_force_pushing setting is disabled' do
-      let(:prevent_force_pushing) { false }
+    context 'when prevent_pushing_and_force_pushing setting is disabled' do
+      let(:prevent_pushing_and_force_pushing) { false }
 
       it 'does not raise' do
         expect { policy_check! }.not_to raise_error

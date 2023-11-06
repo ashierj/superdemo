@@ -3,7 +3,7 @@ import {
   buildSettingsList,
   mergeRequestConfiguration,
   protectedBranchesConfiguration,
-  forcePushingBranchesConfiguration,
+  pushingBranchesConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
 afterEach(() => {
@@ -23,7 +23,7 @@ describe('approval_settings', () => {
 
     it('returns the protected branches settings when the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
       window.gon = { features: { scanResultPoliciesBlockForcePush: true } };
-      expect(buildSettingsList()).toEqual(forcePushingBranchesConfiguration);
+      expect(buildSettingsList()).toEqual(pushingBranchesConfiguration);
     });
 
     it('returns the protected branches settings when the "scanResultPoliciesBlockUnprotectingBranches" feature flag is enabled and the "scanResultPoliciesBlockForcePush" feature flag is enabled', () => {
@@ -35,7 +35,7 @@ describe('approval_settings', () => {
       };
       expect(buildSettingsList()).toEqual({
         ...protectedBranchesConfiguration,
-        ...forcePushingBranchesConfiguration,
+        ...pushingBranchesConfiguration,
       });
     });
 

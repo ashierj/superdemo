@@ -800,7 +800,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
                 remove_approvals_with_new_commit: true,
                 require_password_to_approve: false,
                 block_unprotecting_branches: true,
-                prevent_force_pushing: true
+                prevent_pushing_and_force_pushing: true
               }
             end
 

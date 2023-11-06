@@ -2,7 +2,7 @@ import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const BLOCK_UNPROTECTING_BRANCHES = 'block_unprotecting_branches';
-export const PREVENT_FORCE_PUSHING = 'prevent_force_pushing';
+export const PREVENT_PUSHING_AND_FORCE_PUSHING = 'prevent_pushing_and_force_pushing';
 export const PREVENT_APPROVAL_BY_AUTHOR = 'prevent_approval_by_author';
 export const PREVENT_APPROVAL_BY_COMMIT_AUTHOR = 'prevent_approval_by_commit_author';
 export const REMOVE_APPROVALS_WITH_NEW_COMMIT = 'remove_approvals_with_new_commit';
@@ -12,13 +12,13 @@ export const protectedBranchesConfiguration = {
   [BLOCK_UNPROTECTING_BRANCHES]: false,
 };
 
-export const forcePushingBranchesConfiguration = {
-  [PREVENT_FORCE_PUSHING]: false,
+export const pushingBranchesConfiguration = {
+  [PREVENT_PUSHING_AND_FORCE_PUSHING]: false,
 };
 
 export const PROTECTED_BRANCHES_CONFIGURATION_KEYS = [
   BLOCK_UNPROTECTING_BRANCHES,
-  PREVENT_FORCE_PUSHING,
+  PREVENT_PUSHING_AND_FORCE_PUSHING,
 ];
 
 export const MERGE_REQUEST_CONFIGURATION_KEYS = [
@@ -37,7 +37,7 @@ export const mergeRequestConfiguration = {
 
 export const SETTINGS_HUMANIZED_STRINGS = {
   [BLOCK_UNPROTECTING_BRANCHES]: s__('ScanResultPolicy|Prevent branch protection modification'),
-  [PREVENT_FORCE_PUSHING]: s__('ScanResultPolicy|Prevent pushing and force pushing'),
+  [PREVENT_PUSHING_AND_FORCE_PUSHING]: s__('ScanResultPolicy|Prevent pushing and force pushing'),
   [PREVENT_APPROVAL_BY_AUTHOR]: s__("ScanResultPolicy|Prevent approval by merge request's author"),
   [PREVENT_APPROVAL_BY_COMMIT_AUTHOR]: s__('ScanResultPolicy|Prevent approval by commit author'),
   [REMOVE_APPROVALS_WITH_NEW_COMMIT]: s__('ScanResultPolicy|Remove all approvals with new commit'),
@@ -100,10 +100,7 @@ const buildConfig = ({ hasAnyMergeRequestRule } = { hasAnyMergeRequestRule: fals
     gon.features?.scanResultPoliciesBlockUnprotectingBranches,
     protectedBranchesConfiguration,
   );
-  extendConfiguration(
-    gon.features?.scanResultPoliciesBlockForcePush,
-    forcePushingBranchesConfiguration,
-  );
+  extendConfiguration(gon.features?.scanResultPoliciesBlockForcePush, pushingBranchesConfiguration);
   extendConfiguration(hasAnyMergeRequestRule, mergeRequestConfiguration);
 
   return configuration;

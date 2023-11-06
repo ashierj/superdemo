@@ -6,7 +6,7 @@ import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
 import {
   MERGE_REQUEST_CONFIGURATION_KEYS,
   BLOCK_UNPROTECTING_BRANCHES,
-  PREVENT_FORCE_PUSHING,
+  PREVENT_PUSHING_AND_FORCE_PUSHING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SettingsItem from './settings_item.vue';
@@ -53,7 +53,7 @@ export default {
       }
 
       if (this.glFeatures.scanResultPoliciesBlockForcePush) {
-        settings.push(PREVENT_FORCE_PUSHING);
+        settings.push(PREVENT_PUSHING_AND_FORCE_PUSHING);
       }
 
       return this.groupSettingsBy(settings);
