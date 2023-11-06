@@ -70,9 +70,7 @@ export default {
           this.addDuoChatMessage(data?.aiCompletionResponse);
         },
         error(err) {
-          this.addDuoChatMessage({
-            errors: [err],
-          });
+          this.error = err.toString();
         },
       },
       aiCompletionResponseStream: {
@@ -89,9 +87,7 @@ export default {
           this.addDuoChatMessage(data?.aiCompletionResponse);
         },
         error(err) {
-          this.addDuoChatMessage({
-            errors: [err],
-          });
+          this.error = err.toString();
         },
       },
     },
@@ -103,9 +99,7 @@ export default {
         }
       },
       error(err) {
-        this.addDuoChatMessage({
-          errors: [err],
-        });
+        this.error = err.toString();
       },
     },
   },
@@ -114,6 +108,7 @@ export default {
       helpCenterState,
       clientSubscriptionId: uuidv4(),
       toolName: i18n.GITLAB_DUO,
+      error: '',
     };
   },
   computed: {
@@ -144,10 +139,11 @@ export default {
           });
         })
         .catch((err) => {
-          this.setLoading(false);
+          this.error = err.toString();
           this.addDuoChatMessage({
-            errors: [err],
+            content: question,
           });
+          this.setLoading(false);
         });
     },
     onChatClose() {
@@ -174,7 +170,7 @@ export default {
       v-if="helpCenterState.showTanukiBotChatDrawer"
       :title="$options.i18n.gitlabChat"
       :messages="messages"
-      error=""
+      :error="error"
       :is-loading="loading"
       :predefined-prompts="$options.i18n.predefinedPrompts"
       :experiment-help-page-url="$options.experimentHelpPagePath"
