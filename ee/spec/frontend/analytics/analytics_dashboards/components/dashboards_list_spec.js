@@ -120,6 +120,18 @@ describe('DashboardsList', () => {
         expect.any(Object),
       );
     });
+
+    it('fetches the list of dashboards', () => {
+      expect(mockAnalyticsDashboardsHandler).toHaveBeenCalledWith({
+        fullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        isGroup: false,
+        isProject: true,
+      });
+    });
+
+    it('renders a loading state', () => {
+      expect(findListLoadingSkeletons()).toHaveLength(2);
+    });
   });
 
   describe('for projects', () => {
@@ -191,114 +203,43 @@ describe('DashboardsList', () => {
   });
 
   describe('when the product analytics feature is enabled', () => {
-    const FEATURE = 'productAnalytics';
+    beforeEach(() => {
+      mockAnalyticsDashboardsHandler = jest
+        .fn()
+        .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
 
-    describe('and the feature has not been set up', () => {
-      beforeEach(() => {
-        createWrapper({
-          features: [FEATURE],
-        });
-      });
-
-      it('renders the feature component', () => {
-        expect(findProductAnalyticsOnboarding().exists()).toBe(true);
-      });
-
-      // TODO: Update when backend returns dashboards only for onboarded features
-      // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
-      it('does not render any dashboards', () => {
-        expect(findListItems()).toHaveLength(0);
-      });
-
-      it('does not render a loading state', async () => {
-        await waitForPromises();
-
-        expect(findListLoadingSkeletons()).toHaveLength(0);
-      });
+      createWrapper({ features: ['productAnalytics'] });
     });
 
-    describe('and the feature has been set up', () => {
-      beforeEach(() => {
-        mockAnalyticsDashboardsHandler = jest
-          .fn()
-          .mockResolvedValue(TEST_DASHBOARD_GRAPHQL_EMPTY_SUCCESS_RESPONSE);
+    it('renders the onboarding component', () => {
+      expect(findProductAnalyticsOnboarding().exists()).toBe(true);
+    });
 
-        createWrapper({
-          features: [FEATURE],
-        });
+    describe('when the onboarding component emits "complete"', () => {
+      beforeEach(async () => {
+        await waitForPromises();
 
         findProductAnalyticsOnboarding().vm.$emit('complete');
       });
 
-      it('does not render the feature component', () => {
+      it('removes the onboarding component from the DOM', () => {
         expect(findProductAnalyticsOnboarding().exists()).toBe(false);
       });
 
-      it('renders a loading state', () => {
+      it('refetches the list of dashboards', () => {
         expect(findListLoadingSkeletons()).toHaveLength(2);
-      });
-
-      describe('once loaded', () => {
-        beforeEach(() => {
-          mockAnalyticsDashboardsHandler = jest
-            .fn()
-            .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
-
-          createWrapper({
-            features: [FEATURE],
-          });
-
-          findProductAnalyticsOnboarding().vm.$emit('complete');
-
-          return waitForPromises();
-        });
-
-        it('does not render a loading state', () => {
-          expect(findListLoadingSkeletons()).toHaveLength(0);
-        });
-
-        it('renders a list item for each custom and feature dashboard', () => {
-          const expectedDashboards =
-            TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.customizableDashboards
-              ?.nodes;
-
-          expect(findListItems()).toHaveLength(expectedDashboards.length);
-
-          expectedDashboards.forEach(async (dashboard, idx) => {
-            const dashboardItem = findListItems().at(idx);
-            expect(dashboardItem.props('dashboard')).toEqual(dashboard);
-            expect(dashboardItem.attributes()['data-event-tracking']).toBe(
-              'user_visited_dashboard',
-            );
-
-            InternalEvents.bindInternalEventDocument(dashboardItem.element);
-            await dashboardItem.trigger('click');
-            await nextTick();
-
-            expect(trackingSpy).toHaveBeenCalledWith(
-              expect.any(String),
-              'user_visited_dashboard',
-              expect.any(Object),
-            );
-          });
-        });
+        expect(mockAnalyticsDashboardsHandler).toHaveBeenCalledTimes(2);
       });
     });
 
-    describe('and the feature component throws an error', () => {
+    describe('when the onboarding component emits "error"', () => {
       const message = 'some error';
       const error = new Error(message);
 
-      beforeEach(() => {
-        mockAnalyticsDashboardsHandler = jest
-          .fn()
-          .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
+      beforeEach(async () => {
+        await waitForPromises();
 
-        createWrapper({
-          features: [FEATURE],
-        });
-
-        return findProductAnalyticsOnboarding().vm.$emit('error', error, true, message);
+        findProductAnalyticsOnboarding().vm.$emit('error', error, true, message);
       });
 
       it('creates an alert for the error', () => {
@@ -315,6 +256,84 @@ describe('DashboardsList', () => {
         await nextTick();
 
         expect(mockAlertDismiss).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('when the list of dashboards have been fetched', () => {
+    const setupWithResponse = (mockResponseVal) => {
+      mockAnalyticsDashboardsHandler = jest.fn().mockResolvedValue(mockResponseVal);
+
+      createWrapper();
+
+      return waitForPromises();
+    };
+
+    describe('and there are dashbaords', () => {
+      beforeEach(() => {
+        return setupWithResponse(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
+      });
+
+      it('does not render a loading state', () => {
+        expect(findListLoadingSkeletons()).toHaveLength(0);
+      });
+
+      it('renders a list item for each custom and feature dashboard', () => {
+        const expectedDashboards =
+          TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.customizableDashboards?.nodes;
+
+        expect(findListItems()).toHaveLength(expectedDashboards.length);
+
+        expectedDashboards.forEach(async (dashboard, idx) => {
+          const dashboardItem = findListItems().at(idx);
+          expect(dashboardItem.props('dashboard')).toEqual(dashboard);
+          expect(dashboardItem.attributes()['data-event-tracking']).toBe('user_visited_dashboard');
+
+          InternalEvents.bindInternalEventDocument(dashboardItem.element);
+          await dashboardItem.trigger('click');
+          await nextTick();
+
+          expect(trackingSpy).toHaveBeenCalledWith(
+            expect.any(String),
+            'user_visited_dashboard',
+            expect.any(Object),
+          );
+        });
+      });
+    });
+
+    describe('and the response is empty', () => {
+      beforeEach(() => {
+        return setupWithResponse(TEST_DASHBOARD_GRAPHQL_EMPTY_SUCCESS_RESPONSE);
+      });
+
+      it('does not render a loading state', () => {
+        expect(findListLoadingSkeletons()).toHaveLength(0);
+      });
+
+      it('does not render any list items', () => {
+        expect(findListItems()).toHaveLength(0);
+      });
+    });
+  });
+
+  describe('when an error occured while fetching the list of dashboards', () => {
+    const message = 'failed';
+    const error = new Error(message);
+
+    beforeEach(() => {
+      mockAnalyticsDashboardsHandler = jest.fn().mockRejectedValue(error);
+
+      createWrapper();
+
+      return waitForPromises();
+    });
+
+    it('creates an alert for the error', () => {
+      expect(createAlert).toHaveBeenCalledWith({
+        captureError: true,
+        message,
+        error,
       });
     });
   });
