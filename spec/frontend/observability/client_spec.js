@@ -250,7 +250,7 @@ describe('buildClient', () => {
               { operator: '=', value: 'op' },
               { operator: '!=', value: 'not-op' },
             ],
-            serviceName: [
+            service: [
               { operator: '=', value: 'service' },
               { operator: '!=', value: 'not-service' },
             ],
@@ -317,7 +317,7 @@ describe('buildClient', () => {
               { operator: '>', value: 'foo' },
               { operator: '<', value: 'foo' },
             ],
-            serviceName: [
+            service: [
               { operator: '>', value: 'foo' },
               { operator: '<', value: 'foo' },
             ],
