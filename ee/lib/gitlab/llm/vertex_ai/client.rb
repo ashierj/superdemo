@@ -18,8 +18,6 @@ module Gitlab
         # @param [String] content - Input string
         # @param [Hash] options - Additional options to pass to the request
         def chat(content:, **options)
-          track_prompt_size(token_size(content))
-
           request(
             content: content,
             config: Configuration.new(
@@ -37,8 +35,6 @@ module Gitlab
         #   - Messages appear in chronological order: oldest first, newest last
         # @param [Hash] options - Additional options to pass to the request
         def messages_chat(content:, **options)
-          track_prompt_size(token_size(content.reduce("") { |acc, m| acc + m[:content] }))
-
           request(
             content: content,
             config: Configuration.new(
@@ -51,8 +47,6 @@ module Gitlab
         # @param [String] content - Input string
         # @param [Hash] options - Additional options to pass to the request
         def text(content:, **options)
-          track_prompt_size(token_size(content))
-
           request(
             content: content,
             config: Configuration.new(
@@ -65,8 +59,6 @@ module Gitlab
         # @param [String] content - Input string
         # @param [Hash] options - Additional options to pass to the request
         def code(content:, **options)
-          track_prompt_size(token_size(content))
-
           request(
             content: content,
             config: Configuration.new(
@@ -81,8 +73,6 @@ module Gitlab
         #   - The model will try to generate code from the prefix to the suffix.
         # @param [Hash] options - Additional options to pass to the request
         def code_completion(content:, **options)
-          track_prompt_size(token_size([content[:prefix], content[:suffix]].join('')))
-
           request(
             content: content,
             config: Configuration.new(
@@ -95,8 +85,6 @@ module Gitlab
         # @param [String] content - Input string
         # @param [Hash] options - Additional options to pass to the request
         def text_embeddings(content:, **options)
-          track_prompt_size(token_size(content))
-
           request(
             content: content,
             config: Configuration.new(
@@ -124,8 +112,7 @@ module Gitlab
 
           logger.debug(message: "Received response from Vertex", response: response)
 
-          content = Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response).response_body
-          track_response_size(token_size(content))
+          track_token_usage(response)
 
           response
         end
@@ -145,11 +132,14 @@ module Gitlab
           response.parsed_response.with_indifferent_access.dig("safetyAttributes", "blocked")
         end
 
-        def token_size(content)
-          # Vertex APIs don't send used tokens as part of the response, so
-          # instead we estimate the number of tokens based on typical token size -
-          # one token is roughly 4 chars.
-          content.to_s.size / 4
+        def track_token_usage(response)
+          prompt_size = response.dig("metadata", "tokenMetadata", "inputTokenCount", "totalTokens")
+          response_size = response.dig("metadata", "tokenMetadata", "outputTokenCount", "totalTokens")
+          embedding_size = response.dig("predictions", 0, "embeddings", "statistics", "token_count")
+
+          track_prompt_size(prompt_size) if prompt_size
+          track_response_size(response_size) if response_size
+          track_embedding_size(embedding_size) if embedding_size
         end
       end
     end

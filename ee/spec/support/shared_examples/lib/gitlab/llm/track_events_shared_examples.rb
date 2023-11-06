@@ -23,3 +23,18 @@ RSpec.shared_examples 'tracks events for AI requests' do |prompt_size, response_
     )
   end
 end
+
+RSpec.shared_examples 'tracks embedding events for AI requests' do |token_size|
+  it 'tracks a snowplow event' do
+    subject
+
+    expect_snowplow_event(
+      category: described_class.to_s,
+      action: 'tokens_per_embedding',
+      property: 'uuid',
+      label: 'chat',
+      user: user,
+      value: token_size
+    )
+  end
+end
