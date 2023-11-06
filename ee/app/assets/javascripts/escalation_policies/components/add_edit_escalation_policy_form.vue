@@ -132,7 +132,7 @@ export default {
 
 <template>
   <gl-form>
-    <div class="w-75 gl-xs-w-full!">
+    <div class="gl-w-full gl-sm-w-75p">
       <gl-form-group
         :label="$options.i18n.fields.name.title"
         :invalid-feedback="$options.i18n.fields.name.validation.empty"

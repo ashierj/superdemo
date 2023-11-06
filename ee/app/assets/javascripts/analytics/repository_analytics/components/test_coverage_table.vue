@@ -211,7 +211,7 @@ export default {
           </gl-popover>
         </div>
         <select-projects-dropdown
-          class="gl-xs-w-full gl-xs-mb-3"
+          class="gl-w-full gl-sm-w-auto gl-xs-mb-3"
           placement="right"
           @projects-query-error="handleError"
           @select-all-projects="selectAllProjects"

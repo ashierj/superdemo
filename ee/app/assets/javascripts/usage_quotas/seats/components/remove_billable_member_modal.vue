@@ -42,7 +42,7 @@ export default {
         attributes: {
           variant: 'danger',
           disabled: !this.canSubmit,
-          class: 'gl-xs-w-full',
+          class: 'gl-w-full gl-sm-w-auto',
         },
       };
     },
@@ -50,7 +50,7 @@ export default {
       return {
         text: __('Cancel'),
         attributes: {
-          class: 'gl-xs-w-full',
+          class: 'gl-w-full gl-sm-w-auto',
         },
       };
     },

@@ -110,12 +110,12 @@ export default {
 </script>
 
 <template>
-  <div class="gl-xs-w-full gl-sm-ml-3">
+  <div class="gl-w-full gl-sm-w-auto gl-sm-ml-3">
     <gl-button
       v-gl-modal-directive="'download-csv-modal'"
       category="primary"
       variant="confirm"
-      class="gl-xs-w-full"
+      class="gl-w-full gl-sm-w-auto"
       data-testid="group-code-coverage-modal-button"
       :aria-label="$options.i18n.downloadCSVButton"
       >{{ $options.i18n.downloadCSVButton }}</gl-button
