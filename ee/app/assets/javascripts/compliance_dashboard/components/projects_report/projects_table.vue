@@ -230,8 +230,8 @@ export default {
     {
       key: 'complianceFramework',
       label: __('Compliance framework'),
-      thClass: 'gl-vertical-align-middle!',
-      tdClass: 'gl-vertical-align-middle!',
+      thClass: 'gl-md-max-w-26 gl-vertical-align-middle!',
+      tdClass: 'gl-md-max-w-26 gl-vertical-align-middle!',
       sortable: false,
     },
   ],
