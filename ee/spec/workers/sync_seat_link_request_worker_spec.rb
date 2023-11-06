@@ -244,34 +244,40 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
       end
     end
 
-    context 'with service access tokens', :freeze_time do
-      let(:expires_at) { (Time.current + 2.days).to_i }
-      let(:license_key) { build(:gitlab_license, :cloud).export }
-      let(:body) { { success: true, license: license_key, service_tokens: { code_suggestions: { token: 'token1', expires_at: expires_at } } }.to_json }
-
-      it 'calls Ai::ServiceAccessTokensStorageService' do
-        expect_next_instance_of(Ai::ServiceAccessTokensStorageService, 'token1', expires_at) do |instance|
-          expect(instance).to receive(:execute)
-        end
-
-        sync_seat_link
+    context 'when :use_sync_service_token_worker feature flag is disabled' do
+      before do
+        stub_feature_flags(use_sync_service_token_worker: false)
       end
 
-      context 'when the request is not successful' do
-        let(:body) { { success: false, error: "Bad Request" }.to_json }
+      context 'with service access tokens', :freeze_time do
+        let(:expires_at) { (Time.current + 2.days).to_i }
+        let(:license_key) { build(:gitlab_license, :cloud).export }
+        let(:body) { { success: true, license: license_key, service_tokens: { code_suggestions: { token: 'token1', expires_at: expires_at } } }.to_json }
 
-        before do
-          stub_request(:post, seat_link_url)
-            .to_return(status: 400, body: body)
+        it 'calls Ai::ServiceAccessTokensStorageService' do
+          expect_next_instance_of(Ai::ServiceAccessTokensStorageService, 'token1', expires_at) do |instance|
+            expect(instance).to receive(:execute)
+          end
+
+          sync_seat_link
         end
 
-        it 'does not call Ai::ServiceAccessTokensStorageService' do
-          expect(Ai::ServiceAccessTokensStorageService).not_to receive(:new)
+        context 'when the request is not successful' do
+          let(:body) { { success: false, error: "Bad Request" }.to_json }
 
-          expect { sync_seat_link }.to raise_error(
-            described_class::RequestError,
-            'Seat Link request failed! Code:400 Body:{"success":false,"error":"Bad Request"}'
-          )
+          before do
+            stub_request(:post, seat_link_url)
+              .to_return(status: 400, body: body)
+          end
+
+          it 'does not call Ai::ServiceAccessTokensStorageService' do
+            expect(Ai::ServiceAccessTokensStorageService).not_to receive(:new)
+
+            expect { sync_seat_link }.to raise_error(
+              described_class::RequestError,
+              'Seat Link request failed! Code:400 Body:{"success":false,"error":"Bad Request"}'
+            )
+          end
         end
       end
     end

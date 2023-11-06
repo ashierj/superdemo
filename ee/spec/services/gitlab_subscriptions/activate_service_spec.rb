@@ -125,12 +125,24 @@ RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :sm_provi
 
       it_behaves_like 'call service to handle the provision of code suggestions'
 
-      it 'triggers SeatLinkData sync' do
-        expect_next_instance_of(::Gitlab::SeatLinkData) do |sync_link_data|
-          expect(sync_link_data).to receive(:sync)
-        end
+      it 'triggers SyncServiceTokenWorker worker' do
+        expect(::Ai::SyncServiceTokenWorker).to receive(:perform_async)
 
         subject
+      end
+
+      context 'when :use_sync_service_token_worker feature flag is disabled' do
+        before do
+          stub_feature_flags(use_sync_service_token_worker: false)
+        end
+
+        it 'triggers SeatLinkData sync' do
+          expect_next_instance_of(::Gitlab::SeatLinkData) do |sync_link_data|
+            expect(sync_link_data).to receive(:sync)
+          end
+
+          subject
+        end
       end
     end
 
