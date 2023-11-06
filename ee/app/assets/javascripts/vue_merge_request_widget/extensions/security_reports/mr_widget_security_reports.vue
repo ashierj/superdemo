@@ -223,7 +223,7 @@ export default {
       return 'success';
     },
 
-    canCreateIssue() {
+    hasCreateIssuePath() {
       return Boolean(
         this.mr.createVulnerabilityFeedbackIssuePath ||
           this.modalData?.vulnerability?.create_jira_issue_url,
@@ -645,6 +645,7 @@ export default {
         :finding-uuid="modalData.vulnerability.uuid"
         :pipeline-iid="pipelineIid"
         :project-full-path="mr.targetProjectFullPath"
+        :has-create-issue-path="hasCreateIssuePath"
         @hidden="clearModalData"
         @dismissed="updateFindingState('dismissed')"
         @detected="updateFindingState('detected')"
@@ -657,7 +658,7 @@ export default {
         :is-creating-merge-request="isCreatingMergeRequest"
         :is-creating-issue="isCreatingIssue"
         :is-loading-additional-info="$apollo.queries.securityReportFinding.loading"
-        :can-create-issue="canCreateIssue"
+        :can-create-issue="hasCreateIssuePath"
         :can-dismiss-vulnerability="canDismissFinding"
         @addDismissalComment="addDismissalComment"
         @createMergeRequest="createMergeRequest"
