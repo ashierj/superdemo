@@ -3,7 +3,18 @@
 module EE
   module Members
     module CreateService
+      extend ::Gitlab::Utils::Override
+
+      override :initialize
+      def initialize(*args)
+        super
+
+        @added_member_ids_with_users = []
+      end
+
       private
+
+      attr_accessor :added_member_ids_with_users
 
       def create_params
         top_level_group = source.root_ancestor
@@ -45,10 +56,42 @@ module EE
         source.actual_limits.exceeded?(:daily_invites, invite_count + invites.count)
       end
 
+      override :after_add_hooks
+      def after_add_hooks
+        super
+
+        return unless execute_notification_worker?
+
+        ::Namespaces::FreeUserCap::GroupOverLimitNotificationWorker
+          .perform_async(source.id, added_member_ids_with_users)
+      end
+
+      def execute_notification_worker?
+        ::Namespaces::FreeUserCap.dashboard_limit_enabled? &&
+          ::Namespaces::FreeUserCap.over_user_limit_email_enabled?(source) &&
+          source.is_a?(Group) && # only ever an invited group's members could affect this
+          added_member_ids_with_users.any?
+      end
+
       def after_execute(member:)
         super
 
+        append_added_member_ids_with_users(member: member)
         log_audit_event(member: member)
+      end
+
+      def append_added_member_ids_with_users(member:)
+        return unless ::Namespaces::FreeUserCap.dashboard_limit_enabled?
+        return unless ::Namespaces::FreeUserCap.over_user_limit_email_enabled?(source)
+        return unless new_and_attached_to_user?(member: member)
+
+        added_member_ids_with_users << member.id
+      end
+
+      def new_and_attached_to_user?(member:)
+        # Only members attached to users can possibly affect the user count.
+        # If the member was merely updated, they won't affect a change to the user count.
+        member.user_id && member.previously_new_record?
       end
 
       def log_audit_event(member:)

@@ -2,12 +2,12 @@
 
 module Emails
   class NamespaceStorageUsageMailer < ApplicationMailer
-    include Namespaces::StorageHelper
+    include ::Namespaces::StorageHelper
     include NamespacesHelper
     include GitlabRoutingHelper
 
     helper EmailsHelper
-    helper Namespaces::StorageHelper
+    helper ::Namespaces::StorageHelper
 
     layout 'mailer'
 

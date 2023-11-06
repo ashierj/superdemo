@@ -13,6 +13,10 @@ module Namespaces
       ::Gitlab::CurrentSettings.dashboard_limit_enabled?
     end
 
+    def self.over_user_limit_email_enabled?(group)
+      ::Feature.enabled?(:free_user_cap_over_limit_email, group)
+    end
+
     def self.owner_access?(user:, namespace:)
       return false unless user
 
