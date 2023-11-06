@@ -42,18 +42,6 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         it_behaves_like 'schedules completion worker'
       end
 
-      context 'when explain_code_vertex_ai feature flag is disabled' do
-        before do
-          stub_feature_flags(explain_code_vertex_ai: false)
-        end
-
-        let(:resource) { project }
-        let(:action_name) { :explain_code_open_ai }
-        let(:content) { 'Explain code' }
-
-        it_behaves_like 'schedules completion worker'
-      end
-
       context 'when explain_code licensed feature is disabled' do
         before do
           stub_licensed_features(explain_code: false)
