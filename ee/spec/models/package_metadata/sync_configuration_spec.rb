@@ -8,6 +8,7 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
   before do
     stub_feature_flags(package_metadata_synchronization: true)
     stub_feature_flags(compressed_package_metadata_synchronization: false)
+    allow(File).to receive(:exist?).and_return(false)
   end
 
   describe 'configs based on enabled purl types' do
