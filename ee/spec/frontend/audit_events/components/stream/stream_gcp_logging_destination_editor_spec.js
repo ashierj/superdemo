@@ -144,11 +144,11 @@ describe('StreamDestinationEditor', () => {
       it('should emit add event after destination added', async () => {
         createComponent();
 
-        await findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
-        await findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
-        await findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
-        await findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
-        await findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
+        await findName().setValue(mockGcpLoggingDestinations[0].name);
+        await findProjectId().setValue(mockGcpLoggingDestinations[0].googleProjectIdName);
+        await findClientEmailUrl().setValue(mockGcpLoggingDestinations[0].clientEmail);
+        await findLogId().setValue(mockGcpLoggingDestinations[0].logIdName);
+        await findPrivateKey().setValue(mockGcpLoggingDestinations[0].privateKey);
 
         expect(findAddStreamBtn().props('disabled')).toBe(false);
 
@@ -171,11 +171,11 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
+        findName().setValue(mockGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().setValue(mockGcpLoggingDestinations[0].clientEmail);
+        findLogId().setValue(mockGcpLoggingDestinations[0].logIdName);
+        findPrivateKey().setValue(mockGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -194,11 +194,11 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
+        findName().setValue(mockGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().setValue(mockGcpLoggingDestinations[0].clientEmail);
+        findLogId().setValue(mockGcpLoggingDestinations[0].logIdName);
+        findPrivateKey().setValue(mockGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -291,7 +291,7 @@ describe('StreamDestinationEditor', () => {
 
         expect(findAddStreamBtn().props('disabled')).toBe(true);
 
-        await findInputFn().vm.$emit('input', 'test');
+        await findInputFn().setValue('test');
 
         expect(findAddStreamBtn().props('disabled')).toBe(false);
       });
@@ -307,10 +307,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[1].googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[1].clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestinations[1].logIdName);
+        findName().setValue(mockGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockGcpLoggingDestinations[1].googleProjectIdName);
+        findClientEmailUrl().setValue(mockGcpLoggingDestinations[1].clientEmail);
+        findLogId().setValue(mockGcpLoggingDestinations[1].logIdName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -332,7 +332,7 @@ describe('StreamDestinationEditor', () => {
 
         await findPrivateKeyAddButton().trigger('click');
 
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[1].privateKey);
+        findPrivateKey().setValue(mockGcpLoggingDestinations[1].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -353,10 +353,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
+        findName().setValue(mockGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().setValue(mockGcpLoggingDestinations[0].clientEmail);
+        findLogId().setValue(mockGcpLoggingDestinations[0].logIdName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -376,10 +376,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
+        findName().setValue(mockGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().setValue(mockGcpLoggingDestinations[0].clientEmail);
+        findLogId().setValue(mockGcpLoggingDestinations[0].logIdName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -523,17 +523,11 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        await findName().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].name);
-        await findProjectId().vm.$emit(
-          'input',
-          mockInstanceGcpLoggingDestinations[0].googleProjectIdName,
-        );
-        await findClientEmailUrl().vm.$emit(
-          'input',
-          mockInstanceGcpLoggingDestinations[0].clientEmail,
-        );
-        await findLogId().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].logIdName);
-        await findPrivateKey().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].privateKey);
+        await findName().setValue(mockInstanceGcpLoggingDestinations[0].name);
+        await findProjectId().setValue(mockInstanceGcpLoggingDestinations[0].googleProjectIdName);
+        await findClientEmailUrl().setValue(mockInstanceGcpLoggingDestinations[0].clientEmail);
+        await findLogId().setValue(mockInstanceGcpLoggingDestinations[0].logIdName);
+        await findPrivateKey().setValue(mockInstanceGcpLoggingDestinations[0].privateKey);
 
         expect(findAddStreamBtn().props('disabled')).toBe(false);
 
@@ -560,14 +554,11 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit(
-          'input',
-          mockInstanceGcpLoggingDestinations[0].googleProjectIdName,
-        );
-        findClientEmailUrl().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].clientEmail);
-        findLogId().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].logIdName);
-        findPrivateKey().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].privateKey);
+        findName().setValue(mockInstanceGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockInstanceGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().setValue(mockInstanceGcpLoggingDestinations[0].clientEmail);
+        findLogId().setValue(mockInstanceGcpLoggingDestinations[0].logIdName);
+        findPrivateKey().setValue(mockInstanceGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -589,14 +580,11 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit(
-          'input',
-          mockInstanceGcpLoggingDestinations[0].googleProjectIdName,
-        );
-        findClientEmailUrl().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].clientEmail);
-        findLogId().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].logIdName);
-        findPrivateKey().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].privateKey);
+        findName().setValue(mockInstanceGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockInstanceGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().setValue(mockInstanceGcpLoggingDestinations[0].clientEmail);
+        findLogId().setValue(mockInstanceGcpLoggingDestinations[0].logIdName);
+        findPrivateKey().setValue(mockInstanceGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -689,7 +677,7 @@ describe('StreamDestinationEditor', () => {
 
         expect(findAddStreamBtn().props('disabled')).toBe(true);
 
-        await findInputFn().vm.$emit('input', 'test');
+        await findInputFn().setValue('test');
 
         expect(findAddStreamBtn().props('disabled')).toBe(false);
       });
@@ -705,13 +693,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit(
-          'input',
-          mockInstanceGcpLoggingDestinations[1].googleProjectIdName,
-        );
-        findClientEmailUrl().vm.$emit('input', mockInstanceGcpLoggingDestinations[1].clientEmail);
-        findLogId().vm.$emit('input', mockInstanceGcpLoggingDestinations[1].logIdName);
+        findName().setValue(mockInstanceGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockInstanceGcpLoggingDestinations[1].googleProjectIdName);
+        findClientEmailUrl().setValue(mockInstanceGcpLoggingDestinations[1].clientEmail);
+        findLogId().setValue(mockInstanceGcpLoggingDestinations[1].logIdName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -733,7 +718,7 @@ describe('StreamDestinationEditor', () => {
 
         await findPrivateKeyAddButton().trigger('click');
 
-        findPrivateKey().vm.$emit('input', mockInstanceGcpLoggingDestinations[1].privateKey);
+        findPrivateKey().setValue(mockInstanceGcpLoggingDestinations[1].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -758,13 +743,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit(
-          'input',
-          mockInstanceGcpLoggingDestinations[0].googleProjectIdName,
-        );
-        findClientEmailUrl().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].clientEmail);
-        findLogId().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].logIdName);
+        findName().setValue(mockInstanceGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockInstanceGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().setValue(mockInstanceGcpLoggingDestinations[0].clientEmail);
+        findLogId().setValue(mockInstanceGcpLoggingDestinations[0].logIdName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -787,13 +769,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].name);
-        findProjectId().vm.$emit(
-          'input',
-          mockInstanceGcpLoggingDestinations[0].googleProjectIdName,
-        );
-        findClientEmailUrl().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].clientEmail);
-        findLogId().vm.$emit('input', mockInstanceGcpLoggingDestinations[0].logIdName);
+        findName().setValue(mockInstanceGcpLoggingDestinations[0].name);
+        findProjectId().setValue(mockInstanceGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().setValue(mockInstanceGcpLoggingDestinations[0].clientEmail);
+        findLogId().setValue(mockInstanceGcpLoggingDestinations[0].logIdName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 

@@ -7,11 +7,7 @@ import { createAlert } from '~/alert';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import {
-  shallowMountExtended,
-  mountExtended,
-  extendedWrapper,
-} from 'helpers/vue_test_utils_helper';
+import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import externalAuditEventDestinationCreate from 'ee/audit_events/graphql/mutations/create_external_destination.mutation.graphql';
 import externalAuditEventDestinationUpdate from 'ee/audit_events/graphql/mutations/update_external_destination.mutation.graphql';
 import externalAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/mutations/create_external_destination_header.mutation.graphql';
@@ -73,7 +69,7 @@ describe('StreamDestinationEditor', () => {
   const defaultDeleteSpy = jest.fn().mockResolvedValue(destinationDeleteMutationPopulator());
 
   const createComponent = ({
-    mountFn = shallowMountExtended,
+    mountFn = mountExtended,
     props = {},
     apolloHandlers = [
       [
@@ -143,15 +139,15 @@ describe('StreamDestinationEditor', () => {
   };
 
   const submitForm = async () => {
-    findDestinationName().vm.$emit('input', 'Name');
-    findDestinationUrl().vm.$emit('input', 'https://example.test');
+    findDestinationName().setValue('Name');
+    findDestinationUrl().setValue('https://example.test');
     findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
     await waitForPromises();
   };
 
   const submitFormWithHeaders = async () => {
-    findDestinationName().vm.$emit('input', 'Name');
-    findDestinationUrl().vm.$emit('input', 'https://example.test');
+    findDestinationName().setValue('Name');
+    findDestinationUrl().setValue('https://example.test');
     await findAddHeaderBtn().trigger('click');
     await setHeadersRowData(0, { name: 'row header', value: 'row value' });
     await findAddHeaderBtn().trigger('click');
@@ -173,7 +169,7 @@ describe('StreamDestinationEditor', () => {
 
         it('should render the destinations warning', () => {
           expect(findWarningMessage().props('title')).toBe(ADD_STREAM_EDITOR_I18N.WARNING_TITLE);
-          expect(findWarningMessage().text()).toBe(ADD_STREAM_EDITOR_I18N.WARNING_CONTENT);
+          expect(findWarningMessage().text()).toContain(ADD_STREAM_EDITOR_I18N.WARNING_CONTENT);
         });
 
         it('should render the destination URL input', () => {
@@ -400,8 +396,8 @@ describe('StreamDestinationEditor', () => {
       `(
         'should enable the add button only when both the name and value are filled',
         async ({ name, value, disabled }) => {
-          await findDestinationName().setValue('Name');
-          await findDestinationUrl().setValue('https://example.test');
+          findDestinationName().setValue('Name');
+          findDestinationUrl().setValue('https://example.test');
           await findAddHeaderBtn().trigger('click');
           await setHeadersRowData(0, { name, value });
 
@@ -410,8 +406,8 @@ describe('StreamDestinationEditor', () => {
       );
 
       it('disables add button when there are headers with the same name', async () => {
-        await findDestinationName().setValue('Name');
-        await findDestinationUrl().setValue('https://example.test');
+        findDestinationName().setValue('Name');
+        findDestinationUrl().setValue('https://example.test');
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'a', value: 'b' });
 
@@ -516,8 +512,8 @@ describe('StreamDestinationEditor', () => {
         const addedHeader = mockExternalDestinationHeader();
 
         const setupUpdatedHeaders = async (updated, added) => {
-          findDestinationName().vm.$emit('input', 'Name');
-          findDestinationUrl().vm.$emit('input', 'https://example.test');
+          findDestinationName().setValue('Name');
+          findDestinationUrl().setValue('https://example.test');
           await setHeadersRowData(0, { name: updated.key, value: updated.newValue });
           await findHeaderDeleteBtn(1).trigger('click');
           await findAddHeaderBtn().trigger('click');
@@ -810,7 +806,7 @@ describe('StreamDestinationEditor', () => {
 
         it('should render the destinations warning', () => {
           expect(findWarningMessage().props('title')).toBe(ADD_STREAM_EDITOR_I18N.WARNING_TITLE);
-          expect(findWarningMessage().text()).toBe(ADD_STREAM_EDITOR_I18N.WARNING_CONTENT);
+          expect(findWarningMessage().text()).toContain(ADD_STREAM_EDITOR_I18N.WARNING_CONTENT);
         });
 
         it('should render the destination URL input', () => {
@@ -1044,8 +1040,8 @@ describe('StreamDestinationEditor', () => {
       `(
         'should enable the add button only when both the name and value are filled',
         async ({ name, value, disabled }) => {
-          await findDestinationName().setValue('Name');
-          await findDestinationUrl().setValue('https://example.test');
+          findDestinationName().setValue('Name');
+          findDestinationUrl().setValue('https://example.test');
           await findAddHeaderBtn().trigger('click');
           await setHeadersRowData(0, { name, value });
 
@@ -1054,8 +1050,8 @@ describe('StreamDestinationEditor', () => {
       );
 
       it('disables add button when there are headers with the same name', async () => {
-        await findDestinationName().setValue('Name');
-        await findDestinationUrl().setValue('https://example.test');
+        findDestinationName().setValue('Name');
+        findDestinationUrl().setValue('https://example.test');
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'a', value: 'b' });
 
@@ -1162,8 +1158,8 @@ describe('StreamDestinationEditor', () => {
         const addedHeader = mockInstanceExternalDestinationHeader();
 
         const setupUpdatedHeaders = async (updated, added) => {
-          findDestinationName().vm.$emit('input', 'Name');
-          findDestinationUrl().vm.$emit('input', 'https://example.test');
+          findDestinationName().setValue('Name');
+          findDestinationUrl().setValue('https://example.test');
           await setHeadersRowData(0, { name: updated.key, value: updated.newValue });
           await findHeaderDeleteBtn(1).trigger('click');
           await findAddHeaderBtn().trigger('click');

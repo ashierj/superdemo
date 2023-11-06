@@ -138,11 +138,11 @@ describe('StreamDestinationEditor', () => {
       it('should emit add event after destination added', async () => {
         createComponent();
 
-        await findName().vm.$emit('input', mockAmazonS3Destinations[0].name);
-        await findAccessKeyXid().vm.$emit('input', mockAmazonS3Destinations[0].accessKeyXid);
-        await findAwsRegion().vm.$emit('input', mockAmazonS3Destinations[0].awsRegion);
-        await findBucketName().vm.$emit('input', mockAmazonS3Destinations[0].bucketName);
-        await findSecretAccessKey().vm.$emit('input', mockAmazonS3Destinations[0].secretAccessKey);
+        await findName().setValue(mockAmazonS3Destinations[0].name);
+        await findAccessKeyXid().setValue(mockAmazonS3Destinations[0].accessKeyXid);
+        await findAwsRegion().setValue(mockAmazonS3Destinations[0].awsRegion);
+        await findBucketName().setValue(mockAmazonS3Destinations[0].bucketName);
+        await findSecretAccessKey().setValue(mockAmazonS3Destinations[0].secretAccessKey);
 
         expect(findAddStreamBtn().props('disabled')).toBe(false);
 
@@ -165,11 +165,11 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockAmazonS3Destinations[0].name);
-        findAccessKeyXid().vm.$emit('input', mockAmazonS3Destinations[0].accessKeyXid);
-        findAwsRegion().vm.$emit('input', mockAmazonS3Destinations[0].awsRegion);
-        findBucketName().vm.$emit('input', mockAmazonS3Destinations[0].bucketName);
-        findSecretAccessKey().vm.$emit('input', mockAmazonS3Destinations[0].secretAccessKey);
+        findName().setValue(mockAmazonS3Destinations[0].name);
+        findAccessKeyXid().setValue(mockAmazonS3Destinations[0].accessKeyXid);
+        findAwsRegion().setValue(mockAmazonS3Destinations[0].awsRegion);
+        findBucketName().setValue(mockAmazonS3Destinations[0].bucketName);
+        findSecretAccessKey().setValue(mockAmazonS3Destinations[0].secretAccessKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -186,11 +186,11 @@ describe('StreamDestinationEditor', () => {
           apolloHandlers: [[amazonS3ConfigurationCreate, jest.fn().mockRejectedValue(sentryError)]],
         });
 
-        findName().vm.$emit('input', mockAmazonS3Destinations[0].name);
-        findAccessKeyXid().vm.$emit('input', mockAmazonS3Destinations[0].accessKeyXid);
-        findAwsRegion().vm.$emit('input', mockAmazonS3Destinations[0].awsRegion);
-        findBucketName().vm.$emit('input', mockAmazonS3Destinations[0].bucketName);
-        findSecretAccessKey().vm.$emit('input', mockAmazonS3Destinations[0].secretAccessKey);
+        findName().setValue(mockAmazonS3Destinations[0].name);
+        findAccessKeyXid().setValue(mockAmazonS3Destinations[0].accessKeyXid);
+        findAwsRegion().setValue(mockAmazonS3Destinations[0].awsRegion);
+        findBucketName().setValue(mockAmazonS3Destinations[0].bucketName);
+        findSecretAccessKey().setValue(mockAmazonS3Destinations[0].secretAccessKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -279,7 +279,7 @@ describe('StreamDestinationEditor', () => {
 
         expect(findAddStreamBtn().props('disabled')).toBe(true);
 
-        await findInputFn().vm.$emit('input', 'test');
+        await findInputFn().setValue('test');
 
         expect(findAddStreamBtn().props('disabled')).toBe(false);
       });
@@ -295,10 +295,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockAmazonS3Destinations[0].name);
-        findAccessKeyXid().vm.$emit('input', mockAmazonS3Destinations[1].accessKeyXid);
-        findAwsRegion().vm.$emit('input', mockAmazonS3Destinations[1].awsRegion);
-        findBucketName().vm.$emit('input', mockAmazonS3Destinations[1].bucketName);
+        findName().setValue(mockAmazonS3Destinations[0].name);
+        findAccessKeyXid().setValue(mockAmazonS3Destinations[1].accessKeyXid);
+        findAwsRegion().setValue(mockAmazonS3Destinations[1].awsRegion);
+        findBucketName().setValue(mockAmazonS3Destinations[1].bucketName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -320,7 +320,7 @@ describe('StreamDestinationEditor', () => {
 
         await findSecretAccessKeyAddButton().trigger('click');
 
-        findSecretAccessKey().vm.$emit('input', mockAmazonS3Destinations[1].secretAccessKey);
+        findSecretAccessKey().setValue(mockAmazonS3Destinations[1].secretAccessKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -341,10 +341,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findName().vm.$emit('input', mockAmazonS3Destinations[0].name);
-        findAccessKeyXid().vm.$emit('input', mockAmazonS3Destinations[0].accessKeyXid);
-        findAwsRegion().vm.$emit('input', mockAmazonS3Destinations[0].awsRegion);
-        findBucketName().vm.$emit('input', mockAmazonS3Destinations[0].bucketName);
+        findName().setValue(mockAmazonS3Destinations[0].name);
+        findAccessKeyXid().setValue(mockAmazonS3Destinations[0].accessKeyXid);
+        findAwsRegion().setValue(mockAmazonS3Destinations[0].awsRegion);
+        findBucketName().setValue(mockAmazonS3Destinations[0].bucketName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -362,10 +362,10 @@ describe('StreamDestinationEditor', () => {
           apolloHandlers: [[amazonS3ConfigurationUpdate, jest.fn().mockRejectedValue(sentryError)]],
         });
 
-        findName().vm.$emit('input', mockAmazonS3Destinations[0].name);
-        findAccessKeyXid().vm.$emit('input', mockAmazonS3Destinations[0].accessKeyXid);
-        findAwsRegion().vm.$emit('input', mockAmazonS3Destinations[0].awsRegion);
-        findBucketName().vm.$emit('input', mockAmazonS3Destinations[0].bucketName);
+        findName().setValue(mockAmazonS3Destinations[0].name);
+        findAccessKeyXid().setValue(mockAmazonS3Destinations[0].accessKeyXid);
+        findAwsRegion().setValue(mockAmazonS3Destinations[0].awsRegion);
+        findBucketName().setValue(mockAmazonS3Destinations[0].bucketName);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
