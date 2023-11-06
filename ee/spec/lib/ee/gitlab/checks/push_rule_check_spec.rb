@@ -16,6 +16,8 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck, feature_category: :source_code
 
   shared_examples "push checks" do
     before do
+      allow_any_instance_of(EE::Gitlab::Checks::PushRules::SecretsCheck)
+        .to receive(:validate!).and_return(nil)
       allow_any_instance_of(EE::Gitlab::Checks::PushRules::FileSizeCheck)
         .to receive(:validate!).and_return(nil)
       allow_any_instance_of(EE::Gitlab::Checks::PushRules::TagCheck)
