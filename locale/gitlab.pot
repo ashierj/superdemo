@@ -3534,6 +3534,9 @@ msgstr ""
 msgid "AdminSettings|Enable smartcn custom analyzer: Search"
 msgstr ""
 
+msgid "AdminSettings|Enable the external redirect warning page for job artifacts"
+msgstr ""
+
 msgid "AdminSettings|Enabled"
 msgstr ""
 
@@ -3733,6 +3736,9 @@ msgid "AdminSettings|Set visibility of project contents and configure Git access
 msgstr ""
 
 msgid "AdminSettings|Setting must be greater than 0."
+msgstr ""
+
+msgid "AdminSettings|Show a redirect page that warns you about user-generated content in GitLab Pages."
 msgstr ""
 
 msgid "AdminSettings|Size and domain settings for Pages static sites."
