@@ -38,6 +38,14 @@ module EE
           nil
         end
 
+        # @return [Nil] returns nil unless an error is raised
+        # @raise [Gitlab::GitAccess::ForbiddenError] if check fails
+        def check_secrets!
+          PushRules::SecretsCheck.new(changes_access).validate!
+
+          nil
+        end
+
         # Run the checks one after the other.
         #
         # @return [Nil] returns nil unless an error is raised
@@ -45,6 +53,7 @@ module EE
         def run_checks_in_sequence!
           check_tag_or_branch!
           check_file_size!
+          check_secrets!
         end
 
         # Run the checks in separate threads for performance benefits.
@@ -65,6 +74,10 @@ module EE
 
           parallelize(git_env) do
             check_file_size!
+          end
+
+          parallelize(git_env) do
+            check_secrets!
           end
 
           # Block whilst waiting for threads, however if one errors
