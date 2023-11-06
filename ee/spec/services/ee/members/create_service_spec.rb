@@ -182,6 +182,83 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
     end
   end
 
+  context 'when part of a group that a free group invited', :saas, :sidekiq_inline do
+    context 'when free group is over the limit' do
+      let(:dashboard_limit_enabled) { true }
+      let(:free_user_cap_over_limit_email_enabled) { true }
+      let_it_be(:owner) { create(:user) }
+      let_it_be(:root_ancestor) do
+        create(:group_with_plan, :private, plan: :free_plan).tap { |g| g.add_owner(owner) }
+      end
+
+      let_it_be(:invited_group) do
+        create(:group).tap do |g|
+          g.add_owner(user)
+          create(:group_group_link, { shared_with_group: g, shared_group: root_ancestor })
+        end
+      end
+
+      before do
+        stub_ee_application_setting(dashboard_limit: 3)
+        stub_ee_application_setting(dashboard_limit_enabled: dashboard_limit_enabled)
+        stub_feature_flags(free_user_cap_over_limit_email: free_user_cap_over_limit_email_enabled)
+      end
+
+      subject(:execute_service) { described_class.new(user, params.merge({ source: invited_group })).execute }
+
+      it 'triggers an email notification to owners' do
+        root_ancestor.owners.each do |owner|
+          expect(::Namespaces::FreeUserCapMailer)
+            .to receive(:over_limit_email).with(owner, root_ancestor).once.and_call_original
+        end
+
+        execute_service
+      end
+
+      shared_examples 'notification does not get triggered' do
+        it 'does not trigger the notification worker' do
+          expect(::Namespaces::FreeUserCap::GroupOverLimitNotificationWorker).not_to receive(:perform_async)
+
+          execute_service
+        end
+      end
+
+      context 'when member source is not a Group' do
+        subject(:execute_service) { described_class.new(user, params.merge({ source: project })).execute }
+
+        it_behaves_like 'notification does not get triggered'
+      end
+
+      context 'when dashboard limit is not enabled' do
+        let(:dashboard_limit_enabled) { false }
+
+        it_behaves_like 'notification does not get triggered'
+      end
+
+      context 'when free_user_cap_over_limit_email feature flag is not enabled' do
+        let(:free_user_cap_over_limit_email_enabled) { false }
+
+        it_behaves_like 'notification does not get triggered'
+      end
+
+      context 'when all members added already existed' do
+        let(:invites) { [owner.id] }
+
+        before_all do
+          invited_group.add_developer(owner)
+        end
+
+        it_behaves_like 'notification does not get triggered'
+      end
+
+      context 'when all members added are not associated with a user' do
+        let(:invites) { ['email@example.org'] }
+
+        it_behaves_like 'notification does not get triggered'
+      end
+    end
+  end
+
   context 'when group membership is locked' do
     before do
       root_ancestor.update_attribute(:membership_lock, true)

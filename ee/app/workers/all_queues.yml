@@ -1785,6 +1785,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: namespaces_free_user_cap_group_over_limit_notification
+  :worker_name: Namespaces::FreeUserCap::GroupOverLimitNotificationWorker
+  :feature_category: :user_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: namespaces_storage_usage_export
   :worker_name: Namespaces::StorageUsageExportWorker
   :feature_category: :consumables_cost_management

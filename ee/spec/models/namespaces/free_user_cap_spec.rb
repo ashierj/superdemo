@@ -41,6 +41,26 @@ RSpec.describe Namespaces::FreeUserCap, feature_category: :measurement_and_locki
     end
   end
 
+  describe '.over_user_limit_email_enabled?' do
+    let(:free_user_cap_over_limit_email_enabled) { true }
+
+    subject { described_class.over_user_limit_email_enabled?(build(:group)) }
+
+    before do
+      stub_feature_flags(free_user_cap_over_limit_email: free_user_cap_over_limit_email_enabled)
+    end
+
+    context 'when free_user_cap_over_limit_email feature flag is true' do
+      it { is_expected.to be(true) }
+    end
+
+    context 'when free_user_cap_over_limit_email feature flag is false' do
+      let(:free_user_cap_over_limit_email_enabled) { false }
+
+      it { is_expected.to be(false) }
+    end
+  end
+
   describe '.owner_access?' do
     let_it_be(:user) { create(:user) }
     let_it_be(:namespace) { create(:group) }
