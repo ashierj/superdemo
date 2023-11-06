@@ -99,6 +99,13 @@ module EE
             verify_merge_pipelines_attrs!(project, attrs)
           end
 
+          override :verify_project_filters!
+          def verify_project_filters!(attrs)
+            super
+
+            attrs.delete(:include_hidden) unless current_user&.can_admin_all_resources?
+          end
+
           def verify_mirror_attrs!(project, attrs)
             unless can?(current_user, :admin_mirror, project)
               ::Projects::UpdateService::PULL_MIRROR_ATTRIBUTES.each do |attr_name|

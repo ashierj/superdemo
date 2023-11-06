@@ -128,11 +128,12 @@ module EE
 
       override :project_finder_params_ee
       def project_finder_params_ee
-        if params[:with_security_reports].present?
-          { with_security_reports: true }
-        else
-          {}
-        end
+        finder_params = {}
+
+        finder_params[:include_hidden] = declared_params[:include_hidden] if declared_params[:include_hidden]
+        finder_params[:with_security_reports] = true if params[:with_security_reports].present?
+
+        finder_params
       end
 
       override :send_git_archive
