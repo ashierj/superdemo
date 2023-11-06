@@ -6,6 +6,7 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be(:resource) { create(:issue, project: project) }
 
   let(:options) { {} }
   let(:current_user) { user }
@@ -55,10 +56,21 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
     context 'for an issue' do
       let(:action_name) { :generate_description }
       let(:content) { 'Generate description' }
-      let_it_be(:resource) { create(:issue, project: project) }
 
       it_behaves_like "ensures license and feature flag checks"
       it_behaves_like "ensures user membership"
+
+      it_behaves_like 'schedules completion worker' do
+        subject { service }
+      end
+    end
+
+    context "when claude_description_generation FF is disabled" do
+      let(:action_name) { :generate_description_open_ai }
+
+      before do
+        stub_feature_flags(claude_description_generation: false)
+      end
 
       it_behaves_like 'schedules completion worker' do
         subject { service }

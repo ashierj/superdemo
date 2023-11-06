@@ -40,6 +40,11 @@ module Gitlab
           feature_category: :code_review_workflow
         },
         generate_description: {
+          service_class: ::Gitlab::Llm::Anthropic::Completions::GenerateDescription,
+          prompt_class: ::Gitlab::Llm::Templates::GenerateDescription,
+          feature_category: :ai_abstraction_layer
+        },
+        generate_description_open_ai: {
           service_class: ::Gitlab::Llm::OpenAi::Completions::GenerateDescription,
           prompt_class: ::Gitlab::Llm::OpenAi::Templates::GenerateDescription,
           feature_category: :ai_abstraction_layer

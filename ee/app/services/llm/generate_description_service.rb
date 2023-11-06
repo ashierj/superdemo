@@ -13,7 +13,11 @@ module Llm
     private
 
     def ai_action
-      :generate_description
+      if Feature.enabled?(:claude_description_generation)
+        :generate_description
+      else
+        :generate_description_open_ai
+      end
     end
 
     def perform
