@@ -58,6 +58,24 @@ Specific information applies to installations using Geo:
 
   For more information, see [issue 429617](https://gitlab.com/gitlab-org/gitlab/-/issues/429617).
 
+- [Object storage verification](https://about.gitlab.com/releases/2023/09/22/gitlab-16-4-released/#geo-verifies-object-storage) was added in GitLab 16.4. Due to an [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/429242) some Geo installations are reporting high memory usage which can lead to the GitLab application on the primary becoming unresponsive. 
+
+  Your installation may be impacted if you have configured it to use [object storage](../../administration/object_storage.md) and have enabled [GitLab-managed object storage replication](../../administration/geo/replication/object_storage.md#enabling-gitlab-managed-object-storage-replication)
+
+  Until this is fixed, the workaround is to disable object storage verification.
+  Run the following command on one of the Rails nodes on the primary site:
+
+  ```shell
+  sudo gitlab-rails runner 'Feature.disable(:geo_object_storage_verification)'
+  ```
+
+  **Affected releases**:
+ 
+  | Affected minor releases | Affected patch releases | Fixed in |
+  | ------ | ------ | ------ |
+  | 16.4   | All    | None   |
+  | 16.5   | All    | None   |
+
 ## 16.4.0
 
 - Updating a group path [received a bug fix](https://gitlab.com/gitlab-org/gitlab/-/issues/419289) that uses a database index introduced in 16.3.
@@ -133,6 +151,24 @@ Specific information applies to installations using Geo:
     - 16.5.2 and later
 
   For more information, see [issue 429617](https://gitlab.com/gitlab-org/gitlab/-/issues/429617).
+
+- [Object storage verification](https://about.gitlab.com/releases/2023/09/22/gitlab-16-4-released/#geo-verifies-object-storage) was added in GitLab 16.4. Due to an [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/429242) some Geo installations are reporting high memory usage which can lead to the GitLab application on the primary becoming unresponsive. 
+
+  Your installation may be impacted if you have configured it to use [object storage](../../administration/object_storage.md) and have enabled [GitLab-managed object storage replication](../../administration/geo/replication/object_storage.md#enabling-gitlab-managed-object-storage-replication)
+
+  Until this is fixed, the workaround is to disable object storage verification.
+  Run the following command on one of the Rails nodes on the primary site:
+
+  ```shell
+  sudo gitlab-rails runner 'Feature.disable(:geo_object_storage_verification)'
+  ```
+
+  **Affected releases**:
+ 
+  | Affected minor releases | Affected patch releases | Fixed in |
+  | ------ | ------ | ------ |
+  | 16.4   | All    | None   |
+  | 16.5   | All    | None   |
 
 ## 16.3.0
 
