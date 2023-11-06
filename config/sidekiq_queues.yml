@@ -413,8 +413,6 @@
   - 1
 - - llm_namespace_access_cache_reset
   - 1
-- - llm_tanuki_bot_update
-  - 1
 - - llm_vertex_ai_access_token_refresh
   - 1
 - - mail_scheduler
