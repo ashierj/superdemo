@@ -170,6 +170,15 @@ Specific information applies to installations using Geo:
   | 16.4   | All    | None   |
   | 16.5   | All    | None   |
 
+- An [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/419370) with sync states getting stuck in pending state results in replication being stuck indefinitely for impacted items leading to risk of data loss in the event of a failover. This mostly impact repository syncs but can also can also affect container registry syncs. You are advised to upgrade to a fixed version to avoid risk of data loss.
+
+  **Affected releases**:
+
+  | Affected minor releases | Affected patch releases | Fixed in |
+  | ------ | ------ | ------ |
+  | 16.3   | 16.3.0 - 16.3.5    | 16.3.6   |
+  | 16.4   | 16.4.0 - 16.4.1    | 16.4.2   |
+
 ## 16.3.0
 
 - **Update to GitLab 16.3.5 or later**. This avoids [issue 425971](https://gitlab.com/gitlab-org/gitlab/-/issues/425971) that causes an excessive use of database disk space for GitLab 16.3.3 and 16.3.4.
@@ -256,6 +265,15 @@ Specific information applies to installations using Geo:
     - 16.5.2 and later
 
   For more information, see [issue 429617](https://gitlab.com/gitlab-org/gitlab/-/issues/429617).
+
+- An [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/419370) with sync states getting stuck in pending state results in replication being stuck indefinitely for impacted items leading to risk of data loss in the event of a failover. This mostly impact repository syncs but can also can also affect container registry syncs. You are advised to upgrade to a fixed version to avoid risk of data loss.
+
+  **Affected releases**:
+
+  | Affected minor releases | Affected patch releases | Fixed in |
+  | ------ | ------ | ------ |
+  | 16.3   | 16.3.0 - 16.3.5    | 16.3.6   |
+  | 16.4   | 16.4.0 - 16.4.1    | 16.4.2   |
 
 ## 16.2.0
 
