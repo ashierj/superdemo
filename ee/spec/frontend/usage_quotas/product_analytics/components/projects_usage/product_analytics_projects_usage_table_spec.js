@@ -1,4 +1,4 @@
-import { GlIcon, GlSkeletonLoader, GlTableLite, GlTooltip } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import ProductAnalyticsProjectsUsageTable from 'ee/usage_quotas/product_analytics/components/projects_usage/product_analytics_projects_usage_table.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
@@ -11,8 +11,6 @@ describe('ProductAnalyticsProjectsUsageTable', () => {
   const findEmptyState = () => wrapper.findByTestId('projects-usage-table-empty-state');
   const findUsageTableWrapper = () => wrapper.findByTestId('projects-usage-table');
   const findUsageTable = () => wrapper.findComponent(GlTableLite);
-  const findTooltip = () => wrapper.findComponent(GlTooltip);
-  const findTooltipIcon = () => wrapper.findComponent(GlIcon);
   const findProjectLink = () => wrapper.findByTestId('project-link');
   const findProjectAvatar = () => wrapper.findComponent(ProjectAvatar);
 
@@ -100,11 +98,6 @@ describe('ProductAnalyticsProjectsUsageTable', () => {
 
     it('renders the usage table', () => {
       expect(findUsageTable().exists()).toBe(true);
-    });
-
-    it('renders a tooltip showing data update frequency', () => {
-      expect(findTooltipIcon().exists()).toBe(true);
-      expect(findTooltip().text()).toBe('Event counts update hourly');
     });
 
     it('renders a link to the project', () => {

@@ -5476,6 +5476,9 @@ msgstr ""
 msgid "Analytics|Analytics dashboards"
 msgstr ""
 
+msgid "Analytics|Analytics events by month"
+msgstr ""
+
 msgid "Analytics|Analytics settings for '%{project_name}' were successfully updated."
 msgstr ""
 
@@ -5593,9 +5596,6 @@ msgstr ""
 msgid "Analytics|Event Props"
 msgstr ""
 
-msgid "Analytics|Event counts update hourly"
-msgstr ""
-
 msgid "Analytics|Events"
 msgstr ""
 
@@ -5615,6 +5615,9 @@ msgid "Analytics|Line chart"
 msgstr ""
 
 msgid "Analytics|Link clicks"
+msgstr ""
+
+msgid "Analytics|Month"
 msgstr ""
 
 msgid "Analytics|New dashboard"
@@ -5647,7 +5650,13 @@ msgstr ""
 msgid "Analytics|Previous month"
 msgstr ""
 
+msgid "Analytics|Product analytics usage is calculated based on the total number of events received from projects within the group. %{linkStart}Learn more%{linkEnd}."
+msgstr ""
+
 msgid "Analytics|Projects"
+msgstr ""
+
+msgid "Analytics|Projects (%{maxProjects} of %{totalProjects} shown)"
 msgstr ""
 
 msgid "Analytics|Referer"
@@ -5720,6 +5729,9 @@ msgid "Analytics|Updating dashboard %{dashboardSlug}"
 msgstr ""
 
 msgid "Analytics|Updating visualization %{visualizationName}"
+msgstr ""
+
+msgid "Analytics|Usage by month"
 msgstr ""
 
 msgid "Analytics|Usage by project"

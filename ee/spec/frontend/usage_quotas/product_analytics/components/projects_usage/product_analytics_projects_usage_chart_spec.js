@@ -98,4 +98,32 @@ describe('ProductAnalyticsProjectsUsageChart', () => {
       });
     });
   });
+
+  describe('when there is more than the maximum allowed projects', () => {
+    beforeEach(() => {
+      createComponent(
+        {
+          isLoading: false,
+          projectsUsageData: Array.from({ length: 51 }).map((_, index) => ({
+            id: index,
+            webUrl: `/test-project-${index}`,
+            avatarUrl: `/test-project-${index}.jpg`,
+            name: `test-project-${index}`,
+            currentEvents: 10,
+            previousEvents: 4,
+          })),
+        },
+        mountExtended,
+      );
+    });
+
+    it('limits how many projects are rendered', () => {
+      const chart = findUsageChart();
+      for (const bar of chart.props('bars')) {
+        expect(bar.data).toHaveLength(50);
+      }
+
+      expect(chart.props('xAxisTitle')).toBe('Projects (50 of 51 shown)');
+    });
+  });
 });

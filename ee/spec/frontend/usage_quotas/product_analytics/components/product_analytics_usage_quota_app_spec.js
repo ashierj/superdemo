@@ -6,12 +6,20 @@ describe('ProductAnalyticsUsageQuotaApp', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
+  const findProductAnalyticsGroupUsageChart = () =>
+    wrapper.findComponent(ProductAnalyticsProjectsUsage);
   const findProductAnalyticsProjectsUsage = () =>
     wrapper.findComponent(ProductAnalyticsProjectsUsage);
 
   const createComponent = () => {
     wrapper = shallowMount(ProductAnalyticsUsageQuotaApp, {});
   };
+
+  it('renders the monthly group usage chart', () => {
+    createComponent();
+
+    expect(findProductAnalyticsGroupUsageChart().exists()).toBe(true);
+  });
 
   it('renders the projects usage breakdown', () => {
     createComponent();

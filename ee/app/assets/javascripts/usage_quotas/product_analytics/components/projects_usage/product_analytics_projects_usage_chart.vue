@@ -1,8 +1,12 @@
 <script>
 import { GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
-import { s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import { projectsUsageDataValidator } from '../utils';
+
+// Trying to show more than this many projects on a single chart starts to
+// get illegible, so we only render this many projects if there's many
+const MAX_PROJECTS_TO_CHART = 50;
 
 export default {
   name: 'ProductAnalyticsProjectsUsageChart',
@@ -29,21 +33,35 @@ export default {
     showChart() {
       return this.projectsUsageData && this.projectsUsageData?.length !== 0;
     },
+    xAxisTitle() {
+      if (this.projectsUsageData?.length <= MAX_PROJECTS_TO_CHART) {
+        return s__('Analytics|Projects');
+      }
+
+      return sprintf(s__(`Analytics|Projects (%{maxProjects} of %{totalProjects} shown)`), {
+        maxProjects: MAX_PROJECTS_TO_CHART,
+        totalProjects: this.projectsUsageData.length,
+      });
+    },
     chartSeries() {
       return [
         {
           name: s__('Analytics|Previous month'),
           stack: 'previous',
-          data: this.projectsUsageData?.map((project) => {
-            return [project.name, project.previousEvents];
-          }),
+          data: this.projectsUsageData
+            ?.map((project) => {
+              return [project.name, project.previousEvents];
+            })
+            .slice(0, MAX_PROJECTS_TO_CHART),
         },
         {
           name: s__('Analytics|Current month to date'),
           stack: 'current',
-          data: this.projectsUsageData?.map((project) => {
-            return [project.name, project.currentEvents];
-          }),
+          data: this.projectsUsageData
+            ?.map((project) => {
+              return [project.name, project.currentEvents];
+            })
+            .slice(0, MAX_PROJECTS_TO_CHART),
         },
       ];
     },
@@ -57,7 +75,7 @@ export default {
       v-else-if="showChart"
       :bars="chartSeries"
       x-axis-type="category"
-      :x-axis-title="s__('Analytics|Projects')"
+      :x-axis-title="xAxisTitle"
       :y-axis-title="s__('Analytics|Events')"
     />
   </div>
