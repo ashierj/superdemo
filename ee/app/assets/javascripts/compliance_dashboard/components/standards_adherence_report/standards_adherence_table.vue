@@ -22,7 +22,7 @@ import {
 } from './constants';
 import FixSuggestionsSidebar from './fix_suggestions_sidebar.vue';
 
-const columnWidth = 'gl-white-space-nowrap';
+const columnWidth = 'gl-md-max-w-26 gl-white-space-nowrap';
 
 export default {
   name: 'ComplianceStandardsAdherenceTable',
@@ -146,6 +146,7 @@ export default {
     {
       key: 'project',
       sortable: false,
+      tdClass: columnWidth,
     },
     {
       key: 'checks',
@@ -207,8 +208,13 @@ export default {
 
       <template #cell(project)="{ item: { project } }">
         <div>{{ project.name }}</div>
-        <div v-for="framework in project.complianceFrameworks.nodes" :key="framework.id">
-          <gl-badge size="sm" class="gl-mt-3"> {{ framework.name }}</gl-badge>
+        <div
+          v-for="framework in project.complianceFrameworks.nodes"
+          :key="framework.id"
+          class="gl-label"
+          :title="framework.name"
+        >
+          <gl-badge size="sm" class="gl-mt-3 gl-label-text"> {{ framework.name }}</gl-badge>
         </div>
       </template>
 
