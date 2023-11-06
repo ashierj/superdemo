@@ -110,7 +110,7 @@ export default {
         :label="$options.i18n.firstNameLabel"
         label-size="sm"
         label-for="first_name"
-        class="gl-mr-5 gl-w-half gl-xs-w-full"
+        class="gl-mr-5 gl-w-full gl-sm-w-half"
       >
         <gl-form-input
           id="first_name"
@@ -124,7 +124,7 @@ export default {
         :label="$options.i18n.lastNameLabel"
         label-size="sm"
         label-for="last_name"
-        class="gl-w-half gl-xs-w-full"
+        class="gl-w-full gl-sm-w-half"
       >
         <gl-form-input
           id="last_name"
@@ -140,7 +140,7 @@ export default {
         :label="$options.i18n.companyNameLabel"
         label-size="sm"
         label-for="company_name"
-        class="gl-mr-5 gl-w-half gl-xs-w-full"
+        class="gl-mr-5 gl-w-full gl-sm-w-half"
       >
         <gl-form-input
           id="company_name"
@@ -154,7 +154,7 @@ export default {
         :label="$options.i18n.companySizeLabel"
         label-size="sm"
         label-for="company_size"
-        class="gl-w-half gl-xs-w-full"
+        class="gl-w-full gl-sm-w-half"
       >
         <gl-form-select
           id="company_size"
