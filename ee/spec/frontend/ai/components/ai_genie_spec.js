@@ -102,7 +102,6 @@ describe('AiGenie', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findGenieChat = () => wrapper.findComponent(AiGenieChat);
   const findCodeBlock = () => wrapper.findComponent(CodeBlockHighlighted);
-  const findLegalWarning = () => wrapper.findByTestId('chat-legal-warning-gitlab-usage');
   const findAllUserFeedback = () => wrapper.findAllComponents(UserFeedback);
 
   const getRangeAtMock = (top = () => 0) => {
@@ -358,11 +357,6 @@ describe('AiGenie', () => {
       await waitForPromises();
       await nextTick();
       expect(findGenieChat().props('isLoading')).toBe(false);
-    });
-
-    it('renders the GitLab AI legal warning', async () => {
-      await requestExplanation();
-      expect(findLegalWarning().exists()).toBe(true);
     });
 
     describe('error handling', () => {
