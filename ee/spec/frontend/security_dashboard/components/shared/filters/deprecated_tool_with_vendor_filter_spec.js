@@ -5,7 +5,7 @@ import ToolWithVendorFilter, {
   VENDOR_GITLAB,
   REPORT_TYPES,
   NULL_SCANNER_ID,
-} from 'ee/security_dashboard/components/shared/filters/tool_with_vendor_filter.vue';
+} from 'ee/security_dashboard/components/shared/filters/deprecated_tool_with_vendor_filter.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import { REPORT_TYPE_PRESETS } from 'ee/security_dashboard/components/shared/vulnerability_report/constants';
@@ -33,7 +33,7 @@ const EMPTY_VENDOR_SCANNERS = [
   { id: 13, vendor: '   ', report_type: 'SAST' },
 ];
 
-describe('Tool With Vendor Filter component', () => {
+describe('Tool With Vendor Filter component (Deprecated)', () => {
   let wrapper;
 
   const createWrapper = ({ scanners = CUSTOM_SCANNERS } = {}) => {
