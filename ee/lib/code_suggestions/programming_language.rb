@@ -76,6 +76,13 @@ module CodeSuggestions
         }
     }.freeze
 
+    LANGUAGE_METHOD_PATTERNS = {
+      'Python' => {
+        'empty_function' => %r{^\s*def\s+\w+\s*\([^)]*\):\s*(?:\s*#.*)?\z},
+        'function' => %r{^def\s+\w+\(.*\)(?:\s*->\s*\w+)?\s*:\s*$}
+      }
+    }.freeze
+
     CODE_COMPLETIONS_EXAMPLES_URI = 'ee/lib/code_suggestions/prompts/code_completion/examples.yml'
 
     LANGUAGE_CODE_COMPLETION_EXAMPLES = YAML.safe_load(
@@ -118,6 +125,15 @@ module CodeSuggestions
 
     def examples
       LANGUAGE_CODE_COMPLETION_EXAMPLES[name] || []
+    end
+
+    def cursor_inside_empty_method?(content, suffix)
+      return false unless content
+
+      return false unless LANGUAGE_METHOD_PATTERNS.has_key?(@name)
+
+      LANGUAGE_METHOD_PATTERNS[@name]['empty_function'].match?(content.strip) &&
+        (suffix.blank? || LANGUAGE_METHOD_PATTERNS[@name]['function'].match?(suffix.strip.lines.first))
     end
 
     private
