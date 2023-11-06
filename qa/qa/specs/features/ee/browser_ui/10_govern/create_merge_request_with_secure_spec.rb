@@ -22,7 +22,7 @@ module QA
         @project = create(:project,
           :with_readme,
           add_name_uuid: false,
-          name: Runtime::Env.auto_devops_project_name || 'project-with-secure',
+          name: "project-create-mr-secure-#{SecureRandom.hex(6)}",
           description: 'Project with Secure')
 
         @runner = create(:project_runner, project: @project, name: @executor, tags: %w[secure_report])
