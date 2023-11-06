@@ -50307,6 +50307,9 @@ msgstr ""
 msgid "Tracing|Attribute"
 msgstr ""
 
+msgid "Tracing|Attributes"
+msgstr ""
+
 msgid "Tracing|Check again"
 msgstr ""
 
@@ -50358,10 +50361,16 @@ msgstr ""
 msgid "Tracing|Last 7 days"
 msgstr ""
 
+msgid "Tracing|Metadata"
+msgstr ""
+
 msgid "Tracing|No traces to display."
 msgstr ""
 
 msgid "Tracing|Operation"
+msgstr ""
+
+msgid "Tracing|Resource attributes"
 msgstr ""
 
 msgid "Tracing|Select a service to load suggestions"
@@ -50374,15 +50383,6 @@ msgid "Tracing|Something went wrong while fetching the operations"
 msgstr ""
 
 msgid "Tracing|Something went wrong while fetching the services"
-msgstr ""
-
-msgid "Tracing|Span ID"
-msgstr ""
-
-msgid "Tracing|Span details"
-msgstr ""
-
-msgid "Tracing|Status code"
 msgstr ""
 
 msgid "Tracing|Time range"

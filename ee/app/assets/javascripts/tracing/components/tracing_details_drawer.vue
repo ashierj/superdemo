@@ -2,15 +2,22 @@
 import { GlDrawer } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
-import { formatDate } from '~/lib/utils/datetime/date_format_utility';
-import { formatTraceDuration } from './trace_utils';
+import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
+
+const createSectionContent = (obj) =>
+  Object.entries(obj)
+    .map(([k, v]) => ({ name: k, value: v }))
+    .filter((e) => e.value)
+    .sort((a, b) => (a.name > b.name ? 1 : -1));
 
 export default {
   components: {
     GlDrawer,
   },
   i18n: {
-    drawerTitle: s__('Tracing|Span details'),
+    spanDetailsTitle: s__('Tracing|Metadata'),
+    spanAttributesTitle: s__('Tracing|Attributes'),
+    resourceAttributesTitle: s__('Tracing|Resource attributes'),
   },
   props: {
     span: {
@@ -24,31 +31,41 @@ export default {
     },
   },
   computed: {
-    spanTitle() {
-      return `${this.span.service_name} : ${this.span.operation}`;
-    },
-    content() {
+    sections() {
       if (this.span) {
+        const { span_attributes, resource_attributes, ...rest } = this.span;
+
         return [
-          { title: s__('Tracing|Span ID'), value: this.span.span_id },
-          { title: s__('Tracing|Trace ID'), value: this.span.trace_id },
           {
-            title: s__('Tracing|Date'),
-            value: formatDate(this.span.timestamp, 'mmm d, yyyy HH:MM:ss.l Z'),
-          },
-          { title: s__('Tracing|Service'), value: this.span.service_name },
-          { title: s__('Tracing|Operation'), value: this.span.operation },
-          {
-            title: s__('Tracing|Duration'),
-            value: formatTraceDuration(this.span.duration_nano),
+            content: createSectionContent(rest),
+            title: this.$options.i18n.spanDetailsTitle,
+            key: 'span-details',
           },
           {
-            title: s__('Tracing|Status code'),
-            value: this.span.statusCode,
+            title: this.$options.i18n.spanAttributesTitle,
+            content: createSectionContent(span_attributes),
+            key: 'span-attributes',
+          },
+          {
+            title: this.$options.i18n.resourceAttributesTitle,
+            content: createSectionContent(resource_attributes),
+            key: 'resource-attributes',
           },
         ];
       }
       return [];
+    },
+    title() {
+      if (this.span) {
+        return `${this.span.service_name} : ${this.span.operation}`;
+      }
+      return '';
+    },
+    drawerHeaderHeight() {
+      // avoid calculating this in advance because it causes layout thrashing
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/331172#note_1269378396
+      if (!this.open) return '0';
+      return getContentWrapperHeight();
     },
   },
   DRAWER_Z_INDEX,
@@ -56,17 +73,44 @@ export default {
 </script>
 
 <template>
-  <gl-drawer :open="open" :z-index="$options.DRAWER_Z_INDEX" @close="$emit('close')">
+  <gl-drawer
+    :open="open"
+    :z-index="$options.DRAWER_Z_INDEX"
+    :header-height="drawerHeaderHeight"
+    header-sticky
+    @close="$emit('close')"
+  >
     <template #title>
-      <div data-testid="span-title">
-        <h2 class="gl-font-size-h2 gl-mt-0 gl-mb-4">{{ $options.i18n.drawerTitle }}</h2>
-        <span class="gl-font-lg">{{ spanTitle }}</span>
+      <div data-testid="drawer-title">
+        <h2 class="gl-font-size-h2 gl-mt-0 gl-mb-0">{{ title }}</h2>
       </div>
     </template>
+
     <template #default>
-      <div v-for="section in content" :key="section.title">
-        <label data-testid="section-title" class="gl-font-weight-bold">{{ section.title }}</label>
-        <div data-testid="section-value">{{ section.value }}</div>
+      <div
+        v-for="section in sections"
+        :key="section.key"
+        :data-testid="`section-${section.key}`"
+        class="gl-border-none"
+      >
+        <h2
+          v-if="section.title"
+          data-testid="section-title"
+          class="gl-font-size-h2 gl-mt-0 gl-mb-0"
+        >
+          {{ section.title }}
+        </h2>
+        <div
+          v-for="line in section.content"
+          :key="line.name"
+          data-testid="section-line"
+          class="gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
+        >
+          <label data-testid="section-line-name">{{ line.name }}</label>
+          <div data-testid="section-line-value" class="gl-overflow-wrap-anywhere">
+            {{ line.value }}
+          </div>
+        </div>
       </div>
     </template>
   </gl-drawer>
