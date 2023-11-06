@@ -617,6 +617,16 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       expect(setting.elasticsearch_search?).to be_truthy
       expect(setting.elasticsearch_search).to be_truthy
     end
+
+    it 'enables elasticsearch through usage ping features' do
+      stub_usage_ping_features(true)
+      allow(License).to receive(:current).and_return(nil)
+
+      expect(setting.elasticsearch_indexing?).to be_truthy
+      expect(setting.elasticsearch_indexing).to be_truthy
+      expect(setting.elasticsearch_search?).to be_truthy
+      expect(setting.elasticsearch_search).to be_truthy
+    end
   end
 
   describe '#elasticsearch_pause_indexing', feature_category: :global_search do

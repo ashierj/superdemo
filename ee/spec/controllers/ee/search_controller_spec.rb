@@ -89,6 +89,20 @@ RSpec.describe SearchController, :elastic, feature_category: :global_search do
           end
         end
 
+        context 'feature is available through usage ping features' do
+          before do
+            allow(License).to receive(:current).and_return(nil)
+            stub_ee_application_setting(usage_ping_enabled: true)
+            stub_ee_application_setting(usage_ping_features_enabled: true)
+          end
+
+          it_behaves_like 'tracking unique hll events' do
+            subject(:request) { get controller_action, params: request_params }
+
+            let(:expected_value) { instance_of(String) }
+          end
+        end
+
         it 'does not track if there is no license available' do
           stub_licensed_features(elastic_search: false)
           expect(Gitlab::UsageDataCounters::HLLRedisCounter).not_to receive(:track_event).with(target_event, values: instance_of(String))

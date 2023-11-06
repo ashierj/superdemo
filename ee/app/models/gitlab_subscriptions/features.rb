@@ -46,7 +46,6 @@ module GitlabSubscriptions
       board_iteration_lists
       code_owners
       code_review_analytics
-      elastic_search
       full_codequality_report
       group_activity_analytics
       group_bulk_edit
@@ -270,6 +269,7 @@ module GitlabSubscriptions
       contribution_analytics
       group_webhooks
       member_lock
+      elastic_search
     ].freeze
 
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[
