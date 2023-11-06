@@ -41,7 +41,7 @@ describe('GitLab Duo Chat', () => {
   };
 
   const subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
-  let chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
+  const chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
 
   const createComponent = (
@@ -94,13 +94,6 @@ describe('GitLab Duo Chat', () => {
 
     it('renders the DuoChat component', () => {
       expect(findGlDuoChat().exists()).toBe(true);
-    });
-  });
-
-  describe('chat props', () => {
-    beforeEach(() => {
-      createComponent();
-      helpCenterState.showTanukiBotChatDrawer = true;
     });
   });
 
@@ -215,57 +208,44 @@ describe('GitLab Duo Chat', () => {
   });
 
   describe('Error conditions', () => {
-    describe('when subscription fails', () => {
-      const error = 'foo';
-      describe.each`
-        resourceId          | expectedResourceId
-        ${MOCK_RESOURCE_ID} | ${MOCK_RESOURCE_ID}
-        ${null}             | ${MOCK_USER_ID}
-      `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
-        beforeEach(async () => {
-          subscriptionHandlerMock.mockRejectedValueOnce(error);
-          createComponent({ loading: true }, { userId: MOCK_USER_ID, resourceId });
+    const errorText = 'Fancy foo';
 
-          helpCenterState.showTanukiBotChatDrawer = true;
-          await nextTick();
+    describe.each`
+      mock                       | description
+      ${subscriptionHandlerMock} | ${'subscription'}
+      ${queryHandlerMock}        | ${'querying cached messages'}
+    `('when $description fails', ({ mock }) => {
+      beforeEach(async () => {
+        mock.mockRejectedValue(new Error(errorText));
+        helpCenterState.showTanukiBotChatDrawer = true;
+        createComponent();
+        await waitForPromises();
+      });
 
-          findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
-        });
-
-        it('once error arrives via GraphQL subscription calls addDuoChatMessage', () => {
-          expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(1, {
-            userId: MOCK_USER_ID,
-            aiAction: 'CHAT',
-            htmlResponse: true,
-          });
-          expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(2, {
-            resourceId: expectedResourceId,
-            userId: MOCK_USER_ID,
-            htmlResponse: false,
-            clientSubscriptionId: '123',
-          });
-          expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(expect.any(Object), {
-            errors: [error],
-          });
-        });
+      it('does not call addDuoChatMessage', () => {
+        expect(actionSpies.addDuoChatMessage).not.toHaveBeenCalled();
+        expect(findGlDuoChat().props('error')).toBe(`Error: ${errorText}`);
       });
     });
 
     describe('when mutation fails', () => {
       beforeEach(async () => {
-        subscriptionHandlerMock.mockRejectedValueOnce('foo');
-        chatMutationHandlerMock = jest.fn().mockRejectedValue('foo');
-        createComponent({ loading: true });
-
+        chatMutationHandlerMock.mockRejectedValue(new Error(errorText));
         helpCenterState.showTanukiBotChatDrawer = true;
-        await nextTick();
-        findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
+        createComponent();
+        await waitForPromises();
+        findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.content);
+        await waitForPromises();
       });
 
-      it('calls addDuoChatMessage', () => {
-        expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(expect.any(Object), {
-          errors: ['foo'],
-        });
+      it('throws an error, but still calls addDuoChatMessage', () => {
+        expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
+          expect.anything(),
+          expect.objectContaining({
+            content: MOCK_USER_MESSAGE.content,
+          }),
+        );
+        expect(findGlDuoChat().props('error')).toBe(`Error: ${errorText}`);
       });
     });
   });
