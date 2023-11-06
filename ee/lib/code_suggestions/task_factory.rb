@@ -18,12 +18,13 @@ module CodeSuggestions
       @unsafe_passthrough_params = unsafe_passthrough_params
 
       @prefix = params.dig(:current_file, :content_above_cursor)
+      @suffix = params.dig(:current_file, :content_below_cursor)
       @intent = params[:intent]
     end
 
     def task
       instructions = CodeSuggestions::InstructionsExtractor
-        .new(language, prefix, intent, skip_generate_comment_prefix?).extract
+        .new(language, prefix, suffix, intent, skip_generate_comment_prefix?).extract
 
       if instructions.empty?
         return CodeSuggestions::Tasks::CodeCompletion.new(
@@ -40,7 +41,7 @@ module CodeSuggestions
 
     private
 
-    attr_reader :current_user, :params, :unsafe_passthrough_params, :prefix, :intent
+    attr_reader :current_user, :params, :unsafe_passthrough_params, :prefix, :suffix, :intent
 
     def language
       CodeSuggestions::ProgrammingLanguage.detect_from_filename(params.dig(:current_file, :file_name))

@@ -18,9 +18,10 @@ module CodeSuggestions
     EMPTY_LINES_LIMIT = 1
     MIN_LINES_OF_CODE = 5
 
-    def initialize(language, content, intent, skip_generate_comment_prefix)
+    def initialize(language, content, suffix, intent, skip_generate_comment_prefix)
       @language = language
       @content = content
+      @suffix = suffix
       @intent = intent
       @skip_generate_comment_prefix = skip_generate_comment_prefix
     end
@@ -42,7 +43,7 @@ module CodeSuggestions
 
     private
 
-    attr_reader :language, :content, :intent, :skip_generate_comment_prefix
+    attr_reader :language, :content, :suffix, :intent, :skip_generate_comment_prefix
 
     def prefix_and_comment(lines)
       comment_block = []
@@ -82,6 +83,13 @@ module CodeSuggestions
         return <<~PROMPT
           Create more new code for this file. If the cursor is inside an empty function,
           generate its most likely contents based on the function name and signature.
+        PROMPT
+      end
+
+      if language.cursor_inside_empty_method?(content, suffix)
+        return <<~PROMPT
+            Complete the empty function and generate contents based on the function name and signature.
+            Do not repeat the code. Only return the method contents.
         PROMPT
       end
 

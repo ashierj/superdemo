@@ -10,6 +10,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
     let(:intent) { nil }
     let(:skip_generate_comment_prefix) { true }
+    let(:suffix) { '' }
 
     let(:default_instruction) do
       <<~PROMPT
@@ -18,7 +19,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       PROMPT
     end
 
-    subject { described_class.new(language, content, intent, skip_generate_comment_prefix).extract }
+    subject { described_class.new(language, content, suffix, intent, skip_generate_comment_prefix).extract }
 
     context 'when content is nil' do
       let(:content) { nil }
@@ -433,6 +434,78 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
           it_behaves_like 'detects comments correctly'
         end
+      end
+    end
+
+    context 'when cursor is inside an empty method' do
+      let(:language) do
+        CodeSuggestions::ProgrammingLanguage.new('Python')
+      end
+
+      let(:instruction) do
+        <<~INSTRUCTION
+          Complete the empty function and generate contents based on the function name and signature.
+          Do not repeat the code. Only return the method contents.
+        INSTRUCTION
+      end
+
+      let(:content) do
+        <<~CONTENT
+          def func0():
+            return 0
+
+          def func2():
+            return 0
+
+          def func1():
+            return 0
+
+          def index(arg1, arg2):
+
+        CONTENT
+      end
+
+      context 'when it is at the end of the file' do
+        let(:suffix) { '' }
+
+        specify do
+          is_expected.to eq(
+            prefix: content.strip,
+            instruction: instruction
+          )
+        end
+      end
+
+      context 'when cursor is inside an empty method but middle of the file' do
+        let(:suffix) do
+          <<~SUFFIX
+            def index2():
+              return 0
+
+            def index3(arg1):
+              return 1
+          SUFFIX
+        end
+
+        specify do
+          is_expected.to eq(
+            prefix: content.strip,
+            instruction: instruction
+          )
+        end
+      end
+
+      context 'when cursor in inside a non-empty method' do
+        let(:suffix) do
+          <<~SUFFIX
+              return 0
+
+            def index2():
+              return 'something'
+          SUFFIX
+        end
+
+        it { is_expected.to be_empty }
       end
     end
   end
