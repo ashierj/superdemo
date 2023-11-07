@@ -101,8 +101,8 @@ describe('FrameworksTable component', () => {
       expect(frameworkName).toContain(frameworks[idx].name);
       expect(associatedProjects).toContain(projects[idx].name);
       expect(findTableLinks().wrappers).toHaveLength(2);
-      expect(findTableLinks().at(0).attributes('href')).toBe(
-        'https://example.com/gitlab-org/gitlab-shell',
+      expect(findTableLinks().wrappers.map((w) => w.attributes('href'))).toStrictEqual(
+        projects.map((p) => p.webUrl),
       );
     });
 

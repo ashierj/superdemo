@@ -101,7 +101,7 @@ describe('ComplianceFrameworksReport component', () => {
       expect(findFrameworksTable().props('isLoading')).toBe(true);
     });
 
-    it('fetches the list of frameworks', () => {
+    it('fetches the list of frameworks and projects', () => {
       expect(mockGraphQlLoading).toHaveBeenCalledTimes(2);
       expect(mockGraphQlLoading).toHaveBeenCalledWith({
         fullPath,
