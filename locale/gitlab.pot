@@ -42881,7 +42881,10 @@ msgstr ""
 msgid "SecurityOrchestration|Any merge request"
 msgstr ""
 
-msgid "SecurityOrchestration|Apply this policy to all projects %{projectScopeType} named %{exceptionType} %{projectSelector}"
+msgid "SecurityOrchestration|Apply this policy to all projects %{projectScopeType} %{exceptionType} %{projectSelector}"
+msgstr ""
+
+msgid "SecurityOrchestration|Apply this policy to all projects %{projectScopeType} named %{frameworkSelector}"
 msgstr ""
 
 msgid "SecurityOrchestration|Are you sure you want to delete this policy? This action cannot be undone."
@@ -42966,6 +42969,9 @@ msgid "SecurityOrchestration|Exceptions"
 msgstr ""
 
 msgid "SecurityOrchestration|Failed to load cluster agents."
+msgstr ""
+
+msgid "SecurityOrchestration|Failed to load group projects"
 msgstr ""
 
 msgid "SecurityOrchestration|Failed to load images."
@@ -43345,6 +43351,9 @@ msgstr ""
 msgid "SecurityOrchestration|by the agent named %{agents} %{cadence}%{branchExceptionsString}"
 msgstr ""
 
+msgid "SecurityOrchestration|except projects"
+msgstr ""
+
 msgid "SecurityOrchestration|group level branch input"
 msgstr ""
 
@@ -43400,6 +43409,9 @@ msgid "SecurityOrchestration|with %{exceptionType}"
 msgstr ""
 
 msgid "SecurityOrchestration|with %{exceptionType} on %{branchSelector}"
+msgstr ""
+
+msgid "SecurityOrchestration|without exceptions"
 msgstr ""
 
 msgid "SecurityPolicies|Invalid or empty policy"
