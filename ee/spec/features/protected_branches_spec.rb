@@ -15,6 +15,65 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
     sign_in(user)
   end
 
+  describe 'protected branches affected by security policies' do
+    let(:repository_settings_page) { project_settings_repository_path(project) }
+    let_it_be(:policy_project) { create(:project, :repository) }
+    let_it_be(:protected_branch) { create(:protected_branch, project: project) }
+    let(:branch_name) { protected_branch.name }
+    let_it_be(:policy_configuration) do
+      create(:security_orchestration_policy_configuration, project: protected_branch.project,
+        security_policy_management_project: policy_project)
+    end
+
+    let(:item_tr) { find('[data-test-type="project-level"]') }
+    let(:disabled_popover) { item_tr.find('[data-toggle="popover"].disabled-popover') }
+    let(:allowed_to_merge_input) do
+      within(item_tr) do
+        within_testid('protected-branch-allowed-to-merge') do
+          find('.dropdown-toggle')
+        end
+      end
+    end
+
+    let(:allowed_to_push_input) do
+      within(item_tr) do
+        within_testid('protected-branch-allowed-to-push') do
+          find('.dropdown-toggle')
+        end
+      end
+    end
+
+    let(:force_push_toggle) do
+      within(item_tr) do
+        find_by_testid('protected-branch-force-push-toggle')
+      end
+    end
+
+    let(:action_td) do
+      within(item_tr) do
+        find_by_testid('protected-branch-action')
+      end
+    end
+
+    include_context 'with scan result policy preventing force pushing'
+
+    before do
+      project.repository.add_branch(project.creator, branch_name, 'HEAD')
+
+      visit repository_settings_page
+    end
+
+    it 'makes force push toggle and push input disabled showing "No one"', :aggregate_failures do
+      expect(allowed_to_merge_input).not_to be_disabled
+      expect(allowed_to_push_input).to be_disabled
+      expect(allowed_to_merge_input).to have_css('.gl-dropdown-button-text', text: 'Maintainers')
+      expect(allowed_to_push_input).to have_css('.gl-dropdown-button-text', text: 'No one')
+      expect(disabled_popover).to be_present
+      expect(force_push_toggle).to have_css('.is-disabled')
+      expect(action_td).to have_css('a.btn', text: 'Unprotect')
+    end
+  end
+
   describe 'code owner approval' do
     describe 'when project requires code owner approval' do
       before do
