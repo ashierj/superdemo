@@ -369,6 +369,15 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.by_project_ids' do
+    let_it_be(:occurrence_1) { create(:sbom_occurrence) }
+    let_it_be(:occurrence_2) { create(:sbom_occurrence) }
+
+    it 'returns records filtered by project_id' do
+      expect(described_class.by_project_ids(occurrence_1.project)).to eq([occurrence_1])
+    end
+  end
+
   describe '.filter_by_package_managers' do
     let_it_be(:occurrence_nuget) { create(:sbom_occurrence, packager_name: 'nuget') }
     let_it_be(:occurrence_npm) { create(:sbom_occurrence, packager_name: 'npm') }

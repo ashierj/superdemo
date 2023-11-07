@@ -57,6 +57,8 @@ module Sbom
       where(query_parts.join(' OR '), licenses: Array(licenses))
     end
 
+    scope :by_project_ids, ->(project_ids) { where(project_id: project_ids) }
+
     scope :filter_by_package_managers, ->(package_managers) do
       where(package_manager: package_managers)
     end

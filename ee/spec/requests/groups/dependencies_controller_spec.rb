@@ -16,7 +16,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
       context 'when security dashboard feature is enabled' do
         before do
-          stub_licensed_features(security_dashboard: true)
+          stub_licensed_features(security_dashboard: true, dependency_scanning: true)
         end
 
         context 'and user is allowed to access group level dependencies' do
@@ -81,7 +81,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
       context 'when security dashboard feature is enabled' do
         before do
-          stub_licensed_features(security_dashboard: true)
+          stub_licensed_features(security_dashboard: true, dependency_scanning: true)
         end
 
         context 'and user is allowed to access group level dependencies' do
@@ -338,6 +338,36 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                   expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
                 end
               end
+
+              context 'when filtered by projects' do
+                let_it_be(:other_project) { create(:project, group: group) }
+                let_it_be(:occurrence_from_other_project) { create(:sbom_occurrence, project: other_project) }
+
+                let(:params) { { project_ids: [other_project.id] } }
+
+                it 'returns a filtered list' do
+                  subject
+
+                  expect(json_response['dependencies'].count).to eq(1)
+                  expect(json_response['dependencies'].pluck('name')).to eq([occurrence_from_other_project.name])
+                end
+
+                context 'when trying to search for too many projects' do
+                  let(:params) { { project_ids: (1..11).to_a } }
+
+                  it 'returns an error' do
+                    subject
+
+                    expect(response).to have_gitlab_http_status(:unprocessable_entity)
+                    expect(json_response['message']).to eq(
+                      format(
+                        _('A maximum of %{limit} projects can be searched for at one time.'),
+                        limit: described_class::PROJECT_IDS_LIMIT
+                      )
+                    )
+                  end
+                end
+              end
             end
           end
         end
@@ -370,7 +400,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
     context 'when security dashboard feature is enabled' do
       before do
-        stub_licensed_features(security_dashboard: true)
+        stub_licensed_features(security_dashboard: true, dependency_scanning: true)
       end
 
       context 'and user is allowed to access group level dependencies' do

@@ -4,7 +4,12 @@ module Groups
   class DependenciesController < Groups::ApplicationController
     include GovernUsageGroupTracking
 
+    before_action only: :index do
+      push_frontend_feature_flag(:group_level_dependencies_filtering, group)
+    end
+
     before_action :authorize_read_dependency_list!
+    before_action :validate_project_ids_limit!, only: :index
 
     feature_category :dependency_management
     urgency :low
@@ -12,10 +17,7 @@ module Groups
 
     # More details on https://gitlab.com/gitlab-org/gitlab/-/issues/411257#note_1508315283
     GROUP_COUNT_LIMIT = 600
-
-    before_action only: :index do
-      push_frontend_feature_flag(:group_level_dependencies_filtering, group)
-    end
+    PROJECT_IDS_LIMIT = 10
 
     def index
       respond_to do |format|
@@ -56,6 +58,15 @@ module Groups
       render_not_authorized
     end
 
+    def validate_project_ids_limit!
+      return unless params.fetch(:project_ids, []).size > PROJECT_IDS_LIMIT
+
+      render_error(
+        :unprocessable_entity,
+        format(_('A maximum of %{limit} projects can be searched for at one time.'), limit: PROJECT_IDS_LIMIT)
+      )
+    end
+
     def dependencies_finder
       ::Sbom::DependenciesFinder.new(group, params: dependencies_finder_params)
     end
@@ -69,7 +80,8 @@ module Groups
           :sort_by,
           component_names: [],
           licenses: [],
-          package_managers: []
+          package_managers: [],
+          project_ids: []
         )
       else
         params.permit(:page, :per_page, :sort, :sort_by)
@@ -89,6 +101,14 @@ module Groups
         end
         format.json do
           render_403
+        end
+      end
+    end
+
+    def render_error(status, message)
+      respond_to do |format|
+        format.json do
+          render json: { message: message }, status: status
         end
       end
     end
