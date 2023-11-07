@@ -1,58 +1,125 @@
 <script>
-import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import GroupProjectsDropdown from '../../group_projects_dropdown.vue';
 import {
   PROJECTS_WITH_FRAMEWORK,
-  PROJECT_SCOPE_TYPE_LISTBOX,
-  PROJECT_SCOPE_TYPE_LISTBOX_TEXTS,
+  PROJECT_SCOPE_TYPE_LISTBOX_ITEMS,
+  PROJECT_SCOPE_TYPE_TEXTS,
+  EXCEPTION_TYPE_LISTBOX_ITEMS,
+  EXCEPTION_TYPE_TEXTS,
+  WITHOUT_EXCEPTIONS,
+  SPECIFIC_PROJECTS,
+  EXCEPT_PROJECTS,
+  ALL_PROJECTS_IN_GROUP,
 } from './constants';
 
 export default {
-  PROJECT_SCOPE_TYPE_LISTBOX,
-  PROJECT_SCOPE_TYPE_LISTBOX_TEXTS,
+  PROJECT_SCOPE_TYPE_LISTBOX_ITEMS,
+  EXCEPTION_TYPE_LISTBOX_ITEMS,
   i18n: {
-    policyScopeCopy: s__(
-      `SecurityOrchestration|Apply this policy to all projects %{projectScopeType} named %{exceptionType} %{projectSelector}`,
+    policyScopeFrameworkCopy: s__(
+      `SecurityOrchestration|Apply this policy to all projects %{projectScopeType} named %{frameworkSelector}`,
     ),
+    policyScopeProjectCopy: s__(
+      `SecurityOrchestration|Apply this policy to all projects %{projectScopeType} %{exceptionType} %{projectSelector}`,
+    ),
+    groupProjectErrorDescription: s__('SecurityOrchestration|Failed to load group projects'),
   },
   name: 'PolicyScope',
   components: {
+    GlAlert,
     GlCollapsibleListbox,
     GlSprintf,
+    GroupProjectsDropdown,
   },
+  inject: ['namespacePath'],
   data() {
     return {
       selectedProjectScopeType: PROJECTS_WITH_FRAMEWORK,
+      selectedExceptionType: WITHOUT_EXCEPTIONS,
+      selectedProjectIds: [],
+      showAlert: false,
     };
   },
   computed: {
     selectedProjectScopeText() {
-      return PROJECT_SCOPE_TYPE_LISTBOX_TEXTS[this.selectedProjectScopeType];
+      return PROJECT_SCOPE_TYPE_TEXTS[this.selectedProjectScopeType];
+    },
+    selectedExceptionTypeText() {
+      return EXCEPTION_TYPE_TEXTS[this.selectedExceptionType];
+    },
+    showExceptionTypeDropdown() {
+      return this.selectedProjectScopeType === ALL_PROJECTS_IN_GROUP;
+    },
+    showGroupProjectsDropdown() {
+      return (
+        (this.showExceptionTypeDropdown && this.selectedExceptionType === EXCEPT_PROJECTS) ||
+        this.selectedProjectScopeType === SPECIFIC_PROJECTS
+      );
+    },
+    policyScopeCopy() {
+      return this.selectedProjectScopeType === PROJECTS_WITH_FRAMEWORK
+        ? this.$options.i18n.policyScopeFrameworkCopy
+        : this.$options.i18n.policyScopeProjectCopy;
     },
   },
   methods: {
     selectProjectScopeType(scopeType) {
       this.selectedProjectScopeType = scopeType;
     },
+    selectExceptionType(type) {
+      this.selectedExceptionType = type;
+    },
+    setSelectedProjectIds(ids) {
+      this.selectedProjectIds = ids;
+    },
+    setShowAlert() {
+      this.showAlert = true;
+    },
   },
 };
 </script>
 
 <template>
-  <div class="gl-mt-2 gl-mb-6">
-    <gl-sprintf :message="$options.i18n.policyScopeCopy">
-      <template #projectScopeType>
-        <gl-collapsible-listbox
-          :items="$options.PROJECT_SCOPE_TYPE_LISTBOX"
-          :selected="selectedProjectScopeType"
-          :toggle-text="selectedProjectScopeText"
-          @select="selectProjectScopeType"
-        />
-      </template>
+  <div>
+    <gl-alert v-if="showAlert" class="gl-mb-5" variant="danger" :dismissible="false">
+      {{ $options.i18n.groupProjectErrorDescription }}
+    </gl-alert>
 
-      <template #exceptionType> </template>
+    <div class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap gl-mt-2 gl-mb-6">
+      <gl-sprintf :message="policyScopeCopy">
+        <template #projectScopeType>
+          <gl-collapsible-listbox
+            :items="$options.PROJECT_SCOPE_TYPE_LISTBOX_ITEMS"
+            :selected="selectedProjectScopeType"
+            :toggle-text="selectedProjectScopeText"
+            @select="selectProjectScopeType"
+          />
+        </template>
 
-      <template #projectSelector> </template>
-    </gl-sprintf>
+        <template #frameworkSelector> </template>
+
+        <template #exceptionType>
+          <gl-collapsible-listbox
+            v-if="showExceptionTypeDropdown"
+            :items="$options.EXCEPTION_TYPE_LISTBOX_ITEMS"
+            :toggle-text="selectedExceptionTypeText"
+            :selected="selectedExceptionType"
+            @select="selectExceptionType"
+          />
+        </template>
+
+        <template #projectSelector>
+          <group-projects-dropdown
+            v-if="showGroupProjectsDropdown"
+            :group-full-path="namespacePath"
+            :selected-projects-ids="selectedProjectIds"
+            @projects-query-error="setShowAlert"
+            @select="setSelectedProjectIds"
+          />
+        </template>
+      </gl-sprintf>
+    </div>
   </div>
 </template>
