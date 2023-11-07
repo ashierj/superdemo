@@ -24,7 +24,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       tools_used: [::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor],
       container: container,
       current_user: user,
-      resource: resource
+      resource: resource,
+      request_id: 'uuid'
     )
   end
 
@@ -72,7 +73,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         .and_return(response_handler)
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
         .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
-          extra_resource: extra_resource)
+          extra_resource: extra_resource, request_id: 'uuid')
         .and_return(context)
       expect(categorize_service).to receive(:execute)
       expect(::Llm::ExecuteMethodService).to receive(:new)
@@ -215,7 +216,7 @@ client_subscription_id: 'someid' }
           .and_return(response_handler)
         expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
           .with(current_user: user, container: expected_container, resource: resource,
-            ai_request: ai_request, extra_resource: extra_resource)
+            ai_request: ai_request, extra_resource: extra_resource, request_id: 'uuid')
           .and_return(context)
         expect(categorize_service).to receive(:execute)
         expect(Llm::ExecuteMethodService).to receive(:new)

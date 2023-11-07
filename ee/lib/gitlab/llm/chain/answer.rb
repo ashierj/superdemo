@@ -54,6 +54,7 @@ module Gitlab
 
         def self.default_final_answer(context:)
           logger.debug(message: "Default final answer")
+          track_event(context, 'default_answer')
 
           final_answer(context: context, content: default_final_message)
         end
@@ -64,6 +65,7 @@ module Gitlab
 
         def self.error_answer(context:, content:)
           logger.error(message: "Error", error: content)
+          track_event(context, 'error_answer')
 
           new(
             status: :error,
@@ -93,6 +95,17 @@ module Gitlab
 
         private_class_method def self.logger
           Gitlab::Llm::Logger.build
+        end
+
+        private_class_method def self.track_event(context, action)
+          Gitlab::Tracking.event(
+            Gitlab::Llm::Chain::Answer.to_s,
+            action,
+            label: 'gitlab_duo_chat_answer',
+            property: context.request_id,
+            namespace: context.container,
+            user: context.current_user
+          )
         end
       end
     end
