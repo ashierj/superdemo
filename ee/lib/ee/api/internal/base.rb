@@ -96,6 +96,7 @@ module EE
               user = group.users.find_by_login(params[:user_identifier])
 
               not_found!('User') unless user
+              forbidden!('Not an Enterprise User of the group') unless user.enterprise_user_of_group?(group)
 
               status 200
 
