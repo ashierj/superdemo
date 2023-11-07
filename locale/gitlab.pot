@@ -7368,6 +7368,9 @@ msgstr ""
 msgid "Average per day: %{average}"
 msgstr ""
 
+msgid "Awaiting review"
+msgstr ""
+
 msgid "Awaiting user signup"
 msgstr ""
 
@@ -40775,6 +40778,15 @@ msgid "Reviewer"
 msgid_plural "%d Reviewers"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Reviewer approved changes"
+msgstr ""
+
+msgid "Reviewer commented"
+msgstr ""
+
+msgid "Reviewer requested changes"
+msgstr ""
 
 msgid "Reviewers"
 msgstr ""
