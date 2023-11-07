@@ -15,7 +15,7 @@ module EE
             _("Adds %{epic_ref} as child epic.") % { epic_ref: child_epic.to_reference(quick_action_target) } if child_epic
           end
           types Epic
-          condition { can_admin_relation? }
+          condition { can_perform_action?(:create) }
           params '<&epic | group&epic | Epic URL>'
           command :child_epic do |epic_param|
             child_epic = extract_epic(epic_param)
@@ -38,7 +38,7 @@ module EE
             _("Removes %{epic_ref} from child epics.") % { epic_ref: child_epic.to_reference(quick_action_target) } if child_epic
           end
           types Epic
-          condition { action_allowed_only_on_update? }
+          condition { quick_action_target.persisted? && can_perform_action?(:create) }
           params '<&epic | group&epic | Epic URL>'
           command :remove_child_epic do |epic_param|
             child_epic = extract_epic(epic_param)
@@ -61,7 +61,7 @@ module EE
             _("Sets %{epic_ref} as parent epic.") % { epic_ref: parent_epic.to_reference(quick_action_target) } if parent_epic
           end
           types Epic
-          condition { can_admin_relation? }
+          condition { can_perform_action?(:admin) }
           params '<&epic | group&epic | Epic URL>'
           command :parent_epic do |epic_param|
             parent_epic = extract_epic(epic_param)
@@ -84,7 +84,7 @@ module EE
             _('Removes parent epic %{epic_ref}.') % { epic_ref: parent_epic.to_reference(quick_action_target) } if parent_epic
           end
           types Epic
-          condition { action_allowed_only_on_update? }
+          condition { quick_action_target.persisted? && can_perform_action?(:admin) }
           command :remove_parent_epic do
             parent_epic = quick_action_target.parent
             parent_error = validate_removal(quick_action_target, parent_epic, :parent)
@@ -107,12 +107,8 @@ module EE
             extract_references(params, :epic).first
           end
 
-          def can_admin_relation?(epic = quick_action_target)
-            current_user.can?(:admin_epic_tree_relation, epic)
-          end
-
-          def action_allowed_only_on_update?
-            quick_action_target.persisted? && can_admin_relation?
+          def can_perform_action?(policy, epic = quick_action_target)
+            current_user.can?(:"#{policy}_epic_tree_relation", epic)
           end
 
           def epics_related?(epic, target_epic)
@@ -123,14 +119,14 @@ module EE
             return error_message(:does_not_exist, type) unless epic.present?
             return error_message(:already_related, type) if epics_related?(epic, target_epic)
 
-            error_message(:no_permission, type) unless can_admin_relation?(epic)
+            error_message(:no_permission, type) unless can_perform_action?(policy_for(type), epic)
           end
 
           def validate_removal(target_epic, epic, type)
             return error_message(:not_present, type) unless epic.present?
             return error_message(:does_not_exist, type) if type == :child && !target_epic.child?(epic.id)
 
-            error_message(:no_permission, type) unless can_admin_relation?(epic)
+            error_message(:no_permission, type) unless can_perform_action?(policy_for(type), epic)
           end
 
           def error_message(reason, relation)
@@ -166,6 +162,10 @@ module EE
             when :parent
               _('Removed parent epic %{epic_ref}.') % { epic_ref: reference }
             end
+          end
+
+          def policy_for(relation)
+            relation == :parent ? :create : :admin
           end
         end
       end
