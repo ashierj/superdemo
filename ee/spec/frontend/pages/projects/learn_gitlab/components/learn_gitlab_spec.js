@@ -1,7 +1,10 @@
-import { GlProgressBar, GlAlert } from '@gitlab/ui';
+import { GlAlert } from '@gitlab/ui';
+import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import Cookies from '~/lib/utils/cookies';
+import CircularProgressBar from 'ee/vue_shared/components/circular_progress_bar.vue';
 import LearnGitlab from 'ee/pages/projects/learn_gitlab/components/learn_gitlab.vue';
 import UltimateTrialBenefitModal from 'ee/pages/projects/learn_gitlab/components/ultimate_trial_benefit_modal.vue';
 import eventHub from '~/invite_members/event_hub';
@@ -23,21 +26,25 @@ describe('Learn GitLab', () => {
   let sidebar;
   let showModal;
 
+  const findProgressBarBlock = () => wrapper.findByTestId('progress-bar-block');
+
   const createWrapper = ({ project = testProject } = {}) => {
-    wrapper = mount(LearnGitlab, {
-      propsData: {
-        actions: testActions,
-        sections: testSections,
-        project,
-      },
-      stubs: {
-        UltimateTrialBenefitModal: stubComponent(UltimateTrialBenefitModal, {
-          methods: {
-            show: showModal,
-          },
-        }),
-      },
-    });
+    wrapper = extendedWrapper(
+      mount(LearnGitlab, {
+        propsData: {
+          actions: testActions,
+          sections: testSections,
+          project,
+        },
+        stubs: {
+          UltimateTrialBenefitModal: stubComponent(UltimateTrialBenefitModal, {
+            methods: {
+              show: showModal,
+            },
+          }),
+        },
+      }),
+    );
   };
 
   describe('Initial rendering concerns', () => {
@@ -50,18 +57,34 @@ describe('Learn GitLab', () => {
       expect(wrapper.element).toMatchSnapshot();
     });
 
-    it('renders the progress percentage', () => {
-      const text = wrapper.find('[data-testid="completion-percentage"]').text();
-
-      expect(text).toBe('25% completed');
+    it('renders the progress bar label', () => {
+      expect(findProgressBarBlock().text()).toBe('9 tasks to go');
     });
 
-    it('renders the progress bar with correct values', () => {
-      const progressBar = wrapper.findComponent(GlProgressBar);
-
-      expect(progressBar.vm.$attrs.value).toBe(3);
-      expect(progressBar.vm.$attrs.max).toBe(12);
+    it('renders the progress bar with correct percentage', () => {
+      expect(wrapper.findComponent(CircularProgressBar).props('percentage')).toBe(25);
     });
+  });
+
+  describe('Circular Progress Bar', () => {
+    it.each`
+      breakpoint | classes
+      ${'xs'}    | ${'gl-ml-5'}
+      ${'sm'}    | ${'gl-ml-5'}
+      ${'md'}    | ${'gl-ml-5'}
+      ${'lg'}    | ${'gl-h-0 gl-mr-5 gl-ml-auto'}
+      ${'xl'}    | ${'gl-h-0 gl-mr-5 gl-ml-auto'}
+    `(
+      'adds $classes to progress bar when breakpoint is $breakpoint',
+      async ({ breakpoint, classes }) => {
+        jest.spyOn(bp, 'getBreakpointSize').mockReturnValue(breakpoint);
+
+        showModal = jest.fn();
+        await createWrapper();
+
+        expect(findProgressBarBlock().attributes('class')).toContain(classes);
+      },
+    );
   });
 
   describe('Invite Members Modal', () => {

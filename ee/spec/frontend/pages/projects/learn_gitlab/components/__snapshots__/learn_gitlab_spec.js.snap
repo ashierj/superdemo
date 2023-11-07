@@ -6,7 +6,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
     class="row"
   >
     <div
-      class="gl-mb-7 gl-ml-5"
+      class="col-lg-9 col-mb-9 col-sm-12"
     >
       <h1
         class="gl-font-size-h1"
@@ -19,27 +19,19 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
         Ready to get started with GitLab? Follow these steps to set up your workspace, plan and commit changes, and deploy your project.
       </p>
     </div>
-  </div>
-  <div
-    class="gl-mb-3"
-  >
-    <p
-      class="gl-mb-2 gl-text-gray-500"
-      data-testid="completion-percentage"
-    >
-      25% completed
-    </p>
     <div
-      class="progress"
+      class="gl-display-inline-block gl-h-0 gl-ml-auto gl-mr-5 gl-mt-6"
+      data-testid="progress-bar-block"
     >
       <div
-        aria-valuemax="12"
-        aria-valuemin="0"
-        aria-valuenow="3"
-        class="progress-bar"
-        role="progressbar"
-        style="width: 25%;"
+        class="circular-progress-bar gl-mx-auto"
+        style="--gray100: #dcdcde; --logo-url: url(file-mock); --percentage: 25%; --progress-bar-color: #e24329;"
       />
+      <div
+        class="gl-font-lg gl-font-weight-bold gl-mt-5 gl-text-center"
+      >
+        9 tasks to go
+      </div>
     </div>
   </div>
   <div
@@ -81,7 +73,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           class="gl-card-body gl-pt-0"
         >
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -146,7 +138,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           class="gl-card-body gl-pt-0"
         >
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -169,7 +161,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -192,7 +184,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -212,7 +204,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -233,7 +225,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -260,7 +252,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -316,7 +308,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           class="gl-card-body gl-pt-0"
         >
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -343,7 +335,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -370,7 +362,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -426,7 +418,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           class="gl-card-body gl-pt-0"
         >
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"
@@ -446,7 +438,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="gl-mb-4"
+            class="gl-mb-2"
           >
             <div
               class="align-items-center flex"

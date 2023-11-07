@@ -59,7 +59,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-mb-4">
+  <div class="gl-mb-2">
     <div class="flex align-items-center">
       <span v-if="value.completed" class="gl-text-green-500">
         <gl-icon name="check-circle-filled" :size="16" data-testid="completed-icon" />
