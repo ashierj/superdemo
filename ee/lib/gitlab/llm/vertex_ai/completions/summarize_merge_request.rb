@@ -35,11 +35,13 @@ module Gitlab
           def store_response(response_modifier, mr_diff)
             return if response_modifier.errors.any? || response_modifier.response_body.blank?
 
-            MergeRequest::DiffLlmSummary.create!(
+            summary = MergeRequest::DiffLlmSummary.new(
               merge_request_diff: mr_diff,
               content: response_modifier.response_body,
               provider: MergeRequest::DiffLlmSummary.providers[:vertex_ai]
             )
+
+            summary.save! if summary.valid?
           end
         end
       end
