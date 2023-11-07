@@ -31,20 +31,39 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
     end
 
     context 'with valid auth' do
+      subject(:request) { get api(endpoint), params: valid_params, headers: gitlab_shell_internal_api_request_header }
+
       context 'with feature flag disabled' do
         before do
           stub_feature_flags(zoekt_internal_api_register_nodes: false)
+          allow(::Search::Zoekt::Node).to receive(:find_or_initialize_by_task_request)
+            .with(valid_params).and_return(node)
         end
 
-        it 'does not save node and returns :unprocessable_entity' do
-          node = instance_double(::Search::Zoekt::Node, id: 123)
-          expect(::Search::Zoekt::Node).to receive(:find_or_initialize_by_task_request)
-            .with(valid_params).and_return(node)
-          expect(node).not_to receive(:save)
+        context 'when node does not exist' do
+          let(:node) { instance_double(::Search::Zoekt::Node, id: nil) }
 
-          get api(endpoint), params: valid_params, headers: gitlab_shell_internal_api_request_header
+          it 'does not save node' do
+            expect(node).not_to receive(:save)
 
-          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+            request
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to eq({ 'id' => nil })
+          end
+        end
+
+        context 'when node exists' do
+          let(:node) { instance_double(::Search::Zoekt::Node, id: 123) }
+
+          it 'does not save node when node does not exist' do
+            expect(node).not_to receive(:save)
+
+            request
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to eq({ 'id' => node.id })
+          end
         end
       end
 

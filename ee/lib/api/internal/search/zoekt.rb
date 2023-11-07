@@ -32,7 +32,7 @@ module API
                 get 'tasks' do
                   node = ::Search::Zoekt::Node.find_or_initialize_by_task_request(params)
 
-                  if Feature.enabled?(:zoekt_internal_api_register_nodes, type: :ops) && node.save
+                  if Feature.disabled?(:zoekt_internal_api_register_nodes, type: :ops) || node.save
                     { id: node.id }
                   else
                     unprocessable_entity!
