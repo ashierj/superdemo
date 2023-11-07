@@ -26,7 +26,6 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   end
 
   before do
-    stub_feature_flags(apollo_boards: false)
     stub_licensed_features(epics: true, swimlanes: true)
 
     sign_in(user)

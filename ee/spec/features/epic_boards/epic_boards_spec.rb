@@ -30,7 +30,6 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
   context 'display epics in board' do
     before do
       stub_licensed_features(epics: true)
-      stub_feature_flags(apollo_boards: false)
       group.add_maintainer(user)
       sign_in(user)
       visit_epic_boards_page
@@ -252,7 +251,6 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
   context 'when user can admin epic boards' do
     before do
-      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(epics: true)
       group.add_maintainer(user)
       sign_in(user)
@@ -285,7 +283,6 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
   context 'when user cannot admin epic boards' do
     before do
-      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(epics: true)
       group.add_guest(user)
       sign_in(user)
@@ -322,7 +319,6 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
   context 'filtered search' do
     before do
-      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(epics: true)
 
       group.add_guest(user)

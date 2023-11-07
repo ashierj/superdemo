@@ -20,7 +20,6 @@ RSpec.describe 'Issue board filters', :js, feature_category: :team_planning do
   let_it_be(:epic_issue1) { create(:epic_issue, epic: epic, issue: issue, relative_position: 1) }
 
   before do
-    stub_feature_flags(apollo_boards: false)
     stub_licensed_features(epics: true, iterations: true, issuable_health_status: true)
 
     project.add_maintainer(user)

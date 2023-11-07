@@ -21,7 +21,6 @@ RSpec.describe 'Filter issues by iteration', :js, feature_category: :team_planni
 
   before do
     stub_feature_flags(or_issuable_queries: false)
-    stub_feature_flags(apollo_boards: false)
   end
 
   shared_examples 'filters by iteration' do

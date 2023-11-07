@@ -19,7 +19,6 @@ RSpec.describe 'Labels Hierarchy', :js, feature_category: :team_planning do
   let!(:not_labeled) { create(:issue, project: project_1) }
 
   before do
-    stub_feature_flags(apollo_boards: false)
     grandparent.add_owner(user)
 
     sign_in(user)
