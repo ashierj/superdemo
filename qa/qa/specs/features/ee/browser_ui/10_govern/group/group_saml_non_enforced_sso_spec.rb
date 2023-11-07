@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Govern', :group_saml, :orchestrated, requires_admin: 'creates a user via API' do
-    describe 'Group SAML SSO - Non enforced SSO', product_group: :authentication_and_authorization do
+    describe 'Group SAML SSO - Non enforced SSO', product_group: :authentication do
       include Support::API
 
       let(:user) { create(:user) }

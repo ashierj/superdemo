@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::CreateHandRaiseLeadService, feature_category: :billing_and_payments do
+RSpec.describe GitlabSubscriptions::CreateHandRaiseLeadService, feature_category: :subscription_management do
   describe '#execute' do
     let(:params) { { first_name: 'Jeremy', product_interaction: 'Hand Raise PQL' } }
 

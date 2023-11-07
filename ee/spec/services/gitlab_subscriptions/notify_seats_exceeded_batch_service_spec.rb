@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::NotifySeatsExceededBatchService,
-  :timecop, :saas, feature_category: :billing_and_payments do
+  :timecop, :saas, feature_category: :subscription_management do
   describe '.execute' do
     context 'when subscriptions are present' do
       let(:changed_at_time) { Time.current.beginning_of_day - 1.hour }

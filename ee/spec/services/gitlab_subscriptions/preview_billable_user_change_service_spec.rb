@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService, feature_category: :billing_and_payments do
+RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService, feature_category: :subscription_management do
   describe '#execute' do
     let_it_be(:current_user) { create(:user) }
     let_it_be(:role) { :developer }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest, feature_category: :billing_and_payments do
+RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest, feature_category: :subscription_management do
   let(:client) { Gitlab::SubscriptionPortal::Client }
   let(:message) { nil }
   let(:http_method) { :post }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SubscriptionsHelper, feature_category: :billing_and_payments do
+RSpec.describe SubscriptionsHelper, feature_category: :subscription_management do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:free_plan) do

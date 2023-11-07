@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::Reconciliations::CalculateSeatCountDataService, :saas,
-  feature_category: :billing_and_payments do
+  feature_category: :subscription_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do

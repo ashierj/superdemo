@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Govern', :orchestrated, :ldap_tls, :ldap_no_tls, :requires_admin do
-    describe 'LDAP Group sync', product_group: :authentication_and_authorization do
+    describe 'LDAP Group sync', product_group: :authentication do
       include Support::API
 
       let(:root_group) { create(:sandbox, path: "group_sync_root_group-#{SecureRandom.hex(4)}") }

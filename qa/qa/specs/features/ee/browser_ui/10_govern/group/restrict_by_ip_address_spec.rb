@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Govern' do
     describe 'Group access',
-      :requires_admin, :skip_live_env, :reliable, product_group: :authentication_and_authorization do
+      :requires_admin, :skip_live_env, :reliable, product_group: :authentication do
       include Runtime::IPAddress
 
       let(:sandbox_group) do
