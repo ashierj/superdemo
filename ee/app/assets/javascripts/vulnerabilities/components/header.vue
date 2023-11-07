@@ -126,7 +126,7 @@ export default {
       if (typeof fn === 'function') fn();
     },
 
-    async changeVulnerabilityState({ action, payload }) {
+    async changeVulnerabilityState({ action, dismissalReason }) {
       this.isLoadingVulnerability = true;
 
       try {
@@ -134,7 +134,7 @@ export default {
           mutation: vulnerabilityStateMutations[action],
           variables: {
             id: convertToGraphQLId(TYPENAME_VULNERABILITY, this.vulnerability.id),
-            ...payload,
+            dismissalReason,
           },
         });
         const [queryName] = Object.keys(data);
@@ -238,8 +238,8 @@ export default {
         <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="gl-display-inline" />
         <vulnerability-state-dropdown
           v-else
-          :initial-state="vulnerability.state"
-          :initial-dismissal-reason="initialDismissalReason"
+          :state="vulnerability.state"
+          :dismissal-reason="initialDismissalReason"
           :disabled="disabledChangeState"
           @change="changeVulnerabilityState"
         />

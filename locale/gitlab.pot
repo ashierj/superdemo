@@ -53120,13 +53120,13 @@ msgstr ""
 msgid "VulnerabilityManagement|An unverified non-confirmed finding"
 msgstr ""
 
-msgid "VulnerabilityManagement|Change status"
-msgstr ""
-
 msgid "VulnerabilityManagement|Could not process %{issueReference}: %{errorMessage}."
 msgstr ""
 
 msgid "VulnerabilityManagement|Create Jira issue"
+msgstr ""
+
+msgid "VulnerabilityManagement|Dismiss as..."
 msgstr ""
 
 msgid "VulnerabilityManagement|Enter a name"

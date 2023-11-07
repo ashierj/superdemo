@@ -1,4 +1,4 @@
-import { GlButton, GlLoadingIcon, GlDropdown } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon, GlCollapsibleListbox } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
@@ -87,7 +87,7 @@ describe('Vulnerability Header', () => {
   const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findStatusBadge = () => wrapper.findComponent(StatusBadge);
   const findSplitButton = () => wrapper.findComponent(SplitButton);
-  const findStateButton = () => wrapper.findComponent(GlDropdown);
+  const findStateButton = () => wrapper.findComponent(GlCollapsibleListbox);
   const findResolutionAlert = () => wrapper.findComponent(ResolutionAlert);
   const findStatusDescription = () => wrapper.findComponent(StatusDescription);
 
