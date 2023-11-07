@@ -80,6 +80,10 @@ module CodeSuggestions
       'Python' => {
         'empty_function' => %r{^\s*def\s+\w+\s*\([^)]*\):\s*(?:\s*#.*)?\z},
         'function' => %r{^def\s+\w+\(.*\)(?:\s*->\s*\w+)?\s*:\s*$}
+      },
+      'Ruby' => {
+        'empty_function' => %r{^\s*def\s+\w+\s*(\([^)]*\))?\s*$},
+        'function' => %r{^(end\s*\n?)|(?:\s*def\s+\w+\s*(\([^)]*\))?\s*\n?)}
       }
     }.freeze
 
@@ -127,7 +131,7 @@ module CodeSuggestions
       LANGUAGE_CODE_COMPLETION_EXAMPLES[name] || []
     end
 
-    def cursor_inside_empty_method?(content, suffix)
+    def cursor_inside_empty_function?(content, suffix)
       return false unless content
 
       return false unless LANGUAGE_METHOD_PATTERNS.has_key?(@name)
