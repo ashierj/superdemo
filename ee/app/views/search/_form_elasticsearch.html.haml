@@ -1,5 +1,5 @@
 - if @search_service_presenter.advanced_search_enabled?
-  .gl-mt-2.gl-font-base.gl-mb-0.gl-text-gray-600.gl-align-self-center
+  .gl-text-gray-600
     - if @scope == 'blobs' && search_service.use_zoekt?
       - link_url = help_page_path('user/search/exact_code_search')
       - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: link_url }
@@ -8,3 +8,5 @@
 
     - else
       = advanced_search_status_marker(@project)
+- else
+  &nbsp;
