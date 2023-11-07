@@ -410,7 +410,7 @@ group :development, :test do
 
   gem 'awesome_print', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'database_cleaner', '~> 1.7.0' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'database_cleaner-active_record', '~> 2.1.0', feature_category: :database
   gem 'factory_bot_rails', '~> 6.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'rspec-rails', '~> 6.0.3' # rubocop:todo Gemfile/MissingFeatureCategory
 

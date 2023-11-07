@@ -415,7 +415,10 @@ GEM
       danger
       gitlab (~> 4.2, >= 4.2.0)
     dartsass (1.49.8)
-    database_cleaner (1.7.0)
+    database_cleaner-active_record (2.1.0)
+      activerecord (>= 5.a)
+      database_cleaner-core (~> 2.0.0)
+    database_cleaner-core (2.0.1)
     date (3.3.3)
     dead_end (3.1.1)
     debug_inspector (1.1.0)
@@ -1789,7 +1792,7 @@ DEPENDENCIES
   crystalball (~> 0.7.0)
   csv_builder!
   cvss-suite (~> 3.0.1)
-  database_cleaner (~> 1.7.0)
+  database_cleaner-active_record (~> 2.1.0)
   deckar01-task_list (= 2.3.3)
   declarative_policy (~> 1.1.0)
   deprecation_toolkit (~> 1.5.1)
