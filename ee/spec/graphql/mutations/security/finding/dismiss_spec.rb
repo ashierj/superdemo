@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Mutations::Security::Finding::Dismiss do
+RSpec.describe Mutations::Security::Finding::Dismiss, feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
@@ -38,7 +38,7 @@ RSpec.describe Mutations::Security::Finding::Dismiss do
 
       context 'when the user has access to the project' do
         before do
-          security_finding.project.add_developer(user)
+          security_finding.project.add_maintainer(user)
         end
 
         context 'when the dismissal is successful' do

@@ -8,7 +8,7 @@ RSpec.shared_examples 'security and compliance feature' do
 
     context 'when user has role that enables sufficient access' do
       before do
-        group.add_developer(user)
+        group.add_maintainer(user)
       end
 
       it { is_expected.to have_gitlab_http_status(:not_found) }
@@ -34,7 +34,7 @@ RSpec.shared_examples 'security and compliance feature' do
 
     context 'when user has role that enables sufficient access' do
       before do
-        group.add_developer(user)
+        group.add_maintainer(user)
       end
 
       it { is_expected.not_to have_gitlab_http_status(:not_found) }

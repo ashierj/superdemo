@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SecurityHelper do
+RSpec.describe SecurityHelper, feature_category: :vulnerability_management do
   describe '#instance_security_dashboard_data' do
     let_it_be(:group) { create(:group) }
     let_it_be(:has_group) { true }

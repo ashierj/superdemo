@@ -68,7 +68,7 @@ RSpec.describe Mutations::Security::Finding::RevertToDetected, feature_category:
         end
 
         before do
-          security_finding.project.add_developer(current_user)
+          security_finding.project.add_maintainer(current_user)
         end
 
         shared_examples 'properly sets the security finding state' do

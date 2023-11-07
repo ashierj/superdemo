@@ -21,7 +21,7 @@ RSpec.describe Security::Findings::DismissService, feature_category: :vulnerabil
   describe '#execute' do
     context 'when the user is authorized' do
       before do
-        finding.project.add_developer(user)
+        finding.project.add_maintainer(user)
       end
 
       context 'when comment is added' do

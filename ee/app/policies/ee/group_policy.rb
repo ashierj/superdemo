@@ -247,6 +247,11 @@ module EE
         Ability.allowed?(@user, :developer_access, security_orchestration_policy_configuration.security_policy_management_project)
       end
 
+      condition(:developer_access_to_admin_vulnerability) do
+        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject) &&
+          can?(:developer_access)
+      end
+
       rule { user_banned_from_namespace }.prevent_all
 
       rule { public_group | logged_in_viewable }.policy do
@@ -470,6 +475,9 @@ module EE
 
       rule { security_dashboard_enabled & developer }.policy do
         enable :read_group_security_dashboard
+      end
+
+      rule { security_dashboard_enabled & (can?(:maintainer_access) | developer_access_to_admin_vulnerability) }.policy do
         enable :admin_vulnerability
       end
 

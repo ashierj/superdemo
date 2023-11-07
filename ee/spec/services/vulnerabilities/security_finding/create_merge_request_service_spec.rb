@@ -36,7 +36,7 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#ex
 
   before do
     stub_licensed_features(security_dashboard: true)
-    group.add_developer(user)
+    group.add_maintainer(user)
   end
 
   context 'when user does not have permission to read_security_resource' do

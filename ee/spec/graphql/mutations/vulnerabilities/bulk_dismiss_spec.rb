@@ -19,7 +19,7 @@ RSpec.describe Mutations::Vulnerabilities::BulkDismiss, feature_category: :vulne
   end
 
   before_all do
-    project.add_developer(user)
+    project.add_maintainer(user)
   end
 
   subject do

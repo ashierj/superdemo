@@ -2340,8 +2340,8 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'inviting a group' do
-    let(:current_user) { developer }
-    let(:project) { public_project }
+    let_it_be_with_reload(:current_user) { developer }
+    let_it_be_with_reload(:project) { public_project }
 
     let_it_be(:banned_group) { create(:group) }
     let_it_be(:banned_subgroup) { create(:group, parent: banned_group) }
@@ -3114,6 +3114,50 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     describe 'when the user has permission' do
       it { is_expected.to be_allowed(:read_tracing) }
+    end
+  end
+
+  describe "#admin_vulnerability" do
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
+    context "with guest" do
+      let(:current_user) { guest }
+
+      it { is_expected.to be_disallowed(:admin_vulnerability) }
+    end
+
+    context "with reporter" do
+      let(:current_user) { reporter }
+
+      it { is_expected.to be_disallowed(:admin_vulnerability) }
+    end
+
+    context "with developer" do
+      let(:current_user) { developer }
+
+      it { is_expected.to be_disallowed(:admin_vulnerability) }
+
+      context "with `disable_developer_access_to_admin_vulnerability` disabled" do
+        before do
+          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+        end
+
+        it { is_expected.to be_allowed(:admin_vulnerability) }
+      end
+    end
+
+    context "with maintainer" do
+      let(:current_user) { maintainer }
+
+      it { is_expected.to be_allowed(:admin_vulnerability) }
+    end
+
+    context "with owner" do
+      let(:current_user) { owner }
+
+      it { is_expected.to be_allowed(:admin_vulnerability) }
     end
   end
 

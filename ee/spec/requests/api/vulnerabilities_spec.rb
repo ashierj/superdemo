@@ -21,7 +21,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
 
     context 'with an authorized user with proper permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it 'returns all vulnerabilities of a project', :aggregate_failures do
@@ -72,7 +72,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
 
     context 'with an authorized user with proper permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it 'returns the desired vulnerability', :aggregate_failures do
@@ -119,7 +119,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
 
     context 'with an authorized user with proper permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it 'creates a vulnerability from finding and attaches it to the vulnerability', :aggregate_failures do
@@ -171,12 +171,20 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { create_vulnerability }.to be_allowed_for(:admin) }
       it { expect { create_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { create_vulnerability }.to be_allowed_for(:maintainer).of(project) }
-      it { expect { create_vulnerability }.to be_allowed_for(:developer).of(project) }
+      it { expect { create_vulnerability }.to be_denied_for(:developer).of(project) }
 
       it { expect { create_vulnerability }.to be_denied_for(:auditor) }
       it { expect { create_vulnerability }.to be_denied_for(:reporter).of(project) }
       it { expect { create_vulnerability }.to be_denied_for(:guest).of(project) }
       it { expect { create_vulnerability }.to be_denied_for(:anonymous) }
+
+      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
+        before do
+          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+        end
+
+        it { expect { create_vulnerability }.to be_allowed_for(:developer).of(project) }
+      end
     end
   end
 
@@ -194,7 +202,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
 
     context 'with an authorized user with proper permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it_behaves_like 'responds with "not found" for an unknown vulnerability ID'
@@ -246,12 +254,20 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { dismiss_vulnerability }.to be_allowed_for(:admin) }
       it { expect { dismiss_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { dismiss_vulnerability }.to be_allowed_for(:maintainer).of(project) }
-      it { expect { dismiss_vulnerability }.to be_allowed_for(:developer).of(project) }
+      it { expect { dismiss_vulnerability }.to be_denied_for(:developer).of(project) }
 
       it { expect { dismiss_vulnerability }.to be_denied_for(:auditor) }
       it { expect { dismiss_vulnerability }.to be_denied_for(:reporter).of(project) }
       it { expect { dismiss_vulnerability }.to be_denied_for(:guest).of(project) }
       it { expect { dismiss_vulnerability }.to be_denied_for(:anonymous) }
+
+      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
+        before do
+          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+        end
+
+        it { expect { dismiss_vulnerability }.to be_allowed_for(:developer).of(project) }
+      end
     end
   end
 
@@ -269,7 +285,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
 
     context 'with an authorized user with proper permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it 'resolves a vulnerability and its associated findings', :freeze_time, :aggregate_failures do
@@ -319,12 +335,20 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { resolve_vulnerability }.to be_allowed_for(:admin) }
       it { expect { resolve_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { resolve_vulnerability }.to be_allowed_for(:maintainer).of(project) }
-      it { expect { resolve_vulnerability }.to be_allowed_for(:developer).of(project) }
+      it { expect { resolve_vulnerability }.to be_denied_for(:developer).of(project) }
 
       it { expect { resolve_vulnerability }.to be_denied_for(:auditor) }
       it { expect { resolve_vulnerability }.to be_denied_for(:reporter).of(project) }
       it { expect { resolve_vulnerability }.to be_denied_for(:guest).of(project) }
       it { expect { resolve_vulnerability }.to be_denied_for(:anonymous) }
+
+      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
+        before do
+          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+        end
+
+        it { expect { resolve_vulnerability }.to be_allowed_for(:developer).of(project) }
+      end
     end
   end
 
@@ -347,7 +371,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
 
     context 'with an authorized user with proper permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it 'confirms a vulnerability and its associated findings', :freeze_time, :aggregate_failures do
@@ -381,12 +405,20 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { confirm_vulnerability }.to be_allowed_for(:admin) }
       it { expect { confirm_vulnerability }.to be_allowed_for(:owner).of(project) }
       it { expect { confirm_vulnerability }.to be_allowed_for(:maintainer).of(project) }
-      it { expect { confirm_vulnerability }.to be_allowed_for(:developer).of(project) }
+      it { expect { confirm_vulnerability }.to be_denied_for(:developer).of(project) }
 
       it { expect { confirm_vulnerability }.to be_denied_for(:auditor) }
       it { expect { confirm_vulnerability }.to be_denied_for(:reporter).of(project) }
       it { expect { confirm_vulnerability }.to be_denied_for(:guest).of(project) }
       it { expect { confirm_vulnerability }.to be_denied_for(:anonymous) }
+
+      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
+        before do
+          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+        end
+
+        it { expect { confirm_vulnerability }.to be_allowed_for(:developer).of(project) }
+      end
     end
   end
 
@@ -409,7 +441,7 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
 
     context 'with an authorized user with proper permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it 'reverts a vulnerability and its associated findings to detected state', :freeze_time, :aggregate_failures do
@@ -473,12 +505,20 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:admin) }
       it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:owner).of(project) }
       it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:maintainer).of(project) }
-      it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:developer).of(project) }
+      it { expect { revert_vulnerability_to_detected }.to be_denied_for(:developer).of(project) }
 
       it { expect { revert_vulnerability_to_detected }.to be_denied_for(:auditor) }
       it { expect { revert_vulnerability_to_detected }.to be_denied_for(:reporter).of(project) }
       it { expect { revert_vulnerability_to_detected }.to be_denied_for(:guest).of(project) }
       it { expect { revert_vulnerability_to_detected }.to be_denied_for(:anonymous) }
+
+      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
+        before do
+          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+        end
+
+        it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:developer).of(project) }
+      end
     end
   end
 end

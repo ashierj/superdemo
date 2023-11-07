@@ -34,7 +34,7 @@ RSpec.describe "Mutation.vulnerabilitiesDismiss", feature_category: :vulnerabili
 
   context "when the user has access" do
     before_all do
-      project.add_developer(current_user)
+      project.add_maintainer(current_user)
     end
 
     context "when security_dashboard is disabled" do

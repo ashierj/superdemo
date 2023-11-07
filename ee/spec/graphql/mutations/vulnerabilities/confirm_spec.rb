@@ -34,7 +34,7 @@ RSpec.describe Mutations::Vulnerabilities::Confirm, feature_category: :vulnerabi
 
       context 'when user has access to the project', :aggregate_failures do
         before do
-          vulnerability.project.add_developer(user)
+          vulnerability.project.add_maintainer(user)
         end
 
         context 'when comment is not provided' do
