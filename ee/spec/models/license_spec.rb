@@ -1807,6 +1807,37 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
   end
 
+  describe '#grace_period_expired?', :freeze_time do
+    subject { license.grace_period_expired? }
+
+    let(:now) { Time.current }
+    let(:license) { build(:license, starts_at: now - 2.months, expires_at: expires_at ) }
+
+    context 'when license has not expired' do
+      let(:expires_at) { now + 2.months }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when license has expired' do
+      let(:expires_at) { now - 10.days }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when license has expired more than grace period' do
+      let(:expires_at) { now - described_class::GRACE_PERIOD - 1.day }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when license has no expiration date' do
+      let(:expires_at) { nil }
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
   describe '#auto_renew' do
     it 'is false' do
       expect(license.auto_renew).to be false

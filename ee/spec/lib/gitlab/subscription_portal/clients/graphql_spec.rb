@@ -833,4 +833,84 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
       end
     end
   end
+
+  describe '#get_service_token' do
+    let_it_be(:license_key) { build(:gitlab_license, :cloud).export }
+    let_it_be(:token) { 'stored-token' }
+    let_it_be(:expires_at) { Date.current.iso8601 }
+
+    let(:headers) do
+      {
+        "Accept" => "application/json",
+        "Content-Type" => "application/json"
+      }
+    end
+
+    let(:params) do
+      {
+        variables: { licenseKey: license_key },
+        query: <<~GQL
+          query ServiceToken($licenseKey: String!) {
+            serviceToken(licenseKey: $licenseKey) {
+              token
+              expiresAt
+            }
+          }
+        GQL
+      }
+    end
+
+    subject { client.get_service_token(license_key) }
+
+    context 'when the request is successful' do
+      it 'returns the data' do
+        response = {
+          data: {
+            'data' => {
+              'serviceToken' => {
+                'token' => token,
+                'expiresAt' => expires_at
+              }
+            }
+          }
+        }
+
+        expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
+
+        expect(subject).to eq(success: true, token: token, expires_at: expires_at)
+      end
+    end
+
+    context 'when the request is unsuccessful' do
+      it 'returns a failure response and logs the error' do
+        response = {
+          data: {
+            "data" => { "serviceToken" => nil },
+            "errors" => [
+              {
+                "message" => "You must be logged in to access this resource",
+                "locations" => [{ "line" => 2, "column" => 3 }],
+                "path" => ["serviceToken"]
+              }
+            ]
+          }
+        }
+
+        expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).with(
+          a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
+          query: params[:query],
+          response: response[:data]
+        )
+
+        expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
+
+        error = {
+          "locations" => [{ "column" => 3, "line" => 2 }],
+          "message" => "You must be logged in to access this resource",
+          "path" => ["serviceToken"]
+        }
+        expect(subject).to eq(success: false, errors: [error])
+      end
+    end
+  end
 end

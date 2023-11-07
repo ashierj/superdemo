@@ -18,6 +18,7 @@ class License < MainClusterwide::ApplicationRecord
 
   NOTIFICATION_DAYS_BEFORE_TRIAL_EXPIRY = 1.week
   ADMIN_NOTIFICATION_DAYS_BEFORE_EXPIRY = 15.days
+  GRACE_PERIOD = 2.weeks
 
   EE_ALL_PLANS = [STARTER_PLAN, PREMIUM_PLAN, ULTIMATE_PLAN].freeze
 
@@ -357,6 +358,12 @@ class License < MainClusterwide::ApplicationRecord
     return ONLINE_CLOUD_TYPE if online_cloud_license?
 
     LEGACY_LICENSE_TYPE
+  end
+
+  def grace_period_expired?
+    return false if expires_at.blank?
+
+    (expires_at + GRACE_PERIOD).past?
   end
 
   def auto_renew

@@ -14,6 +14,12 @@ module Ai
       else
         cleanup_all_tokens
       end
+
+      ServiceResponse.success
+    rescue StandardError => err
+      Gitlab::ErrorTracking.track_exception(err)
+
+      ServiceResponse.error(message: err.message)
     end
 
     private
@@ -23,14 +29,14 @@ module Ai
     def store_token
       Ai::ServiceAccessToken.create!(token: token, expires_at: expires_at_time)
       log_event({ action: 'created', expires_at: expires_at_time })
-    rescue StandardError => err
-      Gitlab::ErrorTracking.track_exception(err)
     end
 
     def expires_at_time
-      return if expires_at.nil?
-
-      Time.at(expires_at, in: '+00:00')
+      if expires_at.is_a?(String)
+        Time.iso8601(expires_at)
+      elsif expires_at.is_a?(Numeric) && expires_at > 0
+        Time.at(expires_at, in: '+00:00')
+      end
     end
 
     def cleanup_expired_tokens
