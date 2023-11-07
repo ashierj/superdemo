@@ -5,7 +5,23 @@ require 'spec_helper'
 RSpec.describe ProjectCiCdSetting, feature_category: :continuous_integration do
   using RSpec::Parameterized::TableSyntax
 
+  let_it_be(:project) { create_default(:project) }
+  let(:settings) { project.reload.ci_cd_settings }
+
   it { is_expected.to validate_inclusion_of(:merge_trains_skip_train_allowed).in_array([true, false]) }
+
+  describe '#restrict_pipeline_cancellation_role' do
+    it 'defines an enum' do
+      described_class.restrict_pipeline_cancellation_roles.each_key do |role|
+        settings.update!(restrict_pipeline_cancellation_role: role)
+        expect(settings.restrict_pipeline_cancellation_role).to eq role
+      end
+    end
+
+    it 'defaults to developer' do
+      expect(settings.restrict_pipeline_cancellation_role).to eq('developer')
+    end
+  end
 
   describe '#merge_pipelines_enabled?' do
     subject { project.merge_pipelines_enabled? }

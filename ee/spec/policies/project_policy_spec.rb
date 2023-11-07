@@ -1679,6 +1679,84 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  shared_examples_for 'prevents CI cancellation ability' do
+    using RSpec::Parameterized::TableSyntax
+
+    context 'when feature is enabled' do
+      where(:restricted_role, :actual_role, :allowed) do
+        :developer  | :guest      | false
+        :developer  | :reporter   | false
+        :developer  | :developer  | true
+        :developer  | :maintainer | true
+        :developer  | :owner      | true
+        :maintainer | :guest      | false
+        :maintainer | :reporter   | false
+        :maintainer | :developer  | false
+        :maintainer | :maintainer | true
+        :maintainer | :owner      | true
+        :no_one     | :guest      | false
+        :no_one     | :reporter   | false
+        :no_one     | :developer  | false
+        :no_one     | :maintainer | false
+        :no_one     | :owner      | false
+      end
+
+      with_them do
+        let(:current_user) { public_send(actual_role) }
+
+        before do
+          stub_licensed_features(ci_pipeline_cancellation_restrictions: true)
+          project.update!(restrict_pipeline_cancellation_role: restricted_role)
+        end
+
+        it { is_expected.to(allowed ? be_allowed(ability) : be_disallowed(ability)) }
+      end
+    end
+
+    context 'when feature is disabled' do
+      where(:restricted_role, :actual_role, :allowed) do
+        :developer  | :guest      | false
+        :developer  | :reporter   | false
+        :developer  | :developer  | true
+        :developer  | :maintainer | true
+        :developer  | :owner      | true
+        :maintainer | :guest      | false
+        :maintainer | :reporter   | false
+        :maintainer | :developer  | true
+        :maintainer | :maintainer | true
+        :maintainer | :owner      | true
+        :no_one     | :guest      | false
+        :no_one     | :reporter   | false
+        :no_one     | :developer  | true
+        :no_one     | :maintainer | true
+        :no_one     | :owner      | true
+      end
+
+      with_them do
+        let(:current_user) { public_send(actual_role) }
+
+        before do
+          stub_feature_flags(restrict_pipeline_cancellation_by_role: false)
+          project.update!(restrict_pipeline_cancellation_role: restricted_role)
+        end
+
+        it { is_expected.to(allowed ? be_allowed(ability) : be_disallowed(ability)) }
+      end
+    end
+  end
+
+  describe 'prevents cancel_pipeline when CI cancllation restricted' do
+    let(:ability) { :cancel_pipeline }
+
+    it_behaves_like 'prevents CI cancellation ability'
+  end
+
+  describe 'prevents cancel_build when CI cancllation restricted' do
+    let(:ability) { :cancel_build }
+
+    it_behaves_like 'prevents CI cancellation ability'
+  end
+
   describe ':compliance_framework_available' do
     using RSpec::Parameterized::TableSyntax
 

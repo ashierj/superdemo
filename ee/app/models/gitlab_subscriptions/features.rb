@@ -83,6 +83,7 @@ module GitlabSubscriptions
       ci_cd_projects
       ci_namespace_catalog
       ci_secrets_management
+      ci_pipeline_cancellation_restrictions
       cluster_agents_ci_impersonation
       cluster_agents_user_impersonation
       cluster_deployments
