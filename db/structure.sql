@@ -20482,7 +20482,8 @@ CREATE TABLE packages_tags (
     package_id integer NOT NULL,
     name character varying(255) NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE packages_tags_id_seq
@@ -28047,6 +28048,9 @@ ALTER TABLE workspaces
 ALTER TABLE vulnerability_scanners
     ADD CONSTRAINT check_37608c9db5 CHECK ((char_length(vendor) <= 255)) NOT VALID;
 
+ALTER TABLE packages_tags
+    ADD CONSTRAINT check_91b8472153 CHECK ((project_id IS NOT NULL)) NOT VALID;
+
 ALTER TABLE personal_access_tokens
     ADD CONSTRAINT check_b8d60815eb CHECK ((expires_at IS NOT NULL)) NOT VALID;
 
@@ -33660,6 +33664,8 @@ CREATE INDEX index_packages_tags_on_package_id ON packages_tags USING btree (pac
 
 CREATE INDEX index_packages_tags_on_package_id_and_updated_at ON packages_tags USING btree (package_id, updated_at DESC);
 
+CREATE INDEX index_packages_tags_on_project_id ON packages_tags USING btree (project_id);
+
 CREATE INDEX index_pages_deployment_states_failed_verification ON pages_deployment_states USING btree (verification_retry_at NULLS FIRST) WHERE (verification_state = 3);
 
 CREATE INDEX index_pages_deployment_states_needs_verification ON pages_deployment_states USING btree (verification_state) WHERE ((verification_state = 0) OR (verification_state = 3));
@@ -37243,6 +37249,9 @@ ALTER TABLE ONLY approval_merge_request_rules
 
 ALTER TABLE ONLY deploy_keys_projects
     ADD CONSTRAINT fk_58a901ca7e FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY packages_tags
+    ADD CONSTRAINT fk_5a230894f6 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY dependency_list_exports
     ADD CONSTRAINT fk_5b3d11e1ef FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
