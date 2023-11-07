@@ -8,12 +8,14 @@ RSpec.describe 'Create a new value stream', feature_category: :value_stream_mana
   let_it_be(:current_user) { create(:user) }
   let(:mutation_name) { :value_stream_create }
 
+  let(:value_stream_name) { 'New value stream' }
+
   shared_examples 'a request to create value streams' do
     let(:mutation) do
       graphql_mutation(
         mutation_name,
         namespace_path: namespace.full_path,
-        name: 'New value stream'
+        name: value_stream_name
       )
     end
 
@@ -42,6 +44,18 @@ RSpec.describe 'Create a new value stream', feature_category: :value_stream_mana
 
         expect(value_stream).to be_present
         expect(value_stream['name']).to eq('New value stream')
+      end
+
+      context 'and uses invalid arguments' do
+        let(:value_stream_name) { 'no' }
+
+        it 'returns error' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          result = graphql_mutation_response(mutation_name)['errors']
+
+          expect(result).to include('Name is too short (minimum is 3 characters)')
+        end
       end
     end
 

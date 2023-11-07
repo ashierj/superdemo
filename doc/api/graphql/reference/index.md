@@ -7666,7 +7666,7 @@ Input type: `ValueStreamCreateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationvaluestreamcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationvaluestreamcreatename"></a>`name` | [`String!`](#string) | Value stream description. |
+| <a id="mutationvaluestreamcreatename"></a>`name` | [`String!`](#string) | Value stream name. |
 | <a id="mutationvaluestreamcreatenamespacepath"></a>`namespacePath` | [`ID!`](#id) | Full path of the namespace(project or group) the value stream is created in. |
 
 #### Fields
@@ -7701,6 +7701,32 @@ Input type: `ValueStreamDestroyInput`
 | <a id="mutationvaluestreamdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationvaluestreamdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationvaluestreamdestroyvaluestream"></a>`valueStream` | [`ValueStream`](#valuestream) | Value stream deleted after mutation. |
+
+### `Mutation.valueStreamUpdate`
+
+Updates a value stream.
+
+WARNING:
+**Introduced** in 16.6.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `ValueStreamUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationvaluestreamupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvaluestreamupdateid"></a>`id` | [`AnalyticsCycleAnalyticsValueStreamID!`](#analyticscycleanalyticsvaluestreamid) | Global ID of the value stream to update. |
+| <a id="mutationvaluestreamupdatename"></a>`name` | [`String!`](#string) | Value stream name. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationvaluestreamupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvaluestreamupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationvaluestreamupdatevaluestream"></a>`valueStream` | [`ValueStream`](#valuestream) | Updated value stream. |
 
 ### `Mutation.vulnerabilitiesDismiss`
 
