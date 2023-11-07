@@ -35,14 +35,6 @@ module EE
           )
         end
 
-        override :define_protected_refs
-        def define_protected_refs
-          super
-
-          @branches_protected_from_force_push = fetch_branches_protected_from_force_push(@project)
-        end
-        # rubocop:enable Gitlab/ModuleWithInstanceVariables
-
         def render_show
           push_rule
 
@@ -64,6 +56,25 @@ module EE
             .new(project: project)
             .execute
         end
+
+        # rubocop: disable Gitlab/ModuleWithInstanceVariables
+        override :define_protected_refs
+        def define_protected_refs
+          super
+          @branches_protected_from_force_push = fetch_branches_protected_from_force_push(@project)
+
+          return unless ::Feature.enabled?(:scan_result_policies_block_unprotecting_branches, project)
+
+          protected_branches_protected_from_deletion =
+            ::Security::SecurityOrchestrationPolicies::ProtectedBranchesDeletionCheckService
+              .new(project: project)
+              .execute(@protected_branches)
+
+          @protected_branches.each do |protected_branch|
+            protected_branch.protected_from_deletion = protected_branch.in?(protected_branches_protected_from_deletion)
+          end
+        end
+        # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
         def group_protected_branches_feature_available?(group)
           allow_protected_branches_for_group?(group) && ::License.feature_available?(:group_protected_branches)
