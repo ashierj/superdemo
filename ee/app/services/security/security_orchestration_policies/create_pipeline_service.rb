@@ -56,8 +56,12 @@ module Security
       end
 
       def prepare_ci_configurations(actions)
-        ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(project,
-          scan_variables(actions)).execute(actions)
+        context = Gitlab::Ci::Config::External::Context.new(project: project, user: current_user)
+
+        ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(
+          context,
+          scan_variables(actions)
+        ).execute(actions)
       end
 
       def scan_variables(actions)

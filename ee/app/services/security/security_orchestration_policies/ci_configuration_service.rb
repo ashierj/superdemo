@@ -12,12 +12,18 @@ module Security
       }.freeze
       EXCLUDED_VARIABLES_PATTERNS = %w[_DISABLED _EXCLUDED_ANALYZERS _EXCLUDED_PATHS].freeze
 
-      def execute(action, ci_variables, index = 0)
+      def execute(action, ci_variables, context, index = 0)
         case action[:scan]
         when *SCAN_TEMPLATES.keys
           pipeline_configuration(action, ci_variables, index)
         when 'custom'
-          custom_pipeline_configuration(action, index)
+          if action[:ci_configuration]
+            custom_pipeline_configuration(action[:ci_configuration], index)
+          elsif action[:ci_configuration_path]
+            Gitlab::Ci::Config::External::Processor.new(
+              { include: action[:ci_configuration_path] }, context
+            ).perform
+          end
         else
           error_script('Invalid Scan type', action, index)
         end
@@ -25,8 +31,8 @@ module Security
 
       private
 
-      def custom_pipeline_configuration(action, index)
-        Gitlab::Ci::Config.new(action[:ci_configuration]).to_hash
+      def custom_pipeline_configuration(ci_configuration, index)
+        Gitlab::Ci::Config.new(ci_configuration).to_hash
       rescue Gitlab::Ci::Config::ConfigError => e
         {
           generate_job_name_with_index('security_policy_ci', index) => {

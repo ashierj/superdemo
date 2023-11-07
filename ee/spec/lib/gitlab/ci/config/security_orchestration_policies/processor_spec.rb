@@ -3,9 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, feature_category: :security_policy_management do
-  subject { described_class.new(config, project, ref, source).perform }
+  subject { described_class.new(config, ci_context, ref, source).perform }
 
   let_it_be(:config) { { image: 'image:1.0.0' } }
+
+  let(:ci_context) { Gitlab::Ci::Config::External::Context.new(project: project) }
 
   let(:ref) { 'refs/heads/master' }
   let(:source) { 'pipeline' }
