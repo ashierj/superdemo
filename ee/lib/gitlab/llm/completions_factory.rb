@@ -44,11 +44,6 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::Templates::GenerateDescription,
           feature_category: :ai_abstraction_layer
         },
-        generate_description_open_ai: {
-          service_class: ::Gitlab::Llm::OpenAi::Completions::GenerateDescription,
-          prompt_class: ::Gitlab::Llm::OpenAi::Templates::GenerateDescription,
-          feature_category: :ai_abstraction_layer
-        },
         generate_commit_message: {
           service_class: ::Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage,
           prompt_class: ::Gitlab::Llm::Templates::GenerateCommitMessage,

@@ -64,17 +64,5 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
         subject { service }
       end
     end
-
-    context "when claude_description_generation FF is disabled" do
-      let(:action_name) { :generate_description_open_ai }
-
-      before do
-        stub_feature_flags(claude_description_generation: false)
-      end
-
-      it_behaves_like 'schedules completion worker' do
-        subject { service }
-      end
-    end
   end
 end
