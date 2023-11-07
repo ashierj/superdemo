@@ -27,6 +27,25 @@ module Geo
       false
     end
 
+    override :verify
+    def verify
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/426571
+      unless repository.exists?
+        log_error(
+          "Git repository of group wiki was not found. To avoid verification error, creating empty Git repository",
+          nil,
+          {
+            group_wiki_repository_id: model_record.id,
+            group_id: model_record.group_id
+          }
+        )
+
+        model_record.create_wiki
+      end
+
+      super
+    end
+
     def repository
       model_record.repository
     end
