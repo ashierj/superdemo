@@ -33,10 +33,12 @@ RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code
   end
 
   it 'successfully performs an explain code request' do
-    expect(Llm::CompletionWorker).to receive(:perform_async).with(
-      current_user.id, merge_request.id, "MergeRequest", :generate_test_file, {
-        file_path: file_path, request_id: an_instance_of(String)
-      }
+    expect(Llm::CompletionWorker).to receive(:perform_for).with(
+      an_object_having_attributes(
+        user: current_user,
+        resource: merge_request,
+        ai_action: :generate_test_file),
+      hash_including(file_path: file_path)
     )
 
     post_graphql_mutation(mutation, current_user: current_user)
@@ -48,7 +50,7 @@ RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code
     let(:file_path) { "" }
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
 
@@ -62,7 +64,7 @@ RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
 
@@ -76,7 +78,7 @@ RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
     end
@@ -88,7 +90,7 @@ RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
     end

@@ -52,7 +52,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
 
       context 'when user is not part of the group' do
         it 'returns an error' do
-          expect(Llm::CompletionWorker).not_to receive(:perform_async)
+          expect(Llm::CompletionWorker).not_to receive(:perform_for)
           expect(subject.execute).to be_error
         end
       end

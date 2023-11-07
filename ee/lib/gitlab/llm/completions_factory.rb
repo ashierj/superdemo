@@ -91,9 +91,9 @@ module Gitlab
         }
       }.freeze
 
-      def self.completion(prompt_message, options = {})
+      def self.completion!(prompt_message, options = {})
         name = prompt_message.ai_action.to_sym
-        return unless COMPLETIONS.key?(name)
+        raise NameError, "completion class for action #{name} not found" unless COMPLETIONS.key?(name)
 
         service_class, prompt_class = COMPLETIONS[name].values_at(:service_class, :prompt_class)
         service_class.new(prompt_message, prompt_class, options.merge(action: name))

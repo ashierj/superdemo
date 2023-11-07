@@ -32,10 +32,12 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
   end
 
   it 'successfully performs an generate commit message request' do
-    expect(Llm::CompletionWorker).to receive(:perform_async).with(
-      current_user.id, merge_request.id, "MergeRequest", :generate_commit_message, {
-        request_id: an_instance_of(String)
-      }
+    expect(Llm::CompletionWorker).to receive(:perform_for).with(
+      an_object_having_attributes(
+        user: current_user,
+        resource: merge_request,
+        ai_action: :generate_commit_message),
+      {}
     )
 
     post_graphql_mutation(mutation, current_user: current_user)
@@ -49,7 +51,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
 
@@ -63,7 +65,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
     end
@@ -75,7 +77,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
     end

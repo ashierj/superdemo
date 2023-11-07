@@ -49,9 +49,14 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
 
   it 'successfully performs an explain code request' do
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
-    expect(Llm::CompletionWorker).to receive(:perform_async).with(
-      current_user.id, project.id, "Project", :explain_code,
-      { messages: messages, request_id: uuid }
+
+    expect(Llm::CompletionWorker).to receive(:perform_for).with(
+      an_object_having_attributes(
+        user: current_user,
+        resource: project,
+        ai_action: :explain_code,
+        request_id: uuid),
+      hash_including(messages: messages)
     )
 
     post_graphql_mutation(mutation, current_user: current_user)
@@ -64,7 +69,7 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
     let(:messages) { [] }
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
 
@@ -78,7 +83,7 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
 

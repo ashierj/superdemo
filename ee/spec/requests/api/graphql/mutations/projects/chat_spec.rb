@@ -9,10 +9,9 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:current_user) { create(:user, developer_projects: [project]) }
   let_it_be(:resource) { create(:issue, project: project) }
-  let(:resource_id) { resource.to_gid }
 
   let(:mutation) do
-    params = { chat: { resource_id: resource_id, content: "summarize" } }
+    params = { chat: { resource_id: resource&.to_gid, content: "summarize" } }
 
     graphql_mutation(:ai_action, params) do
       <<-QL.strip_heredoc
@@ -28,14 +27,16 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
   include_context 'with ai features enabled for group'
 
   context 'when resource is nil' do
-    let(:resource_id) { nil }
+    let(:resource) { nil }
 
     it 'successfully performs a chat request' do
-      expect(Llm::CompletionWorker).to receive(:perform_async).with(
-        current_user.id, nil, nil, :chat, {
-          content: "summarize", request_id: an_instance_of(String),
-          referer_url: nil
-        }
+      expect(Llm::CompletionWorker).to receive(:perform_for).with(
+        an_object_having_attributes(
+          user: current_user,
+          resource: resource,
+          ai_action: :chat,
+          content: "summarize"),
+        hash_including(referer_url: nil)
       )
 
       post_graphql_mutation(mutation, current_user: current_user)
@@ -44,11 +45,13 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
 
   context 'when resource is an issue' do
     it 'successfully performs a request' do
-      expect(Llm::CompletionWorker).to receive(:perform_async).with(
-        current_user.id, resource.id, "Issue", :chat, {
-          content: "summarize", request_id: an_instance_of(String),
-          referer_url: nil
-        }
+      expect(Llm::CompletionWorker).to receive(:perform_for).with(
+        an_object_having_attributes(
+          user: current_user,
+          resource: resource,
+          ai_action: :chat,
+          content: "summarize"),
+        hash_including(referer_url: nil)
       )
 
       post_graphql_mutation(mutation, current_user: current_user)
@@ -61,11 +64,13 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
     let_it_be_with_reload(:resource) { current_user }
 
     it 'successfully performs a request' do
-      expect(Llm::CompletionWorker).to receive(:perform_async).with(
-        current_user.id, current_user.id, "User", :chat, {
-          content: "summarize", request_id: an_instance_of(String),
-          referer_url: nil
-        }
+      expect(Llm::CompletionWorker).to receive(:perform_for).with(
+        an_object_having_attributes(
+          user: current_user,
+          resource: resource,
+          ai_action: :chat,
+          content: "summarize"),
+        hash_including(referer_url: nil)
       )
 
       post_graphql_mutation(mutation, current_user: current_user)
@@ -80,7 +85,7 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
     end
 
     it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
       post_graphql_mutation(mutation, current_user: current_user)
     end

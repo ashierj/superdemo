@@ -17,7 +17,7 @@ RSpec.shared_examples 'llm service caches user request' do
     end
 
     it 'only stores the message in cache' do
-      expect(::Llm::CompletionWorker).not_to receive(:perform_async)
+      expect(::Llm::CompletionWorker).not_to receive(:perform_for)
 
       expect_next_instance_of(::Gitlab::Llm::ChatStorage) do |cache|
         expect(cache).to receive(:add).with(kind_of(::Gitlab::Llm::ChatMessage))

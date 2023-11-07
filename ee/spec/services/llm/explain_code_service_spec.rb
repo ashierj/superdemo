@@ -60,7 +60,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         end
 
         it 'returns an error' do
-          expect(Llm::CompletionWorker).not_to receive(:perform_async)
+          expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
           expect(subject.execute).to be_error
         end
@@ -69,7 +69,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
       it 'returns an error when messages are too big' do
         stub_const("#{described_class}::INPUT_CONTENT_LIMIT", 4)
 
-        expect(Llm::CompletionWorker).not_to receive(:perform_async)
+        expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
         expect(subject.execute).to be_error.and have_attributes(message: eq('The messages are too big'))
       end
@@ -78,7 +78,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         let(:experiment_features_enabled) { false }
 
         it 'returns an error' do
-          expect(Llm::CompletionWorker).not_to receive(:perform_async)
+          expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
           expect(subject.execute).to be_error
         end
@@ -88,7 +88,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         let(:third_party_features_enabled) { false }
 
         it 'returns an error' do
-          expect(Llm::CompletionWorker).not_to receive(:perform_async)
+          expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
           expect(subject.execute).to be_error
         end
@@ -97,7 +97,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
 
     context 'when is not a member' do
       it 'returns an error if user is not a member of the project' do
-        expect(Llm::CompletionWorker).not_to receive(:perform_async)
+        expect(Llm::CompletionWorker).not_to receive(:perform_for)
 
         expect(subject.execute).to be_error
       end

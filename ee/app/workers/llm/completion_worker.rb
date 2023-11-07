@@ -11,56 +11,108 @@ module Llm
     feature_category :ai_abstraction_layer
     urgency :low
     deduplicate :until_executed
-    loggable_arguments 0, 1, 2, 3
 
-    def perform(user_id, resource_id, resource_class, ai_action_name, options = {})
-      start_time = ::Gitlab::Metrics::System.monotonic_time
+    class << self
+      def serialize_message(message)
+        message.to_h.tap do |hash|
+          hash['user'] &&= hash['user'].to_gid
+          hash['resource'] &&= hash['resource'].to_gid
+        end
+      end
 
-      logger.debug(
-        message: "Performing CompletionWorker",
-        user_id: user_id,
-        resource_id: resource_id,
-        action_name: ai_action_name
-      )
+      def deserialize_message(message_hash, options)
+        message_hash['user'] &&= GitlabSchema.parse_gid(message_hash['user']).find
+        message_hash['resource'] &&= GitlabSchema.parse_gid(message_hash['resource']).find
 
-      return unless ::Feature.enabled?(:ai_global_switch, type: :ops)
+        ::Gitlab::Llm::AiMessage.for(action: message_hash['ai_action']).new(options.merge(message_hash))
+      end
 
-      options.symbolize_keys!
+      def perform_for(message, options = {})
+        # Temporary old code for 1 deploy to avoid worker arguments conflict
+        # will be replaced with `perform_async(serialize_message(message), options)` in next MR.
+        perform_async(
+          message.user.id, message.resource&.id, message.resource&.class&.name, message.ai_action,
+          options.merge(
+            request_id: message.request_id,
+            client_subscription_id: message.client_subscription_id,
+            content: message.content)
+        )
+      end
+    end
 
-      user = User.find_by_id(user_id)
-      return unless user
-
-      resource = find_resource(resource_id, resource_class)
-      return if resource && !user.can?("read_#{resource.to_ability_name}", resource)
-
-      options[:extra_resource] = ::Llm::ExtraResourceFinder.new(user, options.delete(:referer_url)).execute
-      track_snowplow_event(user, ai_action_name, options)
-
-      logger.debug(message: "Params", params: options.slice(:request_id, :client_subscription_id))
-
-      message_attributes = options.extract!(:request_id, :client_subscription_id).merge(
-        user: user,
-        resource: resource,
-        ai_action: ai_action_name,
-        role: ::Gitlab::Llm::AiMessage::ROLE_USER
-      )
-
-      ai_prompt_message = ::Gitlab::Llm::AiMessage.for(action: ai_action_name).new(message_attributes)
-
-      ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_prompt_message, options)
-      raise NameError, "completion class for action #{ai_action_name} not found" unless ai_completion
-
-      logger.debug(message: "Getting Completion Service from factory", class_name: ai_completion.class.name)
-      response = ai_completion.execute
-      update_error_rate(ai_action_name, response)
-      update_duration_metric(ai_action_name, ::Gitlab::Metrics::System.monotonic_time - start_time)
-    rescue StandardError => err
-      update_error_rate(ai_action_name)
-
-      raise err
+    def perform(user_id, resource_id, resource_class = nil, ai_action_name = nil, options = {})
+      if user_id.is_a?(Hash)
+        new_perform(user_id, resource_id)
+      else # temporary old behavior
+        compatible_perform(user_id, resource_id, resource_class, ai_action_name, options)
+      end
     end
 
     private
+
+    def compatible_perform(user_id, resource_id, resource_class, ai_action_name, options)
+      message_hash = options.merge(
+        user: "gid://gitlab/User/#{user_id}",
+        resource: "gid://gitlab/#{resource_class.classify}/#{resource_id}",
+        ai_action: ai_action_name,
+        role: Gitlab::Llm::AiMessage::ROLE_USER
+      ).stringify_keys
+
+      new_perform(message_hash, options)
+    end
+
+    def new_perform(prompt_message_hash, options = {})
+      return unless Feature.enabled?(:ai_global_switch, type: :ops)
+
+      with_tracking(prompt_message_hash['ai_action']) do
+        ai_prompt_message = self.class.deserialize_message(prompt_message_hash, options)
+
+        return unless resource_authorized?(ai_prompt_message) # rubocop:disable Cop/AvoidReturnFromBlocks -- return from a method is expected here.
+
+        log_perform(ai_prompt_message)
+
+        options.symbolize_keys!
+        options[:extra_resource] = ::Llm::ExtraResourceFinder
+          .new(ai_prompt_message.user, options.delete(:referer_url)).execute
+
+        ai_completion = ::Gitlab::Llm::CompletionsFactory.completion!(ai_prompt_message, options)
+        logger.debug(message: "Got Completion Service from factory", class_name: ai_completion.class.name)
+
+        ai_completion.execute
+      end
+    end
+
+    def with_tracking(ai_action)
+      start_time = ::Gitlab::Metrics::System.monotonic_time
+
+      response = yield
+
+      update_error_rate(ai_action, response)
+      update_duration_metric(ai_action, ::Gitlab::Metrics::System.monotonic_time - start_time)
+
+      response
+    rescue StandardError => err
+      update_error_rate(ai_action)
+      raise err
+    end
+
+    def log_perform(ai_prompt_message)
+      logger.debug(
+        message: "Performing CompletionWorker",
+        user_id: ai_prompt_message.user.to_gid,
+        resource_id: ai_prompt_message.resource&.to_gid,
+        action_name: ai_prompt_message.ai_action,
+        request_id: ai_prompt_message.request_id,
+        client_subscription_id: ai_prompt_message.client_subscription_id
+      )
+
+      track_snowplow_event(ai_prompt_message)
+    end
+
+    def resource_authorized?(ai_prompt_message)
+      !ai_prompt_message.resource ||
+        ai_prompt_message.user.can?("read_#{ai_prompt_message.resource.to_ability_name}", ai_prompt_message.resource)
+    end
 
     def update_error_rate(ai_action_name, response = nil)
       completion = ::Gitlab::Llm::CompletionsFactory::COMPLETIONS[ai_action_name.to_sym]
@@ -95,19 +147,13 @@ module Llm
       @logger ||= Gitlab::Llm::Logger.build
     end
 
-    def find_resource(resource_id, resource_class)
-      return unless resource_id
-
-      resource_class.classify.constantize.find_by_id(resource_id)
-    end
-
-    def track_snowplow_event(user, action_name, options)
+    def track_snowplow_event(prompt_message)
       Gitlab::Tracking.event(
         self.class.to_s,
         "perform_completion_worker",
-        label: action_name.to_s,
-        property: options[:request_id],
-        user: user
+        label: prompt_message.ai_action.to_s,
+        property: prompt_message.request_id,
+        user: prompt_message.user
       )
     end
   end

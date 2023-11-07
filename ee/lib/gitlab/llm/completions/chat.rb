@@ -36,7 +36,7 @@ module Gitlab
           end
 
           response = Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
-            user_input: options[:content],
+            user_input: prompt_message.content,
             tools: tools(user),
             context: context,
             response_handler: response_handler,
