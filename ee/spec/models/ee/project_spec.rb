@@ -97,8 +97,15 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         }
       end
 
-      let(:exclude_attributes) { [] }
+      let(:exclude_attributes) do
+        [
+          'restrict_pipeline_cancellation_role'
+        ]
+      end
     end
+
+    # can't be tested above because it can be nil
+    it { is_expected.to delegate_method(:restrict_pipeline_cancellation_role).to(:ci_cd_settings) }
 
     describe '#merge_pipelines_enabled?' do
       it_behaves_like 'a ci_cd_settings predicate method' do
@@ -3572,6 +3579,13 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       with_cross_joins_prevented do
         expect(primary_project.downstream_projects_count).to eq(2)
       end
+    end
+  end
+
+  describe '#ci_cancellation_restriction' do
+    it 'returns the initalized cancellation restrication object' do
+      expect(project.ci_cancellation_restriction.class).to be Ci::ProjectCancellationRestriction
+      expect(project.ci_cancellation_restriction).to respond_to(:enabled?)
     end
   end
 

@@ -331,6 +331,14 @@ module EE
           (custom_roles_allowed? && merge_requests_is_a_private_feature? && role_enables_admin_merge_request?))
       end
 
+      condition(:ci_cancellation_maintainers_only, scope: :subject) do
+        project.ci_cancellation_restriction.maintainers_only_allowed?
+      end
+
+      condition(:ci_cancellation_no_one, scope: :subject) do
+        project.ci_cancellation_restriction.no_one_allowed?
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
@@ -768,6 +776,16 @@ module EE
 
       rule { can?(:reporter_access) & observability_metrics_enabled }.policy do
         enable :read_observability_metrics
+      end
+
+      rule { ci_cancellation_maintainers_only & ~can?(:maintainer_access) }.policy do
+        prevent :cancel_pipeline
+        prevent :cancel_build
+      end
+
+      rule { ci_cancellation_no_one }.policy do
+        prevent :cancel_pipeline
+        prevent :cancel_build
       end
     end
 

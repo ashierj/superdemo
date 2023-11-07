@@ -342,6 +342,7 @@ module EE
       delegate :merge_pipelines_enabled, :merge_pipelines_enabled=, to: :ci_cd_settings, allow_nil: true
       delegate :merge_trains_enabled, :merge_trains_enabled=, to: :ci_cd_settings, allow_nil: true
       delegate :merge_trains_skip_train_allowed, :merge_trains_skip_train_allowed=, to: :ci_cd_settings, allow_nil: true
+      delegate :restrict_pipeline_cancellation_role, :restrict_pipeline_cancellation_role=, to: :ci_cd_settings, allow_nil: false
 
       delegate :auto_rollback_enabled, :auto_rollback_enabled=, to: :ci_cd_settings, allow_nil: true
 
@@ -1089,6 +1090,10 @@ module EE
 
     def downstream_projects_count
       downstream_project_subscriptions.count
+    end
+
+    def ci_cancellation_restriction
+      ::Ci::ProjectCancellationRestriction.new(self)
     end
 
     def merge_pipelines_enabled?
