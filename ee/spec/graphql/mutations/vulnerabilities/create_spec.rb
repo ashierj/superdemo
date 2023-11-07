@@ -4,7 +4,7 @@ require 'spec_helper'
 RSpec.describe Mutations::Vulnerabilities::Create, feature_category: :vulnerability_management do
   include GraphqlHelpers
   let_it_be_with_reload(:project) { create(:project) }
-  let_it_be(:user) { create(:user).tap { |user| project.add_developer(user) } }
+  let_it_be(:user) { create(:user).tap { |user| project.add_maintainer(user) } }
 
   let(:mutated_vulnerability) { subject[:vulnerability] }
 

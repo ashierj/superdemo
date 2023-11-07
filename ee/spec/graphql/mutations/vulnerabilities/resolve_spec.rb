@@ -27,7 +27,7 @@ RSpec.describe Mutations::Vulnerabilities::Resolve, feature_category: :vulnerabi
 
       context 'when user has access to the project', :aggregate_failures do
         before do
-          vulnerability.project.add_developer(user)
+          vulnerability.project.add_maintainer(user)
         end
 
         it 'returns the resolved vulnerability' do

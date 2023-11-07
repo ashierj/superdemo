@@ -14,7 +14,7 @@ RSpec.describe Vulnerabilities::BulkDismissService, feature_category: :vulnerabi
 
   describe '#execute' do
     before_all do
-      project.add_developer(user)
+      project.add_maintainer(user)
     end
 
     before do

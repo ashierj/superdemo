@@ -10,7 +10,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
   render_views
 
   before do
-    group.add_developer(user)
+    group.add_maintainer(user)
     stub_licensed_features(security_dashboard: true)
     sign_in(user)
   end

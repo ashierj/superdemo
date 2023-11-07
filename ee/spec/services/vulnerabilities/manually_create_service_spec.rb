@@ -16,7 +16,7 @@ RSpec.describe Vulnerabilities::ManuallyCreateService, feature_category: :vulner
 
   context 'with an authorized user with proper permissions' do
     before do
-      project.add_developer(user)
+      project.add_maintainer(user)
     end
 
     context 'with valid parameters' do
@@ -87,7 +87,7 @@ RSpec.describe Vulnerabilities::ManuallyCreateService, feature_category: :vulner
       end
 
       it 'does not exceed query limit' do
-        expect { subject }.not_to exceed_query_limit(27)
+        expect { subject }.not_to exceed_query_limit(28)
       end
 
       it 'creates a new Vulnerability' do

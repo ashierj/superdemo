@@ -1505,7 +1505,15 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     context 'with developer' do
       let(:current_user) { developer }
 
-      it { is_expected.to be_allowed(:admin_vulnerability) }
+      it { is_expected.to be_disallowed(:admin_vulnerability) }
+
+      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
+        before do
+          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+        end
+
+        it { is_expected.to be_allowed(:admin_vulnerability) }
+      end
     end
 
     context 'with maintainer' do
@@ -1516,6 +1524,12 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
     context 'with owner' do
       let(:current_user) { owner }
+
+      it { is_expected.to be_allowed(:admin_vulnerability) }
+    end
+
+    context 'with admin', :enable_admin_mode do
+      let(:current_user) { admin }
 
       it { is_expected.to be_allowed(:admin_vulnerability) }
     end
@@ -1540,7 +1554,15 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           group.add_developer(auditor)
         end
 
-        it { is_expected.to be_allowed(:admin_vulnerability) }
+        it { is_expected.to be_disallowed(:admin_vulnerability) }
+
+        context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
+          before do
+            stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+          end
+
+          it { is_expected.to be_allowed(:admin_vulnerability) }
+        end
       end
     end
   end

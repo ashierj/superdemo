@@ -104,7 +104,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
 
         context 'when user can manage related issues' do
           before do
-            project.add_developer(user)
+            project.add_maintainer(user)
           end
 
           it { is_expected.to include(can_modify_related_issues: true) }
@@ -132,7 +132,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
 
       context 'when user can admin vulnerabilities' do
         before do
-          project.add_developer(user)
+          project.add_maintainer(user)
         end
 
         it { is_expected.to include(can_admin: true) }

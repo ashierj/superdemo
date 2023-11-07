@@ -22,7 +22,7 @@ RSpec.describe Vulnerabilities::UpdateService, feature_category: :vulnerability_
 
   context 'with an authorized user with proper permissions' do
     before do
-      project.add_developer(user)
+      project.add_maintainer(user)
     end
 
     it_behaves_like 'calls Vulnerabilities::Statistics::UpdateService'

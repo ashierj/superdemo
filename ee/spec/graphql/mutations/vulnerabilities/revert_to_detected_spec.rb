@@ -35,7 +35,7 @@ RSpec.describe Mutations::Vulnerabilities::RevertToDetected, feature_category: :
 
       context 'when user has access to the project' do
         before do
-          vulnerability.project.add_developer(user)
+          vulnerability.project.add_maintainer(user)
         end
 
         context 'and no comment is provided' do

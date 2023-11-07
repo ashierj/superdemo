@@ -36,7 +36,7 @@ RSpec.describe 'Creating an External Issue Link', feature_category: :vulnerabili
 
   context 'when the user has permission' do
     before do
-      vulnerability.project.add_developer(current_user)
+      vulnerability.project.add_maintainer(current_user)
     end
 
     context 'when security_dashboard is disabled' do

@@ -23,7 +23,7 @@ RSpec.describe Vulnerabilities::ResolveService, feature_category: :vulnerability
   context 'when vulnerability state is different from the requested state' do
     context 'with an authorized user with proper permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it_behaves_like 'calls vulnerability statistics utility services in order'
@@ -87,11 +87,19 @@ RSpec.describe Vulnerabilities::ResolveService, feature_category: :vulnerability
 
     it { expect { resolve_vulnerability }.to be_allowed_for(:owner).of(project) }
     it { expect { resolve_vulnerability }.to be_allowed_for(:maintainer).of(project) }
-    it { expect { resolve_vulnerability }.to be_allowed_for(:developer).of(project) }
+    it { expect { resolve_vulnerability }.to be_denied_for(:developer).of(project) }
 
     it { expect { resolve_vulnerability }.to be_denied_for(:auditor) }
     it { expect { resolve_vulnerability }.to be_denied_for(:reporter).of(project) }
     it { expect { resolve_vulnerability }.to be_denied_for(:guest).of(project) }
     it { expect { resolve_vulnerability }.to be_denied_for(:anonymous) }
+
+    context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
+      before do
+        stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+      end
+
+      it { expect { resolve_vulnerability }.to be_allowed_for(:developer).of(project) }
+    end
   end
 end
