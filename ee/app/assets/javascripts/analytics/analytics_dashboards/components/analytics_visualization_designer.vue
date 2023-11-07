@@ -9,7 +9,7 @@ import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
-import { getPanelOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_panel_options';
+import { getVisualizationOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_designer_options';
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { FILE_ALREADY_EXISTS_SERVER_RESPONSE, PANEL_DISPLAY_TYPES } from '../constants';
@@ -81,7 +81,11 @@ export default {
       };
     },
     panelOptions() {
-      return getPanelOptions(this.selectedVisualizationType, this.hasTimeDimension);
+      return getVisualizationOptions(
+        this.selectedVisualizationType,
+        this.hasTimeDimension,
+        this.queryState.measureSubType,
+      );
     },
     saveButtonText() {
       return this.$route?.params.dashboardid
@@ -326,6 +330,7 @@ export default {
             filters,
             setFilters,
             addFilters,
+            setSegments,
           }"
         >
           <div class="gl-pr-4 gl-pb-5 gl-border-r">
@@ -335,6 +340,7 @@ export default {
               :filters="filters"
               :set-filters="setFilters"
               :add-filters="addFilters"
+              :set-segments="setSegments"
               data-testid="panel-measure-selector"
               @measureSelected="measureUpdated"
             />

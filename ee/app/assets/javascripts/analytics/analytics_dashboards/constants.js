@@ -6,7 +6,7 @@ export const PRODUCT_ANALYTICS_FEATURE_DASHBOARDS = ['audience', 'behavior'];
 
 export const EVENTS_TYPES = ['pageViews', 'linkClickEvents', 'events'];
 
-export function isTrackedEvent(eventType) {
+export function isRestrictedToEventType(eventType) {
   return EVENTS_TYPES.includes(eventType);
 }
 
@@ -41,6 +41,7 @@ export const DIMENSION_COLOR = '#c3e6cd';
 
 export const EVENTS_TABLE_NAME = 'TrackedEvents';
 export const SESSIONS_TABLE_NAME = 'Sessions';
+export const RETURNING_USERS_TABLE_NAME = 'ReturningUsers';
 
 export const ANALYTICS_FIELD_CATEGORIES = [
   {

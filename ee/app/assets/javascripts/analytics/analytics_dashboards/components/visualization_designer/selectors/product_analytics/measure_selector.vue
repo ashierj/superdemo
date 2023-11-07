@@ -3,8 +3,9 @@ import { GlLabel, GlButton } from '@gitlab/ui';
 import {
   EVENTS_TABLE_NAME,
   SESSIONS_TABLE_NAME,
+  RETURNING_USERS_TABLE_NAME,
   MEASURE_COLOR,
-  isTrackedEvent,
+  isRestrictedToEventType,
 } from 'ee/analytics/analytics_dashboards/constants';
 import VisualizationDesignerListOption from '../../visualization_designer_list_option.vue';
 
@@ -37,6 +38,10 @@ export default {
       type: Function,
       required: true,
     },
+    setSegments: {
+      type: Function,
+      required: true,
+    },
   },
   data() {
     return {
@@ -45,6 +50,30 @@ export default {
     };
   },
   methods: {
+    addSegment(measureSubType) {
+      const segmentMap = {
+        allSessionsCount: [`${RETURNING_USERS_TABLE_NAME}.returningUsers`],
+      };
+      const segments = segmentMap[measureSubType];
+
+      if (segments?.length > 0) {
+        this.setSegments(segments);
+      }
+    },
+    addEventTypeFilter(measureType) {
+      const eventTypeMap = {
+        linkClickEvents: 'link_click',
+      };
+      const selectedEventType = eventTypeMap[measureType];
+
+      if (isRestrictedToEventType(measureType) && selectedEventType) {
+        this.addFilters({
+          member: `${EVENTS_TABLE_NAME}.eventName`,
+          operator: 'equals',
+          values: [selectedEventType],
+        });
+      }
+    },
     selectMeasure(measure, subMeasure) {
       this.measureType = measure;
       this.measureSubType = subMeasure;
@@ -56,31 +85,19 @@ export default {
           events: [`${EVENTS_TABLE_NAME}.count`],
           uniqueUsers: [`${EVENTS_TABLE_NAME}.uniqueUsersCount`],
           sessions: [`${SESSIONS_TABLE_NAME}.${this.measureSubType}`],
+          returningUsers: [`${RETURNING_USERS_TABLE_NAME}.${this.measureSubType}`],
         };
 
-        const eventTypeMap = {
-          linkClickEvents: 'link_click',
-        };
-
-        if (isTrackedEvent(this.measureType)) {
-          this.setMeasures(measureMap[this.measureType]);
-          const selectedEventType = eventTypeMap[this.measureType];
-          if (selectedEventType) {
-            this.addFilters({
-              member: `${EVENTS_TABLE_NAME}.eventName`,
-              operator: 'equals',
-              values: [selectedEventType],
-            });
-          }
-        } else {
-          this.setMeasures(measureMap[this.measureType]);
-        }
+        this.setMeasures(measureMap[this.measureType]);
+        this.addSegment(this.measureSubType);
+        this.addEventTypeFilter(this.measureType);
       } else {
         this.setMeasures([]);
         this.setFilters([]);
+        this.setSegments([]);
       }
 
-      this.$emit('measureSelected', measure, subMeasure);
+      this.$emit('measureSelected', this.measureType, this.measureSubType);
     },
   },
 };
@@ -146,6 +163,15 @@ export default {
             @click="selectMeasure('sessions')"
           />
         </ul>
+        <h3 class="gl-font-lg">{{ s__('ProductAnalytics|Returning Users') }}</h3>
+        <ul class="content-list">
+          <visualization-designer-list-option
+            data-testid="returning-users-button"
+            :title="s__('ProductAnalytics|Returning Users')"
+            :description="s__('ProductAnalytics|Measure all returning users')"
+            @click="selectMeasure('returningUsers')"
+          />
+        </ul>
       </div>
       <div v-else-if="measureType === 'pageViews'">
         <h3 class="gl-font-lg">{{ s__('ProductAnalytics|Page Views') }}</h3>
@@ -204,11 +230,22 @@ export default {
             :description="s__('ProductAnalytics|How many sessions a user has')"
             @click="selectMeasure('sessions', 'averagePerUser')"
           />
+        </ul>
+      </div>
+      <div v-else-if="measureType === 'returningUsers'">
+        <h3 class="gl-font-lg">{{ s__('ProductAnalytics|Returning Users') }}</h3>
+        <ul class="content-list">
           <visualization-designer-list-option
-            data-testid="sessions-repeat-button"
-            :title="s__('ProductAnalytics|Repeat Visit Percentage')"
-            :description="s__('ProductAnalytics|How often sessions are repeated')"
-            @click="selectMeasure('sessions', 'repeatPercent')"
+            data-testid="returning-users-count-button"
+            :title="s__('ProductAnalytics|All Returning Users Compared')"
+            :description="s__('ProductAnalytics|Compares all returning users against each other')"
+            @click="selectMeasure('returningUsers', 'allSessionsCount')"
+          />
+          <visualization-designer-list-option
+            data-testid="returning-users-percentage-button"
+            :title="s__('ProductAnalytics|Percentage of Users Returning')"
+            :description="s__('ProductAnalytics|How often users returned compared to all sessions')"
+            @click="selectMeasure('returningUsers', 'returningUserPercentage')"
           />
         </ul>
       </div>

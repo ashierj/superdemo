@@ -5,14 +5,10 @@ import { DATE_RANGE_FILTER_DIMENSIONS } from 'ee/analytics/analytics_dashboards/
 import { s__, sprintf } from '~/locale';
 import {
   EVENTS_TABLE_NAME,
-  SESSIONS_TABLE_NAME,
   DIMENSION_COLOR,
   ANALYTICS_FIELD_CATEGORIES,
   ANALYTICS_FIELDS,
 } from 'ee/analytics/analytics_dashboards/constants';
-
-const eventsMeasure = EVENTS_TABLE_NAME.toLowerCase();
-const sessionsMeasure = SESSIONS_TABLE_NAME.toLowerCase();
 
 export default {
   name: 'ProductAnalyticsDimensionSelector',
@@ -86,10 +82,18 @@ export default {
       this.selectedDimensionMode = false;
     },
     setGranularity(selectedGranularity) {
-      const dimensionFieldName =
-        DATE_RANGE_FILTER_DIMENSIONS[
-          this.measureType === sessionsMeasure ? this.measureType : eventsMeasure
-        ];
+      let dimensionFieldName;
+
+      switch (this.measureType) {
+        case 'sessions':
+          dimensionFieldName = DATE_RANGE_FILTER_DIMENSIONS.sessions;
+          break;
+        case 'returningUsers':
+          dimensionFieldName = DATE_RANGE_FILTER_DIMENSIONS.returningusers;
+          break;
+        default:
+          dimensionFieldName = DATE_RANGE_FILTER_DIMENSIONS.trackedevents;
+      }
 
       this.setTimeDimensions([{ dimension: dimensionFieldName, granularity: selectedGranularity }]);
       this.selectedDimensionMode = false;
@@ -163,7 +167,8 @@ export default {
             >
           </gl-dropdown>
         </div>
-        <div v-if="measureType !== 'sessions'">
+        <!-- TODO: Remove this check with https://gitlab.com/gitlab-org/gitlab/-/issues/429064 -->
+        <div v-if="measureType !== 'sessions' && measureType !== 'returningUsers'">
           <ul v-if="measureType === 'events'" class="content-list">
             <li>
               <gl-button
