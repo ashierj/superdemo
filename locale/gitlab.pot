@@ -4803,6 +4803,9 @@ msgstr ""
 msgid "All environments"
 msgstr ""
 
+msgid "All groups"
+msgstr ""
+
 msgid "All groups and projects"
 msgstr ""
 
@@ -5194,6 +5197,9 @@ msgid "An error occurred while fetching the template: %{err}"
 msgstr ""
 
 msgid "An error occurred while fetching this tab."
+msgstr ""
+
+msgid "An error occurred while fetching. Please try again."
 msgstr ""
 
 msgid "An error occurred while getting files for - %{branchId}"
@@ -37087,6 +37093,9 @@ msgid "Project export requests"
 msgstr ""
 
 msgid "Project export started. A download link will be sent by email and made available on this page."
+msgstr ""
+
+msgid "Project groups"
 msgstr ""
 
 msgid "Project has too many %{label_for_message} to search"
