@@ -6,17 +6,41 @@ RSpec.describe 'Update value stream', feature_category: :value_stream_management
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:value_stream) { create(:cycle_analytics_value_stream, name: 'Old name') }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:value_stream) do
+    create(
+      :cycle_analytics_value_stream,
+      name: 'Old name',
+      namespace: group,
+      setting_attributes: { project_ids_filter: [1, 2] },
+      stages: Array.new(1) do
+        create(
+          :cycle_analytics_stage,
+          namespace: group,
+          name: "Issue",
+          relative_position: 1,
+          start_event_identifier: :issue_created,
+          end_event_identifier: :issue_closed
+        )
+      end
+    )
+  end
 
   let(:new_name) { 'New name' }
 
   let(:mutation_name) { :value_stream_update }
+  let(:value_stream_parameters) do
+    {
+      id: value_stream.to_global_id,
+      name: new_name
+    }
+  end
+  let(:extra_parameters) { {} } # TO be overriden on more specific examples
 
   let(:mutation) do
     graphql_mutation(
       mutation_name,
-      id: value_stream.to_global_id,
-      name: new_name
+      **value_stream_parameters.merge(extra_parameters)
     )
   end
 
@@ -50,6 +74,69 @@ RSpec.describe 'Update value stream', feature_category: :value_stream_management
         result = graphql_mutation_response(mutation_name)['errors']
 
         expect(result).to include('Name is too short (minimum is 3 characters)')
+      end
+    end
+
+    context 'when stages argument is present' do
+      let(:stages) do
+        [
+          { name: 'code', custom: false }, # default stage
+          { name: 'Custom 1',
+            custom: true,
+            start_event_identifier: 'ISSUE_CREATED',
+            end_event_identifier: 'ISSUE_CLOSED' }
+        ]
+      end
+
+      let(:extra_parameters) do
+        {
+          stages: stages
+        }
+      end
+
+      it 'updates value stream stages' do
+        expect { post_graphql_mutation(mutation, current_user: current_user) }
+          .to change { value_stream.stages.count }.from(1).to(2)
+
+        expect(value_stream.reload.stages.map(&:name)).to match_array(['code', 'Custom 1'])
+      end
+
+      context 'when stages argument has invalid values' do
+        let(:stages) do
+          [
+            { name: 'code', custom: true }
+          ]
+        end
+
+        it 'returns error' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          result = graphql_mutation_response(mutation_name)['errors']
+
+          expect(result).to include('Stages[0] name is reserved')
+          expect(result).to include("Stages[0] start event identifier can't be blank")
+          expect(result).to include("Stages[0] end event identifier can't be blank")
+        end
+      end
+    end
+
+    context 'when setting argument is present' do
+      let_it_be(:project_1) { create(:project, group: group) }
+      let_it_be(:project_2) { create(:project, group: group) }
+
+      let(:extra_parameters) do
+        {
+          setting: {
+            project_ids_filter: [project_1, project_2].map(&:to_global_id)
+          }
+        }
+      end
+
+      it 'saves project_ids filter' do
+        expect { post_graphql_mutation(mutation, current_user: current_user) }
+          .to change { value_stream.setting.reload.project_ids_filter }
+          .from([1, 2])
+          .to([project_1.id, project_2.id])
       end
     end
   end

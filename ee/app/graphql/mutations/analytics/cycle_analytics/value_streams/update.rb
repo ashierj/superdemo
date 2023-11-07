@@ -17,6 +17,10 @@ module Mutations
             required: true,
             description: 'Global ID of the value stream to update.'
 
+          argument :name, GraphQL::Types::String,
+            required: false,
+            description: 'Value stream name.'
+
           field :value_stream, Types::Analytics::CycleAnalytics::ValueStreamType,
             null: true,
             description: 'Updated value stream.'

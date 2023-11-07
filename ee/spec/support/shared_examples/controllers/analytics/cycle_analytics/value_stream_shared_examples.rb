@@ -227,36 +227,6 @@ custom: true }
       end
     end
 
-    context 'when updating setting' do
-      let(:value_stream_params) do
-        { name: 'renamed', setting: { project_ids_filter: [3, 4] } }
-      end
-
-      it 'updates project ids filter array' do
-        value_stream.update!(setting_attributes: { project_ids_filter: [1, 2] })
-
-        expect { request }
-          .to change { value_stream.reload.setting.project_ids_filter }
-          .from([1, 2])
-          .to([3, 4])
-      end
-
-      context 'when project ids filter parameter is empty' do
-        let(:value_stream_params) do
-          { name: 'renamed', setting: { project_ids_filter: [] } }
-        end
-
-        it 'clears the filter' do
-          value_stream.update!(setting_attributes: { project_ids_filter: [1, 2] })
-
-          expect { request }
-            .to change { value_stream.reload.setting.project_ids_filter }
-            .from([1, 2])
-            .to(nil)
-        end
-      end
-    end
-
     it_behaves_like 'authorization examples'
   end
 
@@ -300,21 +270,6 @@ custom: true }
 
         expect(response).to have_gitlab_http_status(:unprocessable_entity)
         expect(json_response.dig('payload', 'errors', 'stages')).to include("has already been taken")
-      end
-    end
-
-    context 'when settings parameters are present' do
-      let(:value_stream_params) do
-        { name: 'renamed', setting: { project_ids_filter: [1, 2] } }
-      end
-
-      it 'saves value stream setting' do
-        request
-
-        value_stream = Analytics::CycleAnalytics::ValueStream.last
-        expect(response).to have_gitlab_http_status(:created)
-        expect(value_stream.setting).to be_persisted
-        expect(value_stream.setting.project_ids_filter).to eq([1, 2])
       end
     end
 
