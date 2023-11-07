@@ -28,7 +28,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PreFlattenDevfileValidat
   context 'for devfiles containing pre flatten violations' do
     using RSpec::Parameterized::TableSyntax
 
-    # rubocop:disable Layout/LineLength
+    # rubocop:disable Layout/LineLength -- We don't want to wrap RSpec::Parameterized::TableSyntax, it hurts readability
     where(:devfile_name, :error_str) do
       "example.invalid-unsupported-parent-inheritance-devfile.yaml" | "Inheriting from 'parent' is not yet supported"
       "example.invalid-unsupported-schema-version-devfile.yaml" | "'schemaVersion' '2.0.0' is not supported, it must be '2.2.0'"
@@ -41,7 +41,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PreFlattenDevfileValidat
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreatePreFlattenDevfileValidationFailed)
           message.context => { details: String => error_details }
-          # noinspection RubyResolve
           expect(error_details).to eq(error_str)
         end
       end
