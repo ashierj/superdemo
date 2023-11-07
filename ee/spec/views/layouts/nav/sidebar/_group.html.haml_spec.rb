@@ -268,9 +268,21 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
     end
 
     describe 'DevOps' do
-      context 'DevOps adoption feature is available' do
+      context 'DevOps adoption feature is available through license' do
         before do
           stub_licensed_features(group_level_devops_adoption: true)
+        end
+
+        it 'is visible' do
+          render
+
+          expect(rendered).to have_text 'DevOps adoption'
+        end
+      end
+
+      context 'DevOps adoption feature is available through usage ping features' do
+        before do
+          stub_usage_ping_features(true)
         end
 
         it 'is visible' do

@@ -157,6 +157,21 @@ RSpec.describe 'DevOps Reports page', :js, feature_category: :devops_reports do
     end
   end
 
+  context 'when feature is available through usage ping features' do
+    before do
+      stub_usage_ping_features(true)
+    end
+
+    it 'shows the correct tabs' do
+      visit admin_dev_ops_reports_path
+
+      within tabs_selector do
+        expect(page.all(:css, tab_item_selector).length).to be(6)
+        expect(page).to have_text 'Overview Dev Sec Ops DevOps Score'
+      end
+    end
+  end
+
   context 'without ultimate license' do
     before do
       stub_licensed_features(devops_adoption: false)

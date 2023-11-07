@@ -17,6 +17,16 @@ RSpec.describe Admin::DevOpsReportController, feature_category: :devops_reports 
         expect(controller.show_adoption?).to be true
       end
     end
+
+    context "'devops_adoption' is enabled through usage ping features" do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it 'is true' do
+        expect(controller.show_adoption?).to be true
+      end
+    end
   end
 
   describe '#show' do

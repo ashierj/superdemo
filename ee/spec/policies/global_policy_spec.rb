@@ -366,6 +366,20 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
         it { is_expected.to be_disallowed(:view_instance_devops_adoption, :manage_devops_adoption_namespaces) }
       end
     end
+
+    context 'when feature is enabled through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it { is_expected.to be_allowed(:view_instance_devops_adoption, :manage_devops_adoption_namespaces) }
+
+      context 'for non-admins' do
+        let(:current_user) { user }
+
+        it { is_expected.to be_disallowed(:view_instance_devops_adoption, :manage_devops_adoption_namespaces) }
+      end
+    end
   end
 
   describe 'read_jobs_statistics' do

@@ -194,7 +194,6 @@ module GitlabSubscriptions
       custom_roles
       dast
       dependency_scanning
-      devops_adoption
       dora4_analytics
       enterprise_templates
       environment_alerts
@@ -209,11 +208,9 @@ module GitlabSubscriptions
       group_ci_cd_analytics
       group_level_compliance_dashboard
       group_level_analytics_dashboard
-      group_level_devops_adoption
       incident_management
       inline_codequality
       insights
-      instance_level_devops_adoption
       issuable_health_status
       issues_completed_analytics
       jira_vulnerabilities_integration
@@ -286,6 +283,9 @@ module GitlabSubscriptions
 
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[
       coverage_fuzzing
+      devops_adoption
+      group_level_devops_adoption
+      instance_level_devops_adoption
     ].freeze
 
     ALL_STARTER_FEATURES  = STARTER_FEATURES + STARTER_FEATURES_WITH_USAGE_PING
