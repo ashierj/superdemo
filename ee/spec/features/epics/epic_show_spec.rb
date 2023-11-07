@@ -200,10 +200,11 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
     it_behaves_like 'page meta description', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nos commodius agimus. Ex rebus enim timiditas, non ex vocabulis nascitur. Ita prorsus, inquam; Duo...'
 
-    it 'shows epic status, date and author in header' do
+    it 'shows epic type, status, date and author in header' do
       within('.detail-page-header-body') do
         expect(page).to have_css('.gl-badge', text: 'Open')
-        expect(page).to have_text('Created')
+        expect(page).to have_text('Epic')
+        expect(page).to have_text('created')
         expect(page).to have_link('Rick Sanchez')
       end
     end

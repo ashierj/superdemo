@@ -22,7 +22,7 @@ export default {
     ...mapState(['sidebarCollapsed', 'author', 'created', 'confidential', 'state']),
     ...mapGetters(['isEpicOpen']),
     statusIcon() {
-      return this.isEpicOpen ? 'epic' : 'epic-closed';
+      return this.isEpicOpen ? 'issue-open-m' : 'issue-close';
     },
   },
   mounted() {
@@ -58,6 +58,7 @@ export default {
     :issuable-type="$options.TYPE_EPIC"
     :status-icon="statusIcon"
     :workspace-type="$options.WORKSPACE_GROUP"
+    show-work-item-type-icon
     @toggle="toggleSidebar({ sidebarCollapsed })"
   />
 </template>
