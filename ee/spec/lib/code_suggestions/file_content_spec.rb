@@ -10,22 +10,7 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
       CodeSuggestions::ProgrammingLanguage.new('Ruby')
     end
 
-    let(:content_above_cursor) { '' }
-    let(:content_below_cursor) { '' }
-
-    context 'when content above cursor is blank' do
-      let(:content_above_cursor) { '' }
-
-      it { is_expected.to be_small }
-    end
-
-    context 'when content above cursor is nil' do
-      let(:content_above_cursor) { nil }
-
-      it { is_expected.to be_small }
-    end
-
-    context 'when file content above cursor is less than 5 lines' do
+    context 'when file content around cursor is less than 5 lines' do
       let(:content_above_cursor) do
         <<~CODE
           # A function that outputs the first 20 fibonacci numbers
@@ -35,61 +20,40 @@ RSpec.describe CodeSuggestions::FileContent, feature_category: :code_suggestions
         CODE
       end
 
+      let(:content_below_cursor) do
+        <<~CODE
+          end
+
+          def square_root(number)
+          end
+        CODE
+      end
+
       it { is_expected.to be_small }
-
-      context 'when file content below cursor more than 5 lines' do
-        let(:content_below_cursor) do
-          <<~CODE
-            end
-
-            # Method to calculate the square root of a number
-            def square_root(number)
-              if number < 0
-                raise ArgumentError, "Square root of a negative number is undefined"
-              else
-                Math.sqrt(number)
-              end
-            end
-          CODE
-        end
-
-        it { is_expected.not_to be_small }
-      end
-
-      context 'when file content below is less than 5 lines' do
-        let(:content_below_cursor) do
-          <<~CODE
-            end
-
-            def square_root(number)
-            end
-          CODE
-        end
-
-        it { is_expected.to be_small }
-      end
     end
 
-    context 'when content above cursor is 5 or more lines' do
+    context 'when content around cursor is 5 or more lines' do
       let(:content_above_cursor) do
         <<~CODE
-          # frozen_string_literal: true
+          # A function that outputs the first 20 fibonacci numbers
 
-          module CodeSuggestions
-            class FileContent
-              MIN_LINES_OF_CODE = 5
+          def fibonacci(x)
 
-              def initialize(language, content_above_cursor, content_below_cursor = '')
-                @language = language
-                @content_above_cursor = content_above_cursor
-                @content_below_cursor = content_below_cursor
-              end
+        CODE
+      end
 
-              attr_reader :language, :content_above_cursor, :content_below_cursor
+      let(:content_below_cursor) do
+        <<~CODE
+          end
 
-              # Generate me a function
-              # with 2 arguments
-              # first and last
+          # Method to calculate the square root of a number
+          def square_root(number)
+            if number < 0
+              raise ArgumentError, "Square root of a negative number is undefined"
+            else
+              Math.sqrt(number)
+            end
+          end
         CODE
       end
 
