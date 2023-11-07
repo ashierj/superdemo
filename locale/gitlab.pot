@@ -16176,6 +16176,12 @@ msgstr ""
 msgid "Delete video"
 msgstr ""
 
+msgid "DeleteProject|Couldn't remove the project. A project repository storage move is in progress. Try again when it's complete."
+msgstr ""
+
+msgid "DeleteProject|Couldn't remove the project. A related snippet repository storage move is in progress. Try again when it's complete."
+msgstr ""
+
 msgid "DeleteProject|Failed to remove design repository. Please try again or contact administrator."
 msgstr ""
 
