@@ -191,10 +191,6 @@ module EE
         @subject.custom_roles_enabled?
       end
 
-      condition(:admin_group_member_custom_roles_allowed) do
-        ::Feature.enabled?(:admin_group_member, @subject.root_ancestor)
-      end
-
       desc "Custom role on group that enables read dependency"
       condition(:role_enables_read_dependency) do
         ::Auth::MemberRoleAbilityLoader.new(
@@ -486,7 +482,7 @@ module EE
         enable :admin_vulnerability
       end
 
-      rule { custom_roles_allowed & admin_group_member_custom_roles_allowed & role_enables_admin_group_member }.policy do
+      rule { custom_roles_allowed & role_enables_admin_group_member }.policy do
         enable :admin_group_member
         enable :update_group_member
         enable :destroy_group_member

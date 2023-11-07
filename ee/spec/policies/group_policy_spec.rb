@@ -2982,29 +2982,9 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
     context 'for a member role with admin_group_member true' do
       let(:member_role_abilities) { { admin_group_member: true } }
+      let(:allowed_abilities) { [:admin_group_member] }
 
-      context 'with admin_group_member FF enabled' do
-        before do
-          stub_feature_flags(admin_group_member: [parent_group])
-        end
-
-        let(:allowed_abilities) { [:admin_group_member] }
-
-        it_behaves_like 'custom roles abilities'
-      end
-
-      context 'with admin_group_member FF disabled' do
-        before do
-          stub_feature_flags(admin_group_member: false)
-          stub_licensed_features(custom_roles: true)
-
-          create_member_role(group_member_guest)
-        end
-
-        let(:disallowed_abilities) { [:admin_group_member] }
-
-        it { is_expected.to be_disallowed(*disallowed_abilities) }
-      end
+      it_behaves_like 'custom roles abilities'
     end
   end
 end
