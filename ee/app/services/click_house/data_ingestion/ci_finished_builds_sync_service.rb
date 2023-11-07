@@ -79,7 +79,7 @@ module ClickHouse
             next if csv_builder.rows_written == 0
 
             File.open(tempfile.path) do |f|
-              ClickHouse::Client.insert_csv(INSERT_FINISHED_BUILDS_QUERY, f, :main)
+              ClickHouse::Client.insert_csv(insert_finished_builds_query, f, :main)
             end
           end
         end
@@ -153,10 +153,19 @@ module ClickHouse
         **RUNNER_MANAGER_FIELD_NAMES.map { |n| :"runner_manager_#{n}" }.index_with { |n| n }
       }.freeze
 
-      INSERT_FINISHED_BUILDS_QUERY = <<~SQL.squish
-        INSERT INTO ci_finished_builds (#{CSV_MAPPING.keys.join(',')})
-        SETTINGS async_insert=1, wait_for_async_insert=1 FORMAT CSV
-      SQL
+      def insert_finished_builds_query
+        deduplicate = Feature.enabled?(:ci_deduplicate_build_ingestion_to_click_house) ? 1 : 0
+
+        <<~SQL.squish
+          INSERT INTO ci_finished_builds (#{CSV_MAPPING.keys.join(',')})
+          SETTINGS
+             async_insert=1,
+             async_insert_deduplicate=#{deduplicate},
+             deduplicate_blocks_in_dependent_materialized_views=#{deduplicate},
+             wait_for_async_insert=1
+          FORMAT CSV
+        SQL
+      end
 
       def keyset_iterator_scope
         lower_bound = (@worker_index * BUILD_ID_PARTITIONS / @total_workers).to_i
