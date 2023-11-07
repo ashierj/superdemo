@@ -39,14 +39,14 @@ export default {
   methods: {
     labelColor(type) {
       // Colors are taken from the label's colors map: gitlab/app/helpers/labels_helper.rb
-      switch (type) {
-        case 'COUNTER':
+      switch (type.toLowerCase()) {
+        case 'sum':
           return '#6699cc'; // blue-gray
-        case 'GAUGE':
+        case 'gauge':
           return '#cd5b45'; // dark-coral
-        case 'HISTOGRAM':
+        case 'histogram':
           return '#009966'; // green-cyan
-        case 'EXPONENTIAL HISTOGRAM': // eslint-disable-line @gitlab/require-i18n-strings
+        case 'exponentialhistogram':
           return '#ed9121'; // carrot-orange
         default:
           return '#808080'; // gray

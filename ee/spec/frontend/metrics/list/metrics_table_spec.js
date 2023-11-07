@@ -31,10 +31,10 @@ describe('MetricsTable', () => {
 
   describe('label', () => {
     it.each([
-      ['COUNTER', '#6699cc'],
-      ['GAUGE', '#cd5b45'],
-      ['HISTOGRAM', '#009966'],
-      ['EXPONENTIAL HISTOGRAM', '#ed9121'],
+      ['Sum', '#6699cc'],
+      ['Gauge', '#cd5b45'],
+      ['Histogram', '#009966'],
+      ['ExponentialHistogram', '#ed9121'],
       ['unknown', '#808080'],
     ])('sets the proper label when metric type is %s', (type, expectedColor) => {
       mountComponent({
