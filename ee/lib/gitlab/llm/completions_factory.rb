@@ -9,6 +9,11 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::Templates::ExplainVulnerability,
           feature_category: :vulnerability_management
         },
+        resolve_vulnerability: {
+          service_class: ::Gitlab::Llm::Completions::ResolveVulnerability,
+          prompt_class: ::Gitlab::Llm::Templates::Vulnerabilities::ResolveVulnerability,
+          feature_category: :vulnerability_management
+        },
         summarize_comments: {
           service_class: ::Gitlab::Llm::Completions::SummarizeAllOpenNotes,
           prompt_class: nil,
