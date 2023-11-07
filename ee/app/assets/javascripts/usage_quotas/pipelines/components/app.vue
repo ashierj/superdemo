@@ -315,6 +315,7 @@ export default {
         <gl-button
           v-else
           v-gl-modal-directive="'limited-access-modal-id'"
+          data-testid="buy-compute-minutes"
           category="primary"
           variant="confirm"
           class="js-buy-additional-minutes"
