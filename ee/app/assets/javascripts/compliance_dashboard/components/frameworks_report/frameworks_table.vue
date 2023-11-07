@@ -74,6 +74,9 @@ export default {
       this.frameworkSelectedForEdit = null;
       this.$refs.editModal.hide();
     },
+    isLastItem(index, arr) {
+      return index >= arr.length - 1;
+    },
   },
   fields: [
     {
@@ -133,7 +136,7 @@ export default {
           class="gl-display-inline-block"
         >
           <gl-link :href="associatedProject.webUrl">{{ associatedProject.name }}</gl-link
-          ><span v-if="index < associatedProjects.length - 1">, </span>
+          ><span v-if="!isLastItem(index, associatedProjects)">, </span>
         </div>
       </template>
       <template #table-busy>

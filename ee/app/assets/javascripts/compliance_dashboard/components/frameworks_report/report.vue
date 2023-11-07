@@ -4,8 +4,8 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 
-import complianceFrameworks from '../../../graphql_shared/queries/get_compliance_framework.query.graphql';
-import complianceFrameworksProjects from '../../../graphql_shared/queries/get_compliance_framework_associated_projects.query.graphql';
+import complianceFrameworks from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
+import complianceFrameworksProjects from 'ee/graphql_shared/queries/get_compliance_framework_associated_projects.query.graphql';
 import FrameworksTable from './frameworks_table.vue';
 
 export default {
