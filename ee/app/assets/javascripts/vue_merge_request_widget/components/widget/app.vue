@@ -41,6 +41,7 @@ export default {
         this.statusChecksWidget,
         this.terraformPlansWidget,
         this.securityReportsWidget,
+        this.accessibilityWidget,
       ].filter((w) => w);
     },
   },
