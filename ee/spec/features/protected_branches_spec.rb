@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Protected Branches', :js, feature_category: :source_code_management do
+RSpec.describe 'Protected Branches', :js, :disable_rate_limiter, feature_category: :source_code_management do
   include ProtectedBranchHelpers
 
   let_it_be(:user) { create(:user) }
