@@ -29,7 +29,7 @@ describe('Contribution Analytics App', () => {
     return responseCopy;
   };
 
-  const createWrapper = ({ contributionsQueryResolver }) => {
+  const createWrapper = ({ contributionsQueryResolver, props = {} }) => {
     const apolloProvider = createMockApollo(
       [[contributionsQuery, contributionsQueryResolver]],
       {},
@@ -42,13 +42,39 @@ describe('Contribution Analytics App', () => {
         fullPath: 'test',
         startDate: '2000-12-10',
         endDate: '2000-12-31',
+        dataSourceClickhouse: false,
+        ...props,
       },
     });
   };
 
+  const nextPageCursor = 'next';
+
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findErrorAlert = () => wrapper.findComponent(GlAlert);
   const findGroupMembersTable = () => wrapper.findComponent(GroupMembersTable);
+
+  const expectGroupMembersTableToHaveData = () =>
+    expect(findGroupMembersTable().props('contributions')).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          user: expect.objectContaining({
+            id: expect.any(String),
+            webUrl: expect.any(String),
+          }),
+        }),
+      ]),
+    );
+
+  const expectContributionsQueryResolverCalls = (resolver, results) => {
+    expect(resolver).toHaveBeenCalledTimes(results.length);
+    results.forEach((result) =>
+      expect(resolver).toHaveBeenCalledWith({
+        fullPath: wrapper.props('fullPath'),
+        ...result,
+      }),
+    );
+  };
 
   it('renders the loading spinner when the request is pending', async () => {
     const contributionsQueryResolver = jest.fn().mockResolvedValue({ data: null });
@@ -69,9 +95,32 @@ describe('Contribution Analytics App', () => {
     expect(findErrorAlert().text()).toEqual(wrapper.vm.$options.i18n.error);
   });
 
-  it('fetches the data per week, using paginated requests when necessary', async () => {
-    const nextPageCursor = 'next';
+  it('fetches Clickhouse data, using paginated requests when necessary', async () => {
+    const contributionsQueryResolver = jest
+      .fn()
+      .mockResolvedValueOnce(mockApiResponse({ endCursor: nextPageCursor }))
+      .mockResolvedValueOnce(mockApiResponse());
 
+    createWrapper({ contributionsQueryResolver, props: { dataSourceClickhouse: true } });
+    await waitForPromises();
+
+    expectGroupMembersTableToHaveData();
+
+    expectContributionsQueryResolverCalls(contributionsQueryResolver, [
+      {
+        startDate: '2000-12-10',
+        endDate: '2000-12-31',
+        nextPageCursor: '',
+      },
+      {
+        startDate: '2000-12-10',
+        endDate: '2000-12-31',
+        nextPageCursor,
+      },
+    ]);
+  });
+
+  it('fetches PostgresQL data per week, using paginated requests when necessary', async () => {
     const contributionsQueryResolver = jest
       .fn()
       .mockResolvedValueOnce(mockApiResponse({ endCursor: nextPageCursor }))
@@ -83,26 +132,15 @@ describe('Contribution Analytics App', () => {
     createWrapper({ contributionsQueryResolver });
     await waitForPromises();
 
-    const contributions = findGroupMembersTable().props('contributions');
-
-    expect(contributions).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          user: expect.objectContaining({
-            id: expect.any(String),
-            webUrl: expect.any(String),
-          }),
-        }),
-      ]),
-    );
-
-    expect(contributionsQueryResolver).toHaveBeenCalledTimes(5);
-    [
+    expectGroupMembersTableToHaveData();
+    expectContributionsQueryResolverCalls(contributionsQueryResolver, [
       {
+        startDate: '2000-12-10',
         endDate: '2000-12-17',
         nextPageCursor: '',
       },
       {
+        startDate: '2000-12-10',
         endDate: '2000-12-17',
         nextPageCursor,
       },
@@ -121,11 +159,6 @@ describe('Contribution Analytics App', () => {
         endDate: '2000-12-31',
         nextPageCursor,
       },
-    ].forEach((result) =>
-      expect(contributionsQueryResolver).toHaveBeenCalledWith({
-        ...wrapper.props(),
-        ...result,
-      }),
-    );
+    ]);
   });
 });

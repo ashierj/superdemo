@@ -38,6 +38,10 @@ export default {
       type: String,
       required: true,
     },
+    dataSourceClickhouse: {
+      type: Boolean,
+      required: true,
+    },
   },
   i18n: {
     loading: s__('ContributionAnalytics|Loading contribution stats for group members'),
@@ -65,11 +69,21 @@ export default {
     await this.fetchContributions(this.startDate);
   },
   methods: {
+    limitPostgresqlRequests(startDate, endDate) {
+      if (this.dataSourceClickhouse) {
+        // Don't modify request dates when using Clickhouse.
+        return { endDate, nextStartDate: null };
+      }
+
+      // Limit the request dates when using PostgresQL to prevent
+      // excessively large queries.
+      return restrictRequestEndDate(startDate, endDate);
+    },
     async fetchContributions(startDate, nextPageCursor = '') {
       this.isLoading = true;
 
       try {
-        const { endDate, nextStartDate } = restrictRequestEndDate(startDate, this.endDate);
+        const { endDate, nextStartDate } = this.limitPostgresqlRequests(startDate, this.endDate);
 
         const { data } = await this.$apollo.query({
           query: contributionsQuery,
