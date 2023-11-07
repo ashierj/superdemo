@@ -9,26 +9,18 @@ module Elastic
       HIGHLIGHT_END_TAG = '←gitlabelasticsearch'
       MAX_LANGUAGES = 100
 
-      def elastic_search(query, type: 'all', page: 1, per: 20, options: {})
-        results = { blobs: [], commits: [] }
-
-        commit_options = options.merge(features: 'repository', scope: 'commit')
-        blob_options = options.merge(features: 'repository', scope: 'blob')
-        wiki_blob_options = options.merge(features: 'wiki', scope: 'wiki_blob')
-
+      def elastic_search(query, type:, page: 1, per: 20, options: {})
         case type
-        when 'all'
-          results[:commits] = search_commit(query, page: page, per: per, options: commit_options)
-          results[:blobs] = search_blob(query, type: 'blob', page: page, per: per, options: blob_options)
-          results[:wiki_blobs] = search_blob(query, type: 'wiki_blob', page: page, per: per, options: wiki_blob_options)
         when 'commit'
-          results[:commits] = search_commit(query, page: page, per: per, options: commit_options)
+          commit_options = options.merge(features: 'repository', scope: type)
+          { commits: search_commit(query, page: page, per: per, options: commit_options) }
         when 'blob'
-          results[:blobs] = search_blob(query, type: type, page: page, per: per, options: blob_options)
+          blob_options = options.merge(features: 'repository', scope: type)
+          { blobs: search_blob(query, type: type, page: page, per: per, options: blob_options) }
         when 'wiki_blob'
-          results[:wiki_blobs] = search_blob(query, type: type, page: page, per: per, options: wiki_blob_options)
+          wiki_blob_options = options.merge(features: 'wiki', scope: type)
+          { wiki_blobs: search_blob(query, type: type, page: page, per: per, options: wiki_blob_options) }
         end
-        results
       end
 
       # @return [Kaminari::PaginatableArray]

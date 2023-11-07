@@ -39,7 +39,7 @@ RSpec.describe ElasticDeleteProjectWorker, feature_category: :global_search do
     expect(Milestone.elastic_search('*', **search_options).records).to include(milestone)
     expect(Note.elastic_search('*', **search_options).records).to include(note)
     expect(MergeRequest.elastic_search('*', **search_options).records).to include(merge_request)
-    expect(Repository.elastic_search('*', **search_options)[:blobs][:results].response).not_to be_empty
+    expect(Repository.elastic_search('*', **search_options, type: 'blob')[:blobs][:results].response).not_to be_empty
     expect(Repository.find_commits_by_message_with_elastic('*').count).to be > 0
     expect(ProjectWiki.__elasticsearch__.elastic_search_as_wiki_page('*',
       options: { project_id: project.id })).not_to be_empty
@@ -53,7 +53,7 @@ RSpec.describe ElasticDeleteProjectWorker, feature_category: :global_search do
     expect(Milestone.elastic_search('*', **search_options).total_count).to be(0)
     expect(Note.elastic_search('*', **search_options).total_count).to be(0)
     expect(MergeRequest.elastic_search('*', **search_options).total_count).to be(0)
-    expect(Repository.elastic_search('*', **search_options)[:blobs][:results].response).to be_empty
+    expect(Repository.elastic_search('*', **search_options, type: 'blob')[:blobs][:results].response).to be_empty
     expect(Repository.find_commits_by_message_with_elastic('*').count).to be(0)
     expect(ProjectWiki.__elasticsearch__.elastic_search_as_wiki_page('*',
       options: { project_id: project.id })).to be_empty
