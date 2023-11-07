@@ -21,11 +21,6 @@ RSpec.describe 'GitLab Duo Chat QA Evaluation for Issue', :clean_gitlab_redis_ch
       root_group.namespace_settings.update_attribute(:experiment_features_enabled, true)
       root_group.add_owner(user)
       issue.project.add_developer(user)
-
-      # Note: In SaaS simulation mode,
-      # the url must be `https://gitlab.com` but the routing helper returns `localhost`
-      # and breaks GitLab ReferenceExtractor
-      stub_default_url_options(host: "gitlab.com", protocol: "https")
     end
 
     where(:question_template) do
@@ -41,8 +36,8 @@ RSpec.describe 'GitLab Duo Chat QA Evaluation for Issue', :clean_gitlab_redis_ch
         ["Please summarize the latest activity and current status of the issue %<url>s"],
         ["How can I improve the description of %<url>s " \
          "so that readers understand the value and problems to be solved?"],
-        ["Please rewrite the description of %<url>s so that readers" \
-         "understand the value and problems to be solved." \
+        ["Please rewrite the description of %<url>s so that readers " \
+         "understand the value and problems to be solved. " \
          "Also add common \"jobs to be done\" or use cases which should be considered from a usability perspective."],
         ["Are there any open questions relating to this issue? %<url>s"]
       ]

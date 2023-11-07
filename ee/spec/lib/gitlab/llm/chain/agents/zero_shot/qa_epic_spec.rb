@@ -21,11 +21,6 @@ RSpec.describe 'GitLab Duo Chat QA Evaluation for Epic', :clean_gitlab_redis_cha
       root_group.namespace_settings.update_attribute(:third_party_ai_features_enabled, true)
       root_group.namespace_settings.update_attribute(:experiment_features_enabled, true)
       root_group.add_owner(user)
-
-      # Note: In SaaS simulation mode,
-      # the url must be `https://gitlab.com` but the routing helper returns `localhost`
-      # and breaks GitLab ReferenceExtractor
-      stub_default_url_options(host: "gitlab.com", protocol: "https")
     end
 
     where(:question_template) do
