@@ -86,7 +86,7 @@ module CodeSuggestions
         PROMPT
       end
 
-      if language.cursor_inside_empty_method?(content, suffix)
+      if language.cursor_inside_empty_function?(content, suffix)
         return <<~PROMPT
             Complete the empty function and generate contents based on the function name and signature.
             Do not repeat the code. Only return the method contents.
