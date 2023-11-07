@@ -634,11 +634,14 @@ module EE
     def member?(user, min_access_level = minimal_member_access_level)
       return false unless user
 
-      if min_access_level == ::Gitlab::Access::MINIMAL_ACCESS && minimal_access_role_allowed?
-        all_group_members.find_by(user_id: user.id).present? || members_from_self_and_ancestor_group_shares.where(user_id: user.id).present?
-      else
-        super
-      end
+      return super unless min_access_level == ::Gitlab::Access::MINIMAL_ACCESS
+      return super unless minimal_access_role_allowed?
+
+      ::Members::MembersWithParents
+        .new(self)
+        .members(minimal_access: true)
+        .find_by(user_id: user.id)
+        .present?
     end
 
     def minimal_member_access_level
