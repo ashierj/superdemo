@@ -658,7 +658,7 @@ GEM
       terminal-table (>= 1.5.1)
     gitlab-chronic (0.10.5)
       numerizer (~> 0.2)
-    gitlab-dangerfiles (4.5.1)
+    gitlab-dangerfiles (4.6.0)
       danger (>= 9.3.0)
       danger-gitlab (>= 8.0.0)
       rake (~> 13.0)
@@ -1835,7 +1835,7 @@ DEPENDENCIES
   gettext_i18n_rails_js (~> 2.0.0)
   gitaly (~> 16.5.0.pre.rc1)
   gitlab-chronic (~> 0.10.5)
-  gitlab-dangerfiles (~> 4.5.1)
+  gitlab-dangerfiles (~> 4.6.0)
   gitlab-experiment (~> 0.8.0)
   gitlab-fog-azure-rm (~> 1.8.0)
   gitlab-http!
