@@ -231,6 +231,27 @@ RSpec.describe IncidentManagement::OncallRotations::PersistShiftsJob, feature_ca
           end
         end
       end
+
+      # Unexpected case/safety-net. If rotation configuration changes were mis-handled,
+      # we still want to save the shifts for users who were on-call.
+      context 'when current time is during an unsaved shift that overlaps the last saved shift' do
+        let!(:original_end_time) { existing_shift.ends_at }
+        let!(:new_end_time) { original_end_time + 30.seconds }
+
+        before do
+          existing_shift.update!(ends_at: new_end_time)
+        end
+
+        around do |example|
+          travel_to(5.minutes.after(new_end_time)) { example.run }
+        end
+
+        it 'creates a shift that does not conflict' do
+          expect { perform }.to change { rotation.shifts.count }.by(1)
+          expect(rotation.shifts.first).to eq(existing_shift)
+          expect(rotation.shifts.second.starts_at).to eq(new_end_time)
+        end
+      end
     end
   end
 end

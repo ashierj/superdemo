@@ -8,8 +8,11 @@ module IncidentManagement
         return error_no_permissions unless allowed?
 
         IncidentManagement::OncallSchedule.transaction do
+          impacted_rotations = oncall_schedule.rotations.with_active_period
+
+          update_shifts!(oncall_schedule, impacted_rotations)
           oncall_schedule.update!(params)
-          update_rotations!(oncall_schedule)
+          update_rotations!(oncall_schedule, impacted_rotations)
         end
 
         success(oncall_schedule)
@@ -21,34 +24,38 @@ module IncidentManagement
 
       private
 
-      def update_rotations!(oncall_schedule)
-        return unless oncall_schedule.timezone_previously_changed?
+      # Ensure shift history is accurate before touching #updated_at on the rotation
+      def update_shifts!(oncall_schedule, rotations)
+        return if oncall_schedule.timezone == params[:timezone]
 
-        update_rotation_active_periods!(oncall_schedule)
+        rotations.each do |rotation|
+          IncidentManagement::OncallRotations::PersistShiftsJob.new.perform(rotation.id)
+        end
       end
 
       # Converts & updates the active period to the new timezone
+      # so the rotation is uninterrupted by the timezone change
       # Ex: 8:00 - 17:00 Europe/Berlin becomes 6:00 - 15:00 UTC
-      def update_rotation_active_periods!(oncall_schedule)
-        original_schedule_current_time = Time.current.in_time_zone(oncall_schedule.timezone_previously_was)
+      def update_rotations!(oncall_schedule, rotations)
+        return unless oncall_schedule.timezone_previously_changed?
 
-        oncall_schedule.rotations.with_active_period.each do |rotation|
-          active_period = rotation.active_period.for_date(original_schedule_current_time)
-          new_start_time, new_end_time = active_period.map { |time| time.in_time_zone(oncall_schedule.timezone).strftime('%H:%M') }
+        rotations.each do |rotation|
+          start_time, end_time = format_active_period(rotation, *oncall_schedule.previous_changes[:timezone])
 
-          service = IncidentManagement::OncallRotations::EditService.new(
-            rotation,
-            current_user,
-            {
-              active_period_start: new_start_time,
-              active_period_end: new_end_time
-            }
+          # Skipping side-effects of OncallRotations::EditSerivce, as
+          # we DON'T want to change the rotation's behavior
+          rotation.update!(
+            active_period_start: start_time,
+            active_period_end: end_time
           )
-
-          response = service.execute
-
-          raise response.message if response.error?
         end
+      end
+
+      def format_active_period(rotation, old_timezone, new_timezone)
+        rotation
+          .active_period
+          .for_date(Time.current.in_time_zone(old_timezone))
+          .map { |time| time.in_time_zone(new_timezone).strftime('%H:%M') }
       end
 
       def error_no_permissions
