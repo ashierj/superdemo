@@ -17,6 +17,8 @@ module EE
               attrs[:enable_tasks_by_type_chart] = 'true' if group.present?
               attrs[:enable_customizable_stages] = 'true' if licensed?
               attrs[:enable_projects_filter] = 'true' if group.present?
+              attrs[:can_edit] = 'true' if licensed? && ::Gitlab::Analytics::CycleAnalytics.allowed_to_edit?(
+                current_user, namespace)
 
               add_licensed_filter_params!(attrs)
             end

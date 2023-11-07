@@ -442,13 +442,12 @@ module EE
       end
 
       # If licensed but not reporter+, prevent access
-      rule { (~reporter & ~auditor & ~admin) & licensed_cycle_analytics_available }.policy do
-        prevent :read_cycle_analytics
+      rule { can?(:read_merge_request) & can?(:read_issue) & licensed_cycle_analytics_available }.policy do
+        enable :read_cycle_analytics
       end
 
       # If licensed and reporter+, allow access
-      rule { (reporter | admin) & licensed_cycle_analytics_available }.policy do
-        enable :read_cycle_analytics
+      rule { ((reporter | admin)) & licensed_cycle_analytics_available }.policy do
         enable :admin_value_stream
       end
 

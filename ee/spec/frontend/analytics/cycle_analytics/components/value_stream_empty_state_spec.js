@@ -20,6 +20,7 @@ const createComponent = (props = {}) =>
         emptyStateSvgPath,
         isLoading: false,
         hasDateRangeError: false,
+        canEdit: true,
         ...props,
       },
       stubs: { GlEmptyState },
@@ -63,6 +64,20 @@ describe('ValueStreamEmptyState', () => {
       expect(findSecondaryAction().attributes('href')).toBe(
         '/help/user/group/value_stream_analytics/index#custom-value-streams',
       );
+    });
+  });
+
+  describe('canEdit = false', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ canEdit: false });
+    });
+
+    it('does not render the create value stream button', () => {
+      expect(findPrimaryAction().exists()).toBe(false);
+    });
+
+    it('does not render the learn more button', () => {
+      expect(findSecondaryAction().exists()).toBe(false);
     });
   });
 

@@ -114,6 +114,7 @@ export default {
       pagination = {},
       aggregation = {},
       namespace = {},
+      canEdit = false,
       enableTasksByTypeChart = false,
       enableCustomizableStages = false,
       enableProjectsFilter = false,
@@ -129,6 +130,7 @@ export default {
     state.createdAfter = createdAfter;
     state.defaultStageConfig = defaultStageConfig;
     state.namespace = namespace;
+    state.canEdit = canEdit;
     state.enableTasksByTypeChart = enableTasksByTypeChart;
     state.enableCustomizableStages = enableCustomizableStages;
     state.enableProjectsFilter = enableProjectsFilter;
