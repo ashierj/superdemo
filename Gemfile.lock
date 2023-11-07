@@ -162,7 +162,7 @@ GEM
   specs:
     CFPropertyList (3.0.5)
       rexml
-    RedCloth (4.3.2)
+    RedCloth (4.3.3)
     acme-client (2.0.11)
       faraday (>= 1.0, < 3.0.0)
       faraday-retry (~> 1.0)
@@ -1744,7 +1744,7 @@ PLATFORMS
 
 DEPENDENCIES
   CFPropertyList (~> 3.0.0)
-  RedCloth (~> 4.3.2)
+  RedCloth (~> 4.3.3)
   acme-client (~> 2.0)
   activerecord-explain-analyze (~> 0.1)
   activerecord-gitlab!
