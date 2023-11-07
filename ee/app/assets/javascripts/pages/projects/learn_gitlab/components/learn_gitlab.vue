@@ -1,19 +1,21 @@
 <script>
-import { GlProgressBar, GlSprintf, GlAlert } from '@gitlab/ui';
+import { GlSprintf, GlAlert } from '@gitlab/ui';
+import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import eventHub from '~/invite_members/event_hub';
-import { s__ } from '~/locale';
+import { s__, n__ } from '~/locale';
 import { getCookie, removeCookie, parseBoolean } from '~/lib/utils/common_utils';
 import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
 import eventHubNav from '~/super_sidebar/event_hub';
+import CircularProgressBar from 'ee/vue_shared/components/circular_progress_bar.vue';
 import { ACTION_LABELS, INVITE_MODAL_OPEN_COOKIE } from '../constants';
 import LearnGitlabSectionCard from './learn_gitlab_section_card.vue';
 import UltimateTrialBenefitModal from './ultimate_trial_benefit_modal.vue';
 
 export default {
   components: {
-    GlProgressBar,
     GlSprintf,
     GlAlert,
+    CircularProgressBar,
     LearnGitlabSectionCard,
     UltimateTrialBenefitModal,
   },
@@ -47,6 +49,7 @@ export default {
     return {
       showSuccessfulInvitationsAlert: false,
       actionsData: this.actions,
+      isDesktop: bp.isDesktop(),
     };
   },
   computed: {
@@ -64,6 +67,22 @@ export default {
     },
     progressPercentage() {
       return Math.round((this.progressValue / this.maxValue) * 100);
+    },
+    progressBarBlockClasses() {
+      return {
+        'gl-mt-6 gl-display-inline-block': true,
+        'gl-ml-5': !this.isDesktop,
+        'gl-h-0 gl-mr-5 gl-ml-auto': this.isDesktop,
+      };
+    },
+    progressBarLabel() {
+      const tasksToGo = this.maxValue - this.progressValue;
+
+      if (tasksToGo > 0) {
+        return n__('LearnGitLab|%d task to go', 'LearnGitLab|%d tasks to go', tasksToGo);
+      }
+
+      return s__('LearnGitLab|You completed all tasks!');
     },
   },
   mounted() {
@@ -146,19 +165,18 @@ export default {
       </gl-sprintf>
     </gl-alert>
     <div class="row">
-      <div class="gl-mb-7 gl-ml-5">
+      <div class="col-sm-12 col-mb-9 col-lg-9">
         <h1 class="gl-font-size-h1">{{ $options.i18n.title }}</h1>
         <p class="gl-text-gray-700 gl-mb-0">{{ $options.i18n.description }}</p>
       </div>
-    </div>
-    <div class="gl-mb-3">
-      <p class="gl-text-gray-500 gl-mb-2" data-testid="completion-percentage">
-        <gl-sprintf :message="$options.i18n.percentageCompleted">
-          <template #percentage>{{ progressPercentage }}</template>
-          <template #percentSymbol>%</template>
-        </gl-sprintf>
-      </p>
-      <gl-progress-bar :value="progressValue" :max="maxValue" />
+
+      <div :class="progressBarBlockClasses" data-testid="progress-bar-block">
+        <circular-progress-bar class="gl-mx-auto" :percentage="progressPercentage" />
+
+        <div class="gl-mt-5 gl-text-center gl-font-lg gl-font-weight-bold">
+          {{ progressBarLabel }}
+        </div>
+      </div>
     </div>
 
     <div class="gl-mt-6">

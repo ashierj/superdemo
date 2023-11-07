@@ -28038,6 +28038,11 @@ msgstr ""
 msgid "Learn more: %{url}"
 msgstr ""
 
+msgid "LearnGitLab|%d task to go"
+msgid_plural "LearnGitLab|%d tasks to go"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "LearnGitLab|%{percentage}%{percentSymbol} completed"
 msgstr ""
 
@@ -28144,6 +28149,9 @@ msgid "LearnGitLab|Use the built-in editor to create or upload files."
 msgstr ""
 
 msgid "LearnGitLab|Use your new GitLab workflow to deploy your application, monitor its health, and keep it secure:"
+msgstr ""
+
+msgid "LearnGitLab|You completed all tasks!"
 msgstr ""
 
 msgid "LearnGitLab|Your team is growing! You've successfully invited new team members to the %{projectName} project."
