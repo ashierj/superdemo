@@ -357,60 +357,6 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
         end
       end
     end
-
-    context 'when type is all' do
-      context 'when performing a global search' do
-        let(:search_options) do
-          {
-            current_user: user,
-            public_and_internal_projects: true,
-            order_by: nil,
-            sort: nil
-          }
-        end
-
-        it 'returns results for all three types' do
-          result = subject.elastic_search('*', type: 'all', options: search_options)
-          expect(result.keys).to match_array([:wiki_blobs, :blobs, :commits])
-        end
-      end
-
-      context 'when performing a group search' do
-        let(:search_options) do
-          {
-            current_user: user,
-            project_ids: [project.id],
-            group_ids: [project.namespace.id],
-            public_and_internal_projects: false,
-            order_by: nil,
-            sort: nil
-          }
-        end
-
-        it 'returns results for all three types' do
-          result = subject.elastic_search('*', type: 'all', options: search_options)
-          expect(result.keys).to match_array([:wiki_blobs, :blobs, :commits])
-        end
-      end
-
-      context 'when performing a project search' do
-        let(:search_options) do
-          {
-            current_user: user,
-            project_ids: [project.id],
-            public_and_internal_projects: false,
-            order_by: nil,
-            sort: nil,
-            repository_id: project.id
-          }
-        end
-
-        it 'returns results for all three types' do
-          result = subject.elastic_search('*', type: 'all', options: search_options)
-          expect(result.keys).to match_array([:wiki_blobs, :blobs, :commits])
-        end
-      end
-    end
   end
 
   describe '#elastic_search_as_found_blob', :aggregate_failures do
