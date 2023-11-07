@@ -22821,7 +22821,9 @@ CREATE TABLE sbom_components (
     component_type smallint NOT NULL,
     name text NOT NULL,
     purl_type smallint,
-    CONSTRAINT check_91a8f6ad53 CHECK ((char_length(name) <= 255))
+    source_package_name text,
+    CONSTRAINT check_91a8f6ad53 CHECK ((char_length(name) <= 255)),
+    CONSTRAINT check_e2dcb53709 CHECK ((char_length(source_package_name) <= 255))
 );
 
 CREATE SEQUENCE sbom_components_id_seq
@@ -34386,6 +34388,8 @@ CREATE INDEX index_sop_configurations_project_id_policy_project_id ON security_o
 CREATE INDEX index_sop_schedules_on_sop_configuration_id ON security_orchestration_policy_rule_schedules USING btree (security_orchestration_policy_configuration_id);
 
 CREATE INDEX index_sop_schedules_on_user_id ON security_orchestration_policy_rule_schedules USING btree (user_id);
+
+CREATE UNIQUE INDEX index_source_package_names_on_component_and_purl ON sbom_components USING btree (component_type, source_package_name, purl_type);
 
 CREATE INDEX index_spam_logs_on_user_id ON spam_logs USING btree (user_id);
 
