@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::FetchSubscriptionPlansService, feature_category: :billing_and_payments do
+RSpec.describe GitlabSubscriptions::FetchSubscriptionPlansService, feature_category: :subscription_management do
   describe '#execute' do
     subject(:execute_service) { described_class.new(plan: plan).execute }
 

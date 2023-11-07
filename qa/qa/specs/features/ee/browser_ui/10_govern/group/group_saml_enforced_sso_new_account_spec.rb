@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Govern', :group_saml, :orchestrated, requires_admin: 'for various user admin functions' do
-    describe 'Group SAML SSO - Enforced SSO', product_group: :authentication_and_authorization do
+    describe 'Group SAML SSO - Enforced SSO', product_group: :authentication do
       include Support::API
 
       let!(:group) { create(:sandbox, :private, path: "saml_sso_group_#{SecureRandom.hex(8)}") }

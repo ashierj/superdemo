@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Govern' do
-    describe 'User with minimal access to group', :requires_admin, product_group: :authentication_and_authorization do
+    describe 'User with minimal access to group', :requires_admin, product_group: :authentication do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
 
       let(:user_with_minimal_access) { create(:user, api_client: admin_api_client) }
