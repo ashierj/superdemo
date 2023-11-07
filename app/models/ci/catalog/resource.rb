@@ -44,6 +44,10 @@ module Ci
         update!(state: :draft)
       end
 
+      def publish!
+        update!(state: :published)
+      end
+
       def sync_with_project!
         sync_with_project
         save!

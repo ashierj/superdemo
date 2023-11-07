@@ -29,6 +29,8 @@ A components repository is a GitLab project with a repository that hosts one or 
 
 If a component requires different versioning from other components, the component should be migrated to its own components repository.
 
+One component repository can have a maximum of 10 components.
+
 ## Create a components repository
 
 To create a components repository, you must:

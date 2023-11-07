@@ -122,6 +122,28 @@ RSpec.describe Ci::Catalog::Resource, feature_category: :pipeline_composition do
     end
   end
 
+  describe '#publish!' do
+    context 'when the catalog resource is in draft state' do
+      it 'updates the state of the catalog resource to published' do
+        expect(resource.state).to eq('draft')
+
+        resource.publish!
+
+        expect(resource.reload.state).to eq('published')
+      end
+    end
+
+    context 'when a catalog resource already has a published state' do
+      it 'leaves the state as published' do
+        resource.update!(state: 'published')
+
+        resource.publish!
+
+        expect(resource.state).to eq('published')
+      end
+    end
+  end
+
   describe '#unpublish!' do
     context 'when the catalog resource is in published state' do
       it 'updates the state to draft' do
