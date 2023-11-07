@@ -68,7 +68,7 @@ module BulkImports
     end
 
     def logger
-      @logger ||= Gitlab::Import::Logger.build
+      @logger ||= Logger.build
     end
 
     def log_exception(exception, payload)
@@ -88,7 +88,7 @@ module BulkImports
         bulk_import_entity_type: entity.source_type,
         source_full_path: entity.source_full_path,
         source_version: source_version,
-        importer: 'gitlab_migration'
+        importer: Logger::IMPORTER_NAME
       }
 
       defaults.merge(extra)
