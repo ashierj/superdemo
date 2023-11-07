@@ -1813,6 +1813,9 @@ msgstr ""
 msgid "A management, operational, or technical control (that is, safeguard or countermeasure) employed by an organization that provides equivalent or comparable protection for an information system."
 msgstr ""
 
+msgid "A maximum of %{limit} projects can be searched for at one time."
+msgstr ""
+
 msgid "A member of the abuse team will review your report as soon as possible."
 msgstr ""
 

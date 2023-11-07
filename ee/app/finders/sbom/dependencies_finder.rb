@@ -2,6 +2,8 @@
 
 module Sbom
   class DependenciesFinder
+    include Gitlab::Utils::StrongMemoize
+
     def initialize(project_or_group, params: {})
       @project_or_group = project_or_group
       @params = params
@@ -27,13 +29,10 @@ module Sbom
     attr_reader :project_or_group, :params
 
     def filtered_collection
-      collection = project_or_group.sbom_occurrences
-
+      collection = occurrences
       collection = filter_by_package_managers(collection) if params[:package_managers].present?
-
       collection = filter_by_component_names(collection) if params[:component_names].present?
       collection = collection.by_licenses(params[:licenses]) if params[:licenses].present?
-
       collection
     end
 
@@ -47,6 +46,23 @@ module Sbom
 
     def sort_direction
       params[:sort]&.downcase == 'desc' ? 'desc' : 'asc'
+    end
+
+    def occurrences
+      return project_or_group.sbom_occurrences if params[:project_ids].blank? || project?
+
+      Sbom::Occurrence.by_project_ids(project_ids_in_group_hierarchy)
+    end
+
+    def project_ids_in_group_hierarchy
+      Project
+        .id_in(params[:project_ids])
+        .for_group_and_its_subgroups(project_or_group)
+        .select(:id)
+    end
+
+    def project?
+      project_or_group.is_a?(::Project)
     end
   end
 end
