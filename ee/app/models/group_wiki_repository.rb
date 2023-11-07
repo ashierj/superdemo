@@ -18,7 +18,7 @@ class GroupWikiRepository < ApplicationRecord
 
   validates :group, :disk_path, presence: true, uniqueness: true
 
-  delegate :repository_storage, to: :group
+  delegate :create_wiki, :repository_storage, to: :group
   delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :group_wiki_repository_state)
 
   after_save :save_verification_details

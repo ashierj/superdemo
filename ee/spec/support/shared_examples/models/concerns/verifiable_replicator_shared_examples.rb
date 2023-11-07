@@ -581,6 +581,7 @@ RSpec.shared_examples 'a verifiable replicator' do
       tracker = double('tracker')
       allow(replicator).to receive(:verification_state_tracker).and_return(tracker)
       allow(replicator).to receive(:calculate_checksum).and_return('abc123')
+      allow(tracker).to receive(:verification_started!).and_return(true)
 
       expect(tracker).to receive(:track_checksum_attempt!).and_yield
 
