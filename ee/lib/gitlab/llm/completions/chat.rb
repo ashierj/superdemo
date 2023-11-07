@@ -71,7 +71,7 @@ module Gitlab
         def response_post_processing
           return if Rails.env.development?
 
-          service_options = { request_id: tracking_context[:request_id], question: options[:content] }
+          service_options = { request_id: tracking_context[:request_id], question: prompt_message.content }
           ::Llm::ExecuteMethodService.new(user, user, :categorize_question, service_options).execute
         end
       end
