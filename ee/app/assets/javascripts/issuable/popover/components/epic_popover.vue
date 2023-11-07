@@ -4,6 +4,7 @@ import { humanTimeframe } from '~/lib/utils/datetime/date_format_utility';
 import StatusBadge from '~/issuable/components/status_badge.vue';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 import { TYPE_EPIC } from '~/issues/constants';
+import WorkItemTypeIcon from '~/work_items/components/work_item_type_icon.vue';
 
 import query from '../queries/epic.query.graphql';
 
@@ -14,6 +15,7 @@ export default {
     GlPopover,
     GlSkeletonLoader,
     StatusBadge,
+    WorkItemTypeIcon,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -103,8 +105,9 @@ export default {
       </span>
     </div>
     <h5 v-if="!loading" class="gl-my-3">{{ title }}</h5>
-    <div class="gl-text-secondary">
-      {{ referenceFull }}
+    <div>
+      <work-item-type-icon work-item-type="epic" />
+      <span class="gl-text-secondary">{{ referenceFull }}</span>
     </div>
     <div
       v-if="showTimeframe"

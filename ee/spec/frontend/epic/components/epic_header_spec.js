@@ -30,7 +30,7 @@ describe('EpicHeader component', () => {
       createdAt: '2015-07-03T10:00:00.000Z',
       issuableState: 'opened',
       issuableType: 'epic',
-      statusIcon: 'epic',
+      statusIcon: 'issue-open-m',
       workspaceType: 'group',
     });
   });

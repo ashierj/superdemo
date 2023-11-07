@@ -54382,6 +54382,9 @@ msgstr ""
 msgid "WorkItem|Due date"
 msgstr ""
 
+msgid "WorkItem|Epic"
+msgstr ""
+
 msgid "WorkItem|Existing task"
 msgstr ""
 
