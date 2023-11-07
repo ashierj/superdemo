@@ -477,6 +477,23 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
       end
     end
 
+    describe "#identifier_names" do
+      let_it_be(:finding) { create(:vulnerabilities_finding) }
+      let(:cwe_1) { 'CWE-0000' }
+      let(:cwe_2) { 'CWE-0001' }
+      let(:cwe_3) { 'CWE-0002' }
+
+      subject { finding.identifier_names }
+
+      before do
+        finding.identifiers << create(:vulnerabilities_identifier, external_type: 'cwe', name: cwe_1)
+        finding.identifiers << create(:vulnerabilities_identifier, external_type: 'cwe', name: cwe_2)
+        finding.identifiers << create(:vulnerabilities_identifier, external_type: 'cwe', name: cwe_3)
+      end
+
+      it { is_expected.to eql(finding.identifiers.pluck(:name)) }
+    end
+
     describe 'feedback' do
       let_it_be(:project) { create(:project) }
 

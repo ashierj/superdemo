@@ -425,14 +425,6 @@ module Vulnerabilities
       finding_pipelines.last&.pipeline
     end
 
-    protected
-
-    def primary_identifier_fingerprint
-      identifiers.first&.fingerprint
-    end
-
-    private
-
     def vulnerable_lines
       # -1 is a magic number here meaning an explicit value
       # for start_line or end_line was not provided.  If neither
@@ -460,6 +452,16 @@ module Vulnerabilities
       blob.present? ? blob.data : ""
     end
     strong_memoize_attr :source_code
+
+    def identifier_names
+      identifiers.pluck(:name)
+    end
+
+    protected
+
+    def primary_identifier_fingerprint
+      identifiers.first&.fingerprint
+    end
   end
 end
 
