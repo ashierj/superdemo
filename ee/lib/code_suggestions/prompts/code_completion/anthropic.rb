@@ -24,15 +24,16 @@ module CodeSuggestions
           trimmed_suffix = suffix.to_s.first(MAX_INPUT_CHARS - trimmed_prefix.size)
 
           <<~PROMPT
-            Human: We want to fill in new #{language.name} code inside the file '#{file_path_info}'.
+            Human: You are a coding autocomplete agent. We want to generate new #{language.name} code inside the file '#{file_path_info}'.
             The existing code is provided in <existing_code></existing_code> tags.
-            The new code belongs at the cursor, which is currently at the position of the <cursor> tag.
-            Review the existing code to understand it's logic and format then try to determine the most likely new code at the cursor.
-            Review the new code step by step to ensure the following
-            1. When inserted at the cursor it is valid #{language.name} code.
+            The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
+            In your process, first, review the existing code to understand its logic and format. Then, try to determine the most likely new code to generate at the cursor position.
+            When generating the new code, please ensure the following:
+            1. It is valid #{language.name} code.
             2. It matches the existing code's variable, parameter and function names.
-            3. It does not repeat any existing code, if code has been repeated, discard it and try again.
-            Return new code enclosed in <new_code></new_code> tags which can be inserted at the <cursor> tag.
+            3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
+            4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+            Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
             #{examples_section}
@@ -41,13 +42,13 @@ module CodeSuggestions
               #{trimmed_prefix}<cursor>#{trimmed_suffix}
             </existing_code>
 
-            Assistant: #{trimmed_prefix&.lines&.last}<new_code>
+            Assistant: <new_code>
           PROMPT
         end
 
         def examples_section
           examples_template = <<~EXAMPLES
-          You got example scenarios between <examples> XML tag.
+          Here are a few examples of successfully generated code by other autocomplete agents:
 
           <examples>
           <% examples_array.each do |use_case| %>
@@ -62,7 +63,7 @@ module CodeSuggestions
           </examples>
           EXAMPLES
 
-          examples_array = language.examples
+          examples_array = language.completion_examples
           return if examples_array.empty?
 
           ERB.new(examples_template).result(binding)

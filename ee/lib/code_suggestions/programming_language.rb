@@ -88,9 +88,14 @@ module CodeSuggestions
     }.freeze
 
     CODE_COMPLETIONS_EXAMPLES_URI = 'ee/lib/code_suggestions/prompts/code_completion/examples.yml'
+    CODE_GENERATIONS_EXAMPLES_URI = 'ee/lib/code_suggestions/prompts/code_generation/examples.yml'
 
     LANGUAGE_CODE_COMPLETION_EXAMPLES = YAML.safe_load(
       File.read(Rails.root.join(CODE_COMPLETIONS_EXAMPLES_URI))
+    ).freeze
+
+    LANGUAGE_CODE_GENERATION_EXAMPLES = YAML.safe_load(
+      File.read(Rails.root.join(CODE_GENERATIONS_EXAMPLES_URI))
     ).freeze
 
     DEFAULT_NAME = ''
@@ -127,8 +132,12 @@ module CodeSuggestions
       end
     end
 
-    def examples
+    def completion_examples
       LANGUAGE_CODE_COMPLETION_EXAMPLES[name] || []
+    end
+
+    def generation_examples
+      LANGUAGE_CODE_GENERATION_EXAMPLES[name] || []
     end
 
     def cursor_inside_empty_function?(content, suffix)

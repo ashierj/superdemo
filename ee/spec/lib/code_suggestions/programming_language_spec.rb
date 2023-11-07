@@ -163,7 +163,8 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
       # generate rspec test case for #examples instance method
       # that return empty array
       it 'returns empty array when there are no examples' do
-        expect(described_class.new(language_name).examples).to eq([])
+        expect(described_class.new(language_name).completion_examples).to eq([])
+        expect(described_class.new(language_name).generation_examples).to eq([])
       end
     end
 
@@ -180,7 +181,8 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
       # return array containing hashes
       # with keys: example and response
       it 'returns array of hashes with example and response' do
-        expect(described_class.new(language_name).examples).to all(include('example', 'response'))
+        expect(described_class.new(language_name).completion_examples).to all(include('example', 'response'))
+        expect(described_class.new(language_name).generation_examples).to all(include('example', 'response'))
       end
     end
   end

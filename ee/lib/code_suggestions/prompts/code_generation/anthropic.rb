@@ -20,22 +20,21 @@ module CodeSuggestions
 
         def prompt
           <<~PROMPT
-
-
-            Human: You are a code completion AI that writes high-quality code like a senior engineer.
-            You are looking at '#{file_path_info}' file. You write code in between tags as in this example:
-
-            <new_code>
-            // Code goes here
-            </new_code>
-
-            This is a task to write new #{language.name} code in a file '#{file_path_info}', based on a given description.
+            Human: You are a coding autocomplete agent. We want to generate new #{language.name} code inside the
+            file '#{file_path_info}' based on the instructions provided in <instruction> XML tags.
             #{existing_code_instruction}
-            You get the description of the code that needs to be created in <instruction> XML tags.
+            The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
+            In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
+            likely new code to generate at the cursor position to fulfill the instructions.
+            When generating the new code, please ensure the following:
+            1. It is valid #{language.name} code.
+            2. It matches the existing code's variable, parameter and function names.
+            3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
+            4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+            Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            It is your task to write valid and working #{language.name} code.
-            Only return in your response new code.
-            Do not provide any explanation.
+            #{examples_section}
 
             #{existing_code_block}
 
@@ -51,17 +50,43 @@ module CodeSuggestions
         def existing_code_instruction
           return unless params[:prefix].present?
 
-          "You get the already existing code file in <existing_code> XML tags."
+          "The existing code is provided in <existing_code></existing_code> tags."
         end
 
         def existing_code_block
           return unless params[:prefix].present?
 
+          trimmed_prefix = prefix.to_s.last(MAX_INPUT_CHARS)
+          trimmed_suffix = suffix.to_s.first(MAX_INPUT_CHARS - trimmed_prefix.size)
+
           <<~CODE
             <existing_code>
-            #{params[:prefix].last(MAX_INPUT_CHARS)}
+            #{trimmed_prefix}<cursor>#{trimmed_suffix}
             </existing_code>
           CODE
+        end
+
+        def examples_section
+          examples_template = <<~EXAMPLES
+          Here are a few examples of successfully generated code by other autocomplete agents:
+
+          <examples>
+          <% examples_array.each do |use_case| %>
+            <example>
+              H: <existing_code>
+                   <%= use_case['example'] %>
+                 </existing_code>
+
+              A: <%= use_case['response'] %></new_code>
+            </example>
+          <% end %>
+          </examples>
+          EXAMPLES
+
+          examples_array = language.generation_examples
+          return if examples_array.empty?
+
+          ERB.new(examples_template).result(binding)
         end
       end
     end
