@@ -138,5 +138,34 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
         end
       end
     end
+
+    describe 'set protected_branches_from_deletion' do
+      subject { get :show, params: { namespace_id: project.namespace, project_id: project } }
+
+      let(:protected_branch_from_deletion) { create(:protected_branch, project: project) }
+
+      let(:protected_branches) { [protected_branch_from_deletion, create(:protected_branch, project: project)] }
+
+      before do
+        allow(project).to receive(:protected_branches).and_return(protected_branches)
+
+        allow_next_instance_of(
+          ::Security::SecurityOrchestrationPolicies::ProtectedBranchesDeletionCheckService,
+          project: project) do |instance|
+          allow(instance).to receive(:execute).and_return([protected_branch_from_deletion])
+        end
+      end
+
+      it 'sets protected_branches_from_deletion' do
+        subject
+
+        assigned_protected_branches = assigns(:protected_branches)
+
+        expect(assigned_protected_branches.size).to eq(2)
+
+        expect(assigned_protected_branches.select(&:protected_from_deletion))
+          .to contain_exactly(protected_branch_from_deletion)
+      end
+    end
   end
 end

@@ -13,6 +13,8 @@ module EE
       protected_ref_access_levels :unprotect
 
       scope :preload_access_levels, -> { preload(:push_access_levels, :merge_access_levels, :unprotect_access_levels) }
+
+      attr_accessor :protected_from_deletion
     end
 
     class_methods do
