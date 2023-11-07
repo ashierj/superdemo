@@ -21,7 +21,8 @@ module Gitlab
             container: resource.try(:resource_parent)&.root_ancestor,
             resource: resource,
             ai_request: ai_request,
-            extra_resource: options.delete(:extra_resource) || {}
+            extra_resource: options.delete(:extra_resource) || {},
+            request_id: prompt_message.request_id
           )
 
           # This can be removed once all clients use the subscription with the `ai_action: "chat"` parameter.
