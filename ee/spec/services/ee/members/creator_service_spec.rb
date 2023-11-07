@@ -96,34 +96,13 @@ RSpec.describe Members::CreatorService, feature_category: :groups_and_projects d
           stub_licensed_features(custom_roles: true)
         end
 
-        context 'with invitations_member_role_id feature flag enabled' do
-          before do
-            stub_feature_flags(invitations_member_role_id: true)
-          end
+        it 'adds a user to members with custom role assigned' do
+          expect { add_member }.to change { group.members.count }.by(1)
 
-          it 'adds a user to members with custom role assigned' do
-            expect { add_member }.to change { group.members.count }.by(1)
+          member = Member.last
 
-            member = Member.last
-
-            expect(member.member_role).to eq(member_role)
-            expect(member.access_level).to eq(Member::GUEST)
-          end
-        end
-
-        context 'with invitations_member_role_id feature flag disabled' do
-          before do
-            stub_feature_flags(invitations_member_role_id: false)
-          end
-
-          it 'adds a user to members without custom role assigned' do
-            expect { add_member }.to change { group.members.count }.by(1)
-
-            member = Member.last
-
-            expect(member.member_role).to be_nil
-            expect(member.access_level).to eq(Member::GUEST)
-          end
+          expect(member.member_role).to eq(member_role)
+          expect(member.access_level).to eq(Member::GUEST)
         end
       end
 
