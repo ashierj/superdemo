@@ -13,7 +13,7 @@
         = _('None')
   .title.hide-collapsed
     = _('Total issue weight')
-  .value.hide-collapsed{ data: { qa_selector: 'total_issue_weight_value' } }
+  .value.hide-collapsed{ data: { testid: 'total-issue-weight-value' } }
     - unless total_weight == 0
       %strong.bold= total_weight
     - else

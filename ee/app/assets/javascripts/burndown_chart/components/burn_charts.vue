@@ -313,7 +313,7 @@ export default {
           :category="weightButtonCategory"
           variant="confirm"
           size="small"
-          data-qa-selector="weight_button"
+          data-testid="weight-button"
           @click="setIssueSelected(false)"
         >
           {{ __('Issue weight') }}
