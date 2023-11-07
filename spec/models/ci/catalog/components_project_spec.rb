@@ -39,7 +39,7 @@ RSpec.describe Ci::Catalog::ComponentsProject, feature_category: :pipeline_compo
     it 'does not fetch more paths than the limit' do
       paths = components_project.fetch_component_paths(project.default_branch, limit: 1)
 
-      expect(paths.size).to be(1)
+      expect(paths.size).to eq(1)
     end
   end
 
