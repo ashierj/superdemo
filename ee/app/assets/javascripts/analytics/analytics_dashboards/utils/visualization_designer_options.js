@@ -1,6 +1,6 @@
 import { __ } from '~/locale';
 
-export function getPanelOptions(visualizationType, hasTimeDimension) {
+export function getVisualizationOptions(visualizationType, hasTimeDimension, measureSubType) {
   switch (visualizationType) {
     case 'LineChart':
       return {
@@ -26,6 +26,14 @@ export function getPanelOptions(visualizationType, hasTimeDimension) {
           type: 'value',
         },
       };
+    case 'SingleStat':
+      if (measureSubType === 'returningUserPercentage') {
+        return {
+          unit: '%',
+        };
+      }
+
+      return {};
     default:
       return {};
   }

@@ -3,6 +3,7 @@ import { GlLabel, GlDropdownItem } from '@gitlab/ui';
 import {
   EVENTS_TABLE_NAME,
   SESSIONS_TABLE_NAME,
+  RETURNING_USERS_TABLE_NAME,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProductAnalyticsDimensionSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/selectors/product_analytics/dimension_selector.vue';
@@ -65,11 +66,11 @@ describe('ProductAnalyticsDimensionSelector', () => {
     it.each(measuredSubTypes)('to select %p', async (startbutton, selectMethod) => {
       createWrapper();
 
-      const overvViewButton = wrapper.findByTestId(startbutton);
+      const overViewButton = wrapper.findByTestId(startbutton);
 
       // Overview
-      expect(overvViewButton.exists()).toBe(true);
-      overvViewButton.vm.$emit('click');
+      expect(overViewButton.exists()).toBe(true);
+      overViewButton.vm.$emit('click');
 
       await nextTick();
 
@@ -150,7 +151,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
     });
   });
 
-  describe('when timedimension is selected', () => {
+  describe('when timeDimension is selected', () => {
     it('should setTimeDimensions when a granularity is selected', () => {
       createWrapper({ measureType: 'events' });
 
@@ -167,7 +168,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
       ]);
     });
 
-    it('should show currect granularity Label', async () => {
+    it('should show correct granularity Label', async () => {
       createWrapper({
         timeDimensions: [
           {
@@ -190,7 +191,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
     });
   });
 
-  describe('when sessions measuretype', () => {
+  describe('when sessions measureType', () => {
     beforeEach(() => {
       createWrapper({ measureType: 'sessions' });
     });
@@ -210,6 +211,32 @@ describe('ProductAnalyticsDimensionSelector', () => {
       expect(setTimeDimensions).toHaveBeenCalledWith([
         {
           dimension: `${SESSIONS_TABLE_NAME}.startAt`,
+          granularity: 'seconds',
+        },
+      ]);
+    });
+  });
+
+  describe('when returningUsers measureType', () => {
+    beforeEach(() => {
+      createWrapper({ measureType: 'returningUsers' });
+    });
+
+    it('should not render any items on overview', () => {
+      const overViewButton = wrapper.findByTestId('pages-url-button');
+
+      expect(overViewButton.exists()).toBe(false);
+    });
+
+    it('should setTimeDimensions with returningUsers field when a granularity is selected', () => {
+      wrapper
+        .findByTestId('event-granularities-dd')
+        .findComponent(GlDropdownItem)
+        .vm.$emit('click');
+
+      expect(setTimeDimensions).toHaveBeenCalledWith([
+        {
+          dimension: `${RETURNING_USERS_TABLE_NAME}.first_timestamp`,
           granularity: 'seconds',
         },
       ]);

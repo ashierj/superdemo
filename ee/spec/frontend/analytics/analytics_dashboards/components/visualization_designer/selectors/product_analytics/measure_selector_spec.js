@@ -3,6 +3,7 @@ import { GlLabel } from '@gitlab/ui';
 import {
   EVENTS_TABLE_NAME,
   SESSIONS_TABLE_NAME,
+  RETURNING_USERS_TABLE_NAME,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProductAnalyticsMeasureSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/selectors/product_analytics/measure_selector.vue';
@@ -19,6 +20,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
   const setMeasures = jest.fn();
   const setFilters = jest.fn();
   const addFilters = jest.fn();
+  const setSegments = jest.fn();
 
   const createWrapper = () => {
     wrapper = shallowMountExtended(ProductAnalyticsMeasureSelector, {
@@ -28,6 +30,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
         filters: [],
         setFilters,
         addFilters,
+        setSegments,
       },
     });
   };
@@ -73,6 +76,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
 
       expect(setMeasures).toHaveBeenCalledWith([]);
       expect(setFilters).toHaveBeenCalledWith([]);
+      expect(setSegments).toHaveBeenCalledWith([]);
     });
 
     it('renders the column title', () => {
@@ -160,7 +164,6 @@ describe('ProductAnalyticsMeasureSelector', () => {
     ${'sessions-count-button'}       | ${'count'}                  | ${'sessions::count'}
     ${'sessions-avgduration-button'} | ${'averageDurationMinutes'} | ${'sessions::averageDurationMinutes'}
     ${'sessions-avgperuser-button'}  | ${'averagePerUser'}         | ${'sessions::averagePerUser'}
-    ${'sessions-repeat-button'}      | ${'repeatPercent'}          | ${'sessions::repeatPercent'}
   `(
     'navigates from overview to sessions subpage $measureName',
     async ({ startButton, measureName, summaryString }) => {
@@ -182,6 +185,38 @@ describe('ProductAnalyticsMeasureSelector', () => {
       expect(wrapper.emitted('measureSelected')).toEqual([[summarySubValues[0]], summarySubValues]);
 
       await checkFinalStep(`${SESSIONS_TABLE_NAME}.${measureName}`, summaryString);
+    },
+  );
+
+  it.each`
+    startbutton                            | measureName                  | addsSegment | summaryString
+    ${'returning-users-count-button'}      | ${'allSessionsCount'}        | ${true}     | ${'returningUsers::allSessionsCount'}
+    ${'returning-users-percentage-button'} | ${'returningUserPercentage'} | ${false}    | ${'returningUsers::returningUserPercentage'}
+  `(
+    'navigates from overview to returning users subpage $measureName',
+    async ({ startbutton, measureName, addsSegment, summaryString }) => {
+      createWrapper();
+
+      const summarySubValues = summaryString.split('::');
+
+      // Overview
+      wrapper.findByTestId('returning-users-button').vm.$emit('click');
+
+      await nextTick();
+
+      const selectTypeButton = wrapper.findByTestId(startbutton);
+      expect(selectTypeButton.exists()).toBe(true);
+      expect(findBackButton().exists()).toBe(true);
+
+      selectTypeButton.vm.$emit('click');
+
+      expect(wrapper.emitted('measureSelected')).toEqual([[summarySubValues[0]], summarySubValues]);
+
+      await checkFinalStep(`${RETURNING_USERS_TABLE_NAME}.${measureName}`, summaryString);
+
+      if (addsSegment) {
+        expect(setSegments).toHaveBeenCalledWith([`${RETURNING_USERS_TABLE_NAME}.returningUsers`]);
+      }
     },
   );
 });

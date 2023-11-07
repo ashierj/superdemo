@@ -4,6 +4,7 @@ import { pikadayToString } from '~/lib/utils/datetime_utility';
 import csrf from '~/lib/utils/csrf';
 import {
   EVENTS_TABLE_NAME,
+  RETURNING_USERS_TABLE_NAME,
   SESSIONS_TABLE_NAME,
 } from 'ee/analytics/analytics_dashboards/constants';
 
@@ -15,6 +16,7 @@ const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/req
 export const DATE_RANGE_FILTER_DIMENSIONS = {
   trackedevents: `${EVENTS_TABLE_NAME}.derivedTstamp`,
   sessions: `${SESSIONS_TABLE_NAME}.startAt`,
+  returningusers: `${RETURNING_USERS_TABLE_NAME}.first_timestamp`,
 };
 
 const convertToCommonChartFormat = (resultSet) => {

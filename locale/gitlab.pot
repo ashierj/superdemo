@@ -36231,6 +36231,9 @@ msgstr ""
 msgid "ProductAnalytics|All Pages"
 msgstr ""
 
+msgid "ProductAnalytics|All Returning Users Compared"
+msgstr ""
+
 msgid "ProductAnalytics|All Sessions Compared"
 msgstr ""
 
@@ -36256,6 +36259,9 @@ msgid "ProductAnalytics|Back to dashboards"
 msgstr ""
 
 msgid "ProductAnalytics|Compares all events against each other"
+msgstr ""
+
+msgid "ProductAnalytics|Compares all returning users against each other"
 msgstr ""
 
 msgid "ProductAnalytics|Compares all user sessions against each other"
@@ -36300,7 +36306,7 @@ msgstr ""
 msgid "ProductAnalytics|How many sessions a user has"
 msgstr ""
 
-msgid "ProductAnalytics|How often sessions are repeated"
+msgid "ProductAnalytics|How often users returned compared to all sessions"
 msgstr ""
 
 msgid "ProductAnalytics|Instrument your application"
@@ -36321,6 +36327,9 @@ msgstr ""
 msgid "ProductAnalytics|Measure all or specific Page Views"
 msgstr ""
 
+msgid "ProductAnalytics|Measure all returning users"
+msgstr ""
+
 msgid "ProductAnalytics|Measure all sessions"
 msgstr ""
 
@@ -36336,10 +36345,13 @@ msgstr ""
 msgid "ProductAnalytics|Page Views"
 msgstr ""
 
+msgid "ProductAnalytics|Percentage of Users Returning"
+msgstr ""
+
 msgid "ProductAnalytics|Product analytics onboarding"
 msgstr ""
 
-msgid "ProductAnalytics|Repeat Visit Percentage"
+msgid "ProductAnalytics|Returning Users"
 msgstr ""
 
 msgid "ProductAnalytics|SDK application ID"

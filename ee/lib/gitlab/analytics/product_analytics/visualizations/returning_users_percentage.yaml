@@ -5,10 +5,9 @@ data:
   type: cube_analytics
   query:
     measures:
-      - Sessions.repeatPercent
+      - ReturningUsers.returningUserPercentage
     limit: 100
     timezone: UTC
-    filters: []
     dimensions: []
     timeDimensions: []
 options:
