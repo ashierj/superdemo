@@ -133,4 +133,21 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       end
     end
   end
+
+  describe '#clean!' do
+    before do
+      subject.add(build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')))
+      subject.add(build(:ai_chat_message, payload.merge(content: '/reset', role: 'user', request_id: '3')))
+      subject.add(build(:ai_chat_message, payload.merge(content: 'msg3', role: 'user', request_id: '3')))
+      subject.add(build(:ai_chat_message, payload.merge(content: '/reset', role: 'user', request_id: '3')))
+    end
+
+    it 'returns clears all chat messages' do
+      expect(subject.messages.size).to eq(4)
+
+      subject.clean!
+
+      expect(subject.messages).to be_empty
+    end
+  end
 end

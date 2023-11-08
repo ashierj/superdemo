@@ -26,4 +26,22 @@ RSpec.shared_examples 'llm service caches user request' do
       subject.execute
     end
   end
+
+  context 'when a special clean message is used' do
+    let(:content) { '/clean' }
+
+    before do
+      allow(subject).to receive(:content).and_return(content)
+    end
+
+    it 'deletes all cache messages' do
+      expect(::Llm::CompletionWorker).not_to receive(:perform_for)
+
+      expect_next_instance_of(::Gitlab::Llm::ChatStorage) do |cache|
+        expect(cache).to receive(:clean!)
+      end
+
+      subject.execute
+    end
+  end
 end
