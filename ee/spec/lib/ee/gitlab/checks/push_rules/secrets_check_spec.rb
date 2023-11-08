@@ -11,6 +11,23 @@ RSpec.describe EE::Gitlab::Checks::PushRules::SecretsCheck, feature_category: :s
     it_behaves_like 'check ignored when push rule unlicensed'
     it_behaves_like 'use predefined push rules'
 
+    context 'when license is not ultimate' do
+      it 'skips the check' do
+        expect(subject.validate!).to be_nil
+      end
+    end
+
+    context 'when license is ultimate' do
+      before do
+        stub_licensed_features(pre_receive_secret_detection: true)
+      end
+
+      it 'returns without raising errors' do
+        # Since the check does nothing at the moment, it just execute without raising errors
+        expect { subject.validate! }.not_to raise_error
+      end
+    end
+
     context 'when feature flag is disabled' do
       before do
         stub_feature_flags(pre_receive_secret_detection_push_check: false)
