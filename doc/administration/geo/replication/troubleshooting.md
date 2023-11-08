@@ -1231,7 +1231,7 @@ status
 
 ### Failed verification of Uploads on the primary Geo site
 
-If some Uploads verification is failing on the primary Geo site with the `verification_checksum: nil` and `verification_failure: Error during verification: undefined method 'underscore' for NilClass:Class` errros, this can be due to orphaned Uploads. The parent record owning the Upload (the Upload's `model`) has somehow been deleted, but the Upload record still exists. These verification failures are false.
+If verification of some uploads is failing on the primary Geo site with `verification_checksum = nil` and with the ``verification_failure = Error during verification: undefined method `underscore' for NilClass:Class``, this can be due to orphaned Uploads. The parent record owning the Upload (the upload's model) has somehow been deleted, but the Upload record still exists. These verification failures are false.
 
 You can find these errors in the `geo.log` file on the primary Geo site.
 
@@ -1249,7 +1249,7 @@ You can delete these Upload records on the primary Geo site to get rid of these 
 uploads = Geo::UploadState.where(
   verification_checksum: nil,
   verification_state: 3,
-  verification_failure: "Error during verification: undefined method  'underscore' for NilClass:Class"
+  verification_failure: "Error during verification: undefined method  `underscore' for NilClass:Class"
 ).pluck(:upload_id)
 
 uploads_deleted = 0
