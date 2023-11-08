@@ -113,7 +113,7 @@ module ChatQaEvaluationHelpers
   end
 
   def chat(user, resource, options)
-    message_attributes = options.extract!(:request_id, :client_subscription_id).merge(
+    message_attributes = options.extract!(:content, :request_id, :client_subscription_id).merge(
       user: user,
       resource: resource,
       ai_action: 'chat',
@@ -121,7 +121,7 @@ module ChatQaEvaluationHelpers
     )
 
     ai_prompt_message = ::Gitlab::Llm::AiMessage.for(action: 'chat').new(message_attributes)
-    ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_prompt_message, options)
+    ai_completion = ::Gitlab::Llm::CompletionsFactory.completion!(ai_prompt_message, options)
     response_modifier = ai_completion.execute
 
     {
