@@ -17,6 +17,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let(:egress_ip_rules) { agent.remote_development_agent_config.network_policy_egress }
 
   let(:logger) { instance_double(::Logger) }
 
@@ -189,7 +190,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         end
       end
 
-      context 'when only some workspaces fail in devfile flattener' do
+      context 'when only some workspaces fail in devfile flattener' do # rubocop:disable RSpec/MultipleMemoizedHelpers -- Need these memoized helpers to test effectively
         let(:workspace) do
           create(:workspace, name: "workspace1", agent: agent, user: user, force_include_all_resources: false)
         end
@@ -333,7 +334,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           let(:deployment_resource_version_from_agent) { workspace.deployment_resource_version }
 
           let(:expected_config_to_apply) do
-            create_config_to_apply(workspace: workspace, started: expected_value_for_started)
+            create_config_to_apply(
+              workspace: workspace,
+              started: expected_value_for_started,
+              egress_ip_rules: egress_ip_rules
+            )
           end
 
           let(:expected_workspace_rails_infos) { [expected_workspace_rails_info] }
@@ -440,7 +445,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
             let(:expected_value_for_started) { false }
 
             let(:expected_config_to_apply) do
-              create_config_to_apply(workspace: workspace, started: expected_value_for_started)
+              create_config_to_apply(
+                workspace: workspace,
+                started: expected_value_for_started,
+                egress_ip_rules: egress_ip_rules
+              )
             end
 
             it 'returns the proper response' do
@@ -510,7 +519,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         create_config_to_apply(
           workspace: unprovisioned_workspace,
           started: expected_value_for_started,
-          include_all_resources: true
+          include_all_resources: true,
+          egress_ip_rules: egress_ip_rules
         )
       end
 

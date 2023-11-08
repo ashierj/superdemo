@@ -153,11 +153,11 @@ module RemoteDevelopment
               - "192.168.0.0/16"
             ]
             egress = [
-              { to: [{ ipBlock: { cidr: "0.0.0.0/0", except: egress_except_cidr } }] },
               {
                 ports: [{ port: 53, protocol: "TCP" }, { port: 53, protocol: "UDP" }],
                 to: [{ namespaceSelector: kube_system_namespace_selector }]
-              }
+              },
+              { to: [{ ipBlock: { cidr: "0.0.0.0/0", except: egress_except_cidr } }] }
             ]
 
             {

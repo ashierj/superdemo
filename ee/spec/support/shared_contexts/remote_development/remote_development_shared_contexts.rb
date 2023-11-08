@@ -303,7 +303,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     include_inventory: true,
     include_network_policy: true,
     include_all_resources: false,
-    dns_zone: 'workspaces.localdev.me'
+    dns_zone: 'workspaces.localdev.me',
+    egress_ip_rules: RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT
   )
     spec_replicas = started == true ? 1 : 0
     host_template_annotation = get_workspace_host_template_annotation(workspace.name, dns_zone)
@@ -344,7 +345,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
       agent_id: agent.id,
-      host_template_annotation: host_template_annotation
+      host_template_annotation: host_template_annotation,
+      egress_ip_rules: egress_ip_rules
     )
 
     workspace_secrets_inventory = workspace_secrets_inventory(
@@ -446,7 +448,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
       workspace_name: workspace_name,
       workspace_namespace: workspace_namespace,
       agent_id: agent_id,
-      host_template_annotation: host_template_annotation
+      host_template_annotation: host_template_annotation,
+      egress_ip_rules: RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT
     )
 
     resources = []
@@ -1094,8 +1097,29 @@ RSpec.shared_context 'with remote development shared fixtures' do
     workspace_name:,
     workspace_namespace:,
     agent_id:,
-    host_template_annotation:
+    host_template_annotation:,
+    egress_ip_rules:
   )
+    egress = [
+      {
+        ports: [{ port: 53, protocol: "TCP" }, { port: 53, protocol: "UDP" }],
+        to: [
+          {
+            namespaceSelector: {
+              matchLabels: {
+                "kubernetes.io/metadata.name": "kube-system"
+              }
+            }
+          }
+        ]
+      }
+    ]
+    egress_ip_rules.each do |egress_rule|
+      symbolized_egress_rule = egress_rule.deep_symbolize_keys
+      egress.append(
+        { to: [{ ipBlock: { cidr: symbolized_egress_rule[:allow], except: symbolized_egress_rule[:except] } }] }
+      )
+    end
     {
       apiVersion: "networking.k8s.io/v1",
       kind: "NetworkPolicy",
@@ -1112,39 +1136,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
         namespace: workspace_namespace.to_s
       },
       spec: {
-        egress: [
-          {
-            to: [
-              {
-                ipBlock: {
-                  cidr: "0.0.0.0/0",
-                  except: %w[10.0.0.0/8 172.16.0.0/12 192.168.0.0/16]
-                }
-              }
-            ]
-          },
-          {
-            ports: [
-              {
-                port: 53,
-                protocol: "TCP"
-              },
-              {
-                port: 53,
-                protocol: "UDP"
-              }
-            ],
-            to: [
-              {
-                namespaceSelector: {
-                  matchLabels: {
-                    "kubernetes.io/metadata.name": "kube-system"
-                  }
-                }
-              }
-            ]
-          }
-        ],
+        egress: egress,
         ingress: [
           {
             from: [

@@ -16,6 +16,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
     let(:deployment_resource_version_from_agent) { workspace.deployment_resource_version }
     let(:network_policy_enabled) { true }
     let(:gitlab_workspaces_proxy_namespace) { 'gitlab-workspaces' }
+    let(:egress_ip_rules) { agent.remote_development_agent_config.network_policy_egress }
 
     let(:workspace) do
       create(
@@ -33,7 +34,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
           workspace: workspace,
           started: started,
           include_network_policy: network_policy_enabled,
-          include_all_resources: include_all_resources
+          include_all_resources: include_all_resources,
+          egress_ip_rules: egress_ip_rules
         )
       )
     end
