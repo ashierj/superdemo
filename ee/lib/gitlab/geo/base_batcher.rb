@@ -44,16 +44,35 @@ module Gitlab
       # @param [Integer] batch_first_id the first ID of the batch
       # @return [Integer] batch_last_id the last ID of the batch (not the table)
       def get_batch_last_id(batch_first_id)
-        source_class_last_id, more_records = get_source_batch_last_id(batch_first_id)
+        source_class_last_id, more_source_records = get_source_batch_last_id(batch_first_id)
         destination_class_last_id, more_destination_records = get_destination_batch_last_id(batch_first_id)
+        more_records = more_source_records || more_destination_records
+        batch_last_id = batch_first_id + batch_size - 1
 
+        # Performance optimization:
+        #
+        # We *could* use batch_last_id as-is, but that would be really slow when there are a lot
+        # of unused IDs. This is not an unusual case for old, large GitLab instances. So this
+        # logic helps skip the gaps.
         batch_last_id = if source_class_last_id && destination_class_last_id
-                          [source_class_last_id, destination_class_last_id].max
+                          if source_class_last_id > batch_last_id || destination_class_last_id > batch_last_id
+                            # We are about to return the smaller increment, therefore there are more records to be
+                            # processed.
+                            more_records = true
+
+                            # Use the smaller increment to avoid returning more rows than batch_size. In some cases,
+                            # this will return fewer rows than batch_size.
+                            # See https://gitlab.com/gitlab-org/gitlab/-/issues/430913
+                            [source_class_last_id, destination_class_last_id].min
+                          else
+                            # Both increment less than batch size, so take the larger one
+                            [source_class_last_id, destination_class_last_id].max
+                          end
                         else
                           source_class_last_id || destination_class_last_id
                         end
 
-        if more_records || more_destination_records
+        if more_records
           increment_batch(batch_last_id)
         elsif batch_first_id > 1
           reset
