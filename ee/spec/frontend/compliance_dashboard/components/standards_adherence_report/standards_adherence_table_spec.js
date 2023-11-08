@@ -1,7 +1,7 @@
-import { GlAlert, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
+import { GlAlert, GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import { mount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ComplianceStandardsAdherenceTable from 'ee/compliance_dashboard/components/standards_adherence_report/standards_adherence_table.vue';
@@ -9,12 +9,17 @@ import FixSuggestionsSidebar from 'ee/compliance_dashboard/components/standards_
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import getProjectComplianceStandardsAdherence from 'ee/compliance_dashboard/graphql/compliance_standards_adherence.query.graphql';
+import Pagination from 'ee/compliance_dashboard/components/shared/pagination.vue';
+import { ROUTE_STANDARDS_ADHERENCE } from 'ee/compliance_dashboard/constants';
 import { createComplianceAdherencesResponse } from '../../mock_data';
 
 Vue.use(VueApollo);
 
 describe('ComplianceStandardsAdherenceTable component', () => {
   let wrapper;
+  let $router;
+  let apolloProvider;
+  const groupPath = 'example-group-path';
 
   const defaultAdherencesResponse = createComplianceAdherencesResponse();
   const sentryError = new Error('GraphQL networkError');
@@ -34,28 +39,49 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   const findFirstTableRow = () => findTableRows().at(1);
   const findFirstTableRowData = () => findFirstTableRow().findAll('td');
   const findViewDetails = () => wrapper.findComponent(GlLink);
-  const findPagination = () => wrapper.findComponent(GlKeysetPagination);
+  const findPagination = () => wrapper.findComponent(Pagination);
 
   const openSidebar = async () => {
     await findViewDetails().trigger('click');
     await nextTick();
   };
 
-  const createComponent = ({ propsData = {}, resolverMock = mockGraphQlLoading } = {}) => {
+  function createComponent(
+    mountFn = shallowMount,
+    props = {},
+    resolverMock = mockGraphQlLoading,
+    queryParams = {},
+  ) {
+    const currentQueryParams = { ...queryParams };
+    $router = {
+      push: jest.fn().mockImplementation(({ query }) => {
+        Object.assign(currentQueryParams, query);
+      }),
+    };
+
+    apolloProvider = createMockApolloProvider(resolverMock);
+
     wrapper = extendedWrapper(
-      mount(ComplianceStandardsAdherenceTable, {
-        apolloProvider: createMockApolloProvider(resolverMock),
+      mountFn(ComplianceStandardsAdherenceTable, {
+        apolloProvider,
         propsData: {
-          groupPath: 'example-group',
-          ...propsData,
+          groupPath,
+          ...props,
+        },
+        mocks: {
+          $router,
+          $route: {
+            name: ROUTE_STANDARDS_ADHERENCE,
+            query: currentQueryParams,
+          },
         },
       }),
     );
-  };
+  }
 
   describe('default behavior', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent(mount);
     });
 
     it('does not render an error message', () => {
@@ -79,7 +105,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   describe('when the adherence query fails', () => {
     beforeEach(() => {
       jest.spyOn(Sentry, 'captureException');
-      createComponent({ resolverMock: mockGraphQlError });
+      createComponent(shallowMount, {}, mockGraphQlError);
     });
 
     it('renders the error message', async () => {
@@ -94,7 +120,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
   describe('when there are standards adherence checks available', () => {
     beforeEach(() => {
-      createComponent({ resolverMock: mockGraphQlSuccess });
+      createComponent(mount, {}, mockGraphQlSuccess);
 
       return waitForPromises();
     });
@@ -129,7 +155,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
           .fn()
           .mockResolvedValue(preventApprovalbyMRCommitersAdherencesResponse);
 
-        createComponent({ resolverMock: mockResolver });
+        createComponent(mount, {}, mockResolver);
 
         return waitForPromises();
       });
@@ -155,7 +181,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         });
         const mockResolver = jest.fn().mockResolvedValue(atLeastTwoApprovalsAdherencesResponse);
 
-        createComponent({ resolverMock: mockResolver });
+        createComponent(mount, {}, mockResolver);
 
         return waitForPromises();
       });
@@ -180,36 +206,50 @@ describe('ComplianceStandardsAdherenceTable component', () => {
           expect(findPagination().exists()).toBe(true);
         });
 
-        describe('when the next page has been selected', () => {
-          beforeEach(async () => {
-            findPagination().vm.$emit('next', 'next-value');
+        describe('when a different size is selected', () => {
+          it('resets to the first page and updates the page size', async () => {
+            findPagination().vm.$emit('page-size-change', 50);
+            await waitForPromises();
 
-            await nextTick();
+            expect($router.push).toHaveBeenCalledWith(
+              expect.objectContaining({
+                query: {
+                  perPage: 50,
+                },
+              }),
+            );
           });
+        });
 
-          it('updates and calls the graphql query', () => {
-            expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
-            expect(mockGraphQlSuccess).toHaveBeenCalledWith({
-              after: 'next-value',
-              before: null,
-              first: 20,
-              fullPath: 'example-group',
-            });
+        describe('when the next page has been selected', () => {
+          it('updates and calls the graphql query', async () => {
+            findPagination().vm.$emit('next', 'next-value');
+            await waitForPromises();
+
+            expect($router.push).toHaveBeenCalledWith(
+              expect.objectContaining({
+                query: {
+                  after: 'next-value',
+                  before: undefined,
+                },
+              }),
+            );
           });
         });
 
         describe('when the prev page has been selected', () => {
-          beforeEach(() => {
+          it('updates and calls the graphql query', async () => {
             findPagination().vm.$emit('prev', 'prev-value');
-          });
+            await waitForPromises();
 
-          it('updates and calls the graphql query', () => {
-            expect(mockGraphQlSuccess).toHaveBeenCalledWith({
-              after: null,
-              before: 'prev-value',
-              last: 20,
-              fullPath: 'example-group',
-            });
+            expect($router.push).toHaveBeenCalledWith(
+              expect.objectContaining({
+                query: {
+                  after: undefined,
+                  before: 'prev-value',
+                },
+              }),
+            );
           });
         });
       });
@@ -224,7 +264,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
           });
           const mockResolver = jest.fn().mockResolvedValue(response);
 
-          createComponent({ resolverMock: mockResolver });
+          createComponent(mount, {}, mockResolver);
           return waitForPromises();
         });
 
@@ -240,7 +280,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
       const noAdherencesResponse = createComplianceAdherencesResponse({ count: 0 });
       const mockResolver = jest.fn().mockResolvedValue(noAdherencesResponse);
 
-      createComponent({ resolverMock: mockResolver });
+      createComponent(mount, {}, mockResolver);
 
       return waitForPromises();
     });
@@ -254,7 +294,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
   describe('fixSuggestionSidebar', () => {
     beforeEach(() => {
-      createComponent({ resolverMock: mockGraphQlSuccess });
+      createComponent(mount, {}, mockGraphQlSuccess);
 
       return waitForPromises();
     });
@@ -265,7 +305,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
         await findFixSuggestionSidebar().vm.$emit('close');
 
-        expect(findFixSuggestionSidebar().props('groupPath')).toBe('example-group');
+        expect(findFixSuggestionSidebar().props('groupPath')).toBe('example-group-path');
         expect(findFixSuggestionSidebar().props('showDrawer')).toBe(false);
         expect(findFixSuggestionSidebar().props('adherence')).toStrictEqual({});
       });
@@ -275,7 +315,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
       it('has the correct props when opened', async () => {
         await openSidebar();
 
-        expect(findFixSuggestionSidebar().props('groupPath')).toBe('example-group');
+        expect(findFixSuggestionSidebar().props('groupPath')).toBe('example-group-path');
         expect(findFixSuggestionSidebar().props('showDrawer')).toBe(true);
         expect(findFixSuggestionSidebar().props('adherence')).toStrictEqual(
           wrapper.vm.adherences.list[0],

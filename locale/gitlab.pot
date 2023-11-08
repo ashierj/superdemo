@@ -12604,9 +12604,6 @@ msgstr ""
 msgid "ComplianceReport|Remove framework from selected projects"
 msgstr ""
 
-msgid "ComplianceReport|Retrieving the compliance framework report failed. Refresh the page and try again."
-msgstr ""
-
 msgid "ComplianceReport|Search target branch"
 msgstr ""
 
