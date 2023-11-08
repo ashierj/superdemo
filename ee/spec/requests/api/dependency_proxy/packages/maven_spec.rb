@@ -184,6 +184,7 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
             where(:etag_service_response, :expected_status, :shared_example) do
               ServiceResponse.success                                          | :ok | nil
               ServiceResponse.error(message: '', reason: :response_error_code) | :ok | nil
+              ServiceResponse.error(message: '', reason: :no_etag)             | :ok | nil
               ServiceResponse.error(message: '', reason: :wrong_etag)          | nil | wrong_etag_shared_example
             end
 

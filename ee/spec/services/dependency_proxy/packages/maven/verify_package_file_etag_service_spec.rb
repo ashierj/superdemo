@@ -42,10 +42,20 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
     context 'with valid arguments' do
       context 'with a successful head request' do
         it 'returns a successful service response' do
-          stub_external_registry_request(status: 200, etag: package_file.file_md5)
+          stub_external_registry_request(status: 200, etag: "\"#{package_file.file_md5}\"")
 
           expect(result).to be_a(ServiceResponse)
           expect(result).to be_success
+        end
+
+        context 'with an etag that contains a digest' do
+          it 'returns a successful service response' do
+            etag = "\"{SHA1{#{package_file.file_sha1}\"}"
+            stub_external_registry_request(status: 200, etag: etag)
+
+            expect(result).to be_a(ServiceResponse)
+            expect(result).to be_success
+          end
         end
 
         context 'with an unmatched etag' do
@@ -56,6 +66,16 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
           it_behaves_like 'expecting a service response error with',
             message: "etag from external registry doesn't match any known digests",
             reason: :wrong_etag
+        end
+
+        context 'with an absent etag' do
+          before do
+            stub_external_registry_request(status: 200, etag: nil)
+          end
+
+          it_behaves_like 'expecting a service response error with',
+            message: 'no etag from external registry',
+            reason: :no_etag
         end
 
         context 'with a redirect' do
@@ -106,10 +126,11 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
     end
 
     def stub_external_registry_request(status: 200, etag: 'etag', response_headers: {})
+      headers = response_headers
+      headers[:etag] = "\"#{etag}\"" if etag
       stub_request(:head, 'http://test/package.file')
-        .with(
-          headers: { 'Authorization' => authorization_header }
-        ).to_return(status: status, body: '', headers: response_headers.merge(etag: "\"#{etag}\""))
+        .with(headers: { 'Authorization' => authorization_header })
+        .to_return(status: status, body: '', headers: headers)
     end
   end
 end

@@ -110,6 +110,14 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
     end
   end
 
+  shared_context 'with no etag returned' do
+    before do
+      allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+        allow(service).to receive(:execute).and_return(ServiceResponse.error(message: '', reason: :no_etag))
+      end
+    end
+  end
+
   context 'with a reporter' do
     before_all do
       project.add_reporter(user)
@@ -130,6 +138,12 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
       it_behaves_like 'returning the cached file'
       it_behaves_like 'proxying the remote file if the wrong etag is returned'
+
+      context 'with no etag returned' do
+        include_context 'with no etag returned' do
+          it_behaves_like 'returning the cached file'
+        end
+      end
     end
   end
 
@@ -147,6 +161,12 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
 
       it_behaves_like 'returning the cached file'
       it_behaves_like 'proxying the remote file if the wrong etag is returned'
+
+      context 'with no etag returned' do
+        include_context 'with no etag returned' do
+          it_behaves_like 'returning the cached file'
+        end
+      end
     end
   end
 
@@ -174,6 +194,11 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
           expect(response.code).to eq(200)
           expect(response.body).to eq(remote_file_content)
         end
+      end
+
+      context 'with no etag returned' do
+        include_context 'with no etag returned'
+        it_behaves_like 'returning the cached file'
       end
     end
   end
