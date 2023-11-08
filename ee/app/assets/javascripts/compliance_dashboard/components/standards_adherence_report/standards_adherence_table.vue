@@ -1,17 +1,10 @@
 <script>
-import {
-  GlAlert,
-  GlTable,
-  GlIcon,
-  GlLink,
-  GlBadge,
-  GlLoadingIcon,
-  GlKeysetPagination,
-} from '@gitlab/ui';
+import { GlAlert, GlTable, GlIcon, GlLink, GlBadge, GlLoadingIcon } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import getProjectComplianceStandardsAdherence from '../../graphql/compliance_standards_adherence.query.graphql';
-import { DEFAULT_PAGINATION_CURSORS, GRAPHQL_PAGE_SIZE } from '../../constants';
+import Pagination from '../shared/pagination.vue';
+import { GRAPHQL_PAGE_SIZE } from '../../constants';
 import {
   FAIL_STATUS,
   STANDARDS_ADHERENCE_CHECK_LABELS,
@@ -33,8 +26,8 @@ export default {
     GlLink,
     GlBadge,
     GlLoadingIcon,
-    GlKeysetPagination,
     FixSuggestionsSidebar,
+    Pagination,
   },
   props: {
     groupPath: {
@@ -51,9 +44,6 @@ export default {
       },
       drawerId: null,
       drawerAdherence: {},
-      paginationCursors: {
-        ...DEFAULT_PAGINATION_CURSORS,
-      },
     };
   },
   apollo: {
@@ -80,7 +70,7 @@ export default {
   },
   computed: {
     isLoading() {
-      return this.$apollo.queries.adherences.loading;
+      return Boolean(this.$apollo.queries.adherences.loading);
     },
     showDrawer() {
       return this.drawerId !== null;
@@ -88,6 +78,24 @@ export default {
     showPagination() {
       const { hasPreviousPage, hasNextPage } = this.adherences.pageInfo || {};
       return hasPreviousPage || hasNextPage;
+    },
+    paginationCursors() {
+      const { before, after } = this.$route.query;
+
+      if (before) {
+        return {
+          before,
+          last: this.perPage,
+        };
+      }
+
+      return {
+        after,
+        first: this.perPage,
+      };
+    },
+    perPage() {
+      return parseInt(this.$route.query.perPage || GRAPHQL_PAGE_SIZE, 10);
     },
   },
   methods: {
@@ -122,18 +130,32 @@ export default {
       this.drawerId = null;
     },
     loadPrevPage(startCursor) {
-      this.paginationCursors = {
-        before: startCursor,
-        after: null,
-        last: GRAPHQL_PAGE_SIZE,
-      };
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          before: startCursor,
+          after: undefined,
+        },
+      });
     },
     loadNextPage(endCursor) {
-      this.paginationCursors = {
-        before: null,
-        after: endCursor,
-        first: GRAPHQL_PAGE_SIZE,
-      };
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          before: undefined,
+          after: endCursor,
+        },
+      });
+    },
+    onPageSizeChange(perPage) {
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          before: undefined,
+          after: undefined,
+          perPage,
+        },
+      });
     },
   },
   fields: [
@@ -187,6 +209,7 @@ export default {
       {{ $options.standardsAdherenceFetchError }}
     </gl-alert>
     <gl-table
+      class="gl-mb-6"
       :fields="$options.fields"
       :items="adherences.list"
       :busy="isLoading"
@@ -243,15 +266,14 @@ export default {
       :adherence="drawerAdherence"
       @close="closeDrawer"
     />
-    <div v-if="showPagination" class="gl-display-flex gl-justify-content-center">
-      <gl-keyset-pagination
-        v-bind="adherences.pageInfo"
-        :disabled="isLoading"
-        :prev-text="__('Prev')"
-        :next-text="__('Next')"
-        @prev="loadPrevPage"
-        @next="loadNextPage"
-      />
-    </div>
+    <pagination
+      v-if="showPagination"
+      :is-loading="isLoading"
+      :page-info="adherences.pageInfo"
+      :per-page="perPage"
+      @prev="loadPrevPage"
+      @next="loadNextPage"
+      @page-size-change="onPageSizeChange"
+    />
   </section>
 </template>

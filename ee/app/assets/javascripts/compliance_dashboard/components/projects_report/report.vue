@@ -15,8 +15,8 @@ import {
 } from 'ee/compliance_dashboard/utils';
 import complianceFrameworksGroupProjects from '../../graphql/compliance_frameworks_group_projects.query.graphql';
 import { mapProjects } from '../../graphql/mappers';
+import Pagination from '../shared/pagination.vue';
 import ProjectsTable from './projects_table.vue';
-import Pagination from './pagination.vue';
 import Filters from './filters.vue';
 
 export default {

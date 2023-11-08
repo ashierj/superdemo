@@ -1,8 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlKeysetPagination } from '@gitlab/ui';
-
-import { s__ } from '~/locale';
 import { NEXT, PREV } from '~/vue_shared/components/pagination/constants';
 import PageSizeSelector from '~/vue_shared/components/page_size_selector.vue';
 import { setUrlParams } from '~/lib/utils/url_utility';
@@ -58,9 +56,6 @@ export default {
     },
   },
   i18n: {
-    queryError: s__(
-      'ComplianceReport|Retrieving the compliance framework report failed. Refresh the page and try again.',
-    ),
     prev: PREV,
     next: NEXT,
   },
