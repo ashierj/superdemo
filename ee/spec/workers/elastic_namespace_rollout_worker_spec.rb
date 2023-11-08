@@ -10,7 +10,7 @@ RSpec.describe ElasticNamespaceRolloutWorker, :saas, feature_category: :global_s
     ElasticsearchIndexedNamespace.delete_all # reset index
   end
 
-  Plan::PAID_HOSTED_PLANS.each do |plan| # rubocop:disable RSpec/UselessDynamicDefinition
+  Plan::PAID_HOSTED_PLANS.each do |plan| # rubocop:disable RSpec/UselessDynamicDefinition -- `plan` used in `let_it_be`
     plan_factory = "#{plan}_plan"
     let_it_be(plan_factory) { create(plan_factory) } # rubocop:disable Rails/SaveBang
   end
