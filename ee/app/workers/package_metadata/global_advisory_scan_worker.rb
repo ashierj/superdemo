@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module PackageMetadata
-  class AdvisoryScanWorker
+  class GlobalAdvisoryScanWorker
     include Gitlab::EventStore::Subscriber
 
     data_consistency :delayed
@@ -17,7 +17,7 @@ module PackageMetadata
         return logger.error(structured_payload(message: 'Advisory not found.', advisory_id: event.data[:advisory_id]))
       end
 
-      AdvisoryScanService.execute(advisory, global: false)
+      AdvisoryScanService.execute(advisory, global: true)
     end
   end
 end

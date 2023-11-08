@@ -30,11 +30,12 @@ RSpec.describe Sbom::PossiblyAffectedOccurrencesFinder, feature_category: :softw
 
   let_it_be(:package_name) { matching_component.name }
   let_it_be(:purl_type) { matching_component.purl_type }
+  let_it_be(:global) { false }
 
   # use a method instead of a subject to avoid rspec memoization
   def possibly_affected_occurrences
     occurrences = []
-    described_class.new(purl_type: purl_type, package_name: package_name).execute_in_batches do |batch|
+    described_class.new(purl_type: purl_type, package_name: package_name, global: global).execute_in_batches do |batch|
       batch.each do |possibly_affected_occurrence|
         occurrences << possibly_affected_occurrence
       end
@@ -47,7 +48,8 @@ RSpec.describe Sbom::PossiblyAffectedOccurrencesFinder, feature_category: :softw
       let_it_be(:package_name) { 'non-matching-package-name' }
 
       it 'returns nil' do
-        expect(described_class.new(purl_type: purl_type, package_name: package_name).execute_in_batches).to be_nil
+        expect(described_class.new(purl_type: purl_type, package_name: package_name,
+          global: global).execute_in_batches).to be_nil
       end
 
       it { expect(possibly_affected_occurrences).to be_empty }
@@ -57,7 +59,8 @@ RSpec.describe Sbom::PossiblyAffectedOccurrencesFinder, feature_category: :softw
       let_it_be(:purl_type) { 'non-matching-purl-type' }
 
       it 'returns nil' do
-        expect(described_class.new(purl_type: purl_type, package_name: package_name).execute_in_batches).to be_nil
+        expect(described_class.new(purl_type: purl_type, package_name: package_name,
+          global: global).execute_in_batches).to be_nil
       end
 
       it { expect(possibly_affected_occurrences).to be_empty }
@@ -66,7 +69,19 @@ RSpec.describe Sbom::PossiblyAffectedOccurrencesFinder, feature_category: :softw
 
   context 'when a component matches the provided details' do
     context 'and the project for the component does not have cvs enabled' do
-      it { expect(possibly_affected_occurrences).to be_empty }
+      context 'and the search is not global' do
+        let_it_be(:global) { false }
+
+        it { expect(possibly_affected_occurrences).to be_empty }
+      end
+
+      context 'and the search is global' do
+        let_it_be(:global) { true }
+
+        it 'returns the possibly affected occurrences' do
+          expect(possibly_affected_occurrences).to match_array(matching_occurrences)
+        end
+      end
     end
 
     context 'and the project for the component has cvs enabled' do
@@ -97,7 +112,8 @@ RSpec.describe Sbom::PossiblyAffectedOccurrencesFinder, feature_category: :softw
       end
 
       it 'pre-loads associations to avoid an N+1 query' do
-        described_class.new(purl_type: purl_type, package_name: package_name).execute_in_batches do |batch|
+        described_class.new(purl_type: purl_type, package_name: package_name,
+          global: global).execute_in_batches do |batch|
           batch.each do |record|
             queries = ActiveRecord::QueryRecorder.new do
               record.component

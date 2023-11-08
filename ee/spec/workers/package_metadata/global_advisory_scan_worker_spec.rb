@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::AdvisoryScanWorker, feature_category: :software_composition_analysis do
+RSpec.describe PackageMetadata::GlobalAdvisoryScanWorker, feature_category: :software_composition_analysis do
   let_it_be(:advisory) { create(:pm_advisory) }
   let(:event) { PackageMetadata::IngestedAdvisoryEvent.new(data: { advisory_id: advisory.id }) }
 
@@ -15,7 +15,7 @@ RSpec.describe PackageMetadata::AdvisoryScanWorker, feature_category: :software_
   context 'when advisory exists' do
     it 'calls the advisory scanning service with the instantiated advisory' do
       consume_event(subscriber: described_class, event: event)
-      expect(PackageMetadata::AdvisoryScanService).to have_received(:execute).with(advisory, global: false)
+      expect(PackageMetadata::AdvisoryScanService).to have_received(:execute).with(advisory, global: true)
     end
   end
 

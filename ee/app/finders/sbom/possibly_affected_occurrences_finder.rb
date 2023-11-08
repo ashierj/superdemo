@@ -6,25 +6,37 @@ module Sbom
 
     BATCH_SIZE = 100
 
-    def initialize(purl_type:, package_name:)
+    # Initializes the finder.
+    #
+    # @param purl_type [string] PURL type of the component to search for
+    # @param package_name [string] Package name of the component to search for
+    # @param global [boolean] When true, search in all projects including those
+    #                         where Continuous Vulnerability Scanning isn't enabled.
+    def initialize(purl_type:, package_name:, global:)
       @purl_type = purl_type
       @package_name = package_name
+      @global = global
     end
 
     def execute_in_batches(of: BATCH_SIZE)
       return unless component_id
 
       Sbom::Occurrence.filter_by_components(component_id).each_batch(of: of) do |batch|
-        yield batch
+        components = batch
           .with_component_source_version_project_and_pipeline
           .filter_by_non_nil_component_version
-          .filter_by_cvs_enabled
+
+        if global
+          yield components
+        else
+          yield components.filter_by_cvs_enabled
+        end
       end
     end
 
     private
 
-    attr_reader :package_name, :purl_type
+    attr_reader :package_name, :purl_type, :global
 
     def component_id
       Sbom::Component
