@@ -33,25 +33,34 @@ export default {
   computed: {
     sections() {
       if (this.span) {
-        const { span_attributes, resource_attributes, ...rest } = this.span;
+        const {
+          span_attributes: spanAttributes,
+          resource_attributes: resourceAttributes,
+          ...rest
+        } = this.span;
 
-        return [
+        const sections = [
           {
             content: createSectionContent(rest),
             title: this.$options.i18n.spanDetailsTitle,
             key: 'span-details',
           },
-          {
-            title: this.$options.i18n.spanAttributesTitle,
-            content: createSectionContent(span_attributes),
-            key: 'span-attributes',
-          },
-          {
-            title: this.$options.i18n.resourceAttributesTitle,
-            content: createSectionContent(resource_attributes),
-            key: 'resource-attributes',
-          },
         ];
+        if (spanAttributes) {
+          sections.push({
+            title: this.$options.i18n.spanAttributesTitle,
+            content: createSectionContent(spanAttributes),
+            key: 'span-attributes',
+          });
+        }
+        if (resourceAttributes) {
+          sections.push({
+            title: this.$options.i18n.resourceAttributesTitle,
+            content: createSectionContent(resourceAttributes),
+            key: 'resource-attributes',
+          });
+        }
+        return sections;
       }
       return [];
     },

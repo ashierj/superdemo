@@ -172,38 +172,32 @@ describe('TracingDetailsSpansChart', () => {
       expect(barStyle.width).toBe('50%');
     });
 
-    it('bar width should not be less than 0.5% and not bigger than 100%', () => {
+    it.each([
+      [{ startTimeMs: 0, durationMs: 0.4 }, '0.5%', '0%'],
+      [{ startTimeMs: 0, durationMs: 110 }, '100%', '0%'],
+      [{ startTimeMs: 80, durationMs: 40 }, '40%', '60%'],
+      [{ startTimeMs: -10, durationMs: 40 }, '40%', '0%'],
+    ])('caps the layout width and margin', (spanAttrs, expectedWidth, expectedMargin) => {
       wrapper = shallowMountExtended(TracingDetailsSpansChart, {
         propsData: {
           serviceToColor: {
             'service-1': 'blue-500',
-            'service-2': 'orange-500',
           },
-          traceDurationMs: 300,
+          traceDurationMs: 100,
           spans: [
             {
               operation: 'operation-1',
               service: 'service-1',
-              startTimeMs: 0,
-              durationMs: 1,
               children: [],
-            },
-            {
-              operation: 'operation-2',
-              service: 'service-2',
-              startTimeMs: 0,
-              durationMs: 310,
-              children: [],
+              ...spanAttrs,
             },
           ],
         },
       });
-      expect(
-        getSpanDurationBar(0).find('[data-testid="span-duration-bar"]').element.style.width,
-      ).toBe('0.5%');
-      expect(
-        getSpanDurationBar(1).find('[data-testid="span-duration-bar"]').element.style.width,
-      ).toBe('100%');
+      const barStyle = getSpanDurationBar(0).find('[data-testid="span-duration-bar"]').element
+        .style;
+      expect(barStyle.width).toBe(expectedWidth);
+      expect(barStyle.marginLeft).toBe(expectedMargin);
     });
   });
 });

@@ -69,16 +69,33 @@ export default {
     isExpanded(index) {
       return this.expanded[index];
     },
-    durationBarIndentation(span) {
-      const l = Math.floor((100 * span.startTimeMs) / this.traceDurationMs);
+    durationBarLayout(span) {
+      const computedWidth = Math.floor((100 * span.durationMs) / this.traceDurationMs);
+      const width = clamp(computedWidth, 0.5, 100);
+
+      const computedMarginLeft = Math.floor((100 * span.startTimeMs) / this.traceDurationMs);
+      const marginLeft = clamp(
+        computedMarginLeft,
+        0, // avoid negative margins. this can happen in case of skewed time between the root and child spans
+        100 - width, // make sure spans do not overlow.
+      );
+
       return {
-        marginLeft: `${l}%`,
+        marginLeft,
+        width,
+      };
+    },
+    durationValueStyle(span) {
+      const { marginLeft } = this.durationBarLayout(span);
+      return {
+        marginLeft: `${marginLeft}%`,
       };
     },
     durationBarStyle(span) {
-      const w = clamp((100 * span.durationMs) / this.traceDurationMs, 0.5, 100);
+      const { width, marginLeft } = this.durationBarLayout(span);
       return {
-        width: `${w}%`,
+        width: `${width}%`,
+        marginLeft: `${marginLeft}%`,
         height: '32px',
         borderRadius: '4px',
       };
@@ -144,12 +161,12 @@ export default {
         >
           <div
             data-testid="span-duration-bar"
-            :style="[durationBarStyle(span), durationBarIndentation(span)]"
+            :style="durationBarStyle(span)"
             :class="`gl-bg-data-viz-${serviceToColor[span.service]}`"
           ></div>
           <span
             data-testid="span-duration-value"
-            :style="durationBarIndentation(span)"
+            :style="durationValueStyle(span)"
             class="gl-text-secondary"
             >{{ durationValue(span) }}</span
           >
