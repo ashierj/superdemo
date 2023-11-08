@@ -2,9 +2,9 @@
 
 module QA
   module Page
-    module Group
+    module Project
       module Settings
-        class GroupDeployTokens < Page::Base
+        class ProjectDeployTokens < Page::Base
           include Page::Component::DeployToken
         end
       end
