@@ -33,10 +33,10 @@ export default {
       return this.mr.approvalsWidgetType === 'base';
     },
     approvedBy() {
-      return this.approvals.approvedBy?.nodes || [];
+      return this.approvals?.approvedBy?.nodes || [];
     },
     approvalsRequired() {
-      return (!this.isBasic && this.approvals.approvalsRequired) || 0;
+      return (!this.isBasic && this.approvals?.approvalsRequired) || 0;
     },
     isOptional() {
       return !this.approvedBy.length && !this.approvalsRequired;
