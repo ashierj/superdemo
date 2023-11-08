@@ -41,7 +41,9 @@ RSpec.describe Gitlab::Checks::Security::PolicyCheck, '#validate!', feature_cate
     include_context 'with scan result policy preventing force pushing'
 
     it 'raises' do
-      expect { policy_check! }.to raise_error(Gitlab::GitAccess::ForbiddenError, described_class::ERROR_MESSAGE)
+      expect do
+        policy_check!
+      end.to raise_error(Gitlab::GitAccess::ForbiddenError, described_class::FORCE_PUSH_ERROR_MESSAGE)
     end
 
     context 'when prevent_pushing_and_force_pushing setting is disabled' do
@@ -63,8 +65,30 @@ RSpec.describe Gitlab::Checks::Security::PolicyCheck, '#validate!', feature_cate
     context 'when push is not forced' do
       let(:force_push?) { false }
 
-      it 'does not raise' do
-        expect { policy_check! }.not_to raise_error
+      context 'when there is a matching MR' do
+        before do
+          allow_next_instance_of(Gitlab::Checks::MatchingMergeRequest) do |instance|
+            allow(instance).to receive(:match?).and_return(true)
+          end
+        end
+
+        it 'does not raise' do
+          expect { policy_check! }.not_to raise_error
+        end
+      end
+
+      context 'when there is no matching MR' do
+        before do
+          allow_next_instance_of(Gitlab::Checks::MatchingMergeRequest) do |instance|
+            allow(instance).to receive(:match?).and_return(false)
+          end
+        end
+
+        it 'raises error' do
+          expect do
+            policy_check!
+          end.to raise_error(Gitlab::GitAccess::ForbiddenError, described_class::PUSH_ERROR_MESSAGE)
+        end
       end
     end
 
