@@ -7,8 +7,7 @@ RSpec.describe API::Ci::Pipelines, feature_category: :continuous_integration do
   let(:project) { create(:project, :repository, creator: user) }
 
   let!(:pipeline) do
-    create(:ci_empty_pipeline, project: project, sha: project.commit.id,
-                               ref: project.default_branch, user: user)
+    create(:ci_empty_pipeline, project: project, sha: project.commit.id, ref: project.default_branch, user: user)
   end
 
   before do
