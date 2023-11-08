@@ -27,6 +27,10 @@ module Security
     belongs_to :namespace, inverse_of: :security_orchestration_policy_configuration, optional: true
     belongs_to :security_policy_management_project, class_name: 'Project', foreign_key: 'security_policy_management_project_id'
 
+    has_many :compliance_framework_security_policies,
+      class_name: 'ComplianceManagement::ComplianceFramework::SecurityPolicy',
+      foreign_key: :policy_configuration_id
+
     validates :project, uniqueness: true, if: :project
     validates :project, presence: true, unless: :namespace
     validates :namespace, uniqueness: true, if: :namespace
