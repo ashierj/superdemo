@@ -19,13 +19,12 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   let(:options) { { content: content, extra_resource: extra_resource } }
   let(:container) { group }
   let(:context) do
-    instance_double(
-      Gitlab::Llm::Chain::GitlabContext,
-      tools_used: [::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor],
+    Gitlab::Llm::Chain::GitlabContext.new(
       container: container,
       current_user: user,
       resource: resource,
-      request_id: 'uuid'
+      request_id: 'uuid',
+      ai_request: ai_request
     )
   end
 
@@ -168,6 +167,7 @@ client_subscription_id: 'someid' }
   describe '#execute' do
     before do
       allow(Gitlab::Llm::Chain::Requests::Anthropic).to receive(:new).and_return(ai_request)
+      allow(context).to receive(:tools_used).and_return([Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor])
     end
 
     context 'when resource is an issue' do

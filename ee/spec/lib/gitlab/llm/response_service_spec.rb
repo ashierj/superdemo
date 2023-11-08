@@ -6,10 +6,7 @@ RSpec.describe ::Gitlab::Llm::ResponseService, feature_category: :duo_chat do
   let(:user) { build(:user) }
   let(:issue) { build(:issue) }
   let(:context) do
-    Gitlab::Llm::Chain::GitlabContext.new(
-      current_user: user, container: nil, resource: issue, ai_request: nil,
-      tools_used: []
-    )
+    Gitlab::Llm::Chain::GitlabContext.new(current_user: user, container: nil, resource: issue, ai_request: nil)
   end
 
   let(:basic_options) { { cache_request: true } }

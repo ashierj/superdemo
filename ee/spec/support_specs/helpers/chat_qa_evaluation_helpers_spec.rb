@@ -34,11 +34,14 @@ RSpec.describe ChatQaEvaluationHelpers, feature_category: :duo_chat do
 
     context 'when the qa evaluation helper is fed the correct issue data' do
       it 'evaluates as correct' do
-        evaluations = evaluate_without_reference(user, issue, question, issue.to_json)[:evaluations]
+        result = evaluate_without_reference(user, issue, question, issue.to_json)
 
-        evaluations.each do |eval|
+        result[:evaluations].each do |eval|
           expect(eval[:response]).to match(/Grade: CORRECT/i)
         end
+
+        expect(result[:tools_used]).to match([Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor,
+          Gitlab::Llm::Chain::Tools::JsonReader::Executor])
       end
     end
 

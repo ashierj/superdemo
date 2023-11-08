@@ -13,8 +13,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
       current_user: user,
       container: nil,
       resource: user,
-      ai_request: ai_request_double,
-      tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier]
+      ai_request: ai_request_double
     )
   end
 
@@ -77,8 +76,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
         current_user: user,
         container: group,
         resource: user,
-        ai_request: ai_request_double,
-        tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier]
+        ai_request: ai_request_double
       )
 
       expect(described_class.new(context: context, options: options).group_from_context).to eq(group)
@@ -89,8 +87,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
         current_user: user,
         container: project,
         resource: user,
-        ai_request: ai_request_double,
-        tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier]
+        ai_request: ai_request_double
       )
 
       expect(described_class.new(context: context, options: options).group_from_context).to eq(group)
@@ -101,8 +98,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
         current_user: user,
         container: project.project_namespace,
         resource: user,
-        ai_request: ai_request_double,
-        tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier]
+        ai_request: ai_request_double
       )
 
       expect(described_class.new(context: context, options: options).group_from_context).to eq(group)

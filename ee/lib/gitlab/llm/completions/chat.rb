@@ -4,6 +4,8 @@ module Gitlab
   module Llm
     module Completions
       class Chat < Base
+        attr_reader :context
+
         TOOLS = [
           ::Gitlab::Llm::Chain::Tools::JsonReader,
           ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
@@ -11,20 +13,23 @@ module Gitlab
           ::Gitlab::Llm::Chain::Tools::EpicIdentifier
         ].freeze
 
-        def execute
+        def initialize(prompt_message, ai_prompt_class, options = nil)
+          super
+
           # we should be able to switch between different providers that we know agent supports, by initializing the
           # one we like. At the moment Anthropic is default and some features may not be supported
           # by other providers.
-          ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, tracking_context: tracking_context)
-          context = ::Gitlab::Llm::Chain::GitlabContext.new(
+          @context = ::Gitlab::Llm::Chain::GitlabContext.new(
             current_user: user,
             container: resource.try(:resource_parent)&.root_ancestor,
             resource: resource,
-            ai_request: ai_request,
+            ai_request: ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, tracking_context: tracking_context),
             extra_resource: options.delete(:extra_resource) || {},
             request_id: prompt_message.request_id
           )
+        end
 
+        def execute
           # This can be removed once all clients use the subscription with the `ai_action: "chat"` parameter.
           # We then can only use `chat_response_handler`.
           # https://gitlab.com/gitlab-org/gitlab/-/issues/423080

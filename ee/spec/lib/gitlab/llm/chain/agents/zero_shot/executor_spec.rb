@@ -21,7 +21,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
       current_user: user, container: nil, resource: resource, ai_request: ai_request_double,
-      tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier, Gitlab::Llm::Chain::Tools::IssueIdentifier],
       extra_resource: extra_resource
     )
   end
@@ -69,7 +68,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         logger = instance_double(Gitlab::Llm::Logger)
 
         expect(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
-        expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).exactly(2)
+        expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).exactly(1)
         expect(logger).to receive(:info).at_least(:once)
         expect(logger).to receive(:debug).at_least(:once)
         expect(response_service_double).to receive(:execute).at_least(:once)
