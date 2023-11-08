@@ -1,18 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  # These tests require several feature flags, user settings, and instance configuration that will require substantial
-  # effort to fully automate. In the meantime the following were done manually so we can run the tests against
-  # staging.gitlab.com and gitlab.com with the `gitlab-qa` user:
-  # 1. Enable the code_suggestions_completion_api feature flag
-  #    ```/chatops run feature set --user=gitlab-qa code_suggestions_completion_api true```
-  #    ```/chatops run feature set --user=gitlab-qa code_suggestions_completion_api true --staging```
-  # 2. Enable the Code Suggestions user preference
-  #    See https://docs.gitlab.com/ee/user/project/repository/code_suggestions.html#enable-code-suggestions-for-an-individual-user
+  # This test requires several feature flags, user settings, and instance configuration.
+  # See https://docs.gitlab.com/ee/development/code_suggestions/#code-suggestions-development-setup
   RSpec.describe(
-    'ModelOps',
-    only: { pipeline: %w[staging-canary staging canary production] },
-    product_group: :code_creation
+    'ModelOps', :smoke, only: { pipeline: %w[staging-canary staging canary production] }, product_group: :code_creation
   ) do
     include Support::API
 
