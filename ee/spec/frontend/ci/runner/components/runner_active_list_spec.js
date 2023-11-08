@@ -114,6 +114,39 @@ describe('RunnerActiveList', () => {
     });
   });
 
+  describe('When there are active runners with no active jobs', () => {
+    beforeEach(async () => {
+      mostActiveRunnersHandler.mockResolvedValue({
+        data: {
+          runners: {
+            nodes: [
+              mockRunner,
+              {
+                ...mockRunner2,
+                runningJobCount: 0,
+              },
+            ],
+          },
+        },
+      });
+
+      createComponent({ mountFn: mountExtended });
+      await waitForPromises();
+    });
+
+    it('ignores runners with no active jobs', () => {
+      expect(findRows()).toHaveLength(1);
+
+      // Row 1
+      const runner = `#${getIdFromGraphQLId(mockRunner.id)} (${mockRunner.shortSha}) - ${
+        mockRunner.description
+      }`;
+      expect(findCell(0, 'index').text()).toBe('1');
+      expect(findCell(0, 'runner').text()).toBe(runner);
+      expect(findCell(0, 'runningJobCount').text()).toBe('2');
+    });
+  });
+
   describe('When there are no runners', () => {
     beforeEach(async () => {
       mostActiveRunnersHandler.mockResolvedValueOnce({
