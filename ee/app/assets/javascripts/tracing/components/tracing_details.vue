@@ -9,7 +9,7 @@ import TracingDetailsDrawer from './tracing_details_drawer.vue';
 
 export default {
   i18n: {
-    error: s__('Tracing|Failed to load trace details.'),
+    error: s__('Tracing|Error: Failed to load trace details. Try reloading the page.'),
   },
   components: {
     GlLoadingIcon,
