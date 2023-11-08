@@ -2,9 +2,22 @@
 
 require 'spec_helper'
 
+# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category: :remote_development do
   # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   let_it_be_with_reload(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let(:default_network_policy_egress) do
+    [
+      {
+        allow: "0.0.0.0/0",
+        except: [
+          - "10.0.0.0/8",
+          - "172.16.0.0/12",
+          - "192.168.0.0/16"
+        ]
+      }.deep_stringify_keys
+    ]
+  end
 
   subject { agent.remote_development_agent_config }
 
@@ -44,6 +57,20 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
           "Validation failed: Dns zone contains invalid characters (valid characters: [a-z0-9\\-])"
         )
       end
+    end
+
+    it 'when network_policy_egress is not specified explicitly' do
+      expect(subject).to be_valid
+      expect(subject.network_policy_egress).to eq(default_network_policy_egress)
+    end
+
+    it 'when network_policy_egress is nil' do
+      subject.network_policy_egress = nil
+      expect(subject).not_to be_valid
+      expect(subject.errors[:network_policy_egress]).to include(
+        'must be a valid json schema',
+        'must be an array'
+      )
     end
   end
 end
