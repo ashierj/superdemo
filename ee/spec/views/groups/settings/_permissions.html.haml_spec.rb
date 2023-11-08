@@ -36,40 +36,28 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
     end
   end
 
-  context 'for third-party AI services' do
+  context 'for experimental settings' do
     context 'when settings are disabled' do
       it 'renders nothing' do
-        allow(view).to receive(:ai_assist_ui_enabled?).and_return(false)
-        allow(group).to receive(:ai_settings_allowed?).and_return(false)
-
-        render
-
-        expect(rendered).to render_template('groups/settings/_ai_third_party_settings')
-        expect(rendered).not_to have_content('Third-party AI services')
-      end
-    end
-
-    context 'when ai assist UI setting is enabled' do
-      it 'renders the ai assist settings' do
         allow(view).to receive(:ai_assist_ui_enabled?).and_return(true)
-        allow(group).to receive(:ai_settings_allowed?).and_return(false)
+        allow(group).to receive(:experiment_settings_allowed?).and_return(false)
 
         render
 
-        expect(rendered).to render_template('groups/settings/_ai_third_party_settings')
-        expect(rendered).to have_content('Third-party AI services')
+        expect(rendered).to render_template('groups/settings/_experimental_settings')
+        expect(rendered).not_to have_content('Experiment and Beta features')
       end
     end
 
-    context 'when ai settings for group is enabled' do
-      it 'renders the ai assist settings' do
-        allow(view).to receive(:ai_assist_ui_enabled?).and_return(false)
-        allow(group).to receive(:ai_settings_allowed?).and_return(true)
+    context 'when experiment settings for group is enabled' do
+      it 'renders the experiment settings' do
+        allow(view).to receive(:ai_assist_ui_enabled?).and_return(true)
+        allow(group).to receive(:experiment_settings_allowed?).and_return(true)
 
         render
 
-        expect(rendered).to render_template('groups/settings/_ai_third_party_settings')
-        expect(rendered).to have_content('Third-party AI services')
+        expect(rendered).to render_template('groups/settings/_experimental_settings')
+        expect(rendered).to have_content('Experiment and Beta features')
       end
     end
   end

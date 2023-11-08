@@ -549,14 +549,6 @@ module EE
       group.domain_verification_available? && enterprise_user_of_group?(group) && group.owned_by?(current_user)
     end
 
-    def third_party_ai_features_enabled?
-      accessible_root_groups = groups.by_parent(nil)
-      return false if accessible_root_groups.empty?
-
-      disabled_by_any_group = accessible_root_groups.reject(&:third_party_ai_features_enabled).any?
-      !disabled_by_any_group
-    end
-
     def code_suggestions_disabled_by_group?
       groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: false }).any?
     end
@@ -581,7 +573,7 @@ module EE
 
     def any_group_with_ai_available?
       Rails.cache.fetch(['users', id, GROUP_WITH_AI_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_ENABLED_CACHE_PERIOD) do
-        member_namespaces.namespace_settings_with_ai_enabled.with_ai_supported_plan.any?
+        member_namespaces.namespace_settings_with_ai_features_enabled.with_ai_supported_plan.any?
       end
     end
 

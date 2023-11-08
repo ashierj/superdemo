@@ -24,7 +24,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
     stub_licensed_features(generate_commit_message: true, ai_features: true)
-    group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
+    group.namespace_settings.update!(experiment_features_enabled: true)
   end
 
   before_all do
@@ -56,18 +56,6 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
       post_graphql_mutation(mutation, current_user: current_user)
 
       expect(fresh_response_data['errors'][0]['message']).to eq("`ai_global_switch` feature flag is disabled.")
-    end
-  end
-
-  context 'when third_party_ai_features_enabled disabled' do
-    before do
-      group.namespace_settings.update!(third_party_ai_features_enabled: false)
-    end
-
-    it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_for)
-
-      post_graphql_mutation(mutation, current_user: current_user)
     end
   end
 

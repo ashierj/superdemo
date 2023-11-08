@@ -17,7 +17,6 @@ RSpec.describe 'GitLab Duo Chat QA Evaluation for Issue', :clean_gitlab_redis_ch
       stub_licensed_features(ai_tanuki_bot: true)
 
       root_group = issue.project.group.root_ancestor
-      root_group.namespace_settings.update_attribute(:third_party_ai_features_enabled, true)
       root_group.namespace_settings.update_attribute(:experiment_features_enabled, true)
       root_group.add_owner(user)
       issue.project.add_developer(user)

@@ -838,32 +838,20 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
     end
 
     it 'updates the attribute' do
-      put :update, params: { id: group.to_param, group: { experiment_features_enabled: true,
-                                                          third_party_ai_features_enabled: false } }
-
-      expect(group.reload.experiment_features_enabled).to eq(true)
-      expect(group.reload.third_party_ai_features_enabled).to eq(false)
+      expect do
+        put :update, params: { id: group.to_param, group: { experiment_features_enabled: true } }
+      end.to change { group.reload.experiment_features_enabled }.from(false).to(true)
     end
 
-    it 'updates the third party attribute when ai settings are not available, but ai assisted are' do
-      stub_licensed_features(ai_features: false)
-
-      put :update, params: { id: group.to_param, group: { third_party_ai_features_enabled: false } }
-
-      expect(group.reload.third_party_ai_features_enabled).to eq(false)
-    end
-
-    context 'when ai licensed and ai assisted features are not available for the group' do
+    context 'when ai license features are not available for the group' do
       before do
         stub_licensed_features(ai_features: false)
-        stub_feature_flags(ai_assist_flag: false)
       end
 
       it 'does not update attributes' do
         expect do
-          put :update, params: { id: group.to_param, group: { experiment_features_enabled: true,
-                                                              third_party_ai_features_enabled: false } }
-        end.to not_change { group.reload.experiment_features_enabled }.and not_change { group.reload.third_party_ai_features_enabled }
+          put :update, params: { id: group.to_param, group: { experiment_features_enabled: true } }
+        end.to not_change { group.reload.experiment_features_enabled }
       end
     end
   end

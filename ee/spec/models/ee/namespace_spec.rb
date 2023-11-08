@@ -35,8 +35,6 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   it { is_expected.to delegate_method(:temporary_storage_increase_ends_on=).to(:namespace_limit).with_arguments(:args) }
   it { is_expected.to delegate_method(:temporary_storage_increase_enabled?).to(:namespace_limit) }
   it { is_expected.to delegate_method(:eligible_for_temporary_storage_increase?).to(:namespace_limit) }
-  it { is_expected.to delegate_method(:third_party_ai_features_enabled).to(:namespace_settings).allow_nil }
-  it { is_expected.to delegate_method(:third_party_ai_features_enabled=).to(:namespace_settings).with_arguments(:args).allow_nil }
   it { is_expected.to delegate_method(:experiment_features_enabled).to(:namespace_settings).allow_nil }
   it { is_expected.to delegate_method(:experiment_features_enabled=).to(:namespace_settings).with_arguments(:args).allow_nil }
 
@@ -421,29 +419,22 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       end
     end
 
-    describe '.namespace_settings_with_ai_enabled', :saas do
-      subject { described_class.namespace_settings_with_ai_enabled }
+    describe '.namespace_settings_with_ai_features_enabled', :saas do
+      subject { described_class.namespace_settings_with_ai_features_enabled }
 
       let_it_be_with_reload(:namespace) { create(:namespace, :with_namespace_settings) }
-      let(:third_party_ai_features_enabled) { true }
-      let(:experiment_features_enabled) { true }
 
       before do
         allow(namespace.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
         namespace.namespace_settings.update!(
-          third_party_ai_features_enabled: third_party_ai_features_enabled,
           experiment_features_enabled: experiment_features_enabled
         )
       end
 
-      context 'when all settings are enabled' do
+      context 'when experimental features are enabled' do
+        let(:experiment_features_enabled) { true }
+
         it { is_expected.to contain_exactly(namespace) }
-      end
-
-      context 'when third party features are disabled' do
-        let(:third_party_ai_features_enabled) { false }
-
-        it { is_expected.to be_empty }
       end
 
       context 'when experimental features are disabled' do

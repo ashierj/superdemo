@@ -407,7 +407,6 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_licensed_features(epics: true, summarize_notes: true, ai_features: true)
       group.namespace_settings.update!(experiment_features_enabled: true)
-      group.namespace_settings.update!(third_party_ai_features_enabled: true)
     end
 
     context 'when a member' do
@@ -420,14 +419,6 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
       context 'when experiment features are disabled' do
         before do
           group.namespace_settings.update!(experiment_features_enabled: false)
-        end
-
-        it { is_expected.to be_disallowed(:summarize_notes) }
-      end
-
-      context 'when third party ai features are disabled' do
-        before do
-          group.namespace_settings.update!(third_party_ai_features_enabled: false)
         end
 
         it { is_expected.to be_disallowed(:summarize_notes) }

@@ -76,8 +76,8 @@ RSpec.describe Llm::ExtraResourceFinder, :saas, feature_category: :duo_chat do
             end
           end
 
-          context 'when project is in group that does not allow AI' do
-            include_context 'with third party features disabled for group'
+          context 'when project is in group that does not allow experiment features' do
+            include_context 'with experiment features disabled for group'
 
             it 'returns an empty hash' do
               expect(execute).to be_empty

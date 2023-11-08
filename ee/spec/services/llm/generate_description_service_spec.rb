@@ -16,7 +16,6 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
   describe '#perform' do
     before do
       stub_licensed_features(generate_description: true)
-      group.namespace_settings.update!(third_party_ai_features_enabled: true)
       group.add_guest(user)
       allow(Ability).to receive(:allowed?).and_call_original
       allow(Ability).to receive(:allowed?)

@@ -37,10 +37,7 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
   before do
     stub_application_setting(check_namespace_plan: true)
     stub_licensed_features(explain_code: true, ai_features: true)
-    project.root_ancestor.update!(
-      experiment_features_enabled: true,
-      third_party_ai_features_enabled: true
-    )
+    project.root_ancestor.update!(experiment_features_enabled: true)
   end
 
   before_all do

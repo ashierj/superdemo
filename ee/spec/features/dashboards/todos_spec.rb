@@ -98,8 +98,7 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
       )
 
       project.reload.root_ancestor.namespace_settings.update!(
-        experiment_features_enabled: true,
-        third_party_ai_features_enabled: true
+        experiment_features_enabled: true
       )
 
       sign_in(user)
@@ -161,8 +160,7 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
       )
 
       project.reload.root_ancestor.namespace_settings.update!(
-        experiment_features_enabled: true,
-        third_party_ai_features_enabled: true
+        experiment_features_enabled: true
       )
 
       sign_in(user)

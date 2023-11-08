@@ -31,10 +31,6 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
     described_class.new(prompt_message, template_class, { file_path: 'index.js' }).execute
   end
 
-  before do
-    group.namespace_settings.update!(third_party_ai_features_enabled: true)
-  end
-
   describe "#execute" do
     context 'with valid params' do
       it 'performs the OpenAI request' do

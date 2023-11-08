@@ -50,7 +50,6 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
       stub_licensed_features(summarize_mr_changes: true)
 
       merge_request.project.namespace.namespace_settings.update_attribute(:experiment_features_enabled, true)
-      merge_request.project.namespace.namespace_settings.update_attribute(:third_party_ai_features_enabled, true)
     end
 
     context "when the user does not have read access to the MR" do
@@ -91,18 +90,6 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
       context 'when the project experiment_features_allowed is false' do
         before do
           merge_request.project.namespace.namespace_settings.update_attribute(:experiment_features_enabled, false)
-        end
-
-        it "returns without attempting to summarize" do
-          expect(service).not_to receive(:llm_client)
-
-          service.execute
-        end
-      end
-
-      context 'when the project third_party_ai_features_enabled is false' do
-        before do
-          merge_request.project.namespace.namespace_settings.update_attribute(:third_party_ai_features_enabled, false)
         end
 
         it "returns without attempting to summarize" do

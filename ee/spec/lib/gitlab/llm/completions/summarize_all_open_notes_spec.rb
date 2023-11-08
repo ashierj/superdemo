@@ -79,10 +79,10 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
       stub_licensed_features(summarize_notes: true, ai_features: true, epics: true)
 
       group.namespace_settings.update!(
-        experiment_features_enabled: true, third_party_ai_features_enabled: true
+        experiment_features_enabled: true
       )
       project.root_ancestor.update!(
-        experiment_features_enabled: true, third_party_ai_features_enabled: true
+        experiment_features_enabled: true
       )
     end
 

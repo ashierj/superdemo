@@ -18,9 +18,7 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
 
   describe '#execute' do
     before do
-      group.namespace_settings.update!(
-        third_party_ai_features_enabled: true,
-        experiment_features_enabled: true)
+      group.namespace_settings.update!(experiment_features_enabled: true)
       allow(Llm::CompletionWorker).to receive(:perform_for)
     end
 
@@ -60,19 +58,17 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
   describe '#valid?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:experiment_features_enabled, :third_party_ai_features_enabled, :result) do
-      true   | true  | true
-      false  | true  | false
-      true   | false | false
-      false  | false | false
+    where(:experiment_features_enabled, :result) do
+      true   |  true
+      false  |  false
     end
 
     with_them do
       before do
         group.add_developer(user)
         project.root_ancestor.namespace_settings.update!(
-          third_party_ai_features_enabled: third_party_ai_features_enabled,
-          experiment_features_enabled: experiment_features_enabled)
+          experiment_features_enabled: experiment_features_enabled
+        )
       end
 
       subject { described_class.new(user, merge_request, options) }

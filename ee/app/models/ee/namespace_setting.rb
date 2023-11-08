@@ -22,10 +22,8 @@ module EE
         user_id_existence: true,
         if: :unique_project_download_limit_alertlist_changed?
       validates :experiment_features_enabled, inclusion: { in: [true, false] }
-      validates :third_party_ai_features_enabled, inclusion: { in: [true, false] }
 
       validate :user_cap_allowed, if: -> { enabling_user_cap? }
-      validate :third_party_ai_settings_allowed
       validate :experiment_features_allowed
 
       before_save :set_prevent_sharing_groups_outside_hierarchy, if: -> { user_cap_enabled? }
@@ -126,13 +124,6 @@ module EE
         namespace.owners.active.pluck_primary_key
       end
 
-      def third_party_ai_settings_allowed
-        return unless third_party_ai_features_enabled_changed?
-        return if ai_settings_allowed? || ai_assist_ui_enabled?
-
-        errors.add(:third_party_ai_features_enabled, _('Third party AI settings not allowed.'))
-      end
-
       def experiment_features_allowed
         return unless experiment_features_enabled_changed?
         return if ai_settings_allowed?
@@ -155,7 +146,6 @@ module EE
         allow_merge_on_skipped_pipeline
         only_allow_merge_if_all_discussions_are_resolved
         experiment_features_enabled
-        third_party_ai_features_enabled
       ].freeze
 
       override :allowed_namespace_settings_params

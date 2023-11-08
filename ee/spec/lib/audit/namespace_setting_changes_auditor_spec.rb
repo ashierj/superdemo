@@ -110,43 +110,43 @@ RSpec.describe Audit::NamespaceSettingChangesAuditor, feature_category: :audit_e
             expect { auditor.execute }.not_to change { AuditEvent.count }
           end
         end
+      end
 
-        context 'when third_party_ai_features_enabled is changed' do
-          where(:prev_value, :new_value) do
-            true | false
-            false | true
-          end
-
-          with_them do
-            before do
-              group.namespace_settings.update!(third_party_ai_features_enabled: prev_value)
-            end
-
-            it 'creates an audit event' do
-              group.namespace_settings.update!(third_party_ai_features_enabled: new_value)
-
-              expect { auditor.execute }.to change { AuditEvent.count }.by(1)
-              audit_details = {
-                change: :third_party_ai_features_enabled,
-                from: prev_value,
-                to: new_value,
-                target_details: group.full_path
-              }
-              expect(AuditEvent.last.details).to include(audit_details)
-            end
-          end
+      context 'when third_party_ai_features_enabled is changed' do
+        where(:prev_value, :new_value) do
+          true | false
+          false | true
         end
 
-        context 'when third_party_ai_features_enabled is not changed' do
+        with_them do
           before do
-            group.namespace_settings.update!(third_party_ai_features_enabled: true)
+            group.namespace_settings.update!(third_party_ai_features_enabled: prev_value)
           end
 
-          it 'does not create an audit event' do
-            group.namespace_settings.update!(third_party_ai_features_enabled: true)
+          it 'creates an audit event' do
+            group.namespace_settings.update!(third_party_ai_features_enabled: new_value)
 
-            expect { auditor.execute }.not_to change { AuditEvent.count }
+            expect { auditor.execute }.to change { AuditEvent.count }.by(1)
+            audit_details = {
+              change: :third_party_ai_features_enabled,
+              from: prev_value,
+              to: new_value,
+              target_details: group.full_path
+            }
+            expect(AuditEvent.last.details).to include(audit_details)
           end
+        end
+      end
+
+      context 'when third_party_ai_features_enabled is not changed' do
+        before do
+          group.namespace_settings.update!(third_party_ai_features_enabled: true)
+        end
+
+        it 'does not create an audit event' do
+          group.namespace_settings.update!(third_party_ai_features_enabled: true)
+
+          expect { auditor.execute }.not_to change { AuditEvent.count }
         end
       end
     end

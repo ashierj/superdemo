@@ -97,7 +97,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
           stub_licensed_features(summarize_notes: true, ai_features: true, epics: true)
           # rubocop: disable RSpec/BeforeAllRoleAssignment
           group.add_guest(user)
-          group.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
+          group.update!(experiment_features_enabled: true)
           # rubocop: enable RSpec/BeforeAllRoleAssignment
         end
 

@@ -76,12 +76,6 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer 
       it_behaves_like 'returns an error'
     end
 
-    context 'when third party features are disabled for the group' do
-      include_context 'with third party features disabled for group'
-
-      it_behaves_like 'returns an error'
-    end
-
     context 'when ai features are enabled' do
       include_context 'with ai features enabled for group'
 

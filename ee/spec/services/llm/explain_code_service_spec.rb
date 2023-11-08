@@ -17,15 +17,13 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
   end
 
   let(:experiment_features_enabled) { true }
-  let(:third_party_features_enabled) { true }
 
   subject { described_class.new(user, project, options) }
 
   before do
     stub_application_setting(check_namespace_plan: true)
     stub_licensed_features(explain_code: true, ai_features: true)
-    group.update!(experiment_features_enabled: experiment_features_enabled,
-      third_party_ai_features_enabled: third_party_features_enabled)
+    group.update!(experiment_features_enabled: experiment_features_enabled)
   end
 
   describe '#perform' do
@@ -76,16 +74,6 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
 
       context 'when experimental features are not enabled' do
         let(:experiment_features_enabled) { false }
-
-        it 'returns an error' do
-          expect(Llm::CompletionWorker).not_to receive(:perform_for)
-
-          expect(subject.execute).to be_error
-        end
-      end
-
-      context 'when third-party features are not enabled' do
-        let(:third_party_features_enabled) { false }
 
         it 'returns an error' do
           expect(Llm::CompletionWorker).not_to receive(:perform_for)

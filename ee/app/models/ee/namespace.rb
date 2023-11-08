@@ -89,9 +89,9 @@ module EE
           .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
-      scope :namespace_settings_with_ai_enabled, -> do
+      scope :namespace_settings_with_ai_features_enabled, -> do
         joins("INNER JOIN \"namespace_settings\" ON \"namespace_settings\".\"namespace_id\" = \"namespaces\".traversal_ids[1]")
-          .where(namespace_settings: { third_party_ai_features_enabled: true, experiment_features_enabled: true })
+          .where(namespace_settings: { experiment_features_enabled: true })
       end
 
       scope :with_ai_supported_plan, -> do
@@ -130,8 +130,6 @@ module EE
       delegate :trial_ends_on, :trial_starts_on, to: :gitlab_subscription, allow_nil: true
 
       delegate(
-        :third_party_ai_features_enabled,
-        :third_party_ai_features_enabled=,
         :experiment_features_enabled,
         :experiment_features_enabled=,
         :code_suggestions,
