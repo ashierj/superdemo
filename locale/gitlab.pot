@@ -10340,6 +10340,9 @@ msgstr ""
 msgid "CiCatalog|Create a pipeline component repository and make reusing pipeline configurations faster and easier."
 msgstr ""
 
+msgid "CiCatalog|Discover CI configuration resources for a seamless CI/CD experience."
+msgstr ""
+
 msgid "CiCatalog|Get started with the CI/CD Catalog"
 msgstr ""
 

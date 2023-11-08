@@ -6,7 +6,7 @@ import CatalogListSkeletonLoader from '~/ci/catalog/components/list/catalog_list
 import CiResourcesList from '~/ci/catalog/components/list/ci_resources_list.vue';
 import EmptyState from '~/ci/catalog/components/list/empty_state.vue';
 import { ciCatalogResourcesItemsCount } from '~/ci/catalog/graphql/settings';
-import getNamespaceCatalogResources from '../../graphql/queries/get_namespace_catalog_resources.query.graphql';
+import getCatalogResources from '../../graphql/queries/get_ci_catalog_resources.query.graphql';
 
 export default {
   components: {
@@ -15,7 +15,6 @@ export default {
     CiResourcesList,
     EmptyState,
   },
-  inject: ['projectFullPath'],
   data() {
     return {
       catalogResources: [],
@@ -26,10 +25,9 @@ export default {
   },
   apollo: {
     catalogResources: {
-      query: getNamespaceCatalogResources,
+      query: getCatalogResources,
       variables() {
         return {
-          fullPath: this.projectFullPath,
           first: ciCatalogResourcesItemsCount,
         };
       },
@@ -67,7 +65,7 @@ export default {
 
         this.currentPage -= 1;
       } catch (e) {
-        // Ensure that the current query is properly stopped if an error occurs.
+        // Ensure that the current query is properly stoped if an error occurs.
         this.$apollo.queries.catalogResources.stop();
         createAlert({ message: e?.message || this.$options.i18n.fetchError, variant: 'danger' });
       }
@@ -82,7 +80,7 @@ export default {
 
         this.currentPage += 1;
       } catch (e) {
-        // Ensure that the current query is properly stopped if an error occurs.
+        // Ensure that the current query is properly stoped if an error occurs.
         this.$apollo.queries.catalogResources.stop();
 
         createAlert({ message: e?.message || this.$options.i18n.fetchError, variant: 'danger' });
