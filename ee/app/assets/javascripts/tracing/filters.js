@@ -15,8 +15,8 @@ export const ATTRIBUTE_FILTER_TOKEN_TYPE = 'attribute';
 
 const DEFAULT_PERIOD_FILTER = [{ operator: '=', value: '1h' }];
 
-export function queryToFilterObj(url) {
-  const filter = urlQueryToFilter(url, {
+export function queryToFilterObj(query) {
+  const filter = urlQueryToFilter(query, {
     filteredSearchTermKey: 'search',
     customOperators: [
       {

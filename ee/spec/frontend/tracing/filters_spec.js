@@ -24,7 +24,7 @@ jest.mock('~/vue_shared/components/filtered_search_bar/filtered_search_utils');
 describe('utils', () => {
   describe('queryToFilterObj', () => {
     it('should build a filter obj', () => {
-      const url = 'http://example.com/';
+      const query = { test: 'query' };
       urlQueryToFilter.mockReturnValue({
         period: '7d',
         service: 'my_service',
@@ -35,9 +35,9 @@ describe('utils', () => {
         [FILTERED_SEARCH_TERM]: 'test',
       });
 
-      const filterObj = queryToFilterObj(url);
+      const filterObj = queryToFilterObj(query);
 
-      expect(urlQueryToFilter).toHaveBeenCalledWith(url, {
+      expect(urlQueryToFilter).toHaveBeenCalledWith(query, {
         customOperators: [
           { operator: '>', prefix: 'gt' },
           { operator: '<', prefix: 'lt' },
@@ -56,10 +56,10 @@ describe('utils', () => {
     });
 
     it('should add the default period filter if not specified', () => {
-      const url = 'http://example.com/';
+      const query = { test: 'query' };
       urlQueryToFilter.mockReturnValue({});
 
-      const filterObj = queryToFilterObj(url);
+      const filterObj = queryToFilterObj(query);
 
       expect(filterObj).toEqual({
         period: [{ operator: '=', value: '1h' }],
