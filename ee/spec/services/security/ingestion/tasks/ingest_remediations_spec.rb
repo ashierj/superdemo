@@ -35,12 +35,6 @@ RSpec.describe Security::Ingestion::Tasks::IngestRemediations, feature_category:
 
     subject(:ingest_finding_remediations) { service_object.execute }
 
-    before do
-      # As the first vulnerability remediations are updated instead of ingestion task above,
-      # we have to update corresponding vulnerability_reads.
-      vulnerability_read_1.update!(has_remediations: true)
-    end
-
     it 'creates remediations and updates the associations' do
       expect { ingest_finding_remediations }.to change { Vulnerabilities::Remediation.count }.by(1)
                                             .and change { existing_remediation_2.reload.findings }.from([finding_1]).to([])
@@ -51,11 +45,28 @@ RSpec.describe Security::Ingestion::Tasks::IngestRemediations, feature_category:
       expect(finding_1.remediations).to include({ "diff" => existing_diff, "summary" => "Foo Summary" }, { "summary" => "Bar Summary", "diff" => new_diff })
     end
 
-    it 'updates vulnerability reads' do
-      ingest_finding_remediations
+    context 'when a new pipeline is run' do
+      before do
+        # As the first vulnerability remediations are updated instead of ingestion task above,
+        # we have to update corresponding vulnerability_reads.
+        vulnerability_read_1.update!(has_remediations: true)
+      end
 
-      expect(vulnerability_read_1.reload.has_remediations).to be(false)
-      expect(vulnerability_read_2.reload.has_remediations).to be(true)
+      context 'when associated remediations for findings is changed' do
+        let(:report_finding_with_no_remediation) { create(:ci_reports_security_finding, remediations: []) }
+        let(:finding_map_1) { create(:finding_map, finding: finding_1, report_finding: report_finding_with_no_remediation) }
+
+        it 'updates vulnerability reads' do
+          expect { ingest_finding_remediations }.to change { vulnerability_read_1.reload.has_remediations }.from(true).to(false)
+                                                .and change { vulnerability_read_2.reload.has_remediations }.from(false).to(true)
+        end
+      end
+
+      context 'when associated remediations for findings is unchanged' do
+        it 'do not update vulnerability reads' do
+          expect { ingest_finding_remediations }.to not_change { vulnerability_read_1.reload.has_remediations }
+        end
+      end
     end
 
     it_behaves_like 'bulk insertable task'
