@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Group, feature_category: :groups_and_projects do
+  include LoginHelpers
   using RSpec::Parameterized::TableSyntax
 
   let(:group) { create(:group) }
@@ -2006,7 +2007,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
     context 'when global SAML is enabled' do
       before do
-        allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
+        stub_basic_saml_config
       end
 
       it { is_expected.to eq(true) }

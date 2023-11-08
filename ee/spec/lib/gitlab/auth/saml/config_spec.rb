@@ -3,12 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::Saml::Config, feature_category: :system_access do
+  include LoginHelpers
   let(:config) { described_class.new }
-
-  def stub_saml_enabled
-    allow(config).to receive_messages({ options: { name: 'saml', args: {} } })
-    allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
-  end
 
   describe '#group_sync_enabled?' do
     subject { config.group_sync_enabled? }
@@ -17,7 +13,7 @@ RSpec.describe Gitlab::Auth::Saml::Config, feature_category: :system_access do
 
     context 'when SAML is enabled' do
       before do
-        stub_saml_enabled
+        stub_basic_saml_config
       end
 
       it { is_expected.to eq(false) }
@@ -57,7 +53,7 @@ RSpec.describe Gitlab::Auth::Saml::Config, feature_category: :system_access do
 
     with_them do
       before do
-        stub_saml_enabled if saml_enabled?
+        stub_basic_saml_config if saml_enabled?
         stub_licensed_features(microsoft_group_sync: feature_licensed?)
         stub_feature_flags(microsoft_azure_group_sync: feature_flag_enabled?)
       end
@@ -79,7 +75,7 @@ RSpec.describe Gitlab::Auth::Saml::Config, feature_category: :system_access do
 
     context 'when groups attribute is not configured for the provider' do
       before do
-        stub_saml_enabled
+        stub_basic_saml_config
         stub_licensed_features(microsoft_group_sync: true)
       end
 

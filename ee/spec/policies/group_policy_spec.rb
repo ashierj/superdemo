@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   include AdminModeHelper
+  include LoginHelpers
 
   include_context 'GroupPolicy context'
   # Can't move to GroupPolicy context because auditor trait is not present
@@ -954,20 +955,17 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     it { is_expected.to be_disallowed(:admin_saml_group_links) }
 
     context 'when global SAML is enabled' do
-      before do
-        allow_next_instance_of(Gitlab::Auth::Saml::Config) do |instance|
-          allow(instance).to receive_messages({ options: { name: 'saml', args: {} } })
+      context 'when the groups attribute is not configured' do
+        before do
+          stub_basic_saml_config
         end
-        allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
-      end
 
-      it { is_expected.to be_disallowed(:admin_saml_group_links) }
+        it { is_expected.to be_disallowed(:admin_saml_group_links) }
+      end
 
       context 'when the groups attribute is configured' do
         before do
-          allow_next_instance_of(Gitlab::Auth::Saml::Config) do |instance|
-            allow(instance).to receive(:groups).and_return(['Groups'])
-          end
+          stub_omniauth_config(providers: [{ name: 'saml', groups_attribute: 'Groups', args: {} }])
         end
 
         it { is_expected.to be_disallowed(:admin_saml_group_links) }
