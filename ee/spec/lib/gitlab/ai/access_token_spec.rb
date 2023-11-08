@@ -34,8 +34,16 @@ RSpec.describe Gitlab::Ai::AccessToken, feature_category: :code_suggestions do
         payload, headers = JWT.decode(jwt, public_key, true, { algorithm: 'RS256' })
 
         expect(headers).to eq("alg" => "RS256", "typ" => "JWT")
-        expect(payload.keys).to contain_exactly("jti", "aud", "iss", "iat", "nbf", "exp",
-          "third_party_ai_features_enabled", "gitlab_realm", "scopes")
+        expect(payload.keys).to contain_exactly(
+          "jti",
+          "aud",
+          "iss",
+          "iat",
+          "nbf",
+          "exp",
+          "gitlab_realm",
+          "scopes"
+        )
       end
     end
 
