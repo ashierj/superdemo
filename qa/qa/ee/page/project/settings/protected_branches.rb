@@ -13,7 +13,7 @@ module QA
 
               base.class_eval do
                 view 'ee/app/views/protected_branches/ee/_code_owner_approval_table.html.haml' do
-                  element :code_owner_toggle_button
+                  element 'protected-branch-code-owner-toggle'
                 end
 
                 view 'app/assets/javascripts/protected_branches/protected_branch_create.js' do
@@ -24,7 +24,7 @@ module QA
             end
 
             def require_code_owner_approval(branch)
-              toggle = find_element(:code_owner_toggle_button, branch_name: branch).find_button('button')
+              toggle = find_element('protected-branch-code-owner-toggle', branch_name: branch).find_button('button')
               toggle.click unless toggle[:class].include?('is-checked')
             end
 
