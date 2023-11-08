@@ -17,10 +17,10 @@ module Gitlab
           data[:role] ||= AiMessage::ROLE_ASSISTANT
           data.merge!(
             user: user,
-            resource: resource,
             content: response_modifier.response_body,
             errors: response_modifier.errors,
-            extras: response_modifier.extras
+            extras: response_modifier.extras,
+            context: AiMessageContext.new(resource: resource)
           )
 
           AiMessage.for(action: data[:ai_action]).new(data.compact)

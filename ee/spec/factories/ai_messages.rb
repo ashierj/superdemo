@@ -6,7 +6,6 @@ FactoryBot.define do
   factory :ai_message, class: 'Gitlab::Llm::AiMessage' do
     id { nil }
     association :user
-    resource { nil }
     role { 'user' }
     request_id { SecureRandom.uuid }
     content { 'user message' }
@@ -17,8 +16,15 @@ FactoryBot.define do
     client_subscription_id { nil }
     type { nil }
     chunk_id { nil }
+    add_attribute(:context) { {} }
+
+    transient do
+      resource { nil }
+    end
 
     initialize_with do
+      context[:resource] = resource if resource
+
       new(
         id: id,
         role: role,
@@ -30,7 +36,7 @@ FactoryBot.define do
         errors: errors,
         ai_action: ai_action,
         client_subscription_id: client_subscription_id,
-        resource: resource,
+        context: Gitlab::Llm::AiMessageContext.new(context),
         type: type,
         chunk_id: chunk_id
       )
