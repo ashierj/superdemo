@@ -22,7 +22,7 @@ module Gitlab
           private
 
           def request!
-            prompt_template = ai_prompt_class.new(options[:content], template: template)
+            prompt_template = ai_prompt_class.new(prompt_message.content, template: template)
 
             ai_client = ::Gitlab::Llm::Anthropic::Client.new(user, tracking_context: tracking_context)
             ai_client.complete(

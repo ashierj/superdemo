@@ -12,7 +12,10 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::GenerateDescription, feature
   let(:template_class) { ::Gitlab::Llm::Templates::GenerateDescription }
   let(:ai_response) { { completion: "Ai response." }.to_json }
   let(:uuid) { SecureRandom.uuid }
-  let(:prompt_message) { build(:ai_message, :generate_description, user: user, resource: issuable, request_id: uuid) }
+  let(:prompt_message) do
+    build(:ai_message, :generate_description, user: user, resource: issuable, content: content, request_id: uuid)
+  end
+
   let(:expected_template) { nil }
 
   subject(:generate_description) { described_class.new(prompt_message, template_class, ai_options).execute }
