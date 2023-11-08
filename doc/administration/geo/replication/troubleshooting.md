@@ -1434,8 +1434,8 @@ If you are using the Linux package installation, something might have failed dur
 
 ### GitLab indicates that more than 100% of repositories were synced
 
-This can be caused by orphaned records in the project registry. You can clear them
-[using the Rake task to remove orphaned project registries](../../../administration/raketasks/geo.md#remove-orphaned-project-registries).
+This can be caused by orphaned records in the project registry. They are being cleaned
+periodically using a registry worker, so give it some time to fix it itself.
 
 ### Secondary site shows "Unhealthy" in UI after changing the value of `external_url` for the primary site
 
