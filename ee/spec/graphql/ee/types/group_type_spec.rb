@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['Group'] do
+RSpec.describe GitlabSchema.types['Group'], feature_category: :groups_and_projects do
   describe 'nested epic request' do
     it { expect(described_class).to have_graphql_field(:epicsEnabled) }
     it { expect(described_class).to have_graphql_field(:epic) }
@@ -28,6 +28,7 @@ RSpec.describe GitlabSchema.types['Group'] do
   it { expect(described_class).to have_graphql_field(:enforce_free_user_cap) }
   it { expect(described_class).to have_graphql_field(:project_compliance_standards_adherence) }
   it { expect(described_class).to have_graphql_field(:amazon_s3_configurations) }
+  it { expect(described_class).to have_graphql_field(:pending_members) }
 
   describe 'vulnerabilities' do
     let_it_be(:group) { create(:group) }

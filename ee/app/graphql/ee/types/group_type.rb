@@ -192,6 +192,12 @@ module EE
           null: true, description: 'Member roles available for the group.',
           resolver: ::Resolvers::MemberRoles::RolesResolver,
           alpha: { milestone: '16.5' }
+        field :pending_members,
+          ::Types::PendingGroupMemberType.connection_type,
+          null: true,
+          description: 'A pending membership of a user within this group.',
+          resolver: Resolvers::PendingGroupMembersResolver,
+          alpha: { milestone: '16.6' }
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)

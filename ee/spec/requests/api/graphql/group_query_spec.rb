@@ -331,6 +331,74 @@ RSpec.describe 'getting group information', feature_category: :groups_and_projec
         it_behaves_like 'correct access to release statistics'
       end
     end
+
+    context 'when loading pending members' do
+      let(:group) { create(:group, :private) }
+      let!(:pending_member) { create(:group_member, :awaiting, group: group) }
+
+      let(:query_fields) do
+        <<~QUERY
+        pendingMembers {
+          nodes {
+            id
+            name
+            username
+            email
+            webUrl
+            invited
+            avatarUrl
+            approved
+          }
+        }
+        QUERY
+      end
+
+      let(:query) do
+        graphql_query_for('group', { 'fullPath' => group.full_path }, query_fields)
+      end
+
+      let(:pending_members) do
+        graphql_data.with_indifferent_access.dig(:group, :pendingMembers, :nodes)
+      end
+
+      context 'when user does not have permission' do
+        before do
+          post_graphql(query, current_user: user)
+        end
+
+        it 'does not return pending members of the group' do
+          expect(pending_members).to be_nil
+        end
+      end
+
+      context 'when user has permission' do
+        before do
+          group.add_owner(user)
+
+          post_graphql(query, current_user: user)
+        end
+
+        it 'returns pending members of the group' do
+          expect(pending_members).not_to be_empty
+          expect(pending_members.first[:name]).to eq(pending_member.user.name)
+          expect(pending_members.first[:username]).to eq(pending_member.user.username)
+          expect(pending_members.first[:email]).to eq(pending_member.user.email)
+          expect(pending_members.first[:webUrl]).to eq(Gitlab::Routing.url_helpers.user_url(pending_member.user))
+          expect(pending_members.first[:avatarUrl]).to eq(GravatarService.new.execute(pending_member.user.email))
+          expect(pending_members.first[:approved]).to eq(pending_member.active?)
+          expect(pending_members.first[:invited]).to eq(pending_member.invite?)
+        end
+
+        it 'does not produce N+1 queries' do
+          baseline = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: user) }
+
+          create(:group_member, :awaiting, group: group)
+          create(:group_member, :awaiting, group: group)
+
+          expect { post_graphql(query, current_user: user) }.not_to exceed_query_limit(baseline)
+        end
+      end
+    end
   end
 
   describe 'pagination' do
