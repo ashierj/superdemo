@@ -6,7 +6,7 @@
 
       .d-flex.flex-column.align-items-center.mt-3.mx-3
         .avatar-container.rect-avatar.s64.home-panel-avatar.mb-3
-          = group_icon(@unauthenticated_group, class: 'avatar avatar-tile s64', width: 64, height: 64)
+          = render Pajamas::AvatarComponent.new(@unauthenticated_group, alt: @unauthenticated_group.name, size: 64)
         %p.text-center
           = html_escape(_("Finish setting up your dedicated account for %{group_name}.")) % { group_name: tag.strong(@group_name) }
 
