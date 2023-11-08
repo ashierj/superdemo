@@ -13,6 +13,7 @@ query getAllRunnersEE(
   $type: CiRunnerType
   $tagList: [String!]
   $search: String
+  $versionPrefix: String
   $sort: CiRunnerSort
 ) {
   runners(
@@ -26,6 +27,7 @@ query getAllRunnersEE(
     type: $type
     tagList: $tagList
     search: $search
+    versionPrefix: $versionPrefix
     sort: $sort
   ) {
     ...AllRunnersConnection

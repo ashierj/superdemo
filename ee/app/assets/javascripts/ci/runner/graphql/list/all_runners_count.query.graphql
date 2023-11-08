@@ -5,6 +5,7 @@ query getAllRunnersCountEE(
   $type: CiRunnerType
   $tagList: [String!]
   $search: String
+  $versionPrefix: String
 ) {
   runners(
     paused: $paused
@@ -13,6 +14,7 @@ query getAllRunnersCountEE(
     type: $type
     tagList: $tagList
     search: $search
+    versionPrefix: $versionPrefix
   ) {
     count
   }
