@@ -47,7 +47,9 @@ export default {
         this.services = await this.config.fetchServices();
       } catch (e) {
         createAlert({
-          message: s__('Tracing|Something went wrong while fetching the services'),
+          message: s__(
+            'Tracing|Error: Something went wrong while fetching the services. Try again.',
+          ),
         });
         this.services = [];
       } finally {

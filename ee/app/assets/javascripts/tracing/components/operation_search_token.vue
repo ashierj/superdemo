@@ -64,7 +64,9 @@ export default {
         this.operations = (await Promise.all(fetchAll)).flat();
       } catch (e) {
         createAlert({
-          message: s__('Tracing|Something went wrong while fetching the operations'),
+          message: s__(
+            'Tracing|Error: Something went wrong while fetching the operations. Try again.',
+          ),
         });
         this.operations = [];
       } finally {

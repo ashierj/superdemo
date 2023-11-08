@@ -140,7 +140,9 @@ describe('TracingDetails', () => {
 
       await mountComponent();
 
-      expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to load trace details.' });
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Error: Failed to load trace details. Try reloading the page.',
+      });
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findTraceDetails().exists()).toBe(false);
     });
@@ -151,7 +153,9 @@ describe('TracingDetails', () => {
 
       await mountComponent();
 
-      expect(createAlert).toHaveBeenCalledWith({ message: 'Failed to load trace details.' });
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'Error: Failed to load trace details. Try reloading the page.',
+      });
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findTraceDetails().exists()).toBe(false);
     });
