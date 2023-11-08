@@ -32,6 +32,7 @@ module API
                 get 'tasks' do
                   node = ::Search::Zoekt::Node.find_or_initialize_by_task_request(params)
 
+                  # We don't want to register (save) the node if the feature flag is disabled
                   if Feature.disabled?(:zoekt_internal_api_register_nodes, type: :ops) || node.save
                     { id: node.id }
                   else
