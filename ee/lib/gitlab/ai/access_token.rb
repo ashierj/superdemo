@@ -48,7 +48,6 @@ module Gitlab
 
       def claims
         {
-          third_party_ai_features_enabled: true,
           gitlab_realm: @gitlab_realm,
           scopes: @scopes
         }
