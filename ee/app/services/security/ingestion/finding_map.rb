@@ -10,16 +10,17 @@ module Security
     class FindingMap
       FINDING_ATTRIBUTES = %i[confidence metadata_version name raw_metadata report_type severity details description message solution].freeze
 
-      attr_reader :security_finding, :report_finding
+      attr_reader :pipeline, :security_finding, :report_finding
       attr_accessor :finding_id, :vulnerability_id, :new_record, :identifier_ids
 
       delegate :uuid, :scanner_id, :severity, to: :security_finding
       delegate :scan, to: :security_finding, private: true
-      delegate :project, to: :scan, private: true
+      delegate :project_id, to: :pipeline
       delegate :project_fingerprint, to: :report_finding, private: true
       delegate :evidence, to: :report_finding
 
-      def initialize(security_finding, report_finding)
+      def initialize(pipeline, security_finding, report_finding)
+        @pipeline = pipeline
         @security_finding = security_finding
         @report_finding = report_finding
         @identifier_ids = []
@@ -27,6 +28,12 @@ module Security
 
       def identifiers
         @identifiers ||= report_finding.identifiers.first(Vulnerabilities::Finding::MAX_NUMBER_OF_IDENTIFIERS)
+      end
+
+      def identifier_data
+        identifiers.map do |identifier|
+          identifier.to_hash.merge(project_id: project_id)
+        end
       end
 
       def set_identifier_ids_by(fingerprint_id_map)
@@ -42,7 +49,8 @@ module Security
                         project_fingerprint: project_fingerprint,
                         primary_identifier_id: identifier_ids.first,
                         location: report_finding.location_data,
-                        location_fingerprint: report_finding.location_fingerprint
+                        location_fingerprint: report_finding.location_fingerprint,
+                        project_id: project_id
                       )
       end
     end

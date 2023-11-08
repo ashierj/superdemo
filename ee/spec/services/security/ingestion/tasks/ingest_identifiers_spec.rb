@@ -14,7 +14,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestIdentifiers, feature_category: 
     let(:expected_fingerprints) { Array.new(19) { |index| Digest::SHA1.hexdigest("type:id-#{index}") }.unshift(existing_fingerprint).sort }
 
     let(:report_finding) { create(:ci_reports_security_finding, identifiers: identifiers) }
-    let(:finding_map) { create(:finding_map, report_finding: report_finding) }
+    let(:finding_map) { create(:finding_map, report_finding: report_finding, pipeline: pipeline) }
     let(:service_object) { described_class.new(pipeline, [finding_map]) }
     let(:project_identifiers) { pipeline.project.vulnerability_identifiers }
 
@@ -30,6 +30,20 @@ RSpec.describe Security::Ingestion::Tasks::IngestIdentifiers, feature_category: 
         change { project_identifiers.where(id: finding_map.identifier_ids).pluck(:fingerprint).sort }
           .from([])
           .to(expected_fingerprints))
+    end
+
+    context 'with multiple projects' do
+      let_it_be(:other_pipeline) { create(:ci_pipeline) }
+
+      let(:identifiers) { Array.new(10) { |index| create(:ci_reports_security_identifier, external_id: "id-#{index}", external_type: 'type') } }
+      let(:other_finding_map) { create(:finding_map, report_finding: report_finding, pipeline: other_pipeline) }
+      let(:service_object) { described_class.new(nil, [finding_map, other_finding_map]) }
+      let(:other_project_identifiers) { other_pipeline.project.vulnerability_identifiers }
+
+      it 'creates records for multiple projects' do
+        expect { ingest_identifiers }.to change { project_identifiers.count }.from(0).to(10)
+          .and change { other_project_identifiers.count }.from(0).to(10)
+      end
     end
 
     it_behaves_like 'bulk insertable task'

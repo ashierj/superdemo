@@ -5,7 +5,8 @@ module Security
     class FindingMapCollection
       include Enumerable
 
-      def initialize(security_scan)
+      def initialize(pipeline, security_scan)
+        @pipeline = pipeline
         @security_scan = security_scan
       end
 
@@ -19,7 +20,7 @@ module Security
 
       private
 
-      attr_reader :security_scan
+      attr_reader :pipeline, :security_scan
 
       delegate :findings, :report_findings, to: :security_scan, private: true
 
@@ -28,7 +29,7 @@ module Security
         # if we have a matching one.
         report_uuid = security_finding.overridden_uuid || security_finding.uuid
 
-        FindingMap.new(security_finding, report_findings_map[report_uuid])
+        FindingMap.new(pipeline, security_finding, report_findings_map[report_uuid])
       end
 
       def report_findings_map

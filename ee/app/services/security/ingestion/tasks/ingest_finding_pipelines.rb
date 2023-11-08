@@ -14,7 +14,7 @@ module Security
 
         def attributes
           finding_maps.map do |finding_map|
-            { pipeline_id: pipeline.id, occurrence_id: finding_map.finding_id }
+            { pipeline_id: finding_map.pipeline.id, occurrence_id: finding_map.finding_id }
           end
         end
       end
