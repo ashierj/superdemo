@@ -2,11 +2,7 @@
 
 module Security
   module Ingestion
-    # Base class to organize the chain of responsibilities
-    # for the report slice.
-    #
-    # Returns the ingested vulnerability IDs.
-    class IngestReportSliceService < IngestSliceBaseService
+    class IngestCvsSliceService < IngestSliceBaseService
       TASKS = %i[
         IngestIdentifiers
         IngestFindings
@@ -19,14 +15,11 @@ module Security
         IngestFindingEvidence
         IngestVulnerabilityFlags
         IngestVulnerabilityStatistics
-        IngestRemediations
         HooksExecution
       ].freeze
 
-      def execute
-        Security::Ingestion::Tasks::UpdateVulnerabilityUuids.execute(@pipeline, @finding_maps)
-
-        super
+      def self.execute(finding_maps)
+        super(nil, finding_maps)
       end
     end
   end

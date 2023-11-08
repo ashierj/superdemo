@@ -17,7 +17,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities, feature_catego
         false)
     end
 
-    let(:finding_maps) { create_list(:finding_map, 5) }
+    let(:finding_maps) { create_list(:finding_map, 5, pipeline: pipeline) }
 
     subject(:ingest_vulnerabilities) { described_class.new(pipeline, finding_maps).execute }
 

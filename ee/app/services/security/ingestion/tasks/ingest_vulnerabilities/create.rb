@@ -24,13 +24,15 @@ module Security
           end
 
           def attributes
-            finding_maps.map { |finding_map| attributes_for_finding(finding_map.report_finding) }
+            finding_maps.map { |finding_map| attributes_for_finding(finding_map) }
           end
 
-          def attributes_for_finding(report_finding)
+          def attributes_for_finding(finding_map)
+            report_finding = finding_map.report_finding
+
             {
-              author_id: pipeline.user_id,
-              project_id: pipeline.project_id,
+              author_id: finding_map.pipeline.user_id,
+              project_id: finding_map.project_id,
               title: report_finding.name.to_s.truncate(::Issuable::TITLE_LENGTH_MAX),
               state: :detected, # this will be detected because if there is any interaction for dismissal for finding, there will be vulnerability already
               severity: report_finding.severity,

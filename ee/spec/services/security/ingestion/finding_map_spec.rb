@@ -3,15 +3,23 @@
 require 'spec_helper'
 
 RSpec.describe Security::Ingestion::FindingMap, feature_category: :vulnerability_management do
+  let_it_be(:pipeline) { build_stubbed(:ci_pipeline) }
+
   let(:security_finding) { build(:security_finding) }
   let(:identifier) { build(:ci_reports_security_identifier) }
   let(:report_finding) { build(:ci_reports_security_finding, identifiers: [identifier]) }
-  let(:finding_map) { build(:finding_map, security_finding: security_finding, report_finding: report_finding) }
+  let(:finding_map) do
+    build(:finding_map, security_finding: security_finding, report_finding: report_finding, pipeline: pipeline)
+  end
 
-  describe '#uuid' do
+  describe 'delegations' do
     subject { finding_map }
 
     it { is_expected.to delegate_method(:uuid).to(:security_finding) }
+    it { is_expected.to delegate_method(:scanner_id).to(:security_finding) }
+    it { is_expected.to delegate_method(:severity).to(:security_finding) }
+    it { is_expected.to delegate_method(:project_id).to(:pipeline) }
+    it { is_expected.to delegate_method(:evidence).to(:report_finding) }
   end
 
   describe '#identifiers' do
@@ -53,7 +61,8 @@ RSpec.describe Security::Ingestion::FindingMap, feature_category: :vulnerability
           "file" => "maven/src/main/java/com/gitlab/security_products/tests/App.java",
           "method" => "insecureCypher",
           "start_line" => 29
-        }
+        },
+        project_id: pipeline.project_id
       }
     end
 

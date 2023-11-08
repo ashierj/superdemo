@@ -12,8 +12,6 @@ module Security
 
         private
 
-        delegate :project, to: :pipeline, private: true
-
         def after_ingest
           return_data.each_with_index do |(finding_id, vulnerability_id), index|
             finding_map = finding_maps[index]
@@ -24,7 +22,7 @@ module Security
         end
 
         def attributes
-          finding_maps.map { |finding_map| finding_map.to_hash.merge(project_id: project.id) }
+          finding_maps.map(&:to_hash)
         end
       end
     end

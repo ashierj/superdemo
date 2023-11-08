@@ -3,13 +3,33 @@
 require 'spec_helper'
 
 RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::Create, feature_category: :vulnerability_management do
-  let_it_be(:user) { create(:user) }
-  let_it_be(:pipeline) { create(:ci_pipeline, user: user) }
-  let_it_be(:report_finding) { create(:ci_reports_security_finding) }
-  let_it_be(:finding_map) { create(:finding_map, :with_finding, report_finding: report_finding) }
+  def create_finding_map
+    user = create(:user)
+    pipeline = create(:ci_pipeline, user: user)
+    report_finding = create(:ci_reports_security_finding)
+    create(:finding_map, :with_finding, report_finding: report_finding, pipeline: pipeline)
+  end
+
+  let_it_be(:finding_maps) { [create_finding_map] }
+
   let(:vulnerability) { Vulnerability.last }
 
-  subject { described_class.new(pipeline, [finding_map]).execute }
+  subject { described_class.new(nil, finding_maps).execute }
+
+  context 'with multiple pipelines' do
+    let_it_be(:finding_maps) { Array.new(2).map { create_finding_map } }
+
+    it 'uses user_id and project from pipeline' do
+      subject
+
+      created_vulnerabilities = Vulnerability.id_in(finding_maps.map(&:vulnerability_id))
+
+      expect(created_vulnerabilities.size).to eq(2)
+      expect(created_vulnerabilities.map(&:author_id)).to match_array(
+        finding_maps.map { |finding_map| finding_map.pipeline.user_id })
+      expect(created_vulnerabilities.map(&:project_id)).to match_array(finding_maps.map(&:project_id))
+    end
+  end
 
   context 'vulnerability CVSS vectors' do
     let(:expected_hash) do
