@@ -13927,6 +13927,9 @@ msgstr ""
 msgid "CorpusManagement|Total Size: %{totalSize}"
 msgstr ""
 
+msgid "Correlation ID"
+msgstr ""
+
 msgid "Cost Factor Settings"
 msgstr ""
 
@@ -29396,6 +29399,9 @@ msgid "Medium timeout"
 msgstr ""
 
 msgid "Medium vulnerabilities present"
+msgstr ""
+
+msgid "Member"
 msgstr ""
 
 msgid "Member since"
