@@ -2,7 +2,7 @@
 
 module NamespaceSettings
   class AiRelatedSettingsChangedEvent < ::Gitlab::EventStore::Event
-    AI_RELATED_SETTINGS = %w[third_party_ai_features_enabled experiment_features_enabled].freeze
+    AI_RELATED_SETTINGS = %w[experiment_features_enabled].freeze
 
     def schema
       {

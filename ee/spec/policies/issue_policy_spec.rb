@@ -30,7 +30,6 @@ RSpec.describe IssuePolicy, :saas, feature_category: :team_planning do
           stub_licensed_features(summarize_notes: true, ai_features: true, generate_description: true)
 
           namespace.namespace_settings.update!(experiment_features_enabled: true)
-          namespace.namespace_settings.update!(third_party_ai_features_enabled: true)
         end
 
         context 'when a member' do
@@ -43,15 +42,6 @@ RSpec.describe IssuePolicy, :saas, feature_category: :team_planning do
             end
 
             it { is_expected.to be_disallowed(:summarize_notes) }
-          end
-
-          context 'when third party ai features are disabled' do
-            before do
-              namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
-            end
-
-            it { is_expected.to be_disallowed(:summarize_notes) }
-            it { is_expected.to be_disallowed(:generate_description) }
           end
 
           context 'when license is not set' do

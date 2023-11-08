@@ -46,10 +46,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     before do
       stub_licensed_features(ai_features: true)
       stub_ee_application_setting(should_check_namespace_plan: true)
-      group.namespace_settings.update!(
-        third_party_ai_features_enabled: true,
-        experiment_features_enabled: true
-      )
+      group.namespace_settings.update!(experiment_features_enabled: true)
       stub_licensed_features(ai_tanuki_bot: true)
       allow(response_service_double).to receive(:execute).at_least(:once)
     end

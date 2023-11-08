@@ -19,7 +19,7 @@ module Gitlab
       def self.check_namespace_settings(namespace_settings)
         return false unless namespace_settings
 
-        namespace_settings.third_party_ai_features_enabled && namespace_settings.experiment_features_enabled
+        namespace_settings.experiment_features_enabled
       end
     end
   end

@@ -96,7 +96,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           stub_licensed_features(summarize_notes: true, ai_features: true)
 
           project.add_guest(user)
-          project.root_ancestor.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
+          project.root_ancestor.update!(experiment_features_enabled: true)
         end
 
         context 'when ai response has invalid JSON' do

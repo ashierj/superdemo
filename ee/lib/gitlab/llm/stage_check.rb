@@ -18,13 +18,11 @@ module Gitlab
         :summarize_submitted_review
       ].freeze
       BETA_FEATURES = [].freeze
-      THIRD_PARTY_FEATURES = EXPERIMENTAL_FEATURES + BETA_FEATURES
 
       class << self
         def available?(group, feature)
           available_on_experimental_stage?(group, feature) &&
-            available_on_beta_stage?(group, feature) &&
-            available_as_third_party_feature?(group, feature)
+            available_on_beta_stage?(group, feature)
         end
 
         private
@@ -41,12 +39,6 @@ module Gitlab
           return true unless BETA_FEATURES.include?(feature)
 
           group&.root_ancestor&.experiment_features_enabled
-        end
-
-        def available_as_third_party_feature?(group, feature)
-          return true unless THIRD_PARTY_FEATURES.include?(feature)
-
-          group&.root_ancestor&.third_party_ai_features_enabled
         end
       end
     end

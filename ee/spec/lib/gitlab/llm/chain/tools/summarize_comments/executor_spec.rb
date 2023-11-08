@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
       stub_licensed_features(summarize_notes: true, ai_features: true)
 
       group.add_developer(user)
-      group.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
+      group.update!(experiment_features_enabled: true)
     end
 
     context 'when issue is identified' do

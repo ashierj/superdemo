@@ -2662,32 +2662,6 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#third_party_ai_features_enabled' do
-    using RSpec::Parameterized::TableSyntax
-
-    let_it_be(:user) { create(:user) }
-    let_it_be(:group1, reload: true) { create(:group).tap { |r| r.add_reporter(user) } }
-    let_it_be(:group2, reload: true) { create(:group).tap { |r| r.add_reporter(user) } }
-
-    subject { user.third_party_ai_features_enabled? }
-
-    where(:group1_enabled, :group2_enabled, :result) do
-      false | false | false
-      true  | false | false
-      false | true  | false
-      true  | true  | true
-    end
-
-    with_them do
-      before do
-        group1.update_attribute(:third_party_ai_features_enabled, group1_enabled)
-        group2.update_attribute(:third_party_ai_features_enabled, group2_enabled)
-      end
-
-      it { is_expected.to eq result }
-    end
-  end
-
   describe '#code_suggestions_disabled_by_group?' do
     let_it_be_with_refind(:user) { create(:user) }
     let_it_be(:allowed_subgroup) do

@@ -18,7 +18,6 @@ RSpec.describe 'GitLab Duo Chat QA Evaluation for Epic', :clean_gitlab_redis_cha
 
       stub_licensed_features(epics: true)
       root_group = epic.group.root_ancestor
-      root_group.namespace_settings.update_attribute(:third_party_ai_features_enabled, true)
       root_group.namespace_settings.update_attribute(:experiment_features_enabled, true)
       root_group.add_owner(user)
     end

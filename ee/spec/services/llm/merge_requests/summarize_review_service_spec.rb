@@ -21,7 +21,7 @@ RSpec.describe Llm::MergeRequests::SummarizeReviewService, :saas, feature_catego
 
       group.add_developer(user)
 
-      group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
+      group.namespace_settings.update!(experiment_features_enabled: true)
     end
 
     subject { described_class.new(user, merge_request, options) }

@@ -3023,10 +3023,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         fill_in_mr_template: true
       )
 
-      namespace.namespace_settings.update!(
-        experiment_features_enabled: true,
-        third_party_ai_features_enabled: true
-      )
+      namespace.namespace_settings.update!(experiment_features_enabled: true)
     end
 
     it { is_expected.to be_allowed(:fill_in_merge_request_template) }
@@ -3061,14 +3058,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     context 'when experiment features are disabled' do
       before do
         namespace.namespace_settings.update!(experiment_features_enabled: false)
-      end
-
-      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
-    end
-
-    context 'when third party ai features are disabled' do
-      before do
-        namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
       end
 
       it { is_expected.to be_disallowed(:fill_in_merge_request_template) }

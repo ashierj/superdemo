@@ -337,7 +337,6 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
         :group_with_plan,
         :public,
         plan: :ultimate_plan,
-        third_party_ai_features_enabled: true,
         experiment_features_enabled: true
       )
     end
@@ -365,7 +364,6 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
 
       project.add_maintainer(reviewer)
       ultimate_group.namespace_settings.update!(
-        third_party_ai_features_enabled: true,
         experiment_features_enabled: true
       )
     end
@@ -492,8 +490,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
       )
 
       namespace.namespace_settings.update!(
-        experiment_features_enabled: true,
-        third_party_ai_features_enabled: true
+        experiment_features_enabled: true
       )
     end
 
@@ -529,14 +526,6 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     context 'when experiment features are disabled' do
       before do
         namespace.namespace_settings.update!(experiment_features_enabled: false)
-      end
-
-      it { is_expected.to be_disallowed(:summarize_submitted_review) }
-    end
-
-    context 'when third party ai features are disabled' do
-      before do
-        namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
       end
 
       it { is_expected.to be_disallowed(:summarize_submitted_review) }
@@ -611,10 +600,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
         summarize_diff_automatically: true
       )
 
-      namespace.namespace_settings.update!(
-        experiment_features_enabled: true,
-        third_party_ai_features_enabled: true
-      )
+      namespace.namespace_settings.update!(experiment_features_enabled: true)
     end
 
     it { is_expected.to be_allowed(:summarize_merge_request) }
@@ -649,14 +635,6 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     context 'when experiment features are disabled' do
       before do
         namespace.namespace_settings.update!(experiment_features_enabled: false)
-      end
-
-      it { is_expected.to be_disallowed(:summarize_merge_request) }
-    end
-
-    context 'when third party ai features are disabled' do
-      before do
-        namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
       end
 
       it { is_expected.to be_disallowed(:summarize_merge_request) }

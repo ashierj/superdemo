@@ -151,12 +151,12 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
 
     describe 'available_scopes' do
       describe 'ai_features scope' do
-        let(:third_party_ai_features_enabled) { false }
         let(:experiment_features_enabled) { false }
         let(:namespace_settings) do
-          build_stubbed(:namespace_settings,
-            third_party_ai_features_enabled: third_party_ai_features_enabled,
-            experiment_features_enabled: experiment_features_enabled)
+          build_stubbed(
+            :namespace_settings,
+            experiment_features_enabled: experiment_features_enabled
+          )
         end
 
         let(:namespace) { build_stubbed(:namespace, namespace_settings: namespace_settings) }
@@ -169,15 +169,15 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
         context 'when resource is user' do
           let(:resource) { build_stubbed(:user) }
 
-          context 'and user has a group with ai features' do
-            it 'includes ai features' do
+          context 'and user belongs to a group with AI features' do
+            it 'includes AI features' do
               expect(resource).to receive(:any_group_with_ai_available?).and_return(true)
 
               is_expected.to include(:ai_features)
             end
           end
 
-          context 'without ai features' do
+          context 'when user does not belong to a group with AI features' do
             it { is_expected.not_to include(:ai_features) }
           end
         end
@@ -185,14 +185,13 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
         context 'when resource is project' do
           let(:resource) { build_stubbed(:project, namespace: root_group) }
 
-          context 'with a namespace that has ai features' do
-            let(:third_party_ai_features_enabled) { true }
+          context 'with a namespace that has AI features' do
             let(:experiment_features_enabled) { true }
 
             it { is_expected.to include(:ai_features) }
           end
 
-          context 'without ai features' do
+          context 'without experiment features' do
             it { is_expected.not_to include(:ai_features) }
           end
         end
@@ -200,14 +199,13 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching, feature_cate
         context 'when resource is group' do
           let(:resource) { build_stubbed(:group, parent: root_group) }
 
-          context 'with ai features' do
-            let(:third_party_ai_features_enabled) { true }
+          context 'with experiment features' do
             let(:experiment_features_enabled) { true }
 
             it { is_expected.to include(:ai_features) }
           end
 
-          context 'without ai features' do
+          context 'without experiment features' do
             it { is_expected.not_to include(:ai_features) }
           end
         end

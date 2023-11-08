@@ -5,12 +5,12 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::ResourceAccess, feature_category: :duo_chat do
   describe '.ai_enabled_for_resource?' do
     let_it_be(:user) { build_stubbed(:user) }
-    let(:third_party_ai_features_enabled) { false }
     let(:experiment_features_enabled) { false }
     let(:namespace_settings) do
-      build_stubbed(:namespace_settings,
-        third_party_ai_features_enabled: third_party_ai_features_enabled,
-        experiment_features_enabled: experiment_features_enabled)
+      build_stubbed(
+        :namespace_settings,
+        experiment_features_enabled: experiment_features_enabled
+      )
     end
 
     let(:namespace) { build_stubbed(:namespace, namespace_settings: namespace_settings) }
@@ -42,7 +42,6 @@ RSpec.describe Gitlab::Llm::ResourceAccess, feature_category: :duo_chat do
       let(:resource) { some_group }
 
       context 'when group has access to ai' do
-        let(:third_party_ai_features_enabled) { true }
         let(:experiment_features_enabled) { true }
 
         it { is_expected.to eq(true) }
@@ -57,7 +56,6 @@ RSpec.describe Gitlab::Llm::ResourceAccess, feature_category: :duo_chat do
       let(:resource) { project }
 
       context 'when project has access to ai' do
-        let(:third_party_ai_features_enabled) { true }
         let(:experiment_features_enabled) { true }
 
         it { is_expected.to eq(true) }

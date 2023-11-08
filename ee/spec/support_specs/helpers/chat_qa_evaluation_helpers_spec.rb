@@ -25,7 +25,6 @@ RSpec.describe ChatQaEvaluationHelpers, feature_category: :duo_chat do
       stub_ee_application_setting(should_check_namespace_plan: true)
 
       group.namespace_settings.update!(
-        third_party_ai_features_enabled: true,
         experiment_features_enabled: true
       )
 
