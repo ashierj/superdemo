@@ -5115,6 +5115,9 @@ msgstr ""
 msgid "An error occurred while fetching codequality mr diff reports."
 msgstr ""
 
+msgid "An error occurred while fetching comments, please try again."
+msgstr ""
+
 msgid "An error occurred while fetching commit data."
 msgstr ""
 
