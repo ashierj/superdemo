@@ -105,6 +105,14 @@ describe('retrieval of emojis.json', () => {
     expect(Object.keys(getEmojiMap())).toEqual(Object.keys(validEmoji));
   };
 
+  it('should remove the old `CACHE_VERSION_KEY`', async () => {
+    localStorage.setItem(CACHE_VERSION_KEY, EMOJI_VERSION);
+
+    await initEmojiMap();
+
+    expect(localStorage.getItem(CACHE_VERSION_KEY)).toBe(null);
+  });
+
   describe('when the localStorage is empty', () => {
     it('should call the API and store results in localStorage', async () => {
       await initEmojiMap();

@@ -26,6 +26,12 @@ const isLocalStorageAvailable = AccessorUtilities.canUseLocalStorage();
 
 async function loadEmoji() {
   try {
+    window.localStorage.removeItem(CACHE_VERSION_KEY);
+  } catch {
+    // Cleanup after us and remove the old EMOJI_VERSION_KEY
+  }
+
+  try {
     if (isLocalStorageAvailable) {
       const parsed = JSON.parse(window.localStorage.getItem(CACHE_KEY));
       if (parsed?.EMOJI_VERSION === EMOJI_VERSION && parsed.data) {
