@@ -35330,10 +35330,13 @@ msgstr ""
 msgid "Pipelines|This pipeline is stuck"
 msgstr ""
 
-msgid "Pipelines|This pipeline ran on the contents of this merge request combined with the contents of all other merge requests queued for merging into the target branch."
+msgid "Pipelines|This pipeline ran on the contents of the merge request combined with the contents of all other merge requests queued for merging into the target branch."
 msgstr ""
 
-msgid "Pipelines|This pipeline ran on the contents of this merge request's source branch, not the target branch."
+msgid "Pipelines|This pipeline ran on the contents of the merge request combined with the contents of the target branch."
+msgstr ""
+
+msgid "Pipelines|This pipeline ran on the contents of the merge request's source branch, not the target branch."
 msgstr ""
 
 msgid "Pipelines|This pipeline will run code originating from a forked project merge request. This means that the code can potentially have security considerations like exposing CI variables."
@@ -35415,6 +35418,9 @@ msgid "Pipelines|merge request"
 msgstr ""
 
 msgid "Pipelines|merge train"
+msgstr ""
+
+msgid "Pipelines|merged results"
 msgstr ""
 
 msgid "Pipelines|stuck"
