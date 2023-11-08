@@ -20,6 +20,18 @@ module Vulnerabilities
       @links ||= finding.links.map(&:with_indifferent_access)
     end
 
+    def location_text
+      return location['file'] unless location["start_line"]
+
+      "#{location['file']}:#{location['start_line']}"
+    end
+
+    def location_link
+      return location_text unless location['blob_path']
+
+      ::Gitlab::Utils.append_path(root_url, location['blob_path'])
+    end
+
     private
 
     def add_line_numbers(start_line, end_line)

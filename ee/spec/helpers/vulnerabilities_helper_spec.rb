@@ -281,6 +281,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
             The cipher does not provide data integrity update 1
 
             * Severity: high
+            * Location: [maven/src/main/java/com/gitlab/security_products/tests/App.java:29|maven/src/main/java/com/gitlab/security_products/tests/App.java:29]
 
 
             h3. Links:

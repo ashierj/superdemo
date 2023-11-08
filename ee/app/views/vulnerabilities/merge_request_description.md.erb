@@ -8,7 +8,7 @@ The large language model that generated the suggested code changes was only prov
 <% end %>
 ### Description:
 
-<%= vulnerability.description %>
+<%= finding.description || finding.name %>
 
 <% if vulnerability.severity.present? %>
 * Severity: <%= vulnerability.severity %>
@@ -17,7 +17,7 @@ The large language model that generated the suggested code changes was only prov
 * Confidence: <%= vulnerability.confidence %>
 <% end %>
 <% if defined?(vulnerability.file) && vulnerability.file.present? %>
-* Location: [<%= vulnerability.location_text %>](<%= vulnerability.location_link %>)
+* Location: [<%= finding.location_text %>](<%= finding.location_link %>)
 <% end %>
 
 <% if vulnerability.solution.present? %>
@@ -42,10 +42,10 @@ The large language model that generated the suggested code changes was only prov
 ### Links:
 
 <% vulnerability.links.each do |link| %>
-<% if link[:name].present? %>
-* [<%= link[:name] %>](<%= link[:url] %>)
+<% if link['name'].present? %>
+* [<%= link['name'] %>](<%= link['url'] %>)
 <% else %>
-* <%= link[:url] %>
+* <%= link['url'] %>
 <% end %>
 <% end %>
 <% end %>

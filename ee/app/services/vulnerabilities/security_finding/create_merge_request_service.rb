@@ -9,8 +9,9 @@ module Vulnerabilities
         @error_message = nil
 
         merge_request = ApplicationRecord.transaction do
-          create_merge_request.tap do |merge_request|
-            create_vulnerability_merge_request_link(merge_request, find_or_create_vulnerability)
+          vulnerability = find_or_create_vulnerability
+          create_merge_request(vulnerability).tap do |merge_request|
+            create_vulnerability_merge_request_link(merge_request, vulnerability)
           end
         end
 
@@ -33,10 +34,10 @@ module Vulnerabilities
         raise ActiveRecord::Rollback
       end
 
-      def create_merge_request
+      def create_merge_request(vulnerability)
         execute_service!(
           MergeRequests::CreateFromVulnerabilityDataService
-            .new(project, current_user, vulnerability_data)
+            .new(project, vulnerability, current_user)
         )[:merge_request]
       end
 
