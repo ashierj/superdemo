@@ -146,9 +146,9 @@ describe('BoardList Component', () => {
       item: {
         dataset: {
           draggableItemType: DraggableItemTypes.card,
-          itemId: mockIssues[0].id,
-          itemIid: mockIssues[0].iid,
-          itemPath: mockIssues[0].referencePath,
+          itemId: mockIssues[1].id,
+          itemIid: mockIssues[1].iid,
+          itemPath: mockIssues[1].referencePath,
         },
       },
       to: { children: [], dataset: { listId: 'gid://gitlab/List/2' } },
@@ -160,9 +160,9 @@ describe('BoardList Component', () => {
       item: {
         dataset: {
           draggableItemType: DraggableItemTypes.card,
-          itemId: mockEpics[1].id,
-          itemIid: mockEpics[1].iid,
-          itemPath: mockEpics[1].referencePath,
+          itemId: mockEpics[0].id,
+          itemIid: mockEpics[0].iid,
+          itemPath: mockEpics[0].referencePath,
         },
       },
       to: { children: [], dataset: { listId: 'gid://gitlab/Boards::EpicList/5' } },
@@ -266,7 +266,18 @@ describe('BoardList Component', () => {
 
         await waitForPromises();
 
-        expect(queryHandler).toHaveBeenCalled();
+        expect(queryHandler).toHaveBeenCalledWith(
+          expect.objectContaining({
+            ...(isEpicBoard
+              ? {
+                  epicId: endDragVariables.item.dataset.itemId,
+                }
+              : {
+                  iid: endDragVariables.item.dataset.itemIid,
+                  projectPath: endDragVariables.item.dataset.itemPath.split(/[#]/)[0],
+                }),
+          }),
+        );
         expect(notCalledHandler).not.toHaveBeenCalled();
       },
     );
