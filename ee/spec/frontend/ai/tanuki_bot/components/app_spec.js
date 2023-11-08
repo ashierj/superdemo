@@ -44,10 +44,11 @@ describe('GitLab Duo Chat', () => {
   const chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
 
-  const createComponent = (
+  const createComponent = ({
     initialState = {},
     propsData = { userId: MOCK_USER_ID, resourceId: MOCK_RESOURCE_ID },
-  ) => {
+    glFeatures = { duoChatBeta: false },
+  } = {}) => {
     const store = new Vuex.Store({
       actions: actionSpies,
       state: {
@@ -65,6 +66,9 @@ describe('GitLab Duo Chat', () => {
       store,
       apolloProvider,
       propsData,
+      provide: {
+        glFeatures,
+      },
     });
   };
 
@@ -95,6 +99,18 @@ describe('GitLab Duo Chat', () => {
     it('renders the DuoChat component', () => {
       expect(findGlDuoChat().exists()).toBe(true);
     });
+
+    it.each`
+      isFlagEnabled | expectedPropValue
+      ${true}       | ${'beta'}
+      ${false}      | ${'experiment'}
+    `(
+      'sets correct `badge-type` prop on the chat compnent when feature flag is $isFlagEnabled',
+      ({ isFlagEnabled, expectedPropValue }) => {
+        createComponent({ glFeatures: { duoChatBeta: isFlagEnabled } });
+        expect(findGlDuoChat().props('badgeType')).toBe(expectedPropValue);
+      },
+    );
   });
 
   describe('events handling', () => {
@@ -138,7 +154,7 @@ describe('GitLab Duo Chat', () => {
         `(
           'calls correct GraphQL mutation with fallback to userId when input is submitted and feature flag is $isFlagEnabled',
           async ({ expectedMutation } = {}) => {
-            createComponent({}, { userId: MOCK_USER_ID, resourceId });
+            createComponent({ propsData: { userId: MOCK_USER_ID, resourceId } });
             findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
 
             await nextTick();
@@ -154,7 +170,10 @@ describe('GitLab Duo Chat', () => {
         it('once response arrives via GraphQL subscription with userId fallback calls addDuoChatMessage', () => {
           subscriptionHandlerMock.mockClear();
 
-          createComponent({ loading: true }, { userId: MOCK_USER_ID, resourceId });
+          createComponent({
+            initialState: { loading: true },
+            propsData: { userId: MOCK_USER_ID, resourceId },
+          });
 
           expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(1, {
             userId: MOCK_USER_ID,
