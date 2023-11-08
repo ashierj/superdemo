@@ -480,8 +480,8 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
 
     describe 'package_metadata_purl_types', feature_category: :software_composition_analysis do
       it { is_expected.to allow_value(1).for(:package_metadata_purl_types) }
-      it { is_expected.to allow_value(12).for(:package_metadata_purl_types) }
-      it { is_expected.not_to allow_value(13).for(:package_metadata_purl_types) }
+      it { is_expected.to allow_value(Enums::Sbom::PURL_TYPES.length).for(:package_metadata_purl_types) }
+      it { is_expected.not_to allow_value(Enums::Sbom::PURL_TYPES.length + 1).for(:package_metadata_purl_types) }
       it { is_expected.not_to allow_value(0).for(:package_metadata_purl_types) }
     end
 

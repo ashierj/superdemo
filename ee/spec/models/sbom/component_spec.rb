@@ -18,7 +18,8 @@ RSpec.describe Sbom::Component, type: :model, feature_category: :dependency_mana
       apk: 9,
       rpm: 10,
       deb: 11,
-      cbl_mariner: 12
+      cbl_mariner: 12,
+      wolfi: 13
     }
   end
 

@@ -16,7 +16,8 @@ RSpec.describe PackageMetadata::Checkpoint, type: :model, feature_category: :sof
       apk: 9,
       rpm: 10,
       deb: 11,
-      cbl_mariner: 12
+      cbl_mariner: 12,
+      wolfi: 13
     }
   end
 
@@ -61,7 +62,7 @@ RSpec.describe PackageMetadata::Checkpoint, type: :model, feature_category: :sof
   end
 
   describe '.with_path_components' do
-    let(:checkpoints) { create_list(:pm_checkpoint, 12) }
+    let(:checkpoints) { create_list(:pm_checkpoint, Enums::Sbom::PURL_TYPES.length) }
 
     it 'returns the checkpoint for the given parameters' do
       checkpoints.each do |checkpoint|

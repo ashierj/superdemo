@@ -41,9 +41,9 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
       subject(:configurations) { described_class.configs_for('licenses') }
 
       where(:sync_v1, :sync_v2, :expected_version_formats, :enabled_purl_types, :expected_num_configs) do
-        true  | false | ['v1']        | ref(:all_purl_types)  | 12
-        false | true  | ['v2']        | ref(:all_purl_types)  | 12
-        true  | true  | %w[v1 v2]     | ref(:all_purl_types)  | 24
+        true  | false | ['v1']        | ref(:all_purl_types)  | Enums::Sbom::PURL_TYPES.length
+        false | true  | ['v2']        | ref(:all_purl_types)  | Enums::Sbom::PURL_TYPES.length
+        true  | true  | %w[v1 v2]     | ref(:all_purl_types)  | (Enums::Sbom::PURL_TYPES.length * 2)
         false | false | []            | ref(:all_purl_types)  | 0
         true  | false | ['v1']        | [1, 5]                | 2
         false | true  | ['v2']        | [1, 5]                | 2
@@ -72,7 +72,7 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
       subject(:configurations) { described_class.configs_for('advisories') }
 
       where(:ff_enabled, :expected_version_formats, :enabled_purl_types, :expected_num_configs) do
-        true  | ['v2']  | ref(:all_purl_types)  | 12
+        true  | ['v2']  | ref(:all_purl_types)  | Enums::Sbom::PURL_TYPES.length
         true  | ['v2']  | [1, 5]                | 2
         true  | ['v2']  | []                    | 0
         false | []      | ref(:all_purl_types)  | 0
