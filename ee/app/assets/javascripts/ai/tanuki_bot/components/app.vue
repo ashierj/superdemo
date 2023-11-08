@@ -12,6 +12,7 @@ import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completio
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import Tracking from '~/tracking';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 
@@ -37,7 +38,7 @@ export default {
   components: {
     GlDuoChat,
   },
-  mixins: [Tracking.mixin()],
+  mixins: [Tracking.mixin(), glFeatureFlagsMixin()],
   provide() {
     return {
       renderMarkdown,
@@ -174,6 +175,7 @@ export default {
       :is-loading="loading"
       :predefined-prompts="$options.i18n.predefinedPrompts"
       :experiment-help-page-url="$options.experimentHelpPagePath"
+      :badge-type="glFeatures.duoChatBeta ? 'beta' : 'experiment'"
       :badge-help-page-url="$options.experimentHelpPagePath"
       :tool-name="toolName"
       @send-chat-prompt="onSendChatPrompt"
