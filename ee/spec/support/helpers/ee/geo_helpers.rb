@@ -52,22 +52,26 @@ module EE
       end
     end
 
-    def model_class_factory_name(registry_class)
-      default_factory_name = registry_class::MODEL_CLASS.underscore.tr('/', '_').to_sym
+    def factory_name(klass)
+      klass_name = klass.name
+      default_factory_name = klass_name.underscore.tr('/', '_').to_sym
 
-      {
-        Geo::MergeRequestDiffRegistry => :external_merge_request_diff,
-        Geo::PackageFileRegistry => :package_file,
-        Geo::UploadRegistry => :upload,
-        Geo::JobArtifactRegistry => :ee_ci_job_artifact,
-        Geo::CiSecureFileRegistry => :ci_secure_file,
-        Geo::ProjectWikiRepositoryRegistry => :project_wiki_repository,
-        Geo::ProjectRepositoryRegistry => :project
-      }.fetch(registry_class, default_factory_name)
+      custom_mapping = {
+        'Ci::JobArtifact' => :ee_ci_job_artifact,
+        'MergeRequestDiff' => :external_merge_request_diff,
+        'Packages::PackageFile' => :package_file,
+        'Projects::WikiRepository' => :project_wiki_repository
+      }
+
+      custom_mapping.fetch(klass_name, default_factory_name)
+    end
+
+    def model_class_factory_name(registry_class)
+      factory_name(registry_class::MODEL_CLASS)
     end
 
     def registry_factory_name(registry_class)
-      registry_class.underscore.tr('/', '_').to_sym
+      factory_name(registry_class)
     end
 
     def with_no_geo_database_configured(&block)
