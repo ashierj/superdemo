@@ -40435,6 +40435,9 @@ msgstr ""
 msgid "Request a new one"
 msgstr ""
 
+msgid "Request changes"
+msgstr ""
+
 msgid "Request data is too large"
 msgstr ""
 
@@ -46507,6 +46510,15 @@ msgid "Submit as spam"
 msgstr ""
 
 msgid "Submit feedback"
+msgstr ""
+
+msgid "Submit feedback and approve these changes."
+msgstr ""
+
+msgid "Submit feedback that should be addressed before merging."
+msgstr ""
+
+msgid "Submit general feedback without explicit approval."
 msgstr ""
 
 msgid "Submit review"

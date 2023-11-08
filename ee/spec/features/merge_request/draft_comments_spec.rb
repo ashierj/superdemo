@@ -29,7 +29,7 @@ RSpec.describe 'Merge request > Batch comments', :js, :sidekiq_inline, feature_c
       it 'does not allow user to approve' do
         click_button 'Finish review'
 
-        expect(page).not_to have_selector('[data-testid="approve_merge_request"]')
+        expect(page).to have_selector('[data-testid="reviewer_states"] .custom-control-input[disabled]')
       end
     end
 
@@ -37,7 +37,7 @@ RSpec.describe 'Merge request > Batch comments', :js, :sidekiq_inline, feature_c
       it 'allows user to approve' do
         click_button 'Finish review'
 
-        find_by_testid('approve_merge_request').click
+        all('[data-testid="reviewer_states"] .custom-control-label')[1].click
         click_button 'Submit review'
 
         wait_for_requests
@@ -55,18 +55,18 @@ RSpec.describe 'Merge request > Batch comments', :js, :sidekiq_inline, feature_c
         it 'does not allow user to approve without password' do
           click_button 'Finish review'
 
-          find_by_testid('approve_merge_request').click
+          all('[data-testid="reviewer_states"] .custom-control-label')[1].click
           click_button 'Submit review'
 
           wait_for_requests
 
-          expect(page).to have_content('An error occurred while approving, please try again.')
+          expect(page).not_to have_content('approved this merge request')
         end
 
         it 'allows user to approve' do
           click_button 'Finish review'
 
-          find_by_testid('approve_merge_request').click
+          all('[data-testid="reviewer_states"] .custom-control-label')[1].click
           fill_in(type: 'password', with: current_user.password)
           click_button 'Submit review'
 
