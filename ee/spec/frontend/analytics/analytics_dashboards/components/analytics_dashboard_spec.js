@@ -27,6 +27,7 @@ import {
   EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import * as yamlUtils from 'ee/analytics/dashboards/yaml_utils';
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 import { stubComponent } from 'helpers/stub_component';
 import {
@@ -653,8 +654,8 @@ describe('AnalyticsDashboard', () => {
         expect(findDashboard().props()).toMatchObject({
           initialDashboard: {
             ...getFirstParsedDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE),
-            title: 'Value Stream Dashboard',
-            slug: 'value_stream_dashboard',
+            title: 'Value Streams Dashboard',
+            slug: 'value_streams_dashboard',
           },
           showDateRangeFilter: false,
         });
@@ -664,6 +665,7 @@ describe('AnalyticsDashboard', () => {
 
   describe('with a group namespace', () => {
     beforeEach(async () => {
+      jest.spyOn(yamlUtils, 'hydrateLegacyYamlConfiguration').mockResolvedValue(null);
       mockDashboardResponse(TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
 
       createWrapper({
@@ -684,6 +686,71 @@ describe('AnalyticsDashboard', () => {
         slug: 'value_streams_dashboard',
         isGroup: true,
         isProject: false,
+      });
+    });
+
+    describe('with customDashboardsProject configured', () => {
+      const fakeCustomDashboard = {
+        slug: 'fake_dashboard',
+        title: 'Fake custom dashboard',
+        userDefined: false,
+        description: 'Fake it til you make it',
+        __typename: 'CustomizableDashboard',
+        panels: [],
+      };
+
+      it('should fetch the dashboard config from the customDashboardsProject', async () => {
+        jest
+          .spyOn(yamlUtils, 'hydrateLegacyYamlConfiguration')
+          .mockResolvedValue(fakeCustomDashboard);
+
+        mockDashboardResponse(TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+        createWrapper({
+          routeSlug: 'value_streams_dashboard',
+          provide: {
+            namespaceId: TEST_CUSTOM_DASHBOARDS_GROUP.id,
+            namespaceFullPath: TEST_CUSTOM_DASHBOARDS_GROUP.fullPath,
+            isGroup: true,
+            isProject: false,
+          },
+        });
+
+        await waitForPromises();
+
+        expect(mockAnalyticsDashboardsHandler).not.toHaveBeenCalledWith();
+
+        expect(findDashboard().props()).toMatchObject({
+          initialDashboard: fakeCustomDashboard,
+        });
+      });
+
+      it('should use the default dashboard if there is no custom dashboard configured', async () => {
+        jest.spyOn(yamlUtils, 'hydrateLegacyYamlConfiguration').mockResolvedValue(null);
+
+        mockDashboardResponse(TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+        createWrapper({
+          routeSlug: 'value_streams_dashboard',
+          provide: {
+            namespaceId: TEST_CUSTOM_DASHBOARDS_GROUP.id,
+            namespaceFullPath: TEST_CUSTOM_DASHBOARDS_GROUP.fullPath,
+            isGroup: true,
+            isProject: false,
+          },
+        });
+
+        await waitForPromises();
+
+        expect(findDashboard().props()).toMatchObject({
+          initialDashboard: {
+            ...getFirstParsedDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE),
+            title: 'Value Streams Dashboard',
+            slug: 'value_streams_dashboard',
+            panels: [],
+          },
+          showDateRangeFilter: false,
+        });
       });
     });
   });

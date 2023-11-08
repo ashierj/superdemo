@@ -33,7 +33,7 @@ export default () => {
 
   return new Vue({
     el,
-    name: 'DashboardsApp',
+    name: 'DashboardsAppRoot',
     apolloProvider,
     render: (createElement) =>
       createElement(DashboardsApp, {

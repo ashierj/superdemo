@@ -185,8 +185,8 @@ export const TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
       customizableDashboards: {
         nodes: [
           getGraphQLDashboard({
-            slug: 'value_stream_dashboard',
-            title: 'Value Stream Dashboard',
+            slug: 'value_streams_dashboard',
+            title: 'Value Streams Dashboard',
             userDefined: false,
           }),
         ],
@@ -203,11 +203,15 @@ export const TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
       id: 'gid://gitlab/Group/1',
       customizableDashboards: {
         nodes: [
-          getGraphQLDashboard({
-            slug: 'value_streams_dashboard',
-            title: 'Value Streams Dashboard',
-            userDefined: false,
-          }),
+          getGraphQLDashboard(
+            {
+              slug: 'value_streams_dashboard',
+              title: 'Value Streams Dashboard',
+              userDefined: false,
+              panels: [],
+            },
+            false,
+          ),
         ],
         __typename: 'CustomizableDashboardConnection',
       },
