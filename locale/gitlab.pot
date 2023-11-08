@@ -32762,9 +32762,6 @@ msgstr ""
 msgid "Number of employees"
 msgstr ""
 
-msgid "Number of events"
-msgstr ""
-
 msgid "Number of files touched"
 msgstr ""
 
@@ -36468,9 +36465,6 @@ msgid "ProductAnalytics|The host to send all tracking events to"
 msgstr ""
 
 msgid "ProductAnalytics|The sender of tracking events"
-msgstr ""
-
-msgid "ProductAnalytics|There is no data for this type of chart currently. Please see the Setup tab if you have not configured the product analytics tool already."
 msgstr ""
 
 msgid "ProductAnalytics|This might take a while, feel free to navigate away from this page and come back later."
