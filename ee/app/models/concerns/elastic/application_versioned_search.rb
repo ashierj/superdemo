@@ -18,16 +18,12 @@ module Elastic
     # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
     # Should be overridden in the models where some records should be skipped
-    def searchable?
-      self.use_elasticsearch?
-    end
-
     def use_elasticsearch?
       self.project&.use_elasticsearch?
     end
 
     def maintaining_elasticsearch?
-      Gitlab::CurrentSettings.elasticsearch_indexing? && self.searchable?
+      Gitlab::CurrentSettings.elasticsearch_indexing? && self.use_elasticsearch?
     end
 
     def es_type

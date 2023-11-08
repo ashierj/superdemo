@@ -9,11 +9,6 @@ RSpec.describe Milestone, :elastic, feature_category: :global_search do
 
   it_behaves_like 'limited indexing is enabled' do
     let_it_be(:object) { create :milestone, project: project }
-    let_it_be(:group) { create(:group) }
-    let(:group_object) do
-      project = create :project, name: 'test1', group: group
-      create :milestone, project: project
-    end
   end
 
   it "searches milestones", :sidekiq_might_not_need_inline do

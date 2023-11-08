@@ -11,26 +11,19 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
 
   it_behaves_like 'limited indexing is enabled' do
     let_it_be(:object) { create :merge_request, source_project: project }
-    let_it_be(:group) { create(:group) }
-    let(:group_object) do
-      project = create :project, name: 'test1', group: group
-      create :merge_request, source_project: project
-    end
   end
 
-  it "searches merge requests", :sidekiq_might_not_need_inline do
+  it 'searches merge requests', :sidekiq_inline do
     project = create :project, :public, :repository
 
-    Sidekiq::Testing.inline! do
-      create :merge_request, title: 'bla-bla term1', source_project: project
-      create :merge_request, description: 'term2 in description', source_project: project, target_branch: "feature2"
-      create :merge_request, source_project: project, target_branch: "feature3"
+    create :merge_request, title: 'bla-bla term1', source_project: project
+    create :merge_request, description: 'term2 in description', source_project: project, target_branch: "feature2"
+    create :merge_request, source_project: project, target_branch: "feature3"
 
-      # The merge request you have no access to except as an administrator
-      create :merge_request, title: 'also with term3', source_project: create(:project, :private)
+    # The merge request you have no access to except as an administrator
+    create :merge_request, title: 'also with term3', source_project: create(:project, :private)
 
-      ensure_elasticsearch_index!
-    end
+    ensure_elasticsearch_index!
 
     options = { project_ids: [project.id] }
 
@@ -40,25 +33,22 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
     expect(described_class.elastic_search('term3', options: { project_ids: :any, public_and_internal_projects: true }).total_count).to eq(1)
   end
 
-  it "names elasticsearch queries" do
+  it 'names elasticsearch queries' do
     described_class.elastic_search('*').total_count
 
     assert_named_queries('merge_request:match:search_terms', 'merge_request:authorized:project')
   end
 
-  it "searches by iid and scopes to type: merge_request only", :sidekiq_might_not_need_inline do
+  it 'searches by iid and scopes to type: merge_request only', :sidekiq_inline do
     project = create :project, :public, :repository
-    merge_request = nil
 
-    Sidekiq::Testing.inline! do
-      merge_request = create :merge_request, title: 'bla-bla merge request', source_project: project
-      create :merge_request, description: 'term2 in description', source_project: project, target_branch: "feature2"
+    merge_request = create :merge_request, title: 'bla-bla merge request', source_project: project
+    create :merge_request, description: 'term2 in description', source_project: project, target_branch: "feature2"
 
-      # Issue with the same iid should not be found in MergeRequest search
-      create :issue, project: project, iid: merge_request.iid
+    # Issue with the same iid should not be found in MergeRequest search
+    create :issue, project: project, iid: merge_request.iid
 
-      ensure_elasticsearch_index!
-    end
+    ensure_elasticsearch_index!
 
     options = { project_ids: [project.id] }
 

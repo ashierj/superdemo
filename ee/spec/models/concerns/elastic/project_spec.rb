@@ -15,10 +15,10 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
     end
 
     context 'when the project is not enabled specifically' do
-      describe '#searchable?' do
-        it 'returns false' do
-          expect(project.searchable?).to be_falsey
-        end
+      describe '#maintaining_elasticsearch?' do
+        subject(:maintaining_elasticsearch) { project.maintaining_elasticsearch? }
+
+        it { is_expected.to be(false) }
       end
 
       describe '#use_elasticsearch?' do
@@ -33,10 +33,10 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
         create :elasticsearch_indexed_project, project: project
       end
 
-      describe '#searchable?' do
-        it 'returns true' do
-          expect(project.searchable?).to be_truthy
-        end
+      describe '#maintaining_elasticsearch?' do
+        subject(:maintaining_elasticsearch) { project.maintaining_elasticsearch? }
+
+        it { is_expected.to be(true) }
       end
 
       describe '#use_elasticsearch?' do
@@ -65,12 +65,12 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
         create :elasticsearch_indexed_namespace, namespace: group
       end
 
-      describe '#searchable?' do
-        it 'returns true' do
-          project = create :project, name: 'test1', group: group
+      describe '#maintaining_elasticsearch?' do
+        let_it_be(:project_in_group) { create(:project, name: 'test1', group: group) }
 
-          expect(project.searchable?).to be_truthy
-        end
+        subject(:maintaining_elasticsearch) { project_in_group.maintaining_elasticsearch? }
+
+        it { is_expected.to be(true) }
       end
 
       it 'indexes only projects under the group' do
@@ -160,7 +160,7 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
     end
   end
 
-  it "finds projects" do
+  it 'finds projects' do
     project_ids = []
 
     Sidekiq::Testing.inline! do
@@ -184,7 +184,7 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
     expect(described_class.elastic_search('"someone_elses_project"', options: { project_ids: project_ids }).total_count).to eq(0)
   end
 
-  it "finds partial matches in project names" do
+  it 'finds partial matches in project names' do
     project_ids = []
 
     Sidekiq::Testing.inline! do
@@ -198,7 +198,7 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
     expect(described_class.elastic_search('tesla', options: { project_ids: project_ids }).total_count).to eq(2)
   end
 
-  it "names elasticsearch queries" do
+  it 'names elasticsearch queries' do
     described_class.elastic_search('*').total_count
 
     assert_named_queries('doc:is_a:project', 'project:match:search_terms')

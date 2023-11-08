@@ -38,8 +38,8 @@ module EE
       ::Search::IndexRegistry.index_for_namespace(namespace: namespace, type: ::Search::NoteIndex)
     end
 
-    # Original method in Elastic::ApplicationSearch
-    def searchable?
+    override :use_elasticsearch?
+    def use_elasticsearch?
       !system && super
     end
 
