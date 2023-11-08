@@ -7,7 +7,7 @@ query getGroupCurrentAndPreviousProductAnalyticsUsage(
 ) {
   previous: group(fullPath: $namespacePath) {
     id
-    projects {
+    projects(includeSubgroups: true) {
       nodes {
         id
         name
@@ -19,7 +19,7 @@ query getGroupCurrentAndPreviousProductAnalyticsUsage(
   }
   current: group(fullPath: $namespacePath) {
     id
-    projects {
+    projects(includeSubgroups: true) {
       nodes {
         id
         name
