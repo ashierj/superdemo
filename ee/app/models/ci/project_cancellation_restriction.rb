@@ -2,7 +2,7 @@
 
 module Ci
   class ProjectCancellationRestriction
-    # Checks if cancellation restrictions are applied for piplines and processables
+    # Checks if cancellation restrictions are applied for pipelines and processables
     # based on the given project
     include Gitlab::Utils::StrongMemoize
 
