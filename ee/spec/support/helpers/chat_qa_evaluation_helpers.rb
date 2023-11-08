@@ -48,6 +48,7 @@ module ChatQaEvaluationHelpers
       question: question,
       resource: resource.to_reference(full: true),
       answer: response[:response_modifier].response_body,
+      tools_used: response[:tools_used],
       evaluations: []
     }
 
@@ -81,6 +82,7 @@ module ChatQaEvaluationHelpers
     puts "------------ Evaluation report (begin) -------------"
     puts "Question: #{result[:question]}\n"
     puts "Resource: #{result[:resource]}\n"
+    puts "Tools used: #{result[:tools_used]}\n"
     puts "Chat answer: #{result[:answer]}\n\n"
 
     result[:evaluations].each do |eval|
@@ -121,11 +123,12 @@ module ChatQaEvaluationHelpers
     )
 
     ai_prompt_message = ::Gitlab::Llm::AiMessage.for(action: 'chat').new(message_attributes)
-    ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_prompt_message, options)
+    ai_completion = ::Gitlab::Llm::CompletionsFactory.completion!(ai_prompt_message, options)
     response_modifier = ai_completion.execute
 
     {
-      response_modifier: response_modifier
+      response_modifier: response_modifier,
+      tools_used: ai_completion.context.tools_used
     }
   end
 end
