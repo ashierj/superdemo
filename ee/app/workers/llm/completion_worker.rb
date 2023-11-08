@@ -28,15 +28,7 @@ module Llm
       end
 
       def perform_for(message, options = {})
-        # Temporary old code for 1 deploy to avoid worker arguments conflict
-        # will be replaced with `perform_async(serialize_message(message), options)` in next MR.
-        perform_async(
-          message.user.id, message.resource&.id, message.resource&.class&.name, message.ai_action,
-          options.merge(
-            request_id: message.request_id,
-            client_subscription_id: message.client_subscription_id,
-            content: message.content)
-        )
+        perform_async(serialize_message(message), options)
       end
     end
 
