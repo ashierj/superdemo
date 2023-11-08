@@ -99,10 +99,6 @@ module BillingPlansHelper
     root.trial_active?
   end
 
-  def namespace_for_user?(namespace)
-    namespace == current_user.namespace
-  end
-
   def upgrade_button_text(plan_offer_type)
     plan_offer_type === :upgrade_for_free ? s_('BillingPlan|Upgrade for free') : s_('BillingPlan|Upgrade')
   end
