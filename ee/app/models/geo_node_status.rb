@@ -6,25 +6,6 @@ class GeoNodeStatus < ApplicationRecord
 
   ignore_columns(
     %i[
-      wikis_checksum_failed_count
-      wikis_checksum_mismatch_count
-      wikis_checksummed_count
-      wikis_failed_count
-      wikis_retrying_verification_count
-      wikis_synced_count
-      wikis_verification_failed_count
-      wikis_verified_count
-      design_repositories_count
-      design_repositories_synced_count
-      design_repositories_failed_count
-      design_repositories_registry_count
-    ],
-    remove_with: '16.5',
-    remove_after: '2023-09-22'
-  )
-
-  ignore_columns(
-    %i[
       repositories_synced_count
       repositories_failed_count
       repositories_verified_count
