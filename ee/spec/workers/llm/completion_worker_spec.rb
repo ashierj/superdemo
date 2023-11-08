@@ -154,19 +154,5 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
         subject
       end
     end
-
-    context 'with old perform interface' do
-      subject { described_class.new.perform(user.id, resource.id, resource.class.name, ai_action_name, params) }
-
-      let(:options) { { request_id: prompt_message.request_id } }
-
-      let_it_be(:resource) { create(:issue, project: project) }
-
-      before do
-        group.add_reporter(user)
-      end
-
-      it_behaves_like 'performs successfully'
-    end
   end
 end
