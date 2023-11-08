@@ -11,24 +11,26 @@ describe('TracingDetailsDrawer', () => {
 
   const findDrawer = () => wrapper.findComponent(GlDrawer);
 
-  const mountComponent = (open = true) => {
+  const mockSpan = {
+    service_name: 'test-service',
+    operation: 'test-operation',
+    emptyVal: '',
+    span_attributes: {
+      'http.status_code': '200',
+      'http.method': 'GET',
+      'http.empty': '',
+    },
+    resource_attributes: {
+      'k8s.namespace.name': 'otel-demo-app',
+      'k8s.deployment.name': 'otel-demo-loadgenerator',
+      'k8s.deployment.empty': '',
+    },
+  };
+
+  const mountComponent = ({ open = true, span = mockSpan } = {}) => {
     wrapper = shallowMountExtended(TracingDetailsDrawer, {
       propsData: {
-        span: {
-          service_name: 'test-service',
-          operation: 'test-operation',
-          emptyVal: '',
-          span_attributes: {
-            'http.status_code': '200',
-            'http.method': 'GET',
-            'http.empty': '',
-          },
-          resource_attributes: {
-            'k8s.namespace.name': 'otel-demo-app',
-            'k8s.deployment.name': 'otel-demo-loadgenerator',
-            'k8s.deployment.empty': '',
-          },
-        },
+        span,
         open,
       },
     });
@@ -97,6 +99,14 @@ describe('TracingDetailsDrawer', () => {
     expect(lines).toEqual(expectedLines);
   });
 
+  it.each([
+    ['span_attributes', 'section-span-attributes'],
+    ['resource_attributes', 'section-resource-attributes'],
+  ])('if %s is missing, it does not render %s', (attrKey, sectionId) => {
+    mountComponent({ span: { ...mockSpan, [attrKey]: undefined } });
+    expect(wrapper.findByTestId(sectionId).exists()).toBe(false);
+  });
+
   describe('with no span', () => {
     beforeEach(() => {
       wrapper = shallowMountExtended(TracingDetailsDrawer, {});
@@ -120,14 +130,14 @@ describe('TracingDetailsDrawer', () => {
     });
 
     it('does not set the header height if not open', () => {
-      mountComponent(false);
+      mountComponent({ open: false });
 
       expect(findDrawer().props('headerHeight')).toBe('0');
       expect(getContentWrapperHeight).not.toHaveBeenCalled();
     });
 
     it('sets the header height to match contentWrapperHeight if open', async () => {
-      mountComponent(true);
+      mountComponent({ open: true });
       await nextTick();
 
       expect(findDrawer().props('headerHeight')).toBe('1234px');
