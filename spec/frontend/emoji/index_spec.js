@@ -206,6 +206,67 @@ describe('retrieval of emojis.json', () => {
       );
     });
   });
+
+  describe('backwards compatibility', () => {
+    // As per: https://gitlab.com/gitlab-org/gitlab/-/blob/62b66abd3bb7801e7c85b4e42a1bbd51fbb37c1b/app/assets/javascripts/emoji/index.js#L27-52
+    async function prevImplementation() {
+      if (
+        window.localStorage.getItem(CACHE_VERSION_KEY) === EMOJI_VERSION &&
+        window.localStorage.getItem(CACHE_KEY)
+      ) {
+        return JSON.parse(window.localStorage.getItem(CACHE_KEY));
+      }
+
+      // We load the JSON file direct from the server
+      // because it can't be loaded from a CDN due to
+      // cross domain problems with JSON
+      const { data } = await axios.get(
+        `${gon.relative_url_root || ''}/-/emojis/${EMOJI_VERSION}/emojis.json`,
+      );
+
+      try {
+        window.localStorage.setItem(CACHE_VERSION_KEY, EMOJI_VERSION);
+        window.localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+      } catch {
+        // Setting data in localstorage may fail when storage quota is exceeded.
+        // We should continue even when this fails.
+      }
+
+      return data;
+    }
+
+    it('Old -> New -> Old should not break', async () => {
+      // The follow steps simulate a multi-version deployment. e.g.
+      // Hitting a page on "regular" .com, then canary, and then "regular" again
+
+      // Load emoji the old way to pre-populate the cache
+      let res = await prevImplementation();
+      expect(res).toEqual(mockEmojiData);
+      expect(mock.history.get.length).toBe(1);
+      localStorage.setItem.mockClear();
+
+      // Load emoji the new way
+      await initEmojiMap();
+      expect(mock.history.get.length).toBe(2);
+      assertEmojiBeingLoadedCorrectly();
+      assertCorrectLocalStorage();
+      localStorage.setItem.mockClear();
+
+      // Load emoji the old way to pre-populate the cache
+      res = await prevImplementation();
+      expect(res).toEqual(mockEmojiData);
+      expect(mock.history.get.length).toBe(3);
+      expect(localStorage.setItem.mock.calls).toEqual([
+        [CACHE_VERSION_KEY, EMOJI_VERSION],
+        [CACHE_KEY, JSON.stringify(mockEmojiData)],
+      ]);
+
+      // Load emoji the old way should work again (and be taken from the cache)
+      res = await prevImplementation();
+      expect(res).toEqual(mockEmojiData);
+      expect(mock.history.get.length).toBe(3);
+    });
+  });
 });
 
 describe('emoji', () => {
