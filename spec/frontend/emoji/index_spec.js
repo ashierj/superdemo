@@ -95,9 +95,10 @@ describe('retrieval of emojis.json', () => {
   });
 
   const assertCorrectLocalStorage = () => {
-    expect(localStorage.length).toBe(2);
-    expect(localStorage.getItem(CACHE_VERSION_KEY)).toEqual(EMOJI_VERSION);
-    expect(localStorage.getItem(CACHE_KEY)).toEqual(JSON.stringify(mockEmojiData));
+    expect(localStorage.length).toBe(1);
+    expect(localStorage.getItem(CACHE_KEY)).toBe(
+      JSON.stringify({ data: mockEmojiData, EMOJI_VERSION }),
+    );
   };
 
   const assertEmojiBeingLoadedCorrectly = () => {
@@ -116,8 +117,7 @@ describe('retrieval of emojis.json', () => {
 
   describe('when the localStorage stores the correct version', () => {
     beforeEach(async () => {
-      localStorage.setItem(CACHE_VERSION_KEY, EMOJI_VERSION);
-      localStorage.setItem(CACHE_KEY, JSON.stringify(mockEmojiData));
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ data: mockEmojiData, EMOJI_VERSION }));
       localStorage.setItem.mockClear();
       await initEmojiMap();
     });
@@ -132,8 +132,10 @@ describe('retrieval of emojis.json', () => {
 
   describe('when the localStorage stores an incorrect version', () => {
     beforeEach(async () => {
-      localStorage.setItem(CACHE_VERSION_KEY, `${EMOJI_VERSION}_DIFFERENT_VERSION`);
-      localStorage.setItem(CACHE_KEY, JSON.stringify(mockEmojiData));
+      localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({ data: mockEmojiData, EMOJI_VERSION: `${EMOJI_VERSION}-different` }),
+      );
       localStorage.setItem.mockClear();
       await initEmojiMap();
     });
@@ -145,10 +147,23 @@ describe('retrieval of emojis.json', () => {
     });
   });
 
-  describe('when the localStorage stores garbage data', () => {
+  describe('when the localStorage stores corrupted data', () => {
     beforeEach(async () => {
-      localStorage.setItem(CACHE_VERSION_KEY, EMOJI_VERSION);
       localStorage.setItem(CACHE_KEY, "[invalid: 'INVALID_JSON");
+      localStorage.setItem.mockClear();
+      await initEmojiMap();
+    });
+
+    it('should call the API and store results in localStorage', () => {
+      assertEmojiBeingLoadedCorrectly();
+      expect(mock.history.get.length).toBe(1);
+      assertCorrectLocalStorage();
+    });
+  });
+
+  describe('when the localStorage stores data in a different format', () => {
+    beforeEach(async () => {
+      localStorage.setItem(CACHE_KEY, JSON.stringify([]));
       localStorage.setItem.mockClear();
       await initEmojiMap();
     });
@@ -177,7 +192,10 @@ describe('retrieval of emojis.json', () => {
       expect(mock.history.get.length).toBe(1);
       expect(localStorage.length).toBe(0);
       expect(localStorage.setItem).toHaveBeenCalledTimes(1);
-      expect(localStorage.setItem).toHaveBeenCalledWith(CACHE_KEY, JSON.stringify(mockEmojiData));
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        CACHE_KEY,
+        JSON.stringify({ data: mockEmojiData, EMOJI_VERSION }),
+      );
     });
   });
 });
