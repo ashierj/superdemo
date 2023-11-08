@@ -136,7 +136,6 @@ export const VALUE_STREAMS_DASHBOARD_CONFIG = {
   title: DASHBOARD_TITLE,
   description: DASHBOARD_DESCRIPTION,
   slug: '/value_streams_dashboard',
-  redirect: true,
   userDefined: false,
 };
 
@@ -261,3 +260,7 @@ export const DORA_PERFORMERS_SCORE_NO_DATA = s__(
 );
 
 export const DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE = [green400, orange400, red400, gray400];
+
+// The URL name already in use is `value_streams_dashboard`,
+// the slug name for a dashboard must match the URL path that is used
+export const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_streams_dashboard';

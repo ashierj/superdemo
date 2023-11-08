@@ -76,10 +76,20 @@ module Analytics
       can?(current_user, :admin_project, namespace)
     end
 
+    def project_dashboard_pointer(project)
+      project.analytics_dashboards_pointer.target_project
+    end
+
+    def group_dashboard_pointer(group)
+      group.all_projects.find_by_id(group.analytics_dashboards_pointer.target_project_id)
+    end
+
     def analytics_dashboard_pointer_project(namespace)
       return unless namespace.analytics_dashboards_pointer
 
-      pointer_project = namespace.analytics_dashboards_pointer.target_project
+      pointer_project = project?(namespace) ? project_dashboard_pointer(namespace) : group_dashboard_pointer(namespace)
+
+      return unless pointer_project
 
       { id: pointer_project.id, full_path: pointer_project.full_path, name: pointer_project.name }
     end

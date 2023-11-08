@@ -15035,9 +15035,6 @@ msgstr ""
 msgid "DORA4Metrics|All labels"
 msgstr ""
 
-msgid "DORA4Metrics|Analytics Dashboards"
-msgstr ""
-
 msgid "DORA4Metrics|Average (last %{days}d)"
 msgstr ""
 

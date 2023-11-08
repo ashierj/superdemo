@@ -1,5 +1,7 @@
 - page_title s_('Analytics|Analytics dashboards')
 - breadcrumb_title s_("Analytics|Analytics dashboards")
 
-#js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@group) }
-  = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')
+- if Feature.enabled?(:group_analytics_dashboards, @group)
+  #js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@group).merge({ available_visualizations: @available_visualizations&.to_json }) }
+- else
+  #js-analytics-dashboards-app{ data: { full_path: @group.full_path, namespaces: @namespaces.to_json, pointer_project: @pointer_project&.to_json, available_visualizations: @available_visualizations&.to_json } }

@@ -75,7 +75,7 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
         post_graphql(query, current_user: user)
 
         expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
-          .to match_array(["Behavior", "Audience", "Value Stream Dashboard", "Dashboard Example 1"])
+          .to match_array(["Behavior", "Audience", "Value Streams Dashboard", "Dashboard Example 1"])
       end
 
       context 'when product analytics onboarding is incomplete' do
@@ -87,7 +87,7 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
           post_graphql(query, current_user: user)
 
           expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
-            .to match_array(["Value Stream Dashboard", "Dashboard Example 1"])
+            .to match_array(["Value Streams Dashboard", "Dashboard Example 1"])
         end
       end
 
@@ -100,7 +100,7 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
           post_graphql(query, current_user: user)
 
           expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
-            .to match_array(["Value Stream Dashboard", "Dashboard Example 1"])
+            .to match_array(["Value Streams Dashboard", "Dashboard Example 1"])
         end
       end
 
@@ -132,7 +132,7 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
         post_graphql(query, current_user: user)
 
         expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
-          .to match_array(["Value Stream Dashboard", "Dashboard Example 1"])
+          .to match_array(["Value Streams Dashboard", "Dashboard Example 1"])
       end
 
       it_behaves_like 'list dashboards without analytics dashboards license'

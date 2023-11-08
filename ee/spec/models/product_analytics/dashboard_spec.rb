@@ -40,7 +40,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
       it 'returns a collection of builtin dashboards' do
         expect(subject.size).to eq(3)
-        expect(subject.map(&:title)).to match_array(['Audience', 'Behavior', 'Value Stream Dashboard'])
+        expect(subject.map(&:title)).to match_array(['Audience', 'Behavior', 'Value Streams Dashboard'])
       end
 
       context 'when configuration project is set' do
@@ -93,7 +93,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
       it 'returns value stream dashboards' do
         expect(subject.size).to eq(1)
-        expect(subject.map(&:title)).to match_array(['Value Stream Dashboard'])
+        expect(subject.map(&:title)).to match_array(['Value Streams Dashboard'])
       end
 
       context 'when configuration project is set' do
@@ -104,7 +104,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
         it 'returns custom and value stream dashboards' do
           expect(subject).to be_a(Array)
           expect(subject.size).to eq(2)
-          expect(subject.map(&:title)).to match_array(['Value Stream Dashboard', 'Dashboard Example 1'])
+          expect(subject.map(&:title)).to match_array(['Value Streams Dashboard', 'Dashboard Example 1'])
         end
       end
 
@@ -193,10 +193,10 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     it 'returns the value stream dashboard' do
       dashboard = subject.first
       expect(dashboard).to be_a(described_class)
-      expect(dashboard.title).to eq('Value Stream Dashboard')
-      expect(dashboard.slug).to eq('value_stream_dashboard')
+      expect(dashboard.title).to eq('Value Streams Dashboard')
+      expect(dashboard.slug).to eq('value_streams_dashboard')
       expect(dashboard.description).to eq(
-        'The Value Stream Dashboard allows all stakeholders from executives ' \
+        'The Value Streams Dashboard allows all stakeholders from executives ' \
         'to individual contributors to identify trends, patterns, and ' \
         'opportunities for software development improvements.')
       expect(dashboard.schema_version).to eq(nil)

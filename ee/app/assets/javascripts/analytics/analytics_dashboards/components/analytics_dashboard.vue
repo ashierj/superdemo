@@ -13,6 +13,8 @@ import {
   updateApolloCache,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import { BUILT_IN_VALUE_STREAM_DASHBOARD } from 'ee/analytics/dashboards/constants';
+import { hydrateLegacyYamlConfiguration } from 'ee/analytics/dashboards/yaml_utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   FILE_ALREADY_EXISTS_SERVER_RESPONSE,
@@ -21,11 +23,9 @@ import {
   EVENT_LABEL_EDITED_DASHBOARD,
   EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
 } from '../constants';
-import { extractNamespaceData } from '../graphql/utils';
 import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
 
-const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_stream_dashboard';
 const HIDE_DATE_RANGE_FILTER = [BUILT_IN_VALUE_STREAM_DASHBOARD];
 
 export default {
@@ -59,6 +59,10 @@ export default {
     breadcrumbState: {
       type: Object,
     },
+    vsdAvailableVisualizations: {
+      type: Array,
+      default: [],
+    },
   },
   async beforeRouteLeave(to, from, next) {
     const confirmed = await this.$refs.dashboard.confirmDiscardIfChanged();
@@ -91,11 +95,23 @@ export default {
       changesSaved: false,
       alert: null,
       hasDashboardError: false,
+      vsdYamlDashboard: null,
     };
   },
   computed: {
+    currentDashboard() {
+      return this.vsdYamlDashboard || this.initialDashboard;
+    },
     showDateRangeFilter() {
-      return !HIDE_DATE_RANGE_FILTER.includes(this.initialDashboard?.slug);
+      return !HIDE_DATE_RANGE_FILTER.includes(this.currentDashboard?.slug);
+    },
+    shouldFetchLegacyYamlConfiguration() {
+      // NOTE: If there is no pointer project configured, we won't have a YAML file to fetch.
+      // We only need to perform this check when viewing the VSD (Value streams dashboard)
+      return (
+        this.$route?.params.slug === BUILT_IN_VALUE_STREAM_DASHBOARD &&
+        this.customDashboardsProject?.id
+      );
     },
   },
   watch: {
@@ -106,6 +122,13 @@ export default {
     },
   },
   async created() {
+    if (this.shouldFetchLegacyYamlConfiguration) {
+      this.vsdYamlDashboard = await hydrateLegacyYamlConfiguration(
+        this.customDashboardsProject.id,
+        this.vsdAvailableVisualizations,
+      );
+    }
+
     if (!this.isNewDashboard) {
       return;
     }
@@ -139,7 +162,7 @@ export default {
         return this.isNewDashboard;
       },
       update(data) {
-        const namespaceData = extractNamespaceData(data);
+        const namespaceData = this.isProject ? data.project : data.group;
         const [dashboard] = namespaceData?.customizableDashboards?.nodes || [];
 
         if (!dashboard) {
@@ -186,7 +209,7 @@ export default {
         );
       },
       update(data) {
-        const namespaceData = extractNamespaceData(data);
+        const namespaceData = this.isProject ? data.project : data.group;
         const visualizations = namespaceData?.customizableDashboardVisualizations?.nodes || [];
         return {
           loading: false,
@@ -294,9 +317,9 @@ export default {
 <template>
   <div>
     <customizable-dashboard
-      v-if="initialDashboard"
+      v-if="currentDashboard"
       ref="dashboard"
-      :initial-dashboard="initialDashboard"
+      :initial-dashboard="currentDashboard"
       :available-visualizations="availableVisualizations"
       :default-filters="defaultFilters"
       :is-saving="isSaving"

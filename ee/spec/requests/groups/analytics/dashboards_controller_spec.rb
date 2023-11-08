@@ -117,7 +117,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
 
       context 'when the license is available' do
         let_it_be(:subgroup) { create(:group, parent: group) }
-        let_it_be(:projects) { create_list(:project, 4, :public, group: group) }
+        let_it_be(:projects, refind: true) { create_list(:project, 4, :public, group: group) }
         let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
         let(:analytics_dashboards_pointer) do
           create(:analytics_dashboards_pointer, namespace: group, target_project: projects.first)
@@ -133,55 +133,85 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
           expect(response).to be_successful
         end
 
-        it 'can accept a `query` params' do
-          project = projects.first
+        context 'when group_analytics_dashboards feature flag is disabled' do
+          before do
+            stub_feature_flags(group_analytics_dashboards: false)
+          end
 
-          get build_dashboard_path(
-            value_streams_dashboard_group_analytics_dashboards_path(group),
-            [another_group, subgroup, project]
-          )
+          it 'can accept a `query` params' do
+            project = projects.first
 
-          expect(response).to be_successful
+            get build_dashboard_path(
+              value_streams_dashboard_group_analytics_dashboards_path(group),
+              [another_group, subgroup, project]
+            )
 
-          expect(response.body.include?("data-namespaces")).to be_truthy
-          expect(response.body).not_to include(parsed_response(another_group, false))
-          expect(response.body).to include(parsed_response(subgroup, false))
-          expect(response.body).to include(parsed_response(project))
-        end
+            expect(response).to be_successful
 
-        it 'will return projects in a subgroup' do
-          first_parent_project = projects.first
-          params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
-
-          get build_dashboard_path(value_streams_dashboard_group_analytics_dashboards_path(group), params)
-
-          expect(response).to be_successful
-          expect(response.body).to include(parsed_response(subgroup, false))
-          expect(response.body).to include(parsed_response(first_parent_project))
-
-          subgroup_projects.each do |project|
+            expect(response.body.include?("data-namespaces")).to be_truthy
+            expect(response.body).not_to include(parsed_response(another_group, false))
+            expect(response.body).to include(parsed_response(subgroup, false))
             expect(response.body).to include(parsed_response(project))
           end
-        end
 
-        it 'passes pointer_project if it has been configured' do
-          analytics_dashboards_pointer
-          request
+          it 'will return projects in a subgroup' do
+            first_parent_project = projects.first
+            params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
 
-          expect(response).to be_successful
+            get build_dashboard_path(value_streams_dashboard_group_analytics_dashboards_path(group), params)
 
-          expect(js_app_attributes['data-pointer-project'].value).to eq({
-            id: analytics_dashboards_pointer.target_project.id,
-            name: analytics_dashboards_pointer.target_project.name,
-            full_path: analytics_dashboards_pointer.target_project.full_path
-          }.to_json)
-        end
+            expect(response).to be_successful
+            expect(response.body).to include(parsed_response(subgroup, false))
+            expect(response.body).to include(parsed_response(first_parent_project))
 
-        context 'when project_id outside of the group hierarchy was set' do
-          it 'does not pass the project pointer' do
-            project_outside_the_hierarchy = create(:project)
-            analytics_dashboards_pointer.update_column(:target_project_id, project_outside_the_hierarchy.id)
+            subgroup_projects.each do |project|
+              expect(response.body).to include(parsed_response(project))
+            end
+          end
 
+          it 'passes pointer_project if it has been configured' do
+            analytics_dashboards_pointer
+            request
+
+            expect(response).to be_successful
+
+            expect(js_app_attributes['data-pointer-project'].value).to eq({
+              id: analytics_dashboards_pointer.target_project.id,
+              name: analytics_dashboards_pointer.target_project.name,
+              full_path: analytics_dashboards_pointer.target_project.full_path
+            }.to_json)
+          end
+
+          it 'will not load the available visualizations' do
+            request
+
+            expect(response).to be_successful
+            expect(js_app_attributes).not_to include('data-available-visualizations')
+          end
+
+          context 'when project_id outside of the group hierarchy was set' do
+            it 'does not pass the project pointer' do
+              project_outside_the_hierarchy = create(:project)
+              analytics_dashboards_pointer.update_column(:target_project_id, project_outside_the_hierarchy.id)
+
+              request
+
+              expect(response).to be_successful
+
+              expect(js_app_attributes).not_to include('data-pointer-project')
+            end
+          end
+
+          it 'does not pass pointer_project if the configured project is missing' do
+            analytics_dashboards_pointer.target_project.destroy!
+            request
+
+            expect(response).to be_successful
+
+            expect(js_app_attributes).not_to include('data-pointer-project')
+          end
+
+          it 'does not pass pointer_project if it was not configured' do
             request
 
             expect(response).to be_successful
@@ -190,21 +220,56 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
           end
         end
 
-        it 'does not pass pointer_project if the configured project is missing' do
-          analytics_dashboards_pointer.target_project.destroy!
-          request
+        context 'when group_analytics_dashboards feature flag is enabled' do
+          it 'passes pointer_project if it has been configured' do
+            analytics_dashboards_pointer
+            request
 
-          expect(response).to be_successful
+            expect(response).to be_successful
 
-          expect(js_app_attributes).not_to include('data-pointer-project')
-        end
+            expect(js_list_app_attributes['data-dashboard-project'].value).to eq({
+              id: analytics_dashboards_pointer.target_project.id,
+              full_path: analytics_dashboards_pointer.target_project.full_path,
+              name: analytics_dashboards_pointer.target_project.name
+            }.to_json)
+          end
 
-        it 'does not pass pointer_project if it was not configured' do
-          request
+          it 'will load the available visualizations' do
+            request
 
-          expect(response).to be_successful
+            expect(response).to be_successful
+            expect(js_list_app_attributes).to include('data-available-visualizations')
+          end
 
-          expect(js_app_attributes).not_to include('data-pointer-project')
+          context 'when project_id outside of the group hierarchy was set' do
+            it 'does not pass the project pointer' do
+              project_outside_the_hierarchy = create(:project)
+              analytics_dashboards_pointer.update_column(:target_project_id, project_outside_the_hierarchy.id)
+
+              request
+
+              expect(response).to be_successful
+
+              expect(js_list_app_attributes).not_to include('data-dashboard-project')
+            end
+          end
+
+          it 'does not pass pointer_project if the configured project is missing' do
+            analytics_dashboards_pointer.target_project.destroy!
+            request
+
+            expect(response).to be_successful
+
+            expect(js_list_app_attributes).not_to include('data-dashboard-project')
+          end
+
+          it 'does not pass pointer_project if it was not configured' do
+            request
+
+            expect(response).to be_successful
+
+            expect(js_list_app_attributes).not_to include('data-dashboard-project')
+          end
         end
 
         it 'tracks page view on usage ping' do
@@ -227,6 +292,10 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
         def js_app_attributes
           Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-app').attributes
         end
+
+        def js_list_app_attributes
+          Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-list-app').attributes
+        end
       end
     end
   end
@@ -241,7 +310,9 @@ RSpec.describe Groups::Analytics::DashboardsController, type: :controller, featu
   end
 
   before do
+    stub_feature_flags(group_analytics_dashboards: false)
     stub_licensed_features(group_level_analytics_dashboard: true)
+
     sign_in(user)
   end
 

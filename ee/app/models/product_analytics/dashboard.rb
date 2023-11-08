@@ -8,7 +8,7 @@ module ProductAnalytics
     DASHBOARD_ROOT_LOCATION = '.gitlab/analytics/dashboards'
 
     PRODUCT_ANALYTICS_DASHBOARDS_LIST = %w[audience behavior].freeze
-    VALUE_STREAM_DASHBOARD_LIST = %w[value_stream_dashboard].freeze
+    VALUE_STREAM_DASHBOARD_LIST = %w[value_streams_dashboard].freeze
 
     def self.for(container:, user:)
       unless container.is_a?(Group) || container.is_a?(Project)
