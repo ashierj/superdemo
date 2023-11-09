@@ -149,7 +149,7 @@ describe('TracingList', () => {
       setWindowLocation('?trace-id=foo');
       await mountComponent();
 
-      expect(findFilteredSearch().props('initialSort')).toBe('created_desc');
+      expect(findFilteredSearch().props('initialSort')).toBe('timestamp_desc');
     });
 
     it('renders UrlSync and sets query prop', () => {
@@ -204,13 +204,13 @@ describe('TracingList', () => {
 
     describe('on sort order changed', () => {
       beforeEach(async () => {
-        findFilteredSearch().vm.$emit('sort', 'created_asc');
+        findFilteredSearch().vm.$emit('sort', 'timestamp_asc');
         await waitForPromises();
       });
 
       it('updates the query on search submit', () => {
         expect(findUrlSync().props('query')).toMatchObject({
-          sortBy: 'created_asc',
+          sortBy: 'timestamp_asc',
         });
       });
 
@@ -219,12 +219,12 @@ describe('TracingList', () => {
           filters: mockFilterObj,
           pageSize: 500,
           pageToken: null,
-          sortBy: 'created_asc',
+          sortBy: 'timestamp_asc',
         });
       });
 
       it('updates FilteredSearch initial sort', () => {
-        expect(findFilteredSearch().props('initialSort')).toEqual('created_asc');
+        expect(findFilteredSearch().props('initialSort')).toEqual('timestamp_asc');
       });
     });
   });
@@ -257,7 +257,7 @@ describe('TracingList', () => {
         filters: {},
         pageSize: 500,
         pageToken: 'page-2',
-        sortBy: 'created_desc',
+        sortBy: 'timestamp_desc',
       });
 
       expect(findInfiniteScrolling().props('fetchedItems')).toBe(
@@ -280,7 +280,7 @@ describe('TracingList', () => {
         filters: {},
         pageSize: 500,
         pageToken: 'page-2',
-        sortBy: 'created_desc',
+        sortBy: 'timestamp_desc',
       });
     });
 
@@ -318,7 +318,7 @@ describe('TracingList', () => {
         filters: {},
         pageSize: 500,
         pageToken: null,
-        sortBy: 'created_desc',
+        sortBy: 'timestamp_desc',
       });
 
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);

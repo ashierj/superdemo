@@ -59,10 +59,10 @@ export default {
         },
         {
           id: 2,
-          title: s__('Tracing|Created date'),
+          title: s__('Tracing|Timestamp'),
           sortDirection: {
-            ascending: SORTING_OPTIONS.CREATED_ASC,
-            descending: SORTING_OPTIONS.CREATED_DESC,
+            ascending: SORTING_OPTIONS.TIMESTAMP_ASC,
+            descending: SORTING_OPTIONS.TIMESTAMP_DESC,
           },
         },
       ];

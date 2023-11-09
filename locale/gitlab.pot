@@ -50474,9 +50474,6 @@ msgstr ""
 msgid "Tracing|Check again"
 msgstr ""
 
-msgid "Tracing|Created date"
-msgstr ""
-
 msgid "Tracing|Date"
 msgstr ""
 
@@ -50550,6 +50547,9 @@ msgid "Tracing|Service"
 msgstr ""
 
 msgid "Tracing|Time range"
+msgstr ""
+
+msgid "Tracing|Timestamp"
 msgstr ""
 
 msgid "Tracing|Toggle child spans"
