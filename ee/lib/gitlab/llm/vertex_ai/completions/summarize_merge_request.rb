@@ -42,6 +42,7 @@ module Gitlab
             )
 
             summary.save! if summary.valid?
+            summary
           end
         end
       end
