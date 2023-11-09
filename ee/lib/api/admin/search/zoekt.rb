@@ -47,10 +47,11 @@ module API
               present({ job_id: job_id }, with: ::API::Entities::Search::Zoekt::ProjectIndexSuccess)
             end
           end
-
+          # TODO: at some point rename to zoekt/nodes
+          # This change is part of https://gitlab.com/gitlab-org/gitlab/-/issues/424456
           resources 'zoekt/shards' do
-            desc 'Get all the Zoekt shards' do
-              success ::API::Entities::Search::Zoekt::Shard
+            desc 'Get all the Zoekt nodes' do
+              success ::API::Entities::Search::Zoekt::Node
               failure [
                 { code: 401, message: '401 Unauthorized' },
                 { code: 403, message: '403 Forbidden' },
@@ -58,11 +59,11 @@ module API
               ]
             end
             get do
-              present ::Search::Zoekt::Node.all, with: ::API::Entities::Search::Zoekt::Shard
+              present ::Search::Zoekt::Node.all, with: ::API::Entities::Search::Zoekt::Node
             end
 
-            resources ':shard_id/indexed_namespaces' do
-              desc 'Get all the indexed namespaces for this shard' do
+            resources ':node_id/indexed_namespaces' do
+              desc 'Get all the indexed namespaces for this node' do
                 success ::API::Entities::Search::Zoekt::IndexedNamespace
                 failure [
                   { code: 401, message: '401 Unauthorized' },
@@ -71,12 +72,12 @@ module API
                 ]
               end
               params do
-                requires :shard_id,
+                requires :node_id,
                   type: Integer,
-                  desc: 'The id of the Zoekt::Shard'
+                  desc: 'The id of the Search::Zoekt::Node'
               end
               get do
-                node = ::Search::Zoekt::Node.find(params[:shard_id])
+                node = ::Search::Zoekt::Node.find(params[:node_id])
                 indexed_namespaces = node.indexed_namespaces.recent.with_limit(MAX_RESULTS)
 
                 present indexed_namespaces, with: ::API::Entities::Search::Zoekt::IndexedNamespace
@@ -92,7 +93,7 @@ module API
                   ]
                 end
                 params do
-                  requires :shard_id,
+                  requires :node_id,
                     type: Integer,
                     desc: 'The id of the Search::Zoekt::Node'
                   requires :namespace_id,
@@ -101,7 +102,7 @@ module API
                 end
                 put do
                   ensure_zoekt_indexing_enabled!
-                  node = ::Search::Zoekt::Node.find(params[:shard_id])
+                  node = ::Search::Zoekt::Node.find(params[:node_id])
                   namespace = Namespace.find(params[:namespace_id])
 
                   indexed_namespace = ::Zoekt::IndexedNamespace
@@ -117,7 +118,7 @@ module API
                   ]
                 end
                 params do
-                  requires :shard_id,
+                  requires :node_id,
                     type: Integer,
                     desc: 'The id of the Search::Zoekt::Node'
                   requires :namespace_id,
@@ -125,7 +126,7 @@ module API
                     desc: 'The id of the namespace you want to index in this node'
                 end
                 delete do
-                  node = ::Search::Zoekt::Node.find(params[:shard_id])
+                  node = ::Search::Zoekt::Node.find(params[:node_id])
                   namespace = Namespace.find(params[:namespace_id])
 
                   indexed_namespace = ::Zoekt::IndexedNamespace

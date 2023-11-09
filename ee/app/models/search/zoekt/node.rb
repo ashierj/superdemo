@@ -3,10 +3,10 @@
 module Search
   module Zoekt
     class Node < ApplicationRecord
-      self.table_name = 'zoekt_shards'
+      self.table_name = 'zoekt_nodes'
 
       has_many :indexed_namespaces,
-        foreign_key: :zoekt_shard_id, inverse_of: :node, class_name: '::Zoekt::IndexedNamespace'
+        foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Zoekt::IndexedNamespace'
 
       validates :index_base_url, presence: true, uniqueness: true
       validates :search_base_url, presence: true, uniqueness: true
@@ -20,7 +20,7 @@ module Search
 
       def self.for_namespace(root_namespace_id:)
         find_by(
-          id: ::Zoekt::IndexedNamespace.where(namespace_id: root_namespace_id).select(:zoekt_shard_id)
+          id: ::Zoekt::IndexedNamespace.where(namespace_id: root_namespace_id).select(:zoekt_node_id)
         )
       end
 

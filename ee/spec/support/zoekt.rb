@@ -8,7 +8,9 @@ module Zoekt
       ::Search::Zoekt::Node.find_or_create_by!(
         index_base_url: index_base_url,
         search_base_url: search_base_url
-      )
+      ) do |node|
+        node.uuid = SecureRandom.uuid
+      end
     end
     module_function :ensure_zoekt_node!
 
