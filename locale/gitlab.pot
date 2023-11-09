@@ -5488,9 +5488,6 @@ msgstr ""
 msgid "Analytics|Analytics dashboards"
 msgstr ""
 
-msgid "Analytics|Analytics events by month"
-msgstr ""
-
 msgid "Analytics|Analytics settings for '%{project_name}' were successfully updated."
 msgstr ""
 
@@ -5537,9 +5534,6 @@ msgid "Analytics|Create your dashboard"
 msgstr ""
 
 msgid "Analytics|Create your visualization"
-msgstr ""
-
-msgid "Analytics|Current month to date"
 msgstr ""
 
 msgid "Analytics|Custom dashboards"
@@ -5608,9 +5602,6 @@ msgstr ""
 msgid "Analytics|Event Props"
 msgstr ""
 
-msgid "Analytics|Events"
-msgstr ""
-
 msgid "Analytics|Failed to fetch data"
 msgstr ""
 
@@ -5627,9 +5618,6 @@ msgid "Analytics|Line chart"
 msgstr ""
 
 msgid "Analytics|Link clicks"
-msgstr ""
-
-msgid "Analytics|Month"
 msgstr ""
 
 msgid "Analytics|New dashboard"
@@ -5657,18 +5645,6 @@ msgid "Analytics|Page Title"
 msgstr ""
 
 msgid "Analytics|Pages"
-msgstr ""
-
-msgid "Analytics|Previous month"
-msgstr ""
-
-msgid "Analytics|Product analytics usage is calculated based on the total number of events received from projects within the group. %{linkStart}Learn more%{linkEnd}."
-msgstr ""
-
-msgid "Analytics|Projects"
-msgstr ""
-
-msgid "Analytics|Projects (%{maxProjects} of %{totalProjects} shown)"
 msgstr ""
 
 msgid "Analytics|Referer"
@@ -5707,9 +5683,6 @@ msgstr ""
 msgid "Analytics|Something went wrong while loading available visualizations. Refresh the page to try again."
 msgstr ""
 
-msgid "Analytics|Something went wrong while loading product analytics usage data. Refresh the page to try again."
-msgstr ""
-
 msgid "Analytics|Something went wrong while loading the dashboard. Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}."
 msgstr ""
 
@@ -5725,12 +5698,6 @@ msgstr ""
 msgid "Analytics|Target URL"
 msgstr ""
 
-msgid "Analytics|This group has no projects with product analytics onboarded in the current or previous month."
-msgstr ""
-
-msgid "Analytics|This table excludes projects that do not have product analytics onboarded."
-msgstr ""
-
 msgid "Analytics|To create your own dashboards, first configure a project to store your dashboards."
 msgstr ""
 
@@ -5741,12 +5708,6 @@ msgid "Analytics|Updating dashboard %{dashboardSlug}"
 msgstr ""
 
 msgid "Analytics|Updating visualization %{visualizationName}"
-msgstr ""
-
-msgid "Analytics|Usage by month"
-msgstr ""
-
-msgid "Analytics|Usage by project"
 msgstr ""
 
 msgid "Analytics|Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard."
@@ -36326,6 +36287,9 @@ msgstr ""
 msgid "ProductAnalytics|An error occurred while fetching data. Refresh the page to try again."
 msgstr ""
 
+msgid "ProductAnalytics|Analytics events by month"
+msgstr ""
+
 msgid "ProductAnalytics|Analyze your product with Product Analytics"
 msgstr ""
 
@@ -36365,6 +36329,9 @@ msgstr ""
 msgid "ProductAnalytics|Cube API key"
 msgstr ""
 
+msgid "ProductAnalytics|Current month to date"
+msgstr ""
+
 msgid "ProductAnalytics|Details on how to configure product analytics to collect data."
 msgstr ""
 
@@ -36389,6 +36356,9 @@ msgstr ""
 msgid "ProductAnalytics|For the product analytics dashboard to start showing you some data, you need to add the analytics tracking code to your project."
 msgstr ""
 
+msgid "ProductAnalytics|Get started with product analytics"
+msgstr ""
+
 msgid "ProductAnalytics|How many sessions a user has"
 msgstr ""
 
@@ -36396,6 +36366,12 @@ msgid "ProductAnalytics|How often users returned compared to all sessions"
 msgstr ""
 
 msgid "ProductAnalytics|Instrument your application"
+msgstr ""
+
+msgid "ProductAnalytics|Learn how to enable product analytics"
+msgstr ""
+
+msgid "ProductAnalytics|Learn how to onboard projects"
 msgstr ""
 
 msgid "ProductAnalytics|Link Click Events"
@@ -36425,6 +36401,12 @@ msgstr ""
 msgid "ProductAnalytics|Measuring"
 msgstr ""
 
+msgid "ProductAnalytics|Month"
+msgstr ""
+
+msgid "ProductAnalytics|No projects found"
+msgstr ""
+
 msgid "ProductAnalytics|On what do you want to get insights?"
 msgstr ""
 
@@ -36434,7 +36416,19 @@ msgstr ""
 msgid "ProductAnalytics|Percentage of Users Returning"
 msgstr ""
 
+msgid "ProductAnalytics|Previous month"
+msgstr ""
+
 msgid "ProductAnalytics|Product analytics onboarding"
+msgstr ""
+
+msgid "ProductAnalytics|Product analytics usage is calculated based on the total number of events received from projects within the group. %{linkStart}Learn more%{linkEnd}."
+msgstr ""
+
+msgid "ProductAnalytics|Projects"
+msgstr ""
+
+msgid "ProductAnalytics|Projects (%{maxProjects} of %{totalProjects} shown)"
 msgstr ""
 
 msgid "ProductAnalytics|Returning Users"
@@ -36464,6 +36458,9 @@ msgstr ""
 msgid "ProductAnalytics|Snowplow configurator connection string"
 msgstr ""
 
+msgid "ProductAnalytics|Something went wrong while loading product analytics usage data. Refresh the page to try again."
+msgstr ""
+
 msgid "ProductAnalytics|The connection string for your Snowplow configurator instance."
 msgstr ""
 
@@ -36473,13 +36470,28 @@ msgstr ""
 msgid "ProductAnalytics|The sender of tracking events"
 msgstr ""
 
+msgid "ProductAnalytics|This group has no projects with product analytics onboarded in the current period."
+msgstr ""
+
 msgid "ProductAnalytics|This might take a while, feel free to navigate away from this page and come back later."
+msgstr ""
+
+msgid "ProductAnalytics|This table excludes projects that do not have product analytics onboarded."
 msgstr ""
 
 msgid "ProductAnalytics|To instrument your application, select one of the options below. After an option has been instrumented and data is being collected, this page will progress to the next step."
 msgstr ""
 
+msgid "ProductAnalytics|Track your product's performance, and optimize your product and development processes."
+msgstr ""
+
 msgid "ProductAnalytics|Unique Users"
+msgstr ""
+
+msgid "ProductAnalytics|Usage by month"
+msgstr ""
+
+msgid "ProductAnalytics|Usage by project"
 msgstr ""
 
 msgid "ProductAnalytics|Used to retrieve dashboard data from the Cube instance."

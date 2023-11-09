@@ -89,6 +89,14 @@ module EE
       data.merge(code_suggestions_hand_raise_props(group))
     end
 
+    def product_analytics_usage_quota_app_data(group)
+      {
+        namespace_path: group.full_path,
+        empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
+        product_analytics_enabled: ::Gitlab::CurrentSettings.product_analytics_enabled?.to_s
+      }
+    end
+
     def hand_raise_props(namespace, glm_content:, product_interaction: 'Hand Raise PQL')
       {
         namespace_id: namespace.id,
@@ -115,12 +123,6 @@ module EE
       return false unless ::Feature.enabled?(:hamilton_seat_management, group)
 
       ::Gitlab.com? && !group.has_free_or_no_subscription?
-    end
-
-    def show_product_analytics_usage_quota_tab?(group)
-      return false unless ::Feature.enabled?(:product_analytics_usage_quota, group)
-
-      can?(current_user, :read_product_analytics, group)
     end
 
     def saml_sso_settings_generate_helper_text(display_none:, text:)

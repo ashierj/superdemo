@@ -8,7 +8,6 @@ describe('ProductAnalyticsProjectsUsageTable', () => {
   let wrapper;
 
   const findLoadingState = () => wrapper.findComponent(GlSkeletonLoader);
-  const findEmptyState = () => wrapper.findByTestId('projects-usage-table-empty-state');
   const findUsageTableWrapper = () => wrapper.findByTestId('projects-usage-table');
   const findUsageTable = () => wrapper.findComponent(GlTableLite);
   const findProjectLink = () => wrapper.findByTestId('project-link');
@@ -34,10 +33,6 @@ describe('ProductAnalyticsProjectsUsageTable', () => {
       expect(findLoadingState().exists()).toBe(true);
     });
 
-    it('does not render the empty state', () => {
-      expect(findEmptyState().exists()).toBe(false);
-    });
-
     it('does not render the usage table', () => {
       expect(findUsageTableWrapper().exists()).toBe(false);
     });
@@ -53,12 +48,6 @@ describe('ProductAnalyticsProjectsUsageTable', () => {
 
     it('does not render the loading state', () => {
       expect(findLoadingState().exists()).toBe(false);
-    });
-
-    it('renders the empty state', () => {
-      expect(findEmptyState().text()).toContain(
-        'This group has no projects with product analytics onboarded in the current or previous month.',
-      );
     });
 
     it('does not render the usage table', () => {
@@ -90,10 +79,6 @@ describe('ProductAnalyticsProjectsUsageTable', () => {
 
     it('does not render the loading state', () => {
       expect(findLoadingState().exists()).toBe(false);
-    });
-
-    it('does not render the empty state', () => {
-      expect(findEmptyState().exists()).toBe(false);
     });
 
     it('renders the usage table', () => {

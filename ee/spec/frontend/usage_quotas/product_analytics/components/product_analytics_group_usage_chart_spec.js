@@ -123,67 +123,95 @@ describe('ProductAnalyticsGroupUsageChart', () => {
       });
     });
 
-    describe('and data has loaded with one project', () => {
-      beforeEach(() => {
-        mockProjectsUsageDataHandler.mockResolvedValue({ data: getProjectsUsageDataResponse() });
-        createComponent();
-        return waitForPromises();
-      });
+    describe('and the data has loaded', () => {
+      describe.each`
+        scenario                                        | currentProjects                                                         | previousProjects
+        ${'with no projects'}                           | ${[]}                                                                   | ${[]}
+        ${'with no product analytics enabled projects'} | ${[getProjectUsage({ id: 1, name: 'not onboarded', numEvents: null })]} | ${[getProjectUsage({ id: 1, name: 'not onboarded', numEvents: null })]}
+      `('$scenario', ({ currentProjects, previousProjects }) => {
+        beforeEach(() => {
+          mockProjectsUsageDataHandler.mockResolvedValue({
+            data: getProjectsUsageDataResponse(currentProjects, previousProjects),
+          });
+          createComponent();
+          return waitForPromises();
+        });
 
-      it('does not render an error', () => {
-        expect(findError().exists()).toBe(false);
-      });
+        it('does not render an error', () => {
+          expect(findError().exists()).toBe(false);
+        });
 
-      it('does not render the loading state', () => {
-        expect(findSkeletonLoader().exists()).toBe(false);
-      });
+        it('does not render the loading state', () => {
+          expect(findSkeletonLoader().exists()).toBe(false);
+        });
 
-      it('renders the chart', () => {
-        expect(findChart().props()).toMatchObject({
-          data: [
-            {
-              name: 'Analytics events by month',
-              data: [
-                ['Dec 2022', 1234],
-                ['Jan 2023', 9876],
-              ],
-            },
-          ],
+        it('emits "no-projects" event', () => {
+          expect(wrapper.emitted('no-projects')).toHaveLength(1);
         });
       });
-    });
 
-    describe('and data has loaded with many projects', () => {
-      beforeEach(() => {
-        mockProjectsUsageDataHandler.mockResolvedValue({
-          data: getProjectsUsageDataResponse(
-            [
-              getProjectUsage({ id: 1, name: 'onboarded1', numEvents: 1 }),
-              getProjectUsage({ id: 2, name: 'onboarded2', numEvents: 1 }),
-              getProjectUsage({ id: 3, name: 'onboarded3', numEvents: 1 }),
-            ],
-            [
-              getProjectUsage({ id: 1, name: 'onboarded1', numEvents: 10 }),
-              getProjectUsage({ id: 2, name: 'onboarded2', numEvents: 20 }),
-              getProjectUsage({ id: 3, name: 'onboarded3', numEvents: 30 }),
-            ],
-          ),
+      describe('with one project', () => {
+        beforeEach(() => {
+          mockProjectsUsageDataHandler.mockResolvedValue({ data: getProjectsUsageDataResponse() });
+          createComponent();
+          return waitForPromises();
         });
-        createComponent();
-        return waitForPromises();
+
+        it('does not render an error', () => {
+          expect(findError().exists()).toBe(false);
+        });
+
+        it('does not render the loading state', () => {
+          expect(findSkeletonLoader().exists()).toBe(false);
+        });
+
+        it('renders the chart', () => {
+          expect(findChart().props()).toMatchObject({
+            data: [
+              {
+                name: 'Analytics events by month',
+                data: [
+                  ['Dec 2022', 1234],
+                  ['Jan 2023', 9876],
+                ],
+              },
+            ],
+          });
+        });
       });
 
-      it('renders the chart with correctly summed counts', () => {
-        expect(findChart().props()).toMatchObject({
-          data: [
-            {
-              name: 'Analytics events by month',
-              data: [
-                ['Dec 2022', 60],
-                ['Jan 2023', 3],
+      describe('with many projects', () => {
+        beforeEach(() => {
+          mockProjectsUsageDataHandler.mockResolvedValue({
+            data: getProjectsUsageDataResponse(
+              [
+                getProjectUsage({ id: 1, name: 'onboarded1', numEvents: 1 }),
+                getProjectUsage({ id: 2, name: 'onboarded2', numEvents: 1 }),
+                getProjectUsage({ id: 3, name: 'onboarded3', numEvents: 1 }),
               ],
-            },
-          ],
+              [
+                getProjectUsage({ id: 1, name: 'onboarded1', numEvents: 10 }),
+                getProjectUsage({ id: 2, name: 'onboarded2', numEvents: 20 }),
+                getProjectUsage({ id: 3, name: 'onboarded3', numEvents: 30 }),
+              ],
+            ),
+          });
+          createComponent();
+          return waitForPromises();
+        });
+
+        it('renders the chart with correctly summed counts', () => {
+          expect(findChart().props()).toMatchObject({
+            data: [
+              {
+                name: 'Analytics events by month',
+                data: [
+                  ['Dec 2022', 60],
+                  ['Jan 2023', 3],
+                ],
+              },
+            ],
+          });
         });
       });
     });
