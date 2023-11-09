@@ -12,6 +12,7 @@ module Gitlab
         :generate_test_file,
         :summarize_diff,
         :explain_vulnerability,
+        :resolve_vulnerability,
         :generate_commit_message,
         :chat,
         :fill_in_merge_request_template,
