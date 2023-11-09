@@ -9,15 +9,14 @@ module ComplianceManagement
 
     idempotent!
     feature_category :compliance_management
-    data_consistency :sticky
-
-    TIMEOUT_INTERVAL = 2.minutes.ago
+    data_consistency :always # rubocop:disable SidekiqLoadBalancing/WorkerDataConsistency
+    urgency :high
 
     def perform
       return unless Feature.enabled?(:timeout_status_check_responses)
 
       ::MergeRequests::StatusCheckResponse.pending.each_batch do |batch|
-        batch.timeout_eligible.each(&:failed!)
+        batch.timeout_eligible.update_all(status: 'failed')
       end
     end
   end

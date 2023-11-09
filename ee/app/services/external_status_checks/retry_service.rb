@@ -8,7 +8,7 @@ module ExternalStatusChecks
 
       last_response = rule.response_for(params[:merge_request], params[:merge_request].diff_head_sha)
 
-      if last_response.update(retried_at: Time.current)
+      if last_response.update(retried_at: Time.current, status: 'pending')
         data = params[:merge_request].to_hook_data(current_user)
         rule.async_execute(data)
         ServiceResponse.success(payload: { rule: rule })

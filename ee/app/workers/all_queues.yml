@@ -133,7 +133,7 @@
   :worker_name: ComplianceManagement::TimeoutPendingStatusCheckResponsesWorker
   :feature_category: :compliance_management
   :has_external_dependencies: false
-  :urgency: :low
+  :urgency: :high
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
@@ -1240,7 +1240,7 @@
   :worker_name: ComplianceManagement::PendingStatusCheckWorker
   :feature_category: :compliance_management
   :has_external_dependencies: false
-  :urgency: :low
+  :urgency: :high
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
