@@ -15,6 +15,7 @@ module EE
           before_action only: [:show] do
             push_frontend_feature_flag(:security_auto_fix, project)
             push_frontend_feature_flag(:dependency_scanning_on_advisory_ingestion, project)
+            push_frontend_feature_flag(:global_dependency_scanning_on_advisory_ingestion, project)
           end
 
           before_action only: [:auto_fix] do
