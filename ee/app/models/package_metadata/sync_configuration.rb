@@ -47,21 +47,9 @@ module PackageMetadata
     def self.license_configs
       storage_type, base_uri = Location.for_licenses
 
-      configs = []
-
-      if Feature.enabled?(:compressed_package_metadata_synchronization)
-        configs.concat(permitted_purl_types.map do |purl_type, _|
-          new('licenses', storage_type, base_uri, VERSION_FORMAT_V2, purl_type)
-        end)
+      permitted_purl_types.map do |purl_type, _|
+        new('licenses', storage_type, base_uri, VERSION_FORMAT_V2, purl_type)
       end
-
-      if Feature.enabled?(:package_metadata_synchronization)
-        configs.concat(permitted_purl_types.map do |purl_type, _|
-          new('licenses', storage_type, base_uri, VERSION_FORMAT_V1, purl_type)
-        end)
-      end
-
-      configs
     end
 
     def self.registry_id(purl_type)

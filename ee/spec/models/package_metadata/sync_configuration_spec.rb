@@ -6,8 +6,6 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
   using RSpec::Parameterized::TableSyntax
 
   before do
-    stub_feature_flags(package_metadata_synchronization: true)
-    stub_feature_flags(compressed_package_metadata_synchronization: false)
     allow(File).to receive(:exist?).and_return(false)
   end
 
@@ -21,15 +19,11 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
       end
 
       specify do
-        expected = []
-        expected_version_formats.each do |version_format|
-          expected += enabled_purl_types.map do |purl_type|
-            have_attributes(data_type: expected_data_type, storage_type: :gcp, base_uri: expected_bucket,
-              version_format: version_format, purl_type: purl_type_map[purl_type])
-          end
+        expected = expected_purl_types.map do |purl_type|
+          have_attributes(data_type: expected_data_type, storage_type: :gcp, base_uri: expected_bucket,
+            version_format: 'v2', purl_type: purl_type_map[purl_type])
         end
 
-        expect(configurations.size).to eq(expected_num_configs)
         expect(configurations).to match_array(expected)
       end
     end
@@ -40,27 +34,13 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
 
       subject(:configurations) { described_class.configs_for('licenses') }
 
-      where(:sync_v1, :sync_v2, :expected_version_formats, :enabled_purl_types, :expected_num_configs) do
-        true  | false | ['v1']        | ref(:all_purl_types)  | Enums::Sbom::PURL_TYPES.length
-        false | true  | ['v2']        | ref(:all_purl_types)  | Enums::Sbom::PURL_TYPES.length
-        true  | true  | %w[v1 v2]     | ref(:all_purl_types)  | (Enums::Sbom::PURL_TYPES.length * 2)
-        false | false | []            | ref(:all_purl_types)  | 0
-        true  | false | ['v1']        | [1, 5]                | 2
-        false | true  | ['v2']        | [1, 5]                | 2
-        true  | true  | %w[v1 v2]     | [1, 5]                | 4
-        false | false | []            | [1, 5]                | 0
-        true  | false | ['v1']        | []                    | 0
-        false | true  | ['v2']        | []                    | 0
-        true  | true  | %w[v1 v2]     | []                    | 0
-        false | false | []            | []                    | 0
+      where(:enabled_purl_types, :expected_purl_types) do
+        ref(:all_purl_types)  | ref(:all_purl_types)
+        [1, 5]                | [1, 5]
+        []                    | []
       end
 
       with_them do
-        before do
-          stub_feature_flags(package_metadata_synchronization: sync_v1)
-          stub_feature_flags(compressed_package_metadata_synchronization: sync_v2)
-        end
-
         it_behaves_like 'it returns all enabled sync configs'
       end
     end
@@ -71,11 +51,11 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
 
       subject(:configurations) { described_class.configs_for('advisories') }
 
-      where(:ff_enabled, :expected_version_formats, :enabled_purl_types, :expected_num_configs) do
-        true  | ['v2']  | ref(:all_purl_types)  | Enums::Sbom::PURL_TYPES.length
-        true  | ['v2']  | [1, 5]                | 2
-        true  | ['v2']  | []                    | 0
-        false | []      | ref(:all_purl_types)  | 0
+      where(:ff_enabled, :enabled_purl_types, :expected_purl_types) do
+        true  | ref(:all_purl_types)  | ref(:all_purl_types)
+        true  | [1, 5]                | [1, 5]
+        true  | []                    | []
+        false | ref(:all_purl_types)  | []
       end
 
       with_them do

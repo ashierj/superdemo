@@ -190,10 +190,6 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
     shared_examples_for 'it calls #execute for each enabled config' do
       let(:should_stop) { false }
 
-      before do
-        stub_feature_flags(compressed_package_metadata_synchronization: false)
-      end
-
       specify do
         expect(observer).to receive(:execute).exactly(::Enums::PackageMetadata.purl_types.count).times
         ::Enums::PackageMetadata.purl_types.each do |purl_type, _|
