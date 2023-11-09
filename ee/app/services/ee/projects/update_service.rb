@@ -113,6 +113,15 @@ module EE
         params.delete(:repository_size_limit) unless current_user&.can_admin_all_resources?
       end
 
+      override :validate_default_branch_change
+      def validate_default_branch_change
+        if changing_default_branch? && default_branch_update_blocked_by_security_policy?
+          raise_validation_error(s_("UpdateProject|Updating default branch is blocked by security policy"))
+        end
+
+        super
+      end
+
       override :after_default_branch_change
       def after_default_branch_change(previous_default_branch)
         audit_context = {
@@ -131,6 +140,10 @@ module EE
         ::Gitlab::Audit::Auditor.audit(audit_context)
 
         ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(project.id)
+      end
+
+      def default_branch_update_blocked_by_security_policy?
+        ::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService.new(project: project).execute
       end
 
       # A user who enables shared runners must meet the credit card requirement if

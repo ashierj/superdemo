@@ -267,6 +267,46 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
     end
   end
 
+  context 'when updating a default branch' do
+    let_it_be(:project) { create(:project, :repository) }
+
+    before do
+      update_default_branch('master')
+    end
+
+    context 'when default_branch is not changed' do
+      it 'does not update the default branch' do
+        expect { update_default_branch(project.default_branch) }.not_to change { project.default_branch }
+      end
+    end
+
+    context 'when block_unprotecting_branches is enabled' do
+      it 'returns error with message' do
+        expect_next_instance_of(::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService) do |service|
+          expect(service).to receive(:execute).and_return(true)
+        end
+
+        expect(update_default_branch).to eq(status: :error, message: 'Updating default branch is blocked by security policy')
+      end
+    end
+
+    context 'when block_unprotecting_branches is not enabled' do
+      it 'changes the default branch' do
+        expect_next_instance_of(::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService) do |service|
+          expect(service).to receive(:execute).and_return(false)
+        end
+
+        update_default_branch
+
+        expect(project.reload.default_branch).to eq('feature')
+      end
+    end
+
+    def update_default_branch(branch = 'feature')
+      update_project(project, user, default_branch: branch)
+    end
+  end
+
   context 'triggering wiki Geo syncs', :geo, feature_category: :geo_replication do
     let_it_be(:primary) { create(:geo_node, :primary) }
     let_it_be(:secondary) { create(:geo_node) }

@@ -51433,6 +51433,9 @@ msgstr ""
 msgid "UpdateProject|Pruning unreachable objects can lead to repository corruption."
 msgstr ""
 
+msgid "UpdateProject|Updating default branch is blocked by security policy"
+msgstr ""
+
 msgid "UpdateRepositoryStorage|Timeout waiting for %{type} repository pushes"
 msgstr ""
 
