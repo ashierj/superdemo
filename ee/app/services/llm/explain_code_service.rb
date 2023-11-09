@@ -28,17 +28,7 @@ module Llm
     end
 
     def ai_action
-      if Feature.enabled?(:explain_code_vertex_ai, user)
-        :explain_code
-      else
-        :explain_code_open_ai
-      end
-    end
-
-    # Use `Explain code` command for GitLab Duo for both VertexAI and OpenAI models
-    # When/if one of the implementations removed, this method can be removed as well
-    def content(_)
-      super(:explain_code)
+      :explain_code
     end
   end
 end
