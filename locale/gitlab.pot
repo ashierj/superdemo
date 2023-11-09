@@ -21509,13 +21509,7 @@ msgstr ""
 msgid "Geo|Remove %{siteType} site"
 msgstr ""
 
-msgid "Geo|Remove entry"
-msgstr ""
-
 msgid "Geo|Remove site"
-msgstr ""
-
-msgid "Geo|Remove tracking database entry"
 msgstr ""
 
 msgid "Geo|Removing a Geo site stops the synchronization to and from that site. Are you sure?"
@@ -21687,9 +21681,6 @@ msgid "Geo|This will reverify all projects. It may take some time to complete. A
 msgstr ""
 
 msgid "Geo|Time in seconds"
-msgstr ""
-
-msgid "Geo|Tracking database entry will be removed. Are you sure?"
 msgstr ""
 
 msgid "Geo|Tuning settings"
