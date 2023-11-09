@@ -8,7 +8,11 @@ module Geo
 
     DEFAULT_VERIFICATION_BATCH_SIZE = 10
     DEFAULT_REVERIFICATION_BATCH_SIZE = 1000
-    DEFAULT_VERIFICATION_STATE_BACKFILL_BATCH_SIZE = 10000
+    # Reduced from 10000 to 1000 to further mitigate
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/429242
+    # in combination with
+    # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/136275
+    DEFAULT_VERIFICATION_STATE_BACKFILL_BATCH_SIZE = 1000
 
     included do
       event :checksum_succeeded
