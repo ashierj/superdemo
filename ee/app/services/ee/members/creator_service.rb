@@ -20,8 +20,6 @@ module EE
       def member_attributes
         attributes = super.merge(ldap: ldap)
 
-        return attributes unless ::Feature.enabled?(:invitations_member_role_id, source)
-
         top_level_group = source.root_ancestor
 
         return attributes unless top_level_group.custom_roles_enabled?

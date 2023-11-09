@@ -264,24 +264,8 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       root_ancestor.update_attribute(:membership_lock, true)
     end
 
-    context 'with invitations_member_role_id feature flag enabled' do
-      before do
-        stub_feature_flags(invitations_member_role_id: true)
-      end
-
-      it 'does not add the given users to the team' do
-        expect { execute_service }.not_to change { project.members.count }
-      end
-    end
-
-    context 'with invitations_member_role_id feature flag disabled' do
-      before do
-        stub_feature_flags(invitations_member_role_id: false)
-      end
-
-      it 'does not add the given users to the team' do
-        expect { execute_service }.not_to change { project.members.count }
-      end
+    it 'does not add the given users to the team' do
+      expect { execute_service }.not_to change { project.members.count }
     end
   end
 
@@ -297,34 +281,13 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
         stub_licensed_features(custom_roles: true)
       end
 
-      context 'with invitations_member_role_id feature flag enabled' do
-        before do
-          stub_feature_flags(invitations_member_role_id: true)
-        end
+      it 'adds a user to members with custom role assigned' do
+        expect { execute_service }.to change { project.members.count }.by(2)
 
-        it 'adds a user to members with custom role assigned' do
-          expect { execute_service }.to change { project.members.count }.by(2)
+        member = Member.last
 
-          member = Member.last
-
-          expect(member.member_role).to eq(member_role)
-          expect(member.access_level).to eq(Member::GUEST)
-        end
-      end
-
-      context 'with invitations_member_role_id feature flag disabled' do
-        before do
-          stub_feature_flags(invitations_member_role_id: false)
-        end
-
-        it 'adds a user to members without custom role assigned' do
-          expect { execute_service }.to change { project.members.count }.by(2)
-
-          member = Member.last
-
-          expect(member.member_role).to be_nil
-          expect(member.access_level).to eq(Member::GUEST)
-        end
+        expect(member.member_role).to eq(member_role)
+        expect(member.access_level).to eq(Member::GUEST)
       end
     end
 
