@@ -1317,7 +1317,6 @@ Layout/ArgumentAlignment:
     - 'lib/gitlab/github_gists_import/importer/gist_importer.rb'
     - 'lib/gitlab/github_import/importer/issue_importer.rb'
     - 'lib/gitlab/github_import/importer/pull_request_importer.rb'
-    - 'lib/gitlab/github_import/parallel_scheduling.rb'
     - 'lib/gitlab/github_import/representation/issue.rb'
     - 'lib/gitlab/github_import/representation/issue_event.rb'
     - 'lib/gitlab/github_import/representation/note.rb'
