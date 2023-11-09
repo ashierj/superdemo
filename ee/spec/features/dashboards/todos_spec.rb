@@ -121,6 +121,8 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
       end
 
       it 'shows the todo with diff summary' do
+        stub_feature_flags(hide_diff_summary: false)
+
         visit page_path
 
         page.within('.js-todos-all .todo-llm-summary') do

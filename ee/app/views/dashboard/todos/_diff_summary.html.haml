@@ -1,5 +1,7 @@
 - todo = local_assigns.fetch(:todo)
 
+- return if Feature.enabled?(:hide_diff_summary, current_user)
+
 - if todo.review_requested?
   - merge_request = todo.target
   - diff_llm_summary = diff_llm_summary(merge_request)

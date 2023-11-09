@@ -57,6 +57,8 @@ module EE
     end
 
     def diff_summary_available?(merge_request, previous_reviewers, recipient)
+      return false if ::Feature.enabled?(:hide_diff_summary, recipient)
+
       new_reviewers = merge_request.reviewers - previous_reviewers
 
       new_reviewers.include?(recipient) &&
