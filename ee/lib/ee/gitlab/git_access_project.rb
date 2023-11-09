@@ -34,14 +34,22 @@ module EE
         # It may happen, when a user authenticates via SSH certificate and tries accessing to personal namespace
         return allowed_namespace_path.blank? unless namespace&.licensed_feature_available?(:ssh_certificates)
 
-        root_namespace = namespace.root_ancestor
-
-        # When allowed_namespace_path is not specified, it's checked whether SSH certificates are not enforced
-        return true if allowed_namespace_path.blank? && ::Feature.disabled?(:enforce_ssh_certificates, root_namespace)
-        return root_namespace.enabled_git_access_protocol != 'ssh_certificates' if allowed_namespace_path.blank?
+        # When allowed_namespace_path is not specified, it's checked whether SSH certificates are enforced
+        return !enforced_ssh_certificates? if allowed_namespace_path.blank?
 
         allowed_namespace = ::Namespace.find_by_full_path(allowed_namespace_path)
-        allowed_namespace.present? && root_namespace.id == allowed_namespace.id
+        allowed_namespace.present? && namespace.root_ancestor.id == allowed_namespace.id
+      end
+
+      # Verify that enabled_git_access_protocol is ssh_certificates and the
+      # actor is either User or Key
+      # Deploy Keys are allowed anyway
+      def enforced_ssh_certificates?
+        return false if ::Feature.disabled?(:enforce_ssh_certificates_via_settings, namespace.root_ancestor)
+        return false unless namespace.root_ancestor.enforce_ssh_certificates?
+        return false unless actor.is_a?(User) || actor.instance_of?(::Key)
+
+        user.human?
       end
     end
   end

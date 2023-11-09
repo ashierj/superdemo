@@ -114,6 +114,7 @@ module EE
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,
         to: :namespace_limit, allow_nil: true
+      delegate :enforce_ssh_certificates=, to: :namespace_settings
 
       # `eligible_additional_purchased_storage_size` uses a FF to start checking `additional_purchased_storage_ends_on`
       # if the FF is enabled before returning `additional_purchased_storage_size`
@@ -546,6 +547,14 @@ module EE
 
     def domain_verification_available?
       ::Gitlab.com? && root? && licensed_feature_available?(:domain_verification)
+    end
+
+    def enforce_ssh_certificates?
+      root? && namespace_settings.enforce_ssh_certificates?
+    end
+
+    def ssh_certificates_available?
+      root? && licensed_feature_available?(:ssh_certificates)
     end
 
     def custom_roles_enabled?

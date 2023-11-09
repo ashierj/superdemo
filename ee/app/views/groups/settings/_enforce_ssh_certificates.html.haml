@@ -1,0 +1,7 @@
+- if group.ssh_certificates_available?
+  %h5= s_('GroupSettings|Enforce SSH Certificates')
+
+  .form-group.gl-mb-3
+    = f.gitlab_ui_checkbox_component :enforce_ssh_certificates,
+        s_('GroupSettings|Enforce SSH Certificates'),
+        checkbox_options: { disabled: !can?(current_user, :admin_group, group), checked: group.enforce_ssh_certificates? }

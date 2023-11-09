@@ -525,20 +525,26 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
     end
 
     context 'when authenticated via an SSH certificate' do
-      let_it_be(:root_group) { create(:group) }
+      let_it_be_with_refind(:root_group) { create(:group) }
       let_it_be(:group) { create(:group, parent: root_group) }
       let_it_be(:project) { create(:project, :public, :repository, group: group) }
 
-      def check_allowed(namespace_path)
+      let(:namespace_path) { nil }
+
+      let(:params) do
+        {
+          action: "git-upload-pack",
+          user_id: user.id,
+          project: project.full_path,
+          protocol: 'ssh',
+          namespace_path: namespace_path
+        }
+      end
+
+      def check_allowed
         post(
           api("/internal/allowed"),
-          params: {
-            action: "git-upload-pack",
-            user_id: user.id,
-            project: project.full_path,
-            protocol: 'ssh_certificates',
-            namespace_path: namespace_path
-          },
+          params: params,
           headers: gitlab_shell_internal_api_request_header
         )
       end
@@ -548,32 +554,67 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
       end
 
       context 'when group is not specified' do
-        it 'is successful' do
-          check_allowed(nil)
+        it 'returns success response' do
+          check_allowed
 
           expect(response).to have_gitlab_http_status(:ok)
         end
 
         context 'when auth via SSH certificates is enforced' do
-          it 'is forbidden' do
-            root_group.namespace_settings.enabled_git_access_protocol = 'ssh_certificates'
+          before do
+            root_group.namespace_settings.enforce_ssh_certificates = true
             root_group.save!
+          end
 
-            check_allowed(nil)
+          it 'returns an unauthorized error response' do
+            check_allowed
 
             expect(response).to have_gitlab_http_status(:unauthorized)
             expect(json_response['status']).to eq(false)
             expect(json_response['message']).to eq('You are not allowed to access projects in this namespace.')
           end
 
-          context 'when enforce_ssh_certificates feature flag is disabled' do
-            it 'is successful' do
-              root_group.namespace_settings.enabled_git_access_protocol = 'ssh_certificates'
-              root_group.save!
+          context 'when enforce_ssh_certificates_via_settings feature flag is disabled' do
+            before do
+              stub_feature_flags(enforce_ssh_certificates_via_settings: false)
+            end
 
-              stub_feature_flags(enforce_ssh_certificates: false)
+            it 'returns success response' do
+              check_allowed
 
-              check_allowed(nil)
+              expect(response).to have_gitlab_http_status(:ok)
+            end
+          end
+
+          context 'when service account is used' do
+            let(:params) do
+              {
+                action: "git-upload-pack",
+                project: project.full_path,
+                namespace_path: namespace_path,
+                user_id: create(:user, :service_account).id
+              }
+            end
+
+            it 'returns success response' do
+              check_allowed
+
+              expect(response).to have_gitlab_http_status(:ok)
+            end
+          end
+
+          context 'when deploy key is used' do
+            let(:params) do
+              {
+                action: "git-upload-pack",
+                project: project.full_path,
+                namespace_path: namespace_path,
+                key_id: create(:deploy_key).id
+              }
+            end
+
+            it 'returns success response' do
+              check_allowed
 
               expect(response).to have_gitlab_http_status(:ok)
             end
@@ -582,8 +623,10 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
       end
 
       context 'when non-root group is specified' do
-        it 'is forbidden' do
-          check_allowed(group.full_path)
+        let(:namespace_path) { group.full_path }
+
+        it 'returns an unauthorized error response' do
+          check_allowed
 
           expect(response).to have_gitlab_http_status(:unauthorized)
           expect(json_response['status']).to eq(false)
@@ -592,17 +635,19 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
       end
 
       context 'when root group is specified' do
+        let(:namespace_path) { root_group.full_path }
+
         it 'is successful' do
-          check_allowed(root_group.full_path)
+          check_allowed
 
           expect(response).to have_gitlab_http_status(:ok)
         end
 
         context 'when ssh_certificates licensed feature is not available' do
-          it 'is forbidden' do
+          it 'returns an unauthorized error response' do
             stub_licensed_features(ssh_certificates: false)
 
-            check_allowed(root_group.full_path)
+            check_allowed
 
             expect(response).to have_gitlab_http_status(:unauthorized)
           end
@@ -611,8 +656,8 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         context 'when personal project is accessed' do
           let_it_be(:project) { create(:project, :public, :repository, namespace: user.namespace) }
 
-          it 'is forbidden' do
-            check_allowed(root_group.full_path)
+          it 'returns an unauthorized error response' do
+            check_allowed
 
             expect(response).to have_gitlab_http_status(:unauthorized)
           end
