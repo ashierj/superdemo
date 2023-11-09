@@ -10,8 +10,8 @@ RSpec.describe ComplianceManagement::PendingStatusCheckWorker, feature_category:
     let_it_be(:status_check) { create(:external_status_check, project: project) }
     let_it_be(:another_status_check) { create(:external_status_check, project: project) }
 
-    let(:target_branch_sha) { 'example-branch' }
-    let(:job_args) { [merge_request.id, project.id, target_branch_sha] }
+    let(:diff_head_sha) { 'example-branch' }
+    let(:job_args) { [merge_request.id, project.id, diff_head_sha] }
     let(:expected_result) do
       [
         [status_check.id, merge_request.id, 'pending'],

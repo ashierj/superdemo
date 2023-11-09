@@ -35,7 +35,7 @@ module MergeRequests
     def status(merge_request, sha)
       last_response = response_for(merge_request, sha)
 
-      return 'pending' if !last_response || !last_response.retried_at.nil?
+      return 'pending' unless last_response
 
       last_response.status
     end

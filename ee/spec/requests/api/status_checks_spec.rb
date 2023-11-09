@@ -399,7 +399,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
           it 'updates last status check response' do
             retry_failed_status_check
 
-            expect(merge_request.status_check_responses.last.status).to eq('failed')
+            expect(merge_request.status_check_responses.last.status).to eq('pending')
             expect(merge_request.status_check_responses.last.retried_at).not_to be_nil
           end
         end

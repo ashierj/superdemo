@@ -7,10 +7,10 @@ module MergeRequests
     include ShaAttribute
     include EachBatch
 
-    TIMEOUT_INTERVAL = 2.minutes.ago
+    TIMEOUT_INTERVAL = 2 # in minutes
 
-    scope :timeout_new, -> { where('retried_at IS NULL AND created_at < ?', TIMEOUT_INTERVAL) }
-    scope :timeout_retried, -> { where('retried_at < ?', TIMEOUT_INTERVAL) }
+    scope :timeout_new, -> { where('retried_at IS NULL AND created_at < ?', TIMEOUT_INTERVAL.minutes.ago) }
+    scope :timeout_retried, -> { where('retried_at < ?', TIMEOUT_INTERVAL.minutes.ago) }
 
     sha_attribute :sha
 

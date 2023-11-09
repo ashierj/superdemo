@@ -157,7 +157,7 @@ RSpec.describe MergeRequests::ExternalStatusCheck, type: :model do
     context 'when a rule has already been retried' do
       let_it_be(:status_check_response) { create(:status_check_response, merge_request: merge_request, external_status_check: rule, sha: merge_request.source_branch_sha, status: 'failed', retried_at: Time.current) }
 
-      it { is_expected.to eq('pending') }
+      it { is_expected.to eq('failed') }
     end
   end
 
