@@ -3,10 +3,18 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import getMRCodequalityAndSecurityReports from '~/diffs/components/graphql/get_mr_codequality_and_security_reports.query.graphql';
 import { TEST_HOST } from 'spec/test_constants';
-import App from '~/diffs/components/app.vue';
+import App, { FINDINGS_POLL_INTERVAL } from '~/diffs/components/app.vue';
 import store from '~/mr_notes/stores';
+
+import {
+  codeQualityNewErrorsHandler,
+  SASTParsedHandler,
+  SASTErrorAndParsedHandler,
+  codeQualityErrorAndParsed,
+} from './mocks/queries';
 
 const TEST_ENDPOINT = `${TEST_HOST}/diff/endpoint`;
 
@@ -15,12 +23,17 @@ Vue.use(VueApollo);
 Vue.config.ignoredElements = ['copy-code'];
 
 describe('diffs/components/app', () => {
+  let wrapper;
+  let stopPollingSpy;
   let mockDispatch;
   let fakeApollo;
 
-  const codeQualityAndSastQueryHandlerSuccess = jest.fn().mockResolvedValue({});
-
-  const createComponent = (props = {}, baseConfig = {}, flags = {}) => {
+  const createComponent = (
+    props = {},
+    baseConfig = {},
+    flags = {},
+    queryHandler = codeQualityNewErrorsHandler,
+  ) => {
     store.reset();
     store.getters.isNotesFetched = false;
     store.getters.getNoteableData = {
@@ -53,11 +66,9 @@ describe('diffs/components/app', () => {
 
     mockDispatch = jest.spyOn(store, 'dispatch');
 
-    fakeApollo = createMockApollo([
-      [getMRCodequalityAndSecurityReports, codeQualityAndSastQueryHandlerSuccess],
-    ]);
+    fakeApollo = createMockApollo([[getMRCodequalityAndSecurityReports, queryHandler]]);
 
-    return shallowMount(App, {
+    wrapper = shallowMount(App, {
       apolloProvider: fakeApollo,
       provide: {
         glFeatures: {
@@ -85,7 +96,7 @@ describe('diffs/components/app', () => {
           shouldShow: true,
           endpointCodequality: `${TEST_HOST}/diff/endpointCodequality`,
         });
-        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
         expect(mockDispatch).toHaveBeenCalledWith('diffs/fetchCodequality');
       });
 
@@ -93,20 +104,45 @@ describe('diffs/components/app', () => {
         createComponent({ shouldShow: true, endpointCodequality: '' });
 
         expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
-        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
       });
     });
 
     describe('sastReportsInInlineDiff flag on', () => {
-      it('fetches Code Quality data via GraphQL and not rest when endpoint is provided', () => {
+      it('polls Code Quality data via GraphQL and not via REST when endpoint is provided', async () => {
         createComponent(
           { shouldShow: true, endpointCodequality: `${TEST_HOST}/diff/endpointCodequality` },
           {},
           { sastReportsInInlineDiff: true },
+          codeQualityErrorAndParsed,
+        );
+        await waitForPromises();
+        expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(1);
+        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
+        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+
+        expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(2);
+      });
+
+      it('stops polling when newErrors in response are defined', async () => {
+        stopPollingSpy = jest.spyOn(App.methods, 'getMRCodequalityAndSecurityReportStopPolling');
+
+        createComponent(
+          {
+            shouldShow: true,
+            endpointCodequality: `${TEST_HOST}/diff/endpointCodequality`,
+          },
+          {},
+          { sastReportsInInlineDiff: true },
         );
 
-        expect(codeQualityAndSastQueryHandlerSuccess).toHaveBeenCalledTimes(1);
-        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
+        const getMRCodequalityAndSecurityReportsQuery =
+          wrapper.vm.$apollo.queries.getMRCodequalityAndSecurityReports;
+        jest.spyOn(getMRCodequalityAndSecurityReportsQuery, 'stopPolling');
+
+        await waitForPromises();
+
+        expect(stopPollingSpy).toHaveBeenCalled();
       });
 
       it('does not fetch code quality data when endpoint is blank', () => {
@@ -115,7 +151,7 @@ describe('diffs/components/app', () => {
           {},
           { sastReportsInInlineDiff: true },
         );
-        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
         expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
       });
     });
@@ -125,30 +161,57 @@ describe('diffs/components/app', () => {
     describe('sastReportsInInlineDiff flag off', () => {
       it('does not fetch SAST data when sastReportAvailable is true', () => {
         createComponent({ shouldShow: true, sastReportAvailable: true });
-        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
       });
 
       it('does not fetch SAST data when sastReportAvailable is false', () => {
         createComponent({ shouldShow: false, sastReportAvailable: false });
 
-        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
       });
     });
 
     describe('sastReportsInInlineDiff flag on', () => {
-      it('fetches SAST data when sastReportAvailable is true', () => {
+      it('polls SAST data when sastReportAvailable is true', async () => {
         createComponent(
           { shouldShow: true, sastReportAvailable: true },
           {},
           { sastReportsInInlineDiff: true },
+          SASTErrorAndParsedHandler,
+        );
+        await waitForPromises();
+
+        expect(SASTErrorAndParsedHandler).toHaveBeenCalledTimes(1);
+        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+
+        expect(SASTErrorAndParsedHandler).toHaveBeenCalledTimes(2);
+      });
+
+      it('stops polling when sastReport status is PARSED', async () => {
+        stopPollingSpy = jest.spyOn(App.methods, 'getMRCodequalityAndSecurityReportStopPolling');
+
+        createComponent(
+          {
+            shouldShow: true,
+            sastReportAvailable: true,
+          },
+          {},
+          { sastReportsInInlineDiff: true },
+          SASTParsedHandler,
         );
 
-        expect(codeQualityAndSastQueryHandlerSuccess).toHaveBeenCalledTimes(1);
+        const getMRCodequalityAndSecurityReportsQuery =
+          wrapper.vm.$apollo.queries.getMRCodequalityAndSecurityReports;
+        jest.spyOn(getMRCodequalityAndSecurityReportsQuery, 'stopPolling');
+
+        await waitForPromises();
+
+        expect(stopPollingSpy).toHaveBeenCalled();
       });
 
       it('does not fetch SAST data when sastReportAvailable is false', () => {
         createComponent({ shouldShow: false }, {}, { sastReportsInInlineDiff: true });
-        expect(codeQualityAndSastQueryHandlerSuccess).not.toHaveBeenCalled();
+        expect(codeQualityNewErrorsHandler).not.toHaveBeenCalled();
       });
     });
   });
