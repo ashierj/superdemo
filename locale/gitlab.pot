@@ -9802,6 +9802,9 @@ msgstr ""
 msgid "Changes"
 msgstr ""
 
+msgid "Changes requested to the current merge request."
+msgstr ""
+
 msgid "Changes saved."
 msgstr ""
 
@@ -40403,6 +40406,9 @@ msgid "Request a new one"
 msgstr ""
 
 msgid "Request changes"
+msgstr ""
+
+msgid "Request changes to the current merge request."
 msgstr ""
 
 msgid "Request data is too large"
