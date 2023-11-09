@@ -1620,6 +1620,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
   describe '#delete_policy_violations' do
     let_it_be(:configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:inherited_configuration) { create(:security_orchestration_policy_configuration, namespace: configuration.project.group) }
     let_it_be(:other_configuration) { create(:security_orchestration_policy_configuration) }
 
     let_it_be(:project) { configuration.project }
@@ -1632,6 +1633,13 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       create(
         :scan_result_policy_read,
         security_orchestration_policy_configuration: configuration,
+        project: project)
+    end
+
+    let_it_be(:inherited_scan_result_policy_read) do
+      create(
+        :scan_result_policy_read,
+        security_orchestration_policy_configuration: inherited_configuration,
         project: project)
     end
 
@@ -1650,6 +1658,14 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         scan_result_policy_read: scan_result_policy_read)
     end
 
+    let_it_be(:inherited_violation) do
+      create(
+        :scan_result_policy_violation,
+        project: project,
+        merge_request: merge_request,
+        scan_result_policy_read: inherited_scan_result_policy_read)
+    end
+
     let_it_be(:other_violation) do
       create(
         :scan_result_policy_violation,
@@ -1658,11 +1674,19 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         scan_result_policy_read: other_scan_result_policy_read)
     end
 
-    it 'deletes project scan_result_policy_reads' do
+    it 'deletes scan_result_policy_violations related to the project and configuration' do
       configuration.delete_policy_violations(project)
 
-      expect(project.scan_result_policy_violations.count).to be(0)
+      project_violations = project.scan_result_policy_violations.where(scan_result_policy_id: scan_result_policy_read.id)
+      inherited_violations = project.scan_result_policy_violations.where(scan_result_policy_id: inherited_scan_result_policy_read.id)
+
+      expect(project_violations.count).to be(0)
+      expect(inherited_violations.count).to be(1)
       expect(other_project.scan_result_policy_violations.count).to be(1)
+    end
+
+    it 'changes policy violation count only for the configuration' do
+      expect { configuration.delete_policy_violations(project) }.to change { project.scan_result_policy_violations.count }.by(-1)
     end
   end
 

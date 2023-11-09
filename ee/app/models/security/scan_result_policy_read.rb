@@ -28,6 +28,7 @@ module Security
     validates :project_approval_settings, json_schema: { filename: 'scan_result_policy_project_approval_settings' },
       allow_blank: true
 
+    scope :for_project, ->(project) { where(project: project) }
     scope :targeting_commits, -> { where.not(commits: nil) }
     scope :including_approval_merge_request_rules, -> { includes(:approval_merge_request_rules) }
 

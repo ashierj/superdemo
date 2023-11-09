@@ -72,6 +72,19 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
     end
   end
 
+  describe '.for_project' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:scan_result_policy_read_1) { create(:scan_result_policy_read, project: project) }
+    let_it_be(:scan_result_policy_read_2) { create(:scan_result_policy_read, project: project) }
+    let_it_be(:scan_result_policy_read_3) { create(:scan_result_policy_read) }
+
+    subject { described_class.for_project(project) }
+
+    it 'returns records for given projects' do
+      is_expected.to contain_exactly(scan_result_policy_read_1, scan_result_policy_read_2)
+    end
+  end
+
   describe '#vulnerability_age' do
     let_it_be(:scan_result_policy_read) do
       create(:scan_result_policy_read, age_operator: 'less_than', age_interval: 'day', age_value: 1)

@@ -57,7 +57,12 @@ module Security
       end
 
       def delete_policy_violations(project)
-        delete_in_batches(project.scan_result_policy_violations)
+        # scan_result_policy_violations does not store security_orchestration_policy_configuration_id
+        # so we need to scope them through scan_resul_policy_reads in order to delete through policy_configuration
+        delete_in_batches(
+          Security::ScanResultPolicyViolation
+            .where(scan_result_policy_read: scan_result_policy_reads.for_project(project))
+        )
       end
 
       def active_scan_result_policies
