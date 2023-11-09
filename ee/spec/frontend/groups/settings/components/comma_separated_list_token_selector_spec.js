@@ -25,7 +25,7 @@ describe('CommaSeparatedListTokenSelector', () => {
       ...options,
       propsData: {
         ...defaultProps,
-        ...(options?.propsData || {}),
+        ...options?.propsData,
       },
     });
   };
