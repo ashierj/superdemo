@@ -103,18 +103,18 @@ describe('Security Dashboard component', () => {
     describe('finding modal', () => {
       const findingUuid = '1';
 
-      const openFindingModal = async () => {
+      const openFindingModal = async (vulnerability = {}) => {
         Object.assign(store.state.vulnerabilities, {
-          modal: { vulnerability: { uuid: findingUuid } },
+          modal: { vulnerability: { uuid: findingUuid, ...vulnerability } },
         });
         const rootWrapper = createWrapper(wrapper.vm.$root);
         rootWrapper.vm.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
         await nextTick();
       };
 
-      beforeEach(openFindingModal);
+      it('passes the correct props to the finding modal', async () => {
+        await openFindingModal();
 
-      it('passes the correct props to the finding modal', () => {
         expect(wrapper.findComponent(VulnerabilityFindingModal).props()).toMatchObject({
           findingUuid,
           pipelineIid,
@@ -122,7 +122,43 @@ describe('Security Dashboard component', () => {
         });
       });
 
+      it.each([
+        {
+          createVulnerabilityFeedbackIssuePath: 'my-feedback-path',
+          createJiraIssueUrl: null,
+          expectedHasCreateIssuePath: true,
+        },
+        {
+          createVulnerabilityFeedbackIssuePath: null,
+          createJiraIssueUrl: 'my-jira-feedback-path',
+          expectedHasCreateIssuePath: true,
+        },
+        {
+          createVulnerabilityFeedbackIssuePath: null,
+          createJiraIssueUrl: null,
+          expectedHasCreateIssuePath: false,
+        },
+      ])(
+        'passes the `hasCreateIssuePath` prop as "$expectedHasCreateIssuePath" to the modal when the feedback path is "$createVulnerabilityFeedbackIssuePath" and the Jira issue URL is "$createJiraIssueUrl"',
+        async ({
+          createVulnerabilityFeedbackIssuePath,
+          createJiraIssueUrl,
+          expectedHasCreateIssuePath,
+        }) => {
+          await openFindingModal({
+            create_vulnerability_feedback_issue_path: createVulnerabilityFeedbackIssuePath,
+            create_jira_issue_url: createJiraIssueUrl,
+          });
+
+          expect(wrapper.findComponent(VulnerabilityFindingModal).props('hasCreateIssuePath')).toBe(
+            expectedHasCreateIssuePath,
+          );
+        },
+      );
+
       it('gets closed when "hidden" is emitted', async () => {
+        await openFindingModal();
+
         expect(wrapper.findComponent(VulnerabilityFindingModal).exists()).toBe(true);
 
         wrapper.findComponent(VulnerabilityFindingModal).vm.$emit('hidden');
@@ -135,7 +171,9 @@ describe('Security Dashboard component', () => {
         description                                                         | eventName      | expectedPayload
         ${'re-fetches the vulnerability list'}                              | ${'dismissed'} | ${{ vulnerability: { uuid: findingUuid } }}
         ${'re-fetches the vulnerability list without show a toast message'} | ${'detected'}  | ${{ vulnerability: { uuid: findingUuid }, showToast: false }}
-      `('$description when "$eventName" is emitted', ({ eventName, expectedPayload }) => {
+      `('$description when "$eventName" is emitted', async ({ eventName, expectedPayload }) => {
+        await openFindingModal();
+
         jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
 
         wrapper.findComponent(VulnerabilityFindingModal).vm.$emit(eventName);

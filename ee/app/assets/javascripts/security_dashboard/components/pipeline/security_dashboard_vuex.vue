@@ -60,15 +60,11 @@ export default {
     ...mapState('pipelineJobs', { projectUniqueId: 'projectId' }),
     ...mapState('filters', ['filters']),
     ...mapGetters('vulnerabilities', ['loadingVulnerabilitiesFailedWithRecognizedErrorCode']),
-    canCreateIssue() {
+    hasCreateIssuePath() {
       const gitLabIssuePath = this.vulnerability.create_vulnerability_feedback_issue_path;
       const jiraIssueUrl = this.vulnerability.create_jira_issue_url;
 
       return Boolean(gitLabIssuePath || jiraIssueUrl);
-    },
-    canDismissVulnerability() {
-      const path = this.vulnerability.create_vulnerability_feedback_dismissal_path;
-      return Boolean(path);
     },
     vulnerability() {
       return this.modal.vulnerability;
@@ -139,6 +135,7 @@ export default {
         :finding-uuid="vulnerability.uuid"
         :pipeline-iid="pipeline.iid"
         :project-full-path="projectFullPath"
+        :has-create-issue-path="hasCreateIssuePath"
         @dismissed="reFetchVulnerabilitiesAfterDismissal({ vulnerability })"
         @detected="reFetchVulnerabilitiesAfterDismissal({ vulnerability, showToast: false })"
         @hidden="shouldShowModal = false"
