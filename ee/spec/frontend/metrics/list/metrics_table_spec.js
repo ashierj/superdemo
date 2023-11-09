@@ -51,13 +51,6 @@ describe('MetricsTable', () => {
 
     expect(getRows().length).toBe(1);
 
-    const row = getRows().at(0);
-    expect(row.text()).toContain('No metrics to display');
-
-    const link = row.findComponent({ name: 'GlLink' });
-    expect(link.text()).toBe('Check again');
-
-    link.trigger('click');
-    expect(wrapper.emitted('reload')).toHaveLength(1);
+    expect(getRows().at(0).text()).toContain('No results found');
   });
 });

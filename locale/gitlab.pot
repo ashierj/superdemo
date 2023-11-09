@@ -30160,9 +30160,6 @@ msgstr ""
 msgid "Metrics:"
 msgstr ""
 
-msgid "Metrics|Check again"
-msgstr ""
-
 msgid "Metrics|Create metric"
 msgstr ""
 
@@ -30200,9 +30197,6 @@ msgid "Metrics|Name"
 msgstr ""
 
 msgid "Metrics|New metric"
-msgstr ""
-
-msgid "Metrics|No metrics to display."
 msgstr ""
 
 msgid "Metrics|PromQL query is valid"
