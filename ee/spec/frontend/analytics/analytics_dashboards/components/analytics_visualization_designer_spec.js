@@ -4,6 +4,7 @@ import { __setMockMetadata } from '@cubejs-client/core';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
+import { mockTracking } from 'helpers/tracking_helper';
 
 import { HTTP_STATUS_CREATED, HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { createAlert } from '~/alert';
@@ -13,6 +14,10 @@ import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashbo
 
 import AnalyticsVisualizationDesigner from 'ee/analytics/analytics_dashboards/components/analytics_visualization_designer.vue';
 import VisualizationTypeSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_type_selector.vue';
+import {
+  EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
+  EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION,
+} from 'ee/analytics/analytics_dashboards/constants';
 
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
 
@@ -33,6 +38,7 @@ const routerPush = jest.fn();
 describe('AnalyticsVisualizationDesigner', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
+  let trackingSpy;
 
   const findTitleFormGroup = () => wrapper.findByTestId('visualization-title-form-group');
   const findTitleInput = () => wrapper.findByTestId('visualization-title-input');
@@ -102,6 +108,10 @@ describe('AnalyticsVisualizationDesigner', () => {
     });
   };
 
+  beforeEach(() => {
+    trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
+  });
+
   describe('when mounted', () => {
     beforeEach(() => {
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
@@ -141,6 +151,14 @@ describe('AnalyticsVisualizationDesigner', () => {
       await button.vm.$emit('click');
 
       expect(routerPush).toHaveBeenCalledWith('/');
+    });
+
+    it(`tracks the "${EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER}" event`, () => {
+      expect(trackingSpy).toHaveBeenCalledWith(
+        expect.any(String),
+        EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
+        expect.any(Object),
+      );
     });
   });
 
@@ -244,29 +262,41 @@ describe('AnalyticsVisualizationDesigner', () => {
     });
 
     describe('when the visualization is valid', () => {
-      it('successfully saves', async () => {
-        await setAllRequiredFields();
-        await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+      describe('and it saved successfully', () => {
+        beforeEach(async () => {
+          await setAllRequiredFields();
+          await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
 
-        await findSaveButton().vm.$emit('click');
+          await findSaveButton().vm.$emit('click');
 
-        expect(saveProductAnalyticsVisualization).toHaveBeenCalledWith(
-          'new_title',
-          {
-            data: {
-              query: { foo: 'bar' },
-              type: 'cube_analytics',
+          return waitForPromises();
+        });
+
+        it('creates the visualization file and shows a success toast', () => {
+          expect(saveProductAnalyticsVisualization).toHaveBeenCalledWith(
+            'new_title',
+            {
+              data: {
+                query: { foo: 'bar' },
+                type: 'cube_analytics',
+              },
+              options: {},
+              type: 'SingleStat',
+              version: 1,
             },
-            options: {},
-            type: 'SingleStat',
-            version: 1,
-          },
-          TEST_CUSTOM_DASHBOARDS_PROJECT,
-        );
+            TEST_CUSTOM_DASHBOARDS_PROJECT,
+          );
 
-        await waitForPromises();
+          expect(showToast).toHaveBeenCalledWith('Visualization was saved successfully');
+        });
 
-        expect(showToast).toHaveBeenCalledWith('Visualization was saved successfully');
+        it(`tracks the "${EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION}" event`, () => {
+          expect(trackingSpy).toHaveBeenCalledWith(
+            expect.any(String),
+            EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION,
+            expect.any(Object),
+          );
+        });
       });
 
       it('dismisses the existing alert after successfully saving', async () => {

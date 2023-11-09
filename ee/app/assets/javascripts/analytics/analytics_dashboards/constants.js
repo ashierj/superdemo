@@ -186,3 +186,6 @@ export const EVENT_LABEL_CREATED_DASHBOARD = 'user_created_custom_dashboard';
 export const EVENT_LABEL_EDITED_DASHBOARD = 'user_edited_custom_dashboard';
 export const EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER = 'user_viewed_dashboard_designer';
 export const EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD = 'user_viewed_custom_dashboard';
+
+export const EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER = 'user_viewed_visualization_designer';
+export const EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION = 'user_created_custom_visualization';
