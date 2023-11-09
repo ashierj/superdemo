@@ -12,12 +12,24 @@ describe('Secrets router', () => {
     path               | componentNames                     | components
     ${'/'}             | ${'SecretsTable'}                  | ${[SecretsTable]}
     ${'/new'}          | ${'SecretFormWrapper'}             | ${[SecretFormWrapper]}
-    ${'/123/edit'}     | ${'SecretFormWrapper'}             | ${[SecretFormWrapper]}
-    ${'/123/details'}  | ${'SecretTabs and SecretDetails'}  | ${[SecretTabs, SecretDetails]}
-    ${'/123/auditlog'} | ${'SecretTabs and SecretAuditLog'} | ${[SecretTabs, SecretAuditLog]}
+    ${'/key/details'}  | ${'SecretTabs and SecretDetails'}  | ${[SecretTabs, SecretDetails]}
+    ${'/key/auditlog'} | ${'SecretTabs and SecretAuditLog'} | ${[SecretTabs, SecretAuditLog]}
+    ${'/key/edit'}     | ${'SecretFormWrapper'}             | ${[SecretFormWrapper]}
   `('uses $componentNames for path "$path"', ({ path, components }) => {
     const router = createRouter(base);
 
     expect(router.getMatchedComponents(path)).toStrictEqual(components);
+  });
+
+  it.each`
+    path                   | redirect
+    ${'/key'}              | ${'/key/details'}
+    ${'/key/unknownroute'} | ${'/'}
+  `('redirects from $path to $redirect', async ({ path, redirect }) => {
+    const router = createRouter(base);
+
+    await router.push(path);
+
+    expect(router.currentRoute.path).toBe(redirect);
   });
 });

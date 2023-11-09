@@ -59,6 +59,10 @@ export default (base) => {
               getName: () => s__('Secrets|Audit log'),
             },
           },
+          {
+            path: '',
+            redirect: 'details',
+          },
         ],
       },
       {
