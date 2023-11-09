@@ -29416,36 +29416,6 @@ msgstr ""
 msgid "MemberRoles|Add new role"
 msgstr ""
 
-msgid "MemberRoles|Admin group member"
-msgstr ""
-
-msgid "MemberRoles|Admin merge requests"
-msgstr ""
-
-msgid "MemberRoles|Admin vulnerability"
-msgstr ""
-
-msgid "MemberRoles|Allows admin access to group members."
-msgstr ""
-
-msgid "MemberRoles|Allows admin access to the merge requests."
-msgstr ""
-
-msgid "MemberRoles|Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect."
-msgstr ""
-
-msgid "MemberRoles|Allows manage access to the project access tokens. Select 'Manage Project Access Tokens' for this to take effect."
-msgstr ""
-
-msgid "MemberRoles|Allows read-only access to the dependencies."
-msgstr ""
-
-msgid "MemberRoles|Allows read-only access to the source code."
-msgstr ""
-
-msgid "MemberRoles|Allows read-only access to the vulnerability reports."
-msgstr ""
-
 msgid "MemberRoles|Are you sure you want to delete this role?"
 msgstr ""
 
@@ -29453,6 +29423,9 @@ msgid "MemberRoles|Base role"
 msgstr ""
 
 msgid "MemberRoles|Base role to use as template"
+msgstr ""
+
+msgid "MemberRoles|Could not fetch available permissions: %{message}"
 msgstr ""
 
 msgid "MemberRoles|Create new role"
@@ -29491,9 +29464,6 @@ msgstr ""
 msgid "MemberRoles|Make sure the group is in the Ultimate tier."
 msgstr ""
 
-msgid "MemberRoles|Manage Project Access Tokens"
-msgstr ""
-
 msgid "MemberRoles|Name"
 msgstr ""
 
@@ -29501,15 +29471,6 @@ msgid "MemberRoles|No custom roles for this group"
 msgstr ""
 
 msgid "MemberRoles|Permissions"
-msgstr ""
-
-msgid "MemberRoles|Read code"
-msgstr ""
-
-msgid "MemberRoles|Read dependency"
-msgstr ""
-
-msgid "MemberRoles|Read vulnerability"
 msgstr ""
 
 msgid "MemberRoles|Role name"

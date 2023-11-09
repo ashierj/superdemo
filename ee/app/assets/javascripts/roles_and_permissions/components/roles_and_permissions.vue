@@ -1,37 +1,48 @@
 <script>
 import GroupSelect from '~/vue_shared/components/entity_select/group_select.vue';
-import { I18N_EMPTY_TEXT_SELF_MANAGED } from '../constants';
 import ListMemberRoles from './list_member_roles.vue';
 
 export default {
-  name: 'RolesAndPermissionsSelfManaged',
   components: {
     GroupSelect,
     ListMemberRoles,
   },
+  props: {
+    showGroupSelector: {
+      type: Boolean,
+      required: true,
+    },
+    groupId: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    emptyText: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
-    return { groupId: null };
+    return { selectedGroupId: this.groupId };
   },
   methods: {
     updateGroup({ value }) {
-      this.groupId = value;
+      this.selectedGroupId = value;
     },
   },
   apiParams: { top_level_only: '1' },
-  i18n: {
-    emptyText: I18N_EMPTY_TEXT_SELF_MANAGED,
-  },
 };
 </script>
 
 <template>
   <div class="col">
     <group-select
+      v-if="showGroupSelector"
       input-id="group-selector"
       input-name="group-selector"
       :api-params="$options.apiParams"
       @input="updateGroup"
     />
-    <list-member-roles :group-id="groupId" :empty-text="$options.i18n.emptyText" />
+    <list-member-roles class="gl-mt-5" :group-id="selectedGroupId" :empty-text="emptyText" />
   </div>
 </template>

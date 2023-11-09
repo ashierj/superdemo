@@ -18,56 +18,6 @@ export const BASE_ROLES = Object.freeze(
   ].map((accessLevel) => ({ text: ACCESS_LEVEL_LABELS[accessLevel], value: accessLevel })),
 );
 
-export const READ_CODE = 'read_code';
-export const READ_VULNERABILITY = 'read_vulnerability';
-export const READ_DEPENDENCY = 'read_dependency';
-export const ADMIN_VULNERABILITY = 'admin_vulnerability';
-export const MANAGE_PROJECT_ACCESS_TOKENS = 'manage_project_access_tokens';
-export const ADMIN_GROUP_MEMBER = 'admin_group_member';
-export const ADMIN_MERGE_REQUEST = 'admin_merge_request';
-
-export const PERMISSIONS = Object.freeze({
-  [READ_CODE]: {
-    help: s__('MemberRoles|Allows read-only access to the source code.'),
-    text: s__('MemberRoles|Read code'),
-    value: READ_CODE,
-  },
-  [READ_VULNERABILITY]: {
-    help: s__('MemberRoles|Allows read-only access to the vulnerability reports.'),
-    text: s__('MemberRoles|Read vulnerability'),
-    value: READ_VULNERABILITY,
-  },
-  [ADMIN_VULNERABILITY]: {
-    help: s__(
-      "MemberRoles|Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect.",
-    ),
-    text: s__('MemberRoles|Admin vulnerability'),
-    value: ADMIN_VULNERABILITY,
-  },
-  [MANAGE_PROJECT_ACCESS_TOKENS]: {
-    help: s__(
-      "MemberRoles|Allows manage access to the project access tokens. Select 'Manage Project Access Tokens' for this to take effect.",
-    ),
-    text: s__('MemberRoles|Manage Project Access Tokens'),
-    value: MANAGE_PROJECT_ACCESS_TOKENS,
-  },
-  [READ_DEPENDENCY]: {
-    help: s__('MemberRoles|Allows read-only access to the dependencies.'),
-    text: s__('MemberRoles|Read dependency'),
-    value: READ_DEPENDENCY,
-  },
-  [ADMIN_GROUP_MEMBER]: {
-    help: s__('MemberRoles|Allows admin access to group members.'),
-    text: s__('MemberRoles|Admin group member'),
-    value: ADMIN_GROUP_MEMBER,
-  },
-  [ADMIN_MERGE_REQUEST]: {
-    help: s__('MemberRoles|Allows admin access to the merge requests.'),
-    text: s__('MemberRoles|Admin merge requests'),
-    value: ADMIN_MERGE_REQUEST,
-  },
-});
-
 export const FIELDS = [
   {
     key: 'name',
@@ -105,11 +55,14 @@ export const I18N_DELETE_ROLE = s__('MemberRoles|Delete role');
 export const I18N_DELETION_ERROR = s__('MemberRoles|Failed to delete the role.');
 export const I18N_DELETION_SUCCESS = s__('MemberRoles|Role successfully deleted.');
 export const I18N_EMPTY_TITLE = s__('MemberRoles|No custom roles for this group');
-export const I18N_EMPTY_TEXT_SAAS = s__("MemberRoles|To add a new role select 'Add new role'.");
-export const I18N_EMPTY_TEXT_SELF_MANAGED = s__(
+export const I18N_EMPTY_TEXT_GROUP = s__("MemberRoles|To add a new role select 'Add new role'.");
+export const I18N_EMPTY_TEXT_ADMIN = s__(
   "MemberRoles|To add a new role select a group and then 'Add new role'.",
 );
 export const I18N_FETCH_ERROR = s__('MemberRoles|Failed to fetch roles.');
+export const I18N_MEMBER_ROLE_PERMISSIONS_QUERY_ERROR = s__(
+  'MemberRoles|Could not fetch available permissions: %{message}',
+);
 export const I18N_FIELD_FORM_ERROR = __('This field is required.');
 export const I18N_LICENSE_ERROR = s__('MemberRoles|Make sure the group is in the Ultimate tier.');
 export const I18N_MODAL_TITLE = s__('MemberRoles|Are you sure you want to delete this role?');

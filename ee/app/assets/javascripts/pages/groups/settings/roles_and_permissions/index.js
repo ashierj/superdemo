@@ -1,3 +1,4 @@
-import { initRolesAndPermissionsSaasApp } from 'ee/roles_and_permissions';
+import { initRolesAndPermissions } from 'ee/roles_and_permissions';
+import { I18N_EMPTY_TEXT_GROUP } from 'ee/roles_and_permissions/constants';
 
-initRolesAndPermissionsSaasApp();
+initRolesAndPermissions({ emptyText: I18N_EMPTY_TEXT_GROUP, showGroupSelector: false });

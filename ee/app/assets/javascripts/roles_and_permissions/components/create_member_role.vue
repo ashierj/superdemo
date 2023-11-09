@@ -24,7 +24,6 @@ import {
   I18N_NEW_ROLE_NAME_LABEL,
   I18N_NEW_ROLE_NAME_PLACEHOLDER,
   I18N_NEW_ROLE_PERMISSIONS_LABEL,
-  PERMISSIONS,
 } from '../constants';
 
 export default {
@@ -44,6 +43,10 @@ export default {
       type: String,
       required: true,
     },
+    availablePermissions: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -54,18 +57,15 @@ export default {
       name: '',
       nameValid: true,
       permissions: [],
-      availablePermissions: [],
       permissionsValid: null,
     };
   },
-  mounted() {
-    if (!gon.features.manageProjectAccessTokens) {
-      this.availablePermissions = Object.values(PERMISSIONS).filter(
-        (permission) => permission.value !== 'manage_project_access_tokens',
-      );
-    } else {
-      this.availablePermissions = Object.values(PERMISSIONS);
-    }
+  computed: {
+    selectablePermissions() {
+      return gon.features.manageProjectAccessTokens
+        ? this.availablePermissions
+        : this.availablePermissions.filter(({ value }) => value !== 'manage_project_access_tokens');
+    },
   },
   methods: {
     areFieldsValid() {
@@ -194,13 +194,13 @@ export default {
     <gl-form-group :label="$options.i18n.permissions.label">
       <gl-form-checkbox-group v-model="permissions" :state="permissionsValid">
         <gl-form-checkbox
-          v-for="permission in availablePermissions"
+          v-for="permission in selectablePermissions"
           :key="permission.value"
           :value="permission.value"
         >
-          {{ permission.text }}
-          <template v-if="permission.help" #help>
-            {{ permission.help }}
+          {{ permission.name }}
+          <template v-if="permission.description" #help>
+            {{ permission.description }}
           </template>
         </gl-form-checkbox>
       </gl-form-checkbox-group>
