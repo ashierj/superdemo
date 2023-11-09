@@ -26948,7 +26948,7 @@ msgstr ""
 msgid "JiraConnect|Tell us what you think!"
 msgstr ""
 
-msgid "JiraConnect|The Jira user is not a site administrator. Check the permissions in Jira and try again."
+msgid "JiraConnect|The Jira user is not a site or organization administrator. Check the permissions in Jira and try again."
 msgstr ""
 
 msgid "JiraConnect|We would love to learn more about your experience with the GitLab for Jira Cloud App."
