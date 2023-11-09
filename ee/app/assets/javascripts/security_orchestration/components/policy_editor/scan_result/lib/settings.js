@@ -45,8 +45,23 @@ export const SETTINGS_HUMANIZED_STRINGS = {
 };
 
 export const SETTINGS_TOOLTIP = {
+  [BLOCK_UNPROTECTING_BRANCHES]: s__(
+    'ScanResultPolicy|Prevent a user from removing a branch from the protected branches list or from deleting a protected branch.',
+  ),
+  [PREVENT_PUSHING_AND_FORCE_PUSHING]: s__(
+    'ScanResultPolicy|Prevent pushing and force pushing to a protected branch.',
+  ),
   [PREVENT_APPROVAL_BY_AUTHOR]: s__(
-    'ScanResultPolicy|When enabled, two person approval will be required on all MRs as merge request authors cannot approve their own MRs and merge them unilaterally',
+    'ScanResultPolicy|The merge request author cannot approve their own merge request.',
+  ),
+  [PREVENT_APPROVAL_BY_COMMIT_AUTHOR]: s__(
+    'ScanResultPolicy|Users who have contributed code to the MR are ineligible for approval, ensuring code committers cannot introduce vulnerabilities and approve code to merge.',
+  ),
+  [REMOVE_APPROVALS_WITH_NEW_COMMIT]: s__(
+    'ScanResultPolicy|If an MR receives all necessary approvals to merge, but then a new commit is added, new approvals are required. This ensures new commits that may include vulnerabilities cannot be introduced.',
+  ),
+  [REQUIRE_PASSWORD_TO_APPROVE]: s__(
+    'ScanResultPolicy|Password confirmation on approvals provides an additional level of security. Enabling this enforces the setting on all projects targeted by this policy.',
   ),
 };
 

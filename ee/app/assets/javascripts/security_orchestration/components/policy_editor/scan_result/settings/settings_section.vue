@@ -1,5 +1,5 @@
 <script>
-import { GlAccordion, GlTooltipDirective } from '@gitlab/ui';
+import { GlAccordion } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
@@ -26,9 +26,6 @@ export default {
   components: {
     GlAccordion,
     SettingsItem,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['namespacePath'],
