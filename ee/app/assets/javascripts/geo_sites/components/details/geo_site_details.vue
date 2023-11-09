@@ -30,7 +30,7 @@ export default {
     <geo-site-core-details :site="site" />
     <div
       v-if="site.primary"
-      class="gl-display-flex gl-sm-flex-direction-column gl-align-items-flex-start gl-h-full gl-w-full"
+      class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-align-items-flex-start gl-h-full gl-w-full"
     >
       <geo-site-verification-info
         class="gl-flex-grow-1 gl-mb-5 gl-md-mb-0 gl-md-mr-5 gl-h-full gl-w-full"
@@ -40,7 +40,7 @@ export default {
     </div>
     <div v-else class="gl-display-flex gl-flex-direction-column gl-h-full gl-w-full">
       <div
-        class="gl-display-flex gl-sm-flex-direction-column gl-align-items-flex-start gl-h-full gl-w-full gl-mb-5"
+        class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-align-items-flex-start gl-h-full gl-w-full gl-mb-5"
       >
         <geo-site-replication-summary
           class="gl-flex-grow-1 gl-mb-5 gl-md-mb-0 gl-md-mr-5 gl-h-full gl-w-full"

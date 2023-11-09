@@ -194,7 +194,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-display-flex gl-sm-flex-direction-column">
+  <div class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row">
     <div class="gl-flex-basis-third gl-mr-5">
       <div class="gl-display-flex gl-align-items-center">
         <h2 ref="pageTitle" class="page-title gl-font-size-h-display">
