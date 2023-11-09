@@ -11,18 +11,6 @@ RSpec.describe Projects::TargetBranchRulesController, feature_category: :code_re
   end
 
   describe 'GET #index' do
-    describe 'when the target_branch_rules_flag flag is disabled' do
-      before do
-        stub_feature_flags(target_branch_rules_flag: false)
-      end
-
-      it 'returns 404' do
-        get project_target_branch_rules_path(project)
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
     describe 'when the project does not have the correct license' do
       before do
         stub_licensed_features(target_branch_rules: false)
@@ -35,10 +23,10 @@ RSpec.describe Projects::TargetBranchRulesController, feature_category: :code_re
       end
     end
 
-    describe 'when target_branch_rules_flag is enabled and project has the correct license' do
+    describe 'when the project has the correct license' do
       before do
-        stub_licensed_features(target_branch_rules: true)
         create(:target_branch_rule, project: project, name: 'feature', target_branch: 'other-branch')
+        stub_licensed_features(target_branch_rules: true)
       end
 
       it 'calls TargetBranchRules::FindService' do
@@ -59,18 +47,6 @@ RSpec.describe Projects::TargetBranchRulesController, feature_category: :code_re
 
   describe 'POST #create' do
     let(:params) { { name: 'dev/*', target_branch: 'develop' } }
-
-    describe 'when the target_branch_rules_flag flag is disabled' do
-      before do
-        stub_feature_flags(target_branch_rules_flag: false)
-      end
-
-      it 'returns 404' do
-        post project_target_branch_rules_path(project), params: { projects_target_branch_rule: params }
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
 
     describe 'when the project does not have the correct license' do
       before do
@@ -115,18 +91,6 @@ RSpec.describe Projects::TargetBranchRulesController, feature_category: :code_re
 
   describe 'POST #destroy' do
     let(:params) { { name: 'dev/*', target_branch: 'develop' } }
-
-    describe 'when the target_branch_rules_flag flag is disabled' do
-      before do
-        stub_feature_flags(target_branch_rules_flag: false)
-      end
-
-      it 'returns 404' do
-        delete project_target_branch_rule_path(project, non_existing_record_id)
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
 
     describe 'when the project does not have the correct license' do
       before do
