@@ -32,28 +32,7 @@ module Llm
       end
     end
 
-    def perform(user_id, resource_id, resource_class = nil, ai_action_name = nil, options = {})
-      if user_id.is_a?(Hash)
-        new_perform(user_id, resource_id)
-      else # temporary old behavior
-        compatible_perform(user_id, resource_id, resource_class, ai_action_name, options)
-      end
-    end
-
-    private
-
-    def compatible_perform(user_id, resource_id, resource_class, ai_action_name, options)
-      message_hash = options.merge(
-        user: "gid://gitlab/User/#{user_id}",
-        resource: "gid://gitlab/#{resource_class.classify}/#{resource_id}",
-        ai_action: ai_action_name,
-        role: Gitlab::Llm::AiMessage::ROLE_USER
-      ).stringify_keys
-
-      new_perform(message_hash, options)
-    end
-
-    def new_perform(prompt_message_hash, options = {})
+    def perform(prompt_message_hash, options = {})
       return unless Feature.enabled?(:ai_global_switch, type: :ops)
 
       with_tracking(prompt_message_hash['ai_action']) do
@@ -73,6 +52,8 @@ module Llm
         ai_completion.execute
       end
     end
+
+    private
 
     def with_tracking(ai_action)
       start_time = ::Gitlab::Metrics::System.monotonic_time
