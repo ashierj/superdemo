@@ -137,13 +137,17 @@ RSpec.describe Geo::RegistryConsistencyService,
           end
 
           it 'deletes unused registries', :sidekiq_inline do
-            subject.execute
+            # Executing two times because when the first source record's ID is 3 or greater, the
+            # first execution processes a range which only skips over the gap of unused IDs.
+            2.times { subject.execute }
 
             expect(registry_class.where(model_foreign_key => unused_registry_ids)).to be_empty
           end
 
           it 'returns truthy' do
-            expect(subject.execute).to be_truthy
+            # Executing two times because when the first source record's ID is 3 or greater, the
+            # first execution processes a range which only skips over the gap of unused IDs.
+            expect(2.times { subject.execute }).to be_truthy
           end
         end
       end
