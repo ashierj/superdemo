@@ -22,6 +22,8 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :ai_abstraction_laye
         :explain_code | build_stubbed(:project) | Llm::ExplainCodeService | {}
         :explain_vulnerability | build_stubbed(:vulnerability,
           :with_findings) | Llm::ExplainVulnerabilityService | { include_source_code: true }
+        :resolve_vulnerability | build_stubbed(:vulnerability,
+          :with_findings) | Llm::ResolveVulnerabilityService | {}
         :categorize_question | user | Llm::Internal::CategorizeChatQuestionService | {}
       end
 

@@ -7,6 +7,7 @@ module Llm
     METHODS = {
       analyze_ci_job_failure: Llm::AnalyzeCiJobFailureService,
       explain_vulnerability: ::Llm::ExplainVulnerabilityService,
+      resolve_vulnerability: ::Llm::ResolveVulnerabilityService,
       summarize_comments: Llm::GenerateSummaryService,
       summarize_review: Llm::MergeRequests::SummarizeReviewService,
       explain_code: Llm::ExplainCodeService,
