@@ -415,7 +415,7 @@ export default {
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
-  FORM_GROUP_CLASS: 'gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full',
+  FORM_GROUP_CLASS: 'gl-w-full gl-sm-w-30p gl-min-w-20 gl-m-0',
   FORM_INPUT_CLASS: 'form-control gl-mr-4 gl-border-gray-200',
 };
 </script>

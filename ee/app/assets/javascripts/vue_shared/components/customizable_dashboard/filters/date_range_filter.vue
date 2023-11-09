@@ -96,7 +96,7 @@ export default {
 
 <template>
   <div
-    class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-gap-3 gl-xs-w-full"
+    class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-gap-3 gl-w-full gl-sm-w-auto"
   >
     <gl-dropdown :text="selectedOption.text">
       <gl-dropdown-item
