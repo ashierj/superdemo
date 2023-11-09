@@ -34,9 +34,11 @@ module EE
             selected_create_access_levels: @protected_tag.create_access_levels.map { |access_level| access_level.user_id || access_level.access_level }
           )
         end
+        # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
         def render_show
           push_rule
+          default_branch_blocked_by_security_policy
 
           super
         end
@@ -73,6 +75,12 @@ module EE
           @protected_branches.each do |protected_branch|
             protected_branch.protected_from_deletion = protected_branch.in?(protected_branches_protected_from_deletion)
           end
+        end
+
+        def default_branch_blocked_by_security_policy
+          @default_branch_blocked_by_security_policy = ::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService
+            .new(project: @project)
+            .execute
         end
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
 

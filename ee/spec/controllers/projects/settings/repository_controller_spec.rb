@@ -72,6 +72,38 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
       end
     end
 
+    describe '#default_branch_blocked_by_security_policy' do
+      subject { get :show, params: { namespace_id: project.namespace, project_id: project } }
+
+      let(:blocked_by_security_policy) { true }
+
+      before do
+        allow_next_instance_of(
+          ::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService
+        ) do |instance|
+          allow(instance).to receive(:execute).and_return(blocked_by_security_policy)
+        end
+      end
+
+      context 'when blocked by security policy' do
+        it 'sets default_branch_blocked_by_security_policy' do
+          subject
+
+          expect(assigns[:default_branch_blocked_by_security_policy]).to eq(true)
+        end
+      end
+
+      context 'when not blocked by security policy' do
+        let(:blocked_by_security_policy) { false }
+
+        it 'does not set default_branch_blocked_by_security_policy' do
+          subject
+
+          expect(assigns[:default_branch_blocked_by_security_policy]).to eq(false)
+        end
+      end
+    end
+
     describe '#fetch_branches_protected_from_force_push' do
       using RSpec::Parameterized::TableSyntax
 
