@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::GitlabRoutingHelper do
+RSpec.describe EE::GitlabRoutingHelper, feature_category: :shared do
   include ProjectsHelper
   include ApplicationSettingsHelper
   include EE::GeoHelpers
