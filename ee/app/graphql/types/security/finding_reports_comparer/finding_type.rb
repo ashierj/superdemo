@@ -62,7 +62,10 @@ module Types
         def location
           return unless Feature.enabled?(:sast_reports_in_inline_diff, context[:project])
 
-          object['location'].merge(report_type: object['report_type'])
+          object['location'].merge(
+            report_type: object['report_type'],
+            blob_path: object['blob_path']
+          )
         end
 
         def identifiers

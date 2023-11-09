@@ -40,7 +40,8 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
                 name: 'eslint.detect-disable-mustache-escape',
                 url: 'https://semgrep.dev/r/gitlab.eslint.detect-disable-mustache-escape'
               }
-            ]
+            ],
+            blob_path: '/foo.js#L1'
           }
         ],
         fixed: []
@@ -69,6 +70,7 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
                 file
                 startLine
                 endLine
+                blobPath
               }
             }
             identifiers {
@@ -90,6 +92,7 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
                 file
                 startLine
                 endLine
+                blobPath
               }
             }
             identifiers {
@@ -188,7 +191,8 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
                 location: {
                   endLine: nil,
                   file: 'foo.js',
-                  startLine: '1'
+                  startLine: '1',
+                  blobPath: '/foo.js#L1'
                 },
                 identifiers: [
                   {
