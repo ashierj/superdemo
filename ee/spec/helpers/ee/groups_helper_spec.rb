@@ -315,6 +315,37 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
   end
 
+  describe '#product_analytics_usage_quota_app_data' do
+    subject(:product_analytics_usage_quota_app_data) { helper.product_analytics_usage_quota_app_data(group) }
+
+    before do
+      allow(helper).to receive(:image_path).and_return('illustrations/chart-empty-state.svg')
+    end
+
+    let(:data) do
+      {
+        namespace_path: group.full_path,
+        empty_state_illustration_path: "illustrations/chart-empty-state.svg"
+      }
+    end
+
+    context 'when product analytics is disabled' do
+      before do
+        stub_application_setting(product_analytics_enabled?: false)
+      end
+
+      it { is_expected.to eql(data.merge({ product_analytics_enabled: "false" })) }
+    end
+
+    context 'when product analytics is enabled' do
+      before do
+        stub_application_setting(product_analytics_enabled?: true)
+      end
+
+      it { is_expected.to eql(data.merge({ product_analytics_enabled: "true" })) }
+    end
+  end
+
   describe '#hand_raise_props' do
     let_it_be(:user) { create(:user, username: 'Joe', first_name: 'Joe', last_name: 'Doe', organization: 'ACME') }
 
@@ -409,26 +440,6 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
 
           expect(helper.show_code_suggestions_tab?(group)).to eq(result)
         end
-      end
-    end
-  end
-
-  describe '#show_product_analytics_usage_quota_tab?' do
-    where(:feature_flag_enabled, :user_can_read_product_analytics, :expected_result) do
-      true  | true  | true
-      true  | false | false
-      false | true  | false
-      false | false | false
-    end
-
-    with_them do
-      before do
-        stub_feature_flags(product_analytics_usage_quota: feature_flag_enabled)
-        allow(helper).to receive(:can?).with(current_user, :read_product_analytics, group).and_return(user_can_read_product_analytics)
-      end
-
-      it 'returns the expected result' do
-        expect(helper.show_product_analytics_usage_quota_tab?(group)).to eq(expected_result)
       end
     end
   end

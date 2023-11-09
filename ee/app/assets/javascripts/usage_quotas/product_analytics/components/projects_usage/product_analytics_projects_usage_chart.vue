@@ -35,10 +35,10 @@ export default {
     },
     xAxisTitle() {
       if (this.projectsUsageData?.length <= MAX_PROJECTS_TO_CHART) {
-        return s__('Analytics|Projects');
+        return s__('ProductAnalytics|Projects');
       }
 
-      return sprintf(s__(`Analytics|Projects (%{maxProjects} of %{totalProjects} shown)`), {
+      return sprintf(s__(`ProductAnalytics|Projects (%{maxProjects} of %{totalProjects} shown)`), {
         maxProjects: MAX_PROJECTS_TO_CHART,
         totalProjects: this.projectsUsageData.length,
       });
@@ -46,7 +46,7 @@ export default {
     chartSeries() {
       return [
         {
-          name: s__('Analytics|Previous month'),
+          name: s__('ProductAnalytics|Previous month'),
           stack: 'previous',
           data: this.projectsUsageData
             ?.map((project) => {
@@ -55,7 +55,7 @@ export default {
             .slice(0, MAX_PROJECTS_TO_CHART),
         },
         {
-          name: s__('Analytics|Current month to date'),
+          name: s__('ProductAnalytics|Current month to date'),
           stack: 'current',
           data: this.projectsUsageData
             ?.map((project) => {
@@ -76,7 +76,7 @@ export default {
       :bars="chartSeries"
       x-axis-type="category"
       :x-axis-title="xAxisTitle"
-      :y-axis-title="s__('Analytics|Events')"
+      :y-axis-title="s__('ProductAnalytics|Events')"
     />
   </div>
 </template>

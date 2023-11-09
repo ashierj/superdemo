@@ -28,28 +28,21 @@ export default {
     },
   },
   computed: {
-    showEmptyState() {
-      return this.projectsUsageData?.length === 0;
+    hasProjects() {
+      return this.projectsUsageData?.length > 0;
     },
   },
   TABLE_FIELDS: [
     { key: 'name', label: __('Project') },
-    { key: 'currentEvents', label: s__('Analytics|Current month to date') },
-    { key: 'previousEvents', label: s__('Analytics|Previous month') },
+    { key: 'currentEvents', label: s__('ProductAnalytics|Current month to date') },
+    { key: 'previousEvents', label: s__('ProductAnalytics|Previous month') },
   ],
 };
 </script>
 <template>
   <div>
     <gl-skeleton-loader v-if="isLoading" :lines="3" :equal-width-lines="true" />
-    <div v-else-if="showEmptyState" data-testid="projects-usage-table-empty-state">
-      {{
-        s__(
-          'Analytics|This group has no projects with product analytics onboarded in the current or previous month.',
-        )
-      }}
-    </div>
-    <div v-else-if="projectsUsageData" data-testid="projects-usage-table">
+    <div v-else-if="hasProjects" data-testid="projects-usage-table">
       <gl-table-lite :items="projectsUsageData" :fields="$options.TABLE_FIELDS">
         <template #cell(name)="{ item: { id, name, avatarUrl, webUrl } }">
           <project-avatar
@@ -72,7 +65,7 @@ export default {
       <p class="gl-text-center gl-py-5">
         {{
           s__(
-            'Analytics|This table excludes projects that do not have product analytics onboarded.',
+            'ProductAnalytics|This table excludes projects that do not have product analytics onboarded.',
           )
         }}
       </p>

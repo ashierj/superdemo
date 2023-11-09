@@ -64,11 +64,11 @@ export default {
 </script>
 <template>
   <section>
-    <h2 class="gl-font-lg">{{ s__('Analytics|Usage by project') }}</h2>
+    <h2 class="gl-font-lg">{{ s__('ProductAnalytics|Usage by project') }}</h2>
     <gl-alert v-if="error" variant="danger" :dismissible="false">
       {{
         s__(
-          'Analytics|Something went wrong while loading product analytics usage data. Refresh the page to try again.',
+          'ProductAnalytics|Something went wrong while loading product analytics usage data. Refresh the page to try again.',
         )
       }}
     </gl-alert>

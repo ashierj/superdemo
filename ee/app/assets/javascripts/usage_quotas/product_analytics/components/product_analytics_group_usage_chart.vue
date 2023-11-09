@@ -9,6 +9,7 @@ import {
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { projectHasProductAnalyticsEnabled } from 'ee/usage_quotas/product_analytics/graphql/utils';
 import getGroupCurrentAndPrevProductAnalyticsUsageQuery from '../graphql/queries/get_group_current_and_prev_product_analytics_usage.query.graphql';
 
 export default {
@@ -43,7 +44,7 @@ export default {
     chartData() {
       return [
         {
-          name: s__('Analytics|Analytics events by month'),
+          name: s__('ProductAnalytics|Analytics events by month'),
           data: this.projectsUsageData.map(([date, usageData]) => [
             formatDate(date, 'mmm yyyy'),
             usageData,
@@ -69,10 +70,21 @@ export default {
         };
       },
       update(data) {
-        return [
+        const months = [
           [this.previousMonth, this.sumProjectEvents(data.previous.projects.nodes)],
           [this.currentMonth, this.sumProjectEvents(data.current.projects.nodes)],
         ];
+
+        const hasNoProjects = [data.previous.projects.nodes, data.current.projects.nodes]
+          .flat()
+          .filter(projectHasProductAnalyticsEnabled)
+          .every((projects) => projects.length === 0);
+
+        if (hasNoProjects) {
+          this.$emit('no-projects');
+        }
+
+        return months;
       },
       error(error) {
         this.error = error;
@@ -90,10 +102,10 @@ export default {
   },
   CHART_OPTIONS: {
     yAxis: {
-      name: s__('Analytics|Events'),
+      name: s__('ProductAnalytics|Events'),
     },
     xAxis: {
-      name: s__('Analytics|Month'),
+      name: s__('ProductAnalytics|Month'),
       type: 'category',
     },
   },
@@ -104,12 +116,12 @@ export default {
 </script>
 <template>
   <section class="gl-mt-5 gl-mb-7">
-    <h2 class="gl-font-lg">{{ s__('Analytics|Usage by month') }}</h2>
+    <h2 class="gl-font-lg">{{ s__('ProductAnalytics|Usage by month') }}</h2>
     <p>
       <gl-sprintf
         :message="
           s__(
-            'Analytics|Product analytics usage is calculated based on the total number of events received from projects within the group. %{linkStart}Learn more%{linkEnd}.',
+            'ProductAnalytics|Product analytics usage is calculated based on the total number of events received from projects within the group. %{linkStart}Learn more%{linkEnd}.',
           )
         "
       >
@@ -125,7 +137,7 @@ export default {
     <gl-alert v-if="error" variant="danger" :dismissible="false">
       {{
         s__(
-          'Analytics|Something went wrong while loading product analytics usage data. Refresh the page to try again.',
+          'ProductAnalytics|Something went wrong while loading product analytics usage data. Refresh the page to try again.',
         )
       }}
     </gl-alert>

@@ -1,7 +1,24 @@
-import { mapProjectsUsageResponse } from 'ee/usage_quotas/product_analytics/graphql/utils';
+import {
+  projectHasProductAnalyticsEnabled,
+  mapProjectsUsageResponse,
+} from 'ee/usage_quotas/product_analytics/graphql/utils';
 import { getProjectsUsageDataResponse, getProjectUsage } from './mock_data';
 
 describe('Product analytics usage quota graphql utils', () => {
+  describe('projectHasProductAnalyticsEnabled', () => {
+    it.each`
+      numEvents | expected
+      ${null}   | ${false}
+      ${0}      | ${true}
+      ${1}      | ${true}
+    `('returns $expected when events stored count is $numEvents', ({ numEvents, expected }) => {
+      const result = projectHasProductAnalyticsEnabled(
+        getProjectUsage({ id: 1, name: 'some project', numEvents }),
+      );
+      expect(result).toBe(expected);
+    });
+  });
+
   describe('mapProjectsUsageResponse', () => {
     it('returns expected value when there are no projects', () => {
       const response = getProjectsUsageDataResponse([], []);
