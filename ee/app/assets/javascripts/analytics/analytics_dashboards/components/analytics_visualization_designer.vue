@@ -7,12 +7,18 @@ import { createAlert } from '~/alert';
 import { slugify } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { InternalEvents } from '~/tracking';
 
 import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { getVisualizationOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_designer_options';
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
-import { FILE_ALREADY_EXISTS_SERVER_RESPONSE, PANEL_DISPLAY_TYPES } from '../constants';
+import {
+  FILE_ALREADY_EXISTS_SERVER_RESPONSE,
+  PANEL_DISPLAY_TYPES,
+  EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
+  EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION,
+} from '../constants';
 
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
 import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
@@ -33,6 +39,7 @@ export default {
     VisualizationTypeSelector,
     VisualizationPreview,
   },
+  mixins: [InternalEvents.mixin()],
   inject: {
     customDashboardsProject: {
       type: Object,
@@ -102,6 +109,8 @@ export default {
     wrappers.forEach((el) => {
       el.classList.remove('container-limited');
     });
+
+    this.trackEvent(EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER);
   },
   methods: {
     onQueryStatusChange({ error }) {
@@ -186,6 +195,8 @@ export default {
           this.alert?.dismiss();
 
           this.$toast.show(s__('Analytics|Visualization was saved successfully'));
+
+          this.trackEvent(EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION);
 
           if (this.$route?.params.dashboard) {
             this.routeToDashboard(this.$route?.params.dashboard);
