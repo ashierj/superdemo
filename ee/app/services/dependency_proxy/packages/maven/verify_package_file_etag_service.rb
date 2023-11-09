@@ -6,7 +6,9 @@ module DependencyProxy
       class VerifyPackageFileEtagService
         include ::Gitlab::Utils::StrongMemoize
 
-        TIMEOUT_ERROR_CODE = 599
+        REGISTRY_NOT_AVAILABLE_ERROR_CODE = 503
+        REGISTRY_NOT_AVAILABLE_MESSAGE = 'External registry is not available'
+        TIMEOUT = 5
 
         def initialize(remote_url:, package_file:)
           @remote_url = remote_url
@@ -23,8 +25,11 @@ module DependencyProxy
             message: "etag from external registry doesn't match any known digests",
             reason: :wrong_etag
           )
-        rescue Timeout::Error
-          error_with_response_code(code: TIMEOUT_ERROR_CODE)
+        rescue *::Gitlab::HTTP::HTTP_ERRORS
+          error_with_response_code(
+            code: REGISTRY_NOT_AVAILABLE_ERROR_CODE,
+            message: REGISTRY_NOT_AVAILABLE_MESSAGE
+          )
         end
 
         private
@@ -32,7 +37,7 @@ module DependencyProxy
         attr_reader :remote_url, :package_file
 
         def response
-          ::Gitlab::HTTP.head(remote_url, follow_redirects: true)
+          ::Gitlab::HTTP.head(remote_url, follow_redirects: true, timeout: TIMEOUT)
         end
         strong_memoize_attr :response
 
@@ -72,8 +77,8 @@ module DependencyProxy
           remote_url.present? && package_file
         end
 
-        def error_with_response_code(code: response.code)
-          message = "Received #{code} from external registry"
+        def error_with_response_code(code: response.code, message: nil)
+          message ||= "Received #{code} from external registry"
           Gitlab::AppLogger.error(
             service_class: self.class.to_s,
             project_id: package_file.package&.project_id,

@@ -104,11 +104,11 @@ RSpec.describe DependencyProxy::Packages::Maven::VerifyPackageFileEtagService, :
 
       context 'with a timeout' do
         before do
-          allow(::Gitlab::HTTP).to receive(:head).and_raise(::Timeout::Error)
+          allow(::Gitlab::HTTP).to receive(:head).and_raise(::Net::OpenTimeout)
         end
 
         it_behaves_like 'expecting a service response error with',
-          message: 'Received 599 from external registry',
+          message: 'External registry is not available',
           reason: :response_error_code
       end
     end
