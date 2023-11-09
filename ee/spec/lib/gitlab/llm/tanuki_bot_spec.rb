@@ -5,8 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:embeddings) { create_list(:tanuki_bot_mvc, 2) }
-    let_it_be(:vertex_embeddings) { create_list(:vertex_gitlab_documentation, 2) }
+    let_it_be(:embeddings) { create_list(:vertex_gitlab_documentation, 2) }
 
     let(:empty_response_message) { "I'm sorry, I was not able to find any documentation to answer your question." }
     let(:question) { 'A question' }
