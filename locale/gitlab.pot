@@ -12637,6 +12637,9 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|At least two approvals"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|Check"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|Failure reason"
 msgstr ""
 
@@ -12652,7 +12655,13 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|How to fix"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|Last Scanned"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|Merge request approval rules"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|More Information"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|No projects with standards adherence checks found"
@@ -12673,7 +12682,16 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|Prevent committers as approvers"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|Project"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|Requirement"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Standard"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Status"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|Success reason"
@@ -12689,6 +12707,9 @@ msgid "ComplianceStandardsAdherence|Update approval settings in the project's me
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|View details"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|View details (fix available)"
 msgstr ""
 
 msgid "ComplianceViolations|Compliance Violations Export"
