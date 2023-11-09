@@ -85,6 +85,13 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
             .not_to change { ::MergeRequest::DiffLlmSummary.count }
         end
 
+        it 'returns unsaved Active Record object' do
+          response = subject.execute
+
+          expect(response).to be_a(MergeRequest::DiffLlmSummary)
+          expect(response).not_to be_persisted
+        end
+
         it 'does not raise an error' do
           expect { subject.execute }
             .not_to raise_error
