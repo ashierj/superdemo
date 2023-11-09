@@ -49326,6 +49326,9 @@ msgstr ""
 msgid "This pipeline was created by a schedule."
 msgstr ""
 
+msgid "This pipeline was created by an API call authenticated with a trigger token"
+msgstr ""
+
 msgid "This pipeline was triggered using the api"
 msgstr ""
 
@@ -58166,6 +58169,9 @@ msgid "token already revoked"
 msgstr ""
 
 msgid "total must be less than or equal to %{size}"
+msgstr ""
+
+msgid "trigger token"
 msgstr ""
 
 msgid "triggered"
