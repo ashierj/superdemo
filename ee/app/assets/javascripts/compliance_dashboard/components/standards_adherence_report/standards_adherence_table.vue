@@ -2,20 +2,18 @@
 import { GlAlert, GlTable, GlIcon, GlLink, GlBadge, GlLoadingIcon } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { formatDate } from '~/lib/utils/datetime_utility';
+import { s__ } from '~/locale';
 import getProjectComplianceStandardsAdherence from '../../graphql/compliance_standards_adherence.query.graphql';
 import Pagination from '../shared/pagination.vue';
 import { GRAPHQL_PAGE_SIZE } from '../../constants';
 import {
   FAIL_STATUS,
   STANDARDS_ADHERENCE_CHECK_LABELS,
-  STANDARDS_ADHERENCE_CHECK_DESCRIPTIONS,
   STANDARDS_ADHERENCE_STANARD_LABELS,
   NO_STANDARDS_ADHERENCES_FOUND,
   STANDARDS_ADHERENCE_FETCH_ERROR,
 } from './constants';
 import FixSuggestionsSidebar from './fix_suggestions_sidebar.vue';
-
-const columnWidth = 'gl-md-max-w-26 gl-white-space-nowrap';
 
 export default {
   name: 'ComplianceStandardsAdherenceTable',
@@ -97,13 +95,56 @@ export default {
     perPage() {
       return parseInt(this.$route.query.perPage || GRAPHQL_PAGE_SIZE, 10);
     },
+    fields() {
+      const columnWidth = 'gl-md-max-w-10 gl-white-space-nowrap';
+
+      return [
+        {
+          key: 'status',
+          label: this.$options.i18n.tableHeaders.status,
+          sortable: false,
+          thClass: columnWidth,
+          tdClass: columnWidth,
+        },
+        {
+          key: 'project',
+          label: this.$options.i18n.tableHeaders.project,
+          sortable: false,
+        },
+        {
+          key: 'check',
+          label: this.$options.i18n.tableHeaders.check,
+          sortable: false,
+          thClass: columnWidth,
+          tdClass: columnWidth,
+        },
+        {
+          key: 'standard',
+          label: this.$options.i18n.tableHeaders.standard,
+          sortable: false,
+          thClass: columnWidth,
+          tdClass: columnWidth,
+        },
+        {
+          key: 'lastScanned',
+          label: this.$options.i18n.tableHeaders.lastScanned,
+          sortable: false,
+          thClass: columnWidth,
+          tdClass: columnWidth,
+        },
+        {
+          key: 'moreInformation',
+          label: this.$options.i18n.tableHeaders.moreInformation,
+          sortable: false,
+          thClass: columnWidth,
+          tdClass: columnWidth,
+        },
+      ];
+    },
   },
   methods: {
     adherenceCheckName(check) {
       return STANDARDS_ADHERENCE_CHECK_LABELS[check];
-    },
-    adherenceCheckDescription(check) {
-      return STANDARDS_ADHERENCE_CHECK_DESCRIPTIONS[check];
     },
     adherenceStandardLabel(standard) {
       return STANDARDS_ADHERENCE_STANARD_LABELS[standard];
@@ -158,43 +199,20 @@ export default {
       });
     },
   },
-  fields: [
-    {
-      key: 'status',
-      sortable: false,
-      thClass: columnWidth,
-      tdClass: columnWidth,
-    },
-    {
-      key: 'project',
-      sortable: false,
-      tdClass: columnWidth,
-    },
-    {
-      key: 'checks',
-      sortable: false,
-    },
-    {
-      key: 'standard',
-      sortable: false,
-      thClass: columnWidth,
-      tdClass: columnWidth,
-    },
-    {
-      key: 'lastScanned',
-      sortable: false,
-      thClass: columnWidth,
-      tdClass: columnWidth,
-    },
-    {
-      key: 'fixSuggestions',
-      sortable: false,
-      thClass: columnWidth,
-      tdClass: columnWidth,
-    },
-  ],
   noStandardsAdherencesFound: NO_STANDARDS_ADHERENCES_FOUND,
   standardsAdherenceFetchError: STANDARDS_ADHERENCE_FETCH_ERROR,
+  i18n: {
+    viewDetails: s__('ComplianceStandardsAdherence|View details'),
+    viewDetailsFixAvailable: s__('ComplianceStandardsAdherence|View details (fix available)'),
+    tableHeaders: {
+      status: s__('ComplianceStandardsAdherence|Status'),
+      project: s__('ComplianceStandardsAdherence|Project'),
+      check: s__('ComplianceStandardsAdherence|Check'),
+      standard: s__('ComplianceStandardsAdherence|Standard'),
+      lastScanned: s__('ComplianceStandardsAdherence|Last Scanned'),
+      moreInformation: s__('ComplianceStandardsAdherence|More Information'),
+    },
+  },
 };
 </script>
 
@@ -209,8 +227,7 @@ export default {
       {{ $options.standardsAdherenceFetchError }}
     </gl-alert>
     <gl-table
-      class="gl-mb-6"
-      :fields="$options.fields"
+      :fields="fields"
       :items="adherences.list"
       :busy="isLoading"
       :empty-text="$options.noStandardsAdherencesFound"
@@ -241,9 +258,8 @@ export default {
         </div>
       </template>
 
-      <template #cell(checks)="{ item: { checkName } }">
-        <div class="gl-font-weight-bold">{{ adherenceCheckName(checkName) }}</div>
-        <div class="gl-mt-2">{{ adherenceCheckDescription(checkName) }}</div>
+      <template #cell(check)="{ item: { checkName } }">
+        {{ adherenceCheckName(checkName) }}
       </template>
 
       <template #cell(standard)="{ item: { standard } }">
@@ -254,10 +270,13 @@ export default {
         {{ formatDate(updatedAt) }}
       </template>
 
-      <template #cell(fixSuggestions)="{ item }">
-        <gl-link @click="toggleDrawer(item)">{{
-          s__('ComplianceStandardsAdherence|View details')
-        }}</gl-link>
+      <template #cell(moreInformation)="{ item }">
+        <gl-link @click="toggleDrawer(item)">
+          <template v-if="isFailedStatus(item.status)">{{
+            $options.i18n.viewDetailsFixAvailable
+          }}</template>
+          <template v-else>{{ $options.i18n.viewDetails }}</template>
+        </gl-link>
       </template>
     </gl-table>
     <fix-suggestions-sidebar

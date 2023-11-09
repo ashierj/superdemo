@@ -21,7 +21,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   let apolloProvider;
   const groupPath = 'example-group-path';
 
-  const defaultAdherencesResponse = createComplianceAdherencesResponse();
+  const defaultAdherencesResponse = createComplianceAdherencesResponse({ count: 2 });
   const sentryError = new Error('GraphQL networkError');
   const mockGraphQlSuccess = jest.fn().mockResolvedValue(defaultAdherencesResponse);
   const mockGraphQlLoading = jest.fn().mockResolvedValue(new Promise(() => {}));
@@ -36,8 +36,8 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   const findTableLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findTableHeaders = () => findStandardsAdherenceTable().findAll('th');
   const findTableRows = () => findStandardsAdherenceTable().findAll('tr');
-  const findFirstTableRow = () => findTableRows().at(1);
-  const findFirstTableRowData = () => findFirstTableRow().findAll('td');
+  const findNthTableRow = (n) => findTableRows().at(n);
+  const findFirstTableRowData = () => findNthTableRow(1).findAll('td');
   const findViewDetails = () => wrapper.findComponent(GlLink);
   const findPagination = () => wrapper.findComponent(Pagination);
 
@@ -94,10 +94,10 @@ describe('ComplianceStandardsAdherenceTable component', () => {
       expect(headerTexts).toStrictEqual([
         'Status',
         'Project',
-        'Checks',
+        'Check',
         'Standard',
         'Last Scanned',
-        'Fix Suggestions',
+        'More Information',
       ]);
     });
   });
@@ -131,6 +131,11 @@ describe('ComplianceStandardsAdherenceTable component', () => {
       expect(findTableLoadingIcon().exists()).toBe(false);
     });
 
+    it('renders the table row properly for failed checks', () => {
+      const infoCell = findNthTableRow(2).findAll('td').at(-1);
+      expect(infoCell.text()).toMatchInterpolatedText('View details (fix available)');
+    });
+
     describe('when check is `PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR`', () => {
       it('renders the table row properly', () => {
         const rowText = findFirstTableRowData().wrappers.map((e) => e.text());
@@ -138,7 +143,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         expect(rowText).toStrictEqual([
           'Success',
           'Example Project',
-          'Prevent authors as approvers Have a valid rule that prevents author-approved merge requests from being merged',
+          'Prevent authors as approvers',
           'GitLab',
           'Jul 1, 2023',
           'View details',
@@ -166,7 +171,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         expect(rowText).toStrictEqual([
           'Success',
           'Example Project',
-          'Prevent committers as approvers Have a valid rule that prevents users from approving merge requests where they’ve added commits',
+          'Prevent committers as approvers',
           'GitLab',
           'Jul 1, 2023',
           'View details',
@@ -192,7 +197,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         expect(rowText).toStrictEqual([
           'Success',
           'Example Project',
-          'At least two approvals Have a valid rule that prevents merge requests with less than two approvals from being merged',
+          'At least two approvals',
           'GitLab',
           'Jul 1, 2023',
           'View details',

@@ -39,7 +39,7 @@ export const createDefaultProjectsResponse = (projects) => ({
 export const createComplianceAdherence = (id, checkName) => ({
   id: `gid://gitlab/Projects::ComplianceStandards::Adherence/${id}`,
   updatedAt: 'July 1, 2023',
-  status: 'SUCCESS',
+  status: id % 2 === 0 ? 'SUCCESS' : 'FAIL',
   checkName,
   standard: 'GITLAB',
   project: {
