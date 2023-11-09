@@ -13,6 +13,10 @@ RSpec.describe Emails::MergeRequests, feature_category: :code_review_workflow do
   let_it_be(:merge_request_diff) { create(:merge_request_diff, merge_request: merge_request) }
   # rubocop: enable RSpec/FactoryBot/AvoidCreate
 
+  before do
+    stub_feature_flags(hide_diff_summary: false)
+  end
+
   describe '#changed_reviewer_of_merge_request_email' do
     let(:previous_reviewer_ids) { [] }
 
