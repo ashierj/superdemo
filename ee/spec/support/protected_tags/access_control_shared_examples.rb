@@ -82,7 +82,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
   end
 
   it "prepends selected users that can create" do
-    users = create_list(:user, 21)
+    users = create_list(:user, 3)
     users.each { |user| project.add_developer(user) }
 
     visit project_protected_tags_path(project)

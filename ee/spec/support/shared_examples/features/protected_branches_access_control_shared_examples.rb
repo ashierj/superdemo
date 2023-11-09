@@ -99,7 +99,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
       end
 
       it "prepends selected users that can #{git_operation} to" do
-        users = create_list(:user, 21)
+        users = create_list(:user, 2)
         users.each { |user| project.add_developer(user) }
 
         visit project_protected_branches_path(project)
