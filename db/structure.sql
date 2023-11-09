@@ -13479,7 +13479,8 @@ CREATE TABLE catalog_resources (
     state smallint DEFAULT 0 NOT NULL,
     latest_released_at timestamp with time zone,
     name character varying,
-    description text
+    description text,
+    visibility_level integer DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE catalog_resources_id_seq
