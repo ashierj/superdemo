@@ -10,7 +10,7 @@ module QA
               element :vulnerability
               element 'vulnerability-checkbox-all'
               element 'false-positive-vulnerability'
-              element 'vulnerability-remediated-badge-content'
+              element 'vulnerability-resolution-badge-content'
               element 'vulnerability-issue-created-badge-content'
               element 'vulnerability-status-content'
             end
@@ -70,8 +70,8 @@ module QA
               click_element(:"listbox-item-#{reason}")
             end
 
-            def has_remediated_badge?(vulnerability_name)
-              has_element?('vulnerability-remediated-badge-content', activity_description: vulnerability_name)
+            def has_resolution_badge?(vulnerability_name)
+              has_element?('vulnerability-resolution-badge-content', activity_description: vulnerability_name)
             end
 
             def has_issue_created_icon?(vulnerability_name)

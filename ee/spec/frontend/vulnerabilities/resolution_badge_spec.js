@@ -1,18 +1,18 @@
 import { GlPopover, GlBadge } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import RemediatedBadge from 'ee/vulnerabilities/components/remediated_badge.vue';
+import ResolutionBadge from 'ee/vulnerabilities/components/resolution_badge.vue';
 
 const POPOVER_TITLE = 'Vulnerability remediated. Review before resolving.';
 const POPOVER_CONTENT =
   'The vulnerability is no longer detected. Verify the vulnerability has been fixed or removed before changing its status.';
 
-describe('Remediated badge component', () => {
+describe('Resolution badge component', () => {
   let wrapper;
 
   const findBadge = () => wrapper.findComponent(GlBadge);
 
   const createWrapper = () => {
-    return shallowMount(RemediatedBadge);
+    return shallowMount(ResolutionBadge);
   };
 
   beforeEach(() => {
