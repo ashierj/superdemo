@@ -24497,6 +24497,7 @@ CREATE TABLE user_preferences (
     project_shortcut_buttons boolean DEFAULT true NOT NULL,
     enabled_zoekt boolean DEFAULT true NOT NULL,
     keyboard_shortcuts_enabled boolean DEFAULT true NOT NULL,
+    time_display_format smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_89bf269f41 CHECK ((char_length(diffs_deletion_color) <= 7)),
     CONSTRAINT check_d07ccd35f7 CHECK ((char_length(diffs_addition_color) <= 7))
 );
