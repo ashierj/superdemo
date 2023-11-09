@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import VueRouter from 'vue-router';
 import Vue from 'vue';
-import ProjectSecretsApp from 'ee/ci/secrets/project_secrets_app.vue';
+import ProjectSecretsApp from 'ee/ci/secrets/components/project_secrets_app.vue';
 
 describe('ProjectSecretsApp', () => {
   let wrapper;

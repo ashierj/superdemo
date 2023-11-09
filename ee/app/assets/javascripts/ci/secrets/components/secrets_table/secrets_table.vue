@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlCard, GlTableLite, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME } from '../constants';
+import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME } from '../../constants';
 
 export default {
   name: 'SecretsTable',

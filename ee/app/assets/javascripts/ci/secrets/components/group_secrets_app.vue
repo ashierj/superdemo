@@ -1,25 +1,25 @@
 <script>
-import { mockProjectSecretsData } from './constants';
+import { mockGroupSecretsData } from '../constants';
 
 export default {
-  name: 'ProjectSecretsApp',
+  name: 'GroupSecretsApp',
   props: {
-    projectPath: {
+    groupPath: {
       type: String,
       required: false,
       default: undefined,
     },
-    projectId: {
+    groupId: {
       type: String,
       required: false,
       default: undefined,
     },
   },
   data() {
-    return { projectSecrets: mockProjectSecretsData };
+    return { groupSecrets: mockGroupSecretsData };
   },
 };
 </script>
 <template>
-  <router-view ref="router-view" :secrets="projectSecrets" />
+  <router-view ref="router-view" :secrets="groupSecrets" />
 </template>

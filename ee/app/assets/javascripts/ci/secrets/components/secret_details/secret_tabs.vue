@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlTabs, GlTab } from '@gitlab/ui';
-import { EDIT_ROUTE_NAME, DETAILS_ROUTE_NAME, AUDIT_LOG_ROUTE_NAME } from '../constants';
+import { EDIT_ROUTE_NAME, DETAILS_ROUTE_NAME, AUDIT_LOG_ROUTE_NAME } from '../../constants';
 
 export default {
   name: 'SecretTabs',

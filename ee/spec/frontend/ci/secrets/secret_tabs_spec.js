@@ -2,7 +2,7 @@ import { GlTabs, GlTab } from '@gitlab/ui';
 import { RouterLinkStub } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { EDIT_ROUTE_NAME, DETAILS_ROUTE_NAME, AUDIT_LOG_ROUTE_NAME } from 'ee/ci/secrets/constants';
-import SecretTabs from 'ee/ci/secrets/components/secret_tabs.vue';
+import SecretTabs from 'ee/ci/secrets/components/secret_details/secret_tabs.vue';
 
 describe('SecretTabs component', () => {
   let wrapper;

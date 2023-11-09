@@ -1,8 +1,8 @@
-import SecretsTable from 'ee/ci/secrets/components/secrets_table.vue';
-import SecretFormWrapper from 'ee/ci/secrets/components/secret_form_wrapper.vue';
-import SecretTabs from 'ee/ci/secrets/components/secret_tabs.vue';
-import SecretDetails from 'ee/ci/secrets/components/secret_details.vue';
-import SecretAuditLog from 'ee/ci/secrets/components/secret_audit_log.vue';
+import SecretsTable from 'ee/ci/secrets/components/secrets_table/secrets_table.vue';
+import SecretFormWrapper from 'ee/ci/secrets/components/secret_form/secret_form_wrapper.vue';
+import SecretTabs from 'ee/ci/secrets/components/secret_details/secret_tabs.vue';
+import SecretDetails from 'ee/ci/secrets/components/secret_details/secret_details.vue';
+import SecretAuditLog from 'ee/ci/secrets/components/secret_details/secret_audit_log.vue';
 import createRouter from 'ee/ci/secrets/router';
 
 describe('Secrets router', () => {

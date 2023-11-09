@@ -2,8 +2,8 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { injectVueAppBreadcrumbs } from '~/lib/utils/breadcrumbs';
-import GroupSecretsApp from './group_secrets_app.vue';
-import ProjectSecretsApp from './project_secrets_app.vue';
+import GroupSecretsApp from './components/group_secrets_app.vue';
+import ProjectSecretsApp from './components/project_secrets_app.vue';
 import createRouter from './router';
 import SecretsBreadcrumbs from './components/secrets_breadcrumbs.vue';
 

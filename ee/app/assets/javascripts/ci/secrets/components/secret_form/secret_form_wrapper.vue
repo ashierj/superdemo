@@ -1,5 +1,5 @@
 <script>
-import { INDEX_ROUTE_NAME, DETAILS_ROUTE_NAME } from '../constants';
+import { INDEX_ROUTE_NAME, DETAILS_ROUTE_NAME } from '../../constants';
 import SecretForm from './secret_form.vue';
 
 export default {

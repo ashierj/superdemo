@@ -1,7 +1,7 @@
 import VueRouter from 'vue-router';
 import Vue from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import GroupSecretsApp from 'ee/ci/secrets/group_secrets_app.vue';
+import GroupSecretsApp from 'ee/ci/secrets/components/group_secrets_app.vue';
 
 describe('GroupSecretsApp', () => {
   let wrapper;

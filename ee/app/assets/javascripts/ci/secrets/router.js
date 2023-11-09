@@ -8,11 +8,11 @@ import {
   AUDIT_LOG_ROUTE_NAME,
   EDIT_ROUTE_NAME,
 } from './constants';
-import SecretsTable from './components/secrets_table.vue';
-import SecretFormWrapper from './components/secret_form_wrapper.vue';
-import SecretTabs from './components/secret_tabs.vue';
-import SecretDetails from './components/secret_details.vue';
-import SecretAuditLog from './components/secret_audit_log.vue';
+import SecretsTable from './components/secrets_table/secrets_table.vue';
+import SecretFormWrapper from './components/secret_form/secret_form_wrapper.vue';
+import SecretTabs from './components/secret_details/secret_tabs.vue';
+import SecretDetails from './components/secret_details/secret_details.vue';
+import SecretAuditLog from './components/secret_details/secret_audit_log.vue';
 
 Vue.use(VueRouter);
 
