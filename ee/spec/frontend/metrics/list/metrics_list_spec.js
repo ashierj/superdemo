@@ -50,16 +50,6 @@ describe('MetricsComponent', () => {
     expect(findMetricsTable().props('metrics')).toEqual(mockResponse.metrics);
   });
 
-  it('calls fetchMetrics method when MetricsTable emits reload event', async () => {
-    await mountComponent();
-
-    observabilityClientMock.fetchMetrics.mockClear();
-
-    findMetricsTable().vm.$emit('reload');
-
-    expect(observabilityClientMock.fetchMetrics).toHaveBeenCalledTimes(1);
-  });
-
   it('if fetchMetrics fails, it renders an alert and empty list', async () => {
     observabilityClientMock.fetchMetrics.mockRejectedValue('error');
 

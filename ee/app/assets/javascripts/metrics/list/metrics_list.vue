@@ -49,7 +49,7 @@ export default {
     </div>
 
     <div v-else class="gl-my-8">
-      <metrics-table :metrics="metrics" @reload="fetchMetrics" />
+      <metrics-table :metrics="metrics" />
     </div>
   </div>
 </template>

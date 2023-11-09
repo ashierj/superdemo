@@ -1,12 +1,11 @@
 <script>
-import { GlTable, GlLink, GlLabel } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlTable, GlLabel } from '@gitlab/ui';
+import { s__, __ } from '~/locale';
 
 export default {
   i18n: {
     title: s__('Metrics|Metrics'),
-    emptyText: s__('Metrics|No metrics to display.'),
-    emptyLinkText: s__('Metrics|Check again'),
+    emptyText: __('No results found'),
   },
   fields: [
     {
@@ -27,7 +26,6 @@ export default {
   ],
   components: {
     GlTable,
-    GlLink,
     GlLabel,
   },
   props: {
@@ -75,7 +73,6 @@ export default {
       <template #empty>
         <div class="gl-text-center">
           {{ $options.i18n.emptyText }}
-          <gl-link @click="$emit('reload')">{{ $options.i18n.emptyLinkText }}</gl-link>
         </div>
       </template>
     </gl-table>
