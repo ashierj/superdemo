@@ -792,12 +792,6 @@ msgstr ""
 msgid "%{integrations_link_start}Integrations%{link_end} enable you to make third-party applications part of your GitLab workflow. If the available integrations don't meet your needs, consider using a %{webhooks_link_start}webhook%{link_end}."
 msgstr ""
 
-msgid "%{issuableDisplayName} locked."
-msgstr ""
-
-msgid "%{issuableDisplayName} unlocked."
-msgstr ""
-
 msgid "%{issuableType} will be removed! Are you sure?"
 msgstr ""
 
@@ -17553,7 +17547,13 @@ msgstr ""
 msgid "Discuss a specific suggestion or question."
 msgstr ""
 
+msgid "Discussion locked."
+msgstr ""
+
 msgid "Discussion to reply to cannot be found"
+msgstr ""
+
+msgid "Discussion unlocked."
 msgstr ""
 
 msgid "Disk Usage"
@@ -28613,13 +28613,13 @@ msgstr ""
 msgid "Lock"
 msgstr ""
 
-msgid "Lock %{issuableDisplayName}"
-msgstr ""
-
 msgid "Lock %{issuableType}"
 msgstr ""
 
 msgid "Lock File?"
+msgstr ""
+
+msgid "Lock discussion"
 msgstr ""
 
 msgid "Lock label after a merge request is merged"
@@ -28643,7 +28643,7 @@ msgstr ""
 msgid "Lock the discussion"
 msgstr ""
 
-msgid "Lock this %{issuableDisplayName}? Only %{strongStart}project members%{strongEnd} will be able to comment."
+msgid "Lock this discussion? Only %{strongStart}project members%{strongEnd} will be able to comment."
 msgstr ""
 
 msgid "Lock to current projects"
@@ -28661,7 +28661,7 @@ msgstr ""
 msgid "Locked the discussion."
 msgstr ""
 
-msgid "Locking %{issuableDisplayName}"
+msgid "Locking discussion"
 msgstr ""
 
 msgid "Locks the discussion."
@@ -45490,6 +45490,9 @@ msgstr ""
 msgid "Something went wrong on our end. Please try again."
 msgstr ""
 
+msgid "Something went wrong trying to change the locked state of the discussion"
+msgstr ""
+
 msgid "Something went wrong trying to change the locked state of this %{issuableDisplayName}"
 msgstr ""
 
@@ -47976,6 +47979,18 @@ msgstr ""
 msgid "The directory has been successfully created."
 msgstr ""
 
+msgid "The discussion in this %{issuableDisplayName} is locked. Only project members can comment."
+msgstr ""
+
+msgid "The discussion in this %{issuable} is locked. Only project members can comment."
+msgstr ""
+
+msgid "The discussion in this %{noteableTypeText} is locked."
+msgstr ""
+
+msgid "The discussion in this merge request is locked."
+msgstr ""
+
 msgid "The domain you entered is misformatted."
 msgstr ""
 
@@ -48781,16 +48796,10 @@ msgstr ""
 msgid "This %{issuable} is locked. Only %{strong_open}project members%{strong_close} can comment."
 msgstr ""
 
-msgid "This %{issuable} is locked. Only project members can comment."
-msgstr ""
-
 msgid "This %{issuable} would exceed the maximum number of linked %{issuables} (%{limit})."
 msgstr ""
 
-msgid "This %{noteableTypeText} is %{confidentialLinkStart}confidential%{confidentialLinkEnd} and %{lockedLinkStart}locked%{lockedLinkEnd}."
-msgstr ""
-
-msgid "This %{noteableTypeText} is locked."
+msgid "This %{noteableTypeText} is %{confidentialLinkStart}confidential%{confidentialLinkEnd} and its %{lockedLinkStart}discussion is locked%{lockedLinkEnd}."
 msgstr ""
 
 msgid "This %{viewer} could not be displayed because %{reason}. You can %{options} instead."
@@ -49244,9 +49253,6 @@ msgid "This merge request is from a private project to an internal project."
 msgstr ""
 
 msgid "This merge request is from an internal project to a public project."
-msgstr ""
-
-msgid "This merge request is locked."
 msgstr ""
 
 msgid "This merge request was merged. To apply this suggestion, edit this file directly."
@@ -51152,10 +51158,10 @@ msgstr ""
 msgid "Unlock"
 msgstr ""
 
-msgid "Unlock %{issuableDisplayName}"
+msgid "Unlock account"
 msgstr ""
 
-msgid "Unlock account"
+msgid "Unlock discussion"
 msgstr ""
 
 msgid "Unlock more features with GitLab Ultimate"
@@ -51164,7 +51170,7 @@ msgstr ""
 msgid "Unlock the discussion"
 msgstr ""
 
-msgid "Unlock this %{issuableDisplayName}? %{strongStart}Everyone%{strongEnd} will be able to comment."
+msgid "Unlock this discussion? %{strongStart}Everyone%{strongEnd} will be able to comment."
 msgstr ""
 
 msgid "Unlocked"
@@ -51173,7 +51179,7 @@ msgstr ""
 msgid "Unlocked the discussion."
 msgstr ""
 
-msgid "Unlocking %{issuableDisplayName}"
+msgid "Unlocking discussion"
 msgstr ""
 
 msgid "Unlocks the discussion."
