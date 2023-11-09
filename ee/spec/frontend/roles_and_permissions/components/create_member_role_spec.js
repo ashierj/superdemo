@@ -16,13 +16,21 @@ jest.mock('~/alert', () => ({
   })),
 }));
 
+const DEFAULT_PERMISSIONS = [
+  { name: 'Permission A', description: 'Description A', value: 'permission_a' },
+  { name: 'Permission B', description: 'Description B', value: 'permission_b' },
+  { name: 'Permission C', description: 'Description C', value: 'permission_c' },
+];
+
 describe('CreateMemberRole', () => {
   let wrapper;
 
-  const createComponent = () => {
+  const createComponent = ({ availablePermissions = DEFAULT_PERMISSIONS } = {}) => {
     wrapper = mountExtended(CreateMemberRole, {
-      propsData: { groupId: '4' },
-      stubs: { GlFormSelect },
+      propsData: {
+        groupId: '4',
+        availablePermissions,
+      },
     });
   };
 
@@ -63,48 +71,27 @@ describe('CreateMemberRole', () => {
     expect(options.at(4).text()).toBe('Owner');
   });
 
-  it('has multiple checkbox permissions', () => {
-    const checkboxes = findCheckboxes();
-    const checkboxOneText = checkboxes.at(0).text();
-    const checkboxTwoText = checkboxes.at(1).text();
-    const checkboxThreeText = checkboxes.at(2).text();
-    const checkboxFourText = checkboxes.at(3).text();
-    const checkboxFiveText = checkboxes.at(4).text();
-    const checkboSixText = checkboxes.at(5).text();
+  it('has the expected permissions checkboxes', () => {
+    DEFAULT_PERMISSIONS.forEach((permission, index) => {
+      const checkbox = findCheckboxes().at(index);
 
-    expect(checkboxOneText).toContain('Read code');
-    expect(checkboxOneText).toContain('Allows read-only access to the source code.');
-
-    expect(checkboxTwoText).toContain('Read vulnerability');
-    expect(checkboxTwoText).toContain('Allows read-only access to the vulnerability reports.');
-
-    expect(checkboxThreeText).toContain('Admin vulnerability');
-    expect(checkboxThreeText).toContain(
-      "Allows admin access to the vulnerability reports. Select 'Read vulnerability' for this to take effect.",
-    );
-
-    expect(checkboxFourText).toContain('Read dependency');
-    expect(checkboxFourText).toContain('Allows read-only access to the dependencies.');
-
-    expect(checkboxFiveText).toContain('Admin group member');
-    expect(checkboxFiveText).toContain('Allows admin access to group members.');
-
-    expect(checkboSixText).toContain('Admin merge requests');
-    expect(checkboSixText).toContain('Allows admin access to the merge requests.');
+      expect(checkbox.text()).toContain(permission.name);
+      expect(checkbox.text()).toContain(permission.description);
+    });
   });
 
   describe('manage_project_access_token feature flag is on', () => {
     beforeEach(() => {
       window.gon.features = { manageProjectAccessTokens: true };
-      createComponent();
     });
 
     it('renders manage project access token permission', () => {
-      const checkboxFourText = findCheckboxes().at(3).text();
-      expect(checkboxFourText).toContain('Manage Project Access Tokens');
-      expect(checkboxFourText).toContain(
-        "Allows manage access to the project access tokens. Select 'Manage Project Access Tokens' for this to take effect.",
-      );
+      const permission = { name: 'Permission D', description: 'Description D' };
+      createComponent({ availablePermissions: [permission] });
+      const checkbox = findCheckboxes().at(0);
+
+      expect(checkbox.text()).toContain(permission.name);
+      expect(checkbox.text()).toContain(permission.description);
     });
   });
 
@@ -158,7 +145,7 @@ describe('CreateMemberRole', () => {
         base_access_level: 10,
         name,
         description,
-        read_code: 1,
+        permission_a: 1,
       });
     });
 

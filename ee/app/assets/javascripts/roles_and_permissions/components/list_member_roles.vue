@@ -1,9 +1,11 @@
 <script>
 import { GlBadge, GlButton, GlCard, GlEmptyState, GlModal, GlTable } from '@gitlab/ui';
+import { keyBy } from 'lodash';
 import { deleteMemberRole, getMemberRoles } from 'ee/rest_api';
 import { ACCESS_LEVEL_LABELS } from '~/access_level/constants';
 import { createAlert, VARIANT_DANGER } from '~/alert';
 import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
+import { sprintf } from '~/locale';
 import {
   FIELDS,
   I18N_ADD_NEW_ROLE,
@@ -18,12 +20,12 @@ import {
   I18N_LICENSE_ERROR,
   I18N_MODAL_TITLE,
   I18N_MODAL_WARNING,
-  PERMISSIONS,
+  I18N_MEMBER_ROLE_PERMISSIONS_QUERY_ERROR,
 } from '../constants';
+import memberRolePermissionsQuery from '../graphql/member_role_permissions.query.graphql';
 import CreateMemberRole from './create_member_role.vue';
 
 export default {
-  name: 'ListMemberRoles',
   components: {
     CreateMemberRole,
     GlBadge,
@@ -48,15 +50,32 @@ export default {
   data() {
     return {
       alert: null,
-      loading: false,
+      isLoadingMemberRoles: false,
       memberRoles: [],
       memberRoleToDelete: null,
       showCreateMemberForm: false,
+      availablePermissions: [],
     };
+  },
+  apollo: {
+    memberRolePermissions: {
+      query: memberRolePermissionsQuery,
+      update({ memberRolePermissions }) {
+        this.availablePermissions = memberRolePermissions.nodes;
+      },
+      error({ message }) {
+        this.alert = createAlert({
+          message: sprintf(I18N_MEMBER_ROLE_PERMISSIONS_QUERY_ERROR, { message }),
+        });
+      },
+    },
   },
   computed: {
     isModalVisible() {
       return this.memberRoleToDelete !== null;
+    },
+    availablePermissionsLookup() {
+      return keyBy(this.availablePermissions, 'value');
     },
   },
   watch: {
@@ -91,7 +110,7 @@ export default {
         this.memberRoles = [];
         return;
       }
-      this.loading = true;
+      this.isLoadingMemberRoles = true;
 
       try {
         const { data } = await getMemberRoles(groupId);
@@ -110,16 +129,20 @@ export default {
           });
         }
       } finally {
-        this.loading = false;
+        this.isLoadingMemberRoles = false;
       }
     },
     listPermissions(item) {
-      return Object.entries(item).flatMap(([key, value]) => {
-        if (value !== true) {
-          return [];
+      return Object.entries(item).reduce((array, [key, value]) => {
+        const permission = this.availablePermissionsLookup[key];
+        // The member roles data has a mix of permissions data and other data. Only add the permission's name if the key
+        // is a permission and if its value is true.
+        if (permission && value) {
+          array.push(permission.name);
         }
-        return [PERMISSIONS[key]?.text || key];
-      });
+
+        return array;
+      }, []);
     },
     nameAccessLevel(value) {
       return ACCESS_LEVEL_LABELS[value];
@@ -175,17 +198,20 @@ export default {
       <div class="gl-new-card-actions">
         <gl-button
           :disabled="!groupId"
+          :loading="$apollo.queries.memberRolePermissions.loading"
           size="small"
           data-testid="add-role"
           @click="showCreateMemberForm = true"
-          >{{ $options.i18n.addNewRole }}</gl-button
         >
+          {{ $options.i18n.addNewRole }}
+        </gl-button>
       </div>
     </template>
 
     <div v-if="showCreateMemberForm" class="gl-new-card-add-form gl-m-3">
       <create-member-role
         :group-id="groupId"
+        :available-permissions="availablePermissions"
         @cancel="showCreateMemberForm = false"
         @success="onCreatedMemberRole"
       />
@@ -197,7 +223,13 @@ export default {
       :description="emptyText"
     />
 
-    <gl-table v-else :fields="$options.FIELDS" :items="memberRoles" :busy="loading" stacked="sm">
+    <gl-table
+      v-else
+      :fields="$options.FIELDS"
+      :items="memberRoles"
+      :busy="isLoadingMemberRoles || $apollo.queries.memberRolePermissions.loading"
+      stacked="sm"
+    >
       <template #cell(base_access_level)="{ item: { base_access_level } }">
         <gl-badge class="gl-my-n4">{{ nameAccessLevel(base_access_level) }}</gl-badge>
       </template>
@@ -211,8 +243,9 @@ export default {
             :key="index"
             variant="success"
             size="sm"
-            >{{ permission }}</gl-badge
           >
+            {{ permission }}
+          </gl-badge>
         </div>
       </template>
 

@@ -1,5 +1,6 @@
 import { GlCard, GlEmptyState, GlModal, GlTable } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { createAlert, VARIANT_DANGER } from '~/alert';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { getMemberRoles, deleteMemberRole } from 'ee/api/member_roles_api';
@@ -14,6 +15,8 @@ import {
 import ListMemberRoles from 'ee/roles_and_permissions/components/list_member_roles.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import memberRolePermissionsQuery from 'ee/roles_and_permissions/graphql/member_role_permissions.query.graphql';
 
 jest.mock('ee/api/member_roles_api');
 
@@ -23,6 +26,23 @@ jest.mock('~/alert', () => ({
     dismiss: mockAlertDismiss,
   })),
 }));
+
+Vue.use(VueApollo);
+
+const DEFAULT_PERMISSIONS = [
+  { name: 'Permission A', description: 'Description A', value: 'read_code' },
+  { name: 'Permission B', description: 'Description B', value: 'read_vulnerability' },
+  { name: 'Permission C', description: 'Description C', value: 'admin_vulnerability' },
+];
+const NON_STANDARD_PERMISSION = {
+  name: 'Permission D',
+  description: 'Description D',
+  value: 'non_standard_permission',
+};
+const PERMISSIONS = [...DEFAULT_PERMISSIONS, NON_STANDARD_PERMISSION];
+
+const getMemberRolePermissionsHandler = ({ nodes = PERMISSIONS } = {}) =>
+  jest.fn().mockResolvedValue({ data: { memberRolePermissions: { nodes } } });
 
 describe('ListMemberRoles', () => {
   const emptyText = 'blah, blah';
@@ -49,8 +69,11 @@ describe('ListMemberRoles', () => {
 
   const createComponent = (props = {}, mountFn = shallowMountExtended) => {
     wrapper = mountFn(ListMemberRoles, {
+      apolloProvider: createMockApollo([
+        [memberRolePermissionsQuery, getMemberRolePermissionsHandler()],
+      ]),
       propsData: { emptyText, ...props },
-      stubs: { GlCard },
+      stubs: { GlCard, GlTable },
       mocks: {
         $toast: {
           show: mockToastShow,
@@ -208,11 +231,11 @@ describe('ListMemberRoles', () => {
     it('shows list of standard permissions', async () => {
       createComponent({ groupId }, mountExtended);
       await waitForPromises();
-
       const badgesText = findCells().at(3).text();
-      expect(badgesText).toContain('Read code');
-      expect(badgesText).toContain('Read vulnerability');
-      expect(badgesText).toContain('Admin vulnerability');
+
+      DEFAULT_PERMISSIONS.forEach((permission) => {
+        expect(badgesText).toContain(permission.name);
+      });
     });
 
     it('shows list of non-standard permissions', async () => {
@@ -220,7 +243,7 @@ describe('ListMemberRoles', () => {
       await waitForPromises();
 
       const badgesText = findCells().at(8).text();
-      expect(badgesText).toBe('non_standard_permission');
+      expect(badgesText).toBe(NON_STANDARD_PERMISSION.name);
     });
   });
 
