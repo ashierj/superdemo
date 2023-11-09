@@ -68,6 +68,13 @@ compared with the pros and cons of alternatives.
 
 ## Design and implementation details
 
+### Workspace & Artifacts
+
+- We will store implementation details like metrics, budgets, and development & architectural patterns here in the docs
+- We will store large bodies of research, the results of audits, etc. in the [wiki](https://gitlab.com/gitlab-com/create-stage/new-diffs/-/wikis/home) of the [New Diffs project](https://gitlab.com/gitlab-com/create-stage/new-diffs)
+- We will store audio & video recordings on the public Youtube channel in the Code Review / New Diffs playlist
+- We will store drafts, meeting notes, and other temporary documents in public Google docs
+
 <!--
 This section should contain enough information that the specifics of your
 change are understandable. This may include API specs (though not always
