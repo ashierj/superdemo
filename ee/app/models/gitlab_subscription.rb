@@ -101,10 +101,8 @@ class GitlabSubscription < ApplicationRecord
     self.seats_owed = calculate_seats_owed
   end
 
-  def has_a_paid_hosted_plan?(include_trials: false)
-    (include_trials || !trial?) &&
-      seats > 0 &&
-      Plan::PAID_HOSTED_PLANS.include?(plan_name)
+  def has_a_paid_hosted_plan?
+    !trial? && seats > 0 && Plan::PAID_HOSTED_PLANS.include?(plan_name)
   end
 
   def expired?
