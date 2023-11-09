@@ -16,6 +16,10 @@ module QA
       end
 
       it 'sets and removes user\'s admin status',
+        quarantine: {
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/431125',
+          type: :investigating
+        },
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347896' do
         Page::Main::Menu.perform do |menu|
           admin_synchronised = menu.wait_until(max_duration: 80, sleep_interval: 1, reload: true) do
