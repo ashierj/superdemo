@@ -21,7 +21,10 @@ module Emails
 
       mail_with_locale(
         bcc: recipients,
-        subject: s_("NamespaceStorage|Action required: Storage has been exceeded for %{namespace_name}" % { namespace_name: namespace.name })
+        subject: s_(
+          "NamespaceStorage|Action required: Storage has been exceeded for %{namespace_name}" %
+          { namespace_name: namespace.name }
+        )
       )
     end
 
@@ -35,8 +38,10 @@ module Emails
 
       mail_with_locale(
         bcc: recipients,
-        subject: s_("NamespaceStorage|You have used %{used_storage_percentage} of the storage quota for %{namespace_name}" %
-          { used_storage_percentage: used_storage_percentage(@usage_ratio), namespace_name: namespace.name })
+        subject: s_(
+          "NamespaceStorage|You have used %{used_storage_percentage} of the storage quota for %{namespace_name}" %
+            { used_storage_percentage: used_storage_percentage(@usage_ratio), namespace_name: namespace.name }
+        )
       )
     end
   end
