@@ -25,7 +25,8 @@ module Gitlab
             resource: resource,
             ai_request: ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, tracking_context: tracking_context),
             extra_resource: options.delete(:extra_resource) || {},
-            request_id: prompt_message.request_id
+            request_id: prompt_message.request_id,
+            current_file: options.delete(:current_file)
           )
         end
 
