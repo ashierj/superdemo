@@ -14,9 +14,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountSecurityScansMetri
     end
 
     ::Security::Scan.scan_types.except('cluster_image_scanning').each do |name, scan_type|
-      let(:scan_type) { scan_type }
-
       context "with scan_type #{name}" do
+        let(:scan_type) { scan_type }
         let(:expected_query) do
           if params[:time_frame] == 'all'
             %{SELECT COUNT("security_scans"."build_id") FROM "security_scans" WHERE "security_scans"."scan_type" = #{scan_type}} # rubocop:disable Layout/LineLength

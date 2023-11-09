@@ -35,7 +35,7 @@ RSpec.describe ElasticsearchIndexedNamespace, :saas do
   end
 
   context 'with plans' do
-    Plan::PAID_HOSTED_PLANS.each do |plan| # rubocop:disable RSpec/UselessDynamicDefinition
+    Plan::PAID_HOSTED_PLANS.each do |plan| # rubocop:disable RSpec/UselessDynamicDefinition -- `plan` used in `let_it_be`
       plan_factory = "#{plan}_plan"
       let_it_be(plan_factory) { create(plan_factory) } # rubocop:disable Rails/SaveBang
     end
