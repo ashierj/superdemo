@@ -49,6 +49,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.mergePipelinesEnabled = Boolean(data.merge_pipelines_enabled);
     this.mergeTrainsCount = data.merge_trains_count || 0;
     this.mergeTrainIndex = data.merge_train_index;
+    this.mergeTrainsSkipAllowed = data.merge_trains_skip_train_allowed;
     this.policyViolation = data.policy_violation;
     this.jiraAssociation = data.jira_associations || {};
 

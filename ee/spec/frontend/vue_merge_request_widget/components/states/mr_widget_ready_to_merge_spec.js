@@ -1,6 +1,7 @@
-import { GlLink, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlSprintf, GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
+import MergeTrainRestartTrainConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_restart_train_confirmation_dialog.vue';
 import MergeTrainFailedPipelineConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_failed_pipeline_confirmation_dialog.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
@@ -50,9 +51,15 @@ describe('ReadyToMerge', () => {
     mergeable: true,
     transitionStateMachine: jest.fn(),
     state: 'readyToMerge',
+    mergeTrainsSkipAllowed: false,
   };
 
-  const createComponent = (mrUpdates = {}, mountFn = shallowMountExtended, data = {}) => {
+  const createComponent = (
+    mrUpdates = {},
+    mountFn = shallowMountExtended,
+    data = {},
+    mergeTrainsSkipTrainFF = false,
+  ) => {
     wrapper = mountFn(ReadyToMerge, {
       propsData: {
         mr: { ...mr, ...mrUpdates },
@@ -72,6 +79,16 @@ describe('ReadyToMerge', () => {
         GlSprintf,
         GlLink,
         MergeTrainFailedPipelineConfirmationDialog,
+        MergeTrainRestartTrainConfirmationDialog: stubComponent(
+          MergeTrainRestartTrainConfirmationDialog,
+        ),
+        GlDisclosureDropdown,
+        GlDisclosureDropdownItem,
+      },
+      provide: {
+        glFeatures: {
+          mergeTrainsSkipTrain: mergeTrainsSkipTrainFF,
+        },
       },
     });
   };
@@ -79,10 +96,16 @@ describe('ReadyToMerge', () => {
   const findMergeButton = () => wrapper.findByTestId('merge-button');
   const findMergeImmediatelyDropdown = () => wrapper.findByTestId('merge-immediately-dropdown');
   const findMergeImmediatelyButton = () => wrapper.findByTestId('merge-immediately-button');
+  const findMergeTrainMergeNowRestartTrainButton = () =>
+    wrapper.findByTestId('mt-merge-now-restart-button');
+  const findMergeTrainMergeNowSkipTrainButton = () =>
+    wrapper.findByTestId('mt-merge-now-skip-restart-button');
   const findMergeTrainFailedPipelineConfirmationDialog = () =>
     wrapper.findComponent(MergeTrainFailedPipelineConfirmationDialog);
   const findMergeImmediatelyConfirmationDialog = () =>
     wrapper.findComponent(MergeImmediatelyConfirmationDialog);
+  const findMergeTrainRestartTrainConfirmationDialog = () =>
+    wrapper.findComponent(MergeTrainRestartTrainConfirmationDialog);
 
   describe('Merge Immediately Dropdown', () => {
     it('should return false if no pipeline is active', () => {
@@ -121,6 +144,23 @@ describe('ReadyToMerge', () => {
 
       expect(findMergeImmediatelyDropdown().exists()).toBe(true);
     });
+
+    it('should display the new merge dropdown options for merge trains when the skip trains feature flag is enabled', () => {
+      createComponent(
+        {
+          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
+          headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: false },
+          onlyAllowMergeIfPipelineSucceeds: true,
+          mergeTrainsSkipAllowed: true,
+        },
+        shallowMountExtended,
+        {},
+        true,
+      );
+
+      expect(findMergeTrainMergeNowRestartTrainButton().exists()).toBe(true);
+      expect(findMergeTrainMergeNowSkipTrainButton().exists()).toBe(true);
+    });
   });
 
   describe('merge train failed confirmation dialog', () => {
@@ -155,13 +195,13 @@ describe('ReadyToMerge', () => {
   });
 
   describe('merge immediately warning dialog', () => {
-    const clickMergeImmediately = async () => {
-      expect(findMergeImmediatelyConfirmationDialog().exists()).toBe(true);
+    const clickMergeImmediately = async (
+      dialog = findMergeImmediatelyConfirmationDialog(),
+      button = findMergeImmediatelyButton(),
+    ) => {
+      expect(dialog.exists()).toBe(true);
 
-      findMergeImmediatelyDropdown().vm.$emit('show');
-      await nextTick();
-
-      findMergeImmediatelyButton().vm.$emit('click');
+      button.vm.$emit('action');
 
       await nextTick();
     };
@@ -201,6 +241,75 @@ describe('ReadyToMerge', () => {
 
       expect(showMock).not.toHaveBeenCalled();
       expect(findMergeTrainFailedPipelineConfirmationDialog().props('visible')).toBe(false);
+      expect(mr.transitionStateMachine).toHaveBeenCalled();
+    });
+
+    it('starts to merge a merge request when restarting a merge train with the new confirmation dialog', async () => {
+      createComponent(
+        {
+          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
+          headPipeline: {
+            id: 'gid://gitlab/Pipeline/1',
+            path: 'path/to/pipeline',
+            status: 'PASSED',
+          },
+          mergeTrainsSkipAllowed: true,
+        },
+        shallowMountExtended,
+        {},
+        true,
+      );
+
+      findMergeTrainRestartTrainConfirmationDialog().vm.$emit('show');
+
+      await clickMergeImmediately(
+        findMergeTrainRestartTrainConfirmationDialog(),
+        findMergeTrainMergeNowRestartTrainButton(),
+      );
+
+      findMergeTrainRestartTrainConfirmationDialog().vm.$emit('processMergeTrainMerge');
+
+      await nextTick();
+
+      expect(mr.transitionStateMachine).toHaveBeenCalledWith({ transition: 'start-merge' });
+    });
+
+    it('does not contain the new confirmation dialog for merging merge trains immediately when the mergeTrainSkipTrain feature flag is disabled', () => {
+      createComponent({
+        availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
+        mergeTrainsSkipAllowed: true,
+      });
+
+      expect(findMergeTrainRestartTrainConfirmationDialog().exists()).toBe(false);
+    });
+
+    it('contains the new confirmation dialog for merging merge trains immediately when the mergeTrainSkipTrain feature flag is enabled', () => {
+      createComponent(
+        { availableAutoMergeStrategies: [MT_MERGE_STRATEGY], mergeTrainsSkipAllowed: true },
+        shallowMountExtended,
+        {},
+        true,
+      );
+
+      expect(findMergeTrainRestartTrainConfirmationDialog().exists()).toBe(true);
+    });
+
+    it('should not ask for confirmation in non-merge train scenarios with the new confirmation dialog', async () => {
+      createComponent(
+        {
+          headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
+          onlyAllowMergeIfPipelineSucceeds: false,
+          mergeTrainsSkipAllowed: true,
+        },
+        shallowMountExtended,
+        {},
+        true,
+      );
+
+      await clickMergeImmediately();
+
+      expect(showMock).not.toHaveBeenCalled();
+      expect(findMergeTrainRestartTrainConfirmationDialog().props('visible')).toBe(false);
       expect(mr.transitionStateMachine).toHaveBeenCalled();
     });
   });

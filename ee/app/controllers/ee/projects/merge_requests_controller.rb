@@ -12,6 +12,7 @@ module EE
         before_action only: [:show] do
           push_frontend_feature_flag(:anonymous_visual_review_feedback)
           push_frontend_feature_flag(:standalone_finding_modal_merge_request_widget, @project)
+          push_frontend_feature_flag(:merge_trains_skip_train, @project)
         end
 
         before_action :authorize_read_pipeline!, only: [:metrics_reports]
