@@ -19,6 +19,13 @@ module EE
             s_('GroupSettings|Prevent forking setting was not saved')
           )
         end
+
+        unless can_update_service_access_tokens_expiration_enforced?
+          group.errors.add(
+            :service_access_tokens_expiration_enforced,
+            s_('GroupSettings|Service access tokens expiration enforced setting was not saved')
+          )
+        end
       end
 
       private
@@ -33,6 +40,15 @@ module EE
 
           false
         end
+      end
+
+      def can_update_service_access_tokens_expiration_enforced?
+        return true unless settings_params.key?(:service_access_tokens_expiration_enforced)
+
+        return true if group.root? && can?(current_user, :admin_service_accounts, group)
+
+        settings_params.delete(:service_access_tokens_expiration_enforced)
+        false
       end
 
       def ai_settings_changed?

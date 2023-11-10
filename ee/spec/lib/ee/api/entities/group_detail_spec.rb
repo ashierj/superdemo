@@ -74,6 +74,41 @@ RSpec.describe API::Entities::GroupDetail do
     end
   end
 
+  describe 'service_account_tokens_expiration_enforced' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:service_account_user) { create(:user, :service_account) }
+
+    subject(:group_detail_entity) { described_class.new(group, current_user: service_account_user).as_json }
+
+    context 'when service accounts feature is licensed' do
+      before do
+        stub_licensed_features(service_accounts: true)
+        group.namespace_settings.update!(service_access_tokens_expiration_enforced: false)
+      end
+
+      it 'exposes attributes' do
+        expect(group_detail_entity[:service_access_tokens_expiration_enforced]).to eq(false)
+      end
+
+      context 'when not root group' do
+        before do
+          group.parent = create(:group)
+          group.save!
+        end
+
+        it 'does not expose the attributes' do
+          expect(group_detail_entity.keys).not_to include(:service_access_tokens_expiration_enforced)
+        end
+      end
+    end
+
+    context 'when feture is not licensed' do
+      it 'does not expose the attributes' do
+        expect(group_detail_entity.keys).not_to include(:service_access_tokens_expiration_enforced)
+      end
+    end
+  end
+
   describe 'ip_restriction_ranges attribute' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }

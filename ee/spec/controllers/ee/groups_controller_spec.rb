@@ -681,6 +681,43 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
       end
     end
 
+    context 'when service_access_tokens_expiration_enforced is specified' do
+      subject(:update_group_request) { put :update, params: params }
+
+      shared_examples_for 'updates the attribute if needed' do
+        it 'updates the attribute' do
+          update_group_request
+
+          expect(response).to have_gitlab_http_status(:found)
+          expect(group.reload.service_access_tokens_expiration_enforced?).to eq(result)
+        end
+      end
+
+      context 'when authenticated as group owner' do
+        where(:feature_enabled, :service_access_tokens_expiration_enforced, :result) do
+          false | false | true
+          false | true  | true
+          true  | false | false
+          true  | true  | true
+        end
+
+        with_them do
+          let(:params) do
+            { id: group.to_param, group: { service_access_tokens_expiration_enforced: service_access_tokens_expiration_enforced } }
+          end
+
+          before do
+            group.add_owner(user)
+            sign_in(user)
+
+            stub_licensed_features(service_accounts: feature_enabled)
+          end
+
+          it_behaves_like 'updates the attribute if needed'
+        end
+      end
+    end
+
     context 'when `prevent_forking_outside_group` is specified' do
       subject { put :update, params: params }
 

@@ -120,7 +120,8 @@ module EE
                                :maven_package_requests_forwarding,
                                :lock_maven_package_requests_forwarding],
           default_branch_protection_restriction_in_groups: :group_owners_can_manage_default_branch_protection,
-          group_ip_restriction: :globally_allowed_ips
+          group_ip_restriction: :globally_allowed_ips,
+          service_accounts: :service_access_tokens_expiration_enforced
         }.each do |license_feature, attribute_names|
           if License.feature_available?(license_feature)
             attrs += Array.wrap(attribute_names)

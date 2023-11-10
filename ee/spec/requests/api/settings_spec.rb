@@ -37,6 +37,35 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       expect(json_response['package_metadata_purl_types']).to eq([1])
     end
 
+    context 'service access tokens expiration enforced setting' do
+      let(:params) { { file_template_project_id: project.id, service_access_tokens_expiration_enforced: false } }
+
+      it_behaves_like 'PUT request permissions for admin mode'
+
+      subject(:api_request) do
+        put api(path, admin, admin_mode: true),
+        params: params
+      end
+
+      it 'sets setting when licensed feature is there' do
+        stub_licensed_features(service_accounts: true)
+
+        api_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['service_access_tokens_expiration_enforced']).to eq(false)
+      end
+
+      it 'does not set the value when licensed feature is not there' do
+        stub_licensed_features(service_accounts: false)
+
+        api_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['service_access_tokens_expiration_enforced']).to eq(nil)
+      end
+    end
+
     context 'elasticsearch settings' do
       it 'limits namespaces and projects properly' do
         namespace_ids = create_list(:namespace, 2).map(&:id)

@@ -12,6 +12,9 @@ module EE
           expose :shared_runners_minutes_limit
           expose :extra_shared_runners_minutes_limit
           expose :prevent_forking_outside_group?, as: :prevent_forking_outside_group
+          expose :service_access_tokens_expiration_enforced?, as: :service_access_tokens_expiration_enforced,
+            if: ->(group, options) { group.root? && group.licensed_feature_available?(:service_accounts) }
+
           expose :membership_lock?, as: :membership_lock
           expose :ip_restriction_ranges, if: ->(group, options) { ip_restriction_feature_available?(group) }
 

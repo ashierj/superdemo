@@ -626,6 +626,10 @@ module EE
       root_ancestor.saml_provider&.prohibited_outer_forks?
     end
 
+    def service_access_tokens_expiration_enforced?
+      namespace_settings.service_access_tokens_expiration_enforced if namespace_settings
+    end
+
     def minimal_access_role_allowed?
       feature_available?(:minimal_access_role) && !has_parent?
     end
