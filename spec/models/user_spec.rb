@@ -1837,7 +1837,7 @@ RSpec.describe User, feature_category: :user_profile do
     end
 
     context 'when the confirmation period has expired' do
-      let(:confirmation_sent_at) {  expired_confirmation_sent_at }
+      let(:confirmation_sent_at) { expired_confirmation_sent_at }
 
       it_behaves_like 'unconfirmed user'
 
@@ -1855,7 +1855,7 @@ RSpec.describe User, feature_category: :user_profile do
     end
 
     context 'when the confirmation period has not expired' do
-      let(:confirmation_sent_at) {  extant_confirmation_sent_at }
+      let(:confirmation_sent_at) { extant_confirmation_sent_at }
 
       it_behaves_like 'unconfirmed user'
 
@@ -2046,7 +2046,7 @@ RSpec.describe User, feature_category: :user_profile do
     end
 
     context 'when the confirmation period has expired' do
-      let(:confirmation_sent_at) {  expired_confirmation_sent_at }
+      let(:confirmation_sent_at) { expired_confirmation_sent_at }
 
       it_behaves_like 'unconfirmed user'
       it_behaves_like 'confirms the user on force_confirm'

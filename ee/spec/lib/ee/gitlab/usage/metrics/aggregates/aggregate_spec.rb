@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Usage::Metrics::Aggregates::Aggregate, :clean_gitlab_redi
     end
 
     context 'when using known events' do
-      before  do
+      before do
         %w[event1 event2].each do |event_name|
           allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:known_event?).with(event_name).and_return(true)
         end
