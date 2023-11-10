@@ -34,6 +34,28 @@ RSpec.describe NamespaceSetting do
         .is_less_than_or_equal_to(10.days.to_i)
     }
 
+    describe 'product_analytics_enabled', feature_category: :product_analytics_data_management do
+      let(:attr) { :product_analytics_enabled }
+
+      context 'when experimental features are enabled' do
+        before do
+          allow(subject).to receive(:experiment_features_enabled).and_return(true)
+        end
+
+        it { is_expected.to allow_value(true).for(attr) }
+        it { is_expected.to allow_value(false).for(attr) }
+      end
+
+      context 'when experimental features are disabled' do
+        before do
+          allow(subject).to receive(:experiment_features_enabled).and_return(false)
+        end
+
+        it { is_expected.not_to allow_value(true).for(attr) }
+        it { is_expected.to allow_value(false).for(attr) }
+      end
+    end
+
     describe 'unique_project_download_limit_allowlist', feature_category: :insider_threat do
       let_it_be(:user) { create(:user) }
 
