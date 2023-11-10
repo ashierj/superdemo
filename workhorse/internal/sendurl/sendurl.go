@@ -33,6 +33,13 @@ type entryParams struct {
 	Method                string
 }
 
+var _ io.Writer = (*flushingWriter)(nil)
+
+type flushingWriter struct {
+	flush    func() error
+	delegate io.Writer
+}
+
 var SendURL = &entry{"send-url:"}
 
 var rangeHeaderKeys = []string{
@@ -158,7 +165,15 @@ func (e *entry) Inject(w http.ResponseWriter, r *http.Request, sendData string) 
 	w.WriteHeader(resp.StatusCode)
 
 	defer resp.Body.Close()
-	n, err := io.Copy(w, resp.Body)
+
+	// Flushes the response right after it received.
+	// Important for streaming responses, where content delivered in chunks.
+	// Without flushing the body gets buffered by io.Copy
+	fw := &flushingWriter{
+		flush:    http.NewResponseController(w).Flush,
+		delegate: w,
+	}
+	n, err := io.Copy(fw, resp.Body)
 	sendURLBytes.Add(float64(n))
 
 	if err != nil {
@@ -189,4 +204,14 @@ func newClient(params entryParams) *http.Client {
 	}
 
 	return client
+}
+
+// Write flushes the response once its written
+func (f *flushingWriter) Write(data []byte) (int, error) {
+	n, err := f.delegate.Write(data)
+	if err != nil {
+		return n, err
+	}
+	err = f.flush()
+	return n, err
 }

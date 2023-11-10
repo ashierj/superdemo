@@ -54,3 +54,12 @@ func TestBlocker(t *testing.T) {
 		})
 	}
 }
+
+func TestBlockerFlushable(t *testing.T) {
+	rw := httptest.NewRecorder()
+	b := blocker{rw: rw}
+	rc := http.NewResponseController(&b)
+
+	err := rc.Flush()
+	require.NoError(t, err, "the underlying response writer is not flushable")
+}

@@ -245,6 +245,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           content_above_cursor: prefix,
           content_below_cursor: ''
         },
+        stream: false,
         **additional_params
       }
     end
@@ -407,6 +408,21 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
               post_api
             end
+          end
+        end
+
+        context 'when passing stream parameter' do
+          let(:additional_params) { { stream: true } }
+
+          it 'passes stream into TaskFactory.new' do
+            expect(::CodeSuggestions::TaskFactory).to receive(:new)
+              .with(
+                current_user,
+                params: hash_including(stream: true),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            post_api
           end
         end
       end

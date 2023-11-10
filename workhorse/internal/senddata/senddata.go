@@ -44,7 +44,7 @@ func SendData(h http.Handler, injecters ...Injecter) http.Handler {
 			req:       r,
 			injecters: injecters,
 		}
-		defer s.flush()
+		defer s.Flush()
 		h.ServeHTTP(&s, r)
 	}))
 }
@@ -101,6 +101,12 @@ func (s *sendDataResponseWriter) tryInject() bool {
 	return false
 }
 
-func (s *sendDataResponseWriter) flush() {
+func (s *sendDataResponseWriter) Flush() {
+	_ = s.FlushError()
+}
+
+// FlushError lets http.ResponseController to be used to flush the underlying http.ResponseWriter.
+func (s *sendDataResponseWriter) FlushError() error {
 	s.WriteHeader(http.StatusOK)
+	return http.NewResponseController(s.rw).Flush()
 }
