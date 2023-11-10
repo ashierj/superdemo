@@ -34583,9 +34583,6 @@ msgstr ""
 msgid "PerformanceBar|Redis calls"
 msgstr ""
 
-msgid "PerformanceBar|Rugged calls"
-msgstr ""
-
 msgid "PerformanceBar|SQL queries"
 msgstr ""
 
