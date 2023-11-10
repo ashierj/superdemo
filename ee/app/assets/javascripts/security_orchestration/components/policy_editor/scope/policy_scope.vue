@@ -2,6 +2,7 @@
 import { GlAlert, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import GroupProjectsDropdown from '../../group_projects_dropdown.vue';
+import ComplianceFrameworkDropdown from './compliance_framework_dropdown.vue';
 import {
   PROJECTS_WITH_FRAMEWORK,
   PROJECT_SCOPE_TYPE_LISTBOX_ITEMS,
@@ -25,21 +26,27 @@ export default {
       `SecurityOrchestration|Apply this policy to all projects %{projectScopeType} %{exceptionType} %{projectSelector}`,
     ),
     groupProjectErrorDescription: s__('SecurityOrchestration|Failed to load group projects'),
+    complianceFrameworkErrorDescription: s__(
+      'SecurityOrchestration|Failed to load compliance frameworks',
+    ),
   },
   name: 'PolicyScope',
   components: {
     GlAlert,
     GlCollapsibleListbox,
+    ComplianceFrameworkDropdown,
     GlSprintf,
     GroupProjectsDropdown,
   },
-  inject: ['namespacePath'],
+  inject: ['namespacePath', 'rootNamespacePath'],
   data() {
     return {
       selectedProjectScopeType: PROJECTS_WITH_FRAMEWORK,
       selectedExceptionType: WITHOUT_EXCEPTIONS,
       selectedProjectIds: [],
+      selectedFrameworkIds: [],
       showAlert: false,
+      errorDescription: '',
     };
   },
   computed: {
@@ -74,8 +81,12 @@ export default {
     setSelectedProjectIds(ids) {
       this.selectedProjectIds = ids;
     },
-    setShowAlert() {
+    setSelectedFrameworkIds(ids) {
+      this.selectedFrameworkIds = ids;
+    },
+    setShowAlert(errorDescription) {
       this.showAlert = true;
+      this.errorDescription = errorDescription;
     },
   },
 };
@@ -84,7 +95,7 @@ export default {
 <template>
   <div>
     <gl-alert v-if="showAlert" class="gl-mb-5" variant="danger" :dismissible="false">
-      {{ $options.i18n.groupProjectErrorDescription }}
+      {{ errorDescription }}
     </gl-alert>
 
     <div class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap gl-mt-2 gl-mb-6">
@@ -98,7 +109,14 @@ export default {
           />
         </template>
 
-        <template #frameworkSelector> </template>
+        <template #frameworkSelector>
+          <compliance-framework-dropdown
+            :selected-framework-ids="selectedFrameworkIds"
+            :full-path="rootNamespacePath"
+            @framework-query-error="setShowAlert($options.i18n.complianceFrameworkErrorDescription)"
+            @select="setSelectedFrameworkIds"
+          />
+        </template>
 
         <template #exceptionType>
           <gl-collapsible-listbox
@@ -115,7 +133,7 @@ export default {
             v-if="showGroupProjectsDropdown"
             :group-full-path="namespacePath"
             :selected-projects-ids="selectedProjectIds"
-            @projects-query-error="setShowAlert"
+            @projects-query-error="setShowAlert($options.i18n.groupProjectErrorDescription)"
             @select="setSelectedProjectIds"
           />
         </template>

@@ -237,6 +237,11 @@ msgid_plural "%d completed issues"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d compliance framework selected"
+msgid_plural "%d compliance frameworks selected"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d contribution"
 msgid_plural "%d contributions"
 msgstr[0] ""
@@ -4789,6 +4794,9 @@ msgid "All eligible users"
 msgstr ""
 
 msgid "All environments"
+msgstr ""
+
+msgid "All frameworks selected"
 msgstr ""
 
 msgid "All groups"
@@ -42999,6 +43007,9 @@ msgstr ""
 msgid "SecurityOrchestration|Choose approver type"
 msgstr ""
 
+msgid "SecurityOrchestration|Choose framework labels"
+msgstr ""
+
 msgid "SecurityOrchestration|Choose specific role"
 msgstr ""
 
@@ -43006,6 +43017,9 @@ msgid "SecurityOrchestration|Clear all"
 msgstr ""
 
 msgid "SecurityOrchestration|Create more robust vulnerability rules and apply them to all your projects."
+msgstr ""
+
+msgid "SecurityOrchestration|Create new framework label"
 msgstr ""
 
 msgid "SecurityOrchestration|Create policy"
@@ -43063,6 +43077,9 @@ msgid "SecurityOrchestration|Exceptions"
 msgstr ""
 
 msgid "SecurityOrchestration|Failed to load cluster agents."
+msgstr ""
+
+msgid "SecurityOrchestration|Failed to load compliance frameworks"
 msgstr ""
 
 msgid "SecurityOrchestration|Failed to load group projects"
@@ -43126,6 +43143,9 @@ msgid "SecurityOrchestration|New scan result policy"
 msgstr ""
 
 msgid "SecurityOrchestration|No actions defined - policy will not run."
+msgstr ""
+
+msgid "SecurityOrchestration|No compliance frameworks"
 msgstr ""
 
 msgid "SecurityOrchestration|No description"
@@ -43266,6 +43286,9 @@ msgid "SecurityOrchestration|Select a project to store your security policies in
 msgstr ""
 
 msgid "SecurityOrchestration|Select exception branches"
+msgstr ""
+
+msgid "SecurityOrchestration|Select frameworks"
 msgstr ""
 
 msgid "SecurityOrchestration|Select groups"
