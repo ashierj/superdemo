@@ -10,6 +10,17 @@ import { createDateTimeFormat } from '~/locale';
  * localDateFormat[DATE_WITH_TIME_FORMAT].formatRange(date, date) // returns 'Jul 6, 2020, 2:45PM – 8:43 PM'
  */
 export const DATE_WITH_TIME_FORMAT = 'asDateTime';
+
+/**
+ * Format a Date with the help of {@link DateTimeFormat.asDateTimeFull}
+ *
+ * Note: In case you can use localeDateFormat.asDateTimeFull directly, please do that.
+ *
+ * @example
+ * localeDateFormat[DATE_TIME_FULL_FORMAT].format(date) // returns 'July 6, 2020 at 2:43:12 PM GMT'
+ */
+export const DATE_TIME_FULL_FORMAT = 'asDateTimeFull';
+
 /**
  * Format a Date with the help of {@link DateTimeFormat.asDate}
  *
@@ -21,7 +32,7 @@ export const DATE_WITH_TIME_FORMAT = 'asDateTime';
  */
 export const DATE_ONLY_FORMAT = 'asDate';
 export const DEFAULT_DATE_TIME_FORMAT = DATE_WITH_TIME_FORMAT;
-export const DATE_TIME_FORMATS = [DATE_WITH_TIME_FORMAT, DATE_ONLY_FORMAT];
+export const DATE_TIME_FORMATS = [DATE_WITH_TIME_FORMAT, DATE_TIME_FULL_FORMAT, DATE_ONLY_FORMAT];
 
 /**
  * The DateTimeFormat utilities support formatting a number of types,
@@ -64,6 +75,32 @@ class DateTimeFormat {
       this.#createFormatter(DATE_WITH_TIME_FORMAT, {
         dateStyle: 'medium',
         timeStyle: 'short',
+        hourCycle: DateTimeFormat.#hourCycle,
+      })
+    );
+  }
+  /**
+   * Locale aware formatter to a complete date time.
+   *
+   * This is needed if you need to convey a full timestamp including timezone and seconds.
+   *
+   * This is mainly used in tooltips. Use {@link DateTimeFormat.asDateTime}
+   * if you don't need to show all the information.
+   *
+   *
+   * @example
+   * // en-US: returns something like July 6, 2020 at 2:43:12 PM GMT
+   * // en-GB: returns something like 6 July 2020 at 14:43:12 GMT
+   * localeDateFormat.asDateTimeFull.format(date)
+   *
+   * @returns {DateTimeFormatter}
+   */
+  get asDateTimeFull() {
+    return (
+      this.#formatters[DATE_TIME_FULL_FORMAT] ||
+      this.#createFormatter(DATE_TIME_FULL_FORMAT, {
+        dateStyle: 'long',
+        timeStyle: 'long',
         hourCycle: DateTimeFormat.#hourCycle,
       })
     );
@@ -177,6 +214,7 @@ class DateTimeFormat {
  *
  * DateTime (showing both date and times):
  * - {@link DateTimeFormat.asDateTime localeDateFormat.asDateTime} - the default format for date times
+ * - {@link DateTimeFormat.asDateTimeFull localeDateFormat.asDateTimeFull} - full format, including timezone and seconds
  *
  * Date (showing date only):
  * - {@link DateTimeFormat.asDate localeDateFormat.asDate} - the default format for a date
