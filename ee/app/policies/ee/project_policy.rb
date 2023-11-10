@@ -637,6 +637,23 @@ module EE
         ).has_ability?
       end
 
+      condition(:archive_project_enabled) do
+        ::Feature.enabled?(:archive_project, @subject.root_ancestor)
+      end
+
+      desc "Custom role on project that enables archiving projects"
+      condition(:custom_role_enables_archive_projects) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :archive_project
+        ).has_ability?
+      end
+
+      rule { custom_roles_allowed & archive_project_enabled & custom_role_enables_archive_projects }.policy do
+        enable :archive_project
+      end
+
       rule { needs_new_sso_session }.policy do
         prevent :read_project
       end

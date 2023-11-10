@@ -170,15 +170,32 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
   end
 
   describe 'GET edit', feature_category: :groups_and_projects do
+    subject(:request) { get :edit, params: { namespace_id: project.namespace.path, id: project.path } }
+
     it 'does not allow an auditor user to access the page' do
       sign_in(create(:user, :auditor))
 
-      get :edit, params: {
-        namespace_id: project.namespace.path,
-        id: project.path
-      }
+      request
 
       expect(response).to have_gitlab_http_status(:not_found)
+    end
+
+    context 'when the user can archive projects' do
+      let_it_be(:guest) { create(:user) }
+
+      before do
+        project.add_guest(guest)
+        allow(controller).to receive(:can?).and_call_original
+        allow(controller).to receive(:can?).with(guest, :archive_project, anything).and_return(true)
+
+        sign_in(guest)
+        request
+      end
+
+      it 'allows the user to access the page' do
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to render_template(:edit)
+      end
     end
   end
 

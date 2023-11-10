@@ -62,9 +62,16 @@ export default {
   },
   computed: {
     selectablePermissions() {
-      return gon.features.manageProjectAccessTokens
-        ? this.availablePermissions
-        : this.availablePermissions.filter(({ value }) => value !== 'manage_project_access_tokens');
+      return this.availablePermissions.filter(({ value }) => {
+        switch (value) {
+          case 'manage_project_access_tokens':
+            return Boolean(gon.features.manageProjectAccessTokens);
+          case 'archive_project':
+            return Boolean(gon.features.archiveProject);
+          default:
+            return true;
+        }
+      });
     },
   },
   methods: {

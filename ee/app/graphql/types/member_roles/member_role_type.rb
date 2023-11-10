@@ -41,6 +41,12 @@ module Types
         alpha: { milestone: '16.5' },
         description: 'Permission to admin group members.'
 
+      field :archive_project,
+        GraphQL::Types::Boolean,
+        null: true,
+        alpha: { milestone: '16.6' },
+        description: 'Permission to archive projects.'
+
       field :manage_project_access_tokens,
         GraphQL::Types::Boolean,
         null: true,

@@ -222,5 +222,9 @@ module EE
     def log_unarchive_audit_event
       log_audit_event(message: 'Project unarchived', event_type: 'project_unarchived')
     end
+
+    def authorize_admin_project_or_custom_permissions!
+      can?(current_user, :archive_project, project) || super
+    end
   end
 end

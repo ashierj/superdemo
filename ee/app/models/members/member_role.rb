@@ -24,6 +24,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     },
     manage_project_access_tokens: {
       description: 'Allows manage access to the project access tokens'
+    },
+    archive_project: {
+      description: 'Allows to archive projects'
     }
   }.freeze
   ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS = [
@@ -32,7 +35,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     :read_vulnerability,
     :admin_merge_request,
     :admin_vulnerability,
-    :manage_project_access_tokens
+    :manage_project_access_tokens,
+    :archive_project
   ].freeze
   ALL_CUSTOMIZABLE_GROUP_PERMISSIONS = [
     :read_dependency,
