@@ -104,10 +104,10 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
       end
     end
 
-    describe '#fetch_branches_protected_from_force_push' do
+    describe '#fetch_branches_protected_from_push' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:feature_flag, :licensed_feature, :branches_protected_from_force_push, :expected_result) do
+      where(:feature_flag, :licensed_feature, :branches_protected_from_push, :expected_result) do
         false            | false           | []                       | []
         false            | true            | []                       | []
         true             | false           | []                       | []
@@ -125,16 +125,16 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
           stub_licensed_features(security_orchestration_policies: licensed_feature)
 
           allow_next_instance_of(
-            ::Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePushService
+            ::Security::SecurityOrchestrationPolicies::ProtectedBranchesPushService
           ) do |instance|
-            allow(instance).to receive(:execute).and_return(branches_protected_from_force_push)
+            allow(instance).to receive(:execute).and_return(branches_protected_from_push)
           end
         end
 
         it 'assigns the list of protected branches' do
           subject
 
-          expect(assigns[:branches_protected_from_force_push]).to eq(expected_result)
+          expect(assigns[:branches_protected_from_push]).to eq(expected_result)
         end
       end
     end

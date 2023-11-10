@@ -2,7 +2,7 @@
 
 module Security
   module SecurityOrchestrationPolicies
-    class ProtectedBranchesForcePushService < BaseProjectService
+    class ProtectedBranchesPushService < BaseProjectService
       def execute
         return [] unless ::Feature.enabled?(:scan_result_policies_block_force_push, project)
 
