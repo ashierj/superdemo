@@ -500,6 +500,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     let(:owner) { create(:user) }
     let(:namespace) { create(:group) }
     let(:privatized_by_abuse_automation) { false }
+    let(:block_namespace_name_update) { false }
 
     subject(:update_namespace) { namespace.update!(attributes) }
 
@@ -507,6 +508,10 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       allow(Gitlab).to receive(:com?).and_return(true)
       allow(owner).to receive(:privatized_by_abuse_automation?)
         .and_return(privatized_by_abuse_automation)
+      allow(::Gitlab::ApplicationRateLimiter).to receive(:peek).and_call_original
+      allow(::Gitlab::ApplicationRateLimiter).to receive(:peek)
+        .with(:update_namespace_name, scope: namespace)
+        .and_return(block_namespace_name_update)
     end
 
     shared_examples 'no sync' do
@@ -621,6 +626,12 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
 
         context 'when the owner is not privatized by abuse automation' do
           include_examples 'sync'
+
+          context 'when the update to CustomersDot is blocked ay throttle' do
+            let(:block_namespace_name_update) { true }
+
+            include_examples 'no sync'
+          end
         end
       end
 
