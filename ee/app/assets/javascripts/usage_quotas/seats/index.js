@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
 import apolloProvider from 'ee/usage_quotas/shared/provider';
+import { writeDataToApolloCache } from 'ee/usage_quotas/seats/graphql/utils';
 import initialStore from './store';
 
 Vue.use(Vuex);
@@ -31,27 +32,30 @@ export default (containerId = 'js-seat-usage-app') => {
     enforcementFreeUserCapEnabled,
   } = el.dataset;
 
+  const store = new Vuex.Store(
+    initialStore({
+      namespaceId,
+      namespaceName,
+      seatUsageExportPath,
+      pendingMembersPagePath,
+      pendingMembersCount,
+      addSeatsHref,
+      hasNoSubscription: parseBoolean(hasNoSubscription),
+      maxFreeNamespaceSeats: parseInt(maxFreeNamespaceSeats, 10),
+      explorePlansPath,
+      enforcementFreeUserCapEnabled: parseBoolean(enforcementFreeUserCapEnabled),
+    }),
+  );
+
   return new Vue({
     el,
     name: 'SeatsUsageApp',
-    apolloProvider,
+    apolloProvider: writeDataToApolloCache(apolloProvider),
     provide: {
+      explorePlansPath,
       fullPath,
     },
-    store: new Vuex.Store(
-      initialStore({
-        namespaceId,
-        namespaceName,
-        seatUsageExportPath,
-        pendingMembersPagePath,
-        pendingMembersCount,
-        addSeatsHref,
-        hasNoSubscription: parseBoolean(hasNoSubscription),
-        maxFreeNamespaceSeats: parseInt(maxFreeNamespaceSeats, 10),
-        explorePlansPath,
-        enforcementFreeUserCapEnabled: parseBoolean(enforcementFreeUserCapEnabled),
-      }),
-    ),
+    store,
     render(createElement) {
       return createElement(SubscriptionSeats);
     },

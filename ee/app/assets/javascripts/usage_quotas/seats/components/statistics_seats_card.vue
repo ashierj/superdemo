@@ -1,8 +1,13 @@
 <script>
 import { GlLink, GlIcon, GlButton, GlModalDirective, GlSkeletonLoader } from '@gitlab/ui';
+import { s__ } from '~/locale';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
+import getSubscriptionPlanQuery from 'ee/fulfillment/shared_queries/subscription_plan.query.graphql';
 import {
   addSeatsText,
+  EXPLORE_PAID_PLANS_CLICKED,
+  PLAN_CODE_FREE,
   seatsOwedHelpText,
   seatsOwedLink,
   seatsOwedText,
@@ -13,7 +18,7 @@ import {
 import Tracking from '~/tracking';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
-import LimitedAccessModal from '../../components/limited_access_modal.vue';
+import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 
 export default {
   name: 'StatisticsSeatsCard',
@@ -31,44 +36,31 @@ export default {
     seatsOwedText,
     seatsOwedHelpText,
     addSeatsText,
+    explorePlansText: s__('Billing|Explore paid plans'),
   },
   mixins: [Tracking.mixin()],
+  inject: ['explorePlansPath'],
   props: {
-    /**
-     * Number of seats used
-     */
     seatsUsed: {
       type: Number,
       required: false,
       default: null,
     },
-    /**
-     * Number of seats owed
-     */
     seatsOwed: {
       type: Number,
       required: false,
       default: null,
     },
-    /**
-     * Link for purchase seats button
-     */
     purchaseButtonLink: {
       type: String,
       required: false,
       default: null,
     },
-    /**
-     * Text for the purchase seats button
-     */
     purchaseButtonText: {
       type: String,
       required: false,
       default: null,
     },
-    /**
-     * Id of the attached namespace
-     */
     namespaceId: {
       type: String,
       required: true,
@@ -76,26 +68,21 @@ export default {
   },
   data() {
     return {
+      plan: {},
       subscriptionPermissions: null,
       showLimitedAccessModal: false,
     };
   },
-  apollo: {
-    subscriptionPermissions: {
-      query: getSubscriptionPermissionsData,
-      client: 'customersDotClient',
-      variables() {
-        return {
-          namespaceId: parseInt(this.namespaceId, 10),
-        };
-      },
-      update: (data) => ({
-        ...data.subscription,
-        reason: data.userActionAccess?.limitedAccessReason,
-      }),
-    },
-  },
   computed: {
+    hasLimitedAccess() {
+      return (
+        gon.features?.limitedAccessModal &&
+        LIMITED_ACCESS_KEYS.includes(this.subscriptionPermissions.reason)
+      );
+    },
+    isFreePlan() {
+      return this.plan.code === PLAN_CODE_FREE;
+    },
     shouldRenderSeatsUsedBlock() {
       return this.seatsUsed !== null;
     },
@@ -103,36 +90,80 @@ export default {
       return this.seatsOwed !== null;
     },
     canAddSeats() {
+      if (this.isFreePlan) {
+        return false;
+      }
       return this.subscriptionPermissions?.canAddSeats ?? true;
     },
+    parsedNamespaceId() {
+      return parseInt(this.namespaceId, 10);
+    },
     shouldShowModal() {
-      return (
-        !this.canAddSeats &&
-        gon.features?.limitedAccessModal &&
-        LIMITED_ACCESS_KEYS.includes(this.subscriptionPermissions.reason)
-      );
+      return !this.canAddSeats && this.hasLimitedAccess;
     },
     shouldShowAddSeatsButton() {
-      return (
-        !this.subscriptionPermissions?.communityPlan && this.purchaseButtonLink && !this.isLoading
-      );
+      if (this.isLoading || !this.purchaseButtonLink) {
+        return false;
+      }
+      return this.canAddSeats || this.hasLimitedAccess;
+    },
+    shouldShowExplorePaidPlansButton() {
+      if (this.isLoading) {
+        return false;
+      }
+      return this.isFreePlan;
     },
     isLoading() {
       return this.$apollo.loading;
     },
   },
-  methods: {
-    trackClick() {
-      this.track('click_button', { label: 'add_seats_saas', property: 'usage_quotas_page' });
+  apollo: {
+    subscriptionPermissions: {
+      query: getSubscriptionPermissionsData,
+      client: 'customersDotClient',
+      variables() {
+        return {
+          namespaceId: this.parsedNamespaceId,
+        };
+      },
+      update: (data) => ({
+        ...data.subscription,
+        reason: data.userActionAccess?.limitedAccessReason,
+      }),
+      error: (error) => {
+        Sentry.captureException(error);
+      },
     },
+    plan: {
+      query: getSubscriptionPlanQuery,
+      variables() {
+        return {
+          namespaceId: this.parsedNamespaceId,
+        };
+      },
+      update: (data) => {
+        return data?.subscription?.plan || {};
+      },
+      error: (error) => {
+        Sentry.captureException(error);
+      },
+    },
+  },
+  methods: {
     handleAddSeats() {
       if (this.shouldShowModal) {
         this.showLimitedAccessModal = true;
         return;
       }
 
-      this.trackClick();
+      this.trackAddSeats();
       visitUrl(this.purchaseButtonLink);
+    },
+    trackAddSeats() {
+      this.track('click_button', { label: 'add_seats_saas', property: 'usage_quotas_page' });
+    },
+    trackExplorePlans() {
+      this.track('click_button', { label: EXPLORE_PAID_PLANS_CLICKED });
     },
   },
 };
@@ -198,6 +229,18 @@ export default {
       @click="handleAddSeats"
     >
       {{ $options.i18n.addSeatsText }}
+    </gl-button>
+    <gl-button
+      v-if="shouldShowExplorePaidPlansButton"
+      :href="explorePlansPath"
+      category="primary"
+      target="_blank"
+      variant="confirm"
+      class="gl-ml-3 gl-align-self-start"
+      data-testid="explore-paid-plans"
+      @click="trackExplorePlans"
+    >
+      {{ $options.i18n.explorePlansText }}
     </gl-button>
     <limited-access-modal
       v-if="shouldShowModal"

@@ -3,15 +3,19 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Tracking from '~/tracking';
 import { visitUrl } from '~/lib/utils/url_utility';
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
+import getSubscriptionPlanQuery from 'ee/fulfillment/shared_queries/subscription_plan.query.graphql';
+import { PLAN_CODE_FREE } from 'ee/usage_quotas/seats/constants';
 
 Vue.use(VueApollo);
 
+jest.mock('~/sentry/sentry_browser_wrapper');
 jest.mock('~/lib/utils/url_utility', () => ({
   ...jest.requireActual('~/lib/utils/url_utility'),
   visitUrl: jest.fn().mockName('visitUrlMock'),
@@ -19,6 +23,11 @@ jest.mock('~/lib/utils/url_utility', () => ({
 
 describe('StatisticsSeatsCard', () => {
   let wrapper;
+  let subscriptionPermissionsQueryHandlerMock = jest
+    .fn()
+    .mockResolvedValue({ data: { subscription: null, userActionAccess: null } });
+
+  const explorePlansPath = 'https://gitlab.com/explore-plans-path';
   const purchaseButtonLink = 'https://gitlab.com/purchase-more-seats';
   const defaultProps = {
     seatsUsed: 20,
@@ -27,19 +36,9 @@ describe('StatisticsSeatsCard', () => {
     purchaseButtonLink,
   };
 
-  const defaultApolloData = {
-    subscription: { canAddSeats: true, canRenew: true, communityPlan: false },
-    userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
-  };
-
-  const createComponent = (options = {}) => {
-    const { props = {}, apolloData = defaultApolloData } = options;
-
-    const queryHandlerMock = jest.fn().mockResolvedValue({
-      data: apolloData,
-    });
+  const createMockApolloProvider = ({ subscriptionPlanData }) => {
     const mockCustomersDotClient = createMockClient([
-      [getSubscriptionPermissionsData, queryHandlerMock],
+      [getSubscriptionPermissionsData, subscriptionPermissionsQueryHandlerMock],
     ]);
     const mockGitlabClient = createMockClient();
     const mockApollo = new VueApollo({
@@ -47,9 +46,23 @@ describe('StatisticsSeatsCard', () => {
       clients: { customersDotClient: mockCustomersDotClient, gitlabClient: mockGitlabClient },
     });
 
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: getSubscriptionPlanQuery,
+      data: subscriptionPlanData,
+    });
+    return mockApollo;
+  };
+
+  const createComponent = (options = {}) => {
+    const { props = {}, subscriptionPlanData = {} } = options;
+    const apolloProvider = createMockApolloProvider({ subscriptionPlanData });
+
     wrapper = shallowMountExtended(StatisticsSeatsCard, {
       propsData: { ...defaultProps, ...props },
-      apolloProvider: mockApollo,
+      apolloProvider,
+      provide: {
+        explorePlansPath,
+      },
       stubs: {
         LimitedAccessModal,
       },
@@ -59,10 +72,17 @@ describe('StatisticsSeatsCard', () => {
   const findSeatsUsedBlock = () => wrapper.findByTestId('seats-used');
   const findSeatsOwedBlock = () => wrapper.findByTestId('seats-owed');
   const findPurchaseButton = () => wrapper.findByTestId('purchase-button');
+  const findExplorePaidPlansButton = () => wrapper.findByTestId('explore-paid-plans');
   const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 
   describe('when `isLoading` computed value is `true`', () => {
     beforeEach(() => {
+      subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
+        data: {
+          subscription: { canAddSeats: true, canRenew: true, communityPlan: false },
+          userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+        },
+      });
       createComponent();
     });
 
@@ -75,7 +95,6 @@ describe('StatisticsSeatsCard', () => {
     it('renders seats used block if seatsUsed is passed', async () => {
       createComponent();
 
-      // wait for apollo to load
       await waitForPromises();
 
       const seatsUsedBlock = findSeatsUsedBlock();
@@ -88,10 +107,24 @@ describe('StatisticsSeatsCard', () => {
     it('does not render seats used block if seatsUsed is not passed', async () => {
       createComponent({ props: { seatsUsed: null } });
 
-      // wait for apollo to load
       await waitForPromises();
 
       expect(findSeatsUsedBlock().exists()).toBe(false);
+    });
+  });
+
+  describe('when there are errors', () => {
+    const mockError = new Error('Something went wrong!');
+
+    beforeEach(async () => {
+      subscriptionPermissionsQueryHandlerMock = jest.fn().mockRejectedValueOnce(mockError);
+      createComponent();
+
+      await waitForPromises();
+    });
+
+    it('captures the exception', () => {
+      expect(Sentry.captureException).toHaveBeenCalledWith(mockError);
     });
   });
 
@@ -99,7 +132,6 @@ describe('StatisticsSeatsCard', () => {
     it('renders seats owed block if seatsOwed is passed', async () => {
       createComponent();
 
-      // wait for apollo to load
       await waitForPromises();
 
       const seatsOwedBlock = findSeatsOwedBlock();
@@ -112,7 +144,6 @@ describe('StatisticsSeatsCard', () => {
     it('does not render seats owed block if seatsOwed is not passed', async () => {
       createComponent({ props: { seatsOwed: null } });
 
-      // wait for apollo to load
       await waitForPromises();
 
       expect(findSeatsOwedBlock().exists()).toBe(false);
@@ -123,7 +154,6 @@ describe('StatisticsSeatsCard', () => {
     it('renders purchase button if purchase link and purchase text is passed', async () => {
       createComponent();
 
-      // wait for apollo to load
       await waitForPromises();
 
       const purchaseButton = findPurchaseButton();
@@ -134,7 +164,6 @@ describe('StatisticsSeatsCard', () => {
     it('does not render purchase button if purchase link is not passed', async () => {
       createComponent({ props: { purchaseButtonLink: null } });
 
-      // wait for apollo to load
       await waitForPromises();
 
       expect(findPurchaseButton().exists()).toBe(false);
@@ -144,7 +173,6 @@ describe('StatisticsSeatsCard', () => {
       jest.spyOn(Tracking, 'event');
       createComponent();
 
-      // wait for apollo to load
       await waitForPromises();
 
       findPurchaseButton().vm.$emit('click');
@@ -158,7 +186,6 @@ describe('StatisticsSeatsCard', () => {
     it('redirects when clicked', async () => {
       createComponent();
 
-      // wait for apollo to load
       await waitForPromises();
 
       findPurchaseButton().vm.$emit('click');
@@ -166,16 +193,91 @@ describe('StatisticsSeatsCard', () => {
       expect(visitUrl).toHaveBeenCalledWith('https://gitlab.com/purchase-more-seats');
     });
 
-    it('does not render purchase button if communityPlan is true', async () => {
-      createComponent({
-        apolloData: {
-          subscription: { canAddSeats: false, canRenew: true, communityPlan: true },
-          userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
-        },
-      });
-      await waitForPromises();
+    describe('when canAddSeats is not provided', () => {
+      describe('with a Free Plan', () => {
+        beforeEach(async () => {
+          subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({});
+          createComponent({
+            subscriptionPlanData: { subscription: { plan: { code: PLAN_CODE_FREE } } },
+          });
+          await waitForPromises();
+        });
 
-      expect(findPurchaseButton().exists()).toBe(false);
+        it('does not render the `Add more seats` button', () => {
+          expect(findPurchaseButton().exists()).toBe(false);
+        });
+
+        it('does not render the modal', () => {
+          expect(findLimitedAccessModal().exists()).toBe(false);
+        });
+
+        it('renders the `Explore paid plans` button', () => {
+          expect(findExplorePaidPlansButton().exists()).toBe(true);
+        });
+      });
+
+      describe('with no Free Plan', () => {
+        beforeEach(async () => {
+          createComponent();
+          await waitForPromises();
+        });
+
+        it('renders the `Add more seats` button', () => {
+          expect(findPurchaseButton().exists()).toBe(true);
+        });
+
+        it('does not render the modal', () => {
+          expect(findLimitedAccessModal().exists()).toBe(false);
+        });
+
+        it('does not render the `Explore paid plans` button', () => {
+          expect(findExplorePaidPlansButton().exists()).toBe(false);
+        });
+      });
+    });
+
+    describe('when canAddSeats is false', () => {
+      beforeEach(() => {
+        subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
+          data: {
+            subscription: { canAddSeats: false, canRenew: true, communityPlan: false },
+            userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+          },
+        });
+        createComponent({
+          subscriptionPlanData: { subscription: { plan: { code: PLAN_CODE_FREE } } },
+        });
+        return waitForPromises();
+      });
+
+      it('does not render the `Add more seats` button', () => {
+        expect(findPurchaseButton().exists()).toBe(false);
+      });
+
+      it('does not render the modal', () => {
+        expect(findLimitedAccessModal().exists()).toBe(false);
+      });
+
+      it('renders the `Explore paid plans` button', () => {
+        expect(findExplorePaidPlansButton().exists()).toBe(true);
+      });
+
+      describe('when it is a community plan', () => {
+        beforeEach(() => {
+          subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
+            data: {
+              subscription: { canAddSeats: false, canRenew: true, communityPlan: true },
+              userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+            },
+          });
+          createComponent();
+          return waitForPromises();
+        });
+
+        it('does not show the `Explore paid plans` button', () => {
+          expect(findExplorePaidPlansButton().exists()).toBe(false);
+        });
+      });
     });
   });
 
@@ -189,6 +291,27 @@ describe('StatisticsSeatsCard', () => {
         gon.features = { limitedAccessModal: true };
       });
 
+      describe('when canAddSeats=false and limitedAccessReason=INVALID_REASON', () => {
+        beforeEach(async () => {
+          subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
+            data: {
+              subscription: { canAddSeats: false, canRenew: true, communityPlan: false },
+              userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+            },
+          });
+          createComponent();
+          await waitForPromises();
+        });
+
+        it('does not render the `Add more seats` button', () => {
+          expect(findPurchaseButton().exists()).toBe(false);
+        });
+
+        it('does not render the modal', () => {
+          expect(findLimitedAccessModal().exists()).toBe(false);
+        });
+      });
+
       describe.each`
         canAddSeats | limitedAccessReason
         ${false}    | ${'MANAGED_BY_RESELLER'}
@@ -197,12 +320,13 @@ describe('StatisticsSeatsCard', () => {
         'when canAddSeats=$canAddSeats and limitedAccessReason=$limitedAccessReason',
         ({ canAddSeats, limitedAccessReason }) => {
           beforeEach(async () => {
-            createComponent({
-              apolloData: {
+            subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
+              data: {
                 subscription: { canAddSeats, canRenew: true, communityPlan: false },
                 userActionAccess: { limitedAccessReason },
               },
             });
+            createComponent();
             await waitForPromises();
 
             findPurchaseButton().vm.$emit('click');
@@ -220,24 +344,28 @@ describe('StatisticsSeatsCard', () => {
           it('does not navigate to URL', () => {
             expect(visitUrl).not.toHaveBeenCalled();
           });
+
+          it('does not show the `Explore paid plans` button', () => {
+            expect(findExplorePaidPlansButton().exists()).toBe(false);
+          });
         },
       );
 
       describe.each`
         canAddSeats | limitedAccessReason
-        ${false}    | ${'INVALID_REASON'}
         ${true}     | ${'MANAGED_BY_RESELLER'}
         ${true}     | ${'RAMP_SUBSCRIPTION'}
       `(
         'when canAddSeats=$canAddSeats and limitedAccessReason=$limitedAccessReason',
         ({ canAddSeats, limitedAccessReason }) => {
           beforeEach(async () => {
-            createComponent({
-              apolloData: {
+            subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
+              data: {
                 subscription: { canAddSeats, canRenew: true, communityPlan: false },
                 userActionAccess: { limitedAccessReason },
               },
             });
+            createComponent();
             await waitForPromises();
 
             findPurchaseButton().vm.$emit('click');
@@ -251,6 +379,10 @@ describe('StatisticsSeatsCard', () => {
           it('navigates to URL', () => {
             expect(visitUrl).toHaveBeenCalledWith(purchaseButtonLink);
           });
+
+          it('does not show the `Explore paid plans` button', () => {
+            expect(findExplorePaidPlansButton().exists()).toBe(false);
+          });
         },
       );
     });
@@ -260,7 +392,6 @@ describe('StatisticsSeatsCard', () => {
         gon.features = { limitedAccessModal: false };
         createComponent();
 
-        // wait for apollo to load
         await waitForPromises();
 
         findPurchaseButton().vm.$emit('click');

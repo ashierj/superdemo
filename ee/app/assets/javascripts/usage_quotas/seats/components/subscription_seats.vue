@@ -16,6 +16,7 @@ import {
 import { sprintf, n__ } from '~/locale';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
+import { updateSubscriptionPlanApolloCache } from 'ee/usage_quotas/seats/graphql/utils';
 import SubscriptionUpgradeInfoCard from './subscription_upgrade_info_card.vue';
 import SubscriptionUserList from './subscription_user_list.vue';
 
@@ -121,6 +122,14 @@ export default {
     },
   },
   created() {
+    /* This will be removed with https://gitlab.com/groups/gitlab-org/-/epics/11942 */
+    this.$store.subscribeAction({
+      after: (action, state) => {
+        if (action.type === 'receiveGitlabSubscriptionSuccess') {
+          updateSubscriptionPlanApolloCache(this.$apolloProvider, { code: state.planCode });
+        }
+      },
+    });
     this.fetchBillableMembersList();
     this.fetchGitlabSubscription();
   },
