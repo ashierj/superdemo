@@ -21,7 +21,6 @@ class Groups::EpicsController < Groups::ApplicationController
     push_frontend_feature_flag(:preserve_unchanged_markdown, @group)
     push_frontend_feature_flag(:moved_mr_sidebar, @project)
     push_frontend_feature_flag(:or_issuable_queries, @group)
-    push_frontend_feature_flag(:saved_replies, current_user)
     push_frontend_feature_flag(:notifications_todos_buttons, current_user)
   end
 
