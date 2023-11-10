@@ -136,7 +136,8 @@ Returns [`CiCatalogResource`](#cicatalogresource).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="querycicatalogresourceid"></a>`id` | [`CiCatalogResourceID!`](#cicatalogresourceid) | CI/CD Catalog resource global ID. |
+| <a id="querycicatalogresourcefullpath"></a>`fullPath` | [`ID`](#id) | CI/CD Catalog resource full path. |
+| <a id="querycicatalogresourceid"></a>`id` | [`CiCatalogResourceID`](#cicatalogresourceid) | CI/CD Catalog resource global ID. |
 
 ### `Query.ciCatalogResources`
 
