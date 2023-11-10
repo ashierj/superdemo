@@ -135,6 +135,27 @@ RSpec.describe Users::UpdateService, feature_category: :user_profile do
           end
         end
 
+        context 'updating auditor status' do
+          let_it_be_with_reload(:admin_user) { create(:admin) }
+
+          it 'logs promoting a user to auditor' do
+            expect do
+              update_user_as(admin_user, user, auditor: true)
+            end.to change { AuditEvent.count }.by(1)
+
+            expect(AuditEvent.last.present.action).to eq('Changed auditor status from false to true')
+          end
+
+          it 'logs demoting an auditor to a regular user' do
+            user.update!(auditor: true)
+            expect do
+              update_user_as(admin_user, user, auditor: false)
+            end.to change { AuditEvent.count }.by(1)
+
+            expect(AuditEvent.last.present.action).to eq('Changed auditor status from true to false')
+          end
+        end
+
         context 'updating username' do
           it 'logs audit event' do
             previous_username = user.username
