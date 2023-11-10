@@ -30,19 +30,6 @@ RSpec.describe API::Branches, feature_category: :source_code_management do
         expect(json_response['name']).to eq(protected_branch.name)
         expect(protected_branch.reload.push_access_levels.pluck(:access_level)).to include(Gitlab::Access::NO_ACCESS)
       end
-
-      context 'with blocking scan result policy' do
-        include_context 'with scan result policy blocking protected branches' do
-          let(:branch_name) { protected_branch.name }
-          let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: protected_branch.project) }
-
-          it 'blocks unprotecting branches' do
-            protect
-
-            expect(response).to have_gitlab_http_status(:forbidden)
-          end
-        end
-      end
     end
   end
 

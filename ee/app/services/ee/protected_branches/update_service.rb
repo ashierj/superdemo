@@ -3,8 +3,6 @@
 module EE
   module ProtectedBranches
     module UpdateService
-      prepend BlockedByPolicy
-
       def after_execute(protected_branch:, old_merge_access_levels:, old_push_access_levels:)
         super
 
