@@ -144,6 +144,6 @@ You can either [create a follow-up issue for Feature Flag Cleanup](https://gitla
 ```
 
 /label ~group::
-/label ~"feature flag"
+/label ~"feature flag" ~C4
 /assign me
 /due in 2 weeks

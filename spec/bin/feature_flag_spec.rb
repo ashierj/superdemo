@@ -7,12 +7,28 @@ load File.expand_path('../../bin/feature-flag', __dir__)
 RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
   using RSpec::Parameterized::TableSyntax
 
+  let(:groups) do
+    {
+      geo: { label: 'group::geo' }
+    }
+  end
+
+  before do
+    allow(HTTParty)
+      .to receive(:get)
+        .with(FeatureFlagOptionParser::WWW_GITLAB_COM_GROUPS_JSON, format: :plain)
+        .and_return(groups.to_json)
+  end
+
   describe FeatureFlagCreator do
-    let(:argv) { %w[feature-flag-name -t development -g group::geo -i https://url -m http://url] }
+    let(:argv) { %w[feature-flag-name -t gitlab_com_derisk -g group::geo -a https://url -i https://url -m http://url -u username -M 16.6] }
     let(:options) { FeatureFlagOptionParser.parse(argv) }
     let(:creator) { described_class.new(options) }
     let(:existing_flags) do
-      { 'existing_feature_flag' => File.join('config', 'feature_flags', 'development', 'existing_feature_flag.yml') }
+      {
+        'existing_feature_flag' =>
+          File.join('config', 'feature_flags', 'gitlab_com_derisk', 'existing_feature_flag.yml')
+      }
     end
 
     before do
@@ -31,7 +47,7 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
 
     it 'properly creates a feature flag' do
       expect(File).to receive(:write).with(
-        File.join('config', 'feature_flags', 'development', 'feature_flag_name.yml'),
+        File.join('config', 'feature_flags', 'gitlab_com_derisk', 'feature_flag_name.yml'),
         anything)
 
       expect do
@@ -183,10 +199,10 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
         expect(Readline).to receive(:readline).and_return(group)
         expect do
           expect(described_class.read_group).to eq('group::geo')
-        end.to output(/Specify the group introducing the feature flag/).to_stdout
+        end.to output(/Specify the group label to which the feature flag belongs, from the following list/).to_stdout
       end
 
-      context 'invalid group given' do
+      context 'with invalid group given' do
         let(:type) { 'invalid' }
 
         it 'shows error message and retries' do
@@ -195,8 +211,8 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
 
           expect do
             expect { described_class.read_group }.to raise_error(/EOF/)
-          end.to output(/Specify the group introducing the feature flag/).to_stdout
-            .and output(/The group needs to include/).to_stderr
+          end.to output(/Specify the group label to which the feature flag belongs, from the following list/).to_stdout
+            .and output(/The group label isn't in the above labels list/).to_stderr
         end
       end
     end
@@ -211,7 +227,7 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
         end.to output(/URL of the MR introducing the feature flag/).to_stdout
       end
 
-      context 'empty URL given' do
+      context 'with empty URL given' do
         let(:url) { '' }
 
         it 'skips entry' do
@@ -222,7 +238,7 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
         end
       end
 
-      context 'invalid URL given' do
+      context 'with invalid URL given' do
         let(:url) { 'invalid' }
 
         it 'shows error message and retries' do
@@ -238,22 +254,39 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
     end
 
     describe '.read_rollout_issue_url' do
-      let(:options) { double('options', name: 'foo', type: :development) }
-      let(:url) { 'https://issue' }
+      let(:options) do
+        FeatureFlagOptionParser::Options.new({
+          name: 'foo',
+          username: 'joe',
+          type: :gitlab_com_derisk,
+          introduced_by_url: 'https://introduced_by_url',
+          feature_issue_url: 'https://feature_issue_url',
+          milestone: '16.6',
+          group: 'group::geo'
+        })
+      end
+
+      let(:rollout_issue_url) { 'https://rollout_issue_url' }
 
       it 'reads type from stdin' do
-        expect(Readline).to receive(:readline).and_return(url)
+        expect(described_class).to receive(:copy_to_clipboard!).and_return(true)
+        expect(Readline).to receive(:readline).and_return('').ordered # enter to open the new issue url
+        expect(described_class).to receive(:open_url!).and_return(true)
+        expect(Readline).to receive(:readline).and_return(rollout_issue_url).ordered
         expect do
-          expect(described_class.read_rollout_issue_url(options)).to eq('https://issue')
+          expect(described_class.read_rollout_issue_url(options)).to eq(rollout_issue_url)
         end.to output(/URL of the rollout issue/).to_stdout
       end
 
-      context 'invalid URL given' do
-        let(:type) { 'invalid' }
+      context 'with invalid URL given' do
+        let(:url) { 'invalid' }
 
         it 'shows error message and retries' do
-          expect(Readline).to receive(:readline).and_return(type)
-          expect(Readline).to receive(:readline).and_raise('EOF')
+          expect(described_class).to receive(:copy_to_clipboard!).and_return(true)
+          expect(Readline).to receive(:readline).and_return('').ordered # enter to open the new issue url
+          expect(described_class).to receive(:open_url!).and_return(true)
+          expect(Readline).to receive(:readline).and_return(url).ordered
+          expect(Readline).to receive(:readline).and_raise('EOF').ordered
 
           expect do
             expect { described_class.read_rollout_issue_url(options) }.to raise_error(/EOF/)
@@ -261,12 +294,6 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
             .and output(/URL needs to start/).to_stderr
         end
       end
-    end
-
-    describe '.read_ee_only' do
-      let(:options) { double('options', name: 'foo', type: :development) }
-
-      it { expect(described_class.read_ee_only(options)).to eq(false) }
     end
   end
 end
