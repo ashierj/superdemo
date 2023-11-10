@@ -68,7 +68,9 @@ module Llm
     end
 
     def ai_allowed?(project)
-      Gitlab::Llm::Chain::Utils::Authorizer.container_authorized?(container: project.root_ancestor)
+      Gitlab::Llm::Chain::Utils::Authorizer
+        .container(container: project, user: @current_user)
+        .allowed?
     end
   end
 end

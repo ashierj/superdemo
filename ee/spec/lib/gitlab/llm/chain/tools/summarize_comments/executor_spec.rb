@@ -66,7 +66,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
             it 'responds with error' do
               expect(tool).not_to receive(:request)
 
-              response = "I am sorry, I am unable to find the Issue you are looking for."
+              response = "I am sorry, I am unable to find what you are looking for."
               expect(tool.execute.content).to eq(response)
             end
           end
@@ -109,7 +109,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
       it 'responds with error' do
         expect(tool).not_to receive(:request)
 
-        response = "I am sorry, I am unable to find the Project you are looking for."
+        response = "I am sorry, I am unable to find what you are looking for."
         expect(tool.execute.content).to eq(response)
       end
     end

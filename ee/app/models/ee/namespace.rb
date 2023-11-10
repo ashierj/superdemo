@@ -546,6 +546,10 @@ module EE
       false
     end
 
+    def resource_parent
+      self
+    end
+
     private
 
     def security_orchestration_policies_for_namespaces(namespace_ids)

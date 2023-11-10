@@ -4269,4 +4269,10 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       let_it_be(:model) { create(:project, deleting_user: parent) }
     end
   end
+
+  describe '#resource_parent' do
+    it 'returns self' do
+      expect(project.resource_parent).to eq(project)
+    end
+  end
 end

@@ -24122,6 +24122,9 @@ msgstr ""
 msgid "I accept the %{terms_link}"
 msgstr ""
 
+msgid "I am sorry, I am unable to find what you are looking for."
+msgstr ""
+
 msgid "I forgot my password"
 msgstr ""
 
@@ -49080,6 +49083,9 @@ msgstr ""
 msgid "This epic does not exist or you don't have sufficient permission."
 msgstr ""
 
+msgid "This feature is only allowed in groups that enable this feature."
+msgstr ""
+
 msgid "This feature requires local storage to be enabled"
 msgstr ""
 
@@ -55284,6 +55290,9 @@ msgid "You do not belong to any groups yet."
 msgstr ""
 
 msgid "You do not belong to any projects yet."
+msgstr ""
+
+msgid "You do not have access to AI features."
 msgstr ""
 
 msgid "You do not have access to any projects for creating incidents."
