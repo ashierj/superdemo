@@ -92,7 +92,6 @@ module GitlabSubscriptions
       commit_committer_name_check
       compliance_framework
       custom_compliance_frameworks
-      cross_project_pipelines
       custom_file_templates
       custom_project_templates
       cycle_analytics_for_groups
@@ -280,6 +279,7 @@ module GitlabSubscriptions
       custom_file_templates_for_namespace
       incident_sla
       export_user_permissions
+      cross_project_pipelines
     ].freeze
 
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[

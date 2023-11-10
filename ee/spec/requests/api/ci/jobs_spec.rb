@@ -31,11 +31,7 @@ RSpec.describe API::Ci::Jobs, feature_category: :continuous_integration do
         get api("/projects/#{project.id}/jobs/#{job.id}/artifacts"), params: { job_token: job.token }
       end
 
-      context 'when cross-project pipelines are enabled' do
-        before do
-          stub_licensed_features(cross_project_pipelines: true)
-        end
-
+      shared_examples 'enabled cross-project pipelines' do
         context 'user is developer' do
           let(:api_user) { developer }
 
@@ -58,6 +54,22 @@ RSpec.describe API::Ci::Jobs, feature_category: :continuous_integration do
             expect(response).to have_gitlab_http_status(:not_found)
           end
         end
+      end
+
+      context 'when cross-project pipelines are enabled through license' do
+        before do
+          stub_licensed_features(cross_project_pipelines: true)
+        end
+
+        it_behaves_like 'enabled cross-project pipelines'
+      end
+
+      context 'when cross-project pipelines are enabled through usage ping features' do
+        before do
+          stub_usage_ping_features(true)
+        end
+
+        it_behaves_like 'enabled cross-project pipelines'
       end
 
       context 'when cross-project pipeline are disabled' do
@@ -95,11 +107,7 @@ RSpec.describe API::Ci::Jobs, feature_category: :continuous_integration do
         get api("/projects/#{project.id}/jobs/artifacts/#{pipeline.ref}/download"), params: { job: job.name, job_token: running_job.token }
       end
 
-      context 'when cross-project pipelines are enabled' do
-        before do
-          stub_licensed_features(cross_project_pipelines: true)
-        end
-
+      shared_examples 'enabled cross-project pipelines' do
         context 'when user is developer' do
           let(:api_user) { developer }
 
@@ -144,6 +152,22 @@ RSpec.describe API::Ci::Jobs, feature_category: :continuous_integration do
             expect(response).to have_gitlab_http_status(:not_found)
           end
         end
+      end
+
+      context 'when cross-project pipelines are enabled through license' do
+        before do
+          stub_licensed_features(cross_project_pipelines: true)
+        end
+
+        it_behaves_like 'enabled cross-project pipelines'
+      end
+
+      context 'when cross-project pipelines are enabled through usage ping features' do
+        before do
+          stub_usage_ping_features(true)
+        end
+
+        it_behaves_like 'enabled cross-project pipelines'
       end
     end
   end
