@@ -591,6 +591,7 @@ module EE
       return unless ::Gitlab.com?
       return if user_namespace? && owner.privatized_by_abuse_automation?
       return unless root? && (trial? || actual_plan&.paid?)
+      return if update_to_customerdot_blocked?
 
       ::Namespaces::SyncNamespaceNameWorker.perform_async(id)
     end
@@ -672,6 +673,10 @@ module EE
       minute_time_is = updated_at.strftime(time_format)
 
       minute_time_was == minute_time_is
+    end
+
+    def update_to_customerdot_blocked?
+      ::Gitlab::ApplicationRateLimiter.peek(:update_namespace_name, scope: self)
     end
   end
 end
