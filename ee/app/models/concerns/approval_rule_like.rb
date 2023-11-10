@@ -131,14 +131,6 @@ module ApprovalRuleLike
 
   private
 
-  def direct_approvers
-    if users.loaded? && group_users.loaded?
-      users | group_users
-    else
-      User.from_union([users, group_users])
-    end
-  end
-
   def relation_exists?(relation, column:, value:)
     return relation.exists?({ column => value }) unless relation.loaded?
 
