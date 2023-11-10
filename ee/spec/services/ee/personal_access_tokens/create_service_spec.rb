@@ -14,8 +14,12 @@ RSpec.describe PersonalAccessTokens::CreateService, feature_category: :system_ac
 
     let(:token) { create_token.payload[:personal_access_token] }
 
-    context 'when target user is a service account' do
+    context 'when target user is a service account', :freeze_time do
       let(:target_user) { create(:user, :service_account) }
+      let(:max_personal_access_token_lifetime) do
+        PersonalAccessToken::MAX_PERSONAL_ACCESS_TOKEN_LIFETIME_IN_DAYS.days.from_now.to_date
+      end
+
       let(:service) do
         described_class.new(current_user: current_user, target_user: target_user,
           params: params, concatenate_errors: false)
@@ -43,6 +47,23 @@ RSpec.describe PersonalAccessTokens::CreateService, feature_category: :system_ac
 
               it 'creates a token successfully' do
                 expect(create_token.success?).to be true
+              end
+
+              context 'when expires_at is nil' do
+                let(:params) { valid_params.merge(expires_at: nil) }
+
+                context 'when service_access_tokens_expiration_enforced is false' do
+                  before do
+                    stub_ee_application_setting(service_access_tokens_expiration_enforced: false)
+                  end
+
+                  it { expect(token.expires_at).to be_nil }
+                end
+
+                it "sets expires_at to default value when setting is true" do
+                  expect(token.expires_at)
+                  .to eq max_personal_access_token_lifetime
+                end
               end
             end
           end
@@ -72,6 +93,34 @@ RSpec.describe PersonalAccessTokens::CreateService, feature_category: :system_ac
 
               it 'creates a token successfully' do
                 expect(create_token.success?).to be true
+              end
+
+              context 'when expires_at is nil' do
+                let(:params) { valid_params.merge(group: group, expires_at: nil) }
+
+                context 'when saas', :saas, :enable_admin_mode do
+                  context 'when service_access_tokens_expiration_enforced is false' do
+                    before do
+                      group.namespace_settings.update!(service_access_tokens_expiration_enforced: false)
+                    end
+
+                    it { expect(create_token.payload[:personal_access_token].expires_at).to be_nil }
+                  end
+
+                  context 'when service_access_tokens_expiration_enforced is true' do
+                    it {
+                      expect(create_token.payload[:personal_access_token].expires_at)
+                    .to eq max_personal_access_token_lifetime
+                    }
+                  end
+                end
+
+                context 'when not saas' do
+                  it "does not set expires_at to be nil" do
+                    expect(create_token.payload[:personal_access_token].expires_at)
+                    .to eq max_personal_access_token_lifetime
+                  end
+                end
               end
             end
 

@@ -77,16 +77,77 @@ RSpec.describe PersonalAccessToken, feature_category: :system_access do
           personal_access_token.expires_at = max_expiration_date + 1
 
           expect(personal_access_token).not_to be_valid
-          expect(personal_access_token.errors.full_messages.to_sentence).to eq(
+          expect(personal_access_token.errors.full_messages.to_sentence).to include(
             "Expiration date must be before #{max_expiration_date}"
           )
         end
 
-        it "is invalid" do
-          personal_access_token.expires_at = nil
+        context 'expires_at is nil' do
+          before do
+            personal_access_token.expires_at = nil
+          end
 
-          expect(personal_access_token).not_to be_valid
-          expect(personal_access_token.errors[:expires_at].first).to eq("can't be blank")
+          context 'user is not service accounts' do
+            it 'is invalid' do
+              expect(personal_access_token).not_to be_valid
+              expect(personal_access_token.errors[:expires_at]).to include("can't be blank")
+            end
+          end
+
+          context 'user is service accounts' do
+            before do
+              stub_licensed_features(service_accounts: true)
+            end
+
+            context 'when saas', :saas do
+              let(:group) { create(:group) }
+              let(:user) { create(:service_account, provisioned_by_group: group) }
+
+              context 'when namespace enforces token expiration' do
+                before do
+                  group.namespace_settings.update!(service_access_tokens_expiration_enforced: true)
+                end
+
+                it 'is invalid' do
+                  expect(personal_access_token).to be_invalid
+                end
+              end
+
+              context 'when namespace does not enforce token expiration' do
+                before do
+                  group.namespace_settings.update!(service_access_tokens_expiration_enforced: false)
+                end
+
+                it 'is invalid' do
+                  expect(personal_access_token).to be_valid
+                end
+              end
+            end
+
+            context 'when self-managed' do
+              let(:user) { build(:service_account) }
+
+              context 'when application setting does not enforce token expiration' do
+                before do
+                  stub_ee_application_setting(service_access_tokens_expiration_enforced: false)
+                end
+
+                it 'is valid' do
+                  expect(personal_access_token).to be_valid
+                end
+              end
+
+              context 'when application setting enforces token expiration' do
+                before do
+                  stub_ee_application_setting(service_access_tokens_expiration_enforced: true)
+                end
+
+                it 'is invalid' do
+                  expect(personal_access_token).to be_invalid
+                end
+              end
+            end
+          end
         end
       end
 

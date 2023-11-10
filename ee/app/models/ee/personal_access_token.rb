@@ -80,6 +80,10 @@ module EE
       ::Gitlab::CurrentSettings.max_personal_access_token_lifetime_from_now
     end
 
+    def allow_expires_at_to_be_empty?
+      !EE::Gitlab::PersonalAccessTokens::ServiceAccountTokenValidator.new(user).expiry_enforced?
+    end
+
     def expires_at_before_max_expiry_date
       return if expires_at.blank?
       return unless expires_at > max_expiry_date

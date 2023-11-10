@@ -28133,9 +28133,6 @@ ALTER TABLE vulnerability_scanners
 ALTER TABLE packages_tags
     ADD CONSTRAINT check_91b8472153 CHECK ((project_id IS NOT NULL)) NOT VALID;
 
-ALTER TABLE personal_access_tokens
-    ADD CONSTRAINT check_b8d60815eb CHECK ((expires_at IS NOT NULL)) NOT VALID;
-
 ALTER TABLE sprints
     ADD CONSTRAINT check_ccd8a1eae0 CHECK ((start_date IS NOT NULL)) NOT VALID;
 

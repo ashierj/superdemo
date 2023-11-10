@@ -31,6 +31,16 @@ module EE
         ::Gitlab::Audit::Auditor.audit(audit_context)
       end
 
+      override :pat_expiration
+      def pat_expiration
+        return params[:expires_at] unless params[:expires_at].blank?
+
+        return unless EE::Gitlab::PersonalAccessTokens::ServiceAccountTokenValidator.new(target_user)
+        .expiry_enforced?
+
+        super
+      end
+
       override :creation_permitted?
       def creation_permitted?
         return super unless target_user.service_account?
