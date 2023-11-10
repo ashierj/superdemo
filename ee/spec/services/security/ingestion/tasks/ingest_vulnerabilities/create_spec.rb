@@ -33,7 +33,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::Create, featur
 
   context 'vulnerability CVSS vectors' do
     let(:expected_hash) do
-      { "vector_string" => "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:N", "vendor" => "GitLab" }
+      { "vector" => "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:N", "vendor" => "GitLab" }
     end
 
     it 'set the CVSS vectors' do
