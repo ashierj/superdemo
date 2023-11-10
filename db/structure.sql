@@ -33208,8 +33208,6 @@ CREATE INDEX index_members_on_user_id_and_access_level_requested_at_is_null ON m
 
 CREATE INDEX index_members_on_user_id_created_at ON members USING btree (user_id, created_at) WHERE ((ldap = true) AND ((type)::text = 'GroupMember'::text) AND ((source_type)::text = 'Namespace'::text));
 
-CREATE INDEX index_merge_request_assignees_on_merge_request_id ON merge_request_assignees USING btree (merge_request_id);
-
 CREATE UNIQUE INDEX index_merge_request_assignees_on_merge_request_id_and_user_id ON merge_request_assignees USING btree (merge_request_id, user_id);
 
 CREATE INDEX index_merge_request_assignees_on_user_id ON merge_request_assignees USING btree (user_id);
