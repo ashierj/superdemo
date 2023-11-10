@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
     it 'returns success response' do
       allow(tool).to receive(:request).and_return(ai_response)
 
-      response = "I am sorry, I am unable to find the issue you are looking for."
+      response = "I am sorry, I am unable to find what you are looking for."
       expect(tool.execute.content).to eq(response)
     end
   end
@@ -49,6 +49,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
     let_it_be(:user) { create(:user) }
     let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be_with_reload(:project) { create(:project, group: group) }
+
+    before do
+      project.add_developer(user)
+    end
 
     context 'when issue is identified' do
       let_it_be(:issue1) { create(:issue, project: project) }
@@ -109,7 +113,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
             expect(tool).to receive(:request).exactly(3).times
 
-            response = "I am sorry, I am unable to find the issue you are looking for."
+            response = "I am sorry, I am unable to find what you are looking for."
             expect(tool.execute.content).to eq(response)
           end
         end
@@ -237,6 +241,28 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
             end
 
             it_behaves_like 'issue not found response'
+          end
+
+          context 'when group does not have ai enabled' do
+            let(:identifier) { 'current' }
+            let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+
+            before do
+              additional_group = create(:group_with_plan, plan: :ultimate_plan)
+              additional_group.update!(experiment_features_enabled: true)
+              additional_group.add_developer(user)
+
+              group.update!(experiment_features_enabled: false)
+              issue1.reload
+            end
+
+            it 'returns success response' do
+              allow(tool).to receive(:request).and_return(ai_response)
+
+              response = 'This feature is only allowed in groups that enable this feature.'
+
+              expect(tool.execute.content).to eq(response)
+            end
           end
 
           xcontext 'when is issue identified with url' do

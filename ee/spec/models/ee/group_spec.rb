@@ -3223,4 +3223,10 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '#resource_parent' do
+    it 'returns self' do
+      expect(group.resource_parent).to eq(group)
+    end
+  end
 end

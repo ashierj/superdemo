@@ -92,7 +92,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
     context 'when context is not authorized' do
       it 'responds with the message from TanukiBot' do
         expect(result.content)
-          .to eq("I am sorry, I am unable to find the documentation answer you are looking for.")
+          .to eq("I am sorry, I am unable to find what you are looking for.")
         expect(result.extras).to eq(nil)
       end
     end

@@ -79,8 +79,12 @@ module Gitlab
           attr_reader :logger, :stream_response_handler
 
           def not_found
-            content = "I am sorry, I am unable to find the #{resource_name} you are looking for."
+            content = "I am sorry, I am unable to find what you are looking for."
 
+            Answer.error_answer(context: context, content: content)
+          end
+
+          def error_with_message(content)
             Answer.error_answer(context: context, content: content)
           end
 

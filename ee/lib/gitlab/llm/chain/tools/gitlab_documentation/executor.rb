@@ -58,7 +58,7 @@ module Gitlab
             def authorize
               # Every user with access to a paid namespace that supports AI features has access to
               # the documentation tool.
-              Utils::Authorizer.user_authorized?(user: context.current_user)
+              Utils::Authorizer.user(user: context.current_user).allowed?
             end
 
             def resource_name

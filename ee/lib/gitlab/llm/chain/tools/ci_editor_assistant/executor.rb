@@ -56,7 +56,7 @@ module Gitlab
             private
 
             def authorize
-              Utils::Authorizer.context_authorized?(context: context)
+              Utils::Authorizer.context_allowed?(context: context)
             end
 
             def resource_name

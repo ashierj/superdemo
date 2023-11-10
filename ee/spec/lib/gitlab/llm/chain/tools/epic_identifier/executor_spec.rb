@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
     it 'returns response that epic was not found' do
       allow(tool).to receive(:request).and_return(ai_response)
 
-      response = "I am sorry, I am unable to find the epic you are looking for."
+      response = "I am sorry, I am unable to find what you are looking for."
       expect(tool.execute.content).to eq(response)
     end
   end
@@ -111,7 +111,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
 
             expect(tool).to receive(:request).exactly(3).times
 
-            response = "I am sorry, I am unable to find the epic you are looking for."
+            response = "I am sorry, I am unable to find what you are looking for."
             expect(tool.execute.content).to eq(response)
           end
         end
@@ -227,6 +227,30 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
             allow(context).to receive(:ai_request).and_return(ai_request)
 
             response = "You already have identified the epic #{context.resource.to_global_id}, read carefully."
+            expect(tool.execute.content).to eq(response)
+          end
+        end
+
+        context 'when group does not have ai enabled' do
+          let(:identifier) { epic2.to_reference(full: true) }
+          let(:ai_response) do
+            "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
+          end
+
+          before do
+            additional_group = create(:group_with_plan, plan: :ultimate_plan)
+            additional_group.update!(experiment_features_enabled: true)
+            additional_group.add_developer(user)
+
+            group.update!(experiment_features_enabled: false)
+            epic2.reload
+          end
+
+          it 'returns success response' do
+            allow(tool).to receive(:request).and_return(ai_response)
+
+            response = 'This feature is only allowed in groups that enable this feature.'
+
             expect(tool.execute.content).to eq(response)
           end
         end

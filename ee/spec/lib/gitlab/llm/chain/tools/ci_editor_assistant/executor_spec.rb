@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor, feature_c
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
-      current_user: user, container: nil, resource: user, ai_request: ai_request_double
+      current_user: user, container: nil, resource: nil, ai_request: ai_request_double
     )
   end
 
@@ -32,20 +32,22 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor, feature_c
   describe '#execute' do
     context 'when context is not authorized' do
       before do
-        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_authorized?).and_return(false)
+        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_allowed?)
+          .and_return(false)
       end
 
       it 'returns error answer' do
         allow(tool).to receive(:authorize).and_return(false)
 
         expect(tool.execute.content)
-          .to eq('I am sorry, I am unable to find the ci editor answer you are looking for.')
+          .to eq('I am sorry, I am unable to find what you are looking for.')
       end
     end
 
     context 'when context is authorized' do
       before do
-        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_authorized?).and_return(true)
+        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_allowed?)
+          .and_return(true)
       end
 
       context 'when response is successful' do

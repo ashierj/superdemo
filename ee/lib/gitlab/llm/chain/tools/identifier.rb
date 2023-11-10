@@ -22,8 +22,14 @@ module Gitlab
               resource = identify_resource(json[:ResourceIdentifierType], json[:ResourceIdentifier])
 
               # if resource not found then return an error as the answer.
-              logger.error(message: "Error finding #{resource_name}", content: json) unless resource
-              return not_found unless resource
+              authorizer = Utils::Authorizer.resource(
+                resource: resource,
+                user: context.current_user)
+
+              unless authorizer.allowed?
+                logger.error(message: "Error finding #{resource_name}", content: json)
+                return error_with_message(authorizer.message)
+              end
 
               # now the resource in context is being referenced in user input.
               context.resource = resource
@@ -68,20 +74,18 @@ module Gitlab
           end
 
           def authorize
-            Utils::Authorizer.context_authorized?(context: context)
+            Utils::Authorizer.user(user: context.current_user).allowed?
           end
 
           def identify_resource(resource_identifier_type, resource_identifier)
             return context.resource if current_resource?(resource_identifier_type, resource_name)
 
-            resource = case resource_identifier_type
-                       when 'iid'
-                         by_iid(resource_identifier)
-                       when 'url', 'reference'
-                         extract_resource(resource_identifier, resource_identifier_type)
-                       end
-
-            resource if Utils::Authorizer.resource_authorized?(resource: resource, user: context.current_user)
+            case resource_identifier_type
+            when 'iid'
+              by_iid(resource_identifier)
+            when 'url', 'reference'
+              extract_resource(resource_identifier, resource_identifier_type)
+            end
           end
 
           def extract_json(response)
