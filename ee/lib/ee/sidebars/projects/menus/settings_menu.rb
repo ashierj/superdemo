@@ -28,6 +28,33 @@ module EE
               item_id: :analytics
             )
           end
+
+          private
+
+          override :enabled_menu_items
+          def enabled_menu_items
+            return super if can?(context.current_user, :admin_project, context.project)
+
+            custom_roles_menu_items
+          end
+
+          def custom_roles_menu_items
+            items = []
+            return items unless context.current_user
+
+            items << general_menu_item if custom_roles_general_menu_item?
+            items << access_tokens_menu_item if custom_roles_access_token_menu_item?
+
+            items
+          end
+
+          def custom_roles_general_menu_item?
+            can?(context.current_user, :archive_project, context.project)
+          end
+
+          def custom_roles_access_token_menu_item?
+            can?(context.current_user, :manage_resource_access_tokens, context.project)
+          end
         end
       end
     end

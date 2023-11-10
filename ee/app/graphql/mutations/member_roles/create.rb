@@ -21,6 +21,10 @@ module Mutations
         GraphQL::Types::Boolean,
         required: false,
         description: 'Permission to admin vulnerability.'
+      argument :archive_project,
+        GraphQL::Types::Boolean,
+        required: false,
+        description: 'Permission to archive projects.'
       argument :base_access_level,
         ::Types::MemberAccessLevelEnum,
         required: true,

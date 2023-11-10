@@ -38,4 +38,27 @@ RSpec.describe 'projects/edit' do
       it_behaves_like 'does not render registration features prompt', :project_disabled_repository_size_limit
     end
   end
+
+  context 'when rendering for a user that is not an owner' do
+    let_it_be(:user) { create(:user) }
+
+    before do
+      allow(view).to receive(:can?).with(user, :archive_project, project).and_return(can_archive_projects)
+      render
+    end
+
+    subject { rendered }
+
+    context 'when the user can archive projects' do
+      let(:can_archive_projects) { true }
+
+      it { is_expected.to have_link(_('Archive project')) }
+    end
+
+    context 'when the user cannot archive projects' do
+      let(:can_archive_projects) { false }
+
+      it { is_expected.not_to have_link(_('Archive project')) }
+    end
+  end
 end

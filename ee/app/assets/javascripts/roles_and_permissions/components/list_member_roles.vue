@@ -218,7 +218,7 @@ export default {
     </div>
 
     <gl-empty-state
-      v-if="memberRoles.length === 0"
+      v-if="memberRoles.length === 0 && !showCreateMemberForm"
       :title="$options.i18n.emptyTitle"
       :description="emptyText"
     />

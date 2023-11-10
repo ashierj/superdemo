@@ -96,16 +96,28 @@ describe('ListMemberRoles', () => {
     getMemberRoles.mockResolvedValue({ data: mockResponse });
   });
 
-  it('shows empty state', () => {
-    createComponent({ groupId: null });
-    expect(wrapper.findByTestId('card-title').text()).toMatch(ListMemberRoles.i18n.cardTitle);
-    expect(findCounter().text()).toBe('0');
-    expect(findAddRoleButton().props('disabled')).toBe(true);
-    expect(findEmptyState().props()).toMatchObject({
-      description: emptyText,
-      title: ListMemberRoles.i18n.emptyTitle,
+  describe('empty state', () => {
+    beforeEach(() => {
+      getMemberRoles.mockResolvedValue({ data: [] });
+      createComponent({ groupId });
     });
-    expect(findCreateMemberRole().exists()).toBe(false);
+
+    it('shows empty state', () => {
+      expect(wrapper.findByTestId('card-title').text()).toMatch(ListMemberRoles.i18n.cardTitle);
+      expect(findCounter().text()).toBe('0');
+      expect(findAddRoleButton().props('disabled')).toBe(false);
+      expect(findEmptyState().props()).toMatchObject({
+        description: emptyText,
+        title: ListMemberRoles.i18n.emptyTitle,
+      });
+      expect(findCreateMemberRole().exists()).toBe(false);
+    });
+
+    it('hides empty state when toggling the form', async () => {
+      findAddRoleButton().vm.$emit('click');
+      await waitForPromises();
+      expect(findEmptyState().exists()).toBe(false);
+    });
   });
 
   describe('fetching roles', () => {

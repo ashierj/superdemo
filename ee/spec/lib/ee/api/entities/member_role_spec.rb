@@ -20,7 +20,8 @@ RSpec.describe EE::API::Entities::MemberRole do
       expect(subject[:read_code]).to eq member_role.read_code
       expect(subject[:read_vulnerability]).to eq member_role.read_vulnerability
       expect(subject[:admin_vulnerability]).to eq member_role.admin_vulnerability
-      expect(subject[:manage_project_access_tokens]).to eq member_role.admin_vulnerability
+      expect(subject[:manage_project_access_tokens]).to eq member_role.manage_project_access_tokens
+      expect(subject[:archive_project]).to eq member_role.archive_project
       expect(subject[:group_id]).to eq(member_role.namespace.id)
     end
   end
