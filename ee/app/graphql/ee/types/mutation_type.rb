@@ -142,6 +142,7 @@ module EE
         mount_mutation ::Mutations::Analytics::CycleAnalytics::ValueStreams::Create, alpha: { milestone: '16.6' }
         mount_mutation ::Mutations::Analytics::CycleAnalytics::ValueStreams::Update, alpha: { milestone: '16.6' }
         mount_mutation ::Mutations::Analytics::CycleAnalytics::ValueStreams::Destroy, alpha: { milestone: '16.6' }
+        mount_mutation ::Mutations::AuditEvents::Streaming::HTTP::NamespaceFilters::Create
 
         prepend(Types::DeprecatedMutations)
       end
