@@ -101,6 +101,9 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       from = board.lists.first
       to = list
 
+      expect(list_weight_badge(from)).to have_content('3 5', exact: true)
+      expect(list_weight_badge(to)).to have_content('0 0', exact: true)
+
       drag_to(
         selector: '.board-list',
         scrollable: '#board-app',
@@ -112,6 +115,8 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
 
       expect(card_weight_badge(from)).to have_content('3')
       expect(card_weight_badge(to)).to have_content('2')
+      expect(list_weight_badge(from)).to have_content('2 3', exact: true)
+      expect(list_weight_badge(to)).to have_content('1 2', exact: true)
     end
 
     it 'maintains weight if null when moving to list' do
