@@ -129,7 +129,7 @@ RSpec.describe EE::ApplicationSettingsHelper do
         expect(result[8]).to have_unchecked_field('apk', with: 9)
         expect(result[9]).to have_unchecked_field('rpm', with: 10)
         expect(result[10]).to have_unchecked_field('deb', with: 11)
-        expect(result[11]).to have_unchecked_field('cbl_mariner', with: 12)
+        expect(result[11]).to have_unchecked_field('cbl-mariner', with: 12)
         expect(result[12]).to have_unchecked_field('wolfi', with: 13)
       end
     end
