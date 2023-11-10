@@ -24914,8 +24914,14 @@ Pypi metadata.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="pypimetadataauthoremail"></a>`authorEmail` | [`String`](#string) | Author email address(es) in RFC-822 format. |
+| <a id="pypimetadatadescription"></a>`description` | [`String`](#string) | Longer description that can run to several paragraphs. |
+| <a id="pypimetadatadescriptioncontenttype"></a>`descriptionContentType` | [`String`](#string) | Markup syntax used in the description field. |
 | <a id="pypimetadataid"></a>`id` | [`PackagesPypiMetadatumID!`](#packagespypimetadatumid) | ID of the metadatum. |
+| <a id="pypimetadatakeywords"></a>`keywords` | [`String`](#string) | List of keywords, separated by commas. |
+| <a id="pypimetadatametadataversion"></a>`metadataVersion` | [`String`](#string) | Metadata version. |
 | <a id="pypimetadatarequiredpython"></a>`requiredPython` | [`String`](#string) | Required Python version of the Pypi package. |
+| <a id="pypimetadatasummary"></a>`summary` | [`String`](#string) | One-line summary of the description. |
 
 ### `QueryComplexity`
 
