@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
+RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_category: :code_review do
   let_it_be_with_reload(:project) { create_default(:project, :repository) }
   let_it_be_with_reload(:merge_request) { create_default(:merge_request) }
 
@@ -12,6 +12,14 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
     subject { build_stubbed(:approval_merge_request_rule) }
 
     it { is_expected.to have_one(:approval_project_rule_project).through(:approval_project_rule) }
+    it { is_expected.to have_one(:approval_project_rule).through(:approval_merge_request_rule_source) }
+    it { is_expected.to have_many(:approval_merge_request_rules_users) }
+
+    it do
+      is_expected.to have_many(:scan_result_policy_violations)
+        .through(:scan_result_policy_read)
+        .source(:violations)
+    end
   end
 
   describe 'validations' do

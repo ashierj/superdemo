@@ -5,8 +5,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
   include ApprovalRuleLike
   include UsageStatistics
 
-  has_many :scan_result_policy_violations, through: :scan_result_policy_read, source: :violations
-
   scope :not_matching_pattern, -> (pattern) { code_owner.where.not(name: pattern) }
   scope :matching_pattern, -> (pattern) { code_owner.where(name: pattern) }
 
@@ -37,6 +35,8 @@ class ApprovalMergeRequestRule < ApplicationRecord
 
   # approved_approvers is only populated after MR is merged
   has_and_belongs_to_many :approved_approvers, class_name: 'User', join_table: :approval_merge_request_rules_approved_approvers
+  has_many :approval_merge_request_rules_users
+  has_many :scan_result_policy_violations, through: :scan_result_policy_read, source: :violations
   has_one :approval_merge_request_rule_source
   has_one :approval_project_rule, through: :approval_merge_request_rule_source
   has_one :approval_project_rule_project, through: :approval_project_rule, source: :project
