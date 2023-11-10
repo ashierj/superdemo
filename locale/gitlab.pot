@@ -18487,6 +18487,9 @@ msgstr ""
 msgid "Enforce two-factor authentication for all user sign-ins."
 msgstr ""
 
+msgid "Engine"
+msgstr ""
+
 msgid "Enhance security by storing service account keys in secret managers - learn more about %{docLinkStart}secret management with GitLab%{docLinkEnd}"
 msgstr ""
 
@@ -20717,16 +20720,16 @@ msgstr ""
 msgid "FindFile|Switch branch/tag"
 msgstr ""
 
-msgid "FindingsDrawer|Category:"
+msgid "FindingsDrawer|Code Quality"
 msgstr ""
 
-msgid "FindingsDrawer|Engine:"
+msgid "FindingsDrawer|Code Quality Finding"
 msgstr ""
 
-msgid "FindingsDrawer|Other locations:"
+msgid "FindingsDrawer|Detected in pipeline"
 msgstr ""
 
-msgid "FindingsDrawer|Severity:"
+msgid "FindingsDrawer|SAST Finding"
 msgstr ""
 
 msgid "Fingerprint (MD5)"
@@ -41897,6 +41900,9 @@ msgstr ""
 msgid "SAML|Your organization's SSO has been connected to your GitLab account"
 msgstr ""
 
+msgid "SAST"
+msgstr ""
+
 msgid "SBOMs last updated"
 msgstr ""
 
@@ -50445,6 +50451,9 @@ msgid "Too many results to display. Edit your search or add a filter."
 msgstr ""
 
 msgid "Too many users found. Quick actions are limited to at most %{max_count} users"
+msgstr ""
+
+msgid "Tool"
 msgstr ""
 
 msgid "TopNav|Explore"
