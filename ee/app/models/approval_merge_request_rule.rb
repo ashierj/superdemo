@@ -29,7 +29,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   scope :code_owner_approval_required, -> { code_owner.where('approvals_required > 0') }
   scope :with_added_approval_rules, -> { left_outer_joins(:approval_merge_request_rule_source).where(approval_merge_request_rule_sources: { approval_merge_request_rule_id: nil }) }
 
-  validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section] }, unless: :scan_finding?
+  validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section, :applicable_post_merge] }, unless: :scan_finding?
   validates :name, uniqueness: { scope: [:merge_request_id, :rule_type, :section, :security_orchestration_policy_configuration_id, :orchestration_policy_idx] }, if: :scan_finding?
   validates :rule_type, uniqueness: { scope: [:merge_request_id, :applicable_post_merge], message: proc { _('any-approver for the merge request already exists') } }, if: :any_approver?
 
@@ -112,6 +112,13 @@ class ApprovalMergeRequestRule < ApplicationRecord
         scope_or_array - [merge_request.author]
       end
     end
+  end
+
+  def applicable_to_branch?(branch)
+    return true unless self.approval_project_rule.present?
+    return true if self.modified_from_project_rule
+
+    self.approval_project_rule.applies_to_branch?(branch)
   end
 
   def sync_approved_approvers

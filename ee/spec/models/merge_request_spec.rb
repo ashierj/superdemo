@@ -110,6 +110,24 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
           end
         end
       end
+
+      describe '#set_applicable_when_copying_rules' do
+        let!(:rule_2) { create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: nil) }
+        let!(:rule_1) { create(:approval_merge_request_rule, merge_request: merge_request, applicable_post_merge: nil) }
+        let(:ids) { [rule_2.id] }
+
+        subject { merge_request.approval_rules.set_applicable_when_copying_rules(ids) }
+
+        it 'sets all the ids to true and others to false' do
+          pre_set = merge_request.approval_rules.all? { |rule| rule.applicable_post_merge.nil? }
+          expect(pre_set).to eq(true)
+
+          subject
+
+          expect(rule_1.reload.applicable_post_merge).to eq(false)
+          expect(rule_2.reload.applicable_post_merge).to eq(true)
+        end
+      end
     end
 
     describe '#merge_requests_author_approval?' do

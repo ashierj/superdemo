@@ -121,6 +121,22 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     end
   end
 
+  describe '.not_regular_or_any_approver scope' do
+    it 'returns all rules but regular or any-approver' do
+      create(:approval_project_rule, rule_type: :any_approver)
+      create(:approval_project_rule)
+      licence_rule = create(:approval_project_rule, :license_scanning)
+      code_owner_rule = create(:approval_project_rule, :code_owner)
+      code_coverage_rule = create(:approval_project_rule, :code_coverage)
+      scan_finding_rule = create(:approval_project_rule, :scan_finding)
+      any_mr_rule = create(:approval_project_rule, :any_merge_request)
+
+      expect(described_class.not_regular_or_any_approver).to(
+        contain_exactly(licence_rule, code_owner_rule, code_coverage_rule, scan_finding_rule, any_mr_rule)
+      )
+    end
+  end
+
   describe '.for_policy_configuration scope' do
     let_it_be(:project) { create(:project) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
