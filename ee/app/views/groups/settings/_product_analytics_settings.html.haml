@@ -1,0 +1,11 @@
+- learn_more = help_page_path('user/product_analytics/index')
+%h5
+  = s_('ProductAnalytics|Product Analytics')
+
+%p
+  = s_('ProductAnalytics|Store, query, and visualize quantitative data to get insights into user value.')
+  = external_link _('Learn more'), learn_more
+
+.form-group.gl-mb-3
+  = f.gitlab_ui_checkbox_component :product_analytics_enabled,
+    s_('ProductAnalytics|Use product analytics')

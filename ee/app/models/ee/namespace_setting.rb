@@ -25,6 +25,7 @@ module EE
 
       validate :user_cap_allowed, if: -> { enabling_user_cap? }
       validate :experiment_features_allowed
+      validate :product_analytics_allowed
 
       before_save :set_prevent_sharing_groups_outside_hierarchy, if: -> { user_cap_enabled? }
       after_save :disable_project_sharing!, if: -> { user_cap_enabled? }
@@ -129,6 +130,14 @@ module EE
         return if ai_settings_allowed?
 
         errors.add(:experiment_features_enabled, _("Experiment features' settings not allowed."))
+      end
+
+      def product_analytics_allowed
+        return unless experiment_features_enabled_changed? || product_analytics_enabled_changed?
+        return if experiment_features_enabled || !product_analytics_enabled
+
+        errors.add(:product_analytics_enabled,
+          _("Product analytics requires Experiment and Beta features to be enabled."))
       end
     end
 
