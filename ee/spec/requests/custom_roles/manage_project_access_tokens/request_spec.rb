@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User with read_dependency custom role', feature_category: :system_access do
+RSpec.describe 'User with manage_project_access_tokens custom role', feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, :in_group) }
 
@@ -21,6 +21,43 @@ RSpec.describe 'User with read_dependency custom role', feature_category: :syste
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:index)
+      end
+    end
+
+    describe 'POST /:namespace/:project/-/settings/access_tokens' do
+      let(:access_token_params) { { name: 'Nerd bot', scopes: ["api"], expires_at: Date.today + 1.month } }
+
+      subject(:submit_form) do
+        post project_settings_access_tokens_path(project), params: { resource_access_token: access_token_params }
+        response
+      end
+
+      context 'with custom access level same as the current user' do
+        let(:access_token_params) do
+          { name: 'Nerd bot', scopes: ["api"], expires_at: Date.today + 1.month, access_level: 10 }
+        end
+
+        let(:resource) { project }
+
+        it_behaves_like 'POST resource access tokens available'
+      end
+
+      context 'with custom access level higher than the current user' do
+        let(:access_token_params) do
+          { name: 'Nerd bot', scopes: ["api"], expires_at: Date.today + 1.month, access_level: 20 }
+        end
+
+        let(:resource) { project }
+
+        it 'renders JSON with an error' do
+          submit_form
+
+          parsed_body = Gitlab::Json.parse(response.body)
+          expect(parsed_body['new_token']).to be_blank
+          expect(parsed_body['errors']).to contain_exactly("Access level of the token can't be greater the access\
+ level of the user who created the token")
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
       end
     end
 
