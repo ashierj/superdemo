@@ -8,7 +8,6 @@ module API
 
     helpers ::API::Helpers::GlobalIds
 
-    USER_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
     # a limit used for overall body size when forwarding request to ai-assist, overall size should not be bigger than
     # summary of limits on accepted parameters
     # (https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist#completions)
@@ -32,7 +31,7 @@ module API
       def active_code_suggestions_purchase?
         return true unless ::Feature.enabled?(:purchase_code_suggestions)
 
-        cache_key = format(USER_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: current_user.id)
+        cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: current_user.id)
         Rails.cache.fetch(cache_key, expires_in: 1.hour) { current_user.code_suggestions_add_on_available? }
       end
 

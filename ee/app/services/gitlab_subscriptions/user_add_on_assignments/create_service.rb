@@ -32,6 +32,8 @@ module GitlabSubscriptions
             add_on_purchase.assigned_users.create!(user: user)
           end
 
+          Rails.cache.delete(format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user.id))
+
           log_event('User AddOn assignment created')
 
           ServiceResponse.success

@@ -32,6 +32,13 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::CreateService, feature
         expect { subject }.to change { add_on_purchase.assigned_users.where(user: user).count }.by(1)
         expect(response).to be_success
       end
+
+      it 'expires the user add-on cache', :use_clean_rails_redis_caching do
+        cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user.id)
+        Rails.cache.write(cache_key, false, expires_in: 1.hour)
+
+        expect { subject }.to change { Rails.cache.read(cache_key) }.from(false).to(nil)
+      end
     end
 
     shared_examples 'error response' do |error|
