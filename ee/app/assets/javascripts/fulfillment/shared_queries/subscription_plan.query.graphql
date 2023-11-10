@@ -1,0 +1,7 @@
+query getSubscriptionPlan($namespaceId: ID!) {
+  subscription @client(namespaceId: $namespaceId) {
+    plan @client {
+      code
+    }
+  }
+}
