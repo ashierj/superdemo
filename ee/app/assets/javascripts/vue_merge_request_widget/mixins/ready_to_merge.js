@@ -112,6 +112,9 @@ export default {
 
       return this.isPipelineActive && !this.state.onlyAllowMergeIfPipelineSucceeds;
     },
+    shouldDisplayMergeImmediatelyDropdownOptions() {
+      return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY].includes(this.preferredAutoMergeStrategy);
+    },
     isMergeImmediatelyDangerous() {
       return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY].includes(this.preferredAutoMergeStrategy);
     },

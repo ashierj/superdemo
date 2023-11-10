@@ -18,7 +18,7 @@ RSpec.describe 'Merge requests > User merges immediately', :js, feature_category
 
   before_all do
     project.add_maintainer(user)
-    project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
+    project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true, merge_trains_skip_train_allowed: true)
     merge_request.all_pipelines.first.succeed!
     merge_request.update_head_pipeline
   end
@@ -27,17 +27,33 @@ RSpec.describe 'Merge requests > User merges immediately', :js, feature_category
     find('.mr-widget-body .accept-merge-request.btn-confirm')
   end
 
-  def open_warning_dialog
-    find('.mr-widget-body .dropdown-toggle').click
+  def open_warning_dialog(confirm_button: 'Merge immediately', dialog_id: '#merge-immediately-confirmation-dialog')
+    find(".mr-widget-body .gl-new-dropdown-toggle").click
 
-    click_button 'Merge immediately'
+    click_button confirm_button
 
-    expect(page).to have_selector('#merge-immediately-confirmation-dialog')
+    expect(page).to have_selector(dialog_id)
   end
 
-  context 'when the merge request is on the merge train' do
+  def merge_from_warning_dialog(
+    confirm_button: 'Merge now and restart train',
+    dropdown_button: "Merge now and restart train")
+    Sidekiq::Testing.fake! do
+      open_warning_dialog(confirm_button: confirm_button,
+        dialog_id: '#merge-train-restart-train-confirmation-dialog')
+
+      click_button dropdown_button
+
+      wait_for_requests
+
+      expect(find_by_testid('merging-state')).to have_content('Merging!')
+    end
+  end
+
+  context 'when the merge request is on the merge train and the merge_trains_skip_train feature flag is disabled' do
     before do
       stub_licensed_features(merge_pipelines: true, merge_trains: true)
+      stub_feature_flags(merge_trains_skip_train: false)
       stub_ci_pipeline_yaml_file(YAML.dump(ci_yaml))
 
       sign_in(user)
@@ -63,6 +79,38 @@ RSpec.describe 'Merge requests > User merges immediately', :js, feature_category
 
         expect(find_by_testid('merging-state')).to have_content('Merging!')
       end
+    end
+  end
+
+  context 'when the merge request is on the merge train and the merge_trains_skip_train feature flag is enabled' do
+    before do
+      stub_licensed_features(merge_pipelines: true, merge_trains: true)
+      stub_feature_flags(merge_trains_skip_train: true)
+      stub_ci_pipeline_yaml_file(YAML.dump(ci_yaml))
+
+      sign_in(user)
+      visit project_merge_request_path(project, merge_request)
+      wait_for_requests
+    end
+
+    it 'shows a warning dialog and does nothing if the user selects "Cancel"' do
+      Sidekiq::Testing.fake! do
+        open_warning_dialog(confirm_button: 'Merge now and restart train',
+          dialog_id: '#merge-train-restart-train-confirmation-dialog')
+
+        find(':focus').send_keys :enter
+
+        expect(merge_button).to have_content('Merge')
+      end
+    end
+
+    it 'shows a warning dialog and merges immediately while restarting the train after the user confirms' do
+      merge_from_warning_dialog
+    end
+
+    it 'shows a warning dialog and merges immediately without restarting the train after the user confirms' do
+      merge_from_warning_dialog(confirm_button: "Merge now and don't restart train",
+        dropdown_button: "Merge now and don't restart train")
     end
   end
 end
