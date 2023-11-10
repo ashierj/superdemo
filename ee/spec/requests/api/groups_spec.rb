@@ -362,6 +362,36 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
       end
     end
 
+    context 'service_access_tokens_expiration_enforced' do
+      using RSpec::Parameterized::TableSyntax
+
+      context 'authenticated as group owner' do
+        where(:feature_enabled, :service_access_tokens_expiration_enforced, :result) do
+          false | false | nil
+          false | true  | nil
+          true  | false | false
+          true  | true  | true
+        end
+
+        with_them do
+          let(:params) { { service_access_tokens_expiration_enforced: service_access_tokens_expiration_enforced } }
+
+          before do
+            group.add_owner(user)
+
+            stub_licensed_features(service_accounts: feature_enabled)
+          end
+
+          it 'updates the attribute as expected' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['service_access_tokens_expiration_enforced']).to eq(result)
+          end
+        end
+      end
+    end
+
     context 'prevent_forking_outside_group' do
       using RSpec::Parameterized::TableSyntax
 

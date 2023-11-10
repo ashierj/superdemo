@@ -77,6 +77,10 @@ module EE
               attrs = attrs.except(:delete_unconfirmed_users_attributes)
             end
 
+            unless License.feature_available?(:service_accounts)
+              attrs = attrs.except(:service_access_tokens_expiration_enforced)
+            end
+
             attrs
           end
           # rubocop:enable Metrics/CyclomaticComplexity

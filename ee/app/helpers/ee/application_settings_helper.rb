@@ -128,6 +128,7 @@ module EE
          maintenance_mode
          maintenance_mode_message
          globally_allowed_ips
+         service_access_tokens_expiration_enforced
        ]
     end
 

@@ -54,6 +54,9 @@ module EE
             params.delete(:prevent_forking_outside_group) unless
               can?(current_user, :change_prevent_group_forking, group)
 
+            params.delete(:service_access_tokens_expiration_enforced) unless
+              group.root? && can?(current_user, :admin_service_accounts, group)
+
             unless group.unique_project_download_limit_enabled?
               %i[
                 unique_project_download_limit

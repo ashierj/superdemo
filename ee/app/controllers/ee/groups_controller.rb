@@ -5,6 +5,7 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
     include PreventForkingHelper
+    include ServiceAccessTokenExpirationHelper
     include GroupInviteMembers
     include ::Admin::IpRestrictionHelper
 
@@ -96,6 +97,7 @@ module EE
         params_ee << :max_pages_size if can?(current_user, :update_max_pages_size)
         params_ee << :max_personal_access_token_lifetime if current_group&.personal_access_token_expiration_policy_available?
         params_ee << :prevent_forking_outside_group if can_change_prevent_forking?(current_user, current_group)
+        params_ee << :service_access_tokens_expiration_enforced if can_change_service_access_tokens_expiration?(current_user, current_group)
         params_ee << :code_suggestions if ai_assist_ui_enabled?
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
         params_ee << :product_analytics_enabled

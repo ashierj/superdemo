@@ -471,6 +471,73 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
       end
     end
 
+    context 'for service access token enforced setting' do
+      context 'when saas', :saas do
+        context 'when service accounts feature enabled' do
+          before do
+            stub_licensed_features(service_accounts: true)
+          end
+
+          it 'renders service access token enforced checkbox' do
+            visit edit_group_path(group)
+            wait_for_all_requests
+
+            expect(page).to have_content('Service account token expiration')
+
+            within(permissions_selector) do
+              checkbox = find(service_access_token_expiration_enforced_selector)
+
+              expect(checkbox).to be_checked
+
+              checkbox.set(false)
+              click_button 'Save changes'
+              wait_for_all_requests
+            end
+
+            visit edit_group_path(group)
+            wait_for_all_requests
+
+            within(permissions_selector) do
+              expect(find(service_access_token_expiration_enforced_selector)).not_to be_checked
+            end
+          end
+
+          context 'when group is not the root group' do
+            let(:subgroup) { create(:group, parent: group) }
+
+            it "does not render service account token enforced checkbox" do
+              visit edit_group_path(subgroup)
+              wait_for_all_requests
+
+              expect(page).not_to have_content('Service account token expiration')
+            end
+          end
+        end
+
+        context 'when service accounts feature not enabled' do
+          it 'renders service access token enforced checkbox' do
+            visit edit_group_path(group)
+            wait_for_all_requests
+
+            expect(page).not_to have_content('Service account token expiration')
+          end
+        end
+      end
+
+      context 'when not saas' do
+        it "does not render service access token enforced checkbox" do
+          visit edit_group_path(group)
+          wait_for_all_requests
+
+          expect(page).not_to have_content('Service account token expiration')
+        end
+      end
+
+      def service_access_token_expiration_enforced_selector
+        '[data-testid="service_access_tokens_expiration_enforced_checkbox"]'
+      end
+    end
+
     def permissions_selector
       '[data-testid="permissions-settings"]'
     end
