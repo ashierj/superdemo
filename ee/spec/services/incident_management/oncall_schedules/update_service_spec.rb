@@ -48,7 +48,7 @@ RSpec.describe IncidentManagement::OncallSchedules::UpdateService, feature_categ
       it_behaves_like 'error response', 'Your license does not support on-call schedules'
     end
 
-    context 'when an on-call schedule witht the same name already exists' do
+    context 'when an on-call schedule with the same name already exists' do
       before do
         create(:incident_management_oncall_schedule, project: project, name: params[:name])
       end
@@ -78,7 +78,14 @@ RSpec.describe IncidentManagement::OncallSchedules::UpdateService, feature_categ
           example.run
         end
 
-        let_it_be_with_reload(:oncall_rotation) { create(:incident_management_oncall_rotation, :with_active_period, schedule: oncall_schedule) }
+        # Active Period: 8:00 - 17:00 UTC
+        let_it_be_with_reload(:oncall_rotation) do
+          create(:incident_management_oncall_rotation,
+            :with_active_period,
+            :with_participants,
+            schedule: oncall_schedule
+          )
+        end
 
         shared_examples 'updates the rotation active periods' do |new_start_time, new_end_time|
           it 'updates the rotation active periods with new timezone' do
@@ -88,6 +95,54 @@ RSpec.describe IncidentManagement::OncallSchedules::UpdateService, feature_categ
             expect { execute }.to change { oncall_rotation.reload.attributes_before_type_cast['active_period_start'] }.from(initial_start_time).to("#{new_start_time}:00")
              .and change { oncall_rotation.reload.attributes_before_type_cast['active_period_end'] }.from(initial_end_time).to("#{new_end_time}:00")
              .and change { oncall_schedule.reload.timezone }.to(new_timezone)
+          end
+
+          context 'when persisting shifts' do
+            let(:rotation_starts_at) { Time.current - oncall_rotation.shift_cycle_duration }
+
+            before do
+              # Behave as though this rotation was created 5 days ago and untouched since
+              oncall_rotation.reload.update!(
+                starts_at: rotation_starts_at,
+                created_at: rotation_starts_at,
+                updated_at: rotation_starts_at
+              )
+            end
+
+            it 'gracefully transitions between active periods' do
+              expected_shifts = IncidentManagement::OncallShiftGenerator
+                .new(oncall_rotation)
+                .for_timeframe(
+                  starts_at: oncall_rotation.starts_at,
+                  ends_at: Time.current
+                )
+
+              execute
+
+              expect(active_periods(expected_shifts))
+                .to match_array(active_periods(oncall_rotation.reload.shifts))
+
+              travel_to Time.utc(2021, 03, 24, 0, 0)
+
+              expect do
+                IncidentManagement::OncallRotations::PersistShiftsJob.new.perform(oncall_rotation.id)
+              end.not_to raise_error
+            end
+
+            private
+
+            def get_shifts(starts_at, ends_at)
+              IncidentManagement::OncallShiftGenerator
+                .new(oncall_rotation)
+                .for_timeframe(
+                  starts_at: starts_at,
+                  ends_at: ends_at
+                )
+            end
+
+            def active_periods(shifts)
+              shifts.map { |shift| shift.slice(:starts_at, :ends_at) }
+            end
           end
         end
 
@@ -129,6 +184,17 @@ RSpec.describe IncidentManagement::OncallSchedules::UpdateService, feature_categ
           end
         end
 
+        context 'between non-UTC timezones' do
+          let(:new_timezone) { 'Pacific/Auckland' }
+
+          before do
+            oncall_schedule.update!(timezone: 'America/New_York')
+            oncall_rotation.update!(active_period_start: '12:00', active_period_end: '11:00')
+          end
+
+          it_behaves_like 'updates the rotation active periods', '05:00', '04:00'
+        end
+
         context 'timezone is not changed' do
           before do
             params.delete(:timezone)
@@ -136,14 +202,16 @@ RSpec.describe IncidentManagement::OncallSchedules::UpdateService, feature_categ
 
           it 'does not update rotations' do
             expect { execute }.to not_change { oncall_rotation.updated_at }
+                              .and not_change { oncall_rotation.shifts }
           end
         end
 
         context 'error updating' do
           before do
-            allow_next_instance_of(IncidentManagement::OncallRotations::EditService) do |edit_service|
-              allow(edit_service).to receive(:execute).and_return(double(error?: true, message: 'Test something went wrong'))
-            end
+            oncall_rotation.errors.add(:base, 'Test something went wrong')
+            # rubocop:disable RSpec/AnyInstanceOf -- Not the next rotation instance
+            allow_any_instance_of(IncidentManagement::OncallRotation).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new(oncall_rotation))
+            # rubocop:enable RSpec/AnyInstanceOf
           end
 
           it_behaves_like 'error response', 'Test something went wrong'
