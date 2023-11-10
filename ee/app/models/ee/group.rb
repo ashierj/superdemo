@@ -978,13 +978,13 @@ module EE
       ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
     end
 
-    override :_safe_read_repository_read_only_column
-    def _safe_read_repository_read_only_column
+    override :safe_read_repository_read_only_column
+    def safe_read_repository_read_only_column
       ::NamespaceSetting.where(namespace: self).pick(:repository_read_only)
     end
 
-    override :_update_repository_read_only_column
-    def _update_repository_read_only_column(value)
+    override :update_repository_read_only_column
+    def update_repository_read_only_column(value)
       settings = namespace_settings || create_namespace_settings
 
       settings.update_column(:repository_read_only, value)
