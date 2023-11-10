@@ -30,7 +30,7 @@ class CreateCiSecureFileRegistry < Gitlab::Database::Migration[2.0]
         # To optimize performance of CiSecureFileRegistry.verification_failed_batch
         t.index :verification_retry_at, name: :ci_secure_file_registry_failed_verification, order: "NULLS FIRST", where: "((state = 2) AND (verification_state = 3))"
         # To optimize performance of CiSecureFileRegistry.needs_verification_count
-        t.index :verification_state, name:  :ci_secure_file_registry_needs_verification, where: "((state = 2)  AND (verification_state = ANY (ARRAY[0, 3])))"
+        t.index :verification_state, name: :ci_secure_file_registry_needs_verification, where: "((state = 2)  AND (verification_state = ANY (ARRAY[0, 3])))"
         # To optimize performance of CiSecureFileRegistry.verification_pending_batch
         t.index :verified_at, name: :ci_secure_file_registry_pending_verification, order: "NULLS FIRST", where: "((state = 2) AND (verification_state = 0))"
       end
