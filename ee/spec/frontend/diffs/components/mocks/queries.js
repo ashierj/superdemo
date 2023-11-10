@@ -9,6 +9,11 @@ export const codeQualityErrorAndParsed = jest
         mergeRequest: {
           id: 'gid://gitlab/MergeRequest/123',
           title: 'Update file noise.rb',
+          project: {
+            id: 'testid',
+            nameWithNamespace: 'test/name',
+            fullPath: 'testPath',
+          },
           hasSecurityReports: false,
           codequalityReportsComparer: {
             report: {
@@ -38,6 +43,11 @@ export const codeQualityErrorAndParsed = jest
         mergeRequest: {
           id: 'gid://gitlab/MergeRequest/123',
           title: 'Update file noise.rb',
+          project: {
+            id: 'testid',
+            nameWithNamespace: 'test/name',
+            fullPath: 'testPath',
+          },
           hasSecurityReports: false,
           codequalityReportsComparer: {
             report: {
@@ -82,6 +92,11 @@ export const SASTErrorAndParsedHandler = jest
         mergeRequest: {
           id: 'gid://gitlab/MergeRequest/123',
           title: 'Update file noise.rb',
+          project: {
+            id: 'testid',
+            nameWithNamespace: 'test/name',
+            fullPath: 'testPath',
+          },
           hasSecurityReports: false,
           codequalityReportsComparer: {
             report: {
@@ -111,6 +126,11 @@ export const SASTErrorAndParsedHandler = jest
         mergeRequest: {
           id: 'gid://gitlab/MergeRequest/123',
           title: 'Update file noise.rb',
+          project: {
+            id: 'testid',
+            nameWithNamespace: 'test/name',
+            fullPath: 'testPath',
+          },
           hasSecurityReports: false,
           codequalityReportsComparer: {
             report: {
@@ -141,6 +161,11 @@ export const codeQualityNewErrorsHandler = jest.fn().mockResolvedValue({
       mergeRequest: {
         id: 'gid://gitlab/MergeRequest/123',
         title: 'Update file noise.rb',
+        project: {
+          id: 'testid',
+          nameWithNamespace: 'test/name',
+          fullPath: 'testPath',
+        },
         hasSecurityReports: false,
         codequalityReportsComparer: {
           report: {
@@ -183,6 +208,11 @@ export const SASTParsedHandler = jest.fn().mockResolvedValue({
       mergeRequest: {
         id: 'gid://gitlab/MergeRequest/123',
         title: 'Update file noise.rb',
+        project: {
+          id: 'testid',
+          nameWithNamespace: 'test/name',
+          fullPath: 'testPath',
+        },
         hasSecurityReports: false,
         codequalityReportsComparer: {
           report: {

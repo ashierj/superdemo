@@ -64,6 +64,17 @@ describe('EE Diffs Module Getters', () => {
               file: 'index.js',
               startLine: '1',
             },
+            foundByPipelineIid: '2',
+            state: 'DETECTED',
+            identifiers: [
+              {
+                externalId: 'eslint.detect-disable-mustache-escape',
+                externalType: 'semgrep_id',
+                name: 'eslint.detect-disable-mustache-escape',
+                url: 'https://semgrep.dev/r/gitlab.eslint.detect-disable-mustache-escape',
+              },
+            ],
+            title: 'Improper Neutralization of Input During Web Page Generation (XSS)',
           },
           {
             description:
@@ -73,6 +84,17 @@ describe('EE Diffs Module Getters', () => {
               file: 'index.js',
               startLine: '3',
             },
+            foundByPipelineIid: '2',
+            state: 'DETECTED',
+            identifiers: [
+              {
+                externalId: 'eslint.detect-disable-mustache-escape',
+                externalType: 'semgrep_id',
+                name: 'eslint.detect-disable-mustache-escape',
+                url: 'https://semgrep.dev/r/gitlab.eslint.detect-disable-mustache-escape',
+              },
+            ],
+            title: 'Improper Neutralization of Input During Web Page Generation (XSS)',
           },
         ],
       };
