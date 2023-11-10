@@ -2325,13 +2325,10 @@
   rules:
     - <<: *if-not-ee
       when: never
-    - <<: *if-merge-request-labels-pipeline-expedite
+    - <<: *if-merge-request
       when: never
     - if: '$FAST_QUARANTINE == "false" && $RETRY_FAILED_TESTS_IN_NEW_PROCESS != "true"'
       when: never
-    - <<: *if-merge-request
-      changes: *code-backstage-patterns
-      when: always
     - <<: *if-default-branch-refs
       changes: *code-backstage-patterns
       when: always
