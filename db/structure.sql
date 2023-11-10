@@ -33587,8 +33587,6 @@ CREATE UNIQUE INDEX index_on_project_id_escalation_policy_name_unique ON inciden
 
 CREATE INDEX index_on_projects_lower_path ON projects USING btree (lower((path)::text));
 
-CREATE INDEX index_on_projects_path ON projects USING btree (path);
-
 CREATE INDEX index_on_routes_lower_path ON routes USING btree (lower((path)::text));
 
 CREATE INDEX index_on_sbom_sources_package_manager_name ON sbom_sources USING btree ((((source -> 'package_manager'::text) ->> 'name'::text)));
