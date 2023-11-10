@@ -11,18 +11,14 @@ module ApprovalRules
     def execute
       return unless merge_request.merged?
 
-      # fails ee/spec/services/approval_rules/finalize_service_spec.rb
-      cross_join_issue = "https://gitlab.com/gitlab-org/gitlab/-/issues/417459"
-      ::Gitlab::Database.allow_cross_joins_across_databases(url: cross_join_issue) do
-        ApplicationRecord.transaction do
-          if new_finalizing_approach?
-            new_handling_of_rules
-          else
-            old_handling_of_rules
-          end
-
-          merge_request.approval_rules.each(&:sync_approved_approvers)
+      ApplicationRecord.transaction do
+        if new_finalizing_approach?
+          new_handling_of_rules
+        else
+          old_handling_of_rules
         end
+
+        merge_request.approval_rules.each(&:sync_approved_approvers)
       end
     end
 
