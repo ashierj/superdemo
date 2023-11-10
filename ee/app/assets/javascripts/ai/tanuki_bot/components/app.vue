@@ -166,21 +166,20 @@ export default {
 </script>
 
 <template>
-  <div>
-    <gl-duo-chat
-      v-if="helpCenterState.showTanukiBotChatDrawer"
-      :title="$options.i18n.gitlabChat"
-      :messages="messages"
-      :error="error"
-      :is-loading="loading"
-      :predefined-prompts="$options.i18n.predefinedPrompts"
-      :experiment-help-page-url="$options.experimentHelpPagePath"
-      :badge-type="glFeatures.duoChatBeta ? 'beta' : 'experiment'"
-      :badge-help-page-url="$options.experimentHelpPagePath"
-      :tool-name="toolName"
-      @send-chat-prompt="onSendChatPrompt"
-      @chat-hidden="onChatClose"
-      @track-feedback="onTrackFeedback"
-    />
-  </div>
+  <gl-duo-chat
+    v-if="helpCenterState.showTanukiBotChatDrawer"
+    :title="$options.i18n.gitlabChat"
+    :messages="messages"
+    :error="error"
+    :is-loading="loading"
+    :predefined-prompts="$options.i18n.predefinedPrompts"
+    :experiment-help-page-url="$options.experimentHelpPagePath"
+    :badge-type="glFeatures.duoChatBeta ? 'beta' : 'experiment'"
+    :badge-help-page-url="$options.experimentHelpPagePath"
+    :tool-name="toolName"
+    class="gl-z-index-9999"
+    @send-chat-prompt="onSendChatPrompt"
+    @chat-hidden="onChatClose"
+    @track-feedback="onTrackFeedback"
+  />
 </template>
