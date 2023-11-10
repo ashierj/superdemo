@@ -77,19 +77,19 @@ RSpec.describe ::Gitlab::PackageMetadata::Connector::Offline, feature_category: 
   # we test that we correctly convert between purl type
   # and registry id used by the license db structure.
   where(:purl_type, :registry_id) do
-    :composer    | "packagist"
-    :conan       | "conan"
-    :gem         | "rubygem"
-    :golang      | "go"
-    :maven       | "maven"
-    :npm         | "npm"
-    :nuget       | "nuget"
-    :pypi        | "pypi"
-    :apk         | "apk"
-    :rpm         | "rpm"
-    :deb         | "deb"
-    :cbl_mariner | "cbl-mariner"
-    :wolfi       | "wolfi"
+    :composer     | "packagist"
+    :conan        | "conan"
+    :gem          | "rubygem"
+    :golang       | "go"
+    :maven        | "maven"
+    :npm          | "npm"
+    :nuget        | "nuget"
+    :pypi         | "pypi"
+    :apk          | "apk"
+    :rpm          | "rpm"
+    :deb          | "deb"
+    'cbl-mariner' | "cbl-mariner"
+    :wolfi        | "wolfi"
   end
 
   let(:sync_config) do

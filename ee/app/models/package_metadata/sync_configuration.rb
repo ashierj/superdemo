@@ -19,7 +19,7 @@ module PackageMetadata
       apk: "apk",
       rpm: "rpm",
       deb: "deb",
-      cbl_mariner: "cbl-mariner",
+      'cbl-mariner': "cbl-mariner",
       wolfi: "wolfi"
     }.with_indifferent_access.freeze
 
