@@ -214,6 +214,7 @@ export const listIssuablesQueries = {
       assignees: { nodes: [], __typename: 'UserCoreConnection' },
       blocked: false,
       blockedByCount: 0,
+      closedAt: null,
       confidential: false,
       dueDate: null,
       emailsDisabled: false,

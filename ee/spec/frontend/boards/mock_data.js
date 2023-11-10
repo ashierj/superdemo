@@ -259,6 +259,7 @@ export const rawIssue = {
   title: 'Issue 1',
   id: 'gid://gitlab/Issue/436',
   iid: '27',
+  closedAt: null,
   dueDate: null,
   timeEstimate: 0,
   totalTimeSpent: 0,
