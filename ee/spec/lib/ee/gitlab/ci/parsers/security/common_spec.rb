@@ -82,23 +82,23 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common, feature_category: :vulnera
                 {
                   'id' => 'vulnerability-3',
                   __oj_introspection: {
-                    start_byte: 12402,
-                    end_byte: 12446
+                    start_byte: 12403,
+                    end_byte: 12447
                   }
                 },
                 {
                   'id' => 'vulnerability-4',
                   __oj_introspection: {
-                    start_byte: 12457,
-                    end_byte: 12501
+                    start_byte: 12458,
+                    end_byte: 12502
                   }
                 }
               ],
               'summary' => 'this remediates the third and fourth vulnerability',
               'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5',
               __oj_introspection: {
-                start_byte: 12375,
-                end_byte: 12660
+                start_byte: 12376,
+                end_byte: 12661
               }
             }.deep_stringify_keys
 
@@ -115,16 +115,16 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common, feature_category: :vulnera
               {
                 'id' => 'vulnerability-6',
                 __oj_introspection: {
-                  start_byte: 13116,
-                  end_byte: 13160
+                  start_byte: 13117,
+                  end_byte: 13161
                 }
               }
             ],
             'summary' => 'this fixed CVE',
             'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5',
             __oj_introspection: {
-              start_byte: 13089,
-              end_byte: 13283
+              start_byte: 13090,
+              end_byte: 13284
             }
           }.deep_stringify_keys
 

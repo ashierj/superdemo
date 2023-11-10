@@ -53143,6 +53143,9 @@ msgstr ""
 msgid "VulnerabilityExport|CVE"
 msgstr ""
 
+msgid "VulnerabilityExport|CVSS Vectors"
+msgstr ""
+
 msgid "VulnerabilityExport|CWE"
 msgstr ""
 

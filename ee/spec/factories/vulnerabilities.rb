@@ -11,7 +11,7 @@ FactoryBot.define do
     report_type { :sast }
     description { "Description of #{title}" }
     present_on_default_branch { true }
-    cvss { [] }
+    cvss { [{ vendor: "GitLab", vector: "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:L/I:L/A:N" }] }
 
     trait :detected do
       state { :detected }

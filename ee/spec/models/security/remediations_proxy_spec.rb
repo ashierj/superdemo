@@ -17,8 +17,8 @@ RSpec.describe Security::RemediationsProxy, feature_category: :vulnerability_man
     # parser = Oj::Introspect.new(filter: "remediations")
     # parsed_report = parser.parse(raw_json)
     # parsed_report.dig(*%w[remediations])[0..1].map { |o| o[:__oj_introspection] }
-    let(:remediation_1_byte_offsets) { [11986, 12173] }
-    let(:remediation_2_byte_offsets) { [12180, 12368] }
+    let(:remediation_1_byte_offsets) { [11987, 12174] }
+    let(:remediation_2_byte_offsets) { [12181, 12369] }
 
     subject(:data_fragments) do
       model.by_byte_offsets([remediation_1_byte_offsets, remediation_2_byte_offsets, remediation_2_byte_offsets])
