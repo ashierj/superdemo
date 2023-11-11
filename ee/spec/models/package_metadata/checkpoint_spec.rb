@@ -3,24 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe PackageMetadata::Checkpoint, type: :model, feature_category: :software_composition_analysis do
-  let(:purl_types) do
-    {
-      composer: 1,
-      conan: 2,
-      gem: 3,
-      golang: 4,
-      maven: 5,
-      npm: 6,
-      nuget: 7,
-      pypi: 8,
-      apk: 9,
-      rpm: 10,
-      deb: 11,
-      'cbl-mariner': 12,
-      wolfi: 13
-    }
-  end
-
   let(:data_types) do
     {
       advisories: 1,
@@ -36,7 +18,7 @@ RSpec.describe PackageMetadata::Checkpoint, type: :model, feature_category: :sof
   end
 
   describe 'enums' do
-    it { is_expected.to define_enum_for(:purl_type).with_values(purl_types) }
+    it_behaves_like 'purl_types enum'
     it { is_expected.to define_enum_for(:data_type).with_values(data_types) }
     it { is_expected.to define_enum_for(:version_format).with_values(version_formats) }
   end
