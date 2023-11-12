@@ -12,6 +12,9 @@ RSpec.describe MergeRequests::Mergeability::CheckExternalStatusChecksPassedServi
 
   let(:merge_request) { build(:merge_request) }
 
+  it_behaves_like 'mergeability check service', :status_checks_must_pass,
+    'Checks whether the external status checks pass'
+
   describe "#execute" do
     let(:result) { check_external_status_checks_passed_service.execute }
 
