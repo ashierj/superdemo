@@ -323,6 +323,22 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
         expect(result).to eq(2)
       end
 
+      it 'expires the cache keys for the ineligible users', :use_clean_rails_redis_caching do
+        user_1_cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user_1.id)
+        user_2_cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user_2.id)
+        Rails.cache.write(user_1_cache_key, true, expires_in: 1.hour)
+        Rails.cache.write(user_2_cache_key, true, expires_in: 1.hour)
+
+        add_on_purchase.namespace.add_guest(user_1) # user_1 still eligible
+
+        expect(add_on_purchase.reload.assigned_users.count).to eq(2)
+
+        expect { expect(result).to eq(1) }
+          .to change { add_on_purchase.reload.assigned_users.count }.by(-1)
+          .and change { Rails.cache.read(user_2_cache_key) }.from(true).to(nil)
+          .and not_change { Rails.cache.read(user_1_cache_key) }
+      end
+
       context 'when the add_on_purchase has no namespace' do
         before do
           add_on_purchase.update_attribute(:namespace, nil)

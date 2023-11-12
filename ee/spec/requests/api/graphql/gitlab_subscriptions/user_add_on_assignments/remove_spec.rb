@@ -94,6 +94,15 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
         'addOnAssignments' => { 'nodes' => [] }
       )
     end
+
+    it 'expires the cache key for that user', :use_clean_rails_redis_caching do
+      cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: remove_user.id)
+      Rails.cache.write(cache_key, true, expires_in: 1.hour)
+
+      expect do
+        post_graphql_mutation(mutation, current_user: current_user)
+      end.to change { Rails.cache.read(cache_key) }.from(true).to(nil)
+    end
   end
 
   it_behaves_like 'success response'

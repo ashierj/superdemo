@@ -59,6 +59,14 @@ module GitlabSubscriptions
         ineligible_user_ids = batch.pluck_user_ids.to_set - eligible_user_ids_for_assignment
 
         deleted_assignments_count += batch.for_user_ids(ineligible_user_ids).delete_all
+
+        cache_keys = ineligible_user_ids.map do |user_id|
+          format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user_id)
+        end
+
+        Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
+          Rails.cache.delete_multi(cache_keys)
+        end
       end
 
       deleted_assignments_count
