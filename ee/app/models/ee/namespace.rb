@@ -14,7 +14,13 @@ module EE
     NAMESPACE_PLANS_TO_LICENSE_PLANS = {
       ::Plan::BRONZE => License::STARTER_PLAN,
       [::Plan::SILVER, ::Plan::PREMIUM, ::Plan::PREMIUM_TRIAL] => License::PREMIUM_PLAN,
-      [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL, ::Plan::OPEN_SOURCE] => License::ULTIMATE_PLAN
+      [
+        ::Plan::GOLD,
+        ::Plan::ULTIMATE,
+        ::Plan::ULTIMATE_TRIAL,
+        ::Plan::ULTIMATE_TRIAL_PAID_CUSTOMER,
+        ::Plan::OPEN_SOURCE
+      ] => License::ULTIMATE_PLAN
     }.freeze
 
     LICENSE_PLANS_TO_NAMESPACE_PLANS = NAMESPACE_PLANS_TO_LICENSE_PLANS.invert.freeze
@@ -438,6 +444,10 @@ module EE
 
     def ultimate_trial_plan?
       actual_plan_name == ::Plan::ULTIMATE_TRIAL
+    end
+
+    def ultimate_trial_paid_customer_plan?
+      actual_plan_name == ::Plan::ULTIMATE_TRIAL_PAID_CUSTOMER
     end
 
     def opensource_plan?

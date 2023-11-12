@@ -1876,11 +1876,12 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     let_it_be(:group, refind: true) { create(:group) }
 
     where(:actual_plan_name, :requested_plan_name, :result) do
-      :free           | nil        | false
-      :premium        | nil        | false
-      :ultimate       | nil        | true
-      :ultimate_trial | nil        | true
-      :gold           | nil        | true
+      :free                         | nil        | false
+      :premium                      | nil        | false
+      :ultimate                     | nil        | true
+      :ultimate_trial               | nil        | true
+      :ultimate_trial_paid_customer | nil        | true
+      :gold                         | nil        | true
 
       :free           | 'premium'  | false
       :free           | 'ultimate' | true
