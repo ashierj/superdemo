@@ -95,6 +95,7 @@ RSpec.describe API::MergeRequestApprovalSettings, feature_category: :source_code
           expect(json_response['retain_approvals_on_push']['value']).to eq(true)
           expect(json_response['selective_code_owner_removals']['value']).to eq(false)
           expect(json_response['require_password_to_approve']['value']).to eq(false)
+          expect(json_response['require_saml_auth_to_approve']['value']).to eq(false)
         end
       end
 

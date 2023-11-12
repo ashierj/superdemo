@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::ComplianceManagement::MergeRequestApprovalSettings::Resolver do
+RSpec.describe ::ComplianceManagement::MergeRequestApprovalSettings::Resolver, feature_category: :compliance_management do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group) }

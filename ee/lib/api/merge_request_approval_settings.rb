@@ -18,13 +18,16 @@ module API
         optional :selective_code_owner_removals, type: Boolean, desc: 'Reset approvals from Code Owners if their files changed', allow_blank: false
         optional :require_password_to_approve,
           type: Boolean, desc: 'Require approver to authenticate before approving', allow_blank: false
+        optional :require_saml_auth_to_approve,
+          type: Boolean, desc: 'Require approver to re-authenticate with SAML before approving', allow_blank: false
 
         at_least_one_of :allow_author_approval,
           :allow_committer_approval,
           :allow_overrides_to_approver_list_per_merge_request,
           :retain_approvals_on_push,
           :selective_code_owner_removals,
-          :require_password_to_approve
+          :require_password_to_approve,
+          :require_saml_auth_to_approve
       end
     end
 

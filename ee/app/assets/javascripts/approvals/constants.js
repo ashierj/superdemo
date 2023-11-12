@@ -56,7 +56,9 @@ export const PROJECT_APPROVAL_SETTINGS_LABELS_I18N = {
   preventCommittersApprovalLabel: s__(
     'ApprovalSettings|Prevent approvals by users who add commits',
   ),
-  requireUserPasswordLabel: s__('ApprovalSettings|Require user password to approve'),
+  requireUserPasswordLabel: s__(
+    'ApprovalSettings|Require user re-authentication (password or SAML) to approve',
+  ),
   whenCommitAddedLabel: s__('ApprovalSettings|When a commit is added:'),
   keepApprovalsLabel: s__('ApprovalSettings|Keep approvals'),
   removeApprovalsOnPushLabel: s__('ApprovalSettings|Remove all approvals'),
