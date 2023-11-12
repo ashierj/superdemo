@@ -16,6 +16,9 @@ resources :merge_requests, only: [], constraints: { id: /\d+/ } do
     get :api_fuzzing_reports
     get :security_reports
 
+    # We intentionally need get here since this is invoked via a callback from the SAML Identity Provider(OmniAuth)
+    get :saml_approval, action: :create, controller: 'merge_requests/saml_approvals'
+
     post :rebase
   end
 

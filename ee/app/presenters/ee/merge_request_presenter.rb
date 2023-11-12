@@ -66,7 +66,46 @@ module EE
       ).issue_keys
     end
 
+    def saml_approval_path
+      return unless group.is_a?(Group) # feature does not work for personal namespaces
+
+      return unless group_requires_saml_auth_for_approval?
+
+      expose_path sso_group_saml_providers_path(
+        group,
+        token: group.saml_discovery_token,
+        redirect: saml_approval_redirect_path
+      )
+    end
+
+    def require_saml_auth_to_approve
+      group_requires_saml_auth_for_approval?
+    end
+
     private
+
+    def group
+      target_project.namespace
+    end
+
+    def group_requires_saml_auth_for_approval?
+      return false unless mr_approval_setting_password_required?
+
+      ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted?(
+        user: current_user,
+        resource: merge_request.project,
+        session_timeout: 0.seconds
+      )
+    end
+
+    def mr_approval_setting_password_required?
+      merge_request.require_password_to_approve?
+    end
+
+    def saml_approval_redirect_path
+      # Will not work with URL since the SSO controller will sanatize it
+      saml_approval_namespace_project_merge_request_path(group, target_project, merge_request.iid)
+    end
 
     def expose_mr_status_checks?
       current_user.present? &&
