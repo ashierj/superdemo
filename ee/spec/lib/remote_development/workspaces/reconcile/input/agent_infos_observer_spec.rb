@@ -42,7 +42,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
     }
   end
 
-  subject do
+  subject(:returned_value) do
     described_class.observe(value)
   end
 
@@ -94,7 +94,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         ]
       )
 
-      expect(subject).to eq(value)
+      expect(returned_value).to eq(value)
     end
 
     it "logs abnormal workspaces at warn level", :unlimited_max_formatted_output_length do
@@ -123,7 +123,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         ]
       )
 
-      expect(subject).to eq(value)
+      expect(returned_value).to eq(value)
     end
   end
 
@@ -155,7 +155,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         abnormal_agent_infos: []
       )
 
-      expect(subject).to eq(value)
+      expect(returned_value).to eq(value)
     end
   end
 
@@ -199,7 +199,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         ]
       )
 
-      expect(subject).to eq(value)
+      expect(returned_value).to eq(value)
     end
 
     it "logs abnormal workspaces at warn level", :unlimited_max_formatted_output_length do
@@ -228,7 +228,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         ]
       )
 
-      expect(subject).to eq(value)
+      expect(returned_value).to eq(value)
     end
   end
 
@@ -251,7 +251,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         abnormal_agent_infos: []
       )
 
-      expect(subject).to eq(value)
+      expect(returned_value).to eq(value)
     end
   end
 end

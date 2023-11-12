@@ -24,7 +24,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsToInfosCon
 
   let(:value) { { workspace_agent_info_hashes_from_params: workspace_agent_info_hashes_from_params } }
 
-  subject do
+  subject(:returned_value) do
     described_class.convert(value)
   end
 
@@ -38,7 +38,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsToInfosCon
   end
 
   it "converts array of workspace agent info hashes from params into array of AgentInfo value objects" do
-    expect(subject).to eq(
+    expect(returned_value).to eq(
       value.merge(
         workspace_agent_infos_by_name: {
           workspace1: expected_agent_info_1,

@@ -58,7 +58,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       )
     end
 
-    subject do
+    subject(:desired_config_generator) do
       described_class
     end
 
@@ -66,7 +66,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       let(:started) { true }
 
       it 'returns expected config' do
-        workspace_resources = subject.generate_desired_config(workspace: workspace, logger: logger)
+        workspace_resources = desired_config_generator.generate_desired_config(workspace: workspace, logger: logger)
 
         expect(workspace_resources).to eq(expected_config)
       end
@@ -77,7 +77,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       let(:started) { false }
 
       it 'returns expected config' do
-        workspace_resources = subject.generate_desired_config(workspace: workspace, logger: logger)
+        workspace_resources = desired_config_generator.generate_desired_config(workspace: workspace, logger: logger)
 
         expect(workspace_resources).to eq(expected_config)
       end
@@ -88,7 +88,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       let(:network_policy_enabled) { false }
 
       it 'returns expected config without network policy' do
-        workspace_resources = subject.generate_desired_config(workspace: workspace, logger: logger)
+        workspace_resources = desired_config_generator.generate_desired_config(workspace: workspace, logger: logger)
 
         expect(workspace_resources).to eq(expected_config)
       end
@@ -100,7 +100,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       end
 
       it 'returns an empty array' do
-        workspace_resources = subject.generate_desired_config(workspace: workspace, logger: logger)
+        workspace_resources = desired_config_generator.generate_desired_config(workspace: workspace, logger: logger)
 
         expect(workspace_resources).to eq([])
       end

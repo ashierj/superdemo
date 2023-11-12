@@ -1,12 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.shared_context 'with remote development shared fixtures' do
-  # rubocop:disable Metrics/ParameterLists
-  # rubocop:disable Metrics/CyclomaticComplexity
-  # rubocop:disable Metrics/PerceivedComplexity
-  # rubocop:disable Layout/LineLength
-  # noinspection RubyInstanceMethodNamingConvention, RubyLocalVariableNamingConvention, RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
-  # rubocop:enable Layout/LineLength
+  # rubocop:todo Metrics/ParameterLists, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity -- Cleanup as part of https://gitlab.com/gitlab-org/gitlab/-/issues/421687
   def create_workspace_agent_info_hash(
     workspace:,
     # NOTE: previous_actual_state is the actual state of the workspace IMMEDIATELY prior to the current state. We don't
@@ -54,7 +49,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
 
     started = spec_replicas == 1
 
-    # rubocop:disable Lint/DuplicateBranch
+    # rubocop:todo Lint/DuplicateBranch -- Make this cop recognize that different arrays with different entries are not duplicates
     status =
       case [previous_actual_state, current_actual_state, workspace_exists]
       in [RemoteDevelopment::Workspaces::States::CREATION_REQUESTED, RemoteDevelopment::Workspaces::States::STARTING, _]
@@ -246,10 +241,12 @@ RSpec.shared_context 'with remote development shared fixtures' do
         #     updatedReplicas: 1
         # STATUS_YAML
       else
+        # rubocop:todo Layout/LineEndStringConcatenationIndentation -- make this cop accept standard 2-character indentation
         msg =
           'Unsupported state transition passed for create_workspace_agent_info_hash fixture creation: ' \
             "actual_state: #{previous_actual_state} -> #{current_actual_state}, " \
             "existing_workspace: #{workspace_exists}"
+        # rubocop:enable Layout/LineEndStringConcatenationIndentation
         raise RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError, msg
       end
     # rubocop:enable Lint/DuplicateBranch
@@ -297,9 +294,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }.compact
   end
 
-  # rubocop:disable Metrics/ParameterLists
-  # noinspection RubyLocalVariableNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
-  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/ParameterLists, Metrics/AbcSize -- Cleanup as part of https://gitlab.com/gitlab-org/gitlab/-/issues/421687
   def create_config_to_apply(
     workspace:,
     started:,
@@ -758,8 +753,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }
   end
 
-  # noinspection RubyParameterNamingConvention
-  # rubocop:disable Metrics/ParameterLists
+  # rubocop:todo Metrics/ParameterLists -- refactor this to have fewer parameters - perhaps introduce a parameter object: https://refactoring.com/catalog/introduceParameterObject.html
   def workspace_deployment_prev1(
     workspace_id:,
     workspace_name:,

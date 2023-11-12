@@ -6,7 +6,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Updater, feature_categor
   include ResultMatchers
 
   subject(:result) do
-    described_class.update(workspace: workspace, params: params) # rubocop:disable Rails/SaveBang
+    described_class.update(workspace: workspace, params: params) # rubocop:disable Rails/SaveBang -- This is not an ActiveRecord method
   end
 
   let_it_be(:user) { create(:user) }
@@ -30,7 +30,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Updater, feature_categor
 
   context 'when workspace update is successful' do
     it 'updates the workspace and returns ok result containing successful message with updated workspace' do
-      expect { subject }.to change { workspace.reload.desired_state }.to(new_desired_state)
+      expect { result }.to change { workspace.reload.desired_state }.to(new_desired_state)
 
       expect(result)
         .to be_ok_result(RemoteDevelopment::Messages::WorkspaceUpdateSuccessful.new({ workspace: workspace }))
@@ -40,7 +40,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Updater, feature_categor
   context 'when workspace update fails' do
     shared_examples 'err result' do |expected_error_details:|
       it 'does not update the db record and returns an error result containing a failed message with model errors' do
-        expect { subject }.not_to change {
+        expect { result }.not_to change {
           [
             workspace.reload,
             workspace.personal_access_token.reload
@@ -73,7 +73,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Updater, feature_categor
       end
 
       it 'does not revoke the token and returns an error result containing a failed message with model errors' do
-        expect { subject }.not_to change { workspace.reload.updated_at }
+        expect { result }.not_to change { workspace.reload.updated_at }
 
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceUpdateFailed)

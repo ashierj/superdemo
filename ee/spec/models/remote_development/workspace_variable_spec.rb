@@ -17,7 +17,7 @@ RSpec.describe RemoteDevelopment::WorkspaceVariable, feature_category: :remote_d
 
   let_it_be(:workspace) { create(:workspace, :without_workspace_variables) }
 
-  subject do
+  subject(:workspace_variable) do
     create(:workspace_variable, workspace: workspace, key: key, value: value, variable_type: variable_type)
   end
 
@@ -25,7 +25,7 @@ RSpec.describe RemoteDevelopment::WorkspaceVariable, feature_category: :remote_d
     it { is_expected.to belong_to(:workspace) }
 
     it 'has correct associations from factory' do
-      expect(subject.workspace).to eq(workspace)
+      expect(workspace_variable.workspace).to eq(workspace)
     end
   end
 
@@ -38,7 +38,7 @@ RSpec.describe RemoteDevelopment::WorkspaceVariable, feature_category: :remote_d
 
   describe '#value' do
     it 'can be decrypted' do
-      expect(subject.value).to eq(value)
+      expect(workspace_variable.value).to eq(value)
     end
   end
 
@@ -47,7 +47,7 @@ RSpec.describe RemoteDevelopment::WorkspaceVariable, feature_category: :remote_d
       let(:variable_type) { variable_type_env_var }
 
       it 'returns the record' do
-        expect(described_class.with_variable_type_env_var).to eq([subject])
+        expect(described_class.with_variable_type_env_var).to eq([workspace_variable])
       end
     end
 
@@ -55,7 +55,7 @@ RSpec.describe RemoteDevelopment::WorkspaceVariable, feature_category: :remote_d
       let(:variable_type) { variable_type_file }
 
       it 'returns the record' do
-        expect(described_class.with_variable_type_file).to eq([subject])
+        expect(described_class.with_variable_type_file).to eq([workspace_variable])
       end
     end
   end

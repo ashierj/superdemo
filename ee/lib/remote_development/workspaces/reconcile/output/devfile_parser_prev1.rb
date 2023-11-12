@@ -8,6 +8,7 @@ module RemoteDevelopment
       module Output
         # noinspection RubyClassMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         class DevfileParserPrev1
+          # rubocop:todo Metrics/ParameterLists -- refactor this to have fewer parameters - perhaps introduce a parameter object: https://refactoring.com/catalog/introduceParameterObject.html
           # @param [String] processed_devfile
           # @param [String] name
           # @param [String] namespace
@@ -18,7 +19,17 @@ module RemoteDevelopment
           # @param [User] user
           # @param [RemoteDevelopment::Logger] logger
           # @return [Array<Hash>]
-          def self.get_all(processed_devfile:, name:, namespace:, replicas:, domain_template:, labels:, annotations:, user:, logger:) # rubocop:disable Metrics/ParameterLists
+          def self.get_all(
+            processed_devfile:,
+            name:,
+            namespace:,
+            replicas:,
+            domain_template:,
+            labels:,
+            annotations:,
+            user:,
+            logger:
+          )
             begin
               workspace_resources_yaml = Devfile::Parser.get_all(
                 processed_devfile,
@@ -49,6 +60,8 @@ module RemoteDevelopment
               domain_template: domain_template
             )
           end
+
+          # rubocop:enable Metrics/ParameterLists
 
           # Devfile library allows specifying the security context of pods/containers as mentioned in
           # https://github.com/devfile/api/issues/920 through `pod-overrides` and `container-overrides` attributes.

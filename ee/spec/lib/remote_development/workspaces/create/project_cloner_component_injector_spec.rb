@@ -30,12 +30,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInje
     }
   end
 
-  subject do
+  subject(:returned_value) do
     described_class.inject(value)
   end
 
   it "injects the project cloner component" do
-    components = subject.dig(:processed_devfile, "components")
+    components = returned_value.dig(:processed_devfile, "components")
     project_cloner_component = components.find { |component| component.fetch("name") == component_name }
     expected_components = expected_processed_devfile.fetch("components")
     expected_volume_component = expected_components.find do |component|

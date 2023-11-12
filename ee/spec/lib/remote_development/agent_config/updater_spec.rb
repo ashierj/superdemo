@@ -41,7 +41,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
     let(:config) { {} }
 
     it "does not update and returns an ok Result containing a hash indicating update was skipped" do
-      expect { subject }.to not_change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+      expect { result }.to not_change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
 
       expect(result)
         .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound.new(
@@ -53,7 +53,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
   context 'when config passed is not empty' do
     context 'when a config file is valid' do
       it 'creates a config record and returns an ok Result containing the agent config' do
-        expect { subject }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+        expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
 
         config_instance = agent.reload.remote_development_agent_config
         expect(config_instance.enabled).to eq(enabled)
@@ -74,7 +74,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           let(:network_policy) { {} }
 
           it 'creates a config record with default value and returns an ok Result containing the agent config' do
-            expect { subject }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
 
             config_instance = agent.reload.remote_development_agent_config
             expect(config_instance.enabled).to eq(enabled)
@@ -93,7 +93,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           let(:network_policy_enabled) { false }
 
           it 'creates a config record with specified value and returns an ok Result containing the agent config' do
-            expect { subject }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
 
             config_instance = agent.reload.remote_development_agent_config
             expect(config_instance.enabled).to eq(enabled)
@@ -116,7 +116,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           let(:gitlab_workspaces_proxy) { {} }
 
           it 'creates a config record with default value and returns an ok Result containing the agent config' do
-            expect { subject }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
 
             config_instance = agent.reload.remote_development_agent_config
             expect(config_instance.enabled).to eq(enabled)
@@ -135,7 +135,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           let(:gitlab_workspaces_proxy_namespace) { 'gitlab-workspaces-specified' }
 
           it 'creates a config record with specified value and returns an ok Result containing the agent config' do
-            expect { subject }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
 
             config_instance = agent.reload.remote_development_agent_config
             expect(config_instance.enabled).to eq(enabled)
@@ -157,7 +157,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
         let(:enabled) { false }
 
         it 'does not create the record and returns error' do
-          expect { subject }.to not_change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+          expect { result }.to not_change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
           expect(agent.reload.remote_development_agent_config).to be_nil
 
           expect(result).to be_err_result do |message|
@@ -172,7 +172,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
         let(:dns_zone) { "invalid dns zone" }
 
         it 'does not create the record and returns error' do
-          expect { subject }.to not_change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+          expect { result }.to not_change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
           expect(agent.reload.remote_development_agent_config).to be_nil
 
           expect(result).to be_err_result do |message|

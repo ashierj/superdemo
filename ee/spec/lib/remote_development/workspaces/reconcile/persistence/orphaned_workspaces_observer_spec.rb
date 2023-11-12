@@ -39,7 +39,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWo
     }
   end
 
-  subject do
+  subject(:returned_value) do
     described_class.observe(value)
   end
 
@@ -67,7 +67,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWo
         ]
       )
 
-      expect(subject).to eq(value)
+      expect(returned_value).to eq(value)
     end
   end
 
@@ -81,7 +81,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWo
     it "does not log" do
       expect(logger).not_to receive(:warn)
 
-      expect(subject).to eq(value)
+      expect(returned_value).to eq(value)
     end
   end
 end

@@ -25,12 +25,12 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreat
   end
 
   subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang
+    described_class.create(value) # rubocop:disable Rails/SaveBang -- we are testing validation, we don't want an exception
   end
 
   context 'when personal access token creation is successful' do
     it 'returns ok result containing successful message with created token' do
-      expect { subject }.to change { user.personal_access_tokens.count }
+      expect { result }.to change { user.personal_access_tokens.count }
 
       expect(result).to be_ok_result do |message|
         message => { personal_access_token: PersonalAccessToken => personal_access_token }
@@ -43,7 +43,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreat
     let(:max_hours_before_termination) { 999999999999 }
 
     it 'returns an error result containing a failed message with model errors' do
-      expect { subject }.not_to change { user.personal_access_tokens.count }
+      expect { result }.not_to change { user.personal_access_tokens.count }
 
       expect(result).to be_err_result do |message|
         expect(message).to be_a(RemoteDevelopment::Messages::PersonalAccessTokenModelCreateFailed)

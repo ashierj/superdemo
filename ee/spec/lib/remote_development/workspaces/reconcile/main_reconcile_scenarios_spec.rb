@@ -43,7 +43,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
   #  (initial_db_state + user_desired_state_update + agent_actual_state_updates).
   #  Array entry is nil, or 2-tuple of symbols for [desired_state, actual_state].
 
-  # rubocop:disable Layout/LineLength, Style/TrailingCommaInArrayLiteral - for ease of reading and editing
+  # rubocop:disable Layout/LineLength, Style/TrailingCommaInArrayLiteral -- We want it this way for ease of reading and editing
   where(:initial_db_state, :user_desired_state_update, :agent_actual_state_updates, :response_expectations, :db_expectations) do
     [
       #

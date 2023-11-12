@@ -49,7 +49,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
   end
 
   subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang
+    described_class.create(value) # rubocop:disable Rails/SaveBang -- we are testing validation, we don't want an exception
   end
 
   context 'when all db records are created successfully' do
@@ -58,7 +58,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
     end
 
     it 'returns ok result containing successful message with created workspace' do
-      expect { subject }.to change {
+      expect { result }.to change {
         [
           project.workspaces.count,
           user.personal_access_tokens.reload.count,
@@ -77,7 +77,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
   context 'when workspace fails on creation' do
     shared_examples 'err result' do |expected_error_details:|
       it 'does not create the db records and returns an error result containing a failed message with model errors' do
-        expect { subject }.not_to change {
+        expect { result }.not_to change {
           [
             project.workspaces.count,
             user.personal_access_tokens.reload.count,

@@ -22,7 +22,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
   let(:expected_value_for_started) { true }
 
-  subject do
+  subject(:response) do
     described_class.main(
       agent: agent,
       logger: logger,
@@ -43,7 +43,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
     it 'updates workspace record and returns proper workspace_rails_info entry' do
       create(:workspace, agent: agent, user: user, force_include_all_resources: false)
-      response = subject
       expect(response[:message]).to be_nil
       workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
       expect(workspace_rails_infos.length).to eq(1)
@@ -169,7 +168,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           # expect abnormal agent info to be logged at warn level
           expect(logger).to receive(:warn).with(hash_including(error_type: "abnormal_actual_state"))
 
-          response = subject
           expect(response[:message]).to be_nil
           workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
           expect(workspace_rails_infos.length).to eq(1)
@@ -191,7 +189,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         end
       end
 
-      # rubocop:disable RSpec/MultipleMemoizedHelpers
       context 'when only some workspaces fail in devfile flattener' do
         let(:workspace) do
           create(:workspace, name: "workspace1", agent: agent, user: user, force_include_all_resources: false)
@@ -232,7 +229,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         let(:expected_workspace_rails_infos) { [expected_workspace2_rails_info, expected_workspace_rails_info] }
 
         it 'returns proper workspace_rails_info entries' do
-          response = subject
           expect(response[:message]).to be_nil
           workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
           expect(workspace_rails_infos.length).to eq(2)
@@ -254,12 +250,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           expect(workspace_rails_infos).to eq(expected_workspace_rails_infos)
         end
       end
-      # rubocop:enable RSpec/MultipleMemoizedHelpers
 
       context 'with timestamp precondition checks' do
-        # NOTE: rubocop:disable RSpec/ExpectInHook could be avoided with a helper method or custom expectation,
-        #       but this works for now.
-        # rubocop:disable RSpec/ExpectInHook
+        # rubocop:disable RSpec/ExpectInHook -- We want it this way - this before/after expectation structure reads clearly and cohesively for checking the timestamps before and after
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         before do
           # Ensure that both desired_state_updated_at and responded_to_agent_at are before Time.current,
@@ -278,7 +271,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         # rubocop:enable RSpec/ExpectInHook
 
         context 'when desired_state matches actual_state' do
-          # rubocop:disable RSpec/ExpectInHook
+          # rubocop:todo RSpec/ExpectInHook -- This could be moved to a shared example
           # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           before do
             expect(workspace.responded_to_agent_at)
@@ -294,7 +287,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               expect(workspace.desired_state).to eq(desired_state)
               expect(workspace.actual_state).to eq(actual_state)
 
-              response = subject
               expect(response[:message]).to be_nil
               workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
               expect(workspace_rails_infos.length).to eq(1)
@@ -321,7 +313,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               expect(workspace.actual_state).to eq(actual_state)
 
               # We could do this with a should_not_change block but this reads cleaner IMO
-              response = subject
               expect(response[:message]).to be_nil
               workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
               expect(workspace_rails_infos.length).to eq(1)
@@ -347,7 +338,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
           let(:expected_workspace_rails_infos) { [expected_workspace_rails_info] }
 
-          # rubocop:disable RSpec/ExpectInHook
+          # rubocop:disable RSpec/ExpectInHook -- This could be moved to a shared example
           before do
             # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
             expect(workspace.responded_to_agent_at)
@@ -365,7 +356,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               expect(workspace.desired_state).to eq(desired_state)
               expect(workspace.actual_state).to eq(actual_state)
 
-              response = subject
               expect(response[:message]).to be_nil
               workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
               expect(workspace_rails_infos.length).to eq(1)
@@ -396,7 +386,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               expect(workspace.desired_state).to eq(desired_state)
               expect(workspace.actual_state).to eq(actual_state)
 
-              response = subject
               expect(response[:message]).to be_nil
               workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
               expect(workspace_rails_infos.length).to eq(1)
@@ -427,7 +416,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               expect(workspace.desired_state).to eq(desired_state)
               expect(workspace.actual_state).to eq(actual_state)
 
-              response = subject
               expect(response[:message]).to be_nil
               workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
               expect(workspace_rails_infos.length).to eq(1)
@@ -459,7 +447,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               # expect abnormal agent info to be logged at warn level
               expect(logger).to receive(:warn).with(hash_including(error_type: "abnormal_actual_state"))
 
-              response = subject
               expect(response[:message]).to be_nil
 
               # Do redundant but progressively higher level checks on the response, so we can have better diffs
@@ -501,7 +488,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
       it 'logs orphaned workspace and does not attempt to update the workspace in the db' do
         expect(logger).to receive(:warn).with(hash_including(error_type: "orphaned_workspace"))
-        response = subject
+
         expect(response[:message]).to be_nil
         workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
         expect(workspace_rails_infos).to be_empty
@@ -548,7 +535,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         expect(unprovisioned_workspace.desired_state).to eq(desired_state)
         expect(unprovisioned_workspace.actual_state).to eq(actual_state)
 
-        response = subject
         expect(response[:message]).to be_nil
         workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
         expect(workspace_rails_infos.length).to eq(1)

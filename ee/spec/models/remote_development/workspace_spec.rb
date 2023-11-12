@@ -11,7 +11,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
   let(:desired_state) { ::RemoteDevelopment::Workspaces::States::STOPPED }
 
-  subject do
+  subject(:workspace) do
     create(:workspace,
       user: user, agent: agent, project: project,
       personal_access_token: personal_access_token, desired_state: desired_state)
@@ -41,13 +41,13 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
     context "when from factory" do
       it 'has correct associations from factory' do
-        expect(subject.user).to eq(user)
-        expect(subject.project).to eq(project)
-        expect(subject.agent).to eq(agent)
-        expect(subject.personal_access_token).to eq(personal_access_token)
-        expect(subject.remote_development_agent_config).to eq(agent.remote_development_agent_config)
-        expect(agent.remote_development_agent_config.workspaces.first).to eq(subject)
-        expect(subject.url).to eq("https://60001-#{subject.name}.#{agent.remote_development_agent_config.dns_zone}")
+        expect(workspace.user).to eq(user)
+        expect(workspace.project).to eq(project)
+        expect(workspace.agent).to eq(agent)
+        expect(workspace.personal_access_token).to eq(personal_access_token)
+        expect(workspace.remote_development_agent_config).to eq(agent.remote_development_agent_config)
+        expect(agent.remote_development_agent_config.workspaces.first).to eq(workspace)
+        expect(workspace.url).to eq("https://60001-#{workspace.name}.#{agent.remote_development_agent_config.dns_zone}")
       end
     end
   end
@@ -55,10 +55,10 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
   describe '#terminated?' do
     let(:actual_state) { ::RemoteDevelopment::Workspaces::States::TERMINATED }
 
-    subject { build(:workspace, actual_state: actual_state) }
+    subject(:workspace) { build(:workspace, actual_state: actual_state) }
 
     it 'returns true if terminated' do
-      expect(subject.terminated?).to eq(true)
+      expect(workspace.terminated?).to eq(true)
     end
   end
 
@@ -67,26 +67,26 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       # NOTE: The workspaces factory overrides the desired_state_updated_at to be earlier than
       #       the current time, so we need to use build here instead of create here to test
       #       the callback which sets the desired_state_updated_at to current time upon creation.
-      subject { build(:workspace, user: user, agent: agent, project: project) }
+      subject(:workspace) { build(:workspace, user: user, agent: agent, project: project) }
 
       it 'sets desired_state_updated_at' do
-        subject.save!
-        expect(subject.desired_state_updated_at).to eq(Time.current)
+        workspace.save!
+        expect(workspace.desired_state_updated_at).to eq(Time.current)
       end
     end
 
     describe 'when updating desired_state' do
       it 'sets desired_state_updated_at' do
-        expect { subject.update!(desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING) }.to change {
-          subject.desired_state_updated_at
+        expect { workspace.update!(desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING) }.to change {
+          workspace.desired_state_updated_at
         }
       end
     end
 
     describe 'when updating a field other than desired_state' do
       it 'does not set desired_state_updated_at' do
-        expect { subject.update!(actual_state: ::RemoteDevelopment::Workspaces::States::RUNNING) }.not_to change {
-          subject.desired_state_updated_at
+        expect { workspace.update!(actual_state: ::RemoteDevelopment::Workspaces::States::RUNNING) }.not_to change {
+          workspace.desired_state_updated_at
         }
       end
     end
@@ -94,22 +94,22 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
   describe 'validations' do
     it 'validates max_hours_before_termination is no more than 120' do
-      subject.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT
-      expect(subject).to be_valid
+      workspace.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT
+      expect(workspace).to be_valid
 
-      subject.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT + 1
-      expect(subject).not_to be_valid
+      workspace.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT + 1
+      expect(workspace).not_to be_valid
     end
 
     it 'validates editor is webide' do
-      subject.editor = 'not-webide'
-      expect(subject).not_to be_valid
+      workspace.editor = 'not-webide'
+      expect(workspace).not_to be_valid
     end
 
     context 'on remote_development_agent_config' do
       let(:agent_with_no_remote_development_config) { create(:cluster_agent) }
 
-      subject do
+      subject(:workspace) do
         build(:workspace, user: user, url: "URL", agent: agent_with_no_remote_development_config, project: project)
       end
 
@@ -117,8 +117,9 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
         # sanity check of fixture
         expect(agent_with_no_remote_development_config.remote_development_agent_config).not_to be_present
 
-        expect(subject).not_to be_valid
-        expect(subject.errors[:agent]).to include('for Workspace must have an associated RemoteDevelopmentAgentConfig')
+        expect(workspace).not_to be_valid
+        expect(workspace.errors[:agent])
+          .to include('for Workspace must have an associated RemoteDevelopmentAgentConfig')
       end
     end
 
@@ -126,12 +127,12 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       let(:desired_state) { ::RemoteDevelopment::Workspaces::States::TERMINATED }
 
       before do
-        subject.desired_state = ::RemoteDevelopment::Workspaces::States::STOPPED
+        workspace.desired_state = ::RemoteDevelopment::Workspaces::States::STOPPED
       end
 
       it 'prevents changes to desired_state' do
-        expect(subject).not_to be_valid
-        expect(subject.errors[:desired_state])
+        expect(workspace).not_to be_valid
+        expect(workspace.errors[:desired_state])
           .to include("is 'Terminated', and cannot be updated. Create a new workspace instead.")
       end
     end
@@ -164,7 +165,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       end
 
       it 'returns workspaces who do not have desired_state and actual_state as Terminated' do
-        subject
+        workspace
         expect(described_class.without_terminated).to include(actual_and_desired_state_running_workspace)
         expect(described_class.without_terminated).to include(desired_state_terminated_workspace)
         expect(described_class.without_terminated).to include(actual_state_terminated_workspace)

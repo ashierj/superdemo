@@ -58,7 +58,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::RailsInfosObser
     }
   end
 
-  subject do
+  subject(:returned_value) do
     described_class.observe(value)
   end
 
@@ -71,6 +71,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::RailsInfosObser
       workspace_rails_infos: expected_logged_workspace_rails_infos
     )
 
-    expect(subject).to eq(value)
+    expect(returned_value).to eq(value)
   end
 end

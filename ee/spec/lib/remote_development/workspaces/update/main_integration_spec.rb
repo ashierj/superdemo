@@ -19,7 +19,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Main, "Integration", fea
 
   context 'when workspace update is successful' do
     it 'updates the workspace and returns success' do
-      expect { subject }.to change { workspace.reload.desired_state }.to(new_desired_state)
+      expect { response }.to change { workspace.reload.desired_state }.to(new_desired_state)
 
       expect(response).to eq({
         status: :success,
@@ -32,7 +32,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Main, "Integration", fea
     let(:new_desired_state) { 'InvalidDesiredState' }
 
     it 'does not update the workspace and returns error' do
-      expect { subject }.not_to change { workspace.reload }
+      expect { response }.not_to change { workspace.reload }
 
       expect(response).to eq({
         status: :error,

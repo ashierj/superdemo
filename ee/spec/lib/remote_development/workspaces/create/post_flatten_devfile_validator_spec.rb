@@ -32,7 +32,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
   context 'for devfiles containing post flatten violations' do
     using RSpec::Parameterized::TableSyntax
 
-    # rubocop:disable Layout/LineLength
+    # rubocop:disable Layout/LineLength -- we want single lines for RSpec::Parameterized::TableSyntax
     where(:flattened_devfile_name, :error_str) do
       'example.invalid-restricted-prefix-command-apply-component-name-devfile.yaml' | "Component name 'gl-example' for command id 'example' must not start with 'gl-'"
       'example.invalid-restricted-prefix-command-exec-component-name-devfile.yaml' | "Component name 'gl-example' for command id 'example' must not start with 'gl-'"
@@ -81,7 +81,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
 
     using RSpec::Parameterized::TableSyntax
 
-    # rubocop:disable Layout/LineLength
+    # rubocop:disable Layout/LineLength -- we want single lines for RSpec::Parameterized::TableSyntax
     where(:flattened_devfile_name, :error_str) do
       'example.invalid-multi-component-devfile.yaml' | "Component name 'gl-example-invalid-second-component' must not start with 'gl-'"
       'example.invalid-multi-endpoint-devfile.yaml' | "Endpoint name 'gl-example-invalid-second-endpoint' of component 'example-invalid-second-component' must not start with 'gl-'"

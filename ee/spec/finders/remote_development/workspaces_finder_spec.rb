@@ -20,7 +20,7 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
     )
   end
 
-  subject { described_class.new(current_user, params).execute }
+  subject(:found_workspaces) { described_class.new(current_user, params).execute }
 
   context 'with valid license' do
     before do
@@ -31,7 +31,7 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
       let(:params) { {} }
 
       it "returns current user's workspaces sorted by last updated time (most recent first)" do
-        workspaces = subject.to_ary
+        workspaces = found_workspaces.to_ary
 
         # The assertions below can be replaced concisely with
         #   eq([workspace_b, workspace_a])
@@ -51,7 +51,7 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
 
       it "returns only current user's workspaces matching the specified IDs" do
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
-        expect(subject).to contain_exactly(workspace_a)
+        expect(found_workspaces).to contain_exactly(workspace_a)
       end
     end
 
@@ -61,7 +61,7 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
 
       it "returns only current user's workspaces matching the specified project IDs" do
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
-        expect(subject).to contain_exactly(workspace_a)
+        expect(found_workspaces).to contain_exactly(workspace_a)
       end
     end
 
@@ -71,18 +71,18 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
 
       it "returns only current user's workspaces not matching the specified actual_states" do
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
-        expect(subject).to contain_exactly(workspace_a)
+        expect(found_workspaces).to contain_exactly(workspace_a)
       end
     end
 
     context 'without current user' do
-      subject { described_class.new(nil, params).execute }
+      subject(:found_workspaces) { described_class.new(nil, params).execute }
 
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
       let(:params) { { ids: [workspace_a.id] } }
 
       it 'returns none' do
-        expect(subject).to be_blank
+        expect(found_workspaces).to be_blank
       end
     end
   end
@@ -91,7 +91,7 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
     let(:params) { {} }
 
     it 'returns none' do
-      expect(subject).to be_blank
+      expect(found_workspaces).to be_blank
     end
   end
 end

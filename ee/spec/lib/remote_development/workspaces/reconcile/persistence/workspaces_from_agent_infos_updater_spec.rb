@@ -43,12 +43,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     }
   end
 
-  subject do
-    described_class.update(value) # rubocop:disable Rails/SaveBang
+  subject(:returned_value) do
+    described_class.update(value) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord method
   end
 
   it "returns persisted workspaces" do
-    expect(subject).to eq(value.merge(workspaces_from_agent_infos: [workspace]))
+    expect(returned_value).to eq(value.merge(workspaces_from_agent_infos: [workspace]))
   end
 
   context "when persisted workspace desired_state is RESTART_REQUESTED and actual_state is STOPPED" do
@@ -56,7 +56,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     let(:actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
 
     it "sets persisted workspace desired state to RUNNING" do
-      expect(subject).to eq(value.merge(workspaces_from_agent_infos: [workspace]))
+      expect(returned_value).to eq(value.merge(workspaces_from_agent_infos: [workspace]))
       expect(workspace.reload.desired_state).to eq(RemoteDevelopment::Workspaces::States::RUNNING)
     end
   end
@@ -67,7 +67,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     end
 
     it "sets persisted workspace desired state to TERMINATED" do
-      expect(subject).to eq(value.merge(workspaces_from_agent_infos: [workspace]))
+      expect(returned_value).to eq(value.merge(workspaces_from_agent_infos: [workspace]))
       expect(workspace.reload.desired_state).to eq(RemoteDevelopment::Workspaces::States::TERMINATED)
     end
   end

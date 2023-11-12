@@ -78,7 +78,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     }
   end
 
-  subject do
+  subject(:returned_value) do
     described_class.find(value)
   end
 
@@ -116,7 +116,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       workspace_with_new_update_to_desired_state.responded_to_agent_at + 1.hour
     )
 
-    subject
+    returned_value
   end
 
   context "with fixture sanity checks" do
@@ -150,17 +150,18 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     end
 
     it "does not return terminated workspaces" do
-      expect(subject.fetch(:workspaces_to_be_returned).map(&:name)).not_to include(workspace_that_is_terminated.name)
+      expect(returned_value.fetch(:workspaces_to_be_returned).map(&:name))
+        .not_to include(workspace_that_is_terminated.name)
     end
 
     it "returns all non-terminated workspaces" do
-      expect(subject.fetch(:workspaces_to_be_returned).map(&:name))
+      expect(returned_value.fetch(:workspaces_to_be_returned).map(&:name))
         .to match_array(expected_workspaces_to_be_returned.map(&:name))
     end
 
     it "preserves existing value entries",
       :unlimited_max_formatted_output_length do
-      expect(subject).to eq(value.merge(workspaces_to_be_returned: expected_workspaces_to_be_returned))
+      expect(returned_value).to eq(value.merge(workspaces_to_be_returned: expected_workspaces_to_be_returned))
     end
   end
 
@@ -178,13 +179,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     end
 
     it "returns only workspaces with new updates to desired state or in workspaces_from_agent_infos" do
-      expect(subject.fetch(:workspaces_to_be_returned).map(&:name))
+      expect(returned_value.fetch(:workspaces_to_be_returned).map(&:name))
         .to eq(expected_workspaces_to_be_returned.map(&:name))
     end
 
     it "preserves existing value entries",
       :unlimited_max_formatted_output_length do
-      expect(subject).to eq(value.merge(workspaces_to_be_returned: expected_workspaces_to_be_returned))
+      expect(returned_value).to eq(value.merge(workspaces_to_be_returned: expected_workspaces_to_be_returned))
     end
   end
 end
