@@ -27,15 +27,5 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::VertexAi, feature_
     end
   end
 
-  describe '.current_code_prompt' do
-    let(:project) { build(:project) }
-    let(:blob) { fake_blob(path: 'foobar.rb', data: 'puts "hello world"') }
-
-    subject(:prompt) { described_class.current_code_prompt(blob) }
-
-    it 'returns the base prompt' do
-      expect(prompt).to include("The current code file that user sees is foobar.rb and")
-      expect(prompt).to include("has the following content:\nputs \"hello world\"\n")
-    end
-  end
+  it_behaves_like 'zero shot prompt'
 end
