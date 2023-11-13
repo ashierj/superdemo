@@ -4,11 +4,7 @@ module QA
   # This test requires several feature flags, user settings, and instance configuration.
   # See https://docs.gitlab.com/ee/development/code_suggestions/#code-suggestions-development-setup
   RSpec.describe(
-    'ModelOps', only: { pipeline: %w[staging-canary staging canary production] },
-    quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/431317',
-      type: :investigating
-    }, product_group: :code_creation
+    'ModelOps', only: { pipeline: %w[staging-canary staging canary production] }, product_group: :code_creation
   ) do
     include Support::API
 
