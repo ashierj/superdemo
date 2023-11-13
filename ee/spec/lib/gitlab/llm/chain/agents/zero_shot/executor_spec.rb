@@ -17,11 +17,12 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   let(:resource) { user }
   let(:response_service_double) { instance_double(::Gitlab::Llm::ResponseService) }
   let(:stream_response_service_double) { nil }
+  let(:current_file) { nil }
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
       current_user: user, container: nil, resource: resource, ai_request: ai_request_double,
-      extra_resource: extra_resource
+      extra_resource: extra_resource, current_file: current_file
     )
   end
 
@@ -230,6 +231,40 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
       it 'includes self-discoverability part in the prompt' do
         expect(agent.prompt[:prompt]).to include self_discoverability_prompt
+      end
+    end
+
+    context 'when current_file is included in context' do
+      let(:selected_text) { 'code selection' }
+      let(:current_file) do
+        {
+          file_name: 'test.py',
+          selected_text: selected_text,
+          cotent_above_cursor: 'prefix',
+          content_below_cursor: 'suffix'
+        }
+      end
+
+      it 'includes selected code in the prompt' do
+        expect(agent.prompt[:prompt]).to include("code selection")
+      end
+
+      context 'when code_tasks feature flag is disabled' do
+        before do
+          stub_feature_flags(code_tasks: false)
+        end
+
+        it 'does not include selected code in the prompt' do
+          expect(agent.prompt[:prompt]).not_to include("code selection")
+        end
+      end
+
+      context 'when selected_text is empty' do
+        let(:selected_text) { '' }
+
+        it 'does not include selected code in the prompt' do
+          expect(agent.prompt[:prompt]).not_to include("code selection")
+        end
       end
     end
 

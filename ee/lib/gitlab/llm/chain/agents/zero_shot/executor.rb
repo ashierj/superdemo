@@ -182,10 +182,21 @@ module Gitlab
             end
 
             def current_code
+              file_context = current_file_context
+              return provider_prompt_class.current_selection_prompt(file_context) if file_context
+
               blob = @context.extra_resource[:blob]
               return "" unless blob
 
-              provider_prompt_class.current_code_prompt(blob)
+              provider_prompt_class.current_blob_prompt(blob)
+            end
+
+            def current_file_context
+              return unless Feature.enabled?(:code_tasks, context.current_user)
+              return unless context.current_file
+              return unless context.current_file[:selected_text].present?
+
+              context.current_file
             end
 
             PROMPT_TEMPLATE = [

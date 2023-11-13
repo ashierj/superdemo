@@ -16,8 +16,25 @@ module Gitlab
                 "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}"
               end
 
-              def self.current_code_prompt(blob)
-                "The current code file that user sees is #{blob.path} and has the following content:\n#{blob.data}\n\n"
+              def self.current_blob_prompt(blob)
+                <<~PROMPT
+                The current code file that user sees is #{blob.path} and has the following content:
+                <content>
+                #{blob.data}
+                </content>
+
+                PROMPT
+              end
+
+              def self.current_selection_prompt(current_file_context)
+                <<~PROMPT
+                  User selected code below enclosed in <code></code> tags in file #{current_file_context[:file_name]} to work with:
+
+                  <code>
+                    #{current_file_context[:selected_text]}
+                  </code>
+
+                PROMPT
               end
             end
           end
