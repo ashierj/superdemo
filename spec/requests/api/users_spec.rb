@@ -2950,6 +2950,39 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     end
   end
 
+  describe "PUT /user/preferences" do
+    let(:path) { '/user/preferences' }
+
+    context "when unauthenticated" do
+      it "returns authentication error" do
+        put api(path)
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context "when authenticated" do
+      it "updates user preferences" do
+        user.user_preference.view_diffs_file_by_file = false
+        user.user_preference.show_whitespace_in_diffs = true
+        user.save!
+
+        put api(path, user), params: {
+          view_diffs_file_by_file: true,
+          show_whitespace_in_diffs: false
+        }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response["view_diffs_file_by_file"]).to eq(true)
+        expect(json_response["show_whitespace_in_diffs"]).to eq(false)
+
+        user.reload
+
+        expect(json_response["view_diffs_file_by_file"]).to eq(user.view_diffs_file_by_file)
+        expect(json_response["show_whitespace_in_diffs"]).to eq(user.show_whitespace_in_diffs)
+      end
+    end
+  end
+
   describe "GET /user/keys" do
     subject(:request) { get api(path, user) }
 
