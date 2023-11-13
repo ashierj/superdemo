@@ -7,6 +7,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
 
   before do
     allow(License).to receive(:feature_available?).and_return(true)
+    allow(user).to receive(:any_group_with_ai_available?).and_return(true)
 
     sign_in(user)
   end
