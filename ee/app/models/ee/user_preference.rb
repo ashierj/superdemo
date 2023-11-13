@@ -10,6 +10,8 @@ module EE
       }
 
       validates :epic_notes_filter, inclusion: { in: ::UserPreference::NOTES_FILTERS.values }, presence: true
+
+      delegate :code_suggestions_enabled?, :code_suggestions, :code_suggestions=, to: :user
     end
   end
 end

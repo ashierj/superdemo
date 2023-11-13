@@ -571,4 +571,67 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
       end
     end
   end
+
+  describe "GET /user/preferences" do
+    let(:path) { '/user/preferences' }
+
+    context "when authenticated" do
+      it "gets user preferences" do
+        user.namespace.namespace_settings.code_suggestions = true
+        user.save!
+
+        get api(path, user)
+
+        expect(response).to have_gitlab_http_status(:ok)
+
+        expect(json_response["code_suggestions"]).to eq(true)
+      end
+    end
+  end
+
+  describe "PUT /user/preferences" do
+    let(:path) { '/user/preferences' }
+
+    context "when authenticated" do
+      it "updates user preferences" do
+        user.user_preference.view_diffs_file_by_file = false
+        user.user_preference.show_whitespace_in_diffs = true
+        user.namespace.namespace_settings.code_suggestions = true
+        user.save!
+
+        put api(path, user), params: {
+          view_diffs_file_by_file: true,
+          show_whitespace_in_diffs: false
+        }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response["view_diffs_file_by_file"]).to be_truthy
+        expect(json_response["show_whitespace_in_diffs"]).to be_falsey
+
+        # test that it doesn't alter unrelated preferences
+        expect(json_response["code_suggestions"]).to be_truthy
+
+        user.reload
+
+        expect(user.user_preference.view_diffs_file_by_file).to be_truthy
+        expect(user.user_preference.show_whitespace_in_diffs).to be_falsey
+      end
+
+      it "updates user namespace preferences" do
+        user.namespace.namespace_settings.code_suggestions = false
+        user.namespace.namespace_settings.save!
+
+        put api(path, user), params: {
+          code_suggestions: true
+        }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response["code_suggestions"]).to be_truthy
+
+        user.reload
+
+        expect(user.namespace.namespace_settings.code_suggestions).to be_truthy
+      end
+    end
+  end
 end
