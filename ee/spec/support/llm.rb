@@ -4,10 +4,9 @@ RSpec.configure do |config|
   config.around(:each, :real_ai_request) do |example|
     real_ai_request_bool = ActiveModel::Type::Boolean.new.cast(ENV['REAL_AI_REQUEST'])
 
-    if !real_ai_request_bool || !ENV['ANTHROPIC_API_KEY'] || !ENV['VERTEX_AI_CREDENTIALS'] || !ENV['VERTEX_AI_PROJECT']
+    if !real_ai_request_bool || !ENV['ANTHROPIC_API_KEY'] || !ENV['VERTEX_AI_PROJECT']
       puts "skipping '#{example.description}' because it does real third-party requests, set " \
-           "REAL_AI_REQUEST=true, ANTHROPIC_API_KEY='<key>', VERTEX_AI_CREDENTIALS=<credentials json> " \
-           "and VERTEX_AI_PROJECT=<project-id>"
+           "REAL_AI_REQUEST=true, ANTHROPIC_API_KEY='<key>' and VERTEX_AI_PROJECT=<project-id>"
       next
     end
 
