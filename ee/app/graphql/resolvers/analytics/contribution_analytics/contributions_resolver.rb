@@ -17,6 +17,9 @@ module Resolvers
                                                    "The end date must be within #{NUMBER_OF_DAYS} days after the start date."
         # rubocop:enable Layout/LineLength
 
+        max_page_size 500
+        default_page_size GitlabSchema.default_max_page_size # ensure backwards compability
+
         def resolve(from:, to:)
           validate_date_range!(from, to)
 

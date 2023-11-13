@@ -84,10 +84,12 @@ export default {
 
       try {
         const { endDate, nextStartDate } = this.limitPostgresqlRequests(startDate, this.endDate);
+        const pageSize = gon.features?.use500PageSizeForContributionAnalytics ? 500 : null;
 
         const { data } = await this.$apollo.query({
           query: contributionsQuery,
           variables: {
+            first: pageSize,
             fullPath: this.fullPath,
             startDate,
             endDate,
