@@ -16,6 +16,7 @@ export const codeQualityErrorAndParsed = jest
           },
           hasSecurityReports: false,
           codequalityReportsComparer: {
+            status: 'PARSING',
             report: {
               status: 'FAILED',
               newErrors: [],
@@ -50,6 +51,7 @@ export const codeQualityErrorAndParsed = jest
           },
           hasSecurityReports: false,
           codequalityReportsComparer: {
+            status: 'PARSED',
             report: {
               status: 'FAILED',
               newErrors: [
@@ -99,6 +101,7 @@ export const SASTErrorAndParsedHandler = jest
           },
           hasSecurityReports: false,
           codequalityReportsComparer: {
+            status: 'PARSING',
             report: {
               status: 'FAILED',
               newErrors: [],
@@ -133,6 +136,7 @@ export const SASTErrorAndParsedHandler = jest
           },
           hasSecurityReports: false,
           codequalityReportsComparer: {
+            status: 'PARSING',
             report: {
               status: 'FAILED',
               newErrors: [],
@@ -168,6 +172,7 @@ export const codeQualityNewErrorsHandler = jest.fn().mockResolvedValue({
         },
         hasSecurityReports: false,
         codequalityReportsComparer: {
+          status: 'PARSED',
           report: {
             status: 'FAILED',
             newErrors: [
@@ -215,6 +220,7 @@ export const SASTParsedHandler = jest.fn().mockResolvedValue({
         },
         hasSecurityReports: false,
         codequalityReportsComparer: {
+          status: 'PARSING',
           report: {
             status: 'FAILED',
             newErrors: [],
