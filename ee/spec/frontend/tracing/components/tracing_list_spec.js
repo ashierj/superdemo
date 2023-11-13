@@ -75,14 +75,6 @@ describe('TracingList', () => {
       expect(findTableList().props('traces')).toEqual(mockResponse.traces);
     });
 
-    it('calls fetchTraces method when TracingTableList emits reload event', () => {
-      observabilityClientMock.fetchTraces.mockClear();
-
-      findTableList().vm.$emit('reload');
-
-      expect(observabilityClientMock.fetchTraces).toHaveBeenCalledTimes(1);
-    });
-
     describe('on trace-clicked', () => {
       let visitUrlMock;
       beforeEach(() => {
@@ -432,14 +424,6 @@ describe('TracingList', () => {
       await findScatterChart().vm.$emit('chart-item-out');
 
       expect(findTableList().props('highlightedTraceId')).toBeNull();
-    });
-
-    it('calls fetchTraces method when the chart emits reload event', () => {
-      observabilityClientMock.fetchTraces.mockClear();
-
-      findScatterChart().vm.$emit('reload-data');
-
-      expect(observabilityClientMock.fetchTraces).toHaveBeenCalledTimes(1);
     });
   });
 

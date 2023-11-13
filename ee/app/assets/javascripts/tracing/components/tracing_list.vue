@@ -175,7 +175,6 @@ export default {
         @chart-item-selected="chartItemSelected"
         @chart-item-over="debouncedChartItemOver"
         @chart-item-out="chartItemOut"
-        @reload-data="fetchTraces"
       />
 
       <gl-infinite-scroll
@@ -189,7 +188,6 @@ export default {
             ref="tableList"
             :traces="traces"
             :highlighted-trace-id="highlightedTraceId"
-            @reload="fetchTraces"
             @trace-clicked="onTraceClicked"
           />
         </template>

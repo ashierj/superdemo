@@ -76,12 +76,7 @@ describe('TracingTableList', () => {
   it('renders the empty state when no traces are provided', () => {
     mountComponent({ traces: [] });
 
-    expect(getCell(0, 0).text()).toContain('No traces to display');
-    const link = getCell(0, 0).findComponent({ name: 'GlLink' });
-    expect(link.text()).toBe('Check again');
-
-    link.trigger('click');
-    expect(wrapper.emitted('reload')).toHaveLength(1);
+    expect(getCell(0, 0).text()).toContain('No results found');
   });
 
   it('sets the correct variant when a trace is highlighted', () => {

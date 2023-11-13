@@ -1,6 +1,6 @@
 <script>
-import { GlTable, GlLink, GlTruncate } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlTable, GlTruncate } from '@gitlab/ui';
+import { s__, __ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { formatTraceDuration } from './trace_utils';
 
@@ -9,8 +9,7 @@ export default {
   name: 'TracingTableList',
   i18n: {
     title: s__('Tracing|Traces'),
-    emptyText: s__('Tracing|No traces to display.'),
-    emptyLinkText: s__('Tracing|Check again'),
+    emptyText: __('No results found'),
   },
   fields: [
     {
@@ -37,7 +36,6 @@ export default {
   ],
   components: {
     GlTable,
-    GlLink,
     GlTruncate,
   },
   props: {
@@ -99,8 +97,7 @@ export default {
 
       <template #empty>
         <div class="gl-text-center">
-          {{ $options.i18n.emptyText }}
-          <gl-link @click="$emit('reload')">{{ $options.i18n.emptyLinkText }}</gl-link>
+          <span>{{ $options.i18n.emptyText }}</span>
         </div>
       </template>
     </gl-table>
