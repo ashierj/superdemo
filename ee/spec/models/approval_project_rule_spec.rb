@@ -402,11 +402,14 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
   describe "#apply_report_approver_rules_to" do
     using RSpec::Parameterized::TableSyntax
 
-    let(:project) { merge_request.target_project }
-    let(:merge_request) { create(:merge_request) }
-    let(:user) { create(:user) }
-    let(:group) { create(:group) }
-    let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let_it_be(:merge_request) { create(:merge_request) }
+    let_it_be(:project) { merge_request.target_project }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
+
+    let_it_be(:security_orchestration_policy_configuration) do
+      create(:security_orchestration_policy_configuration, project: project)
+    end
 
     describe 'attributes' do
       where(:default_name, :report_type, :rules_count) do
@@ -426,11 +429,12 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
       with_them do
         subject(:rules) { create_list(:approval_project_rule, rules_count, report_type, :requires_approval, project: project, orchestration_policy_idx: 1, scanners: [:sast], severity_levels: [:high], vulnerability_states: [:confirmed], vulnerabilities_allowed: 2, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
-        let!(:result) { rules.map { |rule| rule.apply_report_approver_rules_to(merge_request) } }
-
         it 'creates merge_request approval rules with correct attributes', :aggregate_failures do
+          result = rules.map { |rule| rule.apply_report_approver_rules_to(merge_request) }
+
           expect(merge_request.reload.approval_rules).to match_array(result)
           expect(rules.count).to eq rules_count
+
           result.each do |result_rule|
             expect(result_rule.users).to match_array([user])
             expect(result_rule.groups).to match_array([group])
