@@ -7,7 +7,6 @@ module EE
 
       DEPRECATION_REASON = 'For backwards compatibility with REST API version and to be removed in a next iteration'
 
-      include ::Gitlab::Routing.url_helpers
       include ::GitlabRoutingHelper
       include ::NotesHelper
 
