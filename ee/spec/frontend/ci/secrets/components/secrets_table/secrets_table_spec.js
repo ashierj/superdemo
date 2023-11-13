@@ -3,7 +3,7 @@ import { RouterLinkStub } from '@vue/test-utils';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { NEW_ROUTE_NAME, DETAILS_ROUTE_NAME } from 'ee/ci/secrets/constants';
 import SecretsTable from 'ee/ci/secrets/components/secrets_table/secrets_table.vue';
-import { projectSecrets } from './mock_data';
+import { projectSecrets } from '../../mock_data';
 
 describe('SecretsTable component', () => {
   let wrapper;
