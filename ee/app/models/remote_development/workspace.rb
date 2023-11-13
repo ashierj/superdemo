@@ -38,8 +38,6 @@ module RemoteDevelopment
 
     validate :enforce_permanent_termination
 
-    ignore_column :force_full_reconciliation, remove_with: '16.7', remove_after: '2023-11-22'
-
     scope :with_desired_state_updated_more_recently_than_last_response_to_agent, -> do
       # noinspection SqlResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       where('desired_state_updated_at >= responded_to_agent_at').or(where(responded_to_agent_at: nil))
