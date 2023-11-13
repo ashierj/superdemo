@@ -213,4 +213,29 @@ RSpec.describe MergeRequestPresenter do
       end
     end
   end
+
+  describe '#saml_approval_path' do
+    let(:sub_group) { create :group, :nested, name: 'sub_group' }
+    let(:project) { create :project, group: sub_group }
+    let(:presenter) { described_class.new(merge_request, current_user: user) }
+
+    subject { presenter.saml_approval_path }
+
+    before do
+      allow(presenter).to receive(:group_requires_saml_auth_for_approval?).and_return(true)
+    end
+
+    it 'uses the root group for SSO path' do
+      expect(subject).to start_with('/gitlab/groups/group1/-/saml/sso?redirect')
+    end
+
+    context "without nesting" do
+      let(:group) { create :group, name: 'group_wurzel' }
+      let(:project) { create :project, group: group }
+
+      it 'uses the root group for SSO path' do
+        expect(subject).to start_with('/gitlab/groups/group_wurzel/-/saml/sso?redirect')
+      end
+    end
+  end
 end

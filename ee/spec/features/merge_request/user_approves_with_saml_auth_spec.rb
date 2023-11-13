@@ -12,11 +12,12 @@ RSpec.describe 'Merge request > User approves with SAML auth', :js, feature_cate
       group: group
   end
 
+  let_it_be(:sub_group) { create :group, parent: group }
   let_it_be(:project) do
     create :project,
       :public,
       :repository,
-      group: group,
+      group: sub_group,
       approvals_before_merge: 1,
       merge_requests_author_approval: true
   end
