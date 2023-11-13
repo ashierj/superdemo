@@ -74,7 +74,10 @@ module QA
         include_examples 'streamed events', 'project_created', 'Project', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415875'
       end
 
-      context 'when a user is created' do
+      context 'when a user is created', quarantine: {
+        type: :investigating,
+        issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/427266'
+      } do
         let(:entity_path) { create(:user).username }
 
         include_examples 'streamed events', 'user_created', 'User', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415876'
