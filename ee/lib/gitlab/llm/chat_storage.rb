@@ -44,6 +44,12 @@ module Gitlab
         all[idx + 1..]
       end
 
+      def clean!
+        with_redis do |redis|
+          redis.xtrim(key, 0)
+        end
+      end
+
       private
 
       attr_reader :user

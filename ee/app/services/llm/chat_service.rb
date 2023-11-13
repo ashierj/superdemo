@@ -11,7 +11,7 @@ module Llm
     def perform
       prompt_message.save!
       GraphqlTriggers.ai_completion_response(prompt_message)
-      schedule_completion_worker unless prompt_message.conversation_reset?
+      schedule_completion_worker unless prompt_message.conversation_reset? || prompt_message.clean_history?
     end
 
     def content(_action_name)
