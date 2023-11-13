@@ -110,25 +110,19 @@ module RemoteDevelopment
             component
           end
 
-          # TODO: figure out what to do when no editor injection component is found
-          if editor_component_found
-            processed_devfile['components'] += editor_components
+          processed_devfile['components'] += editor_components
 
-            processed_devfile['commands'] = [] if processed_devfile['commands'].nil?
+          processed_devfile['commands'] = [] if processed_devfile['commands'].nil?
+          processed_devfile['commands'] += [{
+            'id' => 'gl-editor-injector-command',
+            'apply' => {
+              'component' => 'gl-editor-injector'
+            }
+          }]
 
-            processed_devfile['commands'] += [{
-              'id' => 'gl-editor-injector-command',
-              'apply' => {
-                'component' => 'gl-editor-injector'
-              }
-            }]
-
-            processed_devfile['events'] = {} if processed_devfile['events'].nil?
-
-            processed_devfile['events']['preStart'] = [] if processed_devfile['events']['preStart'].nil?
-
-            processed_devfile['events']['preStart'] += ['gl-editor-injector-command']
-          end
+          processed_devfile['events'] = {} if processed_devfile['events'].nil?
+          processed_devfile['events']['preStart'] = [] if processed_devfile['events']['preStart'].nil?
+          processed_devfile['events']['preStart'] += ['gl-editor-injector-command']
 
           value
         end
