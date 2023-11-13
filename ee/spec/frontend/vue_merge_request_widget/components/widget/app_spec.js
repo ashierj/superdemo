@@ -11,6 +11,7 @@ import MrMetricsWidget from 'ee/vue_merge_request_widget/extensions/metrics/inde
 import MrCodeQualityWidget from '~/vue_merge_request_widget/extensions/code_quality/index.vue';
 import MrTerraformWidget from '~/vue_merge_request_widget/extensions/terraform/index.vue';
 import MrStatusChecksWidget from 'ee/vue_merge_request_widget/extensions/status_checks/index.vue';
+import MrBrowserPerformanceWidget from 'ee/vue_merge_request_widget/extensions/browser_performance/index.vue';
 
 describe('MR Widget App', () => {
   let wrapper;
@@ -62,12 +63,13 @@ describe('MR Widget App', () => {
   });
 
   describe.each`
-    widgetName                | widget                  | endpoint
-    ${'testReportWidget'}     | ${MrTestReportWidget}   | ${'testResultsPath'}
-    ${'metricsWidget'}        | ${MrMetricsWidget}      | ${'metricsReportsPath'}
-    ${'codeQualityWidget'}    | ${MrCodeQualityWidget}  | ${'codequalityReportsPath'}
-    ${'terraformPlansWidget'} | ${MrTerraformWidget}    | ${'terraformReportsPath'}
-    ${'statusChecksWidget'}   | ${MrStatusChecksWidget} | ${'apiStatusChecksPath'}
+    widgetName                    | widget                        | endpoint
+    ${'testReportWidget'}         | ${MrTestReportWidget}         | ${'testResultsPath'}
+    ${'metricsWidget'}            | ${MrMetricsWidget}            | ${'metricsReportsPath'}
+    ${'codeQualityWidget'}        | ${MrCodeQualityWidget}        | ${'codequalityReportsPath'}
+    ${'terraformPlansWidget'}     | ${MrTerraformWidget}          | ${'terraformReportsPath'}
+    ${'statusChecksWidget'}       | ${MrStatusChecksWidget}       | ${'apiStatusChecksPath'}
+    ${'browserPerformanceWidget'} | ${MrBrowserPerformanceWidget} | ${'browserPerformance'}
   `('$widgetName', ({ widget, endpoint }) => {
     beforeEach(() => {
       mock.onGet(endpoint).reply(HTTP_STATUS_OK);

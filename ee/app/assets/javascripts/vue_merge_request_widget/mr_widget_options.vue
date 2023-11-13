@@ -3,14 +3,13 @@ import { GlSprintf, GlLink } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
-import { s__, __, sprintf } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import CEWidgetOptions from '~/vue_merge_request_widget/mr_widget_options.vue';
 import MrWidgetJiraAssociationMissing from './components/states/mr_widget_jira_association_missing.vue';
 import MrWidgetPolicyViolation from './components/states/mr_widget_policy_violation.vue';
 import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_geo_node.vue';
 import WidgetContainer from './components/widget/app.vue';
 import loadPerformanceExtension from './extensions/load_performance';
-import browserPerformanceExtension from './extensions/browser_performance';
 
 export default {
   components: {
@@ -30,42 +29,12 @@ export default {
   mixins: [reportsMixin],
   data() {
     return {
-      isLoadingBrowserPerformance: false,
       isLoadingLoadPerformance: false,
-      loadingBrowserPerformanceFailed: false,
       loadingLoadPerformanceFailed: false,
       loadingLicenseReportFailed: false,
     };
   },
   computed: {
-    hasBrowserPerformanceMetrics() {
-      return (
-        this.mr.browserPerformanceMetrics?.degraded?.length > 0 ||
-        this.mr.browserPerformanceMetrics?.improved?.length > 0 ||
-        this.mr.browserPerformanceMetrics?.same?.length > 0
-      );
-    },
-    hasBrowserPerformancePaths() {
-      const browserPerformance = this.mr?.browserPerformance || {};
-
-      return Boolean(browserPerformance?.head_path && browserPerformance?.base_path);
-    },
-    degradedBrowserPerformanceTotalScore() {
-      return this.mr?.browserPerformanceMetrics?.degraded.find(
-        (metric) => metric.name === __('Total Score'),
-      );
-    },
-    hasBrowserPerformanceDegradation() {
-      const threshold = this.mr?.browserPerformance?.degradation_threshold || 0;
-
-      if (!threshold) {
-        return true;
-      }
-
-      const totalScoreDelta = this.degradedBrowserPerformanceTotalScore?.delta || 0;
-
-      return threshold + totalScoreDelta <= 0;
-    },
     hasLoadPerformanceMetrics() {
       return (
         this.mr.loadPerformanceMetrics?.degraded?.length > 0 ||
@@ -77,30 +46,6 @@ export default {
       const loadPerformance = this.mr?.loadPerformance || {};
 
       return Boolean(loadPerformance.head_path && loadPerformance.base_path);
-    },
-    browserPerformanceText() {
-      const { improved, degraded, same } = this.mr.browserPerformanceMetrics;
-      const text = [];
-      const reportNumbers = [];
-
-      if (improved.length || degraded.length || same.length) {
-        text.push(s__('ciReport|Browser performance test metrics: '));
-
-        if (degraded.length > 0)
-          reportNumbers.push(
-            sprintf(s__('ciReport|%{degradedNum} degraded'), { degradedNum: degraded.length }),
-          );
-        if (same.length > 0)
-          reportNumbers.push(sprintf(s__('ciReport|%{sameNum} same'), { sameNum: same.length }));
-        if (improved.length > 0)
-          reportNumbers.push(
-            sprintf(s__('ciReport|%{improvedNum} improved'), { improvedNum: improved.length }),
-          );
-      } else {
-        text.push(s__('ciReport|Browser performance test metrics: No changes'));
-      }
-
-      return [...text, ...reportNumbers.join(', ')].join('');
     },
 
     loadPerformanceText() {
@@ -128,13 +73,6 @@ export default {
       return [...text, ...reportNumbers.join(', ')].join('');
     },
 
-    browserPerformanceStatus() {
-      return this.checkReportStatus(
-        this.isLoadingBrowserPerformance,
-        this.loadingBrowserPerformanceFailed,
-      );
-    },
-
     loadPerformanceStatus() {
       return this.checkReportStatus(
         this.isLoadingLoadPerformance,
@@ -143,12 +81,6 @@ export default {
     },
   },
   watch: {
-    hasBrowserPerformancePaths(newVal) {
-      if (newVal) {
-        this.registerBrowserPerformance();
-        this.fetchBrowserPerformance();
-      }
-    },
     hasLoadPerformancePaths(newVal) {
       if (newVal) {
         this.registerLoadPerformance();
@@ -160,9 +92,6 @@ export default {
     registerLoadPerformance() {
       registerExtension(loadPerformanceExtension);
     },
-    registerBrowserPerformance() {
-      registerExtension(browserPerformanceExtension);
-    },
     getServiceEndpoints(store) {
       const base = CEWidgetOptions.methods.getServiceEndpoints(store);
 
@@ -170,23 +99,6 @@ export default {
         ...base,
         apiApprovalSettingsPath: store.apiApprovalSettingsPath,
       };
-    },
-
-    fetchBrowserPerformance() {
-      const { head_path, base_path } = this.mr.browserPerformance;
-
-      this.isLoadingBrowserPerformance = true;
-
-      Promise.all([this.service.fetchReport(head_path), this.service.fetchReport(base_path)])
-        .then((values) => {
-          this.mr.compareBrowserPerformanceMetrics(values[0], values[1]);
-        })
-        .catch(() => {
-          this.loadingBrowserPerformanceFailed = true;
-        })
-        .finally(() => {
-          this.isLoadingBrowserPerformance = false;
-        });
     },
 
     fetchLoadPerformance() {
