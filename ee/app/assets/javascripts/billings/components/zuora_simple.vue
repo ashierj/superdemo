@@ -92,6 +92,11 @@ export default {
       type: Number,
       required: true,
     },
+    fixedIframeHeight: {
+      type: Number,
+      required: false,
+      default: null,
+    },
     paymentFormId: {
       type: String,
       required: true,
@@ -110,6 +115,11 @@ export default {
   },
   computed: {
     style() {
+      if (this.fixedIframeHeight) {
+        const height = `${this.fixedIframeHeight}px`;
+        return { height };
+      }
+
       const height = Math.max(0, this.iframeHeight);
       return { height: `${height}px`, minHeight: DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT };
     },
@@ -197,9 +207,12 @@ export default {
     handleMessage({ data } = {}) {
       const iFrameData = parseJson(data);
       const { action, height } = iFrameData;
+
       switch (action) {
         case Action.RESIZE:
-          this.iframeHeight = height > 0 ? height : this.iframeHeight;
+          if (!this.fixedIframeHeight) {
+            this.iframeHeight = height > 0 ? height : this.iframeHeight;
+          }
           this.isLoading = false;
           break;
         default:
@@ -265,6 +278,18 @@ export default {
         {},
         this.paymentFormSubmitted,
         this.handleErrorMessage,
+
+        // Set the iframe height to a fixed value when fixedIframeHeight prop is
+        // present. This is useful when a dynamic element is displayed in the
+        // iframe but its height cannot accommodate the element (e.g. Google
+        // reCAPTCHA challenge form).
+        //
+        // When fixedIframeHeight prop is not passed in, null is used which
+        // makes Zuora automatically handle resizing of the iframe like normal.
+        //
+        // Ref: https://knowledgecenter.zuora.com/Zuora_Payments/Hosted_Payment_Pages/K_Error_Handling_for_Payment_Pages_2.0/Customize_Error_Messages_for_Payment_Pages_2.0#Render_Payment_Pages_2.0_with_Custom_Error_Handling
+        null,
+        this.fixedIframeHeight ? `${this.fixedIframeHeight}` : null,
       );
     },
     submit() {

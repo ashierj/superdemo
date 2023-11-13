@@ -48,6 +48,7 @@ describe('Account verification modal', () => {
     it('renders the Zuora component', () => {
       expect(findZuora().props()).toEqual({
         currentUserId: 300,
+        fixedIframeHeight: IFRAME_MINIMUM_HEIGHT,
         initialHeight: IFRAME_MINIMUM_HEIGHT,
         paymentFormId: 'payment-validation-page-id',
       });

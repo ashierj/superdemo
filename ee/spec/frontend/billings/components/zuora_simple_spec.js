@@ -335,6 +335,25 @@ describe('Zuora', () => {
           );
         });
       });
+
+      describe(`fixedIframeHeight is given and ${Action.RESIZE} event type is dispatched`, () => {
+        const height = 333;
+        const data = JSON.stringify({ action: Action.RESIZE, height });
+
+        beforeEach(() => {
+          createComponent({ fixedIframeHeight: 480 });
+          window.dispatchEvent(new MessageEvent('message', { data }));
+        });
+
+        it('keeps the current style values', async () => {
+          jest
+            .spyOn(Api, 'fetchPaymentFormParams')
+            .mockResolvedValue({ data: { someData: 'some-data' } });
+          await wrapper.vm.zuoraScriptEl.onload();
+
+          expect(findZuoraPayment().attributes('style')).toBe(`height: 480px;`);
+        });
+      });
     });
 
     describe('handleErrorMessage', () => {
@@ -516,7 +535,27 @@ describe('Zuora', () => {
             expect.anything(),
             expect.any(Function),
             expect.any(Function),
+            null,
+            null,
           );
+        });
+
+        describe('when fixedIframeHeightProp is present', () => {
+          beforeEach(() => {
+            createComponent({ fixedIframeHeight: 480 });
+            wrapper.vm.zuoraScriptEl.onload();
+          });
+
+          it('calls the Z method with the correct params', () => {
+            expect(window.Z.renderWithErrorHandler).toHaveBeenCalledWith(
+              expect.anything(),
+              expect.anything(),
+              expect.anything(),
+              expect.anything(),
+              null,
+              '480',
+            );
+          });
         });
       });
 
