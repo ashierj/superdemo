@@ -72,7 +72,7 @@ module EE
       return unless group_requires_saml_auth_for_approval?
 
       expose_path sso_group_saml_providers_path(
-        group,
+        group.root_ancestor,
         token: group.saml_discovery_token,
         redirect: saml_approval_redirect_path
       )
