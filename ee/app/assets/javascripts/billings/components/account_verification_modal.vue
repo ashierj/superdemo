@@ -3,7 +3,8 @@ import { GlModal, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import Zuora from 'ee/billings/components/zuora_simple.vue';
 
-export const IFRAME_MINIMUM_HEIGHT = 350;
+// Set to 480px to accommodate Google reCAPTCHA challenge form
+export const IFRAME_MINIMUM_HEIGHT = 480;
 const i18n = Object.freeze({
   title: s__('Billings|Validate user account'),
   description: s__(`
@@ -89,6 +90,7 @@ export default {
     <zuora
       ref="zuora"
       :current-user-id="currentUserId"
+      :fixed-iframe-height="$options.iframeHeight"
       :initial-height="$options.iframeHeight"
       :iframe-url="iframeUrl"
       :allowed-origin="allowedOrigin"
