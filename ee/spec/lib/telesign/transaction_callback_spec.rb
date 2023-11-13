@@ -149,6 +149,23 @@ RSpec.describe Telesign::TransactionCallback, feature_category: :instance_resili
       end
     end
 
+    context 'when there is no matching record for the received reference_id' do
+      let(:reference_id) { 'non-existing-ref-id' }
+
+      it 'does not log' do
+        expect_next_instance_of(Telesign::TransactionCallbackPayload, request_params) do |response|
+          expect(response).to receive(:reference_id).and_return(reference_id, reference_id)
+          expect(response).to receive(:status).and_return(status)
+          expect(response).to receive(:status_updated_on).and_return(status_updated_on)
+          expect(response).to receive(:errors).and_return(errors)
+        end
+
+        log
+
+        expect_no_snowplow_event
+      end
+    end
+
     context 'when callback is not valid' do
       let(:callback_valid) { false }
 
