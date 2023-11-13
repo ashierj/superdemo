@@ -112,9 +112,8 @@ describe('TracingScatterChart', () => {
   it('sets the proper title when data is missing', () => {
     mountComponent([]);
     expect(findChart().props('option').title).toEqual({
-      text: 'No traces to display.',
-      subtext: 'Check again',
-      triggerEvent: true,
+      text: 'No results found',
+      subtext: 'Refresh the page, or edit your search filter and try again',
       left: 'center',
       top: '40%',
       textStyle: {
@@ -122,15 +121,8 @@ describe('TracingScatterChart', () => {
       },
       subtextStyle: {
         fontSize: 15,
-        color: '#1f75cb',
       },
     });
-  });
-
-  it('emits the "reload-data" event when the chart title is clicked', () => {
-    findChart().vm.$emit('chartItemClicked', { params: { componentType: 'title' } });
-
-    expect(wrapper.emitted('reload-data')).toHaveLength(1);
   });
 
   it('emits the "chart-item-selected" event when a chart item is clicked', () => {

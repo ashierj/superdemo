@@ -1,6 +1,6 @@
 <script>
 import { GlDiscreteScatterChart } from '@gitlab/ui/dist/charts';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import { durationNanoToMs } from './trace_utils';
 
 export default {
@@ -10,8 +10,8 @@ export default {
   i18n: {
     yAxisTitle: s__('Tracing|Duration (ms)'),
     xAxisTitle: s__('Tracing|Time range'),
-    noDataText: s__('Tracing|No traces to display.'),
-    noDataSubtext: s__('Tracing|Check again'),
+    noDataText: __('No results found'),
+    noDataSubtext: s__('Tracing|Refresh the page, or edit your search filter and try again'),
   },
   props: {
     traces: {
@@ -59,7 +59,6 @@ export default {
           ? {
               text: this.$options.i18n.noDataText,
               subtext: this.$options.i18n.noDataSubtext,
-              triggerEvent: true,
               left: 'center',
               top: '40%',
               textStyle: {
@@ -67,7 +66,6 @@ export default {
               },
               subtextStyle: {
                 fontSize: 15,
-                color: '#1f75cb',
               },
             }
           : undefined;
@@ -90,9 +88,6 @@ export default {
 
   methods: {
     chartItemClicked(e) {
-      if (e?.params?.componentType === 'title') {
-        this.$emit('reload-data');
-      }
       if (e?.params?.data?.traceId) {
         this.$emit('chart-item-selected', { traceId: e.params.data.traceId });
       }
