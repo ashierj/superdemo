@@ -158,9 +158,8 @@ export default {
   <div>
     <gl-form-checkbox
       v-model="isJiraVulnerabilitiesEnabled"
-      data-testid="enable-jira-vulnerabilities"
       :disabled="checkboxDisabled"
-      data-qa-selector="service_jira_enable_vulnerabilities_checkbox"
+      data-testid="jira-enable-vulnerabilities-checkbox"
     >
       <span>{{ $options.i18n.checkbox.label }}</span
       ><gl-badge
@@ -214,11 +213,11 @@ export default {
               :loading="isLoadingJiraIssueTypes"
               :toggle-text="jiraIssueTypesToggleText"
               class="btn-group"
-              data-qa-selector="service_jira_select_issue_type_dropdown"
+              data-testid="jira-select-issue-type-dropdown"
               toggle-aria-labelled-by="issue-type-label"
             >
               <template #list-item="{ item }">
-                <span data-qa-selector="service_jira_type" :data-qa-service-type="item.text">{{
+                <span data-testid="jira-type" :data-qa-service-type="item.text">{{
                   item.text
                 }}</span>
               </template>
@@ -229,8 +228,7 @@ export default {
               :aria-label="$options.i18n.fetchIssueTypesButtonLabel"
               :disabled="!projectKey"
               icon="retry"
-              data-testid="fetch-issue-types"
-              data-qa-selector="service_jira_issue_types_fetch_retry_button"
+              data-testid="jira-issue-types-fetch-retry-button"
               @click="handleLoadJiraIssueTypesClick"
             />
           </gl-button-group>

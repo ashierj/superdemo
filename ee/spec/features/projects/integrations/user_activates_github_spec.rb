@@ -40,7 +40,7 @@ RSpec.describe 'User activates GitHub integration', feature_category: :integrati
     end
 
     it 'renders a token field of type `password` for masking input' do
-      expect(find('#service_token')['type']).to eq('password')
+      expect(find('#service-token')['type']).to eq('password')
     end
 
     context 'with pipelines', :js do
