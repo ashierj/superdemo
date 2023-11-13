@@ -3,6 +3,7 @@ import { GlAlert, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import GroupProjectsDropdown from '../../group_projects_dropdown.vue';
 import ComplianceFrameworkDropdown from './compliance_framework_dropdown.vue';
+import ComplianceFrameworkTooltip from './compliance_framework_tooltip.vue';
 import {
   PROJECTS_WITH_FRAMEWORK,
   PROJECT_SCOPE_TYPE_LISTBOX_ITEMS,
@@ -35,6 +36,7 @@ export default {
     GlAlert,
     GlCollapsibleListbox,
     ComplianceFrameworkDropdown,
+    ComplianceFrameworkTooltip,
     GlSprintf,
     GroupProjectsDropdown,
   },
@@ -110,12 +112,18 @@ export default {
         </template>
 
         <template #frameworkSelector>
-          <compliance-framework-dropdown
-            :selected-framework-ids="selectedFrameworkIds"
-            :full-path="rootNamespacePath"
-            @framework-query-error="setShowAlert($options.i18n.complianceFrameworkErrorDescription)"
-            @select="setSelectedFrameworkIds"
-          />
+          <div class="gl-display-inline-flex gl-align-items-center gl-flex-wrap gl-gap-3">
+            <compliance-framework-dropdown
+              :selected-framework-ids="selectedFrameworkIds"
+              :full-path="rootNamespacePath"
+              @framework-query-error="
+                setShowAlert($options.i18n.complianceFrameworkErrorDescription)
+              "
+              @select="setSelectedFrameworkIds"
+            />
+
+            <compliance-framework-tooltip />
+          </div>
         </template>
 
         <template #exceptionType>

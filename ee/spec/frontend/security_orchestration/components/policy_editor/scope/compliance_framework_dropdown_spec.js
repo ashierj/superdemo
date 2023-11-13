@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { shallowMount } from '@vue/test-utils';
 import { GlButton, GlCollapsibleListbox, GlModal } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ComplianceFrameworkDropdown from 'ee/security_orchestration/components/policy_editor/scope/compliance_framework_dropdown.vue';
 import ComplianceFrameworkFormModal from 'ee/groups/settings/compliance_frameworks/components/form_modal.vue';
 import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
@@ -84,7 +84,7 @@ describe('ComplianceFrameworkDropdown', () => {
     handlers = mockApolloHandlers(),
     stubs = {},
   } = {}) => {
-    wrapper = shallowMount(ComplianceFrameworkDropdown, {
+    wrapper = shallowMountExtended(ComplianceFrameworkDropdown, {
       apolloProvider: createMockApolloProvider(handlers),
       propsData: {
         fullPath: 'gitlab-org',
@@ -108,6 +108,7 @@ describe('ComplianceFrameworkDropdown', () => {
   const findComplianceFrameworkFormModal = () =>
     wrapper.findComponent(ComplianceFrameworkFormModal);
   const findSharedForm = () => wrapper.findComponent(SharedForm);
+  const findErrorMessage = () => wrapper.findByTestId('error-message');
   const selectAll = () => findDropdown().vm.$emit('select-all');
   const resetAll = () => findDropdown().vm.$emit('reset');
 
@@ -244,6 +245,24 @@ describe('ComplianceFrameworkDropdown', () => {
       });
       await waitForPromises();
       expect(wrapper.emitted('framework-query-error')).toHaveLength(1);
+    });
+  });
+
+  describe('error state', () => {
+    it.each`
+      showError | variant      | category
+      ${false}  | ${'default'} | ${'primary'}
+      ${true}   | ${'danger'}  | ${'secondary'}
+    `('should render error state', ({ showError, variant, category }) => {
+      createComponent({
+        propsData: {
+          showError,
+        },
+      });
+
+      expect(findErrorMessage().exists()).toBe(showError);
+      expect(findDropdown().props('variant')).toBe(variant);
+      expect(findDropdown().props('category')).toBe(category);
     });
   });
 });
