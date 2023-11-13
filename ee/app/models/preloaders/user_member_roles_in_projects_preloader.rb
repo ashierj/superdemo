@@ -4,11 +4,11 @@ module Preloaders
   class UserMemberRolesInProjectsPreloader
     def initialize(projects:, user:)
       @projects = if projects.is_a?(Array)
-                    Project.where(id: projects)
+                    Project.select(:id, :namespace_id).where(id: projects)
                   else
                     # Push projects base query in to a sub-select to avoid
                     # table name clashes. Performs better than aliasing.
-                    Project.where(id: projects.reselect(:id))
+                    Project.select(:id, :namespace_id).where(id: projects.reselect(:id))
                   end
 
       @user = user
