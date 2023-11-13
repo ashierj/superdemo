@@ -41,12 +41,14 @@ describe('JiraIssueCreationVulnerabilities', () => {
 
   const withinComponent = () => within(wrapper.element);
   const findHiddenInput = (name) => wrapper.find(`input[name="service[${name}]"]`);
-  const findEnableJiraVulnerabilities = () => wrapper.findByTestId('enable-jira-vulnerabilities');
+  const findEnableJiraVulnerabilities = () =>
+    wrapper.findByTestId('jira-enable-vulnerabilities-checkbox');
   const findIssueTypeSection = () => wrapper.findByTestId('issue-type-section');
   const findIssueTypeListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findIssueTypeLabel = () => wrapper.findComponent('label');
   const findGlBadge = () => wrapper.findComponent(GlBadge);
-  const findFetchIssueTypeButton = () => wrapper.findByTestId('fetch-issue-types');
+  const findFetchIssueTypeButton = () =>
+    wrapper.findByTestId('jira-issue-types-fetch-retry-button');
   const findFetchErrorAlert = () => wrapper.findComponent(GlAlert);
   const setEnableJiraVulnerabilitiesChecked = (isChecked) =>
     findEnableJiraVulnerabilities().vm.$emit('input', isChecked);

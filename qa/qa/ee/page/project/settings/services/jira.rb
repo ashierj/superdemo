@@ -14,16 +14,16 @@ module QA
                 base.class_eval do
                   view 'ee/app/assets/javascripts/integrations/edit/components/' \
                     'jira_issue_creation_vulnerabilities.vue' do
-                    element :service_jira_enable_vulnerabilities_checkbox
-                    element :service_jira_issue_types_fetch_retry_button
-                    element :service_jira_select_issue_type_dropdown
-                    element :service_jira_type
+                    element 'jira-enable-vulnerabilities-checkbox'
+                    element 'jira-issue-types-fetch-retry-button'
+                    element 'jira-select-issue-type-dropdown'
+                    element 'jira-type'
                   end
                 end
               end
 
               def enable_jira_vulnerabilities
-                check_element(:service_jira_enable_vulnerabilities_checkbox, true)
+                check_element('jira-enable-vulnerabilities-checkbox', true)
               end
 
               def select_vulnerability_bug_type(bug_type)
@@ -34,12 +34,12 @@ module QA
               private
 
               def click_retry_vulnerabilities
-                click_element(:service_jira_issue_types_fetch_retry_button)
+                click_element('jira-issue-types-fetch-retry-button')
               end
 
               def select_jira_bug_type(option)
-                click_element(:service_jira_select_issue_type_dropdown)
-                click_element(:service_jira_type, service_type: option)
+                click_element('jira-select-issue-type-dropdown')
+                click_element('jira-type', service_type: option)
               end
             end
           end
