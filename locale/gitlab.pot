@@ -7745,6 +7745,12 @@ msgstr ""
 msgid "BetaBadge|What's Beta?"
 msgstr ""
 
+msgid "BeyondIdentityService|API Token. User must have access to `git-commit-signing` endpoint."
+msgstr ""
+
+msgid "BeyondIdentity|Verify that GPG keys are authorized by Beyond Identity Authenticator."
+msgstr ""
+
 msgid "Bi-weekly code coverage"
 msgstr ""
 
@@ -38225,6 +38231,9 @@ msgstr ""
 msgid "ProjectService|Enter new API key"
 msgstr ""
 
+msgid "ProjectService|Enter new API token"
+msgstr ""
+
 msgid "ProjectService|Enter new password"
 msgstr ""
 
@@ -38241,6 +38250,9 @@ msgid "ProjectService|Leave blank to use your current API key"
 msgstr ""
 
 msgid "ProjectService|Leave blank to use your current API key."
+msgstr ""
+
+msgid "ProjectService|Leave blank to use your current API token."
 msgstr ""
 
 msgid "ProjectService|Leave blank to use your current password"
@@ -53956,6 +53968,9 @@ msgid "Verify SAML Configuration"
 msgstr ""
 
 msgid "Verify code"
+msgstr ""
+
+msgid "Verify that GPG keys are authorized by Beyond Identity Authenticator. %{docs_link}"
 msgstr ""
 
 msgid "Version"
