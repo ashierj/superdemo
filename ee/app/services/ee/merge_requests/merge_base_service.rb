@@ -87,6 +87,9 @@ module EE
         merge_request.target_project.repository_size_checker
       end
 
+      # This was introduced into the main mergeability framework in:
+      # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/90184
+      # To remove: https://gitlab.com/gitlab-org/gitlab/-/issues/432220
       def check_blocking_mrs
         return unless merge_request.merge_blocked_by_other_mrs?
 
@@ -97,9 +100,12 @@ module EE
         return unless merge_request.project.prevent_merge_without_jira_issue?
         return if has_jira_issue_keys?
 
-        raise ::MergeRequests::MergeService::MergeError, _('Before this can be merged, a Jira issue must be linked in the title or description')
+        raise ::MergeRequests::MergeService::MergeError, _('To merge, either the title or description must reference a Jira issue.')
       end
 
+      # This was introduced into the main megreability framework in:
+      # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/136685
+      # To remove: https://gitlab.com/gitlab-org/gitlab/-/issues/432220
       def has_jira_issue_keys?
         return unless merge_request.project.jira_integration.try(:active?)
 
