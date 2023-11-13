@@ -40,7 +40,6 @@ module Llm
       ::Feature.enabled?(:ai_global_switch, type: :ops)
     end
 
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/413520
     def user_can_send_to_ai?
       return true unless ::Gitlab.com?
 

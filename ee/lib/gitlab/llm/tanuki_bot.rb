@@ -26,10 +26,15 @@ module Gitlab
         user.any_group_with_ai_available?
       end
 
-      def self.show_breadcrumbs_entry_point_for?(user:)
-        return false unless Feature.enabled?(:tanuki_bot_breadcrumbs_entry_point, user)
+      def self.show_breadcrumbs_entry_point?(user:, container: nil)
+        return false unless user && Feature.enabled?(:tanuki_bot_breadcrumbs_entry_point,
+          user) && user.any_group_with_ai_available?
 
-        enabled_for?(user: user)
+        return true unless container
+
+        return false unless container.member?(user)
+
+        Gitlab::Llm::StageCheck.available?(container.resource_parent, :chat)
       end
 
       def initialize(current_user:, question:, logger: nil, tracking_context: {})

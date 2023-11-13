@@ -93,28 +93,151 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
       end
     end
 
-    describe '#show_breadcrumbs_entry_point_for' do
-      before do
-        allow(described_class).to receive(:enabled_for?).and_return(:enabled_for_return_value)
+    describe '#show_breadcrumbs_entry_point', :saas, :use_clean_rails_redis_caching do
+      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+      context 'when container is a group with AI enabled' do
+        include_context 'with ai features enabled for group'
+
+        context 'when user is a member of the group' do
+          before_all do
+            group.add_guest(user)
+          end
+
+          context 'when container is a group' do
+            it 'returns true' do
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: group
+                )
+              ).to be(true)
+            end
+          end
+
+          context 'when container is a project' do
+            let_it_be(:project) { create(:project, group: group) }
+
+            it 'returns true' do
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: project
+                )
+              ).to be(true)
+            end
+          end
+
+          context 'when missing Ultimate SaaS license' do
+            let_it_be(:group) { create(:group) }
+
+            it 'returns false' do
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: group
+                )
+              ).to be(false)
+            end
+          end
+
+          context 'when tanuki_bot_breadcrumbs_entry_point feature flag is disabled' do
+            it 'returns false' do
+              stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: false)
+
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: group
+                )
+              ).to be(false)
+            end
+          end
+        end
+
+        context 'when user is not a member of the group' do
+          context 'when the user has AI enabled via another group' do
+            it 'returns false' do
+              allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: group
+                )
+              ).to be(false)
+            end
+          end
+
+          context 'when user does not have AI enabled via any group' do
+            it 'returns false' do
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: group
+                )
+              ).to be(false)
+            end
+          end
+        end
+
+        context 'when user not present' do
+          it 'returns false' do
+            expect(
+              described_class.show_breadcrumbs_entry_point?(
+                user: false,
+                container: group
+              )
+            ).to be(false)
+          end
+        end
       end
 
-      context 'when tanuki_bot_breadcrumbs_entry_point feature flag is enabled' do
-        before do
-          stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: true)
-        end
+      context 'when container is not a group with AI enabled' do
+        context 'when user has AI enabled' do
+          before do
+            allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+          end
 
-        it 'returns enabled_for?\'s return value' do
-          expect(described_class.show_breadcrumbs_entry_point_for?(user: user)).to be(:enabled_for_return_value)
-        end
-      end
+          context 'when container is a group' do
+            include_context 'with experiment features disabled for group'
 
-      context 'when tanuki_bot_breadcrumbs_entry_point feature flag is disabled' do
-        before do
-          stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: false)
-        end
+            it 'returns false' do
+              allow(user).to receive(:any_group_with_ai_available?).and_return(true)
 
-        it 'returns false' do
-          expect(described_class.show_breadcrumbs_entry_point_for?(user: user)).to be(false)
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: group
+                )
+              ).to be(false)
+            end
+          end
+
+          context 'when container is a project in a personal namespace' do
+            let_it_be(:project) { create(:project, namespace: user.namespace) }
+
+            it 'returns false' do
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: project
+                )
+              ).to be(false)
+            end
+          end
+
+          context 'when container is not present' do
+            # for example, Dashboard or User Settings pages
+            it 'returns true' do
+              expect(
+                described_class.show_breadcrumbs_entry_point?(
+                  user: user,
+                  container: nil
+                )
+              ).to be(true)
+            end
+          end
         end
       end
     end
