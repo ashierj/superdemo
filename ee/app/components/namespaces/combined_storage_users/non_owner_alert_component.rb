@@ -14,7 +14,7 @@ module Namespaces
       def non_owner_access?
         return false if Ability.allowed?(user, :owner_access, root_namespace)
 
-        Ability.allowed?(user, :read_group, root_namespace)
+        Ability.allowed?(user, :guest_access, root_namespace)
       end
 
       def show_cta

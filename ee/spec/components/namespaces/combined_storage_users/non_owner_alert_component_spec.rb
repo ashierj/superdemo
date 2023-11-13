@@ -123,6 +123,30 @@ RSpec.describe Namespaces::CombinedStorageUsers::NonOwnerAlertComponent, :saas, 
     end
   end
 
+  context 'when the namespace is public' do
+    let(:namespace) { build_stubbed(:group, :public, gitlab_subscription: build_stubbed(:gitlab_subscription)) }
+
+    context 'when the user is not a member' do
+      it 'does not render the alert' do
+        render_inline(component)
+
+        expect(page).not_to have_content(alert_title)
+      end
+    end
+
+    context 'when the user is a member' do
+      before do
+        stub_member_access_level(namespace, guest: user)
+      end
+
+      it 'does render the alert' do
+        render_inline(component)
+
+        expect(page).to have_content(alert_title)
+      end
+    end
+  end
+
   context 'when user does not exist' do
     let(:user) { nil }
 
