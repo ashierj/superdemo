@@ -27,7 +27,7 @@ class SamlProvider < ApplicationRecord
     defaults.to_h.merge(
       idp_cert_fingerprint: certificate_fingerprint,
       idp_sso_target_url: sso_url,
-      attribute_statements: { nickname: %w[username nickname] }
+      attribute_statements: ::Gitlab::Auth::Saml::Config.default_attribute_statements
     )
   end
 
