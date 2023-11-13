@@ -50,11 +50,11 @@ module EE
           project.all_protected_branches.sorted_by_namespace_and_name.page(params[:page])
         end
 
-        def fetch_branches_protected_from_force_push(project)
+        def fetch_branches_protected_from_push(project)
           return [] unless ::Feature.enabled?(:scan_result_policies_block_force_push, project) &&
             project.licensed_feature_available?(:security_orchestration_policies)
 
-          ::Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePushService
+          ::Security::SecurityOrchestrationPolicies::ProtectedBranchesPushService
             .new(project: project)
             .execute
         end
@@ -63,7 +63,7 @@ module EE
         override :define_protected_refs
         def define_protected_refs
           super
-          @branches_protected_from_force_push = fetch_branches_protected_from_force_push(@project)
+          @branches_protected_from_push = fetch_branches_protected_from_push(@project)
 
           return unless ::Feature.enabled?(:scan_result_policies_block_unprotecting_branches, project)
 

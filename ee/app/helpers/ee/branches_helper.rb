@@ -4,8 +4,8 @@ module EE
   module BranchesHelper
     extend ::Gitlab::Utils::Override
 
-    def preselected_push_access_levels_data(access_levels, can_force_push)
-      return [{ id: nil, type: :role, access_level: ::Gitlab::Access::NO_ACCESS }] unless can_force_push
+    def preselected_push_access_levels_data(access_levels, can_push)
+      return [{ id: nil, type: :role, access_level: ::Gitlab::Access::NO_ACCESS }] unless can_push
 
       access_levels_data(access_levels)
     end

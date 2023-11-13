@@ -27,7 +27,7 @@ module EE
           private
 
           def branch_name_affected_by_policy?
-            affected_branches = ::Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePushService
+            affected_branches = ::Security::SecurityOrchestrationPolicies::ProtectedBranchesPushService
               .new(project: project).execute
 
             branch_name.in? affected_branches

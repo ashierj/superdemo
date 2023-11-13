@@ -46,19 +46,19 @@ RSpec.describe BranchesHelper do
 
   describe '#preselected_push_access_levels_data' do
     subject(:preselected_push_access_levels_data) do
-      helper.preselected_push_access_levels_data(access_levels, can_force_push)
+      helper.preselected_push_access_levels_data(access_levels, can_push)
     end
 
     let(:access_levels) { [instance_double(ProtectedBranch::PushAccessLevel)] }
 
-    context 'when can_force_push is false' do
-      let(:can_force_push) { false }
+    context 'when can_push is false' do
+      let(:can_push) { false }
 
       it { is_expected.to contain_exactly(id: nil, type: :role, access_level: Gitlab::Access::NO_ACCESS) }
     end
 
-    context 'when can_force_push is true' do
-      let(:can_force_push) { true }
+    context 'when can_push is true' do
+      let(:can_push) { true }
 
       it 'calls access_levels_data method' do
         expect(helper).to receive(:access_levels_data).with(access_levels)

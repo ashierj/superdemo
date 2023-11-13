@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Security::SecurityOrchestrationPolicies::ProtectedBranchesForcePushService, feature_category: :security_policy_management do
+RSpec.describe Security::SecurityOrchestrationPolicies::ProtectedBranchesPushService, feature_category: :security_policy_management do
   let_it_be_with_refind(:project) { create(:project, :repository) }
   let_it_be(:policy_project) { create(:project, :repository) }
   let_it_be(:protected_branch) { create(:protected_branch, project: project) }
