@@ -302,6 +302,41 @@ module Gitlab
             error(CONNECTIVITY_ERROR)
           end
 
+          def get_service_token(license_key)
+            query = <<~GQL
+            query ServiceToken($licenseKey: String!) {
+              serviceToken(licenseKey: $licenseKey) {
+                token
+                expiresAt
+              }
+            }
+            GQL
+
+            response = http_post('graphql',
+              json_headers,
+              {
+                query: query,
+                variables: {
+                  licenseKey: license_key
+                }
+              }
+            )[:data]
+
+            if response['errors'].blank?
+              token = response.dig('data', 'serviceToken', 'token')
+              expires_at = response.dig('data', 'serviceToken', 'expiresAt')
+              {
+                success: true,
+                token: token,
+                expires_at: expires_at
+              }
+            else
+              track_error(query, response)
+
+              error(response['errors'])
+            end
+          end
+
           private
 
           def execute_graphql_query(params)
