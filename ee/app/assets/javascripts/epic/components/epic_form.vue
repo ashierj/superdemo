@@ -220,7 +220,7 @@ export default {
         >
       </gl-form-group>
       <gl-form-group :label="__('Start date')" :description="$options.i18n.epicDatesHint">
-        <div class="gl-display-inline-block gl-xs-mb-3">
+        <div class="gl-display-inline-block gl-mb-3 gl-sm-mb-0">
           <gl-datepicker
             v-model="startDateFixed"
             :max-date="dueDateFixed"
@@ -238,7 +238,7 @@ export default {
         >
       </gl-form-group>
       <gl-form-group :label="__('Due date')" :description="$options.i18n.epicDatesHint">
-        <div class="gl-display-inline-block gl-xs-mb-3">
+        <div class="gl-display-inline-block gl-mb-3 gl-sm-mb-0">
           <gl-datepicker
             v-model="dueDateFixed"
             :min-date="startDateFixed"

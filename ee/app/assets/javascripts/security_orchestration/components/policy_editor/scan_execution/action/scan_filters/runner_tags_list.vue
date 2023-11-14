@@ -91,7 +91,7 @@ export default {
   <div>
     <gl-collapsible-listbox
       id="runner-tags-switcher-id"
-      class="gl-mr-2 gl-xs-mb-3"
+      class="gl-mr-2 gl-mb-3 gl-sm-mb-0"
       :disabled="!areRunnersTagged"
       :items="$options.TAGS_MODES"
       :selected="selectedTagsMode"
