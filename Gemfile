@@ -226,7 +226,7 @@ gem 'icalendar' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Diffs
 gem 'diffy', '~> 3.4' # rubocop:todo Gemfile/MissingFeatureCategory
-gem 'diff_match_patch', '~> 0.1.0' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'diff_match_patch', '~> 0.1.0', path: 'vendor/gems/diff_match_patch', feature_category: :team_planning
 
 # Application server
 gem 'rack', '~> 2.2.8' # rubocop:todo Gemfile/MissingFeatureCategory
