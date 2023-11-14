@@ -9,6 +9,10 @@ FactoryBot.define do
     trait(:reporter) { base_access_level { Gitlab::Access::REPORTER } }
     trait(:guest) { base_access_level { Gitlab::Access::GUEST } }
 
+    trait :admin_merge_request do
+      admin_merge_request { true }
+    end
+
     trait :admin_vulnerability do
       admin_vulnerability { true }
       read_vulnerability { true }
