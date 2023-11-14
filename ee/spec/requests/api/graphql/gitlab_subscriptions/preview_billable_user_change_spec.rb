@@ -76,6 +76,26 @@ RSpec.describe 'Query.gitlabSubscriptionsPreviewBillableUserChange', feature_cat
           end
         end
 
+        context 'with elevating custom role' do
+          let(:member_role) do
+            create(:member_role, :guest, namespace: project_or_group.root_ancestor, read_vulnerability: true)
+          end
+
+          let(:args) { base_args.merge(add_user_ids: [1], member_role_id: member_role.id) }
+
+          it 'returns successfully' do
+            post_graphql(query, current_user: current_user)
+
+            expect(subject).to eq(
+              {
+                'willIncreaseOverage' => false,
+                'newBillableUserCount' => 2,
+                'seatsInSubscription' => 0
+              }
+            )
+          end
+        end
+
         context 'when missing all add_* arguments' do
           let(:args) { base_args }
 

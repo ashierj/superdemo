@@ -184,20 +184,19 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService, feature_
           context 'with guest role' do
             let_it_be(:role) { :guest }
 
+            let(:member_role_id) { nil }
+
             subject(:execute) do
               described_class.new(
                 current_user: current_user,
                 target_namespace: target_namespace,
                 role: role,
-                add_user_ids: [non_existing_record_id]
+                add_user_ids: [non_existing_record_id],
+                member_role_id: member_role_id
               ).execute
             end
 
-            context 'when target group does not charge for guests' do
-              before do
-                allow(target_namespace).to receive(:exclude_guests?).and_return true
-              end
-
+            shared_examples 'not counting added users' do
               it 'does not count added users' do
                 expect(execute).to include({
                   success: true,
@@ -207,6 +206,48 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService, feature_
                     seats_in_subscription: 0
                   }
                 })
+              end
+            end
+
+            context 'when target group does not charge for guests' do
+              before do
+                allow(target_namespace).to receive(:exclude_guests?).and_return true
+              end
+
+              context 'with basic guest role' do
+                it_behaves_like 'not counting added users'
+              end
+
+              context 'with guest based custom roles with read_code permission enabled' do
+                let(:member_role) { create(:member_role, :guest, namespace: target_namespace, read_code: true) }
+                let(:member_role_id) { member_role.id }
+
+                it_behaves_like 'not counting added users'
+              end
+
+              context 'with guest based custom roles with other permissions enabled' do
+                let(:member_role) do
+                  create(:member_role, :guest, namespace: target_namespace, read_vulnerability: true)
+                end
+
+                let(:member_role_id) { member_role.id }
+
+                it 'counts added users' do
+                  expect(execute).to include({
+                    success: true,
+                    data: {
+                      will_increase_overage: true,
+                      new_billable_user_count: 2,
+                      seats_in_subscription: 0
+                    }
+                  })
+                end
+              end
+
+              context 'with non-existing member role id' do
+                let(:member_role_id) { non_existing_record_id }
+
+                it_behaves_like 'not counting added users'
               end
             end
 
