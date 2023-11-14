@@ -21,7 +21,6 @@ describe('GlobalSearch MergeRequestsFilters', () => {
     const store = new Vuex.Store({
       state: {
         urlQuery: MOCK_QUERY,
-        useSidebarNavigation: false,
         searchType: SEARCH_TYPE_ADVANCED,
         ...initialState,
       },
@@ -46,8 +45,8 @@ describe('GlobalSearch MergeRequestsFilters', () => {
       expect(findStatusFilter().exists()).toBe(true);
     });
 
-    it('renders divider correctly', () => {
-      expect(findDividers()).toHaveLength(1);
+    it("doesn't render divider", () => {
+      expect(findDividers()).toHaveLength(0);
     });
   });
 
@@ -56,26 +55,6 @@ describe('GlobalSearch MergeRequestsFilters', () => {
       createComponent({ searchType: SEARCH_TYPE_BASIC });
     });
 
-    it('renders StatusFilter', () => {
-      expect(findStatusFilter().exists()).toBe(true);
-    });
-
-    it('renders render ArchivedFilter', () => {
-      expect(findArchivedFilter().exists()).toBe(true);
-    });
-
-    it('renders 1 divider', () => {
-      expect(findDividers()).toHaveLength(1);
-    });
-  });
-
-  describe('Renders correctly in new nav', () => {
-    beforeEach(() => {
-      createComponent({
-        searchType: SEARCH_TYPE_ADVANCED,
-        useSidebarNavigation: true,
-      });
-    });
     it('renders StatusFilter', () => {
       expect(findStatusFilter().exists()).toBe(true);
     });

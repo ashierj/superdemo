@@ -66,8 +66,8 @@ describe('GlobalSearchSidebarLanguageFilter', () => {
       expect(findForm().exists()).toBe(true);
     });
 
-    it('renders dividers', () => {
-      expect(findDividers()).toHaveLength(2);
+    it("doesn't render divider", () => {
+      expect(findDividers()).toHaveLength(0);
     });
 
     it('renders slot content', () => {
