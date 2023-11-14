@@ -67,7 +67,10 @@ module Types
         def location
           return unless sast_reports_enabled?
 
-          object['location'].merge(report_type: object['report_type'])
+          object['location'].merge(
+            report_type: object['report_type'],
+            blob_path: object['blob_path']
+          )
         end
 
         def identifiers
