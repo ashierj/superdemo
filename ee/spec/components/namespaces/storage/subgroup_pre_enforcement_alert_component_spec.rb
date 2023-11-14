@@ -2,7 +2,8 @@
 
 require "spec_helper"
 
-RSpec.describe Namespaces::Storage::SubgroupPreEnforcementAlertComponent, :saas, type: :component do
+RSpec.describe Namespaces::Storage::SubgroupPreEnforcementAlertComponent,
+  :saas, type: :component, feature_category: :consumables_cost_management do
   let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }
   let_it_be_with_refind(:subgroup) { create(:group, parent: group) }
   let_it_be_with_refind(:user) { create(:user) }
