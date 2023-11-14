@@ -249,16 +249,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         expect(agent.prompt[:prompt]).to include("code selection")
       end
 
-      context 'when code_tasks feature flag is disabled' do
-        before do
-          stub_feature_flags(code_tasks: false)
-        end
-
-        it 'does not include selected code in the prompt' do
-          expect(agent.prompt[:prompt]).not_to include("code selection")
-        end
-      end
-
       context 'when selected_text is empty' do
         let(:selected_text) { '' }
 

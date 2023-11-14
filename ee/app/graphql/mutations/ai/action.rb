@@ -85,8 +85,6 @@ module Mutations
         method = methods.each_key.first
         method_arguments = options.merge(methods[method])
 
-        method_arguments.delete(:current_file) unless Feature.enabled?(:code_tasks, current_user)
-
         [method_arguments.delete(:resource_id), method, method_arguments]
       end
     end

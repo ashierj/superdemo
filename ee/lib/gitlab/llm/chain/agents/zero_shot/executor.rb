@@ -192,7 +192,6 @@ module Gitlab
             end
 
             def current_file_context
-              return unless Feature.enabled?(:code_tasks, context.current_user)
               return unless context.current_file
               return unless context.current_file[:selected_text].present?
 
