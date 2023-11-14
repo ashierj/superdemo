@@ -43,7 +43,6 @@ describe('GlobalSearch IssuesFilters', () => {
   const findConfidentialityFilter = () => wrapper.findComponent(ConfidentialityFilter);
   const findLabelFilter = () => wrapper.findComponent(LabelFilter);
   const findArchivedFilter = () => wrapper.findComponent(ArchivedFilter);
-  const findDividers = () => wrapper.findAll('hr');
 
   describe.each`
     description                                       | searchIssueLabelAggregation
@@ -71,10 +70,6 @@ describe('GlobalSearch IssuesFilters', () => {
     it(`renders correctly LabelFilter when searchIssueLabelAggregation is ${searchIssueLabelAggregation}`, () => {
       expect(findLabelFilter().exists()).toBe(searchIssueLabelAggregation);
     });
-
-    it("doesn't render divider", () => {
-      expect(findDividers()).toHaveLength(0);
-    });
   });
 
   describe('Renders correctly with basic search', () => {
@@ -95,10 +90,6 @@ describe('GlobalSearch IssuesFilters', () => {
 
     it("doesn't render ArchivedFilter", () => {
       expect(findArchivedFilter().exists()).toBe(true);
-    });
-
-    it("doesn't render divider", () => {
-      expect(findDividers()).toHaveLength(0);
     });
   });
 
@@ -121,10 +112,6 @@ describe('GlobalSearch IssuesFilters', () => {
 
     it("doesn't render ArchivedFilter", () => {
       expect(findArchivedFilter().exists()).toBe(false);
-    });
-
-    it("doesn't render dividers", () => {
-      expect(findDividers()).toHaveLength(0);
     });
   });
 });

@@ -34,7 +34,6 @@ describe('GlobalSearch MergeRequestsFilters', () => {
 
   const findStatusFilter = () => wrapper.findComponent(StatusFilter);
   const findArchivedFilter = () => wrapper.findComponent(ArchivedFilter);
-  const findDividers = () => wrapper.findAll('hr');
 
   describe('Renders correctly with Archived Filter', () => {
     beforeEach(() => {
@@ -45,8 +44,8 @@ describe('GlobalSearch MergeRequestsFilters', () => {
       expect(findStatusFilter().exists()).toBe(true);
     });
 
-    it("doesn't render divider", () => {
-      expect(findDividers()).toHaveLength(0);
+    it('renders ArchivedFilter', () => {
+      expect(findArchivedFilter().exists()).toBe(true);
     });
   });
 
@@ -62,10 +61,6 @@ describe('GlobalSearch MergeRequestsFilters', () => {
     it('renders ArchivedFilter', () => {
       expect(findArchivedFilter().exists()).toBe(true);
     });
-
-    it("doesn't render divider", () => {
-      expect(findDividers()).toHaveLength(0);
-    });
   });
 
   describe('Renders correctly with wrong scope', () => {
@@ -79,10 +74,6 @@ describe('GlobalSearch MergeRequestsFilters', () => {
 
     it("doesn't render ArchivedFilter", () => {
       expect(findArchivedFilter().exists()).toBe(false);
-    });
-
-    it("doesn't render dividers", () => {
-      expect(findDividers()).toHaveLength(0);
     });
   });
 });

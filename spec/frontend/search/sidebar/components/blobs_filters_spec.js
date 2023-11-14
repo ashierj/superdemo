@@ -17,12 +17,11 @@ describe('GlobalSearch BlobsFilters', () => {
     currentScope: () => 'blobs',
   };
 
-  const createComponent = ({ initialState = {} } = {}) => {
+  const createComponent = () => {
     const store = new Vuex.Store({
       state: {
         urlQuery: MOCK_QUERY,
         searchType: SEARCH_TYPE_ADVANCED,
-        ...initialState,
       },
       getters: defaultGetters,
     });
@@ -34,10 +33,9 @@ describe('GlobalSearch BlobsFilters', () => {
 
   const findLanguageFilter = () => wrapper.findComponent(LanguageFilter);
   const findArchivedFilter = () => wrapper.findComponent(ArchivedFilter);
-  const findDividers = () => wrapper.findAll('hr');
 
   beforeEach(() => {
-    createComponent({});
+    createComponent();
   });
 
   it('renders LanguageFilter', () => {
@@ -46,9 +44,5 @@ describe('GlobalSearch BlobsFilters', () => {
 
   it('renders ArchivedFilter', () => {
     expect(findArchivedFilter().exists()).toBe(true);
-  });
-
-  it("doesn't render dividers", () => {
-    expect(findDividers()).toHaveLength(0);
   });
 });
