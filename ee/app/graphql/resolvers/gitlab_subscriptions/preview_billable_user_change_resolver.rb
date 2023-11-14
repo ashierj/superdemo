@@ -10,6 +10,8 @@ module Resolvers
       argument :add_group_id, GraphQL::Types::Int, required: false, description: 'Group ID to add.'
       argument :add_user_emails, [GraphQL::Types::String], required: false, description: 'User emails to add.'
       argument :add_user_ids, [GraphQL::Types::Int], required: false, description: 'User IDs to add.'
+      argument :member_role_id, GraphQL::Types::Int,
+        required: false, description: 'Custom role assigned to the users.'
       argument :role, Types::GitlabSubscriptions::UserRoleEnum, required: true,
                                                                 description: 'Role of users being added to group.'
 
