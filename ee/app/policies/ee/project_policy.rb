@@ -812,6 +812,8 @@ module EE
         prevent :cancel_pipeline
         prevent :cancel_build
       end
+
+      rule { guest | admin }.enable :read_limit_alert
     end
 
     override :lookup_access_level!

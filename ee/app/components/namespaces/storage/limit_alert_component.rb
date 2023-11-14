@@ -121,7 +121,7 @@ module Namespaces
         if !context.is_a?(Project) && context.user_namespace?
           Ability.allowed?(user, :owner_access, context)
         else
-          Ability.allowed?(user, :guest_access, context)
+          Ability.allowed?(user, :read_limit_alert, context)
         end
       end
 

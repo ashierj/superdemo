@@ -614,6 +614,8 @@ module EE
         enable :read_epic
         enable :read_epic_iid
       end
+
+      rule { guest }.enable :read_limit_alert
     end
 
     override :lookup_access_level!

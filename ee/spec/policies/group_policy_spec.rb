@@ -3007,4 +3007,18 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       it_behaves_like 'custom roles abilities'
     end
   end
+
+  context 'for :read_limit_alert' do
+    context 'when the user is a guest member of the group' do
+      let(:current_user) { guest }
+
+      it { is_expected.to be_allowed(:read_limit_alert) }
+    end
+
+    context 'when the user is not a member of the group' do
+      let(:current_user) { non_group_member }
+
+      it { is_expected.to be_disallowed(:read_limit_alert) }
+    end
+  end
 end
