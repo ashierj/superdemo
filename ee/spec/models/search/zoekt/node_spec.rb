@@ -73,4 +73,11 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
       end
     end
   end
+
+  describe '.backoff' do
+    it 'returns a NodeBackoff' do
+      expect(::Search::Zoekt::NodeBackoff).to receive(:new).with(node).and_return(:backoff)
+      expect(node.backoff).to eq(:backoff)
+    end
+  end
 end

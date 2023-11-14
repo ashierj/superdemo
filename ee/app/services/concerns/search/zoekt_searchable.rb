@@ -9,12 +9,17 @@ module Search
       return false unless ::Feature.enabled?(:search_code_with_zoekt, current_user)
       return false unless ::License.feature_available?(:zoekt_code_search)
       return false unless current_user&.enabled_zoekt?
+      return false unless zoekt_searchable_scope?
 
-      scope == 'blobs' && zoekt_searchable_scope.try(:search_code_with_zoekt?)
+      zoekt_node_available_for_search?
     end
 
     def zoekt_searchable_scope
       raise NotImplementedError
+    end
+
+    def zoekt_searchable_scope?
+      scope == 'blobs' && zoekt_searchable_scope.try(:search_code_with_zoekt?)
     end
 
     def zoekt_projects
@@ -22,8 +27,17 @@ module Search
     end
 
     def zoekt_node_id
-      @zoekt_node_id ||= ::Zoekt::IndexedNamespace.find_by_namespace_id(
-        zoekt_searchable_scope.root_ancestor.id).zoekt_node_id
+      @zoekt_node_id ||= zoekt_nodes.first.id
+    end
+
+    def zoekt_nodes
+      @zoekt_nodes ||= [ # Note: there will be more zoekt nodes whenever replicas are introduced.
+        ::Zoekt::IndexedNamespace.find_by_namespace_id(zoekt_searchable_scope.root_ancestor.id).node
+      ]
+    end
+
+    def zoekt_node_available_for_search?
+      ::Search::Zoekt::CircuitBreaker.new(*zoekt_nodes).operational?
     end
 
     def zoekt_search_results

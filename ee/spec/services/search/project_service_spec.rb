@@ -60,11 +60,18 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     let(:scope) { 'blobs' }
     let(:basic_search) { nil }
     let(:advanced_search) { nil }
+    let(:zoekt_nodes) { create_list(:zoekt_node, 2) }
+    let(:circuit_breaker) { instance_double(::Search::Zoekt::CircuitBreaker) }
+    let(:circuit_breaker_operational) { true }
 
     before do
       allow(project).to receive(:search_code_with_zoekt?).and_return(search_code_with_zoekt)
       allow(user).to receive(:enabled_zoekt?).and_return(user_preference_enabled_zoekt)
       zoekt_ensure_namespace_indexed!(project.root_namespace)
+
+      allow(service).to receive(:zoekt_nodes).and_return zoekt_nodes
+      allow(::Search::Zoekt::CircuitBreaker).to receive(:new).with(*zoekt_nodes).and_return(circuit_breaker)
+      allow(circuit_breaker).to receive(:operational?).and_return(circuit_breaker_operational)
     end
 
     it 'searches with Zoekt' do
@@ -102,6 +109,15 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
 
     context 'when user set enabled_zoekt preference to false' do
       let(:user_preference_enabled_zoekt) { false }
+
+      it 'does not search with Zoekt' do
+        expect(service).not_to be_use_zoekt
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when circuit breaker is tripped' do
+      let(:circuit_breaker_operational) { false }
 
       it 'does not search with Zoekt' do
         expect(service).not_to be_use_zoekt
