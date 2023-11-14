@@ -23,6 +23,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   before do
     stub_feature_flags(code_completion_anthropic: false)
     stub_feature_flags(code_completion_split_by_language: false)
+    stub_feature_flags(skip_code_generation_instruction_extraction: false)
 
     allow(Gitlab).to receive(:org_or_com?).and_return(is_saas)
     allow(Ability).to receive(:allowed?).and_call_original

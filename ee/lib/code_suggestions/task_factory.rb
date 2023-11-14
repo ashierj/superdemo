@@ -25,7 +25,7 @@ module CodeSuggestions
     def task
       file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
       instructions = CodeSuggestions::InstructionsExtractor
-        .new(file_content, intent, skip_generate_comment_prefix?).extract
+        .new(file_content, intent, skip_generate_comment_prefix?, skip_instruction_extraction?).extract
 
       if instructions.empty?
         return CodeSuggestions::Tasks::CodeCompletion.new(
@@ -55,6 +55,11 @@ module CodeSuggestions
       Feature.enabled?(:code_generation_no_comment_prefix, current_user)
     end
     strong_memoize_attr(:skip_generate_comment_prefix?)
+
+    def skip_instruction_extraction?
+      Feature.enabled?(:skip_code_generation_instruction_extraction, current_user)
+    end
+    strong_memoize_attr(:skip_instruction_extraction?)
 
     def code_completion_model_family
       if code_completion_split_by_language?
@@ -90,6 +95,7 @@ module CodeSuggestions
       params.merge(
         prefix: instructions[:prefix],
         instruction: instructions[:instruction],
+        skip_instruction_extraction: skip_instruction_extraction?,
         code_generation_model_family: code_generation_model_family
       )
     end

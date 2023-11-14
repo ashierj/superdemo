@@ -29,7 +29,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
     it 'calls instructions extractor with expected params' do
       expect(CodeSuggestions::InstructionsExtractor)
         .to receive(:new)
-        .with(an_instance_of(CodeSuggestions::FileContent), nil, true)
+        .with(an_instance_of(CodeSuggestions::FileContent), nil, true, true)
         .and_call_original
 
       subject
@@ -96,7 +96,8 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
           params: params.merge(
             code_generation_model_family: expected_family,
             instruction: 'instruction',
-            prefix: 'trimmed prefix'
+            prefix: 'trimmed prefix',
+            skip_instruction_extraction: true
           ),
           unsafe_passthrough_params: {}
         }
