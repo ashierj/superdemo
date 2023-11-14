@@ -16,8 +16,9 @@ export const defaultNamespaceProvideValues = {
   namespacePlanName: 'Free',
   namespacePlanStorageIncluded: 1002321,
   totalRepositorySizeExcess: '0',
-  isUsingProjectEnforcement: true,
-  isUsingNamespaceEnforcement: false,
+  isUsingProjectEnforcementWithLimits: false,
+  isUsingProjectEnforcementWithNoLimits: false,
+  isUsingNamespaceEnforcement: true,
   helpLinks: storageTypeHelpPaths,
 };
 

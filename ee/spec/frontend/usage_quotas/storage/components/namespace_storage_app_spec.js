@@ -135,11 +135,7 @@ describe('NamespaceStorageApp', () => {
 
   describe('sorting projects', () => {
     beforeEach(() => {
-      createComponent({
-        provide: {
-          isUsingProjectEnforcement: false,
-        },
-      });
+      createComponent();
     });
 
     it('sets default sorting', () => {
@@ -336,11 +332,33 @@ describe('NamespaceStorageApp', () => {
 
   // https://docs.gitlab.com/ee/user/usage_quotas#project-storage-limit
   describe('Namespace under Project type storage enforcement', () => {
-    beforeEach(() => {
-      createComponent();
+    it('sets default sorting to STORAGE_SIZE_DESC, when the limit is NOT set', () => {
+      createComponent({
+        provide: {
+          isUsingNamespaceEnforcement: false,
+          isUsingProjectEnforcementWithNoLimits: true,
+        },
+      });
+
+      expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortKey: 'STORAGE_SIZE_DESC',
+        }),
+      );
+
+      const projectList = findProjectList();
+      expect(projectList.props('sortBy')).toBe('storage');
+      expect(projectList.props('sortDesc')).toBe(true);
     });
 
-    it('sets default sorting', () => {
+    it('sets default sorting to STORAGE, when the limit is set', () => {
+      createComponent({
+        provide: {
+          isUsingNamespaceEnforcement: false,
+          isUsingProjectEnforcementWithLimits: true,
+        },
+      });
+
       expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           sortKey: 'STORAGE',

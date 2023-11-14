@@ -44,9 +44,9 @@ const createTemplate = (config = {}) => {
       namespacePlanStorageIncluded: 10 * MEBIBYTE,
       purchaseStorageUrl: '//purchase-storage-url',
       buyAddonTargetAttr: 'buyAddonTargetAttr',
-      enforcementType: 'namespace_storage_limit',
+      isUsingProjectEnforcementWithLimits: false,
+      isUsingProjectEnforcementWithNoLimits: false,
       isUsingNamespaceEnforcement: true,
-      isUsingProjectEnforcement: false,
       helpLinks,
       ...provide,
     },
@@ -68,9 +68,6 @@ export const SaasWithNamespaceLimitsLoading = {
 
     return createTemplate({
       apolloProvider,
-      provide: {
-        isUsingProjectEnforcement: false,
-      },
     })(...args);
   },
 };
@@ -78,9 +75,9 @@ export const SaasWithNamespaceLimitsLoading = {
 export const SaasWithProjectLimits = {
   render: createTemplate({
     provide: {
-      enforcementType: 'project_repository_limit',
       isUsingNamespaceEnforcement: false,
-      isUsingProjectEnforcement: true,
+      isUsingProjectEnforcementWithLimits: true,
+      isUsingProjectEnforcementWithNoLimits: false,
       totalRepositorySizeExcess: MEBIBYTE,
     },
   }),
@@ -89,9 +86,9 @@ export const SaasWithProjectLimits = {
 export const SaasWithNoLimits = {
   render: createTemplate({
     provide: {
-      enforcementType: 'project_repository_limit',
       isUsingNamespaceEnforcement: false,
-      isUsingProjectEnforcement: true,
+      isUsingProjectEnforcementWithLimits: false,
+      isUsingProjectEnforcementWithNoLimits: true,
       totalRepositorySizeExcess: 0,
       namespacePlanStorageIncluded: 0,
     },
@@ -108,9 +105,9 @@ export const SaasWithProjectLimitsLoading = {
     return createTemplate({
       apolloProvider,
       provide: {
-        enforcementType: 'project_repository_limit',
         isUsingNamespaceEnforcement: false,
-        isUsingProjectEnforcement: true,
+        isUsingProjectEnforcementWithLimits: true,
+        isUsingProjectEnforcementWithNoLimits: false,
         totalRepositorySizeExcess: MEBIBYTE,
       },
     })(...args);
@@ -131,7 +128,8 @@ export const SaasLoadingError = {
 };
 
 const selfManagedDefaultProvide = {
-  isUsingProjectEnforcement: false,
+  isUsingProjectEnforcementWithLimits: false,
+  isUsingProjectEnforcementWithNoLimits: false,
   isUsingNamespaceEnforcement: false,
   namespacePlanName: null,
   namespaceStorageIncluded: '',

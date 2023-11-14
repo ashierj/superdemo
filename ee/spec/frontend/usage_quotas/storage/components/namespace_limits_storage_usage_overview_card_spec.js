@@ -58,7 +58,6 @@ describe('NamespaceLimitsStorageUsageOverviewCard', () => {
 
     createComponent({
       props: { totalStorage: 0, usedStorage },
-      provide: { isUsingProjectEnforcement: false },
     });
 
     const componentText = wrapper.text().replace(/[\s\n]+/g, ' ');
@@ -76,7 +75,6 @@ describe('NamespaceLimitsStorageUsageOverviewCard', () => {
       beforeEach(() => {
         createComponent({
           props: { totalStorage, usedStorage },
-          provide: { isUsingProjectEnforcement: false },
         });
       });
 
@@ -102,7 +100,6 @@ describe('NamespaceLimitsStorageUsageOverviewCard', () => {
       beforeEach(() => {
         createComponent({
           props: { totalStorage, usedStorage },
-          provide: { isUsingProjectEnforcement: false },
         });
       });
 
@@ -131,7 +128,6 @@ describe('NamespaceLimitsStorageUsageOverviewCard', () => {
     beforeEach(() => {
       createComponent({
         props: { totalStorage, usedStorage },
-        provide: { isUsingProjectEnforcement: false },
       });
     });
 
