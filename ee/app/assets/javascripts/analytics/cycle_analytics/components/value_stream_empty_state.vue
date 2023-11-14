@@ -39,6 +39,11 @@ export default {
       type: String,
       required: true,
     },
+    canEdit: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   computed: {
     title() {
@@ -79,7 +84,7 @@ export default {
       :description="description"
       data-testid="vsa-empty-state"
     >
-      <template v-if="!hasDateRangeError" #actions>
+      <template v-if="!hasDateRangeError && canEdit" #actions>
         <gl-button
           v-gl-modal-directive="'value-stream-form-modal'"
           class="gl-mx-2 gl-mb-3"

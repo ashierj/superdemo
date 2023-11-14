@@ -69,6 +69,7 @@ export default {
       'isCreatingAggregation',
       'groupPath',
       'features',
+      'canEdit',
       'enableTasksByTypeChart',
       'enableProjectsFilter',
       'enableCustomizableStages',
@@ -212,6 +213,7 @@ export default {
       :is-loading="isLoadingValueStreams"
       :empty-state-svg-path="emptyStateSvgPath"
       :has-date-range-error="!hasDateRangeSet"
+      :can-edit="canEdit"
     />
     <template v-else>
       <div class="gl-mb-6">
@@ -220,7 +222,7 @@ export default {
       <div
         class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-sm-align-items-center gl-justify-content-space-between gl-mb-6 gl-gap-3"
       >
-        <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" />
+        <value-stream-select v-if="shouldDisplayCreateMultipleValueStreams" :can-edit="canEdit" />
         <value-stream-aggregation-status v-if="isAggregationStatusAvailable" :data="aggregation" />
       </div>
       <value-stream-filters

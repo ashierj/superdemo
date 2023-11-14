@@ -38,13 +38,22 @@ describe('ValueStreamSelect', () => {
       },
     });
 
-  const createComponent = ({ data = {}, initialState = {}, mountFn = shallowMountExtended } = {}) =>
+  const createComponent = ({
+    props = {},
+    data = {},
+    initialState = {},
+    mountFn = shallowMountExtended,
+  } = {}) =>
     mountFn(ValueStreamSelect, {
       store: fakeStore({ initialState }),
       data() {
         return {
           ...data,
         };
+      },
+      propsData: {
+        canEdit: true,
+        ...props,
       },
       mocks: {
         $toast: {
@@ -101,26 +110,53 @@ describe('ValueStreamSelect', () => {
     });
 
     describe('with a selected value stream', () => {
-      beforeEach(() => {
-        wrapper = createComponent({
-          mountFn: mountExtended,
-          initialState: {
-            valueStreams,
-            selectedValueStream: {
-              ...selectedValueStream,
-              isCustom: true,
+      describe('with canEdit=true', () => {
+        beforeEach(() => {
+          wrapper = createComponent({
+            mountFn: mountExtended,
+            initialState: {
+              valueStreams,
+              selectedValueStream: {
+                ...selectedValueStream,
+                isCustom: true,
+              },
             },
-          },
+          });
+        });
+
+        it('renders a delete option for custom value streams', () => {
+          expect(findDeleteValueStreamButton().exists()).toBe(true);
+        });
+
+        it('renders an edit option for custom value streams', () => {
+          expect(findEditValueStreamButton().exists()).toBe(true);
+          expect(findEditValueStreamButton().text()).toBe('Edit');
         });
       });
 
-      it('renders a delete option for custom value streams', () => {
-        expect(findDeleteValueStreamButton().exists()).toBe(true);
-      });
+      describe('with canEdit=false', () => {
+        beforeEach(() => {
+          wrapper = createComponent({
+            mountFn: mountExtended,
+            initialState: {
+              valueStreams,
+              selectedValueStream: {
+                ...selectedValueStream,
+                isCustom: true,
+              },
+            },
+            props: {
+              canEdit: false,
+            },
+          });
+        });
+        it('does not render a delete option for custom value streams', () => {
+          expect(findDeleteValueStreamButton().exists()).toBe(false);
+        });
 
-      it('renders an edit option for custom value streams', () => {
-        expect(findEditValueStreamButton().exists()).toBe(true);
-        expect(findEditValueStreamButton().text()).toBe('Edit');
+        it('does not render an edit option for custom value streams', () => {
+          expect(findEditValueStreamButton().exists()).toBe(false);
+        });
       });
     });
 

@@ -39,6 +39,13 @@ export default {
     GlModalDirective,
   },
   mixins: [Tracking.mixin()],
+  props: {
+    canEdit: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+  },
   data() {
     return {
       showForm: false,
@@ -123,7 +130,7 @@ export default {
       :selected="selectedValueStreamId"
       @select="onSelect"
     >
-      <template #footer>
+      <template v-if="canEdit" #footer>
         <div class="gl-border-t gl-p-2">
           <gl-button
             v-gl-modal-directive="'value-stream-form-modal'"
@@ -153,7 +160,7 @@ export default {
       </template>
     </gl-collapsible-listbox>
     <gl-button
-      v-if="isCustomValueStream"
+      v-if="isCustomValueStream && canEdit"
       v-gl-modal-directive="'value-stream-form-modal'"
       data-testid="edit-value-stream"
       data-track-action="click_button"

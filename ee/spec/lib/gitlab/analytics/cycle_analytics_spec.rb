@@ -21,7 +21,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
     {
       nil: nil,
       issue: create(:issue),
-      project_namespace: create(:project, group: group).reload.project_namespace,
+      project_namespace: create(:project, :private, group: group).reload.project_namespace,
       public_project_namespace: create(:project, :public, group: group).reload.project_namespace,
       group: group
     }
@@ -99,12 +99,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
       :issue                    | true  | :not_member     | false
       :project_namespace        | true  | :nil            | false
       :project_namespace        | true  | :reporter_user  | true
-      :project_namespace        | true  | :guest_user     | false
+      :project_namespace        | true  | :guest_user     | true
       :project_namespace        | true  | :not_member     | false
-      :public_project_namespace | true  | :nil            | false
+      :public_project_namespace | true  | :nil            | true
       :public_project_namespace | true  | :reporter_user  | true
-      :public_project_namespace | true  | :guest_user     | false
-      :public_project_namespace | true  | :not_member     | false
+      :public_project_namespace | true  | :guest_user     | true
+      :public_project_namespace | true  | :not_member     | true
       :project_namespace        | false | :nil            | false
       :project_namespace        | false | :reporter_user  | true
       :project_namespace        | false | :guest_user     | true
@@ -159,6 +159,46 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
       it 'raises error' do
         expect { subject_for_access_check }.to raise_error(/Unsupported subject given/)
       end
+    end
+  end
+
+  describe '.allowed_to_edit' do
+    where(:model, :licensed, :user, :outcome) do
+      :nil                      | true  | :developer_user | false
+      :issue                    | true  | :developer_user | false
+      :issue                    | true  | :reporter_user  | false
+      :issue                    | true  | :guest_user     | false
+      :issue                    | true  | :not_member     | false
+      :project_namespace        | true  | :nil            | false
+      :project_namespace        | true  | :reporter_user  | true
+      :project_namespace        | true  | :guest_user     | false
+      :project_namespace        | true  | :not_member     | false
+      :public_project_namespace | true  | :nil            | false
+      :public_project_namespace | true  | :reporter_user  | true
+      :public_project_namespace | true  | :guest_user     | false
+      :public_project_namespace | true  | :not_member     | false
+      :project_namespace        | false | :nil            | false
+      :project_namespace        | false | :reporter_user  | false
+      :project_namespace        | false | :guest_user     | false
+      :project_namespace        | false | :not_member     | false
+      :public_project_namespace | false | :nil            | false
+      :public_project_namespace | false | :reporter_user  | false
+      :public_project_namespace | false | :guest_user     | false
+      :public_project_namespace | false | :not_member     | false
+      :group                    | true  | :nil            | false
+      :group                    | true  | :reporter_user  | true
+      :group                    | true  | :guest_user     | false
+      :group                    | true  | :not_member     | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(cycle_analytics_for_projects: licensed, cycle_analytics_for_groups: licensed)
+      end
+
+      subject { described_class.allowed_to_edit?(users.fetch(user), models.fetch(model)) }
+
+      it { is_expected.to eq(outcome) }
     end
   end
 end

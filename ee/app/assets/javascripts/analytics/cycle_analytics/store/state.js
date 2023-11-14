@@ -54,6 +54,7 @@ export default () => ({
     lastRunAt: null,
     nextRunAt: null,
   },
+  canEdit: false,
   enableTasksByTypeChart: false,
   enableCustomizableStages: false,
   enableProjectsFilter: false,
