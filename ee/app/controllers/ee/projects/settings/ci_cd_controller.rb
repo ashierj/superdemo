@@ -24,9 +24,12 @@ module EE
 
         override :permitted_project_params
         def permitted_project_params
-          super + %i[
+          attrs = %i[
             allow_pipeline_trigger_approve_deployment
           ]
+          attrs << :restrict_pipeline_cancellation_role if project&.ci_cancellation_restriction&.enabled?
+
+          super + attrs
         end
 
         private
