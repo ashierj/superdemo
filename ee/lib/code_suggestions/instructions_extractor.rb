@@ -17,30 +17,35 @@ module CodeSuggestions
 
     EMPTY_LINES_LIMIT = 1
 
-    def initialize(file_content, intent, skip_generate_comment_prefix)
+    def initialize(
+      file_content, intent,
+      skip_generate_comment_prefix,
+      skip_instruction_extraction)
       @file_content = file_content
       @language = file_content.language
       @intent = intent
       @skip_generate_comment_prefix = skip_generate_comment_prefix
+      @skip_instruction_extraction = skip_instruction_extraction
     end
 
     def extract
       return {} if intent == INTENT_COMPLETION
 
       prefix, comment_block = prefix_and_comment(file_content.lines_above_cursor)
-      instruction = get_instruction(comment_block)
+      generation, instruction = get_instruction(comment_block)
 
-      return {} if !instruction && intent != INTENT_GENERATION
+      return {} if !generation && intent != INTENT_GENERATION
 
       {
-        prefix: prefix,
+        prefix: skip_instruction_extraction ? file_content.content_above_cursor : prefix,
         instruction: instruction
       }
     end
 
     private
 
-    attr_reader :language, :file_content, :intent, :skip_generate_comment_prefix
+    attr_reader :language, :file_content, :intent,
+      :skip_generate_comment_prefix, :skip_instruction_extraction
 
     def prefix_and_comment(lines)
       comment_block = []
@@ -68,24 +73,24 @@ module CodeSuggestions
         .join("\n")
         .gsub(/GitLab Duo Generate:\s?/, '')
 
-        return instruction if instruction
+        return true, (skip_instruction_extraction ? '' : instruction) if instruction
       end
 
       if file_content.small?
-        return <<~PROMPT
+        return true, <<~PROMPT
           Create more new code for this file. If the cursor is inside an empty function,
           generate its most likely contents based on the function name and signature.
         PROMPT
       end
 
       if language.cursor_inside_empty_function?(file_content.content_above_cursor, file_content.content_below_cursor)
-        return <<~PROMPT
+        return true, <<~PROMPT
           Complete the empty function and generate contents based on the function name and signature.
           Do not repeat the code. Only return the method contents.
         PROMPT
       end
 
-      nil
+      [false, nil]
     end
 
     def first_line_regex

@@ -19,8 +19,11 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     let(:file_content) { CodeSuggestions::FileContent.new(language, content, suffix) }
     let(:intent) { nil }
     let(:skip_generate_comment_prefix) { true }
+    let(:skip_instruction_extraction) { false }
 
-    subject { described_class.new(file_content, intent, skip_generate_comment_prefix).extract }
+    subject do
+      described_class.new(file_content, intent, skip_generate_comment_prefix, skip_instruction_extraction).extract
+    end
 
     context 'when content is nil' do
       let(:content) { nil }
@@ -90,6 +93,17 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           is_expected.to be_empty
         end
       end
+
+      context 'when skipping instruction extraction' do
+        let(:skip_instruction_extraction) { true }
+
+        it 'ignores the instruction and sends the code directly' do
+          is_expected.to eq({
+            instruction: '',
+            prefix: content
+          })
+        end
+      end
     end
 
     context 'when there is not instruction' do
@@ -147,6 +161,17 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             instruction: default_instruction
           })
         end
+
+        context 'when skipping instruction extraction' do
+          let(:skip_instruction_extraction) { true }
+
+          it 'sets create instruction' do
+            is_expected.to eq({
+              prefix: content,
+              instruction: default_instruction
+            })
+          end
+        end
       end
 
       context 'when the last line is not a comment but code is less than 5 lines' do
@@ -164,6 +189,17 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             prefix: "#{comment_sign}A function that outputs the first 20 fibonacci numbers\n\ndef fibonacci(x)",
             instruction: default_instruction
           })
+        end
+
+        context 'when skipping instruction extraction' do
+          let(:skip_instruction_extraction) { true }
+
+          it 'finds the instruction' do
+            is_expected.to eq({
+              prefix: content,
+              instruction: default_instruction
+            })
+          end
         end
       end
 
@@ -335,6 +371,17 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             instruction: default_instruction
           })
         end
+
+        context 'when skipping instruction extraction' do
+          let(:skip_instruction_extraction) { true }
+
+          it "sets the create instruction" do
+            is_expected.to eq({
+              prefix: content,
+              instruction: default_instruction
+            })
+          end
+        end
       end
 
       context 'when there is content between comment lines' do
@@ -477,6 +524,19 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         end
       end
 
+      context 'when skipping instruction extraction' do
+        let(:skip_instruction_extraction) { true }
+
+        let(:suffix) { '' }
+
+        specify do
+          is_expected.to eq(
+            prefix: content,
+            instruction: instruction
+          )
+        end
+      end
+
       context 'when cursor is inside an empty method but middle of the file' do
         let(:suffix) do
           <<~SUFFIX
@@ -493,6 +553,26 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             prefix: content.strip,
             instruction: instruction
           )
+        end
+
+        context 'when skipping instruction extraction' do
+          let(:skip_instruction_extraction) { true }
+          let(:suffix) do
+            <<~SUFFIX
+            def index2():
+              return 0
+
+            def index3(arg1):
+              return 1
+            SUFFIX
+          end
+
+          specify do
+            is_expected.to eq(
+              prefix: content,
+              instruction: instruction
+            )
+          end
         end
       end
 

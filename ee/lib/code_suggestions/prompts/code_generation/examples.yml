@@ -4,6 +4,8 @@ Ruby:
       def users_with_zipcode(users)
       <cursor>
       end
+
+      # find users with a zipcode
     response: |-
       <new_code>users.reject { |u| u.zipcode.nil? }
   - example: |-
@@ -11,6 +13,8 @@ Ruby:
         has_many :addresses
       # scope for users who have addresses in California
       <cursor>
+
+      # scope for users who are in Arkansas
     response: |-
       <new_code>scope :with_ca_addresses, -> { joins(:addresses).where(addresses: { state: :CA }) }
   - example: |-
@@ -27,8 +31,10 @@ Ruby:
       end
 TypeScript:
   - example: |-
-      # write a function to generate a unique UUID
+      // write a function to generate a unique UUID
       <cursor>
+
+      // calculate the square root of a number
     response: |-
       <new_code>function generateUUID(): string {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -44,6 +50,8 @@ TypeScript:
       <cursor>
         return response.json();
       }
+
+      // display the issue list
     response: |-
       <new_code>const response = await fetch(currentIssuesUrl, filters);
   - example: |-
@@ -75,6 +83,8 @@ Python:
 
           # is this project public?
       <cursor>
+
+          # print name of this project
     response: |-
       <new_code>def is_public(self):
         self.visibility == 'PUBLIC'
@@ -82,6 +92,8 @@ Python:
       # get the current user's name from the session data
       def get_user(session):
       <cursor>
+
+      # is the current user an admin
     response: |-
       <new_code>username = None
       if 'username' in session:
@@ -99,6 +111,8 @@ Go:
       }
       // create an HTTP handler that fetches the current user preferences and returns them as JSON
       <cursor>
+
+      // function to print the current user's name
     response: |-
       <new_code>func userPrefsHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -122,6 +136,8 @@ Go:
       <cursor>
         return primes
       }
+
+      // calculate the square root of a number
     response: |-
       <new_code>var primes []int
         for _, num := range list {
@@ -134,3 +150,65 @@ Go:
           }
           if isPrime { primes = append(primes, num) }
         }
+JavaScript:
+  - example: |-
+      // write a function to generate a unique UUID
+      <cursor>
+      // this function prints someone's name
+    response: |-
+      <new_code>function generateUUID() {
+          return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+  - example: |-
+      import { currentIssuesUrl } from './urls';
+
+      // fetch the current filtered list of issues
+      async function fetchData(filters) {
+      <cursor>
+        return response.json();
+      }
+
+      // function to display list of issues
+    response: |-
+      <new_code>
+      // build request URL with filters
+      let url = currentIssuesUrl;
+      if (filters) {
+        url += '?' + Object.entries(filters)
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join('&');
+      }
+
+      // make fetch request
+      const response = await fetch(url);
+  - example: |-
+      // get the hotels near the user, be sure to check permission for location usage
+      async function getNearbyHotels(userLocation: GeolocationCoordinates): Promise<Hotel[]> {
+        <cursor>
+        return nearbyHotels;
+      }
+    response: |-
+      // check if we have permission to access location
+        if (!navigator.geolocation) {
+        throw new Error('Geolocation not supported');
+      }
+
+        let nearbyHotels = [];
+
+        // make API request to get hotels
+        const response = await fetch('/api/hotels/nearby', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userLocation)
+      });
+
+        if (response.ok) {
+        nearbyHotels = await response.json();
+      } else {
+        throw new Error('Failed to get nearby hotels');
+      }
