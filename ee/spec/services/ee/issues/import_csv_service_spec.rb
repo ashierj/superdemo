@@ -14,6 +14,8 @@ RSpec.describe Issues::ImportCsvService, feature_category: :team_planning do
     described_class.new(user, project, uploader)
   end
 
+  let!(:test_milestone) { create(:milestone, project: project, title: '15.10') }
+
   describe '#execute' do
     subject { service.execute }
 
