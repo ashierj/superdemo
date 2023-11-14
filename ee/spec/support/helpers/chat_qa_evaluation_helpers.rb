@@ -115,7 +115,7 @@ module ChatQaEvaluationHelpers
   end
 
   def chat(user, resource, options)
-    message_attributes = options.extract!(:request_id, :client_subscription_id).merge(
+    message_attributes = options.extract!(:content, :request_id, :client_subscription_id).merge(
       user: user,
       resource: resource,
       ai_action: 'chat',
