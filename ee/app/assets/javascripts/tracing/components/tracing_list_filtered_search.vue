@@ -41,11 +41,6 @@ export default {
       type: String,
     },
   },
-  data() {
-    return {
-      value: this.initialFilters,
-    };
-  },
   computed: {
     sortOptions() {
       return [
@@ -68,10 +63,6 @@ export default {
       ];
     },
     availableTokens() {
-      const serviceFilters = this.value.filter(
-        ({ type, value }) => type === 'service-name' && value.operator === '=',
-      );
-      const loadSuggestionsForServices = serviceFilters.map(({ value }) => value.data);
       return [
         {
           title: s__('Tracing|Time range'),
@@ -105,7 +96,6 @@ export default {
           type: OPERATION_FILTER_TOKEN_TYPE,
           token: OperationToken,
           operators: OPERATORS_IS_NOT,
-          loadSuggestionsForServices,
           fetchOperations: this.observabilityClient.fetchOperations,
         },
         {

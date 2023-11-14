@@ -85,24 +85,5 @@ describe('TracingListFilteredSearch', () => {
       expect(operationToken.token).toBe(OperationToken);
       expect(operationToken.fetchOperations).toBe(observabilityClientMock.fetchOperations);
     });
-
-    it('sets loadSuggestionsForServices based on the existing service filter', () => {
-      wrapper = shallowMountExtended(TracingListFilteredSearch, {
-        propsData: {
-          initialFilters: [
-            { type: 'service-name', value: { operator: '=', data: 'a-service' } },
-            { type: 'service-name', value: { operator: '!=', data: 'unsupported-operator' } },
-            { type: 'trace-id', value: { operator: '=', data: 'a-trace-id' } },
-          ],
-          observabilityClient: observabilityClientMock,
-          initialSort: 'created_desc',
-        },
-      });
-
-      const operationToken = findFilteredSearch()
-        .props('tokens')
-        .find((t) => t.type === 'operation');
-      expect(operationToken.loadSuggestionsForServices).toStrictEqual(['a-service']);
-    });
   });
 });
