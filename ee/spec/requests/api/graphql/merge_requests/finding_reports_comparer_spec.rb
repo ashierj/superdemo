@@ -24,6 +24,11 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
             description: 'Test description',
             severity: 'critical',
             state: 'confirmed',
+            scanner: {
+              name: 'Semgrep',
+              external_id: 'semgrep',
+              vendor: 'Semgrep Inc.'
+            },
             found_by_pipeline: {
               iid: 1
             },
@@ -63,6 +68,11 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
             description
             severity
             state
+            scanner {
+              name
+              externalId
+              vendor
+            }
             foundByPipelineIid
             location {
               ...on VulnerabilityLocationSast {
@@ -84,6 +94,11 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
             description
             severity
             state
+            scanner {
+              name
+              externalId
+              vendor
+            }
             foundByPipelineIid
             location {
               ...on VulnerabilityLocationSast {
@@ -141,30 +156,16 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
         stub_feature_flags(sast_reports_in_inline_diff: false)
       end
 
-      it 'returns null for identifiers and location fields' do
-        expect(result).to match(a_hash_including(
-          {
-            status: 'PARSED',
-            statusReason: 'An example reason',
-            report: {
-              baseReportOutOfDate: false,
-              baseReportCreatedAt: nil,
-              headReportCreatedAt: an_instance_of(String),
-              added: [
-                {
-                  uuid: an_instance_of(String),
-                  title: 'Test Vulnerability',
-                  description: 'Test description',
-                  severity: 'CRITICAL',
-                  location: nil,
-                  identifiers: nil,
-                  state: 'CONFIRMED',
-                  foundByPipelineIid: '1'
-                }
-              ],
-              fixed: []
-            }
-          }.deep_stringify_keys))
+      it 'returns null for scanner, identifiers, and location fields' do
+        expect(result['report']['added']).to include(
+          a_hash_including(
+            {
+              location: nil,
+              identifiers: nil,
+              scanner: nil
+            }.deep_stringify_keys
+          )
+        )
       end
     end
 
@@ -184,6 +185,11 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
                 description: 'Test description',
                 severity: 'CRITICAL',
                 state: 'CONFIRMED',
+                scanner: {
+                  name: 'Semgrep',
+                  externalId: 'semgrep',
+                  vendor: 'Semgrep Inc.'
+                },
                 foundByPipelineIid: '1',
                 location: {
                   endLine: nil,
