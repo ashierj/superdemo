@@ -149,7 +149,7 @@ describe('EEInviteModalBase', () => {
       });
 
       it('emits submit', () => {
-        expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 10, expiresAt: undefined }]]);
+        expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 20, expiresAt: undefined }]]);
       });
     });
   });
@@ -267,7 +267,7 @@ describe('EEInviteModalBase', () => {
 
     it('emits submit event', () => {
       expect(wrapper.emitted('submit')).toHaveLength(1);
-      expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 10, expiresAt: undefined }]]);
+      expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 20, expiresAt: undefined }]]);
     });
 
     it('shows the initial modal', () => {

@@ -49,18 +49,10 @@ describe('EEInviteMembersModal', () => {
 
   const clickInviteButton = emitClickFromModal(findActionButton);
 
-  const findBase = () => wrapper.findComponent(InviteModalBase);
   const findMembersSelect = () => wrapper.findComponent(MembersTokenSelect);
-  const triggerAccessLevel = async (val) => {
-    findBase().vm.$emit('access-level', val);
 
-    await nextTick();
-  };
-
-  const triggerOpenModal = async ({ mode = 'default', source } = {}) => {
+  const triggerOpenModal = ({ mode = 'default', source } = {}) => {
     eventHub.$emit('openModal', { mode, source });
-
-    await triggerAccessLevel(30);
   };
 
   const triggerMembersTokenSelect = async (val) => {
