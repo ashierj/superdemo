@@ -7,18 +7,18 @@ module QA
         class New < QA::Page::Base
           include QA::Page::Component::Dropdown
           view 'ee/app/assets/javascripts/remote_development/pages/create.vue' do
-            element :workspace_devfile_project_id_field
-            element :workspace_cluster_agent_id_field
-            element :save_workspace_button
+            element 'workspace-devfile-project-id-field'
+            element 'workspace-cluster-agent-id-field'
+            element 'create-workspace'
           end
 
           def select_devfile_project(project)
-            click_element(:workspace_devfile_project_id_field)
+            click_element('workspace-devfile-project-id-field')
             search_and_select(project)
           end
 
           def select_cluster_agent(agent)
-            agent_selector = find_element(:workspace_cluster_agent_id_field)
+            agent_selector = find_element('workspace-cluster-agent-id-field')
             options = agent_selector.all('option')
 
             raise "No agent available" if options.empty?
@@ -27,7 +27,7 @@ module QA
           end
 
           def save_workspace
-            click_element(:save_workspace_button, skip_finished_loading_check: true)
+            click_element('create-workspace', skip_finished_loading_check: true)
           end
         end
       end

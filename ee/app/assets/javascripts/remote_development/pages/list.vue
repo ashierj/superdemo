@@ -149,7 +149,7 @@ export default {
         <gl-button
           variant="confirm"
           :to="$options.ROUTES.new"
-          data-qa-selector="list_new_workspace_button"
+          data-testid="list-new-workspace-button"
           >{{ $options.i18n.newWorkspaceButton }}</gl-button
         >
       </div>
@@ -162,7 +162,7 @@ export default {
       <div v-else>
         <workspaces-table
           :workspaces="workspaces"
-          data-qa-selector="workspace_list_item"
+          data-testid="workspace-list-item"
           @updateFailed="onUpdateFailed"
           @updateSucceed="clearError"
         />
