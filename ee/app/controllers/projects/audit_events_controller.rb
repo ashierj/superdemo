@@ -8,8 +8,11 @@ class Projects::AuditEventsController < Projects::ApplicationController
   include AuditEvents::AuditEventsParams
   include AuditEvents::Sortable
   include AuditEvents::DateRange
+  include GovernUsageProjectTracking
 
   before_action :check_audit_events_available!
+
+  track_govern_activity 'audit_events', :index
 
   feature_category :audit_events
 

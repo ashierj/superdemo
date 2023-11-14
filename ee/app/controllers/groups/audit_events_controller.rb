@@ -7,6 +7,7 @@ class Groups::AuditEventsController < Groups::ApplicationController
   include AuditEvents::Sortable
   include AuditEvents::DateRange
   include ProductAnalyticsTracking
+  include GovernUsageGroupTracking
 
   before_action :check_audit_events_available!
 
@@ -15,6 +16,8 @@ class Groups::AuditEventsController < Groups::ApplicationController
     action: 'visit_group_compliance_audit_events',
     label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',
     destinations: [:redis_hll, :snowplow]
+
+  track_govern_activity 'audit_events', :index
 
   feature_category :audit_events
 
