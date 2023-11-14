@@ -456,6 +456,7 @@ module EE
     cascading_with_parent_namespace :only_allow_merge_if_pipeline_succeeds
     cascading_with_parent_namespace :allow_merge_on_skipped_pipeline
     cascading_with_parent_namespace :only_allow_merge_if_all_discussions_are_resolved
+    cascading_with_parent_namespace :allow_merge_without_pipeline
 
     def mirror_last_update_succeeded?
       !!import_state&.last_update_succeeded?

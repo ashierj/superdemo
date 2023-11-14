@@ -28,6 +28,10 @@ module MergeChecksHelper
         only_allow_merge_if_all_resolved: {
           locked: target.only_allow_merge_if_all_discussions_are_resolved_locked?,
           value: target.only_allow_merge_if_all_discussions_are_resolved?(inherit_group_setting: true)
+        },
+        allow_merge_without_pipeline: {
+          locked: target.allow_merge_without_pipeline_locked?,
+          value: target.allow_merge_without_pipeline?(inherit_group_setting: true)
         }
       }.to_json,
       parent_group_name: parent_group_name

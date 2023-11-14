@@ -68,6 +68,7 @@ module EE
       cascading_with_parent_namespace :only_allow_merge_if_pipeline_succeeds
       cascading_with_parent_namespace :allow_merge_on_skipped_pipeline
       cascading_with_parent_namespace :only_allow_merge_if_all_discussions_are_resolved
+      cascading_with_parent_namespace :allow_merge_without_pipeline
 
       def unique_project_download_limit_alertlist
         self[:unique_project_download_limit_alertlist].presence || active_owner_ids
@@ -152,6 +153,7 @@ module EE
         auto_ban_user_on_excessive_projects_download
         default_compliance_framework_id
         only_allow_merge_if_pipeline_succeeds
+        allow_merge_without_pipeline
         allow_merge_on_skipped_pipeline
         only_allow_merge_if_all_discussions_are_resolved
         experiment_features_enabled
