@@ -26,7 +26,7 @@ module Gitlab
 
             def perform
               # We can't reuse the injected client here but need to call TanukiBot as it uses the
-              # embedding database and calls the OpenAI API internally.
+              # embedding database and calls the VertexAI text embeddings API endpoint internally.
               logger.info(message: "Calling TanukiBot", class: self.class.to_s)
               streamed_answer = StreamedDocumentationAnswer.new
 
