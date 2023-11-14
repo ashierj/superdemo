@@ -33,7 +33,7 @@ RSpec.describe ProjectCiCdSetting, feature_category: :continuous_integration do
       project.merge_pipelines_enabled = merge_pipelines_enabled
     end
 
-    context 'when Merge pipelines (EEP) is available' do
+    context 'when Merge pipelines (EEP) is available through license' do
       before do
         stub_licensed_features(merge_pipelines: true)
       end
@@ -45,6 +45,28 @@ RSpec.describe ProjectCiCdSetting, feature_category: :continuous_integration do
 
         it { is_expected.to be_falsy }
       end
+    end
+
+    context 'when Merge pipelines (EEP) is available through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it { is_expected.to be_truthy }
+
+      context 'when project setting is disabled' do
+        let(:merge_pipelines_enabled) { false }
+
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    context 'when usage ping is disabled on free license' do
+      before do
+        stub_usage_ping_features(false)
+      end
+
+      it { is_expected.to be_falsy }
     end
 
     context 'when Merge pipelines (EEP) is unavailable' do
