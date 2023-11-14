@@ -47,7 +47,7 @@ RSpec.describe 'Creating a Merge Request from a Security::Finding', feature_cate
   let(:mutation) { graphql_mutation(mutation_name, uuid: security_finding.uuid) }
 
   before do
-    stub_licensed_features(security_dashboard: true)
+    stub_licensed_features(custom_roles: true, security_dashboard: true)
   end
 
   context 'when the user does not have permission' do
@@ -95,6 +95,27 @@ RSpec.describe 'Creating a Merge Request from a Security::Finding', feature_cate
           "you don't have permission to perform this action"
         ].join(" ")
       ]
+    end
+  end
+
+  context 'when the user is a member of a custom role with permission' do
+    let_it_be(:group) { project.group }
+    let_it_be(:role) { create(:member_role, :guest, :admin_merge_request, :admin_vulnerability, namespace: group) }
+    let_it_be(:membership) { create(:group_member, :guest, user: current_user, source: group, member_role: role) }
+
+    before do
+      allow_next_instance_of(Commits::CommitPatchService) do |service|
+        allow(service).to receive(:execute).and_return({ status: :success })
+      end
+    end
+
+    it 'returns a successful response' do
+      post_graphql_mutation(mutation, current_user: current_user)
+
+      expect(response).to have_gitlab_http_status(:success)
+      mutation_response = graphql_mutation_response(mutation_name)
+      expect(mutation_response).to be_present
+      expect(mutation_response['errors']).to be_empty
     end
   end
 end
