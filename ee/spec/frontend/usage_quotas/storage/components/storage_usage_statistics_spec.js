@@ -228,7 +228,18 @@ describe('StorageUsageStatistics', () => {
       expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().exists()).toBe(false);
     });
 
-    it('passes correct props when the namespace is NOT using project enforcement', () => {
+    it('renders when not in the namespace storage enforcement but IS in pre-enforcement', () => {
+      createComponent({
+        provide: {
+          isUsingNamespaceEnforcement: false,
+          isInNamespaceLimitsPreEnforcement: true,
+        },
+      });
+
+      expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().exists()).toBe(true);
+    });
+
+    it('passes correct props when the namespace is using namespace enforcement', () => {
       createComponent();
 
       expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().props()).toEqual({
@@ -239,12 +250,12 @@ describe('StorageUsageStatistics', () => {
   });
 
   describe('NoLimitsPurchasedStorageBreakdownCard', () => {
-    it('does not render when namespace is NOT using project enforcement', () => {
+    it('does not render when namespace is using namespace enforcement', () => {
       createComponent();
       expect(findNoLimitsPurchasedStorageBreakdownCard().exists()).toBe(false);
     });
 
-    it('does not render when namespace IS using project enforcement with limits', () => {
+    it('does not render when namespace is using project enforcement with limits', () => {
       createComponent({
         provide: {
           isUsingNamespaceEnforcement: false,
@@ -252,6 +263,19 @@ describe('StorageUsageStatistics', () => {
           perProjectStorageLimit: 1,
         },
       });
+      expect(findNoLimitsPurchasedStorageBreakdownCard().exists()).toBe(false);
+    });
+
+    it('does not render when namespace IS using project enforcement with no limits but IS in pre-enforcement', () => {
+      createComponent({
+        provide: {
+          isInNamespaceLimitsPreEnforcement: true,
+          isUsingNamespaceEnforcement: false,
+          isUsingProjectEnforcementWithNoLimits: true,
+          perProjectStorageLimit: 0,
+        },
+      });
+
       expect(findNoLimitsPurchasedStorageBreakdownCard().exists()).toBe(false);
     });
 

@@ -45,6 +45,7 @@ const createTemplate = (config = {}) => {
       namespaceStorageLimit: 5 * MEBIBYTE,
       purchaseStorageUrl: '//purchase-storage-url',
       buyAddonTargetAttr: 'buyAddonTargetAttr',
+      isInNamespaceLimitsPreEnforcement: false,
       totalRepositorySizeExcess: 0,
       isUsingProjectEnforcementWithLimits: false,
       isUsingProjectEnforcementWithNoLimits: false,
@@ -93,6 +94,19 @@ export const SaasWithNoLimits = {
       isUsingProjectEnforcementWithNoLimits: true,
       perProjectStorageLimit: 0,
       namespaceStorageLimit: 0,
+    },
+  }),
+};
+
+export const SaasWithNoLimitsInPreEnforcement = {
+  render: createTemplate({
+    provide: {
+      isUsingNamespaceEnforcement: false,
+      isUsingProjectEnforcementWithLimits: false,
+      isUsingProjectEnforcementWithNoLimits: true,
+      isInNamespaceLimitsPreEnforcement: true,
+      totalRepositorySizeExcess: 0,
+      namespacePlanStorageIncluded: 0,
     },
   }),
 };

@@ -35,6 +35,7 @@ export default {
     'isUsingProjectEnforcementWithLimits',
     'isUsingProjectEnforcementWithNoLimits',
     'isUsingNamespaceEnforcement',
+    'isInNamespaceLimitsPreEnforcement',
     'perProjectStorageLimit',
     'namespaceStorageLimit',
     'namespaceId',
@@ -178,7 +179,7 @@ export default {
 
       <template v-if="namespacePlanName">
         <no-limits-purchased-storage-breakdown-card
-          v-if="isUsingProjectEnforcementWithNoLimits"
+          v-if="isUsingProjectEnforcementWithNoLimits && !isInNamespaceLimitsPreEnforcement"
           :purchased-storage="additionalPurchasedStorageSize"
           :limited-access-mode-enabled="shouldShowLimitedAccessModal"
           :loading="loading"
@@ -192,7 +193,7 @@ export default {
         />
 
         <namespace-limits-total-storage-available-breakdown-card
-          v-else-if="isUsingNamespaceEnforcement"
+          v-else-if="isUsingNamespaceEnforcement || isInNamespaceLimitsPreEnforcement"
           :purchased-storage="additionalPurchasedStorageSize"
           :loading="loading"
         />
