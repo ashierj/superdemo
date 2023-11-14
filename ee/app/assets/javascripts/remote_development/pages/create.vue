@@ -218,7 +218,7 @@ export default {
       >
         <search-projects-listbox
           :value="selectedProject"
-          data-qa-selector="workspace_devfile_project_id_field"
+          data-testid="workspace-devfile-project-id-field"
           @input="onSelectProjectFromListbox"
         />
         <gl-alert
@@ -259,7 +259,7 @@ export default {
             required
             class="gl-max-w-full"
             autocomplete="off"
-            data-qa-selector="workspace_cluster_agent_id_field"
+            data-testid="workspace-cluster-agent-id-field"
           />
         </gl-form-group>
         <gl-form-group
@@ -288,7 +288,6 @@ export default {
           type="submit"
           data-testid="create-workspace"
           variant="confirm"
-          data-qa-selector="save_workspace_button"
         >
           {{ $options.i18n.submitButton.create }}
         </gl-button>

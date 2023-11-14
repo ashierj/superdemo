@@ -103,11 +103,7 @@ export default {
         :tbody-tr-attr="(item) => ({ 'data-testid': item.name })"
       >
         <template #cell(status)="{ item }">
-          <workspace-state-indicator
-            :workspace-state="item.actualState"
-            class="gl-mr-5"
-            :data-qa-selector="`${item.name}_actual_state`"
-          />
+          <workspace-state-indicator class="gl-mr-5" :workspace-state="item.actualState" />
         </template>
         <template #cell(name)="{ item }">
           <div class="gl-display-flex gl-flex-direction-column">
@@ -127,7 +123,7 @@ export default {
             :href="item.url"
             class="workspace-preview-link"
             target="_blank"
-            data-testid="`${item.name}_link`"
+            data-testid="`${item.name}-link`"
             >{{ item.url }}</gl-link
           >
         </template>
@@ -135,7 +131,7 @@ export default {
           <workspace-actions
             :actual-state="item.actualState"
             :desired-state="item.desiredState"
-            :data-qa-selector="`${item.name}_action`"
+            :data-testid="`${item.name}-action`"
             @click="update(item.id, { desiredState: $event })"
           />
         </template>

@@ -141,7 +141,7 @@ export default {
         :aria-label="action.tooltip"
         :icon="action.icon"
         v-bind="compactButtonProps"
-        :data-qa-selector="`workspace_${action.key}_button`"
+        :data-testid="`workspace-${action.key}-button`"
         @click.stop.prevent="onClick(action.desiredState)"
       />
       <gl-tooltip boundary="viewport" :target="action.id">

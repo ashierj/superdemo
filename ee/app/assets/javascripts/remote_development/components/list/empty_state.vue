@@ -31,13 +31,9 @@ export default {
       :svg-height="150"
     >
       <template #actions>
-        <gl-button
-          variant="confirm"
-          class="gl-mb-3 gl-mx-2"
-          :to="$options.ROUTES.new"
-          data-qa-selector="empty_new_workspace_button"
-          >{{ $options.i18n.primaryButtonText }}</gl-button
-        >
+        <gl-button variant="confirm" class="gl-mb-3 gl-mx-2" :to="$options.ROUTES.new">{{
+          $options.i18n.primaryButtonText
+        }}</gl-button>
       </template>
     </gl-empty-state>
   </div>
