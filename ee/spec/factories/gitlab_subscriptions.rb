@@ -76,6 +76,10 @@ FactoryBot.define do
       association :hosted_plan, factory: :ultimate_trial_plan
     end
 
+    trait :ultimate_trial_paid_customer do
+      association :hosted_plan, factory: :ultimate_trial_paid_customer_plan
+    end
+
     trait :opensource do
       association :hosted_plan, factory: :opensource_plan
     end

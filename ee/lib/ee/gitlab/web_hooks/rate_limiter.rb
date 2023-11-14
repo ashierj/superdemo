@@ -21,6 +21,7 @@ module EE
           Plan::PREMIUM_TRIAL => PREMIUM_MID_RANGE,
           Plan::ULTIMATE => ULTIMATE_MID_RANGE,
           Plan::ULTIMATE_TRIAL => ULTIMATE_MID_RANGE,
+          Plan::ULTIMATE_TRIAL_PAID_CUSTOMER => ULTIMATE_MID_RANGE,
           Plan::OPEN_SOURCE => ULTIMATE_MID_RANGE
         }.freeze
 

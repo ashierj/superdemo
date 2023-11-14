@@ -305,7 +305,13 @@ module GitlabSubscriptions
     LICENSE_PLANS_TO_SAAS_PLANS = {
       License::STARTER_PLAN => [::Plan::BRONZE],
       License::PREMIUM_PLAN => [::Plan::SILVER, ::Plan::PREMIUM, ::Plan::PREMIUM_TRIAL],
-      License::ULTIMATE_PLAN => [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL, ::Plan::OPEN_SOURCE]
+      License::ULTIMATE_PLAN => [
+        ::Plan::GOLD,
+        ::Plan::ULTIMATE,
+        ::Plan::ULTIMATE_TRIAL,
+        ::Plan::ULTIMATE_TRIAL_PAID_CUSTOMER,
+        ::Plan::OPEN_SOURCE
+      ]
     }.freeze
 
     PLANS_BY_FEATURE = FEATURES_BY_PLAN.each_with_object({}) do |(plan, features), hash|

@@ -13,11 +13,22 @@ module EE
       GOLD = 'gold'
       ULTIMATE = 'ultimate'
       ULTIMATE_TRIAL = 'ultimate_trial'
+      ULTIMATE_TRIAL_PAID_CUSTOMER = 'ultimate_trial_paid_customer'
       PREMIUM_TRIAL = 'premium_trial'
       OPEN_SOURCE = 'opensource'
 
       EE_DEFAULT_PLANS = (const_get(:DEFAULT_PLANS, false) + [FREE]).freeze
-      PAID_HOSTED_PLANS = [BRONZE, SILVER, PREMIUM, GOLD, ULTIMATE, ULTIMATE_TRIAL, PREMIUM_TRIAL, OPEN_SOURCE].freeze
+      PAID_HOSTED_PLANS = [
+        BRONZE,
+        SILVER,
+        PREMIUM,
+        GOLD,
+        ULTIMATE,
+        ULTIMATE_TRIAL,
+        ULTIMATE_TRIAL_PAID_CUSTOMER,
+        PREMIUM_TRIAL,
+        OPEN_SOURCE
+      ].freeze
       EE_ALL_PLANS = (EE_DEFAULT_PLANS + PAID_HOSTED_PLANS).freeze
       PLANS_ELIGIBLE_FOR_TRIAL = EE_DEFAULT_PLANS
       TOP_PLANS = [GOLD, ULTIMATE, OPEN_SOURCE].freeze

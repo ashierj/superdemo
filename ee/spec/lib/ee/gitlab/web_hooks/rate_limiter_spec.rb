@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_limiting, :freeze_time do
+RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_limiting, :freeze_time,
+  feature_category: :rate_limiting do
   before_all do
     create(:plan_limits, :premium_plan, web_hook_calls_low: 1, web_hook_calls_mid: 2, web_hook_calls: 3)
     create(:plan_limits, :ultimate_plan, web_hook_calls_low: 4, web_hook_calls_mid: 5, web_hook_calls: 6)
@@ -12,6 +13,9 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
     create(:plan_limits, :gold_plan, web_hook_calls_low: 3, web_hook_calls_mid: 2, web_hook_calls: 1)
     create(:plan_limits, :premium_trial_plan, web_hook_calls_low: 1, web_hook_calls_mid: 3, web_hook_calls: 2)
     create(:plan_limits, :ultimate_trial_plan, web_hook_calls_low: 2, web_hook_calls_mid: 1, web_hook_calls: 3)
+    create(
+      :plan_limits, :ultimate_trial_paid_customer_plan, web_hook_calls_low: 4, web_hook_calls_mid: 5, web_hook_calls: 6
+    )
   end
 
   let_it_be(:group_premium_plan) { create(:group_with_plan, plan: :premium_plan) }
@@ -22,6 +26,10 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
   let_it_be(:group_gold_plan) { create(:group_with_plan, plan: :gold_plan) }
   let_it_be(:group_premium_trial_plan) { create(:group_with_plan, plan: :premium_trial_plan) }
   let_it_be(:group_ultimate_trial_plan) { create(:group_with_plan, plan: :ultimate_trial_plan) }
+  let_it_be(:group_ultimate_trial_paid_customer_plan) do
+    create(:group_with_plan, plan: :ultimate_trial_paid_customer_plan)
+  end
+
   let_it_be(:project_premium_plan) { create(:project, group: group_premium_plan) }
   let_it_be(:project_ultimate_plan) { create(:project, group: group_ultimate_plan) }
 
@@ -33,6 +41,9 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
   let_it_be_with_reload(:group_hook_with_gold_plan) { create(:group_hook, group: group_gold_plan) }
   let_it_be_with_reload(:group_hook_with_premium_trial_plan) { create(:group_hook, group: group_premium_trial_plan) }
   let_it_be_with_reload(:group_hook_with_ultimate_trial_plan) { create(:group_hook, group: group_ultimate_trial_plan) }
+  let_it_be_with_reload(:group_hook_with_ultimate_trial_paid_customer_plan) do
+    create(:group_hook, group: group_ultimate_trial_paid_customer_plan)
+  end
 
   describe 'LIMIT_MAP' do
     it 'contains all paid plans' do
@@ -116,6 +127,11 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
         ref(:group_hook_with_ultimate_trial_plan) | 1_000 | :web_hook_calls_mid  | 1
         ref(:group_hook_with_ultimate_trial_plan) | 4_999 | :web_hook_calls_mid  | 1
         ref(:group_hook_with_ultimate_trial_plan) | 5_000 | :web_hook_calls      | 3
+
+        ref(:group_hook_with_ultimate_trial_paid_customer_plan) | 999   | :web_hook_calls_low  | 4
+        ref(:group_hook_with_ultimate_trial_paid_customer_plan) | 1_000 | :web_hook_calls_mid  | 5
+        ref(:group_hook_with_ultimate_trial_paid_customer_plan) | 4_999 | :web_hook_calls_mid  | 5
+        ref(:group_hook_with_ultimate_trial_paid_customer_plan) | 5_000 | :web_hook_calls      | 6
       end
 
       with_them do
