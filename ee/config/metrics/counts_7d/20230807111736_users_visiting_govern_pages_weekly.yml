@@ -27,6 +27,8 @@ options:
     - users_visiting_security_vulnerabilities
     - users_visiting_pipeline_security
     - users_visiting_security_configuration_threat_management
+    - g_compliance_dashboard
+    - users_visiting_audit_events
 performance_indicator_type:
 - smau
 distribution:

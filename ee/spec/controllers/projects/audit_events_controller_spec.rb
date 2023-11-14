@@ -185,6 +185,10 @@ RSpec.describe Projects::AuditEventsController, feature_category: :audit_events 
           namespace: project.namespace
         )
       end
+
+      it_behaves_like 'tracks govern usage event', 'users_visiting_audit_events' do
+        let(:user) { auditor }
+      end
     end
 
     context 'when authorized as maintainer' do
@@ -210,6 +214,10 @@ RSpec.describe Projects::AuditEventsController, feature_category: :audit_events 
           namespace: project.namespace
         )
       end
+
+      it_behaves_like 'tracks govern usage event', 'users_visiting_audit_events' do
+        let(:user) { maintainer }
+      end
     end
 
     context 'unauthorized' do
@@ -223,6 +231,8 @@ RSpec.describe Projects::AuditEventsController, feature_category: :audit_events 
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
+
+      it_behaves_like "doesn't track govern usage event", 'users_visiting_audit_events'
     end
   end
 end

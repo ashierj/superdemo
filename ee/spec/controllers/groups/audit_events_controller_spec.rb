@@ -184,6 +184,9 @@ RSpec.describe Groups::AuditEventsController, feature_category: :audit_events do
         end
 
         it_behaves_like 'when audit_events feature is available'
+        it_behaves_like 'tracks govern usage event', 'users_visiting_audit_events' do
+          let(:user) { owner }
+        end
       end
 
       it_behaves_like 'tracking unique visits', :index do
@@ -205,6 +208,9 @@ RSpec.describe Groups::AuditEventsController, feature_category: :audit_events do
         end
 
         it_behaves_like 'when audit_events feature is available'
+        it_behaves_like 'tracks govern usage event', 'users_visiting_audit_events' do
+          let(:user) { auditor }
+        end
       end
 
       it_behaves_like 'tracking unique visits', :index do
@@ -228,6 +234,8 @@ RSpec.describe Groups::AuditEventsController, feature_category: :audit_events do
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
+
+      it_behaves_like "doesn't track govern usage event", 'users_visiting_audit_events'
     end
   end
 end
