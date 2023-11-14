@@ -138,18 +138,23 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
           finished_at: "2023-01-01 01:01:10", duration: 9)
       end
 
-      context 'pipeline has finished' do
+      context 'pipeline has finished and has compute minutes' do
         it 'shows pipeline compute minutes and time ago' do
+          allow_next_found_instance_of(Ci::Pipeline) do |pipeline|
+            allow(pipeline).to receive(:total_ci_minutes_consumed).and_return 25
+          end
+
           visit project_pipeline_path(project, finished_pipeline)
 
           within_testid('pipeline-details-header') do
+            expect(find_by_testid('compute-minutes')).to have_content("25")
             expect(page).to have_selector('[data-testid="compute-minutes"]')
             expect(page).to have_selector('[data-testid="pipeline-finished-time-ago"]')
           end
         end
       end
 
-      context 'pipeline has not finished' do
+      context 'pipeline has not finished and does not have compute minutes' do
         it 'does not show pipeline compute minutes and time ago' do
           subject
 
