@@ -191,8 +191,8 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
       let(:should_stop) { false }
 
       specify do
-        expect(observer).to receive(:execute).exactly(::Enums::PackageMetadata.purl_types.count).times
-        ::Enums::PackageMetadata.purl_types.each do |purl_type, _|
+        expect(observer).to receive(:execute).exactly(::Enums::Sbom.purl_types.count).times
+        ::Enums::Sbom.purl_types.each do |purl_type, _|
           expect(described_class).to receive(:new)
             .with(having_attributes(data_type: data_type, purl_type: purl_type), stop_signal)
             .and_return(observer)

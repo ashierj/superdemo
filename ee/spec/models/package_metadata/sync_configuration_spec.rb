@@ -10,10 +10,10 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
   end
 
   describe 'configs based on enabled purl types' do
-    let(:all_purl_types) { Enums::PackageMetadata.purl_types.values }
+    let(:all_purl_types) { Enums::Sbom.purl_types.values }
 
     shared_examples_for 'it returns all enabled sync configs' do
-      let(:purl_type_map) { Enums::PackageMetadata::PURL_TYPES.invert }
+      let(:purl_type_map) { Enums::Sbom.purl_types_numerical }
       before do
         stub_application_setting(package_metadata_purl_types: enabled_purl_types)
       end

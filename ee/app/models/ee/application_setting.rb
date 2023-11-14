@@ -180,7 +180,7 @@ module EE
         presence: true,
         if: :product_analytics_enabled
 
-      validates :package_metadata_purl_types, inclusion: { in: ::Enums::PackageMetadata.purl_types.values }
+      validates :package_metadata_purl_types, inclusion: { in: ::Enums::Sbom.purl_types.values }
 
       validates :allow_account_deletion,
         inclusion: { in: [true, false], message: N_('must be a boolean value') }
@@ -497,7 +497,7 @@ module EE
     end
 
     def package_metadata_purl_types_names
-      ::Enums::PackageMetadata.purl_types_numerical.values_at(*package_metadata_purl_types)
+      ::Enums::Sbom.purl_types_numerical.values_at(*package_metadata_purl_types)
     end
 
     def unique_project_download_limit_enabled?

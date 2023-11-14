@@ -206,9 +206,9 @@ module EE
     end
 
     def sync_purl_types_checkboxes(form)
-      ::Enums::PackageMetadata.purl_types.keys.map do |name|
+      ::Enums::Sbom.purl_types.keys.map do |name|
         checked = @application_setting.package_metadata_purl_types_names.include?(name)
-        numeric = ::Enums::PackageMetadata.purl_types[name]
+        numeric = ::Enums::Sbom.purl_types[name]
 
         form.gitlab_ui_checkbox_component(
           :package_metadata_purl_types,
