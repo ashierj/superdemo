@@ -24,28 +24,26 @@ describe('OperationServiceToken', () => {
       .map(({ name }) => ({ name }));
   const isLoadingSuggestions = () => findBaseToken().props('suggestionsLoading');
 
+  const buildMockServiceFilter = (serviceNames) =>
+    serviceNames.map((n) => ({ type: 'service-name', value: { data: n, operator: '=' } }));
+
   let mockFetchOperations = jest.fn();
-  const mockOperations = [{ name: 'o1' }, { name: 'o2' }];
 
   const mountComponent = ({
     active = false,
-    loadSuggestionsForServices = [{ name: 's1' }],
+    currentValue = buildMockServiceFilter(['s1']),
   } = {}) => {
     wrapper = shallowMountExtended(OperationServiceToken, {
       propsData: {
         active,
         config: {
           fetchOperations: mockFetchOperations,
-          loadSuggestionsForServices,
         },
+        currentValue,
         value: { data: '' },
       },
     });
   };
-
-  beforeEach(() => {
-    mockFetchOperations = jest.fn().mockResolvedValue(mockOperations);
-  });
 
   describe('default', () => {
     beforeEach(() => {
@@ -69,32 +67,35 @@ describe('OperationServiceToken', () => {
 
   describe('when active', () => {
     beforeEach(() => {
-      mountComponent({ active: true });
+      mockFetchOperations.mockImplementation((service) =>
+        Promise.resolve({ name: `op-for-${service}` }),
+      );
+      mountComponent({
+        active: true,
+        currentValue: buildMockServiceFilter(['s1', 's2']),
+      });
     });
 
-    it('fetches the operations suggestions', async () => {
+    it('fetches the operations suggestions for each service defined in the current filter', async () => {
       expect(isLoadingSuggestions()).toBe(false);
 
       await triggerFetchSuggestions();
 
-      expect(mockFetchOperations).toHaveBeenCalled();
+      expect(mockFetchOperations).toHaveBeenCalledTimes(2);
+
       expect(isLoadingSuggestions()).toBe(false);
       expect(wrapper.findComponent(GlDropdownText).exists()).toBe(false);
-      expect(findSuggestions()).toEqual(mockOperations);
+      expect(findSuggestions()).toEqual([{ name: 'op-for-s1' }, { name: 'op-for-s2' }]);
     });
 
     it('only fetch suggestions once', async () => {
       await triggerFetchSuggestions();
 
+      mockFetchOperations.mockClear();
+
       await triggerFetchSuggestions();
 
-      expect(mockFetchOperations).toHaveBeenCalledTimes(1);
-    });
-
-    it('filters suggestions if a search term is specified', async () => {
-      await triggerFetchSuggestions('o1');
-
-      expect(findSuggestions()).toEqual([{ name: 'o1' }]);
+      expect(mockFetchOperations).not.toHaveBeenCalled();
     });
 
     it('sets the loading status', async () => {
@@ -105,40 +106,30 @@ describe('OperationServiceToken', () => {
       expect(isLoadingSuggestions()).toBe(true);
     });
 
-    describe('when loadSuggestionsForServices is not empty', () => {
-      beforeEach(() => {
-        mockFetchOperations.mockImplementation((service) =>
-          Promise.resolve({ name: `op-for-${service}` }),
-        );
-        mountComponent({
-          active: true,
-          loadSuggestionsForServices: ['s1', 's2'],
-        });
-      });
+    it('filters suggestions by search term if specified', async () => {
+      await triggerFetchSuggestions('s1');
 
-      it('fetches the operations suggestions for each service defined in loadSuggestionsForServices', async () => {
-        await triggerFetchSuggestions();
-
-        expect(mockFetchOperations).toHaveBeenCalledTimes(2);
-        expect(findSuggestions()).toEqual([{ name: 'op-for-s1' }, { name: 'op-for-s2' }]);
-      });
+      expect(findSuggestions()).toEqual([{ name: 'op-for-s1' }]);
     });
 
-    describe('when loadSuggestionsForServices is empty', () => {
+    describe('when the current filter does not contain service-name filters', () => {
       beforeEach(() => {
         mountComponent({
           active: true,
-          loadSuggestionsForServices: [],
+          currentValue: [
+            { type: 'other-type', value: { data: 'other-value', operator: '=' } },
+            { type: 'service-name', value: { data: 's1', operator: '!=' } },
+          ],
         });
       });
 
-      it('does not fetch suggestions if loadSuggestionsForServices is empty', async () => {
+      it('does not fetch suggestions', async () => {
         await triggerFetchSuggestions();
 
         expect(mockFetchOperations).not.toHaveBeenCalled();
       });
 
-      it('does shows a dropdown-text if loadSuggestionsForServices is empty', async () => {
+      it('does show a dropdown-text', async () => {
         await triggerFetchSuggestions();
 
         expect(wrapper.findComponent(GlDropdownText).exists()).toBe(true);

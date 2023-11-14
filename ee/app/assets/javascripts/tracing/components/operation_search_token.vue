@@ -4,6 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
+import { SERVICE_NAME_FILTER_TOKEN_TYPE } from '../filters';
 
 export default {
   components: {
@@ -24,6 +25,10 @@ export default {
       type: Object,
       required: true,
     },
+    currentValue: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -34,10 +39,16 @@ export default {
   },
   computed: {
     showNoServiceFooter() {
-      return this.config.loadSuggestionsForServices.length === 0;
+      return this.servicesForSuggestions.length === 0;
     },
     shouldLoadSuggestions() {
-      return this.config.loadSuggestionsForServices.length > 0;
+      return this.servicesForSuggestions.length > 0;
+    },
+    servicesForSuggestions() {
+      const serviceFilters = this.currentValue.filter(
+        ({ type, value }) => type === SERVICE_NAME_FILTER_TOKEN_TYPE && value.operator === '=',
+      );
+      return serviceFilters.map(({ value }) => value.data);
     },
   },
   methods: {
@@ -58,9 +69,7 @@ export default {
     async fetchOperations() {
       this.loading = true;
       try {
-        const fetchAll = this.config.loadSuggestionsForServices.map((s) =>
-          this.config.fetchOperations(s),
-        );
+        const fetchAll = this.servicesForSuggestions.map((s) => this.config.fetchOperations(s));
         this.operations = (await Promise.all(fetchAll)).flat();
       } catch (e) {
         createAlert({
