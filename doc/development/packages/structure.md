@@ -6,7 +6,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Package Structure
 
-## Package Registry
+## Package registry
 
 ```mermaid
 erDiagram
