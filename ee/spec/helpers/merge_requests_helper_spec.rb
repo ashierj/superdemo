@@ -169,16 +169,6 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
 
     subject(:mr_compare_form_data) { helper.mr_compare_form_data(user, merge_request) }
 
-    describe 'when the target_branch_rules_flag flag is disabled' do
-      before do
-        stub_feature_flags(target_branch_rules_flag: false)
-      end
-
-      it 'returns target_branch_finder_path as nil' do
-        expect(subject[:target_branch_finder_path]).to eq(nil)
-      end
-    end
-
     describe 'when the project does not have the correct license' do
       before do
         stub_licensed_features(target_branch_rules: false)

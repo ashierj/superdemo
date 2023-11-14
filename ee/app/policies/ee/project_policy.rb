@@ -302,11 +302,6 @@ module EE
       with_scope :subject
       condition(:target_branch_rules_available) { subject.licensed_feature_available?(:target_branch_rules) }
 
-      with_scope :subject
-      condition(:target_branch_rules_enabled) do
-        ::Feature.enabled?(:target_branch_rules_flag, subject)
-      end
-
       condition(:pages_multiple_versions_available) do
         ::Feature.enabled?(:pages_multiple_versions_setting, @subject) &&
           @subject.licensed_feature_available?(:pages_multiple_versions)
@@ -780,13 +775,13 @@ module EE
         ai_features_enabled & generate_description_enabled & can?(:create_issue)
       end.enable :generate_description
 
-      rule { target_branch_rules_enabled & target_branch_rules_available & maintainer }.policy do
+      rule { target_branch_rules_available & maintainer }.policy do
         enable :admin_target_branch_rule
       end
 
-      rule do
-        target_branch_rules_enabled & target_branch_rules_available
-      end.enable :read_target_branch_rule
+      rule { target_branch_rules_available }.policy do
+        enable :read_target_branch_rule
+      end
 
       rule do
         (maintainer | owner | admin) & pages_multiple_versions_available

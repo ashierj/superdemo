@@ -12,16 +12,6 @@ RSpec.describe TargetBranchRules::FindService, feature_category: :code_review_wo
     create(:target_branch_rule, project: project, name: 'dev/*', target_branch: 'dev-target')
   end
 
-  describe 'when the target_branch_rules_flag flag is disabled' do
-    before do
-      stub_feature_flags(target_branch_rules_flag: false)
-    end
-
-    it 'returns default branch' do
-      expect(finder.execute('dev/testing')).to eq('master')
-    end
-  end
-
   describe 'when the project does not have the correct license' do
     before do
       stub_licensed_features(target_branch_rules: false)

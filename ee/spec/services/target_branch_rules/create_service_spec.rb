@@ -9,19 +9,6 @@ RSpec.describe TargetBranchRules::CreateService, feature_category: :code_review_
 
   subject(:service) { described_class.new(project, user, params) }
 
-  describe 'when the target_branch_rules_flag flag is disabled' do
-    before do
-      stub_feature_flags(target_branch_rules_flag: false)
-    end
-
-    it 'returns an error' do
-      response = service.execute
-
-      expect(response[:status]).to eq(:error)
-      expect(response[:message]).to eq(_('You have insufficient permissions to create a target branch rule'))
-    end
-  end
-
   describe 'when the project does not have the correct license' do
     before do
       stub_licensed_features(target_branch_rules: false)
