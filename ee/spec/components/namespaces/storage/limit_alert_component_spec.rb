@@ -17,6 +17,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
     )
   end
 
+  let(:context) { group }
   let(:usage_ratio) { 0.8 }
   let(:above_size_limit) { false }
   let(:alert_title) { /You have used \d+% of the storage quota for #{group.name}/ }
@@ -44,7 +45,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
     "contact a user with the owner role for this namespace and ask them to purchase more storage"
   end
 
-  subject(:component) { described_class.new(context: group, user: user) }
+  subject(:component) { described_class.new(context: context, user: user) }
 
   describe 'namespace enforcement' do
     before do
@@ -177,6 +178,45 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
         render_inline(component)
         expectation = should_render ? have_content(alert_title) : have_no_content(:all)
         expect(page).to expectation
+      end
+    end
+
+    context 'for a project in a public group' do
+      let(:group) do
+        build_stubbed(
+          :group,
+          :public,
+          gitlab_subscription: gitlab_subscription
+        )
+      end
+
+      let(:project) { build_stubbed(:project, :public, namespace: group) }
+      let(:context) { project }
+
+      context 'when the user is not a member' do
+        before do
+          enforce_namespace_storage_limit(group)
+
+          allow_next_instance_of(::Namespaces::Storage::RootSize) do |size_checker|
+            allow(size_checker).to receive(:usage_ratio).and_return(1.00)
+          end
+        end
+
+        it 'does not render the alert' do
+          render_inline(component)
+          expect(page).not_to have_content(alert_title)
+        end
+
+        context 'when the user is at least a guest of the project' do
+          before do
+            stub_member_access_level(project, guest: user)
+          end
+
+          it 'renders the alert' do
+            render_inline(component)
+            expect(page).to have_content(alert_title)
+          end
+        end
       end
     end
   end
