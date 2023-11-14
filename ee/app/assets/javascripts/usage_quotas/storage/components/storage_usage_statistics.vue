@@ -32,7 +32,8 @@ export default {
     'purchaseStorageUrl',
     'buyAddonTargetAttr',
     'namespacePlanName',
-    'isUsingProjectEnforcement',
+    'isUsingProjectEnforcementWithLimits',
+    'isUsingProjectEnforcementWithNoLimits',
     'isUsingNamespaceEnforcement',
     'namespacePlanStorageIncluded',
     'namespaceId',
@@ -84,14 +85,14 @@ export default {
     namespaceStorageOverviewSubtitle: NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
   },
   computed: {
-    isUsingProjectEnforcementWithLimits() {
-      return this.isUsingProjectEnforcement && this.namespacePlanStorageIncluded !== 0;
-    },
-    isUsingProjectEnforcementWithNoLimits() {
-      return this.isUsingProjectEnforcement && this.namespacePlanStorageIncluded === 0;
-    },
     totalStorage() {
       return this.namespacePlanStorageIncluded + this.additionalPurchasedStorageSize;
+    },
+    isPurchaseButtonShown() {
+      return (
+        this.purchaseStorageUrl &&
+        (this.isUsingProjectEnforcementWithNoLimits || this.isUsingNamespaceEnforcement)
+      );
     },
     shouldShowLimitedAccessModal() {
       // NOTE: we're using existing flag for seats `canAddSeats`, to infer
@@ -116,7 +117,7 @@ export default {
   <div>
     <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
       <h3 data-testid="overview-subtitle">{{ $options.i18n.namespaceStorageOverviewSubtitle }}</h3>
-      <template v-if="purchaseStorageUrl && !isUsingProjectEnforcement">
+      <template v-if="isPurchaseButtonShown">
         <gl-button
           v-if="!shouldShowLimitedAccessModal"
           :href="purchaseStorageUrl"
@@ -152,7 +153,7 @@ export default {
         }}</gl-link>
       </template>
 
-      <template v-if="namespacePlanStorageIncluded && isUsingProjectEnforcement">
+      <template v-if="isUsingProjectEnforcementWithLimits">
         <gl-sprintf
           :message="s__('UsageQuota|Projects under this namespace have %{planLimit} of storage.')"
         >

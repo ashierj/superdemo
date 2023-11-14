@@ -90,7 +90,12 @@ describe('StorageUsageStatistics', () => {
 
     describe('purchase more storage button when namespace is using project enforcement', () => {
       it('does not render the button', () => {
-        createComponent();
+        createComponent({
+          provide: {
+            isUsingNamespaceEnforcement: false,
+            isUsingProjectEnforcementWithLimits: true,
+          },
+        });
         expect(findPurchaseButton().exists()).toBe(false);
       });
     });
@@ -100,7 +105,7 @@ describe('StorageUsageStatistics', () => {
         beforeEach(() => {
           createComponent({
             provide: {
-              isUsingProjectEnforcement: false,
+              isUsingNamespaceEnforcement: true,
             },
           });
         });
@@ -124,7 +129,7 @@ describe('StorageUsageStatistics', () => {
           gon.features = { limitedAccessModal: true };
           createComponent({
             provide: {
-              isUsingProjectEnforcement: false,
+              isUsingNamespaceEnforcement: true,
             },
           });
 
@@ -142,7 +147,7 @@ describe('StorageUsageStatistics', () => {
       it('is not rendered if purchaseStorageUrl is not provided', () => {
         createComponent({
           provide: {
-            isUsingProjectEnforcement: false,
+            isUsingNamespaceEnforcement: true,
             purchaseStorageUrl: undefined,
           },
         });
@@ -152,7 +157,14 @@ describe('StorageUsageStatistics', () => {
     });
 
     describe('enforcement type subtitle', () => {
-      it('renders project enforcement copy if enforcementType is project', () => {
+      it('renders project enforcement copy if enforcementType is project and there are limits set', () => {
+        createComponent({
+          provide: {
+            isUsingNamespaceEnforcement: false,
+            isUsingProjectEnforcementWithLimits: true,
+          },
+        });
+
         expect(wrapper.text()).toContain(
           'Projects under this namespace have 978.8 KiB of storage. How are limits applied?',
         );
@@ -161,12 +173,7 @@ describe('StorageUsageStatistics', () => {
       it('renders namespace enforcement copy if enforcementType is namespace', () => {
         // Namespace enforcement type is declared in ee/app/models/namespaces/storage/root_size.rb
         // More about namespace storage limit at https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
-        createComponent({
-          provide: {
-            isUsingProjectEnforcement: false,
-            isUsingNamespaceEnforcement: true,
-          },
-        });
+        createComponent();
 
         expect(wrapper.text()).toContain(
           'This namespace has 978.8 KiB of storage. How are limits applied?',
@@ -176,8 +183,13 @@ describe('StorageUsageStatistics', () => {
   });
 
   describe('StorageStatisticsCard', () => {
-    it('passes the correct props to StorageStatisticsCard', () => {
-      createComponent();
+    it('passes the correct props to StorageUsageOverviewCard', () => {
+      createComponent({
+        provide: {
+          isUsingNamespaceEnforcement: false,
+          isUsingProjectEnforcementWithLimits: true,
+        },
+      });
 
       expect(findStorageUsageOverviewCard().props()).toEqual({
         usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
@@ -186,12 +198,7 @@ describe('StorageUsageStatistics', () => {
     });
 
     it('passes the correct props to NamespaceLimitsStorageStatisticsCard', () => {
-      createComponent({
-        provide: {
-          isUsingProjectEnforcement: false,
-          isUsingNamespaceEnforcement: true,
-        },
-      });
+      createComponent();
 
       expect(findNamespaceLimitsStorageUsageOverviewCard().props()).toEqual({
         usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
@@ -204,8 +211,12 @@ describe('StorageUsageStatistics', () => {
   });
 
   describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
-    it('does not render when the namespace is using project enforcement', () => {
-      createComponent();
+    it('does not render when not in the namespace storage enforcement', () => {
+      createComponent({
+        provide: {
+          isUsingNamespaceEnforcement: false,
+        },
+      });
       expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().exists()).toBe(false);
     });
 
@@ -220,12 +231,7 @@ describe('StorageUsageStatistics', () => {
     });
 
     it('passes correct props when the namespace is NOT using project enforcement', () => {
-      createComponent({
-        provide: {
-          isUsingProjectEnforcement: false,
-          isUsingNamespaceEnforcement: true,
-        },
-      });
+      createComponent();
 
       expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().props()).toEqual({
         includedStorage: withRootStorageStatistics.actualRepositorySizeLimit,
@@ -240,28 +246,26 @@ describe('StorageUsageStatistics', () => {
 
   describe('NoLimitsPurchasedStorageBreakdownCard', () => {
     it('does not render when namespace is NOT using project enforcement', () => {
-      createComponent({
-        provide: {
-          isUsingProjectEnforcement: false,
-        },
-      });
+      createComponent();
       expect(findNoLimitsPurchasedStorageBreakdownCard().exists()).toBe(false);
     });
 
     it('does not render when namespace IS using project enforcement with limits', () => {
       createComponent({
         provide: {
-          isUsingProjectEnforcement: true,
+          isUsingNamespaceEnforcement: false,
+          isUsingProjectEnforcementWithLimits: true,
           namespacePlanStorageIncluded: 1,
         },
       });
       expect(findNoLimitsPurchasedStorageBreakdownCard().exists()).toBe(false);
     });
 
-    it('passes correct props when namespace IS using project enforcement', () => {
+    it('passes correct props when namespace IS using project enforcement with no limits', () => {
       createComponent({
         provide: {
-          isUsingProjectEnforcement: true,
+          isUsingNamespaceEnforcement: false,
+          isUsingProjectEnforcementWithNoLimits: true,
           namespacePlanStorageIncluded: 0,
         },
       });
@@ -274,27 +278,18 @@ describe('StorageUsageStatistics', () => {
   });
 
   describe('ProjectLimitsExcessStorageBreakdownCard', () => {
-    it('does not render when the namespace is NOT using project enforcement', () => {
-      createComponent({
-        provide: {
-          isUsingProjectEnforcement: false,
-        },
-      });
-      expect(findProjectLimitsExcessStorageBreakdownCard().exists()).toBe(false);
-    });
-
-    it('does not render when the namespace IS using project enforcement with no limits', () => {
-      createComponent({
-        provide: {
-          isUsingProjectEnforcement: true,
-          namespacePlanStorageIncluded: 0,
-        },
-      });
-      expect(findProjectLimitsExcessStorageBreakdownCard().exists()).toBe(false);
-    });
-
-    it('passes correct props when the namespace IS using project enforcement', () => {
+    it('does not render when the namespace is NOT using project enforcement with limits', () => {
       createComponent();
+      expect(findProjectLimitsExcessStorageBreakdownCard().exists()).toBe(false);
+    });
+
+    it('passes correct props when the namespace IS using project enforcement with limits', () => {
+      createComponent({
+        provide: {
+          isUsingNamespaceEnforcement: false,
+          isUsingProjectEnforcementWithLimits: true,
+        },
+      });
 
       expect(findProjectLimitsExcessStorageBreakdownCard().props()).toEqual({
         purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
@@ -306,6 +301,8 @@ describe('StorageUsageStatistics', () => {
     it('does not render storage card if there is no plan information', () => {
       createComponent({
         provide: {
+          isUsingNamespaceEnforcement: false,
+          isUsingProjectEnforcementWithLimits: true,
           namespacePlanName: null,
         },
       });

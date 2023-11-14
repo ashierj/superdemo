@@ -21,7 +21,6 @@ describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
       },
       provide: {
         ...defaultNamespaceProvideValues,
-        isUsingProjectEnforcement: false,
         ...provide,
       },
       stubs: {

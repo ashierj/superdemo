@@ -33,7 +33,7 @@ export default {
     'helpLinks',
     'defaultPerPage',
     'userNamespace',
-    'isUsingProjectEnforcement',
+    'isUsingProjectEnforcementWithLimits',
   ],
   apollo: {
     namespace: {
@@ -82,8 +82,8 @@ export default {
       firstFetch: true,
       dependencyProxyTotalSizeBytes: '0',
       loadingError: false,
-      sortKey: this.isUsingProjectEnforcement ? 'STORAGE' : 'STORAGE_SIZE_DESC',
-      initialSortBy: this.isUsingProjectEnforcement ? null : 'storage',
+      sortKey: this.isUsingProjectEnforcementWithLimits ? 'STORAGE' : 'STORAGE_SIZE_DESC',
+      initialSortBy: this.isUsingProjectEnforcementWithLimits ? null : 'storage',
     };
   },
   computed: {

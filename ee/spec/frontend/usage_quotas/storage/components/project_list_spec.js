@@ -7,7 +7,7 @@ import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type
 import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
 import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
 import { stubComponent } from 'helpers/stub_component';
-import { projects } from '../mock_data';
+import { projects, defaultNamespaceProvideValues } from '../mock_data';
 
 /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
 let wrapper;
@@ -15,7 +15,7 @@ let wrapper;
 const createComponent = ({ provide = {}, props = {}, stubs } = {}) => {
   wrapper = mountExtended(ProjectList, {
     provide: {
-      isUsingProjectEnforcement: false,
+      ...defaultNamespaceProvideValues,
       ...provide,
     },
     propsData: {
@@ -123,7 +123,12 @@ describe('ProjectList', () => {
     // https://docs.gitlab.com/ee/user/usage_quotas#project-storage-limit
     describe('Namespace under Project type storage enforcement', () => {
       it('will disable sorting by storage field', () => {
-        createComponentWithTableStub({ provide: { isUsingProjectEnforcement: true } });
+        createComponentWithTableStub({
+          provide: {
+            isUsingNamespaceEnforcement: false,
+            isUsingProjectEnforcementWithLimits: true,
+          },
+        });
         expect(findTable().props('fields')).toEqual(
           expect.arrayContaining([expect.objectContaining({ key: 'storage', sortable: false })]),
         );

@@ -21,12 +21,21 @@ export default () => {
     userNamespace,
     defaultPerPage,
     namespacePlanName,
-    namespacePlanStorageIncluded,
     purchaseStorageUrl,
     buyAddonTargetAttr,
     enforcementType,
     totalRepositorySizeExcess,
   } = el.dataset;
+
+  const namespacePlanStorageIncluded = el.dataset.namespacePlanStorageIncluded
+    ? Number(el.dataset.namespacePlanStorageIncluded)
+    : 0;
+  const isUsingNamespaceEnforcement = enforcementType === NAMESPACE_ENFORCEMENT_TYPE;
+  const isUsingProjectEnforcement = enforcementType === PROJECT_ENFORCEMENT_TYPE;
+  const isUsingProjectEnforcementWithLimits =
+    isUsingProjectEnforcement && namespacePlanStorageIncluded !== 0;
+  const isUsingProjectEnforcementWithNoLimits =
+    isUsingProjectEnforcement && namespacePlanStorageIncluded === 0;
 
   return new Vue({
     el,
@@ -38,15 +47,13 @@ export default () => {
       userNamespace: parseBoolean(userNamespace),
       defaultPerPage: Number(defaultPerPage),
       namespacePlanName,
-      namespacePlanStorageIncluded: namespacePlanStorageIncluded
-        ? Number(namespacePlanStorageIncluded)
-        : 0,
+      namespacePlanStorageIncluded,
       purchaseStorageUrl,
       buyAddonTargetAttr,
-      enforcementType,
       totalRepositorySizeExcess: totalRepositorySizeExcess && Number(totalRepositorySizeExcess),
-      isUsingProjectEnforcement: enforcementType === PROJECT_ENFORCEMENT_TYPE,
-      isUsingNamespaceEnforcement: enforcementType === NAMESPACE_ENFORCEMENT_TYPE,
+      isUsingNamespaceEnforcement,
+      isUsingProjectEnforcementWithLimits,
+      isUsingProjectEnforcementWithNoLimits,
       helpLinks,
     },
     render(createElement) {
