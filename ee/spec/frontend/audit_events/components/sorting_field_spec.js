@@ -1,55 +1,54 @@
-import { GlDropdownItem } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { mount } from '@vue/test-utils';
 import SortingField from 'ee/audit_events/components/sorting_field.vue';
 
 describe('SortingField component', () => {
   let wrapper;
 
-  const initComponent = (props = {}) => {
-    wrapper = shallowMount(SortingField, {
+  const createComponent = (props = {}) => {
+    wrapper = mount(SortingField, {
       propsData: { ...props },
     });
   };
 
-  const getCheckedOptions = () =>
-    wrapper.findAllComponents(GlDropdownItem).filter((item) => item.props().isChecked);
+  const findGlCollapsibleListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findAllGlListboxItems = () => wrapper.findAllComponents(GlListboxItem);
 
   beforeEach(() => {
-    initComponent();
+    createComponent();
   });
 
   describe('when initialized', () => {
     it('should have sorting options', () => {
-      expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(2);
+      expect(findAllGlListboxItems()).toHaveLength(2);
     });
 
     it('should set the sorting option to `created_desc` by default', () => {
-      expect(getCheckedOptions()).toHaveLength(1);
+      expect(findGlCollapsibleListbox().props('selected')).toBe('created_desc');
     });
 
     describe('with a sortBy value', () => {
       beforeEach(() => {
-        initComponent({
+        createComponent({
           sortBy: 'created_asc',
         });
       });
 
       it('should set the sorting option accordingly', () => {
-        expect(getCheckedOptions()).toHaveLength(1);
-        expect(getCheckedOptions().at(0).text()).toEqual('Oldest created');
+        expect(findGlCollapsibleListbox().props('selected')).toBe('created_asc');
       });
     });
   });
 
   describe('when the user clicks on a option', () => {
     beforeEach(() => {
-      initComponent();
-      wrapper.findAllComponents(GlDropdownItem).at(1).vm.$emit('click');
+      createComponent();
+      findGlCollapsibleListbox().vm.$emit('select', 'selected-option');
     });
 
     it('should emit the "selected" event with clicked option', () => {
       expect(wrapper.emitted().selected).toHaveLength(1);
-      expect(wrapper.emitted().selected[0]).toEqual(['created_asc']);
+      expect(wrapper.emitted().selected[0]).toEqual(['selected-option']);
     });
   });
 });
