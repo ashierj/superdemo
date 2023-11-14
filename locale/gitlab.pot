@@ -32069,9 +32069,6 @@ msgstr ""
 msgid "Normal view"
 msgstr ""
 
-msgid "NorthstarNavigation|Navigation redesign"
-msgstr ""
-
 msgid "Not all browsers support WebAuthn. Therefore, we require that you set up a two-factor authentication app first. That way you'll always be able to sign in, even from an unsupported browser."
 msgstr ""
 
