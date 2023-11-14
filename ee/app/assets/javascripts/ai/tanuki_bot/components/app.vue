@@ -150,13 +150,13 @@ export default {
     onChatClose() {
       this.helpCenterState.showTanukiBotChatDrawer = false;
     },
-    onTrackFeedback({ feedbackOptions, extendedFeedback } = {}) {
+    onTrackFeedback({ extendedTextFeedback, feedbackChoices } = {}) {
       this.track(TANUKI_BOT_TRACKING_EVENT_NAME, {
         action: 'click_button',
         label: 'response_feedback',
-        property: feedbackOptions,
+        property: feedbackChoices,
         extra: {
-          extendedFeedback,
+          extendedFeedback: extendedTextFeedback,
           prompt_location: 'after_content',
         },
       });
