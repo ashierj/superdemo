@@ -12,7 +12,7 @@ already exists to unify the user and developer experiences.
 
 Existing registries:
 
-- Package Registry
+- Package registry
 - Container Registry
 - Terraform Module Registry
 - Dependency Proxy
@@ -82,7 +82,7 @@ main pieces of the desired UI and UX of a registry page. The most important comp
 When adding a new registry:
 
 - Leverage the shared components that already exist. It's good to look at how the components are
-  structured and used in the more mature registries (for example, the Package Registry).
+  structured and used in the more mature registries (for example, the package registry).
 - If it's in line with the backend requirements, we suggest using GraphQL for the API. This helps in
   dealing with the innate performance issue of registries.
 - If possible, we recommend using [Vue Router](https://v3.router.vuejs.org/)

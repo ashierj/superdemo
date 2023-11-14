@@ -10,7 +10,7 @@ This page includes an exhaustive list of settings related to and maintained by t
 
 ## Instance Settings
 
-### Package Registry
+### Package registry
 
 Setting | Table | Description
 ------- | ----- | -----------
