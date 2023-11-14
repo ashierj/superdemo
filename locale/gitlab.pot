@@ -32578,6 +32578,9 @@ msgstr ""
 msgid "Notify|Project %{project_name} was exported successfully."
 msgstr ""
 
+msgid "Notify|Read timeout:"
+msgstr ""
+
 msgid "Notify|Remote mirror"
 msgstr ""
 
@@ -32591,6 +32594,9 @@ msgid "Notify|The Administrator created an account for you. Now you are a member
 msgstr ""
 
 msgid "Notify|The Auto DevOps pipeline failed for pipeline %{pipeline_link} and has been disabled for %{project_link}. In order to use the Auto DevOps pipeline with your project, please review the %{supported_langs_link}, adjust your project accordingly, and turn on the Auto DevOps pipeline within your %{settings_link}."
+msgstr ""
+
+msgid "Notify|The SMTP server did not respond in time."
 msgstr ""
 
 msgid "Notify|The diff for this file was not included because it is too large."
@@ -44442,6 +44448,9 @@ msgstr ""
 msgid "ServiceDesk|Please try again. Check email forwarding settings and credentials, and then restart verification."
 msgstr ""
 
+msgid "ServiceDesk|Read timeout"
+msgstr ""
+
 msgid "ServiceDesk|Reset custom email"
 msgstr ""
 
@@ -44500,6 +44509,9 @@ msgid "ServiceDesk|Service Desk setting missing"
 msgstr ""
 
 msgid "ServiceDesk|Service Desk setting or verification object missing"
+msgstr ""
+
+msgid "ServiceDesk|The SMTP server did not respond in time."
 msgstr ""
 
 msgid "ServiceDesk|The given credentials (username and password) were rejected by the SMTP server."
