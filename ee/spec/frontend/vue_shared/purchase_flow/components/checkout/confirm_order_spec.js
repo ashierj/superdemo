@@ -64,6 +64,83 @@ describe('Confirm Order', () => {
       });
     });
 
+    describe('when property is changed then changed back to same value', () => {
+      beforeEach(async () => {
+        mockApolloProvider = createMockApolloProvider([]);
+        mockApolloProvider.clients.defaultClient.cache.writeQuery({
+          query: stateQuery,
+          data: { ...initialStateData, stepList: STEPS, activeStep: STEPS[3] },
+        });
+        uuid.mockReturnValue(idempotencyKeyFirstAttempt);
+        Api.confirmOrder = jest.fn().mockReturnValue(new Promise(jest.fn()));
+        createComponent({ apolloProvider: mockApolloProvider });
+        await waitForPromises();
+      });
+
+      it('uses the same idempotency key when payment method is changed then changed back to same value', async () => {
+        wrapper.vm.$apollo.provider.defaultClient.cache.writeQuery({
+          query: stateQuery,
+          data: {
+            paymentMethod: {
+              id: 999,
+              creditCardExpirationMonth: null,
+              creditCardExpirationYear: null,
+              creditCardType: null,
+              creditCardMaskNumber: null,
+            },
+          },
+        });
+        await waitForPromises();
+
+        findConfirmButton().vm.$emit('click');
+
+        expect(Api.confirmOrder).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            idempotency_key: idempotencyKeyFirstAttempt,
+          }),
+        );
+      });
+
+      it('uses the same idempotency key when plan id is changed then changed back to same value', async () => {
+        wrapper.vm.$apollo.provider.defaultClient.cache.writeQuery({
+          query: stateQuery,
+          data: {
+            selectedPlan: {
+              id: 3,
+              isAddon: true,
+            },
+          },
+        });
+        await waitForPromises();
+
+        findConfirmButton().vm.$emit('click');
+
+        expect(Api.confirmOrder).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            idempotency_key: idempotencyKeyFirstAttempt,
+          }),
+        );
+      });
+
+      it('uses the same idempotency key when selected group is changed then changed back to same value', async () => {
+        wrapper.vm.$apollo.provider.defaultClient.cache.writeQuery({
+          query: stateQuery,
+          data: {
+            selectedNamespaceId: '123',
+          },
+        });
+        await waitForPromises();
+
+        findConfirmButton().vm.$emit('click');
+
+        expect(Api.confirmOrder).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            idempotency_key: idempotencyKeyFirstAttempt,
+          }),
+        );
+      });
+    });
+
     describe('when confirming the order', () => {
       beforeEach(async () => {
         mockApolloProvider = createMockApolloProvider([]);
@@ -147,7 +224,6 @@ describe('Confirm Order', () => {
       describe('with code: 4XX', () => {
         beforeEach(async () => {
           uuid
-            .mockReturnValueOnce('000')
             .mockReturnValueOnce(idempotencyKeyFirstAttempt)
             .mockReturnValueOnce(idempotencyKeySecondAttempt);
           Api.confirmOrder = jest
@@ -186,7 +262,6 @@ describe('Confirm Order', () => {
       describe('with code: 5XX', () => {
         beforeEach(async () => {
           uuid
-            .mockReturnValueOnce('000')
             .mockReturnValueOnce(idempotencyKeyFirstAttempt)
             .mockReturnValueOnce(idempotencyKeySecondAttempt);
           Api.confirmOrder = jest

@@ -182,6 +182,37 @@ describe('Confirm Order', () => {
           );
         },
       );
+
+      it.each`
+        property                | value
+        ${`country`}            | ${'9090'}
+        ${`streetAddressLine1`} | ${'999'}
+        ${`streetAddressLine2`} | ${'premium_plan_id'}
+        ${`city`}               | ${5}
+        ${`countryState`}       | ${456}
+        ${`organizationName`}   | ${456}
+      `(
+        'uses the same idempotency key when $property is changed then changed back to same value',
+        async ({ property, value }) => {
+          const oldValue = store.state[property];
+
+          store.state[property] = value;
+          await nextTick();
+
+          store.state[property] = oldValue;
+          await nextTick();
+
+          Api.confirmOrder = jest.fn().mockReturnValue(Promise.resolve({ data: { location } }));
+          findConfirmButton().vm.$emit('click');
+          await nextTick();
+
+          expect(Api.confirmOrder).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              idempotency_key: firstIdempotencyKey,
+            }),
+          );
+        },
+      );
     });
 
     describe('Clicking the button', () => {

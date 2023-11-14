@@ -1,5 +1,6 @@
 <script>
 import { v4 as uuidv4 } from 'uuid';
+import { isEqual } from 'lodash';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -16,18 +17,18 @@ export default {
   },
   data() {
     return {
-      idempotencyKey: uuidv4(),
+      idempotencyKeys: {},
       isActive: false,
       isLoading: false,
       orderParams: {},
     };
   },
   computed: {
-    confirmOrderParams() {
-      return { ...this.orderParams, idempotency_key: this.idempotencyKey };
-    },
     idempotencyKeyParams() {
       return [this.paymentMethodId, this.planId, this.quantity, this.selectedGroup, this.zipCode];
+    },
+    serializedKey() {
+      return JSON.stringify(this.idempotencyKeyParams);
     },
     paymentMethodId() {
       return this.orderParams?.subscription?.payment_method_id;
@@ -47,10 +48,15 @@ export default {
   },
   watch: {
     idempotencyKeyParams: {
-      handler() {
-        this.regenerateIdempotencyKey();
+      handler(newValue, oldValue) {
+        if (!isEqual(newValue, oldValue)) {
+          this.updateIdempotencyKey();
+        }
       },
     },
+  },
+  created() {
+    this.updateIdempotencyKey();
   },
   apollo: {
     isActive: {
@@ -94,15 +100,25 @@ export default {
     },
   },
   methods: {
+    getConfirmOrderParams() {
+      return {
+        ...this.orderParams,
+        idempotency_key: this.idempotencyKeys[this.serializedKey],
+      };
+    },
+    updateIdempotencyKey() {
+      this.idempotencyKeys[this.serializedKey] =
+        this.idempotencyKeys[this.serializedKey] ?? uuidv4();
+    },
     regenerateIdempotencyKey() {
-      this.idempotencyKey = uuidv4();
+      this.idempotencyKeys[this.serializedKey] = uuidv4();
     },
     isClientSideError(status) {
       return status >= 400 && status < 500;
     },
     confirmOrder() {
       this.isLoading = true;
-      return Api.confirmOrder(this.confirmOrderParams)
+      return Api.confirmOrder(this.getConfirmOrderParams())
         .then(({ data }) => {
           if (data?.location) {
             redirectTo(data.location); // eslint-disable-line import/no-deprecated

@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      idempotencyKey: uuidv4(),
+      idempotencyKeys: {},
       isActive: {},
       isConfirmingOrder: false,
     };
@@ -46,11 +46,11 @@ export default {
     shouldDisableConfirmOrder() {
       return this.isConfirmingOrder || !this.hasValidPriceDetails;
     },
-    orderParams() {
-      return { ...this.confirmOrderParams, idempotency_key: this.idempotencyKey };
-    },
     idempotencyKeyParams() {
       return [this.paymentMethodId, this.planId, this.quantity, this.selectedGroup, this.zipCode];
+    },
+    serializedKey() {
+      return JSON.stringify(this.idempotencyKeyParams);
     },
     paymentMethodId() {
       return this.confirmOrderParams?.subscription?.payment_method_id;
@@ -69,15 +69,31 @@ export default {
     },
   },
   watch: {
-    idempotencyKeyParams(newValue, oldValue) {
-      if (!isEqual(newValue, oldValue)) {
-        this.regenerateIdempotencyKey();
-      }
+    idempotencyKeyParams: {
+      handler(newValue, oldValue) {
+        if (!isEqual(newValue, oldValue)) {
+          this.updateIdempotencyKey();
+        }
+      },
+      deep: true,
     },
   },
+  created() {
+    this.updateIdempotencyKey();
+  },
   methods: {
+    getOrderParams() {
+      return {
+        ...this.confirmOrderParams,
+        idempotency_key: this.idempotencyKeys[this.serializedKey],
+      };
+    },
+    updateIdempotencyKey() {
+      this.idempotencyKeys[this.serializedKey] =
+        this.idempotencyKeys[this.serializedKey] ?? uuidv4();
+    },
     regenerateIdempotencyKey() {
-      this.idempotencyKey = uuidv4();
+      this.idempotencyKeys[this.serializedKey] = uuidv4();
     },
     isClientSideError(status) {
       return status >= 400 && status < 500;
@@ -102,15 +118,17 @@ export default {
     confirmOrder() {
       this.isConfirmingOrder = true;
 
-      Api.confirmOrder(this.orderParams)
+      const orderParams = this.getOrderParams();
+
+      Api.confirmOrder(orderParams)
         .then(({ data }) => {
           if (data?.location) {
             const transactionDetails = {
-              paymentOption: this.orderParams?.subscription?.payment_method_id,
+              paymentOption: orderParams?.subscription?.payment_method_id,
               revenue: this.totalExVat,
               tax: this.vat,
               selectedPlan: this.selectedPlanDetails?.value,
-              quantity: this.orderParams?.subscription?.quantity,
+              quantity: orderParams?.subscription?.quantity,
             };
 
             trackTransaction(transactionDetails);
