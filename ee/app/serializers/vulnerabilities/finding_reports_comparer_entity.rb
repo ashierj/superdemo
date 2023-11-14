@@ -8,4 +8,6 @@ class Vulnerabilities::FindingReportsComparerEntity < Grape::Entity
   expose :head_report_created_at
   expose :added, using: Vulnerabilities::FindingEntity
   expose :fixed, using: Vulnerabilities::FindingEntity
+  expose :errors, documentation: { is_array: true, type: 'string' }
+  expose :warnings, documentation: { is_array: true, type: 'string' }
 end

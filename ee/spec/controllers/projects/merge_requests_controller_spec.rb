@@ -117,7 +117,8 @@ RSpec.shared_examples 'comparable report' do
   end
 
   context 'when user created corrupted reports' do
-    let(:comparison_status) { { status: :error, status_reason: 'Report parsing error' } }
+    let(:error_string) { 'Report parsing error' }
+    let(:comparison_status) { { status: :error, status_reason: error_string } }
 
     it 'does not send polling interval' do
       expect(::Gitlab::PollingInterval).not_to receive(:set_header)
@@ -129,7 +130,13 @@ RSpec.shared_examples 'comparable report' do
       subject
 
       expect(response).to have_gitlab_http_status(:bad_request)
-      expect(json_response).to eq({ 'status_reason' => 'Report parsing error' })
+    end
+
+    it 'returns an error string' do
+      subject
+
+      expect(json_response['status_reason']).to eq error_string
+      expect(json_response['errors']).to match_array [error_string]
     end
   end
 end
