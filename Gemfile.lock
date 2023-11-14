@@ -61,6 +61,11 @@ PATH
       pg_query
 
 PATH
+  remote: gems/gitlab-secret_detection
+  specs:
+    gitlab-secret_detection (0.1.0)
+
+PATH
   remote: gems/gitlab-utils
   specs:
     gitlab-utils (0.1.0)
@@ -1871,6 +1876,7 @@ DEPENDENCIES
   gitlab-rspec!
   gitlab-safe_request_store!
   gitlab-schema-validation!
+  gitlab-secret_detection!
   gitlab-sidekiq-fetcher!
   gitlab-styles (~> 11.0.0)
   gitlab-utils!
