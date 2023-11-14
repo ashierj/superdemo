@@ -195,7 +195,6 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
 
   def expect_group_page_for(group)
     expect(page).to have_text group.name
-    expect(page).to have_text "Group ID: #{group.id}"
   end
 
   def expect_project_page_for(project)

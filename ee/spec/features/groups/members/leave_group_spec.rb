@@ -10,6 +10,9 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
   let_it_be(:group) { create(:group) }
 
   let(:user) { create(:user) }
+  let(:more_actions_dropdown) do
+    find('[data-testid="groups-projects-more-actions-dropdown"] .gl-new-dropdown-custom-toggle')
+  end
 
   before do
     user.update!(provisioned_by_group: group)
@@ -17,15 +20,17 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
   end
 
   context 'with block_password_auth_for_saml_users feature flag switched on' do
-    it 'guest provisoned by this group leaves the group and is signed off' do
+    it 'guest provisoned by this group leaves the group and is signed off', :js do
       group.add_guest(user)
       group.add_owner(other_user)
 
       visit group_path(group)
+      more_actions_dropdown.click
       click_link 'Leave group'
+      accept_gl_confirm(button_text: 'Leave group')
 
-      expect(group.users).not_to include(user)
       expect(page).to have_current_path(new_user_session_path, ignore_query: true)
+      expect(group.users).not_to include(user)
     end
 
     it 'guest leaves the group by url param and is signed off', :js do
@@ -33,10 +38,9 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
       group.add_owner(other_user)
 
       visit group_path(group, leave: 1)
-
       accept_gl_confirm(button_text: 'Leave group')
-
       wait_for_all_requests
+
       expect(page).to have_current_path(new_user_session_path, ignore_query: true)
       expect(group.users).not_to include(user)
     end
@@ -52,19 +56,20 @@ RSpec.describe 'Groups > Members > Leave group', feature_category: :groups_and_p
       group.add_owner(other_user)
 
       visit group_path(group, leave: 1)
-
       accept_gl_confirm(button_text: 'Leave group')
-
       wait_for_all_requests
+
       expect(page).to have_current_path(dashboard_groups_path, ignore_query: true)
       expect(group.users).not_to include(user)
     end
 
-    it 'guest leaves the group as last member' do
+    it 'guest leaves the group as last member', :js do
       group.add_guest(user)
 
       visit group_path(group)
+      more_actions_dropdown.click
       click_link 'Leave group'
+      accept_gl_confirm(button_text: 'Leave group')
 
       expect(page).to have_current_path(dashboard_groups_path, ignore_query: true)
       expect(group.users).not_to include(user)
