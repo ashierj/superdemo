@@ -1,6 +1,6 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 import { statusFilterData } from './status_filter/data';
 import StatusFilter from './status_filter/index.vue';
 import FiltersTemplate from './filters_template.vue';
@@ -16,7 +16,6 @@ export default {
   },
   computed: {
     ...mapGetters(['currentScope']),
-    ...mapState(['searchType']),
     showArchivedFilter() {
       return archivedFilterData.scopes.includes(this.currentScope);
     },

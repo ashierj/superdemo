@@ -1,7 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapGetters, mapState } from 'vuex';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import LanguageFilter from './language_filter/index.vue';
 import ArchivedFilter from './archived_filter/index.vue';
 import FiltersTemplate from './filters_template.vue';
@@ -12,11 +9,6 @@ export default {
     LanguageFilter,
     FiltersTemplate,
     ArchivedFilter,
-  },
-  mixins: [glFeatureFlagsMixin()],
-  computed: {
-    ...mapGetters(['currentScope']),
-    ...mapState(['searchType']),
   },
 };
 </script>
