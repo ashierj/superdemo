@@ -30,6 +30,10 @@ RSpec.describe MergeChecksHelper, type: :helper, feature_category: :code_review_
             only_allow_merge_if_all_resolved: {
               locked: false,
               value: false
+            },
+            allow_merge_without_pipeline: {
+              locked: false,
+              value: false
             }
           }.to_json,
           parent_group_name: ''
@@ -56,6 +60,10 @@ RSpec.describe MergeChecksHelper, type: :helper, feature_category: :code_review_
             only_allow_merge_if_all_resolved: {
               locked: false,
               value: false
+            },
+            allow_merge_without_pipeline: {
+              locked: false,
+              value: false
             }
           }.to_json,
           parent_group_name: parent_group.name
@@ -79,6 +87,10 @@ RSpec.describe MergeChecksHelper, type: :helper, feature_category: :code_review_
               value: true
             },
             only_allow_merge_if_all_resolved: {
+              locked: false,
+              value: false
+            },
+            allow_merge_without_pipeline: {
               locked: false,
               value: false
             }
