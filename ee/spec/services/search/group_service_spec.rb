@@ -85,11 +85,18 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
     let(:scope) { 'blobs' }
     let(:basic_search) { nil }
     let(:page) { nil }
+    let(:zoekt_nodes) { create_list(:zoekt_node, 2) }
+    let(:circuit_breaker) { instance_double(::Search::Zoekt::CircuitBreaker) }
+    let(:circuit_breaker_operational) { true }
 
     before do
       allow(group).to receive(:use_zoekt?).and_return(use_zoekt)
       allow(group).to receive(:search_code_with_zoekt?).and_return(use_zoekt)
       zoekt_ensure_namespace_indexed!(group)
+
+      allow(service).to receive(:zoekt_nodes).and_return zoekt_nodes
+      allow(::Search::Zoekt::CircuitBreaker).to receive(:new).with(*zoekt_nodes).and_return(circuit_breaker)
+      allow(circuit_breaker).to receive(:operational?).and_return(circuit_breaker_operational)
     end
 
     it 'returns a Gitlab::Zoekt::SearchResults' do
@@ -161,6 +168,15 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when circuit breaker is tripped' do
+      let(:circuit_breaker_operational) { false }
+
+      it 'does not search with Zoekt' do
+        expect(service).not_to be_use_zoekt
         expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
       end
     end

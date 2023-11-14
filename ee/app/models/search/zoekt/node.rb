@@ -39,6 +39,10 @@ module Search
           s.metadata['name'] = params.fetch("node.name")
         end
       end
+
+      def backoff
+        @backoff ||= ::Search::Zoekt::NodeBackoff.new(self)
+      end
     end
   end
 end

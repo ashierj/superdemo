@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :global_search do
+RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cache, feature_category: :global_search do
   let_it_be(:project_1) { create(:project, :public, :repository) }
   let_it_be(:project_2) { create(:project, :public, :repository) }
   let_it_be(:project_3) { create(:project, :public, :repository) }
@@ -65,10 +65,57 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
     end
   end
 
+  shared_examples 'with node backoffs' do |method|
+    before do
+      allow(::Search::Zoekt::Node).to receive(:find_by_id).with(node.id).and_return(node)
+      node.backoff.remove_backoff!
+    end
+
+    context 'when an exception occurs' do
+      it 'backs off current node and re-raises the exception' do
+        expect(node.backoff).to receive(:backoff!)
+        expect(::Gitlab::HTTP).to receive(method).and_raise 'boom'
+        expect { make_request }.to raise_error 'boom'
+      end
+    end
+
+    context 'when a backoff is active for zoekt node' do
+      it 'raises an exception' do
+        node.backoff.backoff!
+        expect { make_request }.to raise_error(
+          ::Search::Zoekt::Errors::BackoffError, /Zoekt node cannot be used yet because it is in back off period/
+        )
+      end
+    end
+
+    context 'when feature flag zoekt_node_backoffs is disabled' do
+      before do
+        stub_feature_flags(zoekt_node_backoffs: false)
+      end
+
+      context 'and an exception occurs' do
+        it 'does not backoff current node and exception is still raised' do
+          expect(node.backoff).not_to receive(:backoff!)
+          expect(::Gitlab::HTTP).to receive(method).and_raise 'boom'
+          expect { make_request }.to raise_error 'boom'
+        end
+      end
+
+      context 'when a backoff is active for zoekt node' do
+        it 'raises an exception' do
+          node.backoff.backoff!
+
+          expect { make_request }.not_to raise_error
+        end
+      end
+    end
+  end
+
   describe '#search' do
     let(:project_ids) { [project_1.id, project_2.id] }
     let(:query) { 'use.*egex' }
-    let(:node_id) { ::Search::Zoekt::Node.last.id }
+    let(:node) { ::Search::Zoekt::Node.last }
+    let(:node_id) { node.id }
 
     subject { client.search(query, num: 10, project_ids: project_ids, node_id: node_id) }
 
@@ -124,10 +171,15 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
       let(:make_request) { subject }
       let(:expected_path) { '/api/search' }
     end
+
+    it_behaves_like 'with node backoffs', :post do
+      let(:make_request) { subject }
+    end
   end
 
   describe '#index' do
-    let(:node_id) { ::Search::Zoekt::Node.last.id }
+    let(:node) { ::Search::Zoekt::Node.last }
+    let(:node_id) { node.id }
     let(:successful_response) { true }
     let(:response_body) { {} }
     let(:response) do
@@ -139,6 +191,8 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
         body: response_body.to_json
       )
     end
+
+    subject { client.index(project_1, node_id) }
 
     it 'indexes the project to make it searchable' do
       search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id], node_id: node_id)
@@ -188,10 +242,16 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
       let(:make_request) { client.index(project_1, custom_node.id) }
       let(:expected_path) { '/indexer/index' }
     end
+
+    it_behaves_like 'with node backoffs', :post do
+      let(:make_request) { subject }
+    end
   end
 
   describe '#delete' do
-    subject { described_class.delete(node_id: zoekt_node.id, project_id: project_1.id) }
+    let(:node) { zoekt_node }
+
+    subject { described_class.delete(node_id: node.id, project_id: project_1.id) }
 
     context 'when project is indexed' do
       let(:node_id) { ::Search::Zoekt::Node.last.id }
@@ -230,6 +290,10 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
     it_behaves_like 'with relative base_url', :delete do
       let(:make_request) { client.delete(node_id: custom_node.id, project_id: project_1.id) }
       let(:expected_path) { "/indexer/index/#{project_1.id}" }
+    end
+
+    it_behaves_like 'with node backoffs', :delete do
+      let(:make_request) { subject }
     end
   end
 

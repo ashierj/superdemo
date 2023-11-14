@@ -36,45 +36,52 @@ module Gitlab
           target_node = node(node_id)
           raise 'Node can not be found' unless target_node
 
-          response = post(
-            join_url(target_node.search_base_url, path),
-            payload,
-            allow_local_requests: true,
-            basic_auth: basic_auth_params
-          )
+          with_node_exception_handling(target_node) do
+            response = post(
+              join_url(target_node.search_base_url, path),
+              payload,
+              allow_local_requests: true,
+              basic_auth: basic_auth_params
+            )
 
-          unless response.success?
-            logger.error(message: 'Zoekt search failed', status: response.code, response: response.body)
+            unless response.success?
+              logger.error(message: 'Zoekt search failed', status: response.code, response: response.body)
+            end
+
+            parse_response(response)
           end
-
-          parse_response(response)
         ensure
           add_request_details(start_time: start, path: path, body: payload)
         end
 
         def index(project, node_id)
-          response = zoekt_indexer_post('/indexer/index', indexing_payload(project), node_id)
+          target_node = node(node_id)
+          with_node_exception_handling(target_node) do
+            response = zoekt_indexer_post('/indexer/index', indexing_payload(project), node_id)
 
-          raise "Request failed with: #{response.inspect}" unless response.success?
+            raise "Request failed with: #{response.inspect}" unless response.success?
 
-          parsed_response = parse_response(response)
-          raise parsed_response['Error'] if parsed_response['Error']
+            parsed_response = parse_response(response)
+            raise parsed_response['Error'] if parsed_response['Error']
 
-          response
+            response
+          end
         end
 
         def delete(node_id:, project_id:)
           target_node = node(node_id)
           raise 'Node can not be found' unless target_node
 
-          response = delete_request(join_url(target_node.index_base_url, "/indexer/index/#{project_id}"))
+          with_node_exception_handling(target_node) do
+            response = delete_request(join_url(target_node.index_base_url, "/indexer/index/#{project_id}"))
 
-          raise "Request failed with: #{response.inspect}" unless response.success?
+            raise "Request failed with: #{response.inspect}" unless response.success?
 
-          parsed_response = parse_response(response)
-          raise parsed_response['Error'] if parsed_response['Error']
+            parsed_response = parse_response(response)
+            raise parsed_response['Error'] if parsed_response['Error']
 
-          response
+            response
+          end
         end
 
         def truncate
@@ -152,6 +159,25 @@ module Gitlab
 
         def node(node_id)
           ::Search::Zoekt::Node.find_by_id(node_id)
+        end
+
+        def with_node_exception_handling(zoekt_node)
+          return yield if Feature.disabled?(:zoekt_node_backoffs, type: :ops)
+
+          backoff = zoekt_node.backoff
+
+          if backoff.enabled?
+            raise ::Search::Zoekt::Errors::BackoffError,
+              "Zoekt node cannot be used yet because it is in back off period until #{backoff.expires_at}"
+
+          end
+
+          begin
+            yield
+          rescue StandardError => err
+            backoff.backoff!
+            raise(err)
+          end
         end
 
         def join_url(base_url, path)

@@ -38,7 +38,9 @@ end
 
 RSpec.configure do |config|
   config.around(:each, :zoekt) do |example|
-    ::Zoekt::TestHelpers.ensure_zoekt_node!
+    node = ::Zoekt::TestHelpers.ensure_zoekt_node!
+    node.backoff.remove_backoff!
+
     ::Zoekt::TestHelpers.zoekt_truncate_index!
 
     example.run
