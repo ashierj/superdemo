@@ -33,13 +33,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
     )
   end
 
-  subject do
+  subject(:built_agent_info) do
     described_class.build(agent_info_hash_from_params: workspace_agent_info_hash)
   end
 
   before do
     allow_next_instance_of(::RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator) do |instance|
-      # rubocop:disable RSpec/ExpectInHook
+      # rubocop:disable RSpec/ExpectInHook -- we want to assert expectations on this mock, otherwise we'd just have to duplicate the assertions
       expect(instance).to receive(:calculate_actual_state).with(
         latest_k8s_deployment_info: workspace_agent_info_hash[:latest_k8s_deployment_info],
         termination_progress: termination_progress,
@@ -56,7 +56,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
       let(:termination_progress) { nil }
 
       it 'returns an AgentInfo object with namespace and deployment_resource_version populated' do
-        expect(subject).to eq(expected_agent_info)
+        expect(built_agent_info).to eq(expected_agent_info)
       end
     end
 
@@ -69,7 +69,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
       end
 
       it 'returns an AgentInfo object without deployment_resource_version populated' do
-        expect(subject).to eq(expected_agent_info)
+        expect(built_agent_info).to eq(expected_agent_info)
       end
     end
 
@@ -82,7 +82,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
       end
 
       it 'returns an AgentInfo object without deployment_resource_version populated' do
-        expect(subject).to eq(expected_agent_info)
+        expect(built_agent_info).to eq(expected_agent_info)
       end
     end
 
@@ -101,7 +101,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
       end
 
       it 'returns an AgentInfo object without namespace populated' do
-        expect(subject).to eq(expected_agent_info)
+        expect(built_agent_info).to eq(expected_agent_info)
       end
     end
   end

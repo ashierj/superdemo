@@ -44,12 +44,12 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
   end
 
   subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang
+    described_class.create(value) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord method
   end
 
   context 'when workspace variables create is successful' do
     it 'creates the workspace variables and returns ok result containing successful message with created variables' do
-      expect { subject }.to change { workspace.workspace_variables.count }
+      expect { result }.to change { workspace.workspace_variables.count }
 
       expect(result).to be_ok_result do |message|
         message => { workspace_variables_params: Array => workspace_variables_params }
@@ -66,7 +66,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
     end
 
     it 'does not create the workspace and returns an error result containing a failed message with model errors' do
-      expect { subject }.not_to change { workspace.workspace_variables.count }
+      expect { result }.not_to change { workspace.workspace_variables.count }
 
       expect(result).to be_err_result do |message|
         expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceVariablesModelCreateFailed)

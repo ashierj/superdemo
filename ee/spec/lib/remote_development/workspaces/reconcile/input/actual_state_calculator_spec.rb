@@ -6,7 +6,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
   include_context 'with remote development shared fixtures'
 
   describe '.calculate_actual_state' do
-    subject do
+    subject(:actual_state_calculator) do
       described_class
     end
 
@@ -63,14 +63,16 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         it 'calculates correct actual state' do
           calculated_actual_state = nil
           begin
-            calculated_actual_state = subject.calculate_actual_state(
+            calculated_actual_state = actual_state_calculator.calculate_actual_state(
               latest_k8s_deployment_info: latest_k8s_deployment_info
             )
           rescue RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError
+            # rubocop:todo Layout/LineEndStringConcatenationIndentation -- make this cop accept standard 2-character indentation
             skip 'TODO: Properly implement the agent info status fixture for ' \
               "previous_actual_state: #{previous_actual_state}, " \
               "current_actual_state: #{current_actual_state}, " \
               "workspace_exists: #{workspace_exists}"
+            # rubocop:enable Layout/LineEndStringConcatenationIndentation
           end
           expect(calculated_actual_state).to be(current_actual_state) if calculated_actual_state
         end
@@ -101,7 +103,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -124,7 +126,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -147,7 +149,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -170,7 +172,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -191,7 +193,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -212,7 +214,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -233,7 +235,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -254,7 +256,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -275,7 +277,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -301,7 +303,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -326,7 +328,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
 
         it 'returns the expected actual state' do
           pending "This currently returns STARTING state. See related TODOs in the relevant code."
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -350,7 +352,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -370,7 +372,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -386,7 +388,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -406,7 +408,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -425,7 +427,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -447,7 +449,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
         end
 
         it 'returns the expected actual state' do
-          expect(subject.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
+          expect(actual_state_calculator.calculate_actual_state(latest_k8s_deployment_info: latest_k8s_deployment_info))
             .to be(expected_actual_state)
         end
       end
@@ -461,7 +463,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
 
       it 'returns the expected actual state' do
         expect(
-          subject.calculate_actual_state(
+          actual_state_calculator.calculate_actual_state(
             latest_k8s_deployment_info: nil,
             termination_progress: termination_progress
           )
@@ -477,7 +479,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
 
       it 'returns the expected actual state' do
         expect(
-          subject.calculate_actual_state(
+          actual_state_calculator.calculate_actual_state(
             latest_k8s_deployment_info: nil,
             termination_progress: termination_progress
           )
@@ -501,7 +503,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
 
         it 'returns the expected actual state' do
           expect(
-            subject.calculate_actual_state(
+            actual_state_calculator.calculate_actual_state(
               latest_k8s_deployment_info: nil,
               latest_error_details: latest_error_details
             )
@@ -514,7 +516,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
 
         it 'returns the expected actual state' do
           expect(
-            subject.calculate_actual_state(
+            actual_state_calculator.calculate_actual_state(
               latest_k8s_deployment_info: nil,
               termination_progress:
                 RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATED,
@@ -529,7 +531,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
 
         it 'returns the expected actual state' do
           expect(
-            subject.calculate_actual_state(
+            actual_state_calculator.calculate_actual_state(
               latest_k8s_deployment_info: nil,
               termination_progress:
                 RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATING,

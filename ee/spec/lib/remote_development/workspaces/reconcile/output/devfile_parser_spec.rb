@@ -44,12 +44,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
     )
   end
 
-  subject do
+  subject(:devfile_parser) do
     described_class
   end
 
   it 'returns workspace_resources' do
-    workspace_resources = subject.get_all(
+    workspace_resources = devfile_parser.get_all(
       processed_devfile: example_processed_devfile,
       name: workspace.name,
       namespace: workspace.namespace,
@@ -83,7 +83,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
         devfile_parser_error: "some error"
       )
 
-      workspace_resources = subject.get_all(
+      workspace_resources = devfile_parser.get_all(
         processed_devfile: "",
         name: workspace.name,
         namespace: workspace.namespace,

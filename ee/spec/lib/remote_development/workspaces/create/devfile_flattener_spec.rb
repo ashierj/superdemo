@@ -9,12 +9,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_
   let(:expected_processed_devfile) { YAML.safe_load(example_flattened_devfile) }
   let(:value) { { devfile_yaml: devfile_yaml } }
 
-  subject do
+  subject(:result) do
     described_class.flatten(value)
   end
 
   it "merges flattened devfile to passed value" do
-    expect(subject).to eq(
+    expect(result).to eq(
       Result.ok(
         {
           devfile_yaml: devfile_yaml,
@@ -31,7 +31,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_
     end
 
     it "adds an empty components entry" do
-      expect(subject).to eq(
+      expect(result).to eq(
         Result.ok(
           {
             devfile_yaml: devfile_yaml,
@@ -49,7 +49,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_
       expected_error_message =
         "failed to populateAndParseDevfile: invalid devfile schema. errors :\n" \
         "- (root): Additional property random is not allowed\n"
-      message = subject.unwrap_err
+      message = result.unwrap_err
       expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileFlattenFailed)
       expect(message.context).to eq(details: expected_error_message)
     end

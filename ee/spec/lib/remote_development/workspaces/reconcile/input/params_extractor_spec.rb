@@ -25,12 +25,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsExtractor,
     }
   end
 
-  subject do
+  subject(:returned_value) do
     described_class.extract(value)
   end
 
   it "extracts and flattens agent and params contents to top level and deep symbolizes keys" do
-    expect(subject).to eq(
+    expect(returned_value).to eq(
       {
         agent: agent,
         update_type: "full",

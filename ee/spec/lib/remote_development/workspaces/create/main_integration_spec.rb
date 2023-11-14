@@ -59,7 +59,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
         allow(project.repository).to receive_message_chain(:blob_at_branch, :data) { devfile_yaml }
 
         # NOTE: This example is structured and ordered to give useful and informative error messages in case of failures
-        expect { subject }.to change { RemoteDevelopment::Workspace.count }.by(1)
+        expect { response }.to change { RemoteDevelopment::Workspace.count }.by(1)
 
         expect(response.fetch(:status)).to eq(:success)
         expect(response[:message]).to be_nil
@@ -96,7 +96,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
       it 'does not create the workspace and returns error' do
         allow(project.repository).to receive_message_chain(:blob_at_branch, :data) { devfile_yaml }
 
-        expect { subject }.not_to change { RemoteDevelopment::Workspace.count }
+        expect { response }.not_to change { RemoteDevelopment::Workspace.count }
 
         expect(response).to eq({
           status: :error,
@@ -114,7 +114,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
       it 'does not create the workspace and returns error', :aggregate_failures do
         allow(project.repository).to receive(:blob_at_branch).and_return(nil)
 
-        expect { subject }.not_to change { RemoteDevelopment::Workspace.count }
+        expect { response }.not_to change { RemoteDevelopment::Workspace.count }
 
         expect(response).to eq({
           status: :error,
@@ -131,7 +131,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
         # sanity check on fixture
         expect(agent.remote_development_agent_config).to be_nil
 
-        expect { subject }.not_to change { RemoteDevelopment::Workspace.count }
+        expect { response }.not_to change { RemoteDevelopment::Workspace.count }
 
         expect(response).to eq({
           status: :error,

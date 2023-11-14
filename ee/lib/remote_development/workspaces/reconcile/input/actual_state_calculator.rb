@@ -32,7 +32,7 @@ module RemoteDevelopment
             PROGRESSING_CONDITION_REASON_PROGRESS_DEADLINE_EXCEEDED
           ].freeze
 
-          # rubocop: disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
+          # rubocop:todo Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize -- Cleanup as part of https://gitlab.com/gitlab-org/gitlab/-/issues/421687
           # @param [Hash] latest_k8s_deployment_info
           # @param [String (frozen)] termination_progress
           # @param [Hash] latest_error_details

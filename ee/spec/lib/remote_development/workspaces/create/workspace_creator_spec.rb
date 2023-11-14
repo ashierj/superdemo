@@ -52,12 +52,12 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceCreator, featur
   end
 
   subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang
+    described_class.create(value) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord method
   end
 
   context 'when workspace create is successful' do
     it 'creates the workspace and returns ok result containing successful message with created workspace' do
-      expect { subject }.to change { project.workspaces.count }
+      expect { result }.to change { project.workspaces.count }
 
       expect(result).to be_ok_result do |message|
         message => { workspace: RemoteDevelopment::Workspace => workspace }
@@ -70,7 +70,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceCreator, featur
     let(:desired_state) { 'InvalidDesiredState' }
 
     it 'does not create the workspace and returns an error result containing a failed message with model errors' do
-      expect { subject }.not_to change { project.workspaces.count }
+      expect { result }.not_to change { project.workspaces.count }
 
       expect(result).to be_err_result do |message|
         expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceModelCreateFailed)

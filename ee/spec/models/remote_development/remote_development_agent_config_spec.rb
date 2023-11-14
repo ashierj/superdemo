@@ -19,7 +19,7 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
     ]
   end
 
-  subject { agent.remote_development_agent_config }
+  subject(:config) { agent.remote_development_agent_config }
 
   describe 'associations' do
     it { is_expected.to belong_to(:agent) }
@@ -30,15 +30,15 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
       let(:workspace_2) { create(:workspace, agent: agent) }
 
       it 'has correct associations from factory' do
-        expect(subject.reload.workspaces).to contain_exactly(workspace_1, workspace_2)
-        expect(workspace_1.remote_development_agent_config).to eq(subject)
+        expect(config.reload.workspaces).to contain_exactly(workspace_1, workspace_2)
+        expect(workspace_1.remote_development_agent_config).to eq(config)
       end
     end
   end
 
   describe '#after_update' do
     it 'prevents dns_zone from being updated' do
-      expect { subject.update!(dns_zone: 'new-zone') }.to raise_error(
+      expect { config.update!(dns_zone: 'new-zone') }.to raise_error(
         ActiveRecord::RecordInvalid,
         "Validation failed: Dns zone is currently immutable, and cannot be updated. Create a new agent instead."
       )
@@ -47,12 +47,10 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
 
   describe 'validations' do
     context 'when config has an invalid dns_zone' do
-      let_it_be(:config) { build(:remote_development_agent_config, dns_zone: "invalid dns zone") }
-
-      subject { config }
+      subject(:config) { build(:remote_development_agent_config, dns_zone: "invalid dns zone") }
 
       it 'prevents config from being created' do
-        expect { subject.save! }.to raise_error(
+        expect { config.save! }.to raise_error(
           ActiveRecord::RecordInvalid,
           "Validation failed: Dns zone contains invalid characters (valid characters: [a-z0-9\\-])"
         )
@@ -60,14 +58,14 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
     end
 
     it 'when network_policy_egress is not specified explicitly' do
-      expect(subject).to be_valid
-      expect(subject.network_policy_egress).to eq(default_network_policy_egress)
+      expect(config).to be_valid
+      expect(config.network_policy_egress).to eq(default_network_policy_egress)
     end
 
     it 'when network_policy_egress is nil' do
-      subject.network_policy_egress = nil
-      expect(subject).not_to be_valid
-      expect(subject.errors[:network_policy_egress]).to include(
+      config.network_policy_egress = nil
+      expect(config).not_to be_valid
+      expect(config.errors[:network_policy_egress]).to include(
         'must be a valid json schema',
         'must be an array'
       )

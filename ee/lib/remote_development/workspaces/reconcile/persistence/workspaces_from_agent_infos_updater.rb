@@ -4,7 +4,7 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       module Persistence
-        # rubocop:disable Layout/LineLength
+        # rubocop:disable Layout/LineLength -- we want the following noinspection comments to remain on a single line
         # noinspection RubyLocalVariableNamingConvention,RubyClassModuleNamingConvention,RubyClassMethodNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         # rubocop:enable Layout/LineLength
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
@@ -17,7 +17,7 @@ module RemoteDevelopment
               workspace_agent_infos_by_name: Hash => workspace_agent_infos_by_name,
             }
 
-            workspaces_from_agent_infos = agent.workspaces.where(name: workspace_agent_infos_by_name.keys).to_a # rubocop:disable CodeReuse/ActiveRecord
+            workspaces_from_agent_infos = agent.workspaces.where(name: workspace_agent_infos_by_name.keys).to_a # rubocop:todo CodeReuse/ActiveRecord -- Use a finder class here
 
             # Update persisted workspaces which match the names of the workspaces in the AgentInfo objects array
             workspaces_from_agent_infos.each do |persisted_workspace|

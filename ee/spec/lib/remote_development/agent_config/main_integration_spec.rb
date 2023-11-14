@@ -30,7 +30,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Main, "Integration", feature_ca
     let(:config) { {} }
 
     it 'does not create a config record' do
-      expect { subject }.to not_change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+      expect { response }.to not_change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
 
       expect(response).to eq({
         status: :success,

@@ -14,21 +14,21 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfo, featu
 
   let(:other) { described_class.new(**agent_info_constructor_args) }
 
-  subject do
+  subject(:agent_info_instance) do
     described_class.new(**agent_info_constructor_args)
   end
 
   describe '#==' do
     context 'when objects are equal' do
       it 'returns true' do
-        expect(subject).to eq(other)
+        expect(agent_info_instance).to eq(other)
       end
     end
 
     context 'when objects are not equal' do
       it 'returns false' do
         other.instance_variable_set(:@name, 'other_name')
-        expect(subject).not_to eq(other)
+        expect(agent_info_instance).not_to eq(other)
       end
     end
   end

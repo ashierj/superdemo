@@ -8,7 +8,7 @@ module RemoteDevelopment
       module Output
         # noinspection RubyClassMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         class DevfileParser
-          # rubocop:disable Metrics/ParameterLists
+          # rubocop:todo Metrics/ParameterLists -- refactor this to have fewer parameters - perhaps introduce a parameter object: https://refactoring.com/catalog/introduceParameterObject.html
           # @param [String] processed_devfile
           # @param [String] name
           # @param [String] namespace

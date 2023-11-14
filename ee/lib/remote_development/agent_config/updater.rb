@@ -17,7 +17,7 @@ module RemoteDevelopment
           )
         end
 
-        model_instance = RemoteDevelopmentAgentConfig.find_or_initialize_by(agent: agent) # rubocop:disable CodeReuse/ActiveRecord
+        model_instance = RemoteDevelopmentAgentConfig.find_or_initialize_by(agent: agent) # rubocop:todo CodeReuse/ActiveRecord -- Use a finder class here
         model_instance.enabled = config_from_agent_config_file[:enabled]
         # noinspection RubyResolve
         model_instance.dns_zone = config_from_agent_config_file[:dns_zone]
