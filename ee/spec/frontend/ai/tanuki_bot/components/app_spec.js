@@ -208,8 +208,8 @@ describe('GitLab Duo Chat', () => {
       it('tracks the snowplow event on successful mutation for chat', async () => {
         createComponent();
         findGlDuoChat().vm.$emit('track-feedback', {
-          feedbackOptions: ['foo', 'bar'],
-          extendedFeedback: 'baz',
+          feedbackChoices: ['foo', 'bar'],
+          extendedTextFeedback: 'baz',
         });
 
         await waitForPromises();
