@@ -78,11 +78,6 @@ mapping:
   - source: '(ee/)?app/workers/.+\.rb'
     test: 'spec/workers/every_sidekiq_worker_spec.rb'
 
-  - source: 'lib/gitlab/usage_data_counters/known_events/.+\.yml'
-    test:
-      - 'spec/lib/gitlab/usage_data_counters/hll_redis_counter_spec.rb'
-      - 'spec/lib/gitlab/usage_data_spec.rb'
-
   # Mailer previews
   - source: '(ee/)?app/mailers/(ee/)?previews/.+\.rb'
     test: 'spec/mailers/previews_spec.rb'
@@ -98,9 +93,7 @@ mapping:
   # Note: We only have those tests for ee, even though we have non-ee metrics.
   #
   # See https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/287#note_1192008962
-  - source:
-      - 'ee/config/metrics/.*.yml'
-      - 'ee/lib/ee/gitlab/usage_data_counters/known_events/.*.yml'
+  - source: 'ee/config/metrics/.*.yml'
     test: 'ee/spec/config/metrics/every_metric_definition_spec.rb'
 
   # See https://gitlab.com/gitlab-org/quality/engineering-productivity/team/-/issues/146
