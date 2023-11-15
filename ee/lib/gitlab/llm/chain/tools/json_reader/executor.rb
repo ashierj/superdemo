@@ -53,8 +53,7 @@ module Gitlab
                   user: context.current_user,
                   content_limit: provider_prompt_class::MAX_CHARACTERS
                 ).to_json
-              # todo: not ideal as we load the entire json into memory,
-              # todo: follow-up: https://gitlab.com/gitlab-org/gitlab/-/issues/414848
+
               @data = Gitlab::Json.parse(resource_json)
 
               options[:suggestions] = options[:suggestions].to_s
