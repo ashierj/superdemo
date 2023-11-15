@@ -2,7 +2,7 @@
 
 exports[`RelatedItemsTree RelatedItemsTreeActions template renders button group, tree view and roadmap view buttons 1`] = `
 <div
-  class="card-header gl-bg-gray-10 gl-border-bottom-0 gl-display-flex gl-flex-direction-column gl-px-4 gl-py-3 gl-sm-flex-direction-row"
+  class="card-header gl-bg-gray-10 gl-border-bottom-0 gl-display-flex gl-flex-direction-column gl-p-3 gl-pr-4 gl-sm-flex-direction-row"
 >
   <div>
     <gl-button-group-stub
