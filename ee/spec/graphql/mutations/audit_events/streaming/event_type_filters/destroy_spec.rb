@@ -4,7 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Destroy, feature_category: :audit_events do
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:event_type_filter) { create(:audit_events_streaming_event_type_filter, audit_event_type: 'filter_1') }
+  let_it_be(:event_type_filter) do
+    create(:audit_events_streaming_event_type_filter, audit_event_type: 'event_type_filters_created')
+  end
 
   let(:destination) { event_type_filter.external_audit_event_destination }
   let(:group) { destination.group }
@@ -12,7 +14,7 @@ RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Destroy, fea
   let(:params) do
     {
       destination_id: destination.to_gid,
-      event_type_filters: %w[filter_1]
+      event_type_filters: %w[event_type_filters_created]
     }
   end
 
@@ -57,15 +59,20 @@ RSpec.describe Mutations::AuditEvents::Streaming::EventTypeFilters::Destroy, fea
           let(:params) do
             {
               destination_id: destination.to_gid,
-              event_type_filters: %w[filter_2]
+              event_type_filters: %w[event_type_filters_deleted]
             }
           end
 
           it 'does not delete event type filter', :aggregate_failures do
             expect { subject }.not_to change { destination.event_type_filters.count }
-            expect(subject).to eq({
-                                    errors: ["Couldn't find event type filters where audit event type(s): filter_2"]
-                                  })
+            expect(subject)
+              .to eq(
+                {
+                  errors: [
+                    "Couldn't find event type filters where audit event type(s): event_type_filters_deleted"
+                  ]
+                }
+              )
           end
         end
       end

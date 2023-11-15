@@ -8,7 +8,7 @@ RSpec.describe 'Delete an audit event type filter', feature_category: :audit_eve
   let_it_be(:destination) { create(:external_audit_event_destination) }
   let_it_be(:event_type_filter) do
     create(:audit_events_streaming_event_type_filter, external_audit_event_destination: destination,
-      audit_event_type: 'filter_1')
+      audit_event_type: 'event_type_filters_deleted')
   end
 
   let_it_be(:user) { create(:user) }
@@ -18,7 +18,7 @@ RSpec.describe 'Delete an audit event type filter', feature_category: :audit_eve
   let(:mutation_name) { :audit_events_streaming_destination_events_remove }
   let(:mutation) { graphql_mutation(mutation_name, input) }
   let(:mutation_response) { graphql_mutation_response(mutation_name) }
-  let(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['filter_1'] } }
+  let(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['event_type_filters_deleted'] } }
 
   context 'when unlicensed' do
     subject { post_graphql_mutation(mutation, current_user: user) }

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AuditEvents::Streaming::EventTypeFilters::CreateService, feature_category: :audit_events do
   let_it_be(:destination) { create(:external_audit_event_destination) }
-  let_it_be(:event_type_filters) { ['filter_1'] }
+  let_it_be(:event_type_filters) { ['event_type_filters_deleted'] }
   let_it_be(:user) { create(:user) }
 
   let(:expected_error) { [] }
@@ -22,6 +22,7 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::CreateService, feature_
       shared_examples 'creates event filter' do
         it 'creates event type filter', :aggregate_failures do
           expect { subject }.to change { destination.event_type_filters.count }.by 1
+
           expect(destination.event_type_filters.last.audit_event_type).to eq(event_type_filters.first)
           expect(response).to be_success
           expect(response.errors).to match_array(expected_error)
@@ -33,7 +34,7 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::CreateService, feature_
             author: user,
             scope: scope,
             target: destination,
-            message: "Created audit event type filter(s): filter_1"
+            message: "Created audit event type filter(s): event_type_filters_deleted"
           }
 
           expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)

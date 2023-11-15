@@ -10,13 +10,13 @@ RSpec.describe 'Delete an instance level audit event type filter', feature_categ
   let(:mutation_name) { :audit_events_streaming_destination_instance_events_remove }
   let(:mutation) { graphql_mutation(mutation_name, input) }
   let(:mutation_response) { graphql_mutation_response(mutation_name) }
-  let(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['filter_1'] } }
+  let(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['event_type_filters_created'] } }
 
   before_all do
     create(:audit_events_streaming_instance_event_type_filter, instance_external_audit_event_destination: destination,
-      audit_event_type: 'filter_1')
+      audit_event_type: 'event_type_filters_created')
     create(:audit_events_streaming_instance_event_type_filter, instance_external_audit_event_destination: destination,
-      audit_event_type: 'filter_2')
+      audit_event_type: 'event_type_filters_deleted')
   end
 
   context 'when current user is instance admin' do
@@ -42,7 +42,7 @@ RSpec.describe 'Delete an instance level audit event type filter', feature_categ
       end
 
       context 'when destination id is not in input params' do
-        let(:input) { { eventTypeFilters: ['filter_1'] } }
+        let(:input) { { eventTypeFilters: ['event_type_filters_created'] } }
 
         it 'returns error', :aggregate_failures do
           expect { mutate }.not_to change { AuditEvents::Streaming::InstanceEventTypeFilter.count }
@@ -55,7 +55,7 @@ RSpec.describe 'Delete an instance level audit event type filter', feature_categ
         let(:input) do
           {
             destinationId: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/#{non_existing_record_id}",
-            eventTypeFilters: ['filter_1']
+            eventTypeFilters: ['event_type_filters_created']
           }
         end
 
@@ -77,19 +77,22 @@ RSpec.describe 'Delete an instance level audit event type filter', feature_categ
       end
 
       context 'when event filters is not an array' do
-        let(:input) { { destinationId: destination.to_gid, eventTypeFilters: 'filter_1' } }
+        let(:input) { { destinationId: destination.to_gid, eventTypeFilters: 'event_type_filters_created' } }
 
         it_behaves_like 'deletes event filter'
       end
 
       context 'when the given event filters does not exist for the destination' do
-        let(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['filter_3'] } }
+        let(:input) do
+          { destinationId: destination.to_gid, eventTypeFilters: ['audit_events_streaming_headers_create'] }
+        end
 
         it 'returns error', :aggregate_failures do
           expect { mutate }.not_to change { destination.event_type_filters.count }
 
           expect(mutation_response["errors"])
-            .to eq(["Couldn't find event type filters where audit event type(s): filter_3"])
+            .to eq(["Couldn't find event type filters where audit event type(s): " \
+                    "audit_events_streaming_headers_create"])
         end
       end
 

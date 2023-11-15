@@ -8,13 +8,13 @@ RSpec.describe 'Create an instance audit event type filter', feature_category: :
   let_it_be(:destination) { create(:instance_external_audit_event_destination) }
   let_it_be(:event_type_filter) do
     create(:audit_events_streaming_instance_event_type_filter, instance_external_audit_event_destination: destination,
-      audit_event_type: 'filter_1')
+      audit_event_type: 'event_type_filters_created')
   end
 
   let_it_be(:mutation_name) { :audit_events_streaming_destination_instance_events_add }
   let(:mutation) { graphql_mutation(mutation_name, input) }
   let(:mutation_response) { graphql_mutation_response(mutation_name) }
-  let_it_be(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['filter_2'] } }
+  let_it_be(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['event_type_filters_deleted'] } }
 
   subject { post_graphql_mutation(mutation, current_user: current_user) }
 
