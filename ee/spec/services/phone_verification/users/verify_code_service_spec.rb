@@ -46,7 +46,7 @@ RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :s
         expect(response).to be_error
         expect(response.message).to eq(
           'You\'ve reached the maximum number of tries. ' \
-          'Wait 10 minutes and try again.'
+          'Wait 1 day and try again.'
         )
         expect(response.reason).to eq(:rate_limited)
       end
