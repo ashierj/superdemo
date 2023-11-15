@@ -1303,6 +1303,8 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
 
         context 'with insufficient permissions' do
+          let_it_be(:restricted_project) { create(:project) }
+          let_it_be(:target) { create(:issue, project: restricted_project) }
           let(:current_user) { guest }
 
           it_behaves_like 'quick action is unavailable', :blocks
@@ -1314,7 +1316,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
         context 'with sufficient permissions' do
           before do
-            issue.project.add_developer(current_user)
+            issue.project.add_guest(current_user)
           end
 
           it '/blocked_by is available' do
@@ -1340,6 +1342,8 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
 
         context 'with insufficient permissions' do
+          let_it_be(:restricted_project) { create(:project) }
+          let_it_be(:target) { create(:issue, project: restricted_project) }
           let(:current_user) { guest }
 
           it_behaves_like 'quick action is unavailable', :blocked_by
