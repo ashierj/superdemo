@@ -1604,32 +1604,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
         end
       end
     end
-
-    context 'when running license_scanning ci job' do
-      before do
-        stub_licensed_features(license_scanning: true)
-      end
-
-      context 'when merge request has denied policies' do
-        before do
-          allow(merge_request).to receive(:has_denied_policies?).and_return(true)
-        end
-
-        it 'is not mergeable' do
-          is_expected.to be_falsey
-        end
-      end
-
-      context 'when merge request has no denied policies' do
-        before do
-          allow(merge_request).to receive(:has_denied_policies?).and_return(false)
-        end
-
-        it 'is mergeable' do
-          is_expected.to be_truthy
-        end
-      end
-    end
   end
 
   describe '#on_train?' do
