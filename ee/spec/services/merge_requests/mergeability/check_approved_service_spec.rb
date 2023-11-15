@@ -51,7 +51,7 @@ RSpec.describe MergeRequests::Mergeability::CheckApprovedService, feature_catego
         it "returns a check result with status failure" do
           expect(result.status)
             .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
-          expect(result.payload[:reason]).to eq(:not_approved)
+          expect(result.payload[:identifier]).to eq(:not_approved)
         end
       end
     end

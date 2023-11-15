@@ -11,7 +11,7 @@ module MergeRequests
         return inactive unless merge_request.blocking_merge_requests_feature_available?
 
         if merge_request.merge_blocked_by_other_mrs?
-          failure(reason: failure_reason)
+          failure
         else
           success
         end

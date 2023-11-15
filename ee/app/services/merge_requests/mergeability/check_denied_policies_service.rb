@@ -11,7 +11,7 @@ module MergeRequests
         return inactive unless merge_request.license_scanning_feature_available?
 
         if merge_request.has_denied_policies?
-          failure(reason: failure_reason)
+          failure
         else
           success
         end

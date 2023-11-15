@@ -38,7 +38,7 @@ RSpec.describe MergeRequests::Mergeability::CheckDeniedPoliciesService, feature_
         it "returns a check result with status failed" do
           expect(result.status)
             .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
-          expect(result.payload[:reason]).to eq(:policies_denied)
+          expect(result.payload[:identifier]).to eq(:policies_denied)
         end
       end
 
