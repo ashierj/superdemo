@@ -42,6 +42,7 @@ module API
         {
           'X-Gitlab-Instance-Id' => instance_id,
           'X-Gitlab-Global-User-Id' => user_id,
+          'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
           'X-Gitlab-Realm' => gitlab_realm,
           'X-Gitlab-Authentication-Type' => 'oidc',
           'Authorization' => "Bearer #{gateway_token}",
