@@ -50,7 +50,7 @@ with the ability to:
 
 ### GitLab SaaS
 
-Prerequisite:
+Prerequisites:
 
 - You must have the Owner role in the group you are creating the custom role in.
 
@@ -64,7 +64,7 @@ Prerequisite:
 
 ### Self Managed GitLab Instances
 
-Prerequisite:
+Prerequisites:
 
 - You must be an administrator for the self-managed instance you are creating the custom role in.
 
@@ -143,7 +143,7 @@ the Owner role:
 
 ## Remove a custom role
 
-Prerequisite:
+Prerequisites:
 
 - You must be an administrator or have the Owner role in the group you are removing the custom role from.
 
