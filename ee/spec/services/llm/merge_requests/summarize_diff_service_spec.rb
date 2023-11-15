@@ -47,7 +47,7 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
   describe "#execute" do
     before do
       project.add_developer(user)
-      stub_licensed_features(summarize_mr_changes: true)
+      stub_licensed_features(summarize_mr_changes: true, ai_features: true)
 
       merge_request.project.namespace.namespace_settings.update_attribute(:experiment_features_enabled, true)
     end

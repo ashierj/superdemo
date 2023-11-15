@@ -11,30 +11,22 @@ module Gitlab
       RECORD_LIMIT = 4
       MODEL = 'claude-instant-1.1'
 
-      def self.enabled_for?(user:)
-        return false unless user
-        return false unless ::License.feature_available?(:ai_tanuki_bot)
+      def self.enabled_for?(user:, container: nil)
         return false unless Feature.enabled?(:ai_global_switch, type: :ops)
-        return false unless ai_feature_enabled?(user)
 
-        true
-      end
+        return false unless user
 
-      def self.ai_feature_enabled?(user)
-        return true unless ::Gitlab.com?
-
-        user.any_group_with_ai_available?
+        if container
+          container.member?(user) && Gitlab::Llm::StageCheck.available?(container.resource_parent, :chat)
+        else
+          user.any_group_with_ai_available?
+        end
       end
 
       def self.show_breadcrumbs_entry_point?(user:, container: nil)
-        return false unless user && Feature.enabled?(:tanuki_bot_breadcrumbs_entry_point,
-          user) && user.any_group_with_ai_available?
+        return false unless Feature.enabled?(:tanuki_bot_breadcrumbs_entry_point, user)
 
-        return true unless container
-
-        return false unless container.member?(user)
-
-        Gitlab::Llm::StageCheck.available?(container.resource_parent, :chat)
+        enabled_for?(user: user, container: container)
       end
 
       def initialize(current_user:, question:, logger: nil, tracking_context: {})

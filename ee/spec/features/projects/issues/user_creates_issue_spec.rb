@@ -18,8 +18,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
   end
 
   before do
-    stub_licensed_features(issue_weights: true)
-    stub_licensed_features(epics: true)
+    stub_licensed_features(issue_weights: true, epics: true)
 
     sign_in(user)
 
@@ -28,7 +27,7 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
   context "when user can use AI to generate description" do
     before do
-      stub_licensed_features(generate_description: true)
+      stub_licensed_features(generate_description: true, ai_features: true)
       stub_feature_flags(ai_global_switch: true)
       project.group.root_ancestor.namespace_settings.update_attribute(:experiment_features_enabled, true)
 

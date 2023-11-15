@@ -14,7 +14,8 @@ RSpec.describe 'layouts/_page', feature_category: :global_search do
 
     describe 'when ::Gitlab::Llm::TanukiBot.enabled_for?(user) is true' do
       before do
-        allow(::Gitlab::Llm::TanukiBot).to receive(:enabled_for?).with(user: user).and_return(true)
+        allow(::Gitlab::Llm::TanukiBot).to receive(:enabled_for?)
+          .with(user: user, container: nil).and_return(true)
       end
 
       it 'renders #js-tanuki-bot-chat-app' do
@@ -26,7 +27,8 @@ RSpec.describe 'layouts/_page', feature_category: :global_search do
 
     describe 'when ::Gitlab::Llm::TanukiBot.enabled_for?(user) is false' do
       before do
-        allow(::Gitlab::Llm::TanukiBot).to receive(:enabled_for?).with(user: user).and_return(false)
+        allow(::Gitlab::Llm::TanukiBot).to receive(:enabled_for?)
+          .with(user: user, container: nil).and_return(false)
       end
 
       it 'does not render #js-tanuki-bot-chat-app' do
