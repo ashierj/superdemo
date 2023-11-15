@@ -414,7 +414,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
           page.within('.billing-plan-header') do
             expect(page).to have_content("#{namespace.name} is currently using the Ultimate Plan")
 
-            expect(page).to have_css('.billing-plan-logo .identicon')
+            expect(page).to have_css('.billing-plan-logo .gl-avatar-identicon')
           end
         end
 
@@ -437,7 +437,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
           page.within('.billing-plan-header') do
             expect(page).to have_content("#{namespace.name} is currently using the Bronze Plan")
 
-            expect(page).to have_css('.billing-plan-logo .identicon')
+            expect(page).to have_css('.billing-plan-logo .gl-avatar-identicon')
           end
         end
 
