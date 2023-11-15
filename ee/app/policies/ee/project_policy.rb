@@ -564,6 +564,7 @@ module EE
         prevent :create_issue
         prevent :create_note
         prevent :upload_file
+        prevent :create_issue_link
       end
 
       rule { ~can?(:push_code) }.prevent :push_code_to_protected_branches
