@@ -17,7 +17,6 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilter, feature_category: :audit
   end
 
   it_behaves_like 'audit event streaming filter' do
-    let_it_be(:filter1) { create(:audit_events_streaming_event_type_filter) }
-    let_it_be(:filter2) { create(:audit_events_streaming_event_type_filter) }
+    let(:factory_name) { "audit_events_streaming_event_type_filter" }
   end
 end

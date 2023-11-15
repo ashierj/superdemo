@@ -11,14 +11,14 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
 
   shared_context 'a successful audit event stream' do
     context 'when audit event id is passed' do
-      subject { worker.perform('audit_operation', event.id) }
+      subject { worker.perform('event_type_filters_created', event.id) }
 
       include_context 'audit event stream'
     end
 
     context 'when audit event json is passed' do
       context 'when audit event is streamed as well as database saved' do
-        subject { worker.perform('audit_operation', nil, event.to_json) }
+        subject { worker.perform('event_type_filters_created', nil, event.to_json) }
 
         include_context 'audit event stream'
       end
@@ -28,7 +28,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
           event.id = nil # id is nil in case of stream only events because they are not stored in database.
         end
 
-        subject { worker.perform('audit_operation', nil, event.to_json) }
+        subject { worker.perform('event_type_filters_created', nil, event.to_json) }
 
         include_context 'audit event stream'
       end
@@ -78,14 +78,14 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
       end
 
       it 'sends the correct verification header' do
-        expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), a_hash_including(headers: { "X-Gitlab-Audit-Event-Type" => "audit_operation", 'X-Gitlab-Event-Streaming-Token' => anything })).once
+        expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), a_hash_including(headers: { "X-Gitlab-Audit-Event-Type" => "event_type_filters_created", 'X-Gitlab-Event-Streaming-Token' => anything })).once
 
         subject
       end
 
       context 'sends correct event type in request body' do
         it 'adds event type only when audit operation is present' do
-          expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), hash_including(body: a_string_including("\"event_type\":\"audit_operation\"")))
+          expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), hash_including(body: a_string_including("\"event_type\":\"event_type_filters_created\"")))
 
           subject
         end
@@ -132,7 +132,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
         end
 
         it 'tracks the event count and makes http call' do
-          expect(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).to receive(:count).with('audit_operation')
+          expect(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).to receive(:count).with('event_type_filters_created')
           expect(Gitlab::HTTP).to receive(:post).once
 
           subject
@@ -145,7 +145,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
         end
 
         it 'does not track the event count and makes http call' do
-          expect(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).not_to receive(:count).with('audit_operation')
+          expect(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).not_to receive(:count).with('event_type_filters_created')
           expect(Gitlab::HTTP).to receive(:post).once
 
           subject
@@ -160,12 +160,12 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
         end
       end
 
-      context 'when audit_operation streaming event type filter is not present' do
+      context 'when required streaming event type filter is not present' do
         before do
           create(
             :audit_events_streaming_event_type_filter,
             external_audit_event_destination: group.external_audit_event_destinations.last,
-            audit_event_type: 'some_audit_operation'
+            audit_event_type: 'event_type_filters_deleted'
           )
         end
 
@@ -181,12 +181,12 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
           create(
             :audit_events_streaming_event_type_filter,
             external_audit_event_destination: group.external_audit_event_destinations.last,
-            audit_event_type: 'audit_operation'
+            audit_event_type: 'event_type_filters_created'
           )
           create(
             :audit_events_streaming_event_type_filter,
             external_audit_event_destination: group.external_audit_event_destinations.last,
-            audit_event_type: 'some_audit_operation'
+            audit_event_type: 'event_type_filters_deleted'
           )
         end
 
@@ -337,7 +337,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
           event.root_group_entity_id = group.id
         end
 
-        subject { worker.perform('audit_operation', nil, event.to_json(methods: [:root_group_entity_id])) }
+        subject { worker.perform('event_type_filters_created', nil, event.to_json(methods: [:root_group_entity_id])) }
 
         include_context 'audit event stream'
       end

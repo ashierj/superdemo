@@ -10,24 +10,25 @@ RSpec.describe AuditEvents::InstanceExternalAuditEventDestination, feature_categ
       create(:instance_external_audit_event_destination, verification_token: nil)
     end
 
-    let_it_be(:audit_operation) { 'audit_operation' }
+    let_it_be(:audit_operation) { 'event_type_filters_created' }
     let_it_be(:destination_with_filters_of_given_type) { create(:instance_external_audit_event_destination) }
     let_it_be(:filter1) do
       create(:audit_events_streaming_instance_event_type_filter,
         instance_external_audit_event_destination: destination_with_filters_of_given_type,
-        audit_event_type: 'audit_operation')
+        audit_event_type: 'event_type_filters_created')
     end
 
     let_it_be(:filter2) do
       create(:audit_events_streaming_instance_event_type_filter,
         instance_external_audit_event_destination: destination_with_filters_of_given_type,
-        audit_event_type: 'audit_operation1')
+        audit_event_type: 'event_type_filters_deleted')
     end
 
     let_it_be(:destination_with_filters) { create(:instance_external_audit_event_destination) }
     let!(:filter3) do
       create(:audit_events_streaming_instance_event_type_filter,
-        instance_external_audit_event_destination: destination_with_filters)
+        instance_external_audit_event_destination: destination_with_filters,
+        audit_event_type: 'event_type_filters_deleted')
     end
   end
 

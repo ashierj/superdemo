@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe AuditEvents::Strategies::InstanceExternalDestinationStrategy, feature_category: :audit_events do
   let_it_be(:event) { create(:audit_event, :group_event) }
   let_it_be(:group) { event.entity }
-  let_it_be(:event_type) { 'audit_operation' }
+  let_it_be(:event_type) { 'event_type_filters_created' }
 
   describe '#streamable?' do
     subject { described_class.new(event_type, event).streamable? }
@@ -53,7 +53,7 @@ RSpec.describe AuditEvents::Strategies::InstanceExternalDestinationStrategy, fea
   end
 
   describe '#execute' do
-    subject { described_class.new('audit_operation', event).execute }
+    subject { described_class.new('event_type_filters_created', event).execute }
 
     context 'when the feature is licensed' do
       before do
@@ -121,14 +121,14 @@ RSpec.describe AuditEvents::Strategies::InstanceExternalDestinationStrategy, fea
             create(
               :audit_events_streaming_instance_event_type_filter,
               instance_external_audit_event_destination: destination,
-              audit_event_type: 'some_audit_operation'
+              audit_event_type: 'event_type_filters_deleted'
             )
           end
 
           include_examples 'does not stream anywhere'
         end
 
-        context 'when audit_operation streaming event type filter is present' do
+        context 'when event_type_filters_created streaming event type filter is present' do
           before do
             create(
               :audit_events_streaming_instance_event_type_filter,
@@ -138,7 +138,7 @@ RSpec.describe AuditEvents::Strategies::InstanceExternalDestinationStrategy, fea
             create(
               :audit_events_streaming_instance_event_type_filter,
               instance_external_audit_event_destination: destination,
-              audit_event_type: 'some_audit_operation'
+              audit_event_type: 'event_type_filters_deleted'
             )
           end
 

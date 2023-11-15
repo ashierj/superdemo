@@ -40,8 +40,24 @@ RSpec.shared_examples 'create event type filters for external audit event destin
       end
     end
 
+    context 'when event type is invalid' do
+      let_it_be(:input) { { destinationId: destination.to_gid, eventTypeFilters: ["invalid-event-type"] } }
+
+      it 'returns graphql error' do
+        subject
+
+        expect(mutation_response)
+          .to include('errors' => ['Validation failed: Audit event type with value invalid-event-type is undefined.'])
+      end
+    end
+
     context 'when destinationId is invalid' do
-      let_it_be(:input) { { destinationId: non_existing_destination_id, eventTypeFilters: ["filter1"] } }
+      let_it_be(:input) do
+        {
+          destinationId: non_existing_destination_id,
+          eventTypeFilters: ["event_type_filters_deleted"]
+        }
+      end
 
       it_behaves_like 'a mutation on an unauthorized resource'
     end

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe AuditEvents::Strategies::GroupExternalDestinationStrategy, feature_category: :audit_events do
   let(:group) { build(:group) }
   let(:event) { build(:audit_event, :group_event, target_group: group) }
-  let_it_be(:event_type) { 'audit_operation' }
+  let_it_be(:event_type) { 'event_type_filters_created' }
 
   describe '#streamable?' do
     subject { described_class.new(event_type, event).streamable? }
@@ -126,7 +126,7 @@ RSpec.describe AuditEvents::Strategies::GroupExternalDestinationStrategy, featur
             create(
               :audit_events_streaming_event_type_filter,
               external_audit_event_destination: group.external_audit_event_destinations.last,
-              audit_event_type: 'some_audit_operation'
+              audit_event_type: 'event_type_filters_deleted'
             )
           end
 
@@ -143,7 +143,7 @@ RSpec.describe AuditEvents::Strategies::GroupExternalDestinationStrategy, featur
             create(
               :audit_events_streaming_event_type_filter,
               external_audit_event_destination: group.external_audit_event_destinations.last,
-              audit_event_type: 'some_audit_operation'
+              audit_event_type: 'event_type_filters_deleted'
             )
           end
 

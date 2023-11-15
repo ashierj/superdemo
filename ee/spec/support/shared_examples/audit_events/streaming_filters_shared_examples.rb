@@ -4,9 +4,15 @@
 # They are audit event type filters for streaming audit events to external destinations.
 # They are being used here for testing methods of streaming filter models.
 RSpec.shared_examples 'audit event streaming filter' do
+  let!(:filter1) { create(factory_name.to_sym, audit_event_type: "event_type_filters_created") }
+  let!(:filter2) { create(factory_name.to_sym, audit_event_type: "event_type_filters_deleted") }
+
   describe 'Validations' do
     it { is_expected.to validate_presence_of(:audit_event_type) }
     it { is_expected.to validate_length_of(:audit_event_type).is_at_most(255) }
+
+    it { is_expected.to allow_value('event_type_filters_created').for(:audit_event_type) }
+    it { is_expected.not_to allow_value('invalid_audit_event_type').for(:audit_event_type) }
   end
 
   describe '.audit_event_type_in' do

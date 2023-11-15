@@ -132,17 +132,20 @@ RSpec.describe 'getting a list of external audit event destinations for the inst
           context 'when streaming event type filters are present for the destination' do
             let_it_be(:filter_1) do
               create(:audit_events_streaming_instance_event_type_filter,
-                instance_external_audit_event_destination: destination_1)
+                instance_external_audit_event_destination: destination_1,
+                audit_event_type: 'event_type_filters_created')
             end
 
             let_it_be(:filter_2) do
               create(:audit_events_streaming_instance_event_type_filter,
-                instance_external_audit_event_destination: destination_1)
+                instance_external_audit_event_destination: destination_1,
+                audit_event_type: 'event_type_filters_deleted')
             end
 
             let_it_be(:filter_3) do
               create(:audit_events_streaming_instance_event_type_filter,
-                instance_external_audit_event_destination: destination_2)
+                instance_external_audit_event_destination: destination_2,
+                audit_event_type: 'audit_events_streaming_headers_create')
             end
 
             let_it_be(:query_body) do
@@ -186,17 +189,20 @@ RSpec.describe 'getting a list of external audit event destinations for the inst
         context 'when streaming event type filters are present for the destination' do
           let_it_be(:filter_1) do
             create(:audit_events_streaming_instance_event_type_filter,
-              instance_external_audit_event_destination: destination_1)
+              instance_external_audit_event_destination: destination_1,
+              audit_event_type: 'event_type_filters_created')
           end
 
           let_it_be(:filter_2) do
             create(:audit_events_streaming_instance_event_type_filter,
-              instance_external_audit_event_destination: destination_1)
+              instance_external_audit_event_destination: destination_1,
+              audit_event_type: 'event_type_filters_deleted')
           end
 
           let_it_be(:filter_3) do
             create(:audit_events_streaming_instance_event_type_filter,
-              instance_external_audit_event_destination: destination_2)
+              instance_external_audit_event_destination: destination_2,
+              audit_event_type: 'audit_events_streaming_headers_create')
           end
 
           let_it_be(:query_body) do
