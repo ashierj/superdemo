@@ -29,7 +29,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
 
     describe '#execute DS' do
       before do
-        stub_licensed_features(dependency_scanning: true)
+        stub_licensed_features(security_dashboard: true, dependency_scanning: true)
       end
 
       let(:service) { described_class.new(project, current_user, report_type: 'dependency_scanning') }
@@ -100,7 +100,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
 
     describe '#execute CS' do
       before do
-        stub_licensed_features(container_scanning: true)
+        stub_licensed_features(security_dashboard: true, container_scanning: true)
       end
 
       let(:service) { described_class.new(project, current_user, report_type: 'container_scanning') }
@@ -149,7 +149,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
 
     describe '#execute DAST' do
       before do
-        stub_licensed_features(dast: true)
+        stub_licensed_features(security_dashboard: true, dast: true)
       end
 
       let(:service) { described_class.new(project, current_user, report_type: 'dast') }
@@ -207,7 +207,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
 
     describe '#execute SAST' do
       before do
-        stub_licensed_features(sast: true)
+        stub_licensed_features(security_dashboard: true, sast: true)
       end
 
       let(:service) { described_class.new(project, current_user, report_type: 'sast') }
@@ -257,7 +257,7 @@ RSpec.describe Ci::CompareSecurityReportsService, feature_category: :vulnerabili
 
     describe '#execute SECRET DETECTION' do
       before do
-        stub_licensed_features(secret_detection: true)
+        stub_licensed_features(security_dashboard: true, secret_detection: true)
       end
 
       let(:service) { described_class.new(project, current_user, report_type: 'secret_detection') }

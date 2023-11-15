@@ -22,6 +22,10 @@ RSpec.describe Vulnerabilities::DestroyDismissalFeedbackService, feature_categor
   describe '#execute' do
     subject(:destroy_feedback) { described_class.new(user, vulnerability).execute }
 
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
     context 'without necessary permissions' do
       it 'raises `Gitlab::Access::AccessDeniedError` error' do
         expect { destroy_feedback }.to raise_error(Gitlab::Access::AccessDeniedError)
@@ -31,7 +35,7 @@ RSpec.describe Vulnerabilities::DestroyDismissalFeedbackService, feature_categor
 
     context 'with necessary permissions' do
       before do
-        project.add_developer(user)
+        project.add_maintainer(user)
       end
 
       it 'destroys the feedback records associated with the findings of the given vulnerability' do

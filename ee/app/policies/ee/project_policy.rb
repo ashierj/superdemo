@@ -384,10 +384,6 @@ module EE
 
       rule { can?(:developer_access) }.policy do
         enable :admin_issue_board
-        enable :read_vulnerability_feedback
-        enable :create_vulnerability_feedback
-        enable :destroy_vulnerability_feedback
-        enable :update_vulnerability_feedback
         enable :admin_feature_flags_issue_links
         enable :read_project_audit_events
         enable :read_product_analytics
@@ -427,7 +423,6 @@ module EE
 
       rule { security_dashboard_enabled & can?(:developer_access) }.policy do
         enable :read_security_resource
-        enable :read_vulnerability_scanner
       end
 
       rule { coverage_fuzzing_enabled & can?(:developer_access) }.policy do
@@ -467,6 +462,18 @@ module EE
 
       rule { can?(:read_security_resource) & (can?(:maintainer_access) | developer_access_to_admin_vulnerability) }.policy do
         enable :admin_vulnerability
+      end
+
+      rule { can?(:admin_vulnerability) }.policy do
+        enable :read_vulnerability
+        enable :create_vulnerability_feedback
+        enable :destroy_vulnerability_feedback
+        enable :update_vulnerability_feedback
+      end
+
+      rule { can?(:read_vulnerability) }.policy do
+        enable :read_vulnerability_feedback
+        enable :read_vulnerability_scanner
       end
 
       rule { security_and_compliance_disabled }.policy do
@@ -542,7 +549,6 @@ module EE
 
       rule { auditor & security_dashboard_enabled }.policy do
         enable :read_security_resource
-        enable :read_vulnerability_scanner
       end
 
       rule { auditor & oncall_schedules_available }.policy do
