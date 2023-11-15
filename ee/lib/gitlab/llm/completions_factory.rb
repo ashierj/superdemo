@@ -29,11 +29,6 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::VertexAi::Templates::ExplainCode,
           feature_category: :ai_abstraction_layer
         },
-        tanuki_bot: {
-          service_class: ::Gitlab::Llm::Anthropic::Completions::TanukiBot,
-          prompt_class: ::Gitlab::Llm::Anthropic::Templates::TanukiBot,
-          feature_category: :ai_abstraction_layer
-        },
         generate_test_file: {
           service_class: ::Gitlab::Llm::VertexAi::Completions::GenerateTestFile,
           prompt_class: ::Gitlab::Llm::Templates::GenerateTestFile,

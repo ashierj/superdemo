@@ -11,7 +11,6 @@ module Llm
       summarize_comments: Llm::GenerateSummaryService,
       summarize_review: Llm::MergeRequests::SummarizeReviewService,
       explain_code: Llm::ExplainCodeService,
-      tanuki_bot: Llm::TanukiBotService,
       generate_test_file: Llm::GenerateTestFileService,
       generate_description: Llm::GenerateDescriptionService,
       generate_commit_message: Llm::GenerateCommitMessageService,
