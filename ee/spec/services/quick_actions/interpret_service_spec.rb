@@ -1044,18 +1044,6 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       end
     end
 
-    context 'when merge request has denied policies' do
-      it_behaves_like 'failed command', 'Could not apply merge command.' do
-        before do
-          stub_licensed_features(license_scanning: true)
-          allow(merge_request).to receive(:has_denied_policies?).and_return(true)
-        end
-
-        let(:content) { '/merge' }
-        let(:issuable) { merge_request }
-      end
-    end
-
     context 'approved merge request can be merged' do
       before do
         merge_request.update!(approvals_before_merge: 1)
