@@ -4,8 +4,6 @@ module Llm
   class CompletionWorker
     include ApplicationWorker
 
-    MAX_RUN_TIME = 20.seconds
-
     idempotent!
     data_consistency :delayed
     feature_category :ai_abstraction_layer
@@ -33,92 +31,14 @@ module Llm
     end
 
     def perform(prompt_message_hash, options = {})
-      return unless Feature.enabled?(:ai_global_switch, type: :ops)
+      ai_prompt_message = self.class.deserialize_message(prompt_message_hash, options)
 
-      with_tracking(prompt_message_hash['ai_action']) do
-        ai_prompt_message = self.class.deserialize_message(prompt_message_hash, options)
+      track_snowplow_event(ai_prompt_message)
 
-        return unless resource_authorized?(ai_prompt_message) # rubocop:disable Cop/AvoidReturnFromBlocks -- return from a method is expected here.
-
-        log_perform(ai_prompt_message)
-
-        options.symbolize_keys!
-        options[:extra_resource] = ::Llm::ExtraResourceFinder
-          .new(ai_prompt_message.user, options.delete(:referer_url)).execute
-
-        ai_completion = ::Gitlab::Llm::CompletionsFactory.completion!(ai_prompt_message, options)
-        logger.debug(message: "Got Completion Service from factory", class_name: ai_completion.class.name)
-
-        ai_completion.execute
-      end
+      Internal::CompletionService.new(ai_prompt_message, options).execute
     end
 
     private
-
-    def with_tracking(ai_action)
-      start_time = ::Gitlab::Metrics::System.monotonic_time
-
-      response = yield
-
-      update_error_rate(ai_action, response)
-      update_duration_metric(ai_action, ::Gitlab::Metrics::System.monotonic_time - start_time)
-
-      response
-    rescue StandardError => err
-      update_error_rate(ai_action)
-      raise err
-    end
-
-    def log_perform(ai_prompt_message)
-      logger.debug(
-        message: "Performing CompletionWorker",
-        user_id: ai_prompt_message.user.to_gid,
-        resource_id: ai_prompt_message.resource&.to_gid,
-        action_name: ai_prompt_message.ai_action,
-        request_id: ai_prompt_message.request_id,
-        client_subscription_id: ai_prompt_message.client_subscription_id
-      )
-
-      track_snowplow_event(ai_prompt_message)
-    end
-
-    def resource_authorized?(ai_prompt_message)
-      !ai_prompt_message.resource ||
-        ai_prompt_message.user.can?("read_#{ai_prompt_message.resource.to_ability_name}", ai_prompt_message.resource)
-    end
-
-    def update_error_rate(ai_action_name, response = nil)
-      completion = ::Gitlab::Llm::CompletionsFactory::COMPLETIONS[ai_action_name.to_sym]
-      return unless completion
-
-      success = response.try(:errors)&.empty?
-
-      Gitlab::Metrics::Sli::ErrorRate[:llm_completion].increment(
-        labels: {
-          feature_category: completion[:feature_category],
-          service_class: completion[:service_class].name
-        },
-        error: !success
-      )
-    end
-
-    def update_duration_metric(ai_action_name, duration)
-      completion = ::Gitlab::Llm::CompletionsFactory::COMPLETIONS[ai_action_name.to_sym]
-      return unless completion
-
-      labels = {
-        feature_category: completion[:feature_category],
-        service_class: completion[:service_class].name
-      }
-      Gitlab::Metrics::Sli::Apdex[:llm_completion].increment(
-        labels: labels,
-        success: duration <= MAX_RUN_TIME
-      )
-    end
-
-    def logger
-      @logger ||= Gitlab::Llm::Logger.build
-    end
 
     def track_snowplow_event(prompt_message)
       Gitlab::Tracking.event(
