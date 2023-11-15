@@ -143,6 +143,37 @@ describe('Analytics Dashboards utils', () => {
     it('returns the chart data for each metric', () => {
       expect(res).toEqual(mockChartData);
     });
+    it('rounds deployment_frequency values to the nearest tenth', () => {
+      const randomFloats = [112.32423, 54.453654236, 0.2342, 34.34082345, 9.998843, 4.44444];
+      const randomFloatsRounded = randomFloats.map((f) => Math.round(f * 10) / 10);
+      const mockChartsTimePeriodsWithVariedDeploys = mockChartsTimePeriods.map((p, i) => ({
+        ...p,
+        deployment_frequency: {
+          ...p.deployment_frequency,
+          value: randomFloats[i],
+        },
+      }));
+      const sparklineDataWithRoundedDeployFrequencies = generateSparklineCharts(
+        mockChartsTimePeriodsWithVariedDeploys,
+      );
+      const mockChartDataWithRoundedDeployFrequencies = {
+        ...mockChartData,
+        deployment_frequency: {
+          ...mockChartData.deployment_frequency,
+          chart: {
+            ...mockChartData.deployment_frequency.chart,
+            data: mockChartData.deployment_frequency.chart.data.map((d, i) => [
+              d[0],
+              randomFloatsRounded[i],
+            ]),
+          },
+        },
+      };
+
+      expect(sparklineDataWithRoundedDeployFrequencies).toEqual(
+        mockChartDataWithRoundedDeployFrequencies,
+      );
+    });
 
     describe('with metrics keys', () => {
       beforeEach(() => {
