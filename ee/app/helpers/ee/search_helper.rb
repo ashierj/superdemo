@@ -82,49 +82,6 @@ module EE
       search_truncate(text).html_safe
     end
 
-    def advanced_search_status_marker(project)
-      ref = params[:repository_ref]
-      enabled = project.nil? || ref.blank? || ref == project.default_branch
-
-      tags = {}
-      tags[:doc_link_start], tags[:doc_link_end] = tag.a(
-        PLACEHOLDER,
-        href: help_page_path('user/search/advanced_search'),
-        rel: :noopener,
-        target: '_blank'
-      ).split(PLACEHOLDER)
-
-      unless enabled
-        tags[:ref_elem] = tag.a(href: '#', class: 'ref-truncated has-tooltip', data: { title: ref }) do
-          tag.code(ref, class: 'gl-white-space-nowrap')
-        end
-
-        tags[:default_branch] = tag.code(project.default_branch)
-
-        tags[:default_branch_link_start], tags[:default_branch_link_end] = link_to(
-          PLACEHOLDER,
-          search_path(safe_params.except(:repository_ref))
-        ).split(PLACEHOLDER)
-
-        tags[:docs_link] = link_to(
-          _('Learn more.'),
-          help_page_path('user/search/advanced_search', anchor: 'use-the-advanced-search-syntax'),
-          target: '_blank',
-          rel: 'noopener noreferrer'
-        )
-      end
-
-      # making sure all the tags are marked `html_safe`
-      message =
-        if enabled
-          _('%{doc_link_start}Advanced search%{doc_link_end} is enabled.')
-        else
-          _('%{doc_link_start}Advanced search%{doc_link_end} is disabled since %{ref_elem} is not the default branch. %{docs_link}')
-        end % tags.transform_values(&:html_safe)
-
-      message.html_safe
-    end
-
     override :search_sort_options
     def search_sort_options
       original_options = super
