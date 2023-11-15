@@ -15,10 +15,4 @@ module Groups::SsoHelper
       phrase: phrase
     }
   end
-
-  def saml_provider_enabled?(group = nil)
-    return false unless group.is_a? Group
-
-    !!group.root_ancestor.saml_provider&.enabled?
-  end
 end

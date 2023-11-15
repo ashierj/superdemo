@@ -2,13 +2,7 @@
 
 require 'spec_helper'
 
-RSpec
-  .describe(
-    Projects::MergeRequestsController,
-    '(JavaScript fixtures in EE context)',
-    type: :controller,
-    feature_category: :code_review_workflow
-  ) do
+RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE context)', type: :controller do
   include JavaScriptFixturesHelpers
 
   let(:project) { create(:project, :repository, path: 'merge-requests-project') }

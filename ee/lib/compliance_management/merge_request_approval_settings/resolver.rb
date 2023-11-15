@@ -14,8 +14,7 @@ module ComplianceManagement
           allow_overrides_to_approver_list_per_merge_request: allow_overrides_to_approver_list_per_merge_request,
           retain_approvals_on_push: retain_approvals_on_push,
           selective_code_owner_removals: selective_code_owner_removals,
-          require_password_to_approve: require_password_to_approve,
-          require_saml_auth_to_approve: require_saml_auth_to_approve
+          require_password_to_approve: require_password_to_approve
         }
       end
 
@@ -71,17 +70,6 @@ module ComplianceManagement
         )
       end
 
-      def require_saml_auth_to_approve
-        group_value = group_settings&.require_saml_auth_to_approve
-
-        ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
-          value: [group_value].any?,
-          # locked: is always true for projects frontend will manually ovrride it for groups
-          locked: true,
-          inherited_from: :group
-        )
-      end
-
       private
 
       def instance_settings
@@ -89,8 +77,6 @@ module ComplianceManagement
       end
 
       def group_settings
-        return unless @group.is_a? ::Group
-
         @group&.group_merge_request_approval_setting
       end
 
