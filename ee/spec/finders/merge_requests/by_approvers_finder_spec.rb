@@ -3,37 +3,37 @@
 require 'spec_helper'
 
 RSpec.describe MergeRequests::ByApproversFinder, feature_category: :code_review_workflow do
-  let(:group_user) { create(:user) }
-  let(:second_group_user) { create(:user) }
-  let(:group) do
+  let_it_be(:group_user) { create(:user) }
+  let_it_be(:second_group_user) { create(:user) }
+  let_it_be(:group) do
     create(:group).tap do |group|
       group.add_developer(group_user)
       group.add_developer(second_group_user)
     end
   end
 
-  let!(:merge_request) { create(:merge_request) }
-  let!(:merge_request_with_approver) { create(:merge_request_with_approver) }
+  let_it_be(:merge_request) { create(:merge_request) }
+  let_it_be(:merge_request_with_approver) { create(:merge_request_with_approver) }
 
-  let(:project_user) { create(:user) }
-  let(:first_user) { merge_request_with_approver.approvers.first.user }
-  let(:second_user) { create(:user) }
-  let(:second_project_user) { create(:user) }
+  let_it_be(:project_user) { create(:user) }
+  let_it_be(:first_user) { merge_request_with_approver.approvers.first.user }
+  let_it_be(:second_user) { create(:user) }
+  let_it_be(:second_project_user) { create(:user) }
 
-  let!(:merge_request_with_project_approver) do
+  let_it_be(:merge_request_with_project_approver) do
     rule = create(:approval_project_rule, users: [project_user, second_project_user])
     create(:merge_request, source_project: create(:project, approval_rules: [rule]))
   end
 
-  let!(:merge_request_with_two_approvers) { create(:merge_request, approval_users: [first_user, second_user]) }
-  let!(:merge_request_with_group_approver) do
+  let_it_be(:merge_request_with_two_approvers) { create(:merge_request, approval_users: [first_user, second_user]) }
+  let_it_be(:merge_request_with_group_approver) do
     create(:merge_request).tap do |merge_request|
       rule = create(:approval_merge_request_rule, merge_request: merge_request, groups: [group])
       merge_request.approval_rules << rule
     end
   end
 
-  let!(:merge_request_with_project_group_approver) do
+  let_it_be(:merge_request_with_project_group_approver) do
     rule = create(:approval_project_rule, groups: [group])
     create(:merge_request, source_project: create(:project, approval_rules: [rule]))
   end

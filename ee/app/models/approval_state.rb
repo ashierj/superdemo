@@ -26,7 +26,7 @@ class ApprovalState
     return users if merge_request.merge_requests_author_approval?
 
     if users.is_a?(ActiveRecord::Relation) && !users.loaded?
-      users.where.not(id: merge_request.author_id).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459")
+      users.where.not(id: merge_request.author_id)
     else
       users - [merge_request.author]
     end
@@ -37,7 +37,7 @@ class ApprovalState
     return users unless merge_request.merge_requests_disable_committers_approval?
 
     if users.is_a?(ActiveRecord::Relation) && !users.loaded?
-      users.where.not(id: merge_request.committers(with_merge_commits: true).select(:id)).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459")
+      users.where.not(id: merge_request.committers(with_merge_commits: true).select(:id))
     else
       users - merge_request.committers
     end
@@ -149,12 +149,10 @@ class ApprovalState
   # @param target [:approvers, :users]
   # @param unactioned [Boolean]
   def filtered_approvers(code_owner: true, target: :approvers, unactioned: false)
-    ::Gitlab::Database.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459") do
-      rules = user_defined_rules + report_approver_rules
-      rules.concat(code_owner_rules) if code_owner
+    rules = user_defined_rules + report_approver_rules
+    rules.concat(code_owner_rules) if code_owner
 
-      filter_approvers(rules.flat_map(&target), unactioned: unactioned)
-    end
+    filter_approvers(rules.flat_map(&target), unactioned: unactioned)
   end
 
   def unactioned_approvers

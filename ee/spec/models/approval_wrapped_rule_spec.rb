@@ -5,12 +5,13 @@ require 'spec_helper'
 RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
   using RSpec::Parameterized::TableSyntax
 
-  let(:merge_request) { create(:merge_request) }
+  let_it_be_with_refind(:merge_request) { create(:merge_request) }
+  let_it_be(:approver1) { create(:user) }
+  let_it_be(:approver2) { create(:user) }
+  let_it_be(:approver3) { create(:user) }
+
   let(:rule) { create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: approvals_required) }
   let(:approvals_required) { 0 }
-  let(:approver1) { create(:user) }
-  let(:approver2) { create(:user) }
-  let(:approver3) { create(:user) }
 
   subject(:approval_wrapped_rule) { described_class.new(merge_request, rule) }
 

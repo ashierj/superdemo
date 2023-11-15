@@ -389,6 +389,40 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
 
       expect(subject.group_users).to eq([user1])
     end
+
+    # TODO: Remove along with the feature flag since without the
+    # feature flag this test is not useful
+    context 'when approval_rules_disable_joins feature flag exists' do
+      context 'and is enabled' do
+        before do
+          group1.add_guest(user1)
+          group2.add_guest(user1)
+          subject.groups = [group1, group2]
+        end
+
+        it 'performs a multiple queries' do
+          subject
+
+          control_count = ActiveRecord::QueryRecorder.new do
+            subject.group_users.to_a
+          end
+
+          expect(control_count.count).to eq(4)
+        end
+      end
+
+      context 'and is disabled' do
+        before do
+          stub_feature_flags(approval_rules_disable_joins: false)
+        end
+
+        it 'performs a single query' do
+          subject
+
+          expect { subject.group_users.to_a }.not_to exceed_query_limit(1)
+        end
+      end
+    end
   end
 
   describe '.exportable' do

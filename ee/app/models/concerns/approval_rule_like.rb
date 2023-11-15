@@ -24,8 +24,9 @@ module ApprovalRuleLike
       after_add: :audit_add, after_remove: :audit_remove
 
     has_many :group_members, through: :groups
-    has_many :group_users, -> { distinct.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457") },
-      through: :groups, source: :users
+    has_many :group_users, -> {
+      distinct.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457")
+    }, through: :groups, source: :users, disable_joins: -> { Feature.enabled?(:approval_rules_disable_joins) }
 
     belongs_to :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration', optional: true
     belongs_to :scan_result_policy_read,
@@ -132,14 +133,6 @@ module ApprovalRuleLike
 
   private
 
-  def direct_approvers
-    if users.loaded? && group_users.loaded?
-      users | group_users
-    else
-      User.from_union([users, group_users])
-    end
-  end
-
   def relation_exists?(relation, column:, value:)
     return relation.exists?({ column => value }) unless relation.loaded?
 
@@ -163,7 +156,6 @@ module ApprovalRuleLike
   def filter_inactive_approvers(approvers)
     if approvers.respond_to?(:with_state)
       approvers.with_state(:active)
-        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457")
     else
       approvers.select(&:active?)
     end

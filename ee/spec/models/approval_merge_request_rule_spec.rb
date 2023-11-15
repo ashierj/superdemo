@@ -338,8 +338,8 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
 
       context 'when the rules users have already been loaded' do
         before do
-          subject.users
-          subject.group_users
+          subject.users.to_a
+          subject.group_users.to_a
         end
 
         it 'does not perform any new queries when all users are loaded already' do
