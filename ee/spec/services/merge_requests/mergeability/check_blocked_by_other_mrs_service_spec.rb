@@ -47,7 +47,7 @@ RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService, featu
         it "returns a check result with status success" do
           expect(result.status)
             .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
-          expect(result.payload[:reason]).to eq(:merge_request_blocked)
+          expect(result.payload[:identifier]).to eq(:merge_request_blocked)
         end
       end
     end

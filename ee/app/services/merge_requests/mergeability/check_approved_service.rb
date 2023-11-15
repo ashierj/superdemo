@@ -13,7 +13,7 @@ module MergeRequests
         if merge_request.approved? && !merge_request.approval_state.temporarily_unapproved?
           success
         else
-          failure(reason: failure_reason)
+          failure
         end
       end
 
