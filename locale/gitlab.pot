@@ -707,12 +707,6 @@ msgstr ""
 msgid "%{description}- Sentry event: %{errorUrl}- First seen: %{firstSeen}- Last seen: %{lastSeen} %{countLabel}: %{count}%{userCountLabel}: %{userCount}"
 msgstr ""
 
-msgid "%{doc_link_start}Advanced search%{doc_link_end} is disabled since %{ref_elem} is not the default branch. %{docs_link}"
-msgstr ""
-
-msgid "%{doc_link_start}Advanced search%{doc_link_end} is enabled."
-msgstr ""
-
 msgid "%{docs_link_start}Learn about visibility levels.%{docs_link_end}"
 msgstr ""
 
@@ -921,6 +915,12 @@ msgid "%{linkStart} Learn more%{linkEnd}."
 msgstr ""
 
 msgid "%{linkStart}%{linkEnd} review summary"
+msgstr ""
+
+msgid "%{linkStart}Advanced search%{linkEnd} is enabled."
+msgstr ""
+
+msgid "%{linkStart}Exact code search (powered by Zoekt)%{linkEnd} is disabled since %{ref_elem} is not the default branch. %{docs_link}"
 msgstr ""
 
 msgid "%{listToShow}, and %{awardsListLength} more"
@@ -22303,7 +22303,10 @@ msgstr ""
 msgid "GlobalSearch|%{count} default results provided. Use the up and down arrow keys to navigate search results list."
 msgstr ""
 
-msgid "GlobalSearch|%{link_start}Exact code search (powered by Zoekt)%{link_end} is enabled"
+msgid "GlobalSearch|%{linkStart}Exact code search (powered by Zoekt)%{linkEnd} is disabled since %{ref_elem} is not the default branch. %{docs_link}"
+msgstr ""
+
+msgid "GlobalSearch|%{linkStart}Exact code search (powered by Zoekt)%{linkEnd} is enabled"
 msgstr ""
 
 msgid "GlobalSearch|Aggregations load error."
