@@ -1971,6 +1971,60 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#enforce_ssh_certificates?' do
+    let(:namespace) { create(:group) }
+
+    before do
+      namespace.enforce_ssh_certificates = true
+    end
+
+    it 'delegates the field to namespace settings' do
+      expect(namespace.namespace_settings).to receive(:enforce_ssh_certificates?).and_call_original
+
+      expect(namespace.enforce_ssh_certificates?).to eq(true)
+    end
+
+    context 'with a subgroup' do
+      let(:namespace) { create(:group, :nested) }
+
+      it 'returns false' do
+        expect(namespace.enforce_ssh_certificates?).to eq(false)
+      end
+    end
+  end
+
+  describe '#ssh_certificates_available?' do
+    let(:namespace) { create(:group) }
+
+    context 'when the feature is not licensed' do
+      before do
+        stub_licensed_features(ssh_certificates: false)
+      end
+
+      it 'is not available' do
+        expect(namespace.ssh_certificates_available?).to eq(false)
+      end
+    end
+
+    context 'when the feature is licensed' do
+      before do
+        stub_licensed_features(ssh_certificates: true)
+      end
+
+      it 'is available' do
+        expect(namespace.ssh_certificates_available?).to eq(true)
+      end
+
+      context 'with a subgroup' do
+        let(:subgroup) { create(:group, :nested) }
+
+        it 'is not available' do
+          expect(subgroup.ssh_certificates_available?).to eq(false)
+        end
+      end
+    end
+  end
+
   describe '#custom_roles_enabled?', feature_category: :system_access do
     let_it_be(:namespace) { create(:group) }
 

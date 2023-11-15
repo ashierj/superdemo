@@ -333,6 +333,35 @@ RSpec.describe GroupsController, type: :request, feature_category: :groups_and_p
         end
       end
     end
+
+    context 'setting enforce_ssh_certificates' do
+      let(:params) { { group: { enforce_ssh_certificates: true } } }
+
+      it 'does not change the column' do
+        expect { subject }.not_to change { group.reload.enforce_ssh_certificates? }
+        expect(response).to have_gitlab_http_status(:found)
+      end
+
+      context 'when ssh_certificates licensed feature is available' do
+        before do
+          stub_licensed_features(ssh_certificates: true)
+        end
+
+        it 'successfully changes the column' do
+          expect { subject }.to change { group.reload.enforce_ssh_certificates? }
+          expect(response).to have_gitlab_http_status(:found)
+        end
+
+        context 'when a group is not a top-level group' do
+          let(:group) { create(:group, :nested) }
+
+          it 'does not change the column' do
+            expect { subject }.not_to change { group.reload.enforce_ssh_certificates? }
+            expect(response).to have_gitlab_http_status(:found)
+          end
+        end
+      end
+    end
   end
 
   describe 'PUT #transfer', :saas do

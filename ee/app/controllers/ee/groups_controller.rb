@@ -98,6 +98,7 @@ module EE
         params_ee << :max_personal_access_token_lifetime if current_group&.personal_access_token_expiration_policy_available?
         params_ee << :prevent_forking_outside_group if can_change_prevent_forking?(current_user, current_group)
         params_ee << :service_access_tokens_expiration_enforced if can_change_service_access_tokens_expiration?(current_user, current_group)
+        params_ee << :enforce_ssh_certificates if current_group&.ssh_certificates_available?
         params_ee << :code_suggestions if ai_assist_ui_enabled?
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
         params_ee << :product_analytics_enabled
