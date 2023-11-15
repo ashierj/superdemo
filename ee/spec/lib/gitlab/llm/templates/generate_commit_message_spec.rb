@@ -7,26 +7,6 @@ RSpec.describe Gitlab::Llm::Templates::GenerateCommitMessage, feature_category: 
 
   subject { described_class.new(merge_request) }
 
-  describe '#options' do
-    context 'for OpenAI' do
-      let(:client) { ::Gitlab::Llm::OpenAi::Client }
-
-      it 'returns max tokens' do
-        expect(subject.options(client)).to match(hash_including({
-          max_tokens: described_class::MAX_TOKENS
-        }))
-      end
-    end
-
-    context 'for VertexAI' do
-      let(:client) { ::Gitlab::Llm::VertexAi::Client }
-
-      it 'returns max tokens' do
-        expect(subject.options(client)).to be_empty
-      end
-    end
-  end
-
   describe '#to_prompt' do
     it 'includes raw diff' do
       diff_file = merge_request.raw_diffs.to_a[0]

@@ -4,18 +4,8 @@ module Gitlab
   module Llm
     module Templates
       class GenerateCommitMessage
-        include Gitlab::Utils::StrongMemoize
-
-        MAX_TOKENS = 500
-
         def initialize(merge_request)
           @merge_request = merge_request
-        end
-
-        def options(client)
-          return {} unless client == ::Gitlab::Llm::OpenAi::Client
-
-          { moderated: true, max_tokens: MAX_TOKENS }
         end
 
         def to_prompt
