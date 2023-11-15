@@ -108,26 +108,5 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
 
       expect(graphql_mutation_response(:ai_action)['errors']).to eq([])
     end
-
-    context 'when code_tasks flag is disabled' do
-      before do
-        stub_feature_flags(code_tasks: false)
-      end
-
-      it 'ignores current_file param' do
-        expect(Llm::CompletionWorker).to receive(:perform_for).with(
-          an_object_having_attributes(
-            user: current_user,
-            resource: resource,
-            ai_action: :chat,
-            content: "summarize"),
-          hash_not_including(current_file: current_file)
-        )
-
-        post_graphql_mutation(mutation, current_user: current_user)
-
-        expect(graphql_mutation_response(:ai_action)['errors']).to eq([])
-      end
-    end
   end
 end
