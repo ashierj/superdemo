@@ -616,6 +616,25 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
         end
       end
     end
+
+    context 'without license_scanning report in base pipeline' do
+      before do
+        stub_licensed_features(license_scanning: true)
+        synchronous_reactive_cache(merge_request)
+      end
+
+      let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
+
+      context 'when the base pipeline is nil' do
+        let!(:base_pipeline) { nil }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the base pipeline does not have license reports' do
+        it { is_expected.to be_falsey }
+      end
+    end
   end
 
   describe '#enabled_reports' do
@@ -1083,6 +1102,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
               .to receive(:execute).with(base_pipeline, head_pipeline).and_call_original
 
             expect(subject[:key].last).to include("software_license_policies/query-")
+            expect(subject[:data]['existing_licenses'].last.dig('classification', 'approval_status')).to eq('unclassified')
           end
         end
 

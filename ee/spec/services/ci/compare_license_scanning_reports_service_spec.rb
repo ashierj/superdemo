@@ -60,29 +60,59 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
           expect(subject[:data]['new_licenses']).to match_array([a_hash_including('name' => 'BSD-4-Clause'),
             a_hash_including('name' => 'unknown')])
         end
+
+        it 'reports new licenses statuses' do
+          expect(subject[:data]['new_licenses'][0]['classification']['approval_status']).to eq('unclassified')
+        end
       end
     end
 
-    context "when head pipeline has not run and base pipeline is for a forked project" do
-      before do
-        project.add_maintainer(maintainer)
-        project.add_developer(contributor)
-
-        create(:pm_package, name: "nokogiri", purl_type: "gem",
-          other_licenses: [{ license_names: ["BSD-4-Clause"], versions: ["1.8.0"] }])
-      end
-
+    context 'when base pipeline does not have test reports' do
       let(:service) { described_class.new(project, maintainer) }
       let(:maintainer) { create(:user) }
       let(:contributor) { create(:user) }
       let_it_be(:project) { create(:project, :public, :repository) }
-      let(:base_pipeline) { nil }
-      let(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: forked_project, user: contributor) }
-      let(:forked_project) { fork_project(project, contributor, namespace: contributor.namespace) }
+      let(:head_pipeline_project) { project }
+      let(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: head_pipeline_project, user: contributor) }
 
-      it 'reports new licenses' do
-        expect(subject[:status]).to eq(:parsed)
-        expect(subject[:data]['new_licenses'].count).to eq(2)
+      before do
+        project.add_maintainer(maintainer)
+        project.add_developer(contributor)
+
+        create(:pm_package, name: 'nokogiri', purl_type: 'gem',
+          other_licenses: [{ license_names: ['BSD-4-Clause'], versions: ['1.8.0'] }])
+      end
+
+      shared_examples 'reports new licenses' do
+        it 'reports new licenses' do
+          expect(subject[:status]).to eq(:parsed)
+          expect(subject[:data]['new_licenses'].count).to eq(2)
+        end
+
+        it 'reports new licenses statuses' do
+          expect(subject[:data]['new_licenses'][0]['classification']['approval_status']).to eq('unclassified')
+          expect(subject[:data]['new_licenses'][1]['classification']['approval_status']).to eq('unclassified')
+        end
+      end
+
+      context 'when base pipeline has not run' do
+        let(:base_pipeline) { nil }
+
+        it_behaves_like 'reports new licenses'
+      end
+
+      context 'when base pipeline has not run and head pipeline is for a forked project' do
+        let(:base_pipeline) { nil }
+        let(:forked_project) { fork_project(project, contributor, namespace: contributor.namespace) }
+        let(:head_pipeline_project) { forked_project }
+
+        it_behaves_like 'reports new licenses'
+      end
+
+      context 'when base pipeline does not have a license scanning report' do
+        let(:base_pipeline) { create(:ee_ci_pipeline, project: project) }
+
+        it_behaves_like 'reports new licenses'
       end
     end
 
@@ -122,10 +152,18 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
           expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache 2.0 License')])
         end
 
+        it 'reports new licenses statuses' do
+          expect(subject[:data]['new_licenses'][0]['classification']['approval_status']).to eq('unclassified')
+        end
+
         it 'reports existing licenses' do
           expect(subject[:data]['existing_licenses']).to match(
             [a_hash_including('name' => 'BSD-4-Clause'), a_hash_including('name' => 'unknown')]
           )
+        end
+
+        it 'reports existing licenses statuses' do
+          expect(subject[:data]['existing_licenses'][0]['classification']['approval_status']).to eq('unclassified')
         end
 
         it 'reports removed licenses' do
