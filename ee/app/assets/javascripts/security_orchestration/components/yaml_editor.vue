@@ -23,6 +23,11 @@ export default {
       required: false,
       default: true,
     },
+    fileGlobalId: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   computed: {
     editorOptions() {
@@ -64,6 +69,7 @@ export default {
   <source-editor
     :value="value"
     file-name="*.yaml"
+    :file-global-id="fileGlobalId"
     :editor-options="editorOptions"
     @[$options.readyEvent]="registerSchema($event)"
     @input="onInput"

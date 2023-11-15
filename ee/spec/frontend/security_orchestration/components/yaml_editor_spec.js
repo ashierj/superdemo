@@ -87,4 +87,14 @@ describe('YamlEditor component', () => {
       policyType: mockPolicyType,
     });
   });
+
+  it('configures source editor with unique id', () => {
+    factory({
+      propsData: {
+        fileGlobalId: 'testId',
+      },
+    });
+
+    expect(findEditor().props('fileGlobalId')).toBe('testId');
+  });
 });

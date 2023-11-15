@@ -1,8 +1,10 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import ScanExecutionPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_execution/editor_component.vue';
+import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_execution/action/action_section.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/rule_section.vue';
-import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/action/action_section.vue';
+import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_action.vue';
+import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
@@ -27,6 +29,7 @@ import {
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
   RUNNER_TAGS_PARSING_ERROR,
   DAST_SCANNERS_PARSING_ERROR,
+  EXECUTE_YAML_ACTION,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import { RULE_KEY_MAP } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib/rules';
 
@@ -97,6 +100,9 @@ describe('ScanExecutionPolicyEditor', () => {
   const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
   const findPolicyRuleBuilder = () => wrapper.findComponent(PolicyRuleBuilder);
   const findAllPolicyRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
+  const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
+  const findActionSection = () => wrapper.findComponent(ActionSection);
+  const findAllActionSections = () => wrapper.findAllComponents(ActionSection);
 
   describe('default', () => {
     beforeEach(() => {
@@ -338,5 +344,36 @@ enabled: true`;
         expect(findPolicyEditorLayout().props('parsingError')).toBe(expectedErrorMessage);
       },
     );
+  });
+
+  describe('execute yaml block section', () => {
+    it.each([true, false])(
+      'should render action builder when feature flag is enabled',
+      (flagEnabled) => {
+        factory({
+          provide: {
+            glFeatures: { compliancePipelineInPolicies: flagEnabled },
+          },
+        });
+
+        expect(findActionSection().exists()).toBe(flagEnabled);
+        expect(findScanFilterSelector().exists()).toBe(flagEnabled);
+        expect(findAddActionButton().exists()).toBe(!flagEnabled);
+      },
+    );
+
+    it('should add custom action', async () => {
+      factory({
+        provide: {
+          glFeatures: { compliancePipelineInPolicies: true },
+        },
+      });
+
+      expect(findAllActionSections()).toHaveLength(1);
+
+      await findScanFilterSelector().vm.$emit('select', EXECUTE_YAML_ACTION);
+
+      expect(findAllActionSections()).toHaveLength(2);
+    });
   });
 });
