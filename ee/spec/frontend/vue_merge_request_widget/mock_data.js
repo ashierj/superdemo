@@ -18,7 +18,6 @@ export default {
   dast_comparison_path: '/dast_comparison_path',
   coverage_fuzzing_comparison_path: '/coverage_fuzzing_comparison_path',
   api_fuzzing_comparison_path: '/api_fuzzing_comparison_path',
-  saml_approval_path: '/group/saml_sso_path',
 };
 
 // Browser Performance Testing

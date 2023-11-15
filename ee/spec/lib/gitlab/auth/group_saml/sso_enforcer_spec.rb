@@ -50,24 +50,6 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
         expect(subject).not_to be_active_session
       end
     end
-
-    context 'when a session timeout is specified' do
-      subject(:enforcer) { described_class.new(saml_provider, user: user, session_timeout: 1.hour) }
-
-      it 'returns true within timeout' do
-        enforcer.update_session
-
-        expect(enforcer).to be_active_session
-      end
-
-      it 'returns false after timeout elapses' do
-        enforcer.update_session
-
-        travel_to(2.hours.from_now) do
-          expect(enforcer).not_to be_active_session
-        end
-      end
-    end
   end
 
   describe '#access_restricted?' do
@@ -79,32 +61,12 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
       end
 
       context 'when there is active saml session' do
-        context 'when the session timeout is the default' do
-          before do
-            subject.update_session
-          end
-
-          it 'returns false' do
-            expect(subject).not_to be_access_restricted
-          end
+        before do
+          subject.update_session
         end
 
-        context 'when a session timeout is specified' do
-          subject(:enforcer) { described_class.new(saml_provider, user: user, session_timeout: 1.hour) }
-
-          it 'returns true within timeout' do
-            enforcer.update_session
-
-            expect(enforcer).not_to be_access_restricted
-          end
-
-          it 'returns false after timeout elapses' do
-            enforcer.update_session
-
-            travel_to(2.hours.from_now) do
-              expect(enforcer).to be_access_restricted
-            end
-          end
+        it 'returns false' do
+          expect(subject).not_to be_access_restricted
         end
       end
 
