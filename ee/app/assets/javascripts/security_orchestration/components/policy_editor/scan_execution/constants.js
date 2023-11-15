@@ -67,3 +67,29 @@ export const ERROR_MESSAGE_MAP = {
   [POLICY_ACTION_BUILDER_TAGS_ERROR_KEY]: RUNNER_TAGS_PARSING_ERROR,
   [POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY]: DAST_SCANNERS_PARSING_ERROR,
 };
+export const RUN_SCAN_ACTION = 'run_scan_action';
+export const EXECUTE_YAML_ACTION = 'execute_yaml_action';
+
+export const SCAN_EXECUTION_ACTIONS = {
+  [RUN_SCAN_ACTION]: s__('ScanExecutionPolicy|Run a scan'),
+  [EXECUTE_YAML_ACTION]: s__('ScanExecutionPolicy|Execute a YAML code block'),
+};
+
+export const SCAN_EXECUTION_ACTIONS_LISTBOX_ITEMS = Object.entries(
+  SCAN_EXECUTION_ACTIONS,
+).map(([value, text]) => ({ value, text }));
+export const SCAN_EXECUTION_ACTIONS_KEYS = Object.keys(SCAN_EXECUTION_ACTIONS);
+
+export const INSERTED_CODE_BLOCK = 'inserted_code_block';
+export const LINKED_EXISTING_FILE = 'link_existing_file';
+export const CUSTOM_ACTION_KEY = 'custom';
+
+export const CUSTOM_ACTION_OPTIONS = {
+  [INSERTED_CODE_BLOCK]: s__('ScanExecutionPolicy|Inserted CI code block'),
+  [LINKED_EXISTING_FILE]: s__('ScanExecutionPolicy|Linked existing CI file'),
+};
+
+export const CUSTOM_ACTION_OPTIONS_KEYS = Object.keys(CUSTOM_ACTION_OPTIONS);
+export const CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS = Object.entries(
+  CUSTOM_ACTION_OPTIONS,
+).map(([value, text]) => ({ value, text }));

@@ -5,9 +5,7 @@ import SectionLayout from './section_layout.vue';
 
 export default {
   i18n: {
-    buttonText: s__('ScanResultPolicy|Add new criteria'),
     disabledLabel: __('disabled'),
-    headerText: s__('ScanResultPolicy|Choose criteria type'),
   },
   name: 'ScanFilterSelector',
   directives: {
@@ -38,6 +36,16 @@ export default {
       type: Function,
       required: false,
       default: () => false,
+    },
+    buttonText: {
+      type: String,
+      required: false,
+      default: s__('ScanResultPolicy|Add new criteria'),
+    },
+    header: {
+      type: String,
+      required: false,
+      default: s__('ScanResultPolicy|Choose criteria type'),
     },
     tooltipTitle: {
       type: String,
@@ -75,9 +83,9 @@ export default {
         v-gl-tooltip.right.viewport
         :disabled="disabled"
         fluid-width
-        :header-text="$options.i18n.headerText"
+        :header-text="header"
         :items="filters"
-        :toggle-text="$options.i18n.buttonText"
+        :toggle-text="buttonText"
         :title="tooltipTitle"
         selected="selected"
         variant="link"

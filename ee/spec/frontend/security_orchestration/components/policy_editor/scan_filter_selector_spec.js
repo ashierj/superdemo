@@ -84,4 +84,38 @@ describe('ScanFilterSelector', () => {
       expect(wrapper.emitted('select')).toBeUndefined();
     });
   });
+
+  describe('custom button text', () => {
+    it('should render default button text', () => {
+      createComponent();
+
+      expect(findListbox().props('toggleText')).toBe('Add new criteria');
+    });
+
+    it('should render custom button text', () => {
+      const buttonText = 'add custom variable';
+      createComponent({
+        buttonText,
+      });
+
+      expect(findListbox().props('toggleText')).toBe(buttonText);
+    });
+  });
+
+  describe('custom header text', () => {
+    it('should render default header text', () => {
+      createComponent();
+
+      expect(findListbox().props('headerText')).toBe('Choose criteria type');
+    });
+
+    it('should render custom header text', () => {
+      const header = 'add custom variable';
+      createComponent({
+        header,
+      });
+
+      expect(findListbox().props('headerText')).toBe(header);
+    });
+  });
 });

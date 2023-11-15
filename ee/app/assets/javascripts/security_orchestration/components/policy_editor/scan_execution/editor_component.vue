@@ -3,6 +3,7 @@ import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import {
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
@@ -16,6 +17,7 @@ import EditorLayout from '../editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import RuleSection from './rule/rule_section.vue';
+import ScanAction from './action/scan_action.vue';
 import ActionSection from './action/action_section.vue';
 import {
   buildScannerAction,
@@ -30,6 +32,9 @@ import {
   ADD_CONDITION_LABEL,
   CONDITIONS_LABEL,
   ERROR_MESSAGE_MAP,
+  CUSTOM_ACTION_KEY,
+  SCAN_EXECUTION_ACTIONS_LISTBOX_ITEMS,
+  EXECUTE_YAML_ACTION,
 } from './constants';
 
 export default {
@@ -38,12 +43,15 @@ export default {
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
+  SCAN_EXECUTION_ACTIONS_LISTBOX_ITEMS,
   i18n: {
     ACTIONS_LABEL,
     ADD_ACTION_LABEL,
     ADD_CONDITION_LABEL,
     CONDITIONS_LABEL,
     PARSING_ERROR_MESSAGE,
+    filterHeaderText: s__('SecurityOrchestration|Choose an action'),
+    buttonText: s__('SecurityOrchestration|Add new action'),
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
@@ -51,10 +59,12 @@ export default {
     ),
   },
   components: {
+    ScanFilterSelector,
+    ActionSection,
     DimDisableContainer,
     GlButton,
     GlEmptyState,
-    ActionSection,
+    ScanAction,
     EditorLayout,
     RuleSection,
   },
@@ -110,8 +120,13 @@ export default {
     },
   },
   methods: {
-    addAction() {
-      this.policy.actions.push(buildScannerAction({ scanner: DEFAULT_SCANNER }));
+    addAction(action) {
+      const payload =
+        this.glFeatures.compliancePipelineInPolicies && action === EXECUTE_YAML_ACTION
+          ? { scanner: CUSTOM_ACTION_KEY }
+          : { scanner: DEFAULT_SCANNER };
+
+      this.policy.actions.push(buildScannerAction(payload));
       this.updateYamlEditorValue(this.policy);
     },
     addRule() {
@@ -264,22 +279,44 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <action-section
-          v-for="(action, index) in policy.actions"
-          :key="index"
-          class="gl-mb-4"
-          :init-action="action"
-          :action-index="index"
-          @changed="updateActionOrRule($options.ACTION, index, $event)"
-          @remove="removeActionOrRule($options.ACTION, index)"
-          @parsing-error="handleActionBuilderParsingError"
-        />
+        <template v-if="glFeatures.compliancePipelineInPolicies">
+          <action-section
+            v-for="(action, index) in policy.actions"
+            :key="index"
+            :action-index="index"
+            :init-action="action"
+            @changed="updateActionOrRule($options.ACTION, index, $event)"
+            @remove="removeActionOrRule($options.ACTION, index)"
+            @parsing-error="handleActionBuilderParsingError"
+          />
 
-        <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
-          <gl-button variant="link" data-testid="add-action" icon="plus" @click="addAction">
-            {{ $options.i18n.ADD_ACTION_LABEL }}
-          </gl-button>
-        </div>
+          <scan-filter-selector
+            class="gl-w-full"
+            :button-text="$options.i18n.buttonText"
+            :header="$options.i18n.filterHeaderText"
+            :filters="$options.SCAN_EXECUTION_ACTIONS_LISTBOX_ITEMS"
+            @select="addAction"
+          />
+        </template>
+
+        <template v-else>
+          <scan-action
+            v-for="(action, index) in policy.actions"
+            :key="index"
+            class="gl-mb-4"
+            :init-action="action"
+            :action-index="index"
+            @changed="updateActionOrRule($options.ACTION, index, $event)"
+            @remove="removeActionOrRule($options.ACTION, index)"
+            @parsing-error="handleActionBuilderParsingError"
+          />
+
+          <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
+            <gl-button variant="link" data-testid="add-action" icon="plus" @click="addAction">
+              {{ $options.i18n.ADD_ACTION_LABEL }}
+            </gl-button>
+          </div>
+        </template>
       </dim-disable-container>
     </template>
   </editor-layout>
