@@ -29,7 +29,10 @@ module Gitlab
 
             ::Gitlab::Llm::VertexAi::Client
               .new(user, tracking_context: tracking_context)
-              .text(content: template.to_prompt)
+              .text(
+                content: template.to_prompt,
+                parameters: ::Gitlab::Llm::VertexAi::Configuration.payload_parameters(temperature: 0)
+              )
           end
 
           def store_response(response_modifier, mr_diff)

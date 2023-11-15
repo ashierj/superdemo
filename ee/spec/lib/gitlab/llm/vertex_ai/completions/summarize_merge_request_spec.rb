@@ -25,6 +25,28 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
   subject { described_class.new(prompt_message, prompt_class, options) }
 
   describe '#execute' do
+    let(:prompt) { "This is a prompt." }
+
+    let(:payload_parameters) do
+      {
+        temperature: 0,
+        maxOutputTokens: 1024,
+        topK: 40,
+        topP: 0.95
+      }
+    end
+
+    before do
+      allow_next_instance_of(prompt_class) do |template|
+        allow(template).to receive(:to_prompt).and_return(prompt)
+      end
+
+      allow(::Gitlab::Llm::VertexAi::Configuration)
+        .to receive(:payload_parameters)
+        .with(temperature: 0)
+        .and_return(payload_parameters)
+    end
+
     context 'when specific diff_id does not exist' do
       let(:diff_id) { mr_diff.id + 1 }
 
@@ -59,7 +81,10 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
 
       before do
         allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
-          allow(client).to receive(:text).and_return(example_response.to_json)
+          allow(client)
+            .to receive(:text)
+            .with(content: prompt, parameters: payload_parameters)
+            .and_return(example_response.to_json)
         end
       end
 
@@ -104,7 +129,10 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
 
       before do
         allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
-          allow(client).to receive(:text).and_return(error.to_json)
+          allow(client)
+            .to receive(:text)
+            .with(content: prompt, parameters: payload_parameters)
+            .and_return(error.to_json)
         end
       end
 
@@ -117,7 +145,10 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
     context 'when the AI response is empty' do
       before do
         allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
-          allow(client).to receive(:text).and_return({})
+          allow(client)
+            .to receive(:text)
+            .with(content: prompt, parameters: payload_parameters)
+            .and_return({})
         end
       end
 

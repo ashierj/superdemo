@@ -17,8 +17,7 @@ module Gitlab
             #{extracted_diff}
             ```
 
-            The code above, enclosed by three ticks, is the code diff of a merge request. The merge request's
-            title is: '#{title}'
+            The code above, enclosed by three ticks, is the code diff of a merge request.
 
             Write a summary of the changes in couple sentences, the way an expert engineer would summarize the
             changes using simple - generally non-technical - terms.
