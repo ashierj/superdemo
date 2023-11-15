@@ -31,11 +31,11 @@ export function queryToFilterObj(query) {
   });
   const {
     period = DEFAULT_PERIOD_FILTER,
-    service = null,
-    operation = null,
-    trace_id: traceId = null,
-    durationMs = null,
-    attribute = null,
+    service = undefined,
+    operation = undefined,
+    trace_id: traceId = undefined,
+    durationMs = undefined,
+    attribute = undefined,
   } = filter;
   const search = filter[FILTERED_SEARCH_TERM];
   return {

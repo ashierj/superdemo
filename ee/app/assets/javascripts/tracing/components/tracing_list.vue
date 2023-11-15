@@ -40,7 +40,7 @@ export default {
   },
   data() {
     const query = window.location.search;
-    const { sortBy, ...filterQuery } = queryToObject(query);
+    const { sortBy, ...filterQuery } = queryToObject(query, { gatherArrays: true });
 
     return {
       loading: false,
