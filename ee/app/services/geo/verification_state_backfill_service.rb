@@ -32,7 +32,11 @@ module Geo
 
     # @return [Range] the next range of a batch of records
     def next_range!
-      Gitlab::Geo::BaseBatcher.new(replicable_model, verification_state_table_class, verification_state_model_key, key: batcher_key, batch_size: batch_size).next_range!
+      batcher.next_range!
+    end
+
+    def batcher
+      Gitlab::Geo::BaseBatcher.new(replicable_model, verification_state_table_class, verification_state_model_key, key: batcher_key, batch_size: batch_size)
     end
 
     def batcher_key
