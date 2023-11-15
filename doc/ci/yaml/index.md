@@ -4670,6 +4670,13 @@ child3:
       yaml_variables: false
 ```
 
+**Additional details**:
+
+- CI/CD variables forwarded to downstream pipelines with `trigger:forward` have the
+  [highest precedence](../variables/index.md#cicd-variable-precedence). If a variable
+  with the same name is defined in the downstream pipeline, that variable is overwritten
+  by the forwarded variable.
+
 ### `variables`
 
 Use `variables` to define [CI/CD variables](../variables/index.md#define-a-cicd-variable-in-the-gitlab-ciyml-file) for jobs.
