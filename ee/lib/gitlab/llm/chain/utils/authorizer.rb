@@ -43,6 +43,7 @@ module Gitlab
 
           def self.resource(resource:, user:)
             return Response.new(allowed: false, message: not_found_message) unless resource
+            return user_as_resource(resource: resource, user: user) if resource.is_a?(User)
 
             container = resource&.resource_parent
 
@@ -63,6 +64,12 @@ module Gitlab
             allowed = user.any_group_with_ai_available?
             message = s_("You do not have access to AI features.") unless allowed
             Response.new(allowed: allowed, message: message)
+          end
+
+          def self.user_as_resource(resource:, user:)
+            return Response.new(allowed: false, message: not_found_message) if user != resource
+
+            user(user: user)
           end
 
           def self.not_found_message

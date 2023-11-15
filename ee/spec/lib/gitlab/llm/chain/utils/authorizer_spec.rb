@@ -205,6 +205,35 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, :saas, feature_category: :
         authorizer.resource(resource: new_resource, user: context.current_user)
       end
     end
+
+    context 'when resource is current user' do
+      context 'when user is not in any group with ai' do
+        include_context 'with experiment features disabled for group'
+
+        it 'returns false' do
+          expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)
+            .to be(false)
+        end
+      end
+
+      context 'when user is in any group with ai' do
+        include_context 'with ai features enabled for group'
+
+        it 'returns true' do
+          expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)
+            .to be(true)
+        end
+
+        context 'when resource is different user' do
+          let(:resource) { build(:user) }
+
+          it 'returns false' do
+            expect(authorizer.resource(resource: resource, user: context.current_user).allowed?)
+              .to be(false)
+          end
+        end
+      end
+    end
   end
 
   describe '.user' do
