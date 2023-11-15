@@ -27,34 +27,23 @@ export default {
           unique: true,
           token: LicenseToken,
           operators: OPERATORS_IS,
+          licenses: this.licenses,
         },
       ];
     },
   },
   methods: {
-    ...mapActions({
-      fetchFilteredDependencies(dispatch, filters = []) {
-        const filterParams = {};
-
-        filters.forEach((filter) => {
-          if (Array.isArray(filter.value?.data)) {
-            // `value.data` contains the applied filters as a comma seperated string
-            filterParams[filter.type] = filter.value.data;
-          }
-        });
-
-        dispatch(`${this.currentList}/fetchDependencies`, filterParams);
-      },
-    }),
+    ...mapActions('allDependencies', ['setSearchFilterParameters', 'fetchDependencies']),
   },
 };
 </script>
 
 <template>
   <gl-filtered-search
-    v-model="value"
     :placeholder="__('Search or filter dependencies...')"
     :available-tokens="tokens"
-    @submit="fetchFilteredDependencies"
+    terms-as-tokens
+    @input="setSearchFilterParameters"
+    @submit="fetchDependencies()"
   />
 </template>

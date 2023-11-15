@@ -17,6 +17,9 @@ export default () => ({
     generatedAt: '',
   },
   filter: FILTER.all,
+  searchFilterParameters: {},
   sortField: null,
   sortOrder: null,
+  licenses: [],
+  fetchingLicensesInProgress: false,
 });

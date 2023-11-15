@@ -44,21 +44,13 @@ describe('GroupDependenciesFilteredSearch', () => {
   });
 
   describe('submit', () => {
-    it.each`
-      filterData               | expectedPayload
-      ${['MIT']}               | ${['MIT']}
-      ${['MIT', 'Apache 2.0']} | ${['MIT', 'Apache 2.0']}
-    `(
-      'dispatches the "fetchDependencies" Vuex action with the correct payload when the filter-data is "$filterData',
-      ({ filterData, expectedPayload }) => {
-        expect(store.dispatch).not.toHaveBeenCalled();
+    it('dispatches the "fetchDependencies" Vuex action', () => {
+      expect(store.dispatch).not.toHaveBeenCalled();
 
-        findFilteredSearch().vm.$emit('submit', [{ type: 'license', value: { data: filterData } }]);
+      const filterPayload = [{ type: 'license', value: { data: ['MIT'] } }];
+      findFilteredSearch().vm.$emit('submit', filterPayload);
 
-        expect(store.dispatch).toHaveBeenCalledWith('allDependencies/fetchDependencies', {
-          license: expectedPayload,
-        });
-      },
-    );
+      expect(store.dispatch).toHaveBeenCalledWith('allDependencies/fetchDependencies', undefined);
+    });
   });
 });

@@ -45,11 +45,20 @@ export default {
     };
     state.initialized = true;
   },
+  [types.SET_SEARCH_FILTER_PARAMETERS](state, parameters) {
+    state.searchFilterParameters = parameters;
+  },
   [types.SET_SORT_FIELD](state, payload) {
     state.sortField = payload;
     state.sortOrder = SORT_ORDERS[payload];
   },
   [types.TOGGLE_SORT_ORDER](state) {
     state.sortOrder = state.sortOrder === SORT_ASCENDING ? SORT_DESCENDING : SORT_ASCENDING;
+  },
+  [types.SET_LICENSES](state, licenses) {
+    state.licenses = licenses;
+  },
+  [types.SET_FETCHING_LICENSES_IN_PROGRESS](state, fetchLicensesInProgress) {
+    state.fetchingLicensesInProgress = fetchLicensesInProgress;
   },
 };
