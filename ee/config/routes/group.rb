@@ -227,5 +227,12 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     resources :service_accounts, path: 'service_accounts(/*vueroute)', action: :index
 
     resources :secrets, path: 'secrets(/*vueroute)', only: [:index]
+
+    resources :work_items, only: [], param: :iid do
+      member do
+        get '/descriptions/:version_id/diff', action: :description_diff, as: :description_diff
+        delete '/descriptions/:version_id', action: :delete_description_version, as: :delete_description_version
+      end
+    end
   end
 end
