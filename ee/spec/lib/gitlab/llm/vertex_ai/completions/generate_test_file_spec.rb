@@ -20,21 +20,6 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateTestFile, feature_cat
   subject { described_class.new(prompt_message, prompt_class, options) }
 
   describe '#execute' do
-    context 'when the feature flag is disabled' do
-      before do
-        stub_feature_flags(generate_test_file_vertex: false)
-      end
-
-      it 'falls back to the OpenAI implementation' do
-        allow_next_instance_of(::Gitlab::Llm::OpenAi::Completions::GenerateTestFile,
-          prompt_message, prompt_class, options) do |completion|
-          expect(completion).to receive(:execute)
-        end
-
-        subject.execute
-      end
-    end
-
     context 'when the text model returns an unsuccessful response' do
       before do
         allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |client|

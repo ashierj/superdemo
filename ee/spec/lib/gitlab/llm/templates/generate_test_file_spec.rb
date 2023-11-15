@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Templates::GenerateTestFile, feature_category: :code
 
   subject { described_class.new(merge_request, path) }
 
-  describe '.get_options' do
+  describe '.to_prompt' do
     it 'returns correct parameters' do
       expect(subject.to_prompt).to include("class Commit")
       expect(subject.to_prompt).to include("Write unit tests for #{path} to ensure its proper functioning")
