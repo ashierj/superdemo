@@ -14,7 +14,7 @@ RSpec.describe 'Welcome screen on SaaS', :js, :saas, feature_category: :onboardi
 
     it 'does not show the email opt in checkbox when setting up for a company' do
       expect(page).to have_content('We won\'t share this information with anyone')
-      expect(page).not_to have_selector('input[name="user[email_opted_in]', visible: :visible)
+      expect(page).not_to have_selector('input[name="opt_in_to_email]', visible: :visible)
 
       choose 'user_setup_for_company_true'
 
