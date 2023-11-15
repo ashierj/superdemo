@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Emails::NamespaceStorageUsageMailer do
+RSpec.describe Emails::NamespaceStorageUsageMailer, feature_category: :consumables_cost_management do
   include NamespacesHelper
   include EmailSpec::Matchers
 

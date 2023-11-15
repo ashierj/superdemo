@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::Storage::RootExcessSize do
+RSpec.describe Namespaces::Storage::RootExcessSize, feature_category: :consumables_cost_management do
   let(:namespace) { create(:group, additional_purchased_storage_size: additional_purchased_storage_size) }
   let(:total_repository_size_excess) { 50.megabytes }
   let(:additional_purchased_storage_size) { 100 }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
+RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas, feature_category: :consumables_cost_management do
   include NamespaceStorageHelpers
 
   let_it_be(:namespace) { create(:namespace_with_plan, plan: :ultimate_plan) }
