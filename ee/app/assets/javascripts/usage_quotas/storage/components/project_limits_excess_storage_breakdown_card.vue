@@ -40,7 +40,7 @@ export default {
     'purchaseStorageUrl',
     'buyAddonTargetAttr',
     'totalRepositorySizeExcess',
-    'namespacePlanStorageIncluded',
+    'perProjectStorageLimit',
     'namespacePlanName',
   ],
   props: {
@@ -164,8 +164,8 @@ export default {
       </template>
       <hr class="gl-my-4" />
       <p>{{ $options.i18n.PROJECT_ENFORCEMENT_PURCHASE_CARD_SUBTITLE }}</p>
-      <p v-if="namespacePlanStorageIncluded">
-        <strong><number-to-human-size :value="namespacePlanStorageIncluded" /></strong>
+      <p v-if="perProjectStorageLimit">
+        <strong><number-to-human-size :value="perProjectStorageLimit" /></strong>
 
         {{ planStorageDescription }}
       </p>

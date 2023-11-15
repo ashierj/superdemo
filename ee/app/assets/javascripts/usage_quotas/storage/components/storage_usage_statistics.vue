@@ -35,7 +35,8 @@ export default {
     'isUsingProjectEnforcementWithLimits',
     'isUsingProjectEnforcementWithNoLimits',
     'isUsingNamespaceEnforcement',
-    'namespacePlanStorageIncluded',
+    'perProjectStorageLimit',
+    'namespaceStorageLimit',
     'namespaceId',
   ],
   apollo: {
@@ -85,9 +86,6 @@ export default {
     namespaceStorageOverviewSubtitle: NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
   },
   computed: {
-    totalStorage() {
-      return this.namespacePlanStorageIncluded + this.additionalPurchasedStorageSize;
-    },
     isPurchaseButtonShown() {
       return (
         this.purchaseStorageUrl &&
@@ -142,11 +140,9 @@ export default {
       </template>
     </div>
     <p class="gl-mb-0">
-      <template v-if="namespacePlanStorageIncluded && isUsingNamespaceEnforcement">
+      <template v-if="namespaceStorageLimit && isUsingNamespaceEnforcement">
         <gl-sprintf :message="s__('UsageQuota|This namespace has %{planLimit} of storage.')">
-          <template #planLimit
-            ><number-to-human-size :value="namespacePlanStorageIncluded"
-          /></template>
+          <template #planLimit><number-to-human-size :value="namespaceStorageLimit" /></template>
         </gl-sprintf>
         <gl-link :href="$options.usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit">{{
           s__('UsageQuota|How are limits applied?')
@@ -157,9 +153,7 @@ export default {
         <gl-sprintf
           :message="s__('UsageQuota|Projects under this namespace have %{planLimit} of storage.')"
         >
-          <template #planLimit
-            ><number-to-human-size :value="namespacePlanStorageIncluded"
-          /></template>
+          <template #planLimit><number-to-human-size :value="perProjectStorageLimit" /></template>
         </gl-sprintf>
         <gl-link :href="$options.usageQuotasHelpPaths.usageQuotasProjectStorageLimit">{{
           s__('UsageQuota|How are limits applied?')
@@ -170,7 +164,7 @@ export default {
       <namespace-limits-storage-usage-overview-card
         v-if="isUsingNamespaceEnforcement"
         :used-storage="usedStorage"
-        :total-storage="totalStorage"
+        :purchased-storage="additionalPurchasedStorageSize"
         :loading="loading"
         data-testid="namespace-usage-total"
       />
@@ -199,9 +193,7 @@ export default {
 
         <namespace-limits-total-storage-available-breakdown-card
           v-else-if="isUsingNamespaceEnforcement"
-          :included-storage="namespacePlanStorageIncluded"
           :purchased-storage="additionalPurchasedStorageSize"
-          :total-storage="totalStorage"
           :loading="loading"
         />
       </template>

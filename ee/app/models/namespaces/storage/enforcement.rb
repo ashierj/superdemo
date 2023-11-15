@@ -18,6 +18,7 @@ module Namespaces
         root_namespace = namespace.root_ancestor
 
         return false unless in_pre_enforcement_phase?(root_namespace)
+        return false unless over_pre_enforcement_notification_limit?(root_namespace)
 
         update_pre_enforcement_timestamp(root_namespace)
 
@@ -55,13 +56,10 @@ module Namespaces
         plan_limit.enforcement_limit
       end
 
-      private
-
       def in_pre_enforcement_phase?(root_namespace)
         # a Namespace is in the pre-enforcement phase if all the following are true:
         # - the application settings for rollout are enabled
         # - the namespace is not on a paid plan
-        # - their storage usage is over the notification limit
         # - their storage usage is under the enforcement limit
         # - the namespace is not being excluded from storage limits
 
@@ -74,8 +72,10 @@ module Namespaces
         # namespace is above the applicable limit
         return false if ::Namespaces::Storage::RootSize.new(root_namespace).above_size_limit?
 
-        over_pre_enforcement_notification_limit?(root_namespace)
+        true
       end
+
+      private
 
       def update_pre_enforcement_timestamp(root_namespace)
         Rails.cache.fetch(['namespaces', root_namespace.id, 'pre_enforcement_tracking'], expires_in: 7.days) do

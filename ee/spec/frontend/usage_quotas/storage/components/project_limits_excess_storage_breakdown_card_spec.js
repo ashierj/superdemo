@@ -83,7 +83,7 @@ describe('ProjectLimitsExcessStorageBreakdownCard', () => {
   it('renders the card subtitle related to the storage included', () => {
     createComponent();
     expect(wrapper.text()).toContain(
-      numberToHumanSize(defaultNamespaceProvideValues.namespacePlanStorageIncluded, 1),
+      numberToHumanSize(defaultNamespaceProvideValues.perProjectStorageLimit, 1),
     );
     expect(wrapper.text()).toContain('Storage per project included in Free subscription');
   });

@@ -11,11 +11,7 @@ describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
   const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(NamespaceLimitsTotalStorageAvailableBreakdownCard, {
       propsData: {
-        includedStorage: withRootStorageStatistics.actualRepositorySizeLimit,
         purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
-        totalStorage:
-          withRootStorageStatistics.actualRepositorySizeLimit +
-          withRootStorageStatistics.additionalPurchasedStorageSize,
         loading: false,
         ...props,
       },
@@ -39,7 +35,7 @@ describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
   });
 
   it('renders storage included in the plan', () => {
-    expect(findStorageIncludedInPlan().text()).toContain('978.8 KiB');
+    expect(findStorageIncludedInPlan().text()).toContain('5.0 GiB');
   });
 
   it('renders plan storage description', () => {
@@ -51,7 +47,7 @@ describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {
   });
 
   it('renders total storage', () => {
-    expect(findTotalStorage().text()).toContain('979.1 KiB');
+    expect(findTotalStorage().text()).toContain('5.0 GiB');
   });
 
   describe('skeleton loader', () => {

@@ -19,16 +19,17 @@ export default {
     GlLink,
     NumberToHumanSize,
   },
+  inject: ['namespaceStorageLimit'],
   props: {
-    totalStorage: {
+    purchasedStorage: {
       type: Number,
       required: false,
-      default: null,
+      default: 0,
     },
     usedStorage: {
       type: Number,
       required: false,
-      default: null,
+      default: 0,
     },
     loading: {
       type: Boolean,
@@ -36,12 +37,20 @@ export default {
     },
   },
   computed: {
+    totalStorageAvailable() {
+      return this.namespaceStorageLimit + this.purchasedStorage;
+    },
     percentageUsed() {
       // don't show the progress bar if there's no total storage
-      if (!this.totalStorage || this.usedStorage === null) {
+      if (!this.totalStorageAvailable) {
         return null;
       }
-      const usedRatio = Math.max(Math.round((this.usedStorage / this.totalStorage) * 100), 0);
+
+      const usedRatio = Math.max(
+        Math.round((this.usedStorage / this.totalStorageAvailable) * 100),
+        0,
+      );
+
       return Math.min(usedRatio, 100);
     },
     percentageRemaining() {
@@ -86,10 +95,14 @@ export default {
         </gl-link>
       </div>
       <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
-        <number-to-human-size label-class="gl-font-lg" :value="Number(usedStorage)" plain-zero />
-        <template v-if="totalStorage">
+        <number-to-human-size label-class="gl-font-lg" :value="usedStorage" plain-zero />
+        <template v-if="totalStorageAvailable">
           /
-          <number-to-human-size label-class="gl-font-lg" :value="Number(totalStorage)" plain-zero />
+          <number-to-human-size
+            label-class="gl-font-lg"
+            :value="totalStorageAvailable"
+            plain-zero
+          />
         </template>
       </div>
       <template v-if="percentageUsed !== null">

@@ -166,7 +166,7 @@ describe('StorageUsageStatistics', () => {
         });
 
         expect(wrapper.text()).toContain(
-          'Projects under this namespace have 978.8 KiB of storage. How are limits applied?',
+          'Projects under this namespace have 10.0 GiB of storage. How are limits applied?',
         );
       });
 
@@ -176,7 +176,7 @@ describe('StorageUsageStatistics', () => {
         createComponent();
 
         expect(wrapper.text()).toContain(
-          'This namespace has 978.8 KiB of storage. How are limits applied?',
+          'This namespace has 5.0 GiB of storage. How are limits applied?',
         );
       });
     });
@@ -202,9 +202,7 @@ describe('StorageUsageStatistics', () => {
 
       expect(findNamespaceLimitsStorageUsageOverviewCard().props()).toEqual({
         usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
-        totalStorage:
-          withRootStorageStatistics.actualRepositorySizeLimit +
-          withRootStorageStatistics.additionalPurchasedStorageSize,
+        purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
         loading: false,
       });
     });
@@ -234,11 +232,7 @@ describe('StorageUsageStatistics', () => {
       createComponent();
 
       expect(findNamespaceLimitsTotalStorageAvailableBreakdownCard().props()).toEqual({
-        includedStorage: withRootStorageStatistics.actualRepositorySizeLimit,
         purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
-        totalStorage:
-          withRootStorageStatistics.actualRepositorySizeLimit +
-          withRootStorageStatistics.additionalPurchasedStorageSize,
         loading: false,
       });
     });
@@ -255,7 +249,7 @@ describe('StorageUsageStatistics', () => {
         provide: {
           isUsingNamespaceEnforcement: false,
           isUsingProjectEnforcementWithLimits: true,
-          namespacePlanStorageIncluded: 1,
+          perProjectStorageLimit: 1,
         },
       });
       expect(findNoLimitsPurchasedStorageBreakdownCard().exists()).toBe(false);
@@ -266,7 +260,7 @@ describe('StorageUsageStatistics', () => {
         provide: {
           isUsingNamespaceEnforcement: false,
           isUsingProjectEnforcementWithNoLimits: true,
-          namespacePlanStorageIncluded: 0,
+          perProjectStorageLimit: 0,
         },
       });
 
