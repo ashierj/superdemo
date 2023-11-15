@@ -34,18 +34,7 @@ describe('SecretsBreadcrumbs', () => {
     createWrapper();
   });
 
-  it('should render only the root breadcrumb when on root route', async () => {
-    try {
-      await router.push('/');
-    } catch {
-      // intentionally blank
-      //
-      // * in Vue.js 3 we need to refresh even '/' route
-      // because we dynamically add routes and exception will not be raised
-      //
-      // * in Vue.js 2 this will trigger "redundant navigation" error and will be caught here
-    }
-
+  it('should render only the root breadcrumb when on root route', () => {
     expect(findBreadcrumbs().props('items')).toStrictEqual([rootBreadcrumb]);
   });
 
