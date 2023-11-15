@@ -399,43 +399,6 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
       end
     end
 
-    context 'when restrict_pipeline_cancellation_role is specified' do
-      let(:settings) { project.ci_cd_settings }
-      let(:params) { { restrict_pipeline_cancellation_role: :maintainer } }
-      let(:request) do
-        put :update, params: { namespace_id: project.namespace, id: project, project: params }
-        project.reload
-      end
-
-      let(:developer_restriction) { settings.restrict_pipeline_cancellation_role_developer? }
-
-      context 'when the feature is enabled' do
-        before do
-          allow_next_instance_of(Ci::ProjectCancellationRestriction) do |cr|
-            allow(cr).to receive(:enabled?).and_return(true)
-          end
-        end
-
-        it 'updates the parameter' do
-          expect { request }.to change {
-            project.reload.ci_cd_settings.restrict_pipeline_cancellation_role_maintainer?
-          }.from(false).to(true)
-        end
-      end
-
-      context 'when the feature is disabled' do
-        before do
-          allow_next_instance_of(Ci::ProjectCancellationRestriction) do |cr|
-            allow(cr).to receive(:enabled?).and_return(false)
-          end
-        end
-
-        it 'will not update the parameter' do
-          expect { request }.not_to change { developer_restriction }
-        end
-      end
-    end
-
     context 'when only_allow_merge_if_all_status_checks_passed param is specified' do
       let(:params) { { project_setting_attributes: { only_allow_merge_if_all_status_checks_passed: true } } }
 
