@@ -10321,6 +10321,9 @@ msgstr ""
 msgid "CiCatalog|Discover CI configuration resources for a seamless CI/CD experience."
 msgstr ""
 
+msgid "CiCatalog|Edit your search and try again. Or %{linkStart}learn to create a component repository%{linkEnd}."
+msgstr ""
+
 msgid "CiCatalog|Get started with the CI/CD Catalog"
 msgstr ""
 
@@ -10342,6 +10345,9 @@ msgstr ""
 msgid "CiCatalog|No release available"
 msgstr ""
 
+msgid "CiCatalog|No result found"
+msgstr ""
+
 msgid "CiCatalog|Page %{currentPage} of %{totalPage}"
 msgstr ""
 
@@ -10352,6 +10358,9 @@ msgid "CiCatalog|Released %{timeAgo} by %{author}"
 msgstr ""
 
 msgid "CiCatalog|Repositories of pipeline components available in this namespace."
+msgstr ""
+
+msgid "CiCatalog|Search must be at least 3 characters"
 msgstr ""
 
 msgid "CiCatalog|The project must contain a README.md file and a template.yml file. When enabled, the repository is available in the CI/CD Catalog."
@@ -14512,6 +14521,9 @@ msgid "Created On"
 msgstr ""
 
 msgid "Created a branch and a merge request to resolve this issue."
+msgstr ""
+
+msgid "Created at"
 msgstr ""
 
 msgid "Created branch '%{branch_name}' and a merge request to resolve this issue."
