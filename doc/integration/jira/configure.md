@@ -69,6 +69,10 @@ To configure your project settings in GitLab:
    can view all issues from the Jira project you've specified.
 
    - To [create Jira issues for vulnerabilities](../../user/application_security/vulnerabilities/index.md#create-a-jira-issue-for-a-vulnerability), select the **Enable Jira issue creation from vulnerabilities** checkbox.
+
+   NOTE:
+   You can enable this setting at the project level only.
+
 1. Optional. Select **Test settings**.
 1. Select **Save changes**.
 
