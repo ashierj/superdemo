@@ -39,7 +39,8 @@ module Security
               confidence: report_finding.confidence,
               report_type: report_finding.report_type,
               present_on_default_branch: true,
-              cvss: report_finding.cvss
+              cvss: report_finding.cvss,
+              finding_id: finding_map.finding_id
             }
           end
 

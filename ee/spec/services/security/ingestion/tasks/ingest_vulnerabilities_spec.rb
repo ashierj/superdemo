@@ -18,12 +18,20 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities, feature_catego
     end
 
     let(:finding_maps) { create_list(:finding_map, 5, pipeline: pipeline) }
+    let_it_be(:some_findings) { create_list(:vulnerabilities_finding, 3) }
 
     subject(:ingest_vulnerabilities) { described_class.new(pipeline, finding_maps).execute }
 
     before do
       finding_maps.first.vulnerability_id = existing_vulnerability.id
+      finding_maps.first.finding_id = existing_vulnerability.finding.id
+
       finding_maps.second.vulnerability_id = resolved_vulnerability.id
+      finding_maps.second.finding_id = resolved_vulnerability.finding.id
+
+      finding_maps.third.finding_id = some_findings.first.id
+      finding_maps.fourth.finding_id = some_findings.second.id
+      finding_maps.fifth.finding_id = some_findings.third.id
 
       finding_maps.each { |finding_map| finding_map.identifier_ids << identifier.id }
     end
@@ -32,8 +40,22 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities, feature_catego
       expect { ingest_vulnerabilities }.to change { Vulnerability.count }.by(3)
     end
 
+    it 'fills in the finding_id column' do
+      ingest_vulnerabilities
+
+      ids = Vulnerability.pluck(:finding_id)
+
+      expect(ids).to all be_an(Integer)
+    end
+
     it 'marks the existing vulnerability as not resolved on default branch' do
       expect { ingest_vulnerabilities }.to change { existing_vulnerability.reload.resolved_on_default_branch }.to(false)
+    end
+
+    it 'backfills the finding_id column' do
+      expect { ingest_vulnerabilities }.to change { existing_vulnerability.reload.finding_id }
+        .from(nil).to(existing_vulnerability.finding.id).and change { resolved_vulnerability.reload.finding_id }
+        .from(nil).to(resolved_vulnerability.finding.id)
     end
 
     it 'creates new vulnerabilities with present_on_default_branch set to true' do
