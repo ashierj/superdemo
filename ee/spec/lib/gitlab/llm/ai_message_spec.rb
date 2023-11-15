@@ -16,9 +16,9 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       ai_action: 'chat',
       client_subscription_id: 'client_subscription_id',
       user: build_stubbed(:user),
-      resource: build_stubbed(:project),
       chunk_id: 1,
-      type: 'tool'
+      type: 'tool',
+      context: Gitlab::Llm::AiMessageContext.new(resource: build_stubbed(:user))
     }
   end
 
@@ -101,6 +101,12 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       it { is_expected.not_to be_user }
       it { is_expected.not_to be_assistant }
       it { is_expected.to be_system }
+    end
+  end
+
+  describe '#resource' do
+    it 'delegates to context' do
+      expect(subject.resource).to eq(data[:context].resource)
     end
   end
 end

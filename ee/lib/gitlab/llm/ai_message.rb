@@ -12,10 +12,12 @@ module Gitlab
 
       ATTRIBUTES_LIST = [
         :id, :request_id, :content, :role, :timestamp, :errors, :extras,
-        :user, :resource, :ai_action, :client_subscription_id, :type, :chunk_id
+        :user, :ai_action, :client_subscription_id, :type, :chunk_id, :context
       ].freeze
 
       attr_accessor(*ATTRIBUTES_LIST)
+
+      delegate :resource, to: :context
 
       def self.for(action:)
         if action.to_s == 'chat'
@@ -40,7 +42,7 @@ module Gitlab
 
       def to_h
         ATTRIBUTES_LIST.index_with do |attr|
-          public_send(attr) # rubocop:disable GitlabSecurity/PublicSend
+          public_send(attr) # rubocop:disable GitlabSecurity/PublicSend -- to avoid duplication with ATTRIBUTES_LIST.
         end.compact.with_indifferent_access
       end
 
