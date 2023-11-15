@@ -90,7 +90,7 @@ export default {
       }
     },
   },
-  helpPagePath: helpPagePath('user/ai_features', { anchor: 'third-party-ai-features' }),
+  helpPagePath: helpPagePath('user/ai_features', { anchor: 'root-cause-analysis' }),
   i18n: {
     drawerTitle: __('Root cause analysis'),
     bannerTitle: __('What is root cause analysis?'),
