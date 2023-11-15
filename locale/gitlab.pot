@@ -27740,6 +27740,18 @@ msgstr ""
 msgid "Kubernetes deployment not found"
 msgstr ""
 
+msgid "KubernetesDashboard|Agent %{name} ID #%{id}"
+msgstr ""
+
+msgid "KubernetesDashboard|Agents"
+msgstr ""
+
+msgid "KubernetesDashboard|Dashboard"
+msgstr ""
+
+msgid "KubernetesDashboard|Pods"
+msgstr ""
+
 msgid "LDAP"
 msgstr ""
 
