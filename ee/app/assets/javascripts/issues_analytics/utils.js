@@ -1,6 +1,9 @@
 import { isEmpty, mapKeys } from 'lodash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { RENAMED_FILTER_KEYS_DEFAULT } from 'ee/issues_analytics/constants';
+import { dateFormats } from '~/analytics/shared/constants';
+import dateFormat from '~/lib/dateformat';
+import { getMonthNames } from '~/lib/utils/datetime_utility';
 
 /**
  * Returns an object with renamed filter keys.
@@ -52,4 +55,53 @@ export const transformFilters = (filters = {}, renamedKeys = RENAMED_FILTER_KEYS
   });
 
   return newFilters;
+};
+
+/**
+ * @typedef {Object} monthDataItem
+ * @property {Date} fromDate
+ * @property {Date} toDate
+ * @property {String} month - abbreviated month
+ * @property {Number} year
+ */
+
+/**
+ * Accepts a date range and an Issue Analytics count query type and
+ * generates the data needed to build the GraphQL query for the chart
+ *
+ * @param startDate - start date for the date range
+ * @param endDate - end date for the date range
+ * @param format - format to be used by date range
+ * @return {monthDataItem[]} - date range data
+ */
+export const generateChartDateRangeData = (startDate, endDate, format = dateFormats.isoDate) => {
+  const chartDateRangeData = [];
+  const abbrMonthNames = getMonthNames(true);
+  const formatDate = (date) => dateFormat(date, format, true);
+
+  for (
+    let dateCursor = new Date(endDate);
+    dateCursor >= startDate;
+    dateCursor.setMonth(dateCursor.getMonth(), 0)
+  ) {
+    const monthIndex = dateCursor.getMonth();
+    const month = abbrMonthNames[monthIndex];
+    const year = dateCursor.getFullYear();
+    const fromDate = new Date(year, monthIndex, 1);
+    const toDate = new Date(year, monthIndex + 1, 1);
+
+    chartDateRangeData.unshift({
+      fromDate: formatDate(fromDate),
+      toDate: formatDate(toDate),
+      month,
+      year,
+    });
+  }
+
+  if (chartDateRangeData.length) {
+    chartDateRangeData[0].fromDate = dateFormat(startDate, format, true);
+    chartDateRangeData.at(-1).toDate = dateFormat(endDate, format, true);
+  }
+
+  return chartDateRangeData;
 };

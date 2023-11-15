@@ -9,15 +9,18 @@ import TotalIssuesAnalyticsChart from 'ee/issues_analytics/components/total_issu
 import IssuesAnalyticsEmptyState from 'ee/issues_analytics/components/issues_analytics_empty_state.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import issuesAnalyticsCountsQueryBuilder from 'ee/issues_analytics/graphql/issues_analytics_counts_query_builder';
-import { TOTAL_ISSUES_ANALYTICS_CHART_COLOR_PALETTE } from 'ee/issues_analytics/constants';
 import {
-  generateMockIssuesAnalyticsCountsEmptyResponseData,
-  generateMockIssuesAnalyticsCountsResponseData,
+  ISSUES_COMPLETED_COUNT_ALIAS,
+  ISSUES_OPENED_COUNT_ALIAS,
+  TOTAL_ISSUES_ANALYTICS_CHART_COLOR_PALETTE,
+} from 'ee/issues_analytics/constants';
+import {
   mockIssuesAnalyticsCountsChartData,
   mockIssuesAnalyticsCountsEndDate,
   mockIssuesAnalyticsCountsStartDate,
   mockFilters,
-  mockEmptyFilters,
+  getMockIssuesOpenedCountsResponse,
+  getMockIssuesClosedCountsResponse,
 } from '../mock_data';
 import { mockGraphqlIssuesAnalyticsCountsResponse } from '../helpers';
 
@@ -28,16 +31,28 @@ Vue.use(VueApollo);
 describe('TotalIssuesAnalyticsChart', () => {
   let wrapper;
   let mockApollo;
-  let issuesAnalyticsCountsSuccess;
 
   const fullPath = 'toolbox';
-  const mockGroupBy = ['Jul', 'Aug'];
+  const mockGroupBy = ['Jul', 'Aug', 'Sep'];
   const queryError = jest.fn().mockRejectedValueOnce(new Error('Something went wrong'));
   const mockDataNullResponse = mockGraphqlIssuesAnalyticsCountsResponse({ mockDataResponse: null });
-  const mockDataEmptyResponse = mockGraphqlIssuesAnalyticsCountsResponse({
-    mockDataResponse: generateMockIssuesAnalyticsCountsEmptyResponseData(),
+  const issuesOpenedCountsSuccess = mockGraphqlIssuesAnalyticsCountsResponse({
+    mockDataResponse: getMockIssuesOpenedCountsResponse(),
   });
-  const mockXAxisTitle = 'Last 2 months (Jul 2023 – Aug 2023)';
+
+  const issuesClosedCountsSuccess = mockGraphqlIssuesAnalyticsCountsResponse({
+    mockDataResponse: getMockIssuesClosedCountsResponse(),
+  });
+  const issuesOpenedCountsEmpty = mockGraphqlIssuesAnalyticsCountsResponse({
+    mockDataResponse: getMockIssuesOpenedCountsResponse({ isEmpty: true }),
+  });
+
+  const issuesClosedCountsEmpty = mockGraphqlIssuesAnalyticsCountsResponse({
+    mockDataResponse: getMockIssuesClosedCountsResponse({ isEmpty: true }),
+  });
+  const mockTypePolicy = {
+    Group: { fields: { flowMetrics: { merge: true } } },
+  };
 
   const createComponent = async ({
     props = {},
@@ -45,20 +60,31 @@ describe('TotalIssuesAnalyticsChart', () => {
     endDate = mockIssuesAnalyticsCountsEndDate,
     filters = {},
     type = 'group',
-    issuesAnalyticsCountsResolver,
+    issuesOpenedResolver,
+    issuesClosedResolver,
   } = {}) => {
-    const isProject = type === 'project';
-    const mockDataResponse = generateMockIssuesAnalyticsCountsResponseData(isProject);
-
-    issuesAnalyticsCountsSuccess = mockGraphqlIssuesAnalyticsCountsResponse({
-      mockDataResponse,
+    const issuesOpenedCountsQuery = issuesAnalyticsCountsQueryBuilder({
+      queryAlias: ISSUES_OPENED_COUNT_ALIAS,
+      startDate,
+      endDate,
     });
-    mockApollo = createMockApollo([
+
+    const issuesClosedCountsQuery = issuesAnalyticsCountsQueryBuilder({
+      queryAlias: ISSUES_COMPLETED_COUNT_ALIAS,
+      startDate,
+      endDate,
+    });
+
+    mockApollo = createMockApollo(
       [
-        issuesAnalyticsCountsQueryBuilder(startDate, endDate, isProject),
-        issuesAnalyticsCountsResolver || issuesAnalyticsCountsSuccess,
+        [issuesOpenedCountsQuery, issuesOpenedResolver || issuesOpenedCountsSuccess],
+        [issuesClosedCountsQuery, issuesClosedResolver || issuesClosedCountsSuccess],
       ],
-    ]);
+      {},
+      {
+        typePolicies: mockTypePolicy,
+      },
+    );
 
     wrapper = shallowMountExtended(TotalIssuesAnalyticsChart, {
       apolloProvider: mockApollo,
@@ -86,42 +112,49 @@ describe('TotalIssuesAnalyticsChart', () => {
     mockApollo = null;
   });
 
-  describe.each(['group', 'project'])(
-    'when the issuesAnalyticsCountsData query type is %s',
-    (type) => {
-      describe('and filters are not set', () => {
-        beforeEach(async () => {
-          await createComponent({ type, filters: mockEmptyFilters });
-        });
+  describe('default', () => {
+    beforeEach(async () => {
+      await createComponent();
+    });
 
-        it('fetches Issues Analytics counts without filters', () => {
-          const { monthsBack, ...filters } = mockEmptyFilters;
-
-          expect(issuesAnalyticsCountsSuccess).toHaveBeenCalledTimes(1);
-          expect(issuesAnalyticsCountsSuccess).toHaveBeenCalledWith({
-            fullPath,
-            ...filters,
-          });
-        });
+    it('should render chart', () => {
+      expect(findTotalIssuesAnalyticsChart().props()).toMatchObject({
+        bars: mockIssuesAnalyticsCountsChartData,
+        presentation: 'tiled',
+        groupBy: mockGroupBy,
+        xAxisType: 'category',
+        xAxisTitle: 'Last 3 months (Jul 2023 – Sep 2023)',
+        yAxisTitle: 'Issues Opened vs Closed',
+        customPalette: TOTAL_ISSUES_ANALYTICS_CHART_COLOR_PALETTE,
       });
+    });
 
-      describe('and filters are set', () => {
-        beforeEach(async () => {
-          await createComponent({ type, filters: mockFilters });
-        });
+    it('should display chart header', () => {
+      expect(wrapper.findByText('Overview').exists()).toBe(true);
+    });
 
-        it('fetches Issues Analytics counts with filters', () => {
-          const { monthsBack, ...filters } = mockFilters;
-
-          expect(issuesAnalyticsCountsSuccess).toHaveBeenCalledTimes(1);
-          expect(issuesAnalyticsCountsSuccess).toHaveBeenCalledWith({
-            fullPath,
-            ...filters,
-          });
-        });
+    it(`should fetch issues opened counts`, () => {
+      expect(issuesOpenedCountsSuccess).toHaveBeenCalledTimes(1);
+      expect(issuesOpenedCountsSuccess).toHaveBeenCalledWith({
+        fullPath,
       });
-    },
-  );
+    });
+
+    it(`should fetch issues closed counts`, () => {
+      expect(issuesClosedCountsSuccess).toHaveBeenCalledTimes(1);
+      expect(issuesClosedCountsSuccess).toHaveBeenCalledWith({
+        fullPath,
+      });
+    });
+
+    it('should display correct x-axis title when date range is month to date', async () => {
+      const mockStartDate = new Date('2023-09-01T00:00:00.000Z');
+
+      await createComponent({ startDate: mockStartDate });
+
+      expect(findTotalIssuesAnalyticsChart().props('xAxisTitle')).toBe('This month (Sep 2023)');
+    });
+  });
 
   describe('when fetching data', () => {
     beforeEach(() => {
@@ -133,98 +166,104 @@ describe('TotalIssuesAnalyticsChart', () => {
     });
   });
 
-  describe('when fetching data is successful', () => {
-    it('should render chart', async () => {
-      await createComponent();
-
-      expect(findTotalIssuesAnalyticsChart().exists()).toBe(true);
+  describe('when filters have been applied', () => {
+    beforeEach(async () => {
+      await createComponent({ filters: mockFilters });
     });
 
-    it('should display chart header', async () => {
-      await createComponent();
+    const { monthsBack, ...filters } = mockFilters;
 
-      expect(wrapper.findByText('Overview').exists()).toBe(true);
+    it(`should fetch issues opened counts with filters`, () => {
+      expect(issuesOpenedCountsSuccess).toHaveBeenCalledTimes(1);
+      expect(issuesOpenedCountsSuccess).toHaveBeenCalledWith({
+        fullPath,
+        ...filters,
+      });
     });
 
-    it.each`
-      prop               | propValue
-      ${'bars'}          | ${mockIssuesAnalyticsCountsChartData}
-      ${'presentation'}  | ${'tiled'}
-      ${'groupBy'}       | ${mockGroupBy}
-      ${'xAxisType'}     | ${'category'}
-      ${'xAxisTitle'}    | ${mockXAxisTitle}
-      ${'yAxisTitle'}    | ${'Issues Opened vs Closed'}
-      ${'customPalette'} | ${TOTAL_ISSUES_ANALYTICS_CHART_COLOR_PALETTE}
-    `("sets '$prop' prop to '$propValue' in the chart", async ({ prop, propValue }) => {
-      await createComponent();
-
-      expect(findTotalIssuesAnalyticsChart().props(prop)).toStrictEqual(propValue);
+    it(`should fetch issues closed counts with filters`, () => {
+      expect(issuesClosedCountsSuccess).toHaveBeenCalledTimes(1);
+      expect(issuesClosedCountsSuccess).toHaveBeenCalledWith({
+        fullPath,
+        ...filters,
+      });
     });
 
-    it('displays the correct x-axis title when date range is month to date', async () => {
-      const startDate = new Date('2023-07-01T00:00:00.000Z');
-      const endDate = new Date('2023-07-31T00:00:00.000Z');
+    describe('produced no results', () => {
+      beforeEach(async () => {
+        await createComponent({
+          filters: mockFilters,
+          issuesOpenedResolver: issuesOpenedCountsEmpty,
+          issuesClosedResolver: issuesClosedCountsEmpty,
+        });
+      });
 
-      await createComponent({ startDate, endDate });
+      it('should display correct empty state', () => {
+        expect(findEmptyState().props('emptyStateType')).toBe('noDataWithFilters');
+      });
 
-      expect(findTotalIssuesAnalyticsChart().props('xAxisTitle')).toBe('This month (Jul 2023)');
+      it('should not display chart', () => {
+        expect(findTotalIssuesAnalyticsChart().exists()).toBe(false);
+      });
+
+      it('should not emit "hideFilteredSearchBar" event', () => {
+        expect(wrapper.emitted('hideFilteredSearchBar')).toBeUndefined();
+      });
     });
   });
 
   describe('when fetching data fails', () => {
-    beforeEach(async () => {
-      await createComponent({ issuesAnalyticsCountsResolver: queryError });
-    });
-
-    it('should display alert component', () => {
-      expect(findAlert().exists()).toBe(true);
-      expect(findAlert().text()).toBe('Failed to load chart. Please try again.');
-    });
-
-    it('should log error to Sentry', () => {
-      expect(Sentry.captureException).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not display chart', () => {
-      expect(findTotalIssuesAnalyticsChart().exists()).toBe(false);
-    });
-  });
-
-  describe('when there is no data', () => {
-    describe('and filters are not applied', () => {
-      it.each`
-        description            | response
-        ${'response is null'}  | ${mockDataNullResponse}
-        ${'response is empty'} | ${mockDataEmptyResponse}
-      `(
-        'displays empty state when $description and emits "hideFilteredSearchBar" event',
-        async ({ response }) => {
+    describe.each`
+      issuesOpenedQueryHasError | issuesClosedQueryHasError | expectedSentryCallsCount
+      ${true}                   | ${true}                   | ${2}
+      ${true}                   | ${false}                  | ${1}
+      ${false}                  | ${true}                   | ${1}
+    `(
+      'issuesOpenedQueryHasError=$issuesOpenedQueryHasError and issuesClosedQueryHasError=$issuesClosedQueryHasError',
+      ({ issuesOpenedQueryHasError, issuesClosedQueryHasError, expectedSentryCallsCount }) => {
+        beforeEach(async () => {
           await createComponent({
-            filters: mockEmptyFilters,
-            issuesAnalyticsCountsResolver: response,
+            issuesOpenedResolver: issuesOpenedQueryHasError ? queryError : undefined,
+            issuesClosedResolver: issuesClosedQueryHasError ? queryError : undefined,
           });
-
-          expect(findEmptyState().props('emptyStateType')).toBe('noData');
-          expect(wrapper.emitted('hideFilteredSearchBar')).toHaveLength(1);
-        },
-      );
-    });
-
-    describe('and filters are applied', () => {
-      beforeEach(async () => {
-        await createComponent({
-          filters: mockFilters,
-          issuesAnalyticsCountsResolver: mockDataEmptyResponse,
         });
 
-        it('displays filters empty state', () => {
-          expect(findEmptyState().props('emptyStateType')).toBe('noDataWithFilters');
+        it('should display alert component', () => {
+          expect(findAlert().exists()).toBe(true);
+          expect(findAlert().text()).toBe('Failed to load chart. Please try again.');
+        });
+
+        it('should log error to Sentry', () => {
+          expect(Sentry.captureException).toHaveBeenCalledTimes(expectedSentryCallsCount);
+        });
+
+        it('should not display chart', () => {
+          expect(findTotalIssuesAnalyticsChart().exists()).toBe(false);
         });
 
         it('should not emit "hideFilteredSearchBar" event', () => {
           expect(wrapper.emitted('hideFilteredSearchBar')).toBeUndefined();
         });
-      });
-    });
+      },
+    );
+  });
+
+  describe('when there is no data to present', () => {
+    it.each`
+      description                    | issuesOpenedNoDataResponse | issuesClosedNoDataResponse
+      ${'responses are null'}        | ${mockDataNullResponse}    | ${mockDataNullResponse}
+      ${'response counts are all 0'} | ${issuesOpenedCountsEmpty} | ${issuesClosedCountsEmpty}
+    `(
+      'should display empty state and emit "hideFilteredSearchBar" event when $description',
+      async ({ issuesOpenedNoDataResponse, issuesClosedNoDataResponse }) => {
+        await createComponent({
+          issuesOpenedResolver: issuesOpenedNoDataResponse,
+          issuesClosedResolver: issuesClosedNoDataResponse,
+        });
+
+        expect(findEmptyState().props('emptyStateType')).toBe('noData');
+        expect(wrapper.emitted('hideFilteredSearchBar')).toHaveLength(1);
+      },
+    );
   });
 });

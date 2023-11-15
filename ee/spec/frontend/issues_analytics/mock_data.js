@@ -107,17 +107,19 @@ export const getQueryIssuesAnalyticsResponse = {
   },
 };
 
-export const mockIssuesAnalyticsCountsStartDate = new Date('2023-07-01T00:00:00.000Z');
-export const mockIssuesAnalyticsCountsEndDate = new Date('2023-08-01T00:00:00.000Z');
+export const mockIssuesAnalyticsCountsStartDate = new Date('2023-07-04T00:00:00.000Z');
+export const mockIssuesAnalyticsCountsEndDate = new Date('2023-09-15T00:00:00.000Z');
 
-const generateMockIssuesAnalyticsCountsQuery = (
+export const getMockIssuesAnalyticsCountsQuery = ({
+  queryAlias,
+  metricType,
   isProject = false,
-) => `query ($fullPath: ID!, $assigneeUsernames: [String!], $authorUsername: String, $milestoneTitle: String, $labelNames: [String!]) {
-  issuesAnalyticsCountsData: ${isProject ? 'project' : 'group'}(fullPath: $fullPath) {
+} = {}) => `query get${queryAlias}($fullPath: ID!, $assigneeUsernames: [String!], $authorUsername: String, $milestoneTitle: String, $labelNames: [String!]) {
+  namespace: ${isProject ? 'project' : 'group'}(fullPath: $fullPath) {
     id
-    issuesOpened: flowMetrics {
-      Jul_2023: issueCount(
-        from: "2023-07-01"
+    ${queryAlias}: flowMetrics {
+      Jul_2023: ${metricType}(
+        from: "2023-07-04"
         to: "2023-08-01"
         assigneeUsernames: $assigneeUsernames
         authorUsername: $authorUsername
@@ -126,7 +128,7 @@ const generateMockIssuesAnalyticsCountsQuery = (
       ) {
         value
       }
-      Aug_2023: issueCount(
+      Aug_2023: ${metricType}(
         from: "2023-08-01"
         to: "2023-09-01"
         assigneeUsernames: $assigneeUsernames
@@ -136,21 +138,9 @@ const generateMockIssuesAnalyticsCountsQuery = (
       ) {
         value
       }
-    }
-    issuesClosed: flowMetrics {
-      Jul_2023: issuesCompletedCount(
-        from: "2023-07-01"
-        to: "2023-08-01"
-        assigneeUsernames: $assigneeUsernames
-        authorUsername: $authorUsername
-        milestoneTitle: $milestoneTitle
-        labelNames: $labelNames
-      ) {
-        value
-      }
-      Aug_2023: issuesCompletedCount(
-        from: "2023-08-01"
-        to: "2023-09-01"
+      Sep_2023: ${metricType}(
+        from: "2023-09-01"
+        to: "2023-09-15"
         assigneeUsernames: $assigneeUsernames
         authorUsername: $authorUsername
         milestoneTitle: $milestoneTitle
@@ -163,32 +153,19 @@ const generateMockIssuesAnalyticsCountsQuery = (
 }
 `;
 
-export const mockGroupIssuesAnalyticsCountsQuery = generateMockIssuesAnalyticsCountsQuery();
-
-export const mockProjectIssuesAnalyticsCountsQuery = generateMockIssuesAnalyticsCountsQuery(true);
-
-export const generateMockIssuesAnalyticsCountsResponseData = (isProject = false) => ({
+export const getMockIssuesOpenedCountsResponse = ({ isProject = false, isEmpty = false } = {}) => ({
   id: 'fake-id',
-  issuesOpened: {
+  issuesOpenedCounts: {
     Jul_2023: {
-      value: 134,
+      value: isEmpty ? 0 : 134,
       __typename: 'ValueStreamAnalyticsMetric',
     },
     Aug_2023: {
-      value: 21,
+      value: isEmpty ? 0 : 21,
       __typename: 'ValueStreamAnalyticsMetric',
     },
-    __typename: isProject
-      ? 'ProjectValueStreamAnalyticsFlowMetrics'
-      : 'GroupValueStreamAnalyticsFlowMetrics',
-  },
-  issuesClosed: {
-    Jul_2023: {
-      value: 110,
-      __typename: 'ValueStreamAnalyticsMetric',
-    },
-    Aug_2023: {
-      value: 1,
+    Sep_2023: {
+      value: isEmpty ? 0 : 11,
       __typename: 'ValueStreamAnalyticsMetric',
     },
     __typename: isProject
@@ -198,51 +175,68 @@ export const generateMockIssuesAnalyticsCountsResponseData = (isProject = false)
   __typename: isProject ? TYPENAME_PROJECT : TYPENAME_GROUP,
 });
 
-export const mockGroupIssuesAnalyticsCountsResponseData = generateMockIssuesAnalyticsCountsResponseData();
+export const getMockIssuesClosedCountsResponse = ({ isProject = false, isEmpty = false } = {}) => ({
+  id: 'fake-id',
+  issuesClosedCounts: {
+    Jul_2023: {
+      value: isEmpty ? 0 : 110,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Aug_2023: {
+      value: isEmpty ? 0 : 1,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Sep_2023: {
+      value: isEmpty ? 0 : 15,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    __typename: isProject
+      ? 'ProjectValueStreamAnalyticsFlowMetrics'
+      : 'GroupValueStreamAnalyticsFlowMetrics',
+  },
+  __typename: isProject ? TYPENAME_PROJECT : TYPENAME_GROUP,
+});
 
-export const mockProjectIssuesAnalyticsCountsResponseData = generateMockIssuesAnalyticsCountsResponseData(
+export const getMockTotalIssuesAnalyticsCountsResponse = (isProject = false) => ({
+  ...getMockIssuesOpenedCountsResponse({ isProject }),
+  ...getMockIssuesClosedCountsResponse({ isProject }),
+});
+
+export const mockGroupIssuesAnalyticsCountsResponseData = getMockTotalIssuesAnalyticsCountsResponse();
+
+export const mockProjectIssuesAnalyticsCountsResponseData = getMockTotalIssuesAnalyticsCountsResponse(
   true,
 );
-
-export const generateMockIssuesAnalyticsCountsEmptyResponseData = (isProject = false) => ({
-  id: 'fake-id',
-  issuesOpened: {
-    Jul_2023: {
-      value: 0,
-      __typename: 'ValueStreamAnalyticsMetric',
-    },
-    Aug_2023: {
-      value: 0,
-      __typename: 'ValueStreamAnalyticsMetric',
-    },
-    __typename: isProject
-      ? 'ProjectValueStreamAnalyticsFlowMetrics'
-      : 'GroupValueStreamAnalyticsFlowMetrics',
-  },
-  issuesClosed: {
-    Jul_2023: {
-      value: 0,
-      __typename: 'ValueStreamAnalyticsMetric',
-    },
-    Aug_2023: {
-      value: 0,
-      __typename: 'ValueStreamAnalyticsMetric',
-    },
-    __typename: isProject
-      ? 'ProjectValueStreamAnalyticsFlowMetrics'
-      : 'GroupValueStreamAnalyticsFlowMetrics',
-  },
-  __typename: isProject ? TYPENAME_PROJECT : TYPENAME_GROUP,
-});
 
 export const mockIssuesAnalyticsCountsChartData = [
   {
     name: 'Opened',
-    data: [134, 21],
+    data: [134, 21, 11],
   },
   {
     name: 'Closed',
-    data: [110, 1],
+    data: [110, 1, 15],
+  },
+];
+
+export const mockChartDateRangeData = [
+  {
+    fromDate: '2023-07-04',
+    toDate: '2023-08-01',
+    month: 'Jul',
+    year: 2023,
+  },
+  {
+    fromDate: '2023-08-01',
+    toDate: '2023-09-01',
+    month: 'Aug',
+    year: 2023,
+  },
+  {
+    fromDate: '2023-09-01',
+    toDate: '2023-09-15',
+    month: 'Sep',
+    year: 2023,
   },
 ];
 
@@ -260,12 +254,4 @@ export const mockFilters = {
   labelName: ['Brest', 'DLT'],
   milestoneTitle: '16.4',
   monthsBack: '15',
-};
-
-export const mockEmptyFilters = {
-  authorUsername: null,
-  assigneeUsernames: null,
-  labelName: null,
-  milestoneTitle: null,
-  monthsBack: null,
 };

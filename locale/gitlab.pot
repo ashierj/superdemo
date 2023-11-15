@@ -26534,8 +26534,8 @@ msgstr ""
 msgid "IssuesAnalytics|Sorry, your filter produced no results"
 msgstr ""
 
-msgid "IssuesAnalytics|This month (%{chartDateRange})"
-msgid_plural "IssuesAnalytics|Last %{monthsCount} months (%{chartDateRange})"
+msgid "IssuesAnalytics|This month (%{dateRange})"
+msgid_plural "IssuesAnalytics|Last %{monthsCount} months (%{dateRange})"
 msgstr[0] ""
 msgstr[1] ""
 
