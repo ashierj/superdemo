@@ -26,7 +26,7 @@ export default (base) => {
         path: '/',
         component: SecretsTable,
         meta: {
-          getName: () => s__('Secrets|Secrets'),
+          getBreadcrumbText: () => s__('Secrets|Secrets'),
           isRoot: true,
         },
       },
@@ -35,7 +35,7 @@ export default (base) => {
         path: '/new',
         component: SecretFormWrapper,
         meta: {
-          getName: () => s__('Secrets|New secret'),
+          getBreadcrumbText: () => s__('Secrets|New secret'),
         },
       },
       {
@@ -47,7 +47,7 @@ export default (base) => {
             path: 'details',
             component: SecretDetails,
             meta: {
-              getName: ({ key }) => key,
+              getBreadcrumbText: ({ key }) => key,
               isDetails: true,
             },
           },
@@ -56,7 +56,7 @@ export default (base) => {
             path: 'auditlog',
             component: SecretAuditLog,
             meta: {
-              getName: () => s__('Secrets|Audit log'),
+              getBreadcrumbText: () => s__('Secrets|Audit log'),
             },
           },
           {
@@ -73,7 +73,7 @@ export default (base) => {
           isEditing: true,
         },
         meta: {
-          getName: () => __('Edit'),
+          getBreadcrumbText: () => __('Edit'),
         },
       },
       {

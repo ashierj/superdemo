@@ -53,11 +53,14 @@ export default {
         <strong>
           {{ s__('Secrets|Stored secrets') }}
         </strong>
-        <router-link data-testid="new-secret-link" :to="{ name: $options.NEW_ROUTE_NAME }">
-          <gl-button size="small" class="gl-float-right">
-            {{ s__('Secrets|New secret') }}
-          </gl-button>
-        </router-link>
+        <gl-button
+          size="small"
+          :to="$options.NEW_ROUTE_NAME"
+          class="gl-float-right"
+          data-testid="new-secret-button"
+        >
+          {{ s__('Secrets|New secret') }}
+        </gl-button>
       </template>
       <gl-table-lite :fields="$options.fields" :items="secrets">
         <template #cell(name)="{ item: { key } }">

@@ -20,10 +20,8 @@ export default {
 </script>
 <template>
   <div>
-    <router-link :to="{ name: redirectToRouteName }">
-      <gl-button class="gl-float-right gl-my-4">
-        {{ submitButtonText }}
-      </gl-button>
-    </router-link>
+    <gl-button :to="{ name: redirectToRouteName }" class="gl-float-right gl-my-4">
+      {{ submitButtonText }}
+    </gl-button>
   </div>
 </template>

@@ -1,4 +1,3 @@
-import { RouterLinkStub } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SecretFormWrapper from 'ee/ci/secrets/components/secret_form/secret_form_wrapper.vue';
 import SecretForm from 'ee/ci/secrets/components/secret_form/secret_form.vue';
@@ -19,9 +18,6 @@ describe('SecretFormWrapper component', () => {
     wrapper = shallowMountExtended(SecretFormWrapper, {
       propsData: {
         ...props,
-      },
-      stubs: {
-        RouterLink: RouterLinkStub,
       },
       mocks: {
         $route,

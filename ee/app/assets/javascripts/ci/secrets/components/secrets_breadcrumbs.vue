@@ -10,7 +10,7 @@ export default {
     rootRoute() {
       const route = this.$router.options.routes.find((r) => r.meta.isRoot);
       return {
-        text: route.meta.getName(),
+        text: route.meta.getBreadcrumbText(),
         to: { name: route.name },
       };
     },
@@ -21,7 +21,7 @@ export default {
       };
     },
     routeName() {
-      return this.$route.meta.getName(this.$route.params);
+      return this.$route.meta.getBreadcrumbText(this.$route.params);
     },
     crumbs() {
       // start with link to root on all pages

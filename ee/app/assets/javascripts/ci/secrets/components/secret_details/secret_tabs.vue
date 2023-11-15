@@ -31,9 +31,13 @@ export default {
     <div class="gl-display-flex gl-justify-content-space-between gl-mt-4">
       <h1>{{ $route.params.key }}</h1>
 
-      <router-link data-testid="edit-secret-link" :to="{ name: $options.EDIT_ROUTE_NAME }">
-        <gl-button icon="pencil" :aria-label="__('Edit')" />
-      </router-link>
+      <gl-button
+        icon="pencil"
+        :to="$options.EDIT_ROUTE_NAME"
+        :aria-label="__('Edit')"
+        class="gl-align-self-start"
+        data-testid="edit-secret-button"
+      />
     </div>
 
     <gl-tabs :value="tabIndex">

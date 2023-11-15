@@ -8,7 +8,7 @@ import { projectSecrets } from '../../mock_data';
 describe('SecretsTable component', () => {
   let wrapper;
 
-  const findNewSecretLink = () => wrapper.findByTestId('new-secret-link');
+  const findNewSecretButton = () => wrapper.findByTestId('new-secret-button');
   const findSecretsTable = () => wrapper.findComponent(GlTableLite);
   const findSecretDetailsLink = () => wrapper.findByTestId('secret-details-link');
 
@@ -30,7 +30,7 @@ describe('SecretsTable component', () => {
   });
 
   it('shows a link to the new secret page', () => {
-    expect(findNewSecretLink().props('to')).toStrictEqual({ name: NEW_ROUTE_NAME });
+    expect(findNewSecretButton().attributes('to')).toBe(NEW_ROUTE_NAME);
   });
 
   it('renders a list of secrets and links to their details', () => {
