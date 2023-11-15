@@ -102,6 +102,8 @@ export const fetchBillableMemberDetailsError = ({ commit }, memberId) => {
 };
 
 export const setSearchQuery = ({ commit, dispatch }, searchQuery) => {
+  // reset pagination on applying new filter
+  commit(types.SET_CURRENT_PAGE, 1);
   commit(types.SET_SEARCH_QUERY, searchQuery);
 
   dispatch('fetchBillableMembersList');

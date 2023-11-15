@@ -420,4 +420,35 @@ describe('Usage Quotas Seats actions', () => {
       });
     });
   });
+
+  describe('setSearchQuery', () => {
+    const searchQuery = 'one';
+
+    it('dispatches fetchBillableMembersList', async () => {
+      await testAction({
+        action: actions.setSearchQuery,
+        payload: searchQuery,
+        state,
+        expectedMutations: [
+          { type: types.SET_CURRENT_PAGE, payload: 1 },
+          { type: types.SET_SEARCH_QUERY, payload: searchQuery },
+        ],
+        expectedActions: [{ type: 'fetchBillableMembersList' }],
+      });
+    });
+  });
+
+  describe('setCurrentPage', () => {
+    const page = 11;
+
+    it('dispatches fetchBillableMembersList', async () => {
+      await testAction({
+        action: actions.setCurrentPage,
+        payload: page,
+        state,
+        expectedMutations: [{ type: types.SET_CURRENT_PAGE, payload: page }],
+        expectedActions: [{ type: 'fetchBillableMembersList' }],
+      });
+    });
+  });
 });
