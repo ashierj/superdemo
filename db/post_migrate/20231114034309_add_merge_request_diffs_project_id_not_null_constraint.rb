@@ -2,7 +2,7 @@
 
 class AddMergeRequestDiffsProjectIdNotNullConstraint < Gitlab::Database::Migration[2.2]
   disable_ddl_transaction!
-  milestone '16.6'
+  milestone '16.7'
 
   def up
     add_not_null_constraint :merge_request_diffs, :project_id, validate: false

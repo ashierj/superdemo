@@ -2,7 +2,7 @@
 
 class AddMergeRequestDiffsProjectIdIndexAsync < Gitlab::Database::Migration[2.2]
   disable_ddl_transaction!
-  milestone '16.6'
+  milestone '16.7'
 
   INDEX_NAME = 'index_merge_request_diffs_on_project_id'
 
