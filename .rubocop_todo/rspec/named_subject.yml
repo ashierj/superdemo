@@ -830,7 +830,6 @@ RSpec/NamedSubject:
     - 'ee/spec/requests/groups/settings/merge_requests_controller_spec.rb'
     - 'ee/spec/requests/groups_controller_spec.rb'
     - 'ee/spec/requests/projects/analytics/cycle_analytics/stages_controller_spec.rb'
-    - 'ee/spec/requests/projects/metrics_controller_spec.rb'
     - 'ee/spec/requests/projects/pipelines_controller_spec.rb'
     - 'ee/spec/requests/projects/requirements_management/requirements_controller_spec.rb'
     - 'ee/spec/requests/projects/security/policies_controller_spec.rb'

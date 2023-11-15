@@ -9,5 +9,9 @@ module Projects
     before_action :authorize_read_observability_metrics!
 
     def index; end
+
+    def show
+      @metric_id = params[:id]
+    end
   end
 end

@@ -9,7 +9,7 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
   let(:path) { nil }
   let(:observability_metrics_ff) { true }
 
-  subject do
+  subject(:html_response) do
     get path
     response
   end
@@ -35,7 +35,7 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
       end
 
       it 'returns 404' do
-        expect(subject).to have_gitlab_http_status(:not_found)
+        expect(html_response).to have_gitlab_http_status(:not_found)
       end
     end
 
@@ -45,14 +45,14 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
       end
 
       it 'returns 200' do
-        expect(subject).to have_gitlab_http_status(:ok)
+        expect(html_response).to have_gitlab_http_status(:ok)
       end
 
       context 'when feature is disabled' do
         let(:observability_metrics_ff) { false }
 
         it 'returns 404' do
-          expect(subject).to have_gitlab_http_status(:not_found)
+          expect(html_response).to have_gitlab_http_status(:not_found)
         end
       end
     end
@@ -69,7 +69,7 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
       end
 
       it 'renders the js-metrics element correctly' do
-        element = Nokogiri::HTML.parse(subject.body).at_css('#js-observability-metrics')
+        element = Nokogiri::HTML.parse(html_response.body).at_css('#js-observability-metrics')
 
         expected_view_model = {
           apiConfig: {
@@ -80,6 +80,36 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
             operationsUrl: Gitlab::Observability.operations_url(project),
             metricsUrl: Gitlab::Observability.metrics_url(project)
           }
+        }.to_json
+        expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    let(:path) { project_metric_path(project, id: 'test.metric') }
+
+    it_behaves_like 'metrics route request'
+
+    describe 'html response' do
+      before_all do
+        project.add_reporter(user)
+      end
+
+      it 'renders the js-metrics-details element correctly' do
+        element = Nokogiri::HTML.parse(html_response.body).at_css('#js-observability-metrics-details')
+
+        expected_view_model = {
+          apiConfig: {
+            oauthUrl: Gitlab::Observability.oauth_url,
+            provisioningUrl: Gitlab::Observability.provisioning_url(project),
+            tracingUrl: Gitlab::Observability.tracing_url(project),
+            servicesUrl: Gitlab::Observability.services_url(project),
+            operationsUrl: Gitlab::Observability.operations_url(project),
+            metricsUrl: Gitlab::Observability.metrics_url(project)
+          },
+          metricId: "test.metric",
+          metricsIndexUrl: namespace_project_metrics_path(project.group, project)
         }.to_json
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
       end

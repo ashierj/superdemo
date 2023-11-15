@@ -30283,6 +30283,9 @@ msgstr ""
 msgid "MetricImages|There was an issue uploading your image."
 msgstr ""
 
+msgid "Metrics"
+msgstr ""
+
 msgid "Metrics - Grafana"
 msgstr ""
 
@@ -32871,6 +32874,9 @@ msgid "Objective"
 msgstr ""
 
 msgid "ObservabilityMetrics|Error: Failed to load metrics details. Try reloading the page."
+msgstr ""
+
+msgid "ObservabilityMetrics|Metric Details"
 msgstr ""
 
 msgid "ObservabilityMetrics|Metrics"
