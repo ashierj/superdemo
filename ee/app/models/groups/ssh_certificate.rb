@@ -12,7 +12,13 @@ module Groups
 
     validates :group, presence: true
     validates :title, presence: true, length: { maximum: 255 }
-    validates :key, presence: true, length: { maximum: 512.kilobytes }
+
+    validates :key,
+      presence: true,
+      ssh_key: true,
+      length: { maximum: 5000 },
+      format: { with: /\A(#{Gitlab::SSHPublicKey.supported_algorithms.join('|')})/ }
+
     validates :fingerprint,
       presence: true,
       uniqueness: { message: ->(_, _) {
