@@ -33,6 +33,9 @@ const patterns = [
   { pattern: '0 ', replacement: ' ' },
 ];
 
+/** a function to round a number to the nearest tenth */
+const roundToNearestTenth = (value) => Math.round(value * 10) / 10;
+
 const trimZeros = (value) =>
   patterns.reduce((acc, pattern) => acc.replace(pattern.pattern, pattern.replacement), value);
 
@@ -201,7 +204,7 @@ const sanitizeSparklineData = (value) => {
   // By converting the result to null, we prevent the sparkline from
   // rendering a tooltip with the missing data.
   if (value === '-') return null;
-  return value;
+  return roundToNearestTenth(value);
 };
 
 /**
