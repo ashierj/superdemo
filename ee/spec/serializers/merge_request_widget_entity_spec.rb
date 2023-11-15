@@ -257,6 +257,7 @@ RSpec.describe MergeRequestWidgetEntity, feature_category: :code_review_workflow
   describe '#can_read_vulnerability_feedback' do
     context 'when user has permissions to read vulnerability feedback' do
       before do
+        stub_licensed_features(security_dashboard: true)
         project.add_developer(user)
       end
 

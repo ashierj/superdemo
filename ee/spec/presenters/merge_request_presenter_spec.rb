@@ -62,7 +62,11 @@ RSpec.describe MergeRequestPresenter do
     end
   end
 
-  describe 'create vulnerability feedback paths' do
+  describe 'create vulnerability feedback paths', feature_category: :vulnerability_management do
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
     where(:create_feedback_path) do
       [
         :create_vulnerability_feedback_issue_path,

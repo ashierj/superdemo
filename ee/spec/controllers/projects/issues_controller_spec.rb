@@ -131,6 +131,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
 
           before do
             stub_licensed_features(security_dashboard: true)
+            namespace.add_maintainer(user)
           end
 
           it 'overwrites the default fields' do

@@ -702,6 +702,30 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'vulnerability feedback permissions' do
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
+    context 'with developer' do
+      let(:current_user) { developer }
+
+      it { is_expected.to be_allowed(:read_vulnerability_feedback) }
+      it { is_expected.to be_disallowed(:create_vulnerability_feedback) }
+      it { is_expected.to be_disallowed(:update_vulnerability_feedback) }
+      it { is_expected.to be_disallowed(:destroy_vulnerability_feedback) }
+
+      context "with `disable_developer_access_to_admin_vulnerability` disabled" do
+        before do
+          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
+        end
+
+        it { is_expected.to be_allowed(:read_vulnerability_feedback) }
+        it { is_expected.to be_allowed(:create_vulnerability_feedback) }
+        it { is_expected.to be_allowed(:update_vulnerability_feedback) }
+        it { is_expected.to be_allowed(:destroy_vulnerability_feedback) }
+      end
+    end
+
     where(permission: %i[
             read_vulnerability_feedback
             create_vulnerability_feedback
@@ -730,12 +754,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       context 'with maintainer' do
         let(:current_user) { maintainer }
-
-        it { is_expected.to be_allowed(permission) }
-      end
-
-      context 'with developer' do
-        let(:current_user) { developer }
 
         it { is_expected.to be_allowed(permission) }
       end
@@ -2683,7 +2701,9 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           :access_security_and_compliance,
           :create_vulnerability_export,
           :read_security_resource,
-          :read_vulnerability
+          :read_vulnerability,
+          :read_vulnerability_feedback,
+          :read_vulnerability_scanner
         ]
       end
 
@@ -2696,7 +2716,16 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'for a member role with admin_vulnerability true' do
       let(:member_role_abilities) { { read_vulnerability: true, admin_vulnerability: true } }
-      let(:allowed_abilities) { [:read_vulnerability, :admin_vulnerability] }
+      let(:allowed_abilities) do
+        [
+          :admin_vulnerability,
+          :create_vulnerability_feedback,
+          :destroy_vulnerability_feedback,
+          :read_vulnerability,
+          :read_vulnerability_feedback,
+          :update_vulnerability_feedback
+        ]
+      end
 
       it_behaves_like 'custom roles abilities'
     end

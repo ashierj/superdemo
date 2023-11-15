@@ -99,6 +99,10 @@ RSpec.describe Vulnerabilities::FeedbackPolicy, feature_category: :vulnerability
   end
 
   describe 'update_vulnerability_feedback' do
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
     context 'when feedback type is issue' do
       let(:vulnerability_feedback) { Vulnerabilities::Feedback.new(project: project, feedback_type: :issue) }
 
@@ -125,6 +129,10 @@ RSpec.describe Vulnerabilities::FeedbackPolicy, feature_category: :vulnerability
   end
 
   describe 'destroy_vulnerability_feedback' do
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
     context 'when feedback type is issue' do
       let(:vulnerability_feedback) { Vulnerabilities::Feedback.new(project: project, feedback_type: :issue) }
 

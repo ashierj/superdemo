@@ -136,7 +136,8 @@ RSpec.describe Vulnerabilities::FeedbackEntity, feature_category: :vulnerability
 
       context 'when allowed to destroy vulnerability feedback' do
         before do
-          project.add_developer(user)
+          stub_licensed_features(security_dashboard: true)
+          project.add_maintainer(user)
         end
 
         it 'contains destroy vulnerability feedback dismissal path' do
