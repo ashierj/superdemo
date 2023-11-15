@@ -4,6 +4,7 @@ import { GlStackedColumnChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__, n__, sprintf, __ } from '~/locale';
 import { isValidDate } from '~/lib/utils/datetime_utility';
+import { generateChartDateRangeData } from '../utils';
 import issuesAnalyticsCountsQueryBuilder from '../graphql/issues_analytics_counts_query_builder';
 import { extractIssuesAnalyticsCounts } from '../api';
 import {
@@ -11,6 +12,8 @@ import {
   NAMESPACE_PROJECT_TYPE,
   NO_DATA_EMPTY_STATE_TYPE,
   NO_DATA_WITH_FILTERS_EMPTY_STATE_TYPE,
+  ISSUES_OPENED_COUNT_ALIAS,
+  ISSUES_COMPLETED_COUNT_ALIAS,
 } from '../constants';
 import IssuesAnalyticsEmptyState from './issues_analytics_empty_state.vue';
 
@@ -54,32 +57,48 @@ export default {
     };
   },
   apollo: {
-    totalIssuesAnalyticsChartData: {
+    issuesOpenedCounts: {
       query() {
-        return issuesAnalyticsCountsQueryBuilder(this.startDate, this.endDate, this.isProject);
+        return this.getIssuesAnalyticsCountsQuery(ISSUES_OPENED_COUNT_ALIAS);
       },
       variables() {
-        const { monthsBack, ...filters } = this.filters;
-
-        return {
-          fullPath: this.fullPath,
-          ...filters,
-        };
+        return this.issuesAnalyticsCountsQueryVariables;
       },
       update(data) {
-        return data?.issuesAnalyticsCountsData;
+        return this.getIssuesAnalyticsCountsQueryResponse(data);
       },
       skip() {
-        return !this.fullPath || !this.type || !this.isValidDateRange;
+        return this.shouldSkipQuery;
       },
       result() {
-        if (this.shouldShowNoDataEmptyState) {
+        if (this.shouldHideFilteredSearchBar) {
           this.$emit('hideFilteredSearchBar');
         }
       },
       error(e) {
-        Sentry.captureException(e);
-        this.hasError = true;
+        this.handleQueryError(e);
+      },
+    },
+    issuesClosedCounts: {
+      query() {
+        return this.getIssuesAnalyticsCountsQuery(ISSUES_COMPLETED_COUNT_ALIAS);
+      },
+      variables() {
+        return this.issuesAnalyticsCountsQueryVariables;
+      },
+      update(data) {
+        return this.getIssuesAnalyticsCountsQueryResponse(data);
+      },
+      skip() {
+        return this.shouldSkipQuery;
+      },
+      result() {
+        if (this.shouldHideFilteredSearchBar) {
+          this.$emit('hideFilteredSearchBar');
+        }
+      },
+      error(e) {
+        this.handleQueryError(e);
       },
     },
   },
@@ -87,8 +106,22 @@ export default {
     isProject() {
       return this.type === NAMESPACE_PROJECT_TYPE;
     },
+    issuesAnalyticsCountsQueryVariables() {
+      const { monthsBack, ...filters } = this.filters;
+
+      return {
+        fullPath: this.fullPath,
+        ...filters,
+      };
+    },
+    shouldSkipQuery() {
+      return !this.fullPath || !this.type || !this.isValidDateRange;
+    },
     isLoading() {
-      return this.$apollo.queries.totalIssuesAnalyticsChartData?.loading;
+      return (
+        this.$apollo.queries.issuesOpenedCounts?.loading ||
+        this.$apollo.queries.issuesClosedCounts?.loading
+      );
     },
     isValidDateRange() {
       return (
@@ -96,42 +129,54 @@ export default {
       );
     },
     barsData() {
-      return extractIssuesAnalyticsCounts(this.totalIssuesAnalyticsChartData);
+      return extractIssuesAnalyticsCounts({
+        ...this.issuesOpenedCounts,
+        ...this.issuesClosedCounts,
+      });
     },
     hasChartData() {
-      if (!this.totalIssuesAnalyticsChartData) return false;
+      if (!this.issuesOpenedCounts && !this.issuesClosedCounts) return false;
 
       return this.barsData?.some(({ data }) => data.some((value) => value > 0));
     },
     dates() {
-      const { issuesOpened, issuesClosed } = this.totalIssuesAnalyticsChartData ?? {};
-
-      const counts = issuesOpened ?? issuesClosed;
-
-      if (!counts) return [];
-
-      return Object.keys(counts).filter((key) => key !== '__typename');
+      return generateChartDateRangeData(this.startDate, this.endDate).map(({ month, year }) => ({
+        month,
+        year,
+      }));
     },
     monthLabels() {
-      return this.dates.map((date) => date.split('_')[0]);
+      return this.dates.map(({ month }) => month);
     },
     monthYearLabels() {
-      return this.dates.map((date) => date.replace('_', ' '));
+      return this.dates.map(({ month, year }) => `${month} ${year}`);
+    },
+    monthsCount() {
+      return this.dates.length;
     },
     dateRange() {
-      const { monthYearLabels } = this;
+      const { monthYearLabels, monthsCount } = this;
 
-      const [startMonthYearLabel] = monthYearLabels;
+      const [startMonthYear] = monthYearLabels;
 
-      if (monthYearLabels.length === 1) return startMonthYearLabel;
+      if (monthsCount === 1) return startMonthYear;
 
       return sprintf(__('%{startDate} – %{dueDate}'), {
-        startDate: startMonthYearLabel,
+        startDate: startMonthYear,
         dueDate: monthYearLabels.at(-1),
       });
     },
     xAxisTitle() {
-      return this.$options.i18n.xAxisTitle(this.dates.length, this.dateRange);
+      const { monthsCount, dateRange } = this;
+
+      return sprintf(
+        n__(
+          'IssuesAnalytics|This month (%{dateRange})',
+          'IssuesAnalytics|Last %{monthsCount} months (%{dateRange})',
+          monthsCount,
+        ),
+        { monthsCount, dateRange },
+      );
     },
     hasFilters() {
       return Object.values(this.filters).some((filter) => Boolean(filter));
@@ -145,6 +190,9 @@ export default {
     shouldShowNoDataEmptyState() {
       return this.shouldShowEmptyState && !this.hasFilters;
     },
+    shouldHideFilteredSearchBar() {
+      return this.shouldShowNoDataEmptyState && !this.shouldShowError;
+    },
     emptyStateType() {
       return this.shouldShowNoDataEmptyState
         ? NO_DATA_EMPTY_STATE_TYPE
@@ -152,6 +200,18 @@ export default {
     },
   },
   methods: {
+    getIssuesAnalyticsCountsQuery(queryAlias) {
+      const { startDate, endDate, isProject } = this;
+
+      return issuesAnalyticsCountsQueryBuilder({ queryAlias, startDate, endDate, isProject });
+    },
+    getIssuesAnalyticsCountsQueryResponse(data) {
+      return data?.namespace ?? {};
+    },
+    handleQueryError(e) {
+      Sentry.captureException(e);
+      this.hasError = true;
+    },
     formatTooltipText({ seriesData }) {
       const [firstSeries] = seriesData;
       const { dataIndex } = firstSeries;
@@ -167,15 +227,6 @@ export default {
   },
   i18n: {
     yAxisTitle: s__('IssuesAnalytics|Issues Opened vs Closed'),
-    xAxisTitle: (monthsCount, chartDateRange) =>
-      sprintf(
-        n__(
-          'IssuesAnalytics|This month (%{chartDateRange})',
-          'IssuesAnalytics|Last %{monthsCount} months (%{chartDateRange})',
-          monthsCount,
-        ),
-        { monthsCount, chartDateRange },
-      ),
     errorMessage: s__('IssuesAnalytics|Failed to load chart. Please try again.'),
     chartHeader: s__('IssuesAnalytics|Overview'),
   },

@@ -9,7 +9,17 @@ import store from './stores';
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: createDefaultClient(),
+  defaultClient: createDefaultClient(
+    {},
+    {
+      cacheConfig: {
+        typePolicies: {
+          Group: { fields: { flowMetrics: { merge: true } } },
+          Project: { fields: { flowMetrics: { merge: true } } },
+        },
+      },
+    },
+  ),
 });
 
 export default () => {

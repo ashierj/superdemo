@@ -1,5 +1,11 @@
-import { transformFilters } from 'ee/issues_analytics/utils';
-import { mockOriginalFilters, mockFilters } from './mock_data';
+import { transformFilters, generateChartDateRangeData } from 'ee/issues_analytics/utils';
+import {
+  mockOriginalFilters,
+  mockFilters,
+  mockIssuesAnalyticsCountsStartDate,
+  mockIssuesAnalyticsCountsEndDate,
+  mockChartDateRangeData,
+} from './mock_data';
 
 describe('Issues Analytics utils', () => {
   describe('transformFilters', () => {
@@ -36,6 +42,23 @@ describe('Issues Analytics utils', () => {
       const filters = transformFilters(originalFilters, newKeys);
 
       expect(filters).toEqual(newFilters);
+    });
+  });
+
+  describe('generateChartDateRangeData', () => {
+    const startDate = mockIssuesAnalyticsCountsStartDate;
+    const endDate = mockIssuesAnalyticsCountsEndDate;
+
+    it('returns the data as expected', () => {
+      const chartDateRangeData = generateChartDateRangeData(startDate, endDate);
+
+      expect(chartDateRangeData).toEqual(mockChartDateRangeData);
+    });
+
+    it('returns an empty array when given an invalid date range', () => {
+      const chartDateRangeData = generateChartDateRangeData(endDate, startDate);
+
+      expect(chartDateRangeData).toEqual([]);
     });
   });
 });
