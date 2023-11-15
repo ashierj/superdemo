@@ -5,9 +5,8 @@ module Mutations
     module Streaming
       module HTTP
         module NamespaceFilters
-          class Create < BaseMutation
+          class Create < Base
             graphql_name 'AuditEventsStreamingHTTPNamespaceFiltersAdd'
-            authorize :admin_external_audit_events
 
             argument :destination_id, ::Types::GlobalIDType[::AuditEvents::ExternalAuditEventDestination],
               required: true,
@@ -64,19 +63,6 @@ module Mutations
               namespace = ::Project.find_by_full_path(project_path)
               raise_resource_not_available_error! 'project_path is invalid' if namespace.nil?
               namespace.project_namespace
-            end
-
-            def audit(filter, action:)
-              audit_context = {
-                name: "#{action}_http_namespace_filter",
-                author: current_user,
-                scope: filter.external_audit_event_destination.group,
-                target: filter.external_audit_event_destination,
-                message: "#{action.capitalize} namespace filter for http audit event streaming destination " \
-                         "#{filter.external_audit_event_destination.name} and namespace #{filter.namespace.full_path}"
-              }
-
-              ::Gitlab::Audit::Auditor.audit(audit_context)
             end
 
             def mutually_exclusive_args
