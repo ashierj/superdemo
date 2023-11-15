@@ -7,8 +7,7 @@ RSpec.describe Projects::TransferService do
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
-
-  let(:project) { create(:project, :repository, :public, :legacy_storage, namespace: user.namespace) }
+  let_it_be_with_refind(:project) { create(:project, :repository, :public, :legacy_storage, namespace: user.namespace) }
 
   subject { described_class.new(project, user) }
 
@@ -133,11 +132,10 @@ RSpec.describe Projects::TransferService do
       end
 
       context 'when transferring the project from one hierarchy to another' do
-        let(:project) { create(:project, :repository, group: sub_group) }
-
         let_it_be(:other_group, reload: true) { create(:group) }
 
         before do
+          project.update!(group: sub_group)
           other_group.add_owner(user)
         end
 
