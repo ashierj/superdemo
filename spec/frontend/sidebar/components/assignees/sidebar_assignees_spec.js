@@ -9,10 +9,7 @@ import SidebarService from '~/sidebar/services/sidebar_service';
 import SidebarMediator from '~/sidebar/sidebar_mediator';
 import SidebarStore from '~/sidebar/stores/sidebar_store';
 import eventHub from '~/sidebar/event_hub';
-import { fetchUserCounts } from '~/super_sidebar/user_counts_fetch';
 import Mock from '../../mock_data';
-
-jest.mock('~/super_sidebar/user_counts_fetch');
 
 describe('sidebar assignees', () => {
   let wrapper;
@@ -41,7 +38,7 @@ describe('sidebar assignees', () => {
     axiosMock = new AxiosMockAdapter(axios);
     mediator = new SidebarMediator(Mock.mediator);
 
-    jest.spyOn(mediator, 'saveAssignees').mockResolvedValue({});
+    jest.spyOn(mediator, 'saveAssignees');
     jest.spyOn(mediator, 'assignYourself');
   });
 
@@ -60,17 +57,6 @@ describe('sidebar assignees', () => {
     eventHub.$emit('sidebar.saveAssignees');
 
     expect(mediator.saveAssignees).toHaveBeenCalled();
-  });
-
-  it('re-fetches user counts after saving assignees', async () => {
-    createComponent();
-
-    expect(fetchUserCounts).not.toHaveBeenCalled();
-
-    eventHub.$emit('sidebar.saveAssignees');
-    await nextTick();
-
-    expect(fetchUserCounts).toHaveBeenCalled();
   });
 
   it('calls the mediator when "assignSelf" method is called', async () => {

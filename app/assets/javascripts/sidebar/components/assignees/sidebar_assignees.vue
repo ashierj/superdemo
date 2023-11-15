@@ -3,7 +3,6 @@ import { createAlert } from '~/alert';
 import { TYPE_ISSUE } from '~/issues/constants';
 import { __ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { fetchUserCounts } from '~/super_sidebar/user_counts_fetch';
 import eventHub from '../../event_hub';
 import Store from '../../stores/sidebar_store';
 import AssigneeTitle from './assignee_title.vue';
@@ -104,8 +103,6 @@ export default {
         .then(() => {
           this.loading = false;
           this.store.resetChanging();
-
-          fetchUserCounts();
         })
         .catch(() => {
           this.loading = false;
