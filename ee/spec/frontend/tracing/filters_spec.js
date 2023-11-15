@@ -63,11 +63,11 @@ describe('utils', () => {
 
       expect(filterObj).toEqual({
         period: [{ operator: '=', value: '1h' }],
-        service: null,
-        operation: null,
-        traceId: null,
-        durationMs: null,
-        attribute: null,
+        service: undefined,
+        operation: undefined,
+        traceId: undefined,
+        durationMs: undefined,
+        attribute: undefined,
         search: undefined,
       });
     });
