@@ -39,7 +39,7 @@ module EE
 
       context.merge!(
         trial_data(root_namespace),
-        show_tanuki_bot: ::Gitlab::Llm::TanukiBot.enabled_for?(user: current_user)
+        show_tanuki_bot: ::Gitlab::Llm::TanukiBot.enabled_for?(user: current_user, container: nil)
       )
       context[:trial] = {
         has_start_trial: trials_allowed?(user),

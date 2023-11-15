@@ -28,21 +28,23 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
     subject(:execute) { instance.execute }
 
-    describe 'enabled_for?' do
-      describe 'when :ai_global_switch is true' do
-        where(:feature_available, :ai_feature_enabled, :result) do
+    describe '.enabled_for?', :saas, :use_clean_rails_redis_caching do
+      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+      context 'when user present and container is not present' do
+        where(:ai_global_switch_enabled, :ai_features_available_to_user, :result) do
           [
-            [false, false, false],
-            [false, true, false],
+            [true, true, true],
             [true, false, false],
-            [true, true, true]
+            [false, true, false],
+            [false, false, false]
           ]
         end
 
         with_them do
           before do
-            allow(License).to receive(:feature_available?).and_return(feature_available)
-            allow(described_class).to receive(:ai_feature_enabled?).and_return(ai_feature_enabled)
+            stub_feature_flags(ai_global_switch: ai_global_switch_enabled)
+            allow(user).to receive(:any_group_with_ai_available?).and_return(ai_features_available_to_user)
           end
 
           it 'returns correct result' do
@@ -51,193 +53,123 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         end
       end
 
-      describe 'when ai_global_switch is false' do
-        before do
-          allow(License).to receive(:feature_available?).and_return(true)
-          allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
+      context 'when user and container are both present' do
+        context 'when container is a group with AI enabled' do
+          include_context 'with ai features enabled for group'
 
-          stub_feature_flags(ai_global_switch: false)
-        end
+          context 'when user is a member of the group' do
+            before_all do
+              group.add_guest(user)
+            end
 
-        it 'returns false' do
-          expect(described_class.enabled_for?(user: user)).to be(false)
-        end
-      end
-    end
+            context 'when container is a group' do
+              it 'returns true' do
+                expect(
+                  described_class.enabled_for?(user: user, container: group)
+                ).to be(true)
+              end
+            end
 
-    describe '#ai_feature_enabled?' do
-      subject { described_class.ai_feature_enabled?(user) }
+            context 'when container is a project' do
+              let_it_be(:project) { create(:project, group: group) }
 
-      context 'when not on gitlab.com' do
-        it { is_expected.to be_truthy }
-      end
+              it 'returns true' do
+                expect(
+                  described_class.enabled_for?(user: user, container: project)
+                ).to be(true)
+              end
+            end
 
-      context 'when on gitlab.com', :saas do
-        it { is_expected.to be_falsey }
+            context 'when the group does not have an Ultimate SaaS license' do
+              let_it_be(:group) { create(:group) }
 
-        context 'when user has a group with ai feature enabled' do
-          before do
-            allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+              it 'returns false' do
+                allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+                # add user as a member of the non-licensed group to ensure the
+                # test isn't failing at the membership check
+                group.add_guest(user)
+
+                expect(
+                  described_class.enabled_for?(user: user, container: group)
+                ).to be(false)
+              end
+            end
           end
 
-          it { is_expected.to be_truthy }
+          context 'when user is not a member of the group' do
+            context 'when the user has AI enabled via another group' do
+              it 'returns false' do
+                allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+
+                expect(
+                  described_class.enabled_for?(user: user, container: group)
+                ).to be(false)
+              end
+            end
+          end
         end
 
-        context 'when user has no group with ai feature enabled' do
-          before do
-            allow(user).to receive(:any_group_with_ai_available?).and_return(false)
-          end
+        context 'when container is not a group with AI enabled' do
+          context 'when user has AI enabled' do
+            before do
+              allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+            end
 
-          it { is_expected.to be_falsey }
+            context 'when container is a group' do
+              include_context 'with experiment features disabled for group'
+
+              it 'returns false' do
+                allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+
+                expect(
+                  described_class.enabled_for?(user: user, container: group)
+                ).to be(false)
+              end
+            end
+
+            context 'when container is a project in a personal namespace' do
+              let_it_be(:project) { create(:project, namespace: user.namespace) }
+
+              it 'returns false' do
+                expect(
+                  described_class.enabled_for?(user: user, container: project)
+                ).to be(false)
+              end
+            end
+          end
         end
       end
-    end
 
-    describe '#show_breadcrumbs_entry_point', :saas, :use_clean_rails_redis_caching do
-      let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
-
-      context 'when container is a group with AI enabled' do
+      context 'when user not present, container is present' do
         include_context 'with ai features enabled for group'
 
-        context 'when user is a member of the group' do
-          before_all do
-            group.add_guest(user)
-          end
-
-          context 'when container is a group' do
-            it 'returns true' do
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: group
-                )
-              ).to be(true)
-            end
-          end
-
-          context 'when container is a project' do
-            let_it_be(:project) { create(:project, group: group) }
-
-            it 'returns true' do
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: project
-                )
-              ).to be(true)
-            end
-          end
-
-          context 'when missing Ultimate SaaS license' do
-            let_it_be(:group) { create(:group) }
-
-            it 'returns false' do
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: group
-                )
-              ).to be(false)
-            end
-          end
-
-          context 'when tanuki_bot_breadcrumbs_entry_point feature flag is disabled' do
-            it 'returns false' do
-              stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: false)
-
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: group
-                )
-              ).to be(false)
-            end
-          end
-        end
-
-        context 'when user is not a member of the group' do
-          context 'when the user has AI enabled via another group' do
-            it 'returns false' do
-              allow(user).to receive(:any_group_with_ai_available?).and_return(true)
-
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: group
-                )
-              ).to be(false)
-            end
-          end
-
-          context 'when user does not have AI enabled via any group' do
-            it 'returns false' do
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: group
-                )
-              ).to be(false)
-            end
-          end
-        end
-
-        context 'when user not present' do
-          it 'returns false' do
-            expect(
-              described_class.show_breadcrumbs_entry_point?(
-                user: false,
-                container: group
-              )
-            ).to be(false)
-          end
+        it 'returns false' do
+          expect(
+            described_class.enabled_for?(user: nil, container: group)
+          ).to be(false)
         end
       end
+    end
 
-      context 'when container is not a group with AI enabled' do
-        context 'when user has AI enabled' do
-          before do
-            allow(user).to receive(:any_group_with_ai_available?).and_return(true)
-          end
+    describe '.show_breadcrumbs_entry_point' do
+      where(:tanuki_bot_breadcrumbs_feature_flag_enabled, :ai_features_enabled_for_user, :result) do
+        [
+          [true, true, true],
+          [true, false, false],
+          [false, true, false],
+          [false, false, false]
+        ]
+      end
 
-          context 'when container is a group' do
-            include_context 'with experiment features disabled for group'
+      with_them do
+        before do
+          stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: tanuki_bot_breadcrumbs_feature_flag_enabled)
+          allow(described_class).to receive(:enabled_for?).with(user: user, container: nil)
+            .and_return(ai_features_enabled_for_user)
+        end
 
-            it 'returns false' do
-              allow(user).to receive(:any_group_with_ai_available?).and_return(true)
-
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: group
-                )
-              ).to be(false)
-            end
-          end
-
-          context 'when container is a project in a personal namespace' do
-            let_it_be(:project) { create(:project, namespace: user.namespace) }
-
-            it 'returns false' do
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: project
-                )
-              ).to be(false)
-            end
-          end
-
-          context 'when container is not present' do
-            # for example, Dashboard or User Settings pages
-            it 'returns true' do
-              expect(
-                described_class.show_breadcrumbs_entry_point?(
-                  user: user,
-                  container: nil
-                )
-              ).to be(true)
-            end
-          end
+        it 'returns correct result' do
+          expect(described_class.show_breadcrumbs_entry_point?(user: user)).to be(result)
         end
       end
     end
@@ -272,9 +204,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             end
           end
 
-          context 'when #ai_feature_enabled is false' do
+          context 'when user has AI features disabled' do
             before do
-              allow(described_class).to receive(:ai_feature_enabled?).and_return(false)
+              allow(described_class).to receive(:enabled_for?).with(user: user).and_return(false)
             end
 
             it 'returns an empty response message' do
@@ -282,11 +214,11 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             end
           end
 
-          context 'when #ai_feature_enabled is true' do
+          context 'when user has AI features enabled' do
             before do
               allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
               allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
-              allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
+              allow(described_class).to receive(:enabled_for?).and_return(true)
             end
 
             context 'when embeddings table is empty (no embeddings are stored in the table)' do
