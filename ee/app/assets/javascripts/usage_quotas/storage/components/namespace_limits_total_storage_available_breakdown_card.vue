@@ -21,17 +21,9 @@ import NumberToHumanSize from './number_to_human_size.vue';
 export default {
   name: 'NamespaceLimitsTotalStorageAvailableBreakdownCard',
   components: { GlIcon, GlLink, GlCard, GlSkeletonLoader, NumberToHumanSize },
-  inject: ['namespacePlanName'],
+  inject: ['namespacePlanName', 'namespaceStorageLimit'],
   props: {
-    includedStorage: {
-      type: Number,
-      required: true,
-    },
     purchasedStorage: {
-      type: Number,
-      required: true,
-    },
-    totalStorage: {
       type: Number,
       required: true,
     },
@@ -45,6 +37,9 @@ export default {
       return sprintf(s__('UsageQuota|Included in %{planName} subscription'), {
         planName: this.namespacePlanName,
       });
+    },
+    totalStorageAvailable() {
+      return this.namespaceStorageLimit + this.purchasedStorage;
     },
   },
   i18n: {
@@ -69,7 +64,7 @@ export default {
         data-testid="storage-included-in-plan"
       >
         <div class="gl-w-80p">{{ planStorageDescription }}</div>
-        <number-to-human-size class="gl-white-space-nowrap" :value="includedStorage" />
+        <number-to-human-size class="gl-white-space-nowrap" :value="namespaceStorageLimit" />
       </div>
       <div class="gl-display-flex gl-justify-content-space-between">
         <div class="gl-w-80p">
@@ -94,7 +89,7 @@ export default {
         <div class="gl-w-80p">{{ $options.i18n.STORAGE_STATISTICS_TOTAL_STORAGE }}</div>
         <number-to-human-size
           class="gl-white-space-nowrap"
-          :value="totalStorage"
+          :value="totalStorageAvailable"
           data-testid="total-storage"
         />
       </div>

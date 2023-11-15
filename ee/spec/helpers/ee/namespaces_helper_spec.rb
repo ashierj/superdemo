@@ -273,16 +273,13 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
     let_it_be(:admin) { create(:user, namespace: namespace) }
 
     let(:repository_size_limit) { 1000 }
-    let(:enforceable_storage_limit) { 1 }
+    let(:storage_size_limit) { 1 }
 
-    where(:enforcement_type, :expected_storage_included) do
-      :project_repository_limit | ref(:repository_size_limit)
-      :namespace_storage_limit | lazy { enforceable_storage_limit * 1.megabyte }
-    end
+    where(enforcement_type: [:project_repository_limit, :namespace_storage_limit])
 
     with_them do
       before do
-        namespace.actual_plan.actual_limits.update!(enforcement_limit: enforceable_storage_limit)
+        namespace.actual_plan.actual_limits.update!(storage_size_limit: storage_size_limit)
         allow(Namespaces::Storage::Enforcement).to(
           receive(:enforce_limit?).and_return(enforcement_type == :namespace_storage_limit)
         )
@@ -299,9 +296,11 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
           user_namespace: namespace.user_namespace?.to_s,
           default_per_page: Kaminari.config.default_per_page,
           namespace_plan_name: namespace.actual_plan_name.capitalize,
-          namespace_plan_storage_included: expected_storage_included,
           purchase_storage_url: more_storage_url,
           buy_addon_target_attr: '_blank',
+          per_project_storage_limit: repository_size_limit,
+          namespace_storage_limit: storage_size_limit * 1.megabyte,
+          is_in_namespace_limits_pre_enforcement: 'false',
           enforcement_type: enforcement_type,
           total_repository_size_excess: 0
         })

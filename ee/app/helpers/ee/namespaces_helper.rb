@@ -65,24 +65,29 @@ module EE
 
     override :storage_usage_app_data
     def storage_usage_app_data(namespace)
-      return super unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+      per_project_storage_limit = namespace.actual_repository_size_limit
+      namespace_storage_limit = namespace.actual_limits.storage_size_limit.megabytes
+      is_in_namespace_limits_pre_enforcement = ::Namespaces::Storage::Enforcement.in_pre_enforcement_phase?(namespace)
 
+      unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        # EE SM app data
+        return super.merge({
+          enforcement_type: namespace.root_storage_size.enforcement_type,
+          per_project_storage_limit: per_project_storage_limit
+        })
+      end
+
+      # EE SaaS app data
       super.merge({
         namespace_plan_name: namespace.actual_plan_name.capitalize,
-        namespace_plan_storage_included: namespace_plan_storage_included(namespace),
         purchase_storage_url: buy_storage_path(namespace),
         buy_addon_target_attr: buy_addon_target_attr(namespace),
+        per_project_storage_limit: per_project_storage_limit,
+        namespace_storage_limit: namespace_storage_limit,
         enforcement_type: namespace.root_storage_size.enforcement_type,
+        is_in_namespace_limits_pre_enforcement: is_in_namespace_limits_pre_enforcement.to_s,
         total_repository_size_excess: namespace.total_repository_size_excess
       })
-    end
-
-    def namespace_plan_storage_included(namespace)
-      if namespace.root_storage_size.enforcement_type == :project_repository_limit
-        ::Gitlab::CurrentSettings.repository_size_limit
-      else
-        ::Namespaces::Storage::Enforcement.enforceable_storage_limit(namespace).megabytes
-      end
     end
 
     def purchase_storage_url

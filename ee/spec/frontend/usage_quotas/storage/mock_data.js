@@ -14,7 +14,8 @@ export const defaultNamespaceProvideValues = {
   purchaseStorageUrl: 'some-fancy-url',
   buyAddonTargetAttr: '_blank',
   namespacePlanName: 'Free',
-  namespacePlanStorageIncluded: 1002321,
+  perProjectStorageLimit: 10737418240,
+  namespaceStorageLimit: 5368709120,
   totalRepositorySizeExcess: '0',
   isUsingProjectEnforcementWithLimits: false,
   isUsingProjectEnforcementWithNoLimits: false,
@@ -35,9 +36,10 @@ export const withRootStorageStatistics = {
   containsLockedProjects: true,
   repositorySizeExcessProjectCount: 1,
   totalRepositorySizeExcess: 2321,
-  totalRepositorySize: 1002321,
+  totalRepositorySize: 10737418240,
   additionalPurchasedStorageSize: 321,
-  actualRepositorySizeLimit: 1002321,
+  actualRepositorySizeLimit: 10737418240,
+  storageSizeLimit: 5368709120,
   rootStorageStatistics: {
     containerRegistrySize: 3900000,
     containerRegistrySizeIsEstimated: true,
@@ -53,9 +55,8 @@ export const withRootStorageStatistics = {
 };
 
 export const statisticsCardDefaultProps = {
-  totalStorage: 100 * 1024,
+  purchasedStorage: 0,
   usedStorage: 50 * 1024,
-  planStorageDescription: 'Storage per project included in Free subscription',
   loading: false,
 };
 

@@ -41,9 +41,11 @@ const createTemplate = (config = {}) => {
       userNamespace: false,
       defaultPerPage: 20,
       namespacePlanName: 'free',
-      namespacePlanStorageIncluded: 10 * MEBIBYTE,
+      perProjectStorageLimit: 10 * MEBIBYTE,
+      namespaceStorageLimit: 5 * MEBIBYTE,
       purchaseStorageUrl: '//purchase-storage-url',
       buyAddonTargetAttr: 'buyAddonTargetAttr',
+      totalRepositorySizeExcess: 0,
       isUsingProjectEnforcementWithLimits: false,
       isUsingProjectEnforcementWithNoLimits: false,
       isUsingNamespaceEnforcement: true,
@@ -89,8 +91,8 @@ export const SaasWithNoLimits = {
       isUsingNamespaceEnforcement: false,
       isUsingProjectEnforcementWithLimits: false,
       isUsingProjectEnforcementWithNoLimits: true,
-      totalRepositorySizeExcess: 0,
-      namespacePlanStorageIncluded: 0,
+      perProjectStorageLimit: 0,
+      namespaceStorageLimit: 0,
     },
   }),
 };
@@ -129,11 +131,11 @@ export const SaasLoadingError = {
 
 const selfManagedDefaultProvide = {
   isUsingProjectEnforcementWithLimits: false,
-  isUsingProjectEnforcementWithNoLimits: false,
+  isUsingProjectEnforcementWithNoLimits: true,
   isUsingNamespaceEnforcement: false,
   namespacePlanName: null,
-  namespaceStorageIncluded: '',
-  namespacePlanStorageIncluded: 0,
+  perProjectStorageLimit: 0,
+  namespaceStorageLimit: 0,
   purchaseStorageUrl: null,
   buyAddonTargetAttr: null,
 };
