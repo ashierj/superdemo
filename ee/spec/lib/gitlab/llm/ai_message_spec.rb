@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
   subject { described_class.new(data) }
 
+  let(:content) { 'response' }
   let(:data) do
     {
       timestamp: timestamp,
@@ -12,7 +13,7 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
       request_id: 'original_request_id',
       errors: ['some error1', 'another error'],
       role: 'user',
-      content: 'response',
+      content: content,
       ai_action: 'chat',
       client_subscription_id: 'client_subscription_id',
       user: build_stubbed(:user),
@@ -77,6 +78,46 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
   describe '#to_h' do
     it 'returns hash with all attributes' do
       expect(subject.to_h).to eq(data.stringify_keys)
+    end
+  end
+
+  describe '#slash_command?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:message, :is_slash_command) do
+      nil                  | false
+      'something'          | false
+      '/explain'           | true
+      '/explain something' | true
+      '/e xplain somethin' | true
+      '/ something'        | false
+      ' /something'        | false
+    end
+
+    with_them do
+      let(:content) { message }
+
+      it { expect(subject.slash_command?).to eq(is_slash_command) }
+    end
+  end
+
+  describe '#slash_command_and_input' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:message, :output) do
+      nil                  | []
+      'something'          | []
+      '/explain'           | ['/explain']
+      '/explain something' | ['/explain', 'something']
+      '/e xplain somethin' | ['/e', 'xplain somethin']
+      '/ something'        | []
+      ' /something'        | []
+    end
+
+    with_them do
+      let(:content) { message }
+
+      it { expect(subject.slash_command_and_input).to eq(output) }
     end
   end
 

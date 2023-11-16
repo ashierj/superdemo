@@ -13,6 +13,10 @@ module Gitlab
           ::Gitlab::Llm::Chain::Tools::EpicIdentifier
         ].freeze
 
+        COMMAND_TOOLS = TOOLS + [
+          ::Gitlab::Llm::Chain::Tools::ExplainCode
+        ]
+
         def initialize(prompt_message, ai_prompt_class, options = nil)
           super
 
@@ -37,18 +41,7 @@ module Gitlab
           response_handler = ::Gitlab::Llm::ResponseService
             .new(context, response_options.except(:client_subscription_id))
 
-          if response_options[:client_subscription_id]
-            stream_response_handler = ::Gitlab::Llm::ResponseService.new(context, response_options)
-          end
-
-          response = Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
-            user_input: prompt_message.content,
-            tools: tools(user),
-            context: context,
-            response_handler: response_handler,
-            stream_response_handler: stream_response_handler
-          ).execute
-
+          response = agent_or_tool_response(response_handler)
           response_modifier = Gitlab::Llm::Chain::ResponseModifier.new(response)
 
           context.tools_used.each do |tool|
@@ -68,6 +61,8 @@ module Gitlab
           response_modifier
         end
 
+        private
+
         def tools(user)
           tools = TOOLS.dup
           tools << ::Gitlab::Llm::Chain::Tools::CiEditorAssistant if Feature.enabled?(:ci_editor_assistant_tool, user)
@@ -79,6 +74,37 @@ module Gitlab
 
           service_options = { request_id: tracking_context[:request_id], question: prompt_message.content }
           ::Llm::ExecuteMethodService.new(user, user, :categorize_question, service_options).execute
+        end
+
+        def agent_or_tool_response(response_handler)
+          if response_options[:client_subscription_id]
+            stream_response_handler = ::Gitlab::Llm::ResponseService.new(context, response_options)
+          end
+
+          command = slash_command_for_prompt_message
+          if command
+            return command.tool::Executor.new(
+              context: context,
+              options: { input: options[:content] },
+              stream_response_handler: stream_response_handler,
+              command: command
+            ).perform
+          end
+
+          Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
+            user_input: prompt_message.content,
+            tools: tools(user),
+            context: context,
+            response_handler: response_handler,
+            stream_response_handler: stream_response_handler
+          ).execute
+        end
+
+        def slash_command_for_prompt_message
+          return unless Feature.enabled?(:slash_commands, user)
+          return unless prompt_message.slash_command?
+
+          Gitlab::Llm::Chain::SlashCommand.for(message: prompt_message, tools: COMMAND_TOOLS)
         end
       end
     end

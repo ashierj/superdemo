@@ -198,6 +198,10 @@ module Gitlab
               context.current_file
             end
 
+            def prompt_options
+              options
+            end
+
             PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(
                 <<~PROMPT

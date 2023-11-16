@@ -8,12 +8,13 @@ module Gitlab
           def prompt
             return { prompt: base_prompt } unless provider_prompt_class
 
-            provider_prompt_class.prompt(options)
+            provider_prompt_class.prompt(prompt_options)
           end
 
           def request(&block)
-            logger.debug(message: "Prompt", class: self.class.to_s, content: prompt)
-            ai_request.request(prompt, &block)
+            prompt_str = prompt
+            logger.debug(message: "Prompt", class: self.class.to_s, content: prompt_str)
+            ai_request.request(prompt_str, &block)
           end
 
           private

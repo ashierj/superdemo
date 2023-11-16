@@ -6,6 +6,7 @@ module Gitlab
       module Tools
         module ExplainCode
           class Executor < Tool
+            extend ::Gitlab::Utils::Override
             include Concerns::AiDependent
 
             NAME = 'ExplainCode'
@@ -27,12 +28,30 @@ module Gitlab
                 <<~PROMPT
                   You are a software developer.
                   You can explain code snippets.
-                  The code can be in any programming language.
-                  Explain the code below.
+                  %<language_info>s
                 PROMPT
               ),
-              Utils::Prompt.as_user("%<input>s")
+              Utils::Prompt.as_user("%<input>s"),
+              Utils::Prompt.as_user(
+                <<~PROMPT
+                  <code>
+                    %<selected_text>s
+                  </code>
+                PROMPT
+              )
             ].freeze
+
+            SLASH_COMMANDS = {
+              '/explain' => {
+                description: 'Explain the code',
+                instruction: 'Explain the code below in <code></code> tags.',
+                instruction_with_input: 'Explain %<input>s in the code below in <code></code> tags.'
+              }
+            }.freeze
+
+            def self.slash_commands
+              SLASH_COMMANDS
+            end
 
             def perform
               Answer.new(status: :ok, context: context, content: request, tool: nil)
@@ -48,6 +67,24 @@ module Gitlab
 
             def resource_name
               RESOURCE_NAME
+            end
+
+            override :prompt_options
+            def prompt_options
+              file = context.current_file || {}
+
+              opts = super.merge(
+                language_info: '',
+                selected_text: file[:selected_text].to_s
+              )
+
+              filename = file[:file_name].to_s
+              language = ::CodeSuggestions::ProgrammingLanguage.detect_from_filename(filename)
+              if language.name.present?
+                opts[:language_info] = "The code is written in #{language.name} and stored as #{filename}"
+              end
+
+              opts
             end
           end
         end

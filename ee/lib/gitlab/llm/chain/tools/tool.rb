@@ -24,11 +24,16 @@ module Gitlab
             self::EXAMPLE
           end
 
-          def initialize(context:, options:, stream_response_handler: nil)
+          def self.slash_commands
+            {}
+          end
+
+          def initialize(context:, options:, stream_response_handler: nil, command: nil)
             @context = context
             @options = options
             @logger = Gitlab::Llm::Logger.build
             @stream_response_handler = stream_response_handler
+            @command = command
           end
 
           def execute
@@ -76,7 +81,7 @@ module Gitlab
 
           private
 
-          attr_reader :logger, :stream_response_handler
+          attr_reader :logger, :stream_response_handler, :command
 
           def not_found
             content = "I am sorry, I am unable to find what you are looking for."
@@ -105,6 +110,16 @@ module Gitlab
 
           def already_used?
             context.tools_used.include?(self.class.name)
+          end
+
+          def prompt_options
+            options.merge(command_options)
+          end
+
+          def command_options
+            return {} unless command
+
+            command.prompt_options
           end
         end
       end
