@@ -51,7 +51,13 @@ RSpec.describe Gitlab::Ci::Config::Entry::Service do
 
   context 'when configuration is a hash' do
     let(:config) do
-      { name: 'postgresql:9.5', alias: 'db', command: %w[cmd run], entrypoint: %w[/bin/sh run] }
+      {
+        name: 'postgresql:9.5',
+        alias: 'db',
+        command: %w[cmd run],
+        entrypoint: %w[/bin/sh run],
+        variables: { 'MY_VAR' => 'variable' }
+      }
     end
 
     describe '#valid?' do
