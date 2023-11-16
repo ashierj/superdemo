@@ -46,7 +46,7 @@ exports[`JiraIssuesNote template renders note 1`] = `
         >
           <time-ago-tooltip-stub
             cssclass=""
-            datetimeformat="DATE_WITH_TIME_FORMAT"
+            datetimeformat="asDateTime"
             time="\\"2021-02-01T04:04:40.833Z\\""
             tooltipplacement="bottom"
           />
