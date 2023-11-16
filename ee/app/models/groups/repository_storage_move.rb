@@ -12,6 +12,7 @@ module Groups
 
     belongs_to :container, class_name: 'Group', inverse_of: :repository_storage_moves, foreign_key: :group_id
     alias_attribute :group, :container
+    alias_attribute :container_id, :group_id
 
     scope :with_groups, -> { includes(container: :route) }
 
