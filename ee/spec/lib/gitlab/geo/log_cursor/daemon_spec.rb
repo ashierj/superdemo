@@ -110,9 +110,8 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
 
   describe '#find_and_handle_events!' do
     context 'with some event logs' do
-      let(:project) { create(:project) }
-      let(:repository_updated_event) { create(:geo_repository_updated_event, project: project) }
-      let(:event_log) { create(:geo_event_log, repository_updated_event: repository_updated_event) }
+      let(:cache_invalidation_event) { create(:geo_cache_invalidation_event) }
+      let(:event_log) { create(:geo_event_log, cache_invalidation_event: cache_invalidation_event) }
       let(:batch) { [event_log] }
       let!(:event_log_state) { create(:geo_event_log_state, event_id: event_log.id - 1) }
 
@@ -123,7 +122,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
       end
 
       it 'calls #handle_gap_event for each gap the gap tracking finds' do
-        second_event_log = create(:geo_event_log, repository_updated_event: repository_updated_event)
+        second_event_log = create(:geo_event_log, cache_invalidation_event: cache_invalidation_event)
 
         allow_any_instance_of(::Gitlab::Geo::LogCursor::EventLogs).to receive(:fetch_in_batches)
         allow(daemon.send(:gap_tracking)).to receive(:fill_gaps).and_yield(event_log).and_yield(second_event_log)
@@ -148,8 +147,8 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
       let(:group_1) { create(:group) }
       let(:group_2) { create(:group) }
       let(:project) { create(:project, group: group_1) }
-      let(:repository_updated_event) { create(:geo_repository_updated_event, project: project) }
-      let(:event_log) { create(:geo_event_log, repository_updated_event: repository_updated_event) }
+      let(:hashed_storage_attachments_event) { create(:geo_hashed_storage_attachments_event, project: project) }
+      let(:event_log) { create(:geo_event_log, hashed_storage_attachments_event: hashed_storage_attachments_event) }
       let!(:event_log_state) { create(:geo_event_log_state, event_id: event_log.id - 1) }
       let!(:registry) { create(:geo_project_repository_registry, :synced, project: project) }
 
@@ -159,8 +158,8 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
       end
 
       it 'detects when an event was skipped' do
-        updated_event = create(:geo_repository_updated_event, project: project)
-        new_event = create(:geo_event_log, id: event_log.id + 2, repository_updated_event: updated_event)
+        updated_event = create(:geo_hashed_storage_attachments_event, project: project)
+        new_event = create(:geo_event_log, id: event_log.id + 2, hashed_storage_attachments_event: updated_event)
 
         daemon.find_and_handle_events!
 
@@ -172,17 +171,17 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
       end
 
       it 'detects when an event was skipped between batches' do
-        updated_event = create(:geo_repository_updated_event, project: project)
-        new_event = create(:geo_event_log, repository_updated_event: updated_event)
+        updated_event = create(:geo_hashed_storage_attachments_event, project: project)
+        new_event = create(:geo_event_log, hashed_storage_attachments_event: updated_event)
 
         daemon.find_and_handle_events!
 
-        create(:geo_event_log, id: new_event.id + 3, repository_updated_event: updated_event)
+        create(:geo_event_log, id: new_event.id + 3, hashed_storage_attachments_event: updated_event)
 
         daemon.find_and_handle_events!
 
-        create(:geo_event_log, id: new_event.id + 1, repository_updated_event: updated_event)
-        create(:geo_event_log, id: new_event.id + 2, repository_updated_event: updated_event)
+        create(:geo_event_log, id: new_event.id + 1, hashed_storage_attachments_event: updated_event)
+        create(:geo_event_log, id: new_event.id + 2, hashed_storage_attachments_event: updated_event)
 
         expect(read_gaps).to eq([new_event.id + 1, new_event.id + 2])
       end
@@ -210,8 +209,8 @@ RSpec.describe Gitlab::Geo::LogCursor::Daemon, :clean_gitlab_redis_shared_state,
                                                              message: 'Skipped event',
                                                              class: 'Gitlab::Geo::LogCursor::Daemon',
                                                              event_log_id: event_log.id,
-                                                             event_id: repository_updated_event.id,
-                                                             event_type: 'Geo::RepositoryUpdatedEvent',
+                                                             event_id: hashed_storage_attachments_event.id,
+                                                             event_type: 'Geo::HashedStorageAttachmentsEvent',
                                                              project_id: project.id))
 
         daemon.find_and_handle_events!
