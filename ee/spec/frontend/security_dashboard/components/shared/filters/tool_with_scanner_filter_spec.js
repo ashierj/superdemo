@@ -172,10 +172,32 @@ describe('Tool With Scanner Filter component', () => {
       createWrapper();
     });
 
-    it('emits the default presets when nothing is selected', async () => {
+    it('emits the default development tab filter presets when nothing is selected', async () => {
       await clickAllItem();
 
-      expectFilterChanged({ scanner: [] });
+      expectFilterChanged({
+        reportType: [
+          'API_FUZZING',
+          'CONTAINER_SCANNING',
+          'COVERAGE_FUZZING',
+          'DAST',
+          'DEPENDENCY_SCANNING',
+          'SAST',
+          'SECRET_DETECTION',
+          'GENERIC',
+        ],
+        scanner: undefined,
+      });
+    });
+
+    it('sets the reportType and scanner to be undefined after clicking on a different filter', async () => {
+      await clickAllItem();
+
+      expect(wrapper.emitted('filter-changed')[0][0]).toHaveProperty('scanner', undefined);
+
+      await clickDropdownItem('eslint');
+
+      expect(wrapper.emitted('filter-changed')[1][0]).toHaveProperty('reportType', undefined);
     });
 
     it("emits custom Manually added's external id", async () => {
