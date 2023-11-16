@@ -66,7 +66,10 @@ module QA
         include_examples 'streamed events', 'group_created', 'Group', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415874'
       end
 
-      context 'when a project is created' do
+      context 'when a project is created', quarantine: {
+        type: :investigating,
+        issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/427266'
+      } do
         # Create a group first so its audit event is streamed before we check for the create project event
         let!(:group) { Resource::Group.fabricate! }
         let(:entity_path) { create(:project, group: group).full_path }
