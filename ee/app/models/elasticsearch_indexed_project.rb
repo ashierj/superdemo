@@ -17,13 +17,13 @@ class ElasticsearchIndexedProject < ApplicationRecord
   private
 
   def index
-    return unless Gitlab::CurrentSettings.elasticsearch_indexing? && project.searchable?
+    return unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
     ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) # rubocop: disable CodeReuse/ServiceClass
   end
 
   def delete_from_index
-    return unless Gitlab::CurrentSettings.elasticsearch_indexing? && project.searchable?
+    return unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
     ElasticDeleteProjectWorker.perform_async(project.id, project.es_id)
   end

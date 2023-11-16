@@ -9,18 +9,13 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
 
   it_behaves_like 'limited indexing is enabled' do
     let_it_be(:object) { create :note, project: project }
-    let_it_be(:group) { create(:group) }
-    let(:group_object) do
-      project = create :project, name: 'test1', group: group
-      create :note, project: project
-    end
 
-    describe '#searchable?' do
+    describe '#use_elasticsearch?' do
       before do
         create :elasticsearch_indexed_project, project: project
       end
 
-      it 'also works on diff notes' do
+      it 'supports diff notes' do
         notes = []
         notes << create(:diff_note_on_merge_request, note: "term")
         notes << create(:diff_note_on_commit, note: "term")
@@ -30,13 +25,13 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
         notes.each do |note|
           create :elasticsearch_indexed_project, project: note.noteable.project
 
-          expect(note.searchable?).to be_truthy
+          expect(note.use_elasticsearch?).to eq(true)
         end
       end
     end
   end
 
-  it "searches notes", :sidekiq_inline do
+  it 'searches notes', :sidekiq_inline do
     project = create :project, :public
     issue = create :issue, project: project
 
@@ -55,27 +50,25 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
     expect(described_class.elastic_search('bla-bla', options: { project_ids: :any }).records).to contain_exactly(outside_note)
   end
 
-  it "names elasticsearch queries" do
+  it 'names elasticsearch queries' do
     described_class.elastic_search('*').total_count
 
     assert_named_queries("note:match:search_terms", "note:authorized")
   end
 
-  it "indexes && searches diff notes" do
+  it 'indexes and searches diff notes', :sidekiq_inline do
     notes = []
 
-    Sidekiq::Testing.inline! do
-      notes << create(:diff_note_on_merge_request, note: "term")
-      notes << create(:diff_note_on_commit, note: "term")
-      notes << create(:legacy_diff_note_on_merge_request, note: "term")
-      notes << create(:legacy_diff_note_on_commit, note: "term")
+    notes << create(:diff_note_on_merge_request, note: "term")
+    notes << create(:diff_note_on_commit, note: "term")
+    notes << create(:legacy_diff_note_on_merge_request, note: "term")
+    notes << create(:legacy_diff_note_on_commit, note: "term")
 
-      notes.each do |note|
-        note.project.update!(visibility: Gitlab::VisibilityLevel::PUBLIC)
-      end
-
-      ensure_elasticsearch_index!
+    notes.each do |note|
+      note.project.update!(visibility: Gitlab::VisibilityLevel::PUBLIC)
     end
+
+    ensure_elasticsearch_index!
 
     project_ids = notes.map { |note| note.noteable.project.id }
     options = { project_ids: project_ids }
@@ -83,10 +76,10 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
     expect(described_class.elastic_search('term', options: options).total_count).to eq(4)
   end
 
-  describe 'json serialization' do
+  describe 'as_indexed_json' do
     using RSpec::Parameterized::TableSyntax
 
-    it "returns json with all needed elements" do
+    it 'returns json with all needed elements' do
       assignee = create(:user)
       project = create(:project)
       issue = create(:issue, project: project, assignees: [assignee])
@@ -152,8 +145,8 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
 
     with_them do
       let!(:note) { create(note_type) } # rubocop:disable Rails/SaveBang
-      let(:project) { note.project }
 
+      let(:project) { note.project }
       let(:note_json) { note.__elasticsearch__.as_indexed_json }
 
       before do
@@ -202,8 +195,8 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
     end
   end
 
-  context 'notes to confidential issues' do
-    it "does not find note" do
+  context 'for notes on confidential issues' do
+    it 'does not find note' do
       issue = create :issue, :confidential
 
       Sidekiq::Testing.inline! do
@@ -216,7 +209,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
       expect(described_class.elastic_search('term', options: options).total_count).to eq(0)
     end
 
-    it "finds note when user is authorized to see it", :sidekiq_might_not_need_inline do
+    it 'finds note when user is authorized to see it', :sidekiq_might_not_need_inline do
       user = create :user
       issue = create :issue, :confidential, author: user
       issue.project.add_guest user
@@ -255,34 +248,30 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
 
     it_behaves_like 'notes finder', :auditor, 1
 
-    it "return notes with matching content for project members", :sidekiq_might_not_need_inline do
+    it 'return notes with matching content for project members', :sidekiq_inline do
       user = create :user
       issue = create :issue, :confidential, author: user
 
       member = create(:user)
       issue.project.add_developer(member)
 
-      Sidekiq::Testing.inline! do
-        create_notes_for(issue, 'bla-bla term')
-        ensure_elasticsearch_index!
-      end
+      create_notes_for(issue, 'bla-bla term')
+      ensure_elasticsearch_index!
 
       options = { project_ids: [issue.project.id], current_user: member }
 
       expect(described_class.elastic_search('term', options: options).total_count).to eq(1)
     end
 
-    it "does not return notes with matching content for project members with guest role" do
+    it 'does not return notes with matching content for project members with guest role', :sidekiq_inline do
       user = create :user
       issue = create :issue, :confidential, author: user
 
       member = create(:user)
       issue.project.add_guest(member)
 
-      Sidekiq::Testing.inline! do
-        create_notes_for(issue, 'bla-bla term')
-        ensure_elasticsearch_index!
-      end
+      create_notes_for(issue, 'bla-bla term')
+      ensure_elasticsearch_index!
 
       options = { project_ids: [issue.project.id], current_user: member }
 

@@ -1,41 +1,34 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'limited indexing is enabled' do
-  let_it_be(:project) { create :project, :repository, name: 'test1' }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create :project, name: 'test1', group: group }
 
   before do
     stub_ee_application_setting(elasticsearch_limit_indexing: true)
   end
 
-  context 'when the project is not enabled specifically' do
-    describe '#searchable?' do
-      it 'returns false' do
-        expect(object.searchable?).to be_falsey
+  subject(:use_elasticsearch) { object.use_elasticsearch? }
+
+  describe '#use_elasticsearch?' do
+    context 'when the project is not enabled specifically' do
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when a project is enabled' do
+      before do
+        create :elasticsearch_indexed_project, project: project
       end
-    end
-  end
 
-  context 'when a project is enabled specifically' do
-    before do
-      create :elasticsearch_indexed_project, project: project
+      it { is_expected.to eq(true) }
     end
 
-    describe '#searchable?' do
-      it 'returns true' do
-        expect(object.searchable?).to be_truthy
+    context 'when a group is enabled' do
+      before do
+        create :elasticsearch_indexed_namespace, namespace: group
       end
-    end
-  end
 
-  context 'when a group is enabled' do
-    before do
-      create :elasticsearch_indexed_namespace, namespace: group
-    end
-
-    describe '#searchable?' do
-      it 'returns true' do
-        expect(group_object.searchable?).to be_truthy
-      end
+      it { is_expected.to eq(true) }
     end
   end
 end
