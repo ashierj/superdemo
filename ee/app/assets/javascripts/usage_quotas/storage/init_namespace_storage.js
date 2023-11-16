@@ -24,6 +24,7 @@ export default () => {
     purchaseStorageUrl,
     buyAddonTargetAttr,
     enforcementType,
+    isInNamespaceLimitsPreEnforcement,
     totalRepositorySizeExcess,
   } = el.dataset;
 
@@ -54,6 +55,7 @@ export default () => {
       namespaceStorageLimit,
       purchaseStorageUrl,
       buyAddonTargetAttr,
+      isInNamespaceLimitsPreEnforcement: parseBoolean(isInNamespaceLimitsPreEnforcement),
       totalRepositorySizeExcess: totalRepositorySizeExcess && Number(totalRepositorySizeExcess),
       isUsingNamespaceEnforcement,
       isUsingProjectEnforcementWithLimits,

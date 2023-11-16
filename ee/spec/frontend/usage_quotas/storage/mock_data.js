@@ -14,6 +14,7 @@ export const defaultNamespaceProvideValues = {
   purchaseStorageUrl: 'some-fancy-url',
   buyAddonTargetAttr: '_blank',
   namespacePlanName: 'Free',
+  isInNamespaceLimitsPreEnforcement: false,
   perProjectStorageLimit: 10737418240,
   namespaceStorageLimit: 5368709120,
   totalRepositorySizeExcess: '0',
