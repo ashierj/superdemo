@@ -115,13 +115,31 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :pipeline_compositio
       stub_licensed_features(cross_project_pipelines: true)
     end
 
-    it 'has dependencies and variables', :aggregate_failures do
-      pipeline = create_pipeline!
-      job = pipeline.builds.first
+    shared_examples 'job with dependencies and variables' do
+      it 'has dependencies and variables', :aggregate_failures do
+        pipeline = create_pipeline!
+        job = pipeline.builds.first
 
-      expect(job).to be_present
-      expect(job.all_dependencies).to include(dependency)
-      expect(job.scoped_variables.to_hash).to include(dependency_variable.key => dependency_variable.value)
+        expect(job).to be_present
+        expect(job.all_dependencies).to include(dependency)
+        expect(job.scoped_variables.to_hash).to include(dependency_variable.key => dependency_variable.value)
+      end
+    end
+
+    context 'when feature is available through license' do
+      before do
+        stub_licensed_features(cross_project_pipelines: true)
+      end
+
+      it_behaves_like 'job with dependencies and variables'
+    end
+
+    context 'when feature is available through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it_behaves_like 'job with dependencies and variables'
     end
   end
 

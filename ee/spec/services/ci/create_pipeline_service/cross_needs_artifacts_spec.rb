@@ -198,6 +198,16 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :build_artifacts do
     end
   end
 
+  context 'when feature is available through usage ping features' do
+    before do
+      stub_usage_ping_features(true)
+    end
+
+    it_behaves_like 'mixed artifacts definitions' do
+      let(:expected_dependencies) { dependencies_when_license_is_available }
+    end
+  end
+
   context 'without license' do
     before do
       stub_licensed_features(cross_project_pipelines: false)

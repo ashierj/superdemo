@@ -181,52 +181,72 @@ RSpec.describe API::Ci::Runner, feature_category: :runner do
           make_project_fully_accessible(downstream_project, project)
         end
 
-        before do
-          stub_licensed_features(cross_project_pipelines: true)
-        end
+        context 'when feature is available through license' do
+          before do
+            stub_licensed_features(cross_project_pipelines: true)
+          end
 
-        context 'when the job is created by a user with sufficient permission in upstream project' do
-          it_behaves_like 'successful artifact download'
+          context 'when the job is created by a user with sufficient permission in upstream project' do
+            it_behaves_like 'successful artifact download'
 
-          context 'and the upstream project has disabled public builds' do
+            context 'and the upstream project has disabled public builds' do
+              before do
+                project.update!(public_builds: false)
+              end
+
+              it_behaves_like 'successful artifact download'
+            end
+          end
+
+          context 'when the job is created by a user without sufficient permission in upstream project' do
             before do
-              project.update!(public_builds: false)
+              downstream_ci_build.update!(user: downstream_project_dev)
+            end
+
+            it_behaves_like 'forbidden request'
+
+            context 'and the upstream project has disabled public builds' do
+              before do
+                project.update!(public_builds: false)
+              end
+
+              it_behaves_like 'forbidden request'
+            end
+          end
+
+          context 'when the upstream project is public and the job user does not have permission in the project' do
+            before do
+              project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+              downstream_ci_build.update!(user: downstream_project_dev)
             end
 
             it_behaves_like 'successful artifact download'
+
+            context 'and the upstream project has disabled public builds' do
+              before do
+                project.update!(public_builds: false)
+              end
+
+              it_behaves_like 'forbidden request'
+            end
           end
         end
 
-        context 'when the job is created by a user without sufficient permission in upstream project' do
+        context 'when feature is available through usage ping features' do
           before do
-            downstream_ci_build.update!(user: downstream_project_dev)
+            stub_usage_ping_features(true)
           end
 
-          it_behaves_like 'forbidden request'
+          context 'when the job is created by a user with sufficient permission in upstream project' do
+            it_behaves_like 'successful artifact download'
 
-          context 'and the upstream project has disabled public builds' do
-            before do
-              project.update!(public_builds: false)
+            context 'and the upstream project has disabled public builds' do
+              before do
+                project.update!(public_builds: false)
+              end
+
+              it_behaves_like 'successful artifact download'
             end
-
-            it_behaves_like 'forbidden request'
-          end
-        end
-
-        context 'when the upstream project is public and the job user does not have permission in the project' do
-          before do
-            project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-            downstream_ci_build.update!(user: downstream_project_dev)
-          end
-
-          it_behaves_like 'successful artifact download'
-
-          context 'and the upstream project has disabled public builds' do
-            before do
-              project.update!(public_builds: false)
-            end
-
-            it_behaves_like 'forbidden request'
           end
         end
       end
