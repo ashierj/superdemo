@@ -7,6 +7,7 @@ import {
   REPORT_TYPES_WITH_MANUALLY_ADDED,
 } from 'ee/security_dashboard/store/constants';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
+import { REPORT_TYPE_PRESETS } from 'ee/security_dashboard/components/shared/vulnerability_report/constants';
 import QuerystringSync from './querystring_sync.vue';
 import { ALL_ID } from './constants';
 
@@ -78,7 +79,16 @@ export default {
   },
   watch: {
     selected() {
-      this.$emit('filter-changed', { scanner: this.selected });
+      if (!this.selected.length) {
+        // This will send the filter presets (no "Cluster Image Scanning") for the development tab
+        this.$emit('filter-changed', {
+          reportType: REPORT_TYPE_PRESETS.DEVELOPMENT,
+          scanner: undefined,
+        });
+        return;
+      }
+
+      this.$emit('filter-changed', { scanner: this.selected, reportType: undefined });
     },
   },
   methods: {
