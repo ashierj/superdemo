@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
   let_it_be(:user) { create(:user) }
 
-  describe 'real requests', :real_ai_request, :saas do
+  describe 'real requests', :real_ai_request, :zeroshot_executor, :saas do
     using RSpec::Parameterized::TableSyntax
 
     let_it_be_with_reload(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
