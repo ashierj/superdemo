@@ -114,7 +114,7 @@ export const getMockIssuesAnalyticsCountsQuery = ({
   queryAlias,
   metricType,
   isProject = false,
-} = {}) => `query get${queryAlias}($fullPath: ID!, $assigneeUsernames: [String!], $authorUsername: String, $milestoneTitle: String, $labelNames: [String!]) {
+} = {}) => `query get${queryAlias}($fullPath: ID!, $assigneeUsernames: [String!], $authorUsername: String, $milestoneTitle: String, $labelNames: [String!], $epicId: ID, $iterationId: ID, $myReactionEmoji: String, $weight: Int, $not: NegatedValueStreamAnalyticsIssueFilterInput) {
   namespace: ${isProject ? 'project' : 'group'}(fullPath: $fullPath) {
     id
     ${queryAlias}: flowMetrics {
@@ -125,6 +125,11 @@ export const getMockIssuesAnalyticsCountsQuery = ({
         authorUsername: $authorUsername
         milestoneTitle: $milestoneTitle
         labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
       ) {
         value
       }
@@ -135,6 +140,11 @@ export const getMockIssuesAnalyticsCountsQuery = ({
         authorUsername: $authorUsername
         milestoneTitle: $milestoneTitle
         labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
       ) {
         value
       }
@@ -145,6 +155,11 @@ export const getMockIssuesAnalyticsCountsQuery = ({
         authorUsername: $authorUsername
         milestoneTitle: $milestoneTitle
         labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
       ) {
         value
       }
@@ -245,7 +260,6 @@ export const mockOriginalFilters = {
   assignee_username: ['bob', 'smith'],
   label_name: ['Brest', 'DLT'],
   milestone_title: '16.4',
-  months_back: '15',
 };
 
 export const mockFilters = {
@@ -253,5 +267,4 @@ export const mockFilters = {
   assigneeUsernames: ['bob', 'smith'],
   labelName: ['Brest', 'DLT'],
   milestoneTitle: '16.4',
-  monthsBack: '15',
 };

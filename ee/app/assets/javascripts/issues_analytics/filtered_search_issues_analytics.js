@@ -2,11 +2,8 @@ import FilteredSearchManager from 'ee_else_ce/filtered_search/filtered_search_ma
 import IssuableFilteredSearchTokenKeys from 'ee_else_ce/filtered_search/issuable_filtered_search_token_keys';
 import FilteredSearchTokenKeys from '~/filtered_search/filtered_search_token_keys';
 import {
-  TOKEN_TYPE_EPIC,
-  TOKEN_TYPE_ITERATION,
-  TOKEN_TYPE_MY_REACTION,
   TOKEN_TYPE_RELEASE,
-  TOKEN_TYPE_WEIGHT,
+  TOKEN_TYPE_ITERATION,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import { historyPushState } from '~/lib/utils/common_utils';
 import { queryToObject } from '~/lib/utils/url_utility';
@@ -18,33 +15,19 @@ export default class FilteredSearchIssueAnalytics extends FilteredSearchManager 
     const supportsIssuesCompletedFeature =
       gon.features?.issuesCompletedAnalyticsFeatureFlag && hasIssuesCompletedFeature;
 
-    let excludedTokenKeys = [TOKEN_TYPE_RELEASE];
+    // iteration token will be excluded until https://gitlab.com/gitlab-org/gitlab/-/issues/419743 is completed
+    const excludedTokenKeys = [TOKEN_TYPE_RELEASE, TOKEN_TYPE_ITERATION];
 
     if (supportsIssuesCompletedFeature) {
-      // these tokens will be excluded until https://gitlab.com/gitlab-org/gitlab/-/issues/419925 is completed
-      const issuesCompletedExcludedTokenKeys = [
-        TOKEN_TYPE_EPIC,
-        TOKEN_TYPE_ITERATION,
-        TOKEN_TYPE_MY_REACTION,
-        TOKEN_TYPE_WEIGHT,
-      ];
-
-      excludedTokenKeys = [...excludedTokenKeys, ...issuesCompletedExcludedTokenKeys];
-
       IssuableFilteredSearchTokenKeys.enableMultipleAssignees();
     }
 
     const filteredTokenKeys = IssuableFilteredSearchTokenKeys.tokenKeys.filter(
       ({ key }) => !excludedTokenKeys.includes(key),
     );
-    const tokenKeysWithoutNotEqual = filteredTokenKeys.map((tokenKey) => ({
-      ...tokenKey,
-      hideNotEqual: true,
-    }));
-    const tokenKeys = supportsIssuesCompletedFeature ? tokenKeysWithoutNotEqual : filteredTokenKeys;
 
     const issuesAnalyticsTokenKeys = new FilteredSearchTokenKeys(
-      tokenKeys,
+      filteredTokenKeys,
       IssuableFilteredSearchTokenKeys.alternativeTokenKeys,
       IssuableFilteredSearchTokenKeys.conditions,
     );

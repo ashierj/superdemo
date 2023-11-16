@@ -29,7 +29,7 @@ const renameFilterKeys = (filters, newKeys) =>
 export const transformFilters = (filters = {}, renamedKeys = RENAMED_FILTER_KEYS_DEFAULT) => {
   let formattedFilters = convertObjectPropsToCamelCase(filters, {
     deep: true,
-    dropKeys: ['scope'],
+    dropKeys: ['scope', 'include_subepics'],
   });
 
   if (!isEmpty(renamedKeys)) {
@@ -99,8 +99,8 @@ export const generateChartDateRangeData = (startDate, endDate, format = dateForm
   }
 
   if (chartDateRangeData.length) {
-    chartDateRangeData[0].fromDate = dateFormat(startDate, format, true);
-    chartDateRangeData.at(-1).toDate = dateFormat(endDate, format, true);
+    chartDateRangeData[0].fromDate = formatDate(startDate);
+    chartDateRangeData.at(-1).toDate = formatDate(endDate);
   }
 
   return chartDateRangeData;

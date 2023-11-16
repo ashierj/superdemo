@@ -167,17 +167,30 @@ describe('TotalIssuesAnalyticsChart', () => {
   });
 
   describe('when filters have been applied', () => {
-    beforeEach(async () => {
-      await createComponent({ filters: mockFilters });
-    });
+    const weight = '2';
+    const formattedWeight = Math.round(weight);
+    const iterationId = '36605';
+    const originalFilters = {
+      monthsBack: '3',
+      weight,
+      not: { weight, iterationId },
+      ...mockFilters,
+    };
+    const expectedFilters = {
+      weight: formattedWeight,
+      not: { weight: formattedWeight, iterationId },
+      ...mockFilters,
+    };
 
-    const { monthsBack, ...filters } = mockFilters;
+    beforeEach(async () => {
+      await createComponent({ filters: originalFilters });
+    });
 
     it(`should fetch issues opened counts with filters`, () => {
       expect(issuesOpenedCountsSuccess).toHaveBeenCalledTimes(1);
       expect(issuesOpenedCountsSuccess).toHaveBeenCalledWith({
         fullPath,
-        ...filters,
+        ...expectedFilters,
       });
     });
 
@@ -185,7 +198,7 @@ describe('TotalIssuesAnalyticsChart', () => {
       expect(issuesClosedCountsSuccess).toHaveBeenCalledTimes(1);
       expect(issuesClosedCountsSuccess).toHaveBeenCalledWith({
         fullPath,
-        ...filters,
+        ...expectedFilters,
       });
     });
 
