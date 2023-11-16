@@ -8,8 +8,8 @@ module EE
       prepended do
         %i[epics].each do |feature|
           field "#{feature}_enabled", GraphQL::Types::Boolean,
-                null: true,
-                description: "Indicates if #{feature.to_s.humanize} are enabled for namespace"
+            null: true,
+            description: "Indicates if #{feature.to_s.humanize} are enabled for namespace"
 
           define_method "#{feature}_enabled" do
             object.feature_available?(feature)
@@ -100,56 +100,58 @@ module EE
           description: "Group's DORA scores for all projects by DORA key metric for the last complete month."
 
         field :external_audit_event_destinations,
-              ::Types::AuditEvents::ExternalAuditEventDestinationType.connection_type,
-              null: true,
-              description: 'External locations that receive audit events belonging to the group.',
-              authorize: :admin_external_audit_events
+          ::Types::AuditEvents::ExternalAuditEventDestinationType.connection_type,
+          null: true,
+          description: 'External locations that receive audit events belonging to the group.',
+          authorize: :admin_external_audit_events
 
         field :google_cloud_logging_configurations,
-              ::Types::AuditEvents::GoogleCloudLoggingConfigurationType.connection_type,
-              null: true,
-              description: 'Google Cloud logging configurations that receive audit events belonging to the group.',
-              authorize: :admin_external_audit_events
+          ::Types::AuditEvents::GoogleCloudLoggingConfigurationType.connection_type,
+          null: true,
+          description: 'Google Cloud logging configurations that receive audit events belonging to the group.',
+          authorize: :admin_external_audit_events
 
         field :merge_request_violations,
-              ::Types::ComplianceManagement::MergeRequests::ComplianceViolationType.connection_type,
-              null: true,
-              description: 'Compliance violations reported on merge requests merged within the group.',
-              resolver: ::Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver,
-              authorize: :read_group_compliance_dashboard
+          ::Types::ComplianceManagement::MergeRequests::ComplianceViolationType.connection_type,
+          null: true,
+          description: 'Compliance violations reported on merge requests merged within the group.',
+          resolver: ::Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver,
+          authorize: :read_group_compliance_dashboard
 
         field :allow_stale_runner_pruning,
-              ::GraphQL::Types::Boolean,
-              null: false,
-              description: 'Indicates whether to regularly prune stale group runners. Defaults to false.',
-              method: :allow_stale_runner_pruning?
+          ::GraphQL::Types::Boolean,
+          null: false,
+          description: 'Indicates whether to regularly prune stale group runners. Defaults to false.',
+          method: :allow_stale_runner_pruning?
 
         field :cluster_agents,
-              ::Types::Clusters::AgentType.connection_type,
-              extras: [:lookahead],
-              null: true,
-              description: 'Cluster agents associated with projects in the group and its subgroups.',
-              resolver: ::Resolvers::Clusters::AgentsResolver
+          ::Types::Clusters::AgentType.connection_type,
+          extras: [:lookahead],
+          null: true,
+          description: 'Cluster agents associated with projects in the group and its subgroups.',
+          resolver: ::Resolvers::Clusters::AgentsResolver
 
         field :enforce_free_user_cap,
-              ::GraphQL::Types::Boolean,
-              null: true,
-              authorize: :owner_access,
-              description: 'Indicates whether the group has limited users for a free plan.',
-              method: :enforce_free_user_cap?
+          ::GraphQL::Types::Boolean,
+          null: true,
+          authorize: :owner_access,
+          description: 'Indicates whether the group has limited users for a free plan.',
+          method: :enforce_free_user_cap?
 
         field :gitlab_subscriptions_preview_billable_user_change,
-              ::Types::GitlabSubscriptions::PreviewBillableUserChangeType,
-              null: true,
-              complexity: 100,
-              description: 'Preview Billable User Changes',
-              resolver: ::Resolvers::GitlabSubscriptions::PreviewBillableUserChangeResolver
+          ::Types::GitlabSubscriptions::PreviewBillableUserChangeType,
+          null: true,
+          complexity: 100,
+          description: 'Preview Billable User Changes',
+          resolver: ::Resolvers::GitlabSubscriptions::PreviewBillableUserChangeResolver
+
         field :contributions,
-            ::Types::Analytics::ContributionAnalytics::ContributionMetadataType.connection_type,
-            null: true,
-            resolver: ::Resolvers::Analytics::ContributionAnalytics::ContributionsResolver,
-            description: 'Provides the aggregated contributions by users within the group and its subgroups',
-            authorize: :read_group_contribution_analytics
+          ::Types::Analytics::ContributionAnalytics::ContributionMetadataType.connection_type,
+          null: true,
+          resolver: ::Resolvers::Analytics::ContributionAnalytics::ContributionsResolver,
+          description: 'Provides the aggregated contributions by users within the group and its subgroups',
+          authorize: :read_group_contribution_analytics
+
         field :flow_metrics,
           ::Types::Analytics::CycleAnalytics::FlowMetrics[:group],
           null: true,
@@ -157,12 +159,14 @@ module EE
           method: :itself,
           authorize: :read_cycle_analytics,
           alpha: { milestone: '15.10' }
+
         field :project_compliance_standards_adherence,
           ::Types::Projects::ComplianceStandards::AdherenceType.connection_type,
           null: true,
           description: 'Compliance standards adherence for the projects in a group and its subgroups.',
           resolver: ::Resolvers::Projects::ComplianceStandards::AdherenceResolver,
           authorize: :read_group_compliance_dashboard
+
         field :value_stream_dashboard_usage_overview,
           ::Types::Analytics::ValueStreamDashboard::CountType,
           null: true,
@@ -170,6 +174,7 @@ module EE
           description: 'Aggregated usage counts within the group',
           authorize: :read_group_analytics_dashboards,
           alpha: { milestone: '16.4' }
+
         field :customizable_dashboards,
           ::Types::ProductAnalytics::DashboardType.connection_type,
           description: 'Customizable dashboards for the group.',
@@ -177,21 +182,25 @@ module EE
           calls_gitaly: true,
           alpha: { milestone: '16.4' },
           resolver: ::Resolvers::ProductAnalytics::DashboardsResolver
+
         field :customizable_dashboard_visualizations, ::Types::ProductAnalytics::VisualizationType.connection_type,
           description: 'Visualizations of the group or associated configuration project.',
           null: true,
           calls_gitaly: true,
           alpha: { milestone: '16.4' },
           resolver: ::Resolvers::ProductAnalytics::VisualizationsResolver
+
         field :amazon_s3_configurations,
           ::Types::AuditEvents::AmazonS3ConfigurationType.connection_type,
           null: true,
           description: 'Amazon S3 configurations that receive audit events belonging to the group.',
           authorize: :admin_external_audit_events
+
         field :member_roles, ::Types::MemberRoles::MemberRoleType.connection_type,
           null: true, description: 'Member roles available for the group.',
           resolver: ::Resolvers::MemberRoles::RolesResolver,
           alpha: { milestone: '16.5' }
+
         field :pending_members,
           ::Types::PendingGroupMemberType.connection_type,
           null: true,
