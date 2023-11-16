@@ -24,7 +24,7 @@ module EE
         before_action :verify_namespace_plan_check_enabled, only: [:namespace_storage]
         before_action :indexing_status, only: [:advanced_search]
 
-        after_action :sync_link_data, only: [:general], if: :instance_level_code_suggestions_enabled_submitted?
+        after_action :sync_service_token, only: [:general], if: :instance_level_code_suggestions_enabled_submitted?
 
         feature_category :sm_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
@@ -186,8 +186,12 @@ module EE
         @new_license ||= License.new(data: params[:trial_key]) # rubocop:disable Gitlab/ModuleWithInstanceVariables
       end
 
-      def sync_link_data
-        ::Gitlab::SeatLinkData.new.sync
+      def sync_service_token
+        if ::Feature.enabled?(:use_sync_service_token_worker)
+          ::Ai::SyncServiceTokenWorker.perform_async
+        else
+          ::Gitlab::SeatLinkData.new.sync
+        end
       end
 
       def instance_level_code_suggestions_enabled_submitted?

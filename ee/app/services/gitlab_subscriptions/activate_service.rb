@@ -23,7 +23,7 @@ module GitlabSubscriptions
       if license.save
         save_future_subscriptions(response[:future_subscriptions])
         update_code_suggestions_add_on_purchase
-        ::Gitlab::SeatLinkData.new.sync
+        sync_service_token
 
         {
           success: true,
@@ -38,6 +38,14 @@ module GitlabSubscriptions
     end
 
     private
+
+    def sync_service_token
+      if ::Feature.enabled?(:use_sync_service_token_worker)
+        ::Ai::SyncServiceTokenWorker.perform_async
+      else
+        ::Gitlab::SeatLinkData.new.sync
+      end
+    end
 
     def client
       Gitlab::SubscriptionPortal::Client
