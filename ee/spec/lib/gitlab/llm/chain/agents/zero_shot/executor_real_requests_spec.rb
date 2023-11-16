@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     let_it_be(:project) { create(:project, :repository, group: group) }
 
     let(:response_service_double) { instance_double(::Gitlab::Llm::ResponseService) }
-    let(:resource) { user }
+    let(:resource) { nil }
     let(:extra_resource) { {} }
 
     let(:executor) do
