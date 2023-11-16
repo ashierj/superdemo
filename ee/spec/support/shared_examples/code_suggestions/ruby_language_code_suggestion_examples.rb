@@ -119,7 +119,6 @@ RSpec.shared_examples 'ruby language' do
         end
 
         def func1
-          # This is a doc string in ruby
 
       CONTENT
     end
