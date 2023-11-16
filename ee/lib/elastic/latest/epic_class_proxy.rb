@@ -5,31 +5,17 @@ module Elastic
     class EpicClassProxy < ApplicationClassProxy
       include Elastic::Latest::Routing
 
-      attr_reader :groups, :current_user, :options
+      attr_reader :current_user, :options
 
       def elastic_search(query, options: {})
         @current_user = options[:current_user]
         @options = options
-        @groups = find_groups_by_ids(options)
 
-        query_hash = if !groups.empty? || current_user&.can_read_all_resources?
+        query_hash = if options[:search_scope].in?(%w[global group])
                        query_hash = basic_query_hash(%w[title^2 description], query, options)
-                       traversal_ids = if options[:search_scope] == 'global'
-                                         groups.map { |g| g.root_ancestor.elastic_namespace_ancestry }.uniq
-                                       else
-                                         groups.map(&:elastic_namespace_ancestry)
-                                       end
-
-                       unless current_user&.can_read_all_resources? && options[:search_scope] == 'global'
-                         query_hash = traversal_ids_ancestry_filter(query_hash, traversal_ids, options)
-                       end
-
-                       query_hash = groups_filter(query_hash)
+                       query_hash = build_es_query(query_hash)
+                       query_hash = apply_groups_filter(query_hash)
                        apply_sort(query_hash, options)
-                     elsif options[:search_scope] == 'global'
-                       # For Global Search we can show all the public epics
-                       query_hash = basic_query_hash(%w[title^2 description], query, options)
-                       public_visbility_filter(query_hash)
                      else
                        match_none
                      end
@@ -37,65 +23,10 @@ module Elastic
         search(query_hash, options)
       end
 
-      def find_groups_by_ids(options)
-        group_ids = options[:group_ids]
-        groups = Group.id_in(group_ids)
-        groups.select { |group| Ability.allowed?(current_user, :read_epic, group) }
-      end
-
-      def groups_and_descendants
-        @groups_and_descendants ||= groups.flat_map(&:self_and_descendants)
-      end
-
-      def match_none
-        {
-          query: { match_none: {} },
-          size: 0
-        }
-      end
-
-      def groups_filter(query_hash)
-        group_ids = groups_user_can_read_confidential_epics.map(&:id)
-        shoulds = [
-          { term: { confidential: { value: false, _name: 'confidential:false' } } }
-        ]
-
-        if group_ids.any?
-          shoulds << {
-            bool: {
-              filter: [
-                {
-                  term: { confidential: { value: true, _name: 'confidential:true' } }
-                },
-                {
-                  terms: { group_id: group_ids, _name: 'groups:can:read_confidential_epics' }
-                }
-              ]
-            }
-          }
-        end
-
-        query_hash[:query][:bool][:filter] << { bool: { should: shoulds } }
-
-        query_hash
-      end
-
-      def public_visbility_filter(query_hash)
-        add_filter(query_hash, :query, :bool, :filter) do
-          { term: { visibility_level: { value: ::Gitlab::VisibilityLevel::PUBLIC } } }
-        end
-      end
-
-      def groups_user_can_read_confidential_epics
-        Group.groups_user_can(groups_and_descendants, current_user, :read_confidential_epic)
-      end
-
       def routing_options(options)
-        groups = find_groups_by_ids(options)
+        return {} if options[:search_scope] == 'global'
 
-        return {} if options[:search_scope] == 'global' || groups.blank?
-
-        root_namespace_id = groups[0].root_ancestor.id
+        root_namespace_id = group.root_ancestor.id
 
         { routing: "group_#{root_namespace_id}" }
       end
@@ -106,6 +37,110 @@ module Elastic
         Preloaders::GroupRootAncestorPreloader.new(groups).execute
 
         relation
+      end
+
+      private
+
+      def build_es_query(query_hash)
+        return query_hash if current_user&.can_read_all_resources?
+
+        query_hash[:query][:bool][:minimum_should_match] = 1
+        query_hash[:query][:bool][:should] = []
+        query_hash = add_filter(query_hash, :query, :bool, :should) do
+          should_query_for_public_epics
+        end
+
+        return query_hash unless current_user
+
+        query_hash = add_filter(query_hash, :query, :bool, :should) do
+          should_query_for_private_epics_that_user_can_access
+        end
+
+        unless current_user.external?
+          query_hash = add_filter(query_hash, :query, :bool, :should) do
+            should_query_for_internal_epics
+          end
+        end
+
+        add_filter(query_hash, :query, :bool, :should) do
+          should_query_for_confidential_epics_that_user_can_access
+        end
+      end
+
+      def apply_groups_filter(query_hash)
+        return query_hash unless options[:search_scope] == 'group'
+
+        traversal_ids_ancestry_filter(query_hash, [group.elastic_namespace_ancestry],
+          options)
+      end
+
+      def group
+        group_ids = options[:group_ids]
+        Group.find(group_ids.first)
+      end
+
+      def group_ids_user_can_read_epics(confidential: false)
+        min_access_level = confidential ? ::Gitlab::Access::REPORTER : ::Gitlab::Access::GUEST
+        finder_params = { min_access_level: min_access_level }
+        if options[:search_scope] == 'group'
+          finder_params[:filter_group_ids] = group.self_and_descendants.pluck_primary_key
+        end
+
+        GroupsFinder.new(current_user, finder_params).execute.pluck("#{Group.table_name}.#{Group.primary_key}") # rubocop:disable CodeReuse/ActiveRecord -- we need pluck only the ids from the finder
+      end
+
+      def should_query_for_confidential_epics_that_user_can_access
+        confidential_group_ids = group_ids_user_can_read_epics(confidential: true)
+        return if confidential_group_ids.empty?
+
+        query = { bool: { filter: [] } }
+
+        add_filter(query, :bool, :filter) do
+          { term: { confidential: { value: true, _name: "confidential:true" } } }
+        end
+        add_filter(query, :bool, :filter) do
+          { terms: { group_id: confidential_group_ids, _name: "groups:can:read_confidential_epics" } }
+        end
+      end
+
+      def should_query_for_private_epics_that_user_can_access
+        non_confidential_group_ids = group_ids_user_can_read_epics
+        return if non_confidential_group_ids.empty?
+
+        query = { bool: { filter: [] } }
+        add_filter(query, :bool, :filter) do
+          { terms: { group_id: non_confidential_group_ids } }
+        end
+
+        add_filter(query, :bool, :filter) do
+          { term: { visibility_level: { value: ::Gitlab::VisibilityLevel::PRIVATE,
+                                        _name: "visibility_level:PRIVATE" } } }
+        end
+
+        add_filter(query, :bool, :filter) do
+          { term: { confidential: { value: false, _name: "confidential:false" } } }
+        end
+      end
+
+      def should_query_for_internal_epics
+        query = { bool: { filter: [] } }
+        query = add_filter(query, :bool, :filter) do
+          { term: { visibility_level: { value: ::Gitlab::VisibilityLevel::INTERNAL,
+                                        _name: "visibility_level:INTERNAL" } } }
+        end
+        add_filter(query, :bool, :filter) do
+          { term: { confidential: { value: false, _name: "confidential:false" } } }
+        end
+      end
+
+      def should_query_for_public_epics
+        query = { bool: { filter: [] } }
+        query = add_filter(query, :bool, :filter) do
+          { term: { visibility_level: { value: ::Gitlab::VisibilityLevel::PUBLIC, _name: "visibility_level:PUBLIC" } } }
+        end
+        add_filter(query, :bool, :filter) do
+          { term: { confidential: { value: false, _name: "confidential:false" } } }
+        end
       end
     end
   end

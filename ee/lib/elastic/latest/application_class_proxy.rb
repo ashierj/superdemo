@@ -52,6 +52,13 @@ module Elastic
         :and
       end
 
+      def match_none
+        {
+          query: { match_none: {} },
+          size: 0
+        }
+      end
+
       def highlight_options(fields)
         es_fields = fields.map { |field| field.split('^').first }.each_with_object({}) do |field, memo|
           memo[field.to_sym] = {}
