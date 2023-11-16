@@ -88,6 +88,24 @@ module CodeSuggestions
       'Go' => {
         'empty_function' => %r{func\s*[^\{]+\{},
         'function' => %r{((\})|(^\)))\s*\n?|(func\s*[^\{]+\{)}
+      },
+      'JavaScript' => {
+        'empty_function' => %r{
+          \s*(function\s+\w+\s*\(.*?\)\s*\{|
+          \s*\w+\s*=\s*(\...\)|\([^)]*\)\s*=>\s*\{)|
+          \bfunction\s+\w+\s*\(.*?\)\s*\{|
+          \s*function\s*\(.*?\)\s*\{|
+          \bfunction\s+\w+\s*\(.*?\)\s*=>\s*\{)
+        }x,
+        'function' => %r{
+          \s*\};?|
+          \s*(function\s+\w+\s*\(.*?\)\s*\{|
+          \s*\w+\s*=\s*(\...\)|
+          \([^)]*\)\s*=>\s*\{)|
+          \bfunction\s+\w+\s*\(.*?\)\s*\{|
+          \s*function\s*\(.*?\)\s*\{|
+          \bfunction\s+\w+\s*\(.*?\)\s*=>\s*\{)
+        }x
       }
     }.freeze
 

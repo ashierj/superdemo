@@ -194,6 +194,7 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
       'Python' | 'python language'
       'Ruby' | 'ruby language'
       'Go' | 'go language'
+      'JavaScript' | 'js language'
     end
 
     with_them do
