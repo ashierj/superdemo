@@ -34,7 +34,6 @@ export default {
       __('How do I create a template?'),
     ],
   },
-  experimentHelpPagePath: helpPagePath('policy/experiment-beta-support', { anchor: 'experiment' }),
   components: {
     GlDuoChat,
   },
@@ -114,6 +113,11 @@ export default {
   },
   computed: {
     ...mapState(['loading', 'messages']),
+    experimentHelpPagePath() {
+      return helpPagePath('policy/experiment-beta-support', {
+        anchor: this.glFeatures.duoChatBeta ? 'beta' : 'experiment',
+      });
+    },
   },
   methods: {
     ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
@@ -175,7 +179,7 @@ export default {
     :predefined-prompts="$options.i18n.predefinedPrompts"
     :experiment-help-page-url="$options.experimentHelpPagePath"
     :badge-type="glFeatures.duoChatBeta ? 'beta' : 'experiment'"
-    :badge-help-page-url="$options.experimentHelpPagePath"
+    :badge-help-page-url="experimentHelpPagePath"
     :tool-name="toolName"
     class="gl-z-index-9999"
     @send-chat-prompt="onSendChatPrompt"

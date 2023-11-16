@@ -101,14 +101,15 @@ describe('GitLab Duo Chat', () => {
     });
 
     it.each`
-      isFlagEnabled | expectedPropValue
-      ${true}       | ${'beta'}
-      ${false}      | ${'experiment'}
+      isFlagEnabled | expectedPropValue | expectedAnchorValue
+      ${true}       | ${'beta'}         | ${'#beta'}
+      ${false}      | ${'experiment'}   | ${'#experiment'}
     `(
-      'sets correct `badge-type` prop on the chat compnent when feature flag is $isFlagEnabled',
-      ({ isFlagEnabled, expectedPropValue }) => {
+      'sets correct `badge-type` and `badge-help-page-url` props on the chat compnent when feature flag is $isFlagEnabled',
+      ({ isFlagEnabled, expectedPropValue, expectedAnchorValue }) => {
         createComponent({ glFeatures: { duoChatBeta: isFlagEnabled } });
         expect(findGlDuoChat().props('badgeType')).toBe(expectedPropValue);
+        expect(findGlDuoChat().props('badgeHelpPageUrl')).toContain(expectedAnchorValue);
       },
     );
   });
