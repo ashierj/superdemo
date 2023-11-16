@@ -34,17 +34,28 @@ RSpec.describe 'Filter issues by multiple assignees', :js, feature_category: :te
   end
 
   describe 'with OR filtering' do
-    before do
-      stub_feature_flags(or_issuable_queries: true)
-    end
-
     it 'filters issues by multiple assignees' do
-      select_tokens 'Assignee', '||', user.username, 'Assignee', '||', user2.username, submit: true
+      select_tokens 'Assignee', '||', user.username, user2.username, submit: true
 
-      expect_unioned_assignee_token(user.name)
-      expect_unioned_assignee_token(user2.name)
+      expect_unioned_assignee_token("#{user.name}, #{user2.name}")
       expect_issues_list_count(2)
       expect_empty_search_term
+    end
+
+    describe 'with group_multi_select_tokens disabled' do
+      before do
+        stub_feature_flags(group_multi_select_tokens: false)
+        visit project_issues_path(project)
+      end
+
+      it 'filters issues by multiple assignees' do
+        select_tokens 'Assignee', '||', user.username, 'Assignee', '||', user2.username, submit: true
+
+        expect_unioned_assignee_token(user.name)
+        expect_unioned_assignee_token(user2.name)
+        expect_issues_list_count(2)
+        expect_empty_search_term
+      end
     end
   end
 end
