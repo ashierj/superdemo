@@ -43768,6 +43768,9 @@ msgstr ""
 msgid "SecurityReports|Dismissed as..."
 msgstr ""
 
+msgid "SecurityReports|Does not have a solution"
+msgstr ""
+
 msgid "SecurityReports|Does not have issue"
 msgstr ""
 
@@ -43819,6 +43822,9 @@ msgstr ""
 msgid "SecurityReports|Group your vulnerabilities by one of the provided categories. Leave feedback or suggestions in %{feedbackIssueStart}this issue%{feedbackIssueEnd}."
 msgstr ""
 
+msgid "SecurityReports|Has a solution"
+msgstr ""
+
 msgid "SecurityReports|Has issue"
 msgstr ""
 
@@ -43832,12 +43838,6 @@ msgid "SecurityReports|Image"
 msgstr ""
 
 msgid "SecurityReports|Investigate this vulnerability by creating an issue"
-msgstr ""
-
-msgid "SecurityReports|Is available"
-msgstr ""
-
-msgid "SecurityReports|Is not available"
 msgstr ""
 
 msgid "SecurityReports|Issue"

@@ -34,11 +34,11 @@ export const ITEMS = {
   },
   IS_AVAILABLE: {
     value: 'IS_AVAILABLE',
-    text: s__('SecurityReports|Is available'),
+    text: s__('SecurityReports|Has a solution'),
   },
   IS_NOT_AVAILABLE: {
     value: 'IS_NOT_AVAILABLE',
-    text: s__('SecurityReports|Is not available'),
+    text: s__('SecurityReports|Does not have a solution'),
   },
 };
 
