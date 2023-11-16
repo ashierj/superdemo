@@ -315,15 +315,6 @@ module Gitlab
           base_options.merge(filters.slice(:language, :include_archived))
         when :wiki_blobs
           base_options.merge(root_ancestor_ids: root_ancestor_ids, routing_disabled: !reindex_wikis_to_fix_routing_done?).merge(filters.slice(:include_archived))
-        when :epics
-          group_ids = if current_user.nil? || current_user.can_read_all_resources?
-                        []
-                      else
-                        current_user.authorized_groups.pluck(:id) # rubocop:disable CodeReuse/ActiveRecord
-                      end
-
-          # group_ids is already added in GroupSearchResults so use reverse_merge to avoid overwriting
-          base_options.reverse_merge(group_ids: group_ids)
         else
           base_options
         end
