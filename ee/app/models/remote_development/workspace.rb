@@ -10,6 +10,9 @@ module RemoteDevelopment
 
     MAX_HOURS_BEFORE_TERMINATION_LIMIT = 120
 
+    ignore_column :max_workspaces, remove_with: '16.8', remove_after: '2023-12-22'
+    ignore_column :max_workspaces_per_user, remove_with: '16.8', remove_after: '2023-12-22'
+
     belongs_to :user, inverse_of: :workspaces
     belongs_to :project, inverse_of: :workspaces
     belongs_to :agent, class_name: 'Clusters::Agent', foreign_key: 'cluster_agent_id', inverse_of: :workspaces
