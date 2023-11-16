@@ -30,5 +30,6 @@ export const RENAMED_FILTER_KEYS_DEFAULT = {
 
 export const RENAMED_FILTER_KEYS_CHART = {
   labelName: 'labelNames',
+  'not[labelName]': 'not[labelNames]',
   ...RENAMED_FILTER_KEYS_DEFAULT,
 };

@@ -9,30 +9,19 @@ describe('FilteredSearchIssueAnalytics', () => {
     let availableTokens;
     let enableMultipleAssigneesSpy;
 
-    const defaultTokenKeys = [
-      'author',
-      'assignee',
-      'milestone',
-      'iteration', // will be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/419743
-      'label',
-      'epic',
-      'weight',
-    ];
-    const issuesCompletedTokenKeys = ['author', 'assignee', 'milestone', 'label'];
+    const supportedTokenKeys = ['author', 'assignee', 'milestone', 'label', 'epic', 'weight'];
 
     describe.each`
-      expectedTokenKeys           | shouldHideNotEqual | shouldEnableMultipleAssignees | issuesCompletedAnalyticsFeatureFlag | hasIssuesCompletedFeature
-      ${defaultTokenKeys}         | ${false}           | ${false}                      | ${false}                            | ${false}
-      ${defaultTokenKeys}         | ${false}           | ${false}                      | ${false}                            | ${true}
-      ${defaultTokenKeys}         | ${false}           | ${false}                      | ${true}                             | ${false}
-      ${issuesCompletedTokenKeys} | ${true}            | ${true}                       | ${true}                             | ${true}
+      shouldEnableMultipleAssignees | issuesCompletedAnalyticsFeatureFlag | hasIssuesCompletedFeature
+      ${false}                      | ${false}                            | ${false}
+      ${false}                      | ${false}                            | ${true}
+      ${false}                      | ${true}                             | ${false}
+      ${true}                       | ${true}                             | ${true}
     `(
       'when issuesCompletedAnalyticsFeatureFlag=$issuesCompletedAnalyticsFeatureFlag and hasIssuesCompletedFeature=$hasIssuesCompletedFeature',
       ({
-        expectedTokenKeys,
         issuesCompletedAnalyticsFeatureFlag,
         hasIssuesCompletedFeature,
-        shouldHideNotEqual,
         shouldEnableMultipleAssignees,
       }) => {
         beforeEach(() => {
@@ -57,15 +46,7 @@ describe('FilteredSearchIssueAnalytics', () => {
         it('should only include the supported token keys', () => {
           const availableTokenKeys = availableTokens.getKeys();
 
-          expect(availableTokenKeys).toEqual(expectedTokenKeys);
-        });
-
-        it(`should ${shouldHideNotEqual ? '' : 'not'} hide 'notEqual' operators`, () => {
-          const hasNotEqualOperators = availableTokens
-            .get()
-            .every(({ hideNotEqual }) => hideNotEqual);
-
-          expect(hasNotEqualOperators).toBe(shouldHideNotEqual);
+          expect(availableTokenKeys).toEqual(supportedTokenKeys);
         });
 
         it(`should ${shouldEnableMultipleAssignees ? '' : 'not'} enable multiple assignees`, () => {

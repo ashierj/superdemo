@@ -107,10 +107,21 @@ export default {
       return this.type === NAMESPACE_PROJECT_TYPE;
     },
     issuesAnalyticsCountsQueryVariables() {
-      const { monthsBack, ...filters } = this.filters;
+      const { monthsBack, weight, not, ...filters } = this.filters;
+      const parseWeightVal = (val) => Math.round(val) || undefined;
+
+      // queries expect weight filter to be an integer
+      if (weight) {
+        filters.weight = parseWeightVal(weight);
+      }
+
+      if (not?.weight) {
+        not.weight = parseWeightVal(not.weight);
+      }
 
       return {
         fullPath: this.fullPath,
+        not,
         ...filters,
       };
     },
