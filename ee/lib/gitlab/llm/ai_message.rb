@@ -69,6 +69,16 @@ module Gitlab
       def assistant?
         role == ROLE_ASSISTANT
       end
+
+      def slash_command?
+        content.to_s.match?(%r{\A/\w})
+      end
+
+      def slash_command_and_input
+        return [] unless slash_command?
+
+        content.split(' ', 2)
+      end
     end
   end
 end

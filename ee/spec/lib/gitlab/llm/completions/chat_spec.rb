@@ -238,5 +238,47 @@ client_subscription_id: 'someid' }
         subject
       end
     end
+
+    context 'when message is a slash command' do
+      let(:content) { '/explain something' }
+      let(:executor) { instance_double(Gitlab::Llm::Chain::Tools::ExplainCode::Executor) }
+
+      it 'calls directly a tool' do
+        expected_params = {
+          context: an_instance_of(::Gitlab::Llm::Chain::GitlabContext),
+          options: { input: content },
+          stream_response_handler: nil,
+          command: an_instance_of(::Gitlab::Llm::Chain::SlashCommand)
+        }
+
+        expect(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor).not_to receive(:new)
+        expect(::Gitlab::Llm::Chain::Tools::ExplainCode::Executor)
+          .to receive(:new).with(expected_params).and_return(executor)
+        expect(executor).to receive(:perform).and_return(answer)
+
+        subject
+      end
+
+      context 'when slash_commands flag is disabled' do
+        before do
+          stub_feature_flags(slash_commands: false)
+        end
+
+        it_behaves_like 'success'
+      end
+
+      context 'when slash command does not exist' do
+        let(:content) { '/explain2 something' }
+
+        it 'process the message with zero shot agent' do
+          expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor) do |instance|
+            expect(instance).to receive(:execute).and_return(answer)
+          end
+          expect(::Gitlab::Llm::Chain::Tools::ExplainCode::Executor).not_to receive(:new)
+
+          subject
+        end
+      end
+    end
   end
 end

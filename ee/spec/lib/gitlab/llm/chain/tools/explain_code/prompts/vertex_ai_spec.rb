@@ -5,17 +5,20 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::VertexAi, feature_category: :duo_chat do
   describe '.prompt' do
     it 'returns prompt' do
-      prompt = described_class.prompt({ input: 'foo' })[:prompt]
+      prompt = described_class
+        .prompt({ input: 'foo', language_info: 'language', selected_text: 'selected text' })[:prompt]
+      expected_prompt = <<~PROMPT
+        You are a software developer.
+        You can explain code snippets.
+        language
 
-      expect(prompt).to include('foo')
-      expect(prompt).to include(
-        <<~PROMPT
-          You are a software developer.
-          You can explain code snippets.
-          The code can be in any programming language.
-          Explain the code below.
-        PROMPT
-      )
+        foo
+        <code>
+          selected text
+        </code>
+      PROMPT
+
+      expect(prompt).to eq(expected_prompt)
     end
   end
 end
