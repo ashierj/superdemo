@@ -14,11 +14,10 @@ module Gitlab
         :explain_vulnerability,
         :resolve_vulnerability,
         :generate_commit_message,
-        :chat,
         :fill_in_merge_request_template,
         :summarize_submitted_review
       ].freeze
-      BETA_FEATURES = [].freeze
+      BETA_FEATURES = [:chat].freeze
 
       class << self
         def available?(group, feature)
