@@ -18,7 +18,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
     let(:context) do
       Gitlab::Llm::Chain::GitlabContext.new(
         container: group,
-        resource: user,
+        resource: nil,
         current_user: user,
         ai_request: double
       )

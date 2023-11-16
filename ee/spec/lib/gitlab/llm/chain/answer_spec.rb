@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
     Gitlab::Llm::Chain::GitlabContext.new(
       current_user: user,
       container: project,
-      resource: user,
+      resource: nil,
       ai_request: ai_request_double,
       request_id: request_id
     )
