@@ -22,8 +22,7 @@ module Gitlab
 
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::Anthropic,
-              vertex_ai: ::Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::VertexAi,
-              open_ai: ::Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::OpenAi
+              vertex_ai: ::Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::VertexAi
             }.freeze
 
             PROMPT_TEMPLATE = [
@@ -75,10 +74,10 @@ module Gitlab
 
             def notes_to_summarize(notes)
               notes_content = +""
-              input_content_limit = provider_prompt_class::INPUT_CONTENT_LIMIT - PROMPT_TEMPLATE.size
+              input_content_limit = provider_prompt_class::MAX_CHARACTERS - PROMPT_TEMPLATE.size
               notes.each_batch do |batch|
                 batch.pluck(:id, :note).each do |note| # rubocop: disable CodeReuse/ActiveRecord
-                  input_content_limit = provider_prompt_class::INPUT_CONTENT_LIMIT
+                  input_content_limit = provider_prompt_class::MAX_CHARACTERS
 
                   break notes_content if notes_content.size + note[1].size >= input_content_limit
 

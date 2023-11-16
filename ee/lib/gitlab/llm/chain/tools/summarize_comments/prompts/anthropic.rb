@@ -7,10 +7,8 @@ module Gitlab
         module SummarizeComments
           module Prompts
             class Anthropic
-              TOTAL_MODEL_TOKEN_LIMIT = 100_000
-              INPUT_TOKEN_LIMIT = (TOTAL_MODEL_TOKEN_LIMIT * 0.8).to_i.freeze
-              # approximate that one token is ~4 characters.
-              INPUT_CONTENT_LIMIT = (INPUT_TOKEN_LIMIT * 4).to_i.freeze
+              include Concerns::AnthropicPrompt
+
               OUTPUT_TOKEN_LIMIT = 8000
               MODEL = 'claude-instant-1'
 
