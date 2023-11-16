@@ -104,19 +104,6 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
 
           expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
         end
-
-        context 'when reset_approvals_patch_id feature flag is disabled' do
-          before do
-            stub_feature_flags(reset_approvals_patch_id: false)
-          end
-
-          it 'resets all approvals' do
-            service.execute("refs/heads/master", newrev)
-            merge_request.reload
-
-            expect(merge_request.approvals).to be_empty
-          end
-        end
       end
     end
 
@@ -188,19 +175,6 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
           merge_request.reload
 
           expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
-        end
-
-        context 'when reset_approvals_patch_id feature flag is disabled' do
-          before do
-            stub_feature_flags(reset_approvals_patch_id: false)
-          end
-
-          it 'resets all approvals' do
-            service.execute("refs/heads/master", newrev, skip_reset_checks: true)
-            merge_request.reload
-
-            expect(merge_request.approvals).to be_empty
-          end
         end
       end
     end
@@ -330,20 +304,6 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
 
           expect(merge_request.approvals.count).to be(3)
           expect(merge_request.approvals).to contain_exactly(approval_1, approval_2, approval_3)
-        end
-
-        context 'when reset_approvals_patch_id feature flag is disabled' do
-          before do
-            stub_feature_flags(reset_approvals_patch_id: false)
-          end
-
-          it 'resets code owner approvals with changes' do
-            service.execute("feature", feature_sha3)
-            merge_request.reload
-
-            expect(merge_request.approvals.count).to be(2)
-            expect(merge_request.approvals).to contain_exactly(approval_1, approval_2)
-          end
         end
       end
     end
