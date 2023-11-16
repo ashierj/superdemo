@@ -60,31 +60,26 @@ describe('ee_component/vue_shared/components/web_ide_link', () => {
   });
 
   describe.each`
-    rdAvailable | rdFFlagEnabled | executed
-    ${true}     | ${true}        | ${true}
-    ${true}     | ${false}       | ${false}
-    ${false}    | ${true}        | ${false}
-  `(
-    'when rdAvailable=$rdAvailable, rdFFlagEnabled=$rdFFlagEnabled',
-    ({ rdAvailable, rdFFlagEnabled, executed }) => {
-      it(`getProjectDetailsQuery is${executed ? ' ' : ' not '}executed`, async () => {
-        createComponent({
-          provide: {
-            glFeatures: {
-              remoteDevelopment: rdAvailable,
-              remoteDevelopmentFeatureFlag: rdFFlagEnabled,
-            },
+    rdAvailable | executed
+    ${true}     | ${true}
+    ${false}    | ${false}
+  `('when rdAvailable=$rdAvailable', ({ rdAvailable, executed }) => {
+    it(`getProjectDetailsQuery is${executed ? ' ' : ' not '}executed`, async () => {
+      createComponent({
+        provide: {
+          glFeatures: {
+            remoteDevelopment: rdAvailable,
           },
-        });
-
-        findCeWebIdeLink().vm.$emit('shown');
-
-        await nextTick();
-
-        expect(findGetProjectDetailsQuery().exists()).toBe(executed);
+        },
       });
-    },
-  );
+
+      findCeWebIdeLink().vm.$emit('shown');
+
+      await nextTick();
+
+      expect(findGetProjectDetailsQuery().exists()).toBe(executed);
+    });
+  });
 
   describe('when remote development feature flags are on', () => {
     describe('when workspaces dropdown group is visible', () => {
@@ -95,7 +90,6 @@ describe('ee_component/vue_shared/components/web_ide_link', () => {
             newWorkspacePath,
             glFeatures: {
               remoteDevelopment: true,
-              remoteDevelopmentFeatureFlag: true,
             },
           },
         });

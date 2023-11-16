@@ -10,7 +10,7 @@ module EE
       end
 
       condition(:remote_development_available) do
-        ::Feature.enabled?(:remote_development_feature_flag) && License.feature_available?(:remote_development)
+        License.feature_available?(:remote_development)
       end
 
       condition(:pages_size_limit_available) do

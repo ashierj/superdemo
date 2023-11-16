@@ -46,10 +46,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
     mockApollo = createMockApollo([[userWorkspacesListQuery, userWorkspacesListQueryHandler]]);
   };
-  const createWrapper = ({
-    propsData = {},
-    glFeatures = { remoteDevelopment: true, remoteDevelopmentFeatureFlag: true },
-  } = {}) => {
+  const createWrapper = ({ propsData = {}, glFeatures = { remoteDevelopment: true } } = {}) => {
     updateWorkspaceMutationMock = jest.fn();
 
     wrapper = shallowMountExtended(WorkspacesDropdownGroup, {

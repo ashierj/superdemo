@@ -9,14 +9,13 @@ RSpec.describe RemoteDevelopment::WorkspacesController, feature_category: :remot
     sign_in(user)
   end
 
-  shared_examples 'remote development feature flag' do |feature_flag_enabled, expected_status|
+  shared_examples 'remote development feature licensing' do |is_licensed, expected_status|
     before do
-      stub_licensed_features(remote_development: true)
-      stub_feature_flags(remote_development_feature_flag: feature_flag_enabled)
+      stub_licensed_features(remote_development: is_licensed)
     end
 
     describe 'GET #index' do
-      it 'responds with the expected status' do
+      it "responds with status '#{expected_status}'" do
         get :index
 
         expect(response).to have_gitlab_http_status(expected_status)
@@ -24,9 +23,8 @@ RSpec.describe RemoteDevelopment::WorkspacesController, feature_category: :remot
     end
   end
 
-  context 'with remote development feature flag' do
-    it_behaves_like 'remote development feature flag', true, :ok
-    it_behaves_like 'remote development feature flag', false, :not_found
+  context 'with remote development feature' do
+    it_behaves_like 'remote development feature licensing', true, :ok
   end
 
   context 'with remote development not licensed' do

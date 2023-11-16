@@ -40,7 +40,7 @@ export default {
   },
   computed: {
     isWorkspacesDropdownGroupAvailable() {
-      return this.glFeatures.remoteDevelopment && this.glFeatures.remoteDevelopmentFeatureFlag;
+      return this.glFeatures.remoteDevelopment;
     },
     shouldRenderWorkspacesDropdownGroup() {
       return this.isWorkspacesDropdownGroupAvailable && this.isDropdownVisible;

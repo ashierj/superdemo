@@ -99,14 +99,4 @@ RSpec.describe 'Updating a workspace', feature_category: :remote_development do
       let(:match_errors) { include(/'remote_development' licensed feature is not available/) }
     end
   end
-
-  context 'when remote_development_feature_flag feature flag is disabled' do
-    before do
-      stub_feature_flags(remote_development_feature_flag: false)
-    end
-
-    it_behaves_like 'a mutation that returns top-level errors' do
-      let(:match_errors) { include(/'remote_development_feature_flag' feature flag is disabled/) }
-    end
-  end
 end

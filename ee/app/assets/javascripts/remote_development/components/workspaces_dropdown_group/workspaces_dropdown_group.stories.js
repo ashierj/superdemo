@@ -18,7 +18,6 @@ export const WithAPIAccess = (args, { argTypes, createVueApollo }) => {
     provide: {
       glFeatures: {
         remoteDevelopment: true,
-        remoteDevelopmentFeatureFlag: true,
       },
     },
     props: Object.keys(argTypes),
