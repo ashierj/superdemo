@@ -193,6 +193,7 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
     where(:language, :shared_example) do
       'Python' | 'python language'
       'Ruby' | 'ruby language'
+      'Go' | 'go language'
     end
 
     with_them do

@@ -84,6 +84,10 @@ module CodeSuggestions
       'Ruby' => {
         'empty_function' => %r{^\s*def\s+\w+\s*(\([^)]*\))?\s*$},
         'function' => %r{^(end\s*\n?)|(?:\s*def\s+\w+\s*(\([^)]*\))?\s*\n?)}
+      },
+      'Go' => {
+        'empty_function' => %r{func\s*[^\{]+\{},
+        'function' => %r{((\})|(^\)))\s*\n?|(func\s*[^\{]+\{)}
       }
     }.freeze
 
@@ -145,7 +149,7 @@ module CodeSuggestions
 
       return false unless LANGUAGE_METHOD_PATTERNS.has_key?(@name)
 
-      LANGUAGE_METHOD_PATTERNS[@name]['empty_function'].match?(content.strip) &&
+      LANGUAGE_METHOD_PATTERNS[@name]['empty_function'].match?(content.strip.lines.last) &&
         (suffix.blank? || LANGUAGE_METHOD_PATTERNS[@name]['function'].match?(suffix.strip.lines.first))
     end
 

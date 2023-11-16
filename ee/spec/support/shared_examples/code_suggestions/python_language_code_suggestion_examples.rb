@@ -110,7 +110,6 @@ RSpec.shared_examples 'python language' do
           return 1
 
         def func1():
-          # This is a doc string in python
 
       CONTENT
     end
