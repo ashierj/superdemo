@@ -136,16 +136,6 @@ module EE
       end
 
       def workspace(id:)
-        unless ::Feature.enabled?(:remote_development_feature_flag)
-          # NOTE: Could have `included Gitlab::Graphql::Authorize::AuthorizeResource` and then use
-          #       raise_resource_not_available_error!, but didn't want to take the risk to mix that into
-          #       the root query type
-          # rubocop:disable Graphql/ResourceNotAvailableError -- intentionally not used - see note above
-          raise ::Gitlab::Graphql::Errors::ResourceNotAvailable,
-            "'remote_development_feature_flag' feature flag is disabled"
-          # rubocop:enable Graphql/ResourceNotAvailableError
-        end
-
         unless License.feature_available?(:remote_development)
           # NOTE: Could have `included Gitlab::Graphql::Authorize::AuthorizeResource` and then use
           #       raise_resource_not_available_error!, but didn't want to take the risk to mix that into

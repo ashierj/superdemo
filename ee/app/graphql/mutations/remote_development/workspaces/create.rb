@@ -52,10 +52,6 @@ module Mutations
           description: 'Project repo git path containing the devfile used to configure the workspace.'
 
         def resolve(args)
-          unless Feature.enabled?(:remote_development_feature_flag)
-            raise_resource_not_available_error!("'remote_development_feature_flag' feature flag is disabled")
-          end
-
           unless License.feature_available?(:remote_development)
             raise_resource_not_available_error!("'remote_development' licensed feature is not available")
           end

@@ -38,14 +38,6 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
   end
 
   describe 'reading workspaces' do
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(remote_development_feature_flag: false)
-      end
-
-      it { is_expected.to be_disallowed(:read_workspace) }
-    end
-
     context 'when licensed' do
       before do
         stub_licensed_features(remote_development: true)

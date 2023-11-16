@@ -26,10 +26,6 @@ module Mutations
           description: 'Desired state of the created workspace.'
 
         def resolve(id:, **args)
-          unless Feature.enabled?(:remote_development_feature_flag)
-            raise_resource_not_available_error!("'remote_development_feature_flag' feature flag is disabled")
-          end
-
           unless License.feature_available?(:remote_development)
             raise_resource_not_available_error!("'remote_development' licensed feature is not available")
           end

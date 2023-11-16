@@ -105,23 +105,6 @@ RSpec.shared_examples 'query in unlicensed environment' do
   end
 end
 
-RSpec.shared_examples 'query with feature flag off' do
-  context 'when remote_development_feature_flag feature flag is disabled' do
-    include_context 'in licensed environment'
-
-    before do
-      stub_feature_flags(remote_development_feature_flag: false)
-    end
-
-    context 'when user is authorized' do
-      include_context 'with authorized user'
-
-      it_behaves_like 'query returns blank'
-      it_behaves_like 'query includes graphql error', /'remote_development_feature_flag' feature flag is disabled/
-    end
-  end
-end
-
 RSpec.shared_examples 'single workspace query' do
   context 'when remote_development feature is licensed' do
     include_context 'in licensed environment'
@@ -149,7 +132,6 @@ RSpec.shared_examples 'single workspace query' do
   end
 
   it_behaves_like 'query in unlicensed environment'
-  it_behaves_like 'query with feature flag off'
 end
 
 RSpec.shared_examples 'multiple workspaces query' do
@@ -200,5 +182,4 @@ RSpec.shared_examples 'multiple workspaces query' do
   end
 
   it_behaves_like 'query in unlicensed environment'
-  it_behaves_like 'query with feature flag off'
 end

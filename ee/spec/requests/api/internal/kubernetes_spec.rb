@@ -115,20 +115,6 @@ RSpec.describe API::Internal::Kubernetes, feature_category: :deployment_manageme
         expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
-
-    context 'when remote_development_feature_flag feature flag is disabled' do
-      let(:service_response) { ServiceResponse.success(payload: {}) }
-
-      before do
-        stub_feature_flags(remote_development_feature_flag: false)
-      end
-
-      it 'returns service response with payload' do
-        send_request(params: {})
-
-        expect(response).to have_gitlab_http_status(:forbidden)
-      end
-    end
   end
 
   describe 'POST /internal/kubernetes/agent_configuration' do
@@ -179,18 +165,6 @@ RSpec.describe API::Internal::Kubernetes, feature_category: :deployment_manageme
       context 'when remote_development feature is unlicensed' do
         before do
           stub_licensed_features(remote_development: false)
-        end
-
-        it 'creates the remote dev configuration' do
-          send_request(params: { agent_id: agent.id, agent_config: config })
-          expect(response).to have_gitlab_http_status(:no_content)
-          expect(agent.reload.remote_development_agent_config).to be_nil
-        end
-      end
-
-      context 'when remote_development_feature_flag feature flag is disabled' do
-        before do
-          stub_feature_flags(remote_development_feature_flag: false)
         end
 
         it 'creates the remote dev configuration' do

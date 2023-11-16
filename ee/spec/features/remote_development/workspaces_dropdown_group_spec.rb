@@ -49,29 +49,25 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
     wait_for_requests
   end
 
-  shared_examples 'handles workspaces dropdown group visibility' do |feature_flag_enabled, feature_available, visible|
+  shared_examples 'handles workspaces dropdown group visibility' do |feature_available, visible|
     before do
       stub_licensed_features(remote_development: feature_available)
-      stub_feature_flags(remote_development_feature_flag: feature_flag_enabled)
 
       visit subject
     end
 
-    context "when remote_development_feature_flag=#{feature_flag_enabled}" do
-      context "when remote_development feature availability=#{feature_available}" do
-        it 'does not display workspaces dropdown group' do
-          click_button 'Edit'
+    context "when remote_development feature availability=#{feature_available}" do
+      it 'does not display workspaces dropdown group' do
+        click_button 'Edit'
 
-          expect(page.has_css?(workspaces_dropdown_selector)).to be(visible)
-        end
+        expect(page.has_css?(workspaces_dropdown_selector)).to be(visible)
       end
     end
   end
 
   shared_examples 'views and manages workspaces in workspaces dropdown group' do
-    it_behaves_like 'handles workspaces dropdown group visibility', true, true, true
-    it_behaves_like 'handles workspaces dropdown group visibility', true, false, false
-    it_behaves_like 'handles workspaces dropdown group visibility', false, true, false
+    it_behaves_like 'handles workspaces dropdown group visibility', true, true
+    it_behaves_like 'handles workspaces dropdown group visibility', false, false
 
     context 'when workspaces dropdown group is visible' do
       before do

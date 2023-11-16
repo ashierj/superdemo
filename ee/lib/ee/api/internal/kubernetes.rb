@@ -11,9 +11,7 @@ module EE
             def update_configuration(agent:, config:)
               super(agent: agent, config: config)
 
-              if ::Feature.enabled?(:remote_development_feature_flag) &&
-                ::License.feature_available?(:remote_development) # rubocop:disable Layout/MultilineOperationIndentation -- Currently can't override default RubyMine formatting
-
+              if ::License.feature_available?(:remote_development)
                 # NOTE: We are explicitly ignoring any failures here. See the comment in the service for more details.
                 ::RemoteDevelopment::AgentConfig::UpdateService.new.execute(agent: agent, config: config)
               end
@@ -33,10 +31,6 @@ module EE
 
                 route_setting :authentication, cluster_agent_token_allowed: true
                 post '/reconcile', urgency: :low, feature_category: :remote_development do
-                  unless ::Feature.enabled?(:remote_development_feature_flag)
-                    forbidden!("'remote_development_feature_flag' feature flag is disabled")
-                  end
-
                   unless ::License.feature_available?(:remote_development)
                     forbidden!('"remote_development" licensed feature is not available')
                   end
