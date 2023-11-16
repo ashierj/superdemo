@@ -3,6 +3,8 @@
 module QA
   RSpec.describe 'Govern' do
     describe 'User with minimal access to group', :requires_admin, product_group: :authentication do
+      include QA::Support::Helpers::Project
+
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:user_with_minimal_access) { create(:user, api_client: admin_api_client) }
       let(:user_api_client) { Runtime::API::Client.new(:gitlab, user: user_with_minimal_access) }
@@ -10,6 +12,8 @@ module QA
       let!(:project) { create(:project, :with_readme, name: 'project-for-minimal-access', group: group) }
 
       before do
+        wait_until_project_is_ready(project)
+
         group.sandbox.add_member(user_with_minimal_access, Resource::Members::AccessLevel::MINIMAL_ACCESS)
       end
 
