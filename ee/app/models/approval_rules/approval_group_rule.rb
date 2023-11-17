@@ -3,6 +3,7 @@
 module ApprovalRules
   class ApprovalGroupRule < ApplicationRecord
     include ApprovalRuleLike
+    attribute :applies_to_all_protected_branches, :boolean, default: true
 
     enum rule_type: {
       regular: 1,
@@ -14,10 +15,21 @@ module ApprovalRules
     belongs_to :group, inverse_of: :approval_rules
     has_and_belongs_to_many :protected_branches
 
+    validates :applies_to_all_protected_branches, inclusion: { in: [true], message: N_('must be enabled.') }
     validates :name, uniqueness: { scope: [:group_id, :rule_type] }
     validates :rule_type, uniqueness: {
       scope: :group_id,
       message: proc { _('any-approver for the group already exists') }
     }, if: :any_approver?
+
+    def audit_add(_model)
+      # currently no audit on group add, only on project.
+      # WIP, tracked by https://gitlab.com/gitlab-org/gitlab/-/issues/432807.
+    end
+
+    def audit_remove(_model)
+      # currently no audit on group remove, only on project.
+      # WIP, tracked by https://gitlab.com/gitlab-org/gitlab/-/issues/432807.
+    end
   end
 end

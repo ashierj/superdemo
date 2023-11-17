@@ -11,14 +11,35 @@ module ApprovalRules
 
       # If merge request approvers are specified, they take precedence over project
       # approvers.
+      # WIP, enable copying of group approval properties to merge request,
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/432799.
       copy_approval_project_rule_properties(params) if target.is_a?(MergeRequest)
-      handle_any_approver_rule_creation(target, @rule.project, params)
+      handle_any_approver_rule_creation(target, params)
 
-      super(@rule.project, user, params)
+      super(container: container, current_user: user, params: params)
+    end
+
+    def execute
+      return error("The feature approval_group_rules is not enabled.") if group_rule? && Feature.disabled?(
+        :approval_group_rules, @rule.group)
+
+      super
+    end
+
+    def container
+      return @rule.group if group_rule?
+
+      @rule.project
+    end
+
+    def group_rule?
+      @rule.is_a?(ApprovalGroupRule)
     end
 
     def success
-      track_onboarding_progress
+      # WIP, enable track_onboarding_progress for groups in further iteration,
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/432799.
+      track_onboarding_progress unless group_container?
 
       merge_request_activity_counter
         .track_approval_rule_added_action(user: current_user)
@@ -43,14 +64,14 @@ module ApprovalRules
       end
     end
 
-    def handle_any_approver_rule_creation(target, project, params)
+    def handle_any_approver_rule_creation(target, params)
       unless approvers_present?
         params.reverse_merge!(rule_type: :any_approver, name: ApprovalRuleLike::ALL_MEMBERS)
 
         return
       end
 
-      return if project.multiple_approval_rules_available?
+      return if container.multiple_approval_rules_available?
 
       target.approval_rules.any_approver.delete_all
     end

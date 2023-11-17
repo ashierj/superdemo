@@ -446,6 +446,10 @@ module EE
       ::Gitlab::Auth::Saml::Config.enabled?
     end
 
+    def multiple_approval_rules_available?
+      feature_available?(:multiple_approval_rules)
+    end
+
     override :multiple_issue_boards_available?
     def multiple_issue_boards_available?
       feature_available?(:multiple_group_issue_boards)
