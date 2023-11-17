@@ -107,7 +107,6 @@ module GitlabSubscriptions
       epics
       extended_audit_events
       external_authorization_service_api_management
-      feature_flags_related_issues
       feature_flags_code_references
       file_locks
       geo
@@ -270,6 +269,7 @@ module GitlabSubscriptions
       elastic_search
     ].freeze
 
+    # Features defined in this list will be available in Premium license OR by enabling usage ping setting
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[
       group_ip_restriction
       issues_analytics
@@ -280,8 +280,10 @@ module GitlabSubscriptions
       incident_sla
       export_user_permissions
       cross_project_pipelines
+      feature_flags_related_issues
     ].freeze
 
+    # Features defined in this list will be available in Ultimate license OR by enabling usage ping setting
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[
       coverage_fuzzing
       devops_adoption
