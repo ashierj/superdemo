@@ -56851,6 +56851,9 @@ msgstr ""
 msgid "ciReport|No code quality issues found"
 msgstr ""
 
+msgid "ciReport|Parsing schema failed. Check the output of the scanner."
+msgstr ""
+
 msgid "ciReport|RPS"
 msgstr ""
 
