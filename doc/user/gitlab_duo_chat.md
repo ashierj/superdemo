@@ -64,23 +64,47 @@ Only the last 50 messages are retained in the chat history. The chat history exp
 
 ### Web IDE
 
-To use GitLab Duo Chat in the Web IDE:
+To use GitLab Duo Chat in the Web IDE on GitLab.com:
 
-1. On the left sidebar, select **Search or go to** and find your project.
-1. Select a file. Then in the upper right, select **Edit > Open in Web IDE**.
-1. On the left sidebar, select **GitLab Duo Chat**. A drawer opens.
-1. In the text box, enter your question and press **Enter** or select **Send**. It may take a few seconds for the interactive AI chat to produce an answer.
+1. Open the Web IDE:
+   1. On the left sidebar, select **Search or go to** and find your project.
+   1. Select a file. Then in the upper right, select **Edit > Open in Web IDE**.
+1. Then open Chat by using one of the following methods:
+   - On the left sidebar, select **GitLab Duo Chat**.
+   - In the file that you have open in the editor, select some code.
+     1. Right-click and select **GitLab Duo Chat**.
+     1. Select **Explain selected code** or **Generate Tests**.
+
+   - Use the keyboard shortcut: <kbd>ALT</kbd>+<kbd>d</kbd> (on Windows and Linux) or <kbd>Option</kbd>+<kbd>d</kbd> (on Mac)
+
+1. In the message box, enter your question and press **Enter** or select **Send**.
+
+If you have selected code in the editor, this selection is sent along with your question to the AI. This way you can ask questions about this code selection. For instance, `Could you simplify this?`.
 
 ### GitLab Workflow extension for VS Code
 
-To disable GitLab Duo Chat in VS Code, go to the VS Code extension settings and clear the **Enable GitLab Duo Chat assistant** checkbox.
-
 To use GitLab Duo Chat in VS Code:
 
-1. Install the [GitLab Workflow extension](https://marketplace.visualstudio.com/items?itemName=GitLab.gitlab-workflow) in VS Code.
-1. In VS Code, open your GitLab project.
-1. On the left side of the toolbar, select **GitLab Duo Chat**. A drawer opens.
-1. In the text box, enter your question and press **Enter** or select **Send**. It may take a few seconds for the interactive AI chat to produce an answer.
+1. Install and set up the Workflow extension for VS Code:
+   1. In VS Code, download and Install the [GitLab Workflow extension for VS Code](../editor_extensions/visual_studio_code/index.md#download-the-extension).
+   1. Configure the [GitLab Workflow extension](../editor_extensions/visual_studio_code/index.md#configure-the-extension).
+1. In VS Code, open a file. The file does not need to be a file in a Git repository.
+1. Open Chat by using one of the following methods:
+   - On the left sidebar, select **GitLab Duo Chat**.
+   - In the file that you have open in the editor, select some code.
+     1. Right-click and select **GitLab Duo Chat**.
+     1. Select **Explain selected code** or **Generate Tests**.
+   - Use the keyboard shortcut: <kbd>ALT</kbd>+<kbd>d</kbd> (on Windows and Linux) or <kbd>Option</kbd>+<kbd>d</kbd> (on Mac)
+1. In the message box, enter your question and press **Enter** or select **Send**.
+
+If you have selected code in the editor, this selection is sent along with your question to the AI. This way you can ask questions about this code selection. For instance, `Could you simplify this?`.
+
+### Disable Chat in Web IDE and VS Code
+
+To disable GitLab Duo Chat in the Web IDE and VS Code:
+
+1. Go to **Settings > Extensions > GitLab Workflow (GitLab VSCode Extension)**.
+1. Clear the **Enable GitLab Duo Chat assistant** checkbox.
 
 ## Give Feedback
 
@@ -90,4 +114,4 @@ Your feedback is important to us as we continually enhance your GitLab Duo Chat 
 - **Privacy Assurance**: Rest assured, we don't collect your prompts. Your privacy is respected, and your interactions remain private.
 
 To give feedback about a specific response, use the feedback buttons in the response message.
-Or, you can add a comment in the [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/415591).
+Or, you can add a comment in the [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/430124).
