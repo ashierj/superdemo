@@ -66,6 +66,22 @@ module Namespaces
         !root_namespace.public?
       end
 
+      def over_from_adding_users?(member_ids)
+        # Check for over limit, if they are not over limit, then we have no need to proceed any further.
+        # This will also save doing the bulk of the work in the process.
+        return false unless over_limit?
+
+        # TODO: log here to see how many actually come here(with an index)
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/415487#engineering-breakdownplan
+        # Since we are over the limit, we need to see if our latest addition of members caused it.
+        count_without_added_users = ::Namespaces::FreeUserCap::UsersWithoutAddedMembersFinder
+                                      .count(root_namespace, member_ids, database_limit)
+
+        # Once we remove the members from our latest submission, we can see if the namespace is still over the limit.
+        # If it is not, then we know our addition over members caused the namespace to go over the limit.
+        count_without_added_users <= limit
+      end
+
       private
 
       attr_reader :root_namespace

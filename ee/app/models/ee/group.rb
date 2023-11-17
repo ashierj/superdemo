@@ -776,46 +776,55 @@ module EE
 
     # Members belonging directly to Group or its subgroups
     def billed_group_users(exclude_guests: false)
+      members = billed_group_members(exclude_guests: exclude_guests)
+      billed_users_from_members(members)
+    end
+
+    def billed_group_members(exclude_guests: false)
       members = ::GroupMember.active_without_invites_and_requests.where(
         source_id: self_and_descendants
       )
       members = members.with_elevated_guests if exclude_guests
 
-      members = members.not_banned_in(root_ancestor)
-      users_without_bots(members)
+      members.not_banned_in(root_ancestor)
     end
 
     # Members belonging directly to Projects within Group or Projects within subgroups
     def billed_project_users(exclude_guests: false)
+      members = billed_project_members(exclude_guests: exclude_guests)
+      billed_users_from_members(members, merge_condition: ::User.with_state(:active))
+        .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/417464')
+    end
+
+    def billed_project_members(exclude_guests: false)
       members = ::ProjectMember.without_invites_and_requests
 
       members = members.with_elevated_guests if exclude_guests
 
-      members = members.where(
-        source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
-      )
-
-      members = members.not_banned_in(root_ancestor)
-      users_without_bots(members).with_state(:active)
-        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417464")
+      members.where(source_id: ::Project.joins(:group).where(namespace: self_and_descendants))
+             .not_banned_in(root_ancestor)
     end
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups
     def billed_shared_group_users(exclude_guests: false)
-      groups = self.class.invited_groups_in_groups_for_hierarchy(self, exclude_guests)
-      members = invited_or_shared_group_members(groups, exclude_guests: exclude_guests)
+      members = billed_shared_group_members(exclude_guests: exclude_guests)
+      billed_users_from_members(members)
+    end
 
-      members = members.not_banned_in(root_ancestor)
-      users_without_bots(members)
+    def billed_shared_group_members(exclude_guests: false)
+      groups = self.class.invited_groups_in_groups_for_hierarchy(self, exclude_guests)
+      invited_or_shared_group_members(groups, exclude_guests: exclude_guests).not_banned_in(root_ancestor)
     end
 
     # Members belonging to Groups invited to collaborate with Projects
     def billed_invited_group_to_project_users(exclude_guests: false)
-      groups = self.class.invited_groups_in_projects_for_hierarchy(self, exclude_guests)
-      members = invited_or_shared_group_members(groups, exclude_guests: exclude_guests)
+      members = billed_invited_group_to_project_members(exclude_guests: exclude_guests)
+      billed_users_from_members(members)
+    end
 
-      members = members.not_banned_in(root_ancestor)
-      users_without_bots(members)
+    def billed_invited_group_to_project_members(exclude_guests: false)
+      groups = self.class.invited_groups_in_projects_for_hierarchy(self, exclude_guests)
+      invited_or_shared_group_members(groups, exclude_guests: exclude_guests).not_banned_in(root_ancestor)
     end
 
     # Checks if user belongs to billed_group_users
@@ -910,6 +919,12 @@ module EE
       ::Group.where("traversal_ids @> ARRAY[?]", id).count
     end
 
+    # Thin wrapper to promote a source of truth for filtering billed users as we
+    # filter the users from members outside this class as well.
+    def billed_users_from_members(members, merge_condition: ::User.all)
+      users_without_bots(members, merge_condition: merge_condition)
+    end
+
     private
 
     def active_project_tokens_of_root_ancestor
@@ -977,8 +992,9 @@ module EE
                    .merge(guests_scope)
     end
 
-    def users_without_bots(members)
-      ::User.where(id: members.select(:user_id)).without_bots
+    def users_without_bots(members, merge_condition: ::User.all)
+      ::User.id_in(members.select(:user_id)).without_bots.merge(merge_condition)
+            .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/417464')
     end
 
     def projects_for_group_and_its_subgroups_without_deleted

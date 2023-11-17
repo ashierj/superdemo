@@ -9,7 +9,7 @@ module Namespaces
       data_consistency :delayed
       idempotent!
 
-      def perform(group_id, _member_ids)
+      def perform(group_id, member_ids)
         return unless ::Namespaces::FreeUserCap.dashboard_limit_enabled?
 
         @group = Group.find_by_id(group_id)
@@ -18,11 +18,7 @@ module Namespaces
         return unless ::Namespaces::FreeUserCap.over_user_limit_email_enabled?(@group)
 
         top_level_groups.each do |top_level_group|
-          # TODO: Simple implementation for iterative vertical change
-          # https://gitlab.com/gitlab-org/gitlab/-/issues/415487#engineering-breakdownplan will guide adding final
-          # feature improvement to calculate vs member_ids as seen in
-          # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134410
-          next unless ::Namespaces::FreeUserCap::Enforcement.new(top_level_group).over_limit?
+          next unless ::Namespaces::FreeUserCap::Enforcement.new(top_level_group).over_from_adding_users?(member_ids)
 
           NotifyOverLimitService.execute(top_level_group)
         end
