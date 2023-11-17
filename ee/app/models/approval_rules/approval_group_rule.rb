@@ -31,5 +31,11 @@ module ApprovalRules
       # currently no audit on group remove, only on project.
       # WIP, tracked by https://gitlab.com/gitlab-org/gitlab/-/issues/432807.
     end
+
+    def protected_branches
+      # currently applies_to_all_protected_branches? is always true,
+      # so all protected branches for a group are always returned.
+      group.projects.map(&:all_protected_branches).flat_map(&:to_a).uniq
+    end
   end
 end
