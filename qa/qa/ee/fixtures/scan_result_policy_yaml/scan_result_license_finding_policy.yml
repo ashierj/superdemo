@@ -17,4 +17,4 @@ actions:
     user_approvers_ids:
       - 1675225
 approval_settings:
-  block_unprotecting_branches: true
+  block_branch_modification: true

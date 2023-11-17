@@ -49,7 +49,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::DefaultBranchUpdationChe
         let(:branch_name) { default_branch }
         let(:scan_result_policy) do
           build(:scan_result_policy, branches: [default_branch.reverse],
-            approval_settings: { block_unprotecting_branches: true })
+            approval_settings: { block_branch_modification: true })
         end
 
         it { is_expected.to be_falsey }

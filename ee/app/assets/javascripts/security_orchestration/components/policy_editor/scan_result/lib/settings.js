@@ -1,7 +1,7 @@
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
-export const BLOCK_UNPROTECTING_BRANCHES = 'block_unprotecting_branches';
+export const BLOCK_BRANCH_MODIFICATION = 'block_branch_modification';
 export const PREVENT_PUSHING_AND_FORCE_PUSHING = 'prevent_pushing_and_force_pushing';
 export const PREVENT_APPROVAL_BY_AUTHOR = 'prevent_approval_by_author';
 export const PREVENT_APPROVAL_BY_COMMIT_AUTHOR = 'prevent_approval_by_commit_author';
@@ -9,7 +9,7 @@ export const REMOVE_APPROVALS_WITH_NEW_COMMIT = 'remove_approvals_with_new_commi
 export const REQUIRE_PASSWORD_TO_APPROVE = 'require_password_to_approve';
 
 export const protectedBranchesConfiguration = {
-  [BLOCK_UNPROTECTING_BRANCHES]: false,
+  [BLOCK_BRANCH_MODIFICATION]: false,
 };
 
 export const pushingBranchesConfiguration = {
@@ -17,7 +17,7 @@ export const pushingBranchesConfiguration = {
 };
 
 export const PROTECTED_BRANCHES_CONFIGURATION_KEYS = [
-  BLOCK_UNPROTECTING_BRANCHES,
+  BLOCK_BRANCH_MODIFICATION,
   PREVENT_PUSHING_AND_FORCE_PUSHING,
 ];
 
@@ -36,7 +36,7 @@ export const mergeRequestConfiguration = {
 };
 
 export const SETTINGS_HUMANIZED_STRINGS = {
-  [BLOCK_UNPROTECTING_BRANCHES]: s__('ScanResultPolicy|Prevent branch protection modification'),
+  [BLOCK_BRANCH_MODIFICATION]: s__('ScanResultPolicy|Prevent branch modification'),
   [PREVENT_PUSHING_AND_FORCE_PUSHING]: s__('ScanResultPolicy|Prevent pushing and force pushing'),
   [PREVENT_APPROVAL_BY_AUTHOR]: s__("ScanResultPolicy|Prevent approval by merge request's author"),
   [PREVENT_APPROVAL_BY_COMMIT_AUTHOR]: s__('ScanResultPolicy|Prevent approval by commit author'),
@@ -45,7 +45,7 @@ export const SETTINGS_HUMANIZED_STRINGS = {
 };
 
 export const SETTINGS_TOOLTIP = {
-  [BLOCK_UNPROTECTING_BRANCHES]: s__(
+  [BLOCK_BRANCH_MODIFICATION]: s__(
     'ScanResultPolicy|Prevent a user from removing a branch from the protected branches list or from deleting a protected branch.',
   ),
   [PREVENT_PUSHING_AND_FORCE_PUSHING]: s__(
@@ -66,7 +66,7 @@ export const SETTINGS_TOOLTIP = {
 };
 
 export const SETTINGS_POPOVER_STRINGS = {
-  [BLOCK_UNPROTECTING_BRANCHES]: {
+  [BLOCK_BRANCH_MODIFICATION]: {
     title: s__('ScanResultPolicy|Recommended setting'),
     description: s__(
       'ScanResultPolicy|You have selected any protected branch option as a condition. To better protect your project, it is recommended to enable the protect branch settings. %{linkStart}Learn more.%{linkEnd}',
@@ -76,7 +76,7 @@ export const SETTINGS_POPOVER_STRINGS = {
 };
 
 export const SETTINGS_LINKS = {
-  [BLOCK_UNPROTECTING_BRANCHES]: helpPagePath(
+  [BLOCK_BRANCH_MODIFICATION]: helpPagePath(
     '/user/application_security/policies/scan-result-policies.html',
   ),
 };

@@ -5,7 +5,7 @@ import { s__ } from '~/locale';
 import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
 import {
   MERGE_REQUEST_CONFIGURATION_KEYS,
-  BLOCK_UNPROTECTING_BRANCHES,
+  BLOCK_BRANCH_MODIFICATION,
   PREVENT_PUSHING_AND_FORCE_PUSHING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -46,7 +46,7 @@ export default {
       const settings = [];
 
       if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
-        settings.push(BLOCK_UNPROTECTING_BRANCHES);
+        settings.push(BLOCK_BRANCH_MODIFICATION);
       }
 
       if (this.glFeatures.scanResultPoliciesBlockForcePush) {

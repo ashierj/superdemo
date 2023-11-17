@@ -27,7 +27,7 @@ import { unsupportedManifest } from 'ee_jest/security_orchestration/mocks/mock_d
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
   PERMITTED_INVALID_SETTINGS,
-  BLOCK_UNPROTECTING_BRANCHES,
+  BLOCK_BRANCH_MODIFICATION,
   PREVENT_PUSHING_AND_FORCE_PUSHING,
   PREVENT_APPROVAL_BY_AUTHOR,
   pushingBranchesConfiguration,
@@ -301,7 +301,7 @@ describe('EditorComponent', () => {
 
       describe('settings', () => {
         const defaultProjectApprovalConfiguration = {
-          [BLOCK_UNPROTECTING_BRANCHES]: true,
+          [BLOCK_BRANCH_MODIFICATION]: true,
           [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
         };
 
@@ -347,7 +347,7 @@ describe('EditorComponent', () => {
           findAllRuleBuilders().at(0).vm.$emit('changed', { type: SCAN_FINDING });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
-              approval_settings: { [BLOCK_UNPROTECTING_BRANCHES]: false },
+              approval_settings: { [BLOCK_BRANCH_MODIFICATION]: false },
             }),
           );
         });
@@ -692,16 +692,16 @@ describe('EditorComponent', () => {
           it('displays setting section', () => {
             expect(findSettingsSection().exists()).toBe(true);
             expect(findSettingsSection().props('settings')).toEqual({
-              [BLOCK_UNPROTECTING_BRANCHES]: true,
+              [BLOCK_BRANCH_MODIFICATION]: true,
             });
           });
 
           it('updates the policy when a change is emitted', async () => {
             await findSettingsSection().vm.$emit('changed', {
-              [BLOCK_UNPROTECTING_BRANCHES]: false,
+              [BLOCK_BRANCH_MODIFICATION]: false,
             });
             expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
-              `${BLOCK_UNPROTECTING_BRANCHES}: false`,
+              `${BLOCK_BRANCH_MODIFICATION}: false`,
             );
           });
         });
@@ -770,7 +770,7 @@ describe('EditorComponent', () => {
 
     describe('empty policy alert', () => {
       const features = { scanResultPoliciesBlockUnprotectingBranches: true };
-      const policy = { approval_settings: { [BLOCK_UNPROTECTING_BRANCHES]: true } };
+      const policy = { approval_settings: { [BLOCK_BRANCH_MODIFICATION]: true } };
       describe('when there are actions and settings', () => {
         beforeEach(() => {
           window.gon = { features };
@@ -829,7 +829,7 @@ describe('EditorComponent', () => {
           factoryWithExistingPolicy({
             glFeatures: features,
             hasActions: false,
-            policy: { approval_settings: { [BLOCK_UNPROTECTING_BRANCHES]: false } },
+            policy: { approval_settings: { [BLOCK_BRANCH_MODIFICATION]: false } },
           });
         });
 

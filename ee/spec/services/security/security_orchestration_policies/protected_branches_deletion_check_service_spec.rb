@@ -40,7 +40,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProtectedBranchesDeletio
         let(:branch_name) { protected_branch.name }
         let(:scan_result_policy) do
           build(:scan_result_policy, branches: [branch_name.reverse],
-            approval_settings: { block_unprotecting_branches: true })
+            approval_settings: { block_branch_modification: true })
         end
 
         it "excludes the protected branch" do

@@ -280,7 +280,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
       end
     end
 
-    context 'when block_unprotecting_branches is enabled' do
+    context 'when block_branch_modification is enabled' do
       it 'returns error with message' do
         expect_next_instance_of(::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService) do |service|
           expect(service).to receive(:execute).and_return(true)
@@ -290,7 +290,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
       end
     end
 
-    context 'when block_unprotecting_branches is not enabled' do
+    context 'when block_branch_modification is not enabled' do
       it 'changes the default branch' do
         expect_next_instance_of(::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService) do |service|
           expect(service).to receive(:execute).and_return(false)

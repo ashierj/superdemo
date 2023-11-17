@@ -1,6 +1,6 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
-  BLOCK_UNPROTECTING_BRANCHES,
+  BLOCK_BRANCH_MODIFICATION,
   PREVENT_APPROVAL_BY_AUTHOR,
   PREVENT_PUSHING_AND_FORCE_PUSHING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
@@ -39,13 +39,13 @@ describe('SettingsSection', () => {
     });
 
     it.each`
-      description                                                                                 | glFeatures                                 | settings                                                                                                                                                | protectedBranchSettingVisible | mergeRequestSettingVisible
-      ${`disable ${BLOCK_UNPROTECTING_BRANCHES} setting`}                                         | ${unprotectFeature}                        | ${createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: false })}                                                                                   | ${true}                       | ${false}
-      ${`enable ${BLOCK_UNPROTECTING_BRANCHES} setting`}                                          | ${unprotectFeature}                        | ${createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: true })}                                                                                    | ${true}                       | ${false}
-      ${`enable ${PREVENT_PUSHING_AND_FORCE_PUSHING} setting`}                                    | ${pushFeature}                             | ${createSettings({ key: PREVENT_PUSHING_AND_FORCE_PUSHING, value: true })}                                                                              | ${true}                       | ${false}
-      ${`enable ${BLOCK_UNPROTECTING_BRANCHES} and ${PREVENT_PUSHING_AND_FORCE_PUSHING} setting`} | ${{ ...unprotectFeature, ...pushFeature }} | ${{ ...createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: true }), ...createSettings({ key: PREVENT_PUSHING_AND_FORCE_PUSHING, value: true }) }} | ${true}                       | ${false}
-      ${`disable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}                                          | ${{}}                                      | ${createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: false })}                                                                                    | ${false}                      | ${true}
-      ${`enable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}                                           | ${{}}                                      | ${createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: true })}                                                                                     | ${false}                      | ${true}
+      description                                                                               | glFeatures                                 | settings                                                                                                                                              | protectedBranchSettingVisible | mergeRequestSettingVisible
+      ${`disable ${BLOCK_BRANCH_MODIFICATION} setting`}                                         | ${unprotectFeature}                        | ${createSettings({ key: BLOCK_BRANCH_MODIFICATION, value: false })}                                                                                   | ${true}                       | ${false}
+      ${`enable ${BLOCK_BRANCH_MODIFICATION} setting`}                                          | ${unprotectFeature}                        | ${createSettings({ key: BLOCK_BRANCH_MODIFICATION, value: true })}                                                                                    | ${true}                       | ${false}
+      ${`enable ${PREVENT_PUSHING_AND_FORCE_PUSHING} setting`}                                  | ${pushFeature}                             | ${createSettings({ key: PREVENT_PUSHING_AND_FORCE_PUSHING, value: true })}                                                                            | ${true}                       | ${false}
+      ${`enable ${BLOCK_BRANCH_MODIFICATION} and ${PREVENT_PUSHING_AND_FORCE_PUSHING} setting`} | ${{ ...unprotectFeature, ...pushFeature }} | ${{ ...createSettings({ key: BLOCK_BRANCH_MODIFICATION, value: true }), ...createSettings({ key: PREVENT_PUSHING_AND_FORCE_PUSHING, value: true }) }} | ${true}                       | ${false}
+      ${`disable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}                                        | ${{}}                                      | ${createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: false })}                                                                                  | ${false}                      | ${true}
+      ${`enable ${PREVENT_APPROVAL_BY_AUTHOR} setting`}                                         | ${{}}                                      | ${createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: true })}                                                                                   | ${false}                      | ${true}
     `(
       '$description',
       ({ glFeatures, settings, protectedBranchSettingVisible, mergeRequestSettingVisible }) => {
@@ -61,7 +61,7 @@ describe('SettingsSection', () => {
       await createComponent({
         propsData: {
           settings: {
-            ...createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: true }),
+            ...createSettings({ key: BLOCK_BRANCH_MODIFICATION, value: true }),
             ...createSettings({ key: PREVENT_APPROVAL_BY_AUTHOR, value: true }),
           },
         },
@@ -85,16 +85,16 @@ describe('SettingsSection', () => {
     it('emits event when setting is toggled', async () => {
       createComponent({
         propsData: {
-          settings: createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: true }),
+          settings: createSettings({ key: BLOCK_BRANCH_MODIFICATION, value: true }),
         },
         provide: { glFeatures: unprotectFeature },
       });
 
       await findAllSettingsItem()
         .at(0)
-        .vm.$emit('update', { key: BLOCK_UNPROTECTING_BRANCHES, value: false });
+        .vm.$emit('update', { key: BLOCK_BRANCH_MODIFICATION, value: false });
       expect(wrapper.emitted('changed')).toEqual([
-        [createSettings({ key: BLOCK_UNPROTECTING_BRANCHES, value: false })],
+        [createSettings({ key: BLOCK_BRANCH_MODIFICATION, value: false })],
       ]);
     });
   });

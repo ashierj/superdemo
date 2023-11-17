@@ -87,7 +87,7 @@ RSpec.describe Branches::DeleteService, feature_category: :source_code_managemen
           end
 
           let(:scan_result_policy) do
-            build(:scan_result_policy, rules: rules, approval_settings: { block_unprotecting_branches: true })
+            build(:scan_result_policy, rules: rules, approval_settings: { block_branch_modification: true })
           end
         end
 

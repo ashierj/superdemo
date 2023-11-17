@@ -19,7 +19,7 @@ module Security
 
       def rules
         blocking_policies = applicable_scan_result_policies.select do |policy|
-          policy.dig(:approval_settings, :block_unprotecting_branches)
+          policy.dig(:approval_settings, :block_branch_modification)
         end
 
         blocking_policies.pluck(:rules).flatten # rubocop: disable CodeReuse/ActiveRecord -- blocking_policies is not expected to be an ActiveRecord::Relation but an Array

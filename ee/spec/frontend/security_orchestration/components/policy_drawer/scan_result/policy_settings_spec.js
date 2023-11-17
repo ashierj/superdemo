@@ -21,7 +21,7 @@ describe('Settings', () => {
     factory({ settings: mockApprovalSettingsScanResultObject.approval_settings });
     expect(findHeader().exists()).toBe(true);
     expect(findSettings()).toHaveLength(1);
-    expect(findSettings().at(0).text()).toBe('Prevent branch protection modification');
+    expect(findSettings().at(0).text()).toBe('Prevent branch modification');
   });
 
   it('does not show for a policy without "approval_settings" property', () => {
