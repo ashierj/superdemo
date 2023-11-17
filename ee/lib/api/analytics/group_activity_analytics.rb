@@ -3,8 +3,6 @@
 module API
   module Analytics
     class GroupActivityAnalytics < ::API::Base
-      DESCRIPTION_DETAIL = 'This feature was introduced in GitLab 12.9.'
-
       feature_category :value_stream_management
       urgency :low
 
@@ -27,7 +25,7 @@ module API
         resource :group_activity do
           desc 'Get count of recently created issues for the group' do
             tags %w[group_analytics]
-            detail DESCRIPTION_DETAIL
+            detail 'This feature was introduced in GitLab 12.9.'
             success EE::API::Entities::Analytics::GroupActivity::IssuesCount
           end
           params do
@@ -44,7 +42,7 @@ module API
 
           desc 'Get count of recently created merge requests for the group' do
             tags %w[group_analytics]
-            detail DESCRIPTION_DETAIL
+            detail 'This feature was introduced in GitLab 12.9.'
             success EE::API::Entities::Analytics::GroupActivity::MergeRequestsCount
           end
           params do
@@ -61,7 +59,7 @@ module API
 
           desc 'Get count of recently created group members' do
             tags %w[group_analytics]
-            detail DESCRIPTION_DETAIL
+            detail 'This feature was introduced in GitLab 12.9.'
             success EE::API::Entities::Analytics::GroupActivity::NewMembersCount
           end
           params do
