@@ -18,14 +18,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_categ
   describe '#execute', :clean_gitlab_redis_shared_state do
     subject { service.execute(consumption_minutes, duration) }
 
-    shared_examples 'updates legacy consumption' do
-      it 'updates legacy statistics with consumption seconds' do
-        expect { subject }
-          .to change { project.statistics.reload.shared_runners_seconds }.by(consumption_seconds)
-          .and change { namespace.reload.namespace_statistics&.shared_runners_seconds || 0 }.by(consumption_seconds)
-      end
-    end
-
     shared_examples 'updates monthly consumption' do
       it 'updates monthly usage for namespace' do
         current_usage = Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id)
@@ -65,19 +57,16 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_categ
       end
     end
 
-    context 'when statistics and usage do not have existing values' do
-      it_behaves_like 'updates legacy consumption'
+    context 'when usage does not have existing values' do
       it_behaves_like 'updates monthly consumption'
 
       context 'when project deleted' do
         let(:project) { double(id: non_existing_record_id) }
         let(:namespace) { create(:namespace) }
 
-        it 'will complete successfully and increment namespace statistics' do
+        it 'will complete successfully and increment the usage' do
           subject
 
-          expect(ProjectStatistics.find_by_project_id(project.id)).to be_nil
-          expect(NamespaceStatistics.find_by_namespace_id(namespace.id).shared_runners_seconds).to eq(consumption_seconds)
           expect(Ci::Minutes::ProjectMonthlyUsage.find_by_project_id(project.id)).to be_nil
           expect(Ci::Minutes::NamespaceMonthlyUsage.find_by_namespace_id(namespace.id).amount_used).to eq(consumption_minutes)
         end
@@ -89,8 +78,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_categ
         it 'will complete successfully' do
           subject
 
-          expect(ProjectStatistics.find_by_project_id(project.id).shared_runners_seconds).to eq(consumption_seconds)
-          expect(NamespaceStatistics.find_by_namespace_id(namespace.id)).to be_nil
           expect(Ci::Minutes::ProjectMonthlyUsage.find_by_project_id(project.id).amount_used).to eq(consumption_minutes)
           expect(Ci::Minutes::NamespaceMonthlyUsage.find_by_namespace_id(namespace.id).amount_used).to eq(consumption_minutes)
         end
@@ -103,8 +90,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_categ
         it 'will complete successfully' do
           subject
 
-          expect(ProjectStatistics.find_by_project_id(project.id)).to be_nil
-          expect(NamespaceStatistics.find_by_namespace_id(namespace.id)).to be_nil
           expect(Ci::Minutes::ProjectMonthlyUsage.find_by_project_id(project.id)).to be_nil
           expect(Ci::Minutes::NamespaceMonthlyUsage.find_by_namespace_id(namespace.id).amount_used).to eq(consumption_minutes)
         end
@@ -153,14 +138,13 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_categ
       end
     end
 
-    context 'when statistics and usage have existing values' do
+    context 'when usage has existing values' do
       let(:namespace) { create(:namespace, shared_runners_minutes_limit: 100) }
       let(:project) { create(:project, :private, namespace: namespace) }
       let(:existing_usage_in_seconds) { 100 }
       let(:existing_usage_in_minutes) { (100.to_f / 60).round(2) }
 
       before do
-        project.statistics.update!(shared_runners_seconds: existing_usage_in_seconds)
         create(:ci_project_monthly_usage, project: project, amount_used: existing_usage_in_minutes)
 
         set_ci_minutes_used(namespace, existing_usage_in_minutes)
@@ -184,7 +168,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_categ
         let(:cache_key) { service.idempotency_cache_key }
 
         context 'when update has not been performed yet' do
-          it_behaves_like 'updates legacy consumption'
           it_behaves_like 'updates monthly consumption'
 
           it 'tracks that the update is done' do
@@ -208,7 +191,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_categ
           end
 
           it_behaves_like 'does not update monthly consumption'
-          it_behaves_like 'updates legacy consumption' # not idempotent / to be removed
 
           it 'logs the event' do
             expect(::Gitlab::AppJsonLogger)

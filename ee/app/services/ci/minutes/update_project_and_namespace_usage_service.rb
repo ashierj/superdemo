@@ -17,8 +17,6 @@ module Ci
 
       # Updates the project and namespace usage based on the passed consumption amount
       def execute(consumption, duration = nil)
-        legacy_track_usage_of_monthly_minutes(consumption)
-
         ensure_idempotency { track_monthly_usage(consumption, duration.to_i) }
 
         # No need to check notification if consumption hasn't changed
@@ -41,7 +39,6 @@ module Ci
       # TODO: we should move this to be an async job.
       # https://gitlab.com/gitlab-org/gitlab/-/issues/335885
       def send_minutes_email_notification
-        # `perform reset` on `project` because `Namespace#namespace_statistics` will otherwise return stale data.
         # TODO(issue 335885): Remove @project
         ::Ci::Minutes::EmailNotificationService.new(@project.reset).execute if ::Gitlab.com?
       rescue StandardError => e
@@ -51,33 +48,12 @@ module Ci
           build_id: @build_id)
       end
 
-      def legacy_track_usage_of_monthly_minutes(consumption)
-        return unless consumption > 0
-
-        consumption_in_seconds = consumption.minutes.to_i
-
-        update_legacy_project_minutes(consumption_in_seconds)
-        update_legacy_namespace_minutes(consumption_in_seconds)
-      end
-
       def track_monthly_usage(consumption, duration)
         # preload minutes usage data outside of transaction
         usages = [project_usage, namespace_usage].compact
 
         ::Ci::Minutes::NamespaceMonthlyUsage.transaction do
           usages.each { |usage| usage.increase_usage(amount_used: consumption, shared_runners_duration: duration) }
-        end
-      end
-
-      def update_legacy_project_minutes(consumption_in_seconds)
-        if project_statistics
-          ProjectStatistics.update_counters(project_statistics, shared_runners_seconds: consumption_in_seconds)
-        end
-      end
-
-      def update_legacy_namespace_minutes(consumption_in_seconds)
-        if namespace_statistics
-          NamespaceStatistics.update_counters(namespace_statistics, shared_runners_seconds: consumption_in_seconds)
         end
       end
 
@@ -92,20 +68,6 @@ module Ci
           if @project.present?
             ::Ci::Minutes::ProjectMonthlyUsage.find_or_create_current(project_id: @project_id)
           end
-        end
-      end
-
-      def namespace_statistics
-        strong_memoize(:namespace_statistics) do
-          NamespaceStatistics.safe_find_or_create_by!(namespace_id: @namespace_id)
-        rescue ActiveRecord::NotNullViolation, ActiveRecord::RecordInvalid
-        end
-      end
-
-      def project_statistics
-        strong_memoize(:project_statistics) do
-          ProjectStatistics.safe_find_or_create_by!(project_id: @project_id)
-        rescue ActiveRecord::NotNullViolation, ActiveRecord::RecordInvalid
         end
       end
 

@@ -37,15 +37,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker, feature_catego
           expect(project_usage.shared_runners_duration).to eq(0)
         end
       end
-
-      it 'does not behave idempotently for legacy statistics update', :aggregate_failures do
-        expect(::Ci::Minutes::UpdateProjectAndNamespaceUsageService).to receive(:new).twice.and_call_original
-
-        subject
-
-        expect(project.statistics.reload.shared_runners_seconds).to eq(2 * consumption_seconds)
-        expect(namespace.reload.namespace_statistics.shared_runners_seconds).to eq(2 * consumption_seconds)
-      end
     end
 
     context 'when duration param is passed in' do
@@ -71,15 +62,6 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageWorker, feature_catego
           expect(project_usage.amount_used).to eq(consumption)
           expect(project_usage.shared_runners_duration).to eq(duration)
         end
-      end
-
-      it 'does not behave idempotently for legacy statistics update', :aggregate_failures do
-        expect(::Ci::Minutes::UpdateProjectAndNamespaceUsageService).to receive(:new).twice.and_call_original
-
-        subject
-
-        expect(project.statistics.reload.shared_runners_seconds).to eq(2 * consumption_seconds)
-        expect(namespace.reload.namespace_statistics.shared_runners_seconds).to eq(2 * consumption_seconds)
       end
     end
   end
