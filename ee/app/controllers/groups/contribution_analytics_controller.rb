@@ -23,6 +23,8 @@ class Groups::ContributionAnalyticsController < Groups::ApplicationController
     # https://gitlab.com/gitlab-org/gitlab/-/issues/428585
     @data_source_clickhouse = Feature.enabled?(:clickhouse_data_collection, group)
 
+    push_frontend_feature_flag(:use_500_page_size_for_contribution_analytics, group)
+
     respond_to do |format|
       format.html
       format.json do

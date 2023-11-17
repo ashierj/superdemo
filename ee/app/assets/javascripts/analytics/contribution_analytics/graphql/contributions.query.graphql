@@ -3,10 +3,11 @@ query getContributionsData(
   $startDate: ISO8601Date!
   $endDate: ISO8601Date!
   $nextPageCursor: String = ""
+  $first: Int
 ) {
   group(fullPath: $fullPath) {
     id
-    contributions(from: $startDate, to: $endDate, after: $nextPageCursor) {
+    contributions(from: $startDate, to: $endDate, first: $first, after: $nextPageCursor) {
       nodes {
         repoPushed
         mergeRequestsCreated

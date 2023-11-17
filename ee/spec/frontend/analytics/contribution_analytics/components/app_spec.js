@@ -39,6 +39,7 @@ describe('Contribution Analytics App', () => {
     wrapper = shallowMount(App, {
       apolloProvider,
       propsData: {
+        first: null,
         fullPath: 'test',
         startDate: '2000-12-10',
         endDate: '2000-12-31',
@@ -71,6 +72,7 @@ describe('Contribution Analytics App', () => {
     results.forEach((result) =>
       expect(resolver).toHaveBeenCalledWith({
         fullPath: wrapper.props('fullPath'),
+        first: null,
         ...result,
       }),
     );
@@ -93,6 +95,35 @@ describe('Contribution Analytics App', () => {
     expect(Sentry.captureException).toHaveBeenCalled();
     expect(findErrorAlert().exists()).toBe(true);
     expect(findErrorAlert().text()).toEqual(wrapper.vm.$options.i18n.error);
+  });
+
+  it('fetches a page size of 500 when use_500_page_size_for_contribution_analytics is enabled', async () => {
+    gon.features = { use500PageSizeForContributionAnalytics: true };
+
+    const contributionsQueryResolver = jest
+      .fn()
+      .mockResolvedValueOnce(mockApiResponse({ endCursor: nextPageCursor }))
+      .mockResolvedValueOnce(mockApiResponse());
+
+    createWrapper({ contributionsQueryResolver, props: { dataSourceClickhouse: true } });
+    await waitForPromises();
+
+    expectGroupMembersTableToHaveData();
+
+    expectContributionsQueryResolverCalls(contributionsQueryResolver, [
+      {
+        first: 500,
+        startDate: '2000-12-10',
+        endDate: '2000-12-31',
+        nextPageCursor: '',
+      },
+      {
+        first: 500,
+        startDate: '2000-12-10',
+        endDate: '2000-12-31',
+        nextPageCursor,
+      },
+    ]);
   });
 
   it('fetches Clickhouse data, using paginated requests when necessary', async () => {
