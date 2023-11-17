@@ -3,11 +3,11 @@ import { createDateTimeFormat } from '~/locale';
 /**
  * Format a Date with the help of {@link DateTimeFormat.asDateTime}
  *
- * Note: In case you can use localDateFormat.asDateTime directly, please do that.
+ * Note: In case you can use localeDateFormat.asDateTime directly, please do that.
  *
  * @example
- * localDateFormat[DATE_WITH_TIME_FORMAT].format(date) // returns 'Jul 6, 2020, 2:43 PM'
- * localDateFormat[DATE_WITH_TIME_FORMAT].formatRange(date, date) // returns 'Jul 6, 2020, 2:45PM – 8:43 PM'
+ * localeDateFormat[DATE_WITH_TIME_FORMAT].format(date) // returns 'Jul 6, 2020, 2:43 PM'
+ * localeDateFormat[DATE_WITH_TIME_FORMAT].formatRange(date, date) // returns 'Jul 6, 2020, 2:45PM – 8:43 PM'
  */
 export const DATE_WITH_TIME_FORMAT = 'asDateTime';
 
@@ -24,11 +24,11 @@ export const DATE_TIME_FULL_FORMAT = 'asDateTimeFull';
 /**
  * Format a Date with the help of {@link DateTimeFormat.asDate}
  *
- * Note: In case you can use localDateFormat.asDate directly, please do that.
+ * Note: In case you can use localeDateFormat.asDate directly, please do that.
  *
  * @example
- * localDateFormat[DATE_ONLY_FORMAT].format(date) // returns 'Jul 05, 2023'
- * localDateFormat[DATE_ONLY_FORMAT].formatRange(date, date) // returns 'Jul 05 - Jul 07, 2023'
+ * localeDateFormat[DATE_ONLY_FORMAT].format(date) // returns 'Jul 05, 2023'
+ * localeDateFormat[DATE_ONLY_FORMAT].formatRange(date, date) // returns 'Jul 05 - Jul 07, 2023'
  */
 export const DATE_ONLY_FORMAT = 'asDate';
 export const DEFAULT_DATE_TIME_FORMAT = DATE_WITH_TIME_FORMAT;
@@ -65,7 +65,7 @@ class DateTimeFormat {
    * @example
    * // en-US: returns something like Jul 6, 2020, 2:43 PM
    * // en-GB: returns something like 6 Jul 2020, 14:43
-   * localDateFormat.asDateTime.format(date)
+   * localeDateFormat.asDateTime.format(date)
    *
    * @returns {DateTimeFormatter}
    */
@@ -114,12 +114,12 @@ class DateTimeFormat {
    * @example
    * // en-US: returns something like Jul 6, 2020
    * // en-GB: returns something like 6 Jul 2020
-   * localDateFormat.asDate.format(date)
+   * localeDateFormat.asDate.format(date)
    *
    * @example
    * // en-US: returns something like Jul 6 – 7, 2020
    * // en-GB: returns something like 6-7 Jul 2020
-   * localDateFormat.asDate.formatRange(date, date2)
+   * localeDateFormat.asDate.formatRange(date, date2)
    *
    * @returns {DateTimeFormatter}
    */
