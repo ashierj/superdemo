@@ -39,7 +39,7 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
         end
       end
 
-      it 'allows creation from custom project template', :js do
+      it 'allows creation from custom project template', :js, :sidekiq_inline do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
@@ -50,10 +50,7 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
           # Have to reset it to '' so it overwrites rather than appends
           fill_in('project_path', with: '')
           fill_in('project_path', with: new_path)
-
-          Sidekiq::Testing.inline! do
-            click_button 'Create project'
-          end
+          click_button 'Create project'
         end
 
         expect(page).to have_content new_name
@@ -62,7 +59,7 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
         expect(Project.last.path).to eq new_path
       end
 
-      it 'allows creation from custom project template using only the name', :js do
+      it 'allows creation from custom project template using only the name', :js, :sidekiq_inline do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
@@ -70,10 +67,7 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
 
         page.within '.project-fields-form' do
           fill_in('project_name', with: new_name)
-
-          Sidekiq::Testing.inline! do
-            click_button 'Create project'
-          end
+          click_button 'Create project'
         end
 
         expect(page).to have_content new_name
@@ -82,7 +76,7 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
         expect(Project.last.path).to eq new_path
       end
 
-      it 'allows creation from custom project template using only the path', :js do
+      it 'allows creation from custom project template using only the path', :js, :sidekiq_inline do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
@@ -90,10 +84,7 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
 
         page.within '.project-fields-form' do
           fill_in('project_path', with: new_path)
-
-          Sidekiq::Testing.inline! do
-            click_button 'Create project'
-          end
+          click_button 'Create project'
         end
 
         expect(page).to have_content new_name
