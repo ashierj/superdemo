@@ -55,6 +55,10 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
           "Validation failed: Dns zone contains invalid characters (valid characters: [a-z0-9\\-])"
         )
       end
+
+      describe '#enabled' do
+        it { is_expected.to validate_inclusion_of(:enabled).in_array([true, false]) }
+      end
     end
 
     it 'when network_policy_egress is not specified explicitly' do
