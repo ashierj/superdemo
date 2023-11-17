@@ -27875,7 +27875,7 @@ msgstr ""
 msgid "Last Accessed On"
 msgstr ""
 
-msgid "Last Activity"
+msgid "Last GitLab activity"
 msgstr ""
 
 msgid "Last Name"

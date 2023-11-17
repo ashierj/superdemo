@@ -80,7 +80,7 @@ export default {
     },
     {
       key: 'lastActivityTime',
-      label: __('Last activity'),
+      label: __('Last GitLab activity'),
       thClass: thWidthPercent(25),
       tdClass: 'gl-vertical-align-middle!',
     },
