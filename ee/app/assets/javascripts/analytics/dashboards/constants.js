@@ -1,4 +1,4 @@
-import { green400, orange400, red400, gray400 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { GREEN_400, ORANGE_400, RED_400, GRAY_400 } from '@gitlab/ui/dist/tokens/js/tokens';
 import { s__, __, n__, sprintf } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import {
@@ -259,7 +259,7 @@ export const DORA_PERFORMERS_SCORE_NO_DATA = s__(
   'DORA4Metrics|No data available for Namespace: %{fullPath}',
 );
 
-export const DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE = [green400, orange400, red400, gray400];
+export const DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE = [GREEN_400, ORANGE_400, RED_400, GRAY_400];
 
 // The URL name already in use is `value_streams_dashboard`,
 // the slug name for a dashboard must match the URL path that is used
