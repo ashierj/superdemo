@@ -121,27 +121,17 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
     end
   end
 
-  describe 'role predicates' do
+  describe '#user?' do
     context 'when role is user' do
       it { is_expected.to be_user }
-      it { is_expected.not_to be_assistant }
-      it { is_expected.not_to be_system }
     end
 
-    context 'when role is assistant' do
-      let(:data) { super().merge(role: 'assistant') }
+    context 'when role is not user' do
+      before do
+        data[:role] = 'system'
+      end
 
       it { is_expected.not_to be_user }
-      it { is_expected.to be_assistant }
-      it { is_expected.not_to be_system }
-    end
-
-    context 'when role is system' do
-      let(:data) { super().merge(role: 'system') }
-
-      it { is_expected.not_to be_user }
-      it { is_expected.not_to be_assistant }
-      it { is_expected.to be_system }
     end
   end
 

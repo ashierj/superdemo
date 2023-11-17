@@ -46,10 +46,7 @@ export function mountMarkdownEditor() {
     });
   }
 
-  if (
-    (window.gon?.features?.openaiExperimentation || window.gon?.features?.aiGlobalSwitch) &&
-    window.gon?.licensed_features?.generateDescription
-  ) {
+  if (window.gon?.features?.aiGlobalSwitch && window.gon?.licensed_features?.generateDescription) {
     provideEEAiActions.push(generateDescriptionAction());
   }
 

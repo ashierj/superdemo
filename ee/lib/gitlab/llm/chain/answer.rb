@@ -86,13 +86,6 @@ module Gitlab
           @extras = extras
         end
 
-        def last_tool_name
-          cls = context&.tools_used&.last
-          return unless cls
-
-          cls::NAME
-        end
-
         private_class_method def self.logger
           Gitlab::Llm::Logger.build
         end
