@@ -117,7 +117,7 @@ module ChatQaEvaluationHelpers
   def chat(user, resource, options)
     message_attributes = options.extract!(:content, :request_id, :client_subscription_id).merge(
       user: user,
-      resource: resource,
+      context: ::Gitlab::Llm::AiMessageContext.new(resource: resource),
       ai_action: 'chat',
       role: ::Gitlab::Llm::AiMessage::ROLE_USER
     )
