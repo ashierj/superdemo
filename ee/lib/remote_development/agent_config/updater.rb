@@ -18,7 +18,7 @@ module RemoteDevelopment
         end
 
         model_instance = RemoteDevelopmentAgentConfig.find_or_initialize_by(agent: agent) # rubocop:todo CodeReuse/ActiveRecord -- Use a finder class here
-        model_instance.enabled = config_from_agent_config_file[:enabled]
+        model_instance.enabled = config_from_agent_config_file.fetch(:enabled, false)
         # noinspection RubyResolve
         model_instance.dns_zone = config_from_agent_config_file[:dns_zone]
         # noinspection RubyResolve
@@ -28,9 +28,6 @@ module RemoteDevelopment
         model_instance.gitlab_workspaces_proxy_namespace =
           config_from_agent_config_file.fetch(:gitlab_workspaces_proxy, {}).fetch(:namespace, 'gitlab-workspaces')
 
-        # NOTE: Currently, this will always be expected to fail if the config's `enabled: false` is
-        #       specified, because for the initial release, we are enforcing that all config attributes (including
-        #       `enabled`) are immutable, and thus enabled must be set to true upon creation.
         if model_instance.save
           Result.ok(AgentConfigUpdateSuccessful.new({ remote_development_agent_config: model_instance }))
         else

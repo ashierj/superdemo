@@ -10,14 +10,9 @@ module RemoteDevelopment
 
     has_many :workspaces, through: :agent, source: :workspaces
 
-    validates :enabled, presence: true
     validates :agent, presence: true
     validates :dns_zone, hostname: true
-
-    # NOTE: We do NOT want to use `enum` in the ActiveRecord models, because they break the `ActiveRecord#save` contract
-    #       by throwing an `ArgumentError` on `#save`, instead of `#save!`.
-    #       See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129708#note_1538946504 for more context.
-    validates :enabled, inclusion: { in: [true], message: 'is currently immutable, and must be set to true' }
+    validates :enabled, inclusion: { in: [true, false] }
 
     validates :network_policy_egress,
       json_schema: { filename: 'remote_development_agent_configs_network_policy_egress' }
