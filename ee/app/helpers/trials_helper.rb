@@ -63,6 +63,10 @@ module TrialsHelper
     any_trial_eligible_namespaces?
   end
 
+  def show_tier_badge_for_new_trial?(namespace, user)
+    !namespace.paid? && can?(user, :read_billing, namespace)
+  end
+
   def namespace_options_for_listbox
     group_options = trial_eligible_namespaces.map { |n| { text: n.name, value: n.id.to_s } }
     options = [

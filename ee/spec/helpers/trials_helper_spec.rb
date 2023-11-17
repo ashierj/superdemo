@@ -115,6 +115,29 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
     end
   end
 
+  describe '#show_tier_badge_for_new_trial?' do
+    where(:paid?, :authorized, :result) do
+      true  | true  | false
+      false | true  | true
+      false | false | false
+      true  | false | false
+    end
+
+    with_them do
+      let(:namespace) { build(:namespace) }
+      let(:user) { build(:user) }
+
+      before do
+        allow(namespace).to receive(:paid?).and_return(paid?)
+        allow(helper).to receive(:can?).with(user, :read_billing, namespace).and_return(authorized)
+      end
+
+      subject { helper.show_tier_badge_for_new_trial?(namespace, user) }
+
+      it { is_expected.to be(result) }
+    end
+  end
+
   describe '#glm_params' do
     let(:glm_source) { nil }
     let(:glm_content) { nil }

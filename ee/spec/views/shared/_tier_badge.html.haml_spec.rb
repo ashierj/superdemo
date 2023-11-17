@@ -3,12 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe 'shared/_tier_badge.html.haml', :saas, feature_category: :groups_and_projects do
-  let_it_be(:parent) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
-  let_it_be(:subgroup) { create(:group, parent: parent) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
-  let_it_be(:selector) { '.js-tier-badge-trigger' }
+  let(:parent) { build(:group, :private, id: non_existing_record_id) }
+  let(:subgroup) { build_stubbed(:group, :private, parent: parent) }
+  let(:selector) { '.js-tier-badge-trigger' }
 
   before do
     stub_experiments(tier_badge: tier_badge)
+    allow(view).to receive(:show_tier_badge_for_new_trial?).and_return(true)
   end
 
   context 'when control' do
@@ -40,10 +41,20 @@ RSpec.describe 'shared/_tier_badge.html.haml', :saas, feature_category: :groups_
       end
     end
 
-    context 'when free parent with exprired trial' do
+    context 'when free parent with expired trial' do
       it 'does not render anything' do
-        create(:gitlab_subscription, :expired_trial, namespace: parent) # rubocop:disable RSpec/FactoryBot/AvoidCreate
+        build(:gitlab_subscription, :expired_trial, namespace: parent)
 
+        render 'shared/tier_badge', source: parent, source_type: 'Group'
+
+        expect(rendered).not_to have_selector(selector)
+      end
+    end
+
+    context 'when the parent namespace is not private' do
+      let(:parent) { build(:group, :public, id: non_existing_record_id) }
+
+      it 'does not render anything' do
         render 'shared/tier_badge', source: parent, source_type: 'Group'
 
         expect(rendered).not_to have_selector(selector)
