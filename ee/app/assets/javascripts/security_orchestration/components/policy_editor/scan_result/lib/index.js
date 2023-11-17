@@ -4,6 +4,7 @@ export * from './rules';
 export { approversOutOfSync, APPROVER_TYPE_DICT, APPROVER_TYPE_LIST_ITEMS } from './actions';
 export * from './settings';
 export * from './vulnerability_states';
+export * from './filters';
 
 export const DEFAULT_SCAN_RESULT_POLICY = `type: scan_result_policy
 name: ''

@@ -1,5 +1,5 @@
 <script>
-import { xor, isEmpty } from 'lodash';
+import { xor } from 'lodash';
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
@@ -17,7 +17,7 @@ import { enforceIntValue } from '../../utils';
 import ScanFilterSelector from '../../scan_filter_selector.vue';
 import RuleMultiSelect from '../../rule_multi_select.vue';
 import SectionLayout from '../../section_layout.vue';
-import { getDefaultRule, groupVulnerabilityStatesWithDefaults } from '../lib';
+import { buildFiltersFromRule, getDefaultRule, groupVulnerabilityStatesWithDefaults } from '../lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
 import AgeFilter from './scan_filters/age_filter.vue';
 import StatusFilters from './scan_filters/status_filters.vue';
@@ -74,26 +74,8 @@ export default {
     },
   },
   data() {
-    const {
-      vulnerability_age: vulnerabilityAge,
-      vulnerability_states: vulnerabilityStates,
-    } = this.initRule;
-    const vulnerabilityStateGroups = groupVulnerabilityStatesWithDefaults(vulnerabilityStates);
-    const vulnerabilityAttributes = this.initRule.vulnerability_attributes || {};
-
-    const filters = {
-      [AGE]: !isEmpty(vulnerabilityAge),
-      [NEWLY_DETECTED]:
-        Boolean(vulnerabilityStateGroups[NEWLY_DETECTED]) || isEmpty(vulnerabilityStateGroups),
-      [PREVIOUSLY_EXISTING]: Boolean(vulnerabilityStateGroups[PREVIOUSLY_EXISTING]),
-      [FALSE_POSITIVE]: vulnerabilityAttributes[FALSE_POSITIVE] !== undefined,
-      [FIX_AVAILABLE]: vulnerabilityAttributes[FIX_AVAILABLE] !== undefined,
-    };
-    filters[STATUS] = Boolean(filters[NEWLY_DETECTED] && filters[PREVIOUSLY_EXISTING]);
-    filters[ATTRIBUTE] = Boolean(filters[FALSE_POSITIVE] && filters[FIX_AVAILABLE]);
-
     return {
-      filters,
+      filters: buildFiltersFromRule(this.initRule),
     };
   },
   computed: {
