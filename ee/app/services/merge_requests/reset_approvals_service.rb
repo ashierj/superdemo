@@ -14,9 +14,7 @@ module MergeRequests
       merge_requests = merge_requests_for(branch_name, mr_states: [:opened, :closed])
 
       merge_requests.each do |merge_request|
-        if Feature.enabled?(:reset_approvals_patch_id, merge_request.project)
-          mr_patch_id_sha = merge_request.current_patch_id_sha
-        end
+        mr_patch_id_sha = merge_request.current_patch_id_sha
 
         if skip_reset_checks
           # Delete approvals immediately, with no additional checks or side-effects
