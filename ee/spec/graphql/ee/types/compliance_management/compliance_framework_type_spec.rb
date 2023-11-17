@@ -12,6 +12,7 @@ RSpec.describe GitlabSchema.types['ComplianceFramework'] do
     color
     default
     pipeline_configuration_full_path
+    projects
   ]
 
   it 'has the correct fields' do
