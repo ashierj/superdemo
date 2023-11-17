@@ -41,7 +41,7 @@ RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
             formatted_last_login = developer.last_sign_in_at.strftime('%Y-%m-%dT%H:%M:%SZ')
 
             expect(payload).to eq([
-              "Id,Name,Username,Email,State,Last Activity,Last Login\n",
+              "Id,Name,Username,Email,State,Last GitLab activity,Last login\n",
               "#{owner.id},Owner,owner,,active,,\n",
               "#{developer.id},Dev,dev,public@email.org,active,#{formatted_last_activity},#{formatted_last_login}\n",
               "#{reporter.id},Reporter,reporter,,active,,\n"
@@ -55,7 +55,7 @@ RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
             expect(BilledUsersFinder).to receive(:new).and_return(finder)
             expect(finder).to receive(:execute).and_return({})
 
-            expect(payload).to match_array(["Id,Name,Username,Email,State,Last Activity,Last Login\n"])
+            expect(payload).to match_array(["Id,Name,Username,Email,State,Last GitLab activity,Last login\n"])
           end
         end
       end

@@ -29,7 +29,7 @@ export const FIELDS = [
   },
   {
     key: 'lastActivityTime',
-    label: __('Last activity'),
+    label: __('Last GitLab activity'),
     thClass: thWidthPercent(20),
     tdClass: 'gl-vertical-align-middle!',
   },
@@ -74,7 +74,7 @@ export const AVATAR_SIZE = 32;
 export const SORT_OPTIONS = [
   {
     id: 10,
-    title: __('Last Activity'),
+    title: __('Last GitLab activity'),
     sortDirection: {
       descending: 'last_activity_on_desc',
       ascending: 'last_activity_on_asc',
