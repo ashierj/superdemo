@@ -43142,6 +43142,9 @@ msgstr ""
 msgid "SecurityOrchestration|Clear all"
 msgstr ""
 
+msgid "SecurityOrchestration|Compliance Framework ID(s) can only be set for group policies"
+msgstr ""
+
 msgid "SecurityOrchestration|Create more robust vulnerability rules and apply them to all your projects."
 msgstr ""
 
@@ -43239,6 +43242,9 @@ msgid "SecurityOrchestration|Inherited"
 msgstr ""
 
 msgid "SecurityOrchestration|Inherited from %{namespace}"
+msgstr ""
+
+msgid "SecurityOrchestration|Invalid Compliance Framework ID(s)"
 msgstr ""
 
 msgid "SecurityOrchestration|Invalid branch type detected - rule will not be applied."
