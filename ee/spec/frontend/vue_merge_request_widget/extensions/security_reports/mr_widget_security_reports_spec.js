@@ -22,7 +22,11 @@ import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_con
 import * as urlUtils from '~/lib/utils/url_utility';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_OK,
+} from '~/lib/utils/http_status';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { findingMockData, findingQueryMockData } from './mock_data';
 
@@ -99,6 +103,7 @@ describe('MR Widget Security Reports', () => {
       propsData: {
         ...propsData,
         mr: {
+          targetProjectFullPath: '',
           pipeline: {
             path: '/path/to/pipeline',
           },
@@ -492,8 +497,8 @@ describe('MR Widget Security Reports', () => {
   });
 
   describe('error states', () => {
-    const mockWithData = () => {
-      mockAxios.onGet(reportEndpoints.sastComparisonPathV2).replyOnce(HTTP_STATUS_BAD_REQUEST);
+    const mockWithData = ({ errorCode = HTTP_STATUS_INTERNAL_SERVER_ERROR } = {}) => {
+      mockAxios.onGet(reportEndpoints.sastComparisonPathV2).replyOnce(errorCode);
 
       mockAxios.onGet(reportEndpoints.dastComparisonPathV2).replyOnce(HTTP_STATUS_OK, {
         added: [
@@ -519,6 +524,19 @@ describe('MR Widget Security Reports', () => {
       await createComponentAndExpandWidget({ mockDataFn: mockWithData });
 
       expect(wrapper.findByText('SAST: Loading resulted in an error').exists()).toBe(true);
+    });
+
+    it('displays a top level error message when there is a bad request', async () => {
+      mockWithData({ errorCode: HTTP_STATUS_BAD_REQUEST });
+      createComponent({ mountFn: mountExtended });
+
+      await waitForPromises();
+
+      expect(
+        wrapper.findByText('Parsing schema failed. Check the output of the scanner.').exists(),
+      ).toBe(true);
+
+      expect(wrapper.findByText('SAST: Loading resulted in an error').exists()).toBe(false);
     });
   });
 

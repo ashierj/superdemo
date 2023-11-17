@@ -62,6 +62,7 @@ export default {
       isCreatingMergeRequest: false,
       hasAtLeastOneReportWithMaxNewVulnerabilities: false,
       modalData: null,
+      topLevelErrorMessage: '',
       collapsedData: {},
     };
   },
@@ -217,10 +218,14 @@ export default {
 
     statusIconName() {
       if (this.totalNewVulnerabilities > 0) {
-        return 'warning';
+        return EXTENSION_ICONS.warning;
       }
 
-      return 'success';
+      if (this.topLevelErrorMessage) {
+        return EXTENSION_ICONS.error;
+      }
+
+      return EXTENSION_ICONS.success;
     },
 
     hasCreateIssuePath() {
@@ -335,9 +340,18 @@ export default {
               data: report,
             };
           })
-          .catch(({ headers = {}, status = 500 }) => {
+          .catch(({ response: { status, headers } }) => {
             const report = { ...props, error: true };
             this.$set(this.collapsedData, reportType, report);
+
+            // This is a special case, when the endpoint returns 400 it's because
+            // the .gitlab-ci.yml file is erroneous.
+            if (status === 400) {
+              this.topLevelErrorMessage = s__(
+                'ciReport|Parsing schema failed. Check the output of the scanner.',
+              );
+            }
+
             return { headers, status, data: report };
           });
       });
@@ -617,7 +631,8 @@ export default {
 <template>
   <mr-widget
     v-if="shouldRenderMrWidget"
-    :error-text="$options.i18n.error"
+    :error-text="topLevelErrorMessage || $options.i18n.error"
+    :has-error="Boolean(topLevelErrorMessage)"
     :fetch-collapsed-data="fetchCollapsedData"
     :status-icon-name="statusIconName"
     :widget-name="$options.name"
