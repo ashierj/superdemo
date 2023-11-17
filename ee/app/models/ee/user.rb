@@ -561,12 +561,20 @@ module EE
       !groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: true }).any?
     end
 
-    def code_suggestions_add_on_available?
-      if ::Feature.enabled?(:code_suggestions_user_assignments, self)
-        GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_code_suggestions_purchase.any?
-      else
-        GitlabSubscriptions::AddOnPurchase.for_user(self).for_code_suggestions.active.any?
+    def code_suggestions_add_on_available_namespace_ids
+      cache_key = format(CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: self.id)
+
+      Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+        if ::Feature.enabled?(:code_suggestions_user_assignments, self)
+          GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_code_suggestions_purchase.pluck('subscription_add_on_purchases.namespace_id')
+        else
+          GitlabSubscriptions::AddOnPurchase.for_user(self).for_code_suggestions.active.pluck(:namespace_id)
+        end
       end
+    end
+
+    def code_suggestions_add_on_available?
+      code_suggestions_add_on_available_namespace_ids.any?
     end
 
     def billable_code_suggestions_root_group_ids

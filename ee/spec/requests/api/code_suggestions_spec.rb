@@ -25,7 +25,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     stub_feature_flags(code_completion_split_by_language: false)
     stub_feature_flags(skip_code_generation_instruction_extraction: false)
 
-    allow(Gitlab).to receive(:org_or_com?).and_return(is_saas)
+    allow(Gitlab).to receive(:com?).and_return(is_saas)
     allow(Ability).to receive(:allowed?).and_call_original
     allow(Ability).to receive(:allowed?).with(authorized_user, :access_code_suggestions, :global)
                                         .and_return(access_code_suggestions)
@@ -310,22 +310,22 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           expect(response.body).to eq("".to_json)
           command, params = workhorse_send_data
           expect(command).to eq('send-url')
-          expect(params).to eq({
+          expect(params).to include(
             'URL' => 'https://codesuggestions.gitlab.com/v2/code/completions',
             'AllowRedirects' => false,
             'Body' => body.merge(prompt_version: 1).to_json,
-            'Header' => {
-              'X-Gitlab-Authentication-Type' => ['oidc'],
-              'X-Gitlab-Instance-Id' => [global_instance_id],
-              'X-Gitlab-Global-User-Id' => [global_user_id],
-              'X-Gitlab-Host-Name' => [Gitlab.config.gitlab.host],
-              'X-Gitlab-Realm' => [gitlab_realm],
-              'Authorization' => ["Bearer #{token}"],
-              'Content-Type' => ['application/json'],
-              'User-Agent' => ['Super Awesome Browser 43.144.12']
-            },
             'Method' => 'POST'
-          })
+          )
+          expect(params['Header']).to include(
+            'X-Gitlab-Authentication-Type' => ['oidc'],
+            'X-Gitlab-Instance-Id' => [global_instance_id],
+            'X-Gitlab-Global-User-Id' => [global_user_id],
+            'X-Gitlab-Host-Name' => [Gitlab.config.gitlab.host],
+            'X-Gitlab-Realm' => [gitlab_realm],
+            'Authorization' => ["Bearer #{token}"],
+            'Content-Type' => ['application/json'],
+            'User-Agent' => ['Super Awesome Browser 43.144.12']
+          )
         end
 
         context 'when overriding service base URL' do
@@ -362,21 +362,19 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             post_api
 
             _, params = workhorse_send_data
-            expect(params).to include({
-              'Header' => {
-                'X-Gitlab-Authentication-Type' => ['oidc'],
-                'Authorization' => ["Bearer #{token}"],
-                'Content-Type' => ['application/json'],
-                'X-Gitlab-Instance-Id' => [global_instance_id],
-                'X-Gitlab-Global-User-Id' => [global_user_id],
-                'X-Gitlab-Host-Name' => [Gitlab.config.gitlab.host],
-                'X-Gitlab-Realm' => [gitlab_realm],
-                'X-Gitlab-Cs-Accepts' => ['accepts'],
-                'X-Gitlab-Cs-Requests' => ['requests'],
-                'X-Gitlab-Cs-Errors' => ['errors'],
-                'X-Gitlab-Cs-Custom' => ['helloworld'],
-                'User-Agent' => ['Super Cool Browser 14.5.2']
-              }
+            expect(params['Header']).to include({
+              'X-Gitlab-Authentication-Type' => ['oidc'],
+              'Authorization' => ["Bearer #{token}"],
+              'Content-Type' => ['application/json'],
+              'X-Gitlab-Instance-Id' => [global_instance_id],
+              'X-Gitlab-Global-User-Id' => [global_user_id],
+              'X-Gitlab-Host-Name' => [Gitlab.config.gitlab.host],
+              'X-Gitlab-Realm' => [gitlab_realm],
+              'X-Gitlab-Cs-Accepts' => ['accepts'],
+              'X-Gitlab-Cs-Requests' => ['requests'],
+              'X-Gitlab-Cs-Errors' => ['errors'],
+              'X-Gitlab-Cs-Custom' => ['helloworld'],
+              'User-Agent' => ['Super Cool Browser 14.5.2']
             })
           end
         end
@@ -510,6 +508,15 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 )
 
               post_api
+            end
+
+            it 'includes additional headers for SaaS' do
+              post_api
+
+              _, params = workhorse_send_data
+              expect(params['Header']).to include(
+                'X-Gitlab-Saas-Namespace-Ids' => [add_on_purchase.namespace.id.to_s]
+              )
             end
 
             context 'when body is too big' do
@@ -673,6 +680,19 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           'Content-Type' => 'application/json',
           'User-Agent' => 'Super Awesome Browser 43.144.12'
         }
+      end
+
+      context 'when user is authorized' do
+        let(:current_user) { authorized_user }
+
+        it 'does not include additional headers, which are for SaaS only' do
+          post_api
+
+          expect(response.status).to be(200)
+          expect(response.body).to eq("".to_json)
+          _, params = workhorse_send_data
+          expect(params['Header']).not_to have_key('X-Gitlab-Saas-Namespace-Ids')
+        end
       end
 
       it_behaves_like 'code completions endpoint'
