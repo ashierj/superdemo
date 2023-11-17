@@ -15,6 +15,7 @@ module EE
           onboarding
           search_indexing_status
           subscriptions_trials
+          group_custom_roles
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'

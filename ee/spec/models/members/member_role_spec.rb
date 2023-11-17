@@ -11,10 +11,17 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
   describe 'validation' do
     subject(:member_role) { build(:member_role) }
 
-    it { is_expected.to validate_presence_of(:namespace) }
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:base_access_level) }
     it { is_expected.to validate_inclusion_of(:base_access_level).in_array(described_class::LEVELS) }
+
+    context 'when running on Gitlab.com', :saas do
+      it { is_expected.to validate_presence_of(:namespace) }
+    end
+
+    context 'when running on self-managed' do
+      it { is_expected.not_to validate_presence_of(:namespace) }
+    end
 
     context 'for attributes_locked_after_member_associated' do
       before do

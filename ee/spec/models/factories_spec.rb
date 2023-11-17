@@ -77,7 +77,8 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:scan_execution_policy, :with_schedule_and_agent],
     [:vulnerability, :with_cluster_image_scanning_finding],
     [:vulnerability, :with_findings],
-    [:vulnerability_export, :finished]
+    [:vulnerability_export, :finished],
+    [:member_role, :instance] # this trait is not available for saas
   ].freeze
 
   geo_configured = Gitlab.ee? && Gitlab::Geo.geo_database_configured?

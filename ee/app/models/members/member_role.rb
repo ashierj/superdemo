@@ -60,7 +60,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   has_many :members
   belongs_to :namespace
 
-  validates :namespace, presence: true
+  validates :namespace, presence: true, if: :group_role_required?
   validates :name, presence: true
   validates :base_access_level, presence: true, inclusion: { in: LEVELS }
   validate :belongs_to_top_level_namespace
@@ -172,5 +172,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     )
 
     throw :abort # rubocop:disable Cop/BanCatchThrow
+  end
+
+  def group_role_required?
+    Gitlab::Saas.feature_available?(:group_custom_roles)
   end
 end
