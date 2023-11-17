@@ -1,7 +1,7 @@
 <script>
 import { GlAccordionItem, GlFormCheckbox, GlTooltipDirective, GlLink, GlSprintf } from '@gitlab/ui';
 import {
-  BLOCK_UNPROTECTING_BRANCHES,
+  BLOCK_BRANCH_MODIFICATION,
   SETTINGS_HUMANIZED_STRINGS,
   SETTINGS_LINKS,
   SETTINGS_POPOVER_STRINGS,
@@ -79,7 +79,7 @@ export default {
     },
     showPopover(setting) {
       switch (setting) {
-        case BLOCK_UNPROTECTING_BRANCHES:
+        case BLOCK_BRANCH_MODIFICATION:
         default:
           return this.isProtectedBranchesSelected && !this.getSettingValue(setting);
       }

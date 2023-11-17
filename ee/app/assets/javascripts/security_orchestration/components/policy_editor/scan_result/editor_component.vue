@@ -28,7 +28,7 @@ import PolicyRuleBuilder from './rule/rule_section.vue';
 
 import {
   ANY_MERGE_REQUEST,
-  BLOCK_UNPROTECTING_BRANCHES,
+  BLOCK_BRANCH_MODIFICATION,
   PREVENT_PUSHING_AND_FORCE_PUSHING,
   buildSettingsList,
   createPolicyObject,
@@ -120,7 +120,7 @@ export default {
       defaultPolicyObject.approval_settings = {};
 
       if (this.glFeatures.scanResultPoliciesBlockUnprotectingBranches) {
-        defaultPolicyObject.approval_settings[BLOCK_UNPROTECTING_BRANCHES] = true;
+        defaultPolicyObject.approval_settings[BLOCK_BRANCH_MODIFICATION] = true;
       }
 
       if (this.glFeatures.scanResultPoliciesBlockForcePush) {

@@ -10,7 +10,7 @@ FactoryBot.define do
     sequence :rule_idx
 
     trait :blocking_protected_branches do
-      project_approval_settings { { block_unprotecting_branches: true } }
+      project_approval_settings { { block_branch_modification: true } }
     end
 
     trait :prevent_approval_by_author do
