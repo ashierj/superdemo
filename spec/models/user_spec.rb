@@ -6130,6 +6130,15 @@ RSpec.describe User, feature_category: :user_profile do
         end
       end
 
+      it 'adds a custom attribute that indicates the user deleted their own account' do
+        freeze_time do
+          expect { user.delete_async(deleted_by: deleted_by) }.to change { user.custom_attributes.count }.by(1)
+
+          expect(user.custom_attributes.last.key).to eq UserCustomAttribute::DELETED_OWN_ACCOUNT_AT
+          expect(user.custom_attributes.last.value).to eq Time.zone.now.to_s
+        end
+      end
+
       context 'when delay_delete_own_user feature flag is disabled' do
         before do
           stub_feature_flags(delay_delete_own_user: false)
@@ -6141,6 +6150,10 @@ RSpec.describe User, feature_category: :user_profile do
 
         it 'does not update the note' do
           expect { user.delete_async(deleted_by: deleted_by) }.not_to change { user.note }
+        end
+
+        it 'does not add any new custom attrribute' do
+          expect { user.delete_async(deleted_by: deleted_by) }.not_to change { user.custom_attributes.count }
         end
       end
 
@@ -8007,6 +8020,26 @@ RSpec.describe User, feature_category: :user_profile do
           expect(emails).to eq(project_commit_email)
         end
       end
+    end
+  end
+
+  describe '#deleted_own_account?' do
+    let_it_be(:user) { create(:user) }
+
+    subject(:result) { user.deleted_own_account? }
+
+    context 'when user has a DELETED_OWN_ACCOUNT_AT custom attribute' do
+      let_it_be(:custom_attr) do
+        create(:user_custom_attribute, user: user, key: UserCustomAttribute::DELETED_OWN_ACCOUNT_AT, value: 'now')
+      end
+
+      it { is_expected.to eq true }
+    end
+
+    context 'when user does not have a DELETED_OWN_ACCOUNT_AT custom attribute' do
+      let_it_be(:user) { create(:user) }
+
+      it { is_expected.to eq false }
     end
   end
 end

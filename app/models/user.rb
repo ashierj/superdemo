@@ -1636,6 +1636,7 @@ class User < MainClusterwide::ApplicationRecord
     if should_delay_delete?(deleted_by)
       new_note = format(_("User deleted own account on %{timestamp}"), timestamp: Time.zone.now)
       self.note = "#{new_note}\n#{note}".strip
+      UserCustomAttribute.set_deleted_own_account_at(self)
 
       block_or_ban
       DeleteUserWorker.perform_in(DELETION_DELAY_IN_DAYS, deleted_by.id, id, params.to_h)
@@ -2239,6 +2240,10 @@ class User < MainClusterwide::ApplicationRecord
     return if namespace.nil?
 
     namespace_commit_emails.find_by(namespace: namespace)
+  end
+
+  def deleted_own_account?
+    custom_attributes.by_key(UserCustomAttribute::DELETED_OWN_ACCOUNT_AT).exists?
   end
 
   protected
