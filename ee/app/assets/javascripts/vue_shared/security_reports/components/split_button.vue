@@ -1,5 +1,5 @@
 <script>
-import { GlButtonGroup, GlButton, GlCollapsibleListbox } from '@gitlab/ui';
+import { GlButtonGroup, GlButton, GlCollapsibleListbox, GlIcon, GlBadge } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { visitUrl } from '~/lib/utils/url_utility';
 
@@ -8,6 +8,8 @@ export default {
     GlButtonGroup,
     GlButton,
     GlCollapsibleListbox,
+    GlIcon,
+    GlBadge,
   },
   props: {
     buttons: {
@@ -30,17 +32,10 @@ export default {
       return this.buttons[this.selectedButtonIndex];
     },
     items() {
-      return this.buttons.map((button) => ({
-        text: button.name,
-        value: button.action,
-        description: button.tagline,
-      }));
+      return this.buttons.map((button, index) => ({ ...button, value: index }));
     },
   },
   methods: {
-    setButton(action) {
-      this.selectedButtonIndex = this.buttons.findIndex((button) => button.action === action);
-    },
     handleClick() {
       if (this.selectedButton.href) {
         visitUrl(this.selectedButton.href, true);
@@ -68,6 +63,7 @@ export default {
       >{{ selectedButton.name }}</gl-button
     >
     <gl-collapsible-listbox
+      v-model="selectedButtonIndex"
       class="split"
       toggle-class="gl-rounded-top-left-none! gl-rounded-bottom-left-none! gl-pl-1!"
       variant="confirm"
@@ -75,13 +71,17 @@ export default {
       :toggle-text="$options.i18n.changeAction"
       :disabled="disabled || selectedButton.loading"
       :items="items"
-      :selected="selectedButton.action"
-      @select="setButton"
     >
       <template #list-item="{ item }">
-        <div :data-testid="`${item.value}-button`">
-          <strong>{{ item.text }}</strong>
-          <p class="gl-m-0">{{ item.description }}</p>
+        <div :data-testid="`${item.action}-button`">
+          <strong>
+            <gl-icon v-if="item.icon" data-testid="item-icon" :name="item.icon" class="gl-mr-2" />
+            {{ item.name }}
+          </strong>
+          <p class="gl-m-0">
+            {{ item.tagline }}
+            <gl-badge v-if="item.badge" variant="info" size="sm">{{ item.badge }}</gl-badge>
+          </p>
         </div>
       </template>
     </gl-collapsible-listbox>

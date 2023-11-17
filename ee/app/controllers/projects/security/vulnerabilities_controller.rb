@@ -9,6 +9,7 @@ module Projects
       before_action do
         push_frontend_feature_flag(:create_vulnerability_jira_issue_via_graphql, @project)
         push_frontend_feature_flag(:ai_global_switch, type: :ops)
+        push_frontend_feature_flag(:resolve_vulnerability_ai, @project)
       end
 
       before_action :vulnerability, except: [:new]
