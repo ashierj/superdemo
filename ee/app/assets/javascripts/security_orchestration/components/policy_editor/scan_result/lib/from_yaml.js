@@ -32,6 +32,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         ...(hasApprovalSettings || isEqual(policy.approval_settings, PERMITTED_INVALID_SETTINGS) // Temporary workaround to allow the rule builder to load with wrongly persisted settings
           ? [`approval_settings`]
           : []),
+        ...(gon?.features?.securityPoliciesPolicyScope ? ['policy_scope'] : []),
       ];
       const rulesKeys = [
         'type',

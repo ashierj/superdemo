@@ -237,11 +237,6 @@ msgid_plural "%d completed issues"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d compliance framework selected"
-msgid_plural "%d compliance frameworks selected"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d contribution"
 msgid_plural "%d contributions"
 msgstr[0] ""
@@ -4797,9 +4792,6 @@ msgid "All eligible users"
 msgstr ""
 
 msgid "All environments"
-msgstr ""
-
-msgid "All frameworks selected"
 msgstr ""
 
 msgid "All groups"
@@ -43133,9 +43125,6 @@ msgstr ""
 msgid "SecurityOrchestration|Choose approver type"
 msgstr ""
 
-msgid "SecurityOrchestration|Choose framework labels"
-msgstr ""
-
 msgid "SecurityOrchestration|Choose specific role"
 msgstr ""
 
@@ -43604,6 +43593,9 @@ msgid "SecurityOrchestration|branches"
 msgstr ""
 
 msgid "SecurityOrchestration|by the agent named %{agents} %{cadence}%{branchExceptionsString}"
+msgstr ""
+
+msgid "SecurityOrchestration|compliance frameworks"
 msgstr ""
 
 msgid "SecurityOrchestration|except projects"

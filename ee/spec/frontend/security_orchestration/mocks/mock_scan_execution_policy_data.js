@@ -211,3 +211,38 @@ export const mockInvalidCadenceScanExecutionObject = {
     },
   ],
 };
+
+export const mockPolicyScopeExecutionManifest = `type: scan_execution_policy
+name: Project scope
+description: This policy enforces policy scope
+enabled: false
+rules:
+  - type: pipeline
+    branches:
+      - main
+actions:
+  - scan: container_scanning
+policy_scope:
+  compliance_frameworks: []
+`;
+
+export const mockPolicyScopeScanExecutionObject = {
+  type: 'scan_execution_policy',
+  name: 'Project scope',
+  enabled: false,
+  description: 'This policy enforces policy scope',
+  rules: [
+    {
+      type: 'pipeline',
+      branches: ['main'],
+    },
+  ],
+  actions: [
+    {
+      scan: 'container_scanning',
+    },
+  ],
+  policy_scope: {
+    compliance_frameworks: [],
+  },
+};

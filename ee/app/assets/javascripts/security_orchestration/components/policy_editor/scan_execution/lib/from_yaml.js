@@ -2,6 +2,7 @@ import { safeLoad } from 'js-yaml';
 import { isValidPolicy, hasInvalidCron } from '../../utils';
 import {
   BRANCH_TYPE_KEY,
+  PRIMARY_POLICY_KEYS,
   RULE_MODE_SCANNERS,
   VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
 } from '../../constants';
@@ -65,7 +66,15 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
       ];
       const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
 
-      return isValidPolicy({ policy, rulesKeys, actionsKeys }) &&
+      /**
+       * Can be removed after ff is enabled
+       */
+      const primaryKeys = PRIMARY_POLICY_KEYS;
+      if (gon?.features?.securityPoliciesPolicyScope) {
+        primaryKeys.push('policy_scope');
+      }
+
+      return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
         !hasInvalidCron(policy) &&
         !hasInvalidBranchType(policy.rules) &&
         hasRuleModeSupportedScanners(policy)

@@ -3,6 +3,8 @@ import VueApollo from 'vue-apollo';
 import { GlButton, GlCollapsibleListbox, GlModal } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_COMPLIANCE_FRAMEWORK } from '~/graphql_shared/constants';
 import ComplianceFrameworkDropdown from 'ee/security_orchestration/components/policy_editor/scope/compliance_framework_dropdown.vue';
 import ComplianceFrameworkFormModal from 'ee/groups/settings/compliance_frameworks/components/form_modal.vue';
 import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
@@ -22,7 +24,7 @@ describe('ComplianceFrameworkDropdown', () => {
 
   const defaultNodes = [
     {
-      id: 1,
+      id: convertToGraphQLId(TYPE_COMPLIANCE_FRAMEWORK, 1),
       name: 'A1',
       default: true,
       description: 'description 1',
@@ -30,7 +32,7 @@ describe('ComplianceFrameworkDropdown', () => {
       pipelineConfigurationFullPath: 'path 1',
     },
     {
-      id: 2,
+      id: convertToGraphQLId(TYPE_COMPLIANCE_FRAMEWORK, 2),
       name: 'B2',
       default: false,
       description: 'description 2',
@@ -38,7 +40,7 @@ describe('ComplianceFrameworkDropdown', () => {
       pipelineConfigurationFullPath: 'path 2',
     },
     {
-      id: 3,
+      id: convertToGraphQLId(TYPE_COMPLIANCE_FRAMEWORK, 3),
       name: 'a3',
       default: true,
       description: 'description 3',
@@ -131,18 +133,20 @@ describe('ComplianceFrameworkDropdown', () => {
       const [{ id }] = defaultNodes;
 
       await waitForPromises();
-      findDropdown().vm.$emit('select', id);
-      expect(wrapper.emitted('select')).toEqual([[id]]);
+      findDropdown().vm.$emit('select', [id]);
+      expect(wrapper.emitted('select')).toEqual([[[getIdFromGraphQLId(id)]]]);
     });
 
     it('should select all frameworks', async () => {
       await waitForPromises();
       selectAll();
-      expect(wrapper.emitted('select')).toEqual([[defaultNodesIds]]);
+      expect(wrapper.emitted('select')).toEqual([
+        [defaultNodesIds.map((id) => getIdFromGraphQLId(id))],
+      ]);
     });
 
     it('renders default text when loading', () => {
-      expect(findDropdown().props('toggleText')).toBe('Choose framework labels');
+      expect(findDropdown().props('toggleText')).toBe('Select compliance frameworks');
     });
 
     it('should search frameworks despite case', async () => {
@@ -192,7 +196,7 @@ describe('ComplianceFrameworkDropdown', () => {
         handlers: mockApolloHandlers([]),
       });
       await waitForPromises();
-      expect(findDropdown().props('toggleText')).toBe('Choose framework labels');
+      expect(findDropdown().props('toggleText')).toBe('Select compliance frameworks');
     });
   });
 
@@ -212,7 +216,7 @@ describe('ComplianceFrameworkDropdown', () => {
 
     it('renders all frameworks selected text', async () => {
       await waitForPromises();
-      expect(findDropdown().props('toggleText')).toBe('All frameworks selected');
+      expect(findDropdown().props('toggleText')).toBe('All compliance frameworks');
     });
 
     it('should reset all frameworks', async () => {
@@ -220,6 +224,32 @@ describe('ComplianceFrameworkDropdown', () => {
       resetAll();
 
       expect(wrapper.emitted('select')).toEqual([[[]]]);
+    });
+  });
+
+  describe('selected frameworks that does not exist', () => {
+    it('renders default placeholder when selected frameworks do not exist', async () => {
+      createComponent({
+        propsData: {
+          selectedFrameworkIds: ['one', 'two'],
+        },
+      });
+
+      await waitForPromises();
+      expect(findDropdown().props('toggleText')).toBe('Select compliance frameworks');
+    });
+
+    it('filters selected frameworks that does not exist', async () => {
+      createComponent({
+        propsData: {
+          selectedFrameworkIds: ['one', 'two'],
+        },
+      });
+
+      await waitForPromises();
+      findDropdown().vm.$emit('select', [defaultNodesIds[0]]);
+
+      expect(wrapper.emitted('select')).toEqual([[[getIdFromGraphQLId(defaultNodesIds[0])]]]);
     });
   });
 
@@ -232,7 +262,7 @@ describe('ComplianceFrameworkDropdown', () => {
       });
 
       await waitForPromises();
-      expect(findDropdown().props('toggleText')).toBe('1 compliance framework selected');
+      expect(findDropdown().props('toggleText')).toBe(defaultNodes[0].name);
     });
   });
 
@@ -263,6 +293,34 @@ describe('ComplianceFrameworkDropdown', () => {
       expect(findErrorMessage().exists()).toBe(showError);
       expect(findDropdown().props('variant')).toBe(variant);
       expect(findDropdown().props('category')).toBe(category);
+    });
+  });
+
+  describe('full id format', () => {
+    it('should emit full format of id', async () => {
+      createComponent({
+        propsData: {
+          useShortIdFormat: false,
+        },
+      });
+
+      await waitForPromises();
+      selectAll();
+
+      expect(wrapper.emitted('select')).toEqual([[defaultNodesIds]]);
+    });
+
+    it('should render selected ids in full format', async () => {
+      createComponent({
+        propsData: {
+          selectedFrameworkIds: defaultNodesIds,
+          useShortIdFormat: false,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findDropdown().props('selected')).toEqual(defaultNodesIds);
     });
   });
 });

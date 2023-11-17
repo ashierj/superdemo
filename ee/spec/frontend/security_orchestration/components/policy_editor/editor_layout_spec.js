@@ -17,7 +17,7 @@ import {
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
-import PolicyScope from 'ee/security_orchestration/components/policy_editor/scope/policy_scope.vue';
+import ScopeSection from 'ee/security_orchestration/components/policy_editor/scope/scope_section.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockDastScanExecutionObject } from '../../mocks/mock_scan_execution_policy_data';
 import { mockDefaultBranchesScanResultObject } from '../../mocks/mock_scan_result_policy_data';
@@ -65,7 +65,7 @@ describe('EditorLayout component', () => {
     wrapper.findByTestId('scan-result-policy-run-time-info');
   const findScanResultPolicyRunTimeTooltip = () =>
     findScanResultPolicyRunTimeInfo().findComponent(GlIcon);
-  const findPolicyScope = () => wrapper.findComponent(PolicyScope);
+  const findScopeSection = () => wrapper.findComponent(ScopeSection);
 
   describe('default behavior', () => {
     beforeEach(() => {
@@ -314,8 +314,22 @@ describe('EditorLayout component', () => {
           },
         });
 
-        expect(findPolicyScope().exists()).toBe(expectedResult);
+        expect(findScopeSection().exists()).toBe(expectedResult);
       },
     );
+
+    it('should set policy properties', () => {
+      const payload = { policy_scope: { compliance_frameworks: [{ id: 'test' }] } };
+
+      factory({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.GROUP,
+          glFeatures: { securityPoliciesPolicyScope: true },
+        },
+      });
+
+      findScopeSection().vm.$emit('changed', payload);
+      expect(wrapper.emitted('set-policy-property')).toEqual([['policy_scope', payload]]);
+    });
   });
 });

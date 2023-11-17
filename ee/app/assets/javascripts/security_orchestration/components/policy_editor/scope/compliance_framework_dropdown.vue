@@ -1,8 +1,11 @@
 <script>
 import { debounce } from 'lodash';
 import { GlButton, GlCollapsibleListbox, GlLabel } from '@gitlab/ui';
-import { n__, s__, __ } from '~/locale';
+import { s__, __ } from '~/locale';
+import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_COMPLIANCE_FRAMEWORK } from '~/graphql_shared/constants';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
+import { renderMultiSelectText } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import ComplianceFrameworkFormModal from 'ee/groups/settings/compliance_frameworks/components/form_modal.vue';
 
@@ -10,7 +13,7 @@ export default {
   i18n: {
     complianceFrameworkCreateButton: s__('SecurityOrchestration|Create new framework label'),
     complianceFrameworkHeader: s__('SecurityOrchestration|Select frameworks'),
-    complianceFrameworkPlaceholder: s__('SecurityOrchestration|Choose framework labels'),
+    complianceFrameworkTypeName: s__('SecurityOrchestration|compliance frameworks'),
     errorMessage: s__('SecurityOrchestration|At least one framework label should be selected'),
     noFrameworksText: s__('SecurityOrchestration|No compliance frameworks'),
     selectAllLabel: __('Select all'),
@@ -61,6 +64,18 @@ export default {
       required: false,
       default: false,
     },
+    /**
+     * selected ids passed as short format
+     * [21,34,45] as number
+     * needs to be converted to full graphql id
+     * if false, selectedFrameworkIds needs to be
+     * an array of full graphQl ids
+     */
+    useShortIdFormat: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   data() {
     return {
@@ -69,22 +84,34 @@ export default {
     };
   },
   computed: {
-    dropdownPlaceholder() {
-      if (
-        this.selectedFrameworkIds.length === this.complianceFrameworks?.length &&
-        this.complianceFrameworks?.length > 0
-      ) {
-        return __('All frameworks selected');
-      }
-      if (this.selectedFrameworkIds.length) {
-        return n__(
-          '%d compliance framework selected',
-          '%d compliance frameworks selected',
-          this.selectedFrameworkIds.length,
+    formattedSelectedFrameworkIds() {
+      if (this.useShortIdFormat) {
+        return (
+          this.selectedFrameworkIds?.map((id) =>
+            convertToGraphQLId(TYPE_COMPLIANCE_FRAMEWORK, id),
+          ) || []
         );
       }
 
-      return this.$options.i18n.complianceFrameworkPlaceholder;
+      return this.selectedFrameworkIds || [];
+    },
+    existingFormattedSelectedFrameworkIds() {
+      return this.formattedSelectedFrameworkIds.filter((id) =>
+        this.complianceFrameworkIds.includes(id),
+      );
+    },
+    complianceFrameworkItems() {
+      return this.complianceFrameworks?.reduce((acc, { id, name }) => {
+        acc[id] = name;
+        return acc;
+      }, {});
+    },
+    dropdownPlaceholder() {
+      return renderMultiSelectText(
+        this.formattedSelectedFrameworkIds,
+        this.complianceFrameworkItems,
+        this.$options.i18n.complianceFrameworkTypeName,
+      );
     },
     listBoxItems() {
       return (
@@ -130,10 +157,11 @@ export default {
      * Only works with ListBox multiple mode
      * Without multiple prop select method emits single id
      * and includes method won't work
-     * @param ids selected ids
+     * @param ids selected ids in full graphql format
      */
     selectFrameworks(ids) {
-      this.$emit('select', ids);
+      const payload = this.useShortIdFormat ? ids.map((id) => getIdFromGraphQLId(id)) : ids;
+      this.$emit('select', payload);
     },
     onComplianceFrameworkCreated() {
       this.$refs.formModal.hide();
@@ -158,7 +186,7 @@ export default {
       :show-select-all-button-label="$options.i18n.selectAllLabel"
       :toggle-text="dropdownPlaceholder"
       :title="dropdownPlaceholder"
-      :selected="selectedFrameworkIds"
+      :selected="existingFormattedSelectedFrameworkIds"
       @reset="selectFrameworks([])"
       @search="debouncedSearch"
       @select="selectFrameworks"

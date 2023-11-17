@@ -14,6 +14,10 @@ import {
   SPECIFIC_PROJECTS,
   EXCEPT_PROJECTS,
   ALL_PROJECTS_IN_GROUP,
+  INCLUDING,
+  EXCLUDING,
+  COMPLIANCE_FRAMEWORKS_KEY,
+  PROJECTS_KEY,
 } from './constants';
 
 export default {
@@ -31,7 +35,7 @@ export default {
       'SecurityOrchestration|Failed to load compliance frameworks',
     ),
   },
-  name: 'PolicyScope',
+  name: 'ScopeSection',
   components: {
     GlAlert,
     GlCollapsibleListbox,
@@ -41,17 +45,59 @@ export default {
     GroupProjectsDropdown,
   },
   inject: ['namespacePath', 'rootNamespacePath'],
+  props: {
+    policyScope: {
+      type: Object,
+      required: true,
+      default: () => ({}),
+    },
+  },
   data() {
+    let selectedProjectScopeType = PROJECTS_WITH_FRAMEWORK;
+    let selectedExceptionType = WITHOUT_EXCEPTIONS;
+    let projectsPayloadKey = EXCLUDING;
+
+    const { projects = [] } = this.policyScope || {};
+
+    if (projects?.excluding) {
+      selectedProjectScopeType = ALL_PROJECTS_IN_GROUP;
+      selectedExceptionType = EXCEPT_PROJECTS;
+    }
+
+    if (projects?.including) {
+      selectedProjectScopeType = SPECIFIC_PROJECTS;
+      projectsPayloadKey = INCLUDING;
+    }
+
     return {
-      selectedProjectScopeType: PROJECTS_WITH_FRAMEWORK,
-      selectedExceptionType: WITHOUT_EXCEPTIONS,
-      selectedProjectIds: [],
-      selectedFrameworkIds: [],
+      selectedProjectScopeType,
+      selectedExceptionType,
+      projectsPayloadKey,
       showAlert: false,
       errorDescription: '',
     };
   },
   computed: {
+    projectIds() {
+      /**
+       * Protection from manual yam input as objects
+       * @type {*|*[]}
+       */
+      const projects = Array.isArray(this.policyScope?.projects?.[this.projectsPayloadKey])
+        ? this.policyScope?.projects?.[this.projectsPayloadKey]
+        : [];
+      return projects?.map(({ id }) => id) || [];
+    },
+    complianceFrameworksIds() {
+      /**
+       * Protection from manual yam input as objects
+       * @type {*|*[]}
+       */
+      const frameworks = Array.isArray(this.policyScope?.compliance_frameworks)
+        ? this.policyScope?.compliance_frameworks
+        : [];
+      return frameworks?.map(({ id }) => id) || [];
+    },
     selectedProjectScopeText() {
       return PROJECT_SCOPE_TYPE_TEXTS[this.selectedProjectScopeType];
     },
@@ -67,6 +113,11 @@ export default {
         this.selectedProjectScopeType === SPECIFIC_PROJECTS
       );
     },
+    payloadKey() {
+      return this.selectedProjectScopeType === PROJECTS_WITH_FRAMEWORK
+        ? COMPLIANCE_FRAMEWORKS_KEY
+        : PROJECTS_KEY;
+    },
     policyScopeCopy() {
       return this.selectedProjectScopeType === PROJECTS_WITH_FRAMEWORK
         ? this.$options.i18n.policyScopeFrameworkCopy
@@ -74,17 +125,37 @@ export default {
     },
   },
   methods: {
+    resetPolicyScope() {
+      const internalPayload =
+        this.payloadKey === COMPLIANCE_FRAMEWORKS_KEY ? [] : { [this.projectsPayloadKey]: [] };
+      const payload = {
+        [this.payloadKey]: internalPayload,
+      };
+
+      this.$emit('changed', payload);
+    },
     selectProjectScopeType(scopeType) {
       this.selectedProjectScopeType = scopeType;
+      this.projectsPayloadKey =
+        this.selectedProjectScopeType === ALL_PROJECTS_IN_GROUP ? EXCLUDING : INCLUDING;
+      this.resetPolicyScope();
     },
     selectExceptionType(type) {
       this.selectedExceptionType = type;
+      this.resetPolicyScope();
     },
     setSelectedProjectIds(ids) {
-      this.selectedProjectIds = ids;
+      const projects = ids.map((id) => ({ id }));
+      const payload = { projects: { [this.projectsPayloadKey]: projects } };
+
+      this.triggerChanged(payload);
     },
     setSelectedFrameworkIds(ids) {
-      this.selectedFrameworkIds = ids;
+      const payload = ids.map((id) => ({ id }));
+      this.triggerChanged({ compliance_frameworks: payload });
+    },
+    triggerChanged(value) {
+      this.$emit('changed', { ...this.policyScope, ...value });
     },
     setShowAlert(errorDescription) {
       this.showAlert = true;
@@ -104,6 +175,7 @@ export default {
       <gl-sprintf :message="policyScopeCopy">
         <template #projectScopeType>
           <gl-collapsible-listbox
+            data-testid="project-scope-type"
             :items="$options.PROJECT_SCOPE_TYPE_LISTBOX_ITEMS"
             :selected="selectedProjectScopeType"
             :toggle-text="selectedProjectScopeText"
@@ -114,7 +186,7 @@ export default {
         <template #frameworkSelector>
           <div class="gl-display-inline-flex gl-align-items-center gl-flex-wrap gl-gap-3">
             <compliance-framework-dropdown
-              :selected-framework-ids="selectedFrameworkIds"
+              :selected-framework-ids="complianceFrameworksIds"
               :full-path="rootNamespacePath"
               @framework-query-error="
                 setShowAlert($options.i18n.complianceFrameworkErrorDescription)
@@ -129,6 +201,7 @@ export default {
         <template #exceptionType>
           <gl-collapsible-listbox
             v-if="showExceptionTypeDropdown"
+            data-testid="exception-type"
             :items="$options.EXCEPTION_TYPE_LISTBOX_ITEMS"
             :toggle-text="selectedExceptionTypeText"
             :selected="selectedExceptionType"
@@ -140,7 +213,7 @@ export default {
           <group-projects-dropdown
             v-if="showGroupProjectsDropdown"
             :group-full-path="namespacePath"
-            :selected-projects-ids="selectedProjectIds"
+            :selected-projects-ids="projectIds"
             @projects-query-error="setShowAlert($options.i18n.groupProjectErrorDescription)"
             @select="setSelectedProjectIds"
           />
