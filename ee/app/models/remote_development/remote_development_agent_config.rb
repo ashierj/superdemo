@@ -5,6 +5,11 @@ module RemoteDevelopment
   class RemoteDevelopmentAgentConfig < ApplicationRecord
     # NOTE: See the following comment for the reasoning behind the `RemoteDevelopment` prefix of this table/model:
     #       https://gitlab.com/gitlab-org/gitlab/-/issues/410045#note_1385602915
+    include IgnorableColumns
+
+    ignore_column :max_workspaces, remove_with: '16.8', remove_after: '2023-12-22'
+    ignore_column :max_workspaces_per_user, remove_with: '16.8', remove_after: '2023-12-22'
+
     belongs_to :agent,
       class_name: 'Clusters::Agent', foreign_key: 'cluster_agent_id', inverse_of: :remote_development_agent_config
 
