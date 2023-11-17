@@ -145,6 +145,12 @@ module EE
       scope :with_provider, ->(provider) do
         joins(:identities).where(identities: { provider: provider })
       end
+      scope :with_saml_provider, ->(saml_provider) do
+        joins(:identities).where(identities: { saml_provider: saml_provider })
+      end
+      scope :with_provisioning_group, ->(group) do
+        joins(:user_detail).where(user_detail: { provisioned_by_group: group })
+      end
 
       scope :with_invalid_expires_at_tokens, ->(expiration_date) do
         where(id: ::PersonalAccessToken.with_invalid_expires_at(expiration_date).select(:user_id))

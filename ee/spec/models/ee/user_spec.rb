@@ -309,6 +309,59 @@ RSpec.describe User, feature_category: :system_access do
         )
       end
     end
+
+    describe '.with_saml_provider' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:saml_provider) { create(:saml_provider) }
+
+      subject(:with_saml_provider) { described_class.with_saml_provider(saml_provider) }
+
+      it 'does not find users without a SAML identity' do
+        expect(with_saml_provider).to match_array([])
+      end
+
+      context 'when users have a SAML identity tied to the provider' do
+        let_it_be(:saml_identity) { create(:group_saml_identity, user: user, saml_provider: saml_provider) }
+
+        it 'finds the matching users' do
+          expect(with_saml_provider).to match_array([user])
+        end
+
+        it 'does not find users with a different SAML provider' do
+          provider = create(:saml_provider)
+
+          expect(described_class.with_saml_provider(provider)).to match_array([])
+        end
+      end
+    end
+
+    describe '.with_provisioning_group' do
+      let_it_be(:user) { create(:user) }
+      let_it_be(:group) { create(:group) }
+
+      subject(:with_provisioning_group) { described_class.with_provisioning_group(group) }
+
+      it 'does not find users without a provisioning group' do
+        expect(with_provisioning_group).to match_array([])
+      end
+
+      context 'when users have a provisioning group' do
+        before do
+          user.provisioned_by_group = group
+          user.save!
+        end
+
+        it 'finds the matching users' do
+          expect(with_provisioning_group).to match_array([user])
+        end
+
+        it 'does not find users with a different SAML provider' do
+          group = create(:group)
+
+          expect(described_class.with_provisioning_group(group)).to match_array([])
+        end
+      end
+    end
   end
 
   describe 'after_create' do
