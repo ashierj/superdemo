@@ -2,6 +2,8 @@
 require 'spec_helper'
 
 RSpec.describe ApplicationController, type: :request, feature_category: :shared do
+  include TermsHelper
+
   context 'with redirection due to onboarding', feature_category: :onboarding do
     let(:onboarding_in_progress) { true }
     let(:url) { '_onboarding_step_' }
@@ -21,6 +23,21 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
         get root_path
 
         expect(response).to redirect_to(url)
+      end
+
+      context 'when terms enabled' do
+        it 'redirects to terms first' do
+          enforce_terms
+          get root_path
+
+          expect(response).to have_gitlab_http_status :redirect
+          expect(response).to redirect_to(terms_path({ redirect: root_path }))
+
+          follow_redirect!
+
+          expect(response).to have_gitlab_http_status :ok
+          expect(response.body).to include 'These are the terms'
+        end
       end
 
       context 'when qualifying for 2fa' do
