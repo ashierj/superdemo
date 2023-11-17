@@ -9315,6 +9315,9 @@ msgstr ""
 msgid "CICD|Deployment strategy"
 msgstr ""
 
+msgid "CICD|Developer"
+msgstr ""
+
 msgid "CICD|Disabling this feature is a permanent change."
 msgstr ""
 
@@ -9334,6 +9337,12 @@ msgid "CICD|Limit access %{italicStart}from%{italicEnd} this project (Deprecated
 msgstr ""
 
 msgid "CICD|Limit access %{italicStart}to%{italicEnd} this project"
+msgstr ""
+
+msgid "CICD|Maintainer"
+msgstr ""
+
+msgid "CICD|Pipelines and jobs cannot be cancelled"
 msgstr ""
 
 msgid "CICD|Prevent CI/CD job tokens from this project from being used to access other projects unless the other project is added to the allowlist. It is a security risk to disable this feature, because unauthorized projects might attempt to retrieve an active token and access the API. %{linkStart}Learn more%{linkEnd}."
@@ -30567,6 +30576,9 @@ msgid "Minimal Access"
 msgstr ""
 
 msgid "Minimum capacity to be available before we schedule more mirrors preemptively."
+msgstr ""
+
+msgid "Minimum role required to cancel a pipeline or job"
 msgstr ""
 
 msgid "Minutes"
