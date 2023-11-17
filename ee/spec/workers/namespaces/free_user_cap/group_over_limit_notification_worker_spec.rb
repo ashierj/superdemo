@@ -56,10 +56,71 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
         invited_group.add_developer(create(:user))
       end
 
-      it 'runs notify service' do
-        expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute)
+      it 'does not run notify service' do
+        expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)
 
         perform
+      end
+    end
+
+    context 'when over limit' do
+      let_it_be(:new_invited_group_member) { invited_group.add_developer(create(:user)) }
+      let_it_be(:another_invited_group_member) { invited_group.add_developer(create(:user)) }
+
+      let(:added_member_ids) do
+        [
+          new_invited_group_member.id,
+          another_invited_group_member.id,
+          member_already_taking_seat.id
+        ]
+      end
+
+      context 'when due to members added from invited group' do
+        it 'runs notify service' do
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(group)
+
+          perform
+        end
+      end
+
+      context 'when the top level group is in the same hierarchy as the invited group' do
+        let_it_be(:invited_group) { create(:group, :private, parent: group) }
+
+        it 'does not run the notify service' do
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)
+
+          perform
+        end
+      end
+
+      context 'when invited_group does not exist' do
+        subject(:perform) { described_class.new.perform(non_existing_record_id, added_member_ids) }
+
+        it 'does not run notify service' do
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)
+
+          perform
+        end
+      end
+
+      context 'when free_user_cap_over_limit_email feature is disabled' do
+        let(:free_user_cap_over_limit_email_enabled) { false }
+
+        it 'does not run notify service' do
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)
+
+          perform
+        end
+      end
+
+      context 'when dashboard_limit_enabled is disabled' do
+        let(:dashboard_limit_enabled) { false }
+
+        it 'does not run notify service' do
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)
+
+          perform
+        end
       end
     end
 
@@ -69,6 +130,14 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
       let_it_be(:under_top_level_group) { create(:group_with_plan, :private, plan: :free_plan) }
       let_it_be(:over_top_level_group) do
         create(:group_with_plan, :private, plan: :free_plan).tap { |g| create_list(:group_member, 3, source: g) }
+      end
+
+      let(:added_member_ids) do
+        [
+          new_invited_group_member.id,
+          another_invited_group_member.id,
+          member_already_taking_seat.id
+        ]
       end
 
       before_all do

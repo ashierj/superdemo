@@ -520,4 +520,29 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
       end
     end
   end
+
+  describe '#over_from_adding_users?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:current_users_count, :count_without_added_members, :result) do
+      3 | 0 | false
+      5 | 4 | false
+      5 | 3 | true
+      5 | 2 | true
+      3 | 3 | false
+    end
+
+    with_them do
+      subject(:over_from_adding_users?) { described_class.new(namespace).over_from_adding_users?([]) }
+
+      before do
+        allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: current_users_count })
+        allow(::Namespaces::FreeUserCap::UsersWithoutAddedMembersFinder)
+          .to receive(:count).and_return(count_without_added_members)
+        stub_ee_application_setting(dashboard_limit: 3)
+      end
+
+      it { is_expected.to be result }
+    end
+  end
 end

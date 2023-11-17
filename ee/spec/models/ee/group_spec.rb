@@ -1370,6 +1370,73 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#billed_group_members' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+    let_it_be(:sub_developer) { sub_group.add_developer(create(:user)) }
+    let_it_be(:guest) { group.add_guest(create(:user)) }
+    let_it_be(:developer) { group.add_developer(create(:user)) }
+
+    before_all do
+      create(:group_member, :developer)
+      create(:project_member, :developer, source: create(:project, namespace: group))
+      create(:group_member, :invited, :developer, source: group)
+      create(:group_member, :awaiting, :developer, source: group)
+      create(:group_member, :minimal_access, source: group)
+      create(:group_member, :access_request, :developer, source: group)
+    end
+
+    context 'with guests' do
+      it 'includes members' do
+        expect(group.billed_group_members).to match_array([developer, guest, sub_developer])
+      end
+    end
+
+    context 'without guests' do
+      it 'includes members' do
+        expect(group.billed_group_members(exclude_guests: true)).to match_array([developer, sub_developer])
+      end
+    end
+
+    context 'with member roles' do
+      let_it_be(:guest_with_role) do
+        member_role = create(:member_role, :guest, namespace: group, read_dependency: true)
+        create(:group_member, :guest, source: group, member_role: member_role)
+      end
+
+      it 'includes guests with elevating role assigned' do
+        expect(group.billed_group_members(exclude_guests: true))
+          .to match_array([developer, sub_developer, guest_with_role])
+      end
+    end
+
+    context 'with banned members' do
+      let_it_be(:banned) { create(:group_member, :banned, :developer, source: group) }
+      let_it_be(:sub_banned) { create(:group_member, :banned, :developer, source: sub_group) }
+
+      it 'excludes banned members' do
+        expect(group.billed_group_members).to exclude(banned, sub_banned)
+      end
+
+      context 'when member is banned in one namespace but not another' do
+        let_it_be(:another_group) { create(:group) }
+        let_it_be(:banned_user) { create(:group_member, :banned, :developer, source: group).user }
+
+        before_all do
+          another_group.add_developer(banned_user)
+        end
+
+        it 'excludes banned member in the namespace it is banned in' do
+          expect(group.billed_group_members.map(&:user)).to exclude(banned_user)
+        end
+
+        it 'includes member in the namespace it isn\'t banned in' do
+          expect(another_group.billed_group_members.map(&:user)).to include(banned_user)
+        end
+      end
+    end
+  end
+
   describe '#billed_project_users' do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, namespace: group) }
@@ -1423,6 +1490,56 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
       it 'excludes banned members' do
         expect(group.billed_project_users).to exclude(banned, sub_banned)
+      end
+    end
+  end
+
+  describe '#billed_project_members' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:sub_group_project) { create(:project, namespace: create(:group, parent: group)) }
+    let_it_be(:sub_developer) { sub_group_project.add_developer(create(:user)) }
+    let_it_be(:guest) { project.add_guest(create(:user)) }
+    let_it_be(:developer) { project.add_developer(create(:user)) }
+
+    before_all do
+      group.add_developer(create(:user))
+      create(:project_member, :developer)
+      create(:project_member, :invited, :developer, source: project)
+      create(:project_member, :awaiting, :developer, source: project)
+      create(:project_member, :access_request, :developer, source: project)
+    end
+
+    context 'with guests' do
+      it 'includes members' do
+        expect(group.billed_project_members).to match_array([developer, guest, sub_developer])
+      end
+    end
+
+    context 'without guests' do
+      it 'includes members' do
+        expect(group.billed_project_members(exclude_guests: true)).to match_array([developer, sub_developer])
+      end
+    end
+
+    context 'with member roles' do
+      let_it_be(:guest_with_role) do
+        member_role = create(:member_role, :guest, namespace: group, read_dependency: true)
+        create(:project_member, :guest, source: project, member_role: member_role)
+      end
+
+      it 'includes guests with elevating role assigned' do
+        expect(group.billed_project_members(exclude_guests: true))
+          .to match_array([developer, sub_developer, guest_with_role])
+      end
+    end
+
+    context 'with banned members' do
+      let_it_be(:banned_user) { create(:project_member, :banned, :developer, source: project).user }
+      let_it_be(:sub_banned_user) { create(:project_member, :banned, :developer, source: sub_group_project).user }
+
+      it 'excludes banned members' do
+        expect(group.billed_project_members.map(&:user)).to exclude(banned_user, sub_banned_user)
       end
     end
   end
@@ -1498,6 +1615,71 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#billed_shared_group_members' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+    let_it_be(:ancestor_invited_group) { create(:group) }
+    let_it_be(:invited_group) { create(:group, parent: ancestor_invited_group) }
+    let_it_be(:invited_guest_group) { create(:group) }
+    let_it_be(:sub_invited_group) { create(:group) }
+    let_it_be(:sub_invited_developer) { sub_invited_group.add_developer(create(:user)) }
+    let_it_be(:invited_developer) { invited_group.add_developer(create(:user)) }
+    let_it_be(:invited_guest) { invited_group.add_guest(create(:user)) }
+    let_it_be(:invited_guest_group_user) { invited_guest_group.add_developer(create(:user)) }
+    let_it_be(:ancestor_invited_developer) { ancestor_invited_group.add_developer(create(:user)) }
+
+    before_all do
+      group.add_developer(create(:user))
+      create(:group_member, :invited, :developer, source: invited_group)
+      create(:group_member, :awaiting, :developer, source: invited_group)
+      create(:group_member, :minimal_access, source: invited_group)
+      create(:group_member, :access_request, :developer, source: invited_group)
+      create(:group_group_link, { shared_with_group: sub_invited_group, shared_group: sub_group })
+      create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
+      create(:group_group_link, :guest, { shared_with_group: invited_guest_group, shared_group: group })
+    end
+
+    context 'with guests' do
+      it 'includes members from the other group' do
+        expect(group.billed_shared_group_members)
+          .to match_array([
+                            invited_guest,
+                            invited_developer,
+                            invited_guest_group_user,
+                            ancestor_invited_developer,
+                            sub_invited_developer
+                          ])
+      end
+    end
+
+    context 'without guests' do
+      it 'includes members from the other group' do
+        expect(group.billed_shared_group_members(exclude_guests: true))
+          .to match_array([invited_developer, ancestor_invited_developer, sub_invited_developer])
+      end
+    end
+
+    context 'with banned members' do
+      let_it_be(:banned_user) { create(:group_member, :banned, :developer, source: group).user }
+      let_it_be(:banned_invited_developer) { create(:group_member, :banned, :developer, source: invited_group).user }
+      let_it_be(:sub_banned_invited_developer) do
+        create(:group_member, :banned, :developer, source: sub_invited_group).user
+      end
+
+      it 'includes members that are banned in invited group' do
+        # currently, if user is banned from "invited_group", they still has access to the linked "group"
+        # hence, they are counted as a billable member
+        # TODO: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/314
+        expect(group.billed_shared_group_members.map(&:user))
+          .to include(banned_invited_developer, sub_banned_invited_developer)
+      end
+
+      it 'excludes members that are banned in group' do
+        expect(group.billed_shared_group_members.map(&:user)).to exclude(banned_user)
+      end
+    end
+  end
+
   describe '#billed_invited_group_to_project_users' do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, namespace: group) }
@@ -1567,6 +1749,103 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
       it 'excludes members that are banned in group' do
         expect(group.billed_invited_group_to_project_users).to exclude(banned)
+      end
+    end
+  end
+
+  describe '#billed_invited_group_to_project_members' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:sub_group_project) { create(:project, namespace: create(:group, parent: group)) }
+    let_it_be(:ancestor_invited_group) { create(:group) }
+    let_it_be(:invited_group) { create(:group, parent: ancestor_invited_group) }
+    let_it_be(:invited_guest_group) { create(:group) }
+    let_it_be(:sub_invited_group) { create(:group) }
+    let_it_be(:sub_invited_developer) { sub_invited_group.add_developer(create(:user)) }
+    let_it_be(:invited_developer) { invited_group.add_developer(create(:user)) }
+    let_it_be(:invited_guest) { invited_group.add_guest(create(:user)) }
+    let_it_be(:invited_guest_group_user) { invited_guest_group.add_developer(create(:user)) }
+    let_it_be(:ancestor_invited_developer) { ancestor_invited_group.add_developer(create(:user)) }
+
+    before_all do
+      group.add_developer(create(:user))
+      create(:group_member, :invited, :developer, source: invited_group)
+      create(:group_member, :awaiting, :developer, source: invited_group)
+      create(:group_member, :minimal_access, source: invited_group)
+      create(:group_member, :access_request, :developer, source: invited_group)
+      create(:project_group_link)
+      create(:project_group_link, project: project, group: invited_group)
+      create(:project_group_link, project: sub_group_project, group: sub_invited_group)
+      create(:project_group_link, :guest, project: project, group: invited_guest_group)
+    end
+
+    context 'with guests' do
+      it 'includes members from the other group' do
+        expect(group.billed_invited_group_to_project_members)
+          .to match_array([
+                            invited_guest,
+                            invited_developer,
+                            invited_guest_group_user,
+                            ancestor_invited_developer,
+                            sub_invited_developer
+                          ])
+      end
+    end
+
+    context 'without guests' do
+      it 'includes members from the other group' do
+        expect(group.billed_invited_group_to_project_members(exclude_guests: true))
+          .to match_array([invited_developer, ancestor_invited_developer, sub_invited_developer])
+      end
+    end
+
+    context 'with banned members' do
+      let_it_be(:banned_user) { create(:project_member, :banned, :developer, source: project).user }
+      let_it_be(:banned_invited_developer) { create(:group_member, :banned, :developer, source: invited_group).user }
+      let_it_be(:sub_banned_invited_developer) do
+        create(:group_member, :banned, :developer, source: sub_invited_group).user
+      end
+
+      it 'includes members that are banned in invited group' do
+        # currently, if user is banned from "invited_group", they still has access to the linked "project"
+        # hence, they are counted as a billable member
+        # TODO: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/314
+        expect(group.billed_invited_group_to_project_members.map(&:user))
+          .to include(banned_invited_developer, sub_banned_invited_developer)
+      end
+
+      it 'excludes members that are banned in group' do
+        expect(group.billed_invited_group_to_project_members.map(&:user)).to exclude(banned_user)
+      end
+    end
+  end
+
+  describe '#billed_users_from_members' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:guest) { group.add_guest(create(:user)) }
+    let_it_be(:developer) { group.add_developer(create(:user)) }
+    let_it_be(:blocked_member) { group.add_developer(create(:user, :blocked)) }
+    let(:members) { Member.id_in([guest, developer, blocked_member]) }
+
+    before_all do
+      group.add_maintainer(create(:user, :project_bot))
+      group.add_maintainer(create(:user, :alert_bot))
+      group.add_maintainer(create(:user, :support_bot))
+      group.add_maintainer(create(:user, :visual_review_bot))
+      group.add_maintainer(create(:user, :migration_bot))
+      group.add_maintainer(create(:user, :security_bot))
+      group.add_maintainer(create(:user, :automation_bot))
+      group.add_maintainer(create(:user, :admin_bot))
+    end
+
+    it 'provides users without bots' do
+      expect(group.billed_users_from_members(members)).to match_array(members.map(&:user))
+    end
+
+    context 'when another merge_condition is added' do
+      it 'provides users without bots' do
+        expect(group.billed_users_from_members(members, merge_condition: ::User.with_state(:active)))
+          .to match_array([guest, developer].map(&:user))
       end
     end
   end
