@@ -2998,10 +2998,6 @@ class Project < ApplicationRecord
     Projects::GitGarbageCollectWorker
   end
 
-  def activity_path
-    Gitlab::Routing.url_helpers.activity_project_path(self)
-  end
-
   def ci_forward_deployment_enabled?
     return false unless ci_cd_settings
 

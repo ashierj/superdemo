@@ -40,8 +40,8 @@ module SaasRegistrationHelpers
     end
   end
 
-  def expect_to_be_on_activity_page_for(group)
-    expect(page).to have_current_path(activity_group_path(group), ignore_query: true)
+  def expect_to_be_on_page_for(group)
+    expect(page).to have_current_path(group_path(group), ignore_query: true)
     expect(page).to have_content('You have been granted Developer access to group Test Group')
   end
 

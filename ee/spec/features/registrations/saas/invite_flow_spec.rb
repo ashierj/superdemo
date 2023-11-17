@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sidekiq_inline, feature_category: :onboarding do
-  it 'registers the user and sends them to the group activity page' do
+  it 'registers the user and sends them to the group page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -15,11 +15,11 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     fill_in_welcome_form
     click_on 'Get started!'
 
-    expect_to_be_on_activity_page_for(group)
+    expect_to_be_on_page_for(group)
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user with multiple invites and sends them to the last group activity page' do
+  it 'registers the user with multiple invites and sends them to the last group page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -39,7 +39,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     fill_in_welcome_form
     click_on 'Get started!'
 
-    expect(page).to have_current_path(activity_group_path(group), ignore_query: true)
+    expect(page).to have_current_path(group_path(group), ignore_query: true)
     ensure_onboarding_is_finished
   end
 
