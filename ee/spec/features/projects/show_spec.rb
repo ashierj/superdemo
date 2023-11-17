@@ -20,7 +20,7 @@ RSpec.describe 'Project show page', :js, :saas, feature_category: :groups_and_pr
     end
 
     context 'when project is part of a group' do
-      let_it_be(:group) { create(:group) }
+      let_it_be(:group) { create(:group, :private).tap { |g| g.add_owner(user) } }
       let_it_be(:project) { create(:project, :repository, namespace: group) }
 
       it 'renders the tier badge and popover when clicked' do

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Group show page', :js, :saas, feature_category: :groups_and_projects do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :private).tap { |g| g.add_owner(user) } }
 
   let(:path) { group_path(group) }
 
