@@ -807,4 +807,39 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
       end
     end
   end
+
+  describe '#target_index_names', :elastic_delete_by_query do
+    let(:target_index) { nil }
+
+    subject(:target_index_names) { helper.target_index_names(target: target_index) }
+
+    context 'when a nil target is provided' do
+      let(:index_regex) { /\Agitlab-test-[0-9-].*\z/ }
+
+      it 'uses the default target from target_name' do
+        expect(target_index_names.keys).to contain_exactly(index_regex, index_regex)
+        expect(target_index_names.values).to contain_exactly(true, false)
+      end
+    end
+
+    context 'when a non-nil target is provided' do
+      let(:target_index) { Project.index_name }
+      let(:index_regex) { /\Agitlab-test-projects-[0-9-].*\z/ }
+
+      it 'uses the target index' do
+        expect(target_index_names.keys).to contain_exactly(index_regex, index_regex)
+        expect(target_index_names.values).to contain_exactly(true, false)
+      end
+    end
+
+    context 'when alias does not exist' do
+      before do
+        allow(helper).to receive(:alias_exists?).and_return(false)
+      end
+
+      it 'returns a hash with a single key value pair' do
+        expect(helper.target_index_names(target: nil)).to match({ 'gitlab-test' => true })
+      end
+    end
+  end
 end
