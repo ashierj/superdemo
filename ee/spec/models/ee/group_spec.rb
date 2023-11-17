@@ -2159,7 +2159,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       :premium                      | nil        | false
       :ultimate                     | nil        | true
       :ultimate_trial               | nil        | true
-      :ultimate_trial_paid_customer | nil        | true
+      :ultimate_trial_paid_customer | nil        | false
       :gold                         | nil        | true
 
       :free           | 'premium'  | false

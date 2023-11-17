@@ -545,7 +545,7 @@ module EE
     def exclude_guests?(requested_hosted_plan = nil)
       (
         [actual_plan_name, requested_hosted_plan] &
-          [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL, ::Plan::ULTIMATE_TRIAL_PAID_CUSTOMER]
+          [::Plan::GOLD, ::Plan::ULTIMATE, ::Plan::ULTIMATE_TRIAL]
       ).any?
     end
 
