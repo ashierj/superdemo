@@ -23,13 +23,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :contin
 
   describe '#execute', :sidekiq_inline do
     shared_examples 'does nothing' do
-      it 'does not update legacy statistics' do
-        subject
-
-        expect(project.statistics.reload.shared_runners_seconds).to eq(0)
-        expect(namespace.namespace_statistics).to be_nil
-      end
-
       it 'does not update monthly usages' do
         expect { subject }.to not_change { Ci::Minutes::NamespaceMonthlyUsage.count }
           .and not_change { Ci::Minutes::ProjectMonthlyUsage.count }
@@ -37,26 +30,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :contin
     end
 
     shared_examples 'updates usage' do |expected_ci_minutes, expected_shared_runners_duration|
-      it 'updates legacy statistics', :aggregate_failures do
-        subject
-
-        expect(project.statistics.reload.shared_runners_seconds)
-          .to eq(expected_ci_minutes * 60)
-
-        expect(namespace.namespace_statistics.reload.shared_runners_seconds)
-          .to eq(expected_ci_minutes * 60)
-      end
-
-      it 'stores the same information in both legacy and new tracking' do
-        subject
-
-        expect(namespace_usage.amount_used.to_f)
-          .to eq((namespace.reload.namespace_statistics.shared_runners_seconds.to_f / 60).round(2))
-
-        expect(project_usage.amount_used.to_f)
-          .to eq((project.statistics.reload.shared_runners_seconds.to_f / 60).round(2))
-      end
-
       it 'tracks the usage on a monthly basis', :aggregate_failures do
         subject
 
@@ -103,13 +76,6 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :contin
           end
         end
 
-        it 'does not update legacy statistics' do
-          subject
-
-          expect(project.statistics.reload.shared_runners_seconds).to eq(0)
-          expect(namespace.namespace_statistics).to be_nil
-        end
-
         it 'updates only the shared runners duration' do
           expect { subject }.to change { Ci::Minutes::NamespaceMonthlyUsage.count }
 
@@ -127,14 +93,12 @@ RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :contin
         end
       end
 
-      context 'when statistics and usage have existing amounts' do
+      context 'when usage has existing amount' do
         let(:existing_ci_minutes) { 100 }
         let(:existing_shared_runners_duration) { 200 }
 
         before do
           set_ci_minutes_used(namespace, existing_ci_minutes, existing_shared_runners_duration)
-
-          project.statistics.update!(shared_runners_seconds: existing_ci_minutes * 60)
 
           create(:ci_project_monthly_usage,
             project: project,
