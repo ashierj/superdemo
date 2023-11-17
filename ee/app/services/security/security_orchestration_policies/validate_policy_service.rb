@@ -20,6 +20,8 @@ module Security
         return error_with_title(s_('SecurityOrchestration|Branch types don\'t match any existing branches.'), field: :branches) if invalid_branch_types?
         return error_with_title(s_('SecurityOrchestration|Timezone is invalid'), field: :timezone) if invalid_timezone?
         return error_with_title(s_('SecurityOrchestration|Vulnerability age requires previously existing vulnerability states (detected, confirmed, resolved, or dismissed)'), field: :vulnerability_age) if invalid_vulnerability_age?
+        return error_with_title(s_('SecurityOrchestration|Compliance Framework ID(s) can only be set for group policies'), field: :compliance_frameworks) if has_compliance_framework_for_project_policy?
+        return error_with_title(s_('SecurityOrchestration|Invalid Compliance Framework ID(s)'), field: :compliance_frameworks) if invalid_compliance_framework_ids?
 
         return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers.'), title: s_('SecurityOrchestration|Logic error'), field: :approvers_ids) if required_approvals_exceed_eligible_approvers?
 
@@ -64,6 +66,18 @@ module Security
         return false unless project_container?
 
         missing_branch_names.present?
+      end
+
+      def has_compliance_framework_for_project_policy?
+        project_container? && compliance_framework_ids.present?
+      end
+
+      def invalid_compliance_framework_ids?
+        return false if project_container?
+        return false unless Feature.enabled?(:security_policies_policy_scope, container)
+        return false if compliance_framework_ids.blank?
+
+        container.root_ancestor.compliance_management_frameworks.id_in(compliance_framework_ids).count != compliance_framework_ids.count
       end
 
       def required_approvals_exceed_eligible_approvers?
@@ -186,6 +200,11 @@ module Security
       def scan_result_policy?
         policy_type == :scan_result_policy
       end
+
+      def compliance_framework_ids
+        policy.dig(:policy_scope, :compliance_frameworks)&.pluck(:id)&.uniq
+      end
+      strong_memoize_attr :compliance_framework_ids
 
       def approval_requiring_action
         policy[:actions]&.find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }

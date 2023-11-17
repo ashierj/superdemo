@@ -560,6 +560,25 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         end
       end
 
+      context 'when policy_scope is present' do
+        let_it_be(:container) { create(:project, :repository) }
+        let_it_be(:invaild_framework) { create(:compliance_framework) }
+
+        let(:policy) do
+          {
+            type: policy_type,
+            name: name,
+            policy_scope: policy_scope,
+            enabled: enabled,
+            rules: rules
+          }
+        end
+
+        let(:policy_scope) { { compliance_frameworks: [{ id: invaild_framework.id }] } }
+
+        it_behaves_like 'sets validation errors', field: :compliance_frameworks, message: 'Compliance Framework ID(s) can only be set for group policies'
+      end
+
       context 'when project has a default protected branch' do
         let_it_be(:container) { create(:project, :repository) }
 
@@ -657,6 +676,68 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks if required approvals exceed eligible approvers'
       it_behaves_like 'checks if timezone is valid'
       it_behaves_like 'checks if vulnerability_age is valid'
+
+      context 'when policy_scope is present' do
+        let_it_be(:framework_1) { create(:compliance_framework, namespace: container.root_ancestor) }
+        let_it_be(:framework_2) { create(:compliance_framework, namespace: container.root_ancestor, name: 'SOX') }
+        let_it_be(:invaild_framework) { create(:compliance_framework) }
+
+        let(:policy) do
+          {
+            type: policy_type,
+            name: name,
+            policy_scope: policy_scope,
+            enabled: enabled,
+            rules: rules
+          }
+        end
+
+        let(:policy_scope) do
+          {
+            compliance_frameworks: [
+              { id: framework_1.id },
+              { id: framework_2.id }
+            ]
+          }
+        end
+
+        context 'when feature is disabled' do
+          before do
+            stub_feature_flags(security_policies_policy_scope: false)
+          end
+
+          it { expect(result[:status]).to eq(:success) }
+        end
+
+        context 'when policy_scope is empty' do
+          let(:policy_scope) { {} }
+
+          it { expect(result[:status]).to eq(:success) }
+        end
+
+        context 'when compliance_frameworks is empty' do
+          let(:policy_scope) { { compliance_frameworks: [] } }
+
+          it { expect(result[:status]).to eq(:success) }
+        end
+
+        context 'when compliance framework ids are valid' do
+          it { expect(result[:status]).to eq(:success) }
+        end
+
+        context 'when compliance frameworks contain invalid ids' do
+          let(:policy_scope) do
+            {
+              compliance_frameworks: [
+                { id: framework_1.id },
+                { id: invaild_framework.id }
+              ]
+            }
+          end
+
+          it_behaves_like 'sets validation errors', field: :compliance_frameworks, message: 'Invalid Compliance Framework ID(s)'
+        end
+      end
     end
   end
 end
