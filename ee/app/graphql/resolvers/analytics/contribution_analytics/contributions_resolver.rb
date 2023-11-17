@@ -18,7 +18,7 @@ module Resolvers
         # rubocop:enable Layout/LineLength
 
         max_page_size 500
-        default_page_size GitlabSchema.default_max_page_size # ensure backwards compability
+        default_page_size 100 # ensure backwards compability
 
         def resolve(from:, to:)
           validate_date_range!(from, to)
