@@ -2687,11 +2687,19 @@ RSpec.describe User, feature_category: :system_access do
         disallowed_subgroup.add_owner(user)
       end
 
-      it { is_expected.to eq(true) }
+      it { is_expected.to eq(false) }
 
       it 'avoids N+1 queries' do
         expect { user.code_suggestions_disabled_by_group? }.to match_query_count(1)
       end
+    end
+
+    context 'when code_suggestions setting is false for all groups' do
+      before do
+        disallowed_subgroup.add_owner(user)
+      end
+
+      it { is_expected.to eq(true) }
     end
 
     context 'when code_suggestions setting is true for all groups' do

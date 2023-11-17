@@ -552,7 +552,7 @@ module EE
     end
 
     def code_suggestions_disabled_by_group?
-      groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: false }).any?
+      !groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: true }).any?
     end
 
     def code_suggestions_add_on_available?
