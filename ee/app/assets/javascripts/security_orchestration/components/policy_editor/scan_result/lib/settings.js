@@ -46,22 +46,22 @@ export const SETTINGS_HUMANIZED_STRINGS = {
 
 export const SETTINGS_TOOLTIP = {
   [BLOCK_BRANCH_MODIFICATION]: s__(
-    'ScanResultPolicy|Prevent a user from removing a branch from the protected branches list or from deleting a protected branch.',
+    'ScanResultPolicy|When enabled, prevents a user from removing a branch from the protected branches list, deleting a protected branch, or changing the default branch if that branch is included in the security policy.',
   ),
   [PREVENT_PUSHING_AND_FORCE_PUSHING]: s__(
-    'ScanResultPolicy|Prevent pushing and force pushing to a protected branch.',
+    'ScanResultPolicy|When enabled, prevents pushing and force pushing to a protected branch if that branch is included in the security policy.',
   ),
   [PREVENT_APPROVAL_BY_AUTHOR]: s__(
-    'ScanResultPolicy|The merge request author cannot approve their own merge request.',
+    'ScanResultPolicy|When enabled, merge request authors cannot approve their own MRs.',
   ),
   [PREVENT_APPROVAL_BY_COMMIT_AUTHOR]: s__(
-    'ScanResultPolicy|Users who have contributed code to the MR are ineligible for approval, ensuring code committers cannot introduce vulnerabilities and approve code to merge.',
+    'ScanResultPolicy|When enabled, users who have contributed code to the MR are ineligible for approval.',
   ),
   [REMOVE_APPROVALS_WITH_NEW_COMMIT]: s__(
-    'ScanResultPolicy|If an MR receives all necessary approvals to merge, but then a new commit is added, new approvals are required. This ensures new commits that may include vulnerabilities cannot be introduced.',
+    'ScanResultPolicy|When enabled, if an MR receives all necessary approvals to merge, but then a new commit is added, new approvals are required.',
   ),
   [REQUIRE_PASSWORD_TO_APPROVE]: s__(
-    'ScanResultPolicy|Password confirmation on approvals provides an additional level of security. Enabling this enforces the setting on all projects targeted by this policy.',
+    'ScanResultPolicy|When enabled, there will be password confirmation on approvals.',
   ),
 };
 
