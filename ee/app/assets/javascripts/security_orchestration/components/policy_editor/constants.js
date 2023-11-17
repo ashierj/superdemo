@@ -176,3 +176,9 @@ export const HUMANIZED_BRANCH_TYPE_TEXT_DICT = {
   [GROUP_DEFAULT_BRANCHES.value]: s__('SecurityOrchestration|any default branch'),
   [PROJECT_DEFAULT_BRANCH.value]: s__('SecurityOrchestration|the default branch'),
 };
+
+export const MULTIPLE_SELECTED_LABEL = s__(
+  'PolicyRuleMultiSelect|%{firstLabel} +%{numberOfAdditionalLabels} more',
+);
+export const SELECTED_ITEMS_LABEL = s__('PolicyRuleMultiSelect|Select %{itemTypeName}');
+export const ALL_SELECTED_LABEL = s__('PolicyRuleMultiSelect|All %{itemTypeName}');

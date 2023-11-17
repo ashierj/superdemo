@@ -181,6 +181,29 @@ approval_settings:
     enabled: true
 `;
 
+export const mockPolicyScopeScanResultManifest = `type: scan_result_policy
+name: policy scope
+description: This policy enforces policy scope
+enabled: true
+rules: []
+actions: []
+policy_scope:
+  compliance_frameworks:
+    - id: 26
+`;
+
+export const mockPolicyScopeScanResultObject = {
+  type: 'scan_result_policy',
+  name: 'policy scope',
+  description: 'This policy enforces policy scope',
+  enabled: true,
+  rules: [],
+  actions: [],
+  policy_scope: {
+    compliance_frameworks: [{ id: 26 }],
+  },
+};
+
 export const mockApprovalSettingsScanResultObject = {
   type: 'scan_result_policy',
   name: 'critical vulnerability CS approvals',

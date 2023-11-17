@@ -2,9 +2,7 @@
 import { GlCollapsibleListbox, GlTruncate } from '@gitlab/ui';
 
 import { s__, sprintf } from '~/locale';
-
-const NO_ITEM_SELECTED = 0;
-const ONE_ITEM_SELECTED = 1;
+import { renderMultiSelectText } from './utils';
 
 export default {
   components: {
@@ -49,29 +47,7 @@ export default {
       return this.includeSelectAll ? this.$options.i18n.selectAllLabel : '';
     },
     text() {
-      switch (this.selected.length) {
-        case this.itemsKeys.length:
-          return sprintf(
-            this.$options.i18n.allSelectedLabel,
-            { itemTypeName: this.itemTypeName },
-            false,
-          );
-        case NO_ITEM_SELECTED:
-          return sprintf(
-            this.$options.i18n.selectedItemsLabel,
-            {
-              itemTypeName: this.itemTypeName,
-            },
-            false,
-          );
-        case ONE_ITEM_SELECTED:
-          return this.items[this.selected[0]];
-        default:
-          return sprintf(this.$options.i18n.multipleSelectedLabel, {
-            firstLabel: this.items[this.selected[0]],
-            numberOfAdditionalLabels: this.selected.length - 1,
-          });
-      }
+      return renderMultiSelectText(this.selected, this.items, this.itemTypeName);
     },
     itemsKeys() {
       return Object.keys(this.items);

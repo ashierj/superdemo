@@ -14,18 +14,23 @@ import {
   mockInvalidYamlCadenceValue,
   mockBranchExceptionsScanExecutionObject,
   mockBranchExceptionsExecutionManifest,
+  mockPolicyScopeExecutionManifest,
+  mockPolicyScopeScanExecutionObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_execution_policy_data';
 
 describe('fromYaml', () => {
   it.each`
-    title                                                                                                | input                                                                          | output
-    ${'returns the policy object for a supported manifest'}                                              | ${{ manifest: mockDastScanExecutionManifest }}                                 | ${mockDastScanExecutionObject}
-    ${'returns the error object for a policy with an unsupported attribute'}                             | ${{ manifest: unsupportedManifest, validateRuleMode: true }}                   | ${{ error: true }}
-    ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedManifest }}                                           | ${unsupportedManifestObject}
-    ${'returns error object for a policy with invalid cadence cron string and validation mode'}          | ${{ manifest: mockInvalidCadenceScanExecutionObject, validateRuleMode: true }} | ${{ error: true }}
-    ${'returns error object for a policy with invalid cadence cron string'}                              | ${{ manifest: mockInvalidYamlCadenceValue }}                                   | ${{ error: true, key: 'yaml-parsing' }}
-    ${'returns the policy object for branch exceptions'}                                                 | ${{ manifest: mockBranchExceptionsExecutionManifest, validateRuleMode: true }} | ${mockBranchExceptionsScanExecutionObject}
-  `('$title', ({ input, output }) => {
+    title                                                                                                | input                                                                          | output                                     | features
+    ${'returns the policy object for a supported manifest'}                                              | ${{ manifest: mockDastScanExecutionManifest }}                                 | ${mockDastScanExecutionObject}             | ${{}}
+    ${'returns the error object for a policy with an unsupported attribute'}                             | ${{ manifest: unsupportedManifest, validateRuleMode: true }}                   | ${{ error: true }}                         | ${{}}
+    ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedManifest }}                                           | ${unsupportedManifestObject}               | ${{}}
+    ${'returns error object for a policy with invalid cadence cron string and validation mode'}          | ${{ manifest: mockInvalidCadenceScanExecutionObject, validateRuleMode: true }} | ${{ error: true }}                         | ${{}}
+    ${'returns error object for a policy with invalid cadence cron string'}                              | ${{ manifest: mockInvalidYamlCadenceValue }}                                   | ${{ error: true, key: 'yaml-parsing' }}    | ${{}}
+    ${'returns the policy object for branch exceptions'}                                                 | ${{ manifest: mockBranchExceptionsExecutionManifest, validateRuleMode: true }} | ${mockBranchExceptionsScanExecutionObject} | ${{}}
+    ${'returns the policy object for project scope with disabled ff'}                                    | ${{ manifest: mockPolicyScopeExecutionManifest, validateRuleMode: true }}      | ${{ error: true }}                         | ${{ securityPoliciesPolicyScope: false }}
+    ${'returns the policy object for project scope with enabled ff'}                                     | ${{ manifest: mockPolicyScopeExecutionManifest, validateRuleMode: true }}      | ${mockPolicyScopeScanExecutionObject}      | ${{ securityPoliciesPolicyScope: true }}
+  `('$title', ({ input, output, features }) => {
+    window.gon = { features };
     expect(fromYaml(input)).toStrictEqual(output);
   });
 });

@@ -1,4 +1,6 @@
+import { intersection } from 'lodash';
 import { isValidCron } from 'cron-validator';
+import { sprintf } from '~/locale';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
@@ -11,6 +13,9 @@ import {
   PRIMARY_POLICY_KEYS,
   RULE_MODE_SCANNERS,
   SECURITY_POLICY_ACTIONS,
+  ALL_SELECTED_LABEL,
+  SELECTED_ITEMS_LABEL,
+  MULTIPLE_SELECTED_LABEL,
 } from './constants';
 
 /**
@@ -225,3 +230,55 @@ export const hasInvalidCron = (policy) => {
 };
 
 export const enforceIntValue = (value) => parseInt(value || '0', 10);
+
+const NO_ITEM_SELECTED = 0;
+const ONE_ITEM_SELECTED = 1;
+
+/**
+ *
+ * @param selected items
+ * @param items items used to render list
+ * @param itemTypeName
+ * @returns {*}
+ */
+export const renderMultiSelectText = (selected, items, itemTypeName) => {
+  const itemsKeys = Object.keys(items);
+
+  const defaultPlaceholder = sprintf(
+    SELECTED_ITEMS_LABEL,
+    {
+      itemTypeName,
+    },
+    false,
+  );
+
+  /**
+   * Another edge case
+   * number of selected items and items are equal
+   * but none of them match
+   * without this check it would fall through to
+   * ALL_SELECTED_LABEL
+   * @type {string[]}
+   */
+  const commonItems = intersection(itemsKeys, selected);
+  /**
+   * Edge case for loading states when initial items are empty
+   */
+  if (itemsKeys.length === 0 || commonItems.length === 0) {
+    return defaultPlaceholder;
+  }
+
+  switch (commonItems.length) {
+    case itemsKeys.length:
+      return sprintf(ALL_SELECTED_LABEL, { itemTypeName }, false);
+    case NO_ITEM_SELECTED:
+      return defaultPlaceholder;
+    case ONE_ITEM_SELECTED:
+      return items[commonItems[0]] || defaultPlaceholder;
+    default:
+      return sprintf(MULTIPLE_SELECTED_LABEL, {
+        firstLabel: items[commonItems[0]],
+        numberOfAdditionalLabels: commonItems.length - 1,
+      });
+  }
+};

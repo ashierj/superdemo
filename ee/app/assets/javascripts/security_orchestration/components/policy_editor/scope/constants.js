@@ -20,6 +20,10 @@ export const PROJECT_SCOPE_TYPE_LISTBOX_ITEMS = mapToListBoxItems(PROJECT_SCOPE_
 
 export const WITHOUT_EXCEPTIONS = 'without_exceptions';
 export const EXCEPT_PROJECTS = 'except_projects';
+export const INCLUDING = 'including';
+export const EXCLUDING = 'excluding';
+export const COMPLIANCE_FRAMEWORKS_KEY = 'compliance_frameworks';
+export const PROJECTS_KEY = 'projects';
 
 export const EXCEPTION_TYPE_TEXTS = {
   [WITHOUT_EXCEPTIONS]: s__('SecurityOrchestration|without exceptions'),

@@ -15,7 +15,7 @@ import { __, s__, sprintf } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
-import PolicyScope from 'ee/security_orchestration/components/policy_editor/scope/policy_scope.vue';
+import ScopeSection from 'ee/security_orchestration/components/policy_editor/scope/scope_section.vue';
 import { NAMESPACE_TYPES } from '../../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import {
@@ -46,7 +46,7 @@ export default {
   ],
   components: {
     DimDisableContainer,
-    PolicyScope,
+    ScopeSection,
     GlAlert,
     GlButton,
     GlFormGroup,
@@ -257,7 +257,10 @@ export default {
                 <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
               </template>
 
-              <policy-scope />
+              <scope-section
+                :policy-scope="policy.policy_scope"
+                @changed="setPolicyProperty('policy_scope', $event)"
+              />
             </dim-disable-container>
 
             <slot name="actions-first"></slot>

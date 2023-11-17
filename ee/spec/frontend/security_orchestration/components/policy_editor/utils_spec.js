@@ -6,6 +6,7 @@ import {
   hasInvalidCron,
   slugify,
   slugifyToArray,
+  renderMultiSelectText,
 } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
@@ -205,5 +206,20 @@ describe('slugifyToArray', () => {
     expect(slugifyToArray(BRANCHES.map((b) => b.input).join(','))).toEqual(
       BRANCHES.map((b) => b.output).filter(Boolean),
     );
+  });
+});
+
+describe('renderMultiSelectText', () => {
+  it.each`
+    selected                    | items                                                                      | expectedText
+    ${[]}                       | ${{}}                                                                      | ${'Select projects'}
+    ${['project1']}             | ${{ project1: 'project 1', project2: 'project 2' }}                        | ${'project 1'}
+    ${['project1', 'project2']} | ${{ project1: 'project 1', project2: 'project 2' }}                        | ${'All projects'}
+    ${['project1', 'project2']} | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'project 1 +1 more'}
+    ${[]}                       | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'Select projects'}
+    ${['project4', 'project5']} | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'Select projects'}
+    ${['project4', 'project5']} | ${{ project2: 'project 2', project3: 'project 3' }}                        | ${'Select projects'}
+  `('should render correct selection text', ({ selected, items, expectedText }) => {
+    expect(renderMultiSelectText(selected, items, 'projects')).toBe(expectedText);
   });
 });
