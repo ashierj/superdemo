@@ -12315,6 +12315,7 @@ CREATE TABLE approval_group_rules (
     security_orchestration_policy_configuration_id bigint,
     scan_result_policy_id bigint,
     name text NOT NULL,
+    applies_to_all_protected_branches boolean DEFAULT false NOT NULL,
     CONSTRAINT check_25d42add43 CHECK ((char_length(name) <= 255))
 );
 
