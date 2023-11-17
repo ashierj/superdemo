@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['WorkItemType'] do
   let(:fields) do
-    %i[id icon_name name]
+    %i[id icon_name name widget_definitions]
   end
 
   specify { expect(described_class.graphql_name).to eq('WorkItemType') }
