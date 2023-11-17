@@ -13,5 +13,8 @@ FactoryBot.define do
       admin_vulnerability { true }
       read_vulnerability { true }
     end
+
+    # this trait can be used only for self-managed
+    trait(:instance) { namespace { nil } }
   end
 end

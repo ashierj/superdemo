@@ -87,35 +87,45 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
       end
 
       context 'when member role is associated' do
-        let_it_be(:member_role) do
-          create(:member_role, members: [member], namespace: member.group, base_access_level: member.access_level)
-        end
-
-        context 'when member#member_namespace is a group within hierarchy of member_role#namespace' do
+        context 'when member role is for an instance' do
           it 'is valid' do
-            member.member_namespace = create(:group, parent: member_role.namespace)
+            member.member_role = create(:member_role, :instance, base_access_level: member.access_level)
 
             expect(member).to be_valid
           end
         end
 
-        context 'when member#member_namespace is a project within hierarchy of member_role#namespace' do
-          it 'is valid' do
-            project = create(:project, group: member_role.namespace)
-            member.member_namespace = Namespace.find(project.parent_id)
-
-            expect(member).to be_valid
+        context 'member role for a group' do
+          let_it_be(:member_role) do
+            create(:member_role, members: [member], namespace: member.group, base_access_level: member.access_level)
           end
-        end
 
-        context 'when member#member_namespace is outside hierarchy of member_role#namespace' do
-          it 'is invalid' do
-            member.member_namespace = create(:group)
+          context 'when member#member_namespace is a group within hierarchy of member_role#namespace' do
+            it 'is valid' do
+              member.member_namespace = create(:group, parent: member_role.namespace)
 
-            expect(member).not_to be_valid
-            expect(member.errors[:member_namespace]).to include(
-              _("must be in same hierarchy as custom role's namespace")
-            )
+              expect(member).to be_valid
+            end
+          end
+
+          context 'when member#member_namespace is a project within hierarchy of member_role#namespace' do
+            it 'is valid' do
+              project = create(:project, group: member_role.namespace)
+              member.member_namespace = Namespace.find(project.parent_id)
+
+              expect(member).to be_valid
+            end
+          end
+
+          context 'when member#member_namespace is outside hierarchy of member_role#namespace' do
+            it 'is invalid' do
+              member.member_namespace = create(:group)
+
+              expect(member).not_to be_valid
+              expect(member.errors[:member_namespace]).to include(
+                _("must be in same hierarchy as custom role's namespace")
+              )
+            end
           end
         end
       end
