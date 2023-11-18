@@ -1,5 +1,5 @@
 <script>
-import { mockGroupSecretsData } from '../constants';
+import getGroupSecretsQuery from '../graphql/queries/client/get_group_secrets.query.graphql';
 
 export default {
   name: 'GroupSecretsApp',
@@ -15,11 +15,21 @@ export default {
       default: undefined,
     },
   },
-  data() {
-    return { groupSecrets: mockGroupSecretsData };
+  apollo: {
+    secrets: {
+      query: getGroupSecretsQuery,
+      variables() {
+        return {
+          fullPath: this.groupPath,
+        };
+      },
+      update(data) {
+        return data.group.secrets.nodes || [];
+      },
+    },
   },
 };
 </script>
 <template>
-  <router-view ref="router-view" :secrets="groupSecrets" />
+  <router-view ref="router-view" :secrets="secrets" />
 </template>

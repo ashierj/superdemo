@@ -9,19 +9,17 @@ describe('SecretTabs component', () => {
   const findEditSecretButton = () => wrapper.findByTestId('edit-secret-button');
   const findTabs = () => wrapper.findComponent(GlTabs);
 
-  const $route = {
-    params: {
-      key: 'project_secret_1',
-    },
-  };
-
   const createComponent = (routeName) => {
     wrapper = shallowMountExtended(SecretTabs, {
+      propsData: {
+        secretKey: 'group_secret_1',
+        routeName,
+      },
       stubs: {
         RouterView: true,
       },
       mocks: {
-        $route: { name: routeName, ...$route },
+        $route: { name: routeName },
       },
     });
   };

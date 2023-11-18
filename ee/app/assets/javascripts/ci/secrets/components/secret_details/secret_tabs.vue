@@ -9,14 +9,24 @@ export default {
     GlTabs,
     GlTab,
   },
+  props: {
+    secretKey: {
+      type: String,
+      required: true,
+    },
+    routeName: {
+      type: String,
+      required: true,
+    },
+  },
   computed: {
     tabIndex() {
-      return this.$route.name === AUDIT_LOG_ROUTE_NAME ? 1 : 0;
+      return this.routeName === AUDIT_LOG_ROUTE_NAME ? 1 : 0;
     },
   },
   methods: {
     goTo(name) {
-      if (this.$route.name !== name) {
+      if (this.routeName !== name) {
         this.$router.push({ name });
       }
     },
@@ -29,7 +39,7 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-justify-content-space-between gl-mt-4">
-      <h1>{{ $route.params.key }}</h1>
+      <h1>{{ secretKey }}</h1>
 
       <gl-button
         icon="pencil"

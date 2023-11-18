@@ -1,5 +1,5 @@
 <script>
-import { mockProjectSecretsData } from '../constants';
+import getProjectSecretsQuery from '../graphql/queries/client/get_project_secrets.query.graphql';
 
 export default {
   name: 'ProjectSecretsApp',
@@ -15,11 +15,21 @@ export default {
       default: undefined,
     },
   },
-  data() {
-    return { projectSecrets: mockProjectSecretsData };
+  apollo: {
+    secrets: {
+      query: getProjectSecretsQuery,
+      variables() {
+        return {
+          fullPath: this.projectPath,
+        };
+      },
+      update(data) {
+        return data.project.secrets.nodes || [];
+      },
+    },
   },
 };
 </script>
 <template>
-  <router-view ref="router-view" :secrets="projectSecrets" />
+  <router-view ref="router-view" :secrets="secrets" />
 </template>

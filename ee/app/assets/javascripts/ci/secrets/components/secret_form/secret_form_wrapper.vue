@@ -8,6 +8,10 @@ export default {
     SecretForm,
   },
   props: {
+    secretKey: {
+      type: String,
+      required: true,
+    },
     isEditing: {
       type: Boolean,
       required: false,
@@ -32,11 +36,7 @@ export default {
     </template>
 
     <h1 v-if="isEditing">
-      {{
-        sprintf(s__('Secrets|Edit %{key}'), {
-          key: $route.params.key,
-        })
-      }}
+      {{ sprintf(s__('Secrets|Edit %{key}'), { key: secretKey }) }}
     </h1>
 
     <secret-form
