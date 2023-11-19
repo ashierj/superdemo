@@ -17,6 +17,18 @@ module Analytics
           maximum: MAX_PROJECT_IDS_FILTER,
           message: ->(*) { _('Maximum projects allowed in the filter is %{count}') }
         }
+
+      validate :project_ids_filter_at_group_level
+
+      private
+
+      def project_ids_filter_at_group_level
+        return unless value_stream.present?
+        return unless project_ids_filter.present?
+        return if value_stream.at_group_level?
+
+        errors.add(:project_ids_filter, _('Can only be present for group level value streams'))
+      end
     end
   end
 end

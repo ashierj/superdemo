@@ -13,6 +13,10 @@ module Mutations
 
           authorize :admin_value_stream
 
+          argument :name, GraphQL::Types::String,
+            required: true,
+            description: 'Value stream name.'
+
           argument :namespace_path, GraphQL::Types::ID,
             required: true,
             description: 'Full path of the namespace(project or group) the value stream is created in.'
