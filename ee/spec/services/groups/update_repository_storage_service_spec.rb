@@ -44,6 +44,8 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
         expect(group).not_to be_repository_read_only
         expect(wiki.repository_storage).to eq(destination)
         expect(group.group_wiki_repository.shard_name).to eq(destination)
+        expect(repository_storage_move.reload).to be_finished
+        expect(repository_storage_move.error_message).to be_nil
       end
     end
 
@@ -67,7 +69,7 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
       it 'unmarks the repository as read-only without updating the repository storage' do
         expect(wiki_repository_double).to receive(:replicate)
           .with(wiki.repository.raw)
-          .and_raise(Gitlab::Git::CommandError)
+          .and_raise(Gitlab::Git::CommandError, 'Boom')
         expect(wiki_repository_double).to receive(:remove)
 
         expect do
@@ -77,6 +79,7 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
         expect(group.reload).not_to be_repository_read_only
         expect(wiki.repository_storage).to eq('default')
         expect(repository_storage_move).to be_failed
+        expect(repository_storage_move.error_message).to eq('Boom')
       end
     end
 
