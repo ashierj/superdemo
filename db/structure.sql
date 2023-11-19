@@ -17294,6 +17294,8 @@ CREATE TABLE group_repository_storage_moves (
     state smallint DEFAULT 1 NOT NULL,
     source_storage_name text NOT NULL,
     destination_storage_name text NOT NULL,
+    error_message text,
+    CONSTRAINT check_266d0cf596 CHECK ((char_length(error_message) <= 256)),
     CONSTRAINT group_repository_storage_moves_destination_storage_name CHECK ((char_length(destination_storage_name) <= 255)),
     CONSTRAINT group_repository_storage_moves_source_storage_name CHECK ((char_length(source_storage_name) <= 255))
 );
@@ -21977,6 +21979,8 @@ CREATE TABLE project_repository_storage_moves (
     state smallint DEFAULT 1 NOT NULL,
     source_storage_name text NOT NULL,
     destination_storage_name text NOT NULL,
+    error_message text,
+    CONSTRAINT check_85854380db CHECK ((char_length(error_message) <= 256)),
     CONSTRAINT project_repository_storage_moves_destination_storage_name CHECK ((char_length(destination_storage_name) <= 255)),
     CONSTRAINT project_repository_storage_moves_source_storage_name CHECK ((char_length(source_storage_name) <= 255))
 );
@@ -23493,6 +23497,8 @@ CREATE TABLE snippet_repository_storage_moves (
     state smallint DEFAULT 1 NOT NULL,
     source_storage_name text NOT NULL,
     destination_storage_name text NOT NULL,
+    error_message text,
+    CONSTRAINT check_a42ab83060 CHECK ((char_length(error_message) <= 256)),
     CONSTRAINT snippet_repository_storage_moves_destination_storage_name CHECK ((char_length(destination_storage_name) <= 255)),
     CONSTRAINT snippet_repository_storage_moves_source_storage_name CHECK ((char_length(source_storage_name) <= 255))
 );
