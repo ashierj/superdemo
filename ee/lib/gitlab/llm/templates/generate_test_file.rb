@@ -4,20 +4,9 @@ module Gitlab
   module Llm
     module Templates
       class GenerateTestFile
-        include Gitlab::Utils::StrongMemoize
-
-        TOTAL_MODEL_TOKEN_LIMIT = 4000
-        OUTPUT_TOKEN_LIMIT = (TOTAL_MODEL_TOKEN_LIMIT * 0.25).to_i.freeze
-
         def initialize(merge_request, path)
           @merge_request = merge_request
           @path = path
-        end
-
-        def options(client)
-          return {} unless client == ::Gitlab::Llm::OpenAi::Client
-
-          { moderated: true, max_tokens: OUTPUT_TOKEN_LIMIT }
         end
 
         def to_prompt
