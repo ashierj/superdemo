@@ -330,10 +330,12 @@ RSpec.describe 'User edit profile', feature_category: :user_profile do
         find_by_testid('user-dropdown').click
 
         within_testid('user-dropdown') do
-          find('.js-set-status-modal-trigger.ready')
+          expect(page).to have_button(text: button_text, visible: :visible)
 
           click_button button_text
         end
+
+        expect(page.find('#set-user-status-modal')).to be_visible
       end
 
       def open_user_status_modal

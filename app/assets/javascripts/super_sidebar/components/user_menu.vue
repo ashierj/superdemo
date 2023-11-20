@@ -51,6 +51,11 @@ export default {
       required: true,
       type: Object,
     },
+    setStatusModalReady: {
+      required: false,
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     toggleText() {
@@ -231,7 +236,7 @@ export default {
 
     <gl-disclosure-dropdown-group bordered>
       <gl-disclosure-dropdown-item
-        v-if="data.status.can_update"
+        v-if="setStatusModalReady && data.status.can_update"
         v-gl-modal="$options.SET_STATUS_MODAL_ID"
         :item="statusItem"
         data-testid="status-item"

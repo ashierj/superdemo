@@ -24,6 +24,7 @@ describe('UserMenu component', () => {
           ...userMenuMockData,
           ...userDataChanges,
         },
+        setStatusModalReady: true,
       },
       stubs: {
         GlEmoji,

@@ -73,6 +73,7 @@ export default {
       mrMenuShown: false,
       searchTooltip: this.$options.i18n.searchKbdHelp,
       userCounts,
+      setStatusModalReady: false,
     };
   },
   computed: {
@@ -157,7 +158,11 @@ export default {
         :groups="sidebarData.create_new_menu_groups"
       />
 
-      <user-menu v-if="sidebarData.is_logged_in" :data="sidebarData" />
+      <user-menu
+        v-if="sidebarData.is_logged_in"
+        :data="sidebarData"
+        :set-status-modal-ready="setStatusModalReady"
+      />
 
       <gl-button
         v-if="isImpersonating"
@@ -233,6 +238,7 @@ export default {
       v-if="statusModalData"
       default-emoji="speech_balloon"
       v-bind="statusModalData"
+      @mounted="setStatusModalReady = true"
     />
   </div>
 </template>

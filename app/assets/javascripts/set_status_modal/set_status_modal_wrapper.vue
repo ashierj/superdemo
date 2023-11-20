@@ -66,6 +66,9 @@ export default {
       return computedClearStatusAfterValue(this.clearStatusAfter);
     },
   },
+  mounted() {
+    this.$emit('mounted');
+  },
   methods: {
     closeModal() {
       this.$root.$emit(BV_HIDE_MODAL, SET_STATUS_MODAL_ID);
