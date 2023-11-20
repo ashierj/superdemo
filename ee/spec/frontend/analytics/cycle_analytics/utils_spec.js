@@ -497,7 +497,7 @@ describe('Value Stream Analytics utils', () => {
     });
 
     it('calculates a median for the overview stage', () => {
-      expect(calculatedMedians).toMatchObject({ [OVERVIEW_STAGE_ID]: '3w' });
+      expect(calculatedMedians).toMatchObject({ [OVERVIEW_STAGE_ID]: '3 weeks' });
     });
   });
 

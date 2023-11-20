@@ -414,10 +414,10 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
     end
 
     stages_with_data = [
-      { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '2d' },
-      { title: 'Code', description: 'Time until first merge request', events_count: 1, time: '5h' },
-      { title: 'Review', description: 'Time between merge request creation and merge/close', events_count: 1, time: '1h' },
-      { title: 'Staging', description: 'From merge request merge until deploy to production', events_count: 1, time: '1h' }
+      { title: 'Issue', description: 'Time before an issue gets scheduled', events_count: 1, time: '2 days' },
+      { title: 'Code', description: 'Time until first merge request', events_count: 1, time: '5 hours' },
+      { title: 'Review', description: 'Time between merge request creation and merge/close', events_count: 1, time: '1 hour' },
+      { title: 'Staging', description: 'From merge request merge until deploy to production', events_count: 1, time: '1 hour' }
     ]
 
     stages_without_data = [
