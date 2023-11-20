@@ -60,6 +60,7 @@ module Geo
     #
     # @return [Boolean] whether any rows needed to be inserted or deleted
     def handle_differences_in_verifiables(range)
+      # id values in this method always refer to the source model's primary key
       verifiable_ids = replicable_model.pluck_verifiable_ids_in_range(range) || []
       verification_details_ids = replicable_model.pluck_verification_details_ids_in_range(range) || []
 
@@ -73,15 +74,17 @@ module Geo
     end
 
     def create_verification_details(range, for_creation_ids)
-      replicable_model.find(for_creation_ids).map do |replicable|
-        replicable.save_verification_details
-      end
+      return if for_creation_ids.empty?
+
+      replicable_model.create_verification_details_for(for_creation_ids)
 
       log_created(range, for_creation_ids)
     end
 
     def delete_verification_details(range, for_deletion_ids)
-      verification_state_table_class.delete(for_deletion_ids)
+      return if for_deletion_ids.empty?
+
+      replicable_model.delete_verification_details_for(for_deletion_ids)
 
       log_deleted(range, for_deletion_ids)
     end

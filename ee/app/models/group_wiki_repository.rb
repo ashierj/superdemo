@@ -67,6 +67,11 @@ class GroupWikiRepository < ApplicationRecord
     ::Geo::GroupWikiRepositoryState
   end
 
+  override :verification_state_model_key
+  def self.verification_state_model_key
+    :group_wiki_repository_id
+  end
+
   def group_wiki_repository_state
     super || build_group_wiki_repository_state
   end
