@@ -3642,6 +3642,9 @@ msgstr ""
 msgid "AdminSettings|Pause Elasticsearch indexing"
 msgstr ""
 
+msgid "AdminSettings|Pre-receive secret detection"
+msgstr ""
+
 msgid "AdminSettings|Prevent non-administrators from using the selected visibility levels for groups, projects and snippets."
 msgstr ""
 
@@ -12868,6 +12871,9 @@ msgstr ""
 msgid "Configure repository storage."
 msgstr ""
 
+msgid "Configure secret detection behavior for all projects in your GitLab instance"
+msgstr ""
+
 msgid "Configure settings for Advanced Search with Elasticsearch."
 msgstr ""
 
@@ -18416,6 +18422,9 @@ msgid "Enable or disable keyboard shortcuts in your %{linkStart}user preferences
 msgstr ""
 
 msgid "Enable or disable version check and Service Ping."
+msgstr ""
+
+msgid "Enable pre-receive secret detection"
 msgstr ""
 
 msgid "Enable rate limiting for requests to the specified paths"
@@ -30568,6 +30577,9 @@ msgid "Min Value"
 msgstr ""
 
 msgid "Minimal Access"
+msgstr ""
+
+msgid "Minimize the risk of secrets from being committed to any repository in this GitLab instance."
 msgstr ""
 
 msgid "Minimum capacity to be available before we schedule more mirrors preemptively."

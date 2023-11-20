@@ -132,6 +132,11 @@ module EE
           attrs << :git_two_factor_session_expiry
         end
 
+        if License.feature_available?(:pre_receive_secret_detection) &&
+            ::Feature.enabled?(:secret_detection_application_setting)
+          attrs << :pre_receive_secret_detection_enabled
+        end
+
         if License.feature_available?(:admin_merge_request_approvers_rules)
           attrs += EE::ApplicationSettingsHelper.merge_request_appovers_rules_attributes
         end
