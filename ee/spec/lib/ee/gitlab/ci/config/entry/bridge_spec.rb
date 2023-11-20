@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Config::Entry::Bridge do
+RSpec.describe Gitlab::Ci::Config::Entry::Bridge, feature_category: :pipeline_composition do
   subject { described_class.new(config, name: :my_bridge) }
 
   describe '.matching?' do

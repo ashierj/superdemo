@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe "CI YML Templates" do
+RSpec.describe "CI YML Templates", feature_category: :pipeline_composition do
   using RSpec::Parameterized::TableSyntax
   subject { Gitlab::Ci::YamlProcessor.new(content).execute }
 

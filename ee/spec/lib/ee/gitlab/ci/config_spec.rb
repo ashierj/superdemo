@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Config do
+RSpec.describe Gitlab::Ci::Config, feature_category: :pipeline_composition do
   let_it_be(:ci_yml) do
     <<-EOS
     sample_job:
