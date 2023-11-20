@@ -147,13 +147,27 @@ describe('Activity Filter component', () => {
       });
     });
 
+    const hasSelectedItems = [
+      ITEMS.STILL_DETECTED.value,
+      ITEMS.HAS_ISSUE.value,
+      ITEMS.HAS_MERGE_REQUEST.value,
+      ITEMS.HAS_SOLUTION.value,
+    ];
+
+    const hasNotSelectedItems = [
+      ITEMS.NO_LONGER_DETECTED.value,
+      ITEMS.DOES_NOT_HAVE_ISSUE.value,
+      ITEMS.DOES_NOT_HAVE_MERGE_REQUEST.value,
+      ITEMS.DOES_NOT_HAVE_SOLUTION.value,
+    ];
+
     it.each`
-      selectedItems                                                                                                 | hasIssues | hasResolution | hasMergeRequest
-      ${[ITEMS.STILL_DETECTED.value, ITEMS.HAS_ISSUE.value, ITEMS.HAS_MERGE_REQUEST.value]}                         | ${true}   | ${false}      | ${true}
-      ${[ITEMS.NO_LONGER_DETECTED.value, ITEMS.DOES_NOT_HAVE_ISSUE.value, ITEMS.DOES_NOT_HAVE_MERGE_REQUEST.value]} | ${false}  | ${true}       | ${false}
+      selectedItems          | hasIssues | hasResolution | hasMergeRequest | hasRemediations
+      ${hasSelectedItems}    | ${true}   | ${false}      | ${true}         | ${true}
+      ${hasNotSelectedItems} | ${false}  | ${true}       | ${false}        | ${false}
     `(
       'emits the expected data for $selectedItems',
-      async ({ selectedItems, hasIssues, hasResolution, hasMergeRequest }) => {
+      async ({ selectedItems, hasIssues, hasResolution, hasMergeRequest, hasRemediations }) => {
         for await (const value of selectedItems) {
           await clickItem(value);
         }
@@ -166,6 +180,7 @@ describe('Activity Filter component', () => {
           hasIssues,
           hasMergeRequest,
           hasResolution,
+          hasRemediations,
         });
       },
     );
