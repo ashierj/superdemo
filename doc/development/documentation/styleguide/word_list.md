@@ -509,6 +509,13 @@ To be more upbeat and precise, do not use **downgrade**. Focus instead on the ac
 - For changing to earlier GitLab versions, use [**roll back**](#roll-back).
 - For changing to lower GitLab tiers, use **change the subscription tier**.
 
+## download
+
+Use **download** to describe saving data to a user's device. For details, see
+[the Microsoft style guide](https://learn.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/d/download).
+
+Do not confuse download with [export](#export).
+
 ## dropdown list
 
 Use **dropdown list** to refer to the UI element. Do not use **dropdown** without **list** after it.
@@ -617,6 +624,22 @@ Use uppercase for **Experiment**. For example: **The XYZ feature is an Experimen
 
 You might also want to link to [this section](../../../policy/experiment-beta-support.md#experiment)
 in the handbook when writing about Experiment features.
+
+## export
+
+Use **export** to indicate translating raw data,
+which is not represented by a file in GitLab, into a standard file format.
+
+You can differentiate **export** from **download** because:
+
+- Often, you can use export options to change the output.
+- Exported data is not necessarily downloaded to a user's device.
+
+For example:
+
+- Export the contents of your report to CSV format.
+
+Do not confuse with [download](#download).
 
 ## FAQ
 
