@@ -7,19 +7,13 @@ import { __ } from '~/locale';
 import CreateMenu from '~/super_sidebar/components/create_menu.vue';
 import UserMenu from '~/super_sidebar/components/user_menu.vue';
 import SearchModal from '~/super_sidebar/components/global_search/components/global_search.vue';
-import SetStatusModal from '~/set_status_modal/set_status_modal_wrapper.vue';
 import BrandLogo from 'jh_else_ce/super_sidebar/components/brand_logo.vue';
 import MergeRequestMenu from '~/super_sidebar/components/merge_request_menu.vue';
 import UserBar from '~/super_sidebar/components/user_bar.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import waitForPromises from 'helpers/wait_for_promises';
 import { userCounts } from '~/super_sidebar/user_counts_manager';
-import { stubComponent } from 'helpers/stub_component';
-import {
-  sidebarData as mockSidebarData,
-  loggedOutSidebarData,
-  userMenuMockStatus as mockStatus,
-} from '../mock_data';
+import { sidebarData as mockSidebarData, loggedOutSidebarData } from '../mock_data';
 import { MOCK_DEFAULT_SEARCH_OPTIONS } from './global_search/mock_data';
 
 describe('UserBar component', () => {
@@ -35,7 +29,6 @@ describe('UserBar component', () => {
   const findCollapseButton = () => wrapper.findByTestId('super-sidebar-collapse-button');
   const findSearchButton = () => wrapper.findByTestId('super-sidebar-search-button');
   const findSearchModal = () => wrapper.findComponent(SearchModal);
-  const findSetStatusModal = () => wrapper.findComponent(SetStatusModal);
   const findStopImpersonationButton = () => wrapper.findByTestId('stop-impersonation-btn');
 
   Vue.use(Vuex);
@@ -54,9 +47,6 @@ describe('UserBar component', () => {
       propsData: {
         hasCollapseButton,
         sidebarData,
-      },
-      stubs: {
-        SetStatusModal: stubComponent(SetStatusModal),
       },
       provide: {
         isImpersonating: false,
@@ -174,89 +164,6 @@ describe('UserBar component', () => {
     });
   });
 
-  describe('set status modal', () => {
-    describe('when there is no status data', () => {
-      it('should not render the modal', () => {
-        createWrapper({ sidebarData: { ...mockSidebarData, status: null } });
-
-        expect(findSetStatusModal().exists()).toBe(false);
-      });
-    });
-
-    describe('when the user cannot update the status', () => {
-      it('should not render the modal', () => {
-        createWrapper({
-          sidebarData: { ...mockSidebarData, status: { ...mockStatus, can_update: false } },
-        });
-
-        expect(findSetStatusModal().exists()).toBe(false);
-      });
-    });
-
-    describe('when the user can update the status', () => {
-      describe.each`
-        busy     | customized
-        ${true}  | ${true}
-        ${true}  | ${false}
-        ${false} | ${true}
-      `('and the status is busy or customized', ({ busy, customized }) => {
-        it('should pass the current status to the modal', () => {
-          createWrapper({
-            sidebarData: {
-              ...mockSidebarData,
-              status: { ...mockStatus, can_update: true, busy, customized },
-            },
-          });
-
-          expect(findSetStatusModal().exists()).toBe(true);
-          expect(findSetStatusModal().props()).toMatchObject({
-            defaultEmoji: 'speech_balloon',
-            currentEmoji: mockStatus.emoji,
-            currentMessage: mockStatus.message,
-            currentAvailability: mockStatus.availability,
-            currentClearStatusAfter: mockStatus.clear_after,
-          });
-        });
-
-        it('casts falsey values to empty strings', () => {
-          createWrapper({
-            sidebarData: {
-              ...mockSidebarData,
-              status: { can_update: true, busy, customized },
-            },
-          });
-
-          expect(findSetStatusModal().exists()).toBe(true);
-          expect(findSetStatusModal().props()).toMatchObject({
-            defaultEmoji: 'speech_balloon',
-            currentEmoji: '',
-            currentMessage: '',
-            currentAvailability: '',
-            currentClearStatusAfter: '',
-          });
-        });
-      });
-
-      describe('and the status is neither busy nor customized', () => {
-        it('should pass an empty status to the modal', () => {
-          createWrapper({
-            sidebarData: {
-              ...mockSidebarData,
-              status: { ...mockStatus, can_update: true, busy: false, customized: false },
-            },
-          });
-
-          expect(findSetStatusModal().exists()).toBe(true);
-          expect(findSetStatusModal().props()).toMatchObject({
-            defaultEmoji: 'speech_balloon',
-            currentEmoji: '',
-            currentMessage: '',
-          });
-        });
-      });
-    });
-  });
-
   describe('Search', () => {
     beforeEach(async () => {
       createWrapper();
@@ -337,10 +244,6 @@ describe('UserBar component', () => {
 
     it('does not render user menu', () => {
       expect(findUserMenu().exists()).toBe(false);
-    });
-
-    it('does not render set status modal menu', () => {
-      expect(findSetStatusModal().exists()).toBe(false);
     });
 
     it('does not render counters', () => {

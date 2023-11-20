@@ -32,10 +32,6 @@ export default {
       import(
         /* webpackChunkName: 'global_search_modal' */ './global_search/components/global_search.vue'
       ),
-    SetStatusModal: () =>
-      import(
-        /* webpackChunkName: 'statusModalBundle' */ '../../set_status_modal/set_status_modal_wrapper.vue'
-      ),
     SuperSidebarToggle,
     BrandLogo,
     GlIcon,
@@ -73,30 +69,11 @@ export default {
       mrMenuShown: false,
       searchTooltip: this.$options.i18n.searchKbdHelp,
       userCounts,
-      setStatusModalReady: false,
     };
   },
   computed: {
     mergeRequestTotalCount() {
       return userCounts.assigned_merge_requests + userCounts.review_requested_merge_requests;
-    },
-    statusModalData() {
-      if (!this.sidebarData?.status?.can_update) {
-        return null;
-      }
-
-      const { busy, customized } = this.sidebarData.status;
-
-      if (!busy && !customized) {
-        return {};
-      }
-
-      return {
-        'current-emoji': this.sidebarData.status.emoji || '',
-        'current-message': this.sidebarData.status.message || '',
-        'current-availability': this.sidebarData.status.availability || '',
-        'current-clear-status-after': this.sidebarData.status.clear_after || '',
-      };
     },
   },
   created() {
@@ -158,11 +135,7 @@ export default {
         :groups="sidebarData.create_new_menu_groups"
       />
 
-      <user-menu
-        v-if="sidebarData.is_logged_in"
-        :data="sidebarData"
-        :set-status-modal-ready="setStatusModalReady"
-      />
+      <user-menu v-if="sidebarData.is_logged_in" :data="sidebarData" />
 
       <gl-button
         v-if="isImpersonating"
@@ -234,11 +207,5 @@ export default {
       {{ $options.i18n.searchBtnText }}
     </button>
     <search-modal @shown="hideSearchTooltip" @hidden="showSearchTooltip" />
-    <set-status-modal
-      v-if="statusModalData"
-      default-emoji="speech_balloon"
-      v-bind="statusModalData"
-      @mounted="setStatusModalReady = true"
-    />
   </div>
 </template>

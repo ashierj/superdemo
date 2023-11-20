@@ -1,8 +1,10 @@
 import { GlAvatar, GlDisclosureDropdown } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 import UserMenu from '~/super_sidebar/components/user_menu.vue';
 import UserMenuProfileItem from '~/super_sidebar/components/user_menu_profile_item.vue';
+import SetStatusModal from '~/set_status_modal/set_status_modal_wrapper.vue';
 import { mockTracking } from 'helpers/tracking_helper';
 import PersistentUserCallout from '~/persistent_user_callout';
 import { userMenuMockData, userMenuMockStatus, userMenuMockPipelineMinutes } from '../mock_data';
@@ -13,6 +15,7 @@ describe('UserMenu component', () => {
 
   const GlEmoji = { template: '<img/>' };
   const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findSetStatusModal = () => wrapper.findComponent(SetStatusModal);
   const showDropdown = () => findDropdown().vm.$emit('shown');
 
   const closeDropdownSpy = jest.fn();
@@ -24,11 +27,11 @@ describe('UserMenu component', () => {
           ...userMenuMockData,
           ...userDataChanges,
         },
-        setStatusModalReady: true,
       },
       stubs: {
         GlEmoji,
         GlAvatar: true,
+        SetStatusModal: stubComponent(SetStatusModal),
         ...stubs,
       },
       provide: {
@@ -92,21 +95,36 @@ describe('UserMenu component', () => {
   describe('User status item', () => {
     let item;
 
-    const setItem = ({ can_update, busy, customized, stubs } = {}) => {
-      createWrapper({ status: { ...userMenuMockStatus, can_update, busy, customized } }, stubs);
+    const setItem = async ({
+      can_update: canUpdate = false,
+      busy = false,
+      customized = false,
+      stubs,
+    } = {}) => {
+      createWrapper(
+        { status: { ...userMenuMockStatus, can_update: canUpdate, busy, customized } },
+        stubs,
+      );
+      // Mock mounting the modal if we can update
+      if (canUpdate) {
+        expect(wrapper.vm.setStatusModalReady).toEqual(false);
+        findSetStatusModal().vm.$emit('mounted');
+        await nextTick();
+        expect(wrapper.vm.setStatusModalReady).toEqual(true);
+      }
       item = wrapper.findByTestId('status-item');
     };
 
     describe('When user cannot update the status', () => {
-      it('does not render the status menu item', () => {
-        setItem();
+      it('does not render the status menu item', async () => {
+        await setItem();
         expect(item.exists()).toBe(false);
       });
     });
 
     describe('When user can update the status', () => {
-      it('renders the status menu item', () => {
-        setItem({ can_update: true });
+      it('renders the status menu item', async () => {
+        await setItem({ can_update: true });
         expect(item.exists()).toBe(true);
         expect(item.find('button').attributes()).toMatchObject({
           'data-track-property': 'nav_user_menu',
@@ -115,8 +133,8 @@ describe('UserMenu component', () => {
         });
       });
 
-      it('should close the dropdown when status modal opened', () => {
-        setItem({
+      it('should close the dropdown when status modal opened', async () => {
+        await setItem({
           can_update: true,
           stubs: {
             GlDisclosureDropdown: stubComponent(GlDisclosureDropdown, {
@@ -140,11 +158,77 @@ describe('UserMenu component', () => {
           ${true}  | ${true}    | ${'Edit status'}
         `(
           'when busy is "$busy" and customized is "$customized" the label is "$label"',
-          ({ busy, customized, label }) => {
-            setItem({ can_update: true, busy, customized });
+          async ({ busy, customized, label }) => {
+            await setItem({ can_update: true, busy, customized });
             expect(item.text()).toBe(label);
           },
         );
+      });
+    });
+  });
+
+  describe('set status modal', () => {
+    describe('when the user cannot update the status', () => {
+      it('should not render the modal', () => {
+        createWrapper({
+          status: { ...userMenuMockStatus, can_update: false },
+        });
+
+        expect(findSetStatusModal().exists()).toBe(false);
+      });
+    });
+
+    describe('when the user can update the status', () => {
+      describe.each`
+        busy     | customized
+        ${true}  | ${true}
+        ${true}  | ${false}
+        ${false} | ${true}
+      `('and the status is busy or customized', ({ busy, customized }) => {
+        it('should pass the current status to the modal', () => {
+          createWrapper({
+            status: { ...userMenuMockStatus, can_update: true, busy, customized },
+          });
+
+          expect(findSetStatusModal().exists()).toBe(true);
+          expect(findSetStatusModal().props()).toMatchObject({
+            defaultEmoji: 'speech_balloon',
+            currentEmoji: userMenuMockStatus.emoji,
+            currentMessage: userMenuMockStatus.message,
+            currentAvailability: userMenuMockStatus.availability,
+            currentClearStatusAfter: userMenuMockStatus.clear_after,
+          });
+        });
+
+        it('casts falsey values to empty strings', () => {
+          createWrapper({
+            status: { can_update: true, busy, customized },
+          });
+
+          expect(findSetStatusModal().exists()).toBe(true);
+          expect(findSetStatusModal().props()).toMatchObject({
+            defaultEmoji: 'speech_balloon',
+            currentEmoji: '',
+            currentMessage: '',
+            currentAvailability: '',
+            currentClearStatusAfter: '',
+          });
+        });
+      });
+
+      describe('and the status is neither busy nor customized', () => {
+        it('should pass an empty status to the modal', () => {
+          createWrapper({
+            status: { ...userMenuMockStatus, can_update: true, busy: false, customized: false },
+          });
+
+          expect(findSetStatusModal().exists()).toBe(true);
+          expect(findSetStatusModal().props()).toMatchObject({
+            defaultEmoji: 'speech_balloon',
+            currentEmoji: '',
+            currentMessage: '',
+          });
+        });
       });
     });
   });
