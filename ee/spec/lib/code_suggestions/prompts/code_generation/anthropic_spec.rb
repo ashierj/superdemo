@@ -74,11 +74,13 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
+
             When generating the new code, please ensure the following:
             1. It is valid Go code.
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
@@ -106,10 +108,11 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             <cursor>
             </existing_code>
 
+
             Here are instructions provided in <instruction></instruction> tags.
 
             <instruction>
-              Print a hello world message
+            Print a hello world message
             </instruction>
 
 
@@ -118,7 +121,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
         }
 
         expect(subject.request_params.except(:prompt)).to eq(request_params.except(:prompt))
-        expect(subject.request_params[:prompt].gsub(/\s+/, " ")).to eq(request_params[:prompt].gsub(/\s+/, " ").chomp)
+        expect(subject.request_params[:prompt]).to eq(request_params[:prompt].strip)
       end
 
       context 'when skipping instruction extraction' do
@@ -137,15 +140,14 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
             The comment directly before the <cursor> position is the instruction,
-            all other comments are not instructions.
+                       all other comments are not instructions.
             When generating the new code, please ensure the following:
             1. It is valid Go code.
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
             5. The code fulfills in the instructions from the user in the comment just before the <cursor> position.
-            All other comments are not instructions.
-
+                       All other comments are not instructions.
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
@@ -173,12 +175,15 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             <cursor>
             </existing_code>
 
+
+
+
             Assistant: <new_code>
             PROMPT
           }
 
           expect(subject.request_params.except(:prompt)).to eq(request_params.except(:prompt))
-          expect(subject.request_params[:prompt].gsub(/\s+/, " ")).to eq(request_params[:prompt].gsub(/\s+/, " ").chomp)
+          expect(subject.request_params[:prompt]).to eq(request_params[:prompt].strip)
         end
       end
     end
@@ -194,20 +199,28 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           prompt: <<~PROMPT
             Human: You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
+
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
+
             When generating the new code, please ensure the following:
             1. It is valid Go code.
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+
+
+
+
+
             Here are instructions provided in <instruction></instruction> tags.
 
             <instruction>
-              Print a hello world message
+            Print a hello world message
             </instruction>
 
 
@@ -216,7 +229,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
         }
 
         expect(subject.request_params.except(:prompt)).to eq(request_params.except(:prompt))
-        expect(subject.request_params[:prompt].gsub(/\s+/, " ")).to eq(request_params[:prompt].gsub(/\s+/, " ").chomp)
+        expect(subject.request_params[:prompt]).to eq(request_params[:prompt].strip)
       end
     end
 
@@ -238,32 +251,37 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
+
             When generating the new code, please ensure the following:
             1. It is valid Go code.
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
+
+
             <existing_code>
             main() {
-
             <cursor>
             </existing_code>
+
 
             Here are instructions provided in <instruction></instruction> tags.
 
             <instruction>
-              Print a hello world message
+            Print a hello world message
             </instruction>
+
 
             Assistant: <new_code>
           PROMPT
         }
 
         expect(subject.request_params.except(:prompt)).to eq(request_params.except(:prompt))
-        expect(subject.request_params[:prompt].gsub(/\s+/, " ")).to eq(request_params[:prompt].gsub(/\s+/, " ").chomp)
+        expect(subject.request_params[:prompt]).to eq(request_params[:prompt].strip)
       end
     end
 
@@ -283,13 +301,17 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
+
             When generating the new code, please ensure the following:
             1. It is valid  code.
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+
+
 
             <existing_code>
             package main
@@ -300,10 +322,11 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             <cursor>
             </existing_code>
 
+
             Here are instructions provided in <instruction></instruction> tags.
 
             <instruction>
-              Print a hello world message
+            Print a hello world message
             </instruction>
 
 
@@ -312,7 +335,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
         }
 
         expect(subject.request_params.except(:prompt)).to eq(request_params.except(:prompt))
-        expect(subject.request_params[:prompt].gsub(/\s+/, " ")).to eq(request_params[:prompt].gsub(/\s+/, " ").chomp)
+        expect(subject.request_params[:prompt]).to eq(request_params[:prompt].strip)
       end
     end
 
@@ -332,13 +355,17 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
+
             When generating the new code, please ensure the following:
             1. It is valid  code.
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+
+
 
             <existing_code>
             package main
@@ -349,10 +376,11 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             <cursor>
             </existing_code>
 
+
             Here are instructions provided in <instruction></instruction> tags.
 
             <instruction>
-              Print a hello world message
+            Print a hello world message
             </instruction>
 
 
@@ -361,7 +389,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
         }
 
         expect(subject.request_params.except(:prompt)).to eq(request_params.except(:prompt))
-        expect(subject.request_params[:prompt].gsub(/\s+/, " ")).to eq(request_params[:prompt].gsub(/\s+/, " ").chomp)
+        expect(subject.request_params[:prompt]).to eq(request_params[:prompt].strip)
       end
     end
   end
