@@ -3174,6 +3174,9 @@ msgstr ""
 msgid "Admin Area / Dashboard"
 msgstr ""
 
+msgid "Admin Mode"
+msgstr ""
+
 msgid "Admin Note"
 msgstr ""
 
@@ -3181,9 +3184,6 @@ msgid "Admin Notifications"
 msgstr ""
 
 msgid "Admin message"
-msgstr ""
-
-msgid "Admin mode"
 msgstr ""
 
 msgid "Admin mode already enabled"
@@ -18301,6 +18301,9 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
+msgid "Enable Admin Mode"
+msgstr ""
+
 msgid "Enable Akismet"
 msgstr ""
 
@@ -18350,9 +18353,6 @@ msgid "Enable What's new: Current tier only"
 msgstr ""
 
 msgid "Enable access to the performance bar for non-administrators in a given group."
-msgstr ""
-
-msgid "Enable admin mode"
 msgstr ""
 
 msgid "Enable and disable Service Desk. Some additional configuration might be required. %{link_start}Learn more%{link_end}."

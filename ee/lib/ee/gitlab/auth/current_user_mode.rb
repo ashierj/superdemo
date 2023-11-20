@@ -15,7 +15,7 @@ module EE
             author: user,
             scope: user,
             target: user,
-            message: 'Enabled admin mode',
+            message: 'Enabled Admin Mode',
             created_at: DateTime.current
           }
 
