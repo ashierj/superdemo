@@ -1,12 +1,14 @@
 <script>
-import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlFormGroup, GlFormInput, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL } from '../../constants';
 import {
+  CUSTOM_ACTION_KEY,
   CUSTOM_ACTION_OPTIONS,
   CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS,
   CUSTOM_ACTION_OPTIONS_KEYS,
+  LINKED_EXISTING_FILE,
 } from '../constants';
 import CodeBlockActionTooltip from './code_block_action_tooltip.vue';
 
@@ -16,14 +18,18 @@ export default {
   CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS,
   i18n: {
     customSectionHeaderCopy: s__(
-      'ScanExecutionPolicy|%{boldStart}Run%{boldEnd} %{typeSelector} %{tooltip}',
+      'ScanExecutionPolicy|%{boldStart}Run%{boldEnd} %{typeSelector} %{filePath} %{tooltip}',
     ),
     customSectionTypeLabel: s__('ScanExecutionPolicy|Choose a method to execute code'),
+    linkedFileInputPlaceholder: s__('ScanExecutionPolicy|Link existing CI file'),
+    linkedFileInputValidationMessage: s__("ScanExecutionPolicy|The file path can't be empty"),
   },
   name: 'CodeBlockAction',
   components: {
     CodeBlockActionTooltip,
     GlCollapsibleListbox,
+    GlFormInput,
+    GlFormGroup,
     GlSprintf,
     SectionLayout,
     YamlEditor: () =>
@@ -43,25 +49,54 @@ export default {
     },
   },
   data() {
+    const hasFilePath = Boolean(this.initAction?.ci_configuration_path?.file);
+
     return {
-      selectedType: '',
+      selectedType: hasFilePath ? LINKED_EXISTING_FILE : '',
       yamlEditorValue: '',
     };
   },
   computed: {
+    filePath() {
+      return this.initAction?.ci_configuration_path?.file;
+    },
     isFirstAction() {
       return this.actionIndex === 0;
+    },
+    isLinkedFile() {
+      return this.selectedType === LINKED_EXISTING_FILE;
     },
     toggleText() {
       return CUSTOM_ACTION_OPTIONS[this.selectedType] || this.$options.i18n.customSectionTypeLabel;
     },
+    isValidFilePath() {
+      if (this.filePath === undefined) {
+        return undefined;
+      }
+
+      return Boolean(this.filePath);
+    },
   },
   methods: {
+    resetActionToDefault() {
+      this.$emit('changed', { scan: CUSTOM_ACTION_KEY });
+    },
     setSelectedType(type) {
       this.selectedType = type;
+      this.resetActionToDefault();
     },
     updateYaml(val) {
       this.yamlEditorValue = val;
+    },
+    updatedFilePath(path) {
+      this.triggerChanged({
+        ci_configuration_path: {
+          file: path,
+        },
+      });
+    },
+    triggerChanged(value) {
+      this.$emit('changed', { ...this.initAction, ...value });
     },
   },
 };
@@ -79,31 +114,59 @@ export default {
 
     <section-layout @remove="$emit('remove')">
       <template #content>
-        <div class="gl-display-inline-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
-          <gl-sprintf :message="$options.i18n.customSectionHeaderCopy">
-            <template #bold="{ content }">
-              <b>{{ content }}</b>
-            </template>
+        <div class="gl-display-inline-flex gl-w-full gl-gap-3 gl-align-items-center gl-flex-wrap">
+          <div
+            class="gl-display-inline-flex gl-w-full gl-gap-3 gl-align-items-baseline gl-flex-wrap gl-md-flex-nowrap"
+          >
+            <gl-sprintf :message="$options.i18n.customSectionHeaderCopy">
+              <template #bold="{ content }">
+                <b>{{ content }}</b>
+              </template>
 
-            <template #typeSelector>
-              <gl-collapsible-listbox
-                :items="$options.CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS"
-                :toggle-text="toggleText"
-                :selected="selectedType"
-                @select="setSelectedType"
-              />
-            </template>
+              <template #typeSelector>
+                <gl-collapsible-listbox
+                  label-for="file-path"
+                  :items="$options.CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS"
+                  :toggle-text="toggleText"
+                  :selected="selectedType"
+                  @select="setSelectedType"
+                />
+              </template>
 
-            <template #tooltip>
-              <code-block-action-tooltip />
-            </template>
-          </gl-sprintf>
+              <template #filePath>
+                <gl-form-group
+                  v-if="isLinkedFile"
+                  class="gl-w-full gl-mb-0"
+                  label-sr-only
+                  :label="__('file path group')"
+                  :optional="false"
+                  :invalid-feedback="$options.i18n.linkedFileInputValidationMessage"
+                  :state="isValidFilePath"
+                >
+                  <gl-form-input
+                    id="file-path"
+                    :placeholder="$options.i18n.linkedFileInputPlaceholder"
+                    :state="isValidFilePath"
+                    :value="filePath"
+                    @input="updatedFilePath"
+                  />
+                </gl-form-group>
+              </template>
+
+              <template #tooltip>
+                <code-block-action-tooltip />
+              </template>
+            </gl-sprintf>
+          </div>
         </div>
-        <div class="editor gl-w-full gl-overflow-y-auto gl-rounded-base gl-h-200!">
+        <div
+          v-if="!isLinkedFile"
+          class="editor gl-w-full gl-overflow-y-auto gl-rounded-base gl-h-200!"
+        >
           <yaml-editor
             data-testid="custom-yaml-editor"
             policy-type="scan_execution_policy"
-            :file-global-id="`${actionIndex}-code-block`"
+            :disable-schema="true"
             :value="yamlEditorValue"
             :read-only="false"
             @input="updateYaml"

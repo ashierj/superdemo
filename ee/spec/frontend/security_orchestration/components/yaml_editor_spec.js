@@ -88,6 +88,17 @@ describe('YamlEditor component', () => {
     });
   });
 
+  it('should disable schema registration', () => {
+    factory({
+      propsData: {
+        disableSchema: true,
+      },
+    });
+
+    expect(mockUse).toHaveBeenCalledTimes(0);
+    expect(mockRegisterSecurityPolicySchema).toHaveBeenCalledTimes(0);
+  });
+
   it('configures source editor with unique id', () => {
     factory({
       propsData: {

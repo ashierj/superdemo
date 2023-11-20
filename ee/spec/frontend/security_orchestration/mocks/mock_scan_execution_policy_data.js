@@ -246,3 +246,40 @@ export const mockPolicyScopeScanExecutionObject = {
     compliance_frameworks: [],
   },
 };
+
+export const mockCodeBlockFilePathScanExecutionManifest = `type: scan_execution_policy
+name: Test File Path
+enabled: false
+rules:
+  - type: pipeline
+    branches:
+      - main
+actions:
+  - scan: sast
+  - scan: custom
+    ci_configuration_path:
+      file: file
+`;
+
+export const mockCodeBlockFilePathScanExecutionObject = {
+  type: 'scan_execution_policy',
+  name: 'Test File Path',
+  enabled: false,
+  rules: [
+    {
+      type: 'pipeline',
+      branches: ['main'],
+    },
+  ],
+  actions: [
+    {
+      scan: 'sast',
+    },
+    {
+      scan: 'custom',
+      ci_configuration_path: {
+        file: 'file',
+      },
+    },
+  ],
+};

@@ -63,10 +63,10 @@ describe('ActionBuilder', () => {
       expect(findCodeBlockAction().exists()).toBe(true);
     });
 
-    it('should emit remove event', () => {
-      findCodeBlockAction().vm.$emit('remove');
+    it.each(['remove', 'changed'])('should emit event', (event) => {
+      findCodeBlockAction().vm.$emit(event);
 
-      expect(wrapper.emitted('remove')).toHaveLength(1);
+      expect(wrapper.emitted(event)).toHaveLength(1);
     });
   });
 });

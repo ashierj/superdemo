@@ -28,6 +28,11 @@ export default {
       required: false,
       default: '',
     },
+    disableSchema: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     editorOptions() {
@@ -53,12 +58,14 @@ export default {
       this.$emit('input', val);
     },
     registerSchema({ detail: { instance } }) {
-      instance.use({ definition: PolicySchemaExtension });
-      instance.registerSecurityPolicySchema({
-        namespacePath: this.namespacePath,
-        namespaceType: this.namespaceType,
-        policyType: this.policyType,
-      });
+      if (!this.disableSchema) {
+        instance.use({ definition: PolicySchemaExtension });
+        instance.registerSecurityPolicySchema({
+          namespacePath: this.namespacePath,
+          namespaceType: this.namespaceType,
+          policyType: this.policyType,
+        });
+      }
     },
   },
   readyEvent: EDITOR_READY_EVENT,
