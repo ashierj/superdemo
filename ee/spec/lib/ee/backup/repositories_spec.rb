@@ -57,10 +57,7 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
       let(:storages) { %w[default] }
 
       before do
-        stub_storage_settings('test_second_storage' => {
-          'gitaly_address' => Gitlab.config.repositories.storages.default.gitaly_address,
-          'path' => TestEnv::SECOND_STORAGE_PATH
-        })
+        stub_storage_settings('test_second_storage' => {})
       end
 
       it 'calls enqueue for all repositories on the specified storage', :aggregate_failures do
@@ -102,10 +99,7 @@ RSpec.describe Backup::Repositories, feature_category: :backup_restore do
       let(:storages) { %w[default] }
 
       before do
-        stub_storage_settings('test_second_storage' => {
-          'gitaly_address' => Gitlab.config.repositories.storages.default.gitaly_address,
-          'path' => TestEnv::SECOND_STORAGE_PATH
-        })
+        stub_storage_settings('test_second_storage' => {})
       end
 
       it 'calls enqueue for all repositories on the specified storage', :aggregate_failures do
