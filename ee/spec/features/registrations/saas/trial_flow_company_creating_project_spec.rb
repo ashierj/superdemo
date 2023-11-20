@@ -3,15 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe 'Trial flow for user picking company and creating a project', :js, :saas_registration, feature_category: :onboarding do
-  where(:case_name, :sign_up_method) do
+  where(:case_name, :sign_up_method, :tracking_events_key) do
     [
-      ['with regular trial sign up', ->(params) { trial_registration_sign_up(params) }],
-      ['with sso trial sign up', ->(params) { sso_trial_registration_sign_up(params) }]
+      ['with regular trial sign up', ->(params) { trial_registration_sign_up(params) }, :trial_regular_signup],
+      ['with sso trial sign up', ->(params) { sso_trial_registration_sign_up(params) }, :trial_sso_signup]
     ]
   end
 
   with_them do
-    it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+    it 'registers the user and creates a group and project reaching onboarding', :snowplow_micro, :sidekiq_inline do
       sign_up_method.call(glm_params)
 
       ensure_onboarding { expect_to_see_welcome_form }
@@ -41,6 +41,7 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
       click_on 'Ok, let\'s go'
 
       expect_to_be_in_learn_gitlab
+      expect(tracking_events_key).to have_all_expected_events
     end
 
     context 'with free_trial_registration_redesign experiment candidate' do

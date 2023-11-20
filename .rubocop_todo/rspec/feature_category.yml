@@ -4072,7 +4072,6 @@ RSpec/FeatureCategory:
     - 'spec/lib/gitlab/themes_spec.rb'
     - 'spec/lib/gitlab/throttle_spec.rb'
     - 'spec/lib/gitlab/time_tracking_formatter_spec.rb'
-    - 'spec/lib/gitlab/tracking/destinations/snowplow_micro_spec.rb'
     - 'spec/lib/gitlab/tracking/destinations/snowplow_spec.rb'
     - 'spec/lib/gitlab/tracking/event_definition_spec.rb'
     - 'spec/lib/gitlab/tracking/helpers/weak_password_error_event_spec.rb'
