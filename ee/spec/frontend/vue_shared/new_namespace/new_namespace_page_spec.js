@@ -52,38 +52,18 @@ describe('Experimental new project creation app', () => {
   };
 
   describe('SuperSidebarToggle', () => {
-    let originalGon;
-
-    beforeEach(() => {
-      originalGon = window.gon;
-      window.gon = { use_new_navigation: true };
-      sidebarState.isCollapsed = true;
-    });
-
-    afterEach(() => {
-      window.gon = originalGon;
-    });
-
-    it('shows sidebar toggle', () => {
-      createComponent();
-
-      expect(findSuperSidebarToggle().exists()).toBe(true);
-    });
-
-    describe('when is not new navigation', () => {
-      it('does not show sidebar toggle', () => {
-        window.gon = { use_new_navigation: false };
-
+    describe('when collapsed', () => {
+      it('shows sidebar toggle', () => {
+        sidebarState.isCollapsed = true;
         createComponent();
 
-        expect(findSuperSidebarToggle().exists()).toBe(false);
+        expect(findSuperSidebarToggle().exists()).toBe(true);
       });
     });
 
-    describe('when is not collapsed', () => {
+    describe('when not collapsed', () => {
       it('does not show sidebar toggle', () => {
         sidebarState.isCollapsed = false;
-
         createComponent();
 
         expect(findSuperSidebarToggle().exists()).toBe(false);
