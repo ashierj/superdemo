@@ -23325,7 +23325,6 @@ CREATE TABLE service_access_tokens (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    category smallint DEFAULT 0 NOT NULL,
     encrypted_token bytea NOT NULL,
     encrypted_token_iv bytea NOT NULL,
     expires_at timestamp with time zone NOT NULL
