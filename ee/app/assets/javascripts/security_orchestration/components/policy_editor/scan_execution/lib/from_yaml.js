@@ -1,4 +1,5 @@
 import { safeLoad } from 'js-yaml';
+import { CUSTOM_ACTION_KEY } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import { isValidPolicy, hasInvalidCron } from '../../utils';
 import {
   BRANCH_TYPE_KEY,
@@ -36,6 +37,11 @@ export const hasRuleModeSupportedScanners = (policy) => {
   }
 
   const availableScanners = Object.keys(RULE_MODE_SCANNERS);
+
+  if (gon?.features?.compliancePipelineInPolicies) {
+    availableScanners.push(CUSTOM_ACTION_KEY);
+  }
+
   const configuredScanners = policy.actions.map((action) => action.scan);
   return configuredScanners.every((scanner) => availableScanners.includes(scanner));
 };
@@ -65,6 +71,10 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'branch_exceptions',
       ];
       const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
+
+      if (gon?.features?.compliancePipelineInPolicies) {
+        actionsKeys.push('ci_configuration_path');
+      }
 
       /**
        * Can be removed after ff is enabled

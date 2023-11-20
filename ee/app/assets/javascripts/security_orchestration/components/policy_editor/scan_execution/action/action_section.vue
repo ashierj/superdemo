@@ -55,6 +55,7 @@ export default {
     class="gl-mb-4"
     :action-index="actionIndex"
     :init-action="initAction"
+    @changed="updateAction"
     @remove="removeAction"
   />
 </template>
