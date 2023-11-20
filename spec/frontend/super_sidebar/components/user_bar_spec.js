@@ -194,13 +194,13 @@ describe('UserBar component', () => {
     });
 
     describe('when the user can update the status', () => {
-      describe('and the status is busy or customized', () => {
-        it.each`
-          busy     | customized
-          ${true}  | ${true}
-          ${true}  | ${false}
-          ${false} | ${true}
-        `('should pass the current status to the modal', ({ busy, customized }) => {
+      describe.each`
+        busy     | customized
+        ${true}  | ${true}
+        ${true}  | ${false}
+        ${false} | ${true}
+      `('and the status is busy or customized', ({ busy, customized }) => {
+        it('should pass the current status to the modal', () => {
           createWrapper({
             sidebarData: {
               ...mockSidebarData,
@@ -215,6 +215,24 @@ describe('UserBar component', () => {
             currentMessage: mockStatus.message,
             currentAvailability: mockStatus.availability,
             currentClearStatusAfter: mockStatus.clear_after,
+          });
+        });
+
+        it('casts falsey values to empty strings', () => {
+          createWrapper({
+            sidebarData: {
+              ...mockSidebarData,
+              status: { can_update: true, busy, customized },
+            },
+          });
+
+          expect(findSetStatusModal().exists()).toBe(true);
+          expect(findSetStatusModal().props()).toMatchObject({
+            defaultEmoji: 'speech_balloon',
+            currentEmoji: '',
+            currentMessage: '',
+            currentAvailability: '',
+            currentClearStatusAfter: '',
           });
         });
       });

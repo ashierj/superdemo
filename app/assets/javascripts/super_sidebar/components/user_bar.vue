@@ -92,10 +92,10 @@ export default {
       }
 
       return {
-        'current-emoji': this.sidebarData.status.emoji,
-        'current-message': this.sidebarData.status.message,
-        'current-availability': this.sidebarData.status.availability,
-        'current-clear-status-after': this.sidebarData.status.clear_after,
+        'current-emoji': this.sidebarData.status.emoji || '',
+        'current-message': this.sidebarData.status.message || '',
+        'current-availability': this.sidebarData.status.availability || '',
+        'current-clear-status-after': this.sidebarData.status.clear_after || '',
       };
     },
   },
