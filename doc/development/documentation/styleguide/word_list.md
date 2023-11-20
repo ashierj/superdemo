@@ -50,7 +50,7 @@ Don't use backticks.
 Spell out **two-factor authentication** in sentence case for the first use and in topic titles, and **2FA**
 thereafter. If the first word in a sentence, do not capitalize `factor` or `authentication`. For example:
 
-- Two-factor authentication (2FA) helps secure your account. Set up 2FA when you first log in.
+- Two-factor authentication (2FA) helps secure your account. Set up 2FA when you first sign in.
 
 ## above
 
@@ -970,7 +970,15 @@ Do not use **limitations**. Use **known issues** instead.
 
 ## log in, log on
 
-Do not use **log in** or **log on**. Use [sign in](#sign-in-sign-in) instead. If the user interface has **Log in**, you can use it.
+Do not use:
+
+- **log in**.
+- **log on**.
+- **login**
+
+Use [sign in](#sign-in-sign-in) instead.
+
+However, if the user interface has **Log in**, you should match the UI.
 
 ## logged-in user, logged in user
 
@@ -1529,16 +1537,24 @@ Use **setup** as a noun, and **set up** as a verb. For example:
 
 ## sign in, sign-in
 
-Use **sign in** or **sign in to** as a verb to describe the action of signing in.
+To describe the action of signing in, use:
 
-Do not use **sign on** or **sign into**, or **log on**, **log in**, or **log into**.
+- **sign in**.
+- **sign in to** as a verb. For example: Use your password to sign in to GitLab.
 
-If the user interface has different words, use those.
+You can also use:
 
-You can use **sign-in** as a noun or adjective. For example, **sign-in page** or
-**sign-in restrictions**.
+- **sign-in** as a noun or adjective. For example: **sign-in page** or
+  **sign-in restrictions**.
+- **single sign-on**.
 
-You can use **single sign-on**.
+Do not use:
+
+- **sign on**.
+- **sign into**.
+- [**log on**, **log in**, or **log into**](#log-in-log-on).
+
+If the user interface has different words, you can use those.
 
 ## sign up
 
