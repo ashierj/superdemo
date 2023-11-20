@@ -70,6 +70,29 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ComplianceFrameworks::Sy
     end
   end
 
+  context 'when non existing compliance framework is linked to policy' do
+    let(:framework_ids_and_idx) do
+      [
+        { framework_ids: [non_existing_record_id], policy_index: 0 }
+      ]
+    end
+
+    it_behaves_like 'does not create ComplianceFramework::SecurityPolicy'
+
+    it 'logs details' do
+      expect(::Gitlab::AppJsonLogger).to receive(:info).once.with(
+        message: 'inaccessible compliance_framework_ids found in policy',
+        configuration_id: policy_configuration.id,
+        configuration_source_id: policy_configuration.source.id,
+        root_namespace_id: namespace.id,
+        policy_framework_ids: [non_existing_record_id],
+        inaccessible_framework_ids_count: 1
+      ).and_call_original
+
+      execute
+    end
+  end
+
   context 'when multiple compliance frameworks are linked to policy' do
     let(:framework_ids_and_idx) do
       [
