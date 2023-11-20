@@ -326,6 +326,25 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
           end
         end
 
+        context 'when a custom role is specified in the SAML provider', feature_category: :permissions do
+          let(:member_role) { create(:member_role, namespace: group) }
+          let!(:saml_provider) do
+            create(:saml_provider, group: group,
+              default_membership_role: member_role.base_access_level,
+              member_role: member_role)
+          end
+
+          before do
+            stub_licensed_features(custom_roles: true)
+          end
+
+          it 'sets the `member_role` of the member as per the specified `member_role`' do
+            post provider, params: { group_id: group }
+
+            expect(group.member(user).member_role).to eq(member_role)
+          end
+        end
+
         it_behaves_like "SAML session initiated"
 
         it "displays a flash indicating the account has been linked" do

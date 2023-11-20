@@ -23,11 +23,15 @@ module EE
           private
 
           def add_member
-            group.add_member(user, default_membership_role)
+            group.add_member(user, default_membership_role, member_role_id: member_role_id)
           end
 
           def default_membership_role
             group.saml_provider.default_membership_role
+          end
+
+          def member_role_id
+            group.saml_provider.member_role_id
           end
 
           def existing_member?

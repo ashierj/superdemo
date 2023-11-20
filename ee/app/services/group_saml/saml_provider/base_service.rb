@@ -10,7 +10,7 @@ module GroupSaml
       delegate :group, to: :saml_provider
 
       AUDIT_LOG_ALLOWLIST = %w[
-        enabled certificate_fingerprint sso_url enforced_sso enforced_group_managed_accounts prohibited_outer_forks default_membership_role git_check_enforced
+        enabled certificate_fingerprint sso_url enforced_sso enforced_group_managed_accounts prohibited_outer_forks default_membership_role git_check_enforced member_role_id
       ].freeze
 
       def initialize(current_user, saml_provider, params:)

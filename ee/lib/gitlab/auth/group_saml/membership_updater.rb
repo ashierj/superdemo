@@ -8,7 +8,7 @@ module Gitlab
 
         attr_reader :user, :saml_provider, :auth_hash
 
-        delegate :group, :default_membership_role, to: :saml_provider
+        delegate :group, :default_membership_role, :member_role_id, to: :saml_provider
 
         def initialize(user, saml_provider, auth_hash)
           @user = user
@@ -29,7 +29,7 @@ module Gitlab
         def add_default_membership
           return if group.member?(user)
 
-          member = group.add_member(user, default_membership_role)
+          member = group.add_member(user, default_membership_role, member_role_id: member_role_id)
 
           log_audit_event(member: member) if member&.persisted?
         end

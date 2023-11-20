@@ -22,11 +22,20 @@ module EE
 
         override :member_attributes
         def member_attributes
-          super.merge(ignore_user_limits: ignore_user_limits)
+          attributes = super.merge(ignore_user_limits: ignore_user_limits)
+          top_level_group = source.root_ancestor
+
+          return attributes unless top_level_group.custom_roles_enabled?
+
+          attributes.merge(member_role_id: member_role_id)
         end
 
         def ignore_user_limits
           args[:ignore_user_limits]
+        end
+
+        def member_role_id
+          args[:member_role_id]
         end
       end
     end
