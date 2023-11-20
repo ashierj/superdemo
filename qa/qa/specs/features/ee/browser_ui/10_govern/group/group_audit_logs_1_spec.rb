@@ -49,7 +49,7 @@ module QA
         it_behaves_like 'audit event', ['Added group']
       end
 
-      context 'for change repository size limit', :requires_admin,
+      context 'for change repository size limit', :requires_admin, :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347908' do
         before do
           sign_in(as_admin: true)

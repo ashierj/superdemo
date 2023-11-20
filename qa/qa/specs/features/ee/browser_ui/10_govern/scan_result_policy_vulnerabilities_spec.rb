@@ -83,7 +83,7 @@ module QA
         end
       end
 
-      it 'does not block merge when scan result policy does not apply for pipeline security findings',
+      it 'does not block merge when scan result policy does not apply for pipeline security findings', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/423412' do
         # Make sure Scan result policy commit was successful before running examples
         expect(scan_result_policy_commit.api_response).to have_key(:branch)

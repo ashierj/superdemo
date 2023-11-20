@@ -61,7 +61,7 @@ module QA
         runner&.remove_via_api! if runner
       end
 
-      it 'dependency list has empty state',
+      it 'dependency list has empty state', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348004' do
         Page::Project::Menu.perform(&:go_to_dependency_list)
 
@@ -143,7 +143,7 @@ module QA
         end
       end
 
-      it 'displays security reports in the group security dashboard',
+      it 'displays security reports in the group security dashboard', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
         push_security_reports
         project.visit!
