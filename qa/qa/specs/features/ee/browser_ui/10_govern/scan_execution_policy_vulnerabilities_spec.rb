@@ -54,7 +54,7 @@ module QA
         runner.remove_via_api!
       end
 
-      it 'takes effect when pipeline is run on the main branch',
+      it 'takes effect when pipeline is run on the main branch', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/423944' do
         expect(scan_execution_policy_commit.api_response).to have_key(:branch)
         expect(scan_execution_policy_commit.api_response[:branch]).not_to be nil
@@ -67,7 +67,7 @@ module QA
           "Expected #{job_name} to appear but it is not present"
       end
 
-      it 'does not take effect when pipeline is run on non default branch',
+      it 'does not take effect when pipeline is run on non default branch', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/426177' do
         expect(scan_execution_policy_commit.api_response).to have_key(:branch)
         expect(scan_execution_policy_commit.api_response[:branch]).not_to be nil

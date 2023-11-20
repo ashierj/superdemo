@@ -58,7 +58,7 @@ module QA
         runner.remove_via_api!
       end
 
-      it 'checks that dismissed vulnerabilities do not show up',
+      it 'checks that dismissed vulnerabilities do not show up', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415291' do
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
