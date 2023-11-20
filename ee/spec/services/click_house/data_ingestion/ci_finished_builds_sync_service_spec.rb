@@ -21,6 +21,8 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
 
   before_all do
     create_sync_events(*Ci::Build.finished.order(id: :desc))
+
+    stub_feature_flags(large_finished_builds_batch_size: false)
   end
 
   context 'when the ci_data_ingestion_to_click_house feature flag is on' do

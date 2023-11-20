@@ -49,6 +49,18 @@ module ClickHouse
 
       private
 
+      def builds_batch_size
+        return BUILDS_BATCH_SIZE if Feature.enabled?(:large_finished_builds_batch_size)
+
+        BUILDS_BATCH_SIZE * 2
+      end
+
+      def builds_batch_count
+        return BUILDS_BATCH_COUNT if Feature.enabled?(:large_finished_builds_batch_size)
+
+        BUILDS_BATCH_COUNT / 2
+      end
+
       def enabled?
         Feature.enabled?(:ci_data_ingestion_to_click_house)
       end
@@ -65,7 +77,7 @@ module ClickHouse
       end
 
       def insert_new_finished_builds
-        # Read BUILDS_BATCH_COUNT batches of BUILDS_BATCH_SIZE until the timeout in MAX_RUNTIME is reached
+        # Read BUILDS_BATCH_COUNT batches of developer until the timeout in MAX_RUNTIME is reached
         # We can expect a single worker to process around 2M builds/hour with a single worker,
         # and a bit over 5M builds/hour with three workers (measured in prod).
         @reached_end_of_table = false
@@ -98,7 +110,7 @@ module ClickHouse
       def csv_batches
         events_batches_enumerator = Enumerator.new do |small_batches_yielder|
           # Main loop to page through the events
-          keyset_iterator_scope.each_batch(of: BUILDS_BATCH_SIZE) { |batch| small_batches_yielder << batch }
+          keyset_iterator_scope.each_batch(of: builds_batch_size) { |batch| small_batches_yielder << batch }
           @reached_end_of_table = true
         end
 
@@ -107,7 +119,7 @@ module ClickHouse
           while continue?
             batches_yielder << Enumerator.new do |records_yielder|
               # records_yielder sends rows to the CSV builder
-              BUILDS_BATCH_COUNT.times do
+              builds_batch_count.times do
                 break unless continue?
 
                 yield_builds(events_batches_enumerator.next, records_yielder)
