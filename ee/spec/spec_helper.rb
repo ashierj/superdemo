@@ -47,4 +47,19 @@ RSpec.configure do |config|
   config.around(:each, :geo_tracking_db) do |example|
     example.run if Gitlab::Geo.geo_database_configured?
   end
+
+  config.define_derived_metadata do |metadata|
+    metadata[:do_not_stub_snowplow_by_default] = true if metadata.has_key?(:snowplow_micro)
+  end
+
+  config.before(:example, :snowplow_micro) do
+    config.include(Matchers::Snowplow)
+
+    next unless Gitlab::Tracking.micro_verification_enabled?
+
+    Matchers::Snowplow.clean_snowplow_queue
+
+    stub_application_setting(snowplow_enabled: true)
+    stub_application_setting(snowplow_app_id: 'gitlab-test')
+  end
 end
