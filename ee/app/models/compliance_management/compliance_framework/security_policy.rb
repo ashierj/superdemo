@@ -3,6 +3,8 @@
 module ComplianceManagement
   module ComplianceFramework
     class SecurityPolicy < ApplicationRecord
+      include EachBatch
+
       self.table_name = 'compliance_framework_security_policies'
 
       belongs_to :policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration'
@@ -12,6 +14,22 @@ module ComplianceManagement
 
       scope :for_framework, ->(framework) { where(framework: framework) }
       scope :for_policy_configuration, ->(policy_configuration) { where(policy_configuration: policy_configuration) }
+
+      class << self
+        def delete_for_policy_configuration(policy_configuration)
+          for_policy_configuration(policy_configuration).each_batch(order_hint: :updated_at) do |batch| # rubocop:disable Style/SymbolProc -- does not work with ActiveRecord::Relation
+            batch.delete_all
+          end
+        end
+
+        def relink(configuration, framework_policy_attrs)
+          transaction do
+            delete_for_policy_configuration(configuration)
+
+            insert_all(framework_policy_attrs) if framework_policy_attrs.any?
+          end
+        end
+      end
     end
   end
 end

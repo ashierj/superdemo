@@ -82,6 +82,16 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
         execute
       end
 
+      it 'executes ComplianceFrameworks::SyncService' do
+        expect_next_instance_of(
+          Security::SecurityOrchestrationPolicies::ComplianceFrameworks::SyncService, configuration
+        ) do |service|
+          expect(service).to receive(:execute).with(no_args)
+        end
+
+        execute
+      end
+
       it 'executes ProcessRuleService for each policy' do
         active_policies[:scan_execution_policy].each_with_index do |policy, policy_index|
           expect_next_instance_of(
@@ -148,6 +158,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
         expect(Security::SecurityOrchestrationPolicies::ProcessRuleService).not_to receive(:new)
         expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService).not_to receive(:new)
         expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService).not_to receive(:new)
+        expect(Security::SecurityOrchestrationPolicies::ComplianceFrameworks::SyncService).not_to receive(:new)
 
         expect { execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
         expect(configuration.reload.configured_at).to be_like_time(Time.current)

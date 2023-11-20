@@ -1488,6 +1488,39 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  describe '#compliance_framework_ids_with_policy_index' do
+    subject { security_orchestration_policy_configuration.compliance_framework_ids_with_policy_index }
+
+    context 'for project level configuration' do
+      it { is_expected.to eq([]) }
+    end
+
+    context 'for group level configuration' do
+      let(:security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration,
+          security_policy_management_project: security_policy_management_project,
+          namespace: create(:group),
+          project: nil
+        )
+      end
+
+      context 'without compliance framework ids' do
+        it { is_expected.to eq([]) }
+      end
+
+      context 'with compliance framework ids' do
+        let(:policy_yaml) do
+          build(:orchestration_policy_yaml,
+            scan_execution_policy: [build(:scan_execution_policy, policy_scope: { compliance_frameworks: [{ id: 2 }, { id: 3 }] })],
+            scan_result_policy: [build(:scan_result_policy, policy_scope: { compliance_frameworks: [{ id: 1 }, { id: 2 }] })]
+          )
+        end
+
+        it { is_expected.to match_array([{ framework_ids: [1, 2], policy_index: 0 }, { framework_ids: [2, 3], policy_index: 1 }]) }
+      end
+    end
+  end
+
   describe '#delete_scan_finding_rules' do
     subject(:delete_scan_finding_rules) { security_orchestration_policy_configuration.delete_scan_finding_rules }
 

@@ -12,6 +12,8 @@ module UpdateOrchestrationPolicyConfiguration
       return
     end
 
+    Security::SecurityOrchestrationPolicies::ComplianceFrameworks::SyncService.new(configuration).execute
+
     configuration.active_scan_execution_policies.each_with_index do |policy, policy_index|
       Security::SecurityOrchestrationPolicies::ProcessRuleService
         .new(policy_configuration: configuration, policy_index: policy_index, policy: policy)

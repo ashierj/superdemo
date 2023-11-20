@@ -39,4 +39,63 @@ RSpec.describe ComplianceManagement::ComplianceFramework::SecurityPolicy, featur
 
     it { is_expected.to eq([policy_1]) }
   end
+
+  describe '.relink' do
+    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:other_policy_configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:framework) { create(:compliance_framework) }
+    let_it_be(:other_framework) { create(:compliance_framework) }
+
+    let(:attrs) do
+      [
+        { framework_id: framework.id, policy_configuration_id: policy_configuration.id, policy_index: 1 }
+      ]
+    end
+
+    subject(:relink) { described_class.relink(policy_configuration, attrs) }
+
+    context 'when there are no already existing policies' do
+      it 'creates new record' do
+        relink
+
+        expect(described_class.count).to eq(1)
+        expect(described_class.first).to have_attributes(
+          framework: framework,
+          policy_configuration: policy_configuration,
+          policy_index: 1
+        )
+      end
+    end
+
+    context 'when there are already existing policies' do
+      let_it_be(:policy) do
+        create(:compliance_framework_security_policy,
+          framework: framework,
+          policy_configuration: policy_configuration
+        )
+      end
+
+      let_it_be(:other_policy) do
+        create(:compliance_framework_security_policy,
+          framework: other_framework,
+          policy_configuration: other_policy_configuration
+        )
+      end
+
+      it 'deletes and recreates policy with updated policy_index' do
+        relink
+
+        expect { policy.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+        expect(policy_configuration.compliance_framework_security_policies.first.policy_index).to eq(1)
+      end
+
+      it 'does not update count' do
+        expect { relink }.not_to change { described_class.count }
+      end
+
+      it 'does not update other policies' do
+        expect { relink }.not_to change { other_policy.reload.policy_index }
+      end
+    end
+  end
 end
