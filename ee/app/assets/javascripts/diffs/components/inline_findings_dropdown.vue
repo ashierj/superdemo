@@ -1,10 +1,12 @@
 <script>
-import { GlIcon, GlDisclosureDropdown, GlTruncate } from '@gitlab/ui';
+import { GlBadge, GlIcon, GlDisclosureDropdown, GlTruncate } from '@gitlab/ui';
+import { SAST_FINDING_DISMISSED } from '~/diffs/constants';
 import { firstSentenceOfText } from './inline_findings_dropdown_utils';
 
 export default {
   components: {
     GlIcon,
+    GlBadge,
     GlDisclosureDropdown,
     GlTruncate,
   },
@@ -44,6 +46,9 @@ export default {
     emitMouseLeave() {
       this.$emit('mouseleave');
     },
+    findingsStatus(item) {
+      return item.state === SAST_FINDING_DISMISSED;
+    },
   },
 };
 </script>
@@ -69,10 +74,17 @@ export default {
         />
         <span
           class="gl-white-space-nowrap! gl-text-truncate gl-display-flex findings-dropdown-width"
-          ><span class="gl-font-weight-bold text-capitalize gl-text-black-normal"
+          ><span
+            class="gl-font-weight-bold gl-text-transform-capitalize gl-text-black-normal gl-align-self-center"
             >{{ item.severity }}: </span
-          ><gl-truncate :text="firstSentence(item.text)"
-        /></span>
+          ><gl-truncate class="gl-align-self-center" :text="firstSentence(item.text)" />
+          <gl-badge
+            v-if="findingsStatus(item)"
+            variant="neutral"
+            class="gl-text-transform-capitalize gl-ml-3"
+            >{{ item.state }}</gl-badge
+          >
+        </span>
       </span>
     </template>
     <template #toggle>
