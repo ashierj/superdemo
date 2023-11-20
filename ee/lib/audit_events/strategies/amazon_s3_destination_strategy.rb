@@ -4,8 +4,6 @@ module AuditEvents
   module Strategies
     class AmazonS3DestinationStrategy < ExternalDestinationStrategy
       def streamable?
-        return false unless Feature.enabled?(:allow_streaming_audit_events_to_amazon_s3, audit_event.root_group_entity)
-
         group = audit_event.root_group_entity
         return false if group.nil?
         return false unless group.licensed_feature_available?(:external_audit_events)
@@ -21,8 +19,6 @@ module AuditEvents
       end
 
       def track_and_stream(destination)
-        return unless Feature.enabled?(:allow_streaming_audit_events_to_amazon_s3, audit_event.root_group_entity)
-
         track_audit_event_count
 
         payload = request_body

@@ -12,10 +12,23 @@ RSpec.describe AuditEvents::Strategies::AmazonS3DestinationStrategy, feature_cat
   describe '#streamable?' do
     subject { described_class.new(event_type, event).streamable? }
 
-    context 'when feature flag is disabled' do
+    context 'when feature is not licensed' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when feature is licensed' do
       before do
         stub_licensed_features(external_audit_events: true)
-        stub_feature_flags(allow_streaming_audit_events_to_amazon_s3: false)
+      end
+
+      context 'when event group is nil' do
+        let_it_be(:event) { build(:audit_event) }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when Amazon S3 configurations does not exist for the group' do
+        it { is_expected.to be_falsey }
       end
 
       context 'when Amazon S3 configurations exists for the group' do
@@ -23,41 +36,7 @@ RSpec.describe AuditEvents::Strategies::AmazonS3DestinationStrategy, feature_cat
           create(:amazon_s3_configuration, group: group)
         end
 
-        it { is_expected.to be_falsey }
-      end
-    end
-
-    context 'when feature flag is enabled' do
-      before do
-        stub_feature_flags(allow_streaming_audit_events_to_amazon_s3: true)
-      end
-
-      context 'when feature is not licensed' do
-        it { is_expected.to be_falsey }
-      end
-
-      context 'when feature is licensed' do
-        before do
-          stub_licensed_features(external_audit_events: true)
-        end
-
-        context 'when event group is nil' do
-          let_it_be(:event) { build(:audit_event) }
-
-          it { is_expected.to be_falsey }
-        end
-
-        context 'when Amazon S3 configurations does not exist for the group' do
-          it { is_expected.to be_falsey }
-        end
-
-        context 'when Amazon S3 configurations exists for the group' do
-          before do
-            create(:amazon_s3_configuration, group: group)
-          end
-
-          it { is_expected.to be_truthy }
-        end
+        it { is_expected.to be_truthy }
       end
     end
   end
