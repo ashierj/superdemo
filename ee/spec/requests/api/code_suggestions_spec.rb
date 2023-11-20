@@ -29,6 +29,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     allow(Ability).to receive(:allowed?).and_call_original
     allow(Ability).to receive(:allowed?).with(authorized_user, :access_code_suggestions, :global)
                                         .and_return(access_code_suggestions)
+
+    allow(Gitlab::InternalEvents).to receive(:track_event)
   end
 
   shared_examples 'a response' do |case_name|
@@ -253,6 +255,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
 
     before do
+      allow(Gitlab::ApplicationRateLimiter).to receive(:threshold).and_return(0)
+
       allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
         allow(generator).to receive(:generate).with(authorized_user).and_return([global_instance_id, global_user_id])
       end
@@ -276,6 +280,27 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         before do
           stub_env('CODE_SUGGESTIONS_BASE_URL', nil)
+        end
+
+        it_behaves_like 'rate limited endpoint', rate_limit_key: :code_suggestions_api_endpoint do
+          def request
+            post api('/code_suggestions/completions', current_user), headers: headers, params: body.to_json
+          end
+
+          context 'when rate limit is exceeded' do
+            it 'tracks a code_suggestions_rate_limit_exceeded event' do
+              allow(Gitlab::ApplicationRateLimiter).to receive(:throttled_request?).and_return(true)
+
+              request
+
+              expect(response).to have_gitlab_http_status(:too_many_requests)
+              # `error_message` defined in the shared example
+              expect(response.body).to eq({ message: { error: error_message } }.to_json)
+              expect(Gitlab::InternalEvents)
+                .to have_received(:track_event)
+                .with('code_suggestions_rate_limit_exceeded', user: current_user)
+            end
+          end
         end
 
         it 'delegates downstream service call to Workhorse with correct auth token' do

@@ -17,6 +17,11 @@ RSpec.describe EE::Gitlab::ApplicationRateLimiter do
         expect(values[:threshold].call).to eq 1
         expect(values[:interval].call).to eq 60
       end
+
+      it 'includes values for code_suggestions_api_endpoint' do
+        values = rate_limits[:code_suggestions_api_endpoint]
+        expect(values).to eq(threshold: 60, interval: 1.minute)
+      end
     end
 
     context 'when namespace-level rate limits are configured' do
