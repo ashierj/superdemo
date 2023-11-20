@@ -200,11 +200,11 @@ describe('Value Stream Analytics mutations', () => {
     });
 
     it('formats each stage median for display in the path navigation', () => {
-      expect(state.medians).toMatchObject({ 1: '2h', 2: '5d' });
+      expect(state.medians).toMatchObject({ 1: '2 hours', 2: '5 days' });
     });
 
     it('calculates the overview median', () => {
-      expect(state.medians).toMatchObject({ overview: '5d' });
+      expect(state.medians).toMatchObject({ overview: '5 days' });
     });
   });
 
