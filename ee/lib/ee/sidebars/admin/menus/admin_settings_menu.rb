@@ -33,7 +33,7 @@ module EE
           end
 
           def custom_roles_enabled?
-            ::Feature.enabled?(:custom_roles_ui_self_managed) && ::License.feature_available?(:custom_roles)
+            ::License.feature_available?(:custom_roles)
           end
 
           def advanced_search_menu_item

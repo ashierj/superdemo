@@ -39,29 +39,19 @@ RSpec.describe Admin::ApplicationSettings::RolesAndPermissionsController, :enabl
         sign_in(admin)
       end
 
-      context 'when `custom_roles_ui_self_managed` feature flag is disabled' do
-        before do
-          stub_feature_flags(custom_roles_ui_self_managed: false)
-        end
-
+      context 'when `custom_roles` license is disabled' do
         it_behaves_like 'not found'
       end
 
-      context 'when `custom_roles_ui_self_managed` feature flag is enabled' do
-        context 'when `custom_roles` license is disabled' do
-          it_behaves_like 'not found'
+      context 'when `custom_roles` license is enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
         end
 
-        context 'when `custom_roles` license is enabled' do
-          before do
-            stub_licensed_features(custom_roles: true)
-          end
+        it 'returns a 200 status code' do
+          get_index
 
-          it 'returns a 200 status code' do
-            get_index
-
-            expect(response).to have_gitlab_http_status(:ok)
-          end
+          expect(response).to have_gitlab_http_status(:ok)
         end
       end
     end

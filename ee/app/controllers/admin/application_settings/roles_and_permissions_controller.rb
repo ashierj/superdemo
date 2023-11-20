@@ -10,7 +10,7 @@ module Admin
       private
 
       def ensure_custom_roles_available!
-        render_404 unless Feature.enabled?(:custom_roles_ui_self_managed) && License.feature_available?(:custom_roles)
+        render_404 unless License.feature_available?(:custom_roles)
       end
     end
   end
