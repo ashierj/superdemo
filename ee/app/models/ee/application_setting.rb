@@ -201,6 +201,9 @@ module EE
         numericality: { only_integer: true, greater_than: proc { Devise.allow_unconfirmed_access_for.in_days.to_i } },
         if: :email_confirmation_setting_soft?
 
+      validates :pre_receive_secret_detection_enabled,
+        inclusion: { in: [true, false], message: N_('must be a boolean value') }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?

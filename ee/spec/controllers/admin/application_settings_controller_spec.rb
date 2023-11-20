@@ -266,6 +266,25 @@ RSpec.describe Admin::ApplicationSettingsController do
       end
     end
 
+    context 'secret detection settings' do
+      let(:settings) { { pre_receive_secret_detection_enabled: true } }
+      let(:feature) { :pre_receive_secret_detection }
+
+      it_behaves_like 'settings for licensed features'
+
+      context 'when secret_detection_application_setting feature flag is disabled' do
+        before do
+          stub_licensed_features(feature => true)
+          stub_feature_flags(secret_detection_application_setting: false)
+        end
+
+        it 'does not update pre_receive_secret_detection_enabled setting' do
+          expect { put :update, params: { application_setting: settings } }
+            .not_to change { ApplicationSetting.current.reload.attributes['pre_receive_secret_detection_enabled'] }
+        end
+      end
+    end
+
     it 'updates repository_size_limit' do
       put :update, params: { application_setting: { repository_size_limit: '100' } }
 

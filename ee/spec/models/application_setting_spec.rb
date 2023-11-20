@@ -197,6 +197,10 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       it { is_expected.not_to allow_value("a" * (subject.email_additional_text_character_limit + 1)).for(:email_additional_text) }
     end
 
+    describe 'secret detection validations', feature_category: :secret_detection do
+      it { is_expected.to validate_inclusion_of(:pre_receive_secret_detection_enabled).in_array([true, false]) }
+    end
+
     describe 'when secret detection token revocation is enabled', feature_category: :secret_detection do
       before do
         stub_application_setting(secret_detection_token_revocation_enabled: true)
