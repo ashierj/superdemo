@@ -5,11 +5,13 @@ import {
   GlDisclosureDropdownGroup,
   GlDisclosureDropdownItem,
   GlButton,
+  GlModalDirective,
 } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __, sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import PersistentUserCallout from '~/persistent_user_callout';
+import { SET_STATUS_MODAL_ID } from '~/set_status_modal/constants';
 import { USER_MENU_TRACKING_DEFAULTS, DROPDOWN_Y_OFFSET, IMPERSONATING_OFFSET } from '../constants';
 import UserMenuProfileItem from './user_menu_profile_item.vue';
 
@@ -18,6 +20,7 @@ const DROPDOWN_X_OFFSET_BASE = -211;
 const DROPDOWN_X_OFFSET_IMPERSONATING = DROPDOWN_X_OFFSET_BASE + IMPERSONATING_OFFSET;
 
 export default {
+  SET_STATUS_MODAL_ID,
   i18n: {
     setStatus: s__('SetStatusModal|Set status'),
     editStatus: s__('SetStatusModal|Edit status'),
@@ -39,6 +42,7 @@ export default {
   },
   directives: {
     SafeHtml,
+    GlModal: GlModalDirective,
   },
   mixins: [Tracking.mixin()],
   inject: ['isImpersonating'],
@@ -61,7 +65,8 @@ export default {
       return {
         text: statusLabel,
         extraAttrs: {
-          class: 'js-set-status-modal-trigger',
+          ...USER_MENU_TRACKING_DEFAULTS,
+          'data-track-label': 'user_edit_status',
         },
       };
     },
@@ -139,27 +144,6 @@ export default {
         ],
       };
     },
-    statusModalData() {
-      const defaultData = {
-        'data-current-emoji': '',
-        'data-current-message': '',
-        'data-default-emoji': 'speech_balloon',
-      };
-
-      const { busy, customized } = this.data.status;
-
-      if (!busy && !customized) {
-        return defaultData;
-      }
-
-      return {
-        ...defaultData,
-        'data-current-emoji': this.data.status.emoji,
-        'data-current-message': this.data.status.message,
-        'data-current-availability': this.data.status.availability,
-        'data-current-clear-status-after': this.data.status.clear_after,
-      };
-    },
     buyPipelineMinutesCalloutData() {
       return this.showNotificationDot
         ? {
@@ -214,101 +198,94 @@ export default {
 </script>
 
 <template>
-  <div>
-    <gl-disclosure-dropdown
-      ref="userDropdown"
-      :dropdown-offset="dropdownOffset"
-      data-testid="user-dropdown"
-      :auto-close="false"
-      @shown="onShow"
-    >
-      <template #toggle>
-        <gl-button category="tertiary" class="user-bar-item btn-with-notification">
-          <span class="gl-sr-only">{{ toggleText }}</span>
-          <gl-avatar
-            :size="24"
-            :entity-name="data.name"
-            :src="data.avatar_url"
-            aria-hidden="true"
-            data-testid="user_avatar_content"
-          />
-          <span
-            v-if="showNotificationDot"
-            class="notification-dot-warning"
-            data-testid="buy-pipeline-minutes-notification-dot"
-            v-bind="data.pipeline_minutes.notification_dot_attrs"
-          >
-          </span>
-        </gl-button>
-      </template>
-
-      <gl-disclosure-dropdown-group>
-        <user-menu-profile-item :user="data" />
-      </gl-disclosure-dropdown-group>
-
-      <gl-disclosure-dropdown-group bordered>
-        <gl-disclosure-dropdown-item
-          v-if="data.status.can_update"
-          :item="statusItem"
-          data-testid="status-item"
-          @action="closeDropdown"
+  <gl-disclosure-dropdown
+    ref="userDropdown"
+    :dropdown-offset="dropdownOffset"
+    data-testid="user-dropdown"
+    :auto-close="false"
+    @shown="onShow"
+  >
+    <template #toggle>
+      <gl-button category="tertiary" class="user-bar-item btn-with-notification">
+        <span class="gl-sr-only">{{ toggleText }}</span>
+        <gl-avatar
+          :size="24"
+          :entity-name="data.name"
+          :src="data.avatar_url"
+          aria-hidden="true"
+          data-testid="user_avatar_content"
         />
-
-        <gl-disclosure-dropdown-item
-          v-if="showTrialItem"
-          :item="trialItem"
-          data-testid="start-trial-item"
+        <span
+          v-if="showNotificationDot"
+          class="notification-dot-warning"
+          data-testid="buy-pipeline-minutes-notification-dot"
+          v-bind="data.pipeline_minutes.notification_dot_attrs"
         >
-          <template #list-item>
-            {{ trialItem.text }}
-            <gl-emoji data-name="rocket" />
-          </template>
-        </gl-disclosure-dropdown-item>
+        </span>
+      </gl-button>
+    </template>
 
-        <gl-disclosure-dropdown-item :item="editProfileItem" data-testid="edit-profile-item" />
+    <gl-disclosure-dropdown-group>
+      <user-menu-profile-item :user="data" />
+    </gl-disclosure-dropdown-group>
 
-        <gl-disclosure-dropdown-item :item="preferencesItem" data-testid="preferences-item" />
-
-        <gl-disclosure-dropdown-item
-          v-if="addBuyPipelineMinutesMenuItem"
-          ref="buyPipelineMinutesNotificationCallout"
-          :item="buyPipelineMinutesItem"
-          v-bind="buyPipelineMinutesCalloutData"
-          data-testid="buy-pipeline-minutes-item"
-          @action="trackBuyCIMins"
-        >
-          <template #list-item>
-            <span class="gl-display-flex gl-flex-direction-column">
-              <span>{{ buyPipelineMinutesItem.text }} <gl-emoji data-name="clock9" /></span>
-              <span
-                v-if="data.pipeline_minutes.show_with_subtext"
-                class="gl-font-sm small gl-pt-2 gl-text-orange-800"
-                >{{ buyPipelineMinutesItem.warningText }}</span
-              >
-            </span>
-          </template>
-        </gl-disclosure-dropdown-item>
-
-        <gl-disclosure-dropdown-item
-          v-if="data.gitlab_com_but_not_canary"
-          :item="gitlabNextItem"
-          data-testid="gitlab-next-item"
-        />
-      </gl-disclosure-dropdown-group>
-
-      <gl-disclosure-dropdown-group
-        v-if="data.can_sign_out"
-        bordered
-        :group="signOutGroup"
-        data-testid="sign-out-group"
-        @action="trackSignOut"
+    <gl-disclosure-dropdown-group bordered>
+      <gl-disclosure-dropdown-item
+        v-if="data.status.can_update"
+        v-gl-modal="$options.SET_STATUS_MODAL_ID"
+        :item="statusItem"
+        data-testid="status-item"
+        @action="closeDropdown"
       />
-    </gl-disclosure-dropdown>
 
-    <div
-      v-if="data.status.can_update"
-      class="js-set-status-modal-wrapper"
-      v-bind="statusModalData"
-    ></div>
-  </div>
+      <gl-disclosure-dropdown-item
+        v-if="showTrialItem"
+        :item="trialItem"
+        data-testid="start-trial-item"
+      >
+        <template #list-item>
+          {{ trialItem.text }}
+          <gl-emoji data-name="rocket" />
+        </template>
+      </gl-disclosure-dropdown-item>
+
+      <gl-disclosure-dropdown-item :item="editProfileItem" data-testid="edit-profile-item" />
+
+      <gl-disclosure-dropdown-item :item="preferencesItem" data-testid="preferences-item" />
+
+      <gl-disclosure-dropdown-item
+        v-if="addBuyPipelineMinutesMenuItem"
+        ref="buyPipelineMinutesNotificationCallout"
+        :item="buyPipelineMinutesItem"
+        v-bind="buyPipelineMinutesCalloutData"
+        data-testid="buy-pipeline-minutes-item"
+        @action="trackBuyCIMins"
+      >
+        <template #list-item>
+          <span class="gl-display-flex gl-flex-direction-column">
+            <span>{{ buyPipelineMinutesItem.text }} <gl-emoji data-name="clock9" /></span>
+            <span
+              v-if="data.pipeline_minutes.show_with_subtext"
+              class="gl-font-sm small gl-pt-2 gl-text-orange-800"
+              >{{ buyPipelineMinutesItem.warningText }}</span
+            >
+          </span>
+        </template>
+      </gl-disclosure-dropdown-item>
+
+      <gl-disclosure-dropdown-item
+        v-if="data.gitlab_com_but_not_canary"
+        :item="gitlabNextItem"
+        data-testid="gitlab-next-item"
+      />
+    </gl-disclosure-dropdown-group>
+
+    <gl-disclosure-dropdown-group
+      v-if="data.can_sign_out"
+      bordered
+      :group="signOutGroup"
+      data-testid="sign-out-group"
+      @action="trackSignOut"
+    />
+  </gl-disclosure-dropdown>
 </template>

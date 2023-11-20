@@ -107,11 +107,11 @@ describe('UserMenu component', () => {
       it('renders the status menu item', () => {
         setItem({ can_update: true });
         expect(item.exists()).toBe(true);
-      });
-
-      it('should set the CSS class for triggering status update modal', () => {
-        setItem({ can_update: true });
-        expect(item.find('.js-set-status-modal-trigger').exists()).toBe(true);
+        expect(item.find('button').attributes()).toMatchObject({
+          'data-track-property': 'nav_user_menu',
+          'data-track-action': 'click_link',
+          'data-track-label': 'user_edit_status',
+        });
       });
 
       it('should close the dropdown when status modal opened', () => {
@@ -144,54 +144,6 @@ describe('UserMenu component', () => {
             expect(item.text()).toBe(label);
           },
         );
-      });
-
-      describe('Status update modal wrapper', () => {
-        const findModalWrapper = () => wrapper.find('.js-set-status-modal-wrapper');
-
-        it('renders the modal wrapper', () => {
-          setItem({ can_update: true });
-          expect(findModalWrapper().exists()).toBe(true);
-        });
-
-        describe('when user cannot update status', () => {
-          it('sets default data attributes', () => {
-            setItem({ can_update: true });
-            expect(findModalWrapper().attributes()).toMatchObject({
-              'data-current-emoji': '',
-              'data-current-message': '',
-              'data-default-emoji': 'speech_balloon',
-            });
-          });
-        });
-
-        describe.each`
-          busy     | customized
-          ${true}  | ${true}
-          ${true}  | ${false}
-          ${false} | ${true}
-          ${false} | ${false}
-        `(`when user can update status`, ({ busy, customized }) => {
-          it(`and ${busy ? 'is busy' : 'is not busy'} and status ${
-            customized ? 'is' : 'is not'
-          } customized sets user status data attributes`, () => {
-            setItem({ can_update: true, busy, customized });
-            if (busy || customized) {
-              expect(findModalWrapper().attributes()).toMatchObject({
-                'data-current-emoji': userMenuMockStatus.emoji,
-                'data-current-message': userMenuMockStatus.message,
-                'data-current-availability': userMenuMockStatus.availability,
-                'data-current-clear-status-after': userMenuMockStatus.clear_after,
-              });
-            } else {
-              expect(findModalWrapper().attributes()).toMatchObject({
-                'data-current-emoji': '',
-                'data-current-message': '',
-                'data-default-emoji': 'speech_balloon',
-              });
-            }
-          });
-        });
       });
     });
   });
