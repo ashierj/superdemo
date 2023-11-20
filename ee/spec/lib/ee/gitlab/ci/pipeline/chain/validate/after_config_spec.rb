@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::AfterConfig do
+RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::AfterConfig, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
 

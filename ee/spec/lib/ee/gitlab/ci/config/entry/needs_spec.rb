@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Ci::Config::Entry::Needs do
+RSpec.describe ::Gitlab::Ci::Config::Entry::Needs, feature_category: :pipeline_composition do
   subject(:needs) { described_class.new(config) }
 
   before do

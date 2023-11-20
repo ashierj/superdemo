@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::SecurityOrchestrationPolicy do
+RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::SecurityOrchestrationPolicy, feature_category: :security_policy_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:security_orchestration_policy_configuration) { build(:security_orchestration_policy_configuration, project: project) }
