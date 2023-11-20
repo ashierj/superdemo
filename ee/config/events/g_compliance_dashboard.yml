@@ -1,0 +1,21 @@
+---
+description: User looked at the compliance report
+category: InternalEventTracking
+action: g_compliance_dashboard
+label_description:
+property_description:
+value_description:
+extra_properties:
+identifiers:
+- project
+- user
+- namespace
+product_section: sec
+product_stage: govern
+product_group: compliance
+milestone: "16.4"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/131045
+distributions:
+- ee
+tiers:
+- ultimate
