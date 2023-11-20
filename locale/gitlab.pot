@@ -51644,6 +51644,9 @@ msgstr ""
 msgid "UpdateProject|Cannot rename project because it contains container registry tags!"
 msgstr ""
 
+msgid "UpdateProject|Cannot rename project, the container registry path rename validation failed: %{error}"
+msgstr ""
+
 msgid "UpdateProject|Could not set the default branch"
 msgstr ""
 
