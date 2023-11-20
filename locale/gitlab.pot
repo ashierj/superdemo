@@ -44999,27 +44999,6 @@ msgstr ""
 msgid "ShellOperations|Maximum number of Git operations per minute"
 msgstr ""
 
-msgid "Shimo|Go to Shimo Workspace"
-msgstr ""
-
-msgid "Shimo|Link to a Shimo Workspace from the sidebar."
-msgstr ""
-
-msgid "Shimo|Shimo"
-msgstr ""
-
-msgid "Shimo|Shimo Workspace"
-msgstr ""
-
-msgid "Shimo|Shimo Workspace URL"
-msgstr ""
-
-msgid "Shimo|Shimo Workspace integration is enabled"
-msgstr ""
-
-msgid "Shimo|You've enabled the Shimo Workspace integration. You can view your wiki directly in Shimo."
-msgstr ""
-
 msgid "Short name"
 msgstr ""
 
