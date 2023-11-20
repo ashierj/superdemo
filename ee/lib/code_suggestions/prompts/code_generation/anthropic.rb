@@ -19,7 +19,7 @@ module CodeSuggestions
         private
 
         def prompt
-          <<~PROMPT
+          <<~PROMPT.strip
             Human: You are a coding autocomplete agent. We want to generate new #{language.name} code inside the
             file '#{file_path_info}' based on instructions from the user.
             #{existing_code_instruction}
