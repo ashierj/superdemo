@@ -6,7 +6,7 @@ FactoryBot.define do
 
     trait :cve do
       type { 'cve' }
-      sequence(:name) { |n| "CVE-#{Date.today.year}-#{n.to_s.rjust(5, '0')}" }
+      sequence(:name) { |n| "CVE-#{Date.current.year}-#{n.to_s.rjust(5, '0')}" }
       url { "https://nvd.nist.gov/vuln/detail/#{name}" }
       value { name }
     end
