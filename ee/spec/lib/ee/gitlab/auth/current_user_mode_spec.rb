@@ -33,7 +33,7 @@ RSpec.describe Gitlab::Auth::CurrentUserMode, :request_store do
             target_id: user.id,
             target_type: user.class.name,
             target_details: user.name,
-            details: include(custom_message: 'Enabled admin mode')
+            details: include(custom_message: 'Enabled Admin Mode')
           )
         end
       end
