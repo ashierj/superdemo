@@ -40,10 +40,10 @@ module Security
 
       def remove_bot
         if container.is_a?(Project)
-          container.member(container.security_policy_bot)&.destroy
+          Security::OrchestrationConfigurationRemoveBotWorker.perform_async(container.id, current_user.id)
         else
-          container.all_projects.find_each do |project|
-            project.security_policy_bot&.destroy
+          container.all_project_ids.each do |project_id|
+            Security::OrchestrationConfigurationRemoveBotWorker.perform_async(project_id, current_user.id)
           end
         end
       end

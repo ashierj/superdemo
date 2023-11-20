@@ -122,10 +122,12 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
           container.add_guest(security_policy_bot)
         end
 
-        it 'unassigns policy project and removes the bot', :aggregate_failures do
+        it 'unassigns policy project and enqueues the bot removal worker', :aggregate_failures do
+          expect(Security::OrchestrationConfigurationRemoveBotWorker).to receive(:perform_async)
+                                                                           .with(container.id, current_user.id)
           expect(result).to be_success
+
           expect(container.security_orchestration_policy_configuration).to be_destroyed
-          expect(container.security_policy_bot).to be_nil
         end
       end
 
@@ -147,12 +149,13 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
           end
         end
 
-        it 'unassigns policy project and removes the bot from all projects', :aggregate_failures do
+        it 'unassigns policy project and enqueues the bot removal for all projects', :aggregate_failures do
+          namespace_projects.each do |project|
+            expect(Security::OrchestrationConfigurationRemoveBotWorker).to receive(:perform_async)
+                                                                             .with(project.id, current_user.id)
+          end
           expect(result).to be_success
           expect(container.security_orchestration_policy_configuration).to be_destroyed
-          namespace_projects.each do |project|
-            expect(project.security_policy_bot).to be_nil
-          end
         end
       end
 
