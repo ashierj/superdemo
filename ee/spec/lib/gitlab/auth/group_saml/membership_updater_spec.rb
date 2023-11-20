@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater, feature_category: :system_access do
-  let(:user) { create(:user) }
-  let(:saml_provider) { create(:saml_provider, default_membership_role: Gitlab::Access::DEVELOPER) }
-  let(:group) { saml_provider.group }
+  let_it_be(:user) { create(:user) }
+  let_it_be_with_reload(:group) { create(:group) }
+  let_it_be(:member_role) { create(:member_role, :developer, namespace: group) }
+  let_it_be(:saml_provider) { create(:saml_provider, group: group, default_membership_role: Gitlab::Access::DEVELOPER, member_role: member_role) }
 
   subject(:update_membership) { described_class.new(user, saml_provider, auth_hash).execute }
 
@@ -35,12 +36,20 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater, feature_category: :sy
     end
 
     it 'adds the member with the specified `default_membership_role`' do
-      expect(group).to receive(:add_member).with(user, Gitlab::Access::DEVELOPER).and_call_original
+      expect(group).to receive(:add_member).with(user, Gitlab::Access::DEVELOPER, member_role_id: member_role.id).and_call_original
 
       update_membership
 
       created_member = group.members.find_by(user: user)
       expect(created_member.access_level).to eq(Gitlab::Access::DEVELOPER)
+    end
+
+    it 'adds the member with the specified `member_role`', feature_category: :permissions do
+      stub_licensed_features(custom_roles: true)
+
+      update_membership
+
+      expect(group.member(user).member_role).to eq(member_role)
     end
 
     it "doesn't duplicate group membership" do

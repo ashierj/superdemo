@@ -58,6 +58,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   LEVELS = ::Gitlab::Access.options_with_owner.values.freeze
 
   has_many :members
+  has_many :saml_providers
   belongs_to :namespace
 
   validates :namespace, presence: true

@@ -4,8 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_projects do
   describe '.add_member' do
+    let_it_be(:user) { create(:user) }
+
     context 'for free user limit considerations', :saas do
-      let_it_be(:user) { create(:user) }
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
       before do
@@ -29,6 +30,29 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
           member = described_class.add_member(group, user, :owner, ignore_user_limits: true)
 
           expect(member).to be_persisted
+        end
+      end
+    end
+
+    context 'when a `member_role_id` is passed', feature_category: :permissions do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:member_role) { create(:member_role, namespace: group) }
+
+      subject(:member) { described_class.add_member(group, user, :owner, member_role_id: member_role.id) }
+
+      context 'when custom roles are enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it 'saves the `member_role`' do
+          expect(member.member_role).to eq(member_role)
+        end
+      end
+
+      context 'when custom roles are not enabled' do
+        it 'does not save the `member_role`' do
+          expect(member.member_role).to eq(nil)
         end
       end
     end

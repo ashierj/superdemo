@@ -56489,6 +56489,9 @@ msgstr ""
 msgid "cannot be changed since member is associated with a custom role"
 msgstr ""
 
+msgid "cannot be changed since the provider is associated with a custom role"
+msgstr ""
+
 msgid "cannot be changed to %{new_type} when linked to a parent %{parent_type}."
 msgstr ""
 
@@ -57880,6 +57883,9 @@ msgstr ""
 msgid "must belong to same project of the work item."
 msgstr ""
 
+msgid "must belong to the same namespace as the custom role's namespace"
+msgstr ""
+
 msgid "must contain only a discord user ID."
 msgstr ""
 
@@ -58157,6 +58163,9 @@ msgid "repository:"
 msgstr ""
 
 msgid "role's base access level does not match the access level of the membership"
+msgstr ""
+
+msgid "role's base access level does not match the default membership role"
 msgstr ""
 
 msgid "rule"

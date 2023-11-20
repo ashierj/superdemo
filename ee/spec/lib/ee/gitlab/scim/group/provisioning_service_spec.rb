@@ -94,6 +94,25 @@ RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
         end
       end
 
+      context 'when a custom role is given for created group member', feature_category: :permissions do
+        let(:member_role) { create(:member_role, namespace: group) }
+        let!(:saml_provider) do
+          create(:saml_provider, group: group,
+            default_membership_role: member_role.base_access_level,
+            member_role: member_role)
+        end
+
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it 'sets the `member_role` of the member as specified in `saml_provider`' do
+          service.execute
+
+          expect(group.member(user).member_role).to eq(member_role)
+        end
+      end
+
       it 'user record requires confirmation' do
         service.execute
 

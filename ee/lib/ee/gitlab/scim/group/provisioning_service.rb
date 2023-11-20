@@ -55,12 +55,16 @@ module EE
           def member
             return @group.member(user) if existing_member?(user)
 
-            @group.add_member(user, default_membership_role) if user.valid?
+            @group.add_member(user, default_membership_role, member_role_id: member_role_id) if user.valid?
           end
           strong_memoize_attr :member
 
           def default_membership_role
             @group.saml_provider.default_membership_role
+          end
+
+          def member_role_id
+            @group.saml_provider.member_role_id
           end
 
           def group_user_params
