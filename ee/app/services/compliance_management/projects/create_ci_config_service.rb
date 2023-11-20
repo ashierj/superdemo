@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module ComplianceManagement
   module Projects
     class CreateCiConfigService < ComplianceManagement::Projects::BaseService
