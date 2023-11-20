@@ -106,6 +106,25 @@ module CodeSuggestions
           \s*function\s*\(.*?\)\s*\{|
           \bfunction\s+\w+\s*\(.*?\)\s*=>\s*\{)
         }x
+      },
+      'TypeScript' => {
+        'empty_function' => %r{
+          (function\s*\w*\s*\([^)]*\)\s*(:\s*\w+\s*)?\{)|
+          (function\s*\w*\s*<[^>]*>\s*\([^)]*\)\s*(:\s*\w+\s*)?\{)|
+          (function\s+\w+\([^)]*,\s*callback:\s*\(.*\)\s*=>\s*void\)\s*:\s*void\s*\{)|
+          (\([^)]*\)\s*(:\s*\w+\s*)?\s*=>\s*\{)
+        }x,
+        'function' => %r{
+          \s*\};?|
+          (function\s*\w*\s*\([^)]*\)\s*(:\s*\w+\s*)?\{)|
+          (function\s*\w*\s*<[^>]*>\s*\([^)]*\)\s*(:\s*\w+\s*)?\{)|
+          (function\s+\w+\([^)]*,\s*callback:\s*\(.*\)\s*=>\s*void\)\s*:\s*void\s*\{)|
+          (\([^)]*\)\s*(:\s*\w+\s*)?\s*=>\s*\{)
+        }x
+      },
+      'Java' => {
+        'empty_function' => %r{\b(\w+)\s+(\w+)\s*\(([^)]*)\)\s*\{},
+        'function' => %r{\}\s*|(\b(\w+)\s+(\w+)\s*\(([^)]*)\)\s*\{)}
       }
     }.freeze
 
