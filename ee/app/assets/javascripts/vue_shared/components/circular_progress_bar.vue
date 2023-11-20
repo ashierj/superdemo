@@ -2,12 +2,12 @@
 import GITLAB_LOGO_URL from '@gitlab/svgs/dist/illustrations/gitlab_logo.svg';
 
 import {
-  gray100,
-  green400,
-  brandOrange01,
-  brandOrange02,
-  brandOrange03,
-} from '@gitlab/ui/scss_to_js/scss_variables';
+  GRAY_100,
+  GREEN_400,
+  BRAND_ORANGE_01,
+  BRAND_ORANGE_02,
+  BRAND_ORANGE_03,
+} from '@gitlab/ui/dist/tokens/js/tokens';
 
 export default {
   props: {
@@ -18,17 +18,17 @@ export default {
   },
   computed: {
     progressBarColor() {
-      if (this.percentage < 50) return brandOrange03;
-      if (this.percentage < 75) return brandOrange02;
-      if (this.percentage < 100) return brandOrange01;
+      if (this.percentage < 50) return BRAND_ORANGE_03;
+      if (this.percentage < 75) return BRAND_ORANGE_02;
+      if (this.percentage < 100) return BRAND_ORANGE_01;
 
-      return green400; // == 100%
+      return GREEN_400; // == 100%
     },
     /* eslint-disable @gitlab/require-i18n-strings */
     // Progress bar styling variables
     progressBarStyle() {
       return {
-        '--gray100': gray100,
+        '--gray100': GRAY_100,
         '--logo-url': `url(${GITLAB_LOGO_URL})`,
         '--percentage': `${this.percentage}%`,
         '--progress-bar-color': this.progressBarColor,

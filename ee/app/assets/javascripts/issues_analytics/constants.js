@@ -1,4 +1,4 @@
-import { blue400, green400 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { BLUE_400, GREEN_400 } from '@gitlab/ui/dist/tokens/js/tokens';
 import { s__ } from '~/locale';
 
 export const DEFAULT_MONTHS_BACK = 12;
@@ -21,7 +21,7 @@ export const ISSUES_ANALYTICS_METRIC_TYPES = {
   [ISSUES_COMPLETED_COUNT_ALIAS]: 'issuesCompletedCount',
 };
 
-export const TOTAL_ISSUES_ANALYTICS_CHART_COLOR_PALETTE = [green400, blue400];
+export const TOTAL_ISSUES_ANALYTICS_CHART_COLOR_PALETTE = [GREEN_400, BLUE_400];
 
 export const RENAMED_FILTER_KEYS_DEFAULT = {
   assigneeUsername: 'assigneeUsernames',

@@ -1,11 +1,11 @@
 import { shallowMount } from '@vue/test-utils';
 
 import {
-  green400,
-  brandOrange01,
-  brandOrange02,
-  brandOrange03,
-} from '@gitlab/ui/scss_to_js/scss_variables';
+  GREEN_400,
+  BRAND_ORANGE_01,
+  BRAND_ORANGE_02,
+  BRAND_ORANGE_03,
+} from '@gitlab/ui/dist/tokens/js/tokens';
 
 import CircularProgressBar from 'ee/vue_shared/components/circular_progress_bar.vue';
 
@@ -19,15 +19,15 @@ describe('Learn GitLab', () => {
   describe('Circular Progress Bar', () => {
     it.each`
       percentage | color
-      ${1}       | ${brandOrange03}
-      ${49}      | ${brandOrange03}
-      ${50}      | ${brandOrange02}
-      ${51}      | ${brandOrange02}
-      ${74}      | ${brandOrange02}
-      ${75}      | ${brandOrange01}
-      ${76}      | ${brandOrange01}
-      ${99}      | ${brandOrange01}
-      ${100}     | ${green400}
+      ${1}       | ${BRAND_ORANGE_03}
+      ${49}      | ${BRAND_ORANGE_03}
+      ${50}      | ${BRAND_ORANGE_02}
+      ${51}      | ${BRAND_ORANGE_02}
+      ${74}      | ${BRAND_ORANGE_02}
+      ${75}      | ${BRAND_ORANGE_01}
+      ${76}      | ${BRAND_ORANGE_01}
+      ${99}      | ${BRAND_ORANGE_01}
+      ${100}     | ${GREEN_400}
     `('renders $color color for $percentage%', ({ percentage, color }) => {
       createWrapper({ percentage });
 
