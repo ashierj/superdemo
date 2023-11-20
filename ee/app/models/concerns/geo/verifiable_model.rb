@@ -62,6 +62,20 @@ module Geo
           .primary_key_in(range)
           .pluck_primary_key
       end
+
+      def create_verification_details_for(primary_keys)
+        rows = primary_keys.map do |id|
+          { self.verification_state_model_key => id }
+        end
+
+        verification_state_table_class.insert_all(rows)
+      end
+
+      def delete_verification_details_for(primary_keys)
+        verification_state_table_class
+          .where(self.verification_state_model_key => primary_keys)
+          .delete_all
+      end
     end
   end
 end
