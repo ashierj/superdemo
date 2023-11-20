@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_category: :vulnerability_management do
   include GraphqlHelpers
 
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project, id: 12346) }
   let_it_be(:user) { create(:user) }
   let_it_be(:pipeline) { create(:ci_pipeline, :with_sast_report, project: project) }
 
@@ -396,7 +396,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
 
   describe 'remediations' do
     let(:response) { GitlabSchema.execute(dep_scan_query, context: { current_user: user }) }
-    let(:remediation_finding) { dep_scan_findings.first }
+    let(:remediation_finding) { dep_scan_findings.second }
     let(:expected_remediations) { remediation_finding.remediations.map { |r| r.slice('summary', 'diff') } }
     let(:response_remediations) { response_remediation_finding['remediations'] }
     let(:response_remediation_finding) do
