@@ -13,7 +13,7 @@ FactoryBot.define do
          'commit' => { 'tags' => ['v1.2.3-tag'], 'sha' => '295cf0778821bf08681e2bd0ef0e6cad04fc3001',
                        'timestamp' => '20190626162700' } }]
     end
-    overridden_advisory_fields { { title: 'foo', published_date: Date.today - 1.day } }
+    overridden_advisory_fields { { title: 'foo', published_date: Date.current - 1.day } }
 
     trait :os_advisory do
       purl_type { :deb }
