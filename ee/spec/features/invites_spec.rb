@@ -18,23 +18,11 @@ RSpec.describe 'Group or Project invitations', :js, feature_category: :onboardin
   end
 
   context 'when on .com' do
-    context 'without setup question' do
-      it 'bypasses the setup_for_company question' do
-        fill_in_sign_up_form(new_user)
+    it 'bypasses the setup_for_company question' do
+      fill_in_sign_up_form(new_user, invite: true)
 
-        expect(find('input[name="user[setup_for_company]"]', visible: :hidden).value).to eq 'true'
-        expect(page).not_to have_content('My company or team')
-      end
-    end
-
-    context 'with setup question' do
-      let(:new_user) {  build_stubbed(:user, email: 'bogus@me.com') }
-
-      it 'has the setup question' do
-        fill_in_sign_up_form(new_user)
-
-        expect(page).to have_content('My company or team')
-      end
+      expect(find('input[name="user[setup_for_company]"]', visible: :hidden).value).to eq 'true'
+      expect(page).not_to have_content('My company or team')
     end
   end
 
@@ -42,7 +30,7 @@ RSpec.describe 'Group or Project invitations', :js, feature_category: :onboardin
     let(:com) { false }
 
     it 'bypasses the setup_for_company question' do
-      fill_in_sign_up_form(new_user)
+      fill_in_sign_up_form(new_user, invite: true)
 
       expect(page).not_to have_content('My company or team')
     end
@@ -52,6 +40,6 @@ RSpec.describe 'Group or Project invitations', :js, feature_category: :onboardin
     let(:signup_path) { invite_path(group_invite.raw_invite_token) }
     let(:user_email) { new_user[:email] }
 
-    subject(:fill_and_submit_signup_form) { fill_in_sign_up_form(new_user) }
+    subject(:fill_and_submit_signup_form) { fill_in_sign_up_form(new_user, invite: true) }
   end
 end
