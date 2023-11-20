@@ -69,6 +69,7 @@ module EE
         mount ::API::GroupServiceAccounts
         mount ::API::Ai::Llm::GitCommand
         mount ::API::CodeSuggestions
+        mount ::API::Chat
         mount ::API::GitlabSubscriptions::AddOnPurchases
 
         mount ::API::Internal::AppSec::Dast::SiteValidations
