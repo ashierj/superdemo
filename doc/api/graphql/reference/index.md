@@ -5209,6 +5209,29 @@ Input type: `MemberRoleCreateInput`
 | <a id="mutationmemberrolecreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationmemberrolecreatememberrole"></a>`memberRole` | [`MemberRole`](#memberrole) | Updated member role. |
 
+### `Mutation.memberRoleDelete`
+
+WARNING:
+**Introduced** in 16.7.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `MemberRoleDeleteInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmemberroledeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmemberroledeleteid"></a>`id` | [`MemberRoleID!`](#memberroleid) | ID of the member role to delete. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationmemberroledeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationmemberroledeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationmemberroledeletememberrole"></a>`memberRole` | [`MemberRole`](#memberrole) | Deleted member role. |
+
 ### `Mutation.memberRoleUpdate`
 
 Input type: `MemberRoleUpdateInput`
