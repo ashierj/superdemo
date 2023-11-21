@@ -53,7 +53,7 @@ export default {
       return this.hasValidFile && !this.isUploaded;
     },
     isShowingAttachmentName() {
-      return this.hasAttachment && !this.isLoading;
+      return this.hasAttachment && !this.isUploading;
     },
     isShowingAttachmentCancel() {
       return !this.isUploaded && !this.isUploading;

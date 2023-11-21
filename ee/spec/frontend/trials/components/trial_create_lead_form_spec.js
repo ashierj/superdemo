@@ -2,7 +2,9 @@ import { GlButton, GlForm } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 import TrialCreateLeadForm from 'ee/trials/components/trial_create_lead_form.vue';
+import CountryOrRegionSelector from 'jh_else_ee/trials/components/country_or_region_selector.vue';
 import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
 import { trackSaasTrialSubmit } from 'ee/google_tag_manager';
 import { FORM_DATA, SUBMIT_PATH } from './mock_data';
@@ -21,6 +23,11 @@ describe('TrialCreateLeadForm', () => {
       provide: {
         submitPath: SUBMIT_PATH,
         user: FORM_DATA,
+      },
+      stubs: {
+        CountryOrRegionSelector: stubComponent(CountryOrRegionSelector, {
+          template: `<div></div>`,
+        }),
       },
     });
   };

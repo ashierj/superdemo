@@ -88,6 +88,15 @@ describe('ee/BoardContentSidebar', () => {
         SidebarTodoWidget: true,
         MountingPortal: true,
       },
+      mocks: {
+        $apollo: {
+          queries: {
+            issuableTimeTracking: {
+              loading: false,
+            },
+          },
+        },
+      },
     });
   };
 
