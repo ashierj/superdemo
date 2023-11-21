@@ -178,4 +178,5 @@ func TestSendFileResponseWriterFlushable(t *testing.T) {
 
 	err := rc.Flush()
 	require.NoError(t, err, "the underlying response writer is not flushable")
+	require.True(t, rw.Flushed)
 }
