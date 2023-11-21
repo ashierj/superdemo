@@ -58,10 +58,6 @@ module QA
           element :groups_dropdown
           element :menu_item_link
         end
-        
-        view 'app/views/layouts/_header_search.html.haml' do
-          element :search_box
-        end
 
         view 'app/views/layouts/header/_new_dropdown.html.haml' do
           element 'new-menu-toggle'
