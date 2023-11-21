@@ -12,6 +12,7 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
   before do
     stub_licensed_features(push_rules: push_rules_enabled,
                            commit_committer_check: ccc_enabled,
+                           commit_committer_name_check: ccnc_enabled,
                            reject_unsigned_commits: ruc_enabled)
     project.add_maintainer(user)
     project.add_developer(user3)
@@ -19,6 +20,7 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
 
   let(:push_rules_enabled) { true }
   let(:ccc_enabled) { true }
+  let(:ccnc_enabled) { true }
   let(:ruc_enabled) { true }
 
   describe "GET /projects/:id/push_rule" do
@@ -49,6 +51,29 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
             .slice(:commit_committer_check)
             .transform_keys(&:to_s)
           expect(json_response).to include(subset)
+        end
+      end
+
+      context 'the commit_committer_name_check feature is enabled' do
+        let(:ccnc_enabled) { true }
+
+        it 'returns the commit_committer_name_check information' do
+          subset = attributes
+            .slice(:commit_committer_name_check)
+            .transform_keys(&:to_s)
+          expect(json_response).to include(subset)
+        end
+      end
+
+      context 'the commit_committer_name_check feature is not enabled' do
+        let(:ccnc_enabled) { false }
+
+        it 'succeeds' do
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it 'does not return the commit_committer_name_check information' do
+          expect(json_response).not_to have_key('commit_committer_name_check')
         end
       end
 
@@ -104,6 +129,7 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
         file_name_regex: '[a-zA-Z0-9]+.key',
         max_file_size: 5,
         commit_committer_check: true,
+        commit_committer_name_check: true,
         reject_unsigned_commits: true }
     end
 
@@ -121,6 +147,14 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
 
       context 'commit_committer_check not allowed by License' do
         let(:ccc_enabled) { false }
+
+        it "is forbidden to use this service" do
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context 'commit_committer_name_check not allowed by License' do
+        let(:ccnc_enabled) { false }
 
         it "is forbidden to use this service" do
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -159,6 +193,32 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
             { deny_delete_tag: true,
               member_check: true,
               prevent_secrets: true,
+              commit_committer_name_check: true,
+              commit_message_regex: 'JIRA\-\d+',
+              branch_name_regex: '(feature|hotfix)\/*',
+              author_email_regex: '[a-zA-Z0-9]+@gitlab.com',
+              file_name_regex: '[a-zA-Z0-9]+.key',
+              max_file_size: 5 }
+          end
+
+          it "sets all given parameters" do
+            expect(json_response).to include(expected_response)
+          end
+        end
+      end
+
+      context 'commit_committer_name_check is not enabled' do
+        let(:ccnc_enabled) { false }
+
+        it "is forbidden to send the the :commit_committer_name_check parameter" do
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+
+        context "without the :commit_committer_name_check parameter" do
+          let(:rules_params) do
+            { deny_delete_tag: true,
+              member_check: true,
+              prevent_secrets: true,
               commit_message_regex: 'JIRA\-\d+',
               branch_name_regex: '(feature|hotfix)\/*',
               author_email_regex: '[a-zA-Z0-9]+@gitlab.com',
@@ -184,6 +244,7 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
             { deny_delete_tag: true,
               member_check: true,
               prevent_secrets: true,
+              commit_committer_name_check: true,
               commit_message_regex: 'JIRA\-\d+',
               branch_name_regex: '(feature|hotfix)\/*',
               author_email_regex: '[a-zA-Z0-9]+@gitlab.com',
@@ -305,6 +366,32 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
 
         context 'the commit_committer_check feature is not enabled' do
           let(:ccc_enabled) { false }
+
+          it "is an error to provide this parameter" do
+            request
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+      end
+
+      context "setting commit_committer_name_check" do
+        let(:new_settings) { { commit_committer_name_check: true } }
+
+        it "is successful" do
+          request
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it "sets the commit_committer_name_check" do
+          request
+
+          expect(json_response).to include('commit_committer_name_check' => true)
+        end
+
+        context 'the commit_committer_name_check feature is not enabled' do
+          let(:ccnc_enabled) { false }
 
           it "is an error to provide this parameter" do
             request
