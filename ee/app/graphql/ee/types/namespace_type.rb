@@ -71,12 +71,20 @@ module EE
               GraphQL::Types::Boolean,
               null: false,
               description: 'Status of the temporary storage increase.',
+              deprecated: {
+                reason: 'Feature removal, will be completely removed in 17.0',
+                milestone: '16.7'
+              },
               method: :temporary_storage_increase_enabled?
 
         field :temporary_storage_increase_ends_on,
               ::Types::TimeType,
               null: true,
-              description: 'Date until the temporary storage increase is active.'
+              description: 'Date until the temporary storage increase is active.',
+              deprecated: {
+                reason: 'Feature removal, will be completely removed in 17.0',
+                milestone: '16.7'
+              }
 
         field :compliance_frameworks,
               ::Types::ComplianceManagement::ComplianceFrameworkType.connection_type,
