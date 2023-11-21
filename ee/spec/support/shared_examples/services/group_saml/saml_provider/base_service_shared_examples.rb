@@ -48,6 +48,39 @@ RSpec.shared_examples 'base SamlProvider service' do
       expect(audit_events[index].details[:custom_message]).to match(expected_message)
     end
   end
+
+  context 'when a `member_role_id` parameter is provided' do
+    let(:member_role) { create(:member_role, namespace: group) }
+    let(:params) { super().merge(member_role_id: member_role.id) }
+
+    context 'when custom roles are not enabled' do
+      it 'does not update the `member_role`' do
+        expect { service.execute }.not_to change { group.reload.saml_provider&.member_role }
+
+        audit_event_details = AuditEvent.last(2).pluck(:details)
+        expect(audit_event_details).not_to include(hash_including(custom_message: /default_membership_role changed/))
+        expect(audit_event_details).not_to include(hash_including(custom_message: /member_role_id changed/))
+      end
+    end
+
+    context 'when custom roles are enabled' do
+      before do
+        stub_licensed_features(group_saml: true, custom_roles: true)
+      end
+
+      it 'updates the `default_membership_role` and the `member_role`' do
+        expect do
+          service.execute
+          group.reload
+        end.to change { group.saml_provider&.default_membership_role }.to(member_role.base_access_level)
+          .and change { group.saml_provider&.member_role }.to(member_role)
+
+        audit_event_details = AuditEvent.last(2).pluck(:details)
+        expect(audit_event_details).to include(hash_including(custom_message: /default_membership_role changed([\w\s]*)to 30/))
+        expect(audit_event_details).to include(hash_including(custom_message: /member_role_id changed([\w\s]*)to #{member_role.id}/))
+      end
+    end
+  end
 end
 
 RSpec.shared_examples 'SamlProvider service toggles Group Managed Accounts' do

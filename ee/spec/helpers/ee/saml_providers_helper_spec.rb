@@ -35,4 +35,44 @@ RSpec.describe EE::SamlProvidersHelper, feature_category: :system_access do
         })
     end
   end
+
+  describe '#saml_membership_role_selector_data' do
+    let(:access_level) { Gitlab::Access::DEVELOPER }
+    # rubocop:disable RSpec/FactoryBot/AvoidCreate -- we need these objects to be persisted
+    let(:member_role) { create(:member_role, namespace: group, base_access_level: access_level) }
+    let!(:saml_provider) do
+      create(:saml_provider, group: group, member_role: member_role, default_membership_role: access_level)
+    end
+    # rubocop:enable RSpec/FactoryBot/AvoidCreate
+
+    let(:expected_standard_role_data) do
+      {
+        standard_roles: group.access_level_roles.map { |text, id| { id: id, text: text } },
+        current_standard_role: access_level
+      }
+    end
+
+    subject(:data) { helper.saml_membership_role_selector_data(group) }
+
+    it 'returns a hash with the expected standard role data' do
+      expect(data).to eq(expected_standard_role_data)
+    end
+
+    context 'when custom roles are enabled' do
+      let(:expected_custom_role_data) do
+        {
+          custom_roles: [{ id: member_role.id, text: member_role.name }],
+          current_custom_role_id: member_role.id
+        }
+      end
+
+      before do
+        stub_licensed_features(custom_roles: true)
+      end
+
+      it 'returns a hash with the expected standard and custom role data' do
+        expect(data).to eq(expected_standard_role_data.merge(expected_custom_role_data))
+      end
+    end
+  end
 end

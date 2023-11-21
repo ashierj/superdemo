@@ -33,6 +33,22 @@ module EE
       }
     end
 
+    def saml_membership_role_selector_data(group)
+      data = {
+        standard_roles: group.access_level_roles.map { |text, id| { id: id, text: text } },
+        current_standard_role: group.saml_provider.default_membership_role
+      }
+
+      if group.custom_roles_enabled?
+        data.merge!(
+          custom_roles: group.member_roles.map { |role| { id: role.id, text: role.name } },
+          current_custom_role_id: group.saml_provider.member_role_id
+        )
+      end
+
+      data
+    end
+
     private
 
     def saml_url(group_path, redirect = nil)

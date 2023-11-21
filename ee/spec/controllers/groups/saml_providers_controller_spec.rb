@@ -187,6 +187,46 @@ RSpec.describe Groups::SamlProvidersController, feature_category: :system_access
           end.not_to change { saml_provider.enforced_group_managed_accounts? }
         end
       end
+
+      context 'setting a member_role' do
+        let(:member_role) { create(:member_role, namespace: group) }
+
+        subject do
+          put :update, params:
+            {
+              group_id: group,
+              saml_provider: {
+                member_role_id: member_role.id
+              }
+            }
+        end
+
+        before do
+          stub_licensed_features(group_saml: true, custom_roles: custom_roles_enabled)
+        end
+
+        context 'custom roles are not enabled' do
+          let(:custom_roles_enabled) { false }
+
+          it 'does not update the member_role' do
+            expect do
+              subject
+              saml_provider.reload
+            end.not_to change { saml_provider.member_role }
+          end
+        end
+
+        context 'custom roles are enabled' do
+          let(:custom_roles_enabled) { true }
+
+          it 'updates the member_role' do
+            expect do
+              subject
+              saml_provider.reload
+            end.to change { saml_provider.member_role }.to(member_role)
+          end
+        end
+      end
     end
   end
 end

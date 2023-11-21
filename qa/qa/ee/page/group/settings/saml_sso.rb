@@ -9,10 +9,13 @@ module QA
             view 'ee/app/views/groups/saml_providers/_form.html.haml' do
               element :identity_provider_sso_field
               element :certificate_fingerprint_field
-              element :default_membership_role_dropdown
               element :enforced_sso_checkbox
               element :group_managed_accounts_checkbox
               element :save_changes_button
+            end
+
+            view 'ee/app/assets/javascripts/saml_providers/saml_membership_role_selector/components/saml_membership_role_selector.vue' do
+              element 'default-membership-role-dropdown'
             end
 
             view 'ee/app/views/groups/saml_providers/_test_button.html.haml' do
@@ -32,7 +35,10 @@ module QA
             end
 
             def set_default_membership_role(role)
-              select_element(:default_membership_role_dropdown, role)
+              click_element('default-membership-role-dropdown')
+              within_element 'default-membership-role-dropdown' do
+                select_item(role)
+              end
             end
 
             def has_enforced_sso_checkbox?
