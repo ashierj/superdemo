@@ -1,6 +1,6 @@
 <script>
 import { debounce } from 'lodash';
-import { GlButton, GlCollapsibleListbox, GlLabel } from '@gitlab/ui';
+import { GlButton, GlCollapsibleListbox, GlLabel, GlFormGroup } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_COMPLIANCE_FRAMEWORK } from '~/graphql_shared/constants';
@@ -24,6 +24,7 @@ export default {
     ComplianceFrameworkFormModal,
     GlButton,
     GlCollapsibleListbox,
+    GlFormGroup,
     GlLabel,
   },
   apollo: {
@@ -171,57 +172,58 @@ export default {
 </script>
 
 <template>
-  <div class="gl-relative">
-    <gl-collapsible-listbox
-      block
-      multiple
-      searchable
-      :category="listBoxCategory"
-      :variant="listBoxVariant"
-      :header-text="$options.i18n.complianceFrameworkHeader"
-      :loading="loading"
-      :no-results-text="$options.i18n.noFrameworksText"
-      :items="filteredListBoxItems"
-      :reset-button-label="$options.i18n.clearAllLabel"
-      :show-select-all-button-label="$options.i18n.selectAllLabel"
-      :toggle-text="dropdownPlaceholder"
-      :title="dropdownPlaceholder"
-      :selected="existingFormattedSelectedFrameworkIds"
-      @reset="selectFrameworks([])"
-      @search="debouncedSearch"
-      @select="selectFrameworks"
-      @select-all="selectFrameworks(complianceFrameworkIds)"
+  <div>
+    <gl-form-group
+      class="gl-mb-0"
+      label-sr-only
+      :label="$options.i18n.errorMessage"
+      :state="!showError"
+      :optional="false"
+      :invalid-feedback="$options.i18n.errorMessage"
     >
-      <template #list-item="{ item }">
-        <gl-label
-          size="sm"
-          :background-color="item.color"
-          :description="$options.i18n.editFramework"
-          :title="item.text"
-          :target="item.editPath"
-        />
-      </template>
-      <template #footer>
-        <div class="gl-border-t">
-          <gl-button
-            category="tertiary"
-            class="gl-w-full gl-justify-content-start!"
-            target="_blank"
-            @click="showCreateFrameworkForm"
-          >
-            {{ $options.i18n.complianceFrameworkCreateButton }}
-          </gl-button>
-        </div>
-      </template>
-    </gl-collapsible-listbox>
-
-    <p
-      v-if="showError"
-      class="gl-text-red-600 gl-absolute gl-white-space-nowrap"
-      data-testid="error-message"
-    >
-      {{ $options.i18n.errorMessage }}
-    </p>
+      <gl-collapsible-listbox
+        block
+        multiple
+        searchable
+        :category="listBoxCategory"
+        :variant="listBoxVariant"
+        :header-text="$options.i18n.complianceFrameworkHeader"
+        :loading="loading"
+        :no-results-text="$options.i18n.noFrameworksText"
+        :items="filteredListBoxItems"
+        :reset-button-label="$options.i18n.clearAllLabel"
+        :show-select-all-button-label="$options.i18n.selectAllLabel"
+        :toggle-text="dropdownPlaceholder"
+        :title="dropdownPlaceholder"
+        :selected="existingFormattedSelectedFrameworkIds"
+        @reset="selectFrameworks([])"
+        @search="debouncedSearch"
+        @select="selectFrameworks"
+        @select-all="selectFrameworks(complianceFrameworkIds)"
+      >
+        <template #list-item="{ item }">
+          <gl-label
+            size="sm"
+            :background-color="item.color"
+            :description="$options.i18n.editFramework"
+            :title="item.text"
+            :target="item.editPath"
+          />
+        </template>
+        <template #footer>
+          <div class="gl-border-t">
+            <gl-button
+              category="tertiary"
+              class="gl-w-full gl-justify-content-start!"
+              target="_blank"
+              @click="showCreateFrameworkForm"
+            >
+              {{ $options.i18n.complianceFrameworkCreateButton }}
+            </gl-button>
+          </div>
+        </template>
+      </gl-collapsible-listbox>
+    </gl-form-group>
 
     <compliance-framework-form-modal ref="formModal" @change="onComplianceFrameworkCreated" />
   </div>

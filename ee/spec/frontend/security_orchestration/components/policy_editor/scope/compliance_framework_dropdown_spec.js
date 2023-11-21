@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlButton, GlCollapsibleListbox, GlModal } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
+import { GlButton, GlCollapsibleListbox, GlModal, GlFormGroup } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_COMPLIANCE_FRAMEWORK } from '~/graphql_shared/constants';
 import ComplianceFrameworkDropdown from 'ee/security_orchestration/components/policy_editor/scope/compliance_framework_dropdown.vue';
@@ -86,7 +86,7 @@ describe('ComplianceFrameworkDropdown', () => {
     handlers = mockApolloHandlers(),
     stubs = {},
   } = {}) => {
-    wrapper = shallowMountExtended(ComplianceFrameworkDropdown, {
+    wrapper = shallowMount(ComplianceFrameworkDropdown, {
       apolloProvider: createMockApolloProvider(handlers),
       propsData: {
         fullPath: 'gitlab-org',
@@ -107,10 +107,10 @@ describe('ComplianceFrameworkDropdown', () => {
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findCreateFrameworkButton = () => wrapper.findComponent(GlButton);
+  const findGlFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findComplianceFrameworkFormModal = () =>
     wrapper.findComponent(ComplianceFrameworkFormModal);
   const findSharedForm = () => wrapper.findComponent(SharedForm);
-  const findErrorMessage = () => wrapper.findByTestId('error-message');
   const selectAll = () => findDropdown().vm.$emit('select-all');
   const resetAll = () => findDropdown().vm.$emit('reset');
 
@@ -280,17 +280,17 @@ describe('ComplianceFrameworkDropdown', () => {
 
   describe('error state', () => {
     it.each`
-      showError | variant      | category
-      ${false}  | ${'default'} | ${'primary'}
-      ${true}   | ${'danger'}  | ${'secondary'}
-    `('should render error state', ({ showError, variant, category }) => {
+      showError | variant      | category       | groupErrorAttribute
+      ${false}  | ${'default'} | ${'primary'}   | ${'true'}
+      ${true}   | ${'danger'}  | ${'secondary'} | ${null}
+    `('should render error state', ({ showError, variant, category, groupErrorAttribute }) => {
       createComponent({
         propsData: {
           showError,
         },
       });
 
-      expect(findErrorMessage().exists()).toBe(showError);
+      expect(findGlFormGroup().element.getAttribute('state')).toBe(groupErrorAttribute);
       expect(findDropdown().props('variant')).toBe(variant);
       expect(findDropdown().props('category')).toBe(category);
     });
