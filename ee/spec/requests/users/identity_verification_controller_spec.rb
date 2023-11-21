@@ -793,7 +793,7 @@ feature_category: :system_access do
         do_request
 
         expect(json_response).to eq({
-          'verification_methods' => %w[credit_card email],
+          'verification_methods' => %w[email credit_card],
           'verification_state' => { "credit_card" => false, "email" => false }
         })
       end
