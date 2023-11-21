@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-module ChatQaEvaluationHelpers
+module DuoChatQaEvaluationHelpers
   TMP_REPORT_PATH = "tmp/duo_chat"
   ANTHROPIC_TIMEOUT = 50.seconds
+  NUM_THREADS = 10 # Arbitrarily chosen. Adjust as needed.
+  THREAD_START_DELAY = 2
 
   PROMPT = <<~PROMPT
 
@@ -41,12 +43,20 @@ module ChatQaEvaluationHelpers
   Assistant:
   PROMPT
 
-  def evaluate_without_reference(user, resource, question, context)
-    response = chat(user, resource, { content: question, cache_response: false, request_id: "12345" })
+  # This method runs the given question through through GitLab Duo Chat service
+  # then asks LLMs (Claude and Vertex as of now) to grade GitLab Duo Chat's response using the given context.
+  #
+  # @param user [User] The current user authorized to read `issuable` and use GitLab Duo Chat
+  # @param issuable [Issue, Epic] The issuable to be used in as GitLab Duo Chat's context
+  # @param question [String] The question the user is asking to GitLab Duo Chat
+  # @param context [String] The context that will be used by the LLMs during evaluation.
+  #                         The context will usually be a JSON serialization of the issuable being asked about.
+  def evaluate_without_reference(user, issuable:, question:, context:)
+    response = chat(user, issuable, { content: question, cache_response: false, request_id: SecureRandom.uuid })
 
     result = {
       question: question,
-      resource: resource.to_reference(full: true),
+      resource: issuable.to_reference(full: true),
       answer: response[:response_modifier].response_body,
       tools_used: response[:tools_used],
       evaluations: []
@@ -61,13 +71,42 @@ module ChatQaEvaluationHelpers
     result[:evaluations].push(evaluate_with_claude(user, test_prompt))
     result[:evaluations].push(evaluate_with_vertex(user, test_prompt))
 
-    print_evaluation(result)
-    save_evaluation(result)
-
     result
   end
 
-  def save_evaluation(result)
+  def batch_evaluate
+    test_results = Queue.new
+    test_queue = Queue.new
+    test_cases.each { |test_case| test_queue << test_case }
+
+    (1..NUM_THREADS).map do |_|
+      sleep(THREAD_START_DELAY) # Do not start all threads immediately.
+
+      Thread.new do
+        until test_queue.empty?
+          test_case = test_queue.pop
+          resource = test_case[:issuable].to_reference(full: true)
+          question = test_case[:question]
+          puts "Sending the evaluation request for '#{question}' with (#{resource})"
+
+          Sidekiq::Worker.skipping_transaction_check do
+            Sidekiq::Testing.fake! do
+              test_results << evaluate_without_reference(user, **test_case)
+            end
+          rescue Net::ReadTimeout => _error
+            # Few requests may fail after exceeding the timeout threshold. Ignore them.
+          end
+        end
+      end
+    end.each(&:join)
+
+    test_results = Array.new(test_results.size) { test_results.pop }
+    save_evaluations(test_results)
+
+    test_results
+  end
+
+  def save_evaluations(result)
     save_path = File.join(ENV.fetch('CI_PROJECT_DIR', ''), TMP_REPORT_PATH)
     file_path = File.join(save_path, "qa_#{Time.current.to_i}.json")
     FileUtils.mkdir_p(File.dirname(file_path))

@@ -5,7 +5,7 @@ module DuoChatFixtureHelpers
     return if Epic.exists?(epic[:data][:id])
 
     # Create ancestor epics
-    restore_epic(epics.find { |e| e[:data][:id] == epic[:data][:parent_id] }) if epic[:data][:parent_id]
+    restore_epic(epic_fixtures.find { |e| e[:data][:id] == epic[:data][:parent_id] }) if epic[:data][:parent_id]
 
     # Create the epic's group and the group's direct ancestors.
     root_group = epic[:namespace_hierarchy].first
@@ -32,10 +32,12 @@ module DuoChatFixtureHelpers
     create_labels(epic)
 
     # Create epic
-    create(:epic, **epic[:data].except(:start_date_sourcing_epic_id, :due_date_sourcing_epic_id))
+    created_epic = create(:epic, **epic[:data].except(:start_date_sourcing_epic_id, :due_date_sourcing_epic_id))
 
     # Create notes
     epic[:notes].each { |note_attrs| create(:note, **note_attrs) }
+
+    created_epic
   end
 
   # rubocop: disable Metrics/AbcSize
@@ -94,10 +96,12 @@ module DuoChatFixtureHelpers
     issue_attrs = issue[:data].merge!({
       work_item_type_id: WorkItems::Type.default_by_type(:issue).id
     })
-    create(:issue, **issue_attrs)
+    created_issue = create(:issue, **issue_attrs)
 
     # Create notes
     issue[:notes].each { |note_attrs| create(:note, **note_attrs) }
+
+    created_issue
   end
   # rubocop: enable Metrics/AbcSize
 
@@ -134,5 +138,6 @@ module DuoChatFixtureHelpers
       .select { |f| f.match(/.json/) }
       .map { |f| File.join(fixture_path, f) }
       .map { |f| Gitlab::Json.parse(File.read(f)) }
+      .map(&:deep_symbolize_keys)
   end
 end
