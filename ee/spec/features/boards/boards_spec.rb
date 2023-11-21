@@ -331,6 +331,39 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
     end
   end
 
+  context 'blocking issues' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project, :public) }
+    let_it_be(:issue1) { create(:issue, project: project, title: 'Blocked issue') }
+    let_it_be(:issue2) { create(:issue, project: project, title: 'Blocking issue') }
+
+    before_all do
+      create(:issue_link, source: issue2, target: issue1, link_type: IssueLink::TYPE_BLOCKS)
+      project.add_developer(user)
+    end
+
+    before do
+      login_as(user)
+      visit_board_page
+    end
+
+    it 'displays blocked icon on blocked issue card displayed info on hover' do
+      page.within(find('.board:nth-child(1)')) do
+        page.within(first('.board-card')) do
+          expect(page).to have_content(issue1.title)
+          expect(page).to have_selector('[data-testid="issuable-blocked-icon"]')
+
+          find_by_testid('issuable-blocked-icon').hover
+        end
+      end
+
+      page.within(find('.gl-popover')) do
+        expect(page).to have_content('Blocked by 1 issue')
+        expect(page).to have_content(issue2.title)
+      end
+    end
+  end
+
   def list_weight_badge(list)
     within(".board[data-list-id='gid://gitlab/List/#{list.id}']") do
       find_by_testid('issue-count-badge')
