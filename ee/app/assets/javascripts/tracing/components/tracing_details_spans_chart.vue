@@ -70,10 +70,10 @@ export default {
       return this.expanded[index];
     },
     durationBarLayout(span) {
-      const computedWidth = Math.floor((100 * span.durationMs) / this.traceDurationMs);
+      const computedWidth = Math.floor((100 * span.duration_ms) / this.traceDurationMs);
       const width = clamp(computedWidth, 0.5, 100);
 
-      const computedMarginLeft = Math.floor((100 * span.startTimeMs) / this.traceDurationMs);
+      const computedMarginLeft = Math.floor((100 * span.start_ms) / this.traceDurationMs);
       const marginLeft = clamp(
         computedMarginLeft,
         0, // avoid negative margins. this can happen in case of skewed time between the root and child spans
@@ -101,13 +101,13 @@ export default {
       };
     },
     durationValue(span) {
-      return formatDurationMs(span.durationMs);
+      return formatDurationMs(span.duration_ms);
     },
     onSelect({ spanId }) {
       this.$emit('span-selected', { spanId });
     },
     isSpanSelected(span) {
-      return span.spanId === this.selectedSpanId;
+      return span.span_id === this.selectedSpanId;
     },
   },
 };
@@ -117,7 +117,7 @@ export default {
   <div class="span-tree">
     <div
       v-for="(span, index) in spans"
-      :key="span.spanId"
+      :key="span.span_id"
       :data-testid="`span-wrapper-${depth}-${index}`"
     >
       <div
@@ -127,7 +127,7 @@ export default {
           'gl-bg-blue-100': isSpanSelected(span),
           'gl-hover-bg-t-gray-a-08': !isSpanSelected(span),
         }"
-        @click="onSelect({ spanId: span.spanId })"
+        @click="onSelect({ spanId: span.span_id })"
       >
         <div
           data-testid="span-details"

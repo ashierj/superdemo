@@ -39,7 +39,7 @@ export default {
       const data = this.traces.map((t) => ({
         value: [t.timestamp, durationNanoToMs(t.duration_nano)],
         traceId: t.trace_id,
-        hasError: t.statusCode === 'STATUS_CODE_ERROR',
+        hasError: t.status_code === 'STATUS_CODE_ERROR',
       }));
 
       return [

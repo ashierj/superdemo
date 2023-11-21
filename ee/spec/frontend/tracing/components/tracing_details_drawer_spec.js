@@ -109,7 +109,7 @@ describe('TracingDetailsDrawer', () => {
 
   describe('with no span', () => {
     beforeEach(() => {
-      wrapper = shallowMountExtended(TracingDetailsDrawer, {});
+      mountComponent({ span: null });
     });
 
     it('displays an empty title', () => {
