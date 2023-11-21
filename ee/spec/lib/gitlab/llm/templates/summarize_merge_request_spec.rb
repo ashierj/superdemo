@@ -21,10 +21,6 @@ RSpec.describe Gitlab::Llm::Templates::SummarizeMergeRequest, feature_category: 
   subject { described_class.new(merge_request, mr_diff) }
 
   describe '#to_prompt' do
-    it 'includes title param' do
-      expect(subject.to_prompt).to include(merge_request.title)
-    end
-
     it 'includes raw diff' do
       expect(subject.to_prompt)
         .to include("+class Feature\n+  def foo\n+    puts 'bar'\n+  end\n+end")
