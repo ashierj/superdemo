@@ -5,7 +5,7 @@
 #----------------
 
 RSpec.shared_context 'with authorized user' do
-  let_it_be(:current_user) { workspace.user }
+  let_it_be(:current_user) { authorized_user }
 end
 
 RSpec.shared_context 'with other user' do
@@ -103,35 +103,6 @@ RSpec.shared_examples 'query in unlicensed environment' do
       it_behaves_like 'query includes graphql error', /'remote_development' licensed feature is not available/
     end
   end
-end
-
-RSpec.shared_examples 'single workspace query' do
-  context 'when remote_development feature is licensed' do
-    include_context 'in licensed environment'
-
-    context 'when user is authorized' do
-      include_context 'with authorized user'
-
-      it_behaves_like 'query is a working graphql query'
-      it_behaves_like 'query returns workspace'
-
-      context 'when the user requests a workspace that they are not authorized for' do
-        let_it_be(:other_workspace) { create(:workspace) }
-        let(:id) { other_workspace.to_global_id.to_s }
-
-        it_behaves_like 'query returns blank'
-      end
-    end
-
-    context 'when user is not authorized' do
-      include_context 'with unauthorized user as current user'
-
-      it_behaves_like 'query is a working graphql query'
-      it_behaves_like 'query returns blank'
-    end
-  end
-
-  it_behaves_like 'query in unlicensed environment'
 end
 
 RSpec.shared_examples 'multiple workspaces query' do

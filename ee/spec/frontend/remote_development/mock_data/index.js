@@ -24,7 +24,7 @@ export const WORKSPACE_QUERY_RESULT = {
   },
 };
 
-export const USER_WORKSPACES_QUERY_RESULT = {
+export const USER_WORKSPACES_LIST_QUERY_RESULT = {
   data: {
     currentUser: {
       id: 1,

@@ -89,9 +89,8 @@ module EE
           ::Types::RemoteDevelopment::WorkspaceType.connection_type,
           null: true,
           alpha: { milestone: '16.0' },
-          resolver: ::Resolvers::RemoteDevelopment::WorkspacesResolver,
-          description: 'Find workspaces owned by the current user by their IDs.'
-
+          resolver: ::Resolvers::RemoteDevelopment::WorkspacesForCurrentUserResolver,
+          description: 'Find workspaces owned by the current user.'
         field :instance_external_audit_event_destinations,
           ::Types::AuditEvents::InstanceExternalAuditEventDestinationType.connection_type,
           null: true,

@@ -19,7 +19,7 @@ import {
 } from 'ee/remote_development/constants';
 import {
   USER_WORKSPACES_QUERY_EMPTY_RESULT,
-  USER_WORKSPACES_QUERY_RESULT,
+  USER_WORKSPACES_LIST_QUERY_RESULT,
   PROJECT_ID,
   PROJECT_FULL_PATH,
 } from '../../mock_data';
@@ -42,7 +42,9 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
   };
 
   const buildMockApollo = () => {
-    userWorkspacesListQueryHandler = jest.fn().mockResolvedValueOnce(USER_WORKSPACES_QUERY_RESULT);
+    userWorkspacesListQueryHandler = jest
+      .fn()
+      .mockResolvedValueOnce(USER_WORKSPACES_LIST_QUERY_RESULT);
 
     mockApollo = createMockApollo([[userWorkspacesListQuery, userWorkspacesListQueryHandler]]);
   };
@@ -159,7 +161,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
   describe('when user has workspaces', () => {
     beforeEach(async () => {
       userWorkspacesListQueryHandler.mockReset();
-      userWorkspacesListQueryHandler.mockResolvedValueOnce(USER_WORKSPACES_QUERY_RESULT);
+      userWorkspacesListQueryHandler.mockResolvedValueOnce(USER_WORKSPACES_LIST_QUERY_RESULT);
 
       createWrapper();
 
@@ -171,7 +173,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
     });
 
     it('displays workspaces dropdown items', () => {
-      const { nodes: workspaces } = USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces;
+      const { nodes: workspaces } = USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces;
 
       workspaces.forEach((workspace, index) => {
         expect(findAllWorkspaceItems().at(index).props().workspace).toEqual(workspace);
@@ -188,7 +190,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
     describe('when a workspace item emits "updateWorkspace" event', () => {
       it('calls the update method provided by the WorkspaceUpdateMutation component', () => {
-        const { nodes: workspaces } = USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces;
+        const { nodes: workspaces } = USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces;
         const eventPayload = { desiredState: WORKSPACE_DESIRED_STATES.running };
 
         findAllWorkspaceItems().at(0).vm.$emit('updateWorkspace', eventPayload);

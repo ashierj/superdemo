@@ -1,11 +1,11 @@
 import produce from 'immer';
-import userWorkspacesQuery from '../graphql/queries/user_workspaces_list.query.graphql';
+import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
 import { WORKSPACES_LIST_PAGE_SIZE } from '../constants';
 
 export const addWorkspace = (store, workspace) => {
   store.updateQuery(
     {
-      query: userWorkspacesQuery,
+      query: userWorkspacesListQuery,
       variables: { after: null, before: null, first: WORKSPACES_LIST_PAGE_SIZE },
     },
     (sourceData) =>

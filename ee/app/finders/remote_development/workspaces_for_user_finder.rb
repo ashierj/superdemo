@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
 module RemoteDevelopment
-  class WorkspacesFinder < UnionFinder
-    attr_reader :current_user, :params
+  class WorkspacesForUserFinder
+    attr_reader :user, :params
 
-    def initialize(current_user, params = {})
-      @current_user = current_user
+    def initialize(user:, params: {})
+      @user = user
       @params = params
     end
 
     def execute
-      return Workspace.none unless current_user&.can?(:read_workspace)
+      return Workspace.none unless user.can?(:read_workspace)
 
-      items = current_user.workspaces
+      items = user.workspaces
       items = by_ids(items)
       items = by_project_ids(items)
       items = include_actual_states(items)

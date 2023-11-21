@@ -10,7 +10,7 @@ import WorkspaceStateIndicator from 'ee/remote_development/components/common/wor
 import { populateWorkspacesWithProjectNames } from 'ee/remote_development/services/utils';
 import { WORKSPACE_STATES, WORKSPACE_DESIRED_STATES } from 'ee/remote_development/constants';
 import {
-  USER_WORKSPACES_QUERY_RESULT,
+  USER_WORKSPACES_LIST_QUERY_RESULT,
   USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
 } from '../../mock_data';
 
@@ -52,7 +52,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
 
   const createWrapper = ({
     workspaces = populateWorkspacesWithProjectNames(
-      USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes,
+      USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes,
       USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
     ),
   } = {}) => {
@@ -70,7 +70,9 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
     });
   };
   const setupMockTerminatedWorkspace = (extraData = {}) => {
-    const customData = cloneDeep(USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes);
+    const customData = cloneDeep(
+      USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes,
+    );
     const workspace = cloneDeep(customData[0]);
 
     customData.unshift({
@@ -95,7 +97,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
     it('displays user workspaces correctly', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
         populateWorkspacesWithProjectNames(
-          USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes,
+          USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes,
           USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
         ).map((x) => {
           return {
@@ -154,7 +156,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
       createWrapper();
       const row = findTableRows(wrapper).at(TEST_WORKSPACE_IDX);
       workspace =
-        USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes[TEST_WORKSPACE_IDX];
+        USER_WORKSPACES_LIST_QUERY_RESULT.data.currentUser.workspaces.nodes[TEST_WORKSPACE_IDX];
       workspaceActions = findWorkspaceActions(row);
 
       workspaceActions.vm.$emit('click', TEST_DESIRED_STATE);
