@@ -3,7 +3,7 @@ import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { GlStackedColumnChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__, n__, sprintf, __ } from '~/locale';
-import { isValidDate } from '~/lib/utils/datetime_utility';
+import { isValidDate, differenceInMonths } from '~/lib/utils/datetime_utility';
 import { generateChartDateRangeData } from '../utils';
 import issuesAnalyticsCountsQueryBuilder from '../graphql/issues_analytics_counts_query_builder';
 import { extractIssuesAnalyticsCounts } from '../api';
@@ -162,27 +162,32 @@ export default {
     monthYearLabels() {
       return this.dates.map(({ month, year }) => `${month} ${year}`);
     },
+    firstMonthYearLabel() {
+      return this.monthYearLabels[0];
+    },
     monthsCount() {
-      return this.dates.length;
+      return differenceInMonths(this.startDate, this.endDate);
     },
     dateRange() {
-      const { monthYearLabels, monthsCount } = this;
-
-      const [startMonthYear] = monthYearLabels;
-
-      if (monthsCount === 1) return startMonthYear;
+      const { monthYearLabels, firstMonthYearLabel } = this;
 
       return sprintf(__('%{startDate} – %{dueDate}'), {
-        startDate: startMonthYear,
+        startDate: firstMonthYearLabel,
         dueDate: monthYearLabels.at(-1),
       });
     },
     xAxisTitle() {
-      const { monthsCount, dateRange } = this;
+      const { monthsCount, dateRange, firstMonthYearLabel } = this;
+
+      if (monthsCount === 0) {
+        return sprintf(s__('IssuesAnalytics|This month (%{currentMonthYear})'), {
+          currentMonthYear: firstMonthYearLabel,
+        });
+      }
 
       return sprintf(
         n__(
-          'IssuesAnalytics|This month (%{dateRange})',
+          'IssuesAnalytics|Last month (%{dateRange})',
           'IssuesAnalytics|Last %{monthsCount} months (%{dateRange})',
           monthsCount,
         ),

@@ -107,8 +107,8 @@ export const getQueryIssuesAnalyticsResponse = {
   },
 };
 
-export const mockIssuesAnalyticsCountsStartDate = new Date('2023-07-04T00:00:00.000Z');
-export const mockIssuesAnalyticsCountsEndDate = new Date('2023-09-15T00:00:00.000Z');
+export const mockIssuesAnalyticsCountsStartDate = new Date('2022-11-01T00:00:00.000Z');
+export const mockIssuesAnalyticsCountsEndDate = new Date('2023-11-20T00:00:00.000Z');
 
 export const getMockIssuesAnalyticsCountsQuery = ({
   queryAlias,
@@ -118,8 +118,128 @@ export const getMockIssuesAnalyticsCountsQuery = ({
   namespace: ${isProject ? 'project' : 'group'}(fullPath: $fullPath) {
     id
     ${queryAlias}: flowMetrics {
+      Nov_2022: ${metricType}(
+        from: "2022-11-01"
+        to: "2022-12-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      Dec_2022: ${metricType}(
+        from: "2022-12-01"
+        to: "2023-01-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      Jan_2023: ${metricType}(
+        from: "2023-01-01"
+        to: "2023-02-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      Feb_2023: ${metricType}(
+        from: "2023-02-01"
+        to: "2023-03-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      Mar_2023: ${metricType}(
+        from: "2023-03-01"
+        to: "2023-04-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      Apr_2023: ${metricType}(
+        from: "2023-04-01"
+        to: "2023-05-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      May_2023: ${metricType}(
+        from: "2023-05-01"
+        to: "2023-06-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      Jun_2023: ${metricType}(
+        from: "2023-06-01"
+        to: "2023-07-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
       Jul_2023: ${metricType}(
-        from: "2023-07-04"
+        from: "2023-07-01"
         to: "2023-08-01"
         assigneeUsernames: $assigneeUsernames
         authorUsername: $authorUsername
@@ -150,7 +270,37 @@ export const getMockIssuesAnalyticsCountsQuery = ({
       }
       Sep_2023: ${metricType}(
         from: "2023-09-01"
-        to: "2023-09-15"
+        to: "2023-10-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      Oct_2023: ${metricType}(
+        from: "2023-10-01"
+        to: "2023-11-01"
+        assigneeUsernames: $assigneeUsernames
+        authorUsername: $authorUsername
+        milestoneTitle: $milestoneTitle
+        labelNames: $labelNames
+        epicId: $epicId
+        iterationId: $iterationId
+        myReactionEmoji: $myReactionEmoji
+        weight: $weight
+        not: $not
+      ) {
+        value
+      }
+      Nov_2023: ${metricType}(
+        from: "2023-11-01"
+        to: "2023-11-20"
         assigneeUsernames: $assigneeUsernames
         authorUsername: $authorUsername
         milestoneTitle: $milestoneTitle
@@ -171,16 +321,56 @@ export const getMockIssuesAnalyticsCountsQuery = ({
 export const getMockIssuesOpenedCountsResponse = ({ isProject = false, isEmpty = false } = {}) => ({
   id: 'fake-id',
   issuesOpenedCounts: {
+    Nov_2022: {
+      value: isEmpty ? 0 : 18,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Dec_2022: {
+      value: isEmpty ? 0 : 38,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Jan_2023: {
+      value: isEmpty ? 0 : 51,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Feb_2023: {
+      value: isEmpty ? 0 : 39,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Mar_2023: {
+      value: isEmpty ? 0 : 45,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Apr_2023: {
+      value: isEmpty ? 0 : 40,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    May_2023: {
+      value: isEmpty ? 0 : 44,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Jun_2023: {
+      value: isEmpty ? 0 : 44,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
     Jul_2023: {
-      value: isEmpty ? 0 : 134,
+      value: isEmpty ? 0 : 34,
       __typename: 'ValueStreamAnalyticsMetric',
     },
     Aug_2023: {
-      value: isEmpty ? 0 : 21,
+      value: isEmpty ? 0 : 48,
       __typename: 'ValueStreamAnalyticsMetric',
     },
     Sep_2023: {
-      value: isEmpty ? 0 : 11,
+      value: isEmpty ? 0 : 40,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Oct_2023: {
+      value: isEmpty ? 0 : 39,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Nov_2023: {
+      value: isEmpty ? 0 : 20,
       __typename: 'ValueStreamAnalyticsMetric',
     },
     __typename: isProject
@@ -193,16 +383,56 @@ export const getMockIssuesOpenedCountsResponse = ({ isProject = false, isEmpty =
 export const getMockIssuesClosedCountsResponse = ({ isProject = false, isEmpty = false } = {}) => ({
   id: 'fake-id',
   issuesClosedCounts: {
-    Jul_2023: {
-      value: isEmpty ? 0 : 110,
+    Nov_2022: {
+      value: isEmpty ? 0 : 0,
       __typename: 'ValueStreamAnalyticsMetric',
     },
-    Aug_2023: {
+    Dec_2022: {
+      value: isEmpty ? 0 : 0,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Jan_2023: {
       value: isEmpty ? 0 : 1,
       __typename: 'ValueStreamAnalyticsMetric',
     },
+    Feb_2023: {
+      value: isEmpty ? 0 : 3,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Mar_2023: {
+      value: isEmpty ? 0 : 4,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Apr_2023: {
+      value: isEmpty ? 0 : 9,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    May_2023: {
+      value: isEmpty ? 0 : 13,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Jun_2023: {
+      value: isEmpty ? 0 : 12,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Jul_2023: {
+      value: isEmpty ? 0 : 14,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Aug_2023: {
+      value: isEmpty ? 0 : 21,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
     Sep_2023: {
-      value: isEmpty ? 0 : 15,
+      value: isEmpty ? 0 : 24,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Oct_2023: {
+      value: isEmpty ? 0 : 45,
+      __typename: 'ValueStreamAnalyticsMetric',
+    },
+    Nov_2023: {
+      value: isEmpty ? 0 : 60,
       __typename: 'ValueStreamAnalyticsMetric',
     },
     __typename: isProject
@@ -224,14 +454,8 @@ export const mockProjectIssuesAnalyticsCountsResponseData = getMockTotalIssuesAn
 );
 
 export const mockIssuesAnalyticsCountsChartData = [
-  {
-    name: 'Opened',
-    data: [134, 21, 11],
-  },
-  {
-    name: 'Closed',
-    data: [110, 1, 15],
-  },
+  { name: 'Opened', data: [18, 38, 51, 39, 45, 40, 44, 44, 34, 48, 40, 39, 20] },
+  { name: 'Closed', data: [0, 0, 1, 3, 4, 9, 13, 12, 14, 21, 24, 45, 60] },
 ];
 
 export const mockChartDateRangeData = [
