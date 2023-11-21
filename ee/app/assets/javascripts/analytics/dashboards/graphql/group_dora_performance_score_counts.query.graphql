@@ -1,7 +1,7 @@
-query groupDoraPerformanceScoreCountsQuery($fullPath: ID!) {
+query groupDoraPerformanceScoreCountsQuery($fullPath: ID!, $topics: [String!]) {
   namespace: group(fullPath: $fullPath) {
     id
-    doraPerformanceScoreCounts {
+    doraPerformanceScoreCounts(projectFilters: { topic: $topics }) {
       totalProjectsCount
       noDoraDataProjectsCount
       nodes {

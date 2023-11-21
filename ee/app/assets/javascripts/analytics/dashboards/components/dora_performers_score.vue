@@ -20,6 +20,8 @@ import {
   DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE,
   DORA_PERFORMERS_SCORE_NO_DATA,
 } from 'ee/analytics/dashboards/constants';
+import { validateProjectTopics } from '../utils';
+import FilterProjectTopicsBadges from './filter_project_topics_badges.vue';
 
 export default {
   name: 'DoraPerformersScore',
@@ -31,6 +33,7 @@ export default {
     GlSkeletonLoader,
     GlAlert,
     GlIcon,
+    FilterProjectTopicsBadges,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -74,6 +77,7 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
+          topics: this.filterProjectTopics,
         };
       },
       skip() {
@@ -184,6 +188,12 @@ export default {
         noDoraDataProjectsCount,
       );
     },
+    filterProjectTopics() {
+      return validateProjectTopics(this.data?.filter_project_topics || []);
+    },
+    hasFilterProjectTopics() {
+      return this.filterProjectTopics.length > 0;
+    },
   },
   beforeDestroy() {
     if (this.chart) {
@@ -267,18 +277,21 @@ export default {
   >
     <template #header>
       <gl-skeleton-loader v-if="isLoading" :lines="1" :width="450" />
-      <h5
-        v-else
-        data-testid="dora-performers-score-panel-title"
-        class="gl-my-0 gl-display-flex gl-gap-3 gl-align-items-center"
-      >
-        {{ panelTitle }}
-        <gl-icon
-          v-if="excludedProjectsMessage"
-          v-gl-tooltip="excludedProjectsMessage"
-          name="information-o"
-        />
-      </h5>
+      <div v-else class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+        <h5
+          data-testid="dora-performers-score-panel-title"
+          class="gl-my-0 gl-display-flex gl-gap-3 gl-align-items-center"
+        >
+          {{ panelTitle }}
+          <gl-icon
+            v-if="excludedProjectsMessage"
+            v-gl-tooltip="excludedProjectsMessage"
+            name="information-o"
+          />
+        </h5>
+
+        <filter-project-topics-badges v-if="hasFilterProjectTopics" :topics="filterProjectTopics" />
+      </div>
     </template>
 
     <chart-skeleton-loader v-if="isLoading" />

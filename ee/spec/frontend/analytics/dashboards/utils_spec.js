@@ -15,6 +15,7 @@ import {
   generateDashboardTableFields,
   generateValueStreamDashboardStartDate,
   groupDoraPerformanceScoreCountsByCategory,
+  validateProjectTopics,
 } from 'ee/analytics/dashboards/utils';
 import { LEAD_TIME_METRIC_TYPE, CYCLE_TIME_METRIC_TYPE } from '~/api/analytics_api';
 import {
@@ -284,6 +285,22 @@ describe('Analytics Dashboards utils', () => {
         [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.LOW]: [],
         [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.NO_DATA]: [],
       });
+    });
+  });
+
+  describe('validateProjectTopics', () => {
+    const goodTopics = ['one', 'two', 'three'];
+    const badChars = ['\n', '\v', '\f', '\r', '\u0085', '\u2028', '\u2029'].map((c) =>
+      encodeURIComponent(c),
+    );
+
+    it.each(badChars)(`removes invalid "%s" character`, (char) => {
+      const allTopics = goodTopics.concat(`test${decodeURIComponent(char)}`);
+      expect(validateProjectTopics(allTopics)).toEqual(goodTopics);
+    });
+
+    it.each([undefined, null, [], 0, 'F'])(`returns empty array for "%s"`, (input) => {
+      expect(validateProjectTopics(input)).toEqual([]);
     });
   });
 });

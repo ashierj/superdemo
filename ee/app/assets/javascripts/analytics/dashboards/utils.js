@@ -398,3 +398,15 @@ export const groupDoraPerformanceScoreCountsByCategory = (data = []) => {
 
   return scoresCountsByCategory;
 };
+
+/**
+ * Filters out any user-inputted project topic filters that
+ * contain invalid characters.
+ *
+ * @param {Array} User-inputted project topic names
+ * @returns {Array} Sanitized project topic names
+ */
+export const validateProjectTopics = (topics) =>
+  Array.isArray(topics)
+    ? topics.filter((topic) => !topic.match(/\n|\v|\f|\r|\u0085|\u2028|\u2029/))
+    : [];
