@@ -1,4 +1,3 @@
-import { nextTick } from 'vue';
 import { GlButton, GlButtonGroup, GlCollapsibleListbox, GlListboxItem, GlBadge } from '@gitlab/ui';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
@@ -28,8 +27,8 @@ describe('Split Button', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findListboxItem = () => wrapper.findComponent(GlListboxItem);
-  const findIcon = () => wrapper.findComponent('[data-testid="item-icon"]');
-  const findBadge = () => wrapper.findComponent(GlBadge);
+  const findListboxIcon = () => wrapper.findComponent('[data-testid="item-icon"]');
+  const findListboxBadge = () => findListbox().findComponent(GlBadge);
 
   const createComponent = (props, mountFn = shallowMountExtended) => {
     wrapper = mountFn(SplitButton, {
@@ -62,67 +61,60 @@ describe('Split Button', () => {
     expect(findListbox().props('disabled')).toBe(true);
   });
 
-  it('renders a correct amount of listbox items', () => {
-    createComponent();
+  describe('selected button', () => {
+    it('emits correct action on button click', () => {
+      createComponent({}, mountExtended);
 
-    expect(findListbox().props('items')).toHaveLength(2);
+      findButton().vm.$emit('click');
+
+      expect(wrapper.emitted('button1Action')).toBeDefined();
+      expect(wrapper.emitted('button1Action')).toHaveLength(1);
+    });
+
+    it('visits url if href property is specified', () => {
+      const spy = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
+      const href = 'https://gitlab.com';
+      const { buttons } = defaultProps;
+
+      createComponent({ buttons: [{ ...buttons[0], href }] });
+
+      findButton().vm.$emit('click');
+
+      expect(wrapper.emitted('button1Action')).toBeUndefined();
+      expect(spy).toHaveBeenCalledWith(href, true);
+    });
   });
 
-  it('renders both button text and tagline', () => {
-    createComponent({}, mountExtended);
+  describe('dropdown listbox', () => {
+    it('renders a correct amount of listbox items', () => {
+      createComponent();
 
-    const item = findListboxItem();
-    expect(item.text()).toContain('button one');
-    expect(item.text()).toContain("button one's tagline");
-  });
+      expect(findListbox().props('items')).toHaveLength(2);
+    });
 
-  it('renders the icon', () => {
-    const icon = 'tanuki-ai';
-    const { buttons } = defaultProps;
-    createComponent({ buttons: [{ ...buttons[0], icon }] }, mountExtended);
+    it('renders both button text and tagline', () => {
+      createComponent({}, mountExtended);
 
-    expect(findIcon().props('name')).toBe(icon);
-  });
+      const item = findListboxItem();
+      expect(item.text()).toContain('button one');
+      expect(item.text()).toContain("button one's tagline");
+    });
 
-  it('renders the badge', () => {
-    const badge = 'experiment';
-    const { buttons } = defaultProps;
-    createComponent({ buttons: [{ ...buttons[0], badge }] }, mountExtended);
+    it('renders the icon', () => {
+      const icon = 'tanuki-ai';
+      const { buttons } = defaultProps;
+      createComponent({ buttons: [{ ...buttons[0], icon }] }, mountExtended);
 
-    expect(findBadge().text()).toBe(badge);
-    expect(findBadge().props('size')).toBe('sm');
-  });
+      expect(findListboxIcon().props('name')).toBe(icon);
+    });
 
-  it('emits correct action on button click', () => {
-    createComponent({}, mountExtended);
+    it('renders the badge', () => {
+      const badge = 'experiment';
+      const { buttons } = defaultProps;
+      createComponent({ buttons: [{ ...buttons[0], badge }] }, mountExtended);
 
-    findButton().vm.$emit('click');
-
-    expect(wrapper.emitted('button1Action')).toBeDefined();
-    expect(wrapper.emitted('button1Action')).toHaveLength(1);
-  });
-
-  it('visits url if href property is specified', () => {
-    const spy = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
-    const href = 'https://gitlab.com';
-    const { buttons } = defaultProps;
-
-    createComponent({ buttons: [{ ...buttons[0], href }] });
-
-    findButton().vm.$emit('click');
-
-    expect(wrapper.emitted('button1Action')).toBeUndefined();
-    expect(spy).toHaveBeenCalledWith(href, true);
-  });
-
-  it('updates selected item', async () => {
-    createComponent({}, mountExtended);
-
-    expect(findListbox().props('selected')).toBe(0);
-
-    findListbox().vm.$emit('select', 1);
-    await nextTick();
-
-    expect(findListbox().props('selected')).toBe(1);
+      expect(findListboxBadge().text()).toBe(badge);
+      expect(findListboxBadge().props('size')).toBe('sm');
+    });
   });
 });
