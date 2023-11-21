@@ -44,6 +44,10 @@ module QA
                 view 'ee/app/views/groups/_user_caps_setting.html.haml' do
                   element :user_cap_limit_field
                 end
+
+                view 'ee/app/views/groups/settings/_experimental_settings.haml' do
+                  element 'use-experimental-features-checkbox'
+                end
               end
             end
 
@@ -77,6 +81,12 @@ module QA
               ip_restriction_field_input = find_element(:ip_restriction_field).find('input[type="text"]')
               ip_restriction_field_input.set ip_address
               ip_restriction_field_input.send_keys(:enter)
+              click_element(:save_permissions_changes_button)
+            end
+
+            def set_experimental_features_enabled
+              expand_content(:permission_lfs_2fa_content)
+              check_element('use-experimental-features-checkbox', true)
               click_element(:save_permissions_changes_button)
             end
 
