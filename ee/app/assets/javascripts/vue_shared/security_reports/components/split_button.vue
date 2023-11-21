@@ -58,10 +58,15 @@ export default {
       :disabled="disabled"
       variant="confirm"
       :href="selectedButton.href"
+      :icon="selectedButton.icon"
       :loading="selectedButton.loading"
       @click="handleClick"
-      >{{ selectedButton.name }}</gl-button
     >
+      {{ selectedButton.name }}
+      <gl-badge v-if="selectedButton.badge" class="gl-ml-1" size="sm" variant="info">
+        {{ selectedButton.badge }}
+      </gl-badge>
+    </gl-button>
     <gl-collapsible-listbox
       v-model="selectedButtonIndex"
       class="split"
