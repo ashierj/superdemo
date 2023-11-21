@@ -125,6 +125,10 @@ module CodeSuggestions
       'Java' => {
         'empty_function' => %r{\b(\w+)\s+(\w+)\s*\(([^)]*)\)\s*\{},
         'function' => %r{\}\s*|(\b(\w+)\s+(\w+)\s*\(([^)]*)\)\s*\{)}
+      },
+      'PHP' => {
+        'empty_function' => %r{function\s+(\w*)\s*\(.*?\)\s*(?::\s*(\w+))?\s*\{|\bfunction\s*\([^)]*\)\s*\{},
+        'function' => %r{\}\s*|function\s+(\w*)\s*\(.*?\)\s*(?::\s*(\w+))?\s*\{|\bfunction\s*\([^)]*\)\s*\{}
       }
     }.freeze
 
