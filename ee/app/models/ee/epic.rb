@@ -334,8 +334,6 @@ module EE
       end
 
       def elasticsearch_available?
-        return false unless ::Feature.enabled?(:elastic_index_epics)
-
         ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index)
       end
 

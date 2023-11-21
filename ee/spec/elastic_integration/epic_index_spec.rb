@@ -15,7 +15,6 @@ RSpec.describe 'Epic index', feature_category: :global_search do
   let(:client) { helper.client }
 
   before do
-    stub_feature_flags(elastic_index_epics: true)
     allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
       .with(:migrate_wikis_to_separate_index).and_return(false)
     allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)

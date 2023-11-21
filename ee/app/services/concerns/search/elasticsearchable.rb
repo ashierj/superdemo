@@ -21,7 +21,6 @@ module Search
 
     def advanced_epic_search?
       return true unless params[:scope] == 'epics'
-      return false unless ::Feature.enabled?(:advanced_epic_search, current_user)
 
       ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index) &&
         ::Elastic::DataMigrationService.migration_has_finished?(:backfill_epics)

@@ -1254,16 +1254,6 @@ RSpec.describe Epic, feature_category: :portfolio_management do
           expect(epic).to be_use_elasticsearch
         end
 
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(elastic_index_epics: false)
-          end
-
-          it 'use_elasticsearch? is false' do
-            expect(epic).not_to be_use_elasticsearch
-          end
-        end
-
         context 'with elasticsearch enabled' do
           before do
             allow(Gitlab::CurrentSettings.current_application_settings)

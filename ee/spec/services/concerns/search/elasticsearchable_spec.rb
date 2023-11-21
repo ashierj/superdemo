@@ -81,19 +81,15 @@ RSpec.describe Search::Elasticsearchable, feature_category: :global_search do
 
       let(:params) { { scope: 'epics' } }
 
-      where(:advanced_epic_search_enabled, :create_epic_index_finished, :backfill_epics_finished, :result) do
-        true | true | true | true
-        true | true | false | false
-        true | false | true | false
-        true | false | false | false
-        false | true | true | false
-        false | false | false | false
+      where(:create_epic_index_finished, :backfill_epics_finished, :result) do
+        true  | true  | true
+        true  | false | false
+        false | true  | false
+        false | false | false
       end
 
       with_them do
         it 'returns the correct result' do
-          stub_feature_flags(advanced_epic_search: advanced_epic_search_enabled)
-
           allow(Elastic::DataMigrationService).to receive(:migration_has_finished?)
           .with(:create_epic_index).and_return(create_epic_index_finished)
 
