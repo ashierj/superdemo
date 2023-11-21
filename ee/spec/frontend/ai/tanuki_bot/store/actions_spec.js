@@ -126,6 +126,14 @@ describe('TanukiBot Store Actions', () => {
         ],
       });
     });
+    it('should commit the CLEAN_MESSAGES if there are no messages passed', () => {
+      return testAction({
+        action: actions.setMessages,
+        payload: [],
+        state,
+        expectedMutations: [{ type: types.CLEAN_MESSAGES }],
+      });
+    });
   });
 
   describe('setLoading', () => {

@@ -14,7 +14,7 @@ import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import Tracking from '~/tracking';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
+import { i18n, GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 
 export default {
@@ -96,7 +96,7 @@ export default {
     aiMessages: {
       query: getAiMessages,
       result({ data }) {
-        if (data?.aiMessages?.nodes?.length) {
+        if (data?.aiMessages?.nodes) {
           this.setMessages(data.aiMessages.nodes);
         }
       },
@@ -124,7 +124,7 @@ export default {
   methods: {
     ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
     onSendChatPrompt(question) {
-      if (question !== GENIE_CHAT_RESET_MESSAGE) {
+      if (![GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_RESET_MESSAGE].includes(question)) {
         this.setLoading();
       }
       this.$apollo
@@ -137,13 +137,19 @@ export default {
           },
         })
         .then(({ data: { aiAction = {} } = {} }) => {
-          this.track('submit_gitlab_duo_question', {
-            property: aiAction.requestId,
-          });
-          this.addDuoChatMessage({
-            ...aiAction,
-            content: question,
-          });
+          if (![GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_RESET_MESSAGE].includes(question)) {
+            this.track('submit_gitlab_duo_question', {
+              property: aiAction.requestId,
+            });
+          }
+          if (question === GENIE_CHAT_CLEAN_MESSAGE) {
+            this.$apollo.queries.aiMessages.refetch();
+          } else {
+            this.addDuoChatMessage({
+              ...aiAction,
+              content: question,
+            });
+          }
         })
         .catch((err) => {
           this.error = err.toString();

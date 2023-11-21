@@ -63,4 +63,7 @@ export default {
     }
     state.toolMessage = toolMessage;
   },
+  [types.CLEAN_MESSAGES](state) {
+    state.messages = [];
+  },
 };

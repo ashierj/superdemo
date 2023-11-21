@@ -183,4 +183,13 @@ describe('GitLab Duo Chat Store Mutations', () => {
       },
     );
   });
+
+  describe('CLEAN_MESSAGES', () => {
+    it('removes all messages from chat', () => {
+      state.messages.push(MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE);
+
+      mutations[types.CLEAN_MESSAGES](state);
+      expect(state.messages).toStrictEqual([]);
+    });
+  });
 });
