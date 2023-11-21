@@ -52,7 +52,6 @@ describe('ComplianceReportsApp component', () => {
           'router-view': stubComponent({}),
         },
         provide: {
-          adherenceReportUiEnabled: false,
           complianceFrameworkReportUiEnabled: false,
           ...provide,
         },
@@ -62,7 +61,7 @@ describe('ComplianceReportsApp component', () => {
 
   describe('adherence standards report', () => {
     beforeEach(() => {
-      wrapper = createComponent(defaultProps, mount, {}, { adherenceReportUiEnabled: true });
+      wrapper = createComponent(defaultProps, mount, {}, {});
     });
 
     it('renders the standards adherence report tab', () => {
@@ -201,7 +200,6 @@ describe('ComplianceReportsApp component', () => {
           },
         },
         {
-          adherenceReportUiEnabled: true,
           complianceFrameworkReportUiEnabled: true,
         },
       );

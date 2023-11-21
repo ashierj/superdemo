@@ -28,44 +28,6 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
     expect(rendered).to have_selector("[data-pipeline-configuration-enabled='false']")
   end
 
-  context 'for `adherence-report-ui-enabled` selector' do
-    before do
-      Feature.disable(:adherence_report_ui)
-    end
-
-    context 'when feature `adherence_report_ui` is not enabled' do
-      it 'renders with the correct selector value' do
-        render
-
-        expect(rendered).to have_selector("[data-adherence-report-ui-enabled='false']")
-      end
-    end
-
-    context 'when feature `adherence_report_ui` is enabled for a group' do
-      before do
-        Feature.enable(:adherence_report_ui, group)
-      end
-
-      it 'renders with the correct selector value' do
-        render
-
-        expect(rendered).to have_selector("[data-adherence-report-ui-enabled='true']")
-      end
-    end
-
-    context 'when feature `adherence_report_ui` is globally enabled' do
-      before do
-        Feature.enable(:adherence_report_ui)
-      end
-
-      it 'renders with the correct selector value' do
-        render
-
-        expect(rendered).to have_selector("[data-adherence-report-ui-enabled='true']")
-      end
-    end
-  end
-
   context 'for `compliance-framework-report-ui-enabled` selector' do
     context 'when feature `compliance_framework_report_ui` is not enabled' do
       before do

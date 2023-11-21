@@ -27,7 +27,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['adherenceReportUiEnabled', 'complianceFrameworkReportUiEnabled'],
+  inject: ['complianceFrameworkReportUiEnabled'],
   props: {
     mergeCommitsCsvExportPath: {
       type: String,
@@ -62,9 +62,12 @@ export default {
       return Boolean(this.frameworksCsvExportPath) && this.isProjectsReport;
     },
     tabIndex() {
-      const adherenceTab = this.adherenceReportUiEnabled ? [ROUTE_STANDARDS_ADHERENCE] : [];
-
-      const currentTabs = [...adherenceTab, ROUTE_VIOLATIONS, ROUTE_FRAMEWORKS, ROUTE_PROJECTS];
+      const currentTabs = [
+        ROUTE_STANDARDS_ADHERENCE,
+        ROUTE_VIOLATIONS,
+        ROUTE_FRAMEWORKS,
+        ROUTE_PROJECTS,
+      ];
 
       return currentTabs.indexOf(this.$route.name);
     },
@@ -161,7 +164,6 @@ export default {
 
     <gl-tabs :value="tabIndex" content-class="gl-p-0" lazy>
       <gl-tab
-        v-if="adherenceReportUiEnabled"
         :title="$options.i18n.standardsAdherenceTab"
         :title-link-attributes="standardsAdherenceTabLinkAttributes"
         data-testid="standards-adherence-tab-content"

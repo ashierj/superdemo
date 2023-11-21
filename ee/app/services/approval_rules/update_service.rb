@@ -27,10 +27,8 @@ module ApprovalRules
       merge_request_activity_counter
         .track_approval_rule_edited_action(user: current_user)
 
-      if ::Feature.enabled?(:compliance_adherence_report, project.group)
-        ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
-          .perform_async({ 'project_id' => rule.project.id, 'user_id' => current_user&.id })
-      end
+      ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
+        .perform_async({ 'project_id' => rule.project.id, 'user_id' => current_user&.id })
 
       super
     end

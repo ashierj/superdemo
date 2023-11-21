@@ -8,12 +8,10 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, :public, namespace: group) }
   let_it_be(:project_2) { create(:project, :repository, :public, namespace: group) }
-  let(:adherence_ff) { false }
   let(:compliance_framework_ff) { false }
 
   before do
     stub_feature_flags(compliance_framework_report_ui: compliance_framework_ff)
-    stub_feature_flags(adherence_report_ui: adherence_ff)
     stub_licensed_features(group_level_compliance_dashboard: true)
     group.add_owner(user)
     sign_in(user)
@@ -24,50 +22,28 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
       visit group_security_compliance_dashboard_path(group)
     end
 
-    context 'with feature flag `adherence_report_ui` enabled' do
-      let(:adherence_ff) { true }
+    it 'has the `Standards Adherence` tab selected by default' do
+      page.within('.gl-tabs') do
+        expect(find('[aria-selected="true"]').text).to eq('Standards Adherence')
+      end
+    end
 
-      it 'has the `Standards Adherence` tab selected by default' do
+    context 'when `Violations` tab is clicked' do
+      it 'has the violations tab selected' do
         page.within('.gl-tabs') do
-          expect(find('[aria-selected="true"]').text).to eq('Standards Adherence')
-        end
-      end
+          click_link _('Violations')
 
-      context 'when `Violations` tab is clicked' do
-        it 'has the violations tab selected' do
-          page.within('.gl-tabs') do
-            click_link _('Violations')
-
-            expect(find('[aria-selected="true"]').text).to eq('Violations')
-          end
-        end
-      end
-
-      context 'when `Projects` tab is clicked' do
-        it 'has the projects tab selected' do
-          page.within('.gl-tabs') do
-            click_link _('Projects')
-
-            expect(find('[aria-selected="true"]').text).to eq('Projects')
-          end
+          expect(find('[aria-selected="true"]').text).to eq('Violations')
         end
       end
     end
 
-    context 'with feature flag `adherence_report_ui` disabled' do
-      it 'has the `Violations` tab selected by default' do
+    context 'when `Projects` tab is clicked' do
+      it 'has the projects tab selected' do
         page.within('.gl-tabs') do
-          expect(find('[aria-selected="true"]').text).to eq('Violations')
-        end
-      end
+          click_link _('Projects')
 
-      context 'when `Projects` tab is clicked' do
-        it 'has the projects tab selected' do
-          page.within('.gl-tabs') do
-            click_link _('Projects')
-
-            expect(find('[aria-selected="true"]').text).to eq('Projects')
-          end
+          expect(find('[aria-selected="true"]').text).to eq('Projects')
         end
       end
     end
@@ -116,18 +92,8 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
       visit group_security_compliance_dashboard_path(group)
     end
 
-    context 'with feature flag `adherence_report_ui` enabled' do
-      let(:adherence_ff) { true }
-
-      it 'shows the standards adherence tab by default' do
-        expect(page).to have_current_path(expected_path)
-      end
-    end
-
-    context 'with feature flag `adherence_report_ui` disabled' do
-      it 'does not show the standards adherence tab' do
-        expect(page).not_to have_current_path(expected_path)
-      end
+    it 'shows the standards adherence tab by default' do
+      expect(page).to have_current_path(expected_path)
     end
   end
 
@@ -145,7 +111,7 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
 
     context 'when there are no compliance violations' do
       before do
-        visit group_security_compliance_dashboard_path(group)
+        visit group_security_compliance_dashboard_path(group, vueroute: :violations)
       end
 
       it 'shows an empty state' do
@@ -179,7 +145,7 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
           merge_request.metrics.update!(merged_at: merged_at)
           merge_request_2.metrics.update!(merged_at: 7.days.ago)
 
-          visit group_security_compliance_dashboard_path(group)
+          visit group_security_compliance_dashboard_path(group, vueroute: :violations)
           wait_for_requests
         end
 

@@ -157,8 +157,6 @@ module EE
       end
 
       def run_compliance_standards_checks
-        return unless ::Feature.enabled?(:compliance_adherence_report, project.group)
-
         ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
           .perform_async({ 'project_id' => project.id, 'user_id' => current_user.id })
 
