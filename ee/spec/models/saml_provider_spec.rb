@@ -13,7 +13,6 @@ RSpec.describe SamlProvider do
 
   describe "Associations" do
     it { is_expected.to belong_to :group }
-    it { is_expected.to belong_to :member_role }
     it { is_expected.to have_many :identities }
   end
 
@@ -117,92 +116,6 @@ RSpec.describe SamlProvider do
 
         it 'git_check_enforced is valid when set to false' do
           expect(build(:saml_provider, group: group, enabled: true, enforced_sso: false, git_check_enforced: false)).to be_valid
-        end
-      end
-    end
-
-    describe 'member_role', feature_category: :permissions do
-      let_it_be(:group) { create(:group) }
-      let_it_be(:member_role) { create(:member_role, namespace: group, base_access_level: Gitlab::Access::DEVELOPER) }
-
-      subject(:saml_provider) do
-        build(:saml_provider, group: group, default_membership_role: Gitlab::Access::DEVELOPER, member_role: member_role)
-      end
-
-      describe 'validate_member_role_base_access_level' do
-        context 'when no member role is associated' do
-          let(:member_role) { nil }
-
-          it { is_expected.to be_valid }
-        end
-
-        context 'when the member role base access level matches the default membership role' do
-          it { is_expected.to be_valid }
-        end
-
-        context 'when the member role base access level does not match the default membership role' do
-          let(:member_role) { create(:member_role, namespace: group, base_access_level: Gitlab::Access::GUEST) }
-
-          it 'is invalid' do
-            expect(saml_provider).not_to be_valid
-            expect(saml_provider.errors[:member_role_id]).to include(
-              _("role's base access level does not match the default membership role")
-            )
-          end
-        end
-      end
-
-      describe 'validate_default_membership_role_locked_for_member_role' do
-        before do
-          saml_provider.save!
-          saml_provider.default_membership_role = Gitlab::Access::MAINTAINER
-        end
-
-        context 'when no member role is associated' do
-          let(:member_role) { nil }
-
-          it { is_expected.to be_valid }
-        end
-
-        context 'when the member role has changed' do
-          before do
-            saml_provider.member_role = create(:member_role, namespace: group, base_access_level: Gitlab::Access::MAINTAINER)
-          end
-
-          it { is_expected.to be_valid }
-        end
-
-        context 'when the member role has not changed' do
-          it 'is invalid' do
-            expect(saml_provider).not_to be_valid
-            expect(saml_provider.errors[:default_membership_role]).to include(
-              _('cannot be changed since the provider is associated with a custom role')
-            )
-          end
-        end
-      end
-
-      describe 'validate_member_role_belongs_to_same_namespace' do
-        context 'when no member role is associated' do
-          let(:member_role) { nil }
-
-          it { is_expected.to be_valid }
-        end
-
-        context 'when the member role namespace is the same as the saml provider group' do
-          it { is_expected.to be_valid }
-        end
-
-        context 'when the member role namespace is not the same as the saml provider group' do
-          let(:another_group) { create(:group) }
-          let(:member_role) { create(:member_role, namespace: another_group, base_access_level: Gitlab::Access::DEVELOPER) }
-
-          it 'is invalid' do
-            expect(saml_provider).not_to be_valid
-            expect(saml_provider.errors[:group]).to include(
-              _("must belong to the same namespace as the custom role's namespace")
-            )
-          end
         end
       end
     end
@@ -442,5 +355,9 @@ RSpec.describe SamlProvider do
         end
       end
     end
+  end
+
+  it_behaves_like 'model with member role relation' do
+    subject(:model) { build(:saml_provider) }
   end
 end

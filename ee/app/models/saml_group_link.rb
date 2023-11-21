@@ -2,6 +2,10 @@
 
 class SamlGroupLink < ApplicationRecord
   include StripAttribute
+  include MemberRoles::MemberRoleRelation
+
+  base_access_level_attr :access_level
+
   belongs_to :group
 
   strip_attributes! :saml_group_name

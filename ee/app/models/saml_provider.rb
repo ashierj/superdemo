@@ -2,10 +2,13 @@
 
 class SamlProvider < ApplicationRecord
   include IgnorableColumns
+  include MemberRoles::MemberRoleRelation
+
+  base_access_level_attr :default_membership_role
+
   USER_ATTRIBUTES_LOCKED_FOR_MANAGED_ACCOUNTS = %i[email public_email commit_email notification_email].freeze
 
   belongs_to :group
-  belongs_to :member_role
   has_many :identities
 
   validates :group, presence: true, top_level_group: true
@@ -14,9 +17,6 @@ class SamlProvider < ApplicationRecord
   validates :default_membership_role, presence: true
   validate :git_check_enforced_allowed
   validate :access_level_inclusion
-  validate :validate_member_role_base_access_level
-  validate :validate_default_membership_role_locked_for_member_role, on: :update
-  validate :validate_member_role_belongs_to_same_namespace
 
   after_initialize :set_defaults, if: :new_record?
 
@@ -118,27 +118,5 @@ class SamlProvider < ApplicationRecord
 
   def strip_left_to_right_chars(input)
     input&.gsub(/\u200E/, '')
-  end
-
-  def validate_member_role_base_access_level
-    return unless member_role_id
-    return if default_membership_role == member_role.base_access_level
-
-    errors.add(:member_role_id, _("role's base access level does not match the default membership role"))
-  end
-
-  def validate_default_membership_role_locked_for_member_role
-    return unless member_role_id
-    return if member_role_changed? # it is ok to change the default membership role when changing member role
-    return unless default_membership_role_changed?
-
-    errors.add(:default_membership_role, _('cannot be changed since the provider is associated with a custom role'))
-  end
-
-  def validate_member_role_belongs_to_same_namespace
-    return unless member_role_id
-    return if group_id == member_role.namespace_id
-
-    errors.add(:group, _("must belong to the same namespace as the custom role's namespace"))
   end
 end
