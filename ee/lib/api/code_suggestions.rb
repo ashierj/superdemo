@@ -28,13 +28,6 @@ module API
         current_user.can?(:access_code_suggestions) && access_code_suggestions_when_proxied_to_saas?
       end
 
-      def active_code_suggestions_purchase?
-        return true unless ::Feature.enabled?(:purchase_code_suggestions)
-
-        cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: current_user.id)
-        Rails.cache.fetch(cache_key, expires_in: 1.hour) { current_user.code_suggestions_add_on_available? }
-      end
-
       def model_gateway_headers(headers, gateway_token)
         telemetry_headers = headers.select { |k| /\Ax-gitlab-cs-/i.match?(k) }
 
@@ -48,7 +41,15 @@ module API
           'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
           'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-        }.merge(telemetry_headers).transform_values { |v| Array(v) }
+        }.merge(telemetry_headers).merge(saas_headers).transform_values { |v| Array(v) }
+      end
+
+      def saas_headers
+        return {} unless Gitlab.com?
+
+        {
+          'X-Gitlab-Saas-Namespace-Ids' => current_user.code_suggestions_add_on_available_namespace_ids.join(',')
+        }
       end
 
       # In case the request was proxied from the self-managed instance,
@@ -122,7 +123,10 @@ module API
         post do
           if Gitlab.org_or_com?
             forbidden! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
-            not_found! unless active_code_suggestions_purchase?
+
+            if ::Feature.enabled?(:purchase_code_suggestions)
+              not_found! unless current_user.code_suggestions_add_on_available? # rubocop: disable Style/SoleNestedConditional -- Feature Flag shouldn't be checked in the same condition.
+            end
 
             token = Gitlab::Ai::AccessToken.new(
               current_user,

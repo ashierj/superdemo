@@ -2764,7 +2764,7 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#code_suggestions_add_on_available?' do
+  describe '#code_suggestions_add_on_available_namespace_ids' do
     let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:user) { create(:user) }
 
@@ -2776,35 +2776,60 @@ RSpec.describe User, feature_category: :system_access do
       create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
     end
 
-    subject(:code_suggestions_add_on_available?) { user.code_suggestions_add_on_available? }
+    let(:active_code_suggestion_purchase_namespace_id) { active_code_suggestion_purchase.namespace_id }
+
+    subject(:code_suggestions_add_on_available_namespace_ids) { user.code_suggestions_add_on_available_namespace_ids }
 
     context 'when the user has an active assigned code suggestions seat' do
-      it 'returns true' do
+      it 'returns the namespace ID' do
         create(
           :gitlab_subscription_user_add_on_assignment,
           user: user,
           add_on_purchase: active_code_suggestion_purchase
         )
 
-        expect(code_suggestions_add_on_available?).to be true
+        expect(code_suggestions_add_on_available_namespace_ids).to eq([active_code_suggestion_purchase.namespace_id])
+      end
+    end
+
+    context 'when the user belongs to multiple namespaces with an active assigned code suggestions seat' do
+      let!(:active_code_suggestion_purchase_2) do
+        create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+      end
+
+      it 'returns the namespace IDs' do
+        create(
+          :gitlab_subscription_user_add_on_assignment,
+          user: user,
+          add_on_purchase: active_code_suggestion_purchase
+        )
+
+        create(
+          :gitlab_subscription_user_add_on_assignment,
+          user: user,
+          add_on_purchase: active_code_suggestion_purchase_2
+        )
+
+        expect(code_suggestions_add_on_available_namespace_ids)
+          .to contain_exactly(active_code_suggestion_purchase.namespace_id, active_code_suggestion_purchase_2.namespace_id)
       end
     end
 
     context 'when the user has an expired assigned code suggestions seat' do
-      it 'returns false' do
+      it 'returns empty' do
         create(
           :gitlab_subscription_user_add_on_assignment,
           user: user,
           add_on_purchase: expired_code_suggestion_purchase
         )
 
-        expect(code_suggestions_add_on_available?).to be false
+        expect(code_suggestions_add_on_available_namespace_ids).to be_empty
       end
     end
 
     context 'when the user has no add on seat assignments' do
-      it 'returns false' do
-        expect(code_suggestions_add_on_available?).to be false
+      it 'returns empty' do
+        expect(code_suggestions_add_on_available_namespace_ids).to be_empty
       end
     end
 
@@ -2822,11 +2847,11 @@ RSpec.describe User, feature_category: :system_access do
 
         context 'with an active purchase for a related group' do
           where(:group_access_level, :result) do
-            :guest      | false
-            :reporter   | true
-            :developer  | true
-            :maintainer | true
-            :owner      | true
+            :guest      | []
+            :reporter   | [ref(:active_code_suggestion_purchase_namespace_id)]
+            :developer  | [ref(:active_code_suggestion_purchase_namespace_id)]
+            :maintainer | [ref(:active_code_suggestion_purchase_namespace_id)]
+            :owner      | [ref(:active_code_suggestion_purchase_namespace_id)]
           end
 
           with_them do
@@ -2842,11 +2867,11 @@ RSpec.describe User, feature_category: :system_access do
           let_it_be_with_reload(:project) { create(:project, group: active_code_suggestion_purchase.namespace) }
 
           where(:project_access_level, :result) do
-            :guest      | false
-            :reporter   | true
-            :developer  | true
-            :maintainer | true
-            :owner      | true
+            :guest      | []
+            :reporter   | [ref(:active_code_suggestion_purchase_namespace_id)]
+            :developer  | [ref(:active_code_suggestion_purchase_namespace_id)]
+            :maintainer | [ref(:active_code_suggestion_purchase_namespace_id)]
+            :owner      | [ref(:active_code_suggestion_purchase_namespace_id)]
           end
 
           with_them do
@@ -2868,8 +2893,8 @@ RSpec.describe User, feature_category: :system_access do
             let_it_be(:project_group_link) { create(:project_group_link, project: project, group: invited_group) }
 
             where(:user, :result) do
-              ref(:invited_guest)    | false
-              ref(:invited_reporter) | true
+              ref(:invited_guest)    | []
+              ref(:invited_reporter) | [ref(:active_code_suggestion_purchase_namespace_id)]
             end
 
             with_them do
@@ -2883,8 +2908,8 @@ RSpec.describe User, feature_category: :system_access do
             end
 
             where(:user, :result) do
-              ref(:invited_guest)    | false
-              ref(:invited_reporter) | true
+              ref(:invited_guest)    | []
+              ref(:invited_reporter) | [ref(:active_code_suggestion_purchase_namespace_id)]
             end
 
             with_them do
@@ -2894,13 +2919,29 @@ RSpec.describe User, feature_category: :system_access do
         end
 
         context 'with all expired purchases' do
-          it { is_expected.to eq(false) }
+          it { is_expected.to be_empty }
         end
       end
 
       context 'without code suggestion purchases for any of the groups or projects' do
-        it { is_expected.to eq(false) }
+        it { is_expected.to be_empty }
       end
+    end
+  end
+
+  describe '#code_suggestions_add_on_available?' do
+    subject { user.code_suggestions_add_on_available? }
+
+    it 'returns true when the user belongs to a namespace with add on subscription' do
+      allow(user).to receive(:code_suggestions_add_on_available_namespace_ids).and_return([1])
+
+      is_expected.to eq(true)
+    end
+
+    it 'returns false when the user does not belong to a namespace with add on subscription' do
+      allow(user).to receive(:code_suggestions_add_on_available_namespace_ids).and_return([])
+
+      is_expected.to eq(false)
     end
   end
 
