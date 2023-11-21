@@ -15,6 +15,7 @@ import getCustomizableDashboardQuery from 'ee/analytics/analytics_dashboards/gra
 import getAvailableVisualizations from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_customizable_visualizations.query.graphql';
 import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
+import FeedbackBanner from 'ee/analytics/dashboards/components/feedback_banner.vue';
 import {
   buildDefaultDashboardFilters,
   updateApolloCache,
@@ -75,6 +76,7 @@ describe('AnalyticsDashboard', () => {
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
+  const findFeedbackBanner = () => wrapper.findComponent(FeedbackBanner);
 
   const mockSaveDashboardImplementation = async (responseCallback, dashboardToSave = dashboard) => {
     saveCustomDashboard.mockImplementation(responseCallback);
@@ -246,9 +248,10 @@ describe('AnalyticsDashboard', () => {
       return waitForPromises();
     });
 
-    it('does not render the dashboard or loader', () => {
+    it('does not render the dashboard, loader or feedback banner', () => {
       expect(findDashboard().exists()).toBe(false);
       expect(findLoader().exists()).toBe(false);
+      expect(findFeedbackBanner().exists()).toBe(false);
       expect(breadcrumbState.updateName).toHaveBeenCalledWith('');
     });
 
@@ -659,6 +662,10 @@ describe('AnalyticsDashboard', () => {
           },
           showDateRangeFilter: false,
         });
+      });
+
+      it('renders the feedback banner', () => {
+        expect(findFeedbackBanner().exists()).toBe(true);
       });
     });
   });

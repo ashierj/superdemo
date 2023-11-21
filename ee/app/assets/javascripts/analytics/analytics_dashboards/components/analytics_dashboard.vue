@@ -7,6 +7,7 @@ import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { InternalEvents } from '~/tracking';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
+import FeedbackBanner from 'ee/analytics/dashboards/components/feedback_banner.vue';
 import {
   buildDefaultDashboardFilters,
   getDashboardConfig,
@@ -32,6 +33,7 @@ export default {
   name: 'AnalyticsDashboard',
   components: {
     CustomizableDashboard,
+    FeedbackBanner,
     GlEmptyState,
     GlSkeletonLoader,
   },
@@ -101,6 +103,9 @@ export default {
   computed: {
     currentDashboard() {
       return this.vsdYamlDashboard || this.initialDashboard;
+    },
+    currentDashboardIsVsd() {
+      return this.currentDashboard?.slug === BUILT_IN_VALUE_STREAM_DASHBOARD;
     },
     showDateRangeFilter() {
       return !HIDE_DATE_RANGE_FILTER.includes(this.currentDashboard?.slug);
@@ -316,22 +321,24 @@ export default {
 
 <template>
   <div>
-    <customizable-dashboard
-      v-if="currentDashboard"
-      ref="dashboard"
-      :initial-dashboard="currentDashboard"
-      :available-visualizations="availableVisualizations"
-      :default-filters="defaultFilters"
-      :is-saving="isSaving"
-      :date-range-limit="0"
-      :sync-url-filters="!isNewDashboard"
-      :is-new-dashboard="isNewDashboard"
-      :show-date-range-filter="showDateRangeFilter"
-      :changes-saved="changesSaved"
-      :title-validation-error="titleValidationError"
-      @save="saveDashboard"
-      @title-input="validateDashboardTitle"
-    />
+    <template v-if="currentDashboard">
+      <feedback-banner v-if="currentDashboardIsVsd" />
+      <customizable-dashboard
+        ref="dashboard"
+        :initial-dashboard="currentDashboard"
+        :available-visualizations="availableVisualizations"
+        :default-filters="defaultFilters"
+        :is-saving="isSaving"
+        :date-range-limit="0"
+        :sync-url-filters="!isNewDashboard"
+        :is-new-dashboard="isNewDashboard"
+        :show-date-range-filter="showDateRangeFilter"
+        :changes-saved="changesSaved"
+        :title-validation-error="titleValidationError"
+        @save="saveDashboard"
+        @title-input="validateDashboardTitle"
+      />
+    </template>
     <gl-empty-state
       v-else-if="showEmptyState"
       :svg-path="dashboardEmptyStateIllustrationPath"
