@@ -96,9 +96,10 @@ export const Loading = {
 
 export const LoadingError = {
   render: (...args) => {
+    const handlerWithAnError = () => Promise.reject(new Error('500 Internal Server Error'));
     const apolloProvider = createMockApollo([
-      [getGroupCiMinutesUsage, () => Promise.reject()],
-      [getGroupProjectsCiMinutesUsage, () => Promise.reject()],
+      [getGroupCiMinutesUsage, handlerWithAnError],
+      [getGroupProjectsCiMinutesUsage, handlerWithAnError],
     ]);
 
     return createTemplate({

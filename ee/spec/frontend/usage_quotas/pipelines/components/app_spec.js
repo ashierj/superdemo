@@ -30,6 +30,7 @@ import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { captureException } from '~/ci/runner/sentry_utils';
+import { logError } from '~/lib/logger';
 import {
   defaultProvide,
   mockGetCiMinutesUsageNamespace,
@@ -41,9 +42,10 @@ import {
 Vue.use(VueApollo);
 jest.mock('ee/google_tag_manager');
 jest.mock('~/ci/runner/sentry_utils');
+jest.mock('~/lib/logger');
 
 describe('PipelineUsageApp', () => {
-  /** @type { Wrapper } */
+  /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findAlert = () => wrapper.findComponent(GlAlert);
@@ -272,8 +274,8 @@ describe('PipelineUsageApp', () => {
 
   describe('with apollo loading', () => {
     beforeEach(() => {
-      ciMinutesHandler.mockResolvedValue(null);
-      ciMinutesProjectsHandler.mockResolvedValue(null);
+      ciMinutesHandler.mockReturnValue(new Promise(() => {}));
+      ciMinutesProjectsHandler.mockReturnValue(new Promise(() => {}));
       createComponent();
     });
 
@@ -293,8 +295,14 @@ describe('PipelineUsageApp', () => {
   describe('with apollo fetching error', () => {
     beforeEach(() => {
       ciMinutesHandler.mockRejectedValue(gqlRejectResponse);
+      ciMinutesProjectsHandler.mockRejectedValue(gqlRejectResponse);
       createComponent();
       return waitForPromises();
+    });
+
+    it('logs the error message', () => {
+      expect(logError).toHaveBeenCalledTimes(2);
+      expect(logError).toHaveBeenCalledWith(expect.any(String), gqlRejectResponse);
     });
 
     it('renders failed request error message', () => {
@@ -303,7 +311,7 @@ describe('PipelineUsageApp', () => {
 
     it('captures the exception in Sentry', async () => {
       await Vue.nextTick();
-      expect(captureException).toHaveBeenCalledTimes(1);
+      expect(captureException).toHaveBeenCalledTimes(2);
     });
   });
 
