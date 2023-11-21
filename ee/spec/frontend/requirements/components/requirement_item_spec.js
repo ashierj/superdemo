@@ -5,6 +5,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import RequirementItem from 'ee/requirements/components/requirement_item.vue';
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
 
+import { localeDateFormat } from '~/lib/utils/datetime/locale_dateformat';
 import {
   requirement1,
   requirementArchived,
@@ -110,7 +111,9 @@ describe('RequirementItem', () => {
 
       expect(createdAtEl.text()).toContain('created');
       expect(createdAtEl.text()).toContain('ago');
-      expect(createdAtEl.attributes('title')).toBe('Mar 19, 2020 8:09am UTC');
+      expect(createdAtEl.attributes('title')).toBe(
+        localeDateFormat.asDateTimeFull.format(requirement1.createdAt),
+      );
     });
 
     it('renders element containing requirement author information', () => {
@@ -125,7 +128,9 @@ describe('RequirementItem', () => {
 
       expect(updatedAtEl.text()).toContain('updated');
       expect(updatedAtEl.text()).toContain('ago');
-      expect(updatedAtEl.attributes('title')).toBe('Mar 20, 2020 8:09am UTC');
+      expect(updatedAtEl.attributes('title')).toBe(
+        localeDateFormat.asDateTimeFull.format(requirement1.updatedAt),
+      );
     });
 
     it('renders requirement-status-badge component', () => {

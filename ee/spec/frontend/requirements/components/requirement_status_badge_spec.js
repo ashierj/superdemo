@@ -2,6 +2,7 @@ import { GlBadge, GlTooltip } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
+import { localeDateFormat } from '~/lib/utils/datetime/locale_dateformat';
 import { mockTestReport, mockTestReportFailed, mockTestReportMissing } from '../mock_data';
 
 const successBadgeProps = {
@@ -73,7 +74,9 @@ describe('RequirementStatusBadge', () => {
           expect(tooltipEl.exists()).toBe(Boolean(badgeProps.tooltipTitle));
           if (badgeProps.tooltipTitle) {
             expect(tooltipEl.find('b').text()).toBe(badgeProps.tooltipTitle);
-            expect(tooltipEl.find('div').text()).toBe('Jun 4, 2020 10:55am UTC');
+            expect(tooltipEl.find('div').text()).toBe(
+              localeDateFormat.asDateTimeFull.format(testReport.createdAt),
+            );
           }
         });
       });
