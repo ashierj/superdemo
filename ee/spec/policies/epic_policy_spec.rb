@@ -405,7 +405,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
 
     before do
       stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_licensed_features(epics: true, summarize_notes: true, ai_features: true)
+      stub_licensed_features(epics: true, summarize_notes: true, ai_features: true, experimental_features: true)
       group.namespace_settings.update!(experiment_features_enabled: true)
     end
 

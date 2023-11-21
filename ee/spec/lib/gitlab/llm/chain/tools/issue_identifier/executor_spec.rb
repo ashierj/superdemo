@@ -100,6 +100,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           stub_licensed_features(summarize_notes: true, ai_features: true)
 
           project.add_guest(user)
+          allow(project.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
           project.root_ancestor.update!(experiment_features_enabled: true)
         end
 
@@ -249,9 +250,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
             before do
               additional_group = create(:group_with_plan, plan: :ultimate_plan)
+              allow(additional_group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
               additional_group.update!(experiment_features_enabled: true)
               additional_group.add_developer(user)
-
+              allow(group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
               group.update!(experiment_features_enabled: false)
               issue1.reload
             end

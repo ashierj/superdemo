@@ -76,7 +76,7 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
 
     before do
       stub_application_setting(check_namespace_plan: true)
-      stub_licensed_features(summarize_notes: true, ai_features: true, epics: true)
+      stub_licensed_features(summarize_notes: true, ai_features: true, epics: true, experimental_features: true)
 
       group.namespace_settings.update!(
         experiment_features_enabled: true

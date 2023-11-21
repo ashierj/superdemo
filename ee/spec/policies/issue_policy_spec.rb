@@ -27,7 +27,7 @@ RSpec.describe IssuePolicy, :saas, feature_category: :team_planning do
       context 'on a group namespace' do
         before do
           stub_ee_application_setting(should_check_namespace_plan: true)
-          stub_licensed_features(summarize_notes: true, ai_features: true, generate_description: true)
+          stub_licensed_features(summarize_notes: true, ai_features: true, generate_description: true, experimental_features: true)
 
           namespace.namespace_settings.update!(experiment_features_enabled: true)
         end

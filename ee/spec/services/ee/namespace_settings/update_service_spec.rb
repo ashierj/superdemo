@@ -115,7 +115,6 @@ RSpec.describe EE::NamespaceSettings::UpdateService, feature_category: :groups_a
           allow(Gitlab).to receive(:com?).and_return(true)
           stub_ee_application_setting(should_check_namespace_plan: true)
           stub_licensed_features(ai_features: true)
-          allow(group.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
         end
 
         context 'when experiment_features_enabled changes' do

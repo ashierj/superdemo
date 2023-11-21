@@ -69,7 +69,7 @@ RSpec.describe Audit::NamespaceSettingChangesAuditor, feature_category: :audit_e
 
         before do
           allow(Gitlab).to receive(:com?).and_return(true)
-          stub_licensed_features(ai_features: true)
+          stub_licensed_features(ai_features: true, experimental_features: true)
           stub_ee_application_setting(should_check_namespace_plan: true)
         end
 

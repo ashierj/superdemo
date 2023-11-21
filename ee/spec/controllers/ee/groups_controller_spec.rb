@@ -867,7 +867,7 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
 
     before do
       allow(Gitlab).to receive(:com?).and_return(true)
-      stub_licensed_features(ai_features: true)
+      stub_licensed_features(ai_features: true, experimental_features: true)
       stub_ee_application_setting(should_check_namespace_plan: true)
       group.add_owner(user)
 

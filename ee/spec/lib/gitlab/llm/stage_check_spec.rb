@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :ai_abstraction_layer 
   before do
     allow(Gitlab).to receive(:com?).and_return(true)
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_licensed_features(ai_features: true)
+    stub_licensed_features(ai_features: true, experimental_features: true)
   end
 
   describe ".available?", :saas do

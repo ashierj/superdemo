@@ -23,7 +23,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_licensed_features(generate_commit_message: true, ai_features: true)
+    stub_licensed_features(generate_commit_message: true, ai_features: true, experimental_features: true)
     group.namespace_settings.update!(experiment_features_enabled: true)
   end
 

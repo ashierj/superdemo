@@ -22,7 +22,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
 
   before do
     stub_application_setting(check_namespace_plan: true)
-    stub_licensed_features(explain_code: true, ai_features: true)
+    stub_licensed_features(explain_code: true, ai_features: true, experimental_features: true)
     group.update!(experiment_features_enabled: experiment_features_enabled)
   end
 

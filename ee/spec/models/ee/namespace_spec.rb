@@ -425,7 +425,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       let_it_be_with_reload(:namespace) { create(:namespace, :with_namespace_settings) }
 
       before do
-        allow(namespace.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
+        allow(namespace.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         namespace.namespace_settings.update!(
           experiment_features_enabled: experiment_features_enabled
         )

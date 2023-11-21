@@ -3068,7 +3068,8 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       stub_licensed_features(
         fill_in_merge_request_template: true,
-        ai_features: true
+        ai_features: true,
+        experimental_features: true
       )
 
       stub_feature_flags(

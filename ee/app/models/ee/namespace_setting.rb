@@ -74,13 +74,6 @@ module EE
         self[:unique_project_download_limit_alertlist].presence || active_owner_ids
       end
 
-      def ai_settings_allowed?
-        ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          ::Feature.enabled?(:ai_global_switch, type: :ops) &&
-          namespace.licensed_feature_available?(:ai_features) &&
-          namespace.root?
-      end
-
       def experiment_settings_allowed?
         namespace.root? &&
           ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
@@ -128,7 +121,7 @@ module EE
 
       def experiment_features_allowed
         return unless experiment_features_enabled_changed?
-        return if ai_settings_allowed?
+        return if experiment_settings_allowed?
 
         errors.add(:experiment_features_enabled, _("Experiment features' settings not allowed."))
       end

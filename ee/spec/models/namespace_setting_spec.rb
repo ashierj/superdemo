@@ -34,6 +34,35 @@ RSpec.describe NamespaceSetting do
         .is_less_than_or_equal_to(10.days.to_i)
     }
 
+    describe 'experiment features' do
+      let(:attr) { :experiment_features_enabled }
+
+      subject(:settings) { group.namespace_settings }
+
+      before do
+        allow(subject).to receive(:experiment_settings_allowed?).and_return(true)
+      end
+
+      it 'allows changing experiment_features_enabled' do
+        subject[attr] = !subject[attr]
+
+        expect(subject).to be_valid
+      end
+
+      context 'when experiment settings are not allowed' do
+        before do
+          allow(subject).to receive(:experiment_settings_allowed?).and_return(false)
+        end
+
+        it 'does not allow changing experiment_features_enabled' do
+          subject[attr] = !subject[attr]
+
+          expect(subject).not_to be_valid
+          expect(subject.errors[attr].first).to include("Experiment features' settings not allowed.")
+        end
+      end
+    end
+
     describe 'product_analytics_enabled', feature_category: :product_analytics_data_management do
       let(:attr) { :product_analytics_enabled }
 
@@ -73,33 +102,6 @@ RSpec.describe NamespaceSetting do
           expect(subject).not_to be_valid
           expect(subject.errors[attr]).to include("exceeds maximum length (100 usernames)")
         end
-      end
-
-      describe 'AI related settings' do
-        subject(:settings) { group.namespace_settings }
-
-        shared_examples 'AI related settings validations' do |attr|
-          before do
-            allow(subject).to receive(:ai_settings_allowed?).and_return(true)
-          end
-
-          it { is_expected.to validate_inclusion_of(attr).in_array([true, false]) }
-
-          context 'when AI settings are not allowed' do
-            before do
-              allow(subject).to receive(:ai_settings_allowed?).and_return(false)
-            end
-
-            it "#{attr} is not valid" do
-              subject[attr] = !subject[attr]
-
-              expect(subject).not_to be_valid
-              expect(subject.errors[attr].first).to include("settings not allowed.")
-            end
-          end
-        end
-
-        it_behaves_like 'AI related settings validations', :experiment_features_enabled
       end
     end
 
@@ -448,32 +450,6 @@ RSpec.describe NamespaceSetting do
       before do
         allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
         allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(licensed_feature)
-        allow(group).to receive(:root?).and_return(is_root)
-      end
-
-      it { is_expected.to eq result }
-    end
-  end
-
-  describe '.ai_settings_allowed?' do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:check_namespace_plan, :ai_global_switch, :licensed_feature, :is_root, :result) do
-      true  | true  | true  | true  | true
-      false | true  | true  | true  | false
-      true  | false | true  | true  | false
-      true  | true  | false | true  | false
-      true  | true  | true  | false | false
-    end
-
-    with_them do
-      let(:group) { create(:group) }
-      subject { group.namespace_settings.ai_settings_allowed? }
-
-      before do
-        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
-        stub_feature_flags(ai_global_switch: ai_global_switch)
-        allow(group).to receive(:licensed_feature_available?).with(:ai_features).and_return(licensed_feature)
         allow(group).to receive(:root?).and_return(is_root)
       end
 

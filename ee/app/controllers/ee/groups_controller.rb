@@ -102,10 +102,7 @@ module EE
         params_ee << :code_suggestions if ai_assist_ui_enabled?
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
         params_ee << :product_analytics_enabled
-
-        if ai_settings_allowed? || ai_assist_ui_enabled?
-          params_ee.push(:experiment_features_enabled)
-        end
+        params_ee << :experiment_features_enabled if experiment_settings_allowed?
       end
     end
 
@@ -113,8 +110,8 @@ module EE
       current_group.present? && current_group.ai_assist_ui_enabled?
     end
 
-    def ai_settings_allowed?
-      current_group && current_group.ai_settings_allowed?
+    def experiment_settings_allowed?
+      current_group&.experiment_settings_allowed?
     end
 
     def current_group

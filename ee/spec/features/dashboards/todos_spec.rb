@@ -94,7 +94,8 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
 
       stub_licensed_features(
         summarize_mr_changes: true,
-        ai_features: true
+        ai_features: true,
+        experimental_features: true
       )
 
       project.reload.root_ancestor.namespace_settings.update!(
@@ -158,7 +159,8 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
 
       stub_licensed_features(
         summarize_submitted_review: true,
-        ai_features: true
+        ai_features: true,
+        experimental_features: true
       )
 
       project.reload.root_ancestor.namespace_settings.update!(
