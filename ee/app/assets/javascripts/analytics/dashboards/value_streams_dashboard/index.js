@@ -12,7 +12,7 @@ const apolloProvider = new VueApollo({
 
 export default () => {
   const el = document.querySelector('#js-analytics-dashboards-app');
-  const { fullPath, namespaces, pointerProject } = el.dataset;
+  const { fullPath, namespaces, pointerProject, topicsExploreProjectsPath } = el.dataset;
 
   let queryPaths;
   try {
@@ -35,6 +35,9 @@ export default () => {
     el,
     name: 'DashboardsAppRoot',
     apolloProvider,
+    provide: {
+      topicsExploreProjectsPath,
+    },
     render: (createElement) =>
       createElement(DashboardsApp, {
         props: {

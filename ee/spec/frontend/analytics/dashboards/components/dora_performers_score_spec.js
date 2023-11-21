@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import DoraPerformersScore from 'ee/analytics/dashboards/components/dora_performers_score.vue';
+import FilterProjectTopicsBadges from 'ee/analytics/dashboards/components/filter_project_topics_badges.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import groupDoraPerformanceScoreCountsQuery from 'ee/analytics/dashboards/graphql/group_dora_performance_score_counts.query.graphql';
@@ -244,5 +245,28 @@ describe('DoraPerformersScore', () => {
     await createWrapper({ glFeatures: { doraPerformersScorePanel: false } });
 
     expect(findDoraPerformersScorePanel().exists()).toBe(false);
+  });
+
+  describe('project topics filter', () => {
+    const findFilterBadges = () => wrapper.findComponent(FilterProjectTopicsBadges);
+
+    it('renders the filter badges when provided', async () => {
+      const topics = ['one', 'two'];
+      await createWrapper({ props: { data: { ...mockData, filter_project_topics: topics } } });
+      expect(findFilterBadges().exists()).toBe(true);
+      expect(findFilterBadges().props('topics')).toEqual(topics);
+    });
+
+    it('does not render the filter badges when none provided', async () => {
+      await createWrapper();
+      expect(findFilterBadges().exists()).toBe(false);
+    });
+
+    it('filters out invalid project topics', async () => {
+      const topics = ['one', 'two\n'];
+      await createWrapper({ props: { data: { ...mockData, filter_project_topics: topics } } });
+      expect(findFilterBadges().exists()).toBe(true);
+      expect(findFilterBadges().props('topics')).toEqual(['one']);
+    });
   });
 });
