@@ -1,7 +1,7 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import fuzzaldrinPlus from 'fuzzaldrin-plus';
 import { shallowMount } from '@vue/test-utils';
-import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
+import StreamEventTypeFilters from 'ee/audit_events/components/stream/stream_event_type_filters.vue';
 import { AUDIT_STREAMS_FILTERING } from 'ee/audit_events/constants';
 import { mockExternalDestinations, mockAuditEventDefinitions } from '../../mock_data';
 
@@ -24,7 +24,7 @@ describe('StreamWithFilters', () => {
   let wrapper;
 
   const createComponent = (props) => {
-    wrapper = shallowMount(StreamFilters, {
+    wrapper = shallowMount(StreamEventTypeFilters, {
       propsData: {
         value: mockExternalDestinations[1].eventTypeFilters,
         ...props,
@@ -48,8 +48,8 @@ describe('StreamWithFilters', () => {
       showSelectAllButtonLabel: AUDIT_STREAMS_FILTERING.SELECT_ALL,
       resetButtonLabel: AUDIT_STREAMS_FILTERING.UNSELECT_ALL,
       headerText: AUDIT_STREAMS_FILTERING.SELECT_EVENTS,
-      noResultsText: StreamFilters.i18n.noResultsText,
-      searchPlaceholder: StreamFilters.i18n.searchPlaceholder,
+      noResultsText: StreamEventTypeFilters.i18n.noResultsText,
+      searchPlaceholder: StreamEventTypeFilters.i18n.searchPlaceholder,
       multiple: true,
       searchable: true,
       toggleClass: 'gl-max-w-full',

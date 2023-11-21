@@ -47,7 +47,7 @@ import {
   removeEventTypeFilters,
 } from '../../graphql/cache_update';
 import { mapAllMutationErrors, mapItemHeadersToFormData } from '../../utils';
-import StreamFilters from './stream_filters.vue';
+import StreamEventTypeFilters from './stream_event_type_filters.vue';
 import StreamDeleteModal from './stream_delete_modal.vue';
 
 const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
@@ -69,7 +69,7 @@ export default {
     GlInputGroupText,
     GlSprintf,
     GlTableLite,
-    StreamFilters,
+    StreamEventTypeFilters,
     StreamDeleteModal,
     ClipboardButton,
   },
@@ -812,7 +812,7 @@ export default {
             data-testid="event-type-filtering-header"
             >{{ $options.i18n.FILTER_BY_AUDIT_EVENT_TYPE }}</label
           >
-          <stream-filters v-model="filters" />
+          <stream-event-type-filters v-model="filters" />
         </div>
       </div>
 
