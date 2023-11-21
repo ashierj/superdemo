@@ -8,7 +8,7 @@ module Ci
 
     def initialize(project)
       @project = project
-      @ci_settings = project.ci_cd_settings
+      @ci_settings = project&.ci_cd_settings
     end
 
     def maintainers_only_allowed?
@@ -24,6 +24,9 @@ module Ci
     end
 
     def enabled?
+      return false unless @project
+      return false unless @ci_settings
+
       Feature.enabled?(:restrict_pipeline_cancellation_by_role, @project) &&
         @project.licensed_feature_available?(:ci_pipeline_cancellation_restrictions)
     end
