@@ -2,6 +2,12 @@
 
 module GitlabSubscriptions
   class AddOnPurchasePolicy < ::BasePolicy
-    delegate { subject.namespace }
+    condition(:namespace_owner) do
+      can?(:owner_access, @subject.namespace)
+    end
+
+    rule { admin | namespace_owner }.policy do
+      enable :admin_add_on_purchase
+    end
   end
 end
