@@ -48,12 +48,12 @@ export function mapTraceToTreeRoot(trace) {
   if (!rootSpan) return undefined;
 
   const spanToNode = (span) => ({
-    startTimeMs: timestampToMs(span.timestamp) - timestampToMs(rootSpan.timestamp),
+    start_ms: timestampToMs(span.timestamp) - timestampToMs(rootSpan.timestamp),
     timestamp: span.timestamp,
-    spanId: span.span_id,
+    span_id: span.span_id,
     operation: span.operation,
     service: span.service_name,
-    durationMs: durationNanoToMs(span.duration_nano),
+    duration_ms: durationNanoToMs(span.duration_nano),
     children: [],
   });
 

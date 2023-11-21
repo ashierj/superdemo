@@ -8,16 +8,16 @@ describe('TracingDetailsSpansChart', () => {
     {
       operation: 'operation-1',
       service: 'service-1',
-      spanId: 'span1',
-      startTimeMs: 100,
-      durationMs: 150,
+      span_id: 'span1',
+      start_ms: 100,
+      duration_ms: 150,
       children: [
         {
           operation: 'operation-3',
           service: 'service-3',
-          spanId: 'span3',
-          startTimeMs: 0,
-          durationMs: 100,
+          span_id: 'span3',
+          start_ms: 0,
+          duration_ms: 100,
           children: [],
         },
       ],
@@ -25,9 +25,9 @@ describe('TracingDetailsSpansChart', () => {
     {
       operation: 'operation-2',
       service: 'service-2',
-      spanId: 'span2',
-      startTimeMs: 100,
-      durationMs: 200,
+      span_id: 'span2',
+      start_ms: 100,
+      duration_ms: 200,
       children: [],
     },
   ];
@@ -173,10 +173,10 @@ describe('TracingDetailsSpansChart', () => {
     });
 
     it.each([
-      [{ startTimeMs: 0, durationMs: 0.4 }, '0.5%', '0%'],
-      [{ startTimeMs: 0, durationMs: 110 }, '100%', '0%'],
-      [{ startTimeMs: 80, durationMs: 40 }, '40%', '60%'],
-      [{ startTimeMs: -10, durationMs: 40 }, '40%', '0%'],
+      [{ start_ms: 0, duration_ms: 0.4 }, '0.5%', '0%'],
+      [{ start_ms: 0, duration_ms: 110 }, '100%', '0%'],
+      [{ start_ms: 80, duration_ms: 40 }, '40%', '60%'],
+      [{ start_ms: -10, duration_ms: 40 }, '40%', '0%'],
     ])('caps the layout width and margin', (spanAttrs, expectedWidth, expectedMargin) => {
       wrapper = shallowMountExtended(TracingDetailsSpansChart, {
         propsData: {

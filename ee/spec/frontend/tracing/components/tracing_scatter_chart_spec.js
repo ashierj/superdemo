@@ -10,13 +10,13 @@ describe('TracingScatterChart', () => {
       timestamp: 1620000000,
       duration_nano: 1000000000,
       trace_id: '123',
-      statusCode: 'STATUS_CODE_ERROR',
+      status_code: 'STATUS_CODE_ERROR',
     },
     {
       timestamp: 1621000000,
       duration_nano: 2000000000,
       trace_id: '456',
-      statusCode: 'STATUS_CODE_SUCCESS',
+      status_code: 'STATUS_CODE_SUCCESS',
     },
   ];
 
