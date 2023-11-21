@@ -18,6 +18,7 @@ module EE
         expose :file_name_regex, documentation: { type: 'string', example: '(jar|exe)$' }
         expose :max_file_size, documentation: { type: 'integer', example: 1024 }
         expose_restricted :commit_committer_check, documentation: { type: 'boolean', example: true }, &:project
+        expose_restricted :commit_committer_name_check, documentation: { type: 'boolean', example: true }, &:project
         expose_restricted :reject_unsigned_commits, documentation: { type: 'boolean', example: true }, &:project
       end
     end
