@@ -16,6 +16,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { pushEECproductAddToCartEvent } from 'ee/google_tag_manager';
 import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
+import { logError } from '~/lib/logger';
 import getCiMinutesUsageNamespace from '../graphql/queries/ci_minutes.query.graphql';
 import getCiMinutesUsageNamespaceProjects from '../graphql/queries/ci_minutes_projects.query.graphql';
 import {
@@ -108,6 +109,7 @@ export default {
       error(error) {
         this.error = ERROR_MESSAGE;
         captureException({ error, component: this.$options.name });
+        logError('PipelineUsageApp: error fetching ciMinutesUsage query.', error);
       },
     },
     projectsCiMinutesUsage: {
@@ -129,6 +131,7 @@ export default {
       error(error) {
         this.error = ERROR_MESSAGE;
         captureException({ error, component: this.$options.name });
+        logError('PipelineUsageApp: error fetching projectsCiMinutesUsage query.', error);
       },
     },
     subscriptionPermissions: {
