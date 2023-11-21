@@ -25,7 +25,7 @@ import externalInstanceAuditEventDestinationHeaderDelete from 'ee/audit_events/g
 import deleteInstanceExternalDestinationFilters from 'ee/audit_events/graphql/mutations/delete_instance_external_destination_filters.mutation.graphql';
 import addInstanceExternalDestinationFilters from 'ee/audit_events/graphql/mutations/add_instance_external_destination_filters.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
-import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
+import StreamEventTypeFilters from 'ee/audit_events/components/stream/stream_event_type_filters.vue';
 import StreamDeleteModal from 'ee/audit_events/components/stream/stream_delete_modal.vue';
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';
 import {
@@ -118,7 +118,7 @@ describe('StreamDestinationEditor', () => {
 
   const findFilteringHeader = () => wrapper.findByTestId('filtering-header');
   const findEventTypeFilteringHeader = () => wrapper.findByTestId('event-type-filtering-header');
-  const findFilters = () => wrapper.findComponent(StreamFilters);
+  const findFilters = () => wrapper.findComponent(StreamEventTypeFilters);
 
   const findHeadersRows = () => findHeadersTable().find('tbody').findAll('tr');
   const findHeadersHeaderCell = (tdIdx) =>
@@ -683,7 +683,7 @@ describe('StreamDestinationEditor', () => {
           );
         });
 
-        it('passes selected audit event types to StreamFilters', () => {
+        it('passes selected audit event types to StreamEventTypeFilters', () => {
           expect(findFilters().props()).toStrictEqual({
             value: mockExternalDestinations[1].eventTypeFilters,
           });
@@ -1339,7 +1339,7 @@ describe('StreamDestinationEditor', () => {
           );
         });
 
-        it('passes selected audit event types to StreamFilters', () => {
+        it('passes selected audit event types to StreamEventTypeFilters', () => {
           expect(findFilters().props()).toStrictEqual({
             value: mockInstanceExternalDestinations[1].eventTypeFilters,
           });
