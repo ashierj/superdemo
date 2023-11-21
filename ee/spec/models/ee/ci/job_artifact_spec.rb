@@ -13,8 +13,8 @@ RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
       stub_artifacts_object_storage
     end
 
-    let(:verifiable_model_record) { build(:ci_job_artifact, job: job) } # add extra params if needed to make sure the record is included in `available_verifiables`
-    let(:unverifiable_model_record) { build(:ci_job_artifact, :remote_store, job: job) } # add extra params if needed to make sure the record is NOT included in `available_verifiables`
+    let(:verifiable_model_record) { build(:ci_job_artifact, job: job, partition_id: job.partition_id) } # add extra params if needed to make sure the record is included in `available_verifiables`
+    let(:unverifiable_model_record) { build(:ci_job_artifact, :remote_store, job: job, partition_id: job.partition_id) } # add extra params if needed to make sure the record is NOT included in `available_verifiables`
   end
 
   describe '#destroy' do
