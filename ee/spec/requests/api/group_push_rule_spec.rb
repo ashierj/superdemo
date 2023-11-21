@@ -12,6 +12,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
     {
       author_email_regex: '^[A-Za-z0-9.]+@gitlab.com$',
       commit_committer_check: true,
+      commit_committer_name_check: true,
       commit_message_negative_regex: '[x+]',
       commit_message_regex: '[a-zA-Z]',
       deny_delete_tag: false,
@@ -88,6 +89,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
               "author_email_regex" => attributes[:author_email_regex],
               "branch_name_regex" => nil,
               "commit_committer_check" => true,
+              "commit_committer_name_check" => true,
               "commit_message_negative_regex" => attributes[:commit_message_negative_regex],
               "commit_message_regex" => attributes[:commit_message_regex],
               "created_at" => group.reload.push_rule.created_at.iso8601(3),
@@ -191,6 +193,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
 
           expect(push_rule.author_email_regex).to eq(attributes[:author_email_regex])
           expect(push_rule.commit_committer_check).to eq(attributes[:commit_committer_check])
+          expect(push_rule.commit_committer_name_check).to eq(attributes[:commit_committer_name_check])
           expect(push_rule.commit_message_negative_regex).to eq(attributes[:commit_message_negative_regex])
           expect(push_rule.commit_message_regex).to eq(attributes[:commit_message_regex])
           expect(push_rule.deny_delete_tag).to eq(attributes[:deny_delete_tag])
@@ -283,6 +286,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
       {
         author_email_regex: '^[A-Za-z0-9.]+@disney.com$',
         reject_unsigned_commits: true,
+        commit_committer_name_check: false,
         commit_committer_check: false
       }
     end
