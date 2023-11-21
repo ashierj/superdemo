@@ -1,5 +1,6 @@
 <script>
-import { GlLoadingIcon, GlButton } from '@gitlab/ui';
+import { GlLoadingIcon, GlButton, GlBadge } from '@gitlab/ui';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import { createAlert } from '~/alert';
@@ -11,6 +12,7 @@ import download from '~/lib/utils/downloader';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
+import { REPORT_TYPE_SAST } from '~/vue_shared/security_reports/constants';
 import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
 import { normalizeGraphQLVulnerability, normalizeGraphQLLastStateTransition } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
@@ -22,13 +24,14 @@ export default {
   components: {
     GlLoadingIcon,
     GlButton,
+    GlBadge,
     StatusBadge,
     ResolutionAlert,
     StatusDescription,
     VulnerabilityStateDropdown: () => import('./vulnerability_state_dropdown.vue'),
     SplitButton: () => import('ee/vue_shared/security_reports/components/split_button.vue'),
   },
-
+  mixins: [glFeatureFlagsMixin()],
   props: {
     vulnerability: {
       type: Object,
@@ -55,6 +58,13 @@ export default {
 
       if (this.canDownloadPatch) {
         buttons.push(HEADER_ACTION_BUTTONS.patchDownload);
+      }
+
+      if (
+        this.glFeatures.resolveVulnerabilityAi &&
+        this.vulnerability.reportType === REPORT_TYPE_SAST
+      ) {
+        buttons.push(HEADER_ACTION_BUTTONS.mergeRequestCreationAi);
       }
 
       return buttons;
@@ -252,13 +262,17 @@ export default {
         />
         <gl-button
           v-else-if="actionButtons.length > 0"
+          :icon="actionButtons[0].icon"
           class="gl-ml-2"
           variant="confirm"
-          category="secondary"
+          :category="actionButtons[0].badge ? 'primary' : 'secondary'"
           :loading="isProcessingAction"
           @click="triggerClick(actionButtons[0].action)"
         >
           {{ actionButtons[0].name }}
+          <gl-badge v-if="actionButtons[0].badge" class="gl-ml-2" size="sm" variant="info">
+            {{ actionButtons[0].badge }}
+          </gl-badge>
         </gl-button>
       </div>
     </div>

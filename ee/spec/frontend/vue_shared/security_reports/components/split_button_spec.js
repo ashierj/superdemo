@@ -1,5 +1,5 @@
 import { nextTick } from 'vue';
-import { GlButton, GlButtonGroup, GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { GlButton, GlButtonGroup, GlCollapsibleListbox, GlListboxItem, GlBadge } from '@gitlab/ui';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import * as urlUtility from '~/lib/utils/url_utility';
@@ -28,6 +28,8 @@ describe('Split Button', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findListboxItem = () => wrapper.findComponent(GlListboxItem);
+  const findIcon = () => wrapper.findComponent('[data-testid="item-icon"]');
+  const findBadge = () => wrapper.findComponent(GlBadge);
 
   const createComponent = (props, mountFn = shallowMountExtended) => {
     wrapper = mountFn(SplitButton, {
@@ -74,6 +76,23 @@ describe('Split Button', () => {
     expect(item.text()).toContain("button one's tagline");
   });
 
+  it('renders the icon', () => {
+    const icon = 'tanuki-ai';
+    const { buttons } = defaultProps;
+    createComponent({ buttons: [{ ...buttons[0], icon }] }, mountExtended);
+
+    expect(findIcon().props('name')).toBe(icon);
+  });
+
+  it('renders the badge', () => {
+    const badge = 'experiment';
+    const { buttons } = defaultProps;
+    createComponent({ buttons: [{ ...buttons[0], badge }] }, mountExtended);
+
+    expect(findBadge().text()).toBe(badge);
+    expect(findBadge().props('size')).toBe('sm');
+  });
+
   it('emits correct action on button click', () => {
     createComponent({}, mountExtended);
 
@@ -97,11 +116,13 @@ describe('Split Button', () => {
   });
 
   it('updates selected item', async () => {
-    createComponent();
+    createComponent({}, mountExtended);
 
-    findListbox().vm.$emit('select', 'button2Action');
+    expect(findListbox().props('selected')).toBe(0);
+
+    findListbox().vm.$emit('select', 1);
     await nextTick();
 
-    expect(findListbox().props('selected')).toBe('button2Action');
+    expect(findListbox().props('selected')).toBe(1);
   });
 });
