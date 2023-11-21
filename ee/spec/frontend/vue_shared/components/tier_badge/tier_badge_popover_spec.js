@@ -22,7 +22,7 @@ describe('TierBadgePopover', () => {
       provide: {
         primaryCtaLink: primaryCTALink,
         secondaryCtaLink: secondaryCTALink,
-        sourceType: 'Group',
+        isProject: false,
         ...provide,
       },
       propsData: {
@@ -34,16 +34,16 @@ describe('TierBadgePopover', () => {
   };
 
   describe('with title and content', () => {
-    describe('when sourceType is provided', () => {
-      it('renders the title and correct content for `Group`', () => {
-        createComponent({ provide: { sourceType: 'Group' } });
+    describe('when isProject is provided', () => {
+      it('renders the title and correct content for `false`', () => {
+        createComponent({ provide: { isProject: false } });
 
         expect(wrapper.findByText(popoverTitle).exists()).toBe(true);
         expect(wrapper.findByText(popoverContentForGroup).exists()).toBe(true);
       });
 
-      it('renders the title and correct content for `Project`', () => {
-        createComponent({ provide: { sourceType: 'Project' } });
+      it('renders the title and correct content for `true`', () => {
+        createComponent({ provide: { isProject: true } });
 
         expect(wrapper.findByText(popoverTitle).exists()).toBe(true);
         expect(wrapper.findByText(popoverContentForProject).exists()).toBe(true);

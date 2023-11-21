@@ -16,7 +16,7 @@ RSpec.describe 'shared/_tier_badge.html.haml', :saas, feature_category: :groups_
     let(:tier_badge) { :control }
 
     it 'does not render anything' do
-      render 'shared/tier_badge', source: parent, source_type: 'Group'
+      render 'shared/tier_badge', source: parent, namespace_to_track: parent
 
       expect(rendered).not_to have_selector(selector)
     end
@@ -27,17 +27,17 @@ RSpec.describe 'shared/_tier_badge.html.haml', :saas, feature_category: :groups_
 
     context 'when free parent' do
       it 'renders tier_badge' do
-        render 'shared/tier_badge', source: parent, source_type: 'Group'
+        render 'shared/tier_badge', source: parent, namespace_to_track: parent
 
         expect(rendered).to have_selector(selector)
       end
     end
 
     context 'when free subgroup' do
-      it 'does not render anything' do
-        render 'shared/tier_badge', source: subgroup, source_type: 'Group'
+      it 'renders tier_badge' do
+        render 'shared/tier_badge', source: subgroup, namespace_to_track: subgroup
 
-        expect(rendered).not_to have_selector(selector)
+        expect(rendered).to have_selector(selector)
       end
     end
 
@@ -45,7 +45,7 @@ RSpec.describe 'shared/_tier_badge.html.haml', :saas, feature_category: :groups_
       it 'does not render anything' do
         build(:gitlab_subscription, :expired_trial, namespace: parent)
 
-        render 'shared/tier_badge', source: parent, source_type: 'Group'
+        render 'shared/tier_badge', source: parent, namespace_to_track: parent
 
         expect(rendered).not_to have_selector(selector)
       end
@@ -55,7 +55,7 @@ RSpec.describe 'shared/_tier_badge.html.haml', :saas, feature_category: :groups_
       let(:parent) { build(:group, :public, id: non_existing_record_id) }
 
       it 'does not render anything' do
-        render 'shared/tier_badge', source: parent, source_type: 'Group'
+        render 'shared/tier_badge', source: parent, namespace_to_track: parent
 
         expect(rendered).not_to have_selector(selector)
       end
