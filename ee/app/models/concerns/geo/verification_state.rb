@@ -292,11 +292,10 @@ module Geo
     def verification_failed_with_message!(message, error = nil)
       log_error(message, error)
 
-      self.verification_failure = message
-      self.verification_failure += ": #{error.message}" if error.respond_to?(:message)
-      self.verification_failure.truncate(255)
-      self.verification_checksum = nil
+      message += ": #{error.message}" if error.respond_to?(:message)
+      self.verification_failure = message.truncate(255)
 
+      self.verification_checksum = nil
       self.verification_failed!
     end
 
