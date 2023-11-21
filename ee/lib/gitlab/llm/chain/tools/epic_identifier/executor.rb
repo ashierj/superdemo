@@ -30,11 +30,6 @@ module Gitlab
               vertex_ai: ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Prompts::VertexAi
             }.freeze
 
-            GROUP_REGEX = {
-              'url' => ::Epic.link_reference_pattern,
-              'reference' => ::Epic.reference_pattern
-            }.freeze
-
             # our template
             PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(

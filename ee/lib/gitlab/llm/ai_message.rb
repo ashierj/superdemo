@@ -62,14 +62,6 @@ module Gitlab
         role == ROLE_USER
       end
 
-      def system?
-        role == ROLE_SYSTEM
-      end
-
-      def assistant?
-        role == ROLE_ASSISTANT
-      end
-
       def slash_command?
         content.to_s.match?(%r{\A/\w})
       end

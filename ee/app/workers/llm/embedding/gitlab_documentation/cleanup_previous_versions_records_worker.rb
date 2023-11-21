@@ -14,7 +14,6 @@ module Llm
         urgency :throttled
 
         BATCH_SIZE = 1000
-        TIME_LIMIT = 3.minutes
 
         def perform
           return unless Gitlab::Saas.feature_available?(FEATURE_NAME)

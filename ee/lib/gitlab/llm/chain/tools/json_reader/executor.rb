@@ -117,11 +117,6 @@ module Gitlab
               process_long_path
             end
 
-            def build_prompt(options)
-              prompt = PROMPT_TEMPLATE.map(&:last).join("\n").concat("\nThought:")
-              format(prompt.to_s, input: options, suggestions: options[:suggestions])
-            end
-
             # rubocop: disable Layout/LineLength
             # our template
             PROMPT_TEMPLATE = [
