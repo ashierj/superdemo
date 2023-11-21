@@ -18,7 +18,7 @@
 
   &-enabled {
     &-default {
-      @include circle-fill($indigo-600);
+      @include circle-fill($theme-indigo-600);
     }
 
     &-primary {
