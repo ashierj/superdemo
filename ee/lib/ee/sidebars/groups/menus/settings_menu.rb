@@ -49,8 +49,7 @@ module EE
           end
 
           def custom_roles_enabled?
-            ::Feature.enabled?(:custom_roles_ui_saas, context.group) &&
-              context.group.root? && context.group.licensed_feature_available?(:custom_roles)
+            context.group.root? && context.group.licensed_feature_available?(:custom_roles)
           end
 
           def ldap_sync_menu_item

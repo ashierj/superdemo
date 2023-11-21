@@ -26,14 +26,6 @@ RSpec.describe Groups::Settings::RolesAndPermissionsController, feature_category
         expect(response).to have_gitlab_http_status(:ok)
       end
 
-      context 'when `custom_roles_ui_saas` feature flag is disabled' do
-        before do
-          stub_feature_flags(custom_roles_ui_saas: false)
-        end
-
-        it_behaves_like 'page is not found'
-      end
-
       context 'when accessing a subgroup' do
         let_it_be(:subgroup) { create(:group, parent: group) }
 

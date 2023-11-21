@@ -34,14 +34,6 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
 
           it { is_expected.to be_present }
 
-          context 'when `custom_roles_ui_saas` feature flag is disabled' do
-            before do
-              stub_feature_flags(custom_roles_ui_saas: false)
-            end
-
-            it { is_expected.not_to be_present }
-          end
-
           context 'when it is not a root group' do
             let_it_be_with_refind(:subgroup) do
               create(:group, :private, parent: group).tap do |g|
