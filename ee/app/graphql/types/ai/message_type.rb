@@ -54,10 +54,12 @@ module Types
         description: 'Extra message metadata.'
 
       def id
-        object.is_a?(Hash) ? object[:id] : super # Temporary solution before we introduce AiMessage model.
+        object[:id]
       end
 
       def content_html
+        return if object['chunk_id']
+
         banzai_options = {
           current_user: current_user,
           only_path: false,
@@ -66,11 +68,7 @@ module Types
           skip_project_check: true
         }
 
-        # ChatMessage is an object already while AiResponse is still a hash.
-        # This is temporary solution before we introduce unified AiMessage model.
-        content = object.is_a?(Hash) ? object['content'] : object.content
-
-        Banzai.render_and_post_process(content, banzai_options)
+        Banzai.render_and_post_process(object['content'], banzai_options)
       end
     end
     # rubocop: enable Graphql/AuthorizeTypes
