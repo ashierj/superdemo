@@ -3,8 +3,8 @@ import { GlSprintf, GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeBlockAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_action.vue';
+import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import CodeBlockActionTooltip from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_action_tooltip.vue';
 import YamlEditor from 'ee/security_orchestration/components/yaml_editor.vue';
 import {
   CUSTOM_ACTION_KEY,
@@ -36,7 +36,7 @@ describe('CodeBlockAction', () => {
 
   const findYamlEditor = () => wrapper.findComponent(YamlEditor);
   const findListBox = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findCodeBlockActionTooltip = () => wrapper.findComponent(CodeBlockActionTooltip);
+  const findCodeBlockActionTooltip = () => wrapper.findComponent(PolicyPopover);
   const findGlFormInput = () => wrapper.findComponent(GlFormInput);
 
   describe('default state', () => {

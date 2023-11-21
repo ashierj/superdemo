@@ -1,9 +1,10 @@
 <script>
 import { GlAlert, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
+import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import GroupProjectsDropdown from '../../group_projects_dropdown.vue';
 import ComplianceFrameworkDropdown from './compliance_framework_dropdown.vue';
-import ComplianceFrameworkTooltip from './compliance_framework_tooltip.vue';
 import {
   PROJECTS_WITH_FRAMEWORK,
   PROJECT_SCOPE_TYPE_LISTBOX_ITEMS,
@@ -21,6 +22,7 @@ import {
 } from './constants';
 
 export default {
+  COMPLIANCE_FRAMEWORK_PATH: helpPagePath('user/group/compliance_frameworks.md'),
   PROJECT_SCOPE_TYPE_LISTBOX_ITEMS,
   EXCEPTION_TYPE_LISTBOX_ITEMS,
   i18n: {
@@ -34,15 +36,19 @@ export default {
     complianceFrameworkErrorDescription: s__(
       'SecurityOrchestration|Failed to load compliance frameworks',
     ),
+    complianceFrameworkPopoverTitle: __('Information'),
+    complianceFrameworkPopoverContent: s__(
+      'SecurityOrchestration|A compliance framework is a label to identify that your project has certain compliance requirements. %{linkStart}Learn more%{linkEnd}.',
+    ),
   },
   name: 'ScopeSection',
   components: {
     GlAlert,
     GlCollapsibleListbox,
     ComplianceFrameworkDropdown,
-    ComplianceFrameworkTooltip,
     GlSprintf,
     GroupProjectsDropdown,
+    PolicyPopover,
   },
   inject: ['namespacePath', 'rootNamespacePath'],
   props: {
@@ -194,7 +200,12 @@ export default {
               @select="setSelectedFrameworkIds"
             />
 
-            <compliance-framework-tooltip />
+            <policy-popover
+              :content="$options.i18n.complianceFrameworkPopoverContent"
+              :href="$options.COMPLIANCE_FRAMEWORK_PATH"
+              :title="$options.i18n.complianceFrameworkPopoverTitle"
+              target="compliance-framework-icon"
+            />
           </div>
         </template>
 

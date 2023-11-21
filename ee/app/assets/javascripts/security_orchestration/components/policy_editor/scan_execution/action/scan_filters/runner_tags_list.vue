@@ -1,7 +1,8 @@
 <script>
-import { GlCollapsibleListbox, GlPopover, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { getBaseURL } from '~/lib/utils/url_utility';
+import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import RunnerTagsDropdown from 'ee/vue_shared/components/runner_tags_dropdown/runner_tags_dropdown.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
@@ -21,10 +22,8 @@ export default {
     ),
   },
   components: {
-    GlPopover,
-    GlLink,
     GlCollapsibleListbox,
-    GlSprintf,
+    PolicyPopover,
     RunnerTagsDropdown,
   },
   props: {
@@ -89,25 +88,25 @@ export default {
 
 <template>
   <div>
-    <gl-collapsible-listbox
-      id="runner-tags-switcher-id"
-      class="gl-mr-2 gl-mb-3 gl-sm-mb-0"
-      :disabled="!areRunnersTagged"
-      :items="$options.TAGS_MODES"
-      :selected="selectedTagsMode"
-      @select="setSelectedTagsMode"
-    />
-    <gl-popover
-      v-if="!areRunnersTagged"
-      target="runner-tags-switcher-id"
+    <policy-popover
+      class="gl-display-inline-block"
+      :content="$options.i18n.runnersDisabledStatePopoverContent"
+      :href="runnersTagLink"
       :title="$options.i18n.runnersDisabledStatePopoverTitle"
+      :show-popover="!areRunnersTagged"
+      target="runner-tags-switcher-id"
     >
-      <gl-sprintf :message="$options.i18n.runnersDisabledStatePopoverContent">
-        <template #link="{ content }">
-          <gl-link class="gl-font-sm" :href="runnersTagLink">{{ content }}</gl-link>
-        </template>
-      </gl-sprintf>
-    </gl-popover>
+      <template #trigger>
+        <gl-collapsible-listbox
+          id="runner-tags-switcher-id"
+          class="gl-mr-2 gl-mb-3 gl-sm-mb-0"
+          :disabled="!areRunnersTagged"
+          :items="$options.TAGS_MODES"
+          :selected="selectedTagsMode"
+          @select="setSelectedTagsMode"
+        />
+      </template>
+    </policy-popover>
 
     <runner-tags-dropdown
       v-if="isSpecificTagMode"

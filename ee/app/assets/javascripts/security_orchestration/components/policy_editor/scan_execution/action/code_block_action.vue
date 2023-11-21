@@ -1,6 +1,8 @@
 <script>
 import { GlCollapsibleListbox, GlFormGroup, GlFormInput, GlSprintf } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
+import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL } from '../../constants';
 import {
@@ -10,9 +12,11 @@ import {
   CUSTOM_ACTION_OPTIONS_KEYS,
   LINKED_EXISTING_FILE,
 } from '../constants';
-import CodeBlockActionTooltip from './code_block_action_tooltip.vue';
 
 export default {
+  SCAN_EXECUTION_PATH: helpPagePath('user/application_security/policies/scan-execution-policies', {
+    anchor: 'scan-action-type',
+  }),
   ACTION_AND_LABEL,
   CUSTOM_ACTION_OPTIONS_KEYS,
   CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS,
@@ -23,10 +27,14 @@ export default {
     customSectionTypeLabel: s__('ScanExecutionPolicy|Choose a method to execute code'),
     linkedFileInputPlaceholder: s__('ScanExecutionPolicy|Link existing CI file'),
     linkedFileInputValidationMessage: s__("ScanExecutionPolicy|The file path can't be empty"),
+    customSectionPopoverTitle: __('Information'),
+    customSectionPopoverContent: s__(
+      'ScanExecutionPolicy|If there are any conflicting variables with the local pipeline configuration (Ex, gitlab-ci.yml) then variables defined here will take precedence. %{linkStart}Learn more%{linkEnd}.',
+    ),
   },
   name: 'CodeBlockAction',
   components: {
-    CodeBlockActionTooltip,
+    PolicyPopover,
     GlCollapsibleListbox,
     GlFormInput,
     GlFormGroup,
@@ -154,7 +162,12 @@ export default {
               </template>
 
               <template #tooltip>
-                <code-block-action-tooltip />
+                <policy-popover
+                  :content="$options.i18n.customSectionPopoverContent"
+                  :title="$options.i18n.customSectionPopoverTitle"
+                  :href="$options.SCAN_EXECUTION_PATH"
+                  target="code-block-action-icon"
+                />
               </template>
             </gl-sprintf>
           </div>

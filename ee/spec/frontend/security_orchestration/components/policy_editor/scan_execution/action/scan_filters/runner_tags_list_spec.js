@@ -1,5 +1,6 @@
-import { GlCollapsibleListbox, GlLink, GlPopover, GlSprintf } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import RunnerTagsList from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/runner_tags_list.vue';
 import RunnerTagsDropdown from 'ee/vue_shared/components/runner_tags_dropdown/runner_tags_dropdown.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -25,8 +26,7 @@ describe('RunnerTagsList', () => {
 
   const findTagsModeSwitcher = () => wrapper.findComponent(GlCollapsibleListbox);
   const findTagsList = () => wrapper.findComponent(RunnerTagsDropdown);
-  const findPopover = () => wrapper.findComponent(GlPopover);
-  const findPopoverLink = () => wrapper.findComponent(GlPopover).findComponent(GlLink);
+  const findPopover = () => wrapper.findComponent(PolicyPopover);
 
   const switchTagsMode = async (mode = 'specific') => {
     const newMode =
@@ -61,7 +61,7 @@ describe('RunnerTagsList', () => {
   describe('switch mode', () => {
     it('should not have popover by default', () => {
       createComponent();
-      expect(findPopover().exists()).toBe(false);
+      expect(findPopover().props('showPopover')).toBe(false);
     });
 
     it('should have automatically selected tag mode by default', () => {
@@ -123,9 +123,9 @@ describe('RunnerTagsList', () => {
         await findTagsList().vm.$emit('tags-loaded', []);
 
         expect(findPopover().exists()).toBe(true);
-        expect(findPopoverLink().attributes('href')).toBe(expectedLink);
+        expect(findPopover().props('href')).toBe(expectedLink);
         expect(findPopover().props('title')).toBe('No tags available');
-        expect(findPopover().text()).toMatchInterpolatedText(
+        expect(findPopover().props('content')).toBe(
           'Scan will automatically choose a runner to run on because there are no tags exist on runners. You can %{linkStart}create a new tag in settings%{linkEnd}.',
         );
       });
