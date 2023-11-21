@@ -41,8 +41,6 @@ export const METRICS_REQUESTS = [
   },
 ];
 
-export const DURATION_OVERVIEW_CHART_X_AXIS_DATE_FORMAT = 'd mmm';
-export const DURATION_OVERVIEW_CHART_X_AXIS_TOOLTIP_TITLE_DATE_FORMAT = 'd mmm yyyy';
 export const DURATION_OVERVIEW_CHART_NO_DATA = s__('CycleAnalytics|No data');
 export const DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM = {
   name: DURATION_OVERVIEW_CHART_NO_DATA,

@@ -1,5 +1,6 @@
 import { helpPagePath } from '~/helpers/help_page_helper';
 import dateFormat from '~/lib/dateformat';
+import { dateFormats } from '~/analytics/shared/constants';
 import { nDaysBefore, nMonthsBefore, getStartOfDay, dayAfter } from '~/lib/utils/datetime_utility';
 import { __, sprintf } from '~/locale';
 
@@ -28,7 +29,6 @@ const lastMonth = nMonthsBefore(startOfTomorrow, 1, { utc: true });
 const last90Days = nDaysBefore(startOfTomorrow, 90, { utc: true });
 const last180Days = nDaysBefore(startOfTomorrow, 180, { utc: true });
 const apiDateFormatString = 'isoDateTime';
-const titleDateFormatString = 'mmm d';
 const sharedRequestParams = {
   interval: 'daily',
   end_date: dateFormat(startOfTomorrow, apiDateFormatString, true),
@@ -45,8 +45,8 @@ export const averageSeriesOptions = {
 };
 
 const formatDateRangeString = (startDate) => {
-  const start = dateFormat(startDate, titleDateFormatString, true);
-  const end = dateFormat(startOfToday, titleDateFormatString, true);
+  const start = dateFormat(startDate, dateFormats.defaultDate, true);
+  const end = dateFormat(startOfToday, dateFormats.defaultDate, true);
   return `${start} - ${end}`;
 };
 

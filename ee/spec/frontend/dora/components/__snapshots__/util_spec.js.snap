@@ -8,31 +8,31 @@ Array [
     },
     "data": Array [
       Array [
-        "Jun 27",
+        "Jun 27, 2015",
         86400,
       ],
       Array [
-        "Jun 28",
+        "Jun 28, 2015",
         86400,
       ],
       Array [
-        "Jun 29",
+        "Jun 29, 2015",
         86400,
       ],
       Array [
-        "Jun 30",
+        "Jun 30, 2015",
         86400,
       ],
       Array [
-        "Jul 1",
+        "Jul 01, 2015",
         432000,
       ],
       Array [
-        "Jul 2",
+        "Jul 02, 2015",
         518400,
       ],
       Array [
-        "Jul 3",
+        "Jul 03, 2015",
         604800,
       ],
     ],
@@ -52,31 +52,31 @@ Array [
     },
     "data": Array [
       Array [
-        "Jun 27",
+        "Jun 27, 2015",
         null,
       ],
       Array [
-        "Jun 28",
+        "Jun 28, 2015",
         null,
       ],
       Array [
-        "Jun 29",
+        "Jun 29, 2015",
         null,
       ],
       Array [
-        "Jun 30",
+        "Jun 30, 2015",
         86400,
       ],
       Array [
-        "Jul 1",
+        "Jul 01, 2015",
         432000,
       ],
       Array [
-        "Jul 2",
+        "Jul 02, 2015",
         null,
       ],
       Array [
-        "Jul 3",
+        "Jul 03, 2015",
         604800,
       ],
     ],

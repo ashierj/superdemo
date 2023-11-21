@@ -203,7 +203,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
 
     shared_examples 'date range prepopulated' do |start_date:, end_date:|
       it 'has the date range prepopulated' do
-        expected_date_format = '%b %-d, %Y'
+        expected_date_format = '%b %d, %Y'
         formatted_start_date = DateTime.parse(start_date).strftime(expected_date_format)
         formatted_end_date = DateTime.parse(end_date).strftime(expected_date_format)
 
