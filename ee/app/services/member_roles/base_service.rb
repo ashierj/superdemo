@@ -4,7 +4,7 @@ module MemberRoles
   class BaseService < ::BaseService
     include Gitlab::Allowable
 
-    def initialize(group, current_user, params)
+    def initialize(group, current_user, params = {})
       @group = group
       @current_user = current_user
       @params = params
