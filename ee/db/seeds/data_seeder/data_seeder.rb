@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require 'ostruct'
+require 'rspec'
+require Rails.root.join('spec/support/helpers/stub_method_calls')
+require Rails.root.join('spec/support/factory_bot')
 
 module Gitlab
   module DataSeeder
@@ -8,6 +11,14 @@ module Gitlab
       # Seed test data using GitLab Data Seeder
       # @param [String] seed_file the full-path of the seed file to load (.yml, .rb)
       def seed(owner, seed_file)
+        FactoryBot.define do
+          after(:create) do |resource|
+            Gitlab::DataSeeder::Logger.info(seeding: "#<#{resource.class.name}>")
+
+            print '.'
+          end
+        end
+
         case File.basename(seed_file)
         when /\.y(a)?ml(\.erb)?/
           Parsers::Yaml.new(seed_file, owner).parse
@@ -219,6 +230,7 @@ module Gitlab
           @seed_file = seed_file
           @owner = owner
           @name = File.basename(@seed_file, '.rb')
+          @logger = Gitlab::DataSeeder::Logger.build
 
           # create the seeded group with a path that is hyphenated and random
           @group = FactoryBot.create(:group, name: @name,
@@ -236,10 +248,21 @@ module Gitlab
             seeder.instance_variable_set(:@owner, @owner)
             seeder.instance_variable_set(:@name, @name)
             seeder.instance_variable_set(:@group, @group)
+            seeder.instance_variable_set(:@logger, @logger)
 
             seeder.seed
           end
         end
+      end
+    end
+
+    class Logger < Gitlab::Logger
+      def self.file_name_noext
+        'data_seeder'
+      end
+
+      def self.log_level(fallback: ::Logger::INFO)
+        ENV.fetch('GITLAB_LOG_LEVEL', fallback)
       end
     end
   end

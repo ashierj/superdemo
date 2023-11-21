@@ -4,19 +4,19 @@ namespace :ee do
   namespace :gitlab do
     namespace :seed do
       # @example
-      #   $ rake "ee:gitlab:seed:data_seeder[path/to/seed/file,12345]"
-      desc 'Seed test data for a given namespace'
-      task :data_seeder, [:co, :namespace_id] => :environment do |_, argv|
-        require 'factory_bot'
-        require Rails.root.join('ee/db/seeds/data_seeder/data_seeder.rb')
+      #   $ rake "ee:gitlab:seed:data_seeder[path/to/seed/file(.rb,.yml,json)]"
+      desc 'Seed data using GitLab Data Seeder'
+      task :data_seeder, [:file] => :environment do |_, argv|
+        require Rails.root.join('ee/db/seeds/data_seeder/data_seeder')
 
-        seed_file = Rails.root.join('ee/db/seeds/data_seeder', argv[:co])
+        seed_file = Rails.root.join('ee/db/seeds/data_seeder', argv[:file])
 
         raise "Seed file `#{seed_file}` does not exist" unless File.exist?(seed_file)
 
-        puts "Seeding demo data for #{Namespace.find(argv[:namespace_id]).name}"
+        admin = User.admins.first
+        puts "Seeding data for #{admin.name}"
 
-        Gitlab::DataSeeder.seed(User.admins.first, seed_file.to_s)
+        Gitlab::DataSeeder.seed(admin, seed_file.to_s)
       end
     end
   end
