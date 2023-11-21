@@ -1,19 +1,17 @@
 <script>
 import { isEmpty } from 'lodash';
-import { GlLink, GlSkeletonLoader, GlSprintf, GlAlert } from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
-import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 import {
-  ALERT_TEXT,
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
-  DASHBOARD_SURVEY_LINK,
   DASHBOARD_DOCS_LINK,
   YAML_CONFIG_LOAD_ERROR,
 } from '../../constants';
 import { fetchYamlConfig } from '../../yaml_utils';
 import DoraVisualization from '../../components/dora_visualization.vue';
 import DoraPerformersScore from '../../components/dora_performers_score.vue';
+import FeedbackBanner from '../../components/feedback_banner.vue';
 
 const pathsToPanels = (paths) =>
   paths.map(({ namespace, isProject = false }) => ({ data: { namespace }, isProject }));
@@ -24,10 +22,9 @@ export default {
     GlAlert,
     GlLink,
     GlSkeletonLoader,
-    GlSprintf,
     DoraVisualization,
     DoraPerformersScore,
-    UserCalloutDismisser,
+    FeedbackBanner,
   },
   props: {
     fullPath: {
@@ -47,7 +44,6 @@ export default {
   },
   i18n: {
     learnMore: __('Learn more'),
-    alertText: ALERT_TEXT,
   },
   data: () => ({
     loading: true,
@@ -95,22 +91,12 @@ export default {
     this.loading = false;
   },
   DASHBOARD_DOCS_LINK,
-  DASHBOARD_SURVEY_LINK,
 };
 </script>
 <template>
   <div>
-    <user-callout-dismisser feature-name="vsd_feedback_banner">
-      <template #default="{ dismiss, shouldShowCallout }">
-        <gl-alert v-if="shouldShowCallout" data-testid="alert-banner" @dismiss="dismiss">
-          <gl-sprintf :message="$options.i18n.alertText">
-            <template #link="{ content }">
-              <gl-link :href="$options.DASHBOARD_SURVEY_LINK">{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
-        </gl-alert>
-      </template>
-    </user-callout-dismisser>
+    <feedback-banner />
+
     <div v-if="loading" class="gl-mt-5">
       <gl-skeleton-loader :lines="2" />
     </div>

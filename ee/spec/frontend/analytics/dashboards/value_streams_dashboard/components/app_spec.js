@@ -1,39 +1,28 @@
-import { GlAlert, GlLink, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 import {
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
   DASHBOARD_DOCS_LINK,
-  DASHBOARD_SURVEY_LINK,
 } from 'ee/analytics/dashboards/constants';
 import * as yamlConfigUtils from 'ee/analytics/dashboards/yaml_utils';
 import Component from 'ee/analytics/dashboards/value_streams_dashboard/components/app.vue';
 import DoraVisualization from 'ee/analytics/dashboards/components/dora_visualization.vue';
 import DoraPerformersScore from 'ee/analytics/dashboards/components/dora_performers_score.vue';
+import FeedbackBanner from 'ee/analytics/dashboards/components/feedback_banner.vue';
 
 describe('Executive dashboard app', () => {
   let wrapper;
-  let userCalloutDismissSpy;
   const fullPath = 'groupFullPath';
   const testPaths = ['group', 'group/a', 'group/b', 'group/c', 'group/d', 'group/e'];
   const testPanels = testPaths.map((namespace) => ({ data: { namespace } }));
 
-  const createWrapper = async ({ props = {}, shouldShowCallout = true } = {}) => {
-    userCalloutDismissSpy = jest.fn();
-
+  const createWrapper = async ({ props = {} } = {}) => {
     wrapper = shallowMountExtended(Component, {
       propsData: {
         fullPath,
         ...props,
-      },
-      stubs: {
-        GlSprintf,
-        UserCalloutDismisser: makeMockUserCalloutDismisser({
-          dismiss: userCalloutDismissSpy,
-          shouldShowCallout,
-        }),
       },
     });
 
@@ -46,13 +35,15 @@ describe('Executive dashboard app', () => {
   const findDescription = () => wrapper.findByTestId('dashboard-description');
   const findDoraVisualizations = () => wrapper.findAllComponents(DoraVisualization);
   const findDoraPerformersScorePanels = () => wrapper.findAllComponents(DoraPerformersScore);
-  const findAlertBanner = () => wrapper.findByTestId('alert-banner');
-  const findAlertBannerText = () => findAlertBanner().findComponent(GlSprintf).text();
-  const findAlertBannerLink = () => findAlertBanner().findComponent(GlLink);
 
   it('shows a loading skeleton when fetching the YAML config', () => {
     createWrapper();
     expect(findSkeletonLoader().exists()).toBe(true);
+  });
+
+  it('shows the feedback banner', () => {
+    createWrapper();
+    expect(wrapper.findComponent(FeedbackBanner).exists()).toBe(true);
   });
 
   describe('default config', () => {
@@ -178,35 +169,6 @@ describe('Executive dashboard app', () => {
       [groupFullPath, ...queryPaths].forEach(({ namespace }, index) => {
         expect(charts.wrappers[index].props()).toMatchObject({ data: { namespace } });
       });
-    });
-  });
-
-  describe('VSD feedback banner', () => {
-    it('displays the alert banner correctly', () => {
-      createWrapper();
-
-      expect(findAlertBannerText()).toBe(
-        'To help us improve the Value Stream Management Dashboard, please share feedback about your experience in this',
-      );
-
-      const alertBannerLink = findAlertBannerLink();
-
-      expect(alertBannerLink.text()).toBe('survey');
-      expect(alertBannerLink.attributes('href')).toBe(DASHBOARD_SURVEY_LINK);
-    });
-
-    it('dismisses the callout when closed', () => {
-      createWrapper();
-
-      findAlertBanner().findComponent(GlAlert).vm.$emit('dismiss');
-
-      expect(userCalloutDismissSpy).toHaveBeenCalled();
-    });
-
-    it('is not displayed once it has been dismissed', () => {
-      createWrapper({ shouldShowCallout: false });
-
-      expect(findAlertBanner().exists()).toBe(false);
     });
   });
 });
