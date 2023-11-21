@@ -564,99 +564,45 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
     describe 'run_compliance_standards_checks' do
       let_it_be(:group, reload: true) { create(:group) }
 
-      context 'when feature flag is enabled' do
+      context 'when project belongs to a group', :sidekiq_inline do
         before do
-          stub_feature_flags(compliance_adherence_report: true)
+          group.add_maintainer(user)
         end
 
-        context 'when project belongs to a group', :sidekiq_inline do
-          before do
-            group.add_maintainer(user)
-          end
+        it 'creates compliance standards adherence' do
+          stub_licensed_features(group_level_compliance_dashboard: true)
 
-          it 'creates compliance standards adherence' do
-            stub_licensed_features(group_level_compliance_dashboard: true)
+          expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+            .to receive(:perform_async).and_call_original
 
-            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
-              .to receive(:perform_async).and_call_original
+          expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
+            .to receive(:perform_async).and_call_original
 
-            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
-              .to receive(:perform_async).and_call_original
+          expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+            .to receive(:perform_async).and_call_original
 
-            expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
-              .to receive(:perform_async).and_call_original
+          project = create_project(user, { name: "GitLab", namespace_id: group.id })
 
-            project = create_project(user, { name: "GitLab", namespace_id: group.id })
-
-            expect(project.compliance_standards_adherence.count).to eq(3)
-          end
-        end
-
-        context 'when project belongs to a user namespace' do
-          it 'does not invoke the workers' do
-            stub_licensed_features(group_level_compliance_dashboard: true)
-
-            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
-              .not_to receive(:perform_async)
-
-            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
-              .not_to receive(:perform_async)
-
-            expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
-              .not_to receive(:perform_async)
-
-            project = create_project(user, opts)
-
-            expect(project.compliance_standards_adherence).to be_empty
-          end
+          expect(project.compliance_standards_adherence.count).to eq(3)
         end
       end
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(compliance_adherence_report: false)
-        end
+      context 'when project belongs to a user namespace' do
+        it 'does not invoke the workers' do
+          stub_licensed_features(group_level_compliance_dashboard: true)
 
-        context 'when project belongs to a group', :sidekiq_inline do
-          before do
-            group.add_maintainer(user)
-          end
+          expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+            .not_to receive(:perform_async)
 
-          it 'does not create compliance standards adherence' do
-            stub_licensed_features(group_level_compliance_dashboard: true)
+          expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
+            .not_to receive(:perform_async)
 
-            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
-              .not_to receive(:perform_async)
+          expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+            .not_to receive(:perform_async)
 
-            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
-              .not_to receive(:perform_async)
+          project = create_project(user, opts)
 
-            expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
-              .not_to receive(:perform_async)
-
-            project = create_project(user, { name: "GitLab", namespace_id: group.id })
-
-            expect(project.compliance_standards_adherence).to be_empty
-          end
-        end
-
-        context 'when project belongs to a user namespace' do
-          it 'does not invoke the workers' do
-            stub_licensed_features(group_level_compliance_dashboard: true)
-
-            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
-              .not_to receive(:perform_async)
-
-            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
-              .not_to receive(:perform_async)
-
-            expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
-              .not_to receive(:perform_async)
-
-            project = create_project(user, opts)
-
-            expect(project.compliance_standards_adherence).to be_empty
-          end
+          expect(project.compliance_standards_adherence).to be_empty
         end
       end
     end

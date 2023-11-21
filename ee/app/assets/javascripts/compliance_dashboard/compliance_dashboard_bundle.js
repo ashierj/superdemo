@@ -21,7 +21,6 @@ export default () => {
     rootAncestorPath,
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
-    adherenceReportUiEnabled,
     complianceFrameworkReportUiEnabled,
   } = el.dataset;
 
@@ -36,7 +35,6 @@ export default () => {
     mergeCommitsCsvExportPath,
     groupPath,
     rootAncestorPath,
-    adherenceReportUiEnabled: parseBoolean(adherenceReportUiEnabled),
     complianceFrameworkReportUiEnabled: parseBoolean(complianceFrameworkReportUiEnabled),
   });
 
@@ -50,7 +48,6 @@ export default () => {
       canAddEdit,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
-      adherenceReportUiEnabled: parseBoolean(adherenceReportUiEnabled),
       complianceFrameworkReportUiEnabled: parseBoolean(complianceFrameworkReportUiEnabled),
     },
     render: (createElement) =>

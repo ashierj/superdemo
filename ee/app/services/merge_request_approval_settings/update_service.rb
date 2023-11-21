@@ -72,8 +72,6 @@ module MergeRequestApprovalSettings
     end
 
     def run_compliance_checks_for_group
-      return unless Feature.enabled?(:compliance_adherence_report, container)
-
       ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker
         .perform_async({ 'group_id' => container.id, 'user_id' => current_user&.id })
 
@@ -82,8 +80,6 @@ module MergeRequestApprovalSettings
     end
 
     def run_compliance_checks_for_project
-      return unless Feature.enabled?(:compliance_adherence_report, container.root_ancestor)
-
       ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
         .perform_async({ 'project_id' => container.id, 'user_id' => current_user&.id })
 
