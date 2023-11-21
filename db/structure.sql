@@ -37388,6 +37388,9 @@ ALTER TABLE ONLY merge_request_metrics
 ALTER TABLE ONLY vulnerability_feedback
     ADD CONSTRAINT fk_563ff1912e FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY merge_request_diffs
+    ADD CONSTRAINT fk_56ac6fc9c0 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE NOT VALID;
+
 ALTER TABLE ONLY ml_candidates
     ADD CONSTRAINT fk_56d6ed4d3d FOREIGN KEY (experiment_id) REFERENCES ml_experiments(id) ON DELETE CASCADE;
 
