@@ -33,7 +33,21 @@ describe('TotalIssuesAnalyticsChart', () => {
   let mockApollo;
 
   const fullPath = 'toolbox';
-  const mockGroupBy = ['Jul', 'Aug', 'Sep'];
+  const mockGroupBy = [
+    'Nov',
+    'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+  ];
   const queryError = jest.fn().mockRejectedValueOnce(new Error('Something went wrong'));
   const mockDataNullResponse = mockGraphqlIssuesAnalyticsCountsResponse({ mockDataResponse: null });
   const issuesOpenedCountsSuccess = mockGraphqlIssuesAnalyticsCountsResponse({
@@ -123,7 +137,7 @@ describe('TotalIssuesAnalyticsChart', () => {
         presentation: 'tiled',
         groupBy: mockGroupBy,
         xAxisType: 'category',
-        xAxisTitle: 'Last 3 months (Jul 2023 – Sep 2023)',
+        xAxisTitle: 'Last 12 months (Nov 2022 – Nov 2023)',
         yAxisTitle: 'Issues Opened vs Closed',
         customPalette: TOTAL_ISSUES_ANALYTICS_CHART_COLOR_PALETTE,
       });
@@ -147,13 +161,19 @@ describe('TotalIssuesAnalyticsChart', () => {
       });
     });
 
-    it('should display correct x-axis title when date range is month to date', async () => {
-      const mockStartDate = new Date('2023-09-01T00:00:00.000Z');
+    it.each`
+      startDate                               | expectedXAxisTitle
+      ${new Date('2023-09-01T00:00:00.000Z')} | ${'Last 2 months (Sep 2023 – Nov 2023)'}
+      ${new Date('2023-10-01T00:00:00.000Z')} | ${'Last month (Oct 2023 – Nov 2023)'}
+      ${new Date('2023-11-01T00:00:00.000Z')} | ${'This month (Nov 2023)'}
+    `(
+      `should display the correct x-axis title when startDate=$startDate and endDate=${mockIssuesAnalyticsCountsEndDate}`,
+      async ({ startDate, expectedXAxisTitle }) => {
+        await createComponent({ startDate });
 
-      await createComponent({ startDate: mockStartDate });
-
-      expect(findTotalIssuesAnalyticsChart().props('xAxisTitle')).toBe('This month (Sep 2023)');
-    });
+        expect(findTotalIssuesAnalyticsChart().props('xAxisTitle')).toBe(expectedXAxisTitle);
+      },
+    );
   });
 
   describe('when fetching data', () => {

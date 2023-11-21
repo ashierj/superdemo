@@ -1,11 +1,5 @@
 import { transformFilters, generateChartDateRangeData } from 'ee/issues_analytics/utils';
-import {
-  mockOriginalFilters,
-  mockFilters,
-  mockIssuesAnalyticsCountsStartDate,
-  mockIssuesAnalyticsCountsEndDate,
-  mockChartDateRangeData,
-} from './mock_data';
+import { mockOriginalFilters, mockFilters, mockChartDateRangeData } from './mock_data';
 
 describe('Issues Analytics utils', () => {
   describe('transformFilters', () => {
@@ -46,8 +40,8 @@ describe('Issues Analytics utils', () => {
   });
 
   describe('generateChartDateRangeData', () => {
-    const startDate = mockIssuesAnalyticsCountsStartDate;
-    const endDate = mockIssuesAnalyticsCountsEndDate;
+    const startDate = new Date('2023-07-04T00:00:00.000Z');
+    const endDate = new Date('2023-09-15T00:00:00.000Z');
 
     it('returns the data as expected', () => {
       const chartDateRangeData = generateChartDateRangeData(startDate, endDate);
