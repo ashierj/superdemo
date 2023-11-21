@@ -30325,13 +30325,7 @@ msgstr ""
 msgid "Metrics|Delete metric?"
 msgstr ""
 
-msgid "Metrics|Description"
-msgstr ""
-
 msgid "Metrics|Edit metric"
-msgstr ""
-
-msgid "Metrics|Failed to load metrics."
 msgstr ""
 
 msgid "Metrics|For grouping similar metrics"
@@ -30343,13 +30337,7 @@ msgstr ""
 msgid "Metrics|Legend label (optional)"
 msgstr ""
 
-msgid "Metrics|Metrics"
-msgstr ""
-
 msgid "Metrics|Must be a valid PromQL query."
-msgstr ""
-
-msgid "Metrics|Name"
 msgstr ""
 
 msgid "Metrics|New metric"
@@ -30362,9 +30350,6 @@ msgid "Metrics|Prometheus Query Documentation"
 msgstr ""
 
 msgid "Metrics|There was an error trying to validate your query"
-msgstr ""
-
-msgid "Metrics|Type"
 msgstr ""
 
 msgid "Metrics|Unit label"
@@ -32879,13 +32864,28 @@ msgstr ""
 msgid "Objective"
 msgstr ""
 
+msgid "ObservabilityMetrics|Description"
+msgstr ""
+
 msgid "ObservabilityMetrics|Error: Failed to load metrics details. Try reloading the page."
+msgstr ""
+
+msgid "ObservabilityMetrics|Failed to load metrics."
 msgstr ""
 
 msgid "ObservabilityMetrics|Metric Details"
 msgstr ""
 
 msgid "ObservabilityMetrics|Metrics"
+msgstr ""
+
+msgid "ObservabilityMetrics|Name"
+msgstr ""
+
+msgid "ObservabilityMetrics|Search metrics starting with..."
+msgstr ""
+
+msgid "ObservabilityMetrics|Type"
 msgstr ""
 
 msgid "Observability|Enable"
