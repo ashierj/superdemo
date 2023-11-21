@@ -120,7 +120,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         click_button 'Update approval rule'
         click_on("Create merge request")
         wait_for_all_requests
-        find_by_testid('widget-toggle').click
+        click_button 'Expand eligible approvers'
         wait_for_requests
 
         expect(page).to have_selector(".js-approvers img[alt='#{approver.name}']")
@@ -184,7 +184,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         click_on("Save changes")
         wait_for_all_requests
 
-        find_by_testid('widget-toggle').click
+        click_button 'Expand eligible approvers'
         wait_for_requests
 
         expect(page).not_to have_selector(".js-approvers img[alt='#{other_user.name}']")

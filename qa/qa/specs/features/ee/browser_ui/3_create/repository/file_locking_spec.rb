@@ -79,9 +79,13 @@ module QA
         go_to_file
         click_lock
         sign_out_and_sign_in_as user: user_one
-        try_to_merge merge_request: merge_request
-        Page::MergeRequest::Show.perform(&:wait_for_merge_request_error_message)
-        expect(page).to have_text("locked by #{admin_username}")
+        merge_request.visit!
+
+        Page::MergeRequest::Show.perform do |merge_request|
+          merge_request.try_to_merge!
+          expect(page).to have_text("locked by #{admin_username}", wait: 30)
+          expect(merge_request).to have_merge_button
+        end
       end
 
       it 'locks a file and unlocks in list',
@@ -98,11 +102,6 @@ module QA
         end
 
         expect_no_error_on_push as_user: user_two
-      end
-
-      def try_to_merge(merge_request:)
-        merge_request.visit!
-        Page::MergeRequest::Show.perform(&:try_to_merge!)
       end
 
       def sign_out_and_sign_in_as(user:)

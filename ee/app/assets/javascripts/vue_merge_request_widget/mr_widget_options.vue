@@ -293,7 +293,8 @@ export default {
       <blocking-merge-requests-report :mr="mr" />
 
       <div class="mr-widget-section">
-        <component :is="componentName" :mr="mr" :service="service" />
+        <merge-checks v-if="mergeBlockedComponentEnabled" :mr="mr" :service="service" />
+        <component :is="componentName" v-else :mr="mr" :service="service" />
         <ready-to-merge
           v-if="mr.commitsCount"
           v-show="shouldShowMergeDetails"
