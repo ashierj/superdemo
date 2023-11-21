@@ -86,26 +86,6 @@ module EE
       end
     end
 
-    def resync_all_button(projects_count, limit)
-      # This is deprecated and Hard Coded for Projects.
-      # All new replicable types should be using geo_replicable/app.vue
-
-      resync_all_projects_modal_data = {
-        path: resync_all_admin_geo_projects_url,
-        method: 'post',
-        modal_attributes: {
-          title: projects_count > 1 ? sprintf(s_('Geo|Resync all %{projects_count} projects'), { projects_count: format_project_count(projects_count, limit) }) : s_('Geo|Resync project'),
-          message: s_('Geo|This will resync all projects. It may take some time to complete. Are you sure you want to continue?'),
-          okTitle: s_('Geo|Resync all'),
-          size: 'sm'
-        }
-      }
-
-      render Pajamas::ButtonComponent.new(button_options: { class: 'js-confirm-modal-button gl-mr-3', data: resync_all_projects_modal_data }) do
-        s_("Geo|Resync all")
-      end
-    end
-
     def reverify_all_button(projects_count, limit)
       # This is deprecated and Hard Coded for Projects.
       # All new replicable types should be using geo_replicable/app.vue
