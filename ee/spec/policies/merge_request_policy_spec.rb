@@ -359,7 +359,8 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_licensed_features(
         summarize_my_mr_code_review: true,
-        ai_features: true
+        ai_features: true,
+        experimental_features: true
       )
 
       project.add_maintainer(reviewer)
@@ -481,7 +482,8 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
 
       stub_licensed_features(
         summarize_submitted_review: true,
-        ai_features: true
+        ai_features: true,
+        experimental_features: true
       )
 
       stub_feature_flags(
@@ -592,7 +594,8 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
 
       stub_licensed_features(
         summarize_mr_changes: true,
-        ai_features: true
+        ai_features: true,
+        experimental_features: true
       )
 
       stub_feature_flags(

@@ -13,7 +13,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_licensed_features(generate_commit_message: true, ai_features: true)
+    stub_licensed_features(generate_commit_message: true, ai_features: true, experimental_features: true)
   end
 
   describe '#execute' do

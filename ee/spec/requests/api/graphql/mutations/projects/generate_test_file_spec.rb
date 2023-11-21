@@ -24,7 +24,7 @@ RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_licensed_features(generate_test_file: true, ai_features: true)
+    stub_licensed_features(generate_test_file: true, ai_features: true, experimental_features: true)
     group.namespace_settings.update!(experiment_features_enabled: true)
   end
 

@@ -31,7 +31,7 @@ RSpec.describe 'AiAction for Fill In Merge Request Template', :saas, feature_cat
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_licensed_features(fill_in_merge_request_template: true, ai_features: true)
+    stub_licensed_features(fill_in_merge_request_template: true, ai_features: true, experimental_features: true)
     group.namespace_settings.update!(experiment_features_enabled: true)
   end
 

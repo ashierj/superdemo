@@ -13,7 +13,7 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_licensed_features(generate_test_file: true, ai_features: true)
+    stub_licensed_features(generate_test_file: true, ai_features: true, experimental_features: true)
   end
 
   describe '#execute' do
