@@ -10,7 +10,7 @@ FactoryBot.define do
 
     trait :os_advisory do
       purl_type { :deb }
-      distro_version { 'debian 9' }
+      distro { 'debian 9' }
     end
 
     initialize_with do

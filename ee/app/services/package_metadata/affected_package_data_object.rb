@@ -12,14 +12,14 @@ module PackageMetadata
       :versions, :overridden_advisory_fields, :pm_advisory_id
 
     def initialize(
-      purl_type:, package_name:, affected_range:, solution: '', fixed_versions: '', distro_version: '',
+      purl_type:, package_name:, affected_range:, solution: '', fixed_versions: '', distro: '',
       versions: [], overridden_advisory_fields: {})
       @purl_type = purl_type
       @package_name = package_name
       @affected_range = affected_range
       @solution = solution
       @fixed_versions = fixed_versions
-      @distro_version = distro_version
+      @distro_version = distro
       @versions = versions
       @overridden_advisory_fields = overridden_advisory_fields
     end
