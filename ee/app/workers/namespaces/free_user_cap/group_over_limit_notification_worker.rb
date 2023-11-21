@@ -31,9 +31,7 @@ module Namespaces
       def top_level_groups
         # To protect our performance in this edge case feature, we'll limit the number of top level groups
         # we analyze.
-        # TODO: need @group.shared_projects here too for projects with invited groups
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/415487#engineering-breakdownplan
-        @group.shared_groups.map(&:root_ancestor).uniq.reject do |top_level_group|
+        (@group.shared_groups + @group.shared_projects).map(&:root_ancestor).uniq.reject do |top_level_group|
           # ignore self as we'll already be notified of this in the UI and by default
           # inviting groups from inside our own hierarchy can not change user count
           @group.root_ancestor == top_level_group

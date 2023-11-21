@@ -17,6 +17,12 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
 
     let_it_be(:member_already_taking_seat) { invited_group_with_same_user.add_developer(user_with_multiple_members) }
 
+    let_it_be(:another_top_level_group) do
+      create(:group_with_plan, :private, plan: :free_plan).tap { |g| create_list(:group_member, 4, group: g) }
+    end
+
+    let_it_be(:project_with_another_top_level_group) { create(:project, namespace: another_top_level_group) }
+
     let(:added_member_ids) { [] }
     let(:free_user_cap_over_limit_email_enabled) { true }
     let(:dashboard_limit_enabled) { true }
@@ -29,6 +35,7 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
       create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
       create(:group_group_link, { shared_with_group: invited_group_with_same_user, shared_group: group })
       create(:project_group_link, project: project, group: invited_group)
+      create(:project_group_link, project: project_with_another_top_level_group, group: invited_group)
     end
 
     before do
@@ -78,16 +85,21 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
       context 'when due to members added from invited group' do
         it 'runs notify service' do
           expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(group)
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(another_top_level_group)
 
           perform
         end
       end
 
       context 'when the top level group is in the same hierarchy as the invited group' do
-        let_it_be(:invited_group) { create(:group, :private, parent: group) }
+        before do
+          invited_group.update!(parent: group, visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+        end
 
-        it 'does not run the notify service' do
-          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)
+        it 'does not perform calculation for the group in same hierarchy' do
+          expect(::Namespaces::FreeUserCap::Enforcement).not_to receive(:new).with(group)
+          expect(::Namespaces::FreeUserCap::Enforcement)
+            .to receive(:new).with(another_top_level_group).and_call_original
 
           perform
         end
@@ -147,10 +159,13 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
 
       it 'runs notify service' do
         expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).with(group).and_call_original
+        expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).with(another_top_level_group).and_call_original
         expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).with(over_top_level_group).and_call_original
         expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).with(under_top_level_group).and_call_original
 
         expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(group).and_call_original
+        expect(::Namespaces::FreeUserCap::NotifyOverLimitService)
+          .to receive(:execute).with(another_top_level_group).and_call_original
         expect(::Namespaces::FreeUserCap::NotifyOverLimitService)
           .to receive(:execute).with(over_top_level_group).and_call_original
         expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute).with(under_top_level_group)
@@ -165,12 +180,31 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
 
         it 'runs notify service for first group only' do
           expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).with(group).and_call_original
+          expect(::Namespaces::FreeUserCap::Enforcement).not_to receive(:new).with(another_top_level_group)
           expect(::Namespaces::FreeUserCap::Enforcement).not_to receive(:new).with(over_top_level_group)
           expect(::Namespaces::FreeUserCap::Enforcement).not_to receive(:new).with(under_top_level_group)
 
           expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(group).and_call_original
 
           perform
+        end
+
+        context 'with precedent given to groups with invited groups over projects' do
+          before do
+            stub_const("#{described_class}::TOP_LEVEL_GROUPS_LIMIT", 3)
+          end
+
+          it 'runs the calculation for all except the top level group of the project with an invited group' do
+            expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).with(group).and_call_original
+            expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).with(over_top_level_group).and_call_original
+            expect(::Namespaces::FreeUserCap::Enforcement)
+              .to receive(:new).with(under_top_level_group).and_call_original
+
+            expect(::Namespaces::FreeUserCap::Enforcement)
+              .not_to receive(:new).with(another_top_level_group).and_call_original
+
+            perform
+          end
         end
       end
 
@@ -186,6 +220,8 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
             .to receive(:execute).once.with(group).and_call_original
           expect(::Namespaces::FreeUserCap::NotifyOverLimitService)
             .to receive(:execute).with(over_top_level_group).and_call_original
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService)
+            .to receive(:execute).with(another_top_level_group).and_call_original
 
           perform
         end
