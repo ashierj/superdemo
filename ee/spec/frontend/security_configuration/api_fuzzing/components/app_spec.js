@@ -28,7 +28,7 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
       App,
       merge(
         {
-          apolloProvider: () => createMockApolloProvider(successHandler),
+          apolloProvider: createMockApolloProvider(successHandler),
           stubs: {
             GlSprintf,
             ConfigurationPageLayout,

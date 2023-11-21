@@ -24,6 +24,9 @@ describe('IssueBoardFilter', () => {
         iterationFeatureAvailable: true,
         healthStatusFeatureAvailable: true,
       },
+      mocks: {
+        $apollo: {},
+      },
     });
   };
 

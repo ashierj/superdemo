@@ -21,6 +21,7 @@ describe('EpicFilteredSearch', () => {
   const createComponent = ({ initialFilterParams = {} } = {}) => {
     wrapper = shallowMount(EpicFilteredSearch, {
       provide: { initialFilterParams, fullPath: '', boardType: '', isGroupBoard: true },
+      mocks: { $apollo: {} },
     });
   };
 
