@@ -52,6 +52,7 @@ class Groups::SamlProvidersController < Groups::ApplicationController
 
   def saml_provider_params
     allowed_params = %i[sso_url certificate_fingerprint enabled enforced_sso default_membership_role git_check_enforced]
+    allowed_params << :member_role_id if group.custom_roles_enabled?
 
     if Feature.enabled?(:group_managed_accounts, group)
       allowed_params += [:enforced_group_managed_accounts, :prohibited_outer_forks]
