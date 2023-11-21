@@ -11,6 +11,7 @@ RSpec.describe PackageMetadata::AffectedPackageDataObject, feature_category: :so
         "affected_range" => "(,0.7.0]",
         "solution" => "Upgrade to version 0.8 or above.",
         "fixed_versions" => ["0.8"],
+        "distro" => "1.1",
         "versions" => [{ 'number' => '1.2.3',
                          'commit' => { 'tags' => ['v1.2.3-tag'], 'sha' => '295cf0778821bf08681e2bd0ef0e6cad04fc3001',
                                        'timestamp' => '20190626162700' } }]
@@ -24,7 +25,7 @@ RSpec.describe PackageMetadata::AffectedPackageDataObject, feature_category: :so
     it do
       is_expected.to match(have_attributes(purl_type: 'npm',
         package_name: 'org.jenkins-ci.plugins/google-kubernetes-engine', affected_range: '(,0.7.0]',
-        solution: 'Upgrade to version 0.8 or above.', fixed_versions: ["0.8"],
+        solution: 'Upgrade to version 0.8 or above.', fixed_versions: ["0.8"], distro_version: "1.1",
         "versions" => [{ 'number' => '1.2.3',
                          'commit' => { 'tags' => ['v1.2.3-tag'], 'sha' => '295cf0778821bf08681e2bd0ef0e6cad04fc3001',
                                        'timestamp' => '20190626162700' } }]))
