@@ -334,7 +334,7 @@ module Gitlab
         if alias_exists?(name: target)
           client.indices.get_alias(name: target).transform_values do |options|
             # If it's not set, that means that this is the write index
-            options.dig('aliases', target, 'is_write_index') || true
+            options.dig('aliases', target).fetch('is_write_index', true)
           end
         else
           { target => true }
