@@ -20,7 +20,9 @@ RSpec.describe "User views merge request with blocking merge requests", :js, fea
   end
 
   it 'disables merge button when blocking merge request is open' do
-    expect(page).to have_content('Merge blocked: you can only merge after the above items are resolved.')
+    click_button 'Expand merge checks'
+
+    expect(page).to have_content('Merge request is blocked by another merge request.')
   end
 
   context 'merged blocking merge request' do

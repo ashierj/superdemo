@@ -24,11 +24,11 @@ RSpec.describe 'Merge requests > User merges immediately', :js, feature_category
   end
 
   def merge_button
-    find('.mr-widget-body .accept-merge-request.btn-confirm')
+    find('[data-testid="ready_to_merge_state"] .accept-merge-request.btn-confirm')
   end
 
   def open_warning_dialog(confirm_button: 'Merge immediately', dialog_id: '#merge-immediately-confirmation-dialog')
-    find(".mr-widget-body .gl-new-dropdown-toggle").click
+    find('[data-testid="ready_to_merge_state"] .gl-new-dropdown-toggle').click
 
     click_button confirm_button
 
