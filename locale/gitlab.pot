@@ -22319,9 +22319,6 @@ msgstr ""
 msgid "Global notification level"
 msgstr ""
 
-msgid "GlobalSearch| %{search} %{description} %{scope}"
-msgstr ""
-
 msgid "GlobalSearch|%{count} default results provided. Use the up and down arrow keys to navigate search results list."
 msgstr ""
 
