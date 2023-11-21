@@ -9,6 +9,26 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
   let(:roles) { settings.class.restrict_pipeline_cancellation_roles }
 
   describe '#maintainers_only_allowed?' do
+    subject { cancellation_restriction.maintainers_only_allowed? }
+
+    context 'when no project' do
+      let(:project) { nil }
+
+      it 'returns false' do
+        is_expected.to be false
+      end
+    end
+
+    context 'when no ci settings' do
+      before do
+        allow(project).to receive(:ci_cd_settings).and_return(nil)
+      end
+
+      it 'returns false' do
+        is_expected.to be false
+      end
+    end
+
     context 'when cancellation restrictions are enabled' do
       before do
         stub_enabled
@@ -17,14 +37,14 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       it 'returns true if maintainers are the only ones allowed to cancel' do
         settings.update!(restrict_pipeline_cancellation_role: roles[:maintainer])
 
-        expect(cancellation_restriction.maintainers_only_allowed?).to be_truthy
+        is_expected.to be true
       end
 
       [:no_one, :developer].each do |role|
         it "returns false if #{role} is allowed to cancel" do
           settings.update!(restrict_pipeline_cancellation_role: role)
 
-          expect(cancellation_restriction.maintainers_only_allowed?).to be_falsy
+          is_expected.to be false
         end
       end
     end
@@ -35,12 +55,32 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       end
 
       it 'returns false' do
-        expect(cancellation_restriction.maintainers_only_allowed?).to be_falsy
+        is_expected.to be false
       end
     end
   end
 
   describe '#no_one_allowed?' do
+    subject { cancellation_restriction.no_one_allowed? }
+
+    context 'when no project' do
+      let(:project) { nil }
+
+      it 'returns false' do
+        is_expected.to be false
+      end
+    end
+
+    context 'when no ci settings' do
+      before do
+        allow(project).to receive(:ci_cd_settings).and_return(nil)
+      end
+
+      it 'returns false' do
+        is_expected.to be false
+      end
+    end
+
     context 'when cancellation restrictions are enabled' do
       before do
         stub_enabled
@@ -49,14 +89,14 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       it 'returns true if no one is allowed to cancel' do
         settings.update!(restrict_pipeline_cancellation_role: roles[:no_one])
 
-        expect(cancellation_restriction.no_one_allowed?).to be_truthy
+        is_expected.to be true
       end
 
       [:maintainer, :developer].each do |role|
         it "returns false if #{role} is allowed to cancel" do
           settings.update!(restrict_pipeline_cancellation_role: role)
 
-          expect(cancellation_restriction.no_one_allowed?).to be_falsy
+          is_expected.to be false
         end
       end
     end
@@ -67,19 +107,39 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       end
 
       it 'returns false' do
-        expect(cancellation_restriction.no_one_allowed?).to be_falsy
+        is_expected.to be false
       end
     end
   end
 
   describe '#enabled?' do
+    subject { cancellation_restriction.enabled? }
+
+    context 'when no project' do
+      let(:project) { nil }
+
+      it 'returns false' do
+        is_expected.to be false
+      end
+    end
+
+    context 'when no ci settings' do
+      before do
+        allow(project).to receive(:ci_cd_settings).and_return(nil)
+      end
+
+      it 'returns false' do
+        is_expected.to be false
+      end
+    end
+
     context 'when the feature is enabled and licensed' do
       before do
         stub_enabled
       end
 
       it 'returns true' do
-        expect(cancellation_restriction.enabled?).to be_truthy
+        is_expected.to be true
       end
     end
 
@@ -90,7 +150,7 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       end
 
       it 'returns false' do
-        expect(cancellation_restriction.enabled?).to be_falsy
+        is_expected.to be false
       end
     end
 
@@ -100,7 +160,7 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       end
 
       it 'returns false' do
-        expect(cancellation_restriction.enabled?).to be_falsy
+        is_expected.to be false
       end
     end
 
@@ -110,7 +170,7 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       end
 
       it 'returns false' do
-        expect(cancellation_restriction.enabled?).to be_falsy
+        is_expected.to be false
       end
     end
   end
