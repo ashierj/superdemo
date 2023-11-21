@@ -3,8 +3,6 @@ import { GlPopover, GlButton } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
 
-const GROUP_SOURCE_TYPE = 'Group';
-
 export default {
   name: 'TierBadgePopover',
   components: {
@@ -12,7 +10,7 @@ export default {
     GlButton,
   },
   mixins: [Tracking.mixin({ experiment: 'tier_badge', label: 'tier-badge' })],
-  inject: ['primaryCtaLink', 'secondaryCtaLink', 'sourceType'],
+  inject: ['primaryCtaLink', 'secondaryCtaLink', 'isProject'],
   props: {
     popoverId: {
       type: String,
@@ -31,12 +29,9 @@ export default {
   computed: {
     copyText() {
       const { groupCopyStart, projectCopyStart, copyEnd } = this.$options.i18n;
+      const copyStart = this.isProject ? projectCopyStart : groupCopyStart;
 
-      if (this.sourceType === GROUP_SOURCE_TYPE) {
-        return sprintf(groupCopyStart, { tier: this.tier, copyEnd });
-      }
-
-      return sprintf(projectCopyStart, { tier: this.tier, copyEnd });
+      return sprintf(copyStart, { tier: this.tier, copyEnd });
     },
   },
   methods: {

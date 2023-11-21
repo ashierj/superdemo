@@ -1,14 +1,9 @@
 - return unless show_tier_badge_for_new_trial?(source.root_ancestor, current_user)
 
-- content = 'overview-free-tier-highlight'
-- link_upgrade_path = group_billings_path(source.root_ancestor, source: content)
-- if source_type == 'Group'
-  - namespace_to_track = source
-- else
-  - namespace_to_track = source.namespace
 - experiment(:tier_badge, actor: current_user, namespace: namespace_to_track) do |e|
-  - e.exclude! unless namespace_to_track.eligible_for_trial?
+  - e.exclude! unless source.root_ancestor.never_had_trial?
   - e.exclude! unless source.root_ancestor.private?
   - e.candidate do
     .js-tier-badge-trigger{ data: { primary_cta_link: new_trial_path(namespace_id: source.root_ancestor.id),
-      secondary_cta_link: link_upgrade_path, source_type: source_type } }
+      secondary_cta_link: group_billings_path(source.root_ancestor, source: 'overview-free-tier-highlight'),
+      is_project: source.is_a?(Project).to_s } }

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import TierBadge from 'ee/vue_shared/components/tier_badge/tier_badge.vue';
+import { parseBoolean } from '~/lib/utils/common_utils';
 
 export default function initTierBadgeTrigger() {
   const el = document.querySelector('.js-tier-badge-trigger');
@@ -8,7 +9,7 @@ export default function initTierBadgeTrigger() {
     return false;
   }
 
-  const { primaryCtaLink, secondaryCtaLink, sourceType } = el.dataset;
+  const { primaryCtaLink, secondaryCtaLink, isProject } = el.dataset;
 
   return new Vue({
     el,
@@ -19,7 +20,7 @@ export default function initTierBadgeTrigger() {
     provide: {
       primaryCtaLink,
       secondaryCtaLink,
-      sourceType,
+      isProject: parseBoolean(isProject),
     },
     render(createElement) {
       return createElement(TierBadge);
