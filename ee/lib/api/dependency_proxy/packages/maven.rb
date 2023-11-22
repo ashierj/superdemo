@@ -17,6 +17,16 @@ module API
         content_type :sha1, 'text/plain'
         content_type :binary, 'application/octet-stream'
 
+        TIMEOUTS = {
+          open: 10,
+          read: 10
+        }.freeze
+
+        RESPONSE_STATUSES = {
+          error: :bad_gateway,
+          timeout: :gateway_timeout
+        }.freeze
+
         helpers do
           include ::Gitlab::Utils::StrongMemoize
 
@@ -80,7 +90,14 @@ module API
           end
 
           def send_remote_url(url)
-            header(*Gitlab::Workhorse.send_url(url, allow_redirects: true))
+            header(
+              *Gitlab::Workhorse.send_url(
+                url,
+                allow_redirects: true,
+                timeouts: TIMEOUTS,
+                response_statuses: RESPONSE_STATUSES
+              )
+            )
             env['api.format'] = :binary
             status :ok
             body ''
