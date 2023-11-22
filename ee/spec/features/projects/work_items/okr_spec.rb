@@ -13,7 +13,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   let!(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
   let(:key_result) { create(:work_item, :key_result, project: project) }
   let(:label) { create(:label, project: project, title: "testing-label") }
-  let(:child_objective) { create(:work_item, :objective, project: project) }
 
   before do
     group.add_developer(user)
@@ -219,6 +218,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
 
     it 'adds existing child item with proper link', :aggregate_failures do
+      child_objective = create(:work_item, :objective, project: project)
+      page.refresh
+
       within_testid('work-item-tree') do
         click_button 'Add'
         click_button 'Existing objective'
