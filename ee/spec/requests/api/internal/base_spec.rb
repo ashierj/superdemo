@@ -415,15 +415,19 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
 
           it 'rejects git push when the push size would exceed the limit' do
             set_used_storage(group, megabytes: 3)
+            usage_guide = ::Gitlab::Routing.url_helpers.help_page_url('user/usage_quotas', anchor: 'manage-storage-usage')
+            read_only_guide = ::Gitlab::Routing.url_helpers.help_page_url('user/read_only_namespaces', anchor: 'restricted-actions')
 
             push(key, project, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
 
             expect(response).to have_gitlab_http_status(:unauthorized)
             expect(json_response["status"]).to eq(false)
             expect(json_response["message"]).to eq(
-              'Your push to this repository has been rejected because ' \
-              'it would exceed the namespace storage limit of 4 MiB. ' \
-              'Reduce your namespace storage or purchase additional storage.'
+              "Your push to this repository has been rejected because " \
+              "it would exceed the namespace storage limit of 4 MiB. " \
+              "Reduce your namespace storage or purchase additional storage." \
+              "To manage storage, or purchase additional storage, see #{usage_guide}. " \
+              "To learn more about restricted actions, see #{read_only_guide}"
             )
           end
 
