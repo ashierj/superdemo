@@ -54,12 +54,13 @@ module API
         group = find_group(params[:id])
         name = declared_params[:name].presence || "#{Gitlab::Access.human_access(params[:base_access_level])} - custom"
 
-        member_role = group.member_roles.new(declared_params.merge(name: name))
+        service = ::MemberRoles::CreateService.new(group, current_user, declared_params.merge(name: name))
+        response = service.execute
 
-        if member_role.save
-          present member_role, with: EE::API::Entities::MemberRole
+        if response.success?
+          present response.payload[:member_role], with: EE::API::Entities::MemberRole
         else
-          render_api_error!(member_role.errors.full_messages.first, 400)
+          render_api_error!(response.message, 400)
         end
       end
 
