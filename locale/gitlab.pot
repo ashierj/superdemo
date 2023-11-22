@@ -18214,6 +18214,9 @@ msgstr ""
 msgid "Email patch"
 msgstr ""
 
+msgid "Email reset removed at:"
+msgstr ""
+
 msgid "Email sent"
 msgstr ""
 
