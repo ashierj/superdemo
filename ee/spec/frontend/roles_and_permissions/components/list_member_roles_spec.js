@@ -229,15 +229,15 @@ describe('ListMemberRoles', () => {
     };
 
     it('sorts columns by name', () => {
-      expectSortableColumn('name');
+      return expectSortableColumn('name');
     });
 
     it('sorts columns by ID', () => {
-      expectSortableColumn('id');
+      return expectSortableColumn('id');
     });
 
     it('sorts columns by base role', () => {
-      expectSortableColumn('base_access_level');
+      return expectSortableColumn('base_access_level');
     });
 
     it('shows list of standard permissions', async () => {
