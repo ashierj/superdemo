@@ -30115,7 +30115,6 @@ Represents a vulnerability.
 | <a id="vulnerabilityexternalissuelinks"></a>`externalIssueLinks` | [`VulnerabilityExternalIssueLinkConnection!`](#vulnerabilityexternalissuelinkconnection) | List of external issue links related to the vulnerability. (see [Connections](#connections)) |
 | <a id="vulnerabilityfalsepositive"></a>`falsePositive` | [`Boolean`](#boolean) | Indicates whether the vulnerability is a false positive. |
 | <a id="vulnerabilityhasremediations"></a>`hasRemediations` | [`Boolean`](#boolean) | Indicates whether there is a remediation available for this vulnerability. |
-| <a id="vulnerabilityhassolutions"></a>`hasSolutions` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated** in GitLab 16.3. Use `hasRemediations`. |
 | <a id="vulnerabilityid"></a>`id` | [`ID!`](#id) | GraphQL ID of the vulnerability. |
 | <a id="vulnerabilityidentifiers"></a>`identifiers` | [`[VulnerabilityIdentifier!]!`](#vulnerabilityidentifier) | Identifiers of the vulnerability. |
 | <a id="vulnerabilitylinks"></a>`links` | [`[VulnerabilityLink!]!`](#vulnerabilitylink) | List of links associated with the vulnerability. |
