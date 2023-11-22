@@ -18,7 +18,7 @@ describe('TrialStatusWidget component', () => {
       provide: {
         trialDaysUsed,
         trialDuration,
-        navIconImagePath: 'illustrations/golden_tanuki.svg',
+        navIconImagePath: 'illustrations/gitlab_logo.svg',
         percentageComplete: 10,
         planName: 'Ultimate',
         plansHref: 'billing/path-for/group',

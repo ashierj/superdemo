@@ -91,7 +91,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
           it 'returns trial status widget data' do
             expect(subject[:trial_status_widget_data_attrs]).to match({
               container_id: "trial-status-sidebar-widget",
-              nav_icon_image_path: match_asset_path("/assets/illustrations/golden_tanuki.svg"),
+              nav_icon_image_path: match_asset_path("/assets/illustrations/gitlab_logo.svg"),
               percentage_complete: 50.0,
               plan_name: nil,
               plans_href: group_billings_path(root_group),
