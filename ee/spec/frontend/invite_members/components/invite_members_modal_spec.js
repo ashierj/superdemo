@@ -4,7 +4,8 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import Api from '~/api';
 import InviteMembersModal from '~/invite_members/components/invite_members_modal.vue';
-import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
+import EEInviteModalBase from 'ee/invite_members/components/invite_modal_base.vue';
+import CEInviteModalBase from '~/invite_members/components/invite_modal_base.vue';
 import MembersTokenSelect from '~/invite_members/components/members_token_select.vue';
 import { LEARN_GITLAB } from 'ee/invite_members/constants';
 import eventHub from '~/invite_members/event_hub';
@@ -30,12 +31,13 @@ describe('EEInviteMembersModal', () => {
       propsData: {
         usersLimitDataset: {},
         activeTrialDataset: {},
-        fullPath: 'project',
+        fullPath: 'mygroup',
         ...propsData,
         ...props,
       },
       stubs: {
-        InviteModalBase,
+        InviteModalBase: EEInviteModalBase,
+        CeInviteModalBase: CEInviteModalBase,
         ContentTransition,
         GlModal,
         GlSprintf,
@@ -43,6 +45,7 @@ describe('EEInviteMembersModal', () => {
     });
   };
 
+  const findBase = () => wrapper.findComponent(EEInviteModalBase);
   const findActionButton = () => wrapper.findByTestId('invite-modal-submit');
   const emitClickFromModal = (findButton) => () =>
     findButton().vm.$emit('click', { preventDefault: jest.fn() });
@@ -60,6 +63,15 @@ describe('EEInviteMembersModal', () => {
 
     await nextTick();
   };
+
+  describe('passes correct props to InviteModalBase', () => {
+    it('set isProject', async () => {
+      createComponent();
+      await waitForPromises();
+
+      expect(findBase().props('isProject')).toBe(false);
+    });
+  });
 
   describe('when on the Learn GitLab page', () => {
     describe('when member is added successfully', () => {

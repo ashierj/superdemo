@@ -1,9 +1,11 @@
 <script>
 import { GlLink } from '@gitlab/ui';
-import { partition, isString, invert } from 'lodash';
+import { partition, isString } from 'lodash';
+import { ACCESS_LEVEL_LABELS } from '~/access_level/constants';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
+import CeInviteModalBase from '~/invite_members/components/invite_modal_base.vue';
 import apolloProvider from '../provider';
 import {
   OVERAGE_MODAL_LINK,
@@ -14,8 +16,10 @@ import {
   overageModalInfoText,
   overageModalInfoWarning,
 } from '../constants';
-import getReconciliationStatus from '../subscription_eligible.customer.query.graphql';
-import getBillableUserCountChanges from '../billable_users_count.query.graphql';
+import getReconciliationStatus from '../graphql/queries/subscription_eligible.customer.query.graphql';
+import getBillableUserCountChanges from '../graphql/queries/billable_users_count.query.graphql';
+import getGroupMemberRoles from '../graphql/queries/group_member_roles.query.graphql';
+import getProjectMemberRoles from '../graphql/queries/project_member_roles.query.graphql';
 
 const OVERAGE_CONTENT_SLOT = 'overage-content';
 const EXTRA_SLOTS = [
@@ -31,12 +35,16 @@ const EXTRA_SLOTS = [
 export default {
   components: {
     GlLink,
-    InviteModalBase,
+    CeInviteModalBase,
   },
   apolloProvider,
   mixins: [glFeatureFlagsMixin()],
   inheritAttrs: false,
   props: {
+    accessLevels: {
+      type: Object,
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -78,6 +86,43 @@ export default {
       type: String,
       required: false,
       default: '',
+    },
+    isGroupInvite: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isProject: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  apollo: {
+    memberRoles: {
+      client: 'gitlabClient',
+      query() {
+        return this.isProject ? getProjectMemberRoles : getGroupMemberRoles;
+      },
+      variables() {
+        return {
+          fullPath: this.fullPath,
+        };
+      },
+      update(data) {
+        const memberRoles = data?.namespace?.memberRoles?.nodes || [];
+        return memberRoles.map(({ id, name, baseAccessLevel }) => ({
+          baseAccessLevel: baseAccessLevel.integerValue,
+          name,
+          memberRoleId: getIdFromGraphQLId(id),
+        }));
+      },
+      error(error) {
+        Sentry.captureException(error);
+      },
+      skip() {
+        return this.isGroupInvite;
+      },
     },
   },
   data() {
@@ -140,6 +185,9 @@ export default {
     },
     hasInput() {
       return Boolean(this.newGroupToInvite || this.newUsersToInvite.length !== 0);
+    },
+    upgradedRoles() {
+      return { ...this.accessLevels, customRoles: this.memberRoles };
     },
   },
   watch: {
@@ -210,6 +258,7 @@ export default {
           query: getBillableUserCountChanges,
           client: 'gitlabClient',
           variables,
+          fetchPolicy: 'no-cache',
         });
 
         if (!data?.group?.gitlabSubscriptionsPreviewBillableUserChange) {
@@ -232,8 +281,8 @@ export default {
         this.isLoading = false;
       }
     },
-    emitSubmit({ accessLevel, expiresAt } = {}) {
-      this.$emit('submit', { accessLevel, expiresAt });
+    emitSubmit({ accessLevel, expiresAt, memberRoleId } = {}) {
+      this.$emit('submit', { accessLevel, expiresAt, memberRoleId });
     },
     passthroughSlotNames() {
       return Object.keys(this.$scopedSlots || {});
@@ -246,9 +295,8 @@ export default {
 
       return [usersToInviteByEmail.map(({ name }) => name), usersToAddById.map(({ id }) => id)];
     },
-    overageVariables(args) {
+    overageVariables({ accessLevel }) {
       const [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
-      const accessLevelsKeyMap = invert(this.$attrs['access-levels']);
       const addGroupId = this.newGroupToInvite;
 
       return {
@@ -256,7 +304,7 @@ export default {
         addGroupId,
         addUserEmails: usersToInviteByEmail,
         addUserIds: usersToAddById,
-        role: accessLevelsKeyMap[args.accessLevel].toUpperCase(),
+        role: ACCESS_LEVEL_LABELS[accessLevel].toUpperCase(),
       };
     },
     onCancel() {
@@ -278,9 +326,10 @@ export default {
 </script>
 
 <template>
-  <invite-modal-base
+  <ce-invite-modal-base
     v-bind="$attrs"
     :name="name"
+    :access-levels="upgradedRoles"
     :submit-button-text="overageModalButtons.submit"
     :cancel-button-text="overageModalButtons.cancel"
     :modal-title="modalTitleOverride"
@@ -290,6 +339,7 @@ export default {
     :prevent-cancel-default="showOverageModal"
     :reached-limit="reachedLimit"
     :is-loading="isLoading"
+    :is-loading-roles="$apollo.queries.memberRoles.loading"
     :invalid-feedback-message="actualFeedbackMessage"
     @reset="onReset"
     @submit="onSubmit"
@@ -305,5 +355,5 @@ export default {
     <template v-for="(_, slot) of $scopedSlots" #[slot]="scope">
       <slot :name="slot" v-bind="scope"></slot>
     </template>
-  </invite-modal-base>
+  </ce-invite-modal-base>
 </template>
