@@ -6,22 +6,6 @@ import axios from '~/lib/utils/axios_utils';
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
 import { EDITOR_READY_EVENT } from '~/editor/constants';
 
-jest.mock('ee/security_orchestration/components/policy_editor_schema_ext', () => {
-  const { PolicySchemaExtension } = jest.requireActual(
-    'ee/security_orchestration/components/policy_editor_schema_ext',
-  );
-  return {
-    PolicySchemaExtension: class extends PolicySchemaExtension {
-      // eslint-disable-next-line class-methods-use-this
-      provides() {
-        return {
-          registerSecurityPolicySchema() {},
-        };
-      }
-    },
-  };
-});
-
 describe('YamlEditor component', () => {
   let wrapper;
 
