@@ -33,7 +33,7 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
   end
 
   context 'when there is a single page of CI Catalog resources' do
-    let(:projects) do
+    let_it_be(:projects) do
       create_list(
         :project,
         3,
@@ -42,9 +42,9 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
       )
     end
 
-    before do
-      projects.each do |current_project|
-        create(:ci_catalog_resource, project: current_project)
+    let_it_be(:ci_catalog_resources) do
+      projects.map do |current_project|
+        create(:ci_catalog_resource, :published, project: current_project)
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
   context 'when there are multiple pages of CI Catalog resources' do
     # rubocop:disable RSpec/FactoryBot/ExcessiveCreateList because we
     # need a minimum of 3 pages to test pagination and each page is 20 items long.
-    let(:projects) do
+    let_it_be(:projects) do
       create_list(
         :project,
         41,
@@ -70,9 +70,9 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
     end
     # rubocop:enable RSpec/FactoryBot/ExcessiveCreateList
 
-    before do
-      projects.each do |current_project|
-        create(:ci_catalog_resource, project: current_project)
+    let_it_be(:ci_catalog_resources) do
+      projects.map do |current_project|
+        create(:ci_catalog_resource, :published, project: current_project)
       end
     end
 
