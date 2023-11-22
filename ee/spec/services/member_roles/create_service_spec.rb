@@ -8,10 +8,11 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
 
   describe '#execute' do
     let(:params) do
-      { name: 'new name', read_vulnerability: true, base_access_level: Gitlab::Access::GUEST }
+      { name: 'new name', read_vulnerability: true,
+        admin_merge_request: true, base_access_level: Gitlab::Access::GUEST }
     end
 
-    subject { described_class.new(group, user, params).execute }
+    subject(:create_member_role) { described_class.new(group, user, params).execute }
 
     before do
       stub_licensed_features(custom_roles: true)
@@ -19,15 +20,15 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
 
     shared_examples 'service returns error' do
       it 'is not succesful' do
-        expect(subject).to be_error
+        expect(create_member_role).to be_error
       end
 
       it 'returns the correct error messages' do
-        expect(subject.message).to include(error_message)
+        expect(create_member_role.message).to include(error_message)
       end
 
       it 'does not create the member role' do
-        expect { subject }.not_to change { MemberRole.count }
+        expect { create_member_role }.not_to change { MemberRole.count }
       end
     end
 
@@ -48,19 +49,44 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
 
       context 'with valid params' do
         it 'is successful' do
-          expect(subject).to be_success
+          expect(create_member_role).to be_success
         end
 
         it 'returns the object with updated attribute' do
-          expect(subject.payload[:member_role].name).to eq('new name')
+          expect(create_member_role.payload[:member_role].name).to eq('new name')
         end
 
         it 'creates the member role correctly' do
-          expect { subject }.to change { MemberRole.count }.by(1)
+          expect { create_member_role }.to change { MemberRole.count }.by(1)
 
           member_role = MemberRole.last
           expect(member_role.name).to eq('new name')
           expect(member_role.read_vulnerability).to eq(true)
+        end
+
+        include_examples 'audit event logging' do
+          let(:licensed_features_to_stub) { { custom_roles: true } }
+          let_it_be(:event_type) { 'member_role_created' }
+          let(:operation) { create_member_role.payload[:member_role] }
+          let(:fail_condition!) do
+            allow(group).to receive(:custom_roles_enabled?).and_return(false)
+          end
+
+          let(:attributes) do
+            {
+              author_id: user.id,
+              entity_id: group.id,
+              entity_type: 'Group',
+              details: {
+                author_name: user.name,
+                target_id: operation.id,
+                target_type: 'MemberRole',
+                target_details: 'admin_merge_request, read_vulnerability',
+                custom_message: "Member role #{operation.name} was created",
+                author_class: user.class.name
+              }
+            }
+          end
         end
       end
 
