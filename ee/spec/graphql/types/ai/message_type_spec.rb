@@ -19,18 +19,10 @@ RSpec.describe GitlabSchema.types['AiMessage'], feature_category: :duo_chat do
     let(:expected_id) { '123' }
     let(:message) { build(:ai_message, id: expected_id) }
 
-    it 'returns message gid' do
-      resolved_field = resolve_field(:id, message, current_user: current_user)
+    it 'returns message id' do
+      resolved_field = resolve_field(:id, message.to_h, current_user: current_user)
 
-      expect(resolved_field).to eq(message.to_global_id)
-    end
-
-    context 'when message is a hash' do
-      it 'returns message id' do
-        resolved_field = resolve_field(:id, { id: expected_id }, current_user: current_user)
-
-        expect(resolved_field).to eq(expected_id)
-      end
+      expect(resolved_field).to eq(expected_id)
     end
   end
 
@@ -49,18 +41,9 @@ RSpec.describe GitlabSchema.types['AiMessage'], feature_category: :duo_chat do
     end
 
     it 'renders html through Banzai' do
-      resolved_field = resolve_field(:content_html, message, current_user: current_user)
+      resolved_field = resolve_field(:content_html, message.to_h, current_user: current_user)
 
       expect(resolved_field).to eq('banzai_content')
-    end
-
-    context 'when message is a hash' do
-      it 'renders html through Banzai' do
-        resolved_field = resolve_field(:content_html, { content: content }.with_indifferent_access,
-          current_user: current_user)
-
-        expect(resolved_field).to eq('banzai_content')
-      end
     end
   end
 end
