@@ -35,7 +35,7 @@ module Resolvers
       private
 
       def authorize!(namespace)
-        raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_add_on_purchase, namespace)
+        raise_resource_not_available_error! unless Ability.allowed?(current_user, :owner_access, namespace)
 
         return if namespace.root?
 
