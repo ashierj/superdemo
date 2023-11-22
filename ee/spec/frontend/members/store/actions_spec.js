@@ -33,7 +33,7 @@ describe('Vuex members actions', () => {
     describe('showDisableTwoFactorModal', () => {
       it(`commits ${types.SHOW_DISABLE_TWO_FACTOR_MODAL} mutation`, () => {
         const modalData = { userID: 5, name: 'John Malone' };
-        testAction(showDisableTwoFactorModal, modalData, state, [
+        return testAction(showDisableTwoFactorModal, modalData, state, [
           {
             type: types.SHOW_DISABLE_TWO_FACTOR_MODAL,
             payload: modalData,
@@ -44,7 +44,7 @@ describe('Vuex members actions', () => {
 
     describe('hideDisableTwoFactorModal', () => {
       it(`commits ${types.HIDE_DISABLE_TWO_FACTOR_MODAL} mutation`, () => {
-        testAction(hideDisableTwoFactorModal, {}, state, [
+        return testAction(hideDisableTwoFactorModal, {}, state, [
           {
             type: types.HIDE_DISABLE_TWO_FACTOR_MODAL,
           },
@@ -105,7 +105,7 @@ describe('Vuex members actions', () => {
 
     describe('showLdapOverrideConfirmationModal', () => {
       it(`commits ${types.SHOW_LDAP_OVERRIDE_CONFIRMATION_MODAL} mutation`, () => {
-        testAction(showLdapOverrideConfirmationModal, member, state, [
+        return testAction(showLdapOverrideConfirmationModal, member, state, [
           {
             type: types.SHOW_LDAP_OVERRIDE_CONFIRMATION_MODAL,
             payload: member,
@@ -116,7 +116,7 @@ describe('Vuex members actions', () => {
 
     describe('hideLdapOverrideConfirmationModal', () => {
       it(`commits ${types.HIDE_LDAP_OVERRIDE_CONFIRMATION_MODAL} mutation`, () => {
-        testAction(hideLdapOverrideConfirmationModal, {}, state, [
+        return testAction(hideLdapOverrideConfirmationModal, {}, state, [
           {
             type: types.HIDE_LDAP_OVERRIDE_CONFIRMATION_MODAL,
           },

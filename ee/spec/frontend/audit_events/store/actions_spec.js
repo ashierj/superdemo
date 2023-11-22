@@ -25,7 +25,7 @@ describe('Audit Event actions', () => {
   `(
     '$action should commit $type with $payload and dispatches "searchForAuditEvents"',
     ({ action, type, payload }) => {
-      testAction(
+      return testAction(
         actions[action],
         payload,
         state,
@@ -42,7 +42,9 @@ describe('Audit Event actions', () => {
 
   it('setFilterValue action should commit to the store', () => {
     const payload = [{ type: 'User', value: { data: '@root', operator: '=' } }];
-    testAction(actions.setFilterValue, payload, state, [{ type: types.SET_FILTER_VALUE, payload }]);
+    return testAction(actions.setFilterValue, payload, state, [
+      { type: types.SET_FILTER_VALUE, payload },
+    ]);
   });
 
   describe('searchForAuditEvents', () => {
@@ -85,7 +87,7 @@ describe('Audit Event actions', () => {
       });
 
       it(`commits "${types.INITIALIZE_AUDIT_EVENTS}" with empty dates`, () => {
-        testAction(actions.initializeAuditEvents, null, state, [
+        return testAction(actions.initializeAuditEvents, null, state, [
           {
             type: types.INITIALIZE_AUDIT_EVENTS,
             payload: {
@@ -108,7 +110,7 @@ describe('Audit Event actions', () => {
       });
 
       it(`commits "${types.INITIALIZE_AUDIT_EVENTS}" with the query data`, () => {
-        testAction(actions.initializeAuditEvents, null, state, [
+        return testAction(actions.initializeAuditEvents, null, state, [
           {
             type: types.INITIALIZE_AUDIT_EVENTS,
             payload: {

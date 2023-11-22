@@ -151,7 +151,7 @@ describe('setFilters', () => {
       },
     ],
   ])('should commit mutation SET_FILTERS %s', (_, { filters, filterVariables }) => {
-    testAction(
+    return testAction(
       actions.setFilters,
       filters,
       state,
@@ -759,7 +759,7 @@ describe('setActiveItemHealthStatus', () => {
       prop: 'healthStatus',
       value: 'onTrack',
     };
-    testAction(
+    return testAction(
       actions.setActiveItemHealthStatus,
       payload.value,
       { boardItems: { [mockIssue.id]: mockIssue }, activeBoardItem: mockIssue },
@@ -793,7 +793,7 @@ describe('moveIssue', () => {
       epicId: 'some-epic-id',
     };
 
-    testAction({
+    return testAction({
       action: actions.moveIssue,
       payload: {
         ...params,
@@ -863,7 +863,7 @@ describe('updateEpicForIssue', () => {
       },
     ],
   ])(`commits UPDATE_BOARD_ITEM_BY_ID mutation %s`, (_, { payload, expectedMutations }) => {
-    testAction({
+    return testAction({
       action: actions.updateEpicForIssue,
       payload,
       state: commonState,
@@ -1077,7 +1077,7 @@ describe('addListNewEpic', () => {
         },
       });
 
-      testAction({
+      return testAction({
         action: actions.addListNewEpic,
         payload: {
           epicInput: mockEpic,
@@ -1120,7 +1120,7 @@ describe('addListNewEpic', () => {
         },
       });
 
-      testAction({
+      return testAction({
         action: actions.addListNewEpic,
         payload: {
           epicInput: mockEpic,

@@ -8,13 +8,19 @@ import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 describe('Issue analytics store actions', () => {
   describe('setFilters', () => {
     it('commits SET_FILTERS', () => {
-      testAction(actions.setFilters, null, null, [{ type: 'SET_FILTERS', payload: null }], []);
+      return testAction(
+        actions.setFilters,
+        null,
+        null,
+        [{ type: 'SET_FILTERS', payload: null }],
+        [],
+      );
     });
   });
 
   describe('setLoadingState', () => {
     it('commits SET_LOADING_STATE', () => {
-      testAction(
+      return testAction(
         actions.setLoadingState,
         true,
         null,

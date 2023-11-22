@@ -118,7 +118,7 @@ describe('GeoReplicable Store Actions', () => {
         const data = [];
 
         it('should not error and pass empty values to the mutations', () => {
-          testAction(
+          return testAction(
             actions.fetchReplicableItems,
             direction,
             state,
@@ -156,7 +156,7 @@ describe('GeoReplicable Store Actions', () => {
           const data = registries.nodes;
 
           it('should call mockGeoGqClient with no before/after variables as well as a first variable but no last variable', () => {
-            testAction(
+            return testAction(
               actions.fetchReplicableItems,
               direction,
               state,
@@ -185,7 +185,7 @@ describe('GeoReplicable Store Actions', () => {
           const data = registries.nodes;
 
           it('should call mockGeoGqClient with after variable but no before variable as well as a first variable but no last variable', () => {
-            testAction(
+            return testAction(
               actions.fetchReplicableItems,
               direction,
               state,
@@ -219,7 +219,7 @@ describe('GeoReplicable Store Actions', () => {
           const data = registries.nodes;
 
           it('should call mockGeoGqClient with before variable but no after variable as well as a last variable but no first variable', () => {
-            testAction(
+            return testAction(
               actions.fetchReplicableItems,
               direction,
               state,
@@ -255,7 +255,7 @@ describe('GeoReplicable Store Actions', () => {
           it('should call mockGeoGqClient with all uppercase replicationState', () => {
             state.statusFilter = FILTER_OPTIONS[1].value;
 
-            testAction(
+            return testAction(
               actions.fetchReplicableItems,
               direction,
               state,
@@ -334,7 +334,7 @@ describe('GeoReplicable Store Actions', () => {
 
   describe('receiveInitiateAllReplicableActionError', () => {
     it('should commit mutation RECEIVE_INITIATE_ALL_REPLICABLE_ACTION_ERROR', () => {
-      testAction(
+      return testAction(
         actions.receiveInitiateAllReplicableActionError,
         { action: ACTION_TYPES.RESYNC_ALL },
         state,
@@ -357,7 +357,7 @@ describe('GeoReplicable Store Actions', () => {
         });
 
         it('should call mockGeoClient with correct parameters and success actions', () => {
-          testAction(
+          return testAction(
             actions.initiateAllReplicableAction,
             { action },
             state,
@@ -387,7 +387,7 @@ describe('GeoReplicable Store Actions', () => {
         });
 
         it('should call mockGeoClient with correct parameters and error actions', () => {
-          testAction(
+          return testAction(
             actions.initiateAllReplicableAction,
             { action },
             state,
@@ -466,7 +466,7 @@ describe('GeoReplicable Store Actions', () => {
         });
 
         it('should call mockGeoClient with correct parameters and success actions', () => {
-          testAction(
+          return testAction(
             actions.initiateReplicableAction,
             { registryId, name, action },
             state,
@@ -498,7 +498,7 @@ describe('GeoReplicable Store Actions', () => {
         });
 
         it('should call mockGeoClient with correct parameters and error actions', () => {
-          testAction(
+          return testAction(
             actions.initiateReplicableAction,
             { registryId, name, action },
             state,

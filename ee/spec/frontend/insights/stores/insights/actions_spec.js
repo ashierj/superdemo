@@ -276,11 +276,11 @@ describe('Insights store actions', () => {
     it('does not mutate with no configData', () => {
       state = { configData: null };
 
-      testAction(actions.setActiveTab, key, state, [], []);
+      return testAction(actions.setActiveTab, key, state, [], []);
     });
 
     it('does not mutate with no matching tab', () => {
-      testAction(actions.setActiveTab, 'invalidTab', state, [], []);
+      return testAction(actions.setActiveTab, 'invalidTab', state, [], []);
     });
   });
 
