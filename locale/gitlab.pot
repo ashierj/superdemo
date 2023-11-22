@@ -35291,6 +35291,9 @@ msgstr ""
 msgid "Pipelines|Loading pipelines"
 msgstr ""
 
+msgid "Pipelines|Migrate to GitLab CI/CD from Jenkins"
+msgstr ""
+
 msgid "Pipelines|More Information"
 msgstr ""
 
@@ -35325,6 +35328,12 @@ msgid "Pipelines|Scheduled"
 msgstr ""
 
 msgid "Pipelines|Something went wrong while cleaning runners cache."
+msgstr ""
+
+msgid "Pipelines|Start with a migration plan"
+msgstr ""
+
+msgid "Pipelines|Take advantage of simple, scalable pipelines and CI/CD-enabled features. You can view integration results, security scans, tests, code coverage and more directly in merge requests!"
 msgstr ""
 
 msgid "Pipelines|The %{namespace_name} namespace has %{percentage}%% or less Shared Runner Pipeline minutes remaining. After it runs out, no new jobs or pipelines in its projects will run."
