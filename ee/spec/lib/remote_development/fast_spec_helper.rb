@@ -14,7 +14,6 @@ if ENV['SPRING_TMP_PATH']
 end
 
 require_relative '../../../../spec/fast_spec_helper'
-require_relative '../../../../spec/support/helpers/next_instance_of'
 require_relative '../../../../spec/support/matchers/result_matchers'
 require_relative '../../support/helpers/remote_development/railway_oriented_programming_helpers'
 require_relative '../../support/shared_contexts/remote_development/agent_info_status_fixture_not_implemented_error'
@@ -23,6 +22,7 @@ require_relative '../../support/shared_contexts/remote_development/remote_develo
 require 'rspec-parameterized'
 require 'json_schemer'
 require 'devfile'
+require 'gitlab/rspec/next_instance_of'
 
 RSpec.configure do |config|
   config.include NextInstanceOf
