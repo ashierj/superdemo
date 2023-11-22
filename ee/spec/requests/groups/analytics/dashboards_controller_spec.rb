@@ -20,8 +20,106 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
     end
   end
 
+  shared_examples 'built in value streams dashboard' do
+    it 'accepts a `query` params' do
+      project = projects.first
+
+      get build_dashboard_path(
+        value_streams_dashboard_group_analytics_dashboards_path(group),
+        [another_group, subgroup, project]
+      )
+
+      expect(response).to be_successful
+
+      expect(response.body.include?("data-namespaces")).to be_truthy
+      expect(response.body).not_to include(parsed_response(another_group, false))
+      expect(response.body).to include(parsed_response(subgroup, false))
+      expect(response.body).to include(parsed_response(project))
+    end
+
+    it 'returns projects in a subgroup' do
+      first_parent_project = projects.first
+      params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
+
+      get build_dashboard_path(value_streams_dashboard_group_analytics_dashboards_path(group), params)
+
+      expect(response).to be_successful
+      expect(response.body).to include(parsed_response(subgroup, false))
+      expect(response.body).to include(parsed_response(first_parent_project))
+
+      subgroup_projects.each do |project|
+        expect(response.body).to include(parsed_response(project))
+      end
+    end
+
+    def parsed_response(namespace, is_project = true)
+      json = { name: namespace.name, full_path: namespace.full_path, is_project: is_project }.to_json
+      HTMLEntities.new.encode(json)
+    end
+
+    def build_dashboard_path(path, namespaces)
+      "#{path}?query=#{namespaces.map(&:full_path).join(',')}"
+    end
+  end
+
+  shared_examples 'shared analytics value streams dashboard' do
+    it 'passes pointer_project if it has been configured' do
+      analytics_dashboards_pointer
+      request
+
+      expect(response).to be_successful
+
+      expect(js_list_app_attributes['data-dashboard-project'].value).to eq({
+        id: analytics_dashboards_pointer.target_project.id,
+        full_path: analytics_dashboards_pointer.target_project.full_path,
+        name: analytics_dashboards_pointer.target_project.name
+      }.to_json)
+    end
+
+    it 'loads the available visualizations' do
+      request
+
+      expect(response).to be_successful
+      expect(js_list_app_attributes).to include('data-available-visualizations')
+    end
+
+    context 'when project_id outside of the group hierarchy was set' do
+      it 'does not pass the project pointer' do
+        project_outside_the_hierarchy = create(:project)
+        analytics_dashboards_pointer.update_column(:target_project_id, project_outside_the_hierarchy.id)
+
+        request
+
+        expect(response).to be_successful
+
+        expect(js_list_app_attributes).not_to include('data-dashboard-project')
+      end
+    end
+
+    it 'does not pass pointer_project if the configured project is missing' do
+      analytics_dashboards_pointer.target_project.destroy!
+      request
+
+      expect(response).to be_successful
+
+      expect(js_list_app_attributes).not_to include('data-dashboard-project')
+    end
+
+    it 'does not pass pointer_project if it was not configured' do
+      request
+
+      expect(response).to be_successful
+
+      expect(js_list_app_attributes).not_to include('data-dashboard-project')
+    end
+  end
+
   describe 'GET index' do
     let(:request) { get(group_analytics_dashboards_path(group)) }
+    let_it_be(:projects, refind: true) { create_list(:project, 4, :public, group: group) }
+    let(:analytics_dashboards_pointer) do
+      create(:analytics_dashboards_pointer, namespace: group, target_project: projects.first)
+    end
 
     before do
       stub_licensed_features(group_level_analytics_dashboard: true)
@@ -70,6 +168,21 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
             expect(response)
               .to redirect_to(value_streams_dashboard_group_analytics_dashboards_path(group))
           end
+        end
+
+        context 'when group_analytics_dashboard_dynamic_vsd feature flag is disabled' do
+          let_it_be(:subgroup) { create(:group, parent: group) }
+          let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
+
+          before do
+            stub_feature_flags(group_analytics_dashboard_dynamic_vsd: false)
+          end
+
+          it_behaves_like 'built in value streams dashboard'
+        end
+
+        context 'when group_analytics_dashboard_dynamic_vsd feature flag is enabled' do
+          it_behaves_like 'shared analytics value streams dashboard'
         end
       end
     end
@@ -133,41 +246,19 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
           expect(response).to be_successful
         end
 
-        context 'when group_analytics_dashboards feature flag is disabled' do
+        context 'when group_analytics_dashboard_dynamic_vsd feature flag is enabled' do
+          let_it_be(:subgroup) { create(:group, parent: group) }
+          let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
+
+          it_behaves_like 'shared analytics value streams dashboard'
+        end
+
+        context 'when group_analytics_dashboard_dynamic_vsd feature flag is disabled' do
           before do
-            stub_feature_flags(group_analytics_dashboards: false)
+            stub_feature_flags(group_analytics_dashboard_dynamic_vsd: false)
           end
 
-          it 'can accept a `query` params' do
-            project = projects.first
-
-            get build_dashboard_path(
-              value_streams_dashboard_group_analytics_dashboards_path(group),
-              [another_group, subgroup, project]
-            )
-
-            expect(response).to be_successful
-
-            expect(response.body.include?("data-namespaces")).to be_truthy
-            expect(response.body).not_to include(parsed_response(another_group, false))
-            expect(response.body).to include(parsed_response(subgroup, false))
-            expect(response.body).to include(parsed_response(project))
-          end
-
-          it 'will return projects in a subgroup' do
-            first_parent_project = projects.first
-            params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
-
-            get build_dashboard_path(value_streams_dashboard_group_analytics_dashboards_path(group), params)
-
-            expect(response).to be_successful
-            expect(response.body).to include(parsed_response(subgroup, false))
-            expect(response.body).to include(parsed_response(first_parent_project))
-
-            subgroup_projects.each do |project|
-              expect(response.body).to include(parsed_response(project))
-            end
-          end
+          it_behaves_like 'built in value streams dashboard'
 
           it 'passes pointer_project if it has been configured' do
             analytics_dashboards_pointer
@@ -180,13 +271,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
               name: analytics_dashboards_pointer.target_project.name,
               full_path: analytics_dashboards_pointer.target_project.full_path
             }.to_json)
-          end
-
-          it 'will not load the available visualizations' do
-            request
-
-            expect(response).to be_successful
-            expect(js_app_attributes).not_to include('data-available-visualizations')
           end
 
           context 'when project_id outside of the group hierarchy was set' do
@@ -220,84 +304,29 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
           end
         end
 
-        context 'when group_analytics_dashboards feature flag is enabled' do
-          it 'passes pointer_project if it has been configured' do
-            analytics_dashboards_pointer
+        context 'when group_analytics_dashboards is disabled' do
+          before do
+            stub_feature_flags(group_analytics_dashboards: false)
+          end
+
+          it 'tracks page view on usage ping' do
+            expect(::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter).to receive(:count).with(:views)
+
             request
 
             expect(response).to be_successful
-
-            expect(js_list_app_attributes['data-dashboard-project'].value).to eq({
-              id: analytics_dashboards_pointer.target_project.id,
-              full_path: analytics_dashboards_pointer.target_project.full_path,
-              name: analytics_dashboards_pointer.target_project.name
-            }.to_json)
           end
-
-          it 'will load the available visualizations' do
-            request
-
-            expect(response).to be_successful
-            expect(js_list_app_attributes).to include('data-available-visualizations')
-          end
-
-          context 'when project_id outside of the group hierarchy was set' do
-            it 'does not pass the project pointer' do
-              project_outside_the_hierarchy = create(:project)
-              analytics_dashboards_pointer.update_column(:target_project_id, project_outside_the_hierarchy.id)
-
-              request
-
-              expect(response).to be_successful
-
-              expect(js_list_app_attributes).not_to include('data-dashboard-project')
-            end
-          end
-
-          it 'does not pass pointer_project if the configured project is missing' do
-            analytics_dashboards_pointer.target_project.destroy!
-            request
-
-            expect(response).to be_successful
-
-            expect(js_list_app_attributes).not_to include('data-dashboard-project')
-          end
-
-          it 'does not pass pointer_project if it was not configured' do
-            request
-
-            expect(response).to be_successful
-
-            expect(js_list_app_attributes).not_to include('data-dashboard-project')
-          end
-        end
-
-        it 'tracks page view on usage ping' do
-          expect(::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter).to receive(:count).with(:views)
-
-          request
-
-          expect(response).to be_successful
-        end
-
-        def parsed_response(namespace, is_project = true)
-          json = { name: namespace.name, full_path: namespace.full_path, is_project: is_project }.to_json
-          HTMLEntities.new.encode(json)
-        end
-
-        def build_dashboard_path(path, namespaces)
-          "#{path}?query=#{namespaces.map(&:full_path).join(',')}"
-        end
-
-        def js_app_attributes
-          Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-app').attributes
-        end
-
-        def js_list_app_attributes
-          Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-list-app').attributes
         end
       end
     end
+  end
+
+  def js_app_attributes
+    Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-app').attributes
+  end
+
+  def js_list_app_attributes
+    Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-list-app').attributes
   end
 end
 

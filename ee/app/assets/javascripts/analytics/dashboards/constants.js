@@ -132,10 +132,14 @@ export const DASHBOARD_NAMESPACE_LOAD_ERROR = s__(
 export const DASHBOARD_LABELS_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load labels matching the filter: %{labels}',
 );
+
+// TODO: remove this built in config when we remove group_analytics_dashboard_dynamic_vsd
+//       when the feature flag is removed, we should rely on the graphql response.
 export const VALUE_STREAMS_DASHBOARD_CONFIG = {
   title: DASHBOARD_TITLE,
   description: DASHBOARD_DESCRIPTION,
   slug: '/value_streams_dashboard',
+  redirect: true,
   userDefined: false,
 };
 

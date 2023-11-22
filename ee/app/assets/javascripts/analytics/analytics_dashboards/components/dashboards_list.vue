@@ -4,7 +4,10 @@ import { InternalEvents } from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
+import {
+  VALUE_STREAMS_DASHBOARD_CONFIG,
+  BUILT_IN_VALUE_STREAM_DASHBOARD,
+} from 'ee/analytics/dashboards/constants';
 import getAllCustomizableDashboardsQuery from '../graphql/queries/get_all_customizable_dashboards.query.graphql';
 import DashboardListItem from './list/dashboard_list_item.vue';
 
@@ -70,10 +73,18 @@ export default {
     showValueStreamsDashboard() {
       return !this.isProject && this.glFeatures.groupAnalyticsDashboards;
     },
+    shouldRenderLegacyValueStreamsDashboards() {
+      return !this.glFeatures.groupAnalyticsDashboardDynamicVsd;
+    },
     dashboards() {
-      const dashboards = [...this.featureDashboards, ...this.userDashboards];
-      if (this.showValueStreamsDashboard) {
-        dashboards.push(VALUE_STREAMS_DASHBOARD_CONFIG);
+      let dashboards = [...this.featureDashboards, ...this.userDashboards];
+
+      if (this.showValueStreamsDashboard && this.shouldRenderLegacyValueStreamsDashboards) {
+        // Filter out the graphql route and use the built-in config instead
+        // This will redirect to the backend route for `/value_streams_dashboard
+        dashboards = dashboards
+          .filter(({ slug }) => slug !== BUILT_IN_VALUE_STREAM_DASHBOARD)
+          .concat([VALUE_STREAMS_DASHBOARD_CONFIG]);
       }
       return dashboards;
     },
