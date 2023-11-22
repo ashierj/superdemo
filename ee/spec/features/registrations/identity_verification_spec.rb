@@ -100,9 +100,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     it 'verifies the user' do
       expect_to_see_identity_verification_page
 
-      verify_phone_number
-
       verify_email unless skip_email_validation
+
+      verify_phone_number
 
       expect_verification_completed
 
@@ -113,17 +113,16 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       it 'verifies the user' do
         expect_to_see_identity_verification_page
 
+        verify_email unless skip_email_validation
+
         request_phone_exemption
 
         verify_credit_card
 
-        verify_email unless skip_email_validation
-
-        # if skip_email_validation = true, email is already verified
-        # plus, verify_credit_card creates a credit_card verification record &
-        # refreshes the page. This causes an automatic redirect to the welcome page,
-        # hence skipping the verification successful badge.
-        expect_verification_completed unless skip_email_validation
+        # verify_credit_card creates a credit_card verification record &
+        # refreshes the page. This causes an automatic redirect to the welcome
+        # page, skipping the verification successful badge, and preventing us
+        # from calling expect_verification_completed
 
         expect_to_see_dashboard_page
       end
@@ -136,13 +135,11 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     it 'verifies the user' do
       expect_to_see_identity_verification_page
 
-      verify_credit_card
+      verify_email unless skip_email_validation
 
       verify_phone_number
 
-      verify_email unless skip_email_validation
-
-      expect_verification_completed
+      verify_credit_card
 
       expect_to_see_dashboard_page
     end
@@ -153,15 +150,14 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
         expect_to_see_identity_verification_page
 
-        verify_credit_card
-
         verify_email unless skip_email_validation
 
-        # if skip_email_validation = true, email is already verified
-        # plus, verify_credit_card creates a credit_card verification record &
-        # refreshes the page. This causes an automatic redirect to the welcome page,
-        # hence skipping the verification successful badge.
-        expect_verification_completed unless skip_email_validation
+        verify_credit_card
+
+        # verify_credit_card creates a credit_card verification record &
+        # refreshes the page. This causes an automatic redirect to the welcome
+        # page, skipping the verification successful badge, and preventing us
+        # from calling expect_verification_completed
 
         expect_to_see_dashboard_page
       end

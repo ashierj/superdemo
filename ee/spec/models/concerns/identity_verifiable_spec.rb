@@ -144,15 +144,15 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     let(:user) { create(:user) }
 
     where(:risk_band, :credit_card, :phone_number, :phone_exempt, :identity_verification_exempt, :result) do
-      'High'   | true  | true  | false | false | %w[credit_card phone email]
-      'High'   | true  | true  | true  | false | %w[credit_card email]
+      'High'   | true  | true  | false | false | %w[email phone credit_card]
+      'High'   | true  | true  | true  | false | %w[email credit_card]
       'High'   | true  | true  | false | true  | %w[email]
-      'High'   | false | true  | false | false | %w[phone email]
-      'High'   | true  | false | false | false | %w[credit_card email]
+      'High'   | false | true  | false | false | %w[email phone]
+      'High'   | true  | false | false | false | %w[email credit_card]
       'High'   | false | false | false | false | %w[email]
-      'Medium' | true  | true  | false | false | %w[phone email]
-      'Medium' | false | true  | false | false | %w[phone email]
-      'Medium' | true  | true  | true  | false | %w[credit_card email]
+      'Medium' | true  | true  | false | false | %w[email phone]
+      'Medium' | false | true  | false | false | %w[email phone]
+      'Medium' | true  | true  | true  | false | %w[email credit_card]
       'Medium' | true  | true  | false | true  | %w[email]
       'Medium' | true  | false | false | false | %w[email]
       'Medium' | false | false | false | false | %w[email]
@@ -183,8 +183,8 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       let_it_be(:another_user) { create(:user) }
 
       where(:risk_band, :credit_card, :phone_number, :result) do
-        'High'   | true  | false | %w[credit_card email]
-        'Medium' | false | true  | %w[phone email]
+        'High'   | true  | false | %w[email credit_card]
+        'Medium' | false | true  | %w[email phone]
       end
 
       with_them do
@@ -238,7 +238,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
           stub_experiments(phone_verification_for_low_risk_users: :candidate)
         end
 
-        it { is_expected.to eq(%w[phone email]) }
+        it { is_expected.to eq(%w[email phone]) }
 
         it 'tracks candidate group assignment for the user' do
           expect(experiment_instance).to track(:assignment).on_next_instance.with_context(user: user).for(:candidate)
