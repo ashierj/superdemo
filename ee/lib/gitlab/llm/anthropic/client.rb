@@ -8,7 +8,7 @@ module Gitlab
         include ::Gitlab::Llm::Concerns::EventTracking
 
         URL = 'https://api.anthropic.com'
-        DEFAULT_MODEL = 'claude-2'
+        DEFAULT_MODEL = 'claude-2.0'
         DEFAULT_TEMPERATURE = 0
         DEFAULT_MAX_TOKENS = 2048
         DEFAULT_TIMEOUT = 30.seconds
