@@ -52,7 +52,7 @@ module Mutations
         private
 
         def find_object(id:)
-          GitlabSchema.object_from_id(id, expected_type: ::IncidentManagement::OncallRotation)
+          GitlabSchema.find_by_gid(id)
         end
 
         def raise_rotation_not_found

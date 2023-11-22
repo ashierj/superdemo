@@ -33,7 +33,7 @@ module Mutations
         # and it is `required: false`, expecting to be removed entirely.
         # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/424563
         def resolve(action:, registry_id:, registry_class:)  # rubocop:disable Lint/UnusedMethodArgument
-          registry = authorized_find!(registry_id)
+          registry = authorized_find!(id: registry_id)
 
           result = ::Geo::RegistryUpdateService.new(action, registry).execute
 
@@ -43,12 +43,6 @@ module Mutations
         override :read_only?
         def read_only?
           false
-        end
-
-        private
-
-        def find_object(id)
-          GitlabSchema.find_by_gid(id)
         end
       end
     end

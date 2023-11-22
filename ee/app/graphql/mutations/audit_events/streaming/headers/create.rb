@@ -31,7 +31,7 @@ module Mutations
 
           def resolve(destination_id:, key:, value:, active:)
             response = ::AuditEvents::Streaming::Headers::CreateService.new(
-              destination: authorized_find!(destination_id),
+              destination: authorized_find!(id: destination_id),
               params: { key: key, value: value, active: active },
               current_user: current_user
             ).execute
@@ -41,12 +41,6 @@ module Mutations
             else
               { header: nil, errors: response.errors }
             end
-          end
-
-          private
-
-          def find_object(destination_id)
-            GitlabSchema.object_from_id(destination_id, expected_type: ::AuditEvents::ExternalAuditEventDestination)
           end
         end
       end

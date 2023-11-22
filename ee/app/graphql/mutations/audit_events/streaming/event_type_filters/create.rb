@@ -11,12 +11,6 @@ module Mutations
           argument :destination_id, ::Types::GlobalIDType[::AuditEvents::ExternalAuditEventDestination],
                    required: true,
                    description: 'Destination id.'
-
-          private
-
-          def find_object(destination_id)
-            ::GitlabSchema.object_from_id(destination_id, expected_type: ::AuditEvents::ExternalAuditEventDestination)
-          end
         end
       end
     end

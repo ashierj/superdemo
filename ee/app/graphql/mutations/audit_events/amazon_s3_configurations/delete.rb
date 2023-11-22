@@ -11,7 +11,7 @@ module Mutations
           description: 'ID of the Amazon S3 configuration to destroy.'
 
         def resolve(id:)
-          config = authorized_find!(id)
+          config = authorized_find!(id: id)
 
           audit(config, action: :deleted) if config.destroy
           { errors: Array(config.errors) }

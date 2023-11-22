@@ -14,7 +14,7 @@ module Mutations
             end
 
           def resolve(destination_id:, event_type_filters:)
-            destination = authorized_find!(destination_id)
+            destination = authorized_find!(id: destination_id)
 
             response = ::AuditEvents::Streaming::EventTypeFilters::DestroyService.new(
               destination: destination,

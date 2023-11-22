@@ -17,12 +17,6 @@ module Mutations
 
         authorize :admin_epic_board_list
 
-        private
-
-        def find_object(id:)
-          GitlabSchema.object_from_id(id, expected_type: ::Boards::EpicBoard)
-        end
-
         def create_list(board, params)
           create_list_service =
             ::Boards::EpicLists::CreateService.new(board.group, current_user, params)

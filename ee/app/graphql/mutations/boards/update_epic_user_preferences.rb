@@ -50,10 +50,6 @@ module Mutations
       rescue ActiveRecord::RecordNotFound
         nil
       end
-
-      def find_object(id:)
-        GitlabSchema.object_from_id(id, expected_type: ::Board)
-      end
     end
   end
 end

@@ -29,12 +29,6 @@ module Mutations
                                                                 params: args[:params].to_h).execute
           { compliance_framework: framework, errors: errors_on_object(framework) }
         end
-
-        private
-
-        def find_object(id:)
-          GitlabSchema.object_from_id(id, expected_type: ::ComplianceManagement::Framework)
-        end
       end
     end
   end

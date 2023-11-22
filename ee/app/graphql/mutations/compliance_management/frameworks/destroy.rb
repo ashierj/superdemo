@@ -19,12 +19,6 @@ module Mutations
 
           { errors: result.success? ? [] : Array.wrap(result.message) }
         end
-
-        private
-
-        def find_object(id:)
-          GitlabSchema.object_from_id(id, expected_type: ::ComplianceManagement::Framework)
-        end
       end
     end
   end
