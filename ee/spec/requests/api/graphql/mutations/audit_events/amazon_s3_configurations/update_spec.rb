@@ -115,7 +115,7 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
       context 'when there is error while updating' do
         before do
           allow_next_instance_of(Mutations::AuditEvents::AmazonS3Configurations::Update) do |mutation|
-            allow(mutation).to receive(:authorized_find!).with(config_gid).and_return(config)
+            allow(mutation).to receive(:authorized_find!).with(id: config_gid).and_return(config)
           end
 
           allow(config).to receive(:update).and_return(false)

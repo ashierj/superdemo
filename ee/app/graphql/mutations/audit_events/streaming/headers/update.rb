@@ -46,12 +46,6 @@ module Mutations
               { header: header.reset, errors: response.errors }
             end
           end
-
-          private
-
-          def find_object(id:)
-            GitlabSchema.object_from_id(id, expected_type: ::AuditEvents::Streaming::Header)
-          end
         end
       end
     end

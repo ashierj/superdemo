@@ -24,7 +24,7 @@ RSpec.describe Mutations::Boards::Lists::Create do
     stub_licensed_features(board_assignee_lists: true, board_milestone_lists: true, board_iteration_lists: true)
   end
 
-  subject { mutation.resolve(board_id: board.to_global_id.to_s, **list_create_params) }
+  subject { mutation.resolve(board_id: board.to_global_id, **list_create_params) }
 
   describe '#ready?' do
     it 'raises an error if required arguments are missing' do

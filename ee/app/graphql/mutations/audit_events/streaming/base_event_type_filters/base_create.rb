@@ -18,7 +18,7 @@ module Mutations
             description: 'List of event type filters for the audit event external destination.'
 
           def resolve(destination_id:, event_type_filters:)
-            destination = authorized_find!(destination_id)
+            destination = authorized_find!(id: destination_id)
 
             response = ::AuditEvents::Streaming::EventTypeFilters::CreateService.new(
               destination: destination,

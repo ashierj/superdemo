@@ -56,10 +56,6 @@ module Mutations
         vulnerabilities
       end
 
-      def find_object(id:)
-        GitlabSchema.find_by_gid(id)
-      end
-
       def create_issue_links(issue, vulnerabilities)
         ::VulnerabilityIssueLinks::BulkCreateService.new(current_user, issue, vulnerabilities).execute
       end

@@ -40,7 +40,7 @@ module Mutations
           description: 'Updated Amazon S3 configuration.'
 
         def resolve(id:, access_key_xid: nil, secret_access_key: nil, bucket_name: nil, aws_region: nil, name: nil)
-          config = authorized_find!(id)
+          config = authorized_find!(id: id)
           config_attributes = {
             access_key_xid: access_key_xid,
             secret_access_key: secret_access_key,
