@@ -957,6 +957,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="queryusersadmins"></a>`admins` | [`Boolean`](#boolean) | Return only admin users. |
+| <a id="queryusersgroupid"></a>`groupId` | [`GroupID`](#groupid) | Return users member of a given group. |
 | <a id="queryusersids"></a>`ids` | [`[ID!]`](#id) | List of user Global IDs. |
 | <a id="queryuserssearch"></a>`search` | [`String`](#string) | Query to search users by name, username, or primary email. |
 | <a id="queryuserssort"></a>`sort` | [`Sort`](#sort) | Sort users by this criteria. |
