@@ -565,4 +565,30 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       it { is_expected.to eq(result) }
     end
   end
+
+  describe '#phone_number_verification_required?' do
+    before do
+      add_user_risk_band('Medium')
+    end
+
+    subject { user.phone_number_verification_required? }
+
+    context 'when user has no phone number' do
+      let_it_be(:user) { create(:user, phone_number_validation: nil) }
+
+      it { is_expected.to eq true }
+    end
+
+    context 'when user has not verified a phone number' do
+      let_it_be(:user) { create(:user, phone_number_validation: create(:phone_number_validation)) }
+
+      it { is_expected.to eq true }
+    end
+
+    context 'when user has verified a phone number' do
+      let_it_be(:user) { create(:user, phone_number_validation: create(:phone_number_validation, :validated)) }
+
+      it { is_expected.to eq false }
+    end
+  end
 end

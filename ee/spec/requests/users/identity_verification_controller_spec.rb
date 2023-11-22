@@ -7,9 +7,14 @@ feature_category: :system_access do
   include SessionHelpers
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:unconfirmed_user) { create(:user, :unconfirmed, :arkose_verified) }
-  let_it_be(:confirmed_user) { create(:user, :arkose_verified) }
+  let_it_be(:unconfirmed_user) { create(:user, :unconfirmed, :low_risk) }
+  let_it_be(:confirmed_user) { create(:user, :low_risk) }
   let_it_be(:invalid_verification_user_id) { non_existing_record_id }
+
+  before do
+    stub_application_setting_enum('email_confirmation_setting', 'hard')
+    stub_application_setting(require_admin_approval_after_user_signup: false)
+  end
 
   shared_examples 'it requires a valid verification_user_id' do
     context 'when session contains an invalid `verification_user_id`' do
@@ -96,6 +101,31 @@ feature_category: :system_access do
     end
   end
 
+  shared_examples 'it requires an email verified user' do
+    subject { response }
+
+    before do
+      do_request
+    end
+
+    context 'when current user has verified email' do
+      it { is_expected.to have_gitlab_http_status(:ok) }
+    end
+
+    context 'when current user is not required to verify a phone number' do
+      let_it_be(:user) { create(:user, :high_risk) }
+      let_it_be(:validation) { create(:phone_number_validation, :validated, user: user) }
+
+      it { is_expected.to have_gitlab_http_status(:bad_request) }
+    end
+
+    context 'when current user does not have a verified email' do
+      let_it_be(:user) { create(:user, :unconfirmed, :medium_risk) }
+
+      it { is_expected.to have_gitlab_http_status(:bad_request) }
+    end
+  end
+
   shared_examples 'it requires oauth users to go through ArkoseLabs challenge' do
     let(:user) { create(:omniauth_user, :unconfirmed) }
     let(:arkose_labs_oauth_signup_challenge) { true }
@@ -120,7 +150,7 @@ feature_category: :system_access do
     end
 
     context 'when user has an arkose_risk_band' do
-      let(:user) { create(:omniauth_user, :unconfirmed, :arkose_verified) }
+      let(:user) { create(:omniauth_user, :unconfirmed, :low_risk) }
 
       it { is_expected.not_to redirect_to(arkose_labs_challenge_identity_verification_path) }
     end
@@ -353,6 +383,7 @@ feature_category: :system_access do
   end
 
   describe '#send_phone_verification_code' do
+    let_it_be(:unconfirmed_user) { create(:user, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
     let_it_be(:service_response) { ServiceResponse.success }
     let_it_be(:params) do
@@ -371,6 +402,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
+    it_behaves_like 'it requires an email verified user'
 
     context 'when sending the code is successful' do
       it 'responds with status 200 OK' do
@@ -410,6 +442,7 @@ feature_category: :system_access do
   end
 
   describe '#verify_phone_verification_code' do
+    let_it_be(:unconfirmed_user) { create(:user, :medium_risk) }
     let_it_be(:user) { unconfirmed_user }
     let_it_be(:service_response) { ServiceResponse.success }
     let_it_be(:params) do
@@ -428,6 +461,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
+    it_behaves_like 'it requires an email verified user'
 
     context 'when code verification is successful' do
       it 'responds with status 200 OK' do
@@ -494,7 +528,7 @@ feature_category: :system_access do
   end
 
   describe 'POST verify_arkose_labs_session' do
-    let_it_be(:user) { create(:user, :unconfirmed, :arkose_verified) }
+    let_it_be(:user) { create(:user, :unconfirmed, :low_risk) }
 
     let(:params) { {} }
     let(:do_request) { post verify_arkose_labs_session_identity_verification_path, params: params }
