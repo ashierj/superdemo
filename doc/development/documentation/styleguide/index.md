@@ -559,9 +559,13 @@ about styling cURL commands.
 
 ## Lists
 
+Use lists to present information in a format that is easier to scan.
+
+- Make all items in the list parallel.
+  For example, do not start some bullets with nouns and others with verbs.
 - Do not use a period if the phrase is not a full sentence.
 - Use a period after every sentence. Do not use semicolons or commas.
-- Majority rules. All items should have the same punctuation.
+- Give all items the same punctuation.
 - Start list items with a capital letter.
 - Separate the introductory phrase from explanatory text with a colon (`:`). For example:
 
