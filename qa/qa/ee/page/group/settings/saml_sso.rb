@@ -6,6 +6,8 @@ module QA
       module Group
         module Settings
           class SamlSSO < ::QA::Page::Base
+            include ::QA::Page::Component::Dropdown
+
             view 'ee/app/views/groups/saml_providers/_form.html.haml' do
               element :identity_provider_sso_field
               element :certificate_fingerprint_field
