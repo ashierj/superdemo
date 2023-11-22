@@ -1,5 +1,6 @@
 {
-	"recommendations": [
-		"gitlab.gitlab-workflow"
-	]
+  "recommendations": [
+    "gitlab.gitlab-workflow",
+    "shopify.ruby-lsp"
+  ]
 }
