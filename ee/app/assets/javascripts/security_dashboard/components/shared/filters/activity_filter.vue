@@ -32,12 +32,12 @@ export const ITEMS = {
     value: 'DOES_NOT_HAVE_MERGE_REQUEST',
     text: s__('SecurityReports|Does not have merge request'),
   },
-  IS_AVAILABLE: {
-    value: 'IS_AVAILABLE',
+  HAS_SOLUTION: {
+    value: 'HAS_SOLUTION',
     text: s__('SecurityReports|Has a solution'),
   },
-  IS_NOT_AVAILABLE: {
-    value: 'IS_NOT_AVAILABLE',
+  DOES_NOT_HAVE_SOLUTION: {
+    value: 'DOES_NOT_HAVE_SOLUTION',
     text: s__('SecurityReports|Does not have a solution'),
   },
 };
@@ -50,7 +50,7 @@ export const GROUPS_MR = {
 
 export const GROUPS_SOLUTION = {
   text: s__('SecurityReports|Solution available'),
-  options: [ITEMS.IS_AVAILABLE, ITEMS.IS_NOT_AVAILABLE],
+  options: [ITEMS.HAS_SOLUTION, ITEMS.DOES_NOT_HAVE_SOLUTION],
   icon: 'bulb',
 };
 
@@ -118,7 +118,7 @@ export default {
         'HAS_MERGE_REQUEST',
         'DOES_NOT_HAVE_MERGE_REQUEST',
       );
-      const hasRemediations = this.setSelectedValue('IS_AVAILABLE', 'IS_NOT_AVAILABLE');
+      const hasRemediations = this.setSelectedValue('HAS_SOLUTION', 'DOES_NOT_HAVE_SOLUTION');
 
       this.$emit('filter-changed', {
         hasResolution,
