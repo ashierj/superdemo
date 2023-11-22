@@ -137,11 +137,14 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
             expect(response.body).to eq('')
 
             send_data_type, send_data = workhorse_send_data
-            url, allow_redirect = send_data.values_at('URL', 'AllowRedirects')
 
             expect(send_data_type).to eq('send-url')
-            expect(url).to be_present
-            expect(allow_redirect).to be_truthy
+            expect(send_data['URL']).to be_present
+            expect(send_data['AllowRedirects']).to be_truthy
+            expect(send_data['DialTimeout']).to eq('10s')
+            expect(send_data['ResponseHeaderTimeout']).to eq('10s')
+            expect(send_data['ErrorResponseStatus']).to eq(502)
+            expect(send_data['TimeoutResponseStatus']).to eq(504)
           end
         end
 

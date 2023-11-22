@@ -131,6 +131,33 @@ RSpec.describe 'Dependency Proxy for maven packages', :js, :aggregate_failures, 
         expect(response.code).to eq(200)
         expect(response.body).to eq(remote_file_content)
       end
+
+      context 'with a timeout while getting the remote file' do
+        let_it_be(:remote_server) do
+          handler = ->(_) do
+            sleep 0.1 # sleep for 100ms
+            [200, {}, []]
+          end
+
+          run_server(handler)
+        end
+
+        before do
+          allow(::Gitlab::Workhorse).to receive(:send_url).and_wrap_original do |original_method, *args, &block|
+            # we use `10m` that the function will add an `s` = `10ms`
+            # Workhorse will parse that as a timeout of 10 milliseconds which is what we want here.
+            args.last[:timeouts] = { read: '10m' }
+            original_method.call(*args, &block)
+          end
+        end
+
+        it 'times out and return service unavailable' do
+          expect { response }
+            .to not_change { project.packages.maven.count }
+            .and not_change { ::Packages::PackageFile.count }
+          expect(response.code).to eq(504)
+        end
+      end
     end
 
     context 'with existing file' do
