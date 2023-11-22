@@ -16,6 +16,7 @@ module Groups
       before_action do
         push_frontend_feature_flag(:dora_performers_score_panel, @group)
         push_frontend_feature_flag(:group_analytics_dashboards, @group)
+        push_frontend_feature_flag(:group_analytics_dashboard_dynamic_vsd, @group)
 
         load_visualizations
       end
@@ -24,34 +25,38 @@ module Groups
 
       VALUE_STREAM_VISUALIZATIONS_PATH = 'ee/lib/gitlab/analytics/value_stream_dashboard/visualizations/'
 
-      # TODO: Once we remove the `group_analytics_dashboards` feature flag
-      #       we should rename this route to `index` so we have a single entry point
-      #       the `group_analytics_dashboard_dynamic_vsd` will toggle between the built-in
-      #       VSD page and the VSD rendered via shared analytics dasboards
       def value_streams_dashboard
         respond_to do |format|
           format.html do
-            @pointer_project = find_pointer_project
+            # TODO: Render the shared analytics app if `group_analytics_dashboard_dynamic_vsd` is enabled
+            #       the query params approach for specifying namespaces only applies to the legacy VSD page.
+            #       This check handles rendering when we directly
+            #       link to `/-/analytics/dashboards/value_streams_dashboard`
+            if Feature.enabled?(:group_analytics_dashboard_dynamic_vsd, @group)
+              Gitlab::UsageDataCounters::ValueStreamsDashboardCounter.count(:views)
 
-            @namespaces =
-              if params[:query].present?
-                paths_array = params[:query].split(",")
-                sources = Route.inside_path(@group.full_path).where(path: paths_array).map(&:source) # rubocop:disable CodeReuse/ActiveRecord
+              render :index
+            else
+              @pointer_project = find_pointer_project
 
-                sources.map do |source|
-                  {
-                    name: source.name,
-                    full_path: source.full_path,
-                    is_project: project?(source)
-                  }
+              @namespaces =
+                if params[:query].present?
+                  paths_array = params[:query].split(",")
+                  sources = Route.inside_path(@group.full_path).where(path: paths_array).map(&:source) # rubocop:disable CodeReuse/ActiveRecord
+
+                  sources.map do |source|
+                    {
+                      name: source.name,
+                      full_path: source.full_path,
+                      is_project: project?(source)
+                    }
+                  end
+                else
+                  []
                 end
-              else
-                []
-              end
 
-            Gitlab::UsageDataCounters::ValueStreamsDashboardCounter.count(:views)
-
-            render :index
+              Gitlab::UsageDataCounters::ValueStreamsDashboardCounter.count(:views)
+            end
           end
         end
       end

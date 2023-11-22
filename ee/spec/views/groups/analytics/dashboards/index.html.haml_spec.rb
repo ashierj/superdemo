@@ -28,44 +28,17 @@ RSpec.describe 'groups/analytics/dashboards/index',
     expect(rendered).to have_css("[data-namespace-full-path='#{group.full_path}']")
   end
 
-  context 'with group_analytics_dashboards feature flag disabled' do
+  context 'with available_visualizations set' do
+    let_it_be(:available_visualizations) { [{ name: project.name, full_path: project.full_path, is_project: true }] }
+
     before do
-      stub_feature_flags(group_analytics_dashboards: false)
+      assign(:available_visualizations, [{ version: 1, type: "DORAChart", data: {} }])
     end
 
-    it 'renders as expected' do
+    it 'sets the namespaces key' do
       render
 
-      expect(rendered).to have_selector('#js-analytics-dashboards-app')
-      expect(rendered).to have_css("[data-full-path='#{group.full_path}']")
-    end
-
-    context 'with namespaces set' do
-      let_it_be(:namespaces) { [{ name: project.name, full_path: project.full_path, is_project: true }] }
-
-      before do
-        assign(:namespaces, namespaces)
-      end
-
-      it 'sets the namespaces key' do
-        render
-
-        expect(rendered).to have_css("[data-namespaces]")
-      end
-    end
-
-    context 'with available_visualizations set' do
-      let_it_be(:available_visualizations) { [{ name: project.name, full_path: project.full_path, is_project: true }] }
-
-      before do
-        assign(:available_visualizations, [{ version: 1, type: "DORAChart", data: {} }])
-      end
-
-      it 'sets the namespaces key' do
-        render
-
-        expect(rendered).to have_css("[data-available-visualizations]")
-      end
+      expect(rendered).to have_css("[data-available-visualizations]")
     end
   end
 end

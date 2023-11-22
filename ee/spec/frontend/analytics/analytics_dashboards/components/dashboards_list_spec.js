@@ -19,6 +19,7 @@ import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
   TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE,
   TEST_DASHBOARD_GRAPHQL_EMPTY_SUCCESS_RESPONSE,
+  TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
 
 const mockAlertDismiss = jest.fn();
@@ -165,6 +166,10 @@ describe('DashboardsList', () => {
 
     describe('when `groupAnalyticsDashboards` FF is enabled', () => {
       beforeEach(() => {
+        mockAnalyticsDashboardsHandler = jest
+          .fn()
+          .mockResolvedValue(TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
         createWrapper({
           isProject: false,
           isGroup: true,
@@ -172,12 +177,42 @@ describe('DashboardsList', () => {
         });
       });
 
-      it('should render the Value streams dashboards link', async () => {
+      it('should redirect to the legacy VSD page', async () => {
         await waitForPromises();
         expect(findListItems()).toHaveLength(1);
         expect(findListItems().at(0).props('dashboard')).toMatchObject(
           VALUE_STREAMS_DASHBOARD_CONFIG,
         );
+      });
+    });
+
+    describe('when `groupAnalyticsDashboards` and `groupAnalyticsDashboardDynamicVsd` feature flags are enabled', () => {
+      beforeEach(() => {
+        mockAnalyticsDashboardsHandler = jest
+          .fn()
+          .mockResolvedValue(TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+        createWrapper({
+          isProject: false,
+          isGroup: true,
+          glFeatures: {
+            groupAnalyticsDashboards: true,
+            groupAnalyticsDashboardDynamicVsd: true,
+          },
+        });
+      });
+
+      it('should render the Value streams dashboards link', async () => {
+        await waitForPromises();
+        expect(findListItems()).toHaveLength(1);
+
+        const dashboardAttributes = findListItems().at(0).props('dashboard');
+
+        expect(dashboardAttributes).not.toMatchObject(VALUE_STREAMS_DASHBOARD_CONFIG);
+        expect(dashboardAttributes).toMatchObject({
+          slug: 'value_streams_dashboard',
+          title: 'Value Streams Dashboard',
+        });
       });
     });
   });
