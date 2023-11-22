@@ -1,7 +1,7 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import ToolWithScannerFilter from 'ee/security_dashboard/components/shared/filters/tool_with_scanner_filter.vue';
+import ToolWithVendorFilter from 'ee/security_dashboard/components/shared/filters/tool_with_vendor_filter.vue';
 import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
@@ -16,11 +16,11 @@ const MANUALLY_ADDED_OPTION = {
   value: 'gitlab-manual-vulnerability-report',
 };
 
-describe('Tool With Scanner Filter component', () => {
+describe('Tool With Vendor Filter component', () => {
   let wrapper;
 
   const createWrapper = ({ scanners = MOCK_SCANNERS } = {}) => {
-    wrapper = mountExtended(ToolWithScannerFilter, {
+    wrapper = mountExtended(ToolWithVendorFilter, {
       provide: { scanners },
       stubs: {
         QuerystringSync: true,
@@ -96,11 +96,11 @@ describe('Tool With Scanner Filter component', () => {
 
     describe('default view', () => {
       it('shows the label', () => {
-        expect(wrapper.find('label').text()).toBe(ToolWithScannerFilter.i18n.label);
+        expect(wrapper.find('label').text()).toBe(ToolWithVendorFilter.i18n.label);
       });
 
       it('shows the dropdown with correct header text', () => {
-        expect(findListBox().props('headerText')).toBe(ToolWithScannerFilter.i18n.label);
+        expect(findListBox().props('headerText')).toBe(ToolWithVendorFilter.i18n.label);
       });
     });
   });
