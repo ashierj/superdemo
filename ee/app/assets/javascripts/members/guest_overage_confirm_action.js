@@ -1,7 +1,7 @@
 import { sprintf } from '~/locale';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import createDefaultClient from '~/lib/graphql';
-import getBillableUserCountChanges from '../invite_members/billable_users_count.query.graphql';
+import getBillableUserCountChanges from '../invite_members/graphql/queries/billable_users_count.query.graphql';
 import {
   GUEST_OVERAGE_MODAL_FIELDS,
   MEMBER_ACCESS_LEVELS,

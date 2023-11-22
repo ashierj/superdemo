@@ -13,9 +13,13 @@ import {
   OVERAGE_MODAL_BACK_BUTTON,
 } from 'ee/invite_members/constants';
 import { propsData as propsDataCE } from 'jest/invite_members/mock_data/modal_base';
-import getReconciliationStatus from 'ee/invite_members/subscription_eligible.customer.query.graphql';
-import getBillableUserCountChanges from 'ee/invite_members/billable_users_count.query.graphql';
+import getReconciliationStatus from 'ee/invite_members/graphql/queries/subscription_eligible.customer.query.graphql';
+import getBillableUserCountChanges from 'ee/invite_members/graphql/queries/billable_users_count.query.graphql';
+import getGroupMemberRoles from 'ee/invite_members/graphql/queries/group_member_roles.query.graphql';
+import getProjectMemberRoles from 'ee/invite_members/graphql/queries/project_member_roles.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_GROUP, TYPENAME_MEMBER_ROLE } from '~/graphql_shared/constants';
 
 Vue.use(VueApollo);
 
@@ -44,13 +48,56 @@ describe('EEInviteModalBase', () => {
     },
   });
 
+  const groupMemberRolesResponse = jest.fn().mockResolvedValue({
+    data: {
+      namespace: {
+        id: convertToGraphQLId(TYPENAME_GROUP, 3),
+        memberRoles: {
+          nodes: [
+            {
+              baseAccessLevel: {
+                integerValue: 10,
+              },
+              name: 'My role 1',
+              id: convertToGraphQLId(TYPENAME_MEMBER_ROLE, 100),
+            },
+            {
+              baseAccessLevel: {
+                integerValue: 20,
+              },
+              name: 'My role 2',
+              id: convertToGraphQLId(TYPENAME_MEMBER_ROLE, 101),
+            },
+          ],
+          __typename: 'MemberRoleConnection',
+        },
+      },
+    },
+  });
+
+  const projectMemberRolesResponse = jest.fn().mockResolvedValue({
+    data: {
+      namespace: {
+        id: convertToGraphQLId('Project', 12),
+        memberRoles: {
+          nodes: [],
+          __typename: 'MemberRoleConnection',
+        },
+      },
+    },
+  });
+
   const createComponent = ({
     props = {},
     glFeatures = {},
     queryHandler = defaultResolverMock,
   } = {}) => {
     const mockCustomersDotClient = createMockClient([[getReconciliationStatus, queryHandler]]);
-    const mockGitlabClient = createMockClient([[getBillableUserCountChanges, defaultBillableMock]]);
+    const mockGitlabClient = createMockClient([
+      [getBillableUserCountChanges, defaultBillableMock],
+      [getGroupMemberRoles, groupMemberRolesResponse],
+      [getProjectMemberRoles, projectMemberRolesResponse],
+    ]);
     mockApollo = new VueApollo({
       defaultClient: mockCustomersDotClient,
       clients: { customersDotClient: mockCustomersDotClient, gitlabClient: mockGitlabClient },
@@ -59,18 +106,17 @@ describe('EEInviteModalBase', () => {
     wrapper = shallowMountExtended(EEInviteModalBase, {
       propsData: {
         ...propsDataCE,
+        fullPath: 'mygroup',
+        accessLevels: { validRoles: propsDataCE.accessLevels },
         ...props,
       },
       apolloProvider: mockApollo,
       provide: {
         glFeatures,
       },
-      attrs: {
-        'access-levels': propsDataCE.accessLevels,
-      },
       stubs: {
         GlSprintf,
-        InviteModalBase: CEInviteModalBase,
+        CeInviteModalBase: CEInviteModalBase,
         ContentTransition,
         GlModal: stubComponent(GlModal, {
           template:
@@ -103,14 +149,57 @@ describe('EEInviteModalBase', () => {
   const clickInviteButton = emitClickFromModal(findActionButton);
   const clickBackButton = emitClickFromModal(findCancelButton);
 
+  describe('fetching custom roles', () => {
+    it('sets the `isLoadingRoles` while fetching', async () => {
+      createComponent();
+      expect(findCEBase().props('isLoadingRoles')).toBe(true);
+
+      await waitForPromises();
+
+      expect(findCEBase().props('isLoadingRoles')).toBe(false);
+    });
+
+    describe('when `isProject` is true', () => {
+      it('queries the project', async () => {
+        createComponent({ props: { isProject: true } });
+        await waitForPromises();
+
+        expect(findCEBase().props('accessLevels').customRoles).toEqual([]);
+      });
+    });
+
+    describe('when `isProject` is false', () => {
+      it('queries the group', async () => {
+        createComponent();
+        await waitForPromises();
+
+        expect(findCEBase().props('accessLevels').customRoles).toMatchObject([
+          { baseAccessLevel: 10, memberRoleId: 100, name: 'My role 1' },
+          { baseAccessLevel: 20, memberRoleId: 101, name: 'My role 2' },
+        ]);
+      });
+    });
+
+    describe('when `isGroupInvite` is true', () => {
+      it('skips fetching', async () => {
+        createComponent({ props: { isGroupInvite: true } });
+        await waitForPromises();
+
+        expect(groupMemberRolesResponse).toHaveBeenCalledTimes(0);
+        expect(projectMemberRolesResponse).toHaveBeenCalledTimes(0);
+      });
+    });
+  });
+
   describe('default', () => {
     beforeEach(() => {
-      createComponent({ props: { invalidFeedbackMessage: 'error appeared', fullPath: 'project' } });
+      createComponent({ props: { invalidFeedbackMessage: 'error appeared' } });
     });
 
     it('passes attrs to CE base', () => {
+      const { accessLevels, ...restPropsDataCE } = propsDataCE;
       expect(findCEBase().props()).toMatchObject({
-        ...propsDataCE,
+        ...restPropsDataCE,
         currentSlot: 'default',
         extraSlots: EEInviteModalBase.EXTRA_SLOTS,
         invalidFeedbackMessage: 'error appeared',
@@ -149,15 +238,35 @@ describe('EEInviteModalBase', () => {
       });
 
       it('emits submit', () => {
-        expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 20, expiresAt: undefined }]]);
+        expect(wrapper.emitted('submit')).toEqual([
+          [{ accessLevel: 20, expiresAt: undefined, memberRoleId: null }],
+        ]);
       });
+    });
+  });
+
+  describe('when a custom role is selected', () => {
+    beforeEach(async () => {
+      createComponent({
+        props: { defaultAccessLevel: 10, defaultMemberRoleId: 100, newUsersToInvite: [123] },
+      });
+      await waitForPromises();
+    });
+
+    it('submits the `memberRoleId`', async () => {
+      clickInviteButton();
+      await waitForPromises();
+
+      expect(wrapper.emitted('submit')).toEqual([
+        [{ accessLevel: 10, expiresAt: undefined, memberRoleId: 100 }],
+      ]);
     });
   });
 
   describe('with overageMembersModal feature flag and a group to invite, and invite is clicked', () => {
     beforeEach(async () => {
       createComponent({
-        props: { newGroupToInvite: 123, rootGroupId: '54321', fullPath: 'project' },
+        props: { newGroupToInvite: 123, rootGroupId: '54321' },
         glFeatures: { overageMembersModal: true },
       });
       clickInviteButton();
@@ -174,7 +283,7 @@ describe('EEInviteModalBase', () => {
   describe('with overageMembersModal feature flag, and invite is clicked', () => {
     beforeEach(async () => {
       createComponent({
-        props: { newUsersToInvite: [123], fullPath: 'project' },
+        props: { newUsersToInvite: [123] },
         glFeatures: { overageMembersModal: true },
       });
       clickInviteButton();
@@ -233,7 +342,6 @@ describe('EEInviteModalBase', () => {
   describe('when the group is not eligible to show overage', () => {
     beforeEach(async () => {
       createComponent({
-        props: { fullPath: 'project' },
         glFeatures: { overageMembersModal: true },
         queryHandler: generateReconciliationResponse(false),
       });
@@ -255,7 +363,6 @@ describe('EEInviteModalBase', () => {
   describe('when group eligibility API request fails', () => {
     beforeEach(async () => {
       createComponent({
-        props: { fullPath: 'project' },
         glFeatures: { overageMembersModal: true },
         queryHandler: jest.fn().mockRejectedValue(new Error('GraphQL error')),
       });
@@ -267,7 +374,9 @@ describe('EEInviteModalBase', () => {
 
     it('emits submit event', () => {
       expect(wrapper.emitted('submit')).toHaveLength(1);
-      expect(wrapper.emitted('submit')).toEqual([[{ accessLevel: 20, expiresAt: undefined }]]);
+      expect(wrapper.emitted('submit')).toEqual([
+        [{ accessLevel: 20, expiresAt: undefined, memberRoleId: null }],
+      ]);
     });
 
     it('shows the initial modal', () => {
@@ -283,7 +392,7 @@ describe('EEInviteModalBase', () => {
   describe('integration', () => {
     it('sets overage and actual feedback message if invalidFeedbackMessage prop is passed', async () => {
       createComponent({
-        props: { newUsersToInvite: [123], fullPath: 'project' },
+        props: { newUsersToInvite: [123] },
         glFeatures: { overageMembersModal: true },
       });
 
