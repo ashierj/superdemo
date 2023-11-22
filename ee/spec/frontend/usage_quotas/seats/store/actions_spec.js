@@ -48,8 +48,8 @@ describe('Usage Quotas Seats actions', () => {
       });
     });
 
-    it('passes correct arguments to Api call', () => {
-      testAction({
+    it('passes correct arguments to Api call', async () => {
+      await testAction({
         action: actions.fetchBillableMembersList,
         payload,
         state,
@@ -65,7 +65,7 @@ describe('Usage Quotas Seats actions', () => {
 
     describe('on success', () => {
       it('should dispatch the request and success actions', () => {
-        testAction({
+        return testAction({
           action: actions.fetchBillableMembersList,
           state,
           expectedActions: [
@@ -83,7 +83,7 @@ describe('Usage Quotas Seats actions', () => {
       it('should dispatch the request and error actions', () => {
         GroupsApi.fetchBillableGroupMembersList.mockRejectedValue();
 
-        testAction({
+        return testAction({
           action: actions.fetchBillableMembersList,
           state,
           expectedActions: [{ type: 'receiveBillableMembersListError' }],
@@ -95,7 +95,7 @@ describe('Usage Quotas Seats actions', () => {
 
   describe('receiveBillableMembersListSuccess', () => {
     it('should commit the success mutation', () => {
-      testAction({
+      return testAction({
         action: actions.receiveBillableMembersListSuccess,
         payload: mockDataSeats,
         state,
@@ -124,8 +124,8 @@ describe('Usage Quotas Seats actions', () => {
       Api.userSubscription.mockResolvedValue({ data: mockUserSubscription });
     });
 
-    it('passes correct arguments to Api call', () => {
-      testAction({
+    it('passes correct arguments to Api call', async () => {
+      await testAction({
         action: actions.fetchGitlabSubscription,
         state,
         expectedMutations: expect.anything(),
@@ -137,7 +137,7 @@ describe('Usage Quotas Seats actions', () => {
 
     describe('on success', () => {
       it('should dispatch the request and success actions', () => {
-        testAction({
+        return testAction({
           action: actions.fetchGitlabSubscription,
           state,
           expectedActions: [
@@ -155,7 +155,7 @@ describe('Usage Quotas Seats actions', () => {
       it('should dispatch the request and error actions', () => {
         Api.userSubscription.mockRejectedValue();
 
-        testAction({
+        return testAction({
           action: actions.fetchGitlabSubscription,
           state,
           expectedActions: [{ type: 'receiveGitlabSubscriptionError' }],
@@ -167,7 +167,7 @@ describe('Usage Quotas Seats actions', () => {
 
   describe('receiveGitlabSubscriptionSuccess', () => {
     it('should commit the success mutation', () => {
-      testAction({
+      return testAction({
         action: actions.receiveGitlabSubscriptionSuccess,
         payload: mockDataSeats,
         state,

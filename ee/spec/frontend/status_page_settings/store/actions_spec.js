@@ -36,7 +36,7 @@ describe('Status Page actions', () => {
     ${types.SET_ACCESS_KEY_ID}       | ${'setStatusPageAccessKey'}       | ${'key-id'}           | ${'awsAccessKey'}
     ${types.SET_SECRET_ACCESS_KEY}   | ${'setStatusPageSecretAccessKey'} | ${'secret'}           | ${'awsSecretKey'}
   `('$action will commit $mutation with $value', ({ mutation, action, value, key }) => {
-    testAction(
+    return testAction(
       actions[action],
       { [key]: value },
       null,
@@ -53,7 +53,7 @@ describe('Status Page actions', () => {
   describe('updateStatusPageSettings', () => {
     it('should handle successful status update', () => {
       mock.onPatch().reply(HTTP_STATUS_OK, {});
-      testAction(
+      return testAction(
         actions.updateStatusPageSettings,
         null,
         state,
@@ -73,7 +73,7 @@ describe('Status Page actions', () => {
 
     it('should handle unsuccessful status update', () => {
       mock.onPatch().reply(HTTP_STATUS_BAD_REQUEST, {});
-      testAction(
+      return testAction(
         actions.updateStatusPageSettings,
         null,
         state,

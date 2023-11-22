@@ -168,7 +168,7 @@ describe('DurationChart actions', () => {
 
   describe('receiveDurationDataError', () => {
     it("commits the 'RECEIVE_DURATION_DATA_ERROR' mutation", () => {
-      testAction(
+      return testAction(
         actions.receiveDurationDataError,
         {},
         rootState,
