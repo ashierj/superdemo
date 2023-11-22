@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :runner, product_group: :security_policies do
+  RSpec.describe 'Govern', :runner, product_group: :security_policies, quarantine: {
+    only: :production,
+    issue: 'https://gitlab.com/gitlab-com/gl-infra/production/-/issues/17168',
+    type: :investigating # Quarantine while associated worker being disabled
+  } do
     describe 'Scan result policy' do
       let!(:project) do
         create(:project,
