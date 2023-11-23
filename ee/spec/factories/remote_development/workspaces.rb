@@ -64,7 +64,8 @@ FactoryBot.define do
       user = workspace.user
       workspace.project.add_developer(user)
       workspace.agent.project.add_developer(user)
-      workspace.url ||= "https://60001-#{workspace.name}.#{workspace.agent.remote_development_agent_config.dns_zone}"
+      dns_zone = workspace.agent.remote_development_agent_config&.dns_zone || 'example.com'
+      workspace.url ||= "https://60001-#{workspace.name}.#{dns_zone}"
     end
 
     after(:create) do |workspace, evaluator|

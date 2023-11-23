@@ -83,5 +83,39 @@ RSpec.describe Clusters::AgentsFinder do
         it { is_expected.to contain_exactly(agent_without_remote_development_agent_config) }
       end
     end
+
+    context 'when filtering by has_remote_development_enabled' do
+      let(:params) { { has_remote_development_enabled: has_remote_development_enabled } }
+
+      let_it_be(:agent_with_enabled_config) { create(:ee_cluster_agent, project: project) }
+      let_it_be(:agent_without_enabled_config) { create(:ee_cluster_agent, project: project) }
+
+      let_it_be(:config_for_enabled_agent) do
+        create(:remote_development_agent_config, agent: agent_with_enabled_config, enabled: true)
+      end
+
+      let_it_be(:config_for_disabled_agent) do
+        create(:remote_development_agent_config, agent: agent_without_enabled_config, enabled: false)
+      end
+
+      subject { described_class.new(project, user, params: params).execute }
+
+      context 'when params are not provided' do
+        let(:params) { {} }
+
+        it do
+          is_expected.to contain_exactly(
+            agent_with_enabled_config,
+            agent_without_enabled_config
+          )
+        end
+      end
+
+      context 'when has_remote_development_enabled is set' do
+        let(:has_remote_development_enabled) { true }
+
+        it { is_expected.to contain_exactly(agent_with_enabled_config) }
+      end
+    end
   end
 end

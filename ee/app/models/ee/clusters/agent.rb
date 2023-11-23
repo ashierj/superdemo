@@ -23,6 +23,9 @@ module EE
         scope :without_remote_development_agent_config, -> do
           includes(:remote_development_agent_config).where(remote_development_agent_config: { cluster_agent_id: nil })
         end
+        scope :with_remote_development_enabled, -> do
+          with_remote_development_agent_config.where(remote_development_agent_config: { enabled: true })
+        end
       end
     end
   end

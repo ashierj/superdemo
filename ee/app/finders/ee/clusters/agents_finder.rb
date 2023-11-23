@@ -27,6 +27,8 @@ module EE
           agents = agents.without_remote_development_agent_config
         end
 
+        agents = agents.with_remote_development_enabled if params[:has_remote_development_enabled]
+
         agents
       end
     end
