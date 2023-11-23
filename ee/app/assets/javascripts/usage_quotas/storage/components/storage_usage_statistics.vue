@@ -104,6 +104,11 @@ export default {
         LIMITED_ACCESS_KEYS.includes(this.subscriptionPermissions.reason)
       );
     },
+    projectLimitsHelpLink() {
+      return this.purchaseStorageUrl
+        ? usageQuotasHelpPaths.usageQuotasProjectStorageLimit
+        : usageQuotasHelpPaths.repositorySizeLimit;
+    },
   },
   methods: {
     showLimitedAccessModal() {
@@ -152,11 +157,15 @@ export default {
 
       <template v-if="isUsingProjectEnforcementWithLimits">
         <gl-sprintf
-          :message="s__('UsageQuota|Projects under this namespace have %{planLimit} of storage.')"
+          :message="
+            s__(
+              'UsageQuota|Projects under this namespace have %{planLimit} of storage limit applied to repository and LFS objects.',
+            )
+          "
         >
           <template #planLimit><number-to-human-size :value="perProjectStorageLimit" /></template>
         </gl-sprintf>
-        <gl-link :href="$options.usageQuotasHelpPaths.usageQuotasProjectStorageLimit">{{
+        <gl-link :href="projectLimitsHelpLink">{{
           s__('UsageQuota|How are limits applied?')
         }}</gl-link>
       </template>

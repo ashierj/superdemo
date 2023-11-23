@@ -162,6 +162,17 @@ export const SelfManaged = {
   }),
 };
 
+export const SelfManagedWithProjectLimits = {
+  render: createTemplate({
+    provide: {
+      ...selfManagedDefaultProvide,
+      isUsingProjectEnforcementWithLimits: true,
+      isUsingProjectEnforcementWithNoLimits: false,
+      perProjectStorageLimit: 10 * MEBIBYTE,
+    },
+  }),
+};
+
 export const SelfManagedLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
