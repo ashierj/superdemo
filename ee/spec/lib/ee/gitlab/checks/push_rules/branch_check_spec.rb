@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Gitlab::Checks::PushRules::BranchCheck do
+RSpec.describe EE::Gitlab::Checks::PushRules::BranchCheck, feature_category: :source_code_management do
   include_context 'push rules checks context'
 
   describe '#validate!' do
