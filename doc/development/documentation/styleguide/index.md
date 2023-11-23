@@ -350,10 +350,10 @@ Some contractions, however, should be avoided:
 
 | Do not use a contraction      | Example                                          | Use instead                                                      |
 |-------------------------------|--------------------------------------------------|------------------------------------------------------------------|
-| With a proper noun and a verb | The **Container Registry's** a powerful feature. | The **Container Registry** is a powerful feature.                |
+| With a proper noun and a verb | **Terraform's** a helpful tool.                  | **Terraform** is a helpful tool.                                  |
 | To emphasize a negative       | **Don't** install X with Y.                      | **Do not** install X with Y.                                     |
 | In reference documentation    | **Don't** set a limit.                           | **Do not** set a limit.                                          |
-| In error messages             | Requests to localhost **aren't** allowed.        | Requests to localhost **are not** allowed.                        |
+| In error messages             | Requests to localhost **aren't** allowed.        | Requests to localhost **are not** allowed.                       |
 
 <!-- vale gitlab.Possessive = YES -->
 
