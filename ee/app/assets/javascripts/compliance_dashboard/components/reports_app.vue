@@ -126,11 +126,7 @@ export default {
       :documentation-path="$options.documentationPath"
     >
       <template #actions>
-        <div align="right">
-          <merge-commits-export-button
-            v-if="showMergeCommitsExportButton"
-            :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
-          />
+        <div align="right" style="min-width: 410px">
           <gl-button
             v-if="showViolationsExportButton"
             v-gl-tooltip.hover
@@ -140,7 +136,7 @@ export default {
             data-testid="violations-export"
             data-track-action="click_export"
             data-track-label="export_all_violations"
-            class="gl-mt-3"
+            class="gl-lg-mb-0"
             :href="violationsCsvExportPath"
           >
             {{ $options.i18n.export }}
@@ -158,6 +154,11 @@ export default {
           >
             {{ $options.i18n.export }}
           </gl-button>
+          <merge-commits-export-button
+            v-if="showMergeCommitsExportButton"
+            :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
+            class="gl-display-inline"
+          />
         </div>
       </template>
     </report-header>
