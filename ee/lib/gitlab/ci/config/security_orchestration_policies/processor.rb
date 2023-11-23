@@ -13,7 +13,7 @@ module Gitlab
           DEFAULT_STAGES = Gitlab::Ci::Config::Entry::Stages.default
 
           def initialize(config, context, ref, source)
-            @config = config
+            @config = config.deep_dup
             @context = context
             @project = context.project
             @ref = ref
@@ -26,7 +26,19 @@ module Gitlab
             return @config if valid_security_orchestration_policy_configurations.blank?
             return @config unless extend_configuration?
 
-            merged_config = @config.deep_merge(merge_policies_with_stages(@config))
+            merged_config = @config.deep_merge(merged_security_policy_config)
+
+            if Feature.enabled?(:compliance_pipeline_in_policies, project) && active_scan_custom_actions.any?
+              stages = merged_config.fetch(:stages, [])
+
+              merged_config = merged_config.deep_merge(scan_custom_actions[:pipeline_scan])
+
+              # The stages array will not be merged by `deep_merge` so it has to be merged seperately.
+              merged_config[:stages] = stages + merged_config[:stages]
+            end
+
+            merged_config[:stages] = cleanup_stages(merged_config[:stages])
+            merged_config.delete(:stages) if merged_config[:stages].blank?
 
             observe_processing_duration(Time.current - @start)
 
@@ -36,6 +48,23 @@ module Gitlab
           private
 
           attr_reader :project, :ref, :context
+
+          def cleanup_stages(stages)
+            stages = stages.uniq
+
+            return if stages == DEFAULT_STAGES
+
+            if stages.include?('.post') && stages.last != '.post'
+              stages.delete('.post')
+              stages.push('.post')
+            end
+
+            stages
+          end
+
+          def merged_security_policy_config
+            @merged_security_policy_config ||= merge_policies_with_stages(@config)
+          end
 
           def valid_security_orchestration_policy_configurations
             @valid_security_orchestration_policy_configurations ||= ::Gitlab::Security::Orchestration::ProjectPolicyConfigurations.new(@project).all
@@ -51,8 +80,14 @@ module Gitlab
 
           def scan_templates
             @scan_templates ||= ::Security::SecurityOrchestrationPolicies::ScanPipelineService
+              .new(context)
+              .execute(active_scan_template_actions)
+          end
+
+          def scan_custom_actions
+            @scan_custom_actions ||= ::Security::SecurityOrchestrationPolicies::ScanPipelineService
               .new(context, custom_ci_yaml_allowed: true)
-              .execute(active_scan_actions)
+              .execute(active_scan_custom_actions)
           end
 
           ## Add `dast` to the end of stages if `dast` is not in stages already
@@ -64,7 +99,7 @@ module Gitlab
             merge_on_demand_scan_template(merged_config, defined_stages)
             merge_pipeline_scan_template(merged_config, defined_stages)
 
-            merged_config[:stages] = defined_stages.uniq if (defined_stages - DEFAULT_STAGES).present?
+            merged_config[:stages] = defined_stages + merged_config.fetch(:stages, [])
 
             merged_config
           end
@@ -102,6 +137,14 @@ module Gitlab
             end
 
             defined_stages
+          end
+
+          def active_scan_template_actions
+            @active_scan_template_actions ||= active_scan_actions.reject { |action| action[:scan] == 'custom' }
+          end
+
+          def active_scan_custom_actions
+            @active_scan_custom_actions ||= active_scan_actions.select { |action| action[:scan] == 'custom' }
           end
 
           def active_scan_actions
