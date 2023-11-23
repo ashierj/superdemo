@@ -51,7 +51,8 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
     before do
       stub_licensed_features(
         cycle_analytics_for_projects: true,
-        cycle_analytics_for_groups: true
+        cycle_analytics_for_groups: true,
+        group_level_analytics_dashboard: true
       )
 
       project.add_maintainer(user)
@@ -132,10 +133,11 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
 
         before do
           create_overview_data
-          visit_custom_value_stream
         end
 
         it 'displays data' do
+          visit_custom_value_stream
+
           expect(page).to have_content('Overview')
           expect(page).to have_css '#lead_time div', text: 3
           expect(page).to have_css '#cycle_time div', text: 2
@@ -146,6 +148,21 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
           expect(page).not_to have_css '#lead_time_for_changes'
           expect(page).not_to have_css '#time_to_restore_service'
           expect(page).not_to have_css '#change_failure_rate'
+
+          expect(page).not_to have_content(_('Value Streams Dashboard | DORA'))
+        end
+
+        context "when the user has access to the project's group" do
+          before do
+            group.add_developer(user)
+          end
+
+          it 'displays the link to VSD' do
+            visit_custom_value_stream
+
+            expect(page).to have_content('Overview')
+            expect(page).to have_content(_('Value Streams Dashboard | DORA'))
+          end
         end
 
         it 'does not render task by type chart' do

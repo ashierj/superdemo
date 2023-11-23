@@ -74,6 +74,7 @@ export default {
       'enableProjectsFilter',
       'enableCustomizableStages',
       'predefinedDateRange',
+      'enableVsdLink',
     ]),
     ...mapGetters([
       'hasNoAccessError',
@@ -149,7 +150,7 @@ export default {
       return this.activeStages.length;
     },
     showDashboardsLink() {
-      return Boolean(this.features?.groupLevelAnalyticsDashboard);
+      return this.enableVsdLink && Boolean(this.features?.groupLevelAnalyticsDashboard);
     },
     dashboardsPath() {
       if (this.showDashboardsLink) {

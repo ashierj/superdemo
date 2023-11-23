@@ -6,6 +6,7 @@ module EE
       module CycleAnalytics
         module RequestParams
           include ::Gitlab::Utils::StrongMemoize
+          include ::Gitlab::Allowable
           extend ::Gitlab::Utils::Override
 
           override :to_data_attributes
@@ -17,6 +18,7 @@ module EE
               attrs[:enable_tasks_by_type_chart] = 'true' if group.present?
               attrs[:enable_customizable_stages] = 'true' if licensed?
               attrs[:enable_projects_filter] = 'true' if group.present?
+              attrs[:enable_vsd_link] = 'true' if render_value_stream_dashboard_link?
               attrs[:can_edit] = 'true' if licensed? && ::Gitlab::Analytics::CycleAnalytics.allowed_to_edit?(
                 current_user, namespace)
 
@@ -32,6 +34,12 @@ module EE
           end
 
           private
+
+          def render_value_stream_dashboard_link?
+            (licensed? && group.present?) ||
+              (licensed? && project.present? && project.group.present? && can?(current_user,
+                :read_group_analytics_dashboards, project.group))
+          end
 
           def add_licensed_filter_params!(attrs)
             return unless licensed?

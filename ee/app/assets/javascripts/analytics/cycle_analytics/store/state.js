@@ -55,6 +55,7 @@ export default () => ({
     nextRunAt: null,
   },
   canEdit: false,
+  enableVsdLink: false,
   enableTasksByTypeChart: false,
   enableCustomizableStages: false,
   enableProjectsFilter: false,

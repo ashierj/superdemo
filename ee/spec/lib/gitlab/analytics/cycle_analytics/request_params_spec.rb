@@ -172,6 +172,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
         expect(subject[:iteration_id]).to eq(2)
         expect(subject[:my_reaction_emoji]).to eq('thumbsup')
         expect(subject[:weight]).to eq(5)
+        expect(subject[:enable_vsd_link]).to eq('true')
       end
 
       context 'when adding negated filters' do
@@ -222,7 +223,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
 
       context 'when Namespaces::ProjectNamespace is given' do
         before do
-          stub_licensed_features(cycle_analytics_for_projects: true)
+          stub_licensed_features(cycle_analytics_for_projects: true, group_level_analytics_dashboard: true)
 
           # The reload is needed because the project association with inverse_of is not loaded properly
           params[:namespace] = sub_group_project.project_namespace.reload
@@ -238,6 +239,23 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
           subject(:value) { described_class.new(params).to_data_collector_params[:use_aggregated_data_collector] }
 
           it { is_expected.to eq(true) }
+        end
+
+        describe 'enable_vsd_link attribute' do
+          subject(:value) { described_class.new(params).to_data_attributes[:enable_vsd_link] }
+
+          context "when user has access to the project's group" do
+            it { is_expected.to eq('true') }
+          end
+
+          context "when user has no access to the project's group" do
+            before do
+              params[:current_user] = create(:user)
+              params[:namespace].project.add_developer(params[:current_user])
+            end
+
+            it { is_expected.to eq('false') }
+          end
         end
       end
     end
