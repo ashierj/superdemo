@@ -45,8 +45,6 @@ describe('GitLab Duo Chat', () => {
   const chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
 
-  const findCallout = () => wrapper.findComponent(DuoChatCallout);
-
   const createComponent = ({
     initialState = {},
     propsData = { userId: MOCK_USER_ID, resourceId: MOCK_RESOURCE_ID },
@@ -134,11 +132,6 @@ describe('GitLab Duo Chat', () => {
         expect(findGlDuoChat().props('badgeHelpPageUrl')).toContain(expectedAnchorValue);
       },
     );
-
-    it('renders the duo-chat-callout component', () => {
-      createComponent();
-      expect(findCallout().exists()).toBe(true);
-    });
   });
 
   describe('events handling', () => {
