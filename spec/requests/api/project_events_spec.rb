@@ -134,20 +134,24 @@ RSpec.describe API::ProjectEvents, feature_category: :user_profile do
       end
 
       it 'avoids N+1 queries' do
-        ## Warmup, e.g. personal_acesss_tokens#last_used_at.
+        # Warmup, e.g. users#last_activity_on
         get api("/projects/#{private_project.id}/events", personal_access_token: token), params: { target_type: :merge_request }
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
           get api("/projects/#{private_project.id}/events", personal_access_token: token), params: { target_type: :merge_request }
         end
 
-        control.occurrences.each { |c| puts c }
-
         create_event(merge_request2)
 
         expect do
           get api("/projects/#{private_project.id}/events", personal_access_token: token), params: { target_type: :merge_request }
-        end.to issue_same_number_of_queries_as(control)
+        end.to issue_same_number_of_queries_as(control).with_threshold(1)
+        # The extra threshold is because we need to fetch `project` for the 2nd
+        # event. This is because in `app/policies/issuable_policy.rb`, we fetch
+        # the `project` for the `target` for the `event`. It is non-trivial to
+        # re-use the original `project` object from `lib/api/project_events.rb`
+        #
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/432823
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to include_pagination_headers
