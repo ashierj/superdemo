@@ -29,7 +29,7 @@ export default {
 </script>
 <template>
   <header
-    class="gl-mt-5 gl-mb-6 gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-justify-content-space-between"
+    class="gl-mt-5 gl-mb-6 gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row gl-justify-content-space-between"
   >
     <div>
       <h2 class="gl-flex-grow-1 gl-my-0" data-testid="heading">{{ heading }}</h2>
