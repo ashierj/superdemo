@@ -26,6 +26,7 @@ query getNamespaceStorageStatistics(
       lfsObjectsSize
       containerRegistrySize
       containerRegistrySizeIsEstimated
+      dependencyProxySize
       buildArtifactsSize
       packagesSize
       wikiSize

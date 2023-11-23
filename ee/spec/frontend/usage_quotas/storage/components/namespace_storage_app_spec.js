@@ -9,17 +9,12 @@ import { NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE } from 'ee/usage_quotas/storage/co
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
-import getDependencyProxyTotalSizeQuery from 'ee/usage_quotas/storage/queries/dependency_proxy_usage.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
-import {
-  defaultNamespaceProvideValues,
-  mockedNamespaceStorageResponse,
-  mockDependencyProxyResponse,
-} from '../mock_data';
+import { defaultNamespaceProvideValues, mockedNamespaceStorageResponse } from '../mock_data';
 
 jest.mock('~/ci/runner/sentry_utils');
 
@@ -30,7 +25,6 @@ describe('NamespaceStorageApp', () => {
   let wrapper;
 
   const getNamespaceStorageHandler = jest.fn();
-  const getDependencyProxyTotalSizeHandler = jest.fn();
 
   const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
   const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
@@ -44,10 +38,7 @@ describe('NamespaceStorageApp', () => {
 
   const createComponent = ({ provide = {} } = {}) => {
     wrapper = mountExtended(NamespaceStorageApp, {
-      apolloProvider: createMockApollo([
-        [getNamespaceStorageQuery, getNamespaceStorageHandler],
-        [getDependencyProxyTotalSizeQuery, getDependencyProxyTotalSizeHandler],
-      ]),
+      apolloProvider: createMockApollo([[getNamespaceStorageQuery, getNamespaceStorageHandler]]),
       provide: {
         ...defaultNamespaceProvideValues,
         ...provide,
@@ -57,7 +48,6 @@ describe('NamespaceStorageApp', () => {
 
   beforeEach(() => {
     getNamespaceStorageHandler.mockResolvedValue(mockedNamespaceStorageResponse);
-    getDependencyProxyTotalSizeHandler.mockResolvedValue(mockDependencyProxyResponse);
   });
 
   describe('Namespace usage overview', () => {
@@ -110,7 +100,7 @@ describe('NamespaceStorageApp', () => {
       expect(findContainerRegistry().exists()).toBe(true);
     });
 
-    it('will have receive relevant props', () => {
+    it('will receive relevant props', () => {
       const {
         containerRegistrySize,
         containerRegistrySizeIsEstimated,
@@ -118,6 +108,7 @@ describe('NamespaceStorageApp', () => {
       expect(findContainerRegistry().props()).toEqual({
         containerRegistrySize,
         containerRegistrySizeIsEstimated,
+        loading: false,
       });
     });
   });
@@ -245,7 +236,6 @@ describe('NamespaceStorageApp', () => {
     describe('apollo calls', () => {
       beforeEach(async () => {
         namespaceWithPageInfo.data.namespace.projects.pageInfo.hasPreviousPage = true;
-        getDependencyProxyTotalSizeHandler.mockResolvedValue(namespaceWithPageInfo);
         createComponent();
 
         await waitForPromises();

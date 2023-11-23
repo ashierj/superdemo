@@ -1,11 +1,7 @@
-import {
-  mockDependencyProxyResponse,
-  mockedNamespaceStorageResponse,
-} from 'ee_jest/usage_quotas/storage/mock_data';
+import { mockedNamespaceStorageResponse } from 'ee_jest/usage_quotas/storage/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { storageTypeHelpPaths as helpLinks } from '~/usage_quotas/storage/constants';
 import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
-import getDependencyProxyTotalSizeQuery from 'ee/usage_quotas/storage/queries/dependency_proxy_usage.query.graphql';
 import NamespaceStorageApp from './namespace_storage_app.vue';
 
 const meta = {
@@ -27,7 +23,6 @@ const createTemplate = (config = {}) => {
   if (apolloProvider == null) {
     const requestHandlers = [
       [getNamespaceStorageQuery, () => Promise.resolve(mockedNamespaceStorageResponse)],
-      [getDependencyProxyTotalSizeQuery, () => Promise.resolve(mockDependencyProxyResponse)],
     ];
     apolloProvider = createMockApollo(requestHandlers);
   }
@@ -66,7 +61,6 @@ export const SaasWithNamespaceLimitsLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [getNamespaceStorageQuery, () => new Promise(() => {})],
-      [getDependencyProxyTotalSizeQuery, () => new Promise(() => {})],
     ]);
 
     return createTemplate({
@@ -115,7 +109,6 @@ export const SaasWithProjectLimitsLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [getNamespaceStorageQuery, () => new Promise(() => {})],
-      [getDependencyProxyTotalSizeQuery, () => new Promise(() => {})],
     ]);
 
     return createTemplate({
@@ -132,10 +125,7 @@ export const SaasWithProjectLimitsLoading = {
 
 export const SaasLoadingError = {
   render: (...args) => {
-    const apolloProvider = createMockApollo([
-      [getNamespaceStorageQuery, () => Promise.reject()],
-      [getDependencyProxyTotalSizeQuery, () => Promise.reject()],
-    ]);
+    const apolloProvider = createMockApollo([[getNamespaceStorageQuery, () => Promise.reject()]]);
 
     return createTemplate({
       apolloProvider,
@@ -177,7 +167,6 @@ export const SelfManagedLoading = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [getNamespaceStorageQuery, () => new Promise(() => {})],
-      [getDependencyProxyTotalSizeQuery, () => new Promise(() => {})],
     ]);
 
     return createTemplate({

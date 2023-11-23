@@ -4,7 +4,6 @@ import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { __ } from '~/locale';
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
-import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { parseGetStorageResults } from '../utils';
 import {
   NAMESPACE_STORAGE_ERROR_MESSAGE,
@@ -55,20 +54,6 @@ export default {
         captureException({ error, component: this.$options.name });
       },
     },
-    dependencyProxyTotalSizeBytes: {
-      query: GetDependencyProxyTotalSizeQuery,
-      variables() {
-        return {
-          fullPath: this.namespacePath,
-        };
-      },
-      update({ group }) {
-        return group?.dependencyProxyTotalSizeBytes;
-      },
-      error(error) {
-        captureException({ error, component: this.$options.name });
-      },
-    },
   },
   i18n: {
     NAMESPACE_STORAGE_ERROR_MESSAGE,
@@ -80,7 +65,6 @@ export default {
       namespace: {},
       searchTerm: '',
       firstFetch: true,
-      dependencyProxyTotalSizeBytes: '0',
       loadingError: false,
       sortKey: this.isUsingProjectEnforcementWithLimits ? 'STORAGE' : 'STORAGE_SIZE_DESC',
       initialSortBy: this.isUsingProjectEnforcementWithLimits ? null : 'storage',
@@ -88,29 +72,28 @@ export default {
   },
   computed: {
     namespaceProjects() {
-      return this.namespace?.projects?.data ?? [];
+      return this.namespace.projects?.data ?? [];
     },
-    storageStatistics() {
-      if (!this.namespace) {
-        return null;
-      }
-
-      return {
-        costFactoredStorageSize: this.namespace.rootStorageStatistics?.costFactoredStorageSize,
-        additionalPurchasedStorageSize: this.namespace.additionalPurchasedStorageSize,
-      };
+    costFactoredStorageSize() {
+      return this.namespace.rootStorageStatistics?.costFactoredStorageSize;
     },
-    isQueryLoading() {
-      return this.$apollo.queries.namespace.loading;
+    containerRegistrySize() {
+      return this.namespace.rootStorageStatistics?.containerRegistrySize ?? 0;
     },
-    isDependencyProxyStorageQueryLoading() {
-      return this.$apollo.queries.dependencyProxyTotalSizeBytes.loading;
+    containerRegistrySizeIsEstimated() {
+      return this.namespace.rootStorageStatistics?.containerRegistrySizeIsEstimated ?? false;
+    },
+    dependencyProxyTotalSize() {
+      return this.namespace.rootStorageStatistics?.dependencyProxySize ?? 0;
     },
     pageInfo() {
       return this.namespace.projects?.pageInfo ?? {};
     },
     showPagination() {
       return Boolean(this.pageInfo?.hasPreviousPage || this.pageInfo?.hasNextPage);
+    },
+    isQueryLoading() {
+      return this.$apollo.queries.namespace.loading;
     },
     isStorageUsageStatisticsLoading() {
       return this.loadingError || this.isQueryLoading;
@@ -166,31 +149,25 @@ export default {
     <gl-alert v-if="loadingError" variant="danger" :dismissible="false" class="gl-mt-4">
       {{ $options.i18n.NAMESPACE_STORAGE_ERROR_MESSAGE }}
     </gl-alert>
-    <div v-if="storageStatistics">
-      <storage-usage-statistics
-        :additional-purchased-storage-size="storageStatistics.additionalPurchasedStorageSize"
-        :used-storage="storageStatistics.costFactoredStorageSize"
-        :loading="isStorageUsageStatisticsLoading"
-      />
-    </div>
+    <storage-usage-statistics
+      :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize"
+      :used-storage="costFactoredStorageSize"
+      :loading="isStorageUsageStatisticsLoading"
+    />
 
     <h3 data-testid="breakdown-subtitle">
       {{ $options.i18n.NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE }}
     </h3>
-
     <dependency-proxy-usage
       v-if="!userNamespace"
-      :dependency-proxy-total-size="dependencyProxyTotalSizeBytes"
-      :loading="isDependencyProxyStorageQueryLoading"
+      :dependency-proxy-total-size="dependencyProxyTotalSize"
+      :loading="isQueryLoading"
     />
-    <template v-if="namespace.rootStorageStatistics">
-      <container-registry-usage
-        :container-registry-size="namespace.rootStorageStatistics.containerRegistrySize"
-        :container-registry-size-is-estimated="
-          namespace.rootStorageStatistics.containerRegistrySizeIsEstimated
-        "
-      />
-    </template>
+    <container-registry-usage
+      :container-registry-size="containerRegistrySize"
+      :container-registry-size-is-estimated="containerRegistrySizeIsEstimated"
+      :loading="isQueryLoading"
+    />
 
     <section class="gl-mt-5">
       <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">

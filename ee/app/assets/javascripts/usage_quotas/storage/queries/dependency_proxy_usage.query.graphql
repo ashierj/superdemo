@@ -1,6 +1,0 @@
-query getDependencyProxyTotalSizeQuery($fullPath: ID!) {
-  group(fullPath: $fullPath) {
-    id
-    dependencyProxyTotalSizeBytes
-  }
-}
