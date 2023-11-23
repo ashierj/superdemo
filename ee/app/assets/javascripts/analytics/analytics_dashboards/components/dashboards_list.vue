@@ -62,7 +62,6 @@ export default {
       requiresOnboarding: Object.keys(ONBOARDING_FEATURE_COMPONENTS),
       featureDashboards: [],
       userDashboards: [],
-      showVisualizationDesignerButton: this.glFeatures.combinedAnalyticsVisualizationEditor,
       alert: null,
     };
   },
@@ -174,11 +173,7 @@ export default {
         </p>
       </div>
       <div>
-        <gl-button
-          v-if="showVisualizationDesignerButton"
-          to="visualization-designer"
-          data-testid="visualization-designer-button"
-        >
+        <gl-button to="visualization-designer" data-testid="visualization-designer-button">
           {{ s__('Analytics|Visualization Designer') }}
         </gl-button>
         <router-link
