@@ -1615,39 +1615,51 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   end
 
   describe '#delete_software_license_policies' do
-    let(:configuration) { create(:security_orchestration_policy_configuration) }
-    let(:other_configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:project) { create(:project, namespace: namespace) }
+    let_it_be(:other_project) { create(:project, namespace: namespace) }
+    let_it_be(:configuration) { create(:security_orchestration_policy_configuration, namespace: namespace, project: nil) }
+    let_it_be(:other_configuration) { create(:security_orchestration_policy_configuration, project: other_project) }
 
-    let(:scan_result_policy_read) do
-      create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration)
+    let_it_be(:scan_result_policy_read) do
+      create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: project)
     end
 
-    let(:scan_result_policy_read_other_configuration) do
-      create(:scan_result_policy_read, security_orchestration_policy_configuration: other_configuration)
+    let_it_be(:scan_result_policy_read_other_project) do
+      create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: other_project)
+    end
+
+    let_it_be(:scan_result_policy_read_other_configuration) do
+      create(:scan_result_policy_read, security_orchestration_policy_configuration: other_configuration, project: other_project)
     end
 
     let!(:software_license_without_scan_result_policy) do
-      create(:software_license_policy, project: configuration.project)
+      create(:software_license_policy, project: project)
     end
 
     let!(:software_license_with_scan_result_policy) do
-      create(:software_license_policy, project: configuration.project,
+      create(:software_license_policy, project: project,
         scan_result_policy_read: scan_result_policy_read)
     end
 
     let!(:software_license_with_scan_result_policy_other_configuration) do
-      create(:software_license_policy, project: other_configuration.project,
+      create(:software_license_policy, project: other_project,
         scan_result_policy_read: scan_result_policy_read_other_configuration)
     end
 
-    it 'deletes project scan_result_policy_reads' do
-      configuration.delete_software_license_policies(configuration.project)
+    let!(:software_license_with_scan_result_policy_other_project) do
+      create(:software_license_policy, project: other_project,
+        scan_result_policy_read: scan_result_policy_read_other_project)
+    end
 
-      software_license_policies = SoftwareLicensePolicy.where(project_id: configuration.project.id)
-      other_project_software_license_policies = SoftwareLicensePolicy.where(project_id: other_configuration.project)
+    it 'deletes project scan_result_policy_reads' do
+      configuration.delete_software_license_policies(project)
+
+      software_license_policies = SoftwareLicensePolicy.where(project_id: project.id)
+      other_project_software_license_policies = SoftwareLicensePolicy.where(project_id: other_project.id)
 
       expect(software_license_policies).to match_array([software_license_without_scan_result_policy])
-      expect(other_project_software_license_policies).to match_array([software_license_with_scan_result_policy_other_configuration])
+      expect(other_project_software_license_policies).to match_array([software_license_with_scan_result_policy_other_configuration, software_license_with_scan_result_policy_other_project])
     end
   end
 
