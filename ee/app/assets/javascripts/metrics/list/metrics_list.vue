@@ -2,6 +2,9 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
+import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
+import { isMetaClick } from '~/lib/utils/common_utils';
+import { sanitize } from '~/lib/dompurify';
 import MetricsTable from './metrics_table.vue';
 
 export default {
@@ -38,6 +41,11 @@ export default {
         this.loading = false;
       }
     },
+    onMetricClicked({ metricId, clickEvent = {} }) {
+      const external = isMetaClick(clickEvent);
+      const url = joinPaths(window.location.pathname, encodeURI(metricId));
+      visitUrl(sanitize(url), external);
+    },
   },
 };
 </script>
@@ -49,7 +57,7 @@ export default {
     </div>
 
     <div v-else class="gl-my-8">
-      <metrics-table :metrics="metrics" />
+      <metrics-table :metrics="metrics" @metric-clicked="onMetricClicked" />
     </div>
   </div>
 </template>
