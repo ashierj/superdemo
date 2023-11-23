@@ -17,7 +17,7 @@ RSpec.describe RemoteDevelopment::NetworkPolicyEgressValidator, feature_category
 
   using RSpec::Parameterized::TableSyntax
 
-  # noinspection RubyMismatchedArgumentType - RubyMine is resolving `#|` from Array, instead of Rspec::Parameterized
+  # noinspection RubyMismatchedArgumentType - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-32041
   where(:egress, :validity, :errors) do
     # rubocop:disable Layout/LineLength -- The RSpec table syntax often requires long lines for errors
     nil                                                 | false | { egress: ['must be an array'] }
