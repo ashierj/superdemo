@@ -28,6 +28,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
   let(:domain_template) { "{{.port}}-#{workspace.name}.#{workspace.dns_zone}" }
   let(:env_var_secret_name) { "#{workspace.name}-env-var" }
   let(:file_secret_name) { "#{workspace.name}-file" }
+  let(:egress_ip_rules) { RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT }
 
   let(:expected_workspace_resources) do
     YAML.load_stream(
@@ -39,7 +40,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
         include_inventory: false,
         include_network_policy: false,
         include_all_resources: false,
-        dns_zone: dns_zone
+        dns_zone: dns_zone,
+        egress_ip_rules: egress_ip_rules
       )
     )
   end

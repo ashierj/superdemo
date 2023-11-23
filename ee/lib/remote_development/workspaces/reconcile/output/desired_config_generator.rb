@@ -66,7 +66,8 @@ module RemoteDevelopment
                 namespace: workspace.namespace,
                 labels: labels,
                 annotations: annotations,
-                gitlab_workspaces_proxy_namespace: gitlab_workspaces_proxy_namespace
+                gitlab_workspaces_proxy_namespace: gitlab_workspaces_proxy_namespace,
+                egress_ip_rules: remote_development_agent_config.network_policy_egress
               )
               desired_config.append(network_policy)
             end
@@ -217,8 +218,16 @@ module RemoteDevelopment
           # @param [Hash] labels
           # @param [Hash] annotations
           # @param [string] gitlab_workspaces_proxy_namespace
+          # @param [Array<Hash>] egress_rules
           # @return [Hash]
-          def self.get_network_policy(name:, namespace:, labels:, annotations:, gitlab_workspaces_proxy_namespace:)
+          def self.get_network_policy(
+            name:,
+            namespace:,
+            labels:,
+            annotations:,
+            gitlab_workspaces_proxy_namespace:,
+            egress_ip_rules:
+          )
             policy_types = [
               - "Ingress",
               - "Egress"
@@ -241,18 +250,18 @@ module RemoteDevelopment
                 "kubernetes.io/metadata.name": "kube-system"
               }
             }
-            egress_except_cidr = [
-              - "10.0.0.0/8",
-              - "172.16.0.0/12",
-              - "192.168.0.0/16"
-            ]
             egress = [
-              { to: [{ ipBlock: { cidr: "0.0.0.0/0", except: egress_except_cidr } }] },
               {
                 ports: [{ port: 53, protocol: "TCP" }, { port: 53, protocol: "UDP" }],
                 to: [{ namespaceSelector: kube_system_namespace_selector }]
               }
             ]
+            egress_ip_rules.each do |egress_rule|
+              symbolized_egress_rule = egress_rule.deep_symbolize_keys
+              egress.append(
+                { to: [{ ipBlock: { cidr: symbolized_egress_rule[:allow], except: symbolized_egress_rule[:except] } }] }
+              )
+            end
 
             {
               apiVersion: "networking.k8s.io/v1",
