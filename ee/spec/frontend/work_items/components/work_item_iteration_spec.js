@@ -1,29 +1,21 @@
-import {
-  GlDropdown,
-  GlDropdownItem,
-  GlSearchBoxByType,
-  GlSkeletonLoader,
-  GlDropdownText,
-  GlFormGroup,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox, GlFormGroup, GlListboxItem, GlSkeletonLoader } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
+import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { getIterationPeriod } from 'ee/iterations/utils';
-import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
-import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
-import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import {
   groupIterationsResponse,
   groupIterationsResponseWithNoIterations,
   mockIterationWidgetResponse,
-  updateWorkItemMutationResponse,
   updateWorkItemMutationErrorResponse,
+  updateWorkItemMutationResponse,
 } from 'jest/work_items/mock_data';
+import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
+import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
 describe('WorkItemIteration component', () => {
   Vue.use(VueApollo);
@@ -33,36 +25,23 @@ describe('WorkItemIteration component', () => {
   const workItemId = 'gid://gitlab/WorkItem/1';
   const workItemType = 'Task';
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
-  const findNoIterationDropdownItem = () => wrapper.findByTestId('no-iteration');
-  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-  const findDropdownTexts = () => wrapper.findAllComponents(GlDropdownText);
-  const findFirstDropdownItem = () => findDropdownItems().at(0);
-  const findDropdownItemAtIndex = (index) => findDropdownItems().at(index);
+  const findNoIterationDropdownItem = () => wrapper.findByText('No iteration');
+  const findDropdownItems = () => wrapper.findAllComponents(GlListboxItem);
   const findDisabledTextSpan = () => wrapper.findByTestId('disabled-text');
-  const findDropdownTextAtIndex = (index) => findDropdownTexts().at(index);
   const findInputGroup = () => wrapper.findComponent(GlFormGroup);
-
-  const networkResolvedValue = new Error();
+  const findNoResultsText = () => wrapper.findByTestId('no-results-text');
 
   const successSearchQueryHandler = jest.fn().mockResolvedValue(groupIterationsResponse);
   const successSearchWithNoMatchingIterations = jest
     .fn()
     .mockResolvedValue(groupIterationsResponseWithNoIterations);
-
   const successUpdateWorkItemMutationHandler = jest
     .fn()
     .mockResolvedValue(updateWorkItemMutationResponse);
 
-  const showDropdown = () => {
-    findDropdown().vm.$emit('shown');
-  };
-
-  const hideDropdown = () => {
-    findDropdown().vm.$emit('hide');
-  };
+  const showDropdown = () => findDropdown().vm.$emit('shown');
 
   const createComponent = ({
     canUpdate = true,
@@ -87,21 +66,22 @@ describe('WorkItemIteration component', () => {
       provide: {
         hasIterationsFeature: true,
       },
-      stubs: { GlDropdown, GlSearchBoxByType },
+      stubs: {
+        GlCollapsibleListbox,
+      },
     });
   };
 
   it('has "Iteration" label', () => {
     createComponent();
-    expect(findInputGroup().exists()).toBe(true);
 
-    expect(findInputGroup().attributes('label')).toBe(WorkItemIteration.i18n.ITERATION);
+    expect(findInputGroup().attributes('label')).toBe('Iteration');
   });
 
   describe('Default text with canUpdate false and iteration value', () => {
     describe.each`
       description             | iteration                      | value
-      ${'when no iteration'}  | ${null}                        | ${WorkItemIteration.i18n.NONE}
+      ${'when no iteration'}  | ${null}                        | ${'None'}
       ${'when iteration set'} | ${mockIterationWidgetResponse} | ${mockIterationWidgetResponse.title}
     `('$description', ({ iteration, value }) => {
       it(`has a value of "${value}"`, () => {
@@ -117,7 +97,7 @@ describe('WorkItemIteration component', () => {
     it(`has a value of "Add to iteration"`, () => {
       createComponent({ canUpdate: true, iteration: null });
 
-      expect(findDropdown().props('text')).toBe(WorkItemIteration.i18n.ITERATION_PLACEHOLDER);
+      expect(findDropdown().props('toggleText')).toBe('Add to iteration');
     });
   });
 
@@ -125,23 +105,31 @@ describe('WorkItemIteration component', () => {
     it('has the search box', () => {
       createComponent();
 
-      expect(findSearchBox().exists()).toBe(true);
+      expect(findDropdown().props('searchable')).toBe(true);
     });
 
     it('shows no matching results when no items', () => {
-      createComponent({
-        searchQueryHandler: successSearchWithNoMatchingIterations,
-      });
+      createComponent({ searchQueryHandler: successSearchWithNoMatchingIterations });
 
-      expect(findDropdownTextAtIndex(0).text()).toBe(WorkItemIteration.i18n.NO_MATCHING_RESULTS);
+      expect(findNoResultsText().text()).toBe('No matching results');
       expect(findDropdownItems()).toHaveLength(1);
-      expect(findDropdownTexts()).toHaveLength(1);
     });
   });
 
   describe('Dropdown options', () => {
     beforeEach(() => {
       createComponent({ canUpdate: true });
+    });
+
+    it('calls successSearchQueryHandler with variables when dropdown is opened', async () => {
+      showDropdown();
+      await nextTick();
+
+      expect(successSearchQueryHandler).toHaveBeenCalledWith({
+        fullPath: 'test-project-path',
+        state: 'opened',
+        title: '',
+      });
     });
 
     it('shows the skeleton loader when the items are being fetched on click', async () => {
@@ -153,7 +141,6 @@ describe('WorkItemIteration component', () => {
 
     it('shows the iterations in dropdown when the items have finished fetching', async () => {
       showDropdown();
-      await nextTick();
       await waitForPromises();
 
       expect(findSkeletonLoader().exists()).toBe(false);
@@ -164,17 +151,17 @@ describe('WorkItemIteration component', () => {
     });
 
     it('changes the iteration to null when clicked on no iteration', async () => {
-      showDropdown();
-      findFirstDropdownItem().vm.$emit('click');
-
-      hideDropdown();
+      findDropdown().vm.$emit('select', 'no-iteration-id');
       await nextTick();
+
       expect(findDropdown().props('loading')).toBe(true);
 
       await waitForPromises();
 
-      expect(findDropdown().props('loading')).toBe(false);
-      expect(findDropdown().props('text')).toBe(WorkItemIteration.i18n.ITERATION_PLACEHOLDER);
+      expect(findDropdown().props()).toMatchObject({
+        loading: false,
+        toggleText: 'Iteration title widget',
+      });
     });
 
     it('changes the iteration to the selected iteration', async () => {
@@ -182,19 +169,11 @@ describe('WorkItemIteration component', () => {
       /** the index is -1 since no matching results is also a dropdown item */
       const iterationAtIndex =
         groupIterationsResponse.data.workspace.attributes.nodes[iterationIndex - 1];
-      showDropdown();
 
-      await waitForPromises();
-      findDropdownItemAtIndex(iterationIndex).vm.$emit('click');
-
-      hideDropdown();
-      await nextTick();
-
+      findDropdown().vm.$emit('select', iterationAtIndex.id);
       await waitForPromises();
 
-      expect(findDropdown().props('text')).toBe(
-        iterationAtIndex.title || getIterationPeriod(iterationAtIndex),
-      );
+      expect(findDropdown().props('toggleText')).toBe('Iteration title widget');
     });
   });
 
@@ -202,7 +181,7 @@ describe('WorkItemIteration component', () => {
     it.each`
       errorType          | expectedErrorMessage                                                 | mockValue                              | resolveFunction
       ${'graphql error'} | ${'Something went wrong while updating the task. Please try again.'} | ${updateWorkItemMutationErrorResponse} | ${'mockResolvedValue'}
-      ${'network error'} | ${'Something went wrong while updating the task. Please try again.'} | ${networkResolvedValue}                | ${'mockRejectedValue'}
+      ${'network error'} | ${'Something went wrong while updating the task. Please try again.'} | ${new Error()}                         | ${'mockRejectedValue'}
     `(
       'emits an error when there is a $errorType',
       async ({ mockValue, expectedErrorMessage, resolveFunction }) => {
@@ -211,10 +190,7 @@ describe('WorkItemIteration component', () => {
           canUpdate: true,
         });
 
-        showDropdown();
-        findFirstDropdownItem().vm.$emit('click');
-        hideDropdown();
-
+        findDropdown().vm.$emit('select', 'no-iteration-id');
         await waitForPromises();
 
         expect(wrapper.emitted('error')).toEqual([[expectedErrorMessage]]);
@@ -227,10 +203,7 @@ describe('WorkItemIteration component', () => {
       const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
       createComponent({ canUpdate: true });
 
-      showDropdown();
-      findFirstDropdownItem().vm.$emit('click');
-      hideDropdown();
-
+      findDropdown().vm.$emit('select', 'no-iteration-id');
       await waitForPromises();
 
       expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_iteration', {

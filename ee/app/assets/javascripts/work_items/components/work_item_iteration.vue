@@ -1,31 +1,23 @@
 <script>
-import {
-  GlFormGroup,
-  GlDropdown,
-  GlDropdownSectionHeader,
-  GlDropdownItem,
-  GlDropdownDivider,
-  GlSkeletonLoader,
-  GlSearchBoxByType,
-  GlDropdownText,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox, GlFormGroup, GlSkeletonLoader } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import Tracking from '~/tracking';
-import { s__ } from '~/locale';
-import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
-import {
-  I18N_WORK_ITEM_ERROR_UPDATING,
-  sprintfWorkItem,
-  TRACKING_CATEGORY_SHOW,
-  I18N_WORK_ITEM_FETCH_ITERATIONS_ERROR,
-} from '~/work_items/constants';
+import { getIterationPeriod, groupOptionsByIterationCadences } from 'ee/iterations/utils';
+import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import { STATUS_OPEN } from '~/issues/constants';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
+import { s__ } from '~/locale';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import Tracking from '~/tracking';
+import {
+  I18N_WORK_ITEM_ERROR_UPDATING,
+  I18N_WORK_ITEM_FETCH_ITERATIONS_ERROR,
+  sprintfWorkItem,
+  TRACKING_CATEGORY_SHOW,
+} from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
 const noIterationId = 'no-iteration-id';
+const noIterationItem = { text: s__('WorkItem|No iteration'), value: noIterationId };
 
 export default {
   i18n: {
@@ -36,14 +28,9 @@ export default {
     NO_ITERATION: s__('WorkItem|No iteration'),
   },
   components: {
+    GlCollapsibleListbox,
     GlFormGroup,
-    GlDropdown,
-    GlDropdownItem,
-    GlDropdownSectionHeader,
-    GlDropdownDivider,
     GlSkeletonLoader,
-    GlSearchBoxByType,
-    GlDropdownText,
   },
   mixins: [Tracking.mixin()],
   inject: ['hasIterationsFeature'],
@@ -55,7 +42,7 @@ export default {
     iteration: {
       type: Object,
       required: false,
-      default: null,
+      default: () => ({}),
     },
     canUpdate: {
       type: Boolean,
@@ -78,11 +65,10 @@ export default {
   data() {
     return {
       searchTerm: '',
-      isFocused: false,
       shouldFetch: false,
-      selectedIterationId: null,
+      selectedIterationId: this.iteration?.id,
       updateInProgress: false,
-      localIteration: this.iteration,
+      iterations: [],
     };
   },
   computed: {
@@ -94,38 +80,35 @@ export default {
       };
     },
     iterationPeriod() {
-      return this.localIteration?.period || getIterationPeriod(this.localIteration);
+      return this.iteration?.period || getIterationPeriod(this.iteration);
     },
     iterationTitle() {
-      return this.localIteration?.title || this.iterationPeriod;
+      return this.iteration?.title || this.iterationPeriod;
     },
-    groupedIterationCadences() {
-      return !this.isLoadingIterations && this.iterations
-        ? groupByIterationCadences(this.iterations)
-        : [];
+    listboxItems() {
+      return [
+        {
+          text: this.$options.i18n.NO_ITERATION,
+          textSrOnly: true,
+          options: [noIterationItem],
+        },
+      ].concat(groupOptionsByIterationCadences(this.iterations));
     },
     isLoadingIterations() {
       return this.$apollo.queries.iterations.loading;
     },
     dropdownClasses() {
       return {
-        'gl-text-gray-500!': this.canUpdate && this.isNoIteration,
-        'is-not-focused': !this.isFocused,
+        'gl-text-gray-500!': this.canUpdate && !this.iteration?.id,
       };
-    },
-    doesNotMeetCriteriaToUpdate() {
-      return this.selectedIterationId === this.iteration?.id || !this.selectedIterationId;
     },
     noIterationDefaultText() {
       return this.canUpdate ? this.$options.i18n.ITERATION_PLACEHOLDER : this.$options.i18n.NONE;
     },
     dropdownText() {
-      return this.localIteration?.id && this.localIteration?.id !== noIterationId
+      return this.iteration?.id && this.iteration?.id !== noIterationId
         ? this.iterationTitle
         : this.noIterationDefaultText;
-    },
-    isNoIteration() {
-      return !this.localIteration?.id;
     },
   },
   apollo: {
@@ -150,41 +133,28 @@ export default {
       },
     },
   },
-  watch: {
-    iteration: {
-      handler(newVal) {
-        this.localIteration = newVal;
-      },
-      deep: true,
-    },
-  },
   created() {
     this.debouncedSearchKeyUpdate = debounce(this.setSearchKey, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
   },
   methods: {
-    isIterationChecked(iteration) {
-      return this.selectedIterationId
-        ? this.selectedIterationId === iteration.id
-        : this.localIteration?.id === iteration.id;
-    },
     setSearchKey(value) {
       this.searchTerm = value;
     },
     onDropdownShown() {
-      this.$refs.search.focusInput();
       this.shouldFetch = true;
-      this.isFocused = true;
     },
     onDropdownHide() {
-      this.updateWorkItemIteration();
-      this.isFocused = false;
       this.searchTerm = '';
-      this.selectedIterationId = null;
+      this.shouldFetch = false;
     },
     async updateWorkItemIteration() {
-      if (this.doesNotMeetCriteriaToUpdate) {
+      const selectedIteration =
+        this.iterations.find(({ id }) => id === this.selectedIterationId) ?? noIterationItem;
+
+      if (this.iteration?.id === selectedIteration?.id) {
         return;
       }
+
       this.updateInProgress = true;
       try {
         const {
@@ -214,10 +184,6 @@ export default {
       }
       this.updateInProgress = false;
     },
-    updateLocalIteration(iteration) {
-      this.localIteration = iteration;
-      this.selectedIterationId = iteration.id;
-    },
   },
 };
 </script>
@@ -239,60 +205,39 @@ export default {
     >
       {{ dropdownText }}
     </span>
-    <gl-dropdown
+
+    <gl-collapsible-listbox
       v-else
       id="iteration-value"
-      :toggle-class="dropdownClasses"
-      :text="dropdownText"
-      :loading="updateInProgress"
-      :disabled="!canUpdate"
+      v-model="selectedIterationId"
+      category="tertiary"
       class="work-item-field-value"
+      :items="listboxItems"
+      :loading="updateInProgress"
+      searchable
+      :toggle-class="dropdownClasses"
+      :toggle-text="dropdownText"
+      @hidden="onDropdownHide"
+      @search="debouncedSearchKeyUpdate"
+      @select="updateWorkItemIteration"
       @shown="onDropdownShown"
-      @hide="onDropdownHide"
     >
-      <template #header>
-        <gl-search-box-by-type ref="search" :value="searchTerm" @input="debouncedSearchKeyUpdate" />
-      </template>
-      <gl-dropdown-item
-        data-testid="no-iteration"
-        is-check-item
-        :is-checked="isNoIteration"
-        @click="updateLocalIteration({ id: 'no-iteration-id' })"
-      >
-        {{ $options.i18n.NO_ITERATION }}
-      </gl-dropdown-item>
-      <gl-dropdown-divider />
-      <gl-dropdown-text v-if="isLoadingIterations">
-        <gl-skeleton-loader :height="90">
+      <template #footer>
+        <gl-skeleton-loader v-if="isLoadingIterations" :height="90">
           <rect width="380" height="10" x="10" y="15" rx="4" />
           <rect width="280" height="10" x="10" y="30" rx="4" />
           <rect width="380" height="10" x="10" y="50" rx="4" />
           <rect width="280" height="10" x="10" y="65" rx="4" />
         </gl-skeleton-loader>
-      </gl-dropdown-text>
-
-      <template v-else-if="groupedIterationCadences.length">
-        <template v-for="(cadence, index) in groupedIterationCadences">
-          <gl-dropdown-section-header :key="`header-${cadence.id}`">
-            {{ cadence.title }}
-          </gl-dropdown-section-header>
-          <gl-dropdown-item
-            v-for="currentIteration in cadence.iterations"
-            :key="currentIteration.id"
-            is-check-item
-            :is-checked="isIterationChecked(currentIteration)"
-            @click="updateLocalIteration(currentIteration)"
-          >
-            <span>{{ currentIteration.period }}</span>
-            <span>{{ currentIteration.title }}</span>
-          </gl-dropdown-item>
-          <gl-dropdown-divider
-            v-if="index !== groupedIterationCadences.length - 1"
-            :key="`divider-${cadence.id}`"
-          />
-        </template>
+        <div
+          v-else-if="!iterations.length"
+          aria-live="assertive"
+          class="gl-pl-7 gl-pr-5 gl-py-3 gl-font-base gl-text-gray-600"
+          data-testid="no-results-text"
+        >
+          {{ $options.i18n.NO_MATCHING_RESULTS }}
+        </div>
       </template>
-      <gl-dropdown-text v-else>{{ $options.i18n.NO_MATCHING_RESULTS }}</gl-dropdown-text>
-    </gl-dropdown>
+    </gl-collapsible-listbox>
   </gl-form-group>
 </template>
