@@ -2,6 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import { GlFilteredSearch } from '@gitlab/ui';
 import GroupDependenciesFilteredSearch from 'ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue';
 import LicenseToken from 'ee/dependencies/components/filtered_search/tokens/license_token.vue';
+import ProjectToken from 'ee/dependencies/components/filtered_search/tokens/project_token.vue';
 import createStore from 'ee/dependencies/store';
 
 describe('GroupDependenciesFilteredSearch', () => {
@@ -32,6 +33,7 @@ describe('GroupDependenciesFilteredSearch', () => {
     it.each`
       tokenTitle   | tokenConfig
       ${'License'} | ${{ title: 'License', type: 'licenses', multiSelect: true, token: LicenseToken }}
+      ${'Project'} | ${{ title: 'Project', type: 'project_ids', multiSelect: true, token: ProjectToken }}
     `('contains a "$tokenTitle" search token', ({ tokenConfig }) => {
       expect(findFilteredSearch().props('availableTokens')).toMatchObject(
         expect.arrayContaining([

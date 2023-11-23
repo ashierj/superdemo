@@ -5,6 +5,7 @@ import { mapActions, mapState } from 'vuex';
 import { __ } from '~/locale';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import LicenseToken from './tokens/license_token.vue';
+import ProjectToken from './tokens/project_token.vue';
 
 export default {
   components: {
@@ -27,7 +28,14 @@ export default {
           unique: true,
           token: LicenseToken,
           operators: OPERATORS_IS,
-          licenses: this.licenses,
+        },
+        {
+          type: 'project_ids',
+          title: __('Project'),
+          multiSelect: true,
+          unique: true,
+          token: ProjectToken,
+          operators: OPERATORS_IS,
         },
       ];
     },

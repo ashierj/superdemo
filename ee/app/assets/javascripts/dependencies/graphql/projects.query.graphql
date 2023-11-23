@@ -2,7 +2,7 @@ query dependenciesGetGroupProjects(
   $groupFullPath: ID!
   $search: String!
   $first: Int!
-  $sbomComponentId: ID!
+  $sbomComponentId: ID = null
 ) {
   group(fullPath: $groupFullPath) {
     id

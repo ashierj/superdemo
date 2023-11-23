@@ -34,7 +34,7 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
     jest.spyOn(store, 'dispatch').mockImplementation();
   };
 
-  const createComponent = () => {
+  const createComponent = ({ propsData = {} } = {}) => {
     wrapper = shallowMountExtended(LicenseToken, {
       store,
       propsData: {
@@ -42,6 +42,8 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
           multiSelect: true,
         },
         value: {},
+        active: false,
+        ...propsData,
       },
       provide: {
         licensesEndpoint: TEST_GROUP_LICENSES_ENDPOINT,
@@ -94,6 +96,25 @@ describe('ee/dependencies/components/filtered_search/tokens/license_token.vue', 
       expect(wrapper.text()).toContain(TEST_LICENSES[0].name);
       expect(wrapper.text()).toContain(TEST_LICENSES[1].name);
     });
+
+    it.each([
+      { active: true, expectedValue: null },
+      { active: false, expectedValue: { data: [] } },
+    ])(
+      'passes "$expectedValue" to the search-token when the dropdown is open: "$active"',
+      ({ active, expectedValue }) => {
+        createComponent({
+          propsData: {
+            active,
+            value: { data: [] },
+          },
+        });
+
+        expect(findFilteredSearchToken().props('value')).toEqual(
+          expect.objectContaining(expectedValue),
+        );
+      },
+    );
   });
 
   describe('once the licenses have been fetched', () => {
