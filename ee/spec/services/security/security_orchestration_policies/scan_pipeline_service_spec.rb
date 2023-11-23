@@ -75,7 +75,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
       let(:actions) { [{ scan: 'secret_detection', variables: { SECRET_DETECTION_HISTORIC_SCAN: 'true' } }] }
 
       context 'when SECRET_DETECTION_HISTORIC_SCAN is provided when initializing the service' do
-        let(:service) { described_class.new(context, secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }) }
+        let(:service) { described_class.new(context, base_variables: { secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' } }) }
 
         it 'ignores variables from base_variables and set the value defined in actions' do
           expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
@@ -90,7 +90,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
 
     context 'when actions does not contain the SECRET_DETECTION_HISTORIC_SCAN variable' do
       let(:actions) { [{ scan: 'secret_detection', variables: {} }] }
-      let(:service) { described_class.new(context, secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }) }
+      let(:service) { described_class.new(context, base_variables: { secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' } }) }
 
       context 'when SECRET_DETECTION_HISTORIC_SCAN is provided when initializing the service' do
         it 'sets the value provided when initializing the service' do
@@ -132,6 +132,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
     end
 
     context 'with custom scan type' do
+      let(:custom_ci_yaml_allowed) { true }
+      let(:service) { described_class.new(context, custom_ci_yaml_allowed: custom_ci_yaml_allowed) }
       let(:actions) do
         [
           { scan: 'custom', ci_configuration: ci_configuration }
@@ -154,6 +156,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         before do
           stub_feature_flags(compliance_pipeline_in_policies: false)
         end
+
+        it { is_expected.to eq({ pipeline_scan: {}, on_demand: {} }) }
+      end
+
+      context 'when custom yaml is not allowed from configuration' do
+        let(:custom_ci_yaml_allowed) { false }
 
         it { is_expected.to eq({ pipeline_scan: {}, on_demand: {} }) }
       end

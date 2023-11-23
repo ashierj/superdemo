@@ -60,7 +60,7 @@ module Security
 
         ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(
           context,
-          scan_variables(actions)
+          base_variables: scan_variables(actions)
         ).execute(actions)
       end
 
