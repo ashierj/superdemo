@@ -56,9 +56,9 @@ class GeoNodeStatus < ApplicationRecord
 
   attribute_method_suffix '_timestamp', '_timestamp='
 
-  alias_attribute :last_successful_status_check_timestamp, :last_successful_status_check_at_timestamp
-  alias_attribute :last_event_timestamp, :last_event_date_timestamp
-  alias_attribute :cursor_last_event_timestamp, :cursor_last_event_date_timestamp
+  alias_attribute :last_successful_status_check, :last_successful_status_check_at
+  alias_attribute :last_event, :last_event_date
+  alias_attribute :cursor_last_event, :cursor_last_event_date
 
   scope :for_active_secondaries, -> { joins(:geo_node).merge(GeoNode.secondary_nodes.where(enabled: true)) }
 
