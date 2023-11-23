@@ -8,11 +8,21 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
   let(:enabled) { true }
   let(:dns_zone) { 'my-awesome-domain.me' }
   let(:network_policy_present) { false }
+  let(:default_network_policy_egress) { RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT }
+  let(:network_policy_egress) { default_network_policy_egress }
   let(:network_policy_enabled) { true }
-  let(:network_policy) do
+  let(:network_policy_without_egress) do
     { enabled: network_policy_enabled }
   end
 
+  let(:network_policy_with_egress) do
+    {
+      enabled: network_policy_enabled,
+      egress: network_policy_egress
+    }
+  end
+
+  let(:network_policy) { network_policy_without_egress }
   let(:gitlab_workspaces_proxy_present) { false }
   let(:gitlab_workspaces_proxy_namespace) { 'gitlab-workspaces' }
   let(:gitlab_workspaces_proxy) do
@@ -20,6 +30,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
   end
 
   let_it_be(:agent) { create(:cluster_agent) }
+  let_it_be(:workspace1) { create(:workspace, force_include_all_resources: false) }
+  let_it_be(:workspace2) { create(:workspace, force_include_all_resources: false) }
 
   let(:config) do
     remote_development_config = {
@@ -59,12 +71,14 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
         expect(config_instance.enabled).to eq(enabled)
         expect(config_instance.dns_zone).to eq(dns_zone)
         expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
+        expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
         expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
 
         expect(result)
           .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
             { remote_development_agent_config: config_instance }
           ))
+        expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
       end
 
       context 'when enabled is not present in the config passed' do
@@ -90,12 +104,14 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
             expect(config_instance.enabled).to eq(enabled)
             expect(config_instance.dns_zone).to eq(dns_zone)
             expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
+            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
             expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
 
             expect(result)
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
+            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
           end
         end
 
@@ -109,12 +125,46 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
             expect(config_instance.enabled).to eq(enabled)
             expect(config_instance.dns_zone).to eq(dns_zone)
             expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
+            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
             expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
 
             expect(result)
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
+            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
+          end
+        end
+
+        context 'when network_policy.egress is explicitly specified in the config passed' do
+          let(:network_policy_egress) do
+            [
+              {
+                allow: "0.0.0.0/0",
+                except: [
+                  - "10.0.0.0/8"
+                ]
+              }
+            ].freeze
+          end
+
+          let(:network_policy) { network_policy_with_egress }
+
+          it 'creates a config record with specified value and returns an ok Result containing the agent config' do
+            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+
+            config_instance = agent.reload.remote_development_agent_config
+            expect(config_instance.enabled).to eq(enabled)
+            expect(config_instance.dns_zone).to eq(dns_zone)
+            expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
+            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
+            expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
+
+            expect(result)
+              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
+                { remote_development_agent_config: config_instance }
+              ))
+            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
           end
         end
       end
@@ -132,12 +182,14 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
             expect(config_instance.enabled).to eq(enabled)
             expect(config_instance.dns_zone).to eq(dns_zone)
             expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
+            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
             expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
 
             expect(result)
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
+            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
           end
         end
 
@@ -151,12 +203,14 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
             expect(config_instance.enabled).to eq(enabled)
             expect(config_instance.dns_zone).to eq(dns_zone)
             expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
+            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
             expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
 
             expect(result)
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
+            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
           end
         end
       end
