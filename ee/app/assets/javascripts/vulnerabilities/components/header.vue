@@ -270,7 +270,7 @@ export default {
           @click="triggerClick(actionButtons[0].action)"
         >
           {{ actionButtons[0].name }}
-          <gl-badge v-if="actionButtons[0].badge" class="gl-ml-2" size="sm" variant="info">
+          <gl-badge v-if="actionButtons[0].badge" class="gl-ml-1" size="sm" variant="info">
             {{ actionButtons[0].badge }}
           </gl-badge>
         </gl-button>

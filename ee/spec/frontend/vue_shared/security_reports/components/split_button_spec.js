@@ -29,6 +29,7 @@ describe('Split Button', () => {
   const findListboxItem = () => wrapper.findComponent(GlListboxItem);
   const findListboxIcon = () => wrapper.findComponent('[data-testid="item-icon"]');
   const findListboxBadge = () => findListbox().findComponent(GlBadge);
+  const findButtonBadge = () => findButton().findComponent(GlBadge);
 
   const createComponent = (props, mountFn = shallowMountExtended) => {
     wrapper = mountFn(SplitButton, {
@@ -82,6 +83,23 @@ describe('Split Button', () => {
 
       expect(wrapper.emitted('button1Action')).toBeUndefined();
       expect(spy).toHaveBeenCalledWith(href, true);
+    });
+
+    it('renders the icon', () => {
+      const icon = 'tanuki-ai';
+      const { buttons } = defaultProps;
+      createComponent({ buttons: [{ ...buttons[0], icon }] }, mountExtended);
+
+      expect(findButton().props('icon')).toBe(icon);
+    });
+
+    it('renders the badge', () => {
+      const badge = 'experiment';
+      const { buttons } = defaultProps;
+      createComponent({ buttons: [{ ...buttons[0], badge }] }, mountExtended);
+
+      expect(findButtonBadge().text()).toBe(badge);
+      expect(findButtonBadge().props('size')).toBe('sm');
     });
   });
 
