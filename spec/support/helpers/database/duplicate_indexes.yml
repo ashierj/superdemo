@@ -219,9 +219,6 @@ vulnerability_flags:
 web_hook_logs:
   index_web_hook_logs_on_web_hook_id_and_created_at:
     - index_web_hook_logs_part_on_web_hook_id
-web_hooks:
-  index_web_hooks_on_project_id_recent_failures:
-    - index_web_hooks_on_project_id
 work_item_hierarchy_restrictions:
   index_work_item_hierarchy_restrictions_on_parent_and_child:
     - index_work_item_hierarchy_restrictions_on_parent_type_id
