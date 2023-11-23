@@ -247,6 +247,40 @@ GitLab documentation should be clear and easy to understand.
 - Be clear, concise, and stick to the goal of the topic.
 - Write in US English with US grammar. (Tested in [`British.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/British.yml).)
 
+### Active voice
+
+In most cases, text is easier to understand and to translate if you use active voice instead of passive.
+
+For example, use:
+
+- The developer writes code for the application.
+
+Instead of:
+
+- Application code is written by the developer.
+
+Sometimes, using `GitLab` as the subject can be awkward. For example, `GitLab exports the report`.
+In this case, you can use passive voice instead. For example, `The report is exported`.
+
+### Customer perspective
+
+Focus on the functionality and benefits that GitLab brings to customer,
+rather than what GitLab has created.
+
+For example, use:
+
+- Use merge requests to compare code in the source and target branches.
+
+Instead of:
+
+- GitLab allows you to compare code.
+- GitLab created the ability to let you compare code.
+- Merge requests let you compare code.
+
+Words that indicate you are not writing from a customer perspective are
+[allow and enable](word_list.md#allow-enable). Try instead to use
+[you](word_list.md#you-your-yours) and to speak directly to the user.
+
 ### Capitalization
 
 As a company, we tend toward lowercase.
