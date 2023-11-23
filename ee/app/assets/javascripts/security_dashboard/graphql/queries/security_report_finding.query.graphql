@@ -180,6 +180,7 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
               username
             }
           }
+          presentOnDefaultBranch
         }
       }
     }
