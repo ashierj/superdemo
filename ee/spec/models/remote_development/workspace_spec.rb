@@ -5,7 +5,7 @@ require 'spec_helper'
 # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
-  let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let_it_be(:agent, reload: true) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let_it_be(:project) { create(:project, :in_group) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
 
@@ -107,19 +107,49 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
     end
 
     context 'on remote_development_agent_config' do
-      let(:agent_with_no_remote_development_config) { create(:cluster_agent) }
+      context 'when no config is present' do
+        let(:agent_with_no_remote_development_config) { create(:cluster_agent) }
 
-      subject(:workspace) do
-        build(:workspace, user: user, url: "URL", agent: agent_with_no_remote_development_config, project: project)
+        subject(:invalid_workspace) do
+          build(:workspace, user: user, agent: agent_with_no_remote_development_config, project: project)
+        end
+
+        it 'validates presence of agent.remote_development_agent_config' do
+          # sanity check of fixture
+          expect(agent_with_no_remote_development_config.remote_development_agent_config).not_to be_present
+
+          expect(invalid_workspace).not_to be_valid
+          expect(invalid_workspace.errors[:agent])
+            .to include('for Workspace must have an associated RemoteDevelopmentAgentConfig')
+        end
       end
 
-      it 'validates presence of agent.remote_development_agent_config' do
-        # sanity check of fixture
-        expect(agent_with_no_remote_development_config.remote_development_agent_config).not_to be_present
+      context 'when a config is present' do
+        subject(:workspace) do
+          build(:workspace, user: user, agent: agent, project: project)
+        end
 
-        expect(workspace).not_to be_valid
-        expect(workspace.errors[:agent])
-          .to include('for Workspace must have an associated RemoteDevelopmentAgentConfig')
+        context 'when agent is enabled' do
+          before do
+            agent.remote_development_agent_config.enabled = true
+          end
+
+          it 'validates presence of agent.remote_development_agent_config' do
+            expect(workspace).to be_valid
+          end
+        end
+
+        context 'when agent is disabled' do
+          before do
+            agent.remote_development_agent_config.enabled = false
+          end
+
+          it 'validates presence of agent.remote_development_agent_config' do
+            expect(workspace).not_to be_valid
+            expect(workspace.errors[:agent])
+              .to include("must have the 'enabled' flag set to true")
+          end
+        end
       end
     end
 

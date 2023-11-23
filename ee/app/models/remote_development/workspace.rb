@@ -71,12 +71,15 @@ module RemoteDevelopment
     private
 
     def validate_agent_config_presence
-      # NOTE: The `agent&.` safe navigation operator is necessary in order for the `belong_to(:agent)` association
-      #       specs to work. It's fine, because we separately validate the presence of agent, and adding the missing
-      #       config validation additionally is technically accurate, because it's true there's not a config.
-      return true if agent&.remote_development_agent_config
+      unless agent&.remote_development_agent_config
+        errors.add(:agent, _('for Workspace must have an associated RemoteDevelopmentAgentConfig'))
+        return false
+      end
 
-      errors.add(:agent, _('for Workspace must have an associated RemoteDevelopmentAgentConfig'))
+      return true if agent.remote_development_agent_config.enabled
+
+      errors.add(:agent, _("must have the 'enabled' flag set to true"))
+      false
     end
 
     def enforce_permanent_termination

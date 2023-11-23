@@ -14,6 +14,9 @@ module EE
           argument :has_remote_development_agent_config, GraphQL::Types::Boolean,
             required: false,
             description: 'Returns only cluster agents which have an associated remote development agent config.'
+          argument :has_remote_development_enabled, GraphQL::Types::Boolean,
+            required: false,
+            description: 'Returns only cluster agents which have been enabled with the remote development feature.'
         end
       end
     end

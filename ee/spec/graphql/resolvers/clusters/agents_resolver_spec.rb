@@ -95,6 +95,29 @@ RSpec.describe Resolvers::Clusters::AgentsResolver do
           end
         end
       end
+
+      context 'when has_remote_development_enabled argument is provided' do
+        let(:params) { { has_remote_development_enabled: has_remote_development_enabled } }
+
+        let_it_be(:agent_with_enabled_config) { create(:ee_cluster_agent, project: project) }
+        let_it_be(:agent_without_enabled_config) { create(:ee_cluster_agent, project: project) }
+
+        let_it_be(:config_for_enabled_agent) do
+          create(:remote_development_agent_config, agent: agent_with_enabled_config, enabled: true)
+        end
+
+        let_it_be(:config_for_disabled_agent) do
+          create(:remote_development_agent_config, agent: agent_without_enabled_config, enabled: false)
+        end
+
+        context 'when has_remote_development_agent_config is set to true' do
+          let(:has_remote_development_enabled) { true }
+
+          it 'returns only agents with remote_development_agent_config' do
+            expect(subject).to contain_exactly(agent_with_enabled_config)
+          end
+        end
+      end
     end
 
     context 'the current user does not have access to clusters' do

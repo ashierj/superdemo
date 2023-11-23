@@ -1,7 +1,7 @@
 query getGroupClusterAgents($groupPath: ID!) {
   group(fullPath: $groupPath) {
     id
-    clusterAgents(hasRemoteDevelopmentAgentConfig: true) {
+    clusterAgents(hasRemoteDevelopmentEnabled: true) {
       nodes {
         id
         name
