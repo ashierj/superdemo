@@ -4,6 +4,7 @@ module Sbom
   class Occurrence < ApplicationRecord
     LICENSE_COLUMNS = [:spdx_identifier, :name, :url].freeze
     include EachBatch
+    include IgnorableColumns
 
     belongs_to :component, optional: false
     belongs_to :component_version
@@ -11,13 +12,23 @@ module Sbom
     belongs_to :pipeline, class_name: 'Ci::Pipeline'
     belongs_to :source
 
+    has_many :occurrences_vulnerabilities,
+      class_name: 'Sbom::OccurrencesVulnerability',
+      foreign_key: :sbom_occurrence_id,
+      inverse_of: :occurrence
+
+    has_many :vulnerabilities, through: :occurrences_vulnerabilities
+
+    enum highest_severity: ::Enums::Vulnerability.severity_levels
+
+    ignore_column :vulnerabilities, remove_with: '16.6', remove_after: '2023-12-16'
+
     validates :commit_sha, presence: true
     validates :uuid, presence: true, uniqueness: { case_sensitive: false }
     validates :package_manager, length: { maximum: 255 }
     validates :component_name, length: { maximum: 255 }
     validates :input_file_path, length: { maximum: 255 }
     validates :licenses, json_schema: { filename: 'sbom_occurrences-licenses' }
-    validates :vulnerabilities, json_schema: { filename: 'sbom_occurrences-vulnerabilities' }
 
     delegate :name, to: :component
     delegate :purl_type, to: :component
