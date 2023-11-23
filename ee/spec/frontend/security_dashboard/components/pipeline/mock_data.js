@@ -579,6 +579,7 @@ export const pipelineSecurityReportFinding = {
         webUrl: 'http://gdk.test:3000/root',
       },
     },
+    presentOnDefaultBranch: true,
   },
 };
 
