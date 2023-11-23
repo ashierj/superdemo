@@ -34,23 +34,24 @@ module Gitlab
                   You are a software developer.
                   You can write new tests.
                   %<language_info>s
+                  Here is the code user selected:
                 PROMPT
               ),
-              Utils::Prompt.as_user("%<input>s"),
               Utils::Prompt.as_user(
                 <<~PROMPT
                   <code>
                     %<selected_text>s
                   </code>
                 PROMPT
-              )
+              ),
+              Utils::Prompt.as_user("%<input>s")
             ].freeze
 
             SLASH_COMMANDS = {
               '/tests' => {
                 description: 'Write tests for the code',
-                instruction: 'Write tests for the code below in <code></code> tags.',
-                instruction_with_input: 'Write tests %<input>s for the code below in <code></code> tags.'
+                instruction: 'Write tests for the code in <code></code> tags.',
+                instruction_with_input: 'Write tests %<input>s for the code in <code></code> tags.'
               }
             }.freeze
 
