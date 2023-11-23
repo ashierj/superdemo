@@ -221,7 +221,7 @@ gem 'asciidoctor-plantuml', '~> 0.0.16' # rubocop:todo Gemfile/MissingFeatureCat
 gem 'asciidoctor-kroki', '~> 0.8.0', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'rouge', '~> 4.2.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'truncato', '~> 0.7.12' # rubocop:todo Gemfile/MissingFeatureCategory
-gem 'nokogiri', '~> 1.15', '>= 1.15.4' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'nokogiri', '~> 1.15', '>= 1.15.5' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Calendar rendering
 gem 'icalendar' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -264,7 +264,7 @@ gem 'rainbow', '~> 3.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'ruby-progressbar', '~> 1.10' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Linear-time regex library for untrusted regular expressions
-gem 're2', '2.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 're2', '2.4.3' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Misc
 
@@ -310,7 +310,7 @@ gem 'sanitize', '~> 6.0.2' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'babosa', '~> 2.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Sanitizes SVG input
-gem 'loofah', '~> 2.21.4' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'loofah', '~> 2.22.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Used to provide license templates
 gem 'licensee', '~> 9.16' # rubocop:todo Gemfile/MissingFeatureCategory
