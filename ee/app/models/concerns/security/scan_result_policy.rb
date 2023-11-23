@@ -52,7 +52,7 @@ module Security
         delete_in_batches(
           project
             .software_license_policies
-            .for_scan_result_policy_read(scan_result_policy_reads.pluck(:id))
+            .where(scan_result_policy_read: scan_result_policy_reads.for_project(project))
         )
       end
 
