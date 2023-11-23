@@ -89,6 +89,18 @@ describe('TrialStatusPopover component', () => {
     });
   });
 
+  describe('popover css classes', () => {
+    it('does not set width when showing active trial status', () => {
+      expect(findGlPopover().props('cssClasses')).toEqual(['gl-p-2']);
+    });
+
+    it('sets width when showing expired trial status', () => {
+      wrapper = createComponent({ providers: { daysRemaining: -5 }, mountFn: mount });
+
+      expect(findGlPopover().props('cssClasses')).toEqual(['gl-p-2', 'gl-w-28']);
+    });
+  });
+
   describe('content', () => {
     it('displays correct message when namespace is in active trial', () => {
       wrapper = createComponent({ providers: { daysRemaining: 5 }, mountFn: mount });

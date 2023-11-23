@@ -51022,16 +51022,16 @@ msgstr ""
 msgid "Trials|Day %{daysUsed}/%{duration}"
 msgstr ""
 
+msgid "Trials|Don't lose out on additional GitLab features"
+msgstr ""
+
 msgid "Trials|Looking to do more with GitLab?"
 msgstr ""
 
 msgid "Trials|Trials benefits"
 msgstr ""
 
-msgid "Trials|Upgrade your plan for more security features"
-msgstr ""
-
-msgid "Trials|With GitLab Ultimate you can detect and address vulnerabilities in your application."
+msgid "Trials|Upgrade to regain access to powerful features like advanced team management for code, security, and reporting."
 msgstr ""
 
 msgid "Trials|With GitLab Ultimate, you'll have access to:"
