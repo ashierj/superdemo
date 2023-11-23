@@ -9,11 +9,16 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
-  DEFAULT_SCAN_EXECUTION_POLICY,
+  DEFAULT_PROJECT_SCAN_EXECUTION_POLICY,
+  DEFAULT_GROUP_SCAN_EXECUTION_POLICY,
   buildScannerAction,
   fromYaml,
+  createPolicyObject,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
-import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
+import {
+  DEFAULT_ASSIGNED_POLICY_PROJECT,
+  NAMESPACE_TYPES,
+} from 'ee/security_orchestration/constants';
 import {
   mockDastScanExecutionManifest,
   mockDastScanExecutionObject,
@@ -76,6 +81,7 @@ describe('ScanExecutionPolicyEditor', () => {
         disableScanPolicyUpdate: false,
         policyEditorEmptyStateSvgPath,
         namespacePath: defaultProjectPath,
+        namespaceType: NAMESPACE_TYPES.PROJECT,
         scanPolicyDocumentationPath,
         ...provide,
       },
@@ -119,10 +125,10 @@ describe('ScanExecutionPolicyEditor', () => {
 
   describe('saving a policy', () => {
     it.each`
-      status                            | action                             | event              | factoryFn                    | yamlEditorValue                  | currentlyAssignedPolicyProject
-      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_EXECUTION_POLICY} | ${newlyCreatedPolicyProject}
-      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockDastScanExecutionManifest} | ${assignedPolicyProject}
-      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockDastScanExecutionManifest} | ${assignedPolicyProject}
+      status                            | action                             | event              | factoryFn                    | yamlEditorValue                          | currentlyAssignedPolicyProject
+      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_PROJECT_SCAN_EXECUTION_POLICY} | ${newlyCreatedPolicyProject}
+      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockDastScanExecutionManifest}         | ${assignedPolicyProject}
+      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockDastScanExecutionManifest}         | ${assignedPolicyProject}
     `(
       'navigates to the new merge request when "modifyPolicy" is emitted $status',
       async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
@@ -172,8 +178,8 @@ enabled: true`;
       expect(findPolicyEditorLayout().props()).toMatchObject({
         hasParsingError: false,
         parsingError: '',
-        policy: fromYaml({ manifest: DEFAULT_SCAN_EXECUTION_POLICY }),
-        yamlEditorValue: DEFAULT_SCAN_EXECUTION_POLICY,
+        policy: fromYaml({ manifest: DEFAULT_PROJECT_SCAN_EXECUTION_POLICY }),
+        yamlEditorValue: DEFAULT_PROJECT_SCAN_EXECUTION_POLICY,
       });
       findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
       await nextTick();
@@ -375,5 +381,34 @@ enabled: true`;
 
       expect(findAllActionSections()).toHaveLength(2);
     });
+  });
+
+  describe('policy scope', () => {
+    it.each`
+      securityPoliciesPolicyScope | namespaceType              | manifest
+      ${true}                     | ${NAMESPACE_TYPES.GROUP}   | ${DEFAULT_GROUP_SCAN_EXECUTION_POLICY}
+      ${false}                    | ${NAMESPACE_TYPES.GROUP}   | ${DEFAULT_PROJECT_SCAN_EXECUTION_POLICY}
+      ${true}                     | ${NAMESPACE_TYPES.PROJECT} | ${DEFAULT_PROJECT_SCAN_EXECUTION_POLICY}
+      ${false}                    | ${NAMESPACE_TYPES.PROJECT} | ${DEFAULT_PROJECT_SCAN_EXECUTION_POLICY}
+    `(
+      'should render default policy',
+      ({ securityPoliciesPolicyScope, namespaceType, manifest }) => {
+        const features = {
+          securityPoliciesPolicyScope,
+        };
+        window.gon = { features };
+
+        factory({
+          provide: {
+            namespaceType,
+            glFeatures: features,
+          },
+        });
+
+        expect(findPolicyEditorLayout().props('policy')).toEqual(
+          createPolicyObject(manifest).policy,
+        );
+      },
+    );
   });
 });

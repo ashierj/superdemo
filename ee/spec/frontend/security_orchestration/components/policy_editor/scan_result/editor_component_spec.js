@@ -6,7 +6,8 @@ import EditorLayout from 'ee/security_orchestration/components/policy_editor/edi
 import {
   SCAN_FINDING,
   ANY_MERGE_REQUEST,
-  DEFAULT_SCAN_RESULT_POLICY,
+  DEFAULT_PROJECT_SCAN_RESULT_POLICY,
+  DEFAULT_GROUP_SCAN_RESULT_POLICY,
   getInvalidBranches,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib';
@@ -193,9 +194,9 @@ describe('EditorComponent', () => {
 
     it.each`
       prop                 | compareFn          | expected
-      ${'yamlEditorValue'} | ${'toBe'}          | ${DEFAULT_SCAN_RESULT_POLICY}
+      ${'yamlEditorValue'} | ${'toBe'}          | ${DEFAULT_PROJECT_SCAN_RESULT_POLICY}
       ${'hasParsingError'} | ${'toBe'}          | ${false}
-      ${'policy'}          | ${'toStrictEqual'} | ${fromYaml({ manifest: DEFAULT_SCAN_RESULT_POLICY })}
+      ${'policy'}          | ${'toStrictEqual'} | ${fromYaml({ manifest: DEFAULT_PROJECT_SCAN_RESULT_POLICY })}
     `(
       'passes the correct $prop prop to the PolicyEditorLayout component',
       ({ prop, compareFn, expected }) => {
@@ -491,7 +492,7 @@ describe('EditorComponent', () => {
   describe('CRUD operations', () => {
     it.each`
       status                            | action                             | event              | factoryFn                    | yamlEditorValue                          | currentlyAssignedPolicyProject
-      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_RESULT_POLICY}            | ${newlyCreatedPolicyProject}
+      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_PROJECT_SCAN_RESULT_POLICY}    | ${newlyCreatedPolicyProject}
       ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockDefaultBranchesScanResultManifest} | ${assignedPolicyProject}
       ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockDefaultBranchesScanResultManifest} | ${assignedPolicyProject}
     `(
@@ -672,6 +673,33 @@ describe('EditorComponent', () => {
 
       expect(getInvalidBranches).not.toHaveBeenCalled();
     });
+  });
+
+  describe('policy scope', () => {
+    it.each`
+      securityPoliciesPolicyScope | namespaceType              | manifest
+      ${true}                     | ${NAMESPACE_TYPES.GROUP}   | ${DEFAULT_GROUP_SCAN_RESULT_POLICY}
+      ${false}                    | ${NAMESPACE_TYPES.GROUP}   | ${DEFAULT_PROJECT_SCAN_RESULT_POLICY}
+      ${true}                     | ${NAMESPACE_TYPES.PROJECT} | ${DEFAULT_PROJECT_SCAN_RESULT_POLICY}
+      ${false}                    | ${NAMESPACE_TYPES.PROJECT} | ${DEFAULT_PROJECT_SCAN_RESULT_POLICY}
+    `(
+      'should render default policy',
+      ({ securityPoliciesPolicyScope, namespaceType, manifest }) => {
+        const features = {
+          securityPoliciesPolicyScope,
+        };
+        window.gon = { features };
+
+        factory({
+          glFeatures: features,
+          provide: {
+            namespaceType,
+          },
+        });
+
+        expect(findPolicyEditorLayout().props('policy')).toEqual(fromYaml({ manifest }));
+      },
+    );
   });
 
   describe('settings section', () => {

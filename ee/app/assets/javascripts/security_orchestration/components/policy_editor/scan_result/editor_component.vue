@@ -32,7 +32,8 @@ import {
   PREVENT_PUSHING_AND_FORCE_PUSHING,
   buildSettingsList,
   createPolicyObject,
-  DEFAULT_SCAN_RESULT_POLICY,
+  DEFAULT_PROJECT_SCAN_RESULT_POLICY,
+  DEFAULT_GROUP_SCAN_RESULT_POLICY,
   getInvalidBranches,
   fromYaml,
   toYaml,
@@ -111,7 +112,13 @@ export default {
     },
   },
   data() {
-    const defaultPolicyObject = fromYaml({ manifest: DEFAULT_SCAN_RESULT_POLICY });
+    const isGroupLevel = this.namespaceType === NAMESPACE_TYPES.GROUP;
+    const hasPolicyScope = this.glFeatures.securityPoliciesPolicyScope && isGroupLevel;
+    const manifest = hasPolicyScope
+      ? DEFAULT_GROUP_SCAN_RESULT_POLICY
+      : DEFAULT_PROJECT_SCAN_RESULT_POLICY;
+
+    const defaultPolicyObject = fromYaml({ manifest });
 
     if (
       this.glFeatures.scanResultPoliciesBlockUnprotectingBranches ||
