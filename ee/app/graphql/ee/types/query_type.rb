@@ -124,6 +124,12 @@ module EE
           null: true, description: 'Finds a single custom role.',
           resolver: ::Resolvers::MemberRoles::RolesResolver.single,
           alpha: { milestone: '16.6' }
+        field :self_managed_add_on_eligible_users,
+          ::Types::GitlabSubscriptions::AddOnUserType.connection_type,
+          null: true,
+          description: 'Users within the self-managed instance who are eligible for add-ons.',
+          resolver: ::Resolvers::GitlabSubscriptions::SelfManaged::AddOnEligibleUsersResolver,
+          alpha: { milestone: '16.7' }
       end
 
       def vulnerability(id:)

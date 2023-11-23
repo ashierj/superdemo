@@ -1,0 +1,5 @@
+---
+name: code_suggestions
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137534
+milestone: '16.7'
+group: group::purchase
