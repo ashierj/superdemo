@@ -54,6 +54,7 @@ module EE
           expose :merge_trains_skip_train_allowed?, as: :merge_trains_skip_train_allowed, if: ->(project, _) { project.feature_available?(:merge_pipelines) }
           expose :only_allow_merge_if_all_status_checks_passed, if: ->(project, _) { project.feature_available?(:external_status_checks) }
           expose :allow_pipeline_trigger_approve_deployment, documentation: { type: 'boolean' }, if: ->(project, _) { project.feature_available?(:protected_environments) }
+          expose :prevent_merge_without_jira_issue, if: ->(project, _) { project.feature_available?(:jira_issue_association_enforcement) }
         end
       end
     end

@@ -351,6 +351,7 @@ module EE
       alias_attribute :compliance_pipeline_configuration_full_path, :pipeline_configuration_full_path
 
       delegate :prevent_merge_without_jira_issue,
+        :prevent_merge_without_jira_issue=,
         :selective_code_owner_removals,
         :suggested_reviewers_enabled,
         :only_allow_merge_if_all_status_checks_passed,
