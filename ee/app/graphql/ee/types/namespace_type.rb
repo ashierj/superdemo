@@ -18,7 +18,7 @@ module EE
           ::Types::GitlabSubscriptions::AddOnPurchaseType,
           null: true,
           description: 'AddOnPurchase associated with the namespace',
-          resolver: ::Resolvers::GitlabSubscriptions::AddOnPurchaseResolver
+          resolver: ::Resolvers::GitlabSubscriptions::Namespaces::AddOnPurchaseResolver
 
         field :additional_purchased_storage_size,
               GraphQL::Types::Float,
