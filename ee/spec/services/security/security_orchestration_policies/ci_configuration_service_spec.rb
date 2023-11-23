@@ -229,8 +229,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
         let(:ci_configuration) do
           <<~CI_CONFIG
           image: busybox:latest
+          stages:
+            - custom_stage
           custom:
-            stage: build
+            stage: custom_stage
             script:
               - echo "Defined in security policy"
           CI_CONFIG
@@ -246,9 +248,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
                   script: [
                     "echo \"Defined in security policy\""
                   ],
-                  stage: "build"
+                  stage: "custom_stage"
                 },
-                image: "busybox:latest"
+                image: "busybox:latest",
+                stages: ["custom_stage"]
               }
             )
           }
@@ -305,9 +308,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
                   script: [
                     "echo \"Defined in security policy\""
                   ],
-                  stage: "build"
+                  stage: "custom_stage"
                 },
-                image: "busybox:latest"
+                image: "busybox:latest",
+                stages: ["custom_stage"]
               }
             )
           }
@@ -342,9 +346,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
                   script: [
                     "echo \"Defined in security policy\""
                   ],
-                  stage: "build"
+                  stage: "custom_stage"
                 },
-                image: "busybox:latest"
+                image: "busybox:latest",
+                stages: ["custom_stage"]
               }
             )
           end

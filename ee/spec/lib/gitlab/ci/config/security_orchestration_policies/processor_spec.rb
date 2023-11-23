@@ -277,6 +277,96 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
           end
         end
       end
+
+      context 'when action is custom' do
+        let_it_be(:ci_configuration) do
+          <<~CI_CONFIG
+          stages:
+            - custom_stage
+          custom_job:
+            stage: custom_stage
+            script:
+              - echo "Defined in security policy"
+          CI_CONFIG
+        end
+
+        let_it_be(:policy) do
+          build(
+            :scan_execution_policy,
+            actions: [
+              {
+                scan: 'custom',
+                ci_configuration: ci_configuration
+              }
+            ]
+          )
+        end
+
+        let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
+
+        context 'when compliance_pipeline_in_policies feature is disabled' do
+          before do
+            stub_feature_flags(compliance_pipeline_in_policies: false)
+          end
+
+          it 'does not includes the custom job' do
+            expect(subject[:custom_job]).to be_nil
+          end
+
+          it 'does not add stages' do
+            expect(subject[:stages]).to be_nil
+          end
+        end
+
+        it 'includes the custom job' do
+          expect(subject[:custom_job]).to eq({ stage: 'custom_stage', script: ['echo "Defined in security policy"'] })
+        end
+
+        it 'includes policy custom stage plus default stages' do
+          expect(subject[:stages]).to eq(%w[.pre build test deploy custom_stage .post])
+        end
+
+        context 'when action includes edge stages in the wrong order' do
+          let_it_be(:ci_configuration) do
+            <<~CI_CONFIG
+            stages:
+              - custom_stage
+              - .post
+              - .pre
+            custom_job:
+              stage: custom_stage
+              script:
+                - echo "Defined in security policy"
+            CI_CONFIG
+          end
+
+          it 'puts edge stages in the correct order and adds default stages' do
+            expect(subject[:stages]).to eq(%w[.pre build test deploy custom_stage .post])
+          end
+        end
+
+        context 'when project CI contains stages too' do
+          let(:config) do
+            {
+              stages: %w[ci_config_test ci_config_deploy],
+              image: 'image:1.0.0',
+              job1: {
+                stage: 'build'
+              },
+              job2: {
+                stage: 'test2'
+              },
+              job3: {
+                stage: 'release'
+              }
+            }
+          end
+
+          it 'contains both stages sets in the right order' do
+            expect(subject[:stages]).to eq(%w[scan-policies ci_config_test ci_config_deploy custom_stage])
+          end
+        end
+      end
     end
   end
 end

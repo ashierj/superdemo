@@ -32,7 +32,7 @@ module Security
       private
 
       def custom_pipeline_configuration(ci_configuration, index)
-        Gitlab::Ci::Config.new(ci_configuration).to_hash
+        Gitlab::Ci::Config.new(ci_configuration, inject_edge_stages: false).to_hash
       rescue Gitlab::Ci::Config::ConfigError => e
         {
           generate_job_name_with_index('security_policy_ci', index) => {
