@@ -4,6 +4,7 @@ import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
@@ -23,7 +24,8 @@ import {
   buildScannerAction,
   buildDefaultPipeLineRule,
   createPolicyObject,
-  DEFAULT_SCAN_EXECUTION_POLICY,
+  DEFAULT_PROJECT_SCAN_EXECUTION_POLICY,
+  DEFAULT_GROUP_SCAN_EXECUTION_POLICY,
   fromYaml,
   toYaml,
 } from './lib';
@@ -73,6 +75,7 @@ export default {
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
     'namespacePath',
+    'namespaceType',
     'scanPolicyDocumentationPath',
   ],
   props: {
@@ -92,9 +95,17 @@ export default {
     },
   },
   data() {
-    const yamlEditorValue = this.existingPolicy
-      ? toYaml(this.existingPolicy)
-      : DEFAULT_SCAN_EXECUTION_POLICY;
+    let yamlEditorValue;
+
+    if (this.existingPolicy) {
+      yamlEditorValue = toYaml(this.existingPolicy);
+    } else {
+      const hasPolicyScope =
+        this.glFeatures.securityPoliciesPolicyScope && this.namespaceType === NAMESPACE_TYPES.GROUP;
+      yamlEditorValue = hasPolicyScope
+        ? DEFAULT_GROUP_SCAN_EXECUTION_POLICY
+        : DEFAULT_PROJECT_SCAN_EXECUTION_POLICY;
+    }
 
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
     const parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
