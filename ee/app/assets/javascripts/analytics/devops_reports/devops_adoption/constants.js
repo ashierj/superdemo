@@ -1,3 +1,8 @@
+import {
+  DATA_VIZ_ORANGE_600,
+  DATA_VIZ_AQUA_500,
+  DATA_VIZ_GREEN_600,
+} from '@gitlab/ui/dist/tokens/js/tokens';
 import { s__, __ } from '~/locale';
 
 export const DEFAULT_POLLING_INTERVAL = 30000;
@@ -83,8 +88,7 @@ export const OVERVIEW_CHART_Y_AXIS_TYPE = 'value';
 
 export const OVERVIEW_CHART_PRESENTATION = 'tiled';
 
-// $data-viz-orange-600, $data-viz-aqua-500, $data-viz-green-600
-export const CUSTOM_PALETTE = ['#b24800', '#0094b6', '#487900'];
+export const CUSTOM_PALETTE = [DATA_VIZ_ORANGE_600, DATA_VIZ_AQUA_500, DATA_VIZ_GREEN_600];
 
 export const DEVOPS_ADOPTION_OVERALL_CONFIGURATION = {
   title: s__('DevopsAdoption|Overall adoption'),
