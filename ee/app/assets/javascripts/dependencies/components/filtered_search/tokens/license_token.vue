@@ -28,12 +28,15 @@ export default {
       type: Object,
       required: true,
     },
+    active: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
       searchTerm: '',
-      selectedLicenseNames: this.value.data ? this.value.data.split(',') : [],
-      isActive: false,
+      selectedLicenseNames: [],
     };
   },
   computed: {
@@ -50,6 +53,15 @@ export default {
       return this.licenses.filter(
         (license) => nameIncludesSearchTerm(license) || isSelected(license),
       );
+    },
+    tokenValue() {
+      return {
+        ...this.value,
+        // when the token is active (dropdown is open), we set the value to null to prevent an UX issue
+        // in which only the last selected item is being displayed.
+        // more information: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2381
+        data: this.active ? null : this.selectedLicenseNames,
+      };
     },
   },
   created() {
@@ -79,6 +91,7 @@ export default {
     :config="config"
     v-bind="{ ...$props, ...$attrs }"
     :multi-select-values="selectedLicenseNames"
+    :value="tokenValue"
     v-on="$listeners"
     @select="toggleSelectedLicense"
     @input="setSearchTerm"
