@@ -8,7 +8,7 @@ describe('Dependency proxy usage component', () => {
 
   const helpPath = helpPagePath('user/packages/dependency_proxy/index');
   const defaultProps = {
-    dependencyProxyTotalSize: '512',
+    dependencyProxyTotalSize: 512,
   };
 
   const findDependencyProxySizeSection = () => wrapper.findByTestId('dependency-proxy-size');
@@ -32,11 +32,13 @@ describe('Dependency proxy usage component', () => {
   });
 
   it('displays the dependency proxy size section when prop is provided', () => {
-    expect(findDependencyProxySizeSection().props('value')).toBe(512);
+    expect(findDependencyProxySizeSection().props('value')).toBe(
+      defaultProps.dependencyProxyTotalSize,
+    );
   });
 
   describe('when `dependencyProxyTotalSize` has BigInt value', () => {
-    const mockDependencyProxyTotalSize = String(Number.MAX_SAFE_INTEGER);
+    const mockDependencyProxyTotalSize = Number.MAX_SAFE_INTEGER;
 
     beforeEach(() => {
       createComponent({

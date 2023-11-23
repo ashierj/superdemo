@@ -23,6 +23,11 @@ export default {
       type: Boolean,
       required: true,
     },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   i18n: {
     containerRegistry: s__('UsageQuota|Container Registry'),
@@ -37,7 +42,7 @@ export default {
 };
 </script>
 <template>
-  <usage-banner>
+  <usage-banner :loading="loading">
     <template #left-primary-text>
       {{ $options.i18n.containerRegistry }}
     </template>

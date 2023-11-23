@@ -76,6 +76,7 @@ export const mockedNamespaceStorageResponse = {
       rootStorageStatistics: {
         containerRegistrySize: 3900000,
         containerRegistrySizeIsEstimated: true,
+        dependencyProxySize: 0,
         storageSize: 125771,
         costFactoredStorageSize: 12577,
         repositorySize: 20971,
@@ -147,16 +148,6 @@ export const mockedNamespaceStorageResponse = {
         __typename: 'ProjectConnection',
       },
       __typename: 'Namespace',
-    },
-  },
-};
-
-export const mockDependencyProxyResponse = {
-  data: {
-    group: {
-      id: 'gid://gitlab/Group/84',
-      dependencyProxyTotalSizeBytes: '0',
-      __typename: 'Group',
     },
   },
 };

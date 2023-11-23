@@ -15,9 +15,9 @@ export default {
   },
   props: {
     dependencyProxyTotalSize: {
-      type: String,
+      type: Number,
       required: false,
-      default: '0',
+      default: 0,
     },
     loading: {
       type: Boolean,
@@ -53,10 +53,7 @@ export default {
       {{ $options.i18n.storageUsed }}
     </template>
     <template #right-secondary-text>
-      <number-to-human-size
-        :value="Number(dependencyProxyTotalSize)"
-        data-testid="dependency-proxy-size"
-      />
+      <number-to-human-size :value="dependencyProxyTotalSize" data-testid="dependency-proxy-size" />
     </template>
   </usage-banner>
 </template>
