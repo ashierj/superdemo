@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.addOnPurchase', feature_category: :seat_cost_management do
+RSpec.describe 'Query.namespace.addOnPurchase', feature_category: :seat_cost_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
