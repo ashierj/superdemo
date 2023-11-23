@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import TanukiBotChatApp from 'ee/ai/tanuki_bot/components/app.vue';
+import DuoChatCallout from 'ee/ai/components/global_callout/duo_chat_callout.vue';
 import { GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
@@ -43,6 +44,8 @@ describe('GitLab Duo Chat', () => {
   const subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
   const chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
+
+  const findCallout = () => wrapper.findComponent(DuoChatCallout);
 
   const createComponent = ({
     initialState = {},
@@ -112,6 +115,11 @@ describe('GitLab Duo Chat', () => {
         expect(findGlDuoChat().props('badgeHelpPageUrl')).toContain(expectedAnchorValue);
       },
     );
+
+    it('renders the duo-chat-callout component', () => {
+      createComponent();
+      expect(findCallout().exists()).toBe(true);
+    });
   });
 
   describe('events handling', () => {
