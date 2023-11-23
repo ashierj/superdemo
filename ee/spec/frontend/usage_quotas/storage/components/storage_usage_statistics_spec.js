@@ -1,6 +1,7 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlButton, GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
+import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import StorageUsageOverviewCard from 'ee/usage_quotas/storage/components/storage_usage_overview_card.vue';
 import NamespaceLimitsStorageUsageOverviewCard from 'ee/usage_quotas/storage/components/namespace_limits_storage_usage_overview_card.vue';
 import NamespaceLimitsTotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/namespace_limits_total_storage_available_breakdown_card.vue';
@@ -157,27 +158,61 @@ describe('StorageUsageStatistics', () => {
     });
 
     describe('enforcement type subtitle', () => {
-      it('renders project enforcement copy if enforcementType is project and there are limits set', () => {
-        createComponent({
-          provide: {
-            isUsingNamespaceEnforcement: false,
-            isUsingProjectEnforcementWithLimits: true,
-          },
+      describe('enforcementType is project and there are limits set', () => {
+        beforeEach(() => {
+          createComponent({
+            provide: {
+              isUsingNamespaceEnforcement: false,
+              isUsingProjectEnforcementWithLimits: true,
+            },
+          });
         });
 
-        expect(wrapper.text()).toContain(
-          'Projects under this namespace have 10.0 GiB of storage. How are limits applied?',
-        );
+        it('renders project enforcement copy', () => {
+          expect(wrapper.text()).toContain(
+            'Projects under this namespace have 10.0 GiB of storage limit applied to repository and LFS objects. How are limits applied?',
+          );
+        });
+
+        it('renders SaaS help link', () => {
+          expect(wrapper.findComponent(GlLink).attributes('href')).toBe(
+            usageQuotasHelpPaths.usageQuotasProjectStorageLimit,
+          );
+        });
+
+        it('renders SM help link if not in SaaS', () => {
+          createComponent({
+            provide: {
+              isUsingNamespaceEnforcement: false,
+              isUsingProjectEnforcementWithLimits: true,
+              purchaseStorageUrl: null,
+            },
+          });
+
+          expect(wrapper.findComponent(GlLink).attributes('href')).toBe(
+            usageQuotasHelpPaths.repositorySizeLimit,
+          );
+        });
       });
 
-      it('renders namespace enforcement copy if enforcementType is namespace', () => {
+      describe('enforcementType is namespace', () => {
         // Namespace enforcement type is declared in ee/app/models/namespaces/storage/root_size.rb
         // More about namespace storage limit at https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
-        createComponent();
+        beforeEach(() => {
+          createComponent();
+        });
 
-        expect(wrapper.text()).toContain(
-          'This namespace has 5.0 GiB of storage. How are limits applied?',
-        );
+        it('renders namespace enforcement copy', () => {
+          expect(wrapper.text()).toContain(
+            'This namespace has 5.0 GiB of storage. How are limits applied?',
+          );
+        });
+
+        it('renders namespace enforcement help link', () => {
+          expect(wrapper.findComponent(GlLink).attributes('href')).toBe(
+            usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit,
+          );
+        });
       });
     });
   });

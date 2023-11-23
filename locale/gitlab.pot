@@ -51945,7 +51945,7 @@ msgstr ""
 msgid "UsageQuota|Product analytics"
 msgstr ""
 
-msgid "UsageQuota|Projects under this namespace have %{planLimit} of storage."
+msgid "UsageQuota|Projects under this namespace have %{planLimit} of storage limit applied to repository and LFS objects."
 msgstr ""
 
 msgid "UsageQuota|Purchased storage"
