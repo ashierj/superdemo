@@ -7,7 +7,7 @@ exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip informat
   </h4>
   <div
     bars="[object Object],[object Object],[object Object]"
-    custom-palette="#b24800,#0094b6,#487900"
+    custom-palette="#b14f18,#0090b1,#4e7f0e"
     group-by="January"
     option="[object Object]"
     presentation="tiled"
