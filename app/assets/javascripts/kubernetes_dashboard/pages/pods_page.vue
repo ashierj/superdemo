@@ -1,61 +1,45 @@
 <script>
-import { GlLoadingIcon } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import WorkloadStats from '../components/workload_stats.vue';
+import k8sPodsQuery from '../graphql/queries/k8s_dashboard_pods.query.graphql';
 import {
   PHASE_RUNNING,
   PHASE_PENDING,
   PHASE_SUCCEEDED,
   PHASE_FAILED,
   STATUS_LABELS,
-} from '~/kubernetes_dashboard/constants';
-import WorkloadStats from '~/kubernetes_dashboard/components/workload_stats.vue';
-import k8sPodsQuery from '../graphql/queries/k8s_pods.query.graphql';
+} from '../constants';
 
 export default {
   components: {
     GlLoadingIcon,
+    GlAlert,
     WorkloadStats,
   },
+  inject: ['configuration'],
   apollo: {
     k8sPods: {
       query: k8sPodsQuery,
       variables() {
         return {
           configuration: this.configuration,
-          namespace: this.namespace,
         };
       },
       update(data) {
         return data?.k8sPods || [];
       },
-      error(error) {
-        this.error = error.message;
-        this.$emit('cluster-error', this.error);
+      error(err) {
+        this.errorMessage = err?.message;
       },
-      watchLoading(isLoading) {
-        this.$emit('loading', isLoading);
-      },
-    },
-  },
-  props: {
-    configuration: {
-      required: true,
-      type: Object,
-    },
-    namespace: {
-      required: true,
-      type: String,
     },
   },
   data() {
     return {
-      error: '',
+      errorMessage: '',
     };
   },
   computed: {
     podStats() {
-      if (!this.k8sPods) return null;
-
       return [
         {
           value: this.countPodsByPhase(PHASE_RUNNING),
@@ -81,23 +65,17 @@ export default {
   },
   methods: {
     countPodsByPhase(phase) {
-      const filteredPods = this.k8sPods.filter((item) => item.status.phase === phase);
-      if (phase === PHASE_FAILED && filteredPods.length) {
-        this.$emit('failed');
-      }
+      const filteredPods = this.k8sPods?.filter((item) => item.status.phase === phase) || [];
+
       return filteredPods.length;
     },
-  },
-  i18n: {
-    podsTitle: s__('Environment|Pods'),
   },
 };
 </script>
 <template>
-  <div>
-    <p class="gl-text-gray-500">{{ $options.i18n.podsTitle }}</p>
-
-    <gl-loading-icon v-if="loading" />
-    <workload-stats v-else-if="podStats && !error" :stats="podStats" />
-  </div>
+  <gl-loading-icon v-if="loading" />
+  <gl-alert v-else-if="errorMessage" variant="danger" :dismissible="false" class="gl-mb-5">
+    {{ errorMessage }}
+  </gl-alert>
+  <workload-stats v-else :stats="podStats" />
 </template>

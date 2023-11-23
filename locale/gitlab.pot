@@ -18958,9 +18958,6 @@ msgstr ""
 msgid "Environment|External IP"
 msgstr ""
 
-msgid "Environment|Failed"
-msgstr ""
-
 msgid "Environment|Forbidden to access the cluster agent from this environment."
 msgstr ""
 
@@ -18971,9 +18968,6 @@ msgid "Environment|Jobs"
 msgstr ""
 
 msgid "Environment|Kubernetes overview"
-msgstr ""
-
-msgid "Environment|Pending"
 msgstr ""
 
 msgid "Environment|Pods"
@@ -18991,9 +18985,6 @@ msgstr ""
 msgid "Environment|ReplicaSets"
 msgstr ""
 
-msgid "Environment|Running"
-msgstr ""
-
 msgid "Environment|Services"
 msgstr ""
 
@@ -19001,9 +18992,6 @@ msgid "Environment|Stalled"
 msgstr ""
 
 msgid "Environment|StatefulSets"
-msgstr ""
-
-msgid "Environment|Succeeded"
 msgstr ""
 
 msgid "Environment|Summary"
@@ -27770,7 +27758,19 @@ msgstr ""
 msgid "KubernetesDashboard|Dashboard"
 msgstr ""
 
+msgid "KubernetesDashboard|Failed"
+msgstr ""
+
+msgid "KubernetesDashboard|Pending"
+msgstr ""
+
 msgid "KubernetesDashboard|Pods"
+msgstr ""
+
+msgid "KubernetesDashboard|Running"
+msgstr ""
+
+msgid "KubernetesDashboard|Succeeded"
 msgstr ""
 
 msgid "LDAP"
