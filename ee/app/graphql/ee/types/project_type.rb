@@ -284,6 +284,11 @@ module EE
           method: :configured_to_create_issues_from_vulnerabilities?,
           description: 'Indicates whether Jira issue creation from vulnerabilities is enabled.'
 
+        field :prevent_merge_without_jira_issue_enabled, GraphQL::Types::Boolean,
+          null: false,
+          method: :prevent_merge_without_jira_issue?,
+          description: 'Indicates if an associated issue from Jira is required.'
+
         field :product_analytics_events_stored, GraphQL::Types::Int,
           null: true,
           resolver: ::Resolvers::ProductAnalytics::ProjectUsageDataResolver,

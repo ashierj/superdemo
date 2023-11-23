@@ -19,6 +19,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to delegate_method(:pipeline_configuration_full_path).to(:compliance_management_framework) }
 
     it { is_expected.to delegate_method(:prevent_merge_without_jira_issue).to(:project_setting) }
+    it { is_expected.to delegate_method(:prevent_merge_without_jira_issue=).to(:project_setting).with_arguments(true) }
     it { is_expected.to delegate_method(:only_allow_merge_if_all_status_checks_passed).to(:project_setting) }
 
     it { is_expected.to belong_to(:deleting_user) }

@@ -22,6 +22,7 @@ module EE
             optional :mirror_trigger_builds, type: Grape::API::Boolean, desc: 'Pull mirroring triggers builds'
             optional :external_authorization_classification_label, type: String, desc: 'The classification label for the project'
             optional :requirements_access_level, type: String, values: %w[disabled private enabled], desc: 'Requirements feature access level. One of `disabled`, `private` or `enabled`'
+            optional :prevent_merge_without_jira_issue, type: Grape::API::Boolean, desc: 'Require an associated issue from Jira'
           end
 
           params :optional_filter_params_ee do
@@ -69,7 +70,8 @@ module EE
               :merge_pipelines_enabled,
               :merge_trains_enabled,
               :merge_trains_skip_train_allowed,
-              :requirements_access_level
+              :requirements_access_level,
+              :prevent_merge_without_jira_issue
             ]
           end
         end
@@ -84,6 +86,10 @@ module EE
 
           unless ::License.feature_available?(:protected_environments)
             attrs.delete(:allow_pipeline_trigger_approve_deployment)
+          end
+
+          unless ::License.feature_available?(:jira_issue_association_enforcement)
+            attrs.delete(:prevent_merge_without_jira_issue)
           end
         end
       end

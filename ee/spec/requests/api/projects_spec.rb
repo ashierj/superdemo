@@ -1553,6 +1553,34 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         expect(json_response).not_to have_key 'allow_pipeline_trigger_approve_deployment'
       end
     end
+
+    context 'when jira_issue_association_enforcement is available' do
+      before do
+        stub_licensed_features(jira_issue_association_enforcement: true)
+      end
+
+      let(:project_params) { { prevent_merge_without_jira_issue: true } }
+
+      it 'updates prevent_merge_without_jira_issue' do
+        expect { subject }.to change { project.reload.prevent_merge_without_jira_issue }.from(false).to(true)
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['prevent_merge_without_jira_issue']).to eq(project_params[:prevent_merge_without_jira_issue])
+      end
+    end
+
+    context 'when jira_issue_association_enforcement is not available' do
+      before do
+        stub_licensed_features(jira_issue_association_enforcement: false)
+      end
+
+      let(:project_params) { { prevent_merge_without_jira_issue: true } }
+
+      it 'does not update prevent_merge_without_jira_issue' do
+        expect { subject }.to not_change { project.reload.prevent_merge_without_jira_issue }
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['prevent_merge_without_jira_issue']).to eq(nil)
+      end
+    end
   end
 
   describe 'POST /projects/:id/restore' do
