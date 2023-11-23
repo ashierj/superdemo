@@ -9,8 +9,8 @@ RSpec.describe Geo::DeletedProject, :geo, type: :model, feature_category: :geo_r
 
   before do
     storages = {
-      'foo' => { 'path' => 'tmp/tests/storage_foo' },
-      'bar' => { 'path' => 'tmp/tests/storage_bar' }
+      'foo' => {},
+      'bar' => {}
     }
 
     stub_storage_settings(storages)
