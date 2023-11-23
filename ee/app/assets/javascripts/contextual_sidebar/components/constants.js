@@ -36,9 +36,9 @@ export const POPOVER = {
       features of GitLab %{planName}. To keep those features after your trial
       ends, you’ll need to buy a subscription. (You can also choose GitLab
       Premium if it meets your needs.)`),
-    popoverTitleExpiredTrial: s__('Trials|Upgrade your plan for more security features'),
+    popoverTitleExpiredTrial: s__("Trials|Don't lose out on additional GitLab features"),
     popoverContentExpiredTrial: s__(
-      'Trials|With GitLab Ultimate you can detect and address vulnerabilities in your application.',
+      'Trials|Upgrade to regain access to powerful features like advanced team management for code, security, and reporting.',
     ),
   },
   trackingEvents: {

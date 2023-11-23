@@ -46,7 +46,8 @@ export default {
   handRaiseLeadAttributes: {
     size: 'small',
     variant: 'confirm',
-    class: 'gl-mb-3 gl-w-full',
+    category: 'secondary',
+    class: 'gl-w-full',
     buttonTextClasses: 'gl-font-sm',
     href: '#',
   },
@@ -75,6 +76,15 @@ export default {
         daysRemaining: this.daysRemaining,
         planName: this.planName,
       });
+    },
+    cssClasses() {
+      const classList = ['gl-p-2'];
+
+      if (!this.isTrialActive) {
+        classList.push('gl-w-28');
+      }
+
+      return classList;
     },
   },
   created() {
@@ -116,7 +126,7 @@ export default {
     :target="targetId"
     :disabled="disabled"
     :delay="{ hide: 400 } /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
-    :css-classes="['gl-p-2']"
+    :css-classes="cssClasses"
     @shown="onShown"
   >
     <template #title>
@@ -137,6 +147,19 @@ export default {
     </div>
 
     <div class="gl-mt-5">
+      <gl-button
+        :href="plansHref"
+        variant="confirm"
+        size="small"
+        class="gl-mb-3"
+        block
+        data-testid="compare-btn"
+        :title="$options.i18n.compareAllButtonTitle"
+        @click="trackPageAction('compareBtnClick')"
+      >
+        <span class="gl-font-sm">{{ $options.i18n.compareAllButtonTitle }}</span>
+      </gl-button>
+
       <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
         <div
           class="js-hand-raise-lead-button"
@@ -153,20 +176,6 @@ export default {
           :data-track-label="trackLabel"
         ></div>
       </div>
-
-      <gl-button
-        :href="plansHref"
-        category="secondary"
-        variant="confirm"
-        size="small"
-        class="gl-mb-0"
-        block
-        data-testid="compare-btn"
-        :title="$options.i18n.compareAllButtonTitle"
-        @click="trackPageAction('compareBtnClick')"
-      >
-        <span class="gl-font-sm">{{ $options.i18n.compareAllButtonTitle }}</span>
-      </gl-button>
     </div>
   </gl-popover>
 </template>
