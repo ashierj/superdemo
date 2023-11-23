@@ -9,12 +9,13 @@ module Security
         }
       }.freeze
 
-      attr_reader :project, :base_variables, :context
+      attr_reader :project, :base_variables, :context, :custom_ci_yaml_allowed
 
-      def initialize(context, base_variables = SCAN_VARIABLES)
+      def initialize(context, base_variables: SCAN_VARIABLES, custom_ci_yaml_allowed: false)
         @project = context.project
         @context = context
         @base_variables = base_variables
+        @custom_ci_yaml_allowed = custom_ci_yaml_allowed
       end
 
       def execute(actions)
@@ -79,7 +80,7 @@ module Security
       end
 
       def custom_ci_yaml_enabled?
-        Feature.enabled?(:compliance_pipeline_in_policies, project)
+        custom_ci_yaml_allowed && Feature.enabled?(:compliance_pipeline_in_policies, project)
       end
     end
   end

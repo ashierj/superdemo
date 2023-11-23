@@ -50,7 +50,9 @@ module Gitlab
           end
 
           def scan_templates
-            @scan_templates ||= ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(context).execute(active_scan_actions)
+            @scan_templates ||= ::Security::SecurityOrchestrationPolicies::ScanPipelineService
+              .new(context, custom_ci_yaml_allowed: true)
+              .execute(active_scan_actions)
           end
 
           ## Add `dast` to the end of stages if `dast` is not in stages already
