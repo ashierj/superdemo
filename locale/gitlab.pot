@@ -32867,6 +32867,9 @@ msgstr ""
 msgid "Objective"
 msgstr ""
 
+msgid "ObservabilityMetrics|Error: Failed to load metrics details. Try reloading the page."
+msgstr ""
+
 msgid "ObservabilityMetrics|Metrics"
 msgstr ""
 

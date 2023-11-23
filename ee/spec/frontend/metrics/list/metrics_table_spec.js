@@ -15,6 +15,9 @@ describe('MetricsTable', () => {
   };
 
   const getRows = () => wrapper.findComponent(GlTable).findAll(`[data-testid="metric-row"]`);
+  const getRow = (idx) => getRows().at(idx);
+
+  const clickRow = (idx) => getRow(idx).trigger('click');
 
   it('renders metrics as table', () => {
     mountComponent();
@@ -52,5 +55,15 @@ describe('MetricsTable', () => {
     expect(getRows().length).toBe(1);
 
     expect(getRows().at(0).text()).toContain('No results found');
+  });
+
+  it('emits metric-clicked on row-clicked', async () => {
+    mountComponent();
+
+    await clickRow(0);
+
+    expect(wrapper.emitted('metric-clicked')[0]).toEqual([
+      { metricId: mockMetrics[0].name, clickEvent: expect.any(MouseEvent) },
+    ]);
   });
 });

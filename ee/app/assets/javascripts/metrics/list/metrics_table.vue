@@ -50,6 +50,9 @@ export default {
           return '#808080'; // gray
       }
     },
+    onRowClicked(item, _index, event) {
+      this.$emit('metric-clicked', { metricId: item.name, clickEvent: event });
+    },
   },
 };
 </script>
@@ -65,6 +68,10 @@ export default {
       fixed
       stacked="md"
       :tbody-tr-attr="{ 'data-testid': 'metric-row' }"
+      selectable
+      select-mode="single"
+      selected-variant=""
+      @row-clicked="onRowClicked"
     >
       <template #cell(type)="{ item }">
         <gl-label :background-color="labelColor(item.type)" :title="item.type" />
