@@ -6,7 +6,7 @@ module EE
       extend ::Gitlab::Utils::Override
 
       override :execute
-      def execute
+      def execute(refresh_statistics: true)
         super.tap do |result|
           log_audit_event if result.present?
         end

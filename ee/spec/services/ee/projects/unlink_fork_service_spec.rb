@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_caching, feature_category: :groups_and_projects do
   include ProjectForksHelper
 
-  subject(:unlink_fork) { described_class.new(forked_project, user).execute }
+  subject(:service) { described_class.new(forked_project, user) }
 
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:user) { create(:user) }
@@ -18,7 +18,7 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
             .to receive(:audit).with(
               hash_including({ name: "project_fork_relationship_removed" })).and_call_original
 
-      expect { unlink_fork }.to change(AuditEvent, :count).by(1)
+      expect { service.execute }.to change(AuditEvent, :count).by(1)
 
       expect(AuditEvent.last).to have_attributes({
                                                    author: user,
@@ -35,6 +35,10 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
                                                  })
     end
 
+    it 'creates an audit when project statistics are not refreshed' do
+      expect { service.execute(refresh_statistics: false) }.to change(AuditEvent, :count).by(1)
+    end
+
     context 'when forked project does not exist' do
       before do
         project.destroy!
@@ -45,7 +49,7 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
           .to receive(:audit).with(
             hash_including({ name: "project_fork_relationship_removed" })).and_call_original
 
-        expect { unlink_fork }.to change(AuditEvent, :count).by(1)
+        expect { service.execute }.to change(AuditEvent, :count).by(1)
 
         expect(AuditEvent.last).to have_attributes({
                                                      author: user,
@@ -68,7 +72,7 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
     let(:forked_project) { project }
 
     it 'does not create an audit event' do
-      expect { subject }.not_to change(AuditEvent, :count)
+      expect { service.execute }.not_to change(AuditEvent, :count)
     end
   end
 end
