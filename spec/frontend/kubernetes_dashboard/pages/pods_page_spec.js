@@ -1,22 +1,20 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import KubernetesPods from '~/environments/components/kubernetes_pods.vue';
+import PodsPage from '~/kubernetes_dashboard/pages/pods_page.vue';
 import WorkloadStats from '~/kubernetes_dashboard/components/workload_stats.vue';
-import { mockKasTunnelUrl } from './mock_data';
-import { k8sPodsMock } from './graphql/mock_data';
+import { k8sPodsMock, mockPodStats } from '../graphql/mock_data';
 
 Vue.use(VueApollo);
 
-describe('~/environments/components/kubernetes_pods.vue', () => {
+describe('Kubernetes dashboard pods page', () => {
   let wrapper;
 
-  const namespace = 'my-kubernetes-namespace';
   const configuration = {
-    basePath: mockKasTunnelUrl,
+    basePath: 'kas/tunnel/url',
     baseOptions: {
       headers: { 'GitLab-Agent-Id': '1' },
     },
@@ -24,6 +22,7 @@ describe('~/environments/components/kubernetes_pods.vue', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findWorkloadStats = () => wrapper.findComponent(WorkloadStats);
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   const createApolloProvider = () => {
     const mockResolvers = {
@@ -36,8 +35,8 @@ describe('~/environments/components/kubernetes_pods.vue', () => {
   };
 
   const createWrapper = (apolloProvider = createApolloProvider()) => {
-    wrapper = shallowMount(KubernetesPods, {
-      propsData: { namespace, configuration },
+    wrapper = shallowMount(PodsPage, {
+      provide: { configuration },
       apolloProvider,
     });
   };
@@ -49,14 +48,6 @@ describe('~/environments/components/kubernetes_pods.vue', () => {
       expect(findLoadingIcon().exists()).toBe(true);
     });
 
-    it('emits loading state', async () => {
-      createWrapper();
-      expect(wrapper.emitted('loading')[0]).toEqual([true]);
-
-      await waitForPromises();
-      expect(wrapper.emitted('loading')[1]).toEqual([false]);
-    });
-
     it('hides the loading icon when the list of pods loaded', async () => {
       createWrapper();
       await waitForPromises();
@@ -66,35 +57,18 @@ describe('~/environments/components/kubernetes_pods.vue', () => {
   });
 
   describe('when gets pods data', () => {
-    it('renders workload stats with the correct data', async () => {
+    it('renders stats', async () => {
       createWrapper();
       await waitForPromises();
 
-      expect(findWorkloadStats().props('stats')).toEqual([
-        {
-          value: 2,
-          title: 'Running',
-        },
-        {
-          value: 1,
-          title: 'Pending',
-        },
-        {
-          value: 1,
-          title: 'Succeeded',
-        },
-        {
-          value: 2,
-          title: 'Failed',
-        },
-      ]);
+      expect(findWorkloadStats().exists()).toBe(true);
     });
 
-    it('emits a failed event when there are failed pods', async () => {
+    it('provides correct data for stats', async () => {
       createWrapper();
       await waitForPromises();
 
-      expect(wrapper.emitted('failed')).toHaveLength(1);
+      expect(findWorkloadStats().props('stats')).toEqual(mockPodStats);
     });
   });
 
@@ -119,8 +93,8 @@ describe('~/environments/components/kubernetes_pods.vue', () => {
       expect(findWorkloadStats().exists()).toBe(false);
     });
 
-    it('emits an error message', () => {
-      expect(wrapper.emitted('cluster-error')).toMatchObject([[error.message]]);
+    it('renders an alert with the error message', () => {
+      expect(findAlert().text()).toBe(error.message);
     });
   });
 });
