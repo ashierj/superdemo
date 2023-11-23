@@ -1,39 +1,25 @@
 import { GlDisclosureDropdown, GlInfiniteScroll, GlModal, GlSkeletonLoader } from '@gitlab/ui';
 import { RouterLinkStub } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
-
 import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
 import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
 import { CADENCE_AND_DUE_DATE_DESC } from 'ee/iterations/constants';
-import { getIterationPeriod } from 'ee/iterations/utils';
 import groupIterationsInCadenceQuery from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
 import projectIterationsInCadenceQuery from 'ee/iterations/queries/project_iterations_in_cadence.query.graphql';
+import { getIterationPeriod } from 'ee/iterations/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
-import { mountExtended as mount } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
-import { automaticIterationCadence } from '../mock_data';
+import { automaticIterationCadence, nonEmptyGroupIterationsSuccess } from '../mock_data';
 
-const { i18n } = IterationCadenceListItem;
-const push = jest.fn();
-const $router = {
-  push,
-};
-
-function createMockApolloProvider(requestHandlers) {
+describe('IterationCadenceListItem component', () => {
   Vue.use(VueApollo);
 
-  return createMockApollo(requestHandlers);
-}
-
-describe('Iteration cadence list item', () => {
   let wrapper;
-  let apolloProvider;
-
-  const modalShowSpy = jest.fn();
 
   const fullPath = 'gitlab-org';
   const iterations = [
@@ -58,7 +44,6 @@ describe('Iteration cadence list item', () => {
       __typename: 'Iteration',
     },
   ];
-
   const startCursor = 'MQ';
   const endCursor = 'MjA';
   const querySuccessResponse = {
@@ -78,7 +63,6 @@ describe('Iteration cadence list item', () => {
       },
     },
   };
-
   const queryEmptyResponse = {
     data: {
       workspace: {
@@ -95,23 +79,24 @@ describe('Iteration cadence list item', () => {
       },
     },
   };
+
+  const modalShowSpy = jest.fn();
+  const querySuccessHandler = jest.fn().mockResolvedValue(querySuccessResponse);
+
   function createComponent({
     props = {},
     canCreateIteration,
     canEditCadence,
     currentRoute,
-    cadence = automaticIterationCadence,
     namespaceType = WORKSPACE_GROUP,
     query = groupIterationsInCadenceQuery,
-    resolverMock = jest.fn().mockResolvedValue(querySuccessResponse),
+    queryHandler = querySuccessHandler,
   } = {}) {
-    apolloProvider = createMockApolloProvider([[query, resolverMock]]);
-
-    wrapper = mount(IterationCadenceListItem, {
-      apolloProvider,
+    wrapper = mountExtended(IterationCadenceListItem, {
+      apolloProvider: createMockApollo([[query, queryHandler]]),
       mocks: {
         $router: {
-          ...$router,
+          push: jest.fn(),
           currentRoute,
         },
       },
@@ -130,8 +115,8 @@ describe('Iteration cadence list item', () => {
         namespaceType,
       },
       propsData: {
-        title: cadence.title,
-        cadenceId: cadence.id,
+        title: automaticIterationCadence.title,
+        cadenceId: automaticIterationCadence.id,
         automatic: true,
         iterationState: 'opened',
         ...props,
@@ -149,18 +134,10 @@ describe('Iteration cadence list item', () => {
   const expand = (cadence = automaticIterationCadence) =>
     wrapper.findByRole('button', { text: cadence.title }).trigger('click');
 
-  afterEach(() => {
-    apolloProvider = null;
-  });
-
   it('does not query iterations when component mounted', async () => {
-    const resolverMock = jest.fn();
+    await createComponent();
 
-    await createComponent({
-      resolverMock,
-    });
-
-    expect(resolverMock).not.toHaveBeenCalled();
+    expect(querySuccessHandler).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -173,42 +150,42 @@ describe('Iteration cadence list item', () => {
       query: projectIterationsInCadenceQuery,
     },
   ])('uses DESC sort order for closed iterations', async (params) => {
-    const iterationsQueryHandler = jest.fn().mockResolvedValue(queryEmptyResponse);
-
+    const queryHandler = jest.fn().mockResolvedValue(queryEmptyResponse);
     await createComponent({
-      resolverMock: iterationsQueryHandler,
+      queryHandler,
       props: {
         iterationState: 'closed',
       },
       query: params.query,
       namespaceType: params.namespaceType,
     });
-
     expand();
-
     await waitForPromises();
 
-    expect(iterationsQueryHandler).toHaveBeenCalledWith(
+    expect(queryHandler).toHaveBeenCalledWith(
       expect.objectContaining({ sort: CADENCE_AND_DUE_DATE_DESC }),
     );
   });
 
-  it.each(['opened', 'closed', 'all'])(
+  it.each`
+    iterationState | text
+    ${'opened'}    | ${'No open iterations.'}
+    ${'closed'}    | ${'No closed iterations.'}
+    ${'all'}       | ${'No iterations in cadence.'}
+  `(
     'shows empty text when no results for list of %s iterations',
-    async (iterationState) => {
+    async ({ iterationState, text }) => {
       await createComponent({
-        resolverMock: jest.fn().mockResolvedValue(queryEmptyResponse),
+        queryHandler: jest.fn().mockResolvedValue(queryEmptyResponse),
         props: {
           iterationState,
         },
       });
-
       expand();
-
       await waitForPromises();
 
       expect(findLoader().exists()).toBe(false);
-      expect(wrapper.text()).toContain(i18n.noResults[iterationState]);
+      expect(wrapper.text()).toContain(text);
     },
   );
 
@@ -217,9 +194,7 @@ describe('Iteration cadence list item', () => {
       canCreateIteration: true,
       canEditCadence: true,
     });
-
     expand();
-
     await waitForPromises();
 
     expect(findAddIterationButton().exists()).toBe(false);
@@ -237,11 +212,9 @@ describe('Iteration cadence list item', () => {
         },
         canCreateIteration,
         canEditCadence: true,
-        resolverMock: jest.fn().mockResolvedValue(queryEmptyResponse),
+        queryHandler: jest.fn().mockResolvedValue(queryEmptyResponse),
       });
-
       expand();
-
       await waitForPromises();
 
       expect(findAddIterationButton().exists()).toBe(canCreateIteration);
@@ -282,9 +255,7 @@ describe('Iteration cadence list item', () => {
 
   it('shows iteration dates after loading', async () => {
     await createComponent();
-
     expand();
-
     await waitForPromises();
 
     expectIterationItemToHavePeriod();
@@ -296,7 +267,6 @@ describe('Iteration cadence list item', () => {
         query: { createdCadenceId: getIdFromGraphQLId(automaticIterationCadence.id) },
       },
     });
-
     await waitForPromises();
 
     expectIterationItemToHavePeriod();
@@ -307,9 +277,7 @@ describe('Iteration cadence list item', () => {
       namespaceType: WORKSPACE_PROJECT,
       query: projectIterationsInCadenceQuery,
     });
-
     expand();
-
     await waitForPromises();
 
     expectIterationItemToHavePeriod();
@@ -317,34 +285,34 @@ describe('Iteration cadence list item', () => {
 
   it('shows alert on query error', async () => {
     await createComponent({
-      resolverMock: jest.fn().mockRejectedValue(queryEmptyResponse),
+      queryHandler: jest.fn().mockRejectedValue(queryEmptyResponse),
     });
-
     await expand();
-
     await waitForPromises();
 
     expect(findLoader().exists()).toBe(false);
-    expect(wrapper.text()).toContain(i18n.error);
+    expect(wrapper.text()).toContain('Error loading iterations');
   });
 
   it('calls fetchMore after scrolling down', async () => {
-    await createComponent();
-
-    jest.spyOn(wrapper.vm.$apollo.queries.workspace, 'fetchMore').mockResolvedValue({});
-
+    const queryHandler = jest
+      .fn()
+      .mockResolvedValueOnce(querySuccessResponse)
+      .mockResolvedValueOnce(nonEmptyGroupIterationsSuccess);
+    await createComponent({ queryHandler });
     expand();
-
     await waitForPromises();
+
+    expect(queryHandler).toHaveBeenNthCalledWith(
+      1,
+      expect.not.objectContaining({ afterCursor: endCursor }),
+    );
 
     wrapper.findComponent(GlInfiniteScroll).vm.$emit('bottomReached');
 
-    expect(wrapper.vm.$apollo.queries.workspace.fetchMore).toHaveBeenCalledWith(
-      expect.objectContaining({
-        variables: expect.objectContaining({
-          afterCursor: endCursor,
-        }),
-      }),
+    expect(queryHandler).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ afterCursor: endCursor }),
     );
   });
 
@@ -403,9 +371,7 @@ describe('Iteration cadence list item', () => {
     ['shows', true],
   ])('%s status badge when showStateBadge is %s', async (_, showStateBadge) => {
     await createComponent({ props: { showStateBadge } });
-
     expand();
-
     await waitForPromises();
 
     expect(wrapper.findComponent(TimeboxStatusBadge).exists()).toBe(showStateBadge);
