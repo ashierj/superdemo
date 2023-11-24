@@ -1,18 +1,25 @@
 import produce from 'immer';
-import getSubscriptionPlanQuery from 'ee/fulfillment/shared_queries/subscription_plan.query.graphql';
+import getGitlabSubscription from 'ee/fulfillment/shared_queries/gitlab_subscription.query.graphql';
 
 const PLAN_TYPE = 'Plan';
 const SUBSCRIPTION_TYPE = 'Subscription';
 
-export const writeDataToApolloCache = (apolloProvider, { code = '' } = {}) => {
+export const writeDataToApolloCache = (
+  apolloProvider,
+  { subscriptionId = null, planCode = '', planName = '' } = {},
+) => {
   apolloProvider.clients.defaultClient.cache.writeQuery({
-    query: getSubscriptionPlanQuery,
+    query: getGitlabSubscription,
     data: {
       subscription: {
+        id: subscriptionId,
+        endDate: null,
+        startDate: null,
         __typename: SUBSCRIPTION_TYPE,
         plan: {
           __typename: PLAN_TYPE,
-          code,
+          code: planCode,
+          name: planName,
         },
       },
     },
@@ -20,9 +27,18 @@ export const writeDataToApolloCache = (apolloProvider, { code = '' } = {}) => {
   return apolloProvider;
 };
 
-export const updateSubscriptionPlanApolloCache = (apolloProvider, { code = '' } = {}) => {
+export const updateSubscriptionPlanApolloCache = (
+  apolloProvider,
+  {
+    planCode = '',
+    planName = '',
+    subscriptionId = '',
+    subscriptionEndDate = '',
+    subscriptionStartDate = '',
+  } = {},
+) => {
   const sourceData = apolloProvider.clients.defaultClient.cache.readQuery({
-    query: getSubscriptionPlanQuery,
+    query: getGitlabSubscription,
   });
 
   if (!sourceData) {
@@ -32,15 +48,19 @@ export const updateSubscriptionPlanApolloCache = (apolloProvider, { code = '' } 
   const data = produce(sourceData, (draftState) => {
     draftState.subscription = {
       ...draftState.subscription,
+      id: subscriptionId,
+      endDate: subscriptionEndDate,
+      startDate: subscriptionStartDate,
       plan: {
         __typename: PLAN_TYPE,
-        code,
+        code: planCode,
+        name: planName,
       },
     };
   });
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
-    query: getSubscriptionPlanQuery,
+    query: getGitlabSubscription,
     data,
   });
 };

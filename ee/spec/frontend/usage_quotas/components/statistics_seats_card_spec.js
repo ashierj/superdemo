@@ -10,7 +10,7 @@ import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.
 import waitForPromises from 'helpers/wait_for_promises';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
-import getSubscriptionPlanQuery from 'ee/fulfillment/shared_queries/subscription_plan.query.graphql';
+import getGitlabSubscriptionQuery from 'ee/fulfillment/shared_queries/gitlab_subscription.query.graphql';
 import { PLAN_CODE_FREE } from 'ee/usage_quotas/seats/constants';
 
 Vue.use(VueApollo);
@@ -29,6 +29,8 @@ describe('StatisticsSeatsCard', () => {
 
   const explorePlansPath = 'https://gitlab.com/explore-plans-path';
   const purchaseButtonLink = 'https://gitlab.com/purchase-more-seats';
+  const subscriptionStartDate = '2023-03-16';
+  const subscriptionEndDate = '2024-03-16';
   const defaultProps = {
     seatsUsed: 20,
     seatsOwed: 5,
@@ -47,7 +49,7 @@ describe('StatisticsSeatsCard', () => {
     });
 
     mockApollo.clients.defaultClient.cache.writeQuery({
-      query: getSubscriptionPlanQuery,
+      query: getGitlabSubscriptionQuery,
       data: subscriptionPlanData,
     });
     return mockApollo;
@@ -198,7 +200,14 @@ describe('StatisticsSeatsCard', () => {
         beforeEach(async () => {
           subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({});
           createComponent({
-            subscriptionPlanData: { subscription: { plan: { code: PLAN_CODE_FREE } } },
+            subscriptionPlanData: {
+              subscription: {
+                id: '',
+                endDate: subscriptionEndDate,
+                startDate: subscriptionStartDate,
+                plan: { code: PLAN_CODE_FREE, name: 'Free' },
+              },
+            },
           });
           await waitForPromises();
         });
@@ -245,7 +254,14 @@ describe('StatisticsSeatsCard', () => {
           },
         });
         createComponent({
-          subscriptionPlanData: { subscription: { plan: { code: PLAN_CODE_FREE } } },
+          subscriptionPlanData: {
+            subscription: {
+              id: '',
+              endDate: subscriptionEndDate,
+              startDate: subscriptionStartDate,
+              plan: { code: PLAN_CODE_FREE, name: 'Free' },
+            },
+          },
         });
         return waitForPromises();
       });

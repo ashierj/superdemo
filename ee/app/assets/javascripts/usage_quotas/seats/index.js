@@ -50,7 +50,7 @@ export default (containerId = 'js-seat-usage-app') => {
   return new Vue({
     el,
     name: 'SeatsUsageApp',
-    apolloProvider: writeDataToApolloCache(apolloProvider),
+    apolloProvider: writeDataToApolloCache(apolloProvider, { subscriptionId: namespaceId }),
     provide: {
       explorePlansPath,
       fullPath,

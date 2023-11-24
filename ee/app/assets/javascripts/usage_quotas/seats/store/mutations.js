@@ -22,6 +22,7 @@ export default {
     state.seatsOwed = usage?.seats_owed ?? 0;
     state.activeTrial = Boolean(plan?.trial);
     state.planCode = plan?.code ?? null;
+    state.planName = plan?.name ?? null;
     state.subscriptionEndDate = billing?.subscription_end_date ?? null;
     state.subscriptionStartDate = billing?.subscription_start_date ?? null;
 
