@@ -18,9 +18,7 @@ module Elastic
     def save!(completed:)
       raise 'Migrations index is not found' unless helper.index_exists?(index_name: index_name)
 
-      data = { completed: completed, state: load_state, name: name }.merge(timestamps(completed: completed))
-
-      client.index index: index_name, refresh: true, type: '_doc', id: version, body: data
+      client.index index: index_name, refresh: true, type: '_doc', id: version, body: to_h(completed: completed)
     end
 
     def save_state!(state)
@@ -40,6 +38,8 @@ module Elastic
 
     def load_from_index
       client.get(index: index_name, id: version)
+    rescue Elasticsearch::Transport::Transport::Errors::NotFound
+      nil # do not report index not found errors
     rescue StandardError => e
       logger.error(build_structured_payload(message: "[#{self.class.name}]: #{e.class}: #{e.message}"))
       nil
@@ -135,6 +135,10 @@ module Elastic
 
       # use exclude to support new migrations which do not exist in the index yet
       Elastic::DataMigrationService.migrations.find { |migration| completed_migrations.exclude?(migration.version) } # rubocop: disable CodeReuse/ServiceClass
+    end
+
+    def to_h(completed:)
+      { completed: completed, state: load_state, name: name }.merge(timestamps(completed: completed))
     end
 
     private
