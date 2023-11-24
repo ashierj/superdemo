@@ -1,0 +1,8 @@
+---
+name: audit_events_streaming_namespace_filter
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137009
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/431912
+milestone: '16.7'
+type: development
+group: group::compliance
+default_enabled: false

@@ -20,7 +20,30 @@ module AuditEvents
     validates :name, uniqueness: { scope: :namespace_id }
     validates :destination_url, uniqueness: { scope: :namespace_id }, length: { maximum: 255 }
 
+    def allowed_to_stream?(audit_event_type, audit_event)
+      return false unless entity_allowed_to_stream?(audit_event)
+
+      event_type_allowed_to_stream?(audit_event_type)
+    end
+
     private
+
+    def entity_allowed_to_stream?(audit_event)
+      if Feature.enabled?(:audit_events_streaming_namespace_filter, group) && namespace_filter.present?
+        audit_event_entity = audit_event.entity
+
+        audit_event_entity = audit_event_entity.project_namespace if audit_event_entity.is_a?(::Project)
+
+        # Return false if namespace(entity) of audit event
+        #   - is project or group and
+        #   - is self or descendant of the filter namespace
+        return false if (audit_event_entity.is_a?(::Namespaces::ProjectNamespace) ||
+          audit_event_entity.is_a?(::Group)) &&
+          audit_event_entity.self_and_ancestor_ids.exclude?(namespace_filter.namespace.id)
+      end
+
+      true
+    end
 
     def root_level_group?
       errors.add(:group, 'must not be a subgroup') if group.subgroup?

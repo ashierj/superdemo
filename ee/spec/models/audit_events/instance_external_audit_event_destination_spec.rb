@@ -10,6 +10,7 @@ RSpec.describe AuditEvents::InstanceExternalAuditEventDestination, feature_categ
       create(:instance_external_audit_event_destination, verification_token: nil)
     end
 
+    let_it_be(:audit_event) { create(:audit_event, :instance_event) }
     let_it_be(:audit_operation) { 'event_type_filters_created' }
     let_it_be(:destination_with_filters_of_given_type) { create(:instance_external_audit_event_destination) }
     let_it_be(:filter1) do
