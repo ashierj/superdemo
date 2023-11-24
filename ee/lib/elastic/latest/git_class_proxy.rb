@@ -413,9 +413,7 @@ module Elastic
       end
 
       def archived_filter_applicable_on_wiki?(options)
-        !options[:include_archived] && options[:search_scope] != 'project' &&
-          Feature.enabled?(:search_project_wikis_hide_archived_projects, options[:current_user]) &&
-          backfill_archived_on_wikis_finished?
+        !options[:include_archived] && options[:search_scope] != 'project' && backfill_archived_on_wikis_finished?
       end
     end
   end
