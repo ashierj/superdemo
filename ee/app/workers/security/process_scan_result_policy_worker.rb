@@ -5,7 +5,7 @@ module Security
     include ApplicationWorker
 
     idempotent!
-    deduplicate :until_executed, if_deduplicated: :reschedule_once
+    deduplicate :until_executed, if_deduplicated: :reschedule_once, including_scheduled: true
 
     data_consistency :always
     sidekiq_options retry: true
