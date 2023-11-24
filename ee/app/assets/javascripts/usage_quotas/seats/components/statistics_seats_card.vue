@@ -3,7 +3,7 @@ import { GlLink, GlIcon, GlButton, GlModalDirective, GlSkeletonLoader } from '@g
 import { s__ } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
-import getSubscriptionPlanQuery from 'ee/fulfillment/shared_queries/subscription_plan.query.graphql';
+import getGitlabSubscriptionQuery from 'ee/fulfillment/shared_queries/gitlab_subscription.query.graphql';
 import {
   addSeatsText,
   EXPLORE_PAID_PLANS_CLICKED,
@@ -135,7 +135,7 @@ export default {
       },
     },
     plan: {
-      query: getSubscriptionPlanQuery,
+      query: getGitlabSubscriptionQuery,
       variables() {
         return {
           namespaceId: this.parsedNamespaceId,

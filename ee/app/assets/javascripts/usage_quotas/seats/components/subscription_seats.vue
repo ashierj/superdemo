@@ -126,7 +126,13 @@ export default {
     this.$store.subscribeAction({
       after: (action, state) => {
         if (action.type === 'receiveGitlabSubscriptionSuccess') {
-          updateSubscriptionPlanApolloCache(this.$apolloProvider, { code: state.planCode });
+          updateSubscriptionPlanApolloCache(this.$apolloProvider, {
+            planCode: state.planCode,
+            planName: state.planName,
+            subscriptionId: state.namespaceId,
+            subscriptionEndDate: state.subscriptionEndDate,
+            subscriptionStartDate: state.subscriptionStartDate,
+          });
         }
       },
     });
@@ -190,7 +196,6 @@ export default {
           </gl-skeleton-loader>
         </div>
       </div>
-
       <div v-else class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5">
         <statistics-card
           :help-link="$options.helpLinks.seatsInUseLink"

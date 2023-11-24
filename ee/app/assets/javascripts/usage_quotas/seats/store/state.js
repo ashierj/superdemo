@@ -23,6 +23,7 @@ export default ({
   members: [],
   total: null,
   planCode: null,
+  planName: null,
   page: null,
   perPage: null,
   billableMemberToRemove: null,
