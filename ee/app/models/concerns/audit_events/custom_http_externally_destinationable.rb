@@ -23,16 +23,16 @@ module AuditEvents
         { STREAMING_TOKEN_HEADER_KEY => verification_token }.merge(headers.active.map(&:to_hash).inject(:merge).to_h)
       end
 
-      # TODO: Remove audit_operation.present? guard clause once we implement names for all the audit event types.
+      private
+
+      # TODO: Remove audit_event_type.present? guard clause once we implement names for all the audit event types.
       # Epic: https://gitlab.com/groups/gitlab-org/-/epics/8497
-      def allowed_to_stream?(audit_operation)
-        return true unless audit_operation.present?
+      def event_type_allowed_to_stream?(audit_event_type)
+        return true unless audit_event_type.present?
         return true unless event_type_filters.exists?
 
-        event_type_filters.audit_event_type_in(audit_operation).exists?
+        event_type_filters.audit_event_type_in(audit_event_type).exists?
       end
-
-      private
 
       def no_more_than_20_headers?
         return unless headers.count > MAXIMUM_HEADER_COUNT

@@ -46,18 +46,20 @@ RSpec.shared_examples 'includes CustomHttpExternallyDestinationable concern' do
     end
   end
 
-  describe '#allowed_to_stream?' do
-    using RSpec::Parameterized::TableSyntax
+  it_behaves_like 'allowed_to_stream?'
+end
 
-    where(:destination_object, :audit_operation_val, :result) do
-      ref(:destination_with_filters_of_given_type) | ref(:audit_operation) | true
-      ref(:destination_with_filters)               | ref(:audit_operation) | false
-      ref(:destination)                            | ref(:audit_operation) | true
-      ref(:destination_with_filters_of_given_type) | nil                   | true
-    end
+RSpec.shared_examples 'allowed_to_stream?' do
+  using RSpec::Parameterized::TableSyntax
 
-    with_them do
-      it { expect(destination_object.allowed_to_stream?(audit_operation_val)).to eq(result) }
-    end
+  where(:destination_object, :audit_operation_val, :result) do
+    ref(:destination_with_filters_of_given_type) | ref(:audit_operation) | true
+    ref(:destination_with_filters)               | ref(:audit_operation) | false
+    ref(:destination)                            | ref(:audit_operation) | true
+    ref(:destination_with_filters_of_given_type) | nil                   | true
+  end
+
+  with_them do
+    it { expect(destination_object.allowed_to_stream?(audit_operation_val, audit_event)).to eq(result) }
   end
 end

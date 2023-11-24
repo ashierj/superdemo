@@ -22,5 +22,9 @@ module AuditEvents
       key: Settings.attr_encrypted_db_key_base_32,
       encode: false,
       encode_iv: false
+
+    def allowed_to_stream?(audit_event_type, _audit_event)
+      event_type_allowed_to_stream?(audit_event_type)
+    end
   end
 end

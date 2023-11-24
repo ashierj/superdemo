@@ -6,6 +6,8 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
   subject(:destination) { build(:external_audit_event_destination) }
 
   let_it_be(:group) { create(:group) }
+  let_it_be(:audit_operation) { 'event_type_filters_created' }
+  let_it_be(:audit_event) { create(:audit_event, :group_event, target_group: group) }
 
   describe 'Associations' do
     it 'belongs to a group' do
@@ -105,7 +107,6 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
       create(:external_audit_event_destination, verification_token: nil)
     end
 
-    let_it_be(:audit_operation) { 'event_type_filters_created' }
     let_it_be(:destination_with_filters_of_given_type) { create(:external_audit_event_destination) }
     let_it_be(:filter1) do
       create(:audit_events_streaming_event_type_filter,
@@ -129,6 +130,106 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
 
   it_behaves_like 'includes ExternallyCommonDestinationable concern' do
     let(:model_factory_name) { :external_audit_event_destination }
+  end
+
+  describe '#allowed_to_stream?' do
+    context 'with namespace filter' do
+      using RSpec::Parameterized::TableSyntax
+
+      let_it_be(:subgroup) { create(:group, parent: group) }
+      let_it_be(:sibling_subgroup) { create(:group, parent: group) }
+      let_it_be(:sub_subgroup) { create(:group, parent: subgroup) }
+      let_it_be(:project) { create(:project, group: subgroup) }
+
+      let(:destination_with_group_filter) { build(:external_audit_event_destination, group: group) }
+      let(:destination_with_project_filter) { build(:external_audit_event_destination, group: group) }
+      let(:destination_without_namespace_filter) { build(:external_audit_event_destination, group: group) }
+
+      let!(:group_filter) do
+        build(:audit_events_streaming_http_namespace_filter, namespace: subgroup,
+          external_audit_event_destination: destination_with_group_filter)
+      end
+
+      let!(:project_filter) do
+        build(:audit_events_streaming_http_namespace_filter, namespace: project.project_namespace,
+          external_audit_event_destination: destination_with_project_filter)
+      end
+
+      let(:top_level_group_audit_event) { build(:audit_event, :group_event, target_group: group) }
+      let(:group_audit_event) { build(:audit_event, :group_event, target_group: subgroup) }
+      let(:sibling_group_audit_event) { build(:audit_event, :group_event, target_group: sibling_subgroup) }
+      let(:sub_subgroup_audit_event) { build(:audit_event, :group_event, target_group: sub_subgroup) }
+      let(:project_audit_event) { build(:audit_event, :project_event, target_project: project) }
+      let(:other_project_audit_event) do
+        create(:audit_event, :project_event,
+          target_project: create(:project, group: sibling_subgroup))
+      end
+
+      where(:destination_object, :audit_event, :result) do
+        ref(:destination_with_group_filter)          | ref(:top_level_group_audit_event) | false
+        ref(:destination_with_group_filter)          | ref(:sibling_group_audit_event)   | false
+        ref(:destination_with_group_filter)          | ref(:group_audit_event)           | true
+        ref(:destination_with_group_filter)          | ref(:sub_subgroup_audit_event)    | true
+        ref(:destination_with_group_filter)          | ref(:project_audit_event)         | true
+
+        ref(:destination_with_project_filter)          | ref(:top_level_group_audit_event) | false
+        ref(:destination_with_project_filter)          | ref(:group_audit_event) | false
+        ref(:destination_with_project_filter)          | ref(:other_project_audit_event) | false
+        ref(:destination_with_project_filter)          | ref(:project_audit_event) | true
+      end
+
+      with_them do
+        it { expect(destination_object.allowed_to_stream?(nil, audit_event)).to eq(result) }
+      end
+
+      context 'when event type filter with given event type exists' do
+        before do
+          create(:audit_events_streaming_event_type_filter,
+            external_audit_event_destination: destination_with_group_filter,
+            audit_event_type: 'event_type_filters_created')
+        end
+
+        it do
+          expect(destination_with_group_filter
+                      .allowed_to_stream?('event_type_filters_created', group_audit_event)).to eq(true)
+        end
+      end
+
+      context 'with event filters' do
+        it_behaves_like 'allowed_to_stream?' do
+          let_it_be(:destination_with_filters_of_given_type) { create(:external_audit_event_destination, group: group) }
+
+          let_it_be(:filter1) do
+            create(:audit_events_streaming_event_type_filter,
+              external_audit_event_destination: destination_with_filters_of_given_type,
+              audit_event_type: 'event_type_filters_created')
+          end
+
+          let_it_be(:filter2) do
+            create(:audit_events_streaming_event_type_filter,
+              external_audit_event_destination: destination_with_filters_of_given_type,
+              audit_event_type: 'event_type_filters_deleted')
+          end
+
+          let_it_be(:destination_with_filters) { create(:external_audit_event_destination, group: group) }
+          let!(:filter3) do
+            create(:audit_events_streaming_event_type_filter,
+              external_audit_event_destination: destination_with_filters,
+              audit_event_type: 'event_type_filters_deleted')
+          end
+
+          let!(:group_filter1) do
+            build(:audit_events_streaming_http_namespace_filter, namespace: group,
+              external_audit_event_destination: destination_with_filters_of_given_type)
+          end
+
+          let!(:group_filter2) do
+            build(:audit_events_streaming_http_namespace_filter, namespace: group,
+              external_audit_event_destination: destination_with_filters)
+          end
+        end
+      end
+    end
   end
 
   describe '#audit_details' do
