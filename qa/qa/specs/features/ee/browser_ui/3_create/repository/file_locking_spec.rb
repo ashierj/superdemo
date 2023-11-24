@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'File Locking', product_group: :source_code do
+    describe 'File Locking', :reliable, product_group: :source_code do
       let(:user_one) do
         Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
       end
