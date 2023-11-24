@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create', only: { pipeline: %i[staging] }, product_group: :ide,
-    quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424857',
-      type: :flaky
-    } do
+  RSpec.describe 'Create', only: { pipeline: %i[staging] }, product_group: :ide do
     describe 'Remote Development' do
       include Runtime::Fixtures
 
