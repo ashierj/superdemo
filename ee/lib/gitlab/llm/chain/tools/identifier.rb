@@ -36,7 +36,7 @@ module Gitlab
 
               content = "I identified the #{resource_name} #{json[:ResourceIdentifier]}. For more information use ResourceReader." # rubocop:disable Layout/LineLength
 
-              logger.debug(message: "Answer", class: self.class.to_s, content: content)
+              logger.info_or_debug(context.current_user, message: "Answer", class: self.class.to_s, content: content)
               return Answer.new(status: :ok, context: context, content: content, tool: nil)
             rescue JSON::ParserError
               error_message = "\nObservation: JSON has an invalid format. Please retry"
@@ -102,7 +102,7 @@ module Gitlab
           def already_used_answer
             resource = context.resource
             content = "You already have identified the #{resource_name} #{resource.to_global_id}, read carefully."
-            logger.debug(message: "Answer", class: self.class.to_s, content: content)
+            logger.info_or_debug(context.current_user, message: "Answer", class: self.class.to_s, content: content)
 
             ::Gitlab::Llm::Chain::Answer.new(
               status: :not_executed, context: context, content: content, tool: nil, is_final: false

@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:empty_response_message) { "I'm sorry, I was not able to find any documentation to answer your question." }
     let(:question) { 'A question' }
     let(:answer) { 'The answer.' }
-    let(:logger) { instance_double('Logger') }
+    let(:logger) { instance_double('Gitlab::Llm::Logger') }
     let(:instance) { described_class.new(current_user: user, question: question, logger: logger) }
     let(:vertex_model) { ::Embedding::Vertex::GitlabDocumentation }
     let(:vertex_args) { { content: question } }
@@ -177,7 +177,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     describe 'execute' do
       before do
         allow(License).to receive(:feature_available?).and_return(true)
-        allow(logger).to receive(:debug)
+        allow(logger).to receive(:info_or_debug)
       end
 
       context 'with the ai_tanuki_bot license not available' do

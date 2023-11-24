@@ -71,7 +71,7 @@ module Gitlab
             end
           end
 
-          logger.debug(message: "Received response from Anthropic", response: response)
+          logger.info_or_debug(user, message: "Received response from Anthropic", response: response)
 
           response
         end

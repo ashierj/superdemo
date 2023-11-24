@@ -26,7 +26,7 @@ module Gitlab
             return default_final_answer(context: context) unless tool
           end
 
-          logger.debug(message: "Answer", content: content)
+          logger.info_or_debug(context.current_user, message: "Answer", content: content)
 
           new(
             status: :ok,
@@ -39,7 +39,7 @@ module Gitlab
         end
 
         def self.final_answer(context:, content:, extras: nil)
-          logger.debug(message: "Final answer", content: content)
+          logger.info_or_debug(context.current_user, message: "Final answer", content: content)
 
           new(
             status: :ok,
@@ -53,7 +53,8 @@ module Gitlab
         end
 
         def self.default_final_answer(context:)
-          logger.debug(message: "Default final answer")
+          logger.info_or_debug(context.current_user, message: "Default final answer")
+
           track_event(context, 'default_answer')
 
           final_answer(context: context, content: default_final_message)
