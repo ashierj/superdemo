@@ -155,7 +155,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :tracing, only: [:index, :show], controller: :tracing
 
-        resources :metrics, only: [:index], controller: :metrics
+        resources :metrics, only: [:index, :show], constraints: { id: %r{[^/]+} }, controller: :metrics
       end
       # End of the /-/ scope.
 

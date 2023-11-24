@@ -6,6 +6,13 @@ module Projects
       generate_model(project)
     end
 
+    def observability_metrics_details_view_model(project, metric_id)
+      generate_model(project) do |model|
+        model[:metricId] = metric_id
+        model[:metricsIndexUrl] = namespace_project_metrics_path(project.group, project)
+      end
+    end
+
     def observability_tracing_view_model(project)
       generate_model(project)
     end
