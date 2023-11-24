@@ -572,6 +572,26 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     end
   end
 
+  context 'setting profile to private' do
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:path) { "/users/#{user.id}" }
+      let(:params) { { private_profile: true } }
+    end
+
+    context 'when the ability to make their profile private is disabled for users' do
+      before do
+        stub_application_setting(make_profile_private: false)
+      end
+
+      it 'makes the profile private' do
+        put api("/users/#{user.id}", admin, admin_mode: true), params: { private_profile: true }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['private_profile']).to be true
+      end
+    end
+  end
+
   describe "GET /user/preferences" do
     let(:path) { '/user/preferences' }
 

@@ -97,6 +97,7 @@ module EE
         define_method(action) { perform_update if submitted? }
       end
 
+      # rubocop:disable Metrics/CyclomaticComplexity
       def visible_application_setting_attributes
         attrs = super
 
@@ -157,11 +158,16 @@ module EE
           attrs << :maintenance_mode_message
         end
 
+        if License.feature_available?(:disable_private_profiles) && ::Feature.enabled?(:disallow_private_profiles)
+          attrs << :make_profile_private
+        end
+
         attrs << :new_user_signups_cap
         attrs << :namespace_storage_forks_cost_factor
 
         attrs
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       def seat_link_payload
         data = ::Gitlab::SeatLinkData.new

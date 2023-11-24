@@ -36,6 +36,9 @@ module EE
           expose(*EE::ApplicationSettingsHelper.delete_unconfirmed_users_attributes, if: ->(_instance, _options) do
             ::License.feature_available?(:delete_unconfirmed_users)
           end)
+          expose :make_profile_private, if: ->(_instance, _opts) do
+            ::License.feature_available?(:disable_private_profiles) && ::Feature.enabled?(:disallow_private_profiles)
+          end
         end
       end
     end

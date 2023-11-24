@@ -381,6 +381,13 @@ RSpec.describe Admin::ApplicationSettingsController do
         end
       end
     end
+
+    context 'private profile disabled for users' do
+      let(:settings) { { make_profile_private: false } }
+      let(:feature) { :disable_private_profiles }
+
+      it_behaves_like 'settings for licensed features'
+    end
   end
 
   describe 'PATCH #general', feature_category: :shared do

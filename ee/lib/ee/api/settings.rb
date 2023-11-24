@@ -77,6 +77,11 @@ module EE
               attrs = attrs.except(:delete_unconfirmed_users_attributes)
             end
 
+            unless License.feature_available?(:disable_private_profiles) &&
+              ::Feature.enabled?(:disallow_private_profiles)
+              attrs = attrs.except(:make_profile_private)
+            end
+
             unless License.feature_available?(:service_accounts)
               attrs = attrs.except(:service_access_tokens_expiration_enforced)
             end
