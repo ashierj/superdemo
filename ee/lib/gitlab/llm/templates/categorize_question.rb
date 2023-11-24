@@ -12,7 +12,7 @@ module Gitlab
         end
 
         def to_prompt
-          prompt = <<-PROMPT
+          prompt = <<~PROMPT
             \n\nHuman: You are helpful assistant, ready to give as accurate answer as possible in JSON format.
 
             Given categories below (formatted with XML) return category and detailed_category of question below. Question is prefixed by "q".

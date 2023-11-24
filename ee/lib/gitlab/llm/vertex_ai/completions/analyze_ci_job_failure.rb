@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       module Completions
         class AnalyzeCiJobFailure < Gitlab::Llm::Completions::Base
-          PROMPT = <<-PROMPT.chomp
+          PROMPT = <<~PROMPT.chomp
             You are an ai assistant explaining the root cause of a CI verification job code failure
             Below are the job logs surrounded by the delimiter: #{@delimiter}
             Think step by step and try to determine why the job failed and explain it so that
