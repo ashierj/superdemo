@@ -15,15 +15,19 @@ module EE
 
         before_action :disable_query_limiting_ee, only: [:update]
         before_action only: [:new, :create] do
-          push_frontend_feature_flag(:ai_global_switch, type: :ops)
-          push_licensed_feature(:generate_description, project) if can?(current_user, :generate_description, project)
+          if can?(current_user, :generate_description, project)
+            push_licensed_feature(:generate_description, project)
+          end
+
           populate_vulnerability_id
         end
 
         before_action only: :show do
           push_licensed_feature(:escalation_policies, project)
-          push_frontend_feature_flag(:ai_global_switch, type: :ops)
-          push_licensed_feature(:summarize_notes, project) if can?(current_user, :summarize_notes, issue)
+
+          if can?(current_user, :summarize_notes, issue)
+            push_licensed_feature(:summarize_notes, project)
+          end
         end
 
         before_action :redirect_if_test_case, only: [:show]

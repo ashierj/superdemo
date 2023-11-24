@@ -3056,6 +3056,40 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  describe 'generate_description' do
+    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
+    let(:current_user) { guest }
+    let(:project) { private_project }
+
+    before do
+      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
+    end
+
+    context "when feature is authorized" do
+      before do
+        allow(authorizer).to receive(:allowed?).and_return(true)
+      end
+
+      context 'when user can create issue' do
+        it { is_expected.to be_allowed(:generate_description) }
+      end
+
+      context 'when user cannot create issue' do
+        let(:current_user) { create(:user) }
+
+        it { is_expected.to be_disallowed(:generate_description) }
+      end
+    end
+
+    context "when feature is not authorized" do
+      before do
+        allow(authorizer).to receive(:allowed?).and_return(false)
+      end
+
+      it { is_expected.to be_disallowed(:generate_description) }
+    end
+  end
+
   describe 'fill_in_merge_request_template policy', :saas do
     let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:project) { create(:project, group: namespace) }
