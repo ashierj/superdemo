@@ -45,11 +45,6 @@ describe('GlobalSearchSidebar', () => {
 
     wrapper = shallowMount(GlobalSearchSidebar, {
       store,
-      provide: {
-        glFeatures: {
-          searchProjectWikisHideArchivedProjects: true,
-        },
-      },
     });
   };
 
