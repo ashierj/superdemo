@@ -329,21 +329,13 @@ Returns [`ExplainVulnerabilityPrompt`](#explainvulnerabilityprompt).
 
 ### `Query.frecentGroups`
 
-A user's frecently visited groups. Requires the `frecent_namespaces_suggestions` feature flag to be enabled.
-
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
+A user's frecently visited groups.
 
 Returns [`[Group!]`](#group).
 
 ### `Query.frecentProjects`
 
-A user's frecently visited projects. Requires the `frecent_namespaces_suggestions` feature flag to be enabled.
-
-WARNING:
-**Introduced** in 16.6.
-This feature is an Experiment. It can be changed or removed at any time.
+A user's frecently visited projects.
 
 Returns [`[Project!]`](#project).
 
