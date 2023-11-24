@@ -19,6 +19,20 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
   end
 
   describe '#execute' do
+    context 'when telesign_intelligence feature flag is disabled' do
+      before do
+        stub_feature_flags(telesign_intelligence: false)
+      end
+
+      it 'returns a success ServiceResponse' do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_success
+        expect(response.payload).to eq({})
+      end
+    end
+
     context 'when phone number is valid' do
       let(:risk_score) { 80 }
       let(:telesign_response) do

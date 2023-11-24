@@ -14,6 +14,8 @@ module PhoneVerification
       end
 
       def execute
+        return success unless Feature.enabled?(:telesign_intelligence)
+
         phoneid_client = TelesignEnterprise::PhoneIdClient.new(customer_id, api_key)
         response = phoneid_client.score(phone_number, USE_CASE_ID, request_risk_insights: true)
 
