@@ -34110,8 +34110,6 @@ CREATE INDEX index_projects_on_mirror_creator_id_created_at ON projects USING bt
 
 CREATE INDEX index_projects_on_mirror_id_where_mirror_and_trigger_builds ON projects USING btree (id) WHERE ((mirror = true) AND (mirror_trigger_builds = true));
 
-CREATE INDEX index_projects_on_mirror_last_successful_update_at ON projects USING btree (mirror_last_successful_update_at);
-
 CREATE INDEX index_projects_on_mirror_user_id ON projects USING btree (mirror_user_id);
 
 CREATE INDEX index_projects_on_name_and_id ON projects USING btree (name, id);
