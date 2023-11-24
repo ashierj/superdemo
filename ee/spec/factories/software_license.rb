@@ -17,5 +17,9 @@ FactoryBot.define do
     trait :user_entered do
       spdx_identifier { nil }
     end
+
+    trait :bsd_3_clause do
+      spdx_identifier { 'BSD-3-Clause' }
+    end
   end
 end
