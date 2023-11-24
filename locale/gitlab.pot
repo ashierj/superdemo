@@ -46418,6 +46418,11 @@ msgstr ""
 msgid "Standard"
 msgstr ""
 
+msgid "Star"
+msgid_plural "Stars"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Star labels to start sorting by priority."
 msgstr ""
 
