@@ -20,17 +20,17 @@ module Gitlab
       BETA_FEATURES = [:chat].freeze
 
       class << self
-        def available?(group, feature)
-          available_on_experimental_stage?(group, feature) &&
-            available_on_beta_stage?(group, feature)
+        def available?(container, feature)
+          available_on_experimental_stage?(container, feature) ||
+            available_on_beta_stage?(container, feature)
         end
 
         private
 
-        def available_on_experimental_stage?(group, feature)
-          return true unless EXPERIMENTAL_FEATURES.include?(feature)
+        def available_on_experimental_stage?(container, feature)
+          return false unless EXPERIMENTAL_FEATURES.include?(feature)
 
-          root_ancestor = group&.root_ancestor
+          root_ancestor = container&.root_ancestor
           return false unless root_ancestor&.experiment_features_enabled
 
           root_ancestor.licensed_feature_available?(:ai_features)
@@ -38,10 +38,10 @@ module Gitlab
 
         # There is no beta setting yet.
         # https://gitlab.com/gitlab-org/gitlab/-/issues/409929
-        def available_on_beta_stage?(group, feature)
-          return true unless BETA_FEATURES.include?(feature)
+        def available_on_beta_stage?(container, feature)
+          return false unless BETA_FEATURES.include?(feature)
 
-          root_ancestor = group&.root_ancestor
+          root_ancestor = container&.root_ancestor
           return false unless root_ancestor&.experiment_features_enabled
 
           root_ancestor.licensed_feature_available?(:ai_features)

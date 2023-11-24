@@ -294,9 +294,11 @@ module EE
 
       with_scope :subject
       condition(:generate_description_enabled) do
-        ::Feature.enabled?(:ai_global_switch, type: :ops) &&
-          subject.group&.licensed_feature_available?(:generate_description) &&
-          ::Gitlab::Llm::StageCheck.available?(subject, :generate_description)
+        ::Gitlab::Llm::FeatureAuthorizer.new(
+          container: subject,
+          current_user: user,
+          feature_name: :generate_description
+        ).allowed?
       end
 
       with_scope :subject
@@ -778,7 +780,7 @@ module EE
       end.enable :fill_in_merge_request_template
 
       rule do
-        ai_features_enabled & generate_description_enabled & can?(:create_issue)
+        generate_description_enabled & can?(:create_issue)
       end.enable :generate_description
 
       rule { target_branch_rules_available & maintainer }.policy do

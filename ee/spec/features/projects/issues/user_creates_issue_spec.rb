@@ -2,11 +2,12 @@
 
 require "spec_helper"
 
-RSpec.describe "User creates issue", :js, feature_category: :team_planning do
+RSpec.describe "User creates issue", :js, :saas, feature_category: :team_planning do
   include ListboxHelpers
 
+  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project_empty_repo, :public, namespace: group) }
   let_it_be(:epic) { create(:epic, group: group, title: 'Sample epic', author: user) }
   let_it_be(:iteration) { create(:iteration, group: group, title: 'Sample iteration') }
@@ -19,21 +20,14 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
   before do
     stub_licensed_features(issue_weights: true, epics: true)
-
-    sign_in(user)
-
-    visit(new_project_issue_path(project))
   end
 
   context "when user can use AI to generate description" do
+    include_context 'with ai features enabled for group'
+
     before do
-      stub_licensed_features(generate_description: true, ai_features: true)
-      stub_feature_flags(ai_global_switch: true)
-      project.group.root_ancestor.namespace_settings.update_attribute(:experiment_features_enabled, true)
-
       sign_in(user)
-
-      visit new_project_issue_path(project)
+      visit(new_project_issue_path(project))
     end
 
     it 'has the AI actions button' do
@@ -42,37 +36,24 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
   end
 
   context 'when user cannot use AI to generate description' do
-    using RSpec::Parameterized::TableSyntax
+    include_context 'with experiment features disabled for group'
 
-    where(:generate_description, :ai_global_switch, :experiment_features_enabled) do
-      true  | false | false
-      true  | true  | false
-      true  | false | true
-      false | true  | true
-      false | true  | false
-      false | false | true
-      false | false | false
+    before do
+      sign_in(user)
+      visit(new_project_issue_path(project))
     end
 
-    with_them do
-      before do
-        stub_licensed_features(generate_description: generate_description)
-        stub_feature_flags(ai_global_switch: ai_global_switch)
-        project.group.root_ancestor.namespace_settings.update_attribute(:experiment_features_enabled,
-          experiment_features_enabled)
-
-        sign_in(user)
-
-        visit new_project_issue_path(project)
-      end
-
-      it 'does not have the AI actions button' do
-        expect(page).not_to have_button('AI actions')
-      end
+    it 'does not have the AI actions button' do
+      expect(page).not_to have_button('AI actions')
     end
   end
 
   context "with weight set" do
+    before do
+      sign_in(user)
+      visit(new_project_issue_path(project))
+    end
+
     it "creates issue" do
       weight = "7"
 
@@ -91,6 +72,8 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
   context 'with epics' do
     before do
+      sign_in(user)
+      visit(new_project_issue_path(project))
       fill_in("Title", with: issue_title)
     end
 
@@ -125,6 +108,8 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
 
   context 'with iterations' do
     before do
+      sign_in(user)
+      visit(new_project_issue_path(project))
       fill_in("Title", with: issue_title)
     end
 
@@ -164,6 +149,11 @@ RSpec.describe "User creates issue", :js, feature_category: :team_planning do
   end
 
   context 'when new issue url has parameter' do
+    before do
+      sign_in(user)
+      visit(new_project_issue_path(project))
+    end
+
     context 'for inherited issue template' do
       let_it_be(:template_project) { create(:project, :public, :repository) }
 
