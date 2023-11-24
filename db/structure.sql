@@ -23438,16 +23438,9 @@ CREATE TABLE service_desk_settings (
     file_template_project_id bigint,
     custom_email_enabled boolean DEFAULT false NOT NULL,
     custom_email text,
-    custom_email_smtp_address text,
-    custom_email_smtp_port integer,
-    custom_email_smtp_username text,
-    encrypted_custom_email_smtp_password bytea,
-    encrypted_custom_email_smtp_password_iv bytea,
     service_desk_enabled boolean DEFAULT true NOT NULL,
     add_external_participants_from_cc boolean DEFAULT false NOT NULL,
-    CONSTRAINT check_57a79552e1 CHECK ((char_length(custom_email) <= 255)),
-    CONSTRAINT check_b283637a9e CHECK ((char_length(custom_email_smtp_address) <= 255)),
-    CONSTRAINT check_e3535d46ee CHECK ((char_length(custom_email_smtp_username) <= 255))
+    CONSTRAINT check_57a79552e1 CHECK ((char_length(custom_email) <= 255))
 );
 
 CREATE TABLE shards (
