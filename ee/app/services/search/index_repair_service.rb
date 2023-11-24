@@ -32,7 +32,7 @@ module Search
         }
       }
 
-      project_count = client.count(index: index_name, routing: project.es_id, body: query)['count']
+      project_count = client.count(index: Project.index_name, routing: project.es_id, body: query)['count']
       project_count == 0
     end
 
@@ -64,7 +64,7 @@ module Search
           }
         }
       }
-      blob_count = client.count(index: index_name, routing: project.es_id, body: query)['count']
+      blob_count = client.count(index: Repository.index_name, routing: project.es_id, body: query)['count']
       (blob_count == 0).tap do |result|
         if result
           logger.warn(
@@ -101,10 +101,6 @@ module Search
 
     def logger
       @logger ||= ::Gitlab::Elasticsearch::Logger.build
-    end
-
-    def index_name
-      Repository.__elasticsearch__.index_name
     end
   end
 end
