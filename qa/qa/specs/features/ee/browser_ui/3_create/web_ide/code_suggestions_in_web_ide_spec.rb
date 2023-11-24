@@ -10,7 +10,7 @@ module QA
       let(:project) { create(:project, :with_readme, name: 'webide-code-suggestions-project') }
       let(:file_name) { 'new_file.rb' }
       let(:prompt_data) { 'def reverse_string' }
-      let(:prompt_regex) { /[\s|\S]+end/ }
+      let(:prompt_regex) { /\.reverse/ }
 
       before do
         Flow::Login.sign_in
