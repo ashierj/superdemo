@@ -93,10 +93,16 @@ module Elastic
       end
 
       def mark_all_as_completed!
-        migrations.each do |migration|
-          migration.save!(completed: true)
+        bulk_request = migrations.flat_map do |migration|
           drop_migration_has_finished_cache!(migration)
+
+          [
+            { index: { _id: migration.version } },
+            migration.to_h(completed: true)
+          ]
         end
+
+        helper.client.bulk(index: helper.migrations_index_name, body: bulk_request, refresh: true)
       end
 
       private
@@ -111,6 +117,10 @@ module Elastic
 
       def migrations_full_path
         Rails.root.join(MIGRATIONS_PATH, '**', '[0-9]*_*.rb').to_s
+      end
+
+      def helper
+        @helper ||= ::Gitlab::Elastic::Helper.default
       end
     end
   end
