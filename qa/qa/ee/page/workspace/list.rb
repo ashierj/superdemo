@@ -31,7 +31,7 @@ module QA
           end
 
           def wait_for_workspaces_creation(workspace)
-            within_element("#{workspace}_action".to_sym, skip_finished_loading_check: true) do
+            within_element("#{workspace}-action".to_sym, skip_finished_loading_check: true) do
               Support::WaitForRequests.wait_for_requests(skip_finished_loading_check: false, finish_loading_wait: 180)
             end
           end
