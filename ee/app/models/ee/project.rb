@@ -1205,7 +1205,7 @@ module EE
     end
 
     def product_analytics_events_used(year: Time.current.year, month: Time.current.month)
-      return 0 unless ::ProductAnalytics::Settings.new(project: self).enabled?
+      return unless ::ProductAnalytics::Settings.new(project: self).enabled? && self.project_setting&.product_analytics_instrumentation_key.present?
 
       ::Analytics::ProductAnalytics::ProjectUsageData.new(project_id: id)
                                                      .events_stored_count(year: year, month: month)
