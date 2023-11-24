@@ -37,7 +37,7 @@ module PhoneVerification
         error(error_message, :invalid_phone_number)
       end
 
-      def success(payload)
+      def success(payload = {})
         ServiceResponse.success(
           payload: payload
         )

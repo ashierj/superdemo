@@ -45,7 +45,6 @@ module PhoneVerification
         store_risk_score(risk_result[:risk_score])
 
         success(risk_result, send_code_result)
-
       rescue StandardError => e
         Gitlab::ErrorTracking.track_exception(e, user_id: user.id)
         error
@@ -139,15 +138,17 @@ module PhoneVerification
       end
 
       def success(risk_result, send_code_result)
-        record.update!(
-          risk_score: risk_result[:risk_score],
-          telesign_reference_xid: send_code_result[:telesign_reference_xid]
-        )
+        attrs = { telesign_reference_xid: send_code_result[:telesign_reference_xid] }
+        attrs[:risk_score] = risk_result[:risk_score] if Feature.enabled?(:telesign_intelligence)
+
+        record.update!(attrs)
 
         ServiceResponse.success
       end
 
       def store_risk_score(risk_score)
+        return unless Feature.enabled?(:telesign_intelligence)
+
         Abuse::TrustScore.create!(user: user, score: risk_score.to_f, source: :telesign)
       end
     end

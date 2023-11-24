@@ -285,5 +285,38 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         expect(user_scores.telesign_score).to eq(risk_score.to_f)
       end
     end
+
+    context 'when telesign_intelligence feature flag is disabled' do
+      let_it_be(:risk_service_response) do
+        ServiceResponse.success(payload: { risk_score: 1 })
+      end
+
+      let_it_be(:send_verification_code_response) do
+        ServiceResponse.success(payload: { telesign_reference_xid: '123' })
+      end
+
+      before do
+        stub_feature_flags(telesign_intelligence: false)
+      end
+
+      it 'returns a success response', :aggregate_failures do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_success
+      end
+
+      it 'does not save the risk_score' do
+        service.execute
+        record = user.phone_number_validation
+
+        expect(record.risk_score).to eq 0
+        expect(record.telesign_reference_xid).to eq '123'
+      end
+
+      it 'does not store risk score in abuse trust scores' do
+        expect { service.execute }.not_to change { Abuse::TrustScore.count }
+      end
+    end
   end
 end
