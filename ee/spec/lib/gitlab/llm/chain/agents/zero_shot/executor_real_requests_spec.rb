@@ -30,7 +30,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       )
 
       all_tools = Gitlab::Llm::Completions::Chat::TOOLS.dup
-      all_tools << ::Gitlab::Llm::Chain::Tools::EpicIdentifier
       all_tools << ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
 
       described_class.new(
@@ -46,7 +45,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     end
 
     before do
-      stub_licensed_features(ai_features: true, ai_tanuki_bot: true)
+      stub_licensed_features(ai_features: true, ai_tanuki_bot: true, experimental_features: true)
       stub_ee_application_setting(should_check_namespace_plan: true)
       group.namespace_settings.update!(experiment_features_enabled: true)
       allow(response_service_double).to receive(:execute).at_least(:once)
@@ -307,7 +306,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
 
       before do
-        stub_licensed_features(ai_features: true, ai_tanuki_bot: true, epics: true)
+        stub_licensed_features(ai_features: true, ai_tanuki_bot: true, epics: true, experimental_features: true)
       end
 
       context 'with predefined tools' do
@@ -429,7 +428,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
 
       where(:input_template, :tools, :answer_match) do
-        'Write tests' | [] | /tests.*hello_world/
+        'Write tests for selected code' | [] | /tests.*hello_world/
       end
 
       with_them do
