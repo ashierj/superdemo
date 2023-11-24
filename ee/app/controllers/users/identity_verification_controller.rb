@@ -16,6 +16,7 @@ module Users
     before_action :require_unverified_user!, except: [:verification_state, :success]
     before_action :redirect_banned_user, only: [:show]
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
+    before_action :require_email_verified_user!, only: [:send_phone_verification_code, :verify_phone_verification_code]
 
     feature_category :instance_resiliency
 
@@ -186,6 +187,14 @@ module Users
 
     def require_unverified_user!
       redirect_to success_identity_verification_path if @user.identity_verified?
+    end
+
+    def require_email_verified_user!
+      return if @user.phone_number_verification_required? && @user.confirmed?
+
+      log_event(:phone, :failed_attempt, :unauthorized)
+
+      render status: :bad_request, json: {}
     end
 
     def redirect_banned_user

@@ -34,10 +34,26 @@ FactoryBot.modify do
       user_type { :service_user }
     end
 
-    trait :arkose_verified do
+    trait :low_risk do
       after(:create) do |user|
         create(:user_custom_attribute,
           key: UserCustomAttribute::ARKOSE_RISK_BAND, value: Arkose::VerifyResponse::RISK_BAND_LOW, user: user
+        )
+      end
+    end
+
+    trait :medium_risk do
+      after(:create) do |user|
+        create(:user_custom_attribute,
+          key: UserCustomAttribute::ARKOSE_RISK_BAND, value: Arkose::VerifyResponse::RISK_BAND_MEDIUM, user: user
+        )
+      end
+    end
+
+    trait :high_risk do
+      after(:create) do |user|
+        create(:user_custom_attribute,
+          key: UserCustomAttribute::ARKOSE_RISK_BAND, value: Arkose::VerifyResponse::RISK_BAND_HIGH, user: user
         )
       end
     end

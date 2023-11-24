@@ -148,6 +148,10 @@ module IdentityVerifiable
     end
   end
 
+  def phone_number_verification_required?
+    identity_verification_state[VERIFICATION_METHODS[:PHONE_NUMBER]] == false
+  end
+
   private
 
   def verification_state
