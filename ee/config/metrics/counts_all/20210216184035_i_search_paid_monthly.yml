@@ -21,4 +21,5 @@ tier:
 - ultimate
 performance_indicator_type:
 - paid_gmau
+- customer_health_score
 milestone: "<13.9"
