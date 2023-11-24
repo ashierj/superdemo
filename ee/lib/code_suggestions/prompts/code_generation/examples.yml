@@ -152,6 +152,26 @@ Go:
         }
 JavaScript:
   - example: |-
+      // create CatsController with findAll method using nestjs
+      <cursor>
+    response: |-
+      <new_code>import { Controller, Get } from '@nestjs/common';
+
+      @Controller('cats')
+      export class CatsController {
+        @Get()
+        findAll() {
+          return 'This action returns all cats';
+        }
+      }
+  - example: |-
+      // create an exported weekFrom function that returns date a week from passed one 
+      <cursor>
+    response: |-
+      <new_code>import * as dateFns from 'date-fns'
+
+      module.exports.weekFrom = (date) => dateFns.addDays(new Date(2017, 0, 25, 21, 28, 15), 7)
+  - example: |-
       // write a function to generate a unique UUID
       <cursor>
       // this function prints someone's name
