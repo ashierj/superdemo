@@ -4,6 +4,8 @@ module SCA
   class LicenseCompliance
     include ::Gitlab::Utils::StrongMemoize
 
+    attr_reader :project
+
     SORT_DIRECTION = {
       asc: -> (items) { items },
       desc: -> (items) { items.reverse }
@@ -42,9 +44,17 @@ module SCA
       other_report = other.license_scanning_report
       denied_policies_from_other_report = denied_license_policies_from_report(other_report)
 
+      diff_project = project || other.project
+
+      widget_category_feature_enabled = Feature.enabled?(:license_compliance_widget_category, diff_project)
+
       license_scanning_report.diff_with(other_report).transform_values do |reported_licenses|
         reported_licenses.map do |reported_license|
-          build_policy_with_denied_licenses(denied_policies_from_other_report, reported_license)
+          if widget_category_feature_enabled
+            new_build_policy_with_denied_licenses(denied_policies_from_other_report, reported_license, diff_project)
+          else
+            current_build_policy_with_denied_licenses(denied_policies_from_other_report, reported_license)
+          end
         end
       end
     end
@@ -57,7 +67,7 @@ module SCA
 
     private
 
-    attr_reader :project, :pipeline, :scanner
+    attr_reader :pipeline, :scanner
 
     def license_policies
       strong_memoize(:license_policies) do
@@ -117,7 +127,28 @@ module SCA
       end.compact.to_h
     end
 
-    def build_policy_with_denied_licenses(denied_policies, reported_license)
+    def new_build_policy_with_denied_licenses(denied_policies, reported_license, diff_project)
+      direct_license_policy = policy_from_licenses(direct_license_policies, reported_license)
+      return build_policy(reported_license, direct_license_policy, nil) if direct_license_policy
+
+      denied_license_policy = policy_from_licenses(denied_policies, reported_license)
+      approval_status = denied_license_policy || deny_licenses_for_empty_reports?(diff_project) ? 'denied' : nil
+      build_policy(reported_license, denied_license_policy, approval_status)
+    end
+
+    def deny_licenses_for_empty_reports?(diff_project)
+      base_pipeline_without_report? && license_approval_policies_configured_for_project?(diff_project)
+    end
+
+    def base_pipeline_without_report?
+      pipeline.blank? || license_scanning_report.blank?
+    end
+
+    def license_approval_policies_configured_for_project?(diff_project)
+      diff_project.software_license_policies.with_scan_result_policy_read.any?
+    end
+
+    def current_build_policy_with_denied_licenses(denied_policies, reported_license)
       direct_license_policy = policy_from_licenses(direct_license_policies, reported_license)
 
       denied_license_policy = policy_from_licenses(denied_policies, reported_license) unless direct_license_policy

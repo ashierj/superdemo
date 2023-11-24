@@ -481,6 +481,28 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
           expect(added[1].classification).to eq('denied')
         end
       end
+
+      context 'when base_report does not have denied licenses' do
+        before do
+          base_report.add_license(id: 'MIT', name: 'MIT')
+
+          allow(license_compliance).to receive(:license_scanning_report).and_return(report)
+          allow(base_compliance).to receive(:license_scanning_report).and_return(base_report)
+
+          create(:software_license_policy, :allowed,
+            project: project,
+            software_license: mit,
+            scan_result_policy_read: scan_result_policy_read_without_inclusion
+          )
+        end
+
+        it 'returns differences with allowed status' do
+          added = diff[:added]
+
+          expect(added[0].spdx_identifier).to eq('MIT')
+          expect(added[0].classification).to eq('allowed')
+        end
+      end
     end
 
     context "when the head pipeline has not run" do
@@ -515,6 +537,84 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
         expect(diff[:removed]).to be_empty
         expect(diff[:unchanged]).to all(be_instance_of(::SCA::LicensePolicy))
         expect(diff[:unchanged].count).to eq(3)
+      end
+    end
+
+    context 'when the base pipeline is empty or does not contain report' do
+      subject(:diff) { license_compliance.diff_with(head_compliance) }
+
+      let(:pipeline) { create(:ee_ci_pipeline, :success, project: project) }
+
+      let!(:head_pipeline) { create(:ee_ci_pipeline, :success, :with_cyclonedx_report, project: project, builds: [create(:ee_ci_build, :success)]) }
+      let!(:head_compliance) { project.license_compliance(head_pipeline) }
+
+      context 'when the base pipeline is nil' do
+        let(:pipeline) { nil }
+
+        it 'returns diff' do
+          expect(diff[:added].first.classification).to eq('unclassified')
+        end
+      end
+
+      shared_examples 'when there are no license approval policies configured for the project' do
+        let(:license_approval_policy) do
+          create(:software_license_policy, classification, software_license: bsd_3_clause,
+            scan_result_policy_read: scan_result_policy_read)
+        end
+
+        let(:scan_result_policy_read) do
+          create(:scan_result_policy_read, license_states: ['newly_detected'], match_on_inclusion: true,
+            role_approvers: [Gitlab::Access::MAINTAINER], project: project)
+        end
+
+        let(:bsd_3_clause) { create(:software_license, :bsd_3_clause) }
+
+        before do
+          stub_licensed_features(security_orchestration_policies: true)
+          project.software_license_policies << license_approval_policy
+        end
+
+        it 'returns diff' do
+          expect(diff[:added].first.classification).to eq('denied')
+        end
+
+        context 'when the base pipeline is nil' do
+          let(:pipeline) { nil }
+
+          it 'returns diff' do
+            expect(diff[:added].first.classification).to eq('denied')
+          end
+
+          context 'when the feature flag `license_compliance_widget_category` is disabled' do
+            before do
+              stub_feature_flags(license_compliance_widget_category: false)
+            end
+
+            it 'returns diff' do
+              expect(diff[:added].first.classification).to eq('unclassified')
+            end
+          end
+        end
+      end
+
+      context 'when there are no license approval policies configured for the project' do
+        it 'returns diff' do
+          expect(diff[:added].first.classification).to eq('unclassified')
+        end
+      end
+
+      context 'when there are license approval policies configured for the project' do
+        context 'with allowed policy' do
+          let(:classification) { :allowed }
+
+          it_behaves_like 'when there are no license approval policies configured for the project'
+        end
+
+        context 'with denied policy' do
+          let(:classification) { :denied }
+
+          it_behaves_like 'when there are no license approval policies configured for the project'
+        end
       end
     end
 
