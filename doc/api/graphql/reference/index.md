@@ -28811,6 +28811,7 @@ Values for scoping catalog resources.
 | Value | Description |
 | ----- | ----------- |
 | <a id="cicatalogresourcescopeall"></a>`ALL` | All catalog resources visible to the current user. |
+| <a id="cicatalogresourcescopenamespaces"></a>`NAMESPACES` | Catalog resources belonging to authorized namespaces of the user. |
 
 ### `CiCatalogResourceSort`
 
