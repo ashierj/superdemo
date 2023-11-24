@@ -70,11 +70,7 @@ module Gitlab
         ).map do |item|
           item.metadata['source_url'] = item.url
 
-          content = if Feature.enabled?(:duo_chat_absolute_doc_links, current_user)
-                      Gitlab::Llm::Embeddings::Utils::DocsAbsoluteUrlConverter.convert(item.content, item.url)
-                    else
-                      item.content
-                    end
+          content = Gitlab::Llm::Embeddings::Utils::DocsAbsoluteUrlConverter.convert(item.content, item.url)
 
           {
             id: item.id,
