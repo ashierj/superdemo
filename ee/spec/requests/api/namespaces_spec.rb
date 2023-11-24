@@ -127,7 +127,8 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
       before do
         group1.add_guest(user)
 
-        create(:gitlab_subscription, namespace: group1, max_seats_used: 1, max_seats_used_changed_at: 1.week.ago, seats_in_use: 1)
+        create(:gitlab_subscription, namespace: group1, max_seats_used: 1,
+               max_seats_used_changed_at: 1.week.ago, seats_in_use: 1, end_date: Date.current + 2.days)
       end
 
       # We seem to have some N+1 queries.
@@ -167,6 +168,12 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
 
         expect(json_response.first['seats_in_use']).to eq(1)
       end
+
+      it 'includes end_date' do
+        get api("/namespaces", user)
+
+        expect(Date.parse(json_response.first['end_date'])).to eq(Date.current + 2.days)
+      end
     end
 
     context 'without gitlab subscription' do
@@ -191,6 +198,14 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
 
         json_response.each do |resp|
           expect(resp.keys).not_to include('seats_in_use')
+        end
+      end
+
+      it 'does not include end_date' do
+        get api("/namespaces", user)
+
+        json_response.each do |resp|
+          expect(resp.keys).not_to include('end_date')
         end
       end
     end
