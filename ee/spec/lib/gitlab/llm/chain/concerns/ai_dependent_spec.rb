@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
   let(:ai_request) { ::Gitlab::Llm::Chain::Requests::Anthropic.new(double) }
   let(:context) do
     ::Gitlab::Llm::Chain::GitlabContext.new(
-      current_user: double,
+      current_user: build(:user),
       container: double,
       resource: double,
       ai_request: ai_request

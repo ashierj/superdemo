@@ -71,7 +71,8 @@ module Llm
     def schedule_completion_worker(job_options = options)
       message = prompt_message
 
-      logger.debug(
+      logger.info_or_debug(
+        message.user,
         message: "Enqueuing CompletionWorker",
         user_id: message.user.id,
         resource_id: message.resource&.id,

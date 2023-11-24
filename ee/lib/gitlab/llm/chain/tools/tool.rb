@@ -101,7 +101,8 @@ module Gitlab
 
           def already_used_answer
             content = "You already have the answer from #{self.class::NAME} tool, read carefully."
-            logger.debug(message: "Answer", class: self.class.to_s, content: content)
+
+            logger.info_or_debug(context.current_user, message: "Answer", class: self.class.to_s, content: content)
 
             ::Gitlab::Llm::Chain::Answer.new(
               status: :not_executed, context: context, content: content, tool: nil, is_final: false

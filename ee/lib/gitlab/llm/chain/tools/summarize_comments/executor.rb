@@ -63,7 +63,7 @@ module Gitlab
                           "#{resource_name} ##{resource.iid} has no comments to be summarized."
                         end
 
-              logger.debug(message: "Answer", class: self.class.to_s, content: content)
+              logger.info_or_debug(context.current_user, message: "Answer", class: self.class.to_s, content: content)
 
               ::Gitlab::Llm::Chain::Answer.new(
                 status: :ok, context: context, content: content, tool: nil, is_final: false
@@ -89,8 +89,9 @@ module Gitlab
             end
 
             def can_summarize?
-              logger.debug(message: "Supported Issuable Typees Ability Allowed",
+              logger.info_or_debug(context.current_user, message: "Supported Issuable Typees Ability Allowed",
                 content: Ability.allowed?(context.current_user, :summarize_notes, context.resource))
+
               ::Llm::GenerateSummaryService::SUPPORTED_ISSUABLE_TYPES.include?(resource.to_ability_name) &&
                 Ability.allowed?(context.current_user, :summarize_notes, context.resource)
             end

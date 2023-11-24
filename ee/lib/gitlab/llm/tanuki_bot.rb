@@ -42,7 +42,8 @@ module Gitlab
         return empty_response unless self.class.enabled_for?(user: current_user)
 
         unless ::Embedding::Vertex::GitlabDocumentation.any?
-          logger.debug(message: "Need to query docs but no embeddings are found")
+          logger.info_or_debug(current_user, message: "Need to query docs but no embeddings are found")
+
           return empty_response
         end
 
@@ -110,7 +111,8 @@ module Gitlab
           yield data&.dig("completion").to_s if block_given?
         end
 
-        logger.debug(message: "Got Final Result", prompt: final_prompt[:prompt], response: final_prompt_result)
+        logger.info_or_debug(current_user,
+          message: "Got Final Result", prompt: final_prompt[:prompt], response: final_prompt_result)
 
         Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(
           { completion: final_prompt_result }.to_json, current_user

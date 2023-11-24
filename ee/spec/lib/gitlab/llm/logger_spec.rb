@@ -26,4 +26,29 @@ RSpec.describe Gitlab::Llm::Logger, feature_category: :ai_abstraction_layer do
       it { is_expected.to eq ::Logger::INFO }
     end
   end
+
+  describe "#info_or_debug" do
+    let_it_be(:user) { create(:user) }
+    let(:logger) { described_class.build }
+
+    context 'with expanded_ai_logging switched on' do
+      it 'logs on info level' do
+        expect(logger).to receive(:info).with({ message: 'test' })
+
+        logger.info_or_debug(user, message: 'test')
+      end
+    end
+
+    context 'with expanded_ai_logging switched off' do
+      before do
+        stub_feature_flags(expanded_ai_logging: false)
+      end
+
+      it 'logs on debug level' do
+        expect(logger).to receive(:debug).with({ message: 'test' })
+
+        logger.info_or_debug(user, message: 'test')
+      end
+    end
+  end
 end
