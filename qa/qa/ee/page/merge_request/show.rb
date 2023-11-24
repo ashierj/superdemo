@@ -105,8 +105,10 @@ module QA
 
           def click_approve
             click_element 'approve-button'
-
-            find_element 'approve-button', text: "Revoke approval"
+            retry_until(reload: true, sleep_interval: 2, max_attempts: 5,
+              message: 'Finding Revoke approval button unsuccessful') do
+              find_element 'approve-button', text: "Revoke approval"
+            end
           end
 
           def expand_license_report

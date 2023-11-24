@@ -23,12 +23,7 @@ module QA
           project.remove_via_api!
         end
 
-        context 'and the code owner is the root group', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347804',
-          quarantine: {
-            only: { subdomain: %i[staging staging-canary] },
-            issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422935',
-            type: :flaky
-          } do
+        context 'and the code owner is the root group', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347804' do
           let(:codeowner) { root_group.path }
           let(:group_or_project) { root_group }
 
