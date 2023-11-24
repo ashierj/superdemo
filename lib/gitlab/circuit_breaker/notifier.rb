@@ -14,7 +14,7 @@ module Gitlab
         Gitlab::ErrorTracking.track_exception(exception)
       end
 
-      def notify_warning(service_name, message)
+      def notify_warning(_service_name, _message)
         # no-op
       end
 
