@@ -25,7 +25,11 @@ module EE
 
       case issuable
       when Issue
-        url_helper.description_diff_project_issue_path(issuable.project, issuable, version_id)
+        if issuable.project.blank?
+          url_helper.description_diff_group_work_item_path(issuable.resource_parent, issuable.iid, version_id)
+        else
+          url_helper.description_diff_project_issue_path(issuable.project, issuable, version_id)
+        end
       when MergeRequest
         url_helper.description_diff_project_merge_request_path(issuable.project, issuable, version_id)
       when Epic
@@ -38,7 +42,11 @@ module EE
 
       case issuable
       when Issue
-        url_helper.delete_description_version_project_issue_path(issuable.project, issuable, version_id)
+        if issuable.project.blank?
+          url_helper.delete_description_version_group_work_item_path(issuable.resource_parent, issuable.iid, version_id)
+        else
+          url_helper.delete_description_version_project_issue_path(issuable.project, issuable, version_id)
+        end
       when MergeRequest
         url_helper.delete_description_version_project_merge_request_path(issuable.project, issuable, version_id)
       when Epic

@@ -44,4 +44,80 @@ RSpec.describe NotesHelper do
       expect(notes_data[:groupId]).to eq(epic.group_id)
     end
   end
+
+  describe '#description_diff_path' do
+    let(:version) { create(:description_version, issue: issuable) }
+
+    subject { description_diff_path(issuable, version.id) }
+
+    context 'when issuable is created at the project level' do
+      let_it_be(:project) { create(:project) }
+
+      context 'when issuable is an Issue' do
+        let(:issuable) { create(:issue, project: project) }
+
+        it { is_expected.to eq("/#{project.full_path}/-/issues/#{issuable.iid}/descriptions/#{version.id}/diff") }
+      end
+
+      context 'when issuable is a WorkItem' do
+        let(:issuable) { create(:work_item, project: project) }
+
+        it { is_expected.to eq("/#{project.full_path}/-/issues/#{issuable.iid}/descriptions/#{version.id}/diff") }
+      end
+    end
+
+    context 'when issuable is created at the group level' do
+      let_it_be(:group) { create(:group) }
+
+      context 'when issuable is an Issue' do
+        let(:issuable) { create(:issue, :group_level, namespace: group) }
+
+        it { is_expected.to eq("/groups/#{group.full_path}/-/work_items/#{issuable.iid}/descriptions/#{version.id}/diff") }
+      end
+
+      context 'when issuable is a WorkItem' do
+        let(:issuable) { create(:work_item, :group_level, namespace: group) }
+
+        it { is_expected.to eq("/groups/#{group.full_path}/-/work_items/#{issuable.iid}/descriptions/#{version.id}/diff") }
+      end
+    end
+  end
+
+  describe '#delete_description_version_path' do
+    let(:version) { create(:description_version, issue: issuable) }
+
+    subject { delete_description_version_path(issuable, version.id) }
+
+    context 'when issuable is created at the project level' do
+      let_it_be(:project) { create(:project) }
+
+      context 'when issuable is an Issue' do
+        let(:issuable) { create(:issue, project: project) }
+
+        it { is_expected.to eq("/#{project.full_path}/-/issues/#{issuable.iid}/descriptions/#{version.id}") }
+      end
+
+      context 'when issuable is a WorkItem' do
+        let(:issuable) { create(:work_item, project: project) }
+
+        it { is_expected.to eq("/#{project.full_path}/-/issues/#{issuable.iid}/descriptions/#{version.id}") }
+      end
+    end
+
+    context 'when issuable is created at the group level' do
+      let_it_be(:group) { create(:group) }
+
+      context 'when issuable is an Issue' do
+        let(:issuable) { create(:issue, :group_level, namespace: group) }
+
+        it { is_expected.to eq("/groups/#{group.full_path}/-/work_items/#{issuable.iid}/descriptions/#{version.id}") }
+      end
+
+      context 'when issuable is a WorkItem' do
+        let(:issuable) { create(:work_item, :group_level, namespace: group) }
+
+        it { is_expected.to eq("/groups/#{group.full_path}/-/work_items/#{issuable.iid}/descriptions/#{version.id}") }
+      end
+    end
+  end
 end

@@ -487,13 +487,10 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
               can_delete = description_version['canDelete']
               deleted = description_version['deleted']
 
-              url_helpers = ::Gitlab::Routing.url_helpers
-              url_args = [work_item.project, work_item, id]
-
               if description_diffs_enabled
                 expect(diff).to eq("<span class=\"idiff addition\">updated description</span>")
-                expect(diff_path).to eq(url_helpers.description_diff_project_issue_path(*url_args))
-                expect(delete_path).to eq(url_helpers.delete_description_version_project_issue_path(*url_args))
+                expect(diff_path).to eq(expected_diff_path(id))
+                expect(delete_path).to eq(expected_delete_path(id))
                 expect(can_delete).to be true
               else
                 expect(diff).to be_nil
@@ -503,6 +500,26 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
               end
 
               expect(deleted).to be false
+            end
+
+            def url_helper
+              ::Gitlab::Routing.url_helpers
+            end
+
+            def expected_diff_path(id)
+              if work_item.project.blank?
+                url_helper.description_diff_group_work_item_path(work_item.resource_parent, work_item.iid, id)
+              else
+                url_helper.description_diff_project_issue_path(work_item.resource_parent, work_item.iid, id)
+              end
+            end
+
+            def expected_delete_path(id)
+              if work_item.project.blank?
+                url_helper.delete_description_version_group_work_item_path(work_item.resource_parent, work_item.iid, id)
+              else
+                url_helper.delete_description_version_project_issue_path(work_item.resource_parent, work_item.iid, id)
+              end
             end
 
             def find_note(work_item, starting_with)
@@ -550,15 +567,14 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
           end
 
           let(:version_gid) { "null" }
-          let(:opts) { {} }
-          let(:widget_params) { { description_widget: { description: "updated description" } } }
+          let(:opts) { { description: 'updated description' } }
 
           let(:service) do
             WorkItems::UpdateService.new(
-              container: project,
+              container: work_item.resource_parent,
               current_user: developer,
               params: opts,
-              widget_params: widget_params
+              widget_params: {}
             )
           end
 
@@ -566,28 +582,36 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
             service.execute(work_item)
           end
 
-          it_behaves_like 'description change diff'
+          context 'when work item belongs to a project' do
+            it_behaves_like 'description change diff'
 
-          context 'with passed description version id' do
-            let(:version_gid) { "\"#{work_item.description_versions.first.to_global_id}\"" }
+            context 'with passed description version id' do
+              let(:version_gid) { "\"#{work_item.description_versions.first.to_global_id}\"" }
+
+              it_behaves_like 'description change diff'
+            end
+
+            context 'with description_diffs disabled' do
+              before do
+                stub_licensed_features(description_diffs: false)
+              end
+
+              it_behaves_like 'description change diff', description_diffs_enabled: false
+            end
+
+            context 'with description_diffs enabled' do
+              before do
+                stub_licensed_features(description_diffs: true)
+              end
+
+              it_behaves_like 'description change diff', description_diffs_enabled: true
+            end
+          end
+
+          context 'when work item belongs to a group' do
+            let(:work_item) { group_work_item }
 
             it_behaves_like 'description change diff'
-          end
-
-          context 'with description_diffs disabled' do
-            before do
-              stub_licensed_features(description_diffs: false)
-            end
-
-            it_behaves_like 'description change diff', description_diffs_enabled: false
-          end
-
-          context 'with description_diffs enabled' do
-            before do
-              stub_licensed_features(description_diffs: true)
-            end
-
-            it_behaves_like 'description change diff', description_diffs_enabled: true
           end
         end
       end
