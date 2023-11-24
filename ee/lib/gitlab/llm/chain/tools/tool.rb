@@ -24,10 +24,6 @@ module Gitlab
             self::EXAMPLE
           end
 
-          def self.slash_commands
-            {}
-          end
-
           def initialize(context:, options:, stream_response_handler: nil, command: nil)
             @context = context
             @options = options
@@ -81,7 +77,7 @@ module Gitlab
 
           private
 
-          attr_reader :logger, :stream_response_handler, :command
+          attr_reader :logger, :stream_response_handler
 
           def not_found
             content = "I am sorry, I am unable to find what you are looking for."
@@ -113,13 +109,7 @@ module Gitlab
           end
 
           def prompt_options
-            options.merge(command_options)
-          end
-
-          def command_options
-            return {} unless command
-
-            command.prompt_options
+            options
           end
         end
       end

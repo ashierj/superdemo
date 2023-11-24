@@ -4,30 +4,35 @@ module Gitlab
   module Llm
     module Chain
       module Tools
-        module ExplainCode
+        module WriteTests
           class Executor < SlashCommandTool
             extend ::Gitlab::Utils::Override
             include Concerns::AiDependent
 
-            NAME = 'ExplainCode'
-            HUMAN_NAME = 'Explain Code'
-            DESCRIPTION = 'Useful tool to explain code snippets and blocks.'
+            NAME = 'WriteTests'
+            HUMAN_NAME = 'Write Tests'
+            DESCRIPTION = 'Useful tool to write tests for source code.'
             RESOURCE_NAME = nil
-            EXAMPLE = "Question: How would you improve the " \
-                      "```def hello_world\nputs('Hello, world!\\n\');\nend``` code? " \
-                      'Picked tools: "ExplainCode" tool. ' \
-                      'Reason: The question has a code block that needs improvement. "ExplainCode" tool ' \
-                      'can process this question.'
+            EXAMPLE = <<~TEXT
+              Question: Write tests for this code
+              ```
+              def hello_world
+                puts('Hello, world!')
+              end
+              ```
+              Picked tools: "WriteTests" tool.
+              Reason: The question has a code block for which we want to write tests. "WriteTests" tool can process this question.
+            TEXT
             PROVIDER_PROMPT_CLASSES = {
-              anthropic: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic,
-              vertex_ai: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::VertexAi
+              anthropic: ::Gitlab::Llm::Chain::Tools::WriteTests::Prompts::Anthropic,
+              vertex_ai: ::Gitlab::Llm::Chain::Tools::WriteTests::Prompts::VertexAi
             }.freeze
 
             PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(
                 <<~PROMPT
                   You are a software developer.
-                  You can explain code snippets.
+                  You can write new tests.
                   %<language_info>s
                 PROMPT
               ),
@@ -42,10 +47,10 @@ module Gitlab
             ].freeze
 
             SLASH_COMMANDS = {
-              '/explain' => {
-                description: 'Explain the code',
-                instruction: 'Explain the code below in <code></code> tags.',
-                instruction_with_input: 'Explain %<input>s in the code below in <code></code> tags.'
+              '/tests' => {
+                description: 'Write tests for the code',
+                instruction: 'Write tests for the code below in <code></code> tags.',
+                instruction_with_input: 'Write tests %<input>s for the code below in <code></code> tags.'
               }
             }.freeze
 
@@ -63,10 +68,6 @@ module Gitlab
 
             def authorize
               Utils::Authorizer.context_allowed?(context: context)
-            end
-
-            def resource_name
-              nil
             end
           end
         end

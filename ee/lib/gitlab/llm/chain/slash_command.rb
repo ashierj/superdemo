@@ -8,7 +8,12 @@ module Gitlab
           command, user_input = message.slash_command_and_input
           return unless command
 
-          tool = tools.find { |tool| tool::Executor.slash_commands.has_key?(command) }
+          tool = tools.find do |tool|
+            next unless tool::Executor.respond_to?(:slash_commands)
+
+            tool::Executor.slash_commands.has_key?(command)
+          end
+
           return unless tool
 
           command_options = tool::Executor.slash_commands[command]
