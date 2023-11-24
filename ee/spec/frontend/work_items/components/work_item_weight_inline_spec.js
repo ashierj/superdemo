@@ -1,7 +1,7 @@
 import { GlForm, GlFormInput } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
+import WorkItemWeightInline from 'ee/work_items/components/work_item_weight_inline.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -11,7 +11,7 @@ import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import { updateWorkItemMutationResponse } from 'jest/work_items/mock_data';
 
-describe('WorkItemWeight component', () => {
+describe('WorkItemWeightInline component', () => {
   Vue.use(VueApollo);
 
   let wrapper;
@@ -30,7 +30,7 @@ describe('WorkItemWeight component', () => {
     workItemIid = '1',
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
   } = {}) => {
-    wrapper = mountExtended(WorkItemWeight, {
+    wrapper = mountExtended(WorkItemWeightInline, {
       apolloProvider: createMockApollo([[updateWorkItemMutation, mutationHandler]]),
       propsData: {
         canUpdate,
