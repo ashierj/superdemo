@@ -24,7 +24,7 @@ module TrialStatusWidgetHelper
     trial_status_common_data_attrs(group).merge(
       trial_days_used: trial_status.days_used,
       trial_duration: trial_status.duration,
-      nav_icon_image_path: image_path('illustrations/golden_tanuki.svg'),
+      nav_icon_image_path: image_path('illustrations/gitlab_logo.svg'),
       percentage_complete: trial_status.percentage_complete
     )
   end

@@ -18,7 +18,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
         >
           <img
             class="svg"
-            src="illustrations/golden_tanuki.svg"
+            src="illustrations/gitlab_logo.svg"
             width="16"
           />
         </span>
