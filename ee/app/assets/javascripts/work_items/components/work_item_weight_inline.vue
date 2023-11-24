@@ -160,6 +160,7 @@ export default {
         :readonly="!canUpdate"
         width="sm"
         class="hide-unfocused-input-decoration work-item-field-value"
+        :class="{ 'hide-spinners gl-shadow-none! gl-background-transparent': !isEditing }"
         :type="type"
         :value="weight"
         @blur="updateWeight"
