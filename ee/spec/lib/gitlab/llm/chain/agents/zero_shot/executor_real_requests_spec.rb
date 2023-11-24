@@ -16,6 +16,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     let(:response_service_double) { instance_double(::Gitlab::Llm::ResponseService) }
     let(:resource) { nil }
     let(:extra_resource) { {} }
+    let(:current_file) { nil }
 
     let(:executor) do
       ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
@@ -24,7 +25,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         container: resource.try(:resource_parent)&.root_ancestor,
         resource: resource,
         ai_request: ai_request,
-        extra_resource: extra_resource
+        extra_resource: extra_resource,
+        current_file: current_file
       )
 
       all_tools = Gitlab::Llm::Completions::Chat::TOOLS.dup
@@ -44,10 +46,9 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     end
 
     before do
-      stub_licensed_features(ai_features: true)
+      stub_licensed_features(ai_features: true, ai_tanuki_bot: true)
       stub_ee_application_setting(should_check_namespace_plan: true)
       group.namespace_settings.update!(experiment_features_enabled: true)
-      stub_licensed_features(ai_tanuki_bot: true)
       allow(response_service_double).to receive(:execute).at_least(:once)
     end
 
@@ -306,7 +307,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
 
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(ai_features: true, ai_tanuki_bot: true, epics: true)
       end
 
       context 'with predefined tools' do
@@ -412,6 +413,29 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         answer = executor.execute
 
         expect(answer.content).to match_llm_answer('GitLab Duo Chat')
+      end
+    end
+
+    context 'when asked about writing tests' do
+      let(:current_file) do
+        {
+          file_name: 'test.rb',
+          selected_text: <<~TEXT
+            def hello_world
+              puts "Hello, World"
+            end
+          TEXT
+        }
+      end
+
+      where(:input_template, :tools, :answer_match) do
+        'Write tests' | [] | /tests.*hello_world/
+      end
+
+      with_them do
+        let(:input) { format(input_template) }
+
+        it_behaves_like 'successful prompt processing'
       end
     end
   end

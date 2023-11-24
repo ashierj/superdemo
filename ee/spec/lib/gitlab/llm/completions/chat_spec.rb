@@ -53,18 +53,20 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
     build(:ai_chat_message, user: user, resource: resource, request_id: 'uuid', content: content)
   end
 
+  let(:tools) do
+    [
+      ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
+      ::Gitlab::Llm::Chain::Tools::JsonReader,
+      ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
+      ::Gitlab::Llm::Chain::Tools::EpicIdentifier,
+      ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
+    ]
+  end
+
   subject { described_class.new(prompt_message, nil, **options).execute }
 
   shared_examples 'success' do
     it 'calls the ZeroShot Agent with the right parameters', :snowplow do
-      tools = [
-        ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-        ::Gitlab::Llm::Chain::Tools::JsonReader,
-        ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
-        ::Gitlab::Llm::Chain::Tools::EpicIdentifier,
-        ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
-      ]
-
       expected_params = [
         user_input: content,
         tools: match_array(tools),
@@ -199,18 +201,8 @@ client_subscription_id: 'someid' }
       it_behaves_like 'success'
     end
 
-    context 'when ci_editor_assistant_tool flag is switched off' do
-      before do
-        stub_feature_flags(ci_editor_assistant_tool: false)
-      end
-
-      it 'calls zero shot agent with tools without Ci Editor Assistant' do
-        tools = [
-          ::Gitlab::Llm::Chain::Tools::JsonReader,
-          ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-          ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
-          ::Gitlab::Llm::Chain::Tools::EpicIdentifier
-        ]
+    shared_examples_for 'tool behind a feature flag' do
+      it 'calls zero shot agent with selected tools' do
         expected_params = [
           user_input: content,
           tools: match_array(tools),
@@ -239,32 +231,76 @@ client_subscription_id: 'someid' }
       end
     end
 
-    context 'when message is a slash command' do
-      let(:content) { '/explain something' }
-      let(:executor) { instance_double(Gitlab::Llm::Chain::Tools::ExplainCode::Executor) }
-
-      it 'calls directly a tool' do
-        expected_params = {
-          context: an_instance_of(::Gitlab::Llm::Chain::GitlabContext),
-          options: { input: content },
-          stream_response_handler: nil,
-          command: an_instance_of(::Gitlab::Llm::Chain::SlashCommand)
-        }
-
-        expect(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor).not_to receive(:new)
-        expect(::Gitlab::Llm::Chain::Tools::ExplainCode::Executor)
-          .to receive(:new).with(expected_params).and_return(executor)
-        expect(executor).to receive(:perform).and_return(answer)
-
-        subject
+    context 'when ci_editor_assistant_tool flag is switched off' do
+      before do
+        stub_feature_flags(ci_editor_assistant_tool: false, slash_commands: true)
       end
 
-      context 'when slash_commands flag is disabled' do
-        before do
-          stub_feature_flags(slash_commands: false)
+      it_behaves_like 'tool behind a feature flag' do
+        let(:tools) do
+          [
+            ::Gitlab::Llm::Chain::Tools::JsonReader,
+            ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
+            ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
+            ::Gitlab::Llm::Chain::Tools::EpicIdentifier
+          ]
+        end
+      end
+    end
+
+    context 'when message is a slash command' do
+      shared_examples_for 'slash command execution' do
+        let(:executor) { instance_double(Gitlab::Llm::Chain::Tools::ExplainCode::Executor) }
+
+        it 'calls directly a tool' do
+          expected_params = {
+            context: an_instance_of(::Gitlab::Llm::Chain::GitlabContext),
+            options: { input: content },
+            stream_response_handler: nil,
+            command: an_instance_of(::Gitlab::Llm::Chain::SlashCommand)
+          }
+
+          expect(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor).not_to receive(:new)
+          expect(expected_tool)
+            .to receive(:new).with(expected_params).and_return(executor)
+          expect(executor).to receive(:perform).and_return(answer)
+
+          subject
         end
 
-        it_behaves_like 'success'
+        context 'when slash_commands flag is disabled' do
+          before do
+            stub_feature_flags(slash_commands: false)
+          end
+
+          it_behaves_like 'success' do
+            let(:tools) do
+              [
+                ::Gitlab::Llm::Chain::Tools::JsonReader,
+                ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
+                ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
+                ::Gitlab::Llm::Chain::Tools::EpicIdentifier,
+                ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
+              ]
+            end
+          end
+        end
+      end
+
+      context 'when /explain is used' do
+        let(:content) { '/explain something' }
+
+        it_behaves_like 'slash command execution' do
+          let(:expected_tool) { ::Gitlab::Llm::Chain::Tools::ExplainCode::Executor }
+        end
+      end
+
+      context 'when /tests is used' do
+        let(:content) { '/tests something' }
+
+        it_behaves_like 'slash command execution' do
+          let(:expected_tool) { ::Gitlab::Llm::Chain::Tools::WriteTests::Executor }
+        end
       end
 
       context 'when slash command does not exist' do
