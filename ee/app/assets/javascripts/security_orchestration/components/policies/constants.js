@@ -20,19 +20,19 @@ export const POLICY_TYPE_FILTER_OPTIONS = {
     value: '',
     text: s__('SecurityOrchestration|All types'),
   },
-  POLICY_TYPE_SCAN_EXECUTION: {
-    value: 'POLICY_TYPE_SCAN_EXECUTION',
+  SCAN_EXECUTION: {
+    value: 'SCAN_EXECUTION',
     text: s__('SecurityOrchestration|Scan execution'),
   },
-  POLICY_TYPE_SCAN_RESULT: {
-    value: 'POLICY_TYPE_SCAN_RESULT',
+  SCAN_RESULT: {
+    value: 'SCAN_RESULT',
     text: s__('SecurityOrchestration|Scan result'),
   },
 };
 
 export const POLICY_TYPES_WITH_INHERITANCE = [
-  POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value,
-  POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT.value,
+  POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value,
+  POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.value,
 ];
 
 export const EMPTY_LIST_DESCRIPTION = s__(

@@ -1,6 +1,7 @@
 <script>
 import { GlFormGroup, GlCollapsibleListbox } from '@gitlab/ui';
 import { __ } from '~/locale';
+import { validateTypeFilter } from 'ee/security_orchestration/components/policies/utils';
 import { POLICY_TYPE_FILTER_OPTIONS } from '../constants';
 
 export default {
@@ -13,10 +14,7 @@ export default {
     value: {
       type: String,
       required: true,
-      validator: (value) =>
-        Object.values(POLICY_TYPE_FILTER_OPTIONS)
-          .map((option) => option.value)
-          .includes(value),
+      validator: (value) => validateTypeFilter(value),
     },
   },
   computed: {
