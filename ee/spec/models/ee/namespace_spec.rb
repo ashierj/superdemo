@@ -419,7 +419,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       end
     end
 
-    describe '.namespace_settings_with_ai_features_enabled', :saas do
+    describe '.namespace_settings_with_ai_features_enabled' do
       subject { described_class.namespace_settings_with_ai_features_enabled }
 
       let_it_be_with_reload(:namespace) { create(:namespace, :with_namespace_settings) }
