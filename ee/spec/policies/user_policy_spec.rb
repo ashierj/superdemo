@@ -150,4 +150,50 @@ RSpec.describe UserPolicy do
       it { is_expected.to be_disallowed(:create_user_personal_access_token) }
     end
   end
+
+  describe "making a user profile private" do
+    context 'when `disable_private_profiles` feature is available' do
+      before do
+        stub_licensed_features(disable_private_profiles: true)
+      end
+
+      context 'when the ability to make user profile private is not disabled' do
+        before do
+          stub_application_setting(make_profile_private: true)
+        end
+
+        it_behaves_like 'changing a user', :make_profile_private
+      end
+
+      context 'when the ability to make user profile private is disabled' do
+        before do
+          stub_application_setting(make_profile_private: false)
+        end
+
+        context 'for a regular user' do
+          it { is_expected.not_to be_allowed(:make_profile_private) }
+        end
+
+        context 'for an admin user' do
+          let(:current_user) { create(:admin) }
+
+          context 'when admin mode enabled', :enable_admin_mode do
+            it { is_expected.to be_allowed(:make_profile_private) }
+          end
+
+          context 'when admin mode disabled' do
+            it { is_expected.not_to be_allowed(:make_profile_private) }
+          end
+        end
+      end
+    end
+
+    context 'when `disable_private_profiles` feature is not available' do
+      before do
+        stub_licensed_features(disable_private_profiles: false)
+      end
+
+      it_behaves_like 'changing a user', :make_profile_private
+    end
+  end
 end

@@ -48,6 +48,7 @@ module EE
         super
 
         discard_name unless name_updatable?
+        discard_private_profile if params[:private_profile] && !can_make_profile_private?
       end
 
       def discard_name
@@ -94,6 +95,14 @@ module EE
 
       def log_audit_events
         Audit::UserSettingChangesAuditor.new(current_user).execute
+      end
+
+      def discard_private_profile
+        params.delete(:private_profile)
+      end
+
+      def can_make_profile_private?
+        can?(current_user, :make_profile_private, model)
       end
     end
   end

@@ -245,6 +245,80 @@ RSpec.describe Users::UpdateService, feature_category: :user_profile do
       end
     end
 
+    context 'updating private_profile' do
+      let(:admin) { create(:admin) }
+
+      shared_examples_for 'a user can make their profile private' do
+        it 'makes the profile private' do
+          result = update_user_as(current_user, user, { user: user, private_profile: true })
+
+          expect(result).to be_truthy
+          expect(user.private_profile).to be true
+        end
+      end
+
+      context 'when `disable_private_profiles` feature is available' do
+        before do
+          stub_licensed_features(disable_private_profiles: true)
+        end
+
+        context 'when the ability to make their profiles private is not disabled for users' do
+          before do
+            stub_application_setting(make_profile_private: true)
+          end
+
+          it_behaves_like 'a user can make their profile private' do
+            let(:current_user) { user }
+          end
+        end
+
+        context 'when the ability to make their profiles private is disabled for users' do
+          before do
+            stub_application_setting(make_profile_private: false)
+          end
+
+          context 'when the profile is public' do
+            context 'as a regular user' do
+              let(:current_user) { user }
+
+              it 'does not make the profile private' do
+                result = update_user_as(current_user, user, { user: user, private_profile: true })
+
+                expect(result).to be_truthy
+                expect(user.private_profile).not_to be true
+              end
+            end
+          end
+        end
+
+        context 'when the profile is private' do
+          let(:current_user) { user }
+
+          before do
+            current_user.update!(private_profile: true)
+          end
+
+          it 'makes the profile public' do
+            result = update_user_as(current_user, user, { user: user, private_profile: false })
+
+            expect(result).to be_truthy
+            expect(user.private_profile).not_to be true
+          end
+        end
+      end
+
+      context 'when `disable_private_profiles` feature is not available' do
+        before do
+          stub_application_setting(make_profile_private: false)
+          stub_licensed_features(disable_private_profiles: false)
+        end
+
+        it_behaves_like 'a user can make their profile private' do
+          let(:current_user) { user }
+        end
+      end
+    end
+
     def update_user_as(current_user, user, opts)
       described_class.new(current_user, opts.merge(user: user)).execute!
     end

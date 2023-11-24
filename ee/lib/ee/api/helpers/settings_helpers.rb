@@ -64,6 +64,7 @@ module EE
             optional :auto_ban_user_on_excessive_projects_download, type: Grape::API::Boolean, desc: 'Ban users from the application when they exceed maximum number of unique projects download in the specified time period'
             optional :openai_api_key, type: String, desc: "OpenAI API key"
             optional :anthropic_api_key, type: String, desc: "Anthropic API key"
+            optional :make_profile_private, type: Grape::API::Boolean, desc: 'Flag indicating if users are permitted to make their profiles private'
             optional :service_access_tokens_expiration_enforced, type: Grape::API::Boolean, desc: "To enforce token expiration for Service accounts users"
           end
         end

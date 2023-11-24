@@ -38,6 +38,7 @@ module GitlabSubscriptions
       seat_link
       usage_quotas
       zoekt_code_search
+      disable_private_profiles
     ].freeze
 
     STARTER_FEATURES = %i[
@@ -168,6 +169,7 @@ module GitlabSubscriptions
       group_level_merge_checks_setting
       oidc_client_groups_claim
       disable_deleting_account_for_users
+      disable_private_profiles
     ].freeze
 
     ULTIMATE_FEATURES = %i[

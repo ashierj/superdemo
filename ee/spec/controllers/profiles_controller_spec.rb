@@ -83,4 +83,73 @@ RSpec.describe ProfilesController, :request_store do
       end
     end
   end
+
+  context 'updating public profile to private' do
+    subject { put :update, params: { user: { private_profile: true } } }
+
+    shared_examples_for 'a user can make their profile private' do
+      before do
+        sign_in(current_user)
+      end
+
+      it 'updates their profile to private' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:found)
+        expect(current_user.reload.private_profile).to be true
+      end
+    end
+
+    shared_examples_for 'a user cannot make their profile private' do
+      before do
+        sign_in(current_user)
+      end
+
+      it 'does not update their profile to private' do
+        subject
+        expect(current_user.reload.private_profile).not_to be true
+      end
+    end
+
+    context 'when `disable_private_profiles` feature is available' do
+      before do
+        stub_licensed_features(disable_private_profiles: true)
+      end
+
+      context 'when the ability to make their profile private is disabled' do
+        before do
+          stub_application_setting(make_profile_private: false)
+        end
+
+        context 'as a regular user' do
+          it_behaves_like 'a user cannot make their profile private' do
+            let(:current_user) { user }
+          end
+        end
+      end
+
+      context 'when the ability to make their profile private is not disabled' do
+        before do
+          stub_application_setting(make_profile_private: true)
+        end
+
+        context 'as a regular user' do
+          it_behaves_like 'a user can make their profile private' do
+            let(:current_user) { user }
+          end
+        end
+      end
+    end
+
+    context 'when `disable_private_profiles` feature is not available' do
+      before do
+        stub_application_setting(make_profile_private: false)
+        stub_licensed_features(disable_private_profiles: false)
+      end
+
+      it_behaves_like 'a user can make their profile private' do
+        let(:current_user) { user }
+      end
+    end
+  end
 end
