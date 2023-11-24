@@ -5,7 +5,6 @@ module Gitlab
     module Concerns
       module ExponentialBackoff
         extend ActiveSupport::Concern
-        include ::Gitlab::Llm::Concerns::CircuitBreaker
 
         INITIAL_DELAY = 1.second
         EXPONENTIAL_BASE = 2
@@ -18,7 +17,7 @@ module Gitlab
         end
 
         def retry_with_exponential_backoff(&block)
-          run_with_circuit do
+          Gitlab::CircuitBreaker.run_with_circuit(service_name) do
             retry_with_monitored_exponential_backoff(&block)
           end
         end
@@ -46,7 +45,7 @@ module Gitlab
             http_response = response.response
             return if http_response.nil? || http_response.body.blank?
 
-            raise Gitlab::Llm::Concerns::CircuitBreaker::InternalServerError if response.server_error?
+            raise Gitlab::CircuitBreaker::InternalServerError if response.server_error?
 
             return response unless response.too_many_requests? || retry_immediately?(response)
 
@@ -64,6 +63,10 @@ module Gitlab
         # in the VertexAi::Client.
         def retry_immediately?(_response)
           false
+        end
+
+        def service_name
+          self.class.name
         end
       end
     end
