@@ -1363,6 +1363,9 @@ msgstr ""
 msgid "%{wildcards_link_start}Wildcards%{wildcards_link_end} such as %{code_tag_start}v*%{code_tag_end} or %{code_tag_start}*-release%{code_tag_end} are supported."
 msgstr ""
 
+msgid "'%{data_pointer}' must be a valid '%{type}'"
+msgstr ""
+
 msgid "'%{level}' is not a valid visibility level"
 msgstr ""
 
