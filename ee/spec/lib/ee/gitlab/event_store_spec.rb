@@ -17,7 +17,9 @@ RSpec.describe Gitlab::EventStore do
         ::GitlabSubscriptions::RenewedEvent,
         ::Repositories::DefaultBranchChangedEvent,
         ::NamespaceSettings::AiRelatedSettingsChangedEvent,
-        ::Members::MembersAddedEvent
+        ::Members::MembersAddedEvent,
+        ::ProjectAuthorizations::AuthorizationsChangedEvent,
+        ::Projects::ComplianceFrameworkChangedEvent
       )
     end
   end

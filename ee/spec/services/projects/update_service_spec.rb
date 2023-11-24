@@ -741,14 +741,38 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
         }.from(nil).to(framework)
       end
 
-      it 'unassigns a framework from a project' do
-        project.compliance_management_framework = framework
+      it 'publishes Projects::ComplianceFrameworkChangedEvent' do
+        expect { update_project(project, user, opts) }
+          .to publish_event(::Projects::ComplianceFrameworkChangedEvent)
+          .with(
+            project_id: project.id,
+            compliance_framework_id: framework.id,
+            event_type: 'added'
+          )
+      end
 
-        expect { update_project(project, user, { compliance_framework_setting_attributes: { framework: nil } }) }.to change {
-          project
-            .reload
-            .compliance_management_framework
-        }.from(framework).to(nil)
+      context 'when unassigning a framework' do
+        before do
+          create(:compliance_framework_project_setting, project: project, compliance_management_framework: framework)
+        end
+
+        it 'publishes Projects::ComplianceFrameworkChangedEvent with removed event type' do
+          expect { update_project(project, user, { compliance_framework_setting_attributes: { framework: nil } }) }
+            .to publish_event(::Projects::ComplianceFrameworkChangedEvent)
+            .with(
+              project_id: project.id,
+              compliance_framework_id: framework.id,
+              event_type: 'removed'
+            )
+        end
+
+        it 'unassigns a framework from a project' do
+          expect { update_project(project, user, { compliance_framework_setting_attributes: { framework: nil } }) }.to change {
+            project
+              .reload
+              .compliance_management_framework
+          }.from(framework).to(nil)
+        end
       end
     end
 
@@ -761,6 +785,10 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
         update_project(project, user, opts)
 
         expect(project.reload.compliance_management_framework).not_to be_present
+      end
+
+      it 'does not publish ComplianceFrameworkChangedEvent' do
+        expect { update_project(project, user, opts) }.not_to publish_event(::Projects::ComplianceFrameworkChangedEvent)
       end
     end
   end

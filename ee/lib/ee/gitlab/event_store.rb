@@ -43,6 +43,8 @@ module EE
           store.subscribe ::Security::RefreshProjectPoliciesWorker,
             to: ::ProjectAuthorizations::AuthorizationsChangedEvent,
             delay: 1.minute
+          store.subscribe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker,
+            to: ::Projects::ComplianceFrameworkChangedEvent
         end
       end
     end

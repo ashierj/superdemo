@@ -142,6 +142,28 @@ module EE
         ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(project.id)
       end
 
+      override :publish_events
+      def publish_events
+        super
+        publish_compliance_framework_changed_event
+      end
+
+      def publish_compliance_framework_changed_event
+        settings_params = params[:compliance_framework_setting_attributes]
+        return if settings_params.blank?
+
+        destroyed = settings_params[:_destroy].present?
+        return unless destroyed || project.compliance_framework_setting.previous_changes.present?
+
+        event = ::Projects::ComplianceFrameworkChangedEvent.new(data: {
+          project_id: project.id,
+          compliance_framework_id: project.compliance_framework_setting.framework_id,
+          event_type: destroyed ? ::Projects::ComplianceFrameworkChangedEvent::EVENT_TYPES[:removed] : ::Projects::ComplianceFrameworkChangedEvent::EVENT_TYPES[:added]
+        })
+
+        ::Gitlab::EventStore.publish(event)
+      end
+
       def default_branch_update_blocked_by_security_policy?
         ::Security::SecurityOrchestrationPolicies::DefaultBranchUpdationCheckService.new(project: project).execute
       end
