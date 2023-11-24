@@ -1,6 +1,7 @@
 <script>
 import { GlFormGroup, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { validateSourceFilter } from 'ee/security_orchestration/components/policies/utils';
 import { POLICY_SOURCE_OPTIONS } from '../constants';
 
 const POLICY_SOURCE_OPTIONS_VALUES = Object.values(POLICY_SOURCE_OPTIONS);
@@ -15,8 +16,7 @@ export default {
     value: {
       type: String,
       required: true,
-      validator: (value) =>
-        POLICY_SOURCE_OPTIONS_VALUES.map((option) => option.value).includes(value),
+      validator: (value) => validateSourceFilter(value),
     },
   },
   computed: {

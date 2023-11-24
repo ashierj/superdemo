@@ -1,6 +1,7 @@
 import { GlTable, GlDrawer } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import * as urlUtils from '~/lib/utils/url_utility';
 import ListComponent from 'ee/security_orchestration/components/policies/list_component.vue';
 import DrawerWrapper from 'ee/security_orchestration/components/policy_drawer/drawer_wrapper.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -49,6 +50,7 @@ const defaultRequestHandlers = {
   projectScanResultPolicies: projectScanResultPoliciesSpy,
   groupScanResultPolicies: groupScanResultPoliciesSpy,
 };
+
 describe('List component', () => {
   let wrapper;
   let requestHandlers;
@@ -87,6 +89,9 @@ describe('List component', () => {
         NoPoliciesEmptyState: true,
       },
     });
+
+    document.title = 'Test title';
+    jest.spyOn(urlUtils, 'updateHistory');
   };
   const mountShallowWrapper = factory(shallowMountExtended);
   const mountWrapper = factory();
@@ -160,9 +165,9 @@ describe('List component', () => {
     });
 
     it.each`
-      description         | filterBy                                                 | hiddenTypes
-      ${'scan execution'} | ${POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION} | ${[POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT]}
-      ${'scan result'}    | ${POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT}    | ${[POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION]}
+      description         | filterBy                                     | hiddenTypes
+      ${'scan execution'} | ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION} | ${[POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT]}
+      ${'scan result'}    | ${POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT}    | ${[POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION]}
     `('policies filtered by $description type', async ({ filterBy, hiddenTypes }) => {
       findPolicyTypeFilter().vm.$emit('input', filterBy.value);
       await nextTick();
@@ -170,6 +175,17 @@ describe('List component', () => {
       expect(findPoliciesTable().text()).toContain(filterBy.text);
       hiddenTypes.forEach((hiddenType) => {
         expect(findPoliciesTable().text()).not.toContain(hiddenType.text);
+      });
+    });
+
+    it('updates url when type filter is selected', async () => {
+      findPolicyTypeFilter().vm.$emit('input', POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value);
+      await waitForPromises();
+
+      expect(urlUtils.updateHistory).toHaveBeenCalledWith({
+        title: 'Test title',
+        url: `http://test.host/?type=${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value.toLowerCase()}`,
+        replace: true,
       });
     });
 
@@ -353,16 +369,44 @@ describe('List component', () => {
       );
     });
 
+    it('updates url when source filter is selected', () => {
+      expect(urlUtils.updateHistory).toHaveBeenCalledWith({
+        title: 'Test title',
+        url: `http://test.host/?source=${POLICY_SOURCE_OPTIONS.INHERITED.value.toLowerCase()}`,
+        replace: true,
+      });
+    });
+
     it('displays inherited scan execution policies', () => {
       expect(trimText(findPolicyTypeCells().at(0).text())).toBe(
-        POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.text,
+        POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.text,
       );
     });
 
     it('displays inherited scan result policies', () => {
       expect(trimText(findPolicyTypeCells().at(1).text())).toBe(
-        POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT.text,
+        POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.text,
       );
     });
+  });
+
+  describe('selected url parameters', () => {
+    it.each`
+      value                                              | expectedType                                       | expectedSource
+      ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}            | ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}            | ${POLICY_SOURCE_OPTIONS.ALL.value}
+      ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value} | ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value} | ${POLICY_SOURCE_OPTIONS.ALL.value}
+      ${POLICY_SOURCE_OPTIONS.DIRECT.value}              | ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}            | ${POLICY_SOURCE_OPTIONS.DIRECT.value}
+      ${POLICY_SOURCE_OPTIONS.INHERITED.value}           | ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}            | ${POLICY_SOURCE_OPTIONS.INHERITED.value}
+    `(
+      'should select filters when parameters are in url',
+      ({ value, expectedType, expectedSource }) => {
+        jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue(value);
+
+        mountWrapper();
+
+        expect(findPolicySourceFilter().props('value')).toBe(expectedSource);
+        expect(findPolicyTypeFilter().props('value')).toBe(expectedType);
+      },
+    );
   });
 });

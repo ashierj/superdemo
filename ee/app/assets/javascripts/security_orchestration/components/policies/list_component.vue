@@ -6,6 +6,11 @@ import { createAlert } from '~/alert';
 import { __, s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DATE_ONLY_FORMAT } from '~/lib/utils/datetime_utility';
+import { getParameterByName, setUrlParams, updateHistory } from '~/lib/utils/url_utility';
+import {
+  extractTypeParameter,
+  extractSourceParameter,
+} from 'ee/security_orchestration/components/policies/utils';
 import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
 import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_result_policies.query.graphql';
@@ -117,19 +122,22 @@ export default {
     },
   },
   data() {
+    const selectedPolicySource = extractSourceParameter(getParameterByName('source'));
+    const selectedPolicyType = extractTypeParameter(getParameterByName('type'));
+
     return {
       selectedPolicy: null,
       scanExecutionPolicies: [],
       scanResultPolicies: [],
-      selectedPolicySource: POLICY_SOURCE_OPTIONS.ALL.value,
-      selectedPolicyType: POLICY_TYPE_FILTER_OPTIONS.ALL.value,
+      selectedPolicySource,
+      selectedPolicyType,
     };
   },
   computed: {
     allPolicyTypes() {
       return {
-        [POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value]: this.scanExecutionPolicies,
-        [POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT.value]: this.scanResultPolicies,
+        [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: this.scanExecutionPolicies,
+        [POLICY_TYPE_FILTER_OPTIONS.SCAN_RESULT.value]: this.scanResultPolicies,
       };
     },
     policies() {
@@ -255,6 +263,31 @@ export default {
       const bTable = this.$refs.policiesTable.$children[0];
       bTable.clearSelected();
     },
+    convertFilterValue(defaultValue, value) {
+      return value === defaultValue ? undefined : value.toLowerCase();
+    },
+    setTypeFilter(type) {
+      const value = this.convertFilterValue(POLICY_TYPE_FILTER_OPTIONS.ALL.value, type);
+
+      updateHistory({
+        url: setUrlParams({ type: value }),
+        title: document.title,
+        replace: true,
+      });
+
+      this.selectedPolicyType = type;
+    },
+    setSourceFilter(source) {
+      const value = this.convertFilterValue(POLICY_SOURCE_OPTIONS.ALL.value, source);
+
+      updateHistory({
+        url: setUrlParams({ source: value }),
+        title: document.title,
+        replace: true,
+      });
+
+      this.selectedPolicySource = source;
+    },
   },
   dateTimeFormat: DATE_ONLY_FORMAT,
   i18n: {
@@ -274,14 +307,16 @@ export default {
       <div class="row gl-justify-content-space-between gl-align-items-center">
         <div class="col-12 col-sm-8 col-md-6 col-lg-5 row">
           <type-filter
-            v-model="selectedPolicyType"
+            :value="selectedPolicyType"
             class="col-6"
             data-testid="policy-type-filter"
+            @input="setTypeFilter"
           />
           <source-filter
-            v-model="selectedPolicySource"
+            :value="selectedPolicySource"
             class="col-6"
             data-testid="policy-source-filter"
+            @input="setSourceFilter"
           />
         </div>
       </div>
