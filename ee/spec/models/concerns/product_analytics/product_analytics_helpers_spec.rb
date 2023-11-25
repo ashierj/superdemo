@@ -29,6 +29,42 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
     end
   end
 
+  describe '#project_value_streams_dashboards_enabled?' do
+    context 'with a project' do
+      subject { project.project_value_streams_dashboards_enabled? }
+
+      where(:flag, :outcome) do
+        false | false
+        true | true
+      end
+
+      with_them do
+        before do
+          stub_feature_flags(project_analytics_dashboard_dynamic_vsd: flag)
+        end
+
+        it { is_expected.to eq(outcome) }
+      end
+    end
+
+    context 'with a group' do
+      subject { group.project_value_streams_dashboards_enabled? }
+
+      where(:flag, :outcome) do
+        false | true
+        true | true
+      end
+
+      with_them do
+        before do
+          stub_feature_flags(project_analytics_dashboard_dynamic_vsd: flag)
+        end
+
+        it { is_expected.to eq(outcome) }
+      end
+    end
+  end
+
   describe '#product_analytics_dashboards' do
     it 'returns nothing if product analytics disabled' do
       stub_licensed_features(product_analytics: false)

@@ -15,6 +15,7 @@ module Projects
         push_frontend_feature_flag(:combined_analytics_visualization_editor, project)
         push_frontend_feature_flag(:group_analytics_dashboards, project.namespace)
       end
+
       before_action :track_usage, only: [:index], if: :viewing_single_dashboard?
 
       def index; end
