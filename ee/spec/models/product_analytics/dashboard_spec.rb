@@ -201,5 +201,29 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
         'opportunities for software development improvements.')
       expect(dashboard.schema_version).to eq(nil)
     end
+
+    context 'with the project_analytics_dashboard_dynamic_vsd feature flag disabled' do
+      before do
+        stub_feature_flags(project_analytics_dashboard_dynamic_vsd: false)
+      end
+
+      context 'for projects' do
+        it 'returns an empty array' do
+          dashboard = described_class.value_stream_dashboard(project, config_project)
+
+          expect(dashboard).to match_array([])
+        end
+      end
+
+      context 'for groups' do
+        it 'returns the value streams dashboard' do
+          dashboard = described_class.value_stream_dashboard(group, config_project).first
+
+          expect(dashboard).to be_a(described_class)
+          expect(dashboard.title).to eq('Value Streams Dashboard')
+          expect(dashboard.slug).to eq('value_streams_dashboard')
+        end
+      end
+    end
   end
 end

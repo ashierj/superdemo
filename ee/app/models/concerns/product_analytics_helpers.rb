@@ -11,6 +11,12 @@ module ProductAnalyticsHelpers
     true
   end
 
+  def project_value_streams_dashboards_enabled?
+    return true unless is_a?(Project)
+
+    Feature.enabled?(:project_analytics_dashboard_dynamic_vsd)
+  end
+
   def value_streams_dashboard_available?
     licensed_feature =
       if is_a?(Project)
@@ -19,7 +25,7 @@ module ProductAnalyticsHelpers
         :group_level_analytics_dashboard
       end
 
-    licensed_feature_available?(licensed_feature)
+    licensed_feature_available?(licensed_feature) && project_value_streams_dashboards_enabled?
   end
 
   def product_analytics_dashboards(user)
