@@ -290,40 +290,16 @@ RSpec.shared_examples 'product analytics dashboards' do
               end
             end
 
-            context 'when combined_analytics_dashboards_editor is enabled' do
+            context 'and custom dashboards is configured' do
               before do
-                stub_feature_flags(combined_analytics_dashboards_editor: true)
+                create(:analytics_dashboards_pointer, :project_based, project: project)
               end
 
-              context 'and custom dashboards is configured' do
-                before do
-                  create(:analytics_dashboards_pointer, :project_based, project: project)
-                end
-
-                it_behaves_like 'renders the new dashboard button'
-              end
-
-              context 'and custom dashboards is not configured' do
-                it_behaves_like 'does not render the new dashboard button'
-              end
+              it_behaves_like 'renders the new dashboard button'
             end
 
-            context 'when combined_analytics_dashboards_editor is disabled' do
-              before do
-                stub_feature_flags(combined_analytics_dashboards_editor: false)
-              end
-
-              context 'and custom dashboards is configured' do
-                before do
-                  create(:analytics_dashboards_pointer, :project_based, project: project)
-                end
-
-                it_behaves_like 'does not render the new dashboard button'
-              end
-
-              context 'and custom dashboards is not configured' do
-                it_behaves_like 'does not render the new dashboard button'
-              end
+            context 'and custom dashboards is not configured' do
+              it_behaves_like 'does not render the new dashboard button'
             end
 
             context 'when combined_analytics_visualization_editor FF is enabled' do

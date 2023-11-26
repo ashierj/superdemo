@@ -239,8 +239,7 @@ describe('CustomizableDashboard', () => {
       expect(findEditModeTitle().exists()).toBe(false);
     });
 
-    it('does not show the "edit" or "cancel" button', () => {
-      expect(findEditButton().exists()).toBe(false);
+    it('does not show the "cancel" button', () => {
       expect(findCancelButton().exists()).toBe(false);
     });
 
@@ -292,262 +291,259 @@ describe('CustomizableDashboard', () => {
     });
   });
 
-  describe('when the combinedAnalyticsDashboardsEditor feature flag is enabled', () => {
-    describe('with a built-in dashboard', () => {
-      beforeEach(() => {
-        loadCSSFile.mockResolvedValue();
+  describe('when a dashboard is custom', () => {
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
 
-        createWrapper({}, builtinDashboard, {
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
-        });
+      createWrapper({}, dashboard);
+    });
+
+    it('shows the "edit" button', () => {
+      expect(findEditButton().exists()).toBe(true);
+    });
+  });
+
+  describe('when a dashboard is built-in', () => {
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper({}, builtinDashboard);
+    });
+
+    it('does not show the "edit" button', () => {
+      expect(findEditButton().exists()).toBe(false);
+    });
+  });
+
+  describe('when mounted with the $route.editing param', () => {
+    beforeEach(() => {
+      createWrapper({}, dashboard, {}, { editing: true });
+    });
+
+    it('render the visualization drawer in edit mode', () => {
+      expect(findVisualizationDrawer().exists()).toBe(true);
+    });
+  });
+
+  describe('when editing a custom dashboard', () => {
+    let windowDialogSpy;
+    let beforeUnloadEvent;
+
+    beforeEach(async () => {
+      beforeUnloadEvent = new Event('beforeunload');
+      windowDialogSpy = jest.spyOn(beforeUnloadEvent, 'returnValue', 'set');
+
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper({}, dashboard);
+
+      await waitForPromises();
+
+      findEditButton().vm.$emit('click');
+    });
+
+    afterEach(() => {
+      windowDialogSpy.mockRestore();
+    });
+
+    it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER}" event`, () => {
+      expect(trackingSpy).toHaveBeenCalledWith(
+        expect.any(String),
+        EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
+        expect.any(Object),
+      );
+    });
+
+    it('sets the grid to non-static mode', () => {
+      expect(mockGridSetStatic).toHaveBeenCalledWith(false);
+    });
+
+    it('shows the edit mode page title', () => {
+      expect(findEditModeTitle().text()).toBe('Edit your dashboard');
+    });
+
+    it('does not show the dashboard title header', () => {
+      expect(findDashboardTitle().exists()).toBe(false);
+    });
+
+    it('shows the Save button', () => {
+      expect(findSaveButton().props('loading')).toBe(false);
+    });
+
+    it('updates grid panels when their values change', async () => {
+      const gridPanel = findGridStackPanels().at(0);
+
+      await wrapper.vm.updatePanelWithGridStackItem({
+        id: gridPanel.attributes('id'),
+        x: 10,
+        y: 20,
+        w: 30,
+        h: 40,
       });
 
-      it('does not show the edit button', () => {
-        expect(findEditButton().exists()).toBe(false);
+      expect(gridPanel.attributes()).toMatchObject({
+        'gs-h': '40',
+        'gs-w': '30',
+        'gs-x': '10',
+        'gs-y': '20',
       });
     });
 
-    describe('with a custom dashboard', () => {
+    it('shows an input element with the title as value', () => {
+      expect(findTitleInput().attributes()).toMatchObject({
+        value: 'Analytics Overview',
+        required: '',
+      });
+    });
+
+    it('shows an input element with the description as value', () => {
+      expect(findDescriptionInput().attributes('value')).toBe('This is a dashboard');
+    });
+
+    it('emits an event when title is edited', async () => {
+      await enterDashboardTitle('New Title');
+
+      expect(wrapper.emitted('title-input')[0]).toContain('New Title');
+    });
+
+    it('saves the dashboard changes when the "save" button is clicked', async () => {
+      await enterDashboardTitle('New Title');
+
+      await findSaveButton().vm.$emit('click');
+
+      expect(wrapper.emitted('save')).toMatchObject([
+        [
+          'analytics_overview',
+          {
+            ...dashboard,
+            title: 'New Title',
+          },
+        ],
+      ]);
+    });
+
+    it('shows the "cancel" button', () => {
+      expect(findCancelButton().exists()).toBe(true);
+    });
+
+    describe('and the "cancel" button is clicked with no changes made', () => {
+      afterEach(() => {
+        confirmAction.mockReset();
+      });
+
       beforeEach(() => {
-        loadCSSFile.mockResolvedValue();
+        confirmAction.mockReturnValue(new Promise(() => {}));
 
-        createWrapper({}, dashboard, { glFeatures: { combinedAnalyticsDashboardsEditor: true } });
+        return findCancelButton().vm.$emit('click');
       });
 
-      it('shows the Edit Button', () => {
-        expect(findEditButton().exists()).toBe(true);
+      it('does not show the confirm dialog', () => {
+        expect(confirmAction).not.toHaveBeenCalled();
       });
 
-      describe('when mounted with the $route.editing param', () => {
-        beforeEach(() => {
-          createWrapper(
-            {},
-            dashboard,
-            { glFeatures: { combinedAnalyticsDashboardsEditor: true } },
-            { editing: true },
-          );
-        });
-
-        it('render the visualization drawer in edit mode', () => {
-          expect(findVisualizationDrawer().exists()).toBe(true);
-        });
+      it('disables the edit state', () => {
+        expect(findEditModeTitle().exists()).toBe(false);
       });
 
-      describe('when editing', () => {
-        let windowDialogSpy;
-        let beforeUnloadEvent;
+      it('sets the grid to static mode', () => {
+        expect(mockGridSetStatic).toHaveBeenCalledWith(true);
+      });
+    });
 
-        beforeEach(() => {
-          beforeUnloadEvent = new Event('beforeunload');
-          windowDialogSpy = jest.spyOn(beforeUnloadEvent, 'returnValue', 'set');
+    it('does not show the confirmation dialog when the "beforeunload" is emitted', () => {
+      window.dispatchEvent(beforeUnloadEvent);
 
-          findEditButton().vm.$emit('click');
-        });
+      expect(windowDialogSpy).not.toHaveBeenCalled();
+    });
 
+    describe('and changed were made', () => {
+      beforeEach(() => {
+        return findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+      });
+
+      it('shows the browser confirmation dialog when the "beforeunload" is emitted', () => {
+        window.dispatchEvent(beforeUnloadEvent);
+
+        expect(windowDialogSpy).toHaveBeenCalledWith(
+          'Are you sure you want to lose unsaved changes?',
+        );
+      });
+
+      describe('and the "cancel" button is clicked', () => {
         afterEach(() => {
-          windowDialogSpy.mockRestore();
+          confirmAction.mockReset();
         });
 
-        it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER}" event`, () => {
-          expect(trackingSpy).toHaveBeenCalledWith(
-            expect.any(String),
-            EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
-            expect.any(Object),
+        it('shows confirm modal when the title was changed', async () => {
+          confirmAction.mockReturnValue(new Promise(() => {}));
+
+          await findCancelButton().vm.$emit('click');
+
+          expect(confirmAction).toHaveBeenCalledWith(
+            'Are you sure you want to cancel editing this dashboard?',
+            {
+              cancelBtnText: 'Continue editing',
+              primaryBtnText: 'Discard changes',
+            },
           );
         });
 
-        it('sets the grid to non-static mode', () => {
-          expect(mockGridSetStatic).toHaveBeenCalledWith(false);
+        it('resets the dashboard if the user confirms', async () => {
+          confirmAction.mockResolvedValue(true);
+
+          await findCancelButton().vm.$emit('click');
+          await waitForPromises();
+
+          expect(GridStack.init).toHaveBeenCalledTimes(2);
+          expect(findPanels()).toHaveLength(dashboard.panels.length);
         });
 
-        it('shows the edit mode page title', () => {
-          expect(findEditModeTitle().text()).toBe('Edit your dashboard');
-        });
+        it('does nothing if the user opts to keep editing', async () => {
+          confirmAction.mockResolvedValue(false);
 
-        it('does not show the dashboard title header', () => {
-          expect(findDashboardTitle().exists()).toBe(false);
-        });
+          await findCancelButton().vm.$emit('click');
+          await waitForPromises();
 
-        it('shows the Save button', () => {
-          expect(findSaveButton().props('loading')).toBe(false);
-        });
-
-        it('updates grid panels when their values change', async () => {
-          const gridPanel = findGridStackPanels().at(0);
-
-          await wrapper.vm.updatePanelWithGridStackItem({
-            id: gridPanel.attributes('id'),
-            x: 10,
-            y: 20,
-            w: 30,
-            h: 40,
-          });
-
-          expect(gridPanel.attributes()).toMatchObject({
-            'gs-h': '40',
-            'gs-w': '30',
-            'gs-x': '10',
-            'gs-y': '20',
-          });
-        });
-
-        it('shows an input element with the title as value', () => {
-          expect(findTitleInput().attributes()).toMatchObject({
-            value: 'Analytics Overview',
-            required: '',
-          });
-        });
-
-        it('shows an input element with the description as value', () => {
-          expect(findDescriptionInput().attributes('value')).toBe('This is a dashboard');
-        });
-
-        it('emits an event when title is edited', async () => {
-          await enterDashboardTitle('New Title');
-
-          expect(wrapper.emitted('title-input')[0]).toContain('New Title');
-        });
-
-        it('saves the dashboard changes when the "save" button is clicked', async () => {
-          await enterDashboardTitle('New Title');
-
-          await findSaveButton().vm.$emit('click');
-
-          expect(wrapper.emitted('save')).toMatchObject([
-            [
-              'analytics_overview',
-              {
-                ...dashboard,
-                title: 'New Title',
-              },
-            ],
-          ]);
-        });
-
-        it('shows the "cancel" button', () => {
-          expect(findCancelButton().exists()).toBe(true);
-        });
-
-        describe('and the "cancel" button is clicked with no changes made', () => {
-          afterEach(() => {
-            confirmAction.mockReset();
-          });
-
-          beforeEach(() => {
-            confirmAction.mockReturnValue(new Promise(() => {}));
-
-            return findCancelButton().vm.$emit('click');
-          });
-
-          it('does not show the confirm dialog', () => {
-            expect(confirmAction).not.toHaveBeenCalled();
-          });
-
-          it('disables the edit state', () => {
-            expect(findEditModeTitle().exists()).toBe(false);
-          });
-
-          it('sets the grid to static mode', () => {
-            expect(mockGridSetStatic).toHaveBeenCalledWith(true);
-          });
-        });
-
-        it('does not show the confirmation dialog when the "beforeunload" is emitted', () => {
-          window.dispatchEvent(beforeUnloadEvent);
-
-          expect(windowDialogSpy).not.toHaveBeenCalled();
-        });
-
-        describe('and changed were made', () => {
-          beforeEach(() => {
-            return findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
-          });
-
-          it('shows the browser confirmation dialog when the "beforeunload" is emitted', () => {
-            window.dispatchEvent(beforeUnloadEvent);
-
-            expect(windowDialogSpy).toHaveBeenCalledWith(
-              'Are you sure you want to lose unsaved changes?',
-            );
-          });
-
-          describe('and the "cancel" button is clicked', () => {
-            afterEach(() => {
-              confirmAction.mockReset();
-            });
-
-            it('shows confirm modal when the title was changed', async () => {
-              confirmAction.mockReturnValue(new Promise(() => {}));
-
-              await findCancelButton().vm.$emit('click');
-
-              expect(confirmAction).toHaveBeenCalledWith(
-                'Are you sure you want to cancel editing this dashboard?',
-                {
-                  cancelBtnText: 'Continue editing',
-                  primaryBtnText: 'Discard changes',
-                },
-              );
-            });
-
-            it('resets the dashboard if the user confirms', async () => {
-              confirmAction.mockResolvedValue(true);
-
-              await findCancelButton().vm.$emit('click');
-              await waitForPromises();
-
-              expect(GridStack.init).toHaveBeenCalledTimes(2);
-              expect(findPanels()).toHaveLength(dashboard.panels.length);
-            });
-
-            it('does nothing if the user opts to keep editing', async () => {
-              confirmAction.mockResolvedValue(false);
-
-              await findCancelButton().vm.$emit('click');
-              await waitForPromises();
-
-              expect(GridStack.init).toHaveBeenCalledTimes(1);
-              expect(findPanels()).toHaveLength(dashboard.panels.length + 1);
-            });
-          });
-        });
-
-        it('does not show the "edit" button', () => {
-          expect(findEditButton().exists()).toBe(false);
-        });
-
-        it('shows the visualization drawer', () => {
-          expect(findVisualizationDrawer().props()).toMatchObject({
-            visualizations: {},
-            loading: true,
-            open: false,
-          });
-        });
-
-        it('closes the drawer when the visualization drawer emits "close"', async () => {
-          await findVisualizationDrawer().vm.$emit('close');
-
-          expect(findVisualizationDrawer().props('open')).toBe(false);
-        });
-
-        it('closes the drawer when a visualization is selected', async () => {
-          await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
-
-          expect(findVisualizationDrawer().props('open')).toBe(false);
-        });
-
-        it('add a new panel when a visualization is selected', async () => {
-          expect(findPanels()).toHaveLength(2);
-
-          const visualization = TEST_VISUALIZATION();
-          await findVisualizationDrawer().vm.$emit('select', [visualization]);
-          await nextTick();
-
-          const updatedPanels = findPanels();
-          expect(updatedPanels).toHaveLength(3);
-          expect(updatedPanels.at(-1).props('visualization')).toMatchObject(visualization);
+          expect(GridStack.init).toHaveBeenCalledTimes(1);
+          expect(findPanels()).toHaveLength(dashboard.panels.length + 1);
         });
       });
+    });
+
+    it('does not show the "edit" button', () => {
+      expect(findEditButton().exists()).toBe(false);
+    });
+
+    it('shows the visualization drawer', () => {
+      expect(findVisualizationDrawer().props()).toMatchObject({
+        visualizations: {},
+        loading: true,
+        open: false,
+      });
+    });
+
+    it('closes the drawer when the visualization drawer emits "close"', async () => {
+      await findVisualizationDrawer().vm.$emit('close');
+
+      expect(findVisualizationDrawer().props('open')).toBe(false);
+    });
+
+    it('closes the drawer when a visualization is selected', async () => {
+      await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+
+      expect(findVisualizationDrawer().props('open')).toBe(false);
+    });
+
+    it('add a new panel when a visualization is selected', async () => {
+      expect(findPanels()).toHaveLength(2);
+
+      const visualization = TEST_VISUALIZATION();
+      await findVisualizationDrawer().vm.$emit('select', [visualization]);
+      await nextTick();
+
+      const updatedPanels = findPanels();
+      expect(updatedPanels).toHaveLength(3);
+      expect(updatedPanels.at(-1).props('visualization')).toMatchObject(visualization);
     });
   });
 
@@ -617,7 +613,6 @@ describe('CustomizableDashboard', () => {
           isNewDashboard: true,
         },
         NEW_DASHBOARD(),
-        { glFeatures: { combinedAnalyticsDashboardsEditor: true } },
       );
     });
 
@@ -850,9 +845,7 @@ describe('CustomizableDashboard', () => {
     beforeEach(() => {
       loadCSSFile.mockResolvedValue();
 
-      createWrapper({ isSaving: true }, dashboard, {
-        glFeatures: { combinedAnalyticsDashboardsEditor: true },
-      });
+      createWrapper({ isSaving: true }, dashboard);
 
       findEditButton().vm.$emit('click');
     });
@@ -872,9 +865,7 @@ describe('CustomizableDashboard', () => {
     `(
       'when editing="$editing" and changesSaved="$changesSaved" the new editing state is "$newState',
       async ({ editing, changesSaved, newState }) => {
-        createWrapper({ changesSaved, isNewDashboard: editing }, dashboard, {
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
-        });
+        createWrapper({ changesSaved, isNewDashboard: editing }, dashboard);
 
         await nextTick();
 
@@ -915,9 +906,7 @@ describe('CustomizableDashboard', () => {
     beforeEach(() => {
       loadCSSFile.mockResolvedValue();
 
-      createWrapper({}, dashboardWithoutPanels, {
-        glFeatures: { combinedAnalyticsDashboardsEditor: true },
-      });
+      createWrapper({}, dashboardWithoutPanels);
 
       return findEditButton().vm.$emit('click');
     });
@@ -957,9 +946,7 @@ describe('CustomizableDashboard', () => {
         beforeEach(async () => {
           loadCSSFile.mockResolvedValue();
 
-          createWrapper({ isSaving }, dashboard, {
-            glFeatures: { combinedAnalyticsDashboardsEditor: true },
-          });
+          createWrapper({ isSaving }, dashboard);
 
           await findEditButton().vm.$emit('click');
 

@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     showCreateDashboardButton() {
-      return this.customDashboardsProject && this.glFeatures.combinedAnalyticsDashboardsEditor;
+      return this.customDashboardsProject;
     },
     showValueStreamsDashboard() {
       return !this.isProject && this.glFeatures.groupAnalyticsDashboards;
