@@ -93,7 +93,6 @@ export default {
       isSaving: false,
       titleValidationError: null,
       backUrl: this.$router.resolve('/').href,
-      editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
       changesSaved: false,
       alert: null,
       hasDashboardError: false,
@@ -132,18 +131,12 @@ export default {
         this.customDashboardsProject.id,
         this.vsdAvailableVisualizations,
       );
-    }
-
-    if (!this.isNewDashboard) {
       return;
     }
 
-    if (this.editingEnabled) {
+    if (this.isNewDashboard) {
       this.initialDashboard = this.createNewDashboard();
-      return;
     }
-
-    this.showEmptyState = true;
   },
   beforeDestroy() {
     this.alert?.dismiss();
@@ -209,9 +202,7 @@ export default {
         };
       },
       skip() {
-        return (
-          !this.editingEnabled || !this.initialDashboard || !this.initialDashboard?.userDefined
-        );
+        return !this.initialDashboard || !this.initialDashboard?.userDefined;
       },
       update(data) {
         const namespaceData = this.isProject ? data.project : data.group;

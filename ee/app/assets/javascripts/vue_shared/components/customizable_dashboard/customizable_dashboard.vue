@@ -123,7 +123,7 @@ export default {
       return this.showFilters ? filtersToQueryParams(this.filters) : {};
     },
     editingEnabled() {
-      return this.glFeatures.combinedAnalyticsDashboardsEditor && this.dashboard.userDefined;
+      return this.dashboard.userDefined;
     },
     showEditControls() {
       return this.editingEnabled && this.editing;

@@ -123,15 +123,7 @@ describe('AnalyticsDashboard', () => {
     namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
   };
 
-  const createWrapper = ({
-    props = {},
-    routeSlug = '',
-    glFeatures = {
-      combinedAnalyticsDashboardsEditor: false,
-    },
-    stubs = {},
-    provide = {},
-  } = {}) => {
+  const createWrapper = ({ props = {}, routeSlug = '', stubs = {}, provide = {} } = {}) => {
     const mocks = {
       $toast: {
         show: showToast,
@@ -168,7 +160,6 @@ describe('AnalyticsDashboard', () => {
         ...mockNamespace,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         dashboardEmptyStateIllustrationPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
-        glFeatures,
         breadcrumbState,
         isGroup: false,
         isProject: true,
@@ -301,9 +292,6 @@ describe('AnalyticsDashboard', () => {
       mockAvailableVisualizationsResponse(TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE);
 
       createWrapper({
-        glFeatures: {
-          combinedAnalyticsDashboardsEditor: true,
-        },
         routeSlug: slug || dashboardResponse.data.project.customizableDashboards.nodes[0]?.slug,
       });
 
@@ -361,9 +349,6 @@ describe('AnalyticsDashboard', () => {
         mockAvailableVisualizationsHandler = jest.fn().mockRejectedValue(error);
 
         createWrapper({
-          glFeatures: {
-            combinedAnalyticsDashboardsEditor: true,
-          },
           routeSlug:
             TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE.data.project.customizableDashboards
               .nodes[0]?.slug,
@@ -389,31 +374,7 @@ describe('AnalyticsDashboard', () => {
     });
   });
 
-  describe('with editor disabled', () => {
-    describe('when a dashboard is new', () => {
-      beforeEach(() => {
-        createWrapper({ props: { isNewDashboard: true } });
-
-        return waitForPromises();
-      });
-
-      it('renders the empty state', () => {
-        expect(findEmptyState().props()).toMatchObject({
-          svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
-          title: 'Dashboard not found',
-          description: 'No dashboard matches the specified URL path.',
-          primaryButtonText: 'View available dashboards',
-          primaryButtonLink: TEST_ROUTER_BACK_HREF,
-        });
-      });
-
-      it('does not fetch the list of available visualizations', () => {
-        expect(mockAvailableVisualizationsHandler).not.toHaveBeenCalled();
-      });
-    });
-  });
-
-  describe('with editor enabled', () => {
+  describe('dashboard editor', () => {
     beforeEach(() =>
       mockAvailableVisualizationsResponse(TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE),
     );
@@ -424,7 +385,6 @@ describe('AnalyticsDashboard', () => {
 
         createWrapper({
           routeSlug: 'custom_dashboard',
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
         });
       });
 
@@ -520,7 +480,6 @@ describe('AnalyticsDashboard', () => {
       it('renders an alert with the server message when a bad request was made', async () => {
         createWrapper({
           routeSlug: 'custom_dashboard',
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
         });
 
         const message = 'File already exists';
@@ -546,7 +505,6 @@ describe('AnalyticsDashboard', () => {
       it('updates the apollo cache', async () => {
         createWrapper({
           routeSlug: dashboard.slug,
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
         });
 
         await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
@@ -593,7 +551,6 @@ describe('AnalyticsDashboard', () => {
       beforeEach(() => {
         createWrapper({
           props: { isNewDashboard: true },
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
         });
 
         return waitForPromises();

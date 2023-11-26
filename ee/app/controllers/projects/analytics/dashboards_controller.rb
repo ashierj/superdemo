@@ -11,7 +11,6 @@ module Projects
       before_action :authorize_read_product_analytics!
       before_action :authorize_read_combined_project_analytics_dashboards!
       before_action do
-        push_frontend_feature_flag(:combined_analytics_dashboards_editor, project)
         push_frontend_feature_flag(:combined_analytics_visualization_editor, project)
         push_frontend_feature_flag(:group_analytics_dashboards, project.namespace)
       end
