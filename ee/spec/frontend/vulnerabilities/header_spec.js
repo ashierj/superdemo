@@ -3,6 +3,9 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
+import { createMockSubscription } from 'mock-apollo-client';
+import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
 import Api from 'ee/api';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
@@ -21,10 +24,21 @@ import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import * as urlUtility from '~/lib/utils/url_utility';
-import { getVulnerabilityStatusMutationResponse, dismissalDescriptions } from './mock_data';
+import {
+  getVulnerabilityStatusMutationResponse,
+  dismissalDescriptions,
+  getAiSubscriptionResponse,
+  AI_SUBSCRIPTION_ERROR_RESPONSE,
+  MUTATION_AI_ACTION_DEFAULT_RESPONSE,
+  MUTATION_AI_ACTION_GLOBAL_ERROR,
+  MUTATION_AI_ACTION_ERROR,
+} from './mock_data';
 
 Vue.use(VueApollo);
 
+const MOCK_SUBSCRIPTION_RESPONSE = getAiSubscriptionResponse(
+  'http://gdk.test:3000/secure-ex/webgoat.net/-/merge_requests/5',
+);
 const vulnerabilityStateEntries = Object.entries(VULNERABILITY_STATE_OBJECTS);
 const mockAxios = new MockAdapter(axios);
 jest.mock('~/alert');
@@ -356,17 +370,110 @@ describe('Vulnerability Header', () => {
     });
 
     describe('resolve with AI', () => {
+      let visitUrlMock;
+      let mockSubscription;
+      let subscriptionSpy;
+
+      const createWrapperWithAiApollo = ({
+        mutationResponse = MUTATION_AI_ACTION_DEFAULT_RESPONSE,
+      } = {}) => {
+        mockSubscription = createMockSubscription();
+        subscriptionSpy = jest.fn().mockReturnValue(mockSubscription);
+
+        const apolloProvider = createMockApollo([[aiActionMutation, mutationResponse]]);
+        apolloProvider.defaultClient.setRequestHandler(aiResponseSubscription, subscriptionSpy);
+
+        createWrapper({
+          vulnerability: getVulnerability({
+            canResolveWithAI: true,
+          }),
+          apolloProvider,
+        });
+
+        return waitForPromises();
+      };
+
+      const createWrapperAndClickButton = (params) => {
+        createWrapperWithAiApollo(params);
+        findGlButton().vm.$emit('click');
+      };
+
+      const sendSubscriptionMessage = (aiCompletionResponse) => {
+        mockSubscription.next({ data: { aiCompletionResponse } });
+        return waitForPromises();
+      };
+
+      // When the subscription is ready, a null aiCompletionResponse is sent
+      const waitForSubscriptionToBeReady = () => sendSubscriptionMessage(null);
+
       beforeEach(() => {
+        gon.current_user_id = 1;
+        visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
+      });
+
+      it('renders the experiment badge', () => {
         createWrapper({
           vulnerability: getVulnerability({
             canResolveWithAI: true,
           }),
         });
-      });
-
-      it('renders the experiment badge', () => {
         expect(findBadge().text()).toBe('Experiment');
       });
+
+      it('continues to show the loading state into the redirect call', async () => {
+        await createWrapperWithAiApollo();
+
+        const resolveAIButton = findGlButton();
+        expect(resolveAIButton.props('loading')).toBe(false);
+
+        resolveAIButton.vm.$emit('click');
+        await nextTick();
+        expect(resolveAIButton.props('loading')).toBe(true);
+
+        await waitForSubscriptionToBeReady();
+        expect(resolveAIButton.props('loading')).toBe(true);
+
+        await sendSubscriptionMessage(MOCK_SUBSCRIPTION_RESPONSE);
+        expect(resolveAIButton.props('loading')).toBe(true);
+        expect(visitUrlMock).toHaveBeenCalledTimes(1);
+      });
+
+      it('starts the subscription, waits for the subscription to be ready, then runs the mutation', async () => {
+        await createWrapperAndClickButton();
+        expect(subscriptionSpy).toHaveBeenCalled();
+        expect(MUTATION_AI_ACTION_DEFAULT_RESPONSE).not.toHaveBeenCalled();
+
+        await waitForSubscriptionToBeReady();
+        expect(MUTATION_AI_ACTION_DEFAULT_RESPONSE).toHaveBeenCalled();
+      });
+
+      it('redirects after it receives the AI response', async () => {
+        await createWrapperAndClickButton();
+        await waitForSubscriptionToBeReady();
+        expect(visitUrlMock).not.toHaveBeenCalled();
+
+        await sendSubscriptionMessage(MOCK_SUBSCRIPTION_RESPONSE);
+        expect(visitUrlMock).toHaveBeenCalledTimes(1);
+        expect(visitUrlMock).toHaveBeenCalledWith(MOCK_SUBSCRIPTION_RESPONSE.content);
+      });
+
+      it.each`
+        type                    | mutationResponse                       | subscriptionMessage               | expectedError
+        ${'mutation global'}    | ${MUTATION_AI_ACTION_GLOBAL_ERROR}     | ${null}                           | ${'mutation global error'}
+        ${'mutation ai action'} | ${MUTATION_AI_ACTION_ERROR}            | ${null}                           | ${'mutation ai action error'}
+        ${'subscription'}       | ${MUTATION_AI_ACTION_DEFAULT_RESPONSE} | ${AI_SUBSCRIPTION_ERROR_RESPONSE} | ${'subscription error'}
+      `(
+        'unsubscribes and shows only an error when there is a $type error',
+        async ({ mutationResponse, subscriptionMessage, expectedError }) => {
+          await createWrapperAndClickButton({ mutationResponse });
+          await waitForSubscriptionToBeReady();
+          await sendSubscriptionMessage(subscriptionMessage);
+
+          expect(findGlButton().props('loading')).toBe(false);
+          expect(visitUrlMock).not.toHaveBeenCalled();
+          expect(createAlert.mock.calls[0][0].message.toString()).toContain(expectedError);
+        },
+      );
     });
   });
 

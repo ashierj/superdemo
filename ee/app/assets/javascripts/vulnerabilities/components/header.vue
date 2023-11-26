@@ -5,14 +5,16 @@ import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vu
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
+import { TYPENAME_USER, TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
-import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { redirectTo, visitUrl } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
 import { REPORT_TYPE_SAST } from '~/vue_shared/security_reports/constants';
+import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
+import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
 import { normalizeGraphQLVulnerability, normalizeGraphQLLastStateTransition } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
@@ -45,6 +47,7 @@ export default {
       isLoadingVulnerability: false,
       isLoadingUser: false,
       user: undefined,
+      errorAlert: null,
     };
   },
 
@@ -100,8 +103,41 @@ export default {
     disabledChangeState() {
       return !this.vulnerability.canAdmin;
     },
+    vulnerabilityGraphqlId() {
+      return convertToGraphQLId(TYPENAME_VULNERABILITY, this.vulnerability.id);
+    },
   },
-
+  apollo: {
+    $subscribe: {
+      aiCompletionResponse: {
+        query: aiResponseSubscription,
+        skip: true, // We manually start and stop the subscription.
+        variables() {
+          return {
+            resourceId: this.vulnerabilityGraphqlId,
+            userId: convertToGraphQLId(TYPENAME_USER, gon.current_user_id),
+          };
+        },
+        async result({ data }) {
+          const { errors, content } = data.aiCompletionResponse || {};
+          // Once the subscription is ready, we will receive a null aiCompletionResponse. Once we get this, it's safe to
+          // start the AI request mutation. Otherwise, it's possible that backend will send the AI response before the
+          // subscription is ready, and the AI response will be lost.
+          if (!data.aiCompletionResponse) {
+            this.resolveVulnerability();
+          } else if (errors?.length) {
+            this.handleError(errors[0]);
+          } else if (content) {
+            this.stopSubscription();
+            visitUrl(content);
+          }
+        },
+        error(e) {
+          this.handleError(e);
+        },
+      },
+    },
+  },
   watch: {
     'vulnerability.state': {
       immediate: true,
@@ -168,6 +204,28 @@ export default {
         this.isLoadingVulnerability = false;
       }
     },
+    resolveVulnerability() {
+      this.$apollo
+        .mutate({
+          mutation: aiActionMutation,
+          variables: {
+            input: {
+              resolveVulnerability: {
+                resourceId: this.vulnerabilityGraphqlId,
+              },
+            },
+          },
+        })
+        .then(({ data }) => {
+          const error = data.aiAction.errors[0];
+          if (error) {
+            this.handleError(error);
+          }
+        })
+        .catch((e) => {
+          this.handleError(e.message);
+        });
+    },
 
     createMergeRequest() {
       this.isProcessingAction = true;
@@ -215,6 +273,19 @@ export default {
         fileName: `remediation.patch`,
       });
     },
+    startSubscription() {
+      this.isProcessingAction = true;
+      this.errorAlert?.dismiss();
+      this.$apollo.subscriptions.aiCompletionResponse.start();
+    },
+    stopSubscription() {
+      this.$apollo.subscriptions.aiCompletionResponse.stop();
+    },
+    handleError(error) {
+      this.stopSubscription();
+      this.isProcessingAction = false;
+      this.errorAlert = createAlert({ message: error });
+    },
   },
 };
 </script>
@@ -259,6 +330,7 @@ export default {
           :disabled="isProcessingAction"
           @createMergeRequest="createMergeRequest"
           @downloadPatch="downloadPatch"
+          @createMergeRequestAi="startSubscription"
         />
         <gl-button
           v-else-if="actionButtons.length > 0"

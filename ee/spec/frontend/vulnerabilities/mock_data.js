@@ -120,3 +120,34 @@ export const dismissalDescriptions = {
   not_applicable:
     'The vulnerability is known, and has not been remediated or mitigated, but is considered to be in a part of the application that will not be updated.',
 };
+
+export const getAiSubscriptionResponse = (content = 'response text') => ({
+  id: '123',
+  content,
+  contentHtml: `<p>${content}</p>`,
+  errors: [],
+  requestId: '123',
+  role: 'assistant',
+  timestamp: '2021-05-26T14:00:00.000Z',
+  type: null,
+  chunkId: null,
+  extras: null,
+});
+
+export const AI_SUBSCRIPTION_ERROR_RESPONSE = {
+  ...getAiSubscriptionResponse(),
+  errors: ['subscription error'],
+};
+
+export const MUTATION_AI_ACTION_DEFAULT_RESPONSE = jest.fn().mockResolvedValue({
+  data: { aiAction: { errors: [] } },
+});
+
+export const MUTATION_AI_ACTION_GLOBAL_ERROR = jest.fn().mockResolvedValue({
+  data: { aiAction: null },
+  errors: [{ message: 'mutation global error' }],
+});
+
+export const MUTATION_AI_ACTION_ERROR = jest.fn().mockResolvedValue({
+  data: { aiAction: { errors: ['mutation ai action error'] } },
+});
