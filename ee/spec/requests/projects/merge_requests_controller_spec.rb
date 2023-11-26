@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Projects::MergeRequestsController, feature_category: :code_review_workflow do
+  include ReactiveCachingHelpers
+
   let(:merge_request) { create(:merge_request) }
   let(:project) { merge_request.project }
   let(:user) { merge_request.author }
@@ -163,6 +165,81 @@ RSpec.describe Projects::MergeRequestsController, feature_category: :code_review
                 expect(response).to have_gitlab_http_status(:ok)
                 expect(json_response).to eq({ 'added' => ['foo'], 'fixed' => ['bar'] })
               end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  describe 'GET #license_scanning_reports_collapsed', feature_category: :code_review_workflow do
+    let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
+
+    subject(:request_license_scanning_reports) { get license_scanning_reports_collapsed_project_merge_request_path(project, merge_request, format: :json) }
+
+    before do
+      stub_licensed_features(license_scanning: true)
+    end
+
+    context 'when comparison is done' do
+      context 'with license_scanning report in head pipeline' do
+        before do
+          allow_next_found_instance_of(MergeRequest) { |merge_request| synchronous_reactive_cache(merge_request) }
+        end
+
+        let(:expected_response) { { 'approval_required' => false, 'existing_licenses' => 0, 'has_denied_licenses' => false, 'new_licenses' => 1, 'removed_licenses' => 0 } }
+
+        let(:head_pipeline) do
+          create(
+            :ee_ci_pipeline,
+            :with_license_scanning_feature_branch,
+            project: project,
+            ref: merge_request.source_branch,
+            sha: merge_request.diff_head_sha
+          )
+        end
+
+        let(:base_pipeline) do
+          create(
+            :ee_ci_pipeline,
+            project: project,
+            ref: merge_request.target_branch,
+            sha: merge_request.diff_base_sha
+          )
+        end
+
+        it 'does not send polling interval' do
+          expect(::Gitlab::PollingInterval).not_to receive(:set_header)
+
+          request_license_scanning_reports
+        end
+
+        it 'returns 200 HTTP status' do
+          request_license_scanning_reports
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to eq(expected_response)
+        end
+
+        context 'without license_scanning report in base pipeline' do
+          context 'when the base pipeline is nil' do
+            let!(:base_pipeline) { nil }
+
+            it 'returns 200 HTTP status' do
+              request_license_scanning_reports
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response).to eq(expected_response)
+            end
+          end
+
+          context 'when the base pipeline does not have license reports' do
+            it 'returns 200 HTTP status' do
+              request_license_scanning_reports
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response).to eq(expected_response)
             end
           end
         end
