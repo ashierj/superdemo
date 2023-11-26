@@ -1,0 +1,135 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe Gitlab::Ci::Variables::Builder::ScanExecutionPolicies, feature_category: :security_policy_management do
+  using RSpec::Parameterized::TableSyntax
+
+  let_it_be(:namespace) { create(:group) }
+  let_it_be(:project) { create(:project, :repository, group: namespace) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
+  let(:job_name) { 'build-job' }
+  let(:job) { build(:ci_build, name: job_name, pipeline: pipeline, user: user) }
+  let(:licensed_feature) { true }
+  let(:builder) { described_class.new(pipeline) }
+
+  before do
+    stub_licensed_features(security_orchestration_policies: licensed_feature)
+  end
+
+  describe '#variables' do
+    subject(:variables) { builder.variables(job) }
+
+    context 'with security policies' do
+      let_it_be(:namespace_policies_project) { create(:project, :repository) }
+      let_it_be(:namespace_security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, :namespace, namespace: namespace,
+          security_policy_management_project: namespace_policies_project)
+      end
+
+      let_it_be(:policies_project) { create(:project, :repository, group: namespace) }
+      let_it_be(:security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, project: project,
+          security_policy_management_project: policies_project)
+      end
+
+      let_it_be(:namespace_policy) do
+        build(:scan_execution_policy, actions: [
+          { scan: 'container_scanning', tags: ['runner-tag'], variables: { CS_REGISTRY_USER: 'user' } }
+        ])
+      end
+
+      let_it_be(:project_policy) do
+        build(:scan_execution_policy, actions: [
+          { scan: 'sast', variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } },
+          { scan: 'secret_detection', variables: { SECRET_DETECTION_HISTORIC_SCAN: 'true' } },
+          { scan: 'sast_iac', tags: ['runner-tag'], variables: { SAST_IMAGE_SUFFIX: '-fips' } },
+          { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile',
+            variables: { DAST_WEBSITE: 'https://my.site.com' } },
+          { scan: 'dependency_scanning', tags: ['runner-tag'], variables: { DS_IMAGE_SUFFIX: '-fips' } }
+        ])
+      end
+
+      let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [project_policy]) }
+      let_it_be(:namespace_policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [namespace_policy]) }
+
+      let(:job_name) { 'secret-detection-2' }
+
+      before do
+        allow_next_instance_of(Repository) do |repository|
+          allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
+        end
+
+        allow_next_instance_of(Repository, anything, namespace_policies_project, anything) do |repository|
+          allow(repository).to receive(:blob_data_at).and_return(namespace_policy_yaml)
+        end
+      end
+
+      # the suffixes get assigned in order of the actions in the policies
+      where(:job_name, :expected_variables_lambda) do
+        'build-job'                              | -> { [] }
+        'dast-on-demand-0'                       | -> { [item(key: 'DAST_WEBSITE', value: 'https://my.site.com')] }
+        'container-scanning-0'                   | -> { [item(key: 'CS_REGISTRY_USER', value: 'user')] }
+        'brakeman-sast-1'                        | -> { [item(key: 'SAST_EXCLUDED_ANALYZERS', value: 'semgrep')] }
+        'secret-detection-2'                     | -> { [item(key: 'SECRET_DETECTION_HISTORIC_SCAN', value: 'true')] }
+        'kics-iac-sast-3'                        | -> { [item(key: 'SAST_IMAGE_SUFFIX', value: '-fips')] }
+        'gemnasium-python-dependency-scanning-4' | -> { [item(key: 'DS_IMAGE_SUFFIX', value: '-fips')] }
+      end
+
+      with_them do
+        it { is_expected.to match_array(expected_variables_lambda.call) }
+      end
+
+      describe 'memoization' do
+        it 'memoizes result of active_scan_variables' do
+          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::ScanPipelineService) do |instance|
+            expect(instance).to receive(:execute).once.and_call_original
+          end
+
+          2.times do
+            expect(builder.variables(job)).to match_array(item(key: 'SECRET_DETECTION_HISTORIC_SCAN', value: 'true'))
+          end
+        end
+      end
+
+      context 'when job name does not adhere to the naming convention for scan execution policies jobs' do
+        %w[secret_detection secret-detection secret-detection-a secret-detection-2a invalid-0].each do |name|
+          context "with job name #{name}" do
+            let(:job_name) { name }
+
+            it { is_expected.to match_array([]) }
+          end
+        end
+      end
+
+      context 'when feature is not licensed' do
+        let(:licensed_feature) { false }
+
+        it { is_expected.to match_array([]) }
+      end
+
+      context 'when feature flag "security_policies_variables_precedence" is disabled' do
+        before do
+          stub_feature_flags(security_policies_variables_precedence: false)
+        end
+
+        it { is_expected.to match_array([]) }
+      end
+
+      context 'when job name is nil' do
+        let(:job_name) { nil }
+
+        it { is_expected.to match_array([]) }
+      end
+    end
+
+    context 'without security policies' do
+      it { is_expected.to match_array([]) }
+    end
+
+    def item(variable)
+      ::Gitlab::Ci::Variables::Collection::Item.fabricate(variable)
+    end
+  end
+end

@@ -26,7 +26,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
       ]
     end
 
-    subject(:pipeline_configuration) { service.execute(actions) }
+    subject(:pipeline_configuration) { service.execute(actions).reduce({}, :merge) }
 
     before do
       allow(DastSiteProfilesFinder).to receive(:new).and_return(double(execute: []))
