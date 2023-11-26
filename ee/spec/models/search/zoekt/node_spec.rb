@@ -71,6 +71,12 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
         expect(tasked_node.total_bytes).to eq(params['disk.all'])
         expect(tasked_node.metadata['name']).to eq(params['node.name'])
       end
+
+      it 'allows creation of another node with the same URL' do
+        node.update!(index_base_url: params['node.url'], search_base_url: params['node.url'])
+
+        expect(tasked_node.save).to eq(true)
+      end
     end
   end
 
