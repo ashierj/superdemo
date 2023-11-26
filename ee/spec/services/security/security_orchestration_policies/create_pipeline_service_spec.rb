@@ -383,19 +383,36 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService, f
       end
 
       describe "sast scan action" do
-        let(:actions) do
-          [{ scan: 'sast',
-             variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } }]
-        end
-
         context "when action contains variables" do
-          it 'parses variables from the action and applies them in configuration service' do
-            expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-              expect(ci_configuration_service).to receive(:execute).once
-                                                    .with(actions.first, { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }, kind_of(Gitlab::Ci::Config::External::Context), 0).and_call_original
+          let(:actions) do
+            [{ scan: 'sast',
+               variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } }]
+          end
+
+          context 'when feature flag "security_policies_variables_precedence" is enabled' do
+            it 'does not pass variables from the action into configuration service' do
+              expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+                expect(ci_configuration_service).to receive(:execute).once
+                                                                     .with(actions.first, {}, kind_of(Gitlab::Ci::Config::External::Context), 0).and_call_original
+              end
+
+              subject
+            end
+          end
+
+          context 'when feature flag "security_policies_variables_precedence" is disabled' do
+            before do
+              stub_feature_flags(security_policies_variables_precedence: false)
             end
 
-            subject
+            it 'parses variables from the action and applies them in configuration service' do
+              expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+                expect(ci_configuration_service).to receive(:execute).once
+                                                                     .with(actions.first, { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }, kind_of(Gitlab::Ci::Config::External::Context), 0).and_call_original
+              end
+
+              subject
+            end
           end
         end
       end

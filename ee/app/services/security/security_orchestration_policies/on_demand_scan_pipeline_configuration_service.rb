@@ -10,7 +10,7 @@ module Security
       end
 
       def execute(actions)
-        ci_configs(actions).reduce({}, :merge)
+        actions.map.with_index { |action, index| prepare_policy_configuration(action, index) }
       end
 
       private
@@ -18,10 +18,6 @@ module Security
       DAST_ON_DEMAND_TEMPLATE_NAME = 'DAST-On-Demand-Scan'
 
       attr_reader :project
-
-      def ci_configs(actions)
-        actions.map.with_index { |action, index| prepare_policy_configuration(action, index) }
-      end
 
       def prepare_policy_configuration(action, index)
         {

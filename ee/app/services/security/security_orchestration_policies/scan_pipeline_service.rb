@@ -28,17 +28,37 @@ module Security
           on_demand_scan_type?(action[:scan].to_s)
         end
 
-        pipeline_scan_config = other_actions.map.with_index do |action, index|
+        pipeline_scan_configs = other_actions.map.with_index do |action, index|
           prepare_policy_configuration(action, index)
-        end.reduce({}, :merge)
+        end
 
-        on_demand_config = prepare_on_demand_policy_configuration(on_demand_scan_actions)
+        on_demand_configs = prepare_on_demand_policy_configuration(on_demand_scan_actions)
 
-        { pipeline_scan: pipeline_scan_config,
-          on_demand: on_demand_config }
+        variables = if Feature.enabled?(:security_policies_variables_precedence, project)
+                      pipeline_variables = collect_config_variables(other_actions, pipeline_scan_configs)
+                      on_demand_variables = collect_config_variables(on_demand_scan_actions, on_demand_configs)
+                      pipeline_variables.merge(on_demand_variables)
+                    else
+                      {}
+                    end
+
+        { pipeline_scan: pipeline_scan_configs.reduce({}, :merge),
+          on_demand: on_demand_configs.reduce({}, :merge),
+          variables: variables }
       end
 
       private
+
+      def collect_config_variables(actions, configs)
+        actions.zip(configs).each_with_object({}) do |(action, config), hash|
+          variables = action_variables(action)
+          jobs = custom_scan?(action) ? Gitlab::Ci::Config.new(action[:ci_configuration]).jobs : config
+
+          jobs.each_key do |key|
+            hash[key] = variables
+          end
+        end
+      end
 
       def pipeline_scan_type?(scan_type)
         scan_type.in?(Security::ScanExecutionPolicy::PIPELINE_SCAN_TYPES)
@@ -67,16 +87,23 @@ module Security
       def prepare_policy_configuration(action, index)
         return unless valid_scan_type?(action[:scan]) || custom_scan?(action)
 
-        action_variables = action[:variables].to_h.stringify_keys
+        variables = scan_variables(action)
+        if ::Feature.disabled?(:security_policies_variables_precedence, project)
+          variables = variables.merge(action_variables(action))
+        end
 
         ::Security::SecurityOrchestrationPolicies::CiConfigurationService
           .new
-          .execute(action, scan_variables(action).merge(action_variables), context, index)
+          .execute(action, variables, context, index)
           .deep_symbolize_keys
       end
 
       def scan_variables(action)
         base_variables[action[:scan].to_sym].to_h
+      end
+
+      def action_variables(action)
+        action[:variables].to_h.stringify_keys
       end
 
       def custom_ci_yaml_enabled?
