@@ -41,6 +41,7 @@ module Vulnerabilities
     scope :order_detected_at_asc, -> { reorder(vulnerability_id: :asc) }
     scope :order_detected_at_desc, -> { reorder(vulnerability_id: :desc) }
 
+    scope :by_projects, -> (values) { where(project_id: values) }
     scope :by_scanner, -> (scanner) { where(scanner: scanner) }
     scope :by_scanner_ids, -> (scanner_ids) { where(scanner_id: scanner_ids) }
     scope :grouped_by_severity, -> { reorder(severity: :desc).group(:severity) }

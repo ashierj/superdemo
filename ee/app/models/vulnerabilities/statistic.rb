@@ -2,6 +2,7 @@
 
 module Vulnerabilities
   class Statistic < ApplicationRecord
+    include EachBatch
     self.table_name = 'vulnerability_statistics'
 
     belongs_to :project, optional: false
@@ -20,6 +21,7 @@ module Vulnerabilities
     before_save :assign_letter_grade
 
     scope :for_project, ->(project) { where(project_id: project) }
+    scope :by_projects, -> (values) { where(project_id: values) }
     scope :by_grade, -> (grade) { where(letter_grade: grade) }
 
     class << self

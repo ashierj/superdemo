@@ -23,6 +23,7 @@ module Vulnerabilities
     scope :older_than, ->(days:) { where('"vulnerability_historical_statistics"."date" < now() - interval ?', "#{days} days") }
     scope :between_dates, -> (start_date, end_date) { where(arel_table[:date].between(start_date..end_date)) }
     scope :for_project, -> (project) { where(project: project) }
+    scope :by_projects, -> (values) { where(project_id: values) }
     scope :aggregated_by_date, -> do
       select(
         arel_table[:date],

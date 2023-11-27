@@ -6,6 +6,7 @@ module Vulnerabilities
     include ::Gitlab::Utils::StrongMemoize
     include Presentable
     include ::VulnerabilityFindingHelpers
+    include EachBatch
 
     # https://gitlab.com/groups/gitlab-org/-/epics/3148
     # https://gitlab.com/gitlab-org/gitlab/-/issues/214563#note_370782508 is why the table names are not renamed
@@ -91,6 +92,8 @@ module Vulnerabilities
     scope :report_type, -> (type) { where(report_type: report_types[type]) }
     scope :ordered, -> { order(severity: :desc, confidence: :desc, id: :asc) }
 
+    scope :by_vulnerability, -> (vulnerability_id) { where(vulnerability: vulnerability_id) }
+    scope :ids_by_vulnerability, -> (vulnerability_id) { by_vulnerability(vulnerability_id).pluck(:id) }
     scope :by_report_types, -> (values) { where(report_type: values) }
     scope :by_projects, -> (values) { where(project_id: values) }
     scope :by_scanners, -> (values) { where(scanner_id: values) }

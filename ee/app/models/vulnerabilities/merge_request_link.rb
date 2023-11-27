@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 module Vulnerabilities
   class MergeRequestLink < ApplicationRecord
+    include EachBatch
+
     self.table_name = 'vulnerability_merge_request_links'
 
     belongs_to :vulnerability
@@ -21,5 +23,6 @@ module Vulnerabilities
     end
     scope :with_vulnerability_findings, -> { includes(vulnerability: [:findings]) }
     scope :with_merge_request, -> { includes(:merge_request) }
+    scope :by_vulnerability, ->(values) { where(vulnerability_id: values) }
   end
 end
