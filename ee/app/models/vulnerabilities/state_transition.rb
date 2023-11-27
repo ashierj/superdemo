@@ -2,6 +2,7 @@
 
 module Vulnerabilities
   class StateTransition < ApplicationRecord
+    include EachBatch
     include BulkInsertSafe
 
     self.table_name = 'vulnerability_state_transitions'
@@ -21,6 +22,7 @@ module Vulnerabilities
     declarative_enum DismissalReasonEnum
 
     scope :by_to_states, ->(states) { where(to_state: states) }
+    scope :by_vulnerability, ->(values) { where(vulnerability_id: values) }
 
     private
 

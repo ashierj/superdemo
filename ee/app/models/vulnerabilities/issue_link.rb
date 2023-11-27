@@ -2,6 +2,8 @@
 
 module Vulnerabilities
   class IssueLink < ApplicationRecord
+    include EachBatch
+
     self.table_name = 'vulnerability_issue_links'
 
     belongs_to :vulnerability
@@ -26,5 +28,6 @@ module Vulnerabilities
     scope :for_issue, -> (issue) { where(issue_id: issue) }
     scope :with_associations, -> { preload(:issue, vulnerability: [:project]) }
     scope :with_issues, -> { includes(:issue) }
+    scope :by_vulnerability, ->(values) { where(vulnerability_id: values) }
   end
 end

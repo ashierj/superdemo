@@ -2181,6 +2181,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: vulnerabilities_remove_all_vulnerabilities
+  :worker_name: Vulnerabilities::RemoveAllVulnerabilitiesWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: vulnerabilities_statistics_adjustment
   :worker_name: Vulnerabilities::Statistics::AdjustmentWorker
   :feature_category: :vulnerability_management
