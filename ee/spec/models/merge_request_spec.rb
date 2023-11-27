@@ -1597,6 +1597,35 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       end
     end
 
+    context 'when validating jira associations' do
+      let_it_be_with_reload(:project_jira) { create(:project, :repository, :with_jira_integration) }
+      let_it_be_with_reload(:merge_request) { create(:merge_request, source_project: project_jira, target_project: project_jira) }
+
+      before do
+        allow(merge_request.project).to receive(:prevent_merge_without_jira_issue?).and_return(true)
+      end
+
+      context 'when the merge request does not reference a jira issue' do
+        before do
+          merge_request.update!(description: '')
+        end
+
+        it 'is not mergeable' do
+          is_expected.to be_falsey
+        end
+      end
+
+      context 'when the merge request references a jira issue' do
+        before do
+          merge_request.update!(description: 'PROJECT-1')
+        end
+
+        it 'is mergeable' do
+          is_expected.to be_truthy
+        end
+      end
+    end
+
     context 'when blocking merge requests' do
       before do
         stub_licensed_features(blocking_merge_requests: true)

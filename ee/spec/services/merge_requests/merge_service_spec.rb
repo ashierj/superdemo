@@ -160,7 +160,7 @@ RSpec.describe MergeRequests::MergeService, feature_category: :source_code_manag
           subject
 
           expect(merge_request.reload.merged?).to eq(merged)
-          expect(merge_request.merge_error).to include('Before this can be merged, a Jira issue must be linked in the title or description') unless merged
+          expect(merge_request.merge_error).to include('To merge, either the title or description must reference a Jira issue.') unless merged
         end
       end
     end
