@@ -22,7 +22,7 @@ module Namespaces
       attr_reader :context, :root_namespace, :user, :root_storage_size
 
       def render?
-        return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        return false unless ::Gitlab::Saas.feature_available?(:namespaces_storage_limit)
         return false unless user.present?
         return false unless user_has_access?
         return false unless root_storage_size.enforce_limit?

@@ -25,6 +25,7 @@ module NamespaceStorageHelpers
     stub_ee_application_setting(enforce_namespace_storage_limit: true)
     stub_ee_application_setting(automatic_purchased_storage_allocation: true)
     stub_feature_flags(namespace_storage_limit: root_namespace)
+    stub_saas_features(namespaces_storage_limit: true)
 
     allow(::Namespaces::Storage::Enforcement).to receive(:enforceable_namespace?).and_return true
   end
