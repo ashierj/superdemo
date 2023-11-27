@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver',
+RSpec.describe Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver,
   feature_category: :compliance_management do
   using RSpec::Parameterized::TableSyntax
 
@@ -33,8 +33,6 @@ RSpec.describe 'Resolvers::ComplianceManagement::MergeRequests::ComplianceViolat
       title: merge_request_outside_group.title, target_project_id: project_outside_group.id,
       target_branch: merge_request_outside_group.target_branch)
   end
-
-  let_it_be(:described_class) { Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver }
 
   before do
     merge_request.metrics.update!(merged_at: 3.days.ago)
