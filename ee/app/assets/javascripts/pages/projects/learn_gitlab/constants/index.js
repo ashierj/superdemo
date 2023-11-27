@@ -51,6 +51,7 @@ export const ACTION_LABELS = {
     ),
     trackLabel: 'add_code_owners',
     trialRequired: true,
+    planName: s__('BillingPlans|Premium'),
     section: 'workspace',
     position: 4,
     openInNewTab: true,
@@ -61,6 +62,7 @@ export const ACTION_LABELS = {
     description: s__('LearnGitLab|Route code reviews to the right reviewers, every time.'),
     trackLabel: 'enable_require_merge_approvals',
     trialRequired: true,
+    planName: s__('BillingPlans|Premium'),
     section: 'workspace',
     position: 5,
     openInNewTab: true,
@@ -87,6 +89,7 @@ export const ACTION_LABELS = {
     title: s__('LearnGitLab|Scan dependencies for licenses'),
     trackLabel: 'scan_dependencies_for_licenses',
     trialRequired: true,
+    planName: s__('BillingPlans|Ultimate'),
     section: 'deploy',
     position: 2,
   },
@@ -94,6 +97,7 @@ export const ACTION_LABELS = {
     title: s__('LearnGitLab|Scan dependencies for vulnerabilities'),
     trackLabel: 'scan_dependencies_for_vulnerabilities',
     trialRequired: true,
+    planName: s__('BillingPlans|Ultimate'),
     section: 'deploy',
     position: 3,
   },
@@ -101,6 +105,7 @@ export const ACTION_LABELS = {
     title: s__('LearnGitLab|Analyze your application for vulnerabilities with DAST'),
     trackLabel: 'analyze_your_application_for_vulnerabilities_with_dast',
     trialRequired: true,
+    planName: s__('BillingPlans|Ultimate'),
     section: 'deploy',
     position: 4,
   },
@@ -133,3 +138,4 @@ export const ACTION_SECTIONS = {
 
 export const INVITE_MODAL_OPEN_COOKIE = 'confetti_post_signup';
 export const ULTIMATE_TRIAL_BENEFIT_MODAL = 'ultimate_trial_benefit_modal';
+export const PROMOTE_ULTIMATE_FEATURES = 'promote_ultimate_features';

@@ -2,11 +2,16 @@ import { GlPopover, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
+import { stubExperiments } from 'helpers/experimentation_helper';
+import { TRACKING_CONTEXT_SCHEMA } from '~/experimentation/constants';
 import eventHub from '~/invite_members/event_hub';
 import LearnGitlabSectionLink from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_link.vue';
-import { ACTION_LABELS } from 'ee/pages/projects/learn_gitlab/constants';
+import { ACTION_LABELS, PROMOTE_ULTIMATE_FEATURES } from 'ee/pages/projects/learn_gitlab/constants';
 import { LEARN_GITLAB } from 'ee/invite_members/constants';
 import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
+import IncludedInTrialIndicator from 'ee/pages/projects/learn_gitlab/components/included_in_trial_indicator.vue';
+import PaidFeatureIndicator from 'ee/pages/projects/learn_gitlab/components/paid_feature_indicator.vue';
+import { testProviders } from './mock_data';
 
 const defaultAction = 'gitWrite';
 const defaultProps = {
@@ -25,9 +30,10 @@ const openInNewTabProps = {
 describe('Learn GitLab Section Link', () => {
   let wrapper;
 
-  const createWrapper = (action = defaultAction, props = {}) => {
+  const createWrapper = (action = defaultAction, props = {}, providers = testProviders) => {
     wrapper = extendedWrapper(
       mount(LearnGitlabSectionLink, {
+        provide: { ...providers },
         propsData: { action, value: { ...defaultProps, ...props } },
       }),
     );
@@ -38,6 +44,8 @@ describe('Learn GitLab Section Link', () => {
   const findPopoverTrigger = () => wrapper.findByTestId('contact-admin-popover-trigger');
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findPopoverLink = () => findPopover().findComponent(GlLink);
+  const findIncludedInTrialIndicator = () => wrapper.findComponent(IncludedInTrialIndicator);
+  const findPaidFeatureIndicator = () => wrapper.findComponent(PaidFeatureIndicator);
 
   it('renders no icon when not completed', () => {
     createWrapper(undefined, { completed: false });
@@ -153,6 +161,75 @@ describe('Learn GitLab Section Link', () => {
       });
 
       unmockTracking();
+    });
+  });
+
+  describe('promote_ultimate_features experiment', () => {
+    const trackExperimentOptions = (action, variant) => {
+      const label = ACTION_LABELS[action].trackLabel;
+
+      if (ACTION_LABELS[action].trialRequired) {
+        return {
+          label,
+          context: {
+            data: {
+              variant,
+              experiment: PROMOTE_ULTIMATE_FEATURES,
+            },
+            schema: TRACKING_CONTEXT_SCHEMA,
+          },
+        };
+      }
+
+      return { label };
+    };
+
+    it.each`
+      action                 | variant
+      ${'codeAdded'}         | ${'control'}
+      ${'codeAdded'}         | ${'candidate'}
+      ${'codeOwnersEnabled'} | ${'control'}
+      ${'codeOwnersEnabled'} | ${'candidate'}
+    `('tracks the click for $action action and $variant variant', ({ action, variant }) => {
+      createWrapper(action);
+
+      const trackingSpy = mockTracking('_category_', wrapper.element, jest.spyOn);
+
+      stubExperiments({ [PROMOTE_ULTIMATE_FEATURES]: variant });
+
+      findUncompletedLink().trigger('click');
+
+      expect(trackingSpy).toHaveBeenCalledWith(
+        '_category_',
+        'click_link',
+        trackExperimentOptions(action, variant),
+      );
+
+      unmockTracking();
+    });
+  });
+
+  describe('badge component', () => {
+    describe('when does not promote ultimate features', () => {
+      it('renders component', () => {
+        createWrapper('codeOwnersEnabled', { completed: true });
+
+        expect(findIncludedInTrialIndicator().exists()).toBe(true);
+        expect(findPaidFeatureIndicator().exists()).toBe(false);
+      });
+    });
+
+    describe('when promotes ultimate features', () => {
+      it('renders component with tracking', () => {
+        createWrapper('codeOwnersEnabled', { completed: true }, { promoteUltimateFeatures: true });
+
+        const badgeComponent = findPaidFeatureIndicator();
+
+        expect(findIncludedInTrialIndicator().exists()).toBe(false);
+        expect(badgeComponent.exists()).toBe(true);
+        expect(badgeComponent.props('planName')).toBe(ACTION_LABELS.codeOwnersEnabled.planName);
+        expect(badgeComponent.props('trackLabel')).toBe(ACTION_LABELS.codeOwnersEnabled.trackLabel);
+      });
     });
   });
 });

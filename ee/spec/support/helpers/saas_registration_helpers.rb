@@ -359,7 +359,7 @@ module SaasRegistrationHelpers
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/404805
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(170)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(176)
 
     fill_in 'group_name', with: 'Test Group'
     fill_in 'blank_project_name', with: 'Test Project'

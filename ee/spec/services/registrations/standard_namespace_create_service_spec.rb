@@ -45,6 +45,13 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
                 .by(1).and change { Project.count }.by(1).and change { ::Onboarding::Progress.count }.by(1)
       end
 
+      it 'updates promote_ultimate_features_at in the onboarding progress' do
+        expect(execute).to be_success
+
+        expect(Group.find_by(path: group_params[:path]).onboarding_progress.promote_ultimate_features_at)
+          .to be_present
+      end
+
       it 'passes create_event: true to the Groups::CreateService' do
         added_params = { create_event: true, setup_for_company: nil }
 
@@ -161,6 +168,13 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         expect(execute.payload[:project].errors).not_to be_blank
       end
 
+      it 'updates promote_ultimate_features_at in the onboarding progress' do
+        expect(execute).to be_error
+
+        expect(Group.find_by(path: group_params[:path]).onboarding_progress.promote_ultimate_features_at)
+          .to be_present
+      end
+
       it 'selectively tracks events for group and project creation' do
         expect(execute).to be_error
 
@@ -182,6 +196,12 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
           expect(execute).to be_success
         end.to change { Group.count }.by(0)
                                      .and change { ::Onboarding::Progress.count }.by(0).and change { Project.count }
+      end
+
+      it 'does not update onboarding progress' do
+        expect(execute).to be_success
+
+        expect(group.onboarding_progress).to be_nil
       end
 
       it 'selectively tracks events group and project creation' do

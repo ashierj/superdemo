@@ -78,8 +78,11 @@ module Projects
     end
 
     def onboarding_project_data(project)
-      { name: project.name,
-        show_ultimate_trial_benefit_modal: show_ultimate_trial_benefit_modal?(project) }
+      {
+        name: project.name,
+        show_ultimate_trial_benefit_modal: show_ultimate_trial_benefit_modal?(project.root_ancestor),
+        promote_ultimate_features: promote_ultimate_features?(project.root_ancestor)
+      }
     end
 
     def action_urls(project)
@@ -125,11 +128,19 @@ module Projects
       }
     end
 
-    def show_ultimate_trial_benefit_modal?(project)
-      return unless project.root_ancestor.trial_active?
+    def show_ultimate_trial_benefit_modal?(group)
+      return unless group.trial_active?
 
-      experiment(:ultimate_trial_benefit_modal, group: project.root_ancestor) do |e|
+      experiment(:ultimate_trial_benefit_modal, group: group) do |e|
         e.candidate { true }
+      end.run
+    end
+
+    def promote_ultimate_features?(group)
+      return unless group.trial_active?
+
+      experiment(:promote_ultimate_features, group: group) do |e|
+        e.candidate { group.onboarding_progress&.promote_ultimate_features_at.present? }
       end.run
     end
   end

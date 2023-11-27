@@ -17,6 +17,7 @@ module Registrations
     def after_successful_group_creation(group_track_action:)
       Gitlab::Tracking.event(self.class.name, group_track_action, namespace: group, user: user)
       ::Onboarding::Progress.onboard(group)
+      ::Onboarding::ProgressService.new(group).execute(action: :promote_ultimate_features)
 
       experiment(:phone_verification_for_low_risk_users, user: user).track(:assignment, namespace: group)
 

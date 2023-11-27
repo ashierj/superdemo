@@ -1,5 +1,9 @@
 import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
 
+export const testProviders = {
+  promoteUltimateFeatures: false,
+};
+
 export const testActions = {
   codeAdded: {
     url: 'http://example.com/',

@@ -34,6 +34,13 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
         end.to change { Group.count }.by(1).and change { ::Onboarding::Progress.count }.by(1)
       end
 
+      it 'updates promote_ultimate_features_at in the onboarding progress' do
+        expect(execute).to be_success
+
+        expect(Group.find_by(path: group_params[:path]).onboarding_progress.promote_ultimate_features_at)
+          .to be_present
+      end
+
       it 'passes create_event: true to the Groups::CreateService' do
         added_params = { create_event: true, setup_for_company: nil }
 
