@@ -12,7 +12,7 @@ RSpec.describe Vulnerabilities::Remediation, feature_category: :vulnerability_ma
   it { is_expected.to validate_presence_of(:checksum) }
   it { is_expected.to validate_length_of(:summary).is_at_most(200) }
 
-  describe '.by_checksum' do
+  describe '#by_checksum' do
     let_it_be(:remediation_1) { create(:vulnerabilities_remediation) }
     let_it_be(:remediation_2) { create(:vulnerabilities_remediation) }
 

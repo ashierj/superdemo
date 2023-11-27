@@ -4,7 +4,18 @@ require 'spec_helper'
 
 RSpec.describe Vulnerabilities::FindingPresenter, feature_category: :vulnerability_management do
   let(:presenter) { described_class.new(occurrence) }
-  let(:occurrence) { build_stubbed(:vulnerabilities_finding) }
+  let(:occurrence) do
+    finding = build_stubbed(:vulnerabilities_finding)
+    metadata = ::Gitlab::Json.parse(finding.raw_metadata)
+
+    metadata['location'] = metadata['location'].merge(
+      { 'blob_path' => '/group/project/-/blob/dfd.../maven/src/main/java/tests/App.java' }
+    )
+
+    finding.raw_metadata = metadata.to_json
+
+    finding
+  end
 
   describe '#title' do
     subject { presenter.title }
@@ -93,6 +104,22 @@ RSpec.describe Vulnerabilities::FindingPresenter, feature_category: :vulnerabili
       expect(links.first[:name]).to eq(link_name)
       expect(links.first['url']).to eq(link_url)
       expect(links.first[:url]).to eq(link_url)
+    end
+  end
+
+  describe '#location_text' do
+    subject(:location_text) { presenter.location_text }
+
+    it 'presents the name of the filename', :aggregate_failures do
+      expect(location_text).to eq('maven/src/main/java/com/gitlab/security_products/tests/App.java:29')
+    end
+  end
+
+  describe '#location_link' do
+    subject(:location_link) { presenter.location_link }
+
+    it 'produces a blob links for the respective file', :aggregate_failures do
+      expect(location_link).to eq('http://localhost/group/project/-/blob/dfd.../maven/src/main/java/tests/App.java')
     end
   end
 end
