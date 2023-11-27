@@ -127,7 +127,6 @@ module GitlabSubscriptions
       instance_level_scim
       jira_issues_integration
       ldap_group_sync_filter
-      merge_pipelines
       merge_request_performance_metrics
       admin_merge_request_approvers_rules
       merge_trains
@@ -283,6 +282,7 @@ module GitlabSubscriptions
       export_user_permissions
       cross_project_pipelines
       feature_flags_related_issues
+      merge_pipelines
     ].freeze
 
     # Features defined in this list will be available in Ultimate license OR by enabling usage ping setting

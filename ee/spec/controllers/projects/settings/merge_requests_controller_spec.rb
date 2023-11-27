@@ -61,14 +61,40 @@ RSpec.describe Projects::Settings::MergeRequestsController, feature_category: :c
         put :update, params: { namespace_id: project.namespace, project_id: project, project: params }
       end
 
-      before do
-        stub_licensed_features(merge_pipelines: true)
+      context 'when feature is available through license' do
+        before do
+          stub_licensed_features(merge_pipelines: true)
+        end
+
+        it 'updates the attribute' do
+          request
+
+          expect(project.reload.merge_pipelines_enabled).to be_truthy
+        end
       end
 
-      it 'updates the attribute' do
-        request
+      context 'when feature is available through usage ping features' do
+        before do
+          stub_usage_ping_features(true)
+        end
 
-        expect(project.reload.merge_pipelines_enabled).to be_truthy
+        it 'updates the attribute' do
+          request
+
+          expect(project.reload.merge_pipelines_enabled).to be_truthy
+        end
+      end
+
+      context 'when usage ping is disabled on free license' do
+        before do
+          stub_usage_ping_features(false)
+        end
+
+        it 'does not update the attribute' do
+          request
+
+          expect(project.reload.merge_pipelines_enabled).to be_falsy
+        end
       end
 
       context 'when license is not sufficient' do

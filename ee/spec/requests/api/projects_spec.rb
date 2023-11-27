@@ -343,7 +343,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
       end
     end
 
-    context 'merge pipelines feature is available' do
+    context 'merge pipelines feature is available through license' do
       before do
         stub_licensed_features(merge_pipelines: true)
       end
@@ -353,6 +353,32 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response).to have_key 'merge_pipelines_enabled'
+      end
+    end
+
+    context 'merge pipelines feature is available through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it 'returns merge pipelines enabled flag' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to have_key 'merge_pipelines_enabled'
+      end
+    end
+
+    context 'when usage ping is disabled on free license' do
+      before do
+        stub_usage_ping_features(false)
+      end
+
+      it 'does not return merge pipelines enabled flag' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).not_to have_key 'merge_pipelines_enabled'
       end
     end
 
