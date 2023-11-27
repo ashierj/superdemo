@@ -50,7 +50,7 @@ RSpec.describe API::Admin::Search::Migrations, :elastic, feature_category: :glob
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response.count).to eq(Elastic::DataMigrationService.migrations.count)
-      expect(json_response.first['version']).to eq(20201105181100)
+      expect(json_response.first['version']).to eq(20230209195404)
     end
   end
 

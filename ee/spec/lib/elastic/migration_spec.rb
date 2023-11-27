@@ -14,7 +14,7 @@ RSpec.describe Elastic::Migration, :elastic do
     end
   end
 
-  let(:version) { 20201105181100 }
+  let(:version) { 20230209195404 }
   let(:migration) { migration_class.new(version) }
   let(:bare_migration) { described_class.new(version) }
 
