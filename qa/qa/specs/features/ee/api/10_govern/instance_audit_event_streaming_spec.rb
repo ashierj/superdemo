@@ -51,7 +51,7 @@ module QA
         next unless example.exception
 
         # If there is a failure this will output the logs from the smocker container (at the debug log level)
-        Service::DockerRun::Smocker.logs
+        @mock_service&.logs
       end
 
       context 'when a group is created' do
