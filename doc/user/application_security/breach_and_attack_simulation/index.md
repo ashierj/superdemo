@@ -129,6 +129,9 @@ Perform Out-of-Band Application Security Testing (OAST) for certain [active chec
      services:
        # NOTE: services overwrites rather than merges so it must be referenced to merge.
        - !reference [.dast_with_bas_using_services, services]
+       # NOTE: Link your application container to the dast job and
+       # access it with the hostname yourapp. See more about Docker services at
+       # https://docs.gitlab.com/ee/user/application_security/dast/#docker-services
        - name: $CI_REGISTRY_IMAGE
          alias: yourapp
    ```
