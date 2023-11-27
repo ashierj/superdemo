@@ -91,7 +91,7 @@ To enable Breach and Attack Simulation features inside of an existing DAST job:
      extends: .dast_with_bas
    ```
 
-1. Disable the `dast+job` job included in the BAS template by setting `DAST_BAS_DISABLED`:
+1. Disable the `dast_with_bas` job included in the BAS template by setting `DAST_BAS_DISABLED`:
 
    ```yaml
    variables:
