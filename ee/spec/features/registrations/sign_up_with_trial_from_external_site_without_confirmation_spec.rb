@@ -16,7 +16,7 @@ RSpec.describe 'Sign up with trial from external site without confirmation', :sa
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(163)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(169)
 
     subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
 

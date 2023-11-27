@@ -13,6 +13,7 @@ import { ON_CELEBRATION_TRACK_LABEL } from '~/invite_members/constants';
 import eventHubNav from '~/super_sidebar/event_hub';
 import { stubComponent } from 'helpers/stub_component';
 import {
+  testProviders,
   testActions,
   testSections,
   testProject,
@@ -31,6 +32,7 @@ describe('Learn GitLab', () => {
   const createWrapper = ({ project = testProject } = {}) => {
     wrapper = extendedWrapper(
       mount(LearnGitlab, {
+        provide: testProviders,
         propsData: {
           actions: testActions,
           sections: testSections,

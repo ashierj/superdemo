@@ -4,8 +4,9 @@ import { GlLink, GlIcon, GlButton, GlPopover, GlTooltipDirective as GlTooltip } 
 import eventHub from '~/invite_members/event_hub';
 import { s__ } from '~/locale';
 import { LEARN_GITLAB } from 'ee/invite_members/constants';
-import { ACTION_LABELS } from '../constants';
+import { ACTION_LABELS, PROMOTE_ULTIMATE_FEATURES } from '../constants';
 import IncludedInTrialIndicator from './included_in_trial_indicator.vue';
+import PaidFeatureIndicator from './paid_feature_indicator.vue';
 
 export default {
   name: 'LearnGitlabSectionLink',
@@ -15,6 +16,7 @@ export default {
     GlButton,
     GlPopover,
     IncludedInTrialIndicator,
+    PaidFeatureIndicator,
   },
   directives: {
     GlTooltip,
@@ -23,6 +25,7 @@ export default {
     contactAdmin: s__('LearnGitlab|Contact your administrator to enable this action.'),
     viewAdminList: s__('LearnGitlab|View administrator list'),
   },
+  inject: ['promoteUltimateFeatures'],
   props: {
     action: {
       required: true,
@@ -45,6 +48,30 @@ export default {
     popoverText() {
       return this.value.message || this.$options.i18n.contactAdmin;
     },
+    trackExperiment() {
+      if (this.actionLabelValue('trialRequired')) {
+        return PROMOTE_ULTIMATE_FEATURES;
+      }
+
+      return undefined;
+    },
+    badgeComponent() {
+      if (this.promoteUltimateFeatures) {
+        return PaidFeatureIndicator;
+      }
+
+      return IncludedInTrialIndicator;
+    },
+    badgeOptions() {
+      if (this.promoteUltimateFeatures) {
+        return {
+          planName: this.actionLabelValue('planName'),
+          trackLabel: this.actionLabelValue('trackLabel'),
+        };
+      }
+
+      return {};
+    },
   },
   methods: {
     openModalIfIsInviteLink() {
@@ -64,7 +91,12 @@ export default {
       <span v-if="value.completed" class="gl-text-green-500">
         <gl-icon name="check-circle-filled" :size="16" data-testid="completed-icon" />
         {{ actionLabelValue('title') }}
-        <included-in-trial-indicator v-if="actionLabelValue('trialRequired')" />
+
+        <component
+          :is="badgeComponent"
+          v-if="actionLabelValue('trialRequired')"
+          v-bind="badgeOptions"
+        />
       </span>
       <div v-else-if="value.enabled">
         <gl-link
@@ -73,11 +105,16 @@ export default {
           data-testid="uncompleted-learn-gitlab-link"
           data-track-action="click_link"
           :data-track-label="actionLabelValue('trackLabel')"
+          :data-track-experiment="trackExperiment"
           @click="openModalIfIsInviteLink"
           >{{ actionLabelValue('title') }}</gl-link
         >
 
-        <included-in-trial-indicator v-if="actionLabelValue('trialRequired')" />
+        <component
+          :is="badgeComponent"
+          v-if="actionLabelValue('trialRequired')"
+          v-bind="badgeOptions"
+        />
       </div>
       <template v-else>
         <div data-testid="disabled-learn-gitlab-link">{{ actionLabelValue('title') }}</div>

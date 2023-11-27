@@ -52,8 +52,10 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
       end
 
       it 'has all project data', :aggregate_failures do
-        expect(onboarding_project_data.keys).to contain_exactly(:name, :show_ultimate_trial_benefit_modal)
-        expect(onboarding_project_data.values).to match_array([project.name, nil])
+        expect(onboarding_project_data.keys)
+          .to contain_exactly(:name, :show_ultimate_trial_benefit_modal, :promote_ultimate_features)
+
+        expect(onboarding_project_data.values).to match_array([project.name, nil, nil])
       end
     end
 
@@ -227,7 +229,40 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           stub_experiments(ultimate_trial_benefit_modal: experiment_behavior)
           allow(namespace).to receive(:trial_active?).and_return(active_trial)
 
-          expect(onboarding_project_data.values).to match_array([project.name, show_ultimate_trial_benefit_modal])
+          expect(onboarding_project_data.values)
+            .to match_array([project.name, show_ultimate_trial_benefit_modal, nil])
+        end
+      end
+    end
+
+    context 'when promote_ultimate_features experiment is enabled' do
+      let(:onboarding_project_data) do
+        Gitlab::Json.parse(helper.learn_gitlab_data(project)[:project]).deep_symbolize_keys
+      end
+
+      where(:experiment_behavior, :active_trial, :datetime, :promote_ultimate_features) do
+        [
+          [:control, false, nil, nil],
+          [:control, false, 1.day.ago, nil],
+          [:candidate, false, nil, nil],
+          [:candidate, false, 1.day.ago, nil],
+          [:control, true, nil, nil],
+          [:control, true, 1.day.ago, nil],
+          [:candidate, true, nil, false],
+          [:candidate, true, 1.day.ago, true]
+        ]
+      end
+
+      with_them do
+        it 'sets correct value for promote_ultimate_features in onboarding_project_data' do
+          stub_experiments(promote_ultimate_features: experiment_behavior)
+          allow(namespace).to receive(:trial_active?).and_return(active_trial)
+
+          allow(namespace.onboarding_progress).to receive(:promote_ultimate_features_at)
+            .and_return(datetime)
+
+          expect(onboarding_project_data.values)
+            .to match_array([project.name, nil, promote_ultimate_features])
         end
       end
     end
