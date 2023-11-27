@@ -2,7 +2,7 @@ import { GlFormGroup, GlBadge, GlCollapsibleListbox } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount, mount } from '@vue/test-utils';
-import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status.vue';
+import WorkItemHealthStatusInline from 'ee/work_items/components/work_item_health_status_inline.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -22,7 +22,7 @@ import {
   workItemByIidResponseFactory,
 } from 'jest/work_items/mock_data';
 
-describe('WorkItemHealthStatus component', () => {
+describe('WorkItemHealthStatusInline component', () => {
   Vue.use(VueApollo);
 
   let wrapper;
@@ -43,7 +43,7 @@ describe('WorkItemHealthStatus component', () => {
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
     mountFn = shallowMount,
   } = {}) => {
-    wrapper = mountFn(WorkItemHealthStatus, {
+    wrapper = mountFn(WorkItemHealthStatusInline, {
       apolloProvider: createMockApollo([
         [workItemByIidQuery, workItemQueryHandler],
         [updateWorkItemMutation, mutationHandler],
