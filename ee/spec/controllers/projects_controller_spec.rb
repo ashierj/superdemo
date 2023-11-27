@@ -67,7 +67,7 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
       let(:namespace) { public_project.namespace }
 
       before do
-        stub_ee_application_setting(should_check_namespace_plan: true)
+        stub_saas_features(namespaces_storage_limit: true)
         stub_feature_flags(namespace_storage_limit: false)
 
         namespace.add_owner(user)

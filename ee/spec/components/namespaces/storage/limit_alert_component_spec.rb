@@ -143,7 +143,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
     where(
       :enforce_namespace_storage_limit,
       :automatic_purchased_storage_allocation,
-      :should_check_namespace_plan,
+      :namespaces_storage_limit,
       :user_present,
       :user_has_access,
       :alert_level,
@@ -164,7 +164,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
       before do
         stub_ee_application_setting(enforce_namespace_storage_limit: enforce_namespace_storage_limit)
         stub_ee_application_setting(automatic_purchased_storage_allocation: automatic_purchased_storage_allocation)
-        stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
+        stub_saas_features(namespaces_storage_limit: namespaces_storage_limit)
 
         allow(user).to receive(:present?).and_return(user_present)
         allow_next_instance_of(described_class) do |instance|

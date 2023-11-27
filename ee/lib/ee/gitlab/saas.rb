@@ -11,8 +11,9 @@ module EE
         %i[
           ai_vertex_embeddings
           marketing_google_tag_manager
-          purchases_additional_minutes
+          namespaces_storage_limit
           onboarding
+          purchases_additional_minutes
           search_indexing_status
           subscriptions_trials
           group_custom_roles
