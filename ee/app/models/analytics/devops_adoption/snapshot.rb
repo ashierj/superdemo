@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Analytics::DevopsAdoption::Snapshot < ApplicationRecord
-  include IgnorableColumns
-
   BOOLEAN_METRICS = [
     :issue_opened,
     :merge_request_opened,
@@ -33,8 +31,6 @@ class Analytics::DevopsAdoption::Snapshot < ApplicationRecord
   validates :end_time, presence: true
   validates(*BOOLEAN_METRICS, inclusion: { in: [true, false] })
   validates(*NUMERIC_METRICS, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true)
-
-  ignore_column :segment_id, remove_with: '14.2', remove_after: '2021-07-22'
 
   scope :latest_for_namespace_ids, -> (ids) do
     finalized.for_month(1.month.before(Time.zone.now)).for_namespaces(ids)
