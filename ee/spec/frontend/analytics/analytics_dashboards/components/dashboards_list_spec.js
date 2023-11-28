@@ -95,8 +95,8 @@ describe('DashboardsList', () => {
       expect(findPageTitle().text()).toBe('Analytics dashboards');
     });
 
-    it('does not render the visualization designer button', () => {
-      expect(findVisualizationDesignerButton().exists()).toBe(false);
+    it('renders the visualization designer button', () => {
+      expect(findVisualizationDesignerButton().exists()).toBe(true);
     });
 
     it('renders the new dashboard button', () => {
