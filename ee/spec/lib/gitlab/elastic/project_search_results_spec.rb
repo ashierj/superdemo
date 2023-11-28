@@ -244,7 +244,7 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, feature_category
     where(:scope, :expected_aggregation_name, :feature_flag) do
       'milestones'     | nil        | false
       'notes'          | nil        | false
-      'issues'         | 'labels'   | :search_issue_label_aggregation
+      'issues'         | 'labels'   | false
       'merge_requests' | nil        | false
       'wiki_blobs'     | nil        | false
       'commits'        | nil        | false
