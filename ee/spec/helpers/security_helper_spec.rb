@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe SecurityHelper, feature_category: :vulnerability_management do
+  include VulnerabilitiesHelper
+
   describe '#instance_security_dashboard_data' do
     let_it_be(:group) { create(:group) }
     let_it_be(:has_group) { true }
@@ -10,6 +12,10 @@ RSpec.describe SecurityHelper, feature_category: :vulnerability_management do
 
     let_it_be(:current_user) { create(:user) }
     let_it_be(:expected_can_admin_vulnerability) { 'true' }
+
+    let(:dismissal_descriptions_json) do
+      Gitlab::Json.parse(fixture_file('vulnerabilities/dismissal_descriptions.json', dir: 'ee')).to_json
+    end
 
     before do
       stub_licensed_features(security_dashboard: true)
@@ -31,7 +37,8 @@ RSpec.describe SecurityHelper, feature_category: :vulnerability_management do
         can_admin_vulnerability: expected_can_admin_vulnerability,
         false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
         can_view_false_positive: 'false',
-        has_projects: 'true'
+        has_projects: 'true',
+        dismissal_descriptions: dismissal_descriptions_json
       })
     end
 

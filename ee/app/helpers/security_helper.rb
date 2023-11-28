@@ -13,7 +13,8 @@ module SecurityHelper
       can_admin_vulnerability: can_admin_vulnerability?,
       false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
       can_view_false_positive: can_view_false_positive?,
-      has_projects: instance_security_dashboard.has_projects?.to_s
+      has_projects: instance_security_dashboard.has_projects?.to_s,
+      dismissal_descriptions: dismissal_descriptions.to_json
     }
   end
 

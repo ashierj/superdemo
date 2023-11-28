@@ -198,7 +198,8 @@ module EE
           project_full_path: project.full_path,
           security_configuration_path: project_security_configuration_path(@project),
           can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
-          new_vulnerability_path: new_project_security_vulnerability_path(@project)
+          new_vulnerability_path: new_project_security_vulnerability_path(@project),
+          dismissal_descriptions: dismissal_descriptions.to_json
         }.merge!(security_dashboard_pipeline_data(project))
       else
         {
@@ -217,7 +218,8 @@ module EE
           can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
           can_view_false_positive: can_view_false_positive?,
           security_configuration_path: project_security_configuration_path(@project),
-          new_vulnerability_path: new_project_security_vulnerability_path(@project)
+          new_vulnerability_path: new_project_security_vulnerability_path(@project),
+          dismissal_descriptions: dismissal_descriptions.to_json
         }.merge!(security_dashboard_pipeline_data(project))
       end
     end
