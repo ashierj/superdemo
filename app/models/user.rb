@@ -1298,8 +1298,8 @@ class User < MainClusterwide::ApplicationRecord
     several_namespaces? || admin
   end
 
-  def can?(action, subject = :global)
-    Ability.allowed?(self, action, subject)
+  def can?(action, subject = :global, ...)
+    Ability.allowed?(self, action, subject, ...)
   end
 
   def confirm_deletion_with_password?
