@@ -15,6 +15,11 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
 
   context 'without correct license' do
     before do
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      project.group.root_ancestor.namespace_settings.update!(
+        experiment_features_enabled: true,
+        product_analytics_enabled: true
+      )
       stub_licensed_features(product_analytics: false)
       stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
 
@@ -35,6 +40,11 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
 
     with_them do
       before do
+        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+        project.group.root_ancestor.namespace_settings.update!(
+          experiment_features_enabled: true,
+          product_analytics_enabled: true
+        )
         stub_licensed_features(product_analytics: true)
         stub_feature_flags(product_analytics_admin_settings: product_analytics_admin_settings,
           product_analytics_dashboards: product_analytics_dashboards)
@@ -48,8 +58,29 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
     end
   end
 
-  context 'with valid license and feature flags' do
+  context 'when product analytics toggle is disabled' do
     before do
+      project.group.root_ancestor.namespace_settings.update!(
+        product_analytics_enabled: false
+      )
+      stub_licensed_features(product_analytics: false)
+      stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
+
+      visit project_settings_analytics_path(project)
+    end
+
+    it 'does not show instrumentation instructions' do
+      expect(page).not_to have_content s_('View instrumentation instructions')
+    end
+  end
+
+  context 'with valid license, toggle and feature flags' do
+    before do
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      project.group.root_ancestor.namespace_settings.update!(
+        experiment_features_enabled: true,
+        product_analytics_enabled: true
+      )
       stub_licensed_features(product_analytics: true)
       stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
     end

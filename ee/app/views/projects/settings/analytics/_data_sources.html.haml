@@ -1,4 +1,4 @@
-- return unless @project.licensed_feature_available?(:product_analytics) && Feature.enabled?(:product_analytics_admin_settings) && current_user.can?(:modify_product_analytics_settings, @project) && Feature.enabled?(:product_analytics_dashboards, @project)
+- return unless @project.product_analytics_enabled? && Feature.enabled?(:product_analytics_admin_settings) && current_user.can?(:modify_product_analytics_settings, @project)
 
 %section.settings.no-animate#js-analytics-data-sources{ class: ('expanded' if expanded) }
   .settings-header
