@@ -80,6 +80,10 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
     context 'member role namespace' do
       let_it_be_with_reload(:member) { create(:group_member) }
 
+      before do
+        stub_licensed_features(custom_roles: true)
+      end
+
       context 'when no member role is associated' do
         it 'is valid' do
           expect(member).to be_valid
@@ -129,51 +133,9 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
           end
         end
       end
-    end
 
-    context 'member role access level' do
-      let_it_be_with_reload(:member) { create(:group_member, access_level: Gitlab::Access::DEVELOPER) }
-
-      context 'when no member role is associated' do
-        it 'is valid' do
-          expect(member).to be_valid
-        end
-      end
-
-      context 'when member role is associated' do
-        let!(:member_role) do
-          create(
-            :member_role,
-            members: [member],
-            base_access_level: Gitlab::Access::DEVELOPER,
-            namespace: member.member_namespace
-          )
-        end
-
-        context 'when member role matches access level' do
-          it 'is valid' do
-            expect(member).to be_valid
-          end
-        end
-
-        context 'when member role does not match access level' do
-          it 'is invalid' do
-            member_role.base_access_level = Gitlab::Access::MAINTAINER
-
-            expect(member).not_to be_valid
-          end
-        end
-
-        context 'when access_level is changed' do
-          it 'is invalid' do
-            member.access_level = Gitlab::Access::MAINTAINER
-
-            expect(member).not_to be_valid
-            expect(member.errors[:access_level]).to include(
-              _("cannot be changed since member is associated with a custom role")
-            )
-          end
-        end
+      it_behaves_like 'model with member role relation' do
+        subject(:model) { build(:group_member, source: group) }
       end
     end
   end

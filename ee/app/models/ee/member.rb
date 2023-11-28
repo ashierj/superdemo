@@ -8,6 +8,9 @@ module EE
 
     prepended do
       include Elastic::ApplicationVersionedSearch
+      include MemberRoles::MemberRoleRelation
+
+      base_access_level_attr :access_level
 
       state_machine :state, initial: :active do
         event :wait do
@@ -23,9 +26,6 @@ module EE
       end
 
       validate :seat_available, on: :create
-      validate :validate_member_role_access_level
-      validate :validate_access_level_locked_for_member_role, on: :update
-      validate :validate_member_role_belongs_to_same_root_namespace
 
       scope :awaiting, -> { where(state: ::Member::STATE_AWAITING) }
       scope :non_awaiting, -> { where.not(state: ::Member::STATE_AWAITING) }
@@ -232,25 +232,8 @@ module EE
       errors.add(:base, msg) # add to base here since :user is getting `The member's email address` appended
     end
 
-    def validate_member_role_access_level
-      return unless member_role_id
-
-      if access_level != member_role.base_access_level
-        errors.add(:member_role_id, _("role's base access level does not match the access level of the membership"))
-      end
-    end
-
-    def validate_access_level_locked_for_member_role
-      return unless member_role_id
-      return if member_role_changed? # it is ok to change the access level when changing member role
-
-      if access_level_changed?
-        errors.add(:access_level, _("cannot be changed since member is associated with a custom role"))
-      end
-    end
-
     def validate_member_role_belongs_to_same_root_namespace
-      return unless member_role_id
+      return unless member_role_id && member_namespace.custom_roles_enabled?
       return unless member_role.namespace_id
 
       return if member_namespace.id == member_role.namespace_id

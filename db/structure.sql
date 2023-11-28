@@ -22998,6 +22998,7 @@ CREATE TABLE saml_group_links (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     saml_group_name text NOT NULL,
+    member_role_id bigint,
     CONSTRAINT check_1b3fc49d1e CHECK ((char_length(saml_group_name) <= 255))
 );
 
@@ -34431,6 +34432,8 @@ CREATE UNIQUE INDEX index_routes_on_source_type_and_source_id ON routes USING bt
 
 CREATE UNIQUE INDEX index_saml_group_links_on_group_id_and_saml_group_name ON saml_group_links USING btree (group_id, saml_group_name);
 
+CREATE INDEX index_saml_group_links_on_member_role_id ON saml_group_links USING btree (member_role_id);
+
 CREATE INDEX index_saml_providers_on_group_id ON saml_providers USING btree (group_id);
 
 CREATE INDEX index_saml_providers_on_member_role_id ON saml_providers USING btree (member_role_id);
@@ -37538,6 +37541,9 @@ ALTER TABLE ONLY events
 
 ALTER TABLE ONLY vulnerability_reads
     ADD CONSTRAINT fk_62736f638f FOREIGN KEY (vulnerability_id) REFERENCES vulnerabilities(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY saml_group_links
+    ADD CONSTRAINT fk_6336b1d1d0 FOREIGN KEY (member_role_id) REFERENCES member_roles(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_641731faff FOREIGN KEY (updated_by_id) REFERENCES users(id) ON DELETE SET NULL;

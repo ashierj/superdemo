@@ -101,4 +101,8 @@ RSpec.describe SamlGroupLink do
       end
     end
   end
+
+  it_behaves_like 'model with member role relation' do
+    subject(:model) { build(:saml_group_link) }
+  end
 end

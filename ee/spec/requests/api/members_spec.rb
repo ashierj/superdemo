@@ -225,7 +225,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
               expect(response).to have_gitlab_http_status(:bad_request)
               expect(json_response['message']['member_role_id']).to contain_exactly(
-                "role's base access level does not match the access level of the membership"
+                "the custom role's base access level does not match the current access level"
               )
             end
           end
