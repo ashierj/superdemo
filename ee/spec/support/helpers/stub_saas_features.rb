@@ -5,6 +5,11 @@ module StubSaasFeatures
   #
   # @param [Hash] features where key is feature name and value is boolean whether enabled or not.
   #
+  # This should only ever be called from ee code as it enforces the following of the
+  # https://docs.gitlab.com/ee/development/ee_features.html guidelines in the test area.
+  # `Gitlab::Saas::FEATURES` is only defined in ee, which helps drive the logic in that proper division of
+  # testing.
+  #
   # Examples
   # - `stub_saas_features(onboarding: false)` ... Disable `onboarding`
   #   SaaS feature globally.
