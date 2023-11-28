@@ -428,6 +428,20 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
           expect(subject.verification_retry_count).to be 1
           expect(subject.verification_checksum).to be_nil
         end
+
+        it 'does not raise an error when failure message is too long' do
+          error = double('error', message: 'An error message')
+          failure = 'Failure to calculate checksum is too long' * 10
+
+          subject.verification_started!
+
+          expect { subject.verification_failed_with_message!(failure, error) }.not_to raise_error
+
+          expect(subject.reload.verification_failed?).to be_truthy
+          expect(subject.reload.verification_failure.length).to be 255
+          expect(subject.verification_retry_count).to be 1
+          expect(subject.verification_checksum).to be_nil
+        end
       end
 
       describe '#verification_started!' do
