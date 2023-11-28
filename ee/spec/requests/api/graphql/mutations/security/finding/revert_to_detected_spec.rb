@@ -10,7 +10,8 @@ RSpec.describe Mutations::Security::Finding::RevertToDetected, feature_category:
     let_it_be(:security_finding) { create(:security_finding, :with_finding_data) }
     let_it_be(:current_user) { create(:user) }
     let_it_be(:finding_uuid) { security_finding.uuid }
-    let_it_be(:mutation_input) { { uuid: security_finding.uuid.to_s } }
+    let_it_be(:comment) { 'Revert to detected' }
+    let_it_be(:mutation_input) { { uuid: security_finding.uuid.to_s, comment: comment } }
     let_it_be(:error_message) { 'dismissal failed' }
     let_it_be(:error_result) do
       ServiceResponse.error(message: error_message, reason: :unprocessable_entity)
@@ -110,7 +111,25 @@ RSpec.describe Mutations::Security::Finding::RevertToDetected, feature_category:
             it_behaves_like 'properly sets the security finding state'
             it_behaves_like 'properly sets the vulnerability state'
 
-            context 'when the dismissal fails' do
+            context 'when vulnerability is in dismissed state' do
+              before do
+                vulnerability.update_column(:state, :dismissed)
+              end
+
+              it 'creates state transition entry to `detected`' do
+                expect(::Vulnerabilities::StateTransition).to receive(:create!).with(
+                  vulnerability: vulnerability,
+                  from_state: vulnerability.state,
+                  to_state: :detected,
+                  author: current_user,
+                  comment: "Revert to detected"
+                )
+
+                post_graphql_mutation(mutation, current_user: current_user)
+              end
+            end
+
+            context 'when the revert to detected fails' do
               before do
                 allow_next_instance_of(::Vulnerabilities::RevertToDetectedService) do |service|
                   allow(service).to receive(:execute).and_return(error_result)
@@ -125,7 +144,7 @@ RSpec.describe Mutations::Security::Finding::RevertToDetected, feature_category:
             end
           end
 
-          context 'when the dismissal fails' do
+          context 'when the revert to detected fails' do
             before do
               allow_next_instance_of(::VulnerabilityFeedback::DestroyService) do |service|
                 allow(service).to receive(:execute).and_return(error_result)
