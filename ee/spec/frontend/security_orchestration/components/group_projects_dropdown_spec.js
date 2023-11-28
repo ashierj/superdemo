@@ -2,7 +2,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -87,26 +87,38 @@ describe('GroupProjectsDropdown', () => {
 
     await waitForPromises();
     findDropdown().vm.$emit('select', [id]);
-    expect(wrapper.emitted('select')).toEqual([[[getIdFromGraphQLId(id)]]]);
+    expect(wrapper.emitted('select')).toEqual([[[defaultNodes[0]]]]);
   });
 
   it('should select all projects', async () => {
     await waitForPromises();
     selectAllProjects();
-    expect(wrapper.emitted('select')).toEqual([
-      [defaultNodesIds.map((id) => getIdFromGraphQLId(id))],
-    ]);
+    expect(wrapper.emitted('select')).toEqual([[defaultNodes]]);
   });
 
   it('renders default text when loading', () => {
     expect(findDropdown().props('toggleText')).toBe('Select projects');
   });
 
+  it('should select full projects with full id format', async () => {
+    createComponent({
+      propsData: {
+        useShortIdFormat: false,
+      },
+    });
+
+    const [{ id }] = defaultNodes;
+
+    await waitForPromises();
+    findDropdown().vm.$emit('select', [id]);
+    expect(wrapper.emitted('select')).toEqual([[[defaultNodes[0]]]]);
+  });
+
   describe('selected projects', () => {
     beforeEach(() => {
       createComponent({
         propsData: {
-          selectedProjectsIds: defaultNodesIds,
+          selected: defaultNodesIds,
         },
       });
     });
@@ -133,7 +145,7 @@ describe('GroupProjectsDropdown', () => {
     it('renders default placeholder when selected projects do not exist', async () => {
       createComponent({
         propsData: {
-          selectedProjectsIds: ['one', 'two'],
+          selected: ['one', 'two'],
         },
       });
 
@@ -144,14 +156,43 @@ describe('GroupProjectsDropdown', () => {
     it('filters selected projects that does not exist', async () => {
       createComponent({
         propsData: {
-          selectedProjectsIds: ['one', 'two'],
+          selected: ['one', 'two'],
+          useShortIdFormat: false,
         },
       });
 
       await waitForPromises();
       findDropdown().vm.$emit('select', [defaultNodesIds[0]]);
 
-      expect(wrapper.emitted('select')).toEqual([[[getIdFromGraphQLId(defaultNodesIds[0])]]]);
+      expect(wrapper.emitted('select')).toEqual([[[defaultNodes[0]]]]);
+    });
+  });
+
+  describe('select single project', () => {
+    it('support single selection mode', async () => {
+      createComponent({
+        propsData: {
+          multiple: false,
+        },
+      });
+
+      await waitForPromises();
+
+      findDropdown().vm.$emit('select', defaultNodesIds[0]);
+      expect(wrapper.emitted('select')).toEqual([[defaultNodes[0]]]);
+    });
+
+    it('should render single selected project', async () => {
+      createComponent({
+        propsData: {
+          multiple: false,
+          selected: defaultNodesIds[0],
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findDropdown().props('selected')).toEqual(defaultNodesIds[0]);
     });
   });
 
@@ -202,13 +243,13 @@ describe('GroupProjectsDropdown', () => {
       await waitForPromises();
       selectAllProjects();
 
-      expect(wrapper.emitted('select')).toEqual([[defaultNodesIds]]);
+      expect(wrapper.emitted('select')).toEqual([[defaultNodes]]);
     });
 
     it('should render selected ids in full format', async () => {
       createComponent({
         propsData: {
-          selectedProjectsIds: defaultNodesIds,
+          selected: defaultNodesIds,
           useShortIdFormat: false,
         },
       });

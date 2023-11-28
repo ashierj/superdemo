@@ -3,8 +3,6 @@ import { GlCollapsibleListbox } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import produce from 'immer';
 import { __ } from '~/locale';
-import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { renderMultiSelectText } from 'ee/security_orchestration/components/policy_editor/utils';
 import getGroupProjects from 'ee/security_orchestration/graphql/queries/get_group_projects.query.graphql';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
@@ -49,19 +47,12 @@ export default {
       required: false,
       default: 'left',
     },
-    selectedProjectsIds: {
-      type: Array,
+    selected: {
+      type: [Array, String],
       required: false,
       default: () => [],
     },
-    /**
-     * selected ids passed as short format
-     * [21,34,45] as number
-     * needs to be converted to full graphql id
-     * if false, selectedProjectsIds needs to be
-     * an array of full graphQl ids
-     */
-    useShortIdFormat: {
+    multiple: {
       type: Boolean,
       required: false,
       default: true,
@@ -76,16 +67,14 @@ export default {
   },
   computed: {
     formattedSelectedProjectsIds() {
-      if (this.useShortIdFormat) {
-        return (
-          this.selectedProjectsIds?.map((id) => convertToGraphQLId(TYPENAME_PROJECT, id)) || []
-        );
-      }
-
-      return this.selectedProjectsIds || [];
+      return this.multiple ? this.selected : [this.selected];
     },
     existingFormattedSelectedProjectsIds() {
-      return this.formattedSelectedProjectsIds.filter((id) => this.projectsIds.includes(id));
+      if (this.multiple) {
+        return this.selected.filter((id) => this.projectsIds.includes(id));
+      }
+
+      return this.selected;
     },
     dropdownPlaceholder() {
       return renderMultiSelectText(
@@ -140,9 +129,10 @@ export default {
     setSearchTerm(searchTerm = '') {
       this.searchTerm = searchTerm.trim();
     },
-    selectProjects(ids) {
-      const payload = this.useShortIdFormat ? ids.map((id) => getIdFromGraphQLId(id)) : ids;
-
+    selectProjects(selected) {
+      const ids = this.multiple ? selected : [selected];
+      const selectedProjects = this.projects.filter(({ id }) => ids.includes(id));
+      const payload = this.multiple ? selectedProjects : selectedProjects[0];
       this.$emit('select', payload);
     },
   },
@@ -153,9 +143,9 @@ export default {
   <gl-collapsible-listbox
     block
     is-check-centered
-    multiple
     searchable
     fluid-width
+    :multiple="multiple"
     :loading="loading"
     :header-text="$options.i18n.projectDropdownHeader"
     :infinite-scroll="projectsPageInfo.hasNextPage"

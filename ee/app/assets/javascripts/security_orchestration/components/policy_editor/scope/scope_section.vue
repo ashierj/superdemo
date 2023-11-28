@@ -2,6 +2,8 @@
 import { GlAlert, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import GroupProjectsDropdown from '../../group_projects_dropdown.vue';
 import ComplianceFrameworkDropdown from './compliance_framework_dropdown.vue';
@@ -92,7 +94,8 @@ export default {
       const projects = Array.isArray(this.policyScope?.projects?.[this.projectsPayloadKey])
         ? this.policyScope?.projects?.[this.projectsPayloadKey]
         : [];
-      return projects?.map(({ id }) => id) || [];
+
+      return projects?.map(({ id }) => convertToGraphQLId(TYPENAME_PROJECT, id)) || [];
     },
     complianceFrameworksIds() {
       /**
@@ -150,9 +153,9 @@ export default {
       this.selectedExceptionType = type;
       this.resetPolicyScope();
     },
-    setSelectedProjectIds(ids) {
-      const projects = ids.map((id) => ({ id }));
-      const payload = { projects: { [this.projectsPayloadKey]: projects } };
+    setSelectedProjectIds(projects) {
+      const projectsIds = projects.map(({ id }) => ({ id: getIdFromGraphQLId(id) }));
+      const payload = { projects: { [this.projectsPayloadKey]: projectsIds } };
 
       this.triggerChanged(payload);
     },
@@ -224,7 +227,7 @@ export default {
           <group-projects-dropdown
             v-if="showGroupProjectsDropdown"
             :group-full-path="namespacePath"
-            :selected-projects-ids="projectIds"
+            :selected="projectIds"
             @projects-query-error="setShowAlert($options.i18n.groupProjectErrorDescription)"
             @select="setSelectedProjectIds"
           />
