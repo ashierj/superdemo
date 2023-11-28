@@ -39,7 +39,7 @@ module RemoteDevelopment
           config_from_agent_config_file.fetch(:gitlab_workspaces_proxy, {}).fetch(:namespace, 'gitlab-workspaces')
 
         if model_instance.save
-          model_instance.workspaces.update_all(force_include_all_resources: true)
+          model_instance.workspaces.without_terminated.update_all(force_include_all_resources: true)
           Result.ok(AgentConfigUpdateSuccessful.new({ remote_development_agent_config: model_instance }))
         else
           Result.err(AgentConfigUpdateFailed.new({ errors: model_instance.errors }))

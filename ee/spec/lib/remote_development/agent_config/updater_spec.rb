@@ -78,7 +78,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
             { remote_development_agent_config: config_instance }
           ))
-        expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
+        expect(config_instance.workspaces.without_terminated)
+              .to all(have_attributes(force_include_all_resources: true))
       end
 
       context 'when enabled is not present in the config passed' do
@@ -111,7 +112,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
-            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
+            expect(config_instance.workspaces.without_terminated)
+              .to all(have_attributes(force_include_all_resources: true))
           end
         end
 
@@ -132,7 +134,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
-            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
+            expect(config_instance.workspaces.without_terminated)
+              .to all(have_attributes(force_include_all_resources: true))
           end
         end
 
@@ -164,7 +167,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
-            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
+            expect(config_instance.workspaces.without_terminated)
+              .to all(have_attributes(force_include_all_resources: true))
           end
         end
       end
@@ -189,7 +193,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
-            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
+            expect(config_instance.workspaces.without_terminated)
+              .to all(have_attributes(force_include_all_resources: true))
           end
         end
 
@@ -210,7 +215,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
               .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
                 { remote_development_agent_config: config_instance }
               ))
-            expect(config_instance.workspaces).to all(have_attributes(force_include_all_resources: true))
+            expect(config_instance.workspaces.without_terminated)
+              .to all(have_attributes(force_include_all_resources: true))
           end
         end
       end
