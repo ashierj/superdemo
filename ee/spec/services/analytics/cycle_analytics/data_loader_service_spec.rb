@@ -93,9 +93,18 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
     end
 
     context 'when MergeRequest data is present' do
-      let_it_be(:mr1) { create(:merge_request, :unique_branches, :with_merged_metrics, updated_at: 2.days.ago, source_project: project1) }
-      let_it_be(:mr2) { create(:merge_request, :unique_branches, :with_merged_metrics, updated_at: 5.days.ago, source_project: project1) }
-      let_it_be(:mr3) { create(:merge_request, :unique_branches, :with_merged_metrics, updated_at: 10.days.ago, source_project: project2) }
+      let_it_be(:current_time) { Time.current }
+      let_it_be(:mr1) { create(:merge_request, :unique_branches, :with_merged_metrics, created_at: current_time, updated_at: current_time + 2.days, source_project: project1) }
+      let_it_be(:mr2) { create(:merge_request, :unique_branches, :with_merged_metrics, created_at: current_time, updated_at: current_time + 5.days, source_project: project1) }
+      let_it_be(:mr3) { create(:merge_request, :unique_branches, :with_merged_metrics, created_at: current_time, updated_at: current_time + 10.days, source_project: project2) }
+
+      let(:durations) do
+        {
+          mr1 => 2.days.to_i * 1000,
+          mr2 => 5.days.to_i * 1000,
+          mr3 => 10.days.to_i * 1000
+        }
+      end
 
       it 'inserts stage records' do
         expected_data = [mr1, mr2, mr3].map do |mr|
@@ -196,11 +205,20 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
 
     context 'when Issue data is present' do
       let_it_be(:iteration) { create(:iteration, group: top_level_group) }
-      let_it_be(:issue1) { create(:issue, project: project1, closed_at: 5.minutes.from_now, weight: 5) }
-      let_it_be(:issue2) { create(:issue, project: project1, closed_at: 5.minutes.from_now) }
-      let_it_be(:issue3) { create(:issue, project: project2, closed_at: 5.minutes.from_now, weight: 2, iteration: iteration) }
+      let_it_be(:creation_time) { Time.current }
+      let_it_be(:issue1) { create(:issue, project: project1, created_at: creation_time, closed_at: creation_time + 5.minutes, weight: 5) }
+      let_it_be(:issue2) { create(:issue, project: project1, created_at: creation_time, closed_at: creation_time + 10.minutes) }
+      let_it_be(:issue3) { create(:issue, project: project2, created_at: creation_time, closed_at: creation_time + 15.minutes, weight: 2, iteration: iteration) }
       # invalid the creation time would be later than closed_at, this should not be aggregated
-      let_it_be(:issue4) { create(:issue, project: project2, closed_at: 5.minutes.ago) }
+      let_it_be(:issue4) { create(:issue, project: project2, created_at: creation_time, closed_at: creation_time - 5.minutes) }
+
+      let(:durations) do
+        {
+          issue1 => 5.minutes.to_i * 1000,
+          issue2 => 10.minutes.to_i * 1000,
+          issue3 => 15.minutes.to_i * 1000
+        }
+      end
 
       it 'inserts stage records' do
         expected_data = [issue1, issue2, issue3].map do |issue|
@@ -213,7 +231,8 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
             issue.closed_at,
             issue.state_id,
             issue.weight,
-            issue.sprint_id
+            issue.sprint_id,
+            durations.fetch(issue)
           ]
         end
 
@@ -229,7 +248,8 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
             event.end_event_timestamp,
             Analytics::CycleAnalytics::IssueStageEvent.states[event.state_id],
             event.weight,
-            event.sprint_id
+            event.sprint_id,
+            event.duration_in_milliseconds
           ]
         end
 

@@ -115,6 +115,8 @@ module Analytics
             # Avoid negative duration values
             next if end_event && start_event > end_event
 
+            duration_in_milliseconds = end_event && (end_event - start_event).in_milliseconds
+
             data << {
               stage_event_hash_id: stage.stage_event_hash_id,
               issuable_id: record['id'],
@@ -125,6 +127,7 @@ module Analytics
               state_id: record['state_id'],
               start_event_timestamp: start_event,
               end_event_timestamp: end_event,
+              duration_in_milliseconds: duration_in_milliseconds,
               weight: record['weight'],
               sprint_id: record['sprint_id']
             }
