@@ -514,29 +514,50 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
 
     context 'alerting for pending obsolete migrations' do
-      let_it_be(:migration_1) { Elastic::MigrationRecord.new(name: '1', version: Time.now.to_i, filename: nil) }
-      let_it_be(:migration_2) { Elastic::MigrationRecord.new(name: '2', version: Time.now.to_i, filename: nil) }
+      let_it_be(:helper) { ::Gitlab::Elastic::Helper.default }
 
       before do
-        allow(migration_1).to receive(:load_migration).and_return(Class.new)
-        allow(migration_2).to receive(:load_migration).and_return(Class.new)
-        allow(Elastic::DataMigrationService).to receive(:pending_migrations).and_return([migration_1, migration_2])
+        allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
       end
 
-      it 'alerts when there are pending obsolete migrations' do
-        allow(migration_1).to receive(:obsolete?).and_return(true)
-        allow(migration_2).to receive(:obsolete?).and_return(false)
+      context 'when elasticsearch is reachable' do
+        let_it_be(:migration_1) { Elastic::MigrationRecord.new(name: '1', version: Time.now.to_i, filename: nil) }
+        let_it_be(:migration_2) { Elastic::MigrationRecord.new(name: '2', version: Time.now.to_i, filename: nil) }
 
-        get :advanced_search
-        expect(assigns[:elasticsearch_pending_obsolete_migrations]).to eq([migration_1])
+        before do
+          allow(migration_1).to receive(:load_migration).and_return(Class.new)
+          allow(migration_2).to receive(:load_migration).and_return(Class.new)
+          allow(Elastic::DataMigrationService).to receive(:pending_migrations).and_return([migration_1, migration_2])
+          allow(helper).to receive(:ping?).and_return(true)
+        end
+
+        it 'alerts when there are pending obsolete migrations' do
+          allow(migration_1).to receive(:obsolete?).and_return(true)
+          allow(migration_2).to receive(:obsolete?).and_return(false)
+
+          get :advanced_search
+          expect(assigns[:elasticsearch_pending_obsolete_migrations]).to eq([migration_1])
+          expect(assigns[:elasticsearch_warn_if_obsolete_migrations]).to be_truthy
+        end
+
+        it 'does not alert when there are pending non-obsolete migrations' do
+          allow(migration_1).to receive(:obsolete?).and_return(false)
+          allow(migration_2).to receive(:obsolete?).and_return(false)
+
+          get :advanced_search
+          expect(assigns[:elasticsearch_pending_obsolete_migrations]).to eq([])
+        end
       end
 
-      it 'does not alert when there are pending non-obsolete migrations' do
-        allow(migration_1).to receive(:obsolete?).and_return(false)
-        allow(migration_2).to receive(:obsolete?).and_return(false)
+      context 'when elasticsearch is unreachable' do
+        before do
+          allow(helper).to receive(:ping?).and_return(false)
+        end
 
-        get :advanced_search
-        expect(assigns[:elasticsearch_pending_obsolete_migrations]).to eq([])
+        it 'does not alert' do
+          get :advanced_search
+          expect(assigns[:elasticsearch_warn_if_obsolete_migrations]).to be_falsey
+        end
       end
     end
 
