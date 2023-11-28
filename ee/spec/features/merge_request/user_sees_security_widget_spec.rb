@@ -95,19 +95,7 @@ RSpec.describe "Merge request > User sees security widget",
 
   describe 'dismissal descriptions' do
     let(:dismissal_descriptions_json) do
-      # Use dynamic translations via N_(...)
-      {
-        acceptable_risk: _("The vulnerability is known, and has not been remediated or mitigated, " \
-                           "but is considered to be an acceptable business risk."),
-        false_positive: _("An error in reporting in which a test result incorrectly indicates " \
-                          "the presence of a vulnerability in a system when the vulnerability is not present."),
-        mitigating_control: _("A management, operational, or technical control (that is, safeguard " \
-                              "or countermeasure) employed by an organization that provides equivalent " \
-                              "or comparable protection for an information system."),
-        used_in_tests: _("The finding is not a vulnerability because it is part of a test or is test data."),
-        not_applicable: _("The vulnerability is known, and has not been remediated or mitigated, but is " \
-                          "considered to be in a part of the application that will not be updated.")
-      }.to_json
+      Gitlab::Json.parse(fixture_file('vulnerabilities/dismissal_descriptions.json', dir: 'ee')).to_json
     end
 
     it 'loads dismissal descriptions' do

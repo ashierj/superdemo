@@ -262,6 +262,9 @@ RSpec.describe ProjectsHelper do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, :repository, group: group) }
     let_it_be(:jira_integration) { create(:jira_integration, project: project, vulnerabilities_enabled: true, project_key: 'GV', vulnerabilities_issuetype: '10000') }
+    let_it_be(:dismissal_descriptions_json) do
+      Gitlab::Json.parse(fixture_file('vulnerabilities/dismissal_descriptions.json', dir: 'ee')).to_json
+    end
 
     subject { helper.project_security_dashboard_config(project) }
 
@@ -284,7 +287,8 @@ RSpec.describe ProjectsHelper do
           no_vulnerabilities_svg_path: start_with('/assets/illustrations/empty-state/empty-search-md-'),
           security_configuration_path: end_with('/configuration'),
           can_admin_vulnerability: 'true',
-          new_vulnerability_path: end_with('/security/vulnerabilities/new')
+          new_vulnerability_path: end_with('/security/vulnerabilities/new'),
+          dismissal_descriptions: dismissal_descriptions_json
         }
       end
 
@@ -309,7 +313,8 @@ RSpec.describe ProjectsHelper do
           can_admin_vulnerability: 'true',
           can_view_false_positive: 'false',
           security_configuration_path: kind_of(String),
-          new_vulnerability_path: end_with('/security/vulnerabilities/new')
+          new_vulnerability_path: end_with('/security/vulnerabilities/new'),
+          dismissal_descriptions: dismissal_descriptions_json
         }
       end
 

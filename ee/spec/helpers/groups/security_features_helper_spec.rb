@@ -67,6 +67,10 @@ RSpec.describe Groups::SecurityFeaturesHelper do
     end
 
     let(:has_projects) { 'false' }
+    let(:dismissal_descriptions_json) do
+      Gitlab::Json.parse(fixture_file('vulnerabilities/dismissal_descriptions.json', dir: 'ee')).to_json
+    end
+
     let(:expected_data) do
       {
         projects_endpoint: "http://localhost/api/v4/groups/#{group.id}/projects",
@@ -77,7 +81,8 @@ RSpec.describe Groups::SecurityFeaturesHelper do
         vulnerabilities_export_endpoint: "/api/v4/security/groups/#{group.id}/vulnerability_exports",
         can_admin_vulnerability: 'true',
         can_view_false_positive: 'false',
-        has_projects: has_projects
+        has_projects: has_projects,
+        dismissal_descriptions: dismissal_descriptions_json
       }
     end
 
