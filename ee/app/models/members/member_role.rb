@@ -59,6 +59,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
 
   has_many :members
   has_many :saml_providers
+  has_many :saml_group_links
   belongs_to :namespace
 
   validates :namespace, presence: true, if: :group_role_required?
