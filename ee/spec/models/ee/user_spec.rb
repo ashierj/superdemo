@@ -3619,4 +3619,26 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
   end
+
+  describe '#external?' do
+    subject { user.external? }
+
+    context 'when external is true' do
+      let(:user) { build(:user, external: true) }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when external is false' do
+      let(:user) { build(:user, external: false) }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when user is security_policy_bot' do
+      let(:user) { build(:user, :security_policy_bot, external: false) }
+
+      it { is_expected.to eq(true) }
+    end
+  end
 end
