@@ -10,7 +10,7 @@ RSpec.describe PackageMetadata::AdvisoryDataObject, feature_category: :software_
         "advisory" =>
           {
             "id" => "d4f176d6-0a07-46f4-9da5-22df92e5efa0",
-            "source" => "glad",
+            "source" => source,
             "title" => "Incorrect Permission Assignment for Critical Resource",
             "description" => "A missing permission check in Jenkins Google Kubernetes Engine Plugin allows attackers " \
                              "with Overall/Read permission to obtain limited information about the scope of a " \
@@ -43,6 +43,8 @@ RSpec.describe PackageMetadata::AdvisoryDataObject, feature_category: :software_
       }
     end
 
+    let(:source) { 'glad' }
+
     subject(:create) { described_class.create(hash, purl_type) }
 
     it { is_expected.to be_kind_of(described_class) }
@@ -74,6 +76,7 @@ RSpec.describe PackageMetadata::AdvisoryDataObject, feature_category: :software_
 
     context 'when an attribute is missing' do
       using RSpec::Parameterized::TableSyntax
+
       subject(:create!) do
         described_class.create({ 'advisory' => hash['advisory'].except(attribute.to_s),
           'packages' => hash['packages'] }, purl_type)
@@ -102,6 +105,31 @@ RSpec.describe PackageMetadata::AdvisoryDataObject, feature_category: :software_
         subject(:create!) { described_class.create(hash.except('packages'), purl_type) }
 
         specify { expect { create! }.to raise_error(ArgumentError) }
+      end
+    end
+
+    context 'with source attribute' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:source, :expect_source_to_be_valid) do
+        'glad'          | true
+        'trivy-db'      | true
+        'gLad'          | false
+        'tRiVy-Db'      | false
+        'trivy'         | false
+        'gemnasium-db'  | false
+        'foo'           | false
+        nil             | false
+      end
+
+      with_them do
+        specify do
+          if expect_source_to_be_valid
+            expect(create).to be_kind_of(described_class)
+          else
+            expect { create }.to(raise_error(ArgumentError, /Unsupported advisory source/)) # rubocop:disable Rails/SaveBang -- subject comes from outside of context, no need to override for this case
+          end
+        end
       end
     end
   end
