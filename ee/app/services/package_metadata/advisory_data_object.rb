@@ -5,7 +5,13 @@ module PackageMetadata
     def self.create(data, purl_type)
       advisory = data['advisory'].clone
       advisory['advisory_xid'] = advisory.delete('id') if advisory.has_key?('id')
-      advisory['source_xid'] = advisory.delete('source') if advisory.has_key?('source')
+
+      source = advisory.delete('source')
+      unless Enums::PackageMetadata::ADVISORY_SOURCES.has_key?(source)
+        raise ArgumentError, "Unsupported advisory source #{source}"
+      end
+
+      advisory['source_xid'] = source
 
       packages = data['packages'].clone
       raise ArgumentError, 'Missing packages attribute' unless packages
