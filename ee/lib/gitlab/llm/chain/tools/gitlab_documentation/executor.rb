@@ -10,7 +10,7 @@ module Gitlab
             HUMAN_NAME = 'GitLab Documentation'
             RESOURCE_NAME = 'documentation answer'
             DESCRIPTION =
-              <<-PROMPT
+              <<~PROMPT
                 This tool is beneficial when you need to answer questions concerning GitLab and its features.
                 Questions can be about GitLab's projects, groups, issues, merge requests,
                 epics, milestones, labels, CI/CD pipelines, git repositories, and more.

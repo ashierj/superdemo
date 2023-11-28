@@ -20,7 +20,7 @@ module Gitlab
         end
 
         def to_prompt
-          <<-PROMPT
+          <<~PROMPT
             You are a sophisticated code review assistant.
             You are acting as the reviewer for this merge request and MUST respond in first person as if you reviewed it and should always use 'I'.
             You are provided with the corresponding code comment.
