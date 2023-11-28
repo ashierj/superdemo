@@ -13,7 +13,7 @@ module Gitlab
         end
 
         def to_prompt
-          <<-PROMPT
+          <<~PROMPT
             You are an AI code assistant that can understand DIFF in Git diff format, TEMPLATE in a Markdown format and can produce Markdown as a result.
 
             You will be given TITLE, DIFF, and TEMPLATE. Do the following:

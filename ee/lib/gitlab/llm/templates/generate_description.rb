@@ -6,7 +6,7 @@ module Gitlab
       class GenerateDescription
         include Gitlab::Utils::StrongMemoize
 
-        PROMPT_WITH_TEMPLATE = <<-PROMPT
+        PROMPT_WITH_TEMPLATE = <<~PROMPT
         \n\nHuman: You are a helpful assistant
         Your job is to rewrite a text to follow the given template.
 
@@ -27,7 +27,7 @@ module Gitlab
         Assistant:
         PROMPT
 
-        PROMPT_WITHOUT_TEMPLATE = <<-PROMPT
+        PROMPT_WITHOUT_TEMPLATE = <<~PROMPT
         \n\nHuman: You are a helpful assistant.
         Your job is to write an issue description based off a text.
 
