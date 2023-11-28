@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SamlProvider do
+RSpec.describe SamlProvider, feature_category: :system_access do
   let(:group) { create(:group) }
 
   subject(:saml_provider) { create(:saml_provider, group: group) }
@@ -242,8 +242,18 @@ RSpec.describe SamlProvider do
       expect(settings[:idp_sso_target_url]).to eq saml_provider.sso_url
     end
 
-    it 'includes nickname attribute statements' do
-      expect(settings[:attribute_statements][:nickname]).to match_array(%w[nickname username])
+    it 'includes default attribute statements' do
+      expect(settings[:attribute_statements]).to eq(::Gitlab::Auth::Saml::Config.default_attribute_statements)
+    end
+
+    context 'when saml_microsoft_attribute_names is disabled' do
+      before do
+        stub_feature_flags(saml_microsoft_attribute_names: false)
+      end
+
+      it 'only sets nickname attribute statement' do
+        expect(settings[:attribute_statements]).to eq({ nickname: %w[username nickname] })
+      end
     end
 
     context 'when saml_message_max_byte_size present in gitlab settings ' do

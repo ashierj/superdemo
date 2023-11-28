@@ -64,6 +64,18 @@ RSpec.describe ClickHouse::CiFinishedBuildsSyncCronWorker, :click_house, :freeze
 
             perform
           end
+
+          context 'when ci_data_ingestion_to_click_house is disabled' do
+            before do
+              stub_feature_flags(ci_data_ingestion_to_click_house: false)
+            end
+
+            it 'does nothing' do
+              expect(ClickHouse::CiFinishedBuildsSyncWorker).not_to receive(:perform_async)
+
+              perform
+            end
+          end
         end
 
         context 'with total_workers set to 3', :aggregate_failures do
