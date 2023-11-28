@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectFeature do
-  let(:project) { create(:project, :public) }
-  let(:user) { create(:user) }
+RSpec.describe ProjectFeature, feature_category: :groups_and_projects do
+  let_it_be_with_reload(:project) { create(:project, :public) }
+  let_it_be_with_reload(:user) { create(:user) }
 
   describe 'default values' do
     subject { Project.new.project_feature }
@@ -27,36 +27,122 @@ RSpec.describe ProjectFeature do
     end
   end
 
-  describe 'project visibility changes' do
+  describe 'project visibility changes', feature_category: :global_search do
     using RSpec::Parameterized::TableSyntax
 
-    before do
-      allow(project).to receive(:maintaining_elasticsearch?).and_return(true)
-    end
+    context 'for repository' do
+      where(:maintaining_elasticsearch, :maintaining_indexed_associations, :worker_expected) do
+        true  | true  | true
+        false | true  | false
+        true  | false | false
+        false | false | false
+      end
 
-    where(:feature, :worker_expected, :associations) do
-      'issues'                      | true        | %w[issues notes milestones]
-      'wiki'                        | false       | nil
-      'builds'                      | false       | nil
-      'merge_requests'              | true        | %w[merge_requests notes milestones]
-      'repository'                  | true        | %w[notes]
-      'snippets'                    | true        | %w[notes]
-      'operations'                  | false       | nil
-      'security_and_compliance'     | false       | nil
-      'pages'                       | false       | nil
-    end
-
-    with_them do
-      it 're-indexes project and project associations on update' do
-        expect(project).to receive(:maintain_elasticsearch_update)
-
-        if worker_expected
-          expect(ElasticAssociationIndexerWorker).to receive(:perform_async).with('Project', project.id, associations)
-        else
-          expect(ElasticAssociationIndexerWorker).not_to receive(:perform_async)
+      with_them do
+        before do
+          allow(project).to receive(:maintaining_elasticsearch?).and_return(maintaining_elasticsearch)
+          allow(project).to receive(:maintaining_indexed_associations?).and_return(maintaining_indexed_associations)
         end
 
-        project.project_feature.update_attribute("#{feature}_access_level".to_sym, ProjectFeature::DISABLED)
+        context 'when updating repository_access_level' do
+          it 'enqueues a worker to index commit data' do
+            if worker_expected
+              expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, false, { force: true })
+            else
+              expect(ElasticCommitIndexerWorker).not_to receive(:perform_async)
+            end
+
+            project.project_feature.update_attribute(:repository_access_level, ProjectFeature::DISABLED)
+          end
+        end
+      end
+    end
+
+    context 'for wiki' do
+      where(:maintaining_elasticsearch, :maintaining_indexed_associations, :worker_expected) do
+        true  | true  | true
+        false | true  | false
+        true  | false | false
+        false | false | false
+      end
+
+      with_them do
+        before do
+          allow(project).to receive(:maintaining_elasticsearch?).and_return(maintaining_elasticsearch)
+          allow(project).to receive(:maintaining_indexed_associations?).and_return(maintaining_indexed_associations)
+        end
+
+        context 'when updating wiki_access_level' do
+          it 'enqueues a worker to index commit data' do
+            if worker_expected
+              expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(project.id, 'Project', { force: true })
+            else
+              expect(ElasticWikiIndexerWorker).not_to receive(:perform_async)
+            end
+
+            project.project_feature.update_attribute(:wiki_access_level, ProjectFeature::DISABLED)
+          end
+        end
+      end
+    end
+
+    context 'for associations in the database' do
+      where(:feature, :maintaining_elasticsearch, :maintaining_indexed_associations, :worker_expected, :associations) do
+        'issues'                  | true  | true  | true  | %w[issues notes milestones]
+        'issues'                  | false | true  | false | nil
+        'issues'                  | true  | false | false | nil
+        'issues'                  | false | false | false | nil
+        'builds'                  | true  | true  | false | nil
+        'builds'                  | false | true  | false | nil
+        'builds'                  | true  | false | false | nil
+        'builds'                  | false | false | false | nil
+        'merge_requests'          | true  | true  | true  | %w[merge_requests notes milestones]
+        'merge_requests'          | false | true  | false | nil
+        'merge_requests'          | true  | false | false | nil
+        'merge_requests'          | false | false | false | nil
+        'repository'              | true  | true  | true  | %w[notes]
+        'repository'              | false | true  | false | nil
+        'repository'              | true  | false | false | nil
+        'repository'              | false | false | false | nil
+        'snippets'                | true  | true  | true  | %w[notes]
+        'snippets'                | false | true  | false | nil
+        'snippets'                | true  | false | false | nil
+        'snippets'                | false | false | false | nil
+        'operations'              | true  | true  | false | nil
+        'operations'              | false | true  | false | nil
+        'operations'              | true  | false | false | nil
+        'operations'              | false | false | false | nil
+        'security_and_compliance' | true  | true  | false | nil
+        'security_and_compliance' | false | true  | false | nil
+        'security_and_compliance' | true  | false | false | nil
+        'security_and_compliance' | false | false | false | nil
+        'pages'                   | true  | true  | false | nil
+        'pages'                   | false | true  | false | nil
+        'pages'                   | true  | false | false | nil
+        'pages'                   | false | false | false | nil
+      end
+
+      with_them do
+        before do
+          allow(project).to receive(:maintaining_elasticsearch?).and_return(maintaining_elasticsearch)
+          allow(project).to receive(:maintaining_indexed_associations?).and_return(maintaining_indexed_associations)
+        end
+
+        it 're-indexes project and project associations on update' do
+          if maintaining_elasticsearch
+            expect(project).to receive(:maintain_elasticsearch_update)
+          else
+            expect(project).not_to receive(:maintain_elasticsearch_update)
+          end
+
+          if worker_expected
+            expect(ElasticAssociationIndexerWorker).to receive(:perform_async).with('Project', project.id, associations)
+          else
+            expect(ElasticAssociationIndexerWorker).not_to receive(:perform_async)
+          end
+
+          project.project_feature.update_attribute("#{feature}_access_level".to_sym, ProjectFeature::DISABLED)
+        end
       end
     end
   end

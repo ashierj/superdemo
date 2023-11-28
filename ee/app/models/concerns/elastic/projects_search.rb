@@ -16,6 +16,17 @@ module Elastic
         ::Gitlab::CurrentSettings.elasticsearch_indexes_project?(self)
       end
 
+      def maintaining_indexed_associations?
+        use_elasticsearch?
+      end
+
+      override :maintaining_elasticsearch?
+      def maintaining_elasticsearch?
+        return super if ::Feature.disabled?(:search_index_all_projects, self)
+
+        ::Gitlab::CurrentSettings.elasticsearch_indexing?
+      end
+
       override :maintain_elasticsearch_create
       def maintain_elasticsearch_create
         ::Elastic::ProcessInitialBookkeepingService.track!(self)

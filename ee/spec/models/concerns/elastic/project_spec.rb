@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_category: :global_search do
+RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
 
   context 'when limited indexing is on' do
-    let_it_be(:project) { create :project, name: 'main_project' }
+    let_it_be(:project) { create(:project, :empty_repo, name: 'main_project') }
 
     before do
       stub_ee_application_setting(elasticsearch_limit_indexing: true)
@@ -18,51 +18,85 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
       describe '#maintaining_elasticsearch?' do
         subject(:maintaining_elasticsearch) { project.maintaining_elasticsearch? }
 
-        it { is_expected.to be(false) }
+        context 'when the search_index_all_projects FF is false' do
+          before do
+            stub_feature_flags(search_index_all_projects: false)
+          end
+
+          it { is_expected.to be(false) }
+        end
+
+        context 'when the search_index_all_projects FF is true' do
+          it { is_expected.to be(true) }
+        end
       end
 
       describe '#use_elasticsearch?' do
-        it 'returns false' do
-          expect(project.use_elasticsearch?).to be_falsey
-        end
+        subject(:use_elasticsearch) { project.use_elasticsearch? }
+
+        it { is_expected.to be(false) }
       end
     end
 
     context 'when a project is enabled specifically' do
       before do
-        create :elasticsearch_indexed_project, project: project
+        create(:elasticsearch_indexed_project, project: project)
       end
 
       describe '#maintaining_elasticsearch?' do
         subject(:maintaining_elasticsearch) { project.maintaining_elasticsearch? }
 
-        it { is_expected.to be(true) }
+        context 'when the search_index_all_projects FF is false' do
+          before do
+            stub_feature_flags(search_index_all_projects: false)
+          end
+
+          it { is_expected.to be(true) }
+        end
+
+        context 'when the search_index_all_projects FF is true' do
+          it { is_expected.to be(true) }
+        end
       end
 
       describe '#use_elasticsearch?' do
-        it 'returns true' do
-          expect(project.use_elasticsearch?).to be_truthy
-        end
+        subject(:use_elasticsearch) { project.use_elasticsearch? }
+
+        it { is_expected.to be(true) }
       end
 
-      it 'only indexes enabled projects' do
-        Sidekiq::Testing.inline! do
-          create :project, path: 'test_two', description: 'awesome project'
-          create :project
+      describe 'indexing', :sidekiq_inline do
+        context 'when the search_index_all_projects FF is false' do
+          before do
+            stub_feature_flags(search_index_all_projects: false)
+          end
 
-          ensure_elasticsearch_index!
+          it 'only indexes enabled projects' do
+            create(:project, :empty_repo, path: 'test_two', description: 'awesome project')
+            ensure_elasticsearch_index!
+
+            expect(described_class.elastic_search('main_project', options: { project_ids: :any }).total_count).to eq(1)
+            expect(described_class.elastic_search('"test_two"', options: { project_ids: :any }).total_count).to eq(0)
+          end
         end
 
-        expect(described_class.elastic_search('main_pro*', options: { project_ids: :any }).total_count).to eq(1)
-        expect(described_class.elastic_search('"test_two"', options: { project_ids: :any }).total_count).to eq(0)
+        context 'when the search_index_all_projects FF is true' do
+          it 'indexes all projects' do
+            create(:project, :empty_repo, path: 'test_two', description: 'awesome project')
+            ensure_elasticsearch_index!
+
+            expect(described_class.elastic_search('main_project', options: { project_ids: :any }).total_count).to eq(1)
+            expect(described_class.elastic_search('"test_two"', options: { project_ids: :any }).total_count).to eq(1)
+          end
+        end
       end
     end
 
-    context 'when a group is enabled' do
+    context 'when a group is enabled', :sidekiq_inline do
       let_it_be(:group) { create(:group) }
 
-      before do
-        create :elasticsearch_indexed_namespace, namespace: group
+      before_all do
+        create(:elasticsearch_indexed_namespace, namespace: group)
       end
 
       describe '#maintaining_elasticsearch?' do
@@ -70,38 +104,60 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
 
         subject(:maintaining_elasticsearch) { project_in_group.maintaining_elasticsearch? }
 
-        it { is_expected.to be(true) }
-      end
+        context 'when the search_index_all_projects FF is false' do
+          before do
+            stub_feature_flags(search_index_all_projects: false)
+          end
 
-      it 'indexes only projects under the group' do
-        Sidekiq::Testing.inline! do
-          create :project, name: 'group_test1', group: create(:group, parent: group)
-          create :project, name: 'group_test2', description: 'awesome project'
-          create :project, name: 'group_test3', group: group
-          create :project, path: 'someone_elses_project', name: 'test4'
-
-          ensure_elasticsearch_index!
+          it { is_expected.to be(true) }
         end
 
-        expect(described_class.elastic_search('group_test*', options: { project_ids: :any }).total_count).to eq(2)
-        expect(described_class.elastic_search('"group_test3"', options: { project_ids: :any }).total_count).to eq(1)
-        expect(described_class.elastic_search('"group_test2"', options: { project_ids: :any }).total_count).to eq(0)
-        expect(described_class.elastic_search('"group_test4"', options: { project_ids: :any }).total_count).to eq(0)
+        context 'when the search_index_all_projects FF is true' do
+          it { is_expected.to be(true) }
+        end
+      end
+
+      describe 'indexing' do
+        context 'when the search_index_all_projects FF is false' do
+          before do
+            stub_feature_flags(search_index_all_projects: false)
+          end
+
+          it 'indexes only projects under the group' do
+            create(:project, name: 'group_test1', group: create(:group, parent: group))
+            create(:project, name: 'group_test2', description: 'awesome project')
+            create(:project, name: 'group_test3', group: group)
+            ensure_elasticsearch_index!
+
+            expect(described_class.elastic_search('group_test*', options: { project_ids: :any }).total_count).to eq(2)
+            expect(described_class.elastic_search('"group_test3"', options: { project_ids: :any }).total_count).to eq(1)
+            expect(described_class.elastic_search('"group_test2"', options: { project_ids: :any }).total_count).to eq(0)
+          end
+        end
+
+        context 'when the search_index_all_projects FF is true' do
+          it 'indexes all projects' do
+            create(:project, name: 'group_test1', group: create(:group, parent: group))
+            create(:project, name: 'group_test2', description: 'awesome project')
+            create(:project, name: 'group_test3', group: group)
+            ensure_elasticsearch_index!
+
+            expect(described_class.elastic_search('group_test*', options: { project_ids: :any }).total_count).to eq(3)
+            expect(described_class.elastic_search('"group_test3"', options: { project_ids: :any }).total_count).to eq(1)
+            expect(described_class.elastic_search('"group_test2"', options: { project_ids: :any }).total_count).to eq(1)
+          end
+        end
       end
 
       context 'default_operator' do
         RSpec.shared_examples 'use correct default_operator' do |operator|
-          before do
-            Sidekiq::Testing.inline! do
-              create :project, name: 'project1', group: group, description: 'test foo'
-              create :project, name: 'project2', group: group, description: 'test'
-              create :project, name: 'project3', group: group, description: 'foo'
+          it 'uses correct operator', :sidekiq_inline do
+            create(:project, name: 'project1', group: group, description: 'test foo')
+            create(:project, name: 'project2', group: group, description: 'test')
+            create(:project, name: 'project3', group: group, description: 'foo')
 
-              ensure_elasticsearch_index!
-            end
-          end
+            ensure_elasticsearch_index!
 
-          it 'uses correct operator' do
             count_for_or = described_class.elastic_search('test | foo', options: { project_ids: :any }).total_count
             expect(count_for_or).to be > 0
 
@@ -142,15 +198,12 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
     end
   end
 
-  # This test is added to address the issues described in
-  context 'when projects and snippets co-exist', :elastic_clean, issue: 'https://gitlab.com/gitlab-org/gitlab/issues/36340' do
-    before do
-      create :project
-      create :snippet, :public
-    end
-
+  context 'when projects and snippets co-exist', issue: 'https://gitlab.com/gitlab-org/gitlab/issues/36340' do
     context 'when searching with a wildcard' do
       it 'only returns projects', :sidekiq_inline do
+        create(:project)
+        create(:snippet, :public)
+
         ensure_elasticsearch_index!
         response = described_class.elastic_search('*')
 
@@ -160,21 +213,18 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
     end
   end
 
-  it 'finds projects' do
+  it 'finds projects', :sidekiq_inline do
     project_ids = []
 
-    Sidekiq::Testing.inline! do
-      project = create :project, name: 'test1'
-      project1 = create :project, path: 'test2', description: 'awesome project'
-      project2 = create :project
-      create :project, path: 'someone_elses_project'
-      project_ids += [project.id, project1.id, project2.id]
+    project = create(:project, name: 'test1')
+    project1 = create(:project, path: 'test2', description: 'awesome project')
+    project2 = create(:project)
+    create(:project, path: 'someone_elses_project')
+    project_ids += [project.id, project1.id, project2.id]
 
-      # The project you have no access to except as an administrator
-      create :project, :private, name: 'test3'
+    create(:project, :private, name: 'test3')
 
-      ensure_elasticsearch_index!
-    end
+    ensure_elasticsearch_index!
 
     expect(described_class.elastic_search('"test1"', options: { project_ids: project_ids }).total_count).to eq(1)
     expect(described_class.elastic_search('"test2"', options: { project_ids: project_ids }).total_count).to eq(1)
@@ -184,16 +234,12 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
     expect(described_class.elastic_search('"someone_elses_project"', options: { project_ids: project_ids }).total_count).to eq(0)
   end
 
-  it 'finds partial matches in project names' do
-    project_ids = []
+  it 'finds partial matches in project names', :sidekiq_inline do
+    project = create :project, name: 'tesla-model-s'
+    project1 = create :project, name: 'tesla_model_s'
+    project_ids = [project.id, project1.id]
 
-    Sidekiq::Testing.inline! do
-      project = create :project, name: 'tesla-model-s'
-      project1 = create :project, name: 'tesla_model_s'
-      project_ids += [project.id, project1.id]
-
-      ensure_elasticsearch_index!
-    end
+    ensure_elasticsearch_index!
 
     expect(described_class.elastic_search('tesla', options: { project_ids: project_ids }).total_count).to eq(2)
   end

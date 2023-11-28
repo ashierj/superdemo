@@ -8,7 +8,7 @@ module EE
     end
 
     def update_elasticsearch_index
-      if issue.project&.use_elasticsearch? && issue.maintaining_elasticsearch?
+      if issue.maintaining_elasticsearch? && issue.project&.maintaining_indexed_associations?
         issue.maintain_elasticsearch_update
         issue.maintain_elasticsearch_issue_notes_update # we need to propagate new permissions to notes
       end
