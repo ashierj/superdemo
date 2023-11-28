@@ -2,7 +2,11 @@
 import { GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { s__, sprintf } from '~/locale';
-import { projectsUsageDataValidator } from '../utils';
+import {
+  findCurrentMonthUsage,
+  findPreviousMonthUsage,
+  projectsUsageDataValidator,
+} from '../utils';
 
 // Trying to show more than this many projects on a single chart starts to
 // get illegible, so we only render this many projects if there's many
@@ -50,7 +54,7 @@ export default {
           stack: 'previous',
           data: this.projectsUsageData
             ?.map((project) => {
-              return [project.name, project.previousEvents];
+              return [project.name, findPreviousMonthUsage(project).count];
             })
             .slice(0, MAX_PROJECTS_TO_CHART),
         },
@@ -59,7 +63,7 @@ export default {
           stack: 'current',
           data: this.projectsUsageData
             ?.map((project) => {
-              return [project.name, project.currentEvents];
+              return [project.name, findCurrentMonthUsage(project).count];
             })
             .slice(0, MAX_PROJECTS_TO_CHART),
         },

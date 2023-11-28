@@ -8,21 +8,25 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
+  getProjectWithYearsUsage,
   getProjectsUsageDataResponse,
   getProjectUsage,
 } from 'ee_jest/usage_quotas/product_analytics/graphql/mock_data';
 import { useFakeDate } from 'helpers/fake_date';
 
-import getGroupCurrentAndPrevProductAnalyticsUsage from 'ee/usage_quotas/product_analytics/graphql/queries/get_group_current_and_prev_product_analytics_usage.query.graphql';
-import ProductAnalyticsGroupUsageChart from 'ee/usage_quotas/product_analytics/components/product_analytics_group_usage_chart.vue';
+import getGroupCurrentAndPrevProductAnalyticsUsage from 'ee/usage_quotas/product_analytics/graphql/queries/get_group_product_analytics_usage.query.graphql';
+import ProductAnalyticsGroupUsage from 'ee/usage_quotas/product_analytics/components/product_analytics_group_usage.vue';
 
 Vue.use(VueApollo);
 
 jest.mock('~/sentry/sentry_browser_wrapper');
 
-describe('ProductAnalyticsGroupUsageChart', () => {
+describe('ProductAnalyticsGroupUsage', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
+
+  const mockNow = '2023-01-15T12:00:00Z';
+  useFakeDate(mockNow);
 
   const findError = () => wrapper.findComponent(GlAlert);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
@@ -31,15 +35,19 @@ describe('ProductAnalyticsGroupUsageChart', () => {
 
   const mockProjectsUsageDataHandler = jest.fn();
 
-  const createComponent = () => {
+  const createComponent = ({ glFeatures } = {}) => {
     const mockApollo = createMockApollo([
       [getGroupCurrentAndPrevProductAnalyticsUsage, mockProjectsUsageDataHandler],
     ]);
 
-    wrapper = shallowMountExtended(ProductAnalyticsGroupUsageChart, {
+    wrapper = shallowMountExtended(ProductAnalyticsGroupUsage, {
       apolloProvider: mockApollo,
       provide: {
         namespacePath: 'some-group',
+        glFeatures: {
+          productAnalyticsUsageQuotaAnnualData: true,
+          ...glFeatures,
+        },
       },
       stubs: {
         GlSprintf,
@@ -61,18 +69,83 @@ describe('ProductAnalyticsGroupUsageChart', () => {
   });
 
   describe('when fetching data', () => {
-    const mockNow = '2023-01-15T12:00:00Z';
-    useFakeDate(mockNow);
+    describe('when "product_analytics_usage_quota_annual_data" feature flag is enabled', () => {
+      it('requests data from the last 12 months', () => {
+        createComponent({ glFeatures: { productAnalyticsUsageQuotaAnnualData: true } });
 
-    it('requests data from the current and previous months', () => {
-      createComponent();
+        expect(mockProjectsUsageDataHandler).toHaveBeenCalledWith({
+          namespacePath: 'some-group',
+          monthSelection: [
+            {
+              month: 1,
+              year: 2023,
+            },
+            {
+              month: 12,
+              year: 2022,
+            },
+            {
+              month: 11,
+              year: 2022,
+            },
+            {
+              month: 10,
+              year: 2022,
+            },
+            {
+              month: 9,
+              year: 2022,
+            },
+            {
+              month: 8,
+              year: 2022,
+            },
+            {
+              month: 7,
+              year: 2022,
+            },
+            {
+              month: 6,
+              year: 2022,
+            },
+            {
+              month: 5,
+              year: 2022,
+            },
+            {
+              month: 4,
+              year: 2022,
+            },
+            {
+              month: 3,
+              year: 2022,
+            },
+            {
+              month: 2,
+              year: 2022,
+            },
+          ],
+        });
+      });
+    });
 
-      expect(mockProjectsUsageDataHandler).toHaveBeenCalledWith({
-        namespacePath: 'some-group',
-        currentMonth: 1,
-        currentYear: 2023,
-        previousMonth: 12,
-        previousYear: 2022,
+    describe('when "product_analytics_usage_quota_annual_data" feature flag is disabled', () => {
+      it('requests data from the last 2 months', () => {
+        createComponent({ glFeatures: { productAnalyticsUsageQuotaAnnualData: false } });
+
+        expect(mockProjectsUsageDataHandler).toHaveBeenCalledWith({
+          namespacePath: 'some-group',
+          monthSelection: [
+            {
+              month: 1,
+              year: 2023,
+            },
+            {
+              month: 12,
+              year: 2022,
+            },
+          ],
+        });
       });
     });
 
@@ -125,13 +198,13 @@ describe('ProductAnalyticsGroupUsageChart', () => {
 
     describe('and the data has loaded', () => {
       describe.each`
-        scenario                                        | currentProjects                                                         | previousProjects
-        ${'with no projects'}                           | ${[]}                                                                   | ${[]}
-        ${'with no product analytics enabled projects'} | ${[getProjectUsage({ id: 1, name: 'not onboarded', numEvents: null })]} | ${[getProjectUsage({ id: 1, name: 'not onboarded', numEvents: null })]}
-      `('$scenario', ({ currentProjects, previousProjects }) => {
+        scenario                                        | projects
+        ${'with no projects'}                           | ${[]}
+        ${'with no product analytics enabled projects'} | ${[getProjectUsage({ id: 1, name: 'not onboarded', usage: [{ year: 2023, month: 1, count: null }] })]}
+      `('$scenario', ({ projects }) => {
         beforeEach(() => {
           mockProjectsUsageDataHandler.mockResolvedValue({
-            data: getProjectsUsageDataResponse(currentProjects, previousProjects),
+            data: getProjectsUsageDataResponse(projects),
           });
           createComponent();
           return waitForPromises();
@@ -152,7 +225,9 @@ describe('ProductAnalyticsGroupUsageChart', () => {
 
       describe('with one project', () => {
         beforeEach(() => {
-          mockProjectsUsageDataHandler.mockResolvedValue({ data: getProjectsUsageDataResponse() });
+          mockProjectsUsageDataHandler.mockResolvedValue({
+            data: getProjectsUsageDataResponse([getProjectWithYearsUsage()]),
+          });
           createComponent();
           return waitForPromises();
         });
@@ -171,8 +246,18 @@ describe('ProductAnalyticsGroupUsageChart', () => {
               {
                 name: 'Analytics events by month',
                 data: [
-                  ['Dec 2022', 1234],
-                  ['Jan 2023', 9876],
+                  ['Feb 2022', 1],
+                  ['Mar 2022', 1],
+                  ['Apr 2022', 1],
+                  ['May 2022', 1],
+                  ['Jun 2022', 1],
+                  ['Jul 2022', 1],
+                  ['Aug 2022', 1],
+                  ['Sep 2022', 1],
+                  ['Oct 2022', 1],
+                  ['Nov 2022', 1],
+                  ['Dec 2022', 1],
+                  ['Jan 2023', 1],
                 ],
               },
             ],
@@ -183,18 +268,12 @@ describe('ProductAnalyticsGroupUsageChart', () => {
       describe('with many projects', () => {
         beforeEach(() => {
           mockProjectsUsageDataHandler.mockResolvedValue({
-            data: getProjectsUsageDataResponse(
-              [
-                getProjectUsage({ id: 1, name: 'onboarded1', numEvents: 1 }),
-                getProjectUsage({ id: 2, name: 'onboarded2', numEvents: 1 }),
-                getProjectUsage({ id: 3, name: 'onboarded3', numEvents: 1 }),
-              ],
-              [
-                getProjectUsage({ id: 1, name: 'onboarded1', numEvents: 10 }),
-                getProjectUsage({ id: 2, name: 'onboarded2', numEvents: 20 }),
-                getProjectUsage({ id: 3, name: 'onboarded3', numEvents: 30 }),
-              ],
-            ),
+            data: getProjectsUsageDataResponse([
+              getProjectWithYearsUsage({
+                id: 1,
+              }),
+              getProjectWithYearsUsage({ id: 2 }),
+            ]),
           });
           createComponent();
           return waitForPromises();
@@ -206,8 +285,18 @@ describe('ProductAnalyticsGroupUsageChart', () => {
               {
                 name: 'Analytics events by month',
                 data: [
-                  ['Dec 2022', 60],
-                  ['Jan 2023', 3],
+                  ['Feb 2022', 2],
+                  ['Mar 2022', 2],
+                  ['Apr 2022', 2],
+                  ['May 2022', 2],
+                  ['Jun 2022', 2],
+                  ['Jul 2022', 2],
+                  ['Aug 2022', 2],
+                  ['Sep 2022', 2],
+                  ['Oct 2022', 2],
+                  ['Nov 2022', 2],
+                  ['Dec 2022', 2],
+                  ['Jan 2023', 2],
                 ],
               },
             ],

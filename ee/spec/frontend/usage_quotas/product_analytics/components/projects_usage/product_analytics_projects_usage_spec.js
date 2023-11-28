@@ -6,16 +6,14 @@ import ProductAnalyticsProjectsUsage from 'ee/usage_quotas/product_analytics/com
 import ProductAnalyticsProjectsUsageChart from 'ee/usage_quotas/product_analytics/components/projects_usage/product_analytics_projects_usage_chart.vue';
 import ProductAnalyticsProjectsUsageTable from 'ee/usage_quotas/product_analytics/components/projects_usage/product_analytics_projects_usage_table.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import getGroupCurrentAndPrevProductAnalyticsUsage from 'ee/usage_quotas/product_analytics/graphql/queries/get_group_current_and_prev_product_analytics_usage.query.graphql';
+import getGroupCurrentAndPrevProductAnalyticsUsage from 'ee/usage_quotas/product_analytics/graphql/queries/get_group_product_analytics_usage.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getProjectsUsageDataResponse } from 'ee_jest/usage_quotas/product_analytics/graphql/mock_data';
 import { useFakeDate } from 'helpers/fake_date';
-import * as utils from 'ee/usage_quotas/product_analytics/graphql/utils';
 
 Vue.use(VueApollo);
 
-jest.mock('ee/usage_quotas/product_analytics/graphql/utils');
 jest.mock('~/sentry/sentry_browser_wrapper');
 
 describe('ProductAnalyticsProjectsUsage', () => {
@@ -62,10 +60,16 @@ describe('ProductAnalyticsProjectsUsage', () => {
 
       expect(mockProjectsUsageDataHandler).toHaveBeenCalledWith({
         namespacePath: 'some-group',
-        currentMonth: 1,
-        currentYear: 2023,
-        previousMonth: 12,
-        previousYear: 2022,
+        monthSelection: [
+          {
+            month: 1,
+            year: 2023,
+          },
+          {
+            month: 12,
+            year: 2022,
+          },
+        ],
       });
     });
 
@@ -121,17 +125,8 @@ describe('ProductAnalyticsProjectsUsage', () => {
     });
 
     describe('and data has loaded', () => {
-      const projectsUsageData = [
-        {
-          name: 'some onboarded project',
-          currentEvents: 9876,
-          previousEvents: 1234,
-        },
-      ];
-
       beforeEach(() => {
         mockProjectsUsageDataHandler.mockResolvedValue({ data: getProjectsUsageDataResponse() });
-        utils.mapProjectsUsageResponse.mockReturnValue(projectsUsageData);
         createComponent();
         return waitForPromises();
       });
@@ -143,14 +138,24 @@ describe('ProductAnalyticsProjectsUsage', () => {
       it('renders the chart', () => {
         expect(findProductAnalyticsProjectsUsageChart().props()).toMatchObject({
           isLoading: false,
-          projectsUsageData,
+          projectsUsageData: [
+            {
+              name: 'some onboarded project',
+              productAnalyticsEventsStored: [{ year: 2023, month: 11, count: 1234 }],
+            },
+          ],
         });
       });
 
       it('renders the usage table', () => {
         expect(findProductAnalyticsProjectsUsageTable().props()).toMatchObject({
           isLoading: false,
-          projectsUsageData,
+          projectsUsageData: [
+            {
+              name: 'some onboarded project',
+              productAnalyticsEventsStored: [{ year: 2023, month: 11, count: 1234 }],
+            },
+          ],
         });
       });
     });

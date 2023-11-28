@@ -3,14 +3,14 @@ import { GlEmptyState } from '@gitlab/ui';
 
 import { helpPagePath } from '~/helpers/help_page_helper';
 
-import ProductAnalyticsGroupUsageChart from './product_analytics_group_usage_chart.vue';
+import ProductAnalyticsGroupUsage from './product_analytics_group_usage.vue';
 import ProductAnalyticsProjectsUsage from './projects_usage/product_analytics_projects_usage.vue';
 
 export default {
   name: 'ProductAnalyticsUsageQuotaApp',
   components: {
     GlEmptyState,
-    ProductAnalyticsGroupUsageChart,
+    ProductAnalyticsGroupUsage,
     ProductAnalyticsProjectsUsage,
   },
   inject: {
@@ -70,7 +70,7 @@ export default {
       />
     </template>
     <template v-else>
-      <product-analytics-group-usage-chart @no-projects="handleNoProjects" />
+      <product-analytics-group-usage @no-projects="handleNoProjects" />
       <product-analytics-projects-usage />
     </template>
   </section>

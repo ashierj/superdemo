@@ -2,10 +2,17 @@ import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import ProductAnalyticsProjectsUsageTable from 'ee/usage_quotas/product_analytics/components/projects_usage/product_analytics_projects_usage_table.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
+import { getProjectUsage } from 'ee_jest/usage_quotas/product_analytics/graphql/mock_data';
+import { useFakeDate } from 'helpers/fake_date';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 
 describe('ProductAnalyticsProjectsUsageTable', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
+
+  const mockNow = '2023-01-15T12:00:00Z';
+  useFakeDate(mockNow);
 
   const findLoadingState = () => wrapper.findComponent(GlSkeletonLoader);
   const findUsageTableWrapper = () => wrapper.findByTestId('projects-usage-table');
@@ -56,22 +63,20 @@ describe('ProductAnalyticsProjectsUsageTable', () => {
   });
 
   describe('when there is project data', () => {
-    const projectsUsageData = [
-      {
-        id: 1,
-        webUrl: '/test-project',
-        avatarUrl: '/test-project.jpg',
-        name: 'test-project',
-        currentEvents: 10,
-        previousEvents: 4,
-      },
-    ];
-
     beforeEach(() => {
       createComponent(
         {
           isLoading: false,
-          projectsUsageData,
+          projectsUsageData: [
+            getProjectUsage({
+              id: convertToGraphQLId(TYPENAME_PROJECT, 1),
+              name: 'test-project',
+              usage: [
+                { year: 2023, month: 1, count: 4 },
+                { year: 2022, month: 12, count: 7 },
+              ],
+            }),
+          ],
         },
         mountExtended,
       );
@@ -92,7 +97,7 @@ describe('ProductAnalyticsProjectsUsageTable', () => {
     it('renders the project avatar', () => {
       expect(findProjectAvatar().props()).toMatchObject(
         expect.objectContaining({
-          projectId: 1,
+          projectId: 'gid://gitlab/Project/1',
           projectAvatarUrl: '/test-project.jpg',
           projectName: 'test-project',
           alt: 'test-project',

@@ -7,15 +7,21 @@ module Resolvers
 
       authorizes_object!
       authorize :maintainer_access
-      type GraphQL::Types::Int, null: true
+      type [::Types::ProductAnalytics::MonthlyUsageType], null: true
 
-      argument :year, GraphQL::Types::Int,
-        required: false, description: 'Year for the period to return.'
+      argument :month_selection, [::Types::ProductAnalytics::MonthSelectionInputType],
+        required: true, description: 'Selection for the period to return.'
 
-      argument :month, GraphQL::Types::Int,
-        required: false, description: 'Month for the period to return.'
-      def resolve(year: Time.current.year, month: Time.current.month)
-        object.product_analytics_events_used(year: year, month: month)
+      def resolve(month_selection: [])
+        month_selection.map do |selection|
+          year = selection[:year]
+          month = selection[:month]
+          {
+            year: year,
+            month: month,
+            count: object.product_analytics_events_used(year: year, month: month)
+          }
+        end
       end
     end
   end
