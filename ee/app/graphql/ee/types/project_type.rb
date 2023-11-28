@@ -289,10 +289,11 @@ module EE
           method: :prevent_merge_without_jira_issue?,
           description: 'Indicates if an associated issue from Jira is required.'
 
-        field :product_analytics_events_stored, GraphQL::Types::Int,
+        field :product_analytics_events_stored, [::Types::ProductAnalytics::MonthlyUsageType],
           null: true,
           resolver: ::Resolvers::ProductAnalytics::ProjectUsageDataResolver,
-          description: 'Count of all events used, filtered optionally by month.'
+          description: 'Count of all events used, broken down by month',
+          alpha: { milestone: '16.7' }
 
         field :dependency_proxy_packages_setting,
           ::Types::DependencyProxy::Packages::SettingType,

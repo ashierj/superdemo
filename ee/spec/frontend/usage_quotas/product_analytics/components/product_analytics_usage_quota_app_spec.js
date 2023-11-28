@@ -2,7 +2,7 @@ import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
 import ProductAnalyticsUsageQuotaApp from 'ee/usage_quotas/product_analytics/components/product_analytics_usage_quota_app.vue';
-import ProductAnalyticsGroupUsageChart from 'ee/usage_quotas/product_analytics/components/product_analytics_group_usage_chart.vue';
+import ProductAnalyticsGroupUsage from 'ee/usage_quotas/product_analytics/components/product_analytics_group_usage.vue';
 import ProductAnalyticsProjectsUsage from 'ee/usage_quotas/product_analytics/components/projects_usage/product_analytics_projects_usage.vue';
 
 describe('ProductAnalyticsUsageQuotaApp', () => {
@@ -10,8 +10,7 @@ describe('ProductAnalyticsUsageQuotaApp', () => {
   let wrapper;
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findProductAnalyticsGroupUsageChart = () =>
-    wrapper.findComponent(ProductAnalyticsGroupUsageChart);
+  const findProductAnalyticsGroupUsage = () => wrapper.findComponent(ProductAnalyticsGroupUsage);
   const findProductAnalyticsProjectsUsage = () =>
     wrapper.findComponent(ProductAnalyticsProjectsUsage);
 
@@ -43,7 +42,7 @@ describe('ProductAnalyticsUsageQuotaApp', () => {
     beforeEach(() => createComponent({ productAnalyticsEnabled: true }));
 
     it('renders the monthly group usage chart', () => {
-      expect(findProductAnalyticsGroupUsageChart().exists()).toBe(true);
+      expect(findProductAnalyticsGroupUsage().exists()).toBe(true);
     });
 
     it('renders the projects usage breakdown', () => {
@@ -52,7 +51,7 @@ describe('ProductAnalyticsUsageQuotaApp', () => {
 
     describe('when there are no onboarded projects within the group', () => {
       beforeEach(() => {
-        findProductAnalyticsGroupUsageChart().vm.$emit('no-projects');
+        findProductAnalyticsGroupUsage().vm.$emit('no-projects');
         return nextTick();
       });
 

@@ -6,8 +6,8 @@ import {
   nMonthsBefore,
 } from '~/lib/utils/datetime/date_calculation_utility';
 
-import getGroupCurrentAndPrevProductAnalyticsUsageQuery from '../../graphql/queries/get_group_current_and_prev_product_analytics_usage.query.graphql';
-import { mapProjectsUsageResponse } from '../../graphql/utils';
+import getGroupCurrentAndPrevProductAnalyticsUsageQuery from '../../graphql/queries/get_group_product_analytics_usage.query.graphql';
+import { projectHasProductAnalyticsEnabled } from '../../utils';
 import ProductAnalyticsProjectsUsageChart from './product_analytics_projects_usage_chart.vue';
 import ProductAnalyticsProjectsUsageTable from './product_analytics_projects_usage_table.vue';
 
@@ -43,16 +43,15 @@ export default {
 
         return {
           namespacePath: this.namespacePath,
-          currentYear: current.getFullYear(),
-          previousYear: previous.getFullYear(),
-
-          // JS `getMonth()` is 0 based
-          currentMonth: current.getMonth() + 1,
-          previousMonth: previous.getMonth() + 1,
+          monthSelection: [
+            // note: JS `getMonth()` is 0 based, so add 1
+            { year: current.getFullYear(), month: current.getMonth() + 1 },
+            { year: previous.getFullYear(), month: previous.getMonth() + 1 },
+          ],
         };
       },
       update(data) {
-        return mapProjectsUsageResponse(data);
+        return data.group.projects.nodes.filter(projectHasProductAnalyticsEnabled);
       },
       error(error) {
         this.error = error;

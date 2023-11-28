@@ -1,19 +1,19 @@
 <script>
-import { GlAlert, GlLink, GlSprintf, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlLink, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
+
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import {
-  dateAtFirstDayOfMonth,
-  nMonthsBefore,
-} from '~/lib/utils/datetime/date_calculation_utility';
-import { formatDate } from '~/lib/utils/datetime/date_format_utility';
+import { nMonthsBefore } from '~/lib/utils/datetime/date_calculation_utility';
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { projectHasProductAnalyticsEnabled } from 'ee/usage_quotas/product_analytics/graphql/utils';
-import getGroupCurrentAndPrevProductAnalyticsUsageQuery from '../graphql/queries/get_group_current_and_prev_product_analytics_usage.query.graphql';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+
+import { projectHasProductAnalyticsEnabled } from '../utils';
+import getGroupProductAnalyticsUsage from '../graphql/queries/get_group_product_analytics_usage.query.graphql';
+import { getCurrentMonth, mapMonthlyTotals } from './utils';
 
 export default {
-  name: 'ProductAnalyticsGroupUsageChart',
+  name: 'ProductAnalyticsGroupUsage',
   components: {
     GlAlert,
     GlAreaChart,
@@ -21,20 +21,16 @@ export default {
     GlSkeletonLoader,
     GlSprintf,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: {
     namespacePath: {
       type: String,
     },
   },
   data() {
-    const currentMonth = dateAtFirstDayOfMonth(new Date());
-    const previousMonth = nMonthsBefore(currentMonth, 1);
-
     return {
       error: null,
       projectsUsageData: null,
-      currentMonth,
-      previousMonth,
     };
   },
   computed: {
@@ -45,46 +41,29 @@ export default {
       return [
         {
           name: s__('ProductAnalytics|Analytics events by month'),
-          data: this.projectsUsageData.map(([date, usageData]) => [
-            formatDate(date, 'mmm yyyy'),
-            usageData,
-          ]),
+          data: this.projectsUsageData,
         },
       ];
     },
   },
   apollo: {
     projectsUsageData: {
-      // TODO refactor this component to fetch a years worth of data at a time and display arbitrary months of data
-      // instead of using explicit "previous" and "current" months: https://gitlab.com/gitlab-org/gitlab/-/issues/429312
-      query: getGroupCurrentAndPrevProductAnalyticsUsageQuery,
+      query: getGroupProductAnalyticsUsage,
       variables() {
         return {
           namespacePath: this.namespacePath,
-          currentYear: this.currentMonth.getFullYear(),
-          previousYear: this.previousMonth.getFullYear(),
-
-          // JS `getMonth()` is 0 based
-          currentMonth: this.currentMonth.getMonth() + 1,
-          previousMonth: this.previousMonth.getMonth() + 1,
+          monthSelection: this.getMonthsToQuery(),
         };
       },
       update(data) {
-        const months = [
-          [this.previousMonth, this.sumProjectEvents(data.previous.projects.nodes)],
-          [this.currentMonth, this.sumProjectEvents(data.current.projects.nodes)],
-        ];
+        const projects = data.group.projects.nodes.filter(projectHasProductAnalyticsEnabled);
 
-        const hasNoProjects = [data.previous.projects.nodes, data.current.projects.nodes]
-          .flat()
-          .filter(projectHasProductAnalyticsEnabled)
-          .every((projects) => projects.length === 0);
-
-        if (hasNoProjects) {
+        if (projects.length === 0) {
           this.$emit('no-projects');
+          return [];
         }
 
-        return months;
+        return mapMonthlyTotals(projects);
       },
       error(error) {
         this.error = error;
@@ -93,11 +72,22 @@ export default {
     },
   },
   methods: {
-    sumProjectEvents(projects) {
-      return projects.reduce(
-        (sum, project) => sum + (project.productAnalyticsEventsStored || 0),
-        0,
-      );
+    getMonthsToQuery() {
+      // 12 months data will cause backend performance issues for some large groups. So we can toggle
+      // this when needed until performance is improved in https://gitlab.com/gitlab-org/gitlab/-/issues/430865
+      const ONE_YEAR = 12;
+      const TWO_MONTHS = 2;
+      const numMonthsDataToFetch = this.glFeatures.productAnalyticsUsageQuotaAnnualData
+        ? ONE_YEAR
+        : TWO_MONTHS;
+
+      const currentMonth = getCurrentMonth();
+      return Array.from({ length: numMonthsDataToFetch }).map((_, index) => {
+        const date = nMonthsBefore(currentMonth, index);
+
+        // note: JS `getMonth()` is 0 based, so add 1
+        return { year: date.getFullYear(), month: date.getMonth() + 1 };
+      });
     },
   },
   CHART_OPTIONS: {

@@ -14,7 +14,14 @@ RSpec.describe 'Query.project(fullPath).product_analytics_events_stored',
     %(
       query {
         project(fullPath: "#{project.full_path}") {
-          productAnalyticsEventsStored
+          productAnalyticsEventsStored(monthSelection: [
+            { year: 2023, month: 1 },
+            { year: 2022, month: 12 }
+          ]) {
+            year
+            month
+            count
+          }
         }
       }
     )
@@ -29,10 +36,12 @@ RSpec.describe 'Query.project(fullPath).product_analytics_events_stored',
   end
 
   context 'when project does not have product analytics enabled' do
-    it "returns zero" do
+    it "returns zero for each months usage" do
       subject
 
-      expect(graphql_data.dig('project', 'productAnalyticsEventsStored')).to be_zero
+      graphql_data.dig('project', 'productAnalyticsEventsStored').each do |event|
+        expect(event['count']).to be_zero
+      end
     end
   end
 
@@ -43,41 +52,21 @@ RSpec.describe 'Query.project(fullPath).product_analytics_events_stored',
       end
     end
 
-    it 'queries the ProjectUsageData interface' do
-      freeze_time do
-        expect_next_instance_of(Analytics::ProductAnalytics::ProjectUsageData) do |instance|
-          expect(instance)
-            .to receive(:events_stored_count).with(year: Time.current.year, month: Time.current.month).once
-        end
-
-        subject
-      end
-    end
-
     context 'when user is not a project member' do
       let_it_be(:user) { create(:user) }
 
       it { is_expected.to be_nil }
     end
 
-    context 'when setting a month and year' do
-      let(:query) do
-        %(
-          query {
-            project(fullPath: "#{project.full_path}") {
-              productAnalyticsEventsStored(year: 2021, month: 3)
-            }
-          }
-        )
-      end
+    it 'queries the ProjectUsageData interface with the correct parameters' do
+      instance = Analytics::ProductAnalytics::ProjectUsageData.new(project_id: project.id)
 
-      it 'queries the ProjectUsageData interface with the correct parameters' do
-        expect_next_instance_of(Analytics::ProductAnalytics::ProjectUsageData) do |instance|
-          expect(instance).to receive(:events_stored_count).with(year: 2021, month: 3).once
-        end
+      allow(Analytics::ProductAnalytics::ProjectUsageData).to receive(:new).and_return(instance)
 
-        subject
-      end
+      expect(instance).to receive(:events_stored_count).with(year: 2023, month: 1).once
+      expect(instance).to receive(:events_stored_count).with(year: 2022, month: 12).once
+
+      subject
     end
   end
 end

@@ -2,7 +2,11 @@
 import { GlLink, GlSkeletonLoader, GlTableLite, GlTooltipDirective } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
-import { projectsUsageDataValidator } from '../utils';
+import {
+  findCurrentMonthUsage,
+  findPreviousMonthUsage,
+  projectsUsageDataValidator,
+} from '../utils';
 
 export default {
   name: 'ProductAnalyticsProjectsUsageTable',
@@ -31,6 +35,15 @@ export default {
     hasProjects() {
       return this.projectsUsageData?.length > 0;
     },
+    tableData() {
+      return this.projectsUsageData.map((project) => {
+        return {
+          ...project,
+          currentEvents: findCurrentMonthUsage(project).count,
+          previousEvents: findPreviousMonthUsage(project).count,
+        };
+      });
+    },
   },
   TABLE_FIELDS: [
     { key: 'name', label: __('Project') },
@@ -43,7 +56,7 @@ export default {
   <div>
     <gl-skeleton-loader v-if="isLoading" :lines="3" :equal-width-lines="true" />
     <div v-else-if="hasProjects" data-testid="projects-usage-table">
-      <gl-table-lite :items="projectsUsageData" :fields="$options.TABLE_FIELDS">
+      <gl-table-lite :items="tableData" :fields="$options.TABLE_FIELDS">
         <template #cell(name)="{ item: { id, name, avatarUrl, webUrl } }">
           <project-avatar
             :project-id="id"

@@ -2,10 +2,17 @@ import { GlSkeletonLoader } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import ProductAnalyticsProjectsUsageChart from 'ee/usage_quotas/product_analytics/components/projects_usage/product_analytics_projects_usage_chart.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { getProjectUsage } from 'ee_jest/usage_quotas/product_analytics/graphql/mock_data';
+import { useFakeDate } from 'helpers/fake_date';
 
 describe('ProductAnalyticsProjectsUsageChart', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
+
+  const mockNow = '2023-01-15T12:00:00Z';
+  useFakeDate(mockNow);
 
   const findLoadingState = () => wrapper.findComponent(GlSkeletonLoader);
   const findUsageChart = () => wrapper.findComponent(GlColumnChart);
@@ -53,22 +60,20 @@ describe('ProductAnalyticsProjectsUsageChart', () => {
   });
 
   describe('when there is project data', () => {
-    const projectsUsageData = [
-      {
-        id: 1,
-        webUrl: '/test-project',
-        avatarUrl: '/test-project.jpg',
-        name: 'test-project',
-        currentEvents: 10,
-        previousEvents: 4,
-      },
-    ];
-
     beforeEach(() => {
       createComponent(
         {
           isLoading: false,
-          projectsUsageData,
+          projectsUsageData: [
+            getProjectUsage({
+              id: convertToGraphQLId(TYPENAME_PROJECT, 1),
+              name: `test-project`,
+              usage: [
+                { year: 2023, month: 1, count: 7 },
+                { year: 2022, month: 12, count: 10 },
+              ],
+            }),
+          ],
         },
         mountExtended,
       );
@@ -82,12 +87,12 @@ describe('ProductAnalyticsProjectsUsageChart', () => {
       expect(findUsageChart().props()).toMatchObject({
         bars: [
           {
-            data: [['test-project', 4]],
+            data: [['test-project', 10]],
             name: 'Previous month',
             stack: 'previous',
           },
           {
-            data: [['test-project', 10]],
+            data: [['test-project', 7]],
             name: 'Current month to date',
             stack: 'current',
           },
@@ -104,14 +109,16 @@ describe('ProductAnalyticsProjectsUsageChart', () => {
       createComponent(
         {
           isLoading: false,
-          projectsUsageData: Array.from({ length: 51 }).map((_, index) => ({
-            id: index,
-            webUrl: `/test-project-${index}`,
-            avatarUrl: `/test-project-${index}.jpg`,
-            name: `test-project-${index}`,
-            currentEvents: 10,
-            previousEvents: 4,
-          })),
+          projectsUsageData: Array.from({ length: 51 }).map((_, index) =>
+            getProjectUsage({
+              id: convertToGraphQLId(TYPENAME_PROJECT, index),
+              name: `test-project-${index}`,
+              usage: [
+                { year: 2023, month: 1, count: 7 },
+                { year: 2022, month: 12, count: 10 },
+              ],
+            }),
+          ),
         },
         mountExtended,
       );

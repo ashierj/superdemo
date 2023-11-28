@@ -1,7 +1,33 @@
-import { projectsUsageDataValidator } from 'ee/usage_quotas/product_analytics/components/utils';
+import {
+  projectsUsageDataValidator,
+  findCurrentMonthUsage,
+  findPreviousMonthUsage,
+  mapMonthlyTotals,
+} from 'ee/usage_quotas/product_analytics/components/utils';
+import {
+  getProjectUsage,
+  getProjectWithYearsUsage,
+} from 'ee_jest/usage_quotas/product_analytics/graphql/mock_data';
+import { useFakeDate } from 'helpers/fake_date';
 
 describe('Product analytics usage quota component utils', () => {
   describe('projectsUsageDataValidator', () => {
+    let validProject;
+
+    beforeEach(() => {
+      validProject = getProjectUsage({
+        id: 'gid://gitlab/Project/2',
+        name: 'another project',
+        usage: [
+          {
+            year: 2023,
+            month: 11,
+            count: null,
+          },
+        ],
+      });
+    });
+
     it('returns true for empty array', () => {
       const result = projectsUsageDataValidator([]);
 
@@ -9,18 +35,7 @@ describe('Product analytics usage quota component utils', () => {
     });
 
     it('returns true when all items have all properties', () => {
-      const result = projectsUsageDataValidator([
-        {
-          name: 'some project',
-          currentEvents: 1,
-          previousEvents: 1,
-        },
-        {
-          name: 'another project',
-          currentEvents: 2,
-          previousEvents: 2,
-        },
-      ]);
+      const result = projectsUsageDataValidator([validProject, getProjectUsage()]);
 
       expect(result).toBe(true);
     });
@@ -33,14 +48,10 @@ describe('Product analytics usage quota component utils', () => {
 
     it('returns false when one item is invalid', () => {
       const result = projectsUsageDataValidator([
+        validProject,
         {
-          name: 'some project',
-          currentEvents: 1,
-          previousEvents: 1,
-        },
-        {
-          currentEvents: 2,
-          previousEvents: 2,
+          ...validProject,
+          name: undefined,
         },
       ]);
 
@@ -49,16 +60,24 @@ describe('Product analytics usage quota component utils', () => {
 
     it.each([
       {
-        currentEvents: 1,
-        previousEvents: 1,
+        ...validProject,
+        id: undefined,
       },
       {
-        name: 'some project',
-        previousEvents: 1,
+        ...validProject,
+        name: undefined,
       },
       {
-        name: 'some project',
-        currentEvents: 1,
+        ...validProject,
+        productAnalyticsEventsStored: undefined,
+      },
+      {
+        ...validProject,
+        webUrl: undefined,
+      },
+      {
+        ...validProject,
+        avatarUrl: undefined,
       },
     ])('returns false when an item property is missing', (testCase) => {
       const result = projectsUsageDataValidator([testCase]);
@@ -68,24 +87,115 @@ describe('Product analytics usage quota component utils', () => {
 
     it.each([
       {
-        name: 12345,
-        currentEvents: 1,
-        previousEvents: 1,
+        ...validProject,
+        id: false,
       },
       {
-        name: 'some project',
-        currentEvents: 'invalid',
-        previousEvents: 1,
+        ...validProject,
+        name: false,
       },
       {
-        name: 'some project',
-        currentEvents: 1,
-        previousEvents: 'invalid',
+        ...validProject,
+        productAnalyticsEventsStored: false,
+      },
+      {
+        ...validProject,
+        webUrl: false,
+      },
+      {
+        ...validProject,
+        avatarUrl: false,
       },
     ])('returns false when an item property is the wrong type', (testCase) => {
       const result = projectsUsageDataValidator([testCase]);
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe('findCurrentMonthUsage', () => {
+    const mockNow = '2023-01-15T12:00:00Z';
+    useFakeDate(mockNow);
+
+    it('returns the expected usage', () => {
+      const result = findCurrentMonthUsage(getProjectWithYearsUsage());
+
+      expect(result).toMatchObject({
+        count: 1,
+        month: 1,
+        year: 2023,
+      });
+    });
+  });
+
+  describe('findPreviousMonthUsage', () => {
+    const mockNow = '2023-01-15T12:00:00Z';
+    useFakeDate(mockNow);
+
+    it('returns the expected usage', () => {
+      const result = findPreviousMonthUsage(getProjectWithYearsUsage());
+
+      expect(result).toMatchObject({
+        count: 1,
+        month: 12,
+        year: 2022,
+      });
+    });
+  });
+
+  describe('mapMonthlyTotals', () => {
+    it('returns an empty array for empty projects array', () => {
+      const result = mapMonthlyTotals([]);
+      expect(result).toEqual([]);
+    });
+
+    it('sums counts for the same month and year', () => {
+      const projects = [
+        getProjectUsage({ usage: [{ year: 2023, month: 1, count: 10 }] }),
+        getProjectUsage({ usage: [{ year: 2023, month: 1, count: 5 }] }),
+      ];
+      const result = mapMonthlyTotals(projects);
+      expect(result).toEqual([['Jan 2023', 15]]);
+    });
+
+    it('handles multiple months and years', () => {
+      const projects = [
+        getProjectUsage({ usage: [{ year: 2023, month: 1, count: 10 }] }),
+        getProjectUsage({ usage: [{ year: 2022, month: 12, count: 5 }] }),
+        getProjectUsage({ usage: [{ year: 2023, month: 2, count: 8 }] }),
+      ];
+      const result = mapMonthlyTotals(projects);
+      expect(result).toEqual([
+        ['Dec 2022', 5],
+        ['Jan 2023', 10],
+        ['Feb 2023', 8],
+      ]);
+    });
+
+    it('returns sorted results', () => {
+      const projects = [
+        getProjectUsage({ usage: [{ year: 2023, month: 2, count: 8 }] }),
+        getProjectUsage({ usage: [{ year: 2023, month: 1, count: 10 }] }),
+        getProjectUsage({ usage: [{ year: 2022, month: 12, count: 5 }] }),
+      ];
+      const result = mapMonthlyTotals(projects);
+      expect(result).toEqual([
+        ['Dec 2022', 5],
+        ['Jan 2023', 10],
+        ['Feb 2023', 8],
+      ]);
+    });
+
+    it('handles empty months', () => {
+      const projects = [
+        getProjectUsage({ usage: [{ year: 2023, month: 1, count: 0 }] }),
+        getProjectUsage({ usage: [{ year: 2023, month: 2, count: 0 }] }),
+      ];
+      const result = mapMonthlyTotals(projects);
+      expect(result).toEqual([
+        ['Jan 2023', 0],
+        ['Feb 2023', 0],
+      ]);
     });
   });
 });
