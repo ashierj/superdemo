@@ -198,6 +198,7 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
       'TypeScript' | 'ts language'
       'Java' | 'java language'
       'PHP' | 'php language'
+      'C#' | 'c# language'
     end
 
     with_them do

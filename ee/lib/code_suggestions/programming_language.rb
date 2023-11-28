@@ -129,6 +129,10 @@ module CodeSuggestions
       'PHP' => {
         'empty_function' => %r{function\s+(\w*)\s*\(.*?\)\s*(?::\s*(\w+))?\s*\{|\bfunction\s*\([^)]*\)\s*\{},
         'function' => %r{\}\s*|function\s+(\w*)\s*\(.*?\)\s*(?::\s*(\w+))?\s*\{|\bfunction\s*\([^)]*\)\s*\{}
+      },
+      'C#' => {
+        'empty_function' => %r{\b\s*\w+\s+\w+\s*\([^)]*\)\s*\{|\s*\{},
+        'function' => %r{\}\s*|\b\s*\w+\s+\w+\s*\([^)]*\)\s*(\{?)|\s*\{}
       }
     }.freeze
 
