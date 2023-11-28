@@ -97,7 +97,7 @@ RSpec.describe LicenseHelper, feature_category: :subscription_management do
                                                        buy_subscription_path: Gitlab::Saas.about_pricing_url,
                                                        subscription_sync_path: sync_seat_link_admin_license_path,
                                                        license_remove_path: admin_license_path,
-                                                       congratulation_svg_path: helper.image_path('illustrations/illustration-congratulation-purchase.svg'),
+                                                       congratulation_svg_path: helper.image_path('illustrations/cloud-check-sm.svg'),
                                                        subscription_activation_banner_callout_name: ::EE::Users::CalloutsHelper::CL_SUBSCRIPTION_ACTIVATION,
                                                        license_usage_file_path: admin_license_usage_export_path(format: :csv) })
       end
@@ -113,7 +113,7 @@ RSpec.describe LicenseHelper, feature_category: :subscription_management do
                                                        buy_subscription_path: Gitlab::Saas.about_pricing_url,
                                                        subscription_sync_path: sync_seat_link_admin_license_path,
                                                        license_remove_path: admin_license_path,
-                                                       congratulation_svg_path: helper.image_path('illustrations/illustration-congratulation-purchase.svg'),
+                                                       congratulation_svg_path: helper.image_path('illustrations/cloud-check-sm.svg'),
                                                        subscription_activation_banner_callout_name: ::EE::Users::CalloutsHelper::CL_SUBSCRIPTION_ACTIVATION,
                                                        license_usage_file_path: admin_license_usage_export_path(format: :csv) })
       end
