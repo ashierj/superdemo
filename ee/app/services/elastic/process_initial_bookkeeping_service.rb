@@ -25,6 +25,8 @@ module Elastic
         projects.each do |project|
           raise ArgumentError, 'This method only accepts Projects' unless project.is_a?(Project)
 
+          next unless project.maintaining_indexed_associations?
+
           maintain_indexed_associations(project, INDEXED_PROJECT_ASSOCIATIONS)
 
           ElasticCommitIndexerWorker.perform_async(project.id, false, { force: true })

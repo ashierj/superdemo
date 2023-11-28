@@ -21,34 +21,40 @@ module EE
     prepended do
       set_available_features(EE_FEATURES)
 
-      # Ensure changes to project visibility settings go to elasticsearch if the tracked field(s) change
-      after_commit on: :update do
-        if project.maintaining_elasticsearch?
-          project.maintain_elasticsearch_update
-
-          associations_to_update = []
-          associations_to_update << 'issues' if elasticsearch_project_issues_need_updating?
-          associations_to_update << 'merge_requests' if elasticsearch_project_merge_requests_need_updating?
-          associations_to_update << 'notes' if elasticsearch_project_notes_need_updating?
-          associations_to_update << 'milestones' if elasticsearch_project_milestones_need_updating?
-
-          if associations_to_update.any?
-            ElasticAssociationIndexerWorker.perform_async(project.class.name, project_id, associations_to_update)
-          end
-
-          if elasticsearch_project_blobs_need_updating?
-            ElasticCommitIndexerWorker.perform_async(project.id, false, { force: true })
-          end
-
-          if elasticsearch_project_wikis_need_updating?
-            ElasticWikiIndexerWorker.perform_async(project.id, project.class.name, { force: true })
-          end
-        end
-      end
+      # Ensure changes to project visibility settings go to Elasticsearch if the tracked field(s) change
+      after_commit :update_project_in_index, on: :update, if: -> { project.maintaining_elasticsearch? }
+      after_commit :update_project_associations_in_index, on: :update, if: -> {
+        project.maintaining_elasticsearch? && project.maintaining_indexed_associations?
+      }
 
       attribute :requirements_access_level, default: Featurable::ENABLED
 
       private
+
+      def update_project_in_index
+        project.maintain_elasticsearch_update
+      end
+
+      def update_project_associations_in_index
+        associations_to_update = [].tap do |associations|
+          associations << 'issues' if elasticsearch_project_issues_need_updating?
+          associations << 'merge_requests' if elasticsearch_project_merge_requests_need_updating?
+          associations << 'notes' if elasticsearch_project_notes_need_updating?
+          associations << 'milestones' if elasticsearch_project_milestones_need_updating?
+        end
+
+        if associations_to_update.any?
+          ElasticAssociationIndexerWorker.perform_async(project.class.name, project_id, associations_to_update)
+        end
+
+        if elasticsearch_project_blobs_need_updating?
+          ElasticCommitIndexerWorker.perform_async(project.id, false, { force: true })
+        end
+
+        return unless elasticsearch_project_wikis_need_updating?
+
+        ElasticWikiIndexerWorker.perform_async(project.id, project.class.name, { force: true })
+      end
 
       def elasticsearch_project_milestones_need_updating?
         previous_changes.keys.any? { |key| MILESTONE_PERMISSION_TRACKED_FIELDS.include?(key) }

@@ -21,7 +21,7 @@ module Elastic
         project.invalidate_elasticsearch_indexes_cache!
       end
 
-      if project.maintaining_elasticsearch?
+      if project.maintaining_elasticsearch? && project.maintaining_indexed_associations?
         # If the project is indexed in Elasticsearch, the project and all associated data are queued up for indexing
         # to make sure the namespace_ancestry field gets updated in each document.
         ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project)
