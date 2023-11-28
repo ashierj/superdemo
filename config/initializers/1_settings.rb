@@ -876,6 +876,10 @@ Gitlab.ee do
   Settings.cron_jobs['timeout_pending_status_check_responses_worker'] ||= {}
   Settings.cron_jobs['timeout_pending_status_check_responses_worker']['cron'] ||= '*/1 * * * *'
   Settings.cron_jobs['timeout_pending_status_check_responses_worker']['job_class'] = 'ComplianceManagement::TimeoutPendingStatusCheckResponsesWorker'
+  Settings.cron_jobs['click_house_ci_finished_builds_sync_worker'] ||= {}
+  Settings.cron_jobs['click_house_ci_finished_builds_sync_worker']['cron'] ||= '*/3 * * * *'
+  Settings.cron_jobs['click_house_ci_finished_builds_sync_worker']['args'] ||= [1]
+  Settings.cron_jobs['click_house_ci_finished_builds_sync_worker']['job_class'] = 'ClickHouse::CiFinishedBuildsSyncCronWorker'
 
   Gitlab.com do
     Settings.cron_jobs['disable_legacy_open_source_license_for_inactive_projects'] ||= {}
@@ -893,10 +897,6 @@ Gitlab.ee do
     Settings.cron_jobs['click_house_events_sync_worker'] ||= {}
     Settings.cron_jobs['click_house_events_sync_worker']['cron'] ||= "*/3 * * * *"
     Settings.cron_jobs['click_house_events_sync_worker']['job_class'] = 'ClickHouse::EventsSyncWorker'
-    Settings.cron_jobs['click_house_ci_finished_builds_sync_worker'] ||= {}
-    Settings.cron_jobs['click_house_ci_finished_builds_sync_worker']['cron'] ||= '*/3 * * * *'
-    Settings.cron_jobs['click_house_ci_finished_builds_sync_worker']['args'] ||= [1]
-    Settings.cron_jobs['click_house_ci_finished_builds_sync_worker']['job_class'] = 'ClickHouse::CiFinishedBuildsSyncCronWorker'
     Settings.cron_jobs['vertex_ai_refresh_access_token_worker'] ||= {}
     Settings.cron_jobs['vertex_ai_refresh_access_token_worker']['cron'] ||= '*/50 * * * *'
     Settings.cron_jobs['vertex_ai_refresh_access_token_worker']['job_class'] = 'Llm::VertexAiAccessTokenRefreshWorker'
