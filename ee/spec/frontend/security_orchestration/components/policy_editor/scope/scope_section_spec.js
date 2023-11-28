@@ -1,5 +1,7 @@
 import { GlAlert, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import ScopeSection from 'ee/security_orchestration/components/policy_editor/scope/scope_section.vue';
 import ComplianceFrameworkDropdown from 'ee/security_orchestration/components/policy_editor/scope/compliance_framework_dropdown.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
@@ -96,7 +98,10 @@ describe('PolicyScope', () => {
 
     expect(findGroupProjectsDropdown().exists()).toBe(true);
 
-    findGroupProjectsDropdown().vm.$emit('select', ['id1', 'id2']);
+    findGroupProjectsDropdown().vm.$emit('select', [
+      { id: convertToGraphQLId(TYPENAME_PROJECT, '1') },
+      { id: convertToGraphQLId(TYPENAME_PROJECT, '2') },
+    ]);
 
     expect(wrapper.emitted('changed')).toEqual([
       [
@@ -113,7 +118,7 @@ describe('PolicyScope', () => {
           },
         },
       ],
-      [{ projects: { excluding: [{ id: 'id1' }, { id: 'id2' }] } }],
+      [{ projects: { excluding: [{ id: 1 }, { id: 2 }] } }],
     ]);
   });
 
@@ -122,7 +127,10 @@ describe('PolicyScope', () => {
 
     expect(findGroupProjectsDropdown().exists()).toBe(true);
 
-    findGroupProjectsDropdown().vm.$emit('select', ['id1', 'id2']);
+    findGroupProjectsDropdown().vm.$emit('select', [
+      { id: convertToGraphQLId(TYPENAME_PROJECT, '1') },
+      { id: convertToGraphQLId(TYPENAME_PROJECT, '2') },
+    ]);
 
     expect(wrapper.emitted('changed')).toEqual([
       [
@@ -132,7 +140,7 @@ describe('PolicyScope', () => {
           },
         },
       ],
-      [{ projects: { including: [{ id: 'id1' }, { id: 'id2' }] } }],
+      [{ projects: { including: [{ id: 1 }, { id: 2 }] } }],
     ]);
   });
 
@@ -180,7 +188,10 @@ describe('PolicyScope', () => {
       expect(findExceptionTypeDropdown().props('selected')).toBe(EXCEPT_PROJECTS);
       expect(findExceptionTypeDropdown().exists()).toBe(true);
       expect(findGroupProjectsDropdown().exists()).toBe(true);
-      expect(findGroupProjectsDropdown().props('selectedProjectsIds')).toEqual(['id1', 'id2']);
+      expect(findGroupProjectsDropdown().props('selected')).toEqual([
+        convertToGraphQLId(TYPENAME_PROJECT, 'id1'),
+        convertToGraphQLId(TYPENAME_PROJECT, 'id2'),
+      ]);
     });
 
     it('should render existing including projects', () => {
@@ -197,7 +208,10 @@ describe('PolicyScope', () => {
       expect(findComplianceFrameworkDropdown().exists()).toBe(false);
       expect(findExceptionTypeDropdown().exists()).toBe(false);
       expect(findGroupProjectsDropdown().exists()).toBe(true);
-      expect(findGroupProjectsDropdown().props('selectedProjectsIds')).toEqual(['id1', 'id2']);
+      expect(findGroupProjectsDropdown().props('selected')).toEqual([
+        convertToGraphQLId(TYPENAME_PROJECT, 'id1'),
+        convertToGraphQLId(TYPENAME_PROJECT, 'id2'),
+      ]);
     });
 
     it('should render alert message for projects dropdown', async () => {
@@ -205,7 +219,7 @@ describe('PolicyScope', () => {
         propsData: {
           policyScope: {
             projects: {
-              including: ['id1', 'id2'],
+              including: [{ id: 'id1' }, { id: 'id2' }],
             },
           },
         },
