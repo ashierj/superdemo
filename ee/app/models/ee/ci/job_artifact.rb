@@ -86,6 +86,17 @@ module EE
       def file_types_for_report(report_type)
         EE_REPORT_FILE_TYPES.fetch(report_type) { super }
       end
+
+      override :create_verification_details_for
+      def create_verification_details_for(primary_keys)
+        job_artifacts = find(primary_keys)
+
+        rows = job_artifacts.map do |artifact|
+          { verification_state_model_key => artifact.id, :partition_id => artifact.partition_id }
+        end
+
+        verification_state_table_class.insert_all(rows)
+      end
     end
 
     override :file_stored_after_transaction_hooks

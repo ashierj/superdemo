@@ -13980,7 +13980,7 @@ CREATE TABLE ci_job_artifact_states (
     verification_retry_count smallint,
     verification_checksum bytea,
     verification_failure text,
-    partition_id bigint DEFAULT 100 NOT NULL,
+    partition_id bigint NOT NULL,
     CONSTRAINT check_df832b66ea CHECK ((char_length(verification_failure) <= 255))
 );
 
