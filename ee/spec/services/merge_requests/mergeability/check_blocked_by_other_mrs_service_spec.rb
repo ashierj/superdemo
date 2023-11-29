@@ -11,6 +11,8 @@ RSpec.describe MergeRequests::Mergeability::CheckBlockedByOtherMrsService, featu
 
   let_it_be(:blocking_merge_request) { build(:merge_request) }
 
+  it_behaves_like 'mergeability check service', :merge_request_blocked, 'Checks whether the merge request is blocked'
+
   describe "#execute" do
     let(:result) { check_blocked_by_other_mrs.execute }
 

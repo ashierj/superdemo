@@ -3,9 +3,8 @@
 module MergeRequests
   module Mergeability
     class CheckExternalStatusChecksPassedService < CheckBaseService
-      def self.failure_reason
-        :status_checks_must_pass
-      end
+      identifier :status_checks_must_pass
+      description 'Checks whether the external status checks pass'
 
       def execute
         return inactive unless only_allow_merge_if_all_status_checks_passed_enabled?(merge_request.project)

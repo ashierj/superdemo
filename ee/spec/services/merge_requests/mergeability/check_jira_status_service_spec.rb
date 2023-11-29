@@ -10,6 +10,9 @@ RSpec.describe MergeRequests::Mergeability::CheckJiraStatusService, feature_cate
   let_it_be(:merge_request) { build(:merge_request, source_project: project) }
   let(:params) { {} }
 
+  it_behaves_like 'mergeability check service', :jira_association_missing,
+    'Checks whether the title or description references a Jira issue.'
+
   describe '#execute' do
     let(:result) { check_jira_status.execute }
 

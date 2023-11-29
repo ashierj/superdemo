@@ -9,6 +9,8 @@ RSpec.describe MergeRequests::Mergeability::CheckApprovedService, feature_catego
   let(:params) { { skip_approved_check: skip_check } }
   let(:skip_check) { false }
 
+  it_behaves_like 'mergeability check service', :not_approved, 'Checks whether the merge request is approved'
+
   describe "#execute" do
     let(:result) { check_approved.execute }
 
