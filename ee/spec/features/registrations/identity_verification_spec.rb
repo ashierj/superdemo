@@ -186,8 +186,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     context 'when the user is low risk' do
       let(:risk) { :low }
 
-      it 'does not verify the user and lands on group activity page' do
-        expect(page).to have_current_path(activity_group_path(invitation.group))
+      it 'does not verify the user and lands on group page' do
+        expect(page).to have_current_path(group_path(invitation.group))
         expect(page).to have_content("You have been granted Developer access to group #{invitation.group.name}.")
       end
     end

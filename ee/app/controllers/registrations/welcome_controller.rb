@@ -89,7 +89,7 @@ module Registrations
         signup_onboarding_path
       elsif onboarding_status.single_invite? # invites w/o tasks due to order
         flash[:notice] = helpers.invite_accepted_notice(onboarding_status.last_invited_member)
-        onboarding_status.last_invited_member_source.activity_path
+        polymorphic_path(onboarding_status.last_invited_member_source)
       else
         # Subscription registrations goes through here as well.
         # Invites will come here too if there is more than 1.

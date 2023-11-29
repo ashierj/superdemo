@@ -249,15 +249,15 @@ RSpec.describe Registrations::WelcomeController, :saas, feature_category: :syste
           context 'when the new user already has any accepted group membership' do
             let!(:member1) { create(:group_member, user: user) }
 
-            it 'redirects to the group activity page' do
-              expect(patch_update).to redirect_to(activity_group_path(member1.source))
+            it 'redirects to the group page' do
+              expect(patch_update).to redirect_to(group_path(member1.source))
             end
 
             context 'when the new user already has more than 1 accepted group membership' do
-              it 'redirects to the most recent membership group activity page' do
+              it 'redirects to the most recent membership group page' do
                 member2 = create(:group_member, user: user)
 
-                expect(patch_update).to redirect_to(activity_group_path(member2.source))
+                expect(patch_update).to redirect_to(group_path(member2.source))
               end
             end
 
