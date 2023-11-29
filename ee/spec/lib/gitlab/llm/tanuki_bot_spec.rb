@@ -251,21 +251,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
               execute
             end
 
-            context 'when duo_chat_absolute_doc_links is disabled' do
-              before do
-                stub_feature_flags(duo_chat_absolute_doc_links: false)
-              end
-
-              it 'does not call duo_chat_documentation pipeline' do
-                allow(anthropic_client).to receive(:stream).once.and_return(completion_response)
-                allow(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
-
-                expect(Banzai).not_to receive(:render)
-
-                execute
-              end
-            end
-
             it 'yields the streamed response to the given block' do
               embeddings
 
