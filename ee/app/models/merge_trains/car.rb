@@ -169,6 +169,14 @@ module MergeTrains
       ACTIVE_STATUSES.include?(status_name.to_s)
     end
 
+    def on_ff_train?
+      if ::Feature.enabled?(:fast_forward_merge_trains_support, target_project)
+        active? && pipeline&.sha == merge_request.merge_params.dig('train_ref', 'commit_sha')
+      else
+        false
+      end
+    end
+
     def train
       Train.new(target_project_id, target_branch)
     end

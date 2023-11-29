@@ -11,6 +11,12 @@ module MergeTrains
       .map(&:train)
     end
 
+    def self.project_using_ff?(project)
+      ::Feature.enabled?(:fast_forward_merge_trains_support, project) &&
+        project.merge_trains_enabled? &&
+        project.ff_merge_must_be_possible?
+    end
+
     attr_reader :project_id, :target_branch
 
     def initialize(project_id, branch)

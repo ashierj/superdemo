@@ -9,7 +9,8 @@ module AuditEvents
       AuditEvents::Strategies::InstanceExternalDestinationStrategy,
       AuditEvents::Strategies::GoogleCloudLoggingDestinationStrategy,
       AuditEvents::Strategies::Instance::GoogleCloudLoggingDestinationStrategy,
-      AuditEvents::Strategies::AmazonS3DestinationStrategy
+      AuditEvents::Strategies::AmazonS3DestinationStrategy,
+      AuditEvents::Strategies::Instance::AmazonS3DestinationStrategy
     ].freeze
 
     def initialize(event_name, audit_event)

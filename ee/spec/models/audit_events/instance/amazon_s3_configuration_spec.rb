@@ -29,4 +29,12 @@ RSpec.describe AuditEvents::Instance::AmazonS3Configuration, feature_category: :
   it_behaves_like 'includes ExternallyCommonDestinationable concern' do
     let(:model_factory_name) { :instance_amazon_s3_configuration }
   end
+
+  describe '#allowed_to_stream?' do
+    let(:s3_configuration) { create(:instance_amazon_s3_configuration) }
+
+    it 'always returns true' do
+      expect(s3_configuration.allowed_to_stream?).to eq(true)
+    end
+  end
 end
