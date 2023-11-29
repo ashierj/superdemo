@@ -31,6 +31,7 @@ describe('International Phone input component', () => {
   let axiosMock;
 
   const SEND_CODE_PATH = '/users/identity_verification/send_phone_verification_code';
+  const MOCK_ARKOSE_TOKEN = 'verification-token';
 
   const findForm = () => wrapper.findComponent(GlForm);
 
@@ -60,7 +61,7 @@ describe('International Phone input component', () => {
     return mockApollo;
   };
 
-  const createComponent = (provide = {}, mountFn = shallowMountExtended) => {
+  const createComponent = (provide = {}, props = {}, mountFn = shallowMountExtended) => {
     wrapper = mountFn(InternationalPhoneInput, {
       apolloProvider: createMockApolloProvider(),
       provide: {
@@ -68,6 +69,10 @@ describe('International Phone input component', () => {
           sendCodePath: SEND_CODE_PATH,
           ...provide,
         },
+      },
+      propsData: {
+        arkoseToken: MOCK_ARKOSE_TOKEN,
+        ...props,
       },
     });
   };
@@ -118,7 +123,7 @@ describe('International Phone input component', () => {
     });
 
     it('should render international dial code', () => {
-      createComponent({}, mountExtended);
+      createComponent({}, {}, mountExtended);
 
       expect(findInternationalDialCode().text()).toBe(`+${mockCountry1.internationalDialCode}`);
     });
@@ -138,7 +143,7 @@ describe('International Phone input component', () => {
     });
 
     it('updates country field with the name of selected country', async () => {
-      createComponent({}, mountExtended);
+      createComponent({}, {}, mountExtended);
 
       findCountrySelect().vm.$emit('select', 'AU');
       await nextTick();
@@ -212,6 +217,16 @@ describe('International Phone input component', () => {
         return waitForPromises();
       });
 
+      it('emits `verification-attempt` event', () => {
+        expect(wrapper.emitted('verification-attempt')).toHaveLength(1);
+      });
+
+      it('posts correct data', () => {
+        expect(axiosMock.history.post[0].data).toBe(
+          '{"country":"US","international_dial_code":"1","phone_number":"555","arkose_labs_token":"verification-token"}',
+        );
+      });
+
       it('emits next event with user entered phone number', () => {
         expect(wrapper.emitted('next')).toHaveLength(1);
         expect(wrapper.emitted('next')[0]).toEqual([
@@ -236,6 +251,10 @@ describe('International Phone input component', () => {
         enterPhoneNumber('555');
         submitForm();
         return waitForPromises();
+      });
+
+      it('emits `verification-attempt` event', () => {
+        expect(wrapper.emitted('verification-attempt')).toHaveLength(1);
       });
 
       it('renders error message', () => {
@@ -264,6 +283,10 @@ describe('International Phone input component', () => {
       it('emits the skip-verification event', () => {
         expect(wrapper.emitted('skip-verification')).toHaveLength(1);
       });
+
+      it('does not emit `verification-attempt` event', () => {
+        expect(wrapper.emitted('verification-attempt')).toBeUndefined();
+      });
     });
 
     describe('when user is related to a previously banned user', () => {
@@ -289,6 +312,46 @@ describe('International Phone input component', () => {
           message: errorMessage,
           captureError: true,
           error: expect.any(Error),
+        });
+      });
+    });
+
+    describe('Arkose challenge', () => {
+      describe('when arkose challenge is shown but not solved', () => {
+        beforeEach(() => {
+          createComponent(
+            {},
+            {
+              arkoseChallengeShown: true,
+              arkoseChallengeSolved: false,
+            },
+          );
+
+          enterPhoneNumber('555');
+          return waitForPromises();
+        });
+
+        it('should disable the submit button', () => {
+          expect(findSubmitButton().attributes('disabled')).toBe('true');
+        });
+      });
+
+      describe('when arkose challenge is shown and solved', () => {
+        beforeEach(() => {
+          createComponent(
+            {},
+            {
+              arkoseChallengeShown: true,
+              arkoseChallengeSolved: true,
+            },
+          );
+
+          enterPhoneNumber('555');
+          return waitForPromises();
+        });
+
+        it('should enable the submit button', () => {
+          expect(findSubmitButton().attributes('disabled')).toBeUndefined();
         });
       });
     });

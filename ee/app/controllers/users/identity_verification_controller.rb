@@ -16,7 +16,14 @@ module Users
     before_action :require_unverified_user!, except: [:verification_state, :success]
     before_action :redirect_banned_user, only: [:show]
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
-    before_action :require_email_verified_user!, only: [:send_phone_verification_code, :verify_phone_verification_code]
+
+    before_action :require_email_verified_user!, :verify_arkose_labs_session_for_phone_verification, only: [
+      :send_phone_verification_code, :verify_phone_verification_code
+    ]
+
+    before_action only: :show do
+      push_frontend_feature_flag(:arkose_labs_phone_verification_challenge)
+    end
 
     feature_category :instance_resiliency
 
@@ -92,11 +99,28 @@ module Users
       render json: { status: :success }
     end
 
+    def verify_arkose_labs_session_for_phone_verification
+      return unless Feature.enabled?(:arkose_labs_phone_verification_challenge)
+
+      # it's a soft rate-limit so we will show the user captcha in the front-end, but not block the request
+      challenged = ::Gitlab::ApplicationRateLimiter.throttled?(:phone_verification_challenge, scope: @user)
+
+      return unless challenged
+
+      log_event(:phone, :verification_challenge_triggered)
+
+      return if verify_arkose_labs_token(save_user_data: false)
+
+      render status: :bad_request, json: {
+        message: s_('IdentityVerification|Complete verification to sign up.')
+      }
+    end
+
     def arkose_labs_challenge; end
 
     def verify_arkose_labs_session
       unless verify_arkose_labs_token
-        flash[:alert] = _('IdentityVerification|Complete verification to sign in.')
+        flash[:alert] = s_('IdentityVerification|Complete verification to sign up.')
         return render action: :arkose_labs_challenge
       end
 
@@ -268,10 +292,12 @@ module Users
       params.require(:identity_verification).permit(:verification_code)
     end
 
-    def verify_arkose_labs_token
+    def verify_arkose_labs_token(save_user_data: true)
       return false unless params[:arkose_labs_token].present?
 
-      result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token], user: @user).execute
+      user = @user if save_user_data
+
+      result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token], user: user).execute
       result.success?
     end
   end

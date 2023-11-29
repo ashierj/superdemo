@@ -16,8 +16,8 @@ import { s__, n__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
+import { VERIFICATION_TOKEN_INPUT_NAME } from 'ee/arkose_labs/constants';
 import { validatePhoneNumber } from '../validations';
-
 import {
   DEFAULT_COUNTRY,
   I18N_GENERIC_ERROR,
@@ -43,6 +43,23 @@ export default {
         country: DEFAULT_COUNTRY,
         number: '',
       },
+    },
+  },
+  props: {
+    arkoseChallengeShown: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    arkoseChallengeSolved: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    arkoseToken: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   i18n: {
@@ -110,7 +127,11 @@ export default {
       return this.form.fields.phoneNumber.value;
     },
     isSubmitButtonDisabled() {
-      return this.relatedToBannedUser || !this.form.fields.phoneNumber.state;
+      return (
+        (this.arkoseChallengeShown && !this.arkoseChallengeSolved) ||
+        this.relatedToBannedUser ||
+        !this.form.fields.phoneNumber.state
+      );
     },
     countryDropdownToggleText() {
       return this.countryObject?.text || this.$options.i18n.countryHelpText;
@@ -145,6 +166,7 @@ export default {
           country: countryId,
           international_dial_code: internationalDialCode,
           phone_number: inputPhoneNumber,
+          [VERIFICATION_TOKEN_INPUT_NAME]: this.arkoseToken,
         })
         .then(this.handleSendCodeResponse)
         .catch(this.handleError)
@@ -154,6 +176,8 @@ export default {
     },
     handleSendCodeResponse() {
       const { countryId, internationalDialCode, inputPhoneNumber } = this;
+
+      this.$emit('verification-attempt');
 
       this.$emit('next', {
         country: countryId,
@@ -167,6 +191,8 @@ export default {
         this.$emit('skip-verification');
         return;
       }
+
+      this.$emit('verification-attempt');
 
       this.relatedToBannedUser = reason === RELATED_TO_BANNED_USER;
 

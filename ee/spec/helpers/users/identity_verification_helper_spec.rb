@@ -25,6 +25,8 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       allow(user).to receive(:offer_phone_number_exemption?).and_return(
         mock_offer_phone_number_exemption
       )
+      allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
+      allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return('domain')
     end
 
     subject(:data) { helper.identity_verification_data(user) }
@@ -36,16 +38,41 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
     end
 
     context 'when phone number for user exists' do
+      before do
+        allow(Gitlab::ApplicationRateLimiter).to receive(:peek)
+        .with(:phone_verification_challenge, scope: user)
+        .and_return(challenged)
+      end
+
       let_it_be(:phone_number_validation) { create(:phone_number_validation, user: user) }
 
-      it 'returns the expected data with saved phone number' do
-        phone_number_data = expected_data[:phone_number].merge({
-          country: phone_number_validation.country,
-          international_dial_code: phone_number_validation.international_dial_code,
-          number: phone_number_validation.phone_number
-        })
+      context 'when phone_verification_challenge rate-limit is false' do
+        let(:challenged) { false }
 
-        expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
+        it 'returns the expected data with saved phone number' do
+          phone_number_data = expected_data[:phone_number].merge({
+            country: phone_number_validation.country,
+            international_dial_code: phone_number_validation.international_dial_code,
+            number: phone_number_validation.phone_number
+          })
+
+          expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
+        end
+      end
+
+      context 'when phone_verification_challenge rate-limit is true' do
+        let(:challenged) { true }
+
+        it 'returns the expected data with saved phone number' do
+          phone_number_data = expected_data[:phone_number].merge({
+            country: phone_number_validation.country,
+            international_dial_code: phone_number_validation.international_dial_code,
+            number: phone_number_validation.phone_number,
+            challenge_user: true
+          })
+
+          expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
+        end
       end
     end
 
@@ -83,12 +110,17 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
         },
         phone_number: {
           send_code_path: send_phone_verification_code_identity_verification_path,
-          verify_code_path: verify_phone_verification_code_identity_verification_path
+          verify_code_path: verify_phone_verification_code_identity_verification_path,
+          challenge_user: false
         },
         email: {
           obfuscated: helper.obfuscated_email(user.email),
           verify_path: verify_email_code_identity_verification_path,
           resend_path: resend_email_code_identity_verification_path
+        },
+        arkose: {
+          api_key: 'api-key',
+          domain: 'domain'
         },
         successful_verification_path: success_identity_verification_path
       }

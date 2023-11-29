@@ -189,6 +189,90 @@ feature_category: :system_access do
     end
   end
 
+  shared_examples 'verifies arkose token before phone verification' do
+    subject { response }
+
+    context 'when feature flag arkose_labs_phone_verification_challenge is disabled' do
+      before do
+        stub_feature_flags(arkose_labs_phone_verification_challenge: false)
+
+        do_request
+      end
+
+      it { is_expected.to have_gitlab_http_status(:ok) }
+    end
+
+    context 'when arkose rate-limit hasn\'t been triggered' do
+      before do
+        allow(::Gitlab::ApplicationRateLimiter)
+          .to receive(:throttled?)
+          .with(:phone_verification_challenge, scope: user)
+          .and_return(false)
+
+        do_request
+      end
+
+      it { is_expected.to have_gitlab_http_status(:ok) }
+    end
+
+    context 'when arkose rate-limit has been triggered' do
+      before do
+        allow(::Gitlab::ApplicationRateLimiter)
+          .to receive(:throttled?)
+          .with(:phone_verification_challenge, scope: user)
+          .and_return(true)
+      end
+
+      it_behaves_like 'logs and tracks the event', :phone, :verification_challenge_triggered
+
+      context 'when arkose_labs_token param is not present' do
+        it 'returns a 400 with an error message', :aggregate_failures do
+          do_request
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(response.body).to eq(
+            { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
+        end
+      end
+
+      context 'when arkose_labs_token param is present' do
+        let(:params) do
+          { arkose_labs_token: 'verification-token', identity_verification: { phone_number: '555' } }
+        end
+
+        before do
+          verification_params = { session_token: params[:arkose_labs_token], user: nil }
+
+          allow_next_instance_of(Arkose::TokenVerificationService, verification_params) do |instance|
+            allow(instance).to receive(:execute).and_return(service_response)
+          end
+        end
+
+        context 'when token verification fails' do
+          let(:service_response) { ServiceResponse.error(message: 'Captcha was not solved') }
+
+          it 'returns a 400 with an error message', :aggregate_failures do
+            do_request
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(response.body).to eq(
+              { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
+          end
+        end
+
+        context 'when token verification succeeds' do
+          let(:service_response) { ServiceResponse.success }
+
+          it 'returns a 200' do
+            do_request
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+        end
+      end
+    end
+  end
+
   describe '#show' do
     subject(:do_request) { get identity_verification_path }
 
@@ -403,6 +487,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
     it_behaves_like 'it requires an email verified user'
+    it_behaves_like 'verifies arkose token before phone verification'
 
     context 'when sending the code is successful' do
       it 'responds with status 200 OK' do
@@ -462,6 +547,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
     it_behaves_like 'it requires an email verified user'
+    it_behaves_like 'verifies arkose token before phone verification'
 
     context 'when code verification is successful' do
       it 'responds with status 200 OK' do
@@ -538,7 +624,7 @@ feature_category: :system_access do
 
     shared_examples 'renders arkose_labs_challenge with the correct alert flash' do
       it 'renders arkose_labs_challenge with the correct alert flash' do
-        expect(flash[:alert]).to include(_('IdentityVerification|Complete verification to sign in.'))
+        expect(flash[:alert]).to include(s_('IdentityVerification|Complete verification to sign up.'))
         expect(response).to render_template('arkose_labs_challenge')
       end
     end

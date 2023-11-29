@@ -4,7 +4,7 @@ import { s__, sprintf } from '~/locale';
 
 import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
-
+import { VERIFICATION_TOKEN_INPUT_NAME } from 'ee/arkose_labs/constants';
 import { validateVerificationCode } from '../validations';
 import { UNKNOWN_TELESIGN_ERROR } from '../constants';
 
@@ -21,13 +21,12 @@ export default {
   },
   i18n: {
     verificationCode: s__('IdentityVerification|Verification code'),
-    helper: s__("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
-    resendCode: s__(
-      "IdentityVerification|Didn't receive a code? %{linkStart}Send a new code%{linkEnd}",
+    description: s__("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
+    noCode: s__(
+      "IdentityVerification|Didn't receive a code? %{codeLinkStart}Send a new code%{codeLinkEnd} or %{phoneLinkStart}enter a new phone number%{phoneLinkEnd}",
     ),
     resendSuccess: s__('IdentityVerification|We sent a new code to +%{phoneNumber}'),
-    back: s__('IdentityVerification|%{linkStart}Enter a new phone number%{linkEnd}'),
-    verify: s__('IdentityVerification|Verify phone number'),
+    verifyButton: s__('IdentityVerification|Verify phone number'),
   },
   inject: ['phoneNumber'],
   props: {
@@ -37,6 +36,21 @@ export default {
       default() {
         return {};
       },
+    },
+    arkoseChallengeShown: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    arkoseChallengeSolved: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    arkoseToken: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   data() {
@@ -52,12 +66,18 @@ export default {
   },
   computed: {
     labelDescription() {
-      return sprintf(this.$options.i18n.helper, {
+      return sprintf(this.$options.i18n.description, {
         phoneNumber: this.internationalPhoneNumber,
       });
     },
     internationalPhoneNumber() {
       return `${this.latestPhoneNumber.internationalDialCode}${this.latestPhoneNumber.number}`;
+    },
+    waitingForArkose() {
+      return this.arkoseChallengeShown && !this.arkoseChallengeSolved;
+    },
+    isSubmitButtonDisabled() {
+      return this.waitingForArkose || !this.form.fields.verificationCode.state;
     },
   },
   methods: {
@@ -73,6 +93,7 @@ export default {
       axios
         .post(this.phoneNumber.verifyCodePath, {
           verification_code: this.form.fields.verificationCode.value,
+          [VERIFICATION_TOKEN_INPUT_NAME]: this.arkoseToken,
         })
         .then(this.handleVerifySuccessResponse)
         .catch(this.handleError)
@@ -92,6 +113,7 @@ export default {
           country: this.latestPhoneNumber.country,
           international_dial_code: this.latestPhoneNumber.internationalDialCode,
           phone_number: this.latestPhoneNumber.number,
+          [VERIFICATION_TOKEN_INPUT_NAME]: this.arkoseToken,
         })
         .then(this.handleResendCodeResponse)
         .catch(this.handleError)
@@ -100,6 +122,8 @@ export default {
         });
     },
     handleResendCodeResponse() {
+      this.$emit('verification-attempt');
+
       this.alert = createAlert({
         message: sprintf(this.$options.i18n.resendSuccess, {
           phoneNumber: this.internationalPhoneNumber,
@@ -113,6 +137,8 @@ export default {
         return;
       }
 
+      this.$emit('verification-attempt');
+
       this.alert = createAlert({
         message: error.response?.data?.message || this.$options.i18n.I18N_GENERIC_ERROR,
         captureError: true,
@@ -121,6 +147,7 @@ export default {
     },
     goBack() {
       this.resetForm();
+      this.$emit('verification-attempt');
       this.$emit('back');
     },
     resetForm() {
@@ -153,11 +180,14 @@ export default {
       />
     </gl-form-group>
 
-    <div class="gl-font-sm gl-text-secondary">
+    <div v-if="!waitingForArkose" class="gl-font-sm gl-text-secondary">
       <gl-icon name="information-o" :size="12" class="gl-mt-2" />
-      <gl-sprintf :message="$options.i18n.resendCode">
-        <template #link="{ content }">
-          <gl-link class="gl-font-sm" @click="resendCode"> {{ content }}</gl-link>
+      <gl-sprintf :message="$options.i18n.noCode">
+        <template #codeLink="{ content }">
+          <gl-link @click="resendCode">{{ content }}</gl-link>
+        </template>
+        <template #phoneLink="{ content }">
+          <gl-link @click="goBack">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
     </div>
@@ -166,20 +196,10 @@ export default {
       type="submit"
       variant="confirm"
       class="gl-w-full! gl-mt-5"
-      :disabled="!form.fields.verificationCode.state"
+      :disabled="isSubmitButtonDisabled"
       :loading="isLoading"
     >
-      {{ $options.i18n.verify }}
+      {{ $options.i18n.verifyButton }}
     </gl-button>
-
-    <div class="gl-mt-4 gl-font-sm gl-text-secondary">
-      <gl-sprintf :message="$options.i18n.back">
-        <template #link="{ content }">
-          <gl-link class="gl-font-sm" @click="goBack">
-            {{ content }}
-          </gl-link>
-        </template>
-      </gl-sprintf>
-    </div>
   </gl-form>
 </template>
