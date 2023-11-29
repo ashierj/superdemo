@@ -8,8 +8,8 @@ module Search
       has_many :indexed_namespaces,
         foreign_key: :zoekt_node_id, inverse_of: :node, class_name: '::Zoekt::IndexedNamespace'
 
-      validates :index_base_url, presence: true, uniqueness: true
-      validates :search_base_url, presence: true, uniqueness: true
+      validates :index_base_url, presence: true
+      validates :search_base_url, presence: true
       validates :uuid, presence: true, uniqueness: true
       validates :last_seen_at, presence: true
       validates :used_bytes, presence: true
