@@ -61,16 +61,6 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
         }])
       end
 
-      context 'when ai_git_command_ff feature flag is disabled' do
-        before do
-          stub_feature_flags(ai_git_command_ff: false)
-        end
-
-        it 'returns an error' do
-          expect(subject.execute).to be_error
-        end
-      end
-
       it 'returns an error when messages are too big' do
         stub_const("#{described_class}::INPUT_CONTENT_LIMIT", 4)
 

@@ -129,18 +129,6 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
       end
     end
 
-    context 'when git command is unavailable' do
-      before do
-        stub_feature_flags(ai_git_command_ff: false)
-      end
-
-      it 'returns bad request' do
-        make_request
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-      end
-    end
-
     context 'when the endpoint is called too many times' do
       it 'returns too many requests response' do
         expect(Gitlab::ApplicationRateLimiter).to(

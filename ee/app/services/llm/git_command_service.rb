@@ -11,7 +11,6 @@ module Llm
     def valid?
       super &&
         ::License.feature_available?(:ai_git_command) &&
-        Feature.enabled?(:ai_git_command_ff, user) &&
         options[:prompt].size < INPUT_CONTENT_LIMIT
     end
 
