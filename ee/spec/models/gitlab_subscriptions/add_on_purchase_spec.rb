@@ -146,6 +146,40 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
       end
     end
 
+    describe '.by_namespace_id' do
+      subject(:result) { described_class.by_namespace_id(namespace_id) }
+
+      include_context 'with add-on purchases'
+
+      context 'when record with given namespace_id exists' do
+        let(:namespace_id) { active_code_suggestion_purchase_as_maintainer.namespace_id }
+
+        it { is_expected.to contain_exactly(active_code_suggestion_purchase_as_maintainer) }
+      end
+
+      context 'when record with given namespace_id does not exist' do
+        let(:namespace_id) { non_existing_record_id }
+
+        it { is_expected.to match_array([]) }
+      end
+
+      context 'when nil is given' do
+        let(:namespace_id) { nil }
+
+        context 'and the record exist' do
+          let(:add_on_purchase_with_namespace_id_nil) do
+            create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on, namespace_id: nil)
+          end
+
+          it { is_expected.to contain_exactly(add_on_purchase_with_namespace_id_nil) }
+        end
+
+        context 'and the record does not exist' do
+          it { is_expected.to match_array([]) }
+        end
+      end
+    end
+
     describe '.for_code_suggestions' do
       subject(:code_suggestion_purchases) { described_class.for_code_suggestions }
 
