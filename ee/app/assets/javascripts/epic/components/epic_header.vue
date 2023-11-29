@@ -50,7 +50,7 @@ export default {
 
 <template>
   <issuable-header
-    class="gl-p-0 gl-mb-6 gl-mt-2 gl-sm-mt-0"
+    class="gl-p-0 gl-mb-6 gl-mt-2 gl-md-mt-0"
     :author="formattedAuthor"
     :confidential="confidential"
     :created-at="created"

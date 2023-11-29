@@ -181,7 +181,7 @@ export default {
     <gl-disclosure-dropdown
       v-if="showMobileDropdown"
       ref="epicActionsDropdownMobile"
-      class="gl-display-block gl-sm-display-none! gl-w-full gl-mt-3"
+      class="gl-display-block gl-md-display-none! gl-w-full gl-mt-3"
       category="secondary"
       :auto-close="false"
       toggle-class="gl-w-full"
@@ -227,7 +227,7 @@ export default {
       :title="$options.i18n.editTitleAndDescription"
       :aria-label="$options.i18n.editTitleAndDescription"
       category="secondary"
-      class="js-issuable-edit gl-display-none gl-sm-display-block"
+      class="js-issuable-edit gl-display-none gl-md-display-block"
       @click="editEpic"
     >
       {{ $options.i18n.edit }}
@@ -236,7 +236,7 @@ export default {
     <gl-disclosure-dropdown
       v-if="showDesktopDropdown"
       ref="epicActionsDropdownDesktop"
-      class="gl-display-none gl-sm-display-block"
+      class="gl-display-none gl-md-display-block"
       placement="right"
       :auto-close="false"
       data-testid="desktop-dropdown"
