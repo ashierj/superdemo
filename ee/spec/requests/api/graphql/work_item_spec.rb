@@ -6,7 +6,7 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, :private, group: group) }
+  let_it_be_with_reload(:project) { create(:project, :private, group: group) }
   let_it_be(:guest) { create(:user).tap { |u| group.add_guest(u) } }
   let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
   let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: project.group)) }
@@ -756,7 +756,7 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
       end
 
       describe 'hierarchy widget' do
-        let_it_be(:other_group) { create(:group, :public) }
+        let_it_be_with_reload(:other_group) { create(:group, :public) }
         let_it_be(:ancestor1) { create(:work_item, :epic, namespace: other_group) }
         let_it_be(:ancestor2) { create(:work_item, :epic, namespace: group) }
         let_it_be(:parent_epic) { create(:work_item, :epic, project: project) }
@@ -920,6 +920,83 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
               post_graphql(query, current_user: current_user)
 
               expect(work_item_data).to be_nil
+            end
+          end
+        end
+
+        context 'when not signed in' do
+          let(:current_user) { nil }
+          let(:work_item_fields) do
+            <<~GRAPHQL
+              widgets {
+                ... on WorkItemWidgetHierarchy {
+                  ancestors {
+                    nodes {
+                      id
+                    }
+                  }
+                }
+              }
+            GRAPHQL
+          end
+
+          context 'when project is private' do
+            before do
+              project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+            end
+
+            it 'does not list any ancestors' do
+              post_graphql(query, current_user: current_user)
+
+              expect(work_item_data).to be_nil
+            end
+          end
+
+          context 'when project is public' do
+            before do
+              project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+            end
+
+            context 'when partial ancestors are accessible' do
+              before do
+                other_group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+              end
+
+              it 'truncates ancestors up to the last visible one' do
+                post_graphql(query, current_user: current_user)
+
+                expect(work_item_data).to include(
+                  'widgets' => include(
+                    hash_including(
+                      'ancestors' => { 'nodes' => match_array(
+                        [
+                          hash_including('id' => parent_epic.to_gid.to_s)
+                        ]
+                      ) }
+                    )
+                  )
+                )
+              end
+            end
+
+            context 'when all ancestors are accessible' do
+              it 'shows all ancestors' do
+                post_graphql(query, current_user: current_user)
+
+                expect(work_item_data).to include(
+                  'widgets' => include(
+                    hash_including(
+                      'ancestors' => { 'nodes' => match_array(
+                        [
+                          hash_including('id' => ancestor2.to_gid.to_s),
+                          hash_including('id' => ancestor1.to_gid.to_s),
+                          hash_including('id' => parent_epic.to_gid.to_s)
+                        ]
+                      ) }
+                    )
+                  )
+                )
+              end
             end
           end
         end
