@@ -213,7 +213,7 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
                                                            "(11 B of 12 B). If #{project.namespace.name} exceeds the storage quota, " \
                                                            "all projects in the namespace will be locked and actions will be restricted. " \
                                                            "To manage storage, or purchase additional storage, " \
-                                                           "see http://localhost/help/user/usage_quotas#manage-your-storage-usage. " \
+                                                           "see http://localhost/help/user/usage_quotas#manage-storage-usage. " \
                                                            "To learn more about restricted actions, see http://localhost/help/user/read_only_namespaces#restricted-actions", "type" => "alert" }])
           end
         end
@@ -232,7 +232,7 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
                                                            "(11 B of 12 B). If #{group.name} exceeds the storage quota, " \
                                                            "all projects in the namespace will be locked and actions will be restricted. " \
                                                            "To manage storage, or purchase additional storage, " \
-                                                           "see http://localhost/help/user/usage_quotas#manage-your-storage-usage. " \
+                                                           "see http://localhost/help/user/usage_quotas#manage-storage-usage. " \
                                                            "To learn more about restricted actions, see http://localhost/help/user/read_only_namespaces#restricted-actions", "type" => "alert" }])
           end
         end
