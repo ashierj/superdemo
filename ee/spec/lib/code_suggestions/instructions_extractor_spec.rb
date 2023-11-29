@@ -18,11 +18,10 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     let(:suffix) { '' }
     let(:file_content) { CodeSuggestions::FileContent.new(language, content, suffix) }
     let(:intent) { nil }
-    let(:skip_generate_comment_prefix) { true }
     let(:skip_instruction_extraction) { false }
 
     subject do
-      described_class.new(file_content, intent, skip_generate_comment_prefix, skip_instruction_extraction).extract
+      described_class.new(file_content, intent, skip_instruction_extraction).extract
     end
 
     context 'when content is nil' do
@@ -404,70 +403,6 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it "does not find instruction" do
           is_expected.to eq({})
-        end
-      end
-
-      context "with GitLab Duo Generate prefix" do
-        let(:skip_generate_comment_prefix) { false }
-
-        context 'when no prefix in the first line of the comment' do
-          let(:content) do
-            <<~CODE
-              full_name()
-              address()
-
-              #{comment_sign}Generate me a function
-              #{comment_sign}with 2 arguments
-              #{comment_sign}first and last
-            CODE
-          end
-
-          it 'finds the instruction' do
-            is_expected.to eq({
-              prefix: "full_name()\naddress()\n",
-              instruction: default_instruction
-            })
-          end
-        end
-
-        context 'when there is a prefix in the first line of the comment' do
-          let(:content) do
-            <<~CODE
-              full_name()
-              address()
-
-              #{comment_sign}GitLab Duo Generate: Generate me a function
-              #{comment_sign}with 2 arguments
-              #{comment_sign}first and last
-            CODE
-          end
-
-          specify do
-            is_expected.to eq(
-              prefix: "full_name()\naddress()\n",
-              instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
-            )
-          end
-        end
-
-        context 'when comments are indented' do
-          let(:content) do
-            <<~CODE
-              full_name()
-              address()
-
-                #{comment_sign}GitLab Duo Generate: Generate me a function
-                #{comment_sign}with 2 arguments
-                #{comment_sign}first and last
-            CODE
-          end
-
-          specify do
-            is_expected.to eq(
-              prefix: "full_name()\naddress()\n",
-              instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
-            )
-          end
         end
       end
     end
