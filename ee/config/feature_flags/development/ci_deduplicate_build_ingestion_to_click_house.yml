@@ -1,8 +1,0 @@
----
-name: ci_deduplicate_build_ingestion_to_click_house
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/135733
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/424866
-milestone: '16.6'
-type: development
-group: group::runner
-default_enabled: false

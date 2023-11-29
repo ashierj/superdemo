@@ -5,7 +5,7 @@ module ClickHouse
     include ApplicationWorker
 
     idempotent!
-    data_consistency :delayed, feature_flag: :load_balancing_for_ci_finished_builds_sync_worker
+    data_consistency :delayed
     urgency :throttled
     feature_category :runner_fleet
     loggable_arguments 1, 2

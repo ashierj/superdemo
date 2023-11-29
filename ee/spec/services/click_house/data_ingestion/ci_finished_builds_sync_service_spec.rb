@@ -21,8 +21,6 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
 
   before_all do
     create_sync_events(*Ci::Build.finished.order(id: :desc))
-
-    stub_feature_flags(large_finished_builds_batch_size: false)
   end
 
   context 'when the ci_data_ingestion_to_click_house feature flag is on' do
@@ -32,19 +30,14 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
 
     context 'when all builds fit in a single batch' do
       it 'processes the builds' do
-        expect(ClickHouse::Client).to receive(:insert_csv)
-          .once
-          .with(a_string_including('async_insert_deduplicate=1'), an_instance_of(File), :main)
-          .and_call_original
+        expect(ClickHouse::Client).to receive(:insert_csv).once.and_call_original
 
         expect { execute }.to change { ci_finished_builds_row_count }.by(3)
         expect(execute).to have_attributes({
           payload: {
             reached_end_of_table: true,
             records_inserted: 3,
-            worker_index: 0, total_workers: 1,
-            min_build_id: build1.id,
-            max_build_id: build3.id
+            worker_index: 0, total_workers: 1
           }
         })
 
@@ -55,38 +48,6 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
           a_hash_including(**expected_build_attributes(build2)),
           a_hash_including(**expected_build_attributes(build3))
         )
-      end
-
-      context 'when :ci_deduplicate_build_ingestion_to_click_house FF is disabled' do
-        before do
-          stub_feature_flags(ci_deduplicate_build_ingestion_to_click_house: false)
-        end
-
-        it 'processes the builds' do
-          expect(ClickHouse::Client).to receive(:insert_csv)
-            .once
-            .with(a_string_including('async_insert_deduplicate=0'), an_instance_of(File), :main)
-            .and_call_original
-
-          expect { execute }.to change { ci_finished_builds_row_count }.by(3)
-          expect(execute).to have_attributes({
-            payload: {
-              reached_end_of_table: true,
-              records_inserted: 3,
-              worker_index: 0, total_workers: 1,
-              min_build_id: build1.id,
-              max_build_id: build3.id
-            }
-          })
-
-          records = ci_finished_builds
-          expect(records.count).to eq 3
-          expect(records).to contain_exactly(
-            a_hash_including(**expected_build_attributes(build1)),
-            a_hash_including(**expected_build_attributes(build2)),
-            a_hash_including(**expected_build_attributes(build3))
-          )
-        end
       end
 
       it 'processes only builds from Ci::FinishedBuildChSyncEvent' do
@@ -179,8 +140,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
           expect { execute }.to change { ci_finished_builds_row_count }.by(described_class::BUILDS_BATCH_SIZE)
           expect(execute).to have_attributes({
             payload: a_hash_including(
-              reached_end_of_table: false, records_inserted: described_class::BUILDS_BATCH_SIZE,
-              min_build_id: build1.id, max_build_id: build1.id
+              reached_end_of_table: false, records_inserted: described_class::BUILDS_BATCH_SIZE
             )
           })
         end
@@ -230,9 +190,6 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
           create_sync_events(build5, build6)
 
           expect { execute }.to change { ci_finished_builds_row_count }.by(2)
-          expect(execute).to have_attributes({
-            payload: a_hash_including(min_build_id: build5.id, max_build_id: build6.id)
-          })
 
           records = ci_finished_builds
           expect(records.count).to eq 5
