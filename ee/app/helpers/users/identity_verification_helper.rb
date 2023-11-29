@@ -15,6 +15,7 @@ module Users
           },
           phone_number: phone_number_verification_data(user),
           email: email_verification_data(user),
+          arkose: arkose_labs_data,
           successful_verification_path: success_identity_verification_path
         }.to_json
       }
@@ -58,7 +59,9 @@ module Users
     def phone_number_verification_data(user)
       paths = {
         send_code_path: send_phone_verification_code_identity_verification_path,
-        verify_code_path: verify_phone_verification_code_identity_verification_path
+        verify_code_path: verify_phone_verification_code_identity_verification_path,
+        challenge_user:
+          ::Gitlab::ApplicationRateLimiter.peek(:phone_verification_challenge, scope: user)
       }
 
       phone_number_validation = user.phone_number_validation

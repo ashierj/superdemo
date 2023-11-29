@@ -5,6 +5,7 @@ import { initArkoseLabsScript } from '../init_arkose_labs_script';
 import { VERIFICATION_TOKEN_INPUT_NAME, CHALLENGE_CONTAINER_CLASS } from '../constants';
 
 export default {
+  name: 'IdentityVerificationArkoseApp',
   csrf,
   components: { GlForm, GlLoadingIcon },
   props: {
