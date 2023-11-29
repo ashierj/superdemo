@@ -476,7 +476,12 @@ module EE
 
     override :should_be_rebased?
     def should_be_rebased?
-      super && !on_current_ff_train?
+      return super if ::Feature.disabled?(:fast_forward_merge_trains_support)
+
+      return false if MergeTrains::Train.project_using_ff?(target_project)
+      return false if merge_train_car&.on_ff_train?
+
+      super
     end
 
     override :comparison_base_pipeline
@@ -518,12 +523,6 @@ module EE
 
     def last_base_pipelines(limit:)
       base_pipelines.order(id: :desc).limit(limit)
-    end
-
-    def on_current_ff_train?
-      return false unless on_train? && merge_train_car.pipeline&.sha == merge_params.dig('train_ref', 'commit_sha')
-
-      ::Feature.enabled?(:fast_forward_merge_trains_support, target_project)
     end
 
     def has_approved_license_check?

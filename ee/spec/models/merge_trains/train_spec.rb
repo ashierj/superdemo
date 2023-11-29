@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:target_project) { create(:project, :repository) }
   let_it_be(:merge_request) { create_merge_request_on_train }
 
@@ -23,6 +25,29 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
       branches = trains.map(&:target_branch)
 
       expect(branches).to contain_exactly('master', 'feature-1')
+    end
+  end
+
+  describe '.project_using_ff?' do
+    subject { described_class.project_using_ff?(target_project) }
+
+    where(:merge_trains_enabled, :ff_trains_enabled, :ff_merge_method, :expected) do
+      true         | true         | true      | true
+      true         | true         | false     | false
+      true         | false        | true      | false
+      false        | true         | true      | false
+      false        | false        | true      | false
+      true         | false        | false     | false
+    end
+
+    with_them do
+      before do
+        allow(target_project).to receive(:merge_trains_enabled?).and_return(merge_trains_enabled)
+        stub_feature_flags(fast_forward_merge_trains_support: ff_trains_enabled)
+        allow(target_project).to receive(:ff_merge_must_be_possible?).and_return(ff_merge_method)
+      end
+
+      it { is_expected.to eq expected }
     end
   end
 
