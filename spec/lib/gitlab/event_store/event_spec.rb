@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
+require 'json_schemer'
 
-RSpec.describe Gitlab::EventStore::Event do
+RSpec.describe Gitlab::EventStore::Event, feature_category: :shared do
   let(:event_class) { stub_const('TestEvent', Class.new(described_class)) }
   let(:event) { event_class.new(data: data) }
   let(:data) { { project_id: 123, project_path: 'org/the-project' } }
@@ -21,7 +22,7 @@ RSpec.describe Gitlab::EventStore::Event do
             'required' => ['project_id'],
             'type' => 'object',
             'properties' => {
-              'project_id' => { 'type' => 'integer' },
+              'project_id' => { 'type' => 'intger' },
               'project_path' => { 'type' => 'string' }
             }
           }
