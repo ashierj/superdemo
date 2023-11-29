@@ -87,7 +87,7 @@ module Vulnerabilities
         state_transition.update!(params.slice(:comment, :dismissal_reason).compact)
 
         if params[:dismissal_reason]
-          vulnerability.vulnerability_read.update!(dismissal_reason: params[:dismissal_reason])
+          vulnerability.vulnerability_read&.update!(dismissal_reason: params[:dismissal_reason])
         end
       end
     end
