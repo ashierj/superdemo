@@ -58,7 +58,7 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
           context 'when project_repository_registry entry does exist' do
             context 'when last_repository_updated_at is not set' do
               it 'returns false' do
-                registry = create(:geo_project_repository_registry, :synced)
+                registry = create(:geo_project_repository_registry, :synced, project: project)
                 registry.project.update!(last_repository_updated_at: nil)
 
                 expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
@@ -68,7 +68,7 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
             context 'when last_repository_updated_at is set' do
               context 'when sync failed' do
                 it 'returns true' do
-                  registry = create(:geo_project_repository_registry, :failed)
+                  registry = create(:geo_project_repository_registry, :failed, project: project)
 
                   expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
                 end
@@ -76,9 +76,26 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
 
               context 'when last_synced_at is not set' do
                 it 'returns true' do
-                  registry = create(:geo_project_repository_registry, last_synced_at: nil)
+                  registry = create(:geo_project_repository_registry, project: project, last_synced_at: nil)
 
                   expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
+                end
+              end
+
+              context 'when verification failed' do
+                it 'returns true' do
+                  registry = create(:geo_project_repository_registry, :verification_failed, project: project)
+
+                  expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
+                end
+              end
+
+              context 'when verification succeeded' do
+                it 'returns false' do
+                  registry = create(:geo_project_repository_registry, :verification_succeeded,
+                    project: project, last_synced_at: Time.current + 5.minutes)
+
+                  expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
                 end
               end
 
@@ -99,7 +116,7 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                   before do
                     project.update!(last_repository_updated_at: project_last_updated)
                     project_repository_state.update!(last_repository_updated_at: project_state_last_updated)
-                    create(:geo_project_repository_registry, :synced,
+                    create(:geo_project_repository_registry, :verification_succeeded,
                       project: project, last_synced_at: project_registry_last_synced)
                   end
 

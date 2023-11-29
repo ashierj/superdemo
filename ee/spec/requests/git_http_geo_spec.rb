@@ -11,7 +11,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
 
   let_it_be(:project_with_repo) { create(:project, :repository, :private) }
   let_it_be(:project_no_repo) { create(:project, :private) }
-  let_it_be(:project_registry_with_repo) { create(:geo_project_repository_registry, :synced, project: project_with_repo, last_synced_at: project_with_repo.last_repository_updated_at + 10.seconds) }
+  let_it_be(:project_registry_with_repo) { create(:geo_project_repository_registry, :verification_succeeded, project: project_with_repo, last_synced_at: project_with_repo.last_repository_updated_at + 10.seconds) }
 
   let_it_be(:primary_url) { 'http://primary.example.com' }
   let_it_be(:primary_internal_url) { 'http://primary-internal.example.com' }
