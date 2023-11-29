@@ -31,6 +31,9 @@ module Geo
       # Out-of-date if the repo has never been synced
       return true unless registry.last_synced_at
 
+      # Out-of-date unless verification succeeded
+      return true unless registry.verification_succeeded?
+
       # Return whether the latest change is replicated
       #
       # Current limitations:

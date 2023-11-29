@@ -29,6 +29,7 @@ describe('Verify phone verification code input component', () => {
 
   const SEND_CODE_PATH = '/users/identity_verification/send_phone_verification_code';
   const VERIFY_CODE_PATH = '/users/identity_verification/verify_phone_verification_code';
+  const MOCK_ARKOSE_TOKEN = 'verification-token';
 
   const findForm = () => wrapper.findComponent(GlForm);
 
@@ -36,15 +37,15 @@ describe('Verify phone verification code input component', () => {
   const findVerificationCodeInput = () => wrapper.findByTestId('verification-code-form-input');
 
   const findVerifyCodeButton = () => wrapper.findByText('Verify phone number');
-  const findGoBackLink = () => wrapper.findByText('Enter a new phone number');
+  const findGoBackLink = () => wrapper.findByText('enter a new phone number');
 
   const enterCode = (value) => findVerificationCodeInput().vm.$emit('input', value);
   const submitForm = () => findForm().vm.$emit('submit', { preventDefault: jest.fn() });
 
-  const findResendCodeButton = () => wrapper.findByText(/Send a new code/i);
+  const findResendCodeButton = () => wrapper.findByText('Send a new code');
   const resendCode = () => findResendCodeButton().vm.$emit('click');
 
-  const createComponent = () => {
+  const createComponent = (props = {}) => {
     wrapper = shallowMountExtended(VerifyPhoneVerificationCode, {
       propsData: {
         latestPhoneNumber: {
@@ -52,6 +53,8 @@ describe('Verify phone verification code input component', () => {
           internationalDialCode: INTERNATIONAL_DIAL_CODE,
           number: NUMBER,
         },
+        arkoseToken: MOCK_ARKOSE_TOKEN,
+        ...props,
       },
       provide: {
         phoneNumber: {
@@ -77,14 +80,12 @@ describe('Verify phone verification code input component', () => {
 
   describe('Verification Code input field', () => {
     it('should have label', () => {
-      expect(findVerificationCodeFormGroup().attributes('label')).toBe(
-        wrapper.vm.$options.i18n.verificationCode,
-      );
+      expect(findVerificationCodeFormGroup().attributes('label')).toBe('Verification code');
     });
 
     it('should have helper text with phone number', () => {
       expect(findVerificationCodeFormGroup().attributes('labeldescription')).toBe(
-        sprintf(wrapper.vm.$options.i18n.helper, {
+        sprintf("We've sent a verification code to +%{phoneNumber}", {
           phoneNumber: INTERNATIONAL_DIAL_CODE + NUMBER,
         }),
       );
@@ -120,8 +121,9 @@ describe('Verify phone verification code input component', () => {
   });
 
   describe('Go back to enter another phone number link', () => {
-    beforeEach(async () => {
-      await findGoBackLink().vm.$emit('click');
+    beforeEach(() => {
+      findGoBackLink().vm.$emit('click');
+      return nextTick();
     });
 
     it('emits back event', () => {
@@ -148,9 +150,19 @@ describe('Verify phone verification code input component', () => {
         return waitForPromises();
       });
 
+      it('emits `verification-attempt` event', () => {
+        expect(wrapper.emitted('verification-attempt')).toHaveLength(1);
+      });
+
+      it('posts correct data', () => {
+        expect(axiosMock.history.post[0].data).toBe(
+          '{"country":"US","international_dial_code":"1","phone_number":"555","arkose_labs_token":"verification-token"}',
+        );
+      });
+
       it('renders success message', () => {
         expect(createAlert).toHaveBeenCalledWith({
-          message: sprintf(wrapper.vm.$options.i18n.resendSuccess, {
+          message: sprintf('We sent a new code to +%{phoneNumber}', {
             phoneNumber: INTERNATIONAL_DIAL_CODE + NUMBER,
           }),
           variant: VARIANT_SUCCESS,
@@ -166,6 +178,10 @@ describe('Verify phone verification code input component', () => {
 
         resendCode();
         return waitForPromises();
+      });
+
+      it('emits `verification-attempt` event', () => {
+        expect(wrapper.emitted('verification-attempt')).toHaveLength(1);
       });
 
       it('renders error message', () => {
@@ -188,6 +204,16 @@ describe('Verify phone verification code input component', () => {
         return waitForPromises();
       });
 
+      it('posts correct data', () => {
+        expect(axiosMock.history.post[0].data).toBe(
+          '{"verification_code":"123","arkose_labs_token":"verification-token"}',
+        );
+      });
+
+      it('does not emit `verification-attempt` event', () => {
+        expect(wrapper.emitted('verification-attempt')).toBeUndefined();
+      });
+
       it('emits next event with user entered phone number', () => {
         expect(wrapper.emitted('verified')).toHaveLength(1);
       });
@@ -205,6 +231,10 @@ describe('Verify phone verification code input component', () => {
         enterCode('000');
         submitForm();
         return waitForPromises();
+      });
+
+      it('emits `verification-attempt` event', () => {
+        expect(wrapper.emitted('verification-attempt')).toHaveLength(1);
       });
 
       it('renders error message', () => {
@@ -232,6 +262,44 @@ describe('Verify phone verification code input component', () => {
 
       it('emits the verified event', () => {
         expect(wrapper.emitted('verified')).toHaveLength(1);
+      });
+    });
+
+    describe('Arkose challenge', () => {
+      describe('when arkose challenge is shown but not solved', () => {
+        beforeEach(() => {
+          createComponent({
+            arkoseChallengeShown: true,
+            arkoseChallengeSolved: false,
+          });
+
+          enterCode('000');
+          return waitForPromises();
+        });
+
+        it('should disable the verify, go back and resend buttons', () => {
+          expect(findVerifyCodeButton().attributes('disabled')).toBe('true');
+          expect(findGoBackLink().exists()).toBe(false);
+          expect(findResendCodeButton().exists()).toBe(false);
+        });
+      });
+
+      describe('when arkose challenge is shown and solved', () => {
+        beforeEach(() => {
+          createComponent({
+            arkoseChallengeShown: true,
+            arkoseChallengeSolved: true,
+          });
+
+          enterCode('000');
+          return waitForPromises();
+        });
+
+        it('should enable the verify, go back and resend buttons', () => {
+          expect(findVerifyCodeButton().attributes('disabled')).toBe(undefined);
+          expect(findGoBackLink().exists()).toBe(true);
+          expect(findResendCodeButton().exists()).toBe(true);
+        });
       });
     });
   });

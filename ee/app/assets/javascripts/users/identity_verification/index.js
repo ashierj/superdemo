@@ -16,6 +16,7 @@ export const initIdentityVerification = () => {
     offerPhoneNumberExemption,
     verificationStatePath,
     phoneExemptionPath,
+    arkose,
     successfulVerificationPath,
   } = convertObjectPropsToCamelCase(JSON.parse(el.dataset.data), { deep: true });
 
@@ -30,6 +31,7 @@ export const initIdentityVerification = () => {
       offerPhoneNumberExemption,
       verificationStatePath,
       phoneExemptionPath,
+      arkose,
       successfulVerificationPath,
     },
     render: (createElement) => createElement(IdentityVerificationWizard),
