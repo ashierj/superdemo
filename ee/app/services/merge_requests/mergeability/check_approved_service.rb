@@ -3,9 +3,8 @@
 module MergeRequests
   module Mergeability
     class CheckApprovedService < CheckBaseService
-      def self.failure_reason
-        :not_approved
-      end
+      identifier :not_approved
+      description 'Checks whether the merge request is approved'
 
       def execute
         return inactive unless merge_request.approval_feature_available?
