@@ -7,6 +7,7 @@ RSpec.describe GitlabSchema.types['Query'], feature_category: :shared do
 
   specify do
     expected_ee_fields = [
+      :add_on_purchase,
       :ai_messages,
       :ci_catalog_resources,
       :ci_catalog_resource,
