@@ -19,8 +19,7 @@ RSpec.describe ClickHouse::CiFinishedBuildsSyncWorker, :click_house, :freeze_tim
       expect(worker).to receive(:log_extra_metadata_on_done)
         .with(:result, {
           reached_end_of_table: true, records_inserted: 1,
-          worker_index: 0, total_workers: 1,
-          min_build_id: build1.id, max_build_id: build1.id
+          worker_index: 0, total_workers: 1
         })
 
       params = { worker_index: 0, total_workers: 1 }
@@ -70,10 +69,7 @@ RSpec.describe ClickHouse::CiFinishedBuildsSyncWorker, :click_house, :freeze_tim
             .map(&:build_id)
 
         expect(worker).to receive(:log_extra_metadata_on_done)
-          .with(:result, {
-            reached_end_of_table: true, records_inserted: build_ids.count,
-            min_build_id: build_ids.min, max_build_id: build_ids.max
-          }.merge(params))
+          .with(:result, { reached_end_of_table: true, records_inserted: build_ids.count }.merge(params))
 
         expect_next_instance_of(::ClickHouse::DataIngestion::CiFinishedBuildsSyncService, params) do |service|
           expect(service).to receive(:execute).and_call_original
