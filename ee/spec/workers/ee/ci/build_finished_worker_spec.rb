@@ -213,9 +213,9 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
           end
         end
 
-        context 'when generate_ci_finished_builds_sync_events FF is disabled' do
+        context 'when ci_data_ingestion_to_click_house FF is disabled' do
           before do
-            stub_feature_flags(generate_ci_finished_builds_sync_events: false)
+            stub_feature_flags(ci_data_ingestion_to_click_house: false)
           end
 
           it 'does not save job on Ci::FinishedBuildChSyncEvent by default' do
