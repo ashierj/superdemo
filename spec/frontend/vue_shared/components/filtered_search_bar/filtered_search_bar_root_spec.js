@@ -69,14 +69,9 @@ describe('FilteredSearchBarRoot', () => {
   const findGlSorting = () => wrapper.findComponent(GlSorting);
   const findGlFilteredSearch = () => wrapper.findComponent(GlFilteredSearch);
 
-  beforeEach(() => {
-    wrapper = createComponent({ sortOptions: mockSortOptions });
-  });
-
   describe('data', () => {
     describe('when `sortOptions` are provided', () => {
       beforeEach(() => {
-        wrapper.destroy();
         wrapper = createComponent({ sortOptions: mockSortOptions });
       });
 
@@ -128,6 +123,10 @@ describe('FilteredSearchBarRoot', () => {
     });
 
     describe('sortDirectionIcon', () => {
+      beforeEach(() => {
+        wrapper = createComponent({ sortOptions: mockSortOptions });
+      });
+
       it('passes isAscending=false to GlSorting by default', () => {
         expect(findGlSorting().props('isAscending')).toBe(false);
       });
@@ -141,6 +140,10 @@ describe('FilteredSearchBarRoot', () => {
     });
 
     describe('filteredRecentSearches', () => {
+      beforeEach(() => {
+        wrapper = createComponent();
+      });
+
       it('returns array of recent searches filtering out any string type (unsupported) items', async () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
@@ -224,6 +227,8 @@ describe('FilteredSearchBarRoot', () => {
 
     describe('handleSortOptionChange', () => {
       it('emits component event `onSort` with selected sort by value', async () => {
+        wrapper = createComponent({ sortOptions: mockSortOptions });
+
         findGlSorting().vm.$emit('sortByChange', mockSortOptions[1].id);
         await nextTick();
 
@@ -234,7 +239,6 @@ describe('FilteredSearchBarRoot', () => {
 
     describe('handleSortDirectionChange', () => {
       beforeEach(() => {
-        wrapper.destroy();
         wrapper = createComponent({
           sortOptions: mockSortOptions,
           initialSortBy: mockSortOptions[0].sortDirection.descending,
@@ -285,6 +289,8 @@ describe('FilteredSearchBarRoot', () => {
       const mockFilters = [tokenValueAuthor, 'foo'];
 
       beforeEach(async () => {
+        wrapper = createComponent();
+
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -355,17 +361,14 @@ describe('FilteredSearchBarRoot', () => {
   });
 
   describe('template', () => {
-    beforeEach(async () => {
+    it('renders gl-filtered-search component', async () => {
+      wrapper = createComponent();
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
       // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
+      await wrapper.setData({
         recentSearches: mockHistoryItems,
       });
 
-      await nextTick();
-    });
-
-    it('renders gl-filtered-search component', () => {
       const glFilteredSearchEl = wrapper.findComponent(GlFilteredSearch);
 
       expect(glFilteredSearchEl.props('placeholder')).toBe('Filter requirements');
@@ -449,11 +452,15 @@ describe('FilteredSearchBarRoot', () => {
     });
 
     it('renders sort dropdown component', () => {
-      expect(wrapper.findComponent(GlSorting).exists()).toBe(true);
+      wrapper = createComponent({ sortOptions: mockSortOptions });
+
+      expect(findGlSorting().exists()).toBe(true);
     });
 
     it('renders sort dropdown items', () => {
-      const { sortOptions, sortBy } = wrapper.findComponent(GlSorting).props();
+      wrapper = createComponent({ sortOptions: mockSortOptions });
+
+      const { sortOptions, sortBy } = findGlSorting().props();
 
       expect(sortOptions).toEqual([
         {
@@ -476,6 +483,10 @@ describe('FilteredSearchBarRoot', () => {
       type: FILTERED_SEARCH_TERM,
       value: { data: '' },
     };
+
+    beforeEach(() => {
+      wrapper = createComponent({ sortOptions: mockSortOptions });
+    });
 
     it('syncs filter value', async () => {
       await wrapper.setProps({ initialFilterValue: [tokenValue], syncFilterAndSort: true });
