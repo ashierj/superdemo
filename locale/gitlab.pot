@@ -56317,6 +56317,9 @@ msgstr ""
 msgid "Your public email will be displayed on your public profile."
 msgstr ""
 
+msgid "Your push to this repository has been rejected because it would exceed the namespace storage limit of %{size_limit}. Reduce your namespace storage or purchase additional storage.To manage storage, or purchase additional storage, see %{manage_storage_url}. To learn more about restricted actions, see %{restricted_actions_url}"
+msgstr ""
+
 msgid "Your request for access could not be processed: %{error_message}"
 msgstr ""
 

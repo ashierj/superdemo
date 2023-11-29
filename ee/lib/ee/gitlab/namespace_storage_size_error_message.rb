@@ -53,9 +53,13 @@ module EE
       end
 
       def new_changes_error
-        "Your push to this repository has been rejected because it would exceed " \
-          "the namespace storage limit of #{formatted(limit)}. " \
-          "Reduce your namespace storage or purchase additional storage."
+        _(
+          "Your push to this repository has been rejected because it would exceed " \
+          "the namespace storage limit of %{size_limit}. " \
+          "Reduce your namespace storage or purchase additional storage." \
+          "To manage storage, or purchase additional storage, see %{manage_storage_url}. " \
+          "To learn more about restricted actions, see %{restricted_actions_url}"
+        ) % push_message_params
       end
 
       def above_size_limit_message
@@ -71,7 +75,7 @@ module EE
       def push_message_params
         {
           namespace_name: message_params[:namespace_name],
-          manage_storage_url: help_page_url('user/usage_quotas', 'manage-your-storage-usage'),
+          manage_storage_url: help_page_url('user/usage_quotas', 'manage-storage-usage'),
           restricted_actions_url: help_page_url('user/read_only_namespaces', 'restricted-actions'),
           current_size: formatted(current_size),
           size_limit: formatted(limit),
