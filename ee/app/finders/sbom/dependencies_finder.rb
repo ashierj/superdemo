@@ -10,42 +10,51 @@ module Sbom
     end
 
     def execute
-      sbom_occurrences = filtered_collection
+      @collection = occurrences
 
-      case params[:sort_by]
-      when 'name'
-        sbom_occurrences.order_by_component_name(sort_direction)
-      when 'packager'
-        sbom_occurrences.order_by_package_name(sort_direction)
-      when 'license'
-        sbom_occurrences.order_by_spdx_identifier(sort_direction)
-      else
-        sbom_occurrences.order_by_id
-      end
+      filter_by_package_managers
+      filter_by_component_names
+      filter_by_licences
+      sort
     end
 
     private
 
     attr_reader :project_or_group, :params
 
-    def filtered_collection
-      collection = occurrences
-      collection = filter_by_package_managers(collection) if params[:package_managers].present?
-      collection = filter_by_component_names(collection) if params[:component_names].present?
-      collection = collection.by_licenses(params[:licenses]) if params[:licenses].present?
-      collection
+    def filter_by_package_managers
+      return if params[:package_managers].blank?
+
+      @collection = @collection.filter_by_package_managers(params[:package_managers])
     end
 
-    def filter_by_package_managers(sbom_occurrences)
-      sbom_occurrences.filter_by_package_managers(params[:package_managers])
+    def filter_by_component_names
+      return if params[:component_names].blank?
+
+      @collection = @collection.filter_by_component_names(params[:component_names])
     end
 
-    def filter_by_component_names(sbom_occurrences)
-      sbom_occurrences.filter_by_component_names(params[:component_names])
+    def filter_by_licences
+      return if params[:licenses].blank?
+
+      @collection = @collection.by_licenses(params[:licenses])
     end
 
     def sort_direction
       params[:sort]&.downcase == 'desc' ? 'desc' : 'asc'
+    end
+
+    def sort
+      case params[:sort_by]
+      when 'name'
+        @collection.order_by_component_name(sort_direction)
+      when 'packager'
+        @collection.order_by_package_name(sort_direction)
+      when 'license'
+        @collection.order_by_spdx_identifier(sort_direction)
+      else
+        @collection.order_by_id
+      end
     end
 
     def occurrences
