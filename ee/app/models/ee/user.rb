@@ -231,6 +231,12 @@ module EE
       end
     end
 
+    def external?
+      return true if security_policy_bot?
+
+      read_attribute(:external)
+    end
+
     def cannot_be_admin_and_auditor
       if admin? && auditor?
         errors.add(:admin, 'user cannot also be an Auditor.')
