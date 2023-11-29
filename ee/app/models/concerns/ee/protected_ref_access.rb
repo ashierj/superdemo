@@ -62,13 +62,17 @@ module EE
     def check_access(current_user)
       super do
         break current_user.id == user_id if user?
-        break group.users.exists?(current_user.id) if group?
+        break group_access_allowed?(current_user) if group?
 
         yield if block_given?
       end
     end
 
     private
+
+    def group_access_allowed?(current_user)
+      group.users.exists?(current_user.id)
+    end
 
     def user?
       type == :user
