@@ -74,20 +74,35 @@ describe('FilteredSearchBarRoot', () => {
   });
 
   describe('data', () => {
-    it('initializes `filterValue`, `selectedSortOption` and `selectedSortDirection` data props and displays the sort dropdown', () => {
-      expect(wrapper.vm.filterValue).toEqual([]);
-      expect(wrapper.vm.selectedSortOption).toBe(mockSortOptions[0]);
-      expect(wrapper.vm.selectedSortDirection).toBe(SORT_DIRECTION.descending);
-      expect(findGlSorting().exists()).toBe(true);
+    describe('when `sortOptions` are provided', () => {
+      beforeEach(() => {
+        wrapper.destroy();
+        wrapper = createComponent({ sortOptions: mockSortOptions });
+      });
+
+      it('sets a correct initial value for GlFilteredSearch', () => {
+        expect(findGlFilteredSearch().props('value')).toEqual([]);
+      });
+
+      it('emits an event with the selectedSortOption provided by default', async () => {
+        findGlSorting().vm.$emit('sortByChange', mockSortOptions[1].id);
+        await nextTick();
+
+        expect(wrapper.emitted('onSort')[0]).toEqual([mockSortOptions[1].sortDirection.descending]);
+      });
+
+      it('emits an event with the selectedSortDirection provided by default', async () => {
+        findGlSorting().vm.$emit('sortDirectionChange', true);
+        await nextTick();
+
+        expect(wrapper.emitted('onSort')[0]).toEqual([mockSortOptions[0].sortDirection.ascending]);
+      });
     });
 
-    it('does not initialize `selectedSortOption` and `selectedSortDirection` when `sortOptions` is not applied and hides the sort dropdown', () => {
-      wrapper.destroy();
+    it('does not initialize the sort dropdown when `sortOptions` are not provided', () => {
       wrapper = createComponent();
 
-      expect(wrapper.vm.filterValue).toEqual([]);
-      expect(wrapper.vm.selectedSortOption).toBe(undefined);
-      expect(wrapper.findComponent(GlSorting).exists()).toBe(false);
+      expect(findGlSorting().exists()).toBe(false);
     });
   });
 
@@ -226,12 +241,13 @@ describe('FilteredSearchBarRoot', () => {
         });
       });
 
-      it('sets `selectedSortDirection` to be opposite of its current value', () => {
-        expect(wrapper.vm.selectedSortDirection).toBe(SORT_DIRECTION.descending);
+      it('sets sort direction to be opposite of its current value', async () => {
+        expect(findGlSorting().props('isAscending')).toBe(false);
 
         findGlSorting().vm.$emit('sortDirectionChange', true);
+        await nextTick();
 
-        expect(wrapper.vm.selectedSortDirection).toBe(SORT_DIRECTION.ascending);
+        expect(findGlSorting().props('isAscending')).toBe(true);
       });
 
       it('emits component event `onSort` with opposite of currently selected sort by value', () => {
