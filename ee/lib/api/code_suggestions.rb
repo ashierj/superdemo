@@ -122,8 +122,6 @@ module API
         end
         post do
           if Gitlab.org_or_com?
-            forbidden! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
-
             if ::Feature.enabled?(:purchase_code_suggestions)
               not_found! unless current_user.code_suggestions_add_on_available? # rubocop: disable Style/SoleNestedConditional -- Feature Flag shouldn't be checked in the same condition.
             end

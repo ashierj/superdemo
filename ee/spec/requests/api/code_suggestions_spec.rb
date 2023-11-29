@@ -646,16 +646,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
       end
 
-      context 'when code_suggestions_completion_api feature flag is disabled' do
-        let(:current_user) { authorized_user }
-
-        before do
-          stub_feature_flags(code_suggestions_completion_api: false)
-        end
-
-        include_examples 'a forbidden response'
-      end
-
       context 'when purchase_code_suggestions feature flag is disabled' do
         let(:current_user) { authorized_user }
 
