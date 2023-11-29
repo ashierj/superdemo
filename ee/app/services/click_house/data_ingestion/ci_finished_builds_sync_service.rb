@@ -49,18 +49,6 @@ module ClickHouse
 
       private
 
-      def builds_batch_size
-        return BUILDS_BATCH_SIZE if Feature.enabled?(:large_finished_builds_batch_size)
-
-        BUILDS_BATCH_SIZE * 2
-      end
-
-      def builds_batch_count
-        return BUILDS_BATCH_COUNT if Feature.enabled?(:large_finished_builds_batch_size)
-
-        BUILDS_BATCH_COUNT / 2
-      end
-
       def enabled?
         Feature.enabled?(:ci_data_ingestion_to_click_house)
       end
@@ -77,7 +65,7 @@ module ClickHouse
       end
 
       def insert_new_finished_builds
-        # Read BUILDS_BATCH_COUNT batches of developer until the timeout in MAX_RUNTIME is reached
+        # Read BUILDS_BATCH_COUNT batches of BUILDS_BATCH_SIZE until the timeout in MAX_RUNTIME is reached
         # We can expect a single worker to process around 2M builds/hour with a single worker,
         # and a bit over 5M builds/hour with three workers (measured in prod).
         @reached_end_of_table = false
@@ -91,26 +79,22 @@ module ClickHouse
             next if csv_builder.rows_written == 0
 
             File.open(tempfile.path) do |f|
-              ClickHouse::Client.insert_csv(insert_finished_builds_query, f, :main)
+              ClickHouse::Client.insert_csv(INSERT_FINISHED_BUILDS_QUERY, f, :main)
             end
           end
         end
 
-        min_id, max_id = @processed_record_ids.minmax
-
         {
           records_inserted:
             Ci::FinishedBuildChSyncEvent.primary_key_in(@processed_record_ids).update_all(processed: true),
-          reached_end_of_table: @reached_end_of_table,
-          min_build_id: min_id,
-          max_build_id: max_id
+          reached_end_of_table: @reached_end_of_table
         }
       end
 
       def csv_batches
         events_batches_enumerator = Enumerator.new do |small_batches_yielder|
           # Main loop to page through the events
-          keyset_iterator_scope.each_batch(of: builds_batch_size) { |batch| small_batches_yielder << batch }
+          keyset_iterator_scope.each_batch(of: BUILDS_BATCH_SIZE) { |batch| small_batches_yielder << batch }
           @reached_end_of_table = true
         end
 
@@ -119,7 +103,7 @@ module ClickHouse
           while continue?
             batches_yielder << Enumerator.new do |records_yielder|
               # records_yielder sends rows to the CSV builder
-              builds_batch_count.times do
+              BUILDS_BATCH_COUNT.times do
                 break unless continue?
 
                 yield_builds(events_batches_enumerator.next, records_yielder)
@@ -133,7 +117,10 @@ module ClickHouse
       end
 
       def yield_builds(events_batch, records_yielder)
-        build_ids = events_batch.pluck(:build_id) # rubocop: disable CodeReuse/ActiveRecord
+        # NOTE: The `.to_a` call is necessary here to materialize the ActiveRecord relationship, so that the call
+        # to `.last` in `.each_batch` (see https://gitlab.com/gitlab-org/gitlab/-/blob/a38c93c792cc0d2536018ed464862076acb8d3d7/lib/gitlab/pagination/keyset/iterator.rb#L27)
+        # doesn't mess it up and cause duplicates (see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138066)
+        build_ids = events_batch.to_a.pluck(:build_id) # rubocop: disable CodeReuse/ActiveRecord
         Ci::Build.id_in(build_ids)
           .left_outer_joins(:runner, :runner_manager)
           .select(:finished_at, *finished_build_projections)
@@ -165,19 +152,10 @@ module ClickHouse
         **RUNNER_MANAGER_FIELD_NAMES.map { |n| :"runner_manager_#{n}" }.index_with { |n| n }
       }.freeze
 
-      def insert_finished_builds_query
-        deduplicate = Feature.enabled?(:ci_deduplicate_build_ingestion_to_click_house) ? 1 : 0
-
-        <<~SQL.squish
-          INSERT INTO ci_finished_builds (#{CSV_MAPPING.keys.join(',')})
-          SETTINGS
-             async_insert=1,
-             async_insert_deduplicate=#{deduplicate},
-             deduplicate_blocks_in_dependent_materialized_views=#{deduplicate},
-             wait_for_async_insert=1
-          FORMAT CSV
-        SQL
-      end
+      INSERT_FINISHED_BUILDS_QUERY = <<~SQL.squish
+        INSERT INTO ci_finished_builds (#{CSV_MAPPING.keys.join(',')})
+        SETTINGS async_insert=1, wait_for_async_insert=1 FORMAT CSV
+      SQL
 
       def keyset_iterator_scope
         lower_bound = (@worker_index * BUILD_ID_PARTITIONS / @total_workers).to_i

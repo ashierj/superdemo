@@ -3,9 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_data_management do
-  let_it_be(:project) { create(:project, :with_product_analytics_funnel) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :with_product_analytics_funnel, group: group) }
 
   before do
+    allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+    project.group.root_ancestor.namespace_settings.update!(
+      experiment_features_enabled: true,
+      product_analytics_enabled: true
+    )
     stub_licensed_features(product_analytics: true)
   end
 
@@ -50,7 +56,8 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
     end
 
     context 'when the project does not have a funnels directory' do
-      let_it_be(:project) { create(:project, :repository) }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, :repository, group: group) }
 
       it { is_expected.to be_empty }
     end

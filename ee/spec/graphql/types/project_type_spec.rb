@@ -43,9 +43,15 @@ RSpec.describe GitlabSchema.types['Project'] do
       end
 
       with_them do
-        let_it_be(:project) { create(:project) }
+        let_it_be(:group) { create(:group) }
+        let_it_be(:project) { create(:project, group: group) }
 
         before do
+          allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+          project.group.root_ancestor.namespace_settings.update!(
+            experiment_features_enabled: true,
+            product_analytics_enabled: true
+          )
           project.project_setting.update!(product_analytics_instrumentation_key: project_instrumentation_key)
 
           stub_application_setting(product_analytics_enabled: can_read_product_analytics)

@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_shared_state,
   feature_category: :product_analytics_data_management do
-  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
 
   before do
@@ -44,6 +45,11 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
     subject { described_class.new(container: project, current_user: user).execute }
 
     before do
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      project.group.root_ancestor.namespace_settings.update!(
+        experiment_features_enabled: true,
+        product_analytics_enabled: true
+      )
       stub_licensed_features(product_analytics: true)
       stub_ee_application_setting(product_analytics_enabled: true)
     end
