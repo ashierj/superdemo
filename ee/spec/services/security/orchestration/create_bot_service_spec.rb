@@ -80,6 +80,7 @@ RSpec.describe Security::Orchestration::CreateBotService, feature_category: :sec
       expect(bot_user.username).to start_with("gitlab_security_policy_project_#{project.id}_bot")
       expect(bot_user.email).to start_with("gitlab_security_policy_project_#{project.id}_bot")
       expect(bot_user.user_type).to eq('security_policy_bot')
+      expect(bot_user.external).to eq(true)
     end
 
     it 'adds the bot user as a guest to the project', :aggregate_failures do
