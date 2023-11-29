@@ -3,8 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analytics_visualization do
+  let_it_be(:group) { create(:group) }
   let_it_be(:project, reload: true) do
-    create(:project, :with_product_analytics_dashboard,
+    create(:project, :with_product_analytics_dashboard, group: group,
       project_setting: build(:project_setting, product_analytics_instrumentation_key: 'test')
     )
   end
@@ -15,6 +16,11 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   let(:num_builtin_visualizations) { 15 }
 
   before do
+    allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+    project.group.root_ancestor.namespace_settings.update!(
+      experiment_features_enabled: true,
+      product_analytics_enabled: true
+    )
     stub_licensed_features(
       product_analytics: true,
       project_level_analytics_dashboard: true,
@@ -177,8 +183,9 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   end
 
   context 'when visualization is loaded with attempted path traversal' do
+    let_it_be(:group) { create(:group) }
     let_it_be(:project) do
-      create(:project, :with_dashboard_attempting_path_traversal,
+      create(:project, :with_dashboard_attempting_path_traversal, group: group,
         project_setting: build(:project_setting, product_analytics_instrumentation_key: 'test')
       )
     end
@@ -191,8 +198,9 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   end
 
   context 'when visualization definition is invalid' do
+    let_it_be(:group) { create(:group) }
     let_it_be(:project) do
-      create(:project, :with_product_analytics_invalid_custom_visualization,
+      create(:project, :with_product_analytics_invalid_custom_visualization, group: group,
         project_setting: build(:project_setting, product_analytics_instrumentation_key: 'test')
       )
     end

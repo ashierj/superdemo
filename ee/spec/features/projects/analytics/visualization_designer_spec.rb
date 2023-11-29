@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :product_analytics_visualization do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:user) { current_user }
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:meta_response_with_data) { fixture_file('cube_js/meta_with_data.json', dir: 'ee') }
   let_it_be(:query_response_with_data) { fixture_file('cube_js/query_with_data.json', dir: 'ee') }
   let_it_be(:query_response_with_error) { fixture_file('cube_js/query_with_error.json', dir: 'ee') }
@@ -27,7 +28,11 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
         product_analytics_dashboards: true
       )
       stub_licensed_features(combined_project_analytics_dashboards: true, product_analytics: true)
-
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      project.group.root_ancestor.namespace_settings.update!(
+        experiment_features_enabled: true,
+        product_analytics_enabled: true
+      )
       stub_application_setting(product_analytics_enabled?: true)
       stub_application_setting(product_analytics_data_collector_host: 'https://collector.example.com')
       stub_application_setting(cube_api_base_url: 'https://cube.example.com')
