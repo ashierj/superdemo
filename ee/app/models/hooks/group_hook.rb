@@ -7,6 +7,8 @@ class GroupHook < WebHook
   include Limitable
   extend ::Gitlab::Utils::Override
 
+  self.allow_legacy_sti_class = true
+
   self.limit_name = 'group_hooks'
   self.limit_scope = :group
   self.singular_route_key = :hook
