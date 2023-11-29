@@ -3,7 +3,6 @@
 module CodeSuggestions
   module Tasks
     class Base
-      DEFAULT_CODE_SUGGESTIONS_URL = 'https://codesuggestions.gitlab.com'
       AI_GATEWAY_CONTENT_SIZE = 100_000
 
       def initialize(params: {}, unsafe_passthrough_params: {})
@@ -12,7 +11,7 @@ module CodeSuggestions
       end
 
       def self.base_url
-        ENV.fetch('CODE_SUGGESTIONS_BASE_URL', DEFAULT_CODE_SUGGESTIONS_URL)
+        Gitlab::AiGateway.url
       end
 
       def endpoint

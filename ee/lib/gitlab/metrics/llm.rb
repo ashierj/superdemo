@@ -5,6 +5,7 @@ module Gitlab
     module Llm
       class << self
         CLIENT_NAMES = {
+          'Gitlab::Llm::AiGateway::Client' => :ai_gateway,
           'Gitlab::Llm::VertexAi::Client' => :vertex_ai,
           'Gitlab::Llm::Anthropic::Client' => :anthropic,
           'Gitlab::Llm::OpenAi::Client' => :open_ai

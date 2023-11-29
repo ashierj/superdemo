@@ -27,6 +27,11 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
     group.add_member(authorized_user, :developer)
     stub_licensed_features(epics: true)
     allow(SecureRandom).to receive(:uuid).and_return('uuid')
+
+    # Bypass actual requests of AI Gateway client
+    allow_next_instance_of(Gitlab::Ai::AccessToken) do |access_token|
+      allow(access_token).to receive(:encoded).and_return(nil)
+    end
   end
 
   shared_examples 'a response' do |case_name|
