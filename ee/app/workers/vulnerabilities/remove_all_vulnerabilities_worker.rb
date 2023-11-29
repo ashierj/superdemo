@@ -37,14 +37,14 @@ module Vulnerabilities
       VulnerabilityUserMention
     ].freeze
 
-    def perform(project)
-      Vulnerability.with_project(project.id).each_batch(of: BATCH_SIZE) do |batch|
+    def perform(project_id)
+      Vulnerability.with_project(project_id).each_batch(of: BATCH_SIZE) do |batch|
         vulnerability_ids = batch.pluck(:id) # rubocop:disable CodeReuse/ActiveRecord -- there's no simple way to create a scope to use with EachBatch
         finding_ids = Vulnerabilities::Finding.ids_by_vulnerability(vulnerability_ids)
 
         Vulnerability.transaction do
           drop_by_finding_id(finding_ids)
-          drop_by_project_id(project.id)
+          drop_by_project_id(project_id)
           drop_by_vulnerability_id(vulnerability_ids)
           batch.delete_all
         end

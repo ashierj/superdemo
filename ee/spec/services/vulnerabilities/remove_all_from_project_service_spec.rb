@@ -38,7 +38,8 @@ RSpec.describe Vulnerabilities::RemoveAllFromProjectService, feature_category: :
       end
 
       it 'schedules jobs in bulk', :aggregate_failures do
-        expect(Vulnerabilities::RemoveAllVulnerabilitiesWorker).to receive(:bulk_perform_async_with_contexts).once
+        expect(Vulnerabilities::RemoveAllVulnerabilitiesWorker).to receive(:bulk_perform_async_with_contexts)
+          .once.with(projects, { arguments_proc: kind_of(Proc), context_proc: kind_of(Proc) })
 
         service
       end
