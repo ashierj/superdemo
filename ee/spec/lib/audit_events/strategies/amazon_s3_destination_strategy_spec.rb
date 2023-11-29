@@ -7,7 +7,6 @@ RSpec.describe AuditEvents::Strategies::AmazonS3DestinationStrategy, feature_cat
   let_it_be(:event) { create(:audit_event, :group_event, target_group: group) }
 
   let_it_be(:event_type) { 'project_name_updated' }
-  let_it_be(:request_body) { { key: "value", id: event.id }.to_json }
 
   describe '#streamable?' do
     subject { described_class.new(event_type, event).streamable? }
@@ -62,36 +61,7 @@ RSpec.describe AuditEvents::Strategies::AmazonS3DestinationStrategy, feature_cat
     end
   end
 
-  describe '#track_and_stream' do
-    let(:instance) { described_class.new(event_type, event) }
+  it_behaves_like 'validate Amazon S3 destination strategy' do
     let!(:destination) { create(:amazon_s3_configuration, group: group) }
-
-    subject(:track_and_stream) { instance.send(:track_and_stream, destination) }
-
-    context 'when Amazon S3 configuration exists' do
-      before do
-        allow(instance).to receive(:request_body).and_return(request_body)
-      end
-
-      it 'tracks audit event count and calls Aws::S3::Client', :freeze_time do
-        time_in_ms = (Time.now.to_f * 1000).to_i
-        date = Date.current.strftime("%Y/%m")
-
-        expect(instance).to receive(:track_audit_event_count)
-
-        allow_next_instance_of(Aws::S3::Client) do |s3_client|
-          expect(s3_client).to receive(:put_object).with(
-            {
-              key: "#{event['entity_type']}/#{date}/project_name_updated_#{event['id']}_#{time_in_ms}.json",
-              bucket: destination.bucket_name,
-              content_type: 'application/json',
-              body: request_body
-            }
-          )
-        end
-
-        track_and_stream
-      end
-    end
   end
 end

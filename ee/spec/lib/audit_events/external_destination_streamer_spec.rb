@@ -64,6 +64,7 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
         create(:google_cloud_logging_configuration, group: group)
         create(:instance_google_cloud_logging_configuration)
         create(:amazon_s3_configuration, group: group)
+        create(:instance_amazon_s3_configuration)
       end
 
       it { is_expected.to be_truthy }
@@ -105,6 +106,14 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
       context 'when only amazon s3 destination is streamable' do
         before do
           create(:amazon_s3_configuration, group: group)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when only instance amazon s3 destination is streamable' do
+        before do
+          create(:instance_amazon_s3_configuration)
         end
 
         it { is_expected.to be_truthy }

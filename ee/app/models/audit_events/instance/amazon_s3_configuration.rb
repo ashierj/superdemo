@@ -29,6 +29,10 @@ module AuditEvents
         algorithm: 'aes-256-gcm',
         encode: false,
         encode_iv: false
+
+      def allowed_to_stream?(*)
+        true
+      end
     end
   end
 end
