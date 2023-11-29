@@ -7,11 +7,6 @@ module CodeSuggestions
     VERTEX_AI = :vertex_ai
     ANTHROPIC = :anthropic
 
-    # We determined this in an experimental way, without any deep measurements.
-    # We're going to iterate on this based on how different AI models performing for these languages.
-    ANTHROPIC_CODE_COMPLETION_LANGUAGES = %w[Ruby TypeScript].freeze
-    ANTHROPIC_CODE_GENERATION_LANGUAGES = %w[Ruby TypeScript].freeze
-
     def initialize(current_user, params:, unsafe_passthrough_params: {})
       @current_user = current_user
       @params = params
@@ -62,30 +57,12 @@ module CodeSuggestions
     strong_memoize_attr(:skip_instruction_extraction?)
 
     def code_completion_model_family
-      if code_completion_split_by_language?
-        return ANTHROPIC_CODE_COMPLETION_LANGUAGES.include?(language&.name) ? ANTHROPIC : VERTEX_AI
-      end
-
       Feature.enabled?(:code_completion_anthropic, current_user) ? ANTHROPIC : VERTEX_AI
     end
 
     def code_generation_model_family
-      if code_generation_split_by_language?
-        return ANTHROPIC_CODE_GENERATION_LANGUAGES.include?(language&.name) ? ANTHROPIC : VERTEX_AI
-      end
-
       Feature.enabled?(:code_generation_anthropic, current_user) ? ANTHROPIC : VERTEX_AI
     end
-
-    def code_completion_split_by_language?
-      Feature.enabled?(:code_completion_split_by_language, current_user)
-    end
-    strong_memoize_attr(:code_completion_split_by_language?)
-
-    def code_generation_split_by_language?
-      Feature.enabled?(:code_generation_split_by_language, current_user)
-    end
-    strong_memoize_attr(:code_generation_split_by_language?)
 
     def code_completion_params
       params.merge(code_completion_model_family: code_completion_model_family)
