@@ -14,7 +14,7 @@ module ProductAnalyticsHelpers
   def project_value_streams_dashboards_enabled?
     return true unless is_a?(Project)
 
-    Feature.enabled?(:project_analytics_dashboard_dynamic_vsd)
+    Feature.enabled?(:project_analytics_dashboard_dynamic_vsd, self)
   end
 
   def value_streams_dashboard_available?
