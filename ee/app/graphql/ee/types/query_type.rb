@@ -5,6 +5,13 @@ module EE
     module QueryType
       extend ActiveSupport::Concern
       prepended do
+        field :add_on_purchase,
+          ::Types::GitlabSubscriptions::AddOnPurchaseType,
+          null: true,
+          description: 'Retrieve the active add-on purchase. ' \
+                       'This query can be used in GitLab SaaS and self-managed environments.',
+          resolver: ::Resolvers::GitlabSubscriptions::AddOnPurchaseResolver,
+          alpha: { milestone: '16.7' }
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
           null: true,
           description: 'Compute usage data for a namespace.' do
