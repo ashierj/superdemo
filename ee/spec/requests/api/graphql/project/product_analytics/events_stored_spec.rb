@@ -36,17 +36,18 @@ RSpec.describe 'Query.project(fullPath).product_analytics_events_stored',
   end
 
   context 'when project does not have product analytics enabled' do
-    it "returns zero for each months usage" do
+    it "returns nil for each months usage" do
       subject
 
       graphql_data.dig('project', 'productAnalyticsEventsStored').each do |event|
-        expect(event['count']).to be_zero
+        expect(event['count']).to be_nil
       end
     end
   end
 
   context 'when project does have product analytics enabled' do
     before do
+      project.project_setting.update!(product_analytics_instrumentation_key: 'abc-123')
       allow_next_instance_of(ProductAnalytics::Settings) do |instance|
         allow(instance).to receive(:enabled?).and_return(true)
       end
