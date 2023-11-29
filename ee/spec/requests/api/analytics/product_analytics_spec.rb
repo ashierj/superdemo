@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_analytics_data_management do
-  let_it_be(:project) { create(:project, :with_product_analytics_funnel) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :with_product_analytics_funnel, group: group) }
 
-  let(:current_user) { project.owner }
+  let(:current_user) { create(:user) }
 
   shared_examples_for 'well behaved cube query' do |options = { stub_service: true }|
     before do
@@ -70,7 +71,13 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
   describe 'GET projects/:id/product_analytics/funnels' do
     let(:request) { get api("/projects/#{project.id}/product_analytics/funnels", current_user) }
 
-    it_behaves_like 'well behaved cube query', { stub_service: false }
+    context 'when project is not moved' do
+      before do
+        stub_cube_product_analytics_enabled
+      end
+
+      it_behaves_like 'well behaved cube query', { sub_service: false }
+    end
 
     context 'when a project is moved' do
       let_it_be(:redirect_route) { 'new/project/location' }
@@ -88,10 +95,21 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
   private
 
   def stub_cube_proxy_setup
-    stub_licensed_features(product_analytics: true)
+    stub_licensed_features(product_analytics: true, experimental_features: true)
     stub_ee_application_setting(product_analytics_enabled: true)
     stub_ee_application_setting(cube_api_key: 'testtest')
     stub_ee_application_setting(cube_api_base_url: 'http://cube.dev')
+    allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+    project.group.root_ancestor.namespace_settings.update!(
+      experiment_features_enabled: true,
+      product_analytics_enabled: true
+    )
+  end
+
+  def stub_cube_product_analytics_enabled
+    expect_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |service|
+      expect(service).to receive(:product_analytics_enabled?).and_return(true)
+    end
   end
 
   def stub_cube_data_service_success

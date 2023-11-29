@@ -12,17 +12,21 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   describe '#product_analytics_enabled?' do
     subject { project.product_analytics_enabled? }
 
-    where(:licensed, :flag, :outcome) do
-      false | false | false
-      true | false | false
-      false | true | false
-      true | true | true
+    where(:licensed, :flag, :toggle, :outcome) do
+      false | false | false | false
+      true | false | false | false
+      false | true | false | false
+      false | false | true | false
+      true | true | true | true
     end
 
     with_them do
       before do
+        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_feature_flags(product_analytics_dashboards: flag)
         stub_licensed_features(product_analytics: licensed)
+        project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
+          product_analytics_enabled: toggle)
       end
 
       it { is_expected.to eq(outcome) }
@@ -71,11 +75,23 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       expect(project.product_analytics_dashboards(user)).to be_empty
     end
 
+    it 'returns nothing if product analytics toggle is disabled' do
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      stub_licensed_features(product_analytics: false)
+      project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
+        product_analytics_enabled: false)
+
+      expect(project.product_analytics_dashboards(user)).to be_empty
+    end
+
     context 'with configuration project' do
       let_it_be(:config_project) { create(:project, :with_product_analytics_dashboard, group: group) }
 
       before do
+        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: true)
+        project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
+          product_analytics_enabled: true)
         project.update!(analytics_dashboards_configuration_project: config_project)
       end
 
@@ -86,7 +102,10 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
 
     context 'without configuration project' do
       before do
+        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: true)
+        project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
+          product_analytics_enabled: true)
         project.project_setting.update!(product_analytics_instrumentation_key: "key")
         allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
           allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
@@ -113,7 +132,13 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   end
 
   describe '#product_analytics_funnels' do
-    subject { create(:project, :with_product_analytics_funnel).product_analytics_funnels }
+    subject { create(:project, :with_product_analytics_funnel, group: group).product_analytics_funnels }
+
+    before do
+      allow(group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
+        product_analytics_enabled: false)
+    end
 
     context 'when the feature is not available' do
       before do
@@ -123,9 +148,19 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       it { is_expected.to be_empty }
     end
 
-    context 'when the feature is available' do
+    context 'when the toggle is disabled' do
+      before do
+        stub_licensed_features(product_analytics: false)
+        group.root_ancestor.namespace_settings.update!(product_analytics_enabled: false)
+      end
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when the feature is available and toggle is enabled' do
       before do
         stub_licensed_features(product_analytics: true)
+        group.root_ancestor.namespace_settings.update!(product_analytics_enabled: true)
       end
 
       it { is_expected.to contain_exactly(a_kind_of(::ProductAnalytics::Funnel)) }

@@ -188,6 +188,8 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
     context 'Product Analytics' do
       using RSpec::Parameterized::TableSyntax
 
+      let(:group) { create(:group) }
+
       where(:flag_enabled, :default_branch, :licence_available, :called) do
         true  | 'master' | true  | true
         true  | 'master' | false | false
@@ -200,6 +202,12 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
       end
 
       before do
+        project.update!(group: group)
+        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+        project.group.root_ancestor.namespace_settings.update!(
+          experiment_features_enabled: true,
+          product_analytics_enabled: true
+        )
         stub_feature_flags(product_analytics_dashboards: flag_enabled)
         stub_licensed_features(product_analytics: licence_available)
         allow(project).to receive(:default_branch).and_return(default_branch)

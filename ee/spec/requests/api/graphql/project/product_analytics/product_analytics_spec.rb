@@ -3,8 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_data_management do
-  let_it_be(:project) { create(:project, :with_product_analytics_dashboard) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :with_product_analytics_dashboard, group: group) }
   let_it_be(:user) { create(:user) }
+  let_it_be(:settings) { build(:application_setting, product_analytics_enabled: true) }
 
   let_it_be(:events_table) { 'TrackedEvents.count' }
 
@@ -19,7 +21,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
     )
     end
 
-    subject do
+    subject(:result) do
       GitlabSchema.execute(query, context: { current_user: user }).as_json.dig('data', 'project', 'trackingKey')
     end
 
@@ -49,7 +51,10 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
 
     with_them do
       before do
+        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: licensed)
+        project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
+          product_analytics_enabled: true)
         stub_feature_flags(product_analytics_dashboards: enabled)
         project.add_role(user, user_role) # rubocop:disable RSpec/BeforeAllRoleAssignment
         project.project_setting.update!(product_analytics_instrumentation_key: snowplow_instrumentation_key)
@@ -83,15 +88,17 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
               }))
         end
 
-        expect(subject.dig('data', 'project', 'productAnalyticsState')).to eq('COMPLETE')
+        expect(result.dig('data', 'project', 'productAnalyticsState')).to eq('COMPLETE')
       end
     end
 
     before do
-      stub_application_setting(product_analytics_enabled?: true)
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
+      project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
+        product_analytics_enabled: true)
+      stub_application_setting(product_analytics_enabled: true)
       stub_feature_flags(product_analytics_dashboards: true)
-
       allow_next_instance_of(ProjectSetting) do |instance|
         allow(instance).to receive(:product_analytics_instrumentation_key).and_return('test key')
       end
@@ -99,13 +106,14 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
       allow_next_instance_of(Resolvers::ProductAnalytics::StateResolver) do |instance|
         allow(instance).to receive(:initializing?).and_return(false)
       end
+      project.reload
     end
 
     before_all do
       project.add_developer(user)
     end
 
-    subject do
+    subject(:result) do
       GitlabSchema.execute(query, context: { current_user: user })
                   .as_json
     end
@@ -123,7 +131,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
             }))
       end
 
-      expect(subject.dig('errors', 0, 'message')).to eq('Error from Cube API: Test Error')
+      expect(result.dig('errors', 0, 'message')).to eq('Error from Cube API: Test Error')
     end
 
     it 'will query state when Cube DB does not exist' do
@@ -133,7 +141,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
             message: '404 Clickhouse Database Not Found', reason: :not_found))
       end
 
-      expect(subject.dig('data', 'project', 'productAnalyticsState')).to eq('WAITING_FOR_EVENTS')
+      expect(result.dig('data', 'project', 'productAnalyticsState')).to eq('WAITING_FOR_EVENTS')
     end
 
     it 'will pass through Cube API connection errors' do
@@ -141,7 +149,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
         expect(instance).to receive(:execute).and_return(ServiceResponse.error(message: 'Connection Error'))
       end
 
-      expect(subject.dig('errors', 0, 'message')).to eq('Error from Cube API: Connection Error')
+      expect(result.dig('errors', 0, 'message')).to eq('Error from Cube API: Connection Error')
     end
   end
 end

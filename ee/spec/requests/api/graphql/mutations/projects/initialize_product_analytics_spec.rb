@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Set project compliance framework', feature_category: :product_analytics_data_management do
   include GraphqlHelpers
 
-  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:current_user) { create(:user) }
 
   let(:mutation) do
@@ -21,8 +22,9 @@ RSpec.describe 'Set project compliance framework', feature_category: :product_an
   describe '#resolve' do
     context 'when product analytics is enabled' do
       before do
-        stub_licensed_features(product_analytics: true)
-        stub_application_setting(product_analytics_enabled: true)
+        allow_next_instance_of(ProductAnalytics::InitializeStackService) do |service|
+          allow(service).to receive(:feature_availability_error).and_return(nil)
+        end
       end
 
       context 'when user is a project maintainer' do

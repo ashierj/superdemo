@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :product_analytics_data_management do
-  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
 
-  let(:current_user) { project.owner }
+  let(:current_user) { create(:user) }
   let(:cube_api_load_url) { "http://cube.dev/cubejs-api/v1/load" }
   let(:cube_api_dry_run_url) { "http://cube.dev/cubejs-api/v1/dry-run" }
   let(:cube_api_meta_url) { "http://cube.dev/cubejs-api/v1/meta" }
@@ -14,6 +15,15 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
 
   let(:request_meta) do
     described_class.new(container: project, current_user: current_user, params: { path: 'meta' }).execute
+  end
+
+  before do
+    project.add_owner(current_user)
+    allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+    project.group.root_ancestor.namespace_settings.update!(
+      experiment_features_enabled: true,
+      product_analytics_enabled: true
+    )
   end
 
   shared_examples 'a not found error' do
