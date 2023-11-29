@@ -28,5 +28,12 @@ class ProtectedBranch::UnprotectAccessLevel < ApplicationRecord
   def self.allowed_access_levels
     super.excluding(Gitlab::Access::NO_ACCESS)
   end
-  include ProtectedBranchAccess
+  include ProtectedRefAccess
+
+  belongs_to :protected_branch
+  delegate :project, to: :protected_branch
+
+  def self.declarative_policy_class
+    'ProtectedBranchPolicy'
+  end
 end
