@@ -6,19 +6,14 @@ RSpec.describe MergeRequestsFinder, feature_category: :code_review_workflow do
   describe '#execute' do
     include_context 'MergeRequestsFinder multiple projects with merge requests context'
 
-    let_it_be(:merged_merge_request) do
+    let(:merged_merge_request) do
       create(
-        :merge_request, :simple, author: user, source_project: project4, target_project: project4,
-        state: :merged, merge_commit_sha: 'rurebf'
+        :merge_request, :simple, author: user, source_project: project4, target_project: project4, merge_commit_sha: 'rurebf', source_branch: 'test'
       )
     end
 
-    let_it_be(:approver) { create(:approver, target: merged_merge_request, user: user) }
-    let_it_be(:approver_rule) { create(:approval_merge_request_rule, merge_request: merged_merge_request) }
-
-    before do
-      approver_rule.users << user
-    end
+    let(:approver) { create(:approver, target: merged_merge_request, user: user) }
+    let(:approver_rule) { create(:approval_merge_request_rule, merge_request: merged_merge_request) }
 
     it 'ignores filtering by weight' do
       params = { project_id: project1.id, scope: 'authored', state: 'opened', weight: Issue::WEIGHT_ANY }
@@ -29,6 +24,11 @@ RSpec.describe MergeRequestsFinder, feature_category: :code_review_workflow do
     end
 
     context 'merge commit sha' do
+      before do
+        approver_rule.users << user
+        merged_merge_request.mark_as_merged!
+      end
+
       it 'filters by merge commit sha' do
         merge_requests = described_class.new(
           user,
@@ -145,6 +145,11 @@ RSpec.describe MergeRequestsFinder, feature_category: :code_review_workflow do
     end
 
     context 'filtering by approver usernames' do
+      before do
+        approver_rule.users << user
+        merged_merge_request.mark_as_merged!
+      end
+
       let(:params) { { approver_usernames: user.username, sort: 'milestone' } }
 
       it 'returns merge requests that have user as an approver' do
@@ -165,6 +170,11 @@ RSpec.describe MergeRequestsFinder, feature_category: :code_review_workflow do
     end
 
     context 'filtering by approver user IDs' do
+      before do
+        approver_rule.users << user
+        merged_merge_request.mark_as_merged!
+      end
+
       let(:params) { { approver_ids: user.id, sort: 'milestone' } }
 
       it 'returns merge requests that have user as an approver' do

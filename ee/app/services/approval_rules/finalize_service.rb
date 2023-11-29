@@ -11,14 +11,16 @@ module ApprovalRules
     def execute
       return unless merge_request.merged?
 
-      ApplicationRecord.transaction do
-        if new_finalizing_approach?
-          new_handling_of_rules
-        else
-          old_handling_of_rules
-        end
+      merge_request.finalize_rules do
+        ApplicationRecord.transaction do
+          if new_finalizing_approach?
+            new_handling_of_rules
+          else
+            old_handling_of_rules
+          end
 
-        merge_request.approval_rules.each(&:sync_approved_approvers)
+          merge_request.approval_rules.each(&:sync_approved_approvers)
+        end
       end
     end
 

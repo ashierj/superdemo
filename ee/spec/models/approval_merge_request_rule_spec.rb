@@ -31,6 +31,52 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
       expect(build(:approval_merge_request_rule, name: nil)).not_to be_valid
     end
 
+    context 'when the merge request is merged' do
+      let(:merge_request) { create(:merge_request, :merged) }
+      let(:rule) { build(:approval_merge_request_rule, merge_request: merge_request) }
+
+      context 'when prevent_modifications_of_mr_rules_post_merge is on' do
+        context 'when finalizing_rules is true' do
+          before do
+            merge_request.finalizing_rules = true
+          end
+
+          it 'is valid' do
+            expect(rule).to be_valid
+          end
+        end
+
+        context 'when finalizing_rules is not set' do
+          it 'is not valid' do
+            expect(rule).not_to be_valid
+            expect(rule.errors[:merge_request]).to include(/must not be merged/)
+          end
+        end
+      end
+
+      context 'when prevent_modifications_of_mr_rules_post_merge is off' do
+        before do
+          stub_feature_flags(prevent_modifications_of_mr_rules_post_merge: false)
+        end
+
+        context 'when finalizing_rules is true' do
+          before do
+            merge_request.finalizing_rules = true
+          end
+
+          it 'is valid' do
+            expect(rule).to be_valid
+          end
+        end
+
+        context 'when finalizing_rules is not set' do
+          it 'is valid' do
+            expect(rule).to be_valid
+          end
+        end
+      end
+    end
+
     context 'for report type different than scan_finding' do
       it 'is invalid when name not unique within rule type,  merge request and applicable_post_merge' do
         is_expected.to validate_uniqueness_of(:name).scoped_to([:merge_request_id, :rule_type, :section, :applicable_post_merge])
@@ -362,7 +408,7 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
     let!(:approval2) { create(:approval, merge_request: merge_request, user: member2) }
     let!(:approval3) { create(:approval, merge_request: merge_request, user: member3) }
 
-    let(:any_approver_rule) { create(:any_approver_rule, merge_request: merge_request) }
+    let!(:any_approver_rule) { create(:any_approver_rule, merge_request: merge_request) }
 
     before do
       subject.users = [member1, member2]
@@ -379,20 +425,42 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep, feature_categor
     end
 
     context 'when merged' do
-      let(:merge_request) { create(:merged_merge_request) }
+      let(:merge_request) { create(:merge_request, source_branch: 'test') }
 
-      it 'records approved approvers as approved_approvers association' do
-        approval_rule = described_class.find(subject.id)
-
-        approval_rule.sync_approved_approvers
-
-        expect(approval_rule.reload.approved_approvers).to contain_exactly(member1, member2)
+      before do
+        merge_request.mark_as_merged!
       end
 
-      it 'stores all the approvals for any-approver rule' do
-        any_approver_rule.sync_approved_approvers
+      context 'when merge request finalizing_rules is true' do
+        before do
+          subject.merge_request.finalizing_rules = true
+        end
 
-        expect(any_approver_rule.approved_approvers.reload).to contain_exactly(member1, member2, member3)
+        it 'records approved approvers as approved_approvers association' do
+          subject.sync_approved_approvers
+
+          expect(subject.reload.approved_approvers).to contain_exactly(member1, member2)
+        end
+
+        it 'stores all the approvals for any-approver rule' do
+          any_approver_rule.sync_approved_approvers
+
+          expect(any_approver_rule.approved_approvers.reload).to contain_exactly(member1, member2, member3)
+        end
+      end
+
+      context 'when finalizing_rules is false' do
+        before do
+          subject.merge_request.finalizing_rules = false
+        end
+
+        it 'does nothing' do
+          subject.sync_approved_approvers
+          any_approver_rule.sync_approved_approvers
+
+          expect(subject.approved_approvers.reload).to be_empty
+          expect(any_approver_rule.approved_approvers).to be_empty
+        end
       end
     end
   end

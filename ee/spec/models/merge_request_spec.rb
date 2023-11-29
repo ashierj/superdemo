@@ -1897,6 +1897,10 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
           merge_request.update!(state: 'merged')
         end
 
+        after do
+          merge_request.update!(state: 'opened')
+        end
+
         it 'does not update the approval rules' do
           expect { execute }.to not_change { approval_rules.first.reload.approvals_required }
             .and not_change { approval_rules.second.reload.approvals_required }
@@ -1922,6 +1926,17 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     describe '.with_head_pipeline' do
       it 'returns MRs that have a head pipeline' do
         expect(described_class.with_head_pipeline).to eq([merge_request_with_head_pipeline])
+      end
+    end
+
+    describe '.not_merged' do
+      let(:opened_merge_request) { create(:merge_request, :opened) }
+      let(:merged_merge_request) { create(:merge_request, :merged) }
+      let(:closed_merge_request) { create(:merge_request, :closed) }
+      let(:locked_merge_request) { create(:merge_request, :locked) }
+
+      it 'returns everything except the merged mr' do
+        expect(described_class.not_merged).to contain_exactly(merge_request, merge_request_with_head_pipeline, opened_merge_request, closed_merge_request, locked_merge_request)
       end
     end
 

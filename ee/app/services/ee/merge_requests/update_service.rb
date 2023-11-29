@@ -9,6 +9,11 @@ module EE
 
       override :general_fallback
       def general_fallback(merge_request)
+        if merge_request.merged?
+          params.delete(:reset_approval_rules_to_defaults)
+          params.delete(:approval_rules_attributes)
+        end
+
         reset_approval_rules(merge_request) if params.delete(:reset_approval_rules_to_defaults)
 
         merge_request = super(merge_request)

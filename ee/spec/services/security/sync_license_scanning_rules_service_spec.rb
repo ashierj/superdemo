@@ -26,8 +26,6 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
   let!(:ee_ci_build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
 
   before do
-    merge_request.update_head_pipeline
-
     stub_licensed_features(license_scanning: true)
   end
 
@@ -120,13 +118,12 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         end
 
         context 'when most recent base pipeline lacks SBOM report' do
-          let_it_be(:pipeline_without_sbom) do
+          let(:pipeline_without_sbom) do
             create(
               :ee_ci_pipeline,
               :success,
               source: :security_orchestration_policy,
               project: project,
-              merge_requests_as_head_pipeline: [merge_request],
               ref: merge_request.target_branch,
               sha: merge_request.diff_base_sha)
           end
