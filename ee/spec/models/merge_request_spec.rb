@@ -2038,14 +2038,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
   describe '#should_be_rebased?' do
     subject { merge_request.should_be_rebased? }
 
-    context 'when merge source is no longer a fast-forward' do
-      before do
-        allow(merge_request.target_project).to receive(:ff_merge_must_be_possible?).and_return(true)
-        allow(merge_request).to receive(:ff_merge_possible?).and_return(false)
-      end
-
-      it { is_expected.to eq true }
-
+    shared_examples 'ff car on train' do
       context 'when MR is on an up-to-date fast-forward merge train' do
         before do
           car = create(:merge_train_car, merge_request: merge_request)
@@ -2059,6 +2052,49 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
         it { is_expected.to eq false }
       end
+    end
+
+    context 'when MR source branch needs to be rebased to be merged' do
+      before do
+        stub_foss_conditions_met
+      end
+
+      context 'when the project is using ff trains' do
+        before do
+          allow(MergeTrains::Train).to receive(:project_using_ff?).and_return(true)
+        end
+
+        it { is_expected.to eq false }
+
+        it_behaves_like 'ff car on train'
+      end
+
+      context 'when project not using ff trains' do
+        before do
+          allow(MergeTrains::Train).to receive(:project_using_ff?).and_return(false)
+        end
+
+        it { is_expected.to eq true }
+
+        it_behaves_like 'ff car on train'
+      end
+
+      context 'when the ff merge train feature is disabled' do
+        before do
+          stub_feature_flags(fast_forward_merge_trains_support: false)
+        end
+
+        it { is_expected.to eq true }
+
+        it 'will not run ff related code' do
+          expect(MergeTrains::Train).not_to receive(:project_using_ff?)
+        end
+      end
+    end
+
+    def stub_foss_conditions_met
+      allow(project).to receive(:ff_merge_must_be_possible?).and_return(true)
+      allow(merge_request).to receive(:ff_merge_possible?).and_return(false)
     end
   end
 

@@ -498,6 +498,39 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
   end
 
+  describe '#on_ff_train?' do
+    subject { train_car.on_ff_train? }
+
+    let_it_be(:fresh_car) { create(:merge_train_car, :fresh) }
+    let_it_be(:merged_car) { create(:merge_train_car, :merged) }
+
+    context 'when car is active' do
+      let(:train_car) { fresh_car }
+
+      context 'when the pipeline sha is the same as the merge request sha' do
+        before do
+          train_car.merge_request.update!(merge_params: { 'train_ref' => { 'commit_sha' => train_car.pipeline.sha } })
+        end
+
+        it { is_expected.to eq(true) }
+
+        context 'when the feature flag is disabled' do
+          before do
+            stub_feature_flags(fast_forward_merge_trains_support: false)
+          end
+
+          it { is_expected.to eq(false) }
+        end
+      end
+    end
+
+    context 'when train car is inactive' do
+      let(:train_car) { merged_car }
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
   describe '#train' do
     include_context 'with train cars in many states'
 
