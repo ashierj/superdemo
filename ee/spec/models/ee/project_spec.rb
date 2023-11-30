@@ -2549,23 +2549,54 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   end
 
   describe '#add_import_job' do
-    let(:project) { create(:project) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:mirroring_params) { { mirror: true, import_url: 'http://some_url.com', mirror_user_id: user.id } }
 
     before do
       stub_licensed_features(custom_project_templates: true)
     end
 
     context 'when import_type is gitlab_custom_project_template' do
-      it 'does not create import job' do
-        project.import_type = 'gitlab_custom_project_template'
+      let(:project) { build(:project, import_type: 'gitlab_custom_project_template') }
 
-        expect(project.gitlab_custom_project_template_import?).to be true
-        expect(project.add_import_job).to be_nil
+      context 'when repository does not exist' do
+        it 'does not create import job' do
+          expect(project.add_import_job).to be_nil
+        end
+
+        context 'when mirroring is enabled' do
+          before do
+            project.update!(mirroring_params)
+          end
+
+          it 'does not create import job' do
+            expect(project.add_import_job).to be_nil
+          end
+        end
+      end
+
+      context 'when repository exists' do
+        before do
+          allow(project.repository).to receive(:exists?).and_return(true)
+        end
+
+        it 'does not create import job' do
+          expect(project.add_import_job).to be_nil
+        end
+
+        context 'when mirroring is enabled' do
+          before do
+            project.update!(mirroring_params)
+          end
+
+          it 'schedules an import job' do
+            expect(project.add_import_job).to be_present
+          end
+        end
       end
     end
 
     context 'when mirror true on a jira imported project' do
-      let_it_be(:user) { create(:user) }
       let_it_be(:project) { create(:project, :repository, import_type: 'jira', mirror: true, import_url: 'http://some_url.com', mirror_user_id: user.id) }
       let_it_be(:jira_import) { create(:jira_import_state, project: project) }
 

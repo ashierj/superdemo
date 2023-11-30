@@ -24,6 +24,15 @@ RSpec.describe Namespaces::FreeUserCap::NotifyOverLimitService, feature_category
       expect(execute).to be_success
     end
 
+    it 'logs the info that we are notifying' do
+      expect(Gitlab::AppLogger).to receive(:info).with(
+        message: 'Notifying owners of overage',
+        class: described_class.name,
+        namespace_id: group.id)
+
+      execute
+    end
+
     context 'with error condition' do
       it 'rescues to a ServiceResponse' do
         expect(::Namespaces::FreeUserCapMailer).to receive(:over_limit_email).and_raise(StandardError, '_error_')

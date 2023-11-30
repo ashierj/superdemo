@@ -12,8 +12,10 @@ import store from '~/mr_notes/stores';
 import {
   codeQualityNewErrorsHandler,
   SASTParsedHandler,
-  SASTErrorAndParsedHandler,
+  SASTParsingAndParsedHandler,
+  SASTErrorHandler,
   codeQualityErrorAndParsed,
+  requestError,
 } from './mocks/queries';
 
 const TEST_ENDPOINT = `${TEST_HOST}/diff/endpoint`;
@@ -23,8 +25,6 @@ Vue.use(VueApollo);
 Vue.config.ignoredElements = ['copy-code'];
 
 describe('diffs/components/app', () => {
-  let wrapper;
-  let stopPollingSpy;
   let mockDispatch;
   let fakeApollo;
 
@@ -68,7 +68,7 @@ describe('diffs/components/app', () => {
 
     fakeApollo = createMockApollo([[getMRCodequalityAndSecurityReports, queryHandler]]);
 
-    wrapper = shallowMount(App, {
+    shallowMount(App, {
       apolloProvider: fakeApollo,
       provide: {
         glFeatures: {
@@ -125,8 +125,6 @@ describe('diffs/components/app', () => {
       });
 
       it('stops polling when newErrors in response are defined', async () => {
-        stopPollingSpy = jest.spyOn(App.methods, 'getMRCodequalityAndSecurityReportStopPolling');
-
         createComponent(
           {
             shouldShow: true,
@@ -136,13 +134,12 @@ describe('diffs/components/app', () => {
           { sastReportsInInlineDiff: true },
         );
 
-        const getMRCodequalityAndSecurityReportsQuery =
-          wrapper.vm.$apollo.queries.getMRCodequalityAndSecurityReports;
-        jest.spyOn(getMRCodequalityAndSecurityReportsQuery, 'stopPolling');
-
         await waitForPromises();
 
-        expect(stopPollingSpy).toHaveBeenCalled();
+        expect(codeQualityNewErrorsHandler).toHaveBeenCalledTimes(1);
+        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+
+        expect(codeQualityNewErrorsHandler).toHaveBeenCalledTimes(1);
       });
 
       it('does not fetch code quality data when endpoint is blank', () => {
@@ -177,19 +174,17 @@ describe('diffs/components/app', () => {
           { shouldShow: true, sastReportAvailable: true },
           {},
           { sastReportsInInlineDiff: true },
-          SASTErrorAndParsedHandler,
+          SASTParsingAndParsedHandler,
         );
         await waitForPromises();
 
-        expect(SASTErrorAndParsedHandler).toHaveBeenCalledTimes(1);
+        expect(SASTParsingAndParsedHandler).toHaveBeenCalledTimes(1);
         jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
 
-        expect(SASTErrorAndParsedHandler).toHaveBeenCalledTimes(2);
+        expect(SASTParsingAndParsedHandler).toHaveBeenCalledTimes(2);
       });
 
       it('stops polling when sastReport status is PARSED', async () => {
-        stopPollingSpy = jest.spyOn(App.methods, 'getMRCodequalityAndSecurityReportStopPolling');
-
         createComponent(
           {
             shouldShow: true,
@@ -200,13 +195,42 @@ describe('diffs/components/app', () => {
           SASTParsedHandler,
         );
 
-        const getMRCodequalityAndSecurityReportsQuery =
-          wrapper.vm.$apollo.queries.getMRCodequalityAndSecurityReports;
-        jest.spyOn(getMRCodequalityAndSecurityReportsQuery, 'stopPolling');
-
         await waitForPromises();
 
-        expect(stopPollingSpy).toHaveBeenCalled();
+        expect(SASTParsedHandler).toHaveBeenCalledTimes(1);
+        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+
+        expect(SASTParsedHandler).toHaveBeenCalledTimes(1);
+      });
+
+      it('stops polling on request error', async () => {
+        createComponent(
+          { shouldShow: true, sastReportAvailable: true },
+          {},
+          { sastReportsInInlineDiff: true },
+          requestError,
+        );
+        await waitForPromises();
+
+        expect(requestError).toHaveBeenCalledTimes(1);
+        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+
+        expect(requestError).toHaveBeenCalledTimes(1);
+      });
+
+      it('stops polling on response status error', async () => {
+        createComponent(
+          { shouldShow: true, sastReportAvailable: true },
+          {},
+          { sastReportsInInlineDiff: true },
+          SASTErrorHandler,
+        );
+        await waitForPromises();
+
+        expect(SASTErrorHandler).toHaveBeenCalledTimes(1);
+        jest.advanceTimersByTime(FINDINGS_POLL_INTERVAL);
+
+        expect(SASTErrorHandler).toHaveBeenCalledTimes(1);
       });
 
       it('does not fetch SAST data when sastReportAvailable is false', () => {

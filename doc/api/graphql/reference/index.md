@@ -28367,6 +28367,17 @@ Represents a generic widget definition.
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetdefinitiongenerictype"></a>`type` | [`WorkItemWidgetType!`](#workitemwidgettype) | Widget type. |
 
+### `WorkItemWidgetDefinitionLabels`
+
+Represents a labels widget definition.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetdefinitionlabelsallowsscopedlabels"></a>`allowsScopedLabels` | [`Boolean!`](#boolean) | Indicates whether scoped labels are available. |
+| <a id="workitemwidgetdefinitionlabelstype"></a>`type` | [`WorkItemWidgetType!`](#workitemwidgettype) | Widget type. |
+
 ### `WorkItemWidgetDescription`
 
 Represents a description widget.
@@ -28426,7 +28437,7 @@ Represents the labels widget.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="workitemwidgetlabelsallowsscopedlabels"></a>`allowsScopedLabels` | [`Boolean`](#boolean) | Indicates whether a scoped label is allowed. |
+| <a id="workitemwidgetlabelsallowsscopedlabels"></a>`allowsScopedLabels` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated** in 16.7. Field moved to workItemType widget definition interface. Use: [`WorkItemWidgetDefinitionLabels.allowsScopedLabels`](#workitemwidgetdefinitionlabelsallowsscopedlabels). |
 | <a id="workitemwidgetlabelslabels"></a>`labels` | [`LabelConnection`](#labelconnection) | Labels assigned to the work item. (see [Connections](#connections)) |
 | <a id="workitemwidgetlabelstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
@@ -33087,6 +33098,7 @@ Implementations:
 
 - [`WorkItemWidgetDefinitionAssignees`](#workitemwidgetdefinitionassignees)
 - [`WorkItemWidgetDefinitionGeneric`](#workitemwidgetdefinitiongeneric)
+- [`WorkItemWidgetDefinitionLabels`](#workitemwidgetdefinitionlabels)
 
 ##### Fields
 
