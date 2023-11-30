@@ -63,7 +63,7 @@ describe('CreateIssueForm', () => {
   const findIssueTitleLabel = () => wrapper.findAll('label').at(0);
   const findProjectItem = (project) => wrapper.findByTestId(`project-item-${project.id}`);
   const findProjectsDropdownLabel = () => wrapper.findAll('label').at(1);
-  const findRecentDropdown = () => wrapper.findByTestId('recent-items-content');
+  const findRecentDropdown = () => wrapper.findByTestId('frequent-items-content');
   const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
   const findSubmitButton = () => wrapper.findByTestId('submit-button');
   const findTitleInput = () => wrapper.findByTestId('title-input');
