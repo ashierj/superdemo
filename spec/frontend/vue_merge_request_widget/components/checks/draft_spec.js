@@ -1,18 +1,26 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+
 import getStateQueryResponse from 'test_fixtures/graphql/merge_requests/get_state.query.graphql.json';
+
 import { createAlert } from '~/alert';
-import WorkInProgress, {
-  MSG_SOMETHING_WENT_WRONG,
-  MSG_MARK_READY,
-} from '~/vue_merge_request_widget/components/states/work_in_progress.vue';
-import draftQuery from '~/vue_merge_request_widget/queries/states/draft.query.graphql';
-import getStateQuery from '~/vue_merge_request_widget/queries/get_state.query.graphql';
-import removeDraftMutation from '~/vue_merge_request_widget/queries/toggle_draft.mutation.graphql';
-import MergeRequest from '~/merge_request';
+
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+
+import MergeRequest from '~/merge_request';
+
+import DraftCheck from '~/vue_merge_request_widget/components/checks/draft.vue';
+import {
+  DRAFT_CHECK_READY,
+  DRAFT_CHECK_ERROR,
+} from '~/vue_merge_request_widget/components/checks/i18n';
+import { FAILURE_REASONS } from '~/vue_merge_request_widget/components/checks/message.vue';
+
+import draftQuery from '~/vue_merge_request_widget/queries/states/draft.query.graphql';
+import getStateQuery from '~/vue_merge_request_widget/queries/get_state.query.graphql';
+import removeDraftMutation from '~/vue_merge_request_widget/queries/toggle_draft.mutation.graphql';
 
 Vue.use(VueApollo);
 
@@ -25,14 +33,14 @@ const TEST_PROJECT_PATH = 'lorem/ipsum';
 jest.mock('~/alert');
 jest.mock('~/merge_request', () => ({ toggleDraftStatus: jest.fn() }));
 
-describe('~/vue_merge_request_widget/components/states/work_in_progress.vue', () => {
+describe('~/vue_merge_request_widget/components/checks/draft.vue', () => {
   let wrapper;
   let apolloProvider;
 
   let draftQuerySpy;
   let removeDraftMutationSpy;
 
-  const findWIPButton = () => wrapper.findByTestId('removeWipButton');
+  const findMarkReadyButton = () => wrapper.findByTestId('mark-as-ready-button');
 
   const createDraftQueryResponse = (canUpdateMergeRequest) => ({
     data: {
@@ -69,7 +77,7 @@ describe('~/vue_merge_request_widget/components/states/work_in_progress.vue', ()
   });
 
   const createComponent = async () => {
-    wrapper = mountExtended(WorkInProgress, {
+    wrapper = mountExtended(DraftCheck, {
       apolloProvider,
       propsData: {
         mr: {
@@ -78,12 +86,16 @@ describe('~/vue_merge_request_widget/components/states/work_in_progress.vue', ()
           iid: TEST_MR_IID,
           targetProjectFullPath: TEST_PROJECT_PATH,
         },
+        check: {
+          identifier: 'draft_status',
+          status: 'FAILED',
+        },
       },
     });
 
     await waitForPromises();
 
-    // why: work_in_progress.vue has some coupling that this query has been read before
+    // why: draft.vue has some coupling that this query has been read before
     //      for some reason this has to happen **after** the component has mounted
     //      or apollo throws errors.
     apolloProvider.defaultClient.cache.writeQuery({
@@ -113,12 +125,11 @@ describe('~/vue_merge_request_widget/components/states/work_in_progress.vue', ()
 
     it('renders text', () => {
       const message = wrapper.text();
-      expect(message).toContain('Merge blocked:');
-      expect(message).toContain('Select Mark as ready to remove it from Draft status.');
+      expect(message).toContain(FAILURE_REASONS.draft_status);
     });
 
     it('renders mark ready button', () => {
-      expect(findWIPButton().text()).toBe(MSG_MARK_READY);
+      expect(findMarkReadyButton().text()).toBe(DRAFT_CHECK_READY);
     });
 
     it('does not call remove draft mutation', () => {
@@ -127,7 +138,7 @@ describe('~/vue_merge_request_widget/components/states/work_in_progress.vue', ()
 
     describe('when mark ready button is clicked', () => {
       beforeEach(async () => {
-        findWIPButton().vm.$emit('click');
+        findMarkReadyButton().vm.$emit('click');
 
         await waitForPromises();
       });
@@ -152,14 +163,14 @@ describe('~/vue_merge_request_widget/components/states/work_in_progress.vue', ()
     describe('when mutation fails and ready button is clicked', () => {
       beforeEach(async () => {
         removeDraftMutationSpy.mockRejectedValue(new Error('TEST FAIL'));
-        findWIPButton().vm.$emit('click');
+        findMarkReadyButton().vm.$emit('click');
 
         await waitForPromises();
       });
 
       it('creates alert', () => {
         expect(createAlert).toHaveBeenCalledWith({
-          message: MSG_SOMETHING_WENT_WRONG,
+          message: DRAFT_CHECK_ERROR,
         });
       });
 
@@ -179,7 +190,7 @@ describe('~/vue_merge_request_widget/components/states/work_in_progress.vue', ()
     });
 
     it('does not render mark ready button', () => {
-      expect(findWIPButton().exists()).toBe(false);
+      expect(findMarkReadyButton().exists()).toBe(false);
     });
   });
 });

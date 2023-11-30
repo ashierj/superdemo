@@ -57681,6 +57681,9 @@ msgstr ""
 msgid "mrWidgetCommitsAdded|The changes were not merged into %{targetBranch}."
 msgstr ""
 
+msgid "mrWidgetDraftCheck|Mark as ready"
+msgstr ""
+
 msgid "mrWidgetNothingToMerge|Merge request contains no changes"
 msgstr ""
 
