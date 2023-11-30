@@ -79,9 +79,24 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
         end
       end
 
-      it 'throttles calls to ingestion service after each ingested slice' do
-        expect(service).to receive(:sleep).with(described_class::THROTTLE_RATE).twice
-        service.execute
+      context 'when a slice has been ingested' do
+        context 'and it is in dev mode' do
+          before do
+            stub_env('PM_SYNC_IN_DEV', 'true')
+          end
+
+          it 'throttles calls to ingestion service after each ingested slice' do
+            expect(service).not_to receive(:sleep)
+            service.execute
+          end
+        end
+
+        context 'and it is not in dev mode' do
+          it 'throttles calls to ingestion service after each ingested slice' do
+            expect(service).to receive(:sleep).with(described_class::THROTTLE_RATE).twice
+            service.execute
+          end
+        end
       end
 
       it 'logs progress with correct sync position' do
