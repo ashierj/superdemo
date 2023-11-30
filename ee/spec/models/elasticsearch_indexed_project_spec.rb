@@ -7,47 +7,97 @@ RSpec.describe ElasticsearchIndexedProject, feature_category: :global_search do
     stub_ee_application_setting(elasticsearch_indexing: true)
   end
 
-  it_behaves_like 'an elasticsearch indexed container' do
-    let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project) }
 
-    let(:container) { :elasticsearch_indexed_project }
-    let(:container_attributes) { { project: project } }
+  let(:container) { :elasticsearch_indexed_project }
+  let(:container_attributes) { { project: project } }
 
-    let(:required_attribute) { :project_id }
+  let(:required_attribute) { :project_id }
 
-    let(:index_action) do
-      expect(Elastic::ProcessBookkeepingService).to receive(:track!).with(subject.project)
+  let(:index_action) do
+    expect(Elastic::ProcessBookkeepingService).to receive(:track!).with(project)
+  end
+
+  context 'when search_index_all_projects is true' do
+    before do
+      stub_feature_flags(search_index_all_projects: true)
     end
 
     let(:delete_action) do
-      expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(subject.project.id, subject.project.es_id)
+      expect(ElasticDeleteProjectWorker).to receive(:perform_async)
+        .with(project.id, project.es_id, delete_project: false)
     end
 
-    context 'when elasticsearch_indexing is false' do
-      before do
-        stub_ee_application_setting(elasticsearch_indexing: false)
-      end
-
-      describe 'callbacks' do
-        describe 'on save' do
-          subject(:elasticsearch_indexed_project) { build(container, container_attributes) }
-
-          it 'triggers index but does not index the data' do
-            is_expected.to receive(:index)
-            expect(Elastic::ProcessBookkeepingService).not_to receive(:track!)
-
-            elasticsearch_indexed_project.save!
-          end
+    it_behaves_like 'an elasticsearch indexed container' do
+      context 'when elasticsearch_indexing is false' do
+        before do
+          stub_ee_application_setting(elasticsearch_indexing: false)
         end
 
-        describe 'on destroy' do
-          subject(:elasticsearch_indexed_project) { create(container, container_attributes) }
+        describe 'callbacks' do
+          describe 'on save' do
+            subject(:elasticsearch_indexed_project) { build(container, container_attributes) }
 
-          it 'triggers delete_from_index but does not delete data from index' do
-            is_expected.to receive(:delete_from_index)
-            expect(ElasticDeleteProjectWorker).not_to receive(:perform_async)
+            it 'triggers index but does not index the data' do
+              is_expected.to receive(:index)
+              expect(Elastic::ProcessBookkeepingService).not_to receive(:track!)
 
-            elasticsearch_indexed_project.destroy!
+              elasticsearch_indexed_project.save!
+            end
+          end
+
+          describe 'on destroy' do
+            subject(:elasticsearch_indexed_project) { create(container, container_attributes) }
+
+            it 'triggers delete_from_index but does not delete data from index' do
+              is_expected.to receive(:delete_from_index)
+              expect(ElasticDeleteProjectWorker).not_to receive(:perform_async)
+
+              elasticsearch_indexed_project.destroy!
+            end
+          end
+        end
+      end
+    end
+  end
+
+  context 'when search_index_all_projects is false' do
+    before do
+      stub_feature_flags(search_index_all_projects: false)
+    end
+
+    let(:delete_action) do
+      expect(ElasticDeleteProjectWorker).to receive(:perform_async)
+        .with(project.id, project.es_id, delete_project: true)
+    end
+
+    it_behaves_like 'an elasticsearch indexed container' do
+      context 'when elasticsearch_indexing is false' do
+        before do
+          stub_ee_application_setting(elasticsearch_indexing: false)
+        end
+
+        describe 'callbacks' do
+          describe 'on save' do
+            subject(:elasticsearch_indexed_project) { build(container, container_attributes) }
+
+            it 'triggers index but does not index the data' do
+              is_expected.to receive(:index)
+              expect(Elastic::ProcessBookkeepingService).not_to receive(:track!)
+
+              elasticsearch_indexed_project.save!
+            end
+          end
+
+          describe 'on destroy' do
+            subject(:elasticsearch_indexed_project) { create(container, container_attributes) }
+
+            it 'triggers delete_from_index but does not delete data from index' do
+              is_expected.to receive(:delete_from_index)
+              expect(ElasticDeleteProjectWorker).not_to receive(:perform_async)
+
+              elasticsearch_indexed_project.destroy!
+            end
           end
         end
       end

@@ -22,7 +22,7 @@ module Elastic
 
       override :maintaining_elasticsearch?
       def maintaining_elasticsearch?
-        return super if ::Feature.disabled?(:search_index_all_projects, self)
+        return super if ::Feature.disabled?(:search_index_all_projects, root_namespace)
 
         ::Gitlab::CurrentSettings.elasticsearch_indexing?
       end
@@ -51,7 +51,7 @@ module Elastic
 
       override :maintain_elasticsearch_destroy
       def maintain_elasticsearch_destroy
-        ElasticDeleteProjectWorker.perform_async(id, es_id)
+        ElasticDeleteProjectWorker.perform_async(id, es_id, delete_project: true)
         Search::Zoekt::DeleteProjectWorker.perform_async(root_namespace&.id, id)
       end
 

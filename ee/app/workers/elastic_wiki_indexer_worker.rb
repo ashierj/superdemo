@@ -28,7 +28,7 @@ class ElasticWikiIndexerWorker
     end
 
     container_class = container_type.safe_constantize
-    unless container_class == Project || container_class == Group
+    unless allowed_class?(container_class)
       logger.error(message: 'ElasticWikiIndexerWorker only accepts Project and Group',
         container_id: container_id, container_type: container_type)
       return true
@@ -36,14 +36,13 @@ class ElasticWikiIndexerWorker
 
     return true unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
-    container = container_class.find(container_id)
-    unless container.use_elasticsearch?
-      cleanup_container_elastic_documents(container_id, container_type)
+    container = container_class.find_by_id(container_id)
+    unless container&.use_elasticsearch?
+      cleanup_container_elastic_documents(container, container_id, container_type)
       return true
     end
 
     options = options.with_indifferent_access
-
     force = !!options[:force]
     search_indexing_duration_s = Benchmark.realtime do
       @ret = in_lock("#{self.class.name}/#{container_type}/#{container_id}",
@@ -74,17 +73,27 @@ class ElasticWikiIndexerWorker
     end
 
     @ret
-  rescue ActiveRecord::RecordNotFound
-    logger.warn(message: 'Container record not found', container_type: container_type, container_id: container_id)
-    cleanup_container_elastic_documents(container_id, container_type)
-    true
   end
 
   private
 
-  def cleanup_container_elastic_documents(container_id, container_type)
+  def allowed_class?(container_class)
+    container_class == Project || container_class == Group
+  end
+
+  def cleanup_container_elastic_documents(container, container_id, container_type)
+    if container.nil?
+      logger.warn(message: 'Container record not found', container_type: container_type, container_id: container_id)
+    end
+
     if container_type == 'Project'
-      ElasticDeleteProjectWorker.perform_async(container_id, es_id(container_id, container_type))
+      delete_project = container.nil? || ::Feature.disabled?(:search_index_all_projects, container.root_namespace)
+
+      ElasticDeleteProjectWorker.perform_async(
+        container_id,
+        es_id(container_id, container_type),
+        delete_project: delete_project
+      )
     else
       Search::Wiki::ElasticDeleteGroupWikiWorker.perform_async(container_id)
     end
