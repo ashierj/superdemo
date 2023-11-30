@@ -88,7 +88,7 @@ module Namespaces
       end
 
       def content_class
-        "container-limited limit-container-width" unless user.layout == "fluid"
+        "container-limited" unless user.layout == "fluid"
       end
 
       def dismissible?
