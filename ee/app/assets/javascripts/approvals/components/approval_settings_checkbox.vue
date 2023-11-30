@@ -37,6 +37,9 @@ export default {
     input(value) {
       this.$emit('input', value);
     },
+    change(value) {
+      this.$emit('change', value);
+    },
   },
 };
 </script>
@@ -47,6 +50,7 @@ export default {
     :checked="checked"
     :data-qa-selector="checkboxQaSelector"
     @input="input"
+    @change="change"
   >
     {{ label }}
     <approval-settings-locked-icon v-if="locked" :label="label" :locked-text="lockedText" />
