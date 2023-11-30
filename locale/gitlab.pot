@@ -39807,6 +39807,9 @@ msgstr ""
 msgid "Release|Learn more about releases"
 msgstr ""
 
+msgid "Release|Leave blank to use the tag name as the release title."
+msgstr ""
+
 msgid "Release|More information"
 msgstr ""
 
