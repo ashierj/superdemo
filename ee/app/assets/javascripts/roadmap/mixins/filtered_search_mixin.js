@@ -60,7 +60,8 @@ export default {
         'or[labelName]': orLabelName,
         'or[authorUsername]': orAuthorUsername,
       } = this.filterParams || {};
-
+      // TODO: refactor to remove potentially undefined properties
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/432995
       return {
         in: searchWithin,
         state: this.currentState || this.epicsState,
@@ -68,8 +69,8 @@ export default {
         sort: this.sortedBy,
         prev: this.prevPageCursor || undefined,
         next: this.nextPageCursor || undefined,
-        layout: this.presetType || undefined,
-        timeframe_range_type: this.timeframeRangeType || undefined,
+        layout: 'presetType' in this ? this.presetType : undefined,
+        timeframe_range_type: 'timeframeRangeType' in this ? this.timeframeRangeType : undefined,
         author_username: authorUsername,
         'label_name[]': labelName,
         milestone_title: milestoneTitle,
@@ -83,11 +84,12 @@ export default {
         'not[label_name][]': notLabelName,
         'or[label_name][]': orLabelName,
         'or[author_username]': orAuthorUsername,
-        progress: this.progressTracking,
-        show_progress: this.isProgressTrackingActive,
-        show_milestones: this.isShowingMilestones,
-        milestones_type: this.milestonesType,
-        show_labels: this.isShowingLabels,
+        progress: 'progressTracking' in this ? this.progressTracking : undefined,
+        show_progress:
+          'isProgressTrackingActive' in this ? this.isProgressTrackingActive : undefined,
+        show_milestones: 'isShowingMilestones' in this ? this.isShowingMilestones : undefined,
+        milestones_type: 'milestonesType' in this ? this.milestonesType : undefined,
+        show_labels: 'isShowingLabels' in this ? this.isShowingLabels : undefined,
       };
     },
   },
