@@ -18985,7 +18985,7 @@ msgstr ""
 msgid "Environment|Deployments"
 msgstr ""
 
-msgid "Environment|Environment health"
+msgid "Environment|Environment status"
 msgstr ""
 
 msgid "Environment|External IP"
