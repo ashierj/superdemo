@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.shared_examples 'filtered search bar' do |tokens, sort_options|
+RSpec.shared_examples 'filtered search bar' do |tokens, sort_options, current_sort_option|
   minimum_values_for_token = {
     # Count must be at least 2 as current user are available by default
     "Author" => 2,
@@ -26,12 +26,6 @@ RSpec.shared_examples 'filtered search bar' do |tokens, sort_options|
     page.first('.gl-filtered-search-suggestion').click
   end
 
-  def open_sort_dropdown
-    page.within('.vue-filtered-search-bar-container .sort-dropdown-container .gl-dropdown-toggle') do
-      page.find('.gl-dropdown-toggle').click
-    end
-  end
-
   describe 'filtered search bar tokens list' do
     tokens.each do |token|
       it "renders values for token '#{token}' correctly" do
@@ -50,9 +44,9 @@ RSpec.shared_examples 'filtered search bar' do |tokens, sort_options|
     sort_options.each do |sort_option|
       it "renders sort option '#{sort_option}' correctly" do
         page.within('.vue-filtered-search-bar-container .sort-dropdown-container') do
-          page.find('.gl-dropdown-toggle').click
+          click_button current_sort_option
 
-          expect(page.find('.dropdown-menu')).to have_selector('li', text: sort_option)
+          expect(page).to have_selector('[role="option"]', text: sort_option)
         end
       end
     end

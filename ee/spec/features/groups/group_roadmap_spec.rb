@@ -55,7 +55,8 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
     let_it_be(:milestone_project_2) { create(:milestone, :with_dates, project: project, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
 
     available_tokens = %w[Author Label Milestone Epic My-Reaction]
-    available_sort_options = ['Start date', 'Due date']
+    default_sort_option = 'Start date'
+    available_sort_options = [default_sort_option, 'Due date']
 
     before do
       visit group_roadmap_path(group)
@@ -450,7 +451,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         wait_for_requests
       end
 
-      it_behaves_like 'filtered search bar', available_tokens, available_sort_options
+      it_behaves_like 'filtered search bar', available_tokens, available_sort_options, default_sort_option
     end
 
     describe 'that is a sub-group' do
@@ -465,7 +466,7 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         wait_for_requests
       end
 
-      it_behaves_like 'filtered search bar', available_tokens, available_sort_options
+      it_behaves_like 'filtered search bar', available_tokens, available_sort_options, default_sort_option
     end
   end
 

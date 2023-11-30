@@ -1,17 +1,12 @@
 <script>
-import {
-  GlColumnChart,
-  GlLineChart,
-  GlStackedColumnChart,
-  GlChartLegend,
-} from '@gitlab/ui/dist/charts';
+import { GlColumnChart, GlLineChart, GlStackedColumnChart } from '@gitlab/ui/dist/charts';
 
 import { isNumber } from 'lodash';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import ChartTooltipText from 'ee/analytics/shared/components/chart_tooltip_text.vue';
 
-import { CHART_TYPES, INSIGHTS_DATA_SOURCE_DORA, INSIGHTS_NO_DATA_TOOLTIP } from '../constants';
+import { CHART_TYPES, INSIGHTS_NO_DATA_TOOLTIP } from '../constants';
 import InsightsChartError from './insights_chart_error.vue';
 
 const CHART_HEIGHT = 300;
@@ -59,7 +54,6 @@ export default {
     InsightsChartError,
     ChartSkeletonLoader,
     ChartTooltipText,
-    GlChartLegend,
   },
   props: {
     loaded: {
@@ -144,9 +138,6 @@ export default {
     isLineChart() {
       return this.type === this.$options.chartTypes.LINE;
     },
-    isDoraChart() {
-      return this.dataSource === INSIGHTS_DATA_SOURCE_DORA;
-    },
   },
   methods: {
     setSvg(name) {
@@ -222,7 +213,7 @@ export default {
         :data="data.datasets"
         :option="chartOptions"
         :format-tooltip-text="formatTooltipText"
-        :show-legend="!isDoraChart"
+        show-legend
         @created="onChartCreated"
       >
         <template #tooltip-title> {{ tooltipTitle }} </template>
@@ -233,9 +224,6 @@ export default {
           />
         </template>
       </gl-line-chart>
-      <div v-if="isDoraChart" class="gl-pl-11">
-        <gl-chart-legend v-if="chart" :chart="chart" :series-info="seriesInfo" />
-      </div>
     </template>
     <chart-skeleton-loader v-else />
   </div>
