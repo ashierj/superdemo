@@ -34158,8 +34158,6 @@ CREATE INDEX index_projects_id_for_aimed_for_deletion ON projects USING btree (i
 
 CREATE INDEX index_projects_not_aimed_for_deletion ON projects USING btree (id) WHERE (marked_for_deletion_at IS NULL);
 
-CREATE INDEX index_projects_on_created_at_and_id ON projects USING btree (created_at, id);
-
 CREATE INDEX index_projects_on_creator_id_and_created_at_and_id ON projects USING btree (creator_id, created_at, id);
 
 CREATE INDEX index_projects_on_creator_id_and_id ON projects USING btree (creator_id, id);
