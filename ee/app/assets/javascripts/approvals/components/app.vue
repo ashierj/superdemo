@@ -74,6 +74,7 @@ export default {
     class="gl-new-card js-approval-rules"
     header-class="gl-new-card-header"
     body-class="gl-new-card-body gl-px-0 gl-overflow-hidden"
+    data-testid="mr-approval-rules"
   >
     <template #header>
       <div class="gl-new-card-title-wrapper">
@@ -85,7 +86,7 @@ export default {
           </span>
         </h5>
       </div>
-      <div v-if="settings.allowMultiRule" class="gl-new-card-actions">
+      <div v-if="settings.canEdit && settings.allowMultiRule" class="gl-new-card-actions">
         <gl-button
           :class="{ 'gl-mr-3': targetBranch, 'gl-mr-0': !targetBranch }"
           :disabled="isLoading"
