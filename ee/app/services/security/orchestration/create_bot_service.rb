@@ -24,7 +24,7 @@ module Security
             bot_user_params
           ).execute
           Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
-            %w[members notification_settings events user_interacted_projects projects], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424290'
+            %w[members notification_settings events projects], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424290'
           ) do
             if skip_authorization
               project.add_guest(bot_user)
