@@ -259,7 +259,7 @@ When a repository path changes, GitLab handles the transition from the
 old location to the new one with a redirect.
 
 When you [rename a user](../../profile/index.md#change-your-username),
-[change a group path](../../group/manage.md#change-a-groups-path), or [rename a repository](../settings/index.md#rename-a-repository):
+[change a group path](../../group/manage.md#change-a-groups-path), or [rename a repository](../../project/working_with_projects.md#rename-a-repository):
 
 - URLs for the namespace and everything under it, like projects, are
   redirected to the new URLs.
