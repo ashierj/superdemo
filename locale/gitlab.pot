@@ -50725,9 +50725,6 @@ msgstr ""
 msgid "TopNav|Explore"
 msgstr ""
 
-msgid "TopNav|Go back"
-msgstr ""
-
 msgid "TopNav|Switch to"
 msgstr ""
 
