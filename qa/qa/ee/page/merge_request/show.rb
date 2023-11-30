@@ -31,8 +31,8 @@ module QA
                 element :secret_detection_report
               end
 
-              view 'app/assets/javascripts/ci/reports/components/report_section.vue' do
-                element :expand_report_button
+              view 'app/assets/javascripts/vue_merge_request_widget/components/widget/widget.vue' do
+                element 'toggle-button'
               end
 
               view 'app/assets/javascripts/vue_merge_request_widget/components/approvals/approvals.vue' do
@@ -118,8 +118,8 @@ module QA
           end
 
           def expand_vulnerability_report
-            within_element 'vulnerability-report-grouped' do
-              click_element :expand_report_button unless has_content? 'Collapse'
+            within_element('vulnerability-report-grouped') do
+              click_element('toggle-button') unless has_content? 'Collapse'
             end
           end
 
