@@ -46,9 +46,6 @@ export default {
     starCount() {
       return this.resource?.starCount || 0;
     },
-    starIcon() {
-      return this.starCount > 0 ? 'star' : 'star-o';
-    },
     starCountText() {
       return n__('Star', 'Stars', this.starCount);
     },
@@ -124,7 +121,7 @@ export default {
               class="gl--flex-center"
               data-testid="stats-favorites"
             >
-              <gl-icon :name="starIcon" :size="14" class="gl-mr-2" />
+              <gl-icon name="star-o" :size="14" class="gl-mr-2" />
               <span class="gl-mr-3">{{ starCount }}</span>
             </span>
           </span>

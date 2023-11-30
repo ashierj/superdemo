@@ -37405,7 +37405,7 @@ msgstr ""
 msgid "ProjectOverview|Create new fork"
 msgstr ""
 
-msgid "ProjectOverview|Forks"
+msgid "ProjectOverview|Fork"
 msgstr ""
 
 msgid "ProjectOverview|Go to your fork"
