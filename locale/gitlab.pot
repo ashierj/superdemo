@@ -32876,6 +32876,9 @@ msgstr ""
 msgid "Objective"
 msgstr ""
 
+msgid "ObservabilityMetrics|Date"
+msgstr ""
+
 msgid "ObservabilityMetrics|Description"
 msgstr ""
 
@@ -32898,6 +32901,9 @@ msgid "ObservabilityMetrics|Search metrics starting with..."
 msgstr ""
 
 msgid "ObservabilityMetrics|Type"
+msgstr ""
+
+msgid "ObservabilityMetrics|Value"
 msgstr ""
 
 msgid "Observability|Enable"
