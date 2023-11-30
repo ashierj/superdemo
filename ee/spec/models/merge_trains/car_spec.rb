@@ -555,8 +555,8 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
 
   context 'with loose foreign key on merge_trains.pipeline_id' do
     it_behaves_like 'cleanup by a loose foreign key' do
-      let!(:parent) { create(:ci_pipeline) }
-      let!(:model) { create(:merge_train_car, pipeline: parent) }
+      let_it_be(:parent) { create(:ci_pipeline) }
+      let_it_be(:model) { create(:merge_train_car, pipeline: parent) }
     end
   end
 end
