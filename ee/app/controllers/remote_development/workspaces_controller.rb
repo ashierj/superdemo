@@ -12,7 +12,7 @@ module RemoteDevelopment
     private
 
     def authorize_remote_development!
-      render_404 unless can?(current_user, :read_workspace)
+      render_404 unless can?(current_user, :access_workspaces_feature)
     end
   end
 end

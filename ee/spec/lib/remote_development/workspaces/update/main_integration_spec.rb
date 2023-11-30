@@ -17,6 +17,10 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Main, "Integration", fea
     described_class.main(value)
   end
 
+  before do
+    stub_licensed_features(remote_development: true)
+  end
+
   context 'when workspace update is successful' do
     it 'updates the workspace and returns success' do
       expect { response }.to change { workspace.reload.desired_state }.to(new_desired_state)

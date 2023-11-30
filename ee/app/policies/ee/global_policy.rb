@@ -9,10 +9,6 @@ module EE
         License.feature_available?(:operations_dashboard)
       end
 
-      condition(:remote_development_available) do
-        License.feature_available?(:remote_development)
-      end
-
       condition(:pages_size_limit_available) do
         License.feature_available?(:pages_size_limit)
       end
@@ -86,7 +82,13 @@ module EE
 
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
 
-      rule { ~anonymous & remote_development_available }.enable :read_workspace
+      condition(:remote_development_feature_licensed) do
+        License.feature_available?(:remote_development)
+      end
+
+      rule { ~anonymous & remote_development_feature_licensed }.policy do
+        enable :access_workspaces_feature
+      end
 
       rule { admin & instance_devops_adoption_available }.policy do
         enable :manage_devops_adoption_namespaces
@@ -97,6 +99,7 @@ module EE
         enable :read_licenses
         enable :destroy_licenses
         enable :read_all_geo
+        enable :read_all_workspaces
         enable :manage_subscription
       end
 

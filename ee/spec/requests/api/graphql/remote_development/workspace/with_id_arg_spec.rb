@@ -6,6 +6,8 @@ require_relative '../shared'
 RSpec.describe 'Query.workspace(id: RemoteDevelopmentWorkspaceID!)', feature_category: :remote_development do
   include GraphqlHelpers
 
+  include_context "with authorized user as developer on workspace's project"
+
   RSpec.shared_examples 'single workspace query' do
     context 'when remote_development feature is licensed' do
       include_context 'in licensed environment'
