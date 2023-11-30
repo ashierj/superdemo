@@ -72,7 +72,7 @@ export const EXECUTE_YAML_ACTION = 'execute_yaml_action';
 
 export const SCAN_EXECUTION_ACTIONS = {
   [RUN_SCAN_ACTION]: s__('ScanExecutionPolicy|Run a scan'),
-  [EXECUTE_YAML_ACTION]: s__('ScanExecutionPolicy|Execute a YAML code block'),
+  [EXECUTE_YAML_ACTION]: s__('ScanExecutionPolicy|Run CI/CD code'),
 };
 
 export const SCAN_EXECUTION_ACTIONS_LISTBOX_ITEMS = Object.entries(

@@ -28729,6 +28729,9 @@ msgstr ""
 msgid "Load more users"
 msgstr ""
 
+msgid "Load new file"
+msgstr ""
+
 msgid "Loading"
 msgstr ""
 
@@ -42248,9 +42251,6 @@ msgstr ""
 msgid "ScanExecutionPolicy|DAST site profiles"
 msgstr ""
 
-msgid "ScanExecutionPolicy|Execute a YAML code block"
-msgstr ""
-
 msgid "ScanExecutionPolicy|If there are any conflicting variables with the local pipeline configuration (Ex, gitlab-ci.yml) then variables defined here will take precedence. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
@@ -42273,6 +42273,9 @@ msgid "ScanExecutionPolicy|Maximum number of CI-criteria is one"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Only one variable can be added at a time."
+msgstr ""
+
+msgid "ScanExecutionPolicy|Run CI/CD code"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Run a %{scan} scan with the following options:"
@@ -43164,6 +43167,12 @@ msgstr ""
 msgid "SecurityOrchestration|%{cadence} on %{branches}%{branchExceptionsString}"
 msgstr ""
 
+msgid "SecurityOrchestration|%{fileName} loaded succeeded."
+msgstr ""
+
+msgid "SecurityOrchestration|%{fileName} loading failed. Please try again."
+msgstr ""
+
 msgid "SecurityOrchestration|%{licenses} and %{lastLicense}"
 msgstr ""
 
@@ -43383,6 +43392,9 @@ msgstr ""
 msgid "SecurityOrchestration|License Scan"
 msgstr ""
 
+msgid "SecurityOrchestration|Load CI/CD code from file"
+msgstr ""
+
 msgid "SecurityOrchestration|Logic error"
 msgstr ""
 
@@ -43434,6 +43446,9 @@ msgid "SecurityOrchestration|Only owners can update Security Policy Project"
 msgstr ""
 
 msgid "SecurityOrchestration|Override the following project settings:"
+msgstr ""
+
+msgid "SecurityOrchestration|Overwrite the current CI/CD code with the new file's content?"
 msgstr ""
 
 msgid "SecurityOrchestration|Policies"
