@@ -87,3 +87,5 @@ export const treeTitle = {
 export const EPIC_CREATE_ERROR_MESSAGE = s__(
   'Epics|Something went wrong while creating child epics.',
 );
+
+export const MAX_FREQUENT_PROJECTS = 3;
