@@ -111,7 +111,7 @@ export default {
 </script>
 
 <template>
-  <gl-form @submit.prevent="createRotation">
+  <gl-form>
     <div class="gl-w-full gl-sm-w-75p">
       <gl-form-group
         :label="$options.i18n.fields.name.title"

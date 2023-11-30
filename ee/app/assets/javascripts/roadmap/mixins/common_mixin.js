@@ -12,7 +12,9 @@ import { PRESET_TYPES, DAYS_IN_WEEK } from '../constants';
 export default {
   computed: {
     roadmapItem() {
-      return this.epic ? this.epic : this.milestone;
+      // TODO: refactor to remove potentially undefined property
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/432995
+      return 'epic' in this ? this.epic : this.milestone;
     },
     startDateValues() {
       const { startDate } = this.roadmapItem;
