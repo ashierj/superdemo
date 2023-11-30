@@ -6,8 +6,18 @@ class FixBrokenUserAchievementsAwarded < Gitlab::Database::Migration[2.2]
 
   milestone '16.7'
 
+  class User < MigrationRecord
+    self.table_name = 'users'
+  end
+
   def up
-    update_column_in_batches(:user_achievements, :awarded_by_user_id, Users::Internal.ghost.id) do |table, query|
+    User.reset_column_information
+
+    ghost_id = User.where(user_type: 5).first&.id
+
+    return unless ghost_id
+
+    update_column_in_batches(:user_achievements, :awarded_by_user_id, ghost_id) do |table, query|
       query.where(table[:awarded_by_user_id].eq(nil))
     end
   end
