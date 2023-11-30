@@ -3,15 +3,18 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import MetricsChart from './metrics_chart.vue';
 
 export default {
   i18n: {
     error: s__(
       'ObservabilityMetrics|Error: Failed to load metrics details. Try reloading the page.',
     ),
+    metricType: s__('ObservabilityMetrics|Type'),
   },
   components: {
     GlLoadingIcon,
+    MetricsChart,
   },
   props: {
     observabilityClient: {
@@ -30,9 +33,21 @@ export default {
   },
   data() {
     return {
-      metric: null,
+      metricData: null,
       loading: false,
     };
+  },
+  computed: {
+    header() {
+      if (this.metricData.length > 0) {
+        return {
+          title: this.metricData[0].name,
+          description: this.metricData[0].description,
+          type: this.metricData[0].type,
+        };
+      }
+      return null;
+    },
   },
   created() {
     this.validateAndFetch();
@@ -64,12 +79,7 @@ export default {
     async fetchMetricDetails() {
       this.loading = true;
       try {
-        // TODO https://gitlab.com/gitlab-org/opstrace/opstrace/-/work_items/2545 Load metric from API
-        this.metric = {
-          name: this.metricId,
-          description: 'measures the duration of the outbound HTTP request', // eslint-disable-line @gitlab/require-i18n-strings
-          type: 'Histogram',
-        };
+        this.metricData = await this.observabilityClient.fetchMetric(this.metricId);
       } catch (e) {
         createAlert({
           message: this.$options.i18n.error,
@@ -90,7 +100,15 @@ export default {
     <gl-loading-icon size="lg" />
   </div>
 
-  <div v-else-if="metric" data-testid="metric-details" class="gl-m-7">
-    {{ metric }}
+  <div v-else-if="metricData" data-testid="metric-details" class="gl-m-7">
+    <div v-if="header" data-testid="metric-header">
+      <h1 class="gl-font-size-h1 gl-my-0" data-testid="metric-title">{{ header.title }}</h1>
+      <p class="gl-my-0" data-testid="metric-type">
+        <strong>{{ $options.i18n.metricType }}:&nbsp;</strong>{{ header.type }}
+      </p>
+      <p class="gl-my-0" data-testid="metric-description">{{ header.description }}</p>
+    </div>
+
+    <metrics-chart :metric-data="metricData" />
   </div>
 </template>

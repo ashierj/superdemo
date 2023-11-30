@@ -5,6 +5,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import MetricsChart from 'ee/metrics/details/metrics_chart.vue';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
@@ -18,6 +19,7 @@ describe('MetricsDetails', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findMetricDetails = () => wrapper.findComponentByTestId('metric-details');
+  const findHeader = () => wrapper.findComponentByTestId('metric-header');
 
   const props = {
     metricId: METRIC_ID,
@@ -48,15 +50,64 @@ describe('MetricsDetails', () => {
   });
 
   describe('when observability is enabled', () => {
+    const mockMetricData = [
+      {
+        name: 'container_cpu_usage_seconds_total',
+        description: 'System disk operations',
+        type: 'Gauge',
+        unit: 'gb',
+        attributes: {
+          beta_kubernetes_io_arch: 'amd64',
+          beta_kubernetes_io_instance_type: 'n1-standard-4',
+          beta_kubernetes_io_os: 'linux',
+          env: 'production',
+        },
+        values: [
+          [1700118610000, 0.25595267476015443],
+          [1700118660000, 0.1881374588830907],
+          [1700118720000, 0.28915416028993485],
+        ],
+      },
+    ];
     beforeEach(async () => {
       observabilityClientMock.isObservabilityEnabled.mockResolvedValueOnce(true);
+      observabilityClientMock.fetchMetric.mockResolvedValueOnce(mockMetricData);
       await mountComponent();
     });
 
-    it('renders the metrics details', () => {
+    it('fetches details and renders the metrics details', () => {
       expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
+      expect(observabilityClientMock.fetchMetric).toHaveBeenCalled();
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findMetricDetails().exists()).toBe(true);
+    });
+
+    it('renders the details chart', () => {
+      const chart = findMetricDetails().findComponent(MetricsChart);
+      expect(chart.exists()).toBe(true);
+      expect(chart.props('metricData')).toEqual(mockMetricData);
+    });
+
+    describe('header', () => {
+      it('renders the details header', () => {
+        const header = findHeader();
+        expect(header.exists()).toBe(true);
+        expect(header.find(`[data-testid="metric-title"]`).text()).toBe(
+          'container_cpu_usage_seconds_total',
+        );
+        expect(header.find(`[data-testid="metric-description"]`).text()).toBe(
+          'System disk operations',
+        );
+        expect(header.find(`[data-testid="metric-type"]`).text()).toBe('Type:\u00a0Gauge');
+      });
+
+      it('does not render the header if the metric data is empty', () => {
+        observabilityClientMock.fetchMetric.mockResolvedValueOnce([]);
+
+        mountComponent();
+
+        expect(findHeader().exists()).toBe(false);
+      });
     });
   });
 

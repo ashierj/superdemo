@@ -32,7 +32,7 @@ module PackageMetadata
         DataObjectFabricator.new(data_file: file, sync_config: sync_config)
           .each_slice(INGEST_SLICE_SIZE) do |data_objects|
             ingest(data_objects)
-            sleep(THROTTLE_RATE)
+            throttle
           end
 
         checkpoint.update(sequence: file.sequence, chunk: file.chunk)
@@ -78,6 +78,12 @@ module PackageMetadata
       Gitlab::AppJsonLogger
         .debug(class: self.class.name,
           message: "Evaluating data for #{sync_config}/#{file}")
+    end
+
+    def throttle
+      return if ENV['PM_SYNC_IN_DEV'] == 'true'
+
+      sleep(THROTTLE_RATE)
     end
   end
 end

@@ -6,6 +6,7 @@ module Namespaces
       CURRENT_SIZE_CACHE_KEY = 'root_storage_current_size'
       EXPIRATION_TIME = 10.minutes
       LIMIT_CACHE_NAME = 'root_storage_size_limit'
+      DASHBOARD_LIMIT_CACHE_NAME = 'root_dashboard_size_limit'
 
       def initialize(root_namespace)
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
@@ -37,6 +38,13 @@ module Namespaces
         # https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
         @limit ||= Rails.cache.fetch(limit_cache_key, expires_in: EXPIRATION_TIME) do
           enforceable_storage_limit.megabytes +
+            root_namespace.additional_purchased_storage_size.megabytes
+        end
+      end
+
+      def dashboard_limit
+        @dashboard_limit ||= Rails.cache.fetch(dashboard_limit_cache_key, expires_in: EXPIRATION_TIME) do
+          root_namespace.actual_limits.storage_size_limit.megabytes +
             root_namespace.additional_purchased_storage_size.megabytes
         end
       end
@@ -101,6 +109,15 @@ module Namespaces
           'namespaces',
           root_namespace.id,
           limit_cache_name
+        ]
+      end
+
+      def dashboard_limit_cache_key
+        [
+          root_namespace.actual_limits.cache_key_with_version,
+          'namespaces',
+          root_namespace.id,
+          DASHBOARD_LIMIT_CACHE_NAME
         ]
       end
 
