@@ -25,7 +25,8 @@ module Audit
       feature_flags_access_level: 'project_feature_feature_flags_access_level_updated',
       environments_access_level: 'project_feature_environments_access_level_updated',
       releases_access_level: 'project_feature_releases_access_level_updated',
-      model_experiments_access_level: 'project_feature_model_experiments_access_level_updated'
+      model_experiments_access_level: 'project_feature_model_experiments_access_level_updated',
+      model_registry_access_level: 'project_feature_model_registry_access_level_updated'
     }.freeze
 
     def initialize(current_user, model, project)
