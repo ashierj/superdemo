@@ -17,12 +17,12 @@ import { mapState, mapActions } from 'vuex';
 import Api from '~/api';
 import { createAlert } from '~/alert';
 import { STORAGE_KEY } from '~/frequent_items/constants';
-import { getTopFrequentItems } from '~/frequent_items/utils';
+import { getTopFrequentItems } from '~/super_sidebar/utils';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
-import { SEARCH_DEBOUNCE } from '../constants';
+import { SEARCH_DEBOUNCE, MAX_FREQUENT_PROJECTS } from '../constants';
 
 export default {
   components: {
@@ -38,11 +38,11 @@ export default {
   },
   data() {
     return {
-      recentItems: [],
+      frequentProjects: [],
       selectedProject: null,
       searchKey: '',
       title: '',
-      recentItemFetchInProgress: false,
+      frequentProjectFetchInProgress: false,
     };
   },
   computed: {
@@ -77,7 +77,7 @@ export default {
      */
     searchKey: debounce(function debounceSearch() {
       this.fetchProjects(this.searchKey);
-      this.setRecentItems(this.searchKey);
+      this.setFrequentProjects(this.searchKey);
     }, SEARCH_DEBOUNCE),
     /**
      * As Issue Create Form already has `autofocus` set for
@@ -136,11 +136,11 @@ export default {
     },
     handleDropdownShow() {
       this.searchKey = '';
-      this.setRecentItems();
+      this.setFrequentProjects();
       this.fetchProjects();
     },
-    handleRecentItemSelection(selectedProject) {
-      this.recentItemFetchInProgress = true;
+    handleFrequentProjectSelection(selectedProject) {
+      this.frequentProjectFetchInProgress = true;
       this.selectedProject = selectedProject;
 
       Api.project(selectedProject.id)
@@ -155,10 +155,10 @@ export default {
           this.selectedProject = null;
         })
         .finally(() => {
-          this.recentItemFetchInProgress = false;
+          this.frequentProjectFetchInProgress = false;
         });
     },
-    setRecentItems(searchTerm) {
+    setFrequentProjects(searchTerm) {
       const { current_username: currentUsername } = gon;
 
       if (!currentUsername) {
@@ -173,24 +173,27 @@ export default {
 
       const storedRawItems = localStorage.getItem(storageKey);
 
-      let storedFrequentItems = storedRawItems ? JSON.parse(storedRawItems) : [];
+      let storedFrequentProjects = storedRawItems ? JSON.parse(storedRawItems) : [];
 
       /* Filter for the current group */
-      storedFrequentItems = storedFrequentItems.filter((item) => {
+      storedFrequentProjects = storedFrequentProjects.filter((item) => {
         return Boolean(item.webUrl?.slice(1)?.startsWith(this.parentItem.fullPath));
       });
 
       if (searchTerm) {
-        storedFrequentItems = fuzzaldrinPlus.filter(storedFrequentItems, searchTerm, {
+        storedFrequentProjects = fuzzaldrinPlus.filter(storedFrequentProjects, searchTerm, {
           key: ['namespace'],
         });
       }
 
-      this.recentItems = getTopFrequentItems(storedFrequentItems).map((item) => {
+      this.frequentProjects = getTopFrequentItems(
+        storedFrequentProjects,
+        MAX_FREQUENT_PROJECTS,
+      ).map((item) => {
         return { ...item, avatar_url: item.avatarUrl, web_url: item.webUrl };
       });
 
-      return this.recentItems;
+      return this.frequentProjects;
     },
   },
 };
@@ -199,7 +202,7 @@ export default {
 <template>
   <div>
     <div class="row mb-3">
-      <div class="col-sm-6">
+      <div class="col-sm-6 gl-mb-3 gl-sm-mb-0">
         <label class="label-bold">{{ s__('Issue|Title') }}</label>
         <gl-form-input
           ref="titleInput"
@@ -229,30 +232,32 @@ export default {
             :disabled="projectsFetchInProgress"
           />
           <div class="dropdown-contents gl-overflow-auto gl-pb-2">
-            <gl-dropdown-section-header v-if="recentItems.length > 0">{{
+            <gl-dropdown-section-header v-if="frequentProjects.length > 0">{{
               __('Recently used')
             }}</gl-dropdown-section-header>
 
-            <div v-if="recentItems.length > 0" data-testid="recent-items-content">
+            <div v-if="frequentProjects.length > 0" data-testid="frequent-items-content">
               <gl-dropdown-item
-                v-for="project in recentItems"
-                :key="`recent-${project.id}`"
+                v-for="project in frequentProjects"
+                :key="`frequent-${project.id}`"
                 class="gl-w-full select-project-dropdown"
-                @click="() => handleRecentItemSelection(project)"
+                @click="() => handleFrequentProjectSelection(project)"
               >
-                <project-avatar
-                  :project-id="project.id"
-                  :project-avatar-url="project.avatar_url"
-                  :project-name="project.name"
-                />
-                <span
-                  ><span class="block">{{ project.name }}</span>
-                  <span class="block text-secondary">{{ project.namespace }}</span></span
-                >
+                <div class="gl-display-flex">
+                  <project-avatar
+                    :project-id="project.id"
+                    :project-avatar-url="project.avatar_url"
+                    :project-name="project.name"
+                  />
+                  <span
+                    ><span class="block">{{ project.name }}</span>
+                    <span class="block text-secondary">{{ project.namespace }}</span></span
+                  >
+                </div>
               </gl-dropdown-item>
             </div>
 
-            <gl-dropdown-divider v-if="recentItems.length > 0" />
+            <gl-dropdown-divider v-if="frequentProjects.length > 0" />
             <template v-if="!projectsFetchInProgress">
               <span v-if="!projects.length" class="gl-display-block text-center gl-p-3">{{
                 __('No matches found')
@@ -264,15 +269,17 @@ export default {
                 class="gl-w-full select-project-dropdown"
                 @click="selectedProject = project"
               >
-                <project-avatar
-                  :project-id="project.id"
-                  :project-avatar-url="project.avatar_url"
-                  :project-name="project.name"
-                />
-                <span
-                  ><span class="block">{{ project.name }}</span>
-                  <span class="block text-secondary">{{ project.namespace.name }}</span></span
-                >
+                <div class="gl-display-flex">
+                  <project-avatar
+                    :project-id="project.id"
+                    :project-avatar-url="project.avatar_url"
+                    :project-name="project.name"
+                  />
+                  <span
+                    ><span class="block">{{ project.name }}</span>
+                    <span class="block text-secondary">{{ project.namespace.name }}</span></span
+                  >
+                </div>
               </gl-dropdown-item>
             </template>
           </div>
@@ -293,7 +300,7 @@ export default {
         class="gl-mr-2"
         data-testid="submit-button"
         :disabled="isIssueCreationDisabled"
-        :loading="itemCreateInProgress || recentItemFetchInProgress"
+        :loading="itemCreateInProgress || frequentProjectFetchInProgress"
         @click="createIssue"
         >{{ __('Create issue') }}</gl-button
       >
