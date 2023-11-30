@@ -127,20 +127,6 @@ RSpec.describe User, feature_category: :system_access do
               end
             end
 
-            context 'when enterprise_users_automatic_claim FF is disabled' do
-              before do
-                stub_feature_flags(enterprise_users_automatic_claim: false)
-              end
-
-              it 'is not applied' do
-                user.email = new_email
-
-                expect(user).not_to receive(:enterprise_user_email_change)
-
-                expect(user).to be_valid
-              end
-            end
-
             context 'when new email has invalid format' do
               let(:new_email) { 'invalid_email_format' }
 

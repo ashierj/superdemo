@@ -39,7 +39,7 @@ module EE
       validate :cannot_be_admin_and_auditor
 
       validate :enterprise_user_email_change, on: :update, if: ->(user) {
-        user.email_changed? && user.enterprise_user? && !user.skip_enterprise_user_email_change_restrictions? && ::Feature.enabled?(:enterprise_users_automatic_claim, user.user_detail.enterprise_group)
+        user.email_changed? && user.enterprise_user? && !user.skip_enterprise_user_email_change_restrictions?
       }
 
       after_create :perform_user_cap_check
