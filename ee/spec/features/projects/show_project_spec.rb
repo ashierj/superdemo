@@ -36,6 +36,10 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
       create(:project, :repository, mirror: true, mirror_user: user, import_url: 'http://user:pass@test.com')
     end
 
+    before do
+      stub_feature_flags(project_overview_reorg: false)
+    end
+
     context 'for maintainer' do
       before do
         project.add_maintainer(user)

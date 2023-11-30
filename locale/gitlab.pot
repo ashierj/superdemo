@@ -37432,6 +37432,12 @@ msgstr ""
 msgid "ProjectPage|Project ID: %{project_id}"
 msgstr ""
 
+msgid "ProjectPage|Project information"
+msgstr ""
+
+msgid "ProjectPage|Project settings"
+msgstr ""
+
 msgid "ProjectQualitySummary|An error occurred while trying to fetch project quality statistics"
 msgstr ""
 
