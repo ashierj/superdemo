@@ -33588,6 +33588,9 @@ msgstr ""
 msgid "Organization|A group is a collection of several projects. If you organize your projects under a group, it works like a folder."
 msgstr ""
 
+msgid "Organization|An error occurred changing your organization URL. Please try again."
+msgstr ""
+
 msgid "Organization|An error occurred creating an organization. Please try again."
 msgstr ""
 
@@ -33604,6 +33607,12 @@ msgid "Organization|An error occurred loading user organizations. Please refresh
 msgstr ""
 
 msgid "Organization|An error occurred updating your organization. Please try again."
+msgstr ""
+
+msgid "Organization|Change organization URL"
+msgstr ""
+
+msgid "Organization|Changing an organization's URL can have unintended side effects."
 msgstr ""
 
 msgid "Organization|Choose what organization you want to see by default."
@@ -33654,7 +33663,10 @@ msgstr ""
 msgid "Organization|Organization URL is required."
 msgstr ""
 
-msgid "Organization|Organization URL must be a minimum of two characters."
+msgid "Organization|Organization URL is too short (minimum is 2 characters)."
+msgstr ""
+
+msgid "Organization|Organization URL successfully changed."
 msgstr ""
 
 msgid "Organization|Organization name"
@@ -33679,6 +33691,9 @@ msgid "Organization|Organization was successfully updated."
 msgstr ""
 
 msgid "Organization|Organizations"
+msgstr ""
+
+msgid "Organization|Perform advanced options such as deleting the organization."
 msgstr ""
 
 msgid "Organization|Public - The organization can be accessed without any authentication."
