@@ -37456,6 +37456,12 @@ msgstr ""
 msgid "ProjectPage|Project settings"
 msgstr ""
 
+msgid "ProjectPage|The default branch was not able to be found. Please contact your administrator."
+msgstr ""
+
+msgid "ProjectPage|Unable to load default branch"
+msgstr ""
+
 msgid "ProjectQualitySummary|An error occurred while trying to fetch project quality statistics"
 msgstr ""
 
