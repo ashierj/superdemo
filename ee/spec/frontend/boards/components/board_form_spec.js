@@ -1,8 +1,6 @@
 import { GlModal } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BoardForm from 'ee/boards/components/board_form.vue';
@@ -22,8 +20,6 @@ jest.mock('~/lib/utils/url_utility', () => ({
   ...jest.requireActual('~/lib/utils/url_utility'),
   visitUrl: jest.fn().mockName('visitUrlMock'),
 }));
-
-Vue.use(Vuex);
 
 const currentBoard = {
   id: 'gid://gitlab/Board/1',
@@ -52,26 +48,12 @@ const defaultProps = {
 describe('BoardForm', () => {
   let wrapper;
   let requestHandlers;
-  let store;
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findModalActionPrimary = () => findModal().props('actionPrimary');
   const findFormWrapper = () => wrapper.findByTestId('board-form-wrapper');
   const findDeleteConfirmation = () => wrapper.findByTestId('delete-confirmation-message');
   const findInput = () => wrapper.find('#board-new-name');
-
-  const setBoardMock = jest.fn();
-
-  const createStore = ({ getters = {} } = {}) => {
-    store = new Vuex.Store({
-      getters: {
-        ...getters,
-      },
-      actions: {
-        setBoard: setBoardMock,
-      },
-    });
-  };
 
   const defaultHandlers = {
     create: jest.fn().mockResolvedValue({}),
@@ -113,7 +95,6 @@ describe('BoardForm', () => {
         isProjectBoard: false,
       },
       attachTo: document.body,
-      store,
     });
   };
 
@@ -122,10 +103,6 @@ describe('BoardForm', () => {
   });
 
   describe('when creating a new epic board', () => {
-    beforeEach(() => {
-      createStore();
-    });
-
     describe('on non-scoped-board', () => {
       beforeEach(() => {
         createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
@@ -209,9 +186,6 @@ describe('BoardForm', () => {
             projectPath: undefined,
           },
         });
-
-        await waitForPromises();
-        expect(setBoardMock).toHaveBeenCalledTimes(1);
       });
 
       it('sets error if GraphQL mutation fails', async () => {
@@ -228,17 +202,12 @@ describe('BoardForm', () => {
         expect(requestHandlers.create).toHaveBeenCalled();
 
         await waitForPromises();
-        expect(setBoardMock).not.toHaveBeenCalled();
         expect(cacheUpdates.setError).toHaveBeenCalled();
       });
     });
   });
 
   describe('when editing a scoped issue board', () => {
-    beforeEach(() => {
-      createStore();
-    });
-
     it('should use global ids for assignee, milestone and iteration when calling GraphQL mutation', async () => {
       createComponent({
         props: {
@@ -349,10 +318,6 @@ describe('BoardForm', () => {
   });
 
   describe('when editing an epic board', () => {
-    beforeEach(() => {
-      createStore();
-    });
-
     it('calls GraphQL mutation with correct parameters', async () => {
       createComponent({
         props: {
@@ -385,9 +350,6 @@ describe('BoardForm', () => {
           name: 'test',
         },
       });
-
-      await waitForPromises();
-      expect(setBoardMock).toHaveBeenCalledTimes(1);
     });
 
     it('sets error if GraphQL mutation fails', async () => {
@@ -408,16 +370,11 @@ describe('BoardForm', () => {
       expect(requestHandlers.update).toHaveBeenCalled();
 
       await waitForPromises();
-      expect(setBoardMock).not.toHaveBeenCalled();
       expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 
   describe('when deleting an epic board', () => {
-    beforeEach(() => {
-      createStore();
-    });
-
     it('passes correct primary action text and variant', () => {
       createComponent({
         props: {

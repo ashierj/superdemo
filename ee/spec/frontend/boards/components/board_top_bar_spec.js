@@ -1,8 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
 import ToggleEpicsSwimlanes from 'ee/boards/components/toggle_epics_swimlanes.vue';
@@ -24,24 +22,16 @@ import epicBoardQuery from 'ee_component/boards/graphql/epic_board.query.graphql
 import { mockEpicBoardResponse } from '../mock_data';
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 describe('BoardTopBar', () => {
   let wrapper;
   let mockApollo;
-
-  const createStore = () => {
-    return new Vuex.Store({
-      state: {},
-    });
-  };
 
   const projectBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockProjectBoardResponse);
   const groupBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupBoardResponse);
   const epicBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockEpicBoardResponse);
 
   const createComponent = ({ provide = {} } = {}) => {
-    const store = createStore();
     mockApollo = createMockApollo([
       [projectBoardQuery, projectBoardQueryHandlerSuccess],
       [groupBoardQuery, groupBoardQueryHandlerSuccess],
@@ -49,7 +39,6 @@ describe('BoardTopBar', () => {
     ]);
 
     wrapper = shallowMount(BoardTopBar, {
-      store,
       apolloProvider: mockApollo,
       propsData: {
         boardId: 'gid://gitlab/Board/1',
@@ -69,7 +58,7 @@ describe('BoardTopBar', () => {
         isIssueBoard: true,
         isEpicBoard: false,
         isGroupBoard: true,
-        isApolloBoard: false,
+        isApolloBoard: true,
         ...provide,
       },
       stubs: { IssueBoardFilteredSearch, EpicBoardFilteredSearch, ToggleLabels },
@@ -143,30 +132,27 @@ describe('BoardTopBar', () => {
     });
   });
 
-  describe('Apollo boards', () => {
-    it.each`
-      boardType            | isEpicBoard | queryHandler                       | notCalledHandler
-      ${WORKSPACE_GROUP}   | ${false}    | ${groupBoardQueryHandlerSuccess}   | ${projectBoardQueryHandlerSuccess}
-      ${WORKSPACE_PROJECT} | ${false}    | ${projectBoardQueryHandlerSuccess} | ${groupBoardQueryHandlerSuccess}
-      ${WORKSPACE_GROUP}   | ${true}     | ${epicBoardQueryHandlerSuccess}    | ${groupBoardQueryHandlerSuccess}
-    `(
-      'fetches $boardType boards when isEpicBoard is $isEpicBoard',
-      async ({ boardType, isEpicBoard, queryHandler, notCalledHandler }) => {
-        createComponent({
-          provide: {
-            boardType,
-            isProjectBoard: boardType === WORKSPACE_PROJECT,
-            isGroupBoard: boardType === WORKSPACE_GROUP,
-            isEpicBoard,
-            isApolloBoard: true,
-          },
-        });
+  it.each`
+    boardType            | isEpicBoard | queryHandler                       | notCalledHandler
+    ${WORKSPACE_GROUP}   | ${false}    | ${groupBoardQueryHandlerSuccess}   | ${projectBoardQueryHandlerSuccess}
+    ${WORKSPACE_PROJECT} | ${false}    | ${projectBoardQueryHandlerSuccess} | ${groupBoardQueryHandlerSuccess}
+    ${WORKSPACE_GROUP}   | ${true}     | ${epicBoardQueryHandlerSuccess}    | ${groupBoardQueryHandlerSuccess}
+  `(
+    'fetches $boardType boards when isEpicBoard is $isEpicBoard',
+    async ({ boardType, isEpicBoard, queryHandler, notCalledHandler }) => {
+      createComponent({
+        provide: {
+          boardType,
+          isProjectBoard: boardType === WORKSPACE_PROJECT,
+          isGroupBoard: boardType === WORKSPACE_GROUP,
+          isEpicBoard,
+        },
+      });
 
-        await nextTick();
+      await nextTick();
 
-        expect(queryHandler).toHaveBeenCalled();
-        expect(notCalledHandler).not.toHaveBeenCalled();
-      },
-    );
-  });
+      expect(queryHandler).toHaveBeenCalled();
+      expect(notCalledHandler).not.toHaveBeenCalled();
+    },
+  );
 });

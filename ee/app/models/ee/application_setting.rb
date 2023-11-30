@@ -204,6 +204,10 @@ module EE
       validates :pre_receive_secret_detection_enabled,
         inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
+      validates :instance_level_ai_beta_features_enabled,
+        allow_nil: false,
+        inclusion: { in: [true, false], message: N_('must be a boolean value') }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
