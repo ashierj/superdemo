@@ -27,8 +27,7 @@ module Ci
       return false unless @project
       return false unless @ci_settings
 
-      Feature.enabled?(:restrict_pipeline_cancellation_by_role, @project) &&
-        @project.licensed_feature_available?(:ci_pipeline_cancellation_restrictions)
+      @project.licensed_feature_available?(:ci_pipeline_cancellation_restrictions)
     end
     strong_memoize_attr :enabled?
   end
