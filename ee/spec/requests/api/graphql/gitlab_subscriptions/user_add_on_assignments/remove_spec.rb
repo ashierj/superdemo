@@ -47,6 +47,7 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
     GQL
   end
 
+  let(:namespace_path) { namespace.path }
   let(:mutation) { graphql_mutation(:user_add_on_assignment_remove, input, requested_fields) }
   let(:mutation_response) { graphql_mutation_response(:user_add_on_assignment_remove) }
   let(:expected_response) do
@@ -79,7 +80,7 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
         message: 'User AddOn assignment removed',
         user: remove_user.username.to_s,
         add_on: add_on_purchase.add_on.name,
-        namespace: namespace.path
+        namespace: namespace_path
       )
 
       expect do
@@ -134,7 +135,9 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
   end
 
   context 'when add_on_purchase_id does not exists' do
-    let(:add_on_purchase_id) { global_id_of(id: 666, model_name: '::GitlabSubscriptions::AddOnPurchase') }
+    let(:add_on_purchase_id) do
+      global_id_of(id: non_existing_record_id, model_name: '::GitlabSubscriptions::AddOnPurchase')
+    end
 
     it_behaves_like 'empty response'
   end
@@ -148,9 +151,26 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
   end
 
   context 'when user_id does not exists' do
-    let(:user_id) { global_id_of(id: 666, model_name: '::User') }
+    let(:user_id) { global_id_of(id: non_existing_record_id, model_name: '::User') }
 
     it_behaves_like 'empty response'
+  end
+
+  context 'when the namespace is nil' do
+    before_all  do
+      add_on_purchase.update!(namespace_id: nil)
+    end
+
+    context 'when current_user is admin' do
+      let(:current_user) { create(:admin) }
+      let(:namespace_path) { nil }
+
+      it_behaves_like 'success response'
+    end
+
+    context 'when current_user is not admin' do
+      it_behaves_like 'empty response'
+    end
   end
 
   context 'when there are multiple add-on assignments for the user' do
