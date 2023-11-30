@@ -32,7 +32,6 @@ export const i18n = {
     'AI|There is too much text in the chat. Please try again with a shorter text.',
   ),
   GENIE_CHAT_PROMPT_PLACEHOLDER: s__('AI|GitLab Duo Chat'),
-  GENIE_CHAT_SUBMIT_LABEL: s__('AI|Send chat message.'),
   GENIE_CHAT_EMPTY_STATE_TITLE: s__('AI|Ask a question'),
   GENIE_CHAT_EMPTY_STATE_DESC: s__('AI|AI generated explanations will appear here.'),
   GENIE_CHAT_LEGAL_DISCLAIMER: s__(
