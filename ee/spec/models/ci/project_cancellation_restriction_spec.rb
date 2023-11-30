@@ -14,9 +14,7 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
     context 'when no project' do
       let(:project) { nil }
 
-      it 'returns false' do
-        is_expected.to be false
-      end
+      it { is_expected.to be false }
     end
 
     context 'when no ci settings' do
@@ -24,14 +22,12 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
         allow(project).to receive(:ci_cd_settings).and_return(nil)
       end
 
-      it 'returns false' do
-        is_expected.to be false
-      end
+      it { is_expected.to be false }
     end
 
-    context 'when cancellation restrictions are enabled' do
+    context 'when the licensed feature is enabled' do
       before do
-        stub_enabled
+        stub_licensed_features(ci_pipeline_cancellation_restrictions: true)
       end
 
       it 'returns true if maintainers are the only ones allowed to cancel' do
@@ -49,14 +45,8 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       end
     end
 
-    context 'when cancellation restrictions are disabled' do
-      before do
-        stub_disabled
-      end
-
-      it 'returns false' do
-        is_expected.to be false
-      end
+    context 'when the licensed_features is disabled' do
+      it { is_expected.to be false }
     end
   end
 
@@ -66,9 +56,7 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
     context 'when no project' do
       let(:project) { nil }
 
-      it 'returns false' do
-        is_expected.to be false
-      end
+      it { is_expected.to be false }
     end
 
     context 'when no ci settings' do
@@ -76,14 +64,12 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
         allow(project).to receive(:ci_cd_settings).and_return(nil)
       end
 
-      it 'returns false' do
-        is_expected.to be false
-      end
+      it { is_expected.to be false }
     end
 
-    context 'when cancellation restrictions are enabled' do
+    context 'when the licensed feature is enabled' do
       before do
-        stub_enabled
+        stub_licensed_features(ci_pipeline_cancellation_restrictions: true)
       end
 
       it 'returns true if no one is allowed to cancel' do
@@ -101,14 +87,8 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
       end
     end
 
-    context 'when cancellation restrictions are disabled' do
-      before do
-        stub_disabled
-      end
-
-      it 'returns false' do
-        is_expected.to be false
-      end
+    context 'when the licensed_features is disabled' do
+      it { is_expected.to be false }
     end
   end
 
@@ -118,9 +98,7 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
     context 'when no project' do
       let(:project) { nil }
 
-      it 'returns false' do
-        is_expected.to be false
-      end
+      it { is_expected.to be false }
     end
 
     context 'when no ci settings' do
@@ -128,59 +106,23 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
         allow(project).to receive(:ci_cd_settings).and_return(nil)
       end
 
-      it 'returns false' do
-        is_expected.to be false
-      end
+      it { is_expected.to be false }
     end
 
-    context 'when the feature is enabled and licensed' do
+    context 'when the feature is licensed' do
       before do
-        stub_enabled
-      end
-
-      it 'returns true' do
-        is_expected.to be true
-      end
-    end
-
-    context 'when the feature is disabled' do
-      before do
-        stub_feature_flags(restrict_pipeline_cancellation_by_role: false)
         stub_licensed_features(ci_pipeline_cancellation_restrictions: true)
       end
 
-      it 'returns false' do
-        is_expected.to be false
-      end
+      it { is_expected.to be true }
     end
 
-    context 'when the feature is enabled but not licensed' do
+    context 'when the feature is not licensed' do
       before do
         stub_licensed_features(ci_pipeline_cancellation_restrictions: false)
       end
 
-      it 'returns false' do
-        is_expected.to be false
-      end
+      it { is_expected.to be false }
     end
-
-    context 'when the feature is disabled and not licensed' do
-      before do
-        stub_disabled
-      end
-
-      it 'returns false' do
-        is_expected.to be false
-      end
-    end
-  end
-
-  def stub_enabled
-    stub_licensed_features(ci_pipeline_cancellation_restrictions: true)
-  end
-
-  def stub_disabled
-    stub_feature_flags(restrict_pipeline_cancellation_by_role: false)
-    stub_licensed_features(ci_pipeline_cancellation_restrictions: false)
   end
 end
