@@ -115,6 +115,7 @@ export default {
       aggregation = {},
       namespace = {},
       canEdit = false,
+      enableVsdLink = false,
       enableTasksByTypeChart = false,
       enableCustomizableStages = false,
       enableProjectsFilter = false,
@@ -131,6 +132,7 @@ export default {
     state.defaultStageConfig = defaultStageConfig;
     state.namespace = namespace;
     state.canEdit = canEdit;
+    state.enableVsdLink = enableVsdLink;
     state.enableTasksByTypeChart = enableTasksByTypeChart;
     state.enableCustomizableStages = enableCustomizableStages;
     state.enableProjectsFilter = enableProjectsFilter;

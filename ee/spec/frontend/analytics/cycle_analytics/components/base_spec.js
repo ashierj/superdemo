@@ -593,6 +593,10 @@ describe('EE Value Stream Analytics component', () => {
       wrapper = await createComponent({
         withStageSelected: true,
         features: { groupLevelAnalyticsDashboard: true },
+        initialState: {
+          ...initialCycleAnalyticsState,
+          enableVsdLink: true,
+        },
       });
 
       expect(findOverviewMetrics().props('dashboardsPath')).toBe(
@@ -607,6 +611,7 @@ describe('EE Value Stream Analytics component', () => {
         initialState: {
           ...initialCycleAnalyticsState,
           selectedProjects,
+          enableVsdLink: true,
         },
       });
 
@@ -694,6 +699,7 @@ describe('EE Value Stream Analytics component', () => {
         initialState: {
           ...initialCycleAnalyticsState,
           enableProjectsFilter: false,
+          enableVsdLink: true,
           namespace: projectNamespace,
           project: 'fake-id',
         },
@@ -708,6 +714,32 @@ describe('EE Value Stream Analytics component', () => {
       expect(findOverviewMetrics().props('dashboardsPath')).toBe(
         '/groups/foo/-/analytics/dashboards/value_streams_dashboard?query=some/cool/path',
       );
+    });
+  });
+
+  describe('when dashboard link is disabled for the project namespace`', () => {
+    beforeEach(async () => {
+      mock = new MockAdapter(axios);
+      mockRequiredRoutes(mock);
+      wrapper = await createComponent({
+        withStageSelected: true,
+        features: { groupLevelAnalyticsDashboard: true },
+        initialState: {
+          ...initialCycleAnalyticsState,
+          enableProjectsFilter: false,
+          enableVsdLink: false,
+          namespace: projectNamespace,
+          project: 'fake-id',
+        },
+      });
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+
+    it('renders a link to the value streams dashboard', () => {
+      expect(findOverviewMetrics().props('dashboardsPath')).toBeNull();
     });
   });
 });
