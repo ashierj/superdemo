@@ -2,6 +2,8 @@
 
 module Users
   module IdentityVerificationHelper
+    include RecaptchaHelper
+
     def identity_verification_data(user)
       {
         data: {
@@ -46,6 +48,22 @@ module Users
       format(message, interval: interval)
     end
 
+    def enable_arkose_challenge?
+      return false if show_recaptcha_challenge?
+
+      Feature.enabled?(:arkose_labs_phone_verification_challenge)
+    end
+
+    def show_arkose_challenge?(user)
+      enable_arkose_challenge? &&
+        PhoneVerification::Users::RateLimitService.verification_attempts_limit_exceeded?(user)
+    end
+
+    def show_recaptcha_challenge?
+      recaptcha_enabled? &&
+        PhoneVerification::Users::RateLimitService.daily_transaction_limit_exceeded?
+    end
+
     private
 
     def email_verification_data(user)
@@ -60,8 +78,9 @@ module Users
       paths = {
         send_code_path: send_phone_verification_code_identity_verification_path,
         verify_code_path: verify_phone_verification_code_identity_verification_path,
-        challenge_user:
-          ::Gitlab::ApplicationRateLimiter.peek(:phone_verification_challenge, scope: user)
+        enable_arkose_challenge: enable_arkose_challenge?.to_s,
+        show_arkose_challenge: show_arkose_challenge?(user).to_s,
+        show_recaptcha_challenge: show_recaptcha_challenge?.to_s
       }
 
       phone_number_validation = user.phone_number_validation

@@ -211,7 +211,7 @@ module IdentityVerifiable
     # Actual high risk users will be subject to the same order of required steps
     # as users assumed high risk when the daily phone verification transaction
     # limit is exceeded until it is reset
-    daily_limit_exceeded = PhoneVerification::Users::SendVerificationCodeService.daily_transaction_limit_exceeded?
+    daily_limit_exceeded = PhoneVerification::Users::RateLimitService.daily_transaction_limit_exceeded?
     high_risk = daily_limit_exceeded && arkose_high_risk?
 
     high_risk || assumed_high_risk?

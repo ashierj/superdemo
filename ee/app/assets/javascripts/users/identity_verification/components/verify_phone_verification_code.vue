@@ -4,7 +4,6 @@ import { s__, sprintf } from '~/locale';
 
 import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
-import { VERIFICATION_TOKEN_INPUT_NAME } from 'ee/arkose_labs/constants';
 import { validateVerificationCode } from '../validations';
 import { UNKNOWN_TELESIGN_ERROR } from '../constants';
 
@@ -33,24 +32,17 @@ export default {
     latestPhoneNumber: {
       type: Object,
       required: false,
-      default() {
-        return {};
-      },
+      default: () => {},
     },
-    arkoseChallengeShown: {
+    disableSubmitButton: {
       type: Boolean,
       required: false,
       default: false,
     },
-    arkoseChallengeSolved: {
-      type: Boolean,
+    additionalRequestParams: {
+      type: Object,
       required: false,
-      default: false,
-    },
-    arkoseToken: {
-      type: String,
-      required: false,
-      default: '',
+      default: () => {},
     },
   },
   data() {
@@ -73,11 +65,8 @@ export default {
     internationalPhoneNumber() {
       return `${this.latestPhoneNumber.internationalDialCode}${this.latestPhoneNumber.number}`;
     },
-    waitingForArkose() {
-      return this.arkoseChallengeShown && !this.arkoseChallengeSolved;
-    },
     isSubmitButtonDisabled() {
-      return this.waitingForArkose || !this.form.fields.verificationCode.state;
+      return this.disableSubmitButton || !this.form.fields.verificationCode.state;
     },
   },
   methods: {
@@ -93,7 +82,7 @@ export default {
       axios
         .post(this.phoneNumber.verifyCodePath, {
           verification_code: this.form.fields.verificationCode.value,
-          [VERIFICATION_TOKEN_INPUT_NAME]: this.arkoseToken,
+          ...this.additionalRequestParams,
         })
         .then(this.handleVerifySuccessResponse)
         .catch(this.handleError)
@@ -113,7 +102,7 @@ export default {
           country: this.latestPhoneNumber.country,
           international_dial_code: this.latestPhoneNumber.internationalDialCode,
           phone_number: this.latestPhoneNumber.number,
-          [VERIFICATION_TOKEN_INPUT_NAME]: this.arkoseToken,
+          ...this.additionalRequestParams,
         })
         .then(this.handleResendCodeResponse)
         .catch(this.handleError)
@@ -180,7 +169,7 @@ export default {
       />
     </gl-form-group>
 
-    <div v-if="!waitingForArkose" class="gl-font-sm gl-text-secondary">
+    <div v-if="!disableSubmitButton" class="gl-font-sm gl-text-secondary">
       <gl-icon name="information-o" :size="12" class="gl-mt-2" />
       <gl-sprintf :message="$options.i18n.noCode">
         <template #codeLink="{ content }">
@@ -191,6 +180,8 @@ export default {
         </template>
       </gl-sprintf>
     </div>
+
+    <slot name="captcha"></slot>
 
     <gl-button
       type="submit"

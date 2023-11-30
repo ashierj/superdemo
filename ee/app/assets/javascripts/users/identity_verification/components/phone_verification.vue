@@ -1,10 +1,9 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import PhoneVerificationArkoseApp from 'ee/arkose_labs/components/phone_verification_arkose_app.vue';
 import InternationalPhoneInput from './international_phone_input.vue';
 import VerifyPhoneVerificationCode from './verify_phone_verification_code.vue';
+import Captcha from './identity_verification_captcha.vue';
 
 export default {
   name: 'PhoneVerification',
@@ -12,27 +11,17 @@ export default {
     GlButton,
     InternationalPhoneInput,
     VerifyPhoneVerificationCode,
-    PhoneVerificationArkoseApp,
+    Captcha,
   },
-  mixins: [glFeatureFlagsMixin()],
-  inject: ['arkose', 'phoneNumber', 'offerPhoneNumberExemption'],
+  inject: ['phoneNumber', 'offerPhoneNumberExemption'],
   data() {
     return {
       stepIndex: 1,
       latestPhoneNumber: {},
-      arkoseChallengeSolved: false,
-      arkoseToken: '',
-      resetArkoseSession: false,
       verificationAttempts: 0,
+      disableSubmitButton: false,
+      captchaData: {},
     };
-  },
-  computed: {
-    showArkoseChallenge() {
-      return (
-        this.glFeatures.arkoseLabsPhoneVerificationChallenge &&
-        (this.phoneNumber.challengeUser || this.verificationAttempts >= 3)
-      );
-    },
   },
   methods: {
     goToStepTwo(phoneNumber) {
@@ -45,17 +34,19 @@ export default {
     setVerified() {
       this.$emit('completed');
     },
-    onArkoseChallengeSolved(arkoseToken) {
-      this.arkoseChallengeSolved = true;
-      this.arkoseToken = arkoseToken;
-      this.resetArkoseSession = false;
-    },
     increaseVerificationAttempts() {
       this.verificationAttempts += 1;
-
-      this.arkoseChallengeSolved = false;
-      this.arkoseToken = '';
-      this.resetArkoseSession = true;
+    },
+    onCaptchaShown() {
+      this.disableSubmitButton = true;
+    },
+    onCaptchaSolved(data) {
+      this.disableSubmitButton = false;
+      this.captchaData = data;
+    },
+    onCaptchaReset() {
+      this.disableSubmitButton = true;
+      this.captchaData = {};
     },
   },
   i18n: {
@@ -67,24 +58,46 @@ export default {
   <div>
     <international-phone-input
       v-if="stepIndex == 1"
-      :arkose-challenge-shown="showArkoseChallenge"
-      :arkose-challenge-solved="arkoseChallengeSolved"
-      :arkose-token="arkoseToken"
+      :disable-submit-button="disableSubmitButton"
+      :additional-request-params="captchaData"
       @next="goToStepTwo"
       @verification-attempt="increaseVerificationAttempts"
       @skip-verification="setVerified"
-    />
+    >
+      <template #captcha>
+        <captcha
+          :verification-attempts="verificationAttempts"
+          :enable-arkose-challenge="phoneNumber.enableArkoseChallenge"
+          :show-arkose-challenge="phoneNumber.showArkoseChallenge"
+          :show-recaptcha-challenge="phoneNumber.showRecaptchaChallenge"
+          @captcha-shown="onCaptchaShown"
+          @captcha-solved="onCaptchaSolved"
+          @captcha-reset="onCaptchaReset"
+        />
+      </template>
+    </international-phone-input>
 
     <verify-phone-verification-code
       v-if="stepIndex == 2"
       :latest-phone-number="latestPhoneNumber"
-      :arkose-challenge-shown="showArkoseChallenge"
-      :arkose-challenge-solved="arkoseChallengeSolved"
-      :arkose-token="arkoseToken"
+      :disable-submit-button="disableSubmitButton"
+      :additional-request-params="captchaData"
       @back="goToStepOne"
       @verification-attempt="increaseVerificationAttempts"
       @verified="setVerified"
-    />
+    >
+      <template #captcha>
+        <captcha
+          :verification-attempts="verificationAttempts"
+          :enable-arkose-challenge="phoneNumber.enableArkoseChallenge"
+          :show-arkose-challenge="phoneNumber.showArkoseChallenge"
+          :show-recaptcha-challenge="phoneNumber.showRecaptchaChallenge"
+          @captcha-shown="onCaptchaShown"
+          @captcha-solved="onCaptchaSolved"
+          @captcha-reset="onCaptchaReset"
+        />
+      </template>
+    </verify-phone-verification-code>
 
     <gl-button
       v-if="offerPhoneNumberExemption"
@@ -94,14 +107,5 @@ export default {
       @click="$emit('exemptionRequested')"
       >{{ $options.i18n.verifyWithCreditCard }}</gl-button
     >
-
-    <phone-verification-arkose-app
-      v-if="showArkoseChallenge"
-      :public-key="arkose.apiKey"
-      :domain="arkose.domain"
-      :reset-session="resetArkoseSession"
-      class="gl-mt-5"
-      @challenge-solved="onArkoseChallengeSolved"
-    />
   </div>
 </template>

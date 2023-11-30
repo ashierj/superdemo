@@ -287,7 +287,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
       with_them do
         before do
-          allow(PhoneVerification::Users::SendVerificationCodeService)
+          allow(PhoneVerification::Users::RateLimitService)
             .to receive(:daily_transaction_limit_exceeded?).and_return(true)
 
           add_user_risk_band(risk_band) if risk_band

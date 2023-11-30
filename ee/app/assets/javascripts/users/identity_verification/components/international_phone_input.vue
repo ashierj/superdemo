@@ -9,14 +9,10 @@ import {
   GlIcon,
   GlButton,
 } from '@gitlab/ui';
-
 import { createAlert } from '~/alert';
 import { s__, n__ } from '~/locale';
-
 import axios from '~/lib/utils/axios_utils';
-
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
-import { VERIFICATION_TOKEN_INPUT_NAME } from 'ee/arkose_labs/constants';
 import { validatePhoneNumber } from '../validations';
 import {
   DEFAULT_COUNTRY,
@@ -46,20 +42,15 @@ export default {
     },
   },
   props: {
-    arkoseChallengeShown: {
+    disableSubmitButton: {
       type: Boolean,
       required: false,
       default: false,
     },
-    arkoseChallengeSolved: {
-      type: Boolean,
+    additionalRequestParams: {
+      type: Object,
       required: false,
-      default: false,
-    },
-    arkoseToken: {
-      type: String,
-      required: false,
-      default: '',
+      default: () => {},
     },
   },
   i18n: {
@@ -128,9 +119,7 @@ export default {
     },
     isSubmitButtonDisabled() {
       return (
-        (this.arkoseChallengeShown && !this.arkoseChallengeSolved) ||
-        this.relatedToBannedUser ||
-        !this.form.fields.phoneNumber.state
+        this.disableSubmitButton || this.relatedToBannedUser || !this.form.fields.phoneNumber.state
       );
     },
     countryDropdownToggleText() {
@@ -166,7 +155,7 @@ export default {
           country: countryId,
           international_dial_code: internationalDialCode,
           phone_number: inputPhoneNumber,
-          [VERIFICATION_TOKEN_INPUT_NAME]: this.arkoseToken,
+          ...this.additionalRequestParams,
         })
         .then(this.handleSendCodeResponse)
         .catch(this.handleError)
@@ -282,6 +271,8 @@ export default {
       <gl-icon name="information-o" :size="12" class="gl-mt-2" />
       <span>{{ $options.i18n.infoText }}</span>
     </div>
+
+    <slot name="captcha"></slot>
 
     <gl-button
       variant="confirm"

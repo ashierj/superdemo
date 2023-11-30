@@ -27,6 +27,7 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       )
       allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
       allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return('domain')
+      stub_feature_flags(arkose_labs_phone_verification_challenge: false)
     end
 
     subject(:data) { helper.identity_verification_data(user) }
@@ -38,41 +39,16 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
     end
 
     context 'when phone number for user exists' do
-      before do
-        allow(Gitlab::ApplicationRateLimiter).to receive(:peek)
-        .with(:phone_verification_challenge, scope: user)
-        .and_return(challenged)
-      end
-
       let_it_be(:phone_number_validation) { create(:phone_number_validation, user: user) }
 
-      context 'when phone_verification_challenge rate-limit is false' do
-        let(:challenged) { false }
+      it 'returns the expected data' do
+        phone_number_data = expected_data[:phone_number].merge({
+          country: phone_number_validation.country,
+          international_dial_code: phone_number_validation.international_dial_code,
+          number: phone_number_validation.phone_number
+        })
 
-        it 'returns the expected data with saved phone number' do
-          phone_number_data = expected_data[:phone_number].merge({
-            country: phone_number_validation.country,
-            international_dial_code: phone_number_validation.international_dial_code,
-            number: phone_number_validation.phone_number
-          })
-
-          expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
-        end
-      end
-
-      context 'when phone_verification_challenge rate-limit is true' do
-        let(:challenged) { true }
-
-        it 'returns the expected data with saved phone number' do
-          phone_number_data = expected_data[:phone_number].merge({
-            country: phone_number_validation.country,
-            international_dial_code: phone_number_validation.international_dial_code,
-            number: phone_number_validation.phone_number,
-            challenge_user: true
-          })
-
-          expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
-        end
+        expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
       end
     end
 
@@ -96,6 +72,108 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       end
     end
 
+    describe '#enable_arkose_challenge' do
+      subject(:enable_arkose) { helper.enable_arkose_challenge? }
+
+      before do
+        stub_feature_flags(arkose_labs_phone_verification_challenge: feature_flag_enabled)
+        allow(helper).to receive(:show_recaptcha_challenge?).and_return(recaptcha_enabled)
+      end
+
+      context 'when arkose_labs_phone_verification_challenge feature-flag is disabled' do
+        let(:feature_flag_enabled) { false }
+        let(:recaptcha_enabled) { false }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when arkose_labs_phone_verification_challenge feature-flag is enabled' do
+        let(:feature_flag_enabled) { true }
+
+        context 'and reCAPTCHA is disabled' do
+          let(:recaptcha_enabled) { false }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'and reCAPTCHA is enabled' do
+          let(:recaptcha_enabled) { true }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+
+    describe '#show_arkose_challenge' do
+      subject(:show_arkose) { helper.show_arkose_challenge?(user) }
+
+      before do
+        allow(helper).to receive(:enable_arkose_challenge?).and_return(arkose_enabled)
+
+        allow(PhoneVerification::Users::RateLimitService)
+          .to receive(:verification_attempts_limit_exceeded?)
+          .with(user)
+          .and_return(rate_limit_reached)
+      end
+
+      context 'when arkose is not enabled' do
+        let(:arkose_enabled) { false }
+        let(:rate_limit_reached) { false }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when arkose is enabled' do
+        let(:arkose_enabled) { true }
+
+        context 'and when verification attempts have not been exceeded' do
+          let(:rate_limit_reached) { false }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context 'and when verification attempts have been exceeded' do
+          let(:rate_limit_reached) { true }
+
+          it { is_expected.to be_truthy }
+        end
+      end
+    end
+
+    describe '#show_recaptcha_challenge' do
+      subject(:show_recaptcha) { helper.show_recaptcha_challenge? }
+
+      before do
+        allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(recaptcha_enabled)
+
+        allow(PhoneVerification::Users::RateLimitService)
+          .to receive(:daily_transaction_limit_exceeded?).and_return(daily_limit_reached)
+      end
+
+      context 'when reCAPTCHA is not enabled' do
+        let(:recaptcha_enabled) { false }
+        let(:daily_limit_reached) { false }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when reCAPTCHA is enabled' do
+        let(:recaptcha_enabled) { true }
+
+        context 'and daily limit is not reached' do
+          let(:daily_limit_reached) { false }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context 'and daily limit is reached' do
+          let(:daily_limit_reached) { true }
+
+          it { is_expected.to be_truthy }
+        end
+      end
+    end
+
     private
 
     def expected_data
@@ -111,7 +189,9 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
         phone_number: {
           send_code_path: send_phone_verification_code_identity_verification_path,
           verify_code_path: verify_phone_verification_code_identity_verification_path,
-          challenge_user: false
+          enable_arkose_challenge: 'false',
+          show_arkose_challenge: 'false',
+          show_recaptcha_challenge: 'false'
         },
         email: {
           obfuscated: helper.obfuscated_email(user.email),

@@ -49,7 +49,7 @@ module EE
     def after_request_hook(user)
       super
 
-      service = PhoneVerification::Users::SendVerificationCodeService
+      service = PhoneVerification::Users::RateLimitService
       service.assume_user_high_risk_if_daily_limit_exceeded!(user)
 
       log_audit_event(user)

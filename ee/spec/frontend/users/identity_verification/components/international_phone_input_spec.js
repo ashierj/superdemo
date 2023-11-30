@@ -31,7 +31,6 @@ describe('International Phone input component', () => {
   let axiosMock;
 
   const SEND_CODE_PATH = '/users/identity_verification/send_phone_verification_code';
-  const MOCK_ARKOSE_TOKEN = 'verification-token';
 
   const findForm = () => wrapper.findComponent(GlForm);
 
@@ -71,7 +70,6 @@ describe('International Phone input component', () => {
         },
       },
       propsData: {
-        arkoseToken: MOCK_ARKOSE_TOKEN,
         ...props,
       },
     });
@@ -212,6 +210,8 @@ describe('International Phone input component', () => {
       beforeEach(() => {
         axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_OK, { success: true });
 
+        createComponent({}, { additionalRequestParams: { captcha_token: '1234' } });
+
         enterPhoneNumber('555');
         submitForm();
         return waitForPromises();
@@ -221,9 +221,14 @@ describe('International Phone input component', () => {
         expect(wrapper.emitted('verification-attempt')).toHaveLength(1);
       });
 
-      it('posts correct data', () => {
+      it('posts correct data with additional request params', () => {
         expect(axiosMock.history.post[0].data).toBe(
-          '{"country":"US","international_dial_code":"1","phone_number":"555","arkose_labs_token":"verification-token"}',
+          JSON.stringify({
+            country: 'US',
+            international_dial_code: '1',
+            phone_number: '555',
+            captcha_token: '1234',
+          }),
         );
       });
 
@@ -316,16 +321,10 @@ describe('International Phone input component', () => {
       });
     });
 
-    describe('Arkose challenge', () => {
-      describe('when arkose challenge is shown but not solved', () => {
+    describe('Captcha', () => {
+      describe('when disableSubmitButton is true', () => {
         beforeEach(() => {
-          createComponent(
-            {},
-            {
-              arkoseChallengeShown: true,
-              arkoseChallengeSolved: false,
-            },
-          );
+          createComponent({}, { disableSubmitButton: true });
 
           enterPhoneNumber('555');
           return waitForPromises();
@@ -333,25 +332,6 @@ describe('International Phone input component', () => {
 
         it('should disable the submit button', () => {
           expect(findSubmitButton().attributes('disabled')).toBe('true');
-        });
-      });
-
-      describe('when arkose challenge is shown and solved', () => {
-        beforeEach(() => {
-          createComponent(
-            {},
-            {
-              arkoseChallengeShown: true,
-              arkoseChallengeSolved: true,
-            },
-          );
-
-          enterPhoneNumber('555');
-          return waitForPromises();
-        });
-
-        it('should enable the submit button', () => {
-          expect(findSubmitButton().attributes('disabled')).toBeUndefined();
         });
       });
     });

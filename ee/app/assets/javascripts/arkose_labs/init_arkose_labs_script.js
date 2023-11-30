@@ -13,11 +13,16 @@ export const initArkoseLabsScript = ({ publicKey, domain }) => {
       resolve(enforcement);
     };
 
+    // in case the challenge needs to be loaded twice in the same Vue app, such as phone verification
+    const element = document.getElementById('arkose-challenge-script');
+    if (element) element.remove();
+
     const tag = document.createElement('script');
     [
       ['type', 'text/javascript'],
       ['src', `https://${domain}/v2/${publicKey}/api.js`],
       ['data-callback', callbackFunctionName],
+      ['id', 'arkose-challenge-script'],
     ].forEach(([attr, value]) => {
       tag.setAttribute(attr, value);
     });

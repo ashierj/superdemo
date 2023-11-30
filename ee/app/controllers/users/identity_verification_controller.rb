@@ -7,6 +7,7 @@ module Users
     include Arkose::ContentSecurityPolicy
     include IdentityVerificationHelper
     include ::Gitlab::RackLoadBalancingHelpers
+    include Recaptcha::Adapters::ControllerMethods
 
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
     PHONE_VERIFICATION_ACTIONS = %i[send_phone_verification_code verify_phone_verification_code].freeze
@@ -16,15 +17,10 @@ module Users
 
     before_action :require_verification_user!
     before_action :require_unverified_user!, except: [:verification_state, :success]
-    before_action :redirect_banned_user, only: [:show]
+    before_action :load_captcha, :redirect_banned_user, only: [:show]
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
     before_action :ensure_verification_method_attempt_allowed!,
       only: PHONE_VERIFICATION_ACTIONS + CREDIT_CARD_VERIFICATION_ACTIONS
-    before_action :verify_arkose_labs_session_for_phone_verification, only: PHONE_VERIFICATION_ACTIONS
-
-    before_action only: :show do
-      push_frontend_feature_flag(:arkose_labs_phone_verification_challenge)
-    end
 
     feature_category :instance_resiliency
 
@@ -73,6 +69,12 @@ module Users
     end
 
     def send_phone_verification_code
+      unless ensure_challenge_completed
+        return render status: :bad_request, json: {
+          message: s_('IdentityVerification|Complete verification to sign up.')
+        }
+      end
+
       result = ::PhoneVerification::Users::SendVerificationCodeService.new(@user, phone_verification_params).execute
 
       unless result.success?
@@ -95,6 +97,12 @@ module Users
     end
 
     def verify_phone_verification_code
+      unless ensure_challenge_completed
+        return render status: :bad_request, json: {
+          message: s_('IdentityVerification|Complete verification to sign up.')
+        }
+      end
+
       result = ::PhoneVerification::Users::VerifyCodeService.new(@user, verify_phone_verification_code_params).execute
 
       unless result.success?
@@ -106,23 +114,6 @@ module Users
       render json: { status: :success }
     end
 
-    def verify_arkose_labs_session_for_phone_verification
-      return unless Feature.enabled?(:arkose_labs_phone_verification_challenge)
-
-      # it's a soft rate-limit so we will show the user captcha in the front-end, but not block the request
-      challenged = ::Gitlab::ApplicationRateLimiter.throttled?(:phone_verification_challenge, scope: @user)
-
-      return unless challenged
-
-      log_event(:phone, :verification_challenge_triggered)
-
-      return if verify_arkose_labs_token(save_user_data: false)
-
-      render status: :bad_request, json: {
-        message: s_('IdentityVerification|Complete verification to sign up.')
-      }
-    end
-
     def arkose_labs_challenge; end
 
     def verify_arkose_labs_session
@@ -131,7 +122,7 @@ module Users
         return render action: :arkose_labs_challenge
       end
 
-      service = PhoneVerification::Users::SendVerificationCodeService
+      service = PhoneVerification::Users::RateLimitService
       service.assume_user_high_risk_if_daily_limit_exceeded!(@user)
 
       redirect_to action: :show
@@ -315,6 +306,36 @@ module Users
 
       result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token], user: user).execute
       result.success?
+    end
+
+    def load_captcha
+      show_recaptcha_challenge? && Gitlab::Recaptcha.load_configurations!
+    end
+
+    def ensure_challenge_completed
+      # save values in variables before increase in attempts
+      recaptcha_shown = show_recaptcha_challenge?
+      arkose_shown = show_arkose_challenge?(@user)
+
+      # if total daily attempts reach 16K, show reCAPTCHA on every request
+      if recaptcha_enabled? && recaptcha_shown
+        log_event(:phone, :recaptcha_shown)
+
+        return verify_recaptcha
+      end
+
+      # if user makes more than 2 incorrect verification attempts, show arkose challenge
+      if enable_arkose_challenge?
+        PhoneVerification::Users::RateLimitService.increase_verification_attempts(@user)
+
+        if arkose_shown
+          log_event(:phone, :arkose_challenge_shown)
+
+          return verify_arkose_labs_token(save_user_data: false)
+        end
+      end
+
+      true
     end
   end
 end
