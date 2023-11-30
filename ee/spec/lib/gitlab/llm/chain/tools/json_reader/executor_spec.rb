@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failures, feature_category: :duo_chat do
+RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failures, :saas, feature_category: :duo_chat do
   subject(:reader) { described_class.new(context: context, options: options, stream_response_handler: nil) }
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, group: group, name: "My sweet project with robots in it") }
   let_it_be(:issue) do
     create(:issue, project: project, title: "AI should be included at birthdays", description: description_content)
@@ -57,6 +57,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
   end
 
   describe '#execute' do
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_licensed_features(experimental_features: true, ai_features: true)
+      group.namespace_settings.update!(experiment_features_enabled: true)
+    end
+
     context 'when the tool was already used' do
       before do
         context.tools_used << described_class

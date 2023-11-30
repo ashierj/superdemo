@@ -40,19 +40,13 @@ module Gitlab
             end
 
             def perform
-              resource_wrapper_class = "Ai::AiResource::#{resource.class}".safe_constantize
-              # We need to implement it for all models we want to take into considerations
-              unless resource_wrapper_class
+              begin
+                resource_json = context.resource_json(content_limit: provider_prompt_class::MAX_CHARACTERS)
+              rescue ArgumentError
                 return Answer.error_answer(context: context,
                   content: _("Unexpected error: Cannot serialize resource", resource_class: resource.class)
                 )
               end
-
-              resource_json = resource_wrapper_class.new(resource)
-                .serialize_for_ai(
-                  user: context.current_user,
-                  content_limit: provider_prompt_class::MAX_CHARACTERS
-                ).to_json
 
               @data = Gitlab::Json.parse(resource_json)
 
