@@ -12,6 +12,7 @@ import {
   CUSTOM_ACTION_OPTIONS_KEYS,
   LINKED_EXISTING_FILE,
 } from '../constants';
+import CodeBlockImport from './code_block_import.vue';
 
 export default {
   SCAN_EXECUTION_PATH: helpPagePath('user/application_security/policies/scan-execution-policies', {
@@ -35,6 +36,7 @@ export default {
   name: 'CodeBlockAction',
   components: {
     PolicyPopover,
+    CodeBlockImport,
     GlCollapsibleListbox,
     GlFormInput,
     GlFormGroup,
@@ -67,6 +69,9 @@ export default {
   computed: {
     filePath() {
       return this.initAction?.ci_configuration_path?.file;
+    },
+    hasExistingCode() {
+      return Boolean(this.yamlEditorValue.length);
     },
     isFirstAction() {
       return this.actionIndex === 0;
@@ -185,6 +190,7 @@ export default {
             @input="updateYaml"
           />
         </div>
+        <code-block-import :has-existing-code="hasExistingCode" @changed="updateYaml" />
       </template>
     </section-layout>
   </div>
