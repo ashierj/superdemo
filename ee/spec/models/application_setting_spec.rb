@@ -520,6 +520,11 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
         it { is_expected.not_to allow_value(true).for(:delete_unconfirmed_users) }
       end
     end
+
+    describe 'instance_level_ai_beta_features_enabled', feature_category: :cloud_connector do
+      it { is_expected.to allow_values([true, false]).for(:instance_level_ai_beta_features_enabled) }
+      it { is_expected.not_to allow_value(nil).for(:instance_level_ai_beta_features_enabled) }
+    end
   end
 
   describe 'search curation settings after .create_from_defaults', feature_category: :global_search do
