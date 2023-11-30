@@ -1,8 +1,6 @@
 import { GlButtonGroup } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -13,15 +11,13 @@ import {
   mockList,
   mockLabelList,
 } from 'jest/boards/mock_data';
-import { ListType, inactiveId } from '~/boards/constants';
+import { ListType } from '~/boards/constants';
 import boardsEventHub from '~/boards/eventhub';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import listQuery from 'ee/boards/graphql/board_lists_deferred.query.graphql';
 import epicListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
-import sidebarEventHub from '~/sidebar/event_hub';
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 const listMocks = {
   [ListType.assignee]: {
@@ -36,11 +32,9 @@ const listMocks = {
 };
 
 describe('Board List Header Component', () => {
-  let store;
   let wrapper;
   let fakeApollo;
 
-  const setFullBoardIssuesCountSpy = jest.fn();
   const mockClientToggleListCollapsedResolver = jest.fn();
   const mockClientToggleEpicListCollapsedResolver = jest.fn();
 
@@ -60,7 +54,6 @@ describe('Board List Header Component', () => {
     listQueryHandler = jest.fn().mockResolvedValue(boardListQueryResponse()),
     epicListQueryHandler = jest.fn().mockResolvedValue(epicBoardListQueryResponse()),
     currentUserId = 1,
-    state = { activeId: inactiveId },
     isEpicBoard = false,
     issuableType = 'issue',
     injectedProps = {},
@@ -93,17 +86,8 @@ describe('Board List Header Component', () => {
       },
     );
 
-    store = new Vuex.Store({
-      state,
-      actions: {
-        setFullBoardIssuesCount: setFullBoardIssuesCountSpy,
-        setActiveId: jest.fn(),
-      },
-    });
-
     wrapper = mountExtended(BoardListHeader, {
       apolloProvider: fakeApollo,
-      store,
       propsData: {
         list: listMock,
         filterParams: {},
@@ -208,32 +192,6 @@ describe('Board List Header Component', () => {
 
       expect(findButtonGroup().exists()).toBe(false);
     });
-
-    describe('emits sidebar.closeAll event on openSidebarSettings', () => {
-      beforeEach(() => {
-        jest.spyOn(sidebarEventHub, '$emit');
-      });
-
-      it('emits event if no active List', () => {
-        // Shares the same behavior for any settings-enabled List type
-        createComponent({ listType: hasSettings[0] });
-        findSettingsButton().trigger('click');
-
-        expect(sidebarEventHub.$emit).toHaveBeenCalledWith('sidebar.closeAll');
-      });
-
-      it('does not emit event when there is an active List', () => {
-        createComponent({
-          listType: hasSettings[0],
-          state: {
-            activeId: mockLabelList.id,
-          },
-        });
-        findSettingsButton().trigger('click');
-
-        expect(sidebarEventHub.$emit).not.toHaveBeenCalled();
-      });
-    });
   });
 
   describe('Swimlanes header', () => {
@@ -293,61 +251,58 @@ describe('Board List Header Component', () => {
     });
   });
 
-  describe('Apollo boards', () => {
+  it.each`
+    issuableType | isEpicBoard | queryHandler                                 | notCalledHandler
+    ${'epic'}    | ${true}     | ${mockClientToggleEpicListCollapsedResolver} | ${mockClientToggleListCollapsedResolver}
+    ${'issue'}   | ${false}    | ${mockClientToggleListCollapsedResolver}     | ${mockClientToggleEpicListCollapsedResolver}
+  `(
+    'sets $issuableType list collapsed state',
+    async ({ issuableType, isEpicBoard, queryHandler, notCalledHandler }) => {
+      createComponent({
+        injectedProps: { issuableType, isEpicBoard },
+      });
+
+      await nextTick();
+      findCaret().vm.$emit('click');
+      await nextTick();
+
+      expect(queryHandler).toHaveBeenCalledWith(
+        {},
+        {
+          list: mockList,
+          collapsed: true,
+        },
+        expect.anything(),
+        expect.anything(),
+      );
+      expect(notCalledHandler).not.toHaveBeenCalled();
+    },
+  );
+
+  describe('when fetch list query fails', () => {
+    const errorMessage = 'Failed to fetch list';
+    const listQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
+
+    beforeEach(() => {
+      createComponent({
+        listQueryHandler: listQueryHandlerFailure,
+      });
+    });
+
     it.each`
-      issuableType | isEpicBoard | queryHandler                                 | notCalledHandler
-      ${'epic'}    | ${true}     | ${mockClientToggleEpicListCollapsedResolver} | ${mockClientToggleListCollapsedResolver}
-      ${'issue'}   | ${false}    | ${mockClientToggleListCollapsedResolver}     | ${mockClientToggleEpicListCollapsedResolver}
-    `(
-      'sets $issuableType list collapsed state',
-      async ({ issuableType, isEpicBoard, queryHandler, notCalledHandler }) => {
-        createComponent({
-          injectedProps: { isApolloBoard: true, issuableType, isEpicBoard },
-        });
-
-        await nextTick();
-        findCaret().vm.$emit('click');
-        await nextTick();
-
-        expect(queryHandler).toHaveBeenCalledWith(
-          {},
-          {
-            list: mockList,
-            collapsed: true,
-          },
-          expect.anything(),
-          expect.anything(),
-        );
-        expect(notCalledHandler).not.toHaveBeenCalled();
-      },
-    );
-
-    describe('when fetch list query fails', () => {
-      const errorMessage = 'Failed to fetch list';
-      const listQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
-
-      beforeEach(() => {
-        createComponent({
-          listQueryHandler: listQueryHandlerFailure,
-          injectedProps: { isApolloBoard: true },
-        });
+      issuableType | isEpicBoard
+      ${'epic'}    | ${true}
+      ${'issue'}   | ${false}
+    `('sets error for $issuableType', async ({ issuableType, isEpicBoard }) => {
+      createComponent({
+        listQueryHandler: listQueryHandlerFailure,
+        epicListQueryHandler: listQueryHandlerFailure,
+        injectedProps: { issuableType, isEpicBoard },
       });
 
-      it.each`
-        issuableType | isEpicBoard
-        ${'epic'}    | ${true}
-        ${'issue'}   | ${false}
-      `('sets error for $issuableType', async ({ issuableType, isEpicBoard }) => {
-        createComponent({
-          listQueryHandler: listQueryHandlerFailure,
-          epicListQueryHandler: listQueryHandlerFailure,
-          injectedProps: { isApolloBoard: true, issuableType, isEpicBoard },
-        });
+      await waitForPromises();
 
-        await waitForPromises();
-
-        expect(cacheUpdates.setError).toHaveBeenCalled();
-      });
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 });

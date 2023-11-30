@@ -1,6 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions } from 'vuex';
 import { isEmpty } from 'lodash';
 import BoardFilteredSearchCe from '~/boards/components/board_filtered_search.vue';
 import { transformBoardConfig } from 'ee/boards/boards_util';
@@ -10,7 +8,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 export default {
   components: { BoardFilteredSearchCe },
-  inject: ['boardBaseUrl', 'isApolloBoard'],
+  inject: ['boardBaseUrl'],
   props: {
     tokens: {
       required: true,
@@ -28,9 +26,7 @@ export default {
     };
   },
   computed: {
-    ...mapState({ boardScopeConfig: ({ boardConfig }) => boardConfig }),
     boardScope() {
-      if (!this.isApolloBoard) return {};
       const { board } = this;
       return {
         milestoneId: board.milestone?.id || null,
@@ -47,25 +43,6 @@ export default {
     },
   },
   watch: {
-    boardScopeConfig(newVal) {
-      if (!isEmpty(newVal)) {
-        const boardConfigPath = transformBoardConfig(newVal);
-        if (boardConfigPath !== '') {
-          const filterPath = window.location.search ? `${window.location.search}&` : '?';
-          updateHistory({
-            url: `${filterPath}${transformBoardConfig(newVal)}`,
-          });
-
-          this.performSearch();
-
-          const rawFilterParams = queryToObject(window.location.search, { gatherArrays: true });
-
-          this.filterParams = {
-            ...convertObjectPropsToCamelCase(rawFilterParams, {}),
-          };
-        }
-      }
-    },
     board: {
       deep: true,
       handler(_, oldVal) {
@@ -96,9 +73,6 @@ export default {
         this.$refs.filteredSearch.updateTokens();
       },
     },
-  },
-  methods: {
-    ...mapActions(['performSearch']),
   },
 };
 </script>

@@ -2,11 +2,9 @@ import { shallowMount } from '@vue/test-utils';
 import EpicBoardContentSidebar from 'ee/boards/components/epic_board_content_sidebar.vue';
 import BoardContent from '~/boards/components/board_content.vue';
 import BoardContentSidebar from '~/boards/components/board_content_sidebar.vue';
-import { createStore } from '~/boards/stores';
 
 describe('ee/BoardContent', () => {
   let wrapper;
-  let store;
 
   const createComponent = ({
     issuableType = 'issue',
@@ -15,7 +13,6 @@ describe('ee/BoardContent', () => {
     isSwimlanesOn = false,
   }) => {
     wrapper = shallowMount(BoardContent, {
-      store,
       provide: {
         timeTrackingLimitToHours: false,
         canAdminList: false,
@@ -28,10 +25,10 @@ describe('ee/BoardContent', () => {
         isEpicBoard,
         isGroupBoard: true,
         disabled: false,
-        isApolloBoard: false,
+        isApolloBoard: true,
       },
       propsData: {
-        lists: [],
+        boardLists: {},
         boardId: 'gid://gitlab/Board/1',
         filterParams: {},
         isSwimlanesOn,
@@ -40,13 +37,13 @@ describe('ee/BoardContent', () => {
       },
       stubs: {
         'board-content-sidebar': BoardContentSidebar,
+        'epic-board-content-sidebar': EpicBoardContentSidebar,
       },
     });
   };
 
   beforeEach(() => {
     window.gon = { licensed_features: {} };
-    store = createStore();
   });
 
   describe.each`
