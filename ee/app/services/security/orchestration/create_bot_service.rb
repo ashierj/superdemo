@@ -43,7 +43,8 @@ module Security
           email: username_and_email_generator.email,
           username: username_and_email_generator.username,
           user_type: :security_policy_bot,
-          skip_confirmation: true # Bot users should always have their emails confirmed.
+          skip_confirmation: true, # Bot users should always have their emails confirmed.
+          external: true
         }
       end
 
