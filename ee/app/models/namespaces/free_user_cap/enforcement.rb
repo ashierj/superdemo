@@ -77,6 +77,13 @@ module Namespaces
         count_without_added_users = ::Namespaces::FreeUserCap::UsersWithoutAddedMembersFinder
                                       .count(root_namespace, member_ids, database_limit)
 
+        Gitlab::AppLogger.info(
+          class: self.class.name,
+          namespace_id: root_namespace.id,
+          count: count_without_added_users,
+          message: 'Over from adding users calculation'
+        )
+
         # Once we remove the members from our latest submission, we can see if the namespace is still over the limit.
         # If it is not, then we know our addition over members caused the namespace to go over the limit.
         count_without_added_users <= limit

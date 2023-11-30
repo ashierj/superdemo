@@ -16,6 +16,12 @@ module Namespaces
       def execute
         notify
 
+        Gitlab::AppLogger.info(
+          class: self.class.name,
+          namespace_id: root_namespace.id,
+          message: 'Notifying owners of overage'
+        )
+
         ServiceResponse.success
       rescue StandardError => e
         ServiceResponse.error(message: e.message)

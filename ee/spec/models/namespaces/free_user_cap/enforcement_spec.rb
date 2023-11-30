@@ -524,25 +524,60 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
   describe '#over_from_adding_users?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:current_users_count, :count_without_added_members, :result) do
-      3 | 0 | false
-      5 | 4 | false
-      5 | 3 | true
-      5 | 2 | true
-      3 | 3 | false
+    before do
+      stub_ee_application_setting(dashboard_limit: 3)
     end
 
-    with_them do
-      subject(:over_from_adding_users?) { described_class.new(namespace).over_from_adding_users?([]) }
+    subject(:over_from_adding_users?) { described_class.new(namespace).over_from_adding_users?([]) }
 
-      before do
-        allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: current_users_count })
-        allow(::Namespaces::FreeUserCap::UsersWithoutAddedMembersFinder)
-          .to receive(:count).and_return(count_without_added_members)
-        stub_ee_application_setting(dashboard_limit: 3)
+    context 'with all variations' do
+      where(:current_users_count, :count_without_added_members, :result) do
+        3 | 0 | false
+        5 | 4 | false
+        5 | 3 | true
+        5 | 2 | true
+        3 | 3 | false
       end
 
-      it { is_expected.to be result }
+      with_them do
+        before do
+          allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: current_users_count })
+          allow(::Namespaces::FreeUserCap::UsersWithoutAddedMembersFinder)
+            .to receive(:count).and_return(count_without_added_members)
+        end
+
+        it { is_expected.to be result }
+      end
+    end
+
+    context 'when namespace is over limit' do
+      before do
+        allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: 4 })
+      end
+
+      it 'logs the count' do
+        allow(::Namespaces::FreeUserCap::UsersWithoutAddedMembersFinder).to receive(:count).and_return(2)
+
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          message: 'Over from adding users calculation',
+          class: described_class.name,
+          namespace_id: namespace.id,
+          count: 2)
+
+        over_from_adding_users?
+      end
+    end
+
+    context 'when namespace is not over the limit' do
+      before do
+        allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: 3 })
+      end
+
+      it 'does not log the count' do
+        expect(Gitlab::AppLogger).not_to receive(:info)
+
+        over_from_adding_users?
+      end
     end
   end
 end
