@@ -169,6 +169,7 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
     end
 
     it 'returns the correct data' do
+      stub_licensed_features(external_audit_events: true)
       expect(helper.audit_log_app_data(true, events, audit_event_definitions)).to contain_exactly(
         [:form_path, "/admin/audit_logs"],
         [:events, events.to_json],
