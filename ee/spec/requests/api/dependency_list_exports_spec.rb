@@ -97,18 +97,6 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
     let(:params) { { export_type: 'sbom' } }
 
     it_behaves_like 'creating dependency list export'
-
-    context 'when the `merge_sbom_api` feature flag is disabled' do
-      before do
-        stub_feature_flags(merge_sbom_api: false)
-      end
-
-      it 'returns 404' do
-        post api(request_path, user)
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
   end
 
   describe 'GET /dependency_list_exports/:export_id' do
