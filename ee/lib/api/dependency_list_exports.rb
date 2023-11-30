@@ -45,8 +45,6 @@ module API
       end
       desc 'Generate a dependency list export on a pipeline-level'
       post ':id/dependency_list_exports' do
-        not_found! unless Feature.enabled?(:merge_sbom_api, user_pipeline&.project)
-
         # Currently, we only support sbom export type for this endpoint.
         not_found! if params[:export_type] != 'sbom'
 
