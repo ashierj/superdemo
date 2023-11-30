@@ -22,15 +22,72 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
       worker.perform(project.id, false)
     end
 
-    context 'when elasticsearch is disabled for Project' do
-      it 'calls ElasticDeleteProjectWorker on the project and return true' do
-        allow_next_found_instance_of(Project) do |project|
-          expect(project).to receive(:use_elasticsearch?).and_return(false)
+    context 'when the project does not exist' do
+      let_it_be(:id) { non_existing_record_id }
+      let_it_be(:es_id) do
+        Gitlab::Elastic::Helper.build_es_id(es_type: Project.es_type, target_id: non_existing_record_id)
+      end
+
+      context 'when search_index_all_projects is true' do
+        before do
+          stub_feature_flags(search_index_all_projects: true)
         end
-        expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(project.id, project.es_id)
-        expect(Gitlab::Elastic::Indexer).not_to receive(:new)
-        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
-        expect(worker.perform(project.id)).to be true
+
+        it 'calls ElasticDeleteProjectWorker on the project to delete all documents and returns true' do
+          expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(id, es_id, delete_project: true)
+          expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+          expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+          expect(worker.perform(id)).to be true
+        end
+      end
+
+      context 'when search_index_all_projects is false' do
+        before do
+          stub_feature_flags(search_index_all_projects: false)
+        end
+
+        it 'calls ElasticDeleteProjectWorker on the project to delete all documents and returns true' do
+          expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(id, es_id, delete_project: true)
+          expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+          expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+          expect(worker.perform(id)).to be true
+        end
+      end
+    end
+
+    context 'when elasticsearch is disabled for Project' do
+      context 'when search_index_all_projects is true' do
+        before do
+          stub_feature_flags(search_index_all_projects: true)
+        end
+
+        it 'calls ElasticDeleteProjectWorker to keep itself and only delete associated documents and returns true' do
+          allow_next_found_instance_of(Project) do |project|
+            expect(project).to receive(:use_elasticsearch?).and_return(false)
+          end
+          expect(ElasticDeleteProjectWorker).to receive(:perform_async)
+            .with(project.id, project.es_id, delete_project: false)
+          expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+          expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+          expect(worker.perform(project.id)).to be true
+        end
+      end
+
+      context 'when search_index_all_projects is false' do
+        before do
+          stub_feature_flags(search_index_all_projects: false)
+        end
+
+        it 'calls ElasticDeleteProjectWorker on the project to delete all documents and returns true' do
+          allow_next_found_instance_of(Project) do |project|
+            expect(project).to receive(:use_elasticsearch?).and_return(false)
+          end
+          expect(ElasticDeleteProjectWorker).to receive(:perform_async)
+            .with(project.id, project.es_id, delete_project: true)
+          expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+          expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+          expect(worker.perform(project.id)).to be true
+        end
       end
     end
 

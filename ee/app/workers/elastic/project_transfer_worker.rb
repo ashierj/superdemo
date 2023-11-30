@@ -22,14 +22,22 @@ module Elastic
       end
 
       if project.maintaining_elasticsearch? && project.maintaining_indexed_associations?
-        # If the project is indexed in Elasticsearch, the project and all associated data are queued up for indexing
+        # If the project is indexed, the project and all associated data are queued for indexing
         # to make sure the namespace_ancestry field gets updated in each document.
         ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project)
-      elsif should_invalidate_elasticsearch_indexes_cache &&
-          ::Gitlab::CurrentSettings.elasticsearch_indexing?
-        # If the project is no longer indexed and the indexing settings are different between the old and new namespace,
-        # the project should no longer exist in the index and will be deleted asynchronously.
-        ElasticDeleteProjectWorker.perform_async(project.id, project.es_id, namespace_routing_id: old_namespace_id)
+      elsif should_invalidate_elasticsearch_indexes_cache && ::Gitlab::CurrentSettings.elasticsearch_indexing?
+        # If the new namespace isn't indexed, the project should no longer exist in the index
+        # and will be deleted asynchronously. If all projects are indexed, queue the project for indexing
+        # to update the namespace field and do not remove the document from the index.
+
+        keep_project_in_index = ::Feature.enabled?(:search_index_all_projects, project.root_namespace)
+        ::Elastic::ProcessInitialBookkeepingService.track!(project) if keep_project_in_index
+
+        ElasticDeleteProjectWorker.perform_async(project.id,
+          project.es_id,
+          namespace_routing_id: old_namespace_id,
+          delete_project: !keep_project_in_index
+        )
       end
     end
 

@@ -7,14 +7,19 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
     subject(:worker) { described_class.new }
 
     let(:logger_double) { instance_double(Gitlab::Elasticsearch::Logger) }
+
     let_it_be(:project) { create(:project, :repository) }
+
+    before do
+      allow(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
+    end
 
     context 'when ES is disabled' do
       before do
         stub_ee_application_setting(elasticsearch_indexing: false)
       end
 
-      it 'does not runs Gitlab::Elastic::Indexer and does not performs logging and metrics' do
+      it 'does not run Gitlab::Elastic::Indexer and does not perform logging and metrics' do
         expect(Gitlab::Elastic::Indexer).not_to receive(:new)
         expect(logger_double).not_to receive(:info)
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
@@ -30,21 +35,48 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
 
       context 'when container is Project' do
         context 'when elasticsearch is disabled for Project' do
-          it 'does not runs Gitlab::Elastic::Indexer and does not performs logging and metrics' do
-            allow_next_found_instance_of(Project) do |project|
-              expect(project).to receive(:use_elasticsearch?).and_return(false)
+          context 'when search_index_all_projects is true' do
+            before do
+              stub_feature_flags(search_index_all_projects: true)
             end
-            expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(project.id, project.es_id)
-            expect(Gitlab::Elastic::Indexer).not_to receive(:new)
-            expect(logger_double).not_to receive(:info)
-            expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
-            expect(worker.perform(project.id, project.class.name)).to be true
+
+            it 'does not remove the project but removes all associated documents from the index' do
+              allow_next_found_instance_of(Project) do |project|
+                expect(project).to receive(:use_elasticsearch?).and_return(false)
+              end
+
+              expect(ElasticDeleteProjectWorker).to receive(:perform_async)
+                .with(project.id, project.es_id, delete_project: false)
+              expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+              expect(logger_double).not_to receive(:info)
+              expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+              expect(worker.perform(project.id, project.class.name)).to be true
+            end
+          end
+
+          context 'when search_index_all_projects is false' do
+            before do
+              stub_feature_flags(search_index_all_projects: false)
+            end
+
+            it 'removes the project and all associated documents from the index' do
+              allow_next_found_instance_of(Project) do |project|
+                expect(project).to receive(:use_elasticsearch?).and_return(false)
+              end
+
+              expect(ElasticDeleteProjectWorker).to receive(:perform_async)
+                .with(project.id, project.es_id, delete_project: true)
+              expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+              expect(logger_double).not_to receive(:info)
+              expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+              expect(worker.perform(project.id, project.class.name)).to be true
+            end
           end
         end
 
         context 'when elasticsearch is enabled for Project' do
           context 'and options force is passed as true' do
-            it 'does runs Gitlab::Elastic::Indexer with force and does performs logging and metrics' do
+            it 'runs Gitlab::Elastic::Indexer with force and performs logging and metrics' do
               expect_next_instance_of(Gitlab::Elastic::Indexer, project, { wiki: true, force: true }) do |indexer|
                 expect(indexer).to receive(:run).and_return(true)
               end
@@ -56,7 +88,7 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
           end
 
           context 'and options is not passed' do
-            it 'does runs Gitlab::Elastic::Indexer without force and does performs logging and metrics' do
+            it 'runs Gitlab::Elastic::Indexer without force and performs logging and metrics' do
               expect_next_instance_of(Gitlab::Elastic::Indexer, project, { wiki: true, force: false }) do |indexer|
                 expect(indexer).to receive(:run).and_return(true)
               end
@@ -73,7 +105,7 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
         let_it_be(:group) { create(:group) }
 
         context 'when elasticsearch is disabled for Group' do
-          it 'does not runs Gitlab::Elastic::Indexer and does not performs logging and metrics' do
+          it 'does not run Gitlab::Elastic::Indexer and does not perform logging and metrics' do
             allow_next_found_instance_of(Group) do |group|
               expect(group).to receive(:use_elasticsearch?).and_return(false)
             end
@@ -86,7 +118,7 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
         end
 
         context 'when elasticsearch is enabled for Group' do
-          it 'does runs Gitlab::Elastic::Indexer and does performs logging and metrics' do
+          it 'runs Gitlab::Elastic::Indexer and performs logging and metrics' do
             allow_next_found_instance_of(Group) do |group|
               expect(group).to receive(:use_elasticsearch?).and_return(true)
             end
@@ -104,7 +136,7 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
       context 'when container is neither Group nor Project' do
         let_it_be(:user) { create(:user) }
 
-        it 'does not runs Gitlab::Elastic::Indexer, performs error logging and does not performs metrics log' do
+        it 'does not run Gitlab::Elastic::Indexer, performs error logging and does not perform metrics log' do
           expect(Gitlab::Elastic::Indexer).not_to receive(:new)
           expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
           expect(logger_double).to receive(:error).with(container_id: user.id, container_type: user.class.name,
@@ -116,28 +148,52 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
       end
 
       context 'when container can not be found' do
-        it 'does not runs Gitlab::Elastic::Indexer and does not performs logging and metrics' do
-          es_id = Gitlab::Elastic::Helper.build_es_id(es_type: project.class.es_type, target_id: 0)
-          expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
-          expect(logger_double).to receive(:warn).with(container_id: 0, container_type: project.class.name,
-            message: 'Container record not found')
-          expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(0, es_id)
-          expect(Gitlab::Elastic::Indexer).not_to receive(:new)
-          expect(logger_double).not_to receive(:info)
-          expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
-          expect(worker.perform(0, project.class.name)).to be true
+        let_it_be(:id) { non_existing_record_id }
+        let_it_be(:es_id) do
+          Gitlab::Elastic::Helper.build_es_id(es_type: Project.es_type, target_id: non_existing_record_id)
+        end
+
+        context 'when search_index_all_projects is false' do
+          before do
+            stub_feature_flags(search_index_all_projects: false)
+          end
+
+          it 'removes the project and all associated documents from the index' do
+            expect(logger_double).to receive(:warn).with(container_id: id, container_type: Project.name,
+              message: 'Container record not found')
+            expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(id, es_id, delete_project: true)
+            expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+            expect(logger_double).not_to receive(:info)
+            expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+            expect(worker.perform(id, Project.name)).to be true
+          end
+        end
+
+        context 'when search_index_all_projects is true' do
+          before do
+            stub_feature_flags(search_index_all_projects: true)
+          end
+
+          it 'removes the project and all associated documents from the index' do
+            expect(logger_double).to receive(:warn).with(container_id: id, container_type: Project.name,
+              message: 'Container record not found')
+            expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(id, es_id, delete_project: true)
+            expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+            expect(logger_double).not_to receive(:info)
+            expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+            expect(worker.perform(id, Project.name)).to be true
+          end
         end
       end
 
       context 'when container_id is nil' do
-        it 'does not runs Gitlab::Elastic::Indexer, performs error logging and does not performs metrics log' do
+        it 'does not run Gitlab::Elastic::Indexer, performs error logging and does not perform metrics log' do
           expect(Gitlab::Elastic::Indexer).not_to receive(:new)
-          expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
           expect(logger_double).to receive(:error).with(message: 'container_id or container_type can not be nil',
-            container_id: nil, container_type: project.class.name)
+            container_id: nil, container_type: Project.name)
           expect(logger_double).not_to receive(:info)
           expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
-          expect(worker.perform(nil, project.class.name)).to be true
+          expect(worker.perform(nil, Project.name)).to be true
         end
       end
     end
