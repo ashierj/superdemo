@@ -149,6 +149,16 @@ RSpec.shared_examples 'member group domain validations' do |source_type|
         end
       end
 
+      context 'with service account users' do
+        let_it_be(:service_account) { create(:user, :service_account, email: "bot@example.com") }
+
+        it 'allows a service account user, even when email does not match' do
+          expect(group.allowed_email_domains.include?(service_account.email)).to be_falsey
+
+          expect(build(member_type, source: source, user: service_account)).to be_valid
+        end
+      end
+
       context 'with group SAML users' do
         let(:saml_provider) { create(:saml_provider, group: group) }
 
