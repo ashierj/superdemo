@@ -52,6 +52,6 @@ export default {
     :available-tokens="tokens"
     terms-as-tokens
     @input="setSearchFilterParameters"
-    @submit="fetchDependencies()"
+    @submit="fetchDependencies({ page: 1 })"
   />
 </template>
