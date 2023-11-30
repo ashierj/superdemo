@@ -13840,6 +13840,9 @@ msgstr ""
 msgid "Copy command"
 msgstr ""
 
+msgid "Copy command to finalize manually"
+msgstr ""
+
 msgid "Copy commands"
 msgstr ""
 
@@ -50723,9 +50726,6 @@ msgid "Tool"
 msgstr ""
 
 msgid "TopNav|Explore"
-msgstr ""
-
-msgid "TopNav|Go back"
 msgstr ""
 
 msgid "TopNav|Switch to"

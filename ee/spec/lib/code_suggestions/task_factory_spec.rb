@@ -29,7 +29,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
     it 'calls instructions extractor with expected params' do
       expect(CodeSuggestions::InstructionsExtractor)
         .to receive(:new)
-        .with(an_instance_of(CodeSuggestions::FileContent), nil, true, true)
+        .with(an_instance_of(CodeSuggestions::FileContent), nil, true)
         .and_call_original
 
       subject
