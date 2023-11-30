@@ -94,7 +94,7 @@ module Gitlab
               options: { input: options[:content] },
               stream_response_handler: stream_response_handler,
               command: command
-            ).perform
+            ).execute
           end
 
           Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
