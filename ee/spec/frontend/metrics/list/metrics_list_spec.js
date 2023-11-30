@@ -1,4 +1,5 @@
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
+import { filterObjToFilterToken } from 'ee/metrics/list/filters';
 import MetricsTable from 'ee/metrics/list/metrics_table.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import MetricsList from 'ee/metrics/list/metrics_list.vue';
@@ -6,6 +7,9 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import * as urlUtility from '~/lib/utils/url_utility';
 import setWindowLocation from 'helpers/set_window_location_helper';
+import { createMockClient } from 'helpers/mock_observability_client';
+import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { mockMetrics } from './mock_data';
 
 jest.mock('~/alert');
@@ -19,7 +23,14 @@ describe('MetricsComponent', () => {
   };
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findMetricsTable = () => wrapper.findComponent(MetricsTable);
+  const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
+  const findInfiniteScrolling = () => wrapper.findComponent(GlInfiniteScroll);
+  const findMetricsTable = () => findInfiniteScrolling().getComponent(MetricsTable);
+  const findUrlSync = () => wrapper.findComponent(UrlSync);
+  const setFilters = async (filters) => {
+    findFilteredSearch().vm.$emit('onFilter', filterObjToFilterToken(filters));
+    await waitForPromises();
+  };
 
   const mountComponent = async () => {
     wrapper = shallowMountExtended(MetricsList, {
@@ -31,35 +42,128 @@ describe('MetricsComponent', () => {
   };
 
   beforeEach(() => {
-    observabilityClientMock = {
-      fetchMetrics: jest.fn().mockResolvedValue(mockResponse),
-    };
+    observabilityClientMock = createMockClient();
+    observabilityClientMock.fetchMetrics.mockResolvedValue(mockResponse);
   });
 
-  it('renders the loading indicator while fetching metrics', () => {
-    mountComponent();
+  describe('initial metrics fetching', () => {
+    it('only renders the loading indicator while fetching metrics', () => {
+      mountComponent();
 
-    expect(findLoadingIcon().exists()).toBe(true);
-    expect(findMetricsTable().exists()).toBe(false);
-    expect(observabilityClientMock.fetchMetrics).toHaveBeenCalled();
+      expect(findLoadingIcon().exists()).toBe(true);
+      expect(findInfiniteScrolling().exists()).toBe(false);
+      expect(findFilteredSearch().exists()).toBe(false);
+
+      expect(observabilityClientMock.fetchMetrics).toHaveBeenCalledWith({
+        filters: { search: undefined },
+        limit: 50,
+      });
+    });
+
+    describe('when done', () => {
+      beforeEach(async () => {
+        await mountComponent();
+      });
+      it('does not render the loading indicator', () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+      });
+
+      it('renders the search bar', () => {
+        expect(findFilteredSearch().exists()).toBe(true);
+      });
+
+      it('renders renders infinite scrolling list', () => {
+        expect(findInfiniteScrolling().exists()).toBe(true);
+        expect(findInfiniteScrolling().props('fetchedItems')).toBe(mockResponse.metrics.length);
+        expect(
+          findInfiniteScrolling().find('[data-testid="metrics-infinite-scrolling-legend"]').text(),
+        ).toBe('');
+      });
+
+      it('renders the metrics table within the infinite-scrolling', () => {
+        expect(findMetricsTable().exists()).toBe(true);
+        expect(findMetricsTable().props('metrics')).toEqual(mockResponse.metrics);
+      });
+    });
   });
 
-  it('renders the MetricsTable when fetching metrics is done', async () => {
-    await mountComponent();
+  describe('filtered search', () => {
+    beforeEach(async () => {
+      setWindowLocation('?search=foo+bar');
+      await mountComponent();
+    });
 
-    expect(findLoadingIcon().exists()).toBe(false);
-    expect(findMetricsTable().exists()).toBe(true);
-    expect(findMetricsTable().props('metrics')).toEqual(mockResponse.metrics);
+    it('renders FilteredSeach with initial filters parsed from window.location', () => {
+      expect(findFilteredSearch().props('initialFilterValue')).toEqual(
+        filterObjToFilterToken({
+          search: [{ value: 'foo bar' }],
+        }),
+      );
+    });
+
+    it('renders UrlSync and sets query prop', () => {
+      expect(findUrlSync().props('query')).toEqual({
+        search: 'foo bar',
+      });
+    });
+
+    it('fetches metrics with filters and limit', () => {
+      expect(observabilityClientMock.fetchMetrics).toHaveBeenLastCalledWith({
+        filters: {
+          search: [{ value: 'foo bar' }],
+        },
+        limit: 50,
+      });
+    });
+
+    describe('on search submit', () => {
+      beforeEach(async () => {
+        await setFilters({
+          search: [{ value: 'search query' }],
+        });
+      });
+
+      it('hides the loading indicator when done', () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findFilteredSearch().exists()).toBe(true);
+        expect(findInfiniteScrolling().exists()).toBe(true);
+        expect(findMetricsTable().exists()).toBe(true);
+      });
+
+      it('updates the query on search submit', () => {
+        expect(findUrlSync().props('query')).toEqual({
+          search: 'search query',
+        });
+      });
+
+      it('fetches metrics with updated filters', () => {
+        expect(observabilityClientMock.fetchMetrics).toHaveBeenLastCalledWith({
+          filters: {
+            search: [{ value: 'search query' }],
+          },
+          limit: 50,
+        });
+      });
+
+      it('updates FilteredSearch initialFilters', () => {
+        expect(findFilteredSearch().props('initialFilterValue')).toEqual(
+          filterObjToFilterToken({
+            search: [{ value: 'search query' }],
+          }),
+        );
+      });
+    });
   });
 
-  it('if fetchMetrics fails, it renders an alert and empty list', async () => {
-    observabilityClientMock.fetchMetrics.mockRejectedValue('error');
+  describe('error handling', () => {
+    it('if fetchMetrics fails, it renders an alert and empty list', async () => {
+      observabilityClientMock.fetchMetrics.mockRejectedValue('error');
+      await mountComponent();
 
-    await mountComponent();
-
-    expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load metrics.' });
-    expect(findMetricsTable().exists()).toBe(true);
-    expect(findMetricsTable().props('metrics')).toEqual([]);
+      expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load metrics.' });
+      expect(findMetricsTable().exists()).toBe(true);
+      expect(findMetricsTable().props('metrics')).toEqual([]);
+    });
   });
 
   describe('on metric-clicked', () => {

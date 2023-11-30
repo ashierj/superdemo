@@ -4,23 +4,23 @@ import { s__, __ } from '~/locale';
 
 export default {
   i18n: {
-    title: s__('Metrics|Metrics'),
+    title: s__('ObservabilityMetrics|Metrics'),
     emptyText: __('No results found'),
   },
   fields: [
     {
       key: 'name',
-      label: s__('Metrics|Name'),
+      label: s__('ObservabilityMetrics|Name'),
       tdAttr: { 'data-testid': 'metric-name' },
     },
     {
       key: 'description',
-      label: s__('Metrics|Description'),
+      label: s__('ObservabilityMetrics|Description'),
       tdAttr: { 'data-testid': 'metric-description' },
     },
     {
       key: 'type',
-      label: s__('Metrics|Type'),
+      label: s__('ObservabilityMetrics|Type'),
       tdAttr: { 'data-testid': 'metric-type' },
     },
   ],
