@@ -20,7 +20,7 @@ module CodeSuggestions
     def task
       file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
       instructions = CodeSuggestions::InstructionsExtractor
-        .new(file_content, intent, skip_generate_comment_prefix?, skip_instruction_extraction?).extract
+        .new(file_content, intent, skip_instruction_extraction?).extract
 
       if instructions.empty?
         return CodeSuggestions::Tasks::CodeCompletion.new(
@@ -43,13 +43,6 @@ module CodeSuggestions
       CodeSuggestions::ProgrammingLanguage.detect_from_filename(params.dig(:current_file, :file_name))
     end
     strong_memoize_attr(:language)
-
-    # TODO: Remove `skip_generate_comment_prefix` when `code_suggestions_no_comment_prefix` feature flag
-    # is removed https://gitlab.com/gitlab-org/gitlab/-/issues/424879
-    def skip_generate_comment_prefix?
-      Feature.enabled?(:code_generation_no_comment_prefix, current_user)
-    end
-    strong_memoize_attr(:skip_generate_comment_prefix?)
 
     def skip_instruction_extraction?
       Feature.enabled?(:skip_code_generation_instruction_extraction, current_user)

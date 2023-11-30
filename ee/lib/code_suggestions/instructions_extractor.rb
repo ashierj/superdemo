@@ -6,25 +6,19 @@ module CodeSuggestions
     INTENT_GENERATION = 'generation'
 
     # Regex is looking for something that looks like a _single line_ code comment.
-    # It looks for GitLab Duo Generate and at least 10 characters
-    # afterwards.
+    # It looks for at least 10 characters afterwards.
     # It is case-insensitive.
     # It searches for the last instance of a match by looking for the end
     # of a text block and an optional line break.
-    FIRST_COMMENT_REGEX = "(?<comment>%{comment_format})[ \\t]?%{generate_prefix}[ \\t]*(?<instruction>[^\\r\\n]{10,})\\s*\\Z" # rubocop:disable Layout/LineLength
+    FIRST_COMMENT_REGEX = "(?<comment>%{comment_format})[ \\t]*(?<instruction>[^\\r\\n]{10,})\\s*\\Z"
     ALWAYS_GENERATE_PREFIX = %r{.*?}
-    GENERATE_COMMENT_PREFIX = "GitLab Duo Generate:"
 
     EMPTY_LINES_LIMIT = 1
 
-    def initialize(
-      file_content, intent,
-      skip_generate_comment_prefix,
-      skip_instruction_extraction)
+    def initialize(file_content, intent, skip_instruction_extraction)
       @file_content = file_content
       @language = file_content.language
       @intent = intent
-      @skip_generate_comment_prefix = skip_generate_comment_prefix
       @skip_instruction_extraction = skip_instruction_extraction
     end
 
@@ -44,8 +38,7 @@ module CodeSuggestions
 
     private
 
-    attr_reader :language, :file_content, :intent,
-      :skip_generate_comment_prefix, :skip_instruction_extraction
+    attr_reader :language, :file_content, :intent, :skip_instruction_extraction
 
     def prefix_and_comment(lines)
       comment_block = []
@@ -96,10 +89,9 @@ module CodeSuggestions
     def first_line_regex
       return ALWAYS_GENERATE_PREFIX if intent == INTENT_GENERATION
 
-      generate_prefix = GENERATE_COMMENT_PREFIX unless skip_generate_comment_prefix
       comment_format = language.single_line_comment_format
       Regexp.new(
-        format(FIRST_COMMENT_REGEX, { comment_format: comment_format, generate_prefix: generate_prefix }),
+        format(FIRST_COMMENT_REGEX, { comment_format: comment_format }),
         'im'
       )
     end
