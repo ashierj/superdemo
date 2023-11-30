@@ -65,11 +65,11 @@ RSpec.describe RemoteDevelopment::WorkspacesForUserFinder, feature_category: :re
     end
   end
 
-  context 'when user does not have read_workspace policy rule allowed (anonymous user)' do
+  context 'when user does not have access_workspaces_feature ability (anonymous user)' do
     let(:params) { {} }
 
     before do
-      allow(current_user).to receive(:can?).with(:read_workspace).and_return(false)
+      allow(current_user).to receive(:can?).with(:access_workspaces_feature).and_return(false)
     end
 
     it 'returns none' do

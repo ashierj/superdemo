@@ -5,6 +5,8 @@ require_relative '../../shared'
 RSpec.shared_examples 'a fully working Query.currentUser.workspaces query' do
   include GraphqlHelpers
 
+  include_context "with authorized user as developer on workspace's project"
+
   let(:fields) do
     <<~QUERY
       nodes {

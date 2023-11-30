@@ -10,7 +10,11 @@ module RemoteDevelopment
     end
 
     def execute
-      return Workspace.none unless user.can?(:read_workspace)
+      # NOTE: This check is included in the :read_workspace ability, but we do it here to short
+      #       circuit for performance if the user can't access the feature, because otherwise
+      #       there is an N+1 call for each workspace via `authorize :read_workspace` in
+      #       the graphql resolver.
+      return Workspace.none unless user.can?(:access_workspaces_feature)
 
       items = user.workspaces
       items = by_ids(items)

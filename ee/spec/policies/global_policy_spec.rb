@@ -37,39 +37,50 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
-  describe 'reading workspaces' do
-    context 'when licensed' do
+  describe 'access_workspaces_feature ability' do
+    where(:anonymous, :licensed, :allowed) do
+      # anonymous  | licensed  | allowed
+      true         | true      | false
+      false        | false     | false
+      true         | false     | false
+      false        | true      | true
+    end
+
+    with_them do
+      let(:current_user) { anonymous ? nil : user }
+
+      before do
+        stub_licensed_features(remote_development: licensed)
+      end
+
+      it { is_expected.to(allowed ? be_allowed(:access_workspaces_feature) : be_disallowed(:access_workspace_feature)) }
+    end
+
+    context 'when anon=false and licensed=true it is allowed' do
+      # TODO: This is a redundant test because the TableSyntax test above was giving false positives.
+      #       See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/136642#note_1670763898
+
+      let(:current_user) { user }
+
       before do
         stub_licensed_features(remote_development: true)
       end
 
-      it { is_expected.to be_allowed(:read_workspace) }
-
-      context 'and the user is not logged in' do
-        let(:current_user) { nil }
-
-        it { is_expected.to be_disallowed(:read_workspace) }
-      end
-    end
-
-    context 'when unlicensed' do
-      before do
-        stub_licensed_features(remote_development: false)
-      end
-
-      it { is_expected.to be_disallowed(:read_workspace) }
+      it { is_expected.to be_allowed(:access_workspaces_feature) }
     end
   end
 
   it { is_expected.to be_disallowed(:read_licenses) }
   it { is_expected.to be_disallowed(:destroy_licenses) }
   it { is_expected.to be_disallowed(:read_all_geo) }
+  it { is_expected.to be_disallowed(:read_all_workspaces) }
   it { is_expected.to be_disallowed(:manage_subscription) }
 
   context 'when admin mode enabled', :enable_admin_mode do
     it { expect(described_class.new(admin, [user])).to be_allowed(:read_licenses) }
     it { expect(described_class.new(admin, [user])).to be_allowed(:destroy_licenses) }
     it { expect(described_class.new(admin, [user])).to be_allowed(:read_all_geo) }
+    it { expect(described_class.new(admin, [user])).to be_allowed(:read_all_workspaces) }
     it { expect(described_class.new(admin, [user])).to be_allowed(:manage_subscription) }
   end
 
@@ -77,6 +88,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     it { expect(described_class.new(admin, [user])).to be_disallowed(:read_licenses) }
     it { expect(described_class.new(admin, [user])).to be_disallowed(:destroy_licenses) }
     it { expect(described_class.new(admin, [user])).to be_disallowed(:read_all_geo) }
+    it { expect(described_class.new(admin, [user])).to be_disallowed(:read_all_workspaces) }
     it { expect(described_class.new(admin, [user])).to be_disallowed(:manage_subscription) }
   end
 

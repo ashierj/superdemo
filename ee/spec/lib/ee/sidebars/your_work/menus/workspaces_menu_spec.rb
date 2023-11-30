@@ -18,7 +18,7 @@ RSpec.describe Sidebars::YourWork::Menus::WorkspacesMenu, feature_category: :rem
     active_route: { path: 'remote_development/workspaces#index' }
 
   it_behaves_like 'top-level menu item with license feature guard',
-    access_check: :read_workspace
+    access_check: :access_workspaces_feature
 
   it_behaves_like 'menu without sub menu items'
 end

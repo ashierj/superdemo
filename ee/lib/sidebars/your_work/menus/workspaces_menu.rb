@@ -21,7 +21,7 @@ module Sidebars
 
         override :render?
         def render?
-          can?(context.current_user, :read_workspace)
+          can?(context.current_user, :access_workspaces_feature)
         end
 
         override :active_routes

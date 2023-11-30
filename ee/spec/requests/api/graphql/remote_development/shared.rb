@@ -8,6 +8,14 @@ RSpec.shared_context 'with authorized user' do
   let_it_be(:current_user) { authorized_user }
 end
 
+RSpec.shared_context "with authorized user as developer on workspace's project" do
+  # NOTE: Currently, the :read_workspace ability will only be enabled if the user has developer access to the
+  #       workspace's project. This will be revisited as part of https://gitlab.com/groups/gitlab-org/-/epics/10272
+  before do
+    workspace.project.add_developer(authorized_user)
+  end
+end
+
 RSpec.shared_context 'with other user' do
   let_it_be(:other_user) { create(:user) }
 end
