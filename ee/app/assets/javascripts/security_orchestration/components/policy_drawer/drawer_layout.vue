@@ -1,7 +1,8 @@
 <script>
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
+import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { getPolicyListUrl, isPolicyInherited, policyHasNamespace } from '../utils';
+import { isPolicyInherited, policyHasNamespace } from '../utils';
 import {
   DEFAULT_DESCRIPTION_LABEL,
   DESCRIPTION_TITLE,
@@ -60,7 +61,7 @@ export default {
       return policyHasNamespace(this.policy.source);
     },
     sourcePolicyListUrl() {
-      return getPolicyListUrl({ namespacePath: this.policy.source.namespace.fullPath });
+      return getSecurityPolicyListUrl({ namespacePath: this.policy.source.namespace.fullPath });
     },
     statusLabel() {
       return this.policy?.enabled ? ENABLED_LABEL : NOT_ENABLED_LABEL;

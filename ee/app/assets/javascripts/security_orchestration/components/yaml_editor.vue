@@ -1,7 +1,7 @@
 <script>
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
 import { EDITOR_READY_EVENT } from '~/editor/constants';
-import { PolicySchemaExtension } from './policy_editor_schema_ext';
+import { SecurityPolicySchemaExtension } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 
 export default {
   components: {
@@ -59,8 +59,8 @@ export default {
     },
     registerSchema({ detail: { instance } }) {
       if (!this.disableSchema) {
-        instance.use({ definition: PolicySchemaExtension });
-        instance.registerSecurityPolicySchema({
+        instance.use({ definition: SecurityPolicySchemaExtension });
+        instance.registerSecurityPolicyEditorSchema({
           namespacePath: this.namespacePath,
           namespaceType: this.namespaceType,
           policyType: this.policyType,

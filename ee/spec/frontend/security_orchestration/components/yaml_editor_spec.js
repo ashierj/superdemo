@@ -11,7 +11,7 @@ describe('YamlEditor component', () => {
 
   let editorInstanceDetail;
   let mockEditorInstance;
-  let mockRegisterSecurityPolicySchema;
+  let mockRegisterSecurityPolicyEditorSchema;
   let mockUse;
   let mock;
 
@@ -41,10 +41,10 @@ describe('YamlEditor component', () => {
   beforeEach(() => {
     mock = new MockAdapter(axios);
     mockUse = jest.fn();
-    mockRegisterSecurityPolicySchema = jest.fn();
+    mockRegisterSecurityPolicyEditorSchema = jest.fn();
     mockEditorInstance = {
       use: mockUse,
-      registerSecurityPolicySchema: mockRegisterSecurityPolicySchema,
+      registerSecurityPolicyEditorSchema: mockRegisterSecurityPolicyEditorSchema,
     };
     editorInstanceDetail = {
       detail: {
@@ -80,8 +80,8 @@ describe('YamlEditor component', () => {
     findEditor().vm.$emit(EDITOR_READY_EVENT, editorInstanceDetail);
 
     expect(mockUse).toHaveBeenCalledTimes(1);
-    expect(mockRegisterSecurityPolicySchema).toHaveBeenCalledTimes(1);
-    expect(mockRegisterSecurityPolicySchema).toHaveBeenCalledWith({
+    expect(mockRegisterSecurityPolicyEditorSchema).toHaveBeenCalledTimes(1);
+    expect(mockRegisterSecurityPolicyEditorSchema).toHaveBeenCalledWith({
       namespacePath: mockNamespacePath,
       namespaceType: mockNamespaceType,
       policyType: mockPolicyType,
@@ -96,7 +96,7 @@ describe('YamlEditor component', () => {
     });
 
     expect(mockUse).toHaveBeenCalledTimes(0);
-    expect(mockRegisterSecurityPolicySchema).toHaveBeenCalledTimes(0);
+    expect(mockRegisterSecurityPolicyEditorSchema).toHaveBeenCalledTimes(0);
   });
 
   it('configures source editor with unique id', () => {
