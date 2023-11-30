@@ -1731,37 +1731,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         it { is_expected.to(allowed ? be_allowed(ability) : be_disallowed(ability)) }
       end
     end
-
-    context 'when feature is disabled' do
-      where(:restricted_role, :actual_role, :allowed) do
-        :developer  | :guest      | false
-        :developer  | :reporter   | false
-        :developer  | :developer  | true
-        :developer  | :maintainer | true
-        :developer  | :owner      | true
-        :maintainer | :guest      | false
-        :maintainer | :reporter   | false
-        :maintainer | :developer  | true
-        :maintainer | :maintainer | true
-        :maintainer | :owner      | true
-        :no_one     | :guest      | false
-        :no_one     | :reporter   | false
-        :no_one     | :developer  | true
-        :no_one     | :maintainer | true
-        :no_one     | :owner      | true
-      end
-
-      with_them do
-        let(:current_user) { public_send(actual_role) }
-
-        before do
-          stub_feature_flags(restrict_pipeline_cancellation_by_role: false)
-          project.update!(restrict_pipeline_cancellation_role: restricted_role)
-        end
-
-        it { is_expected.to(allowed ? be_allowed(ability) : be_disallowed(ability)) }
-      end
-    end
   end
 
   describe 'prevents cancel_pipeline when CI cancllation restricted' do
