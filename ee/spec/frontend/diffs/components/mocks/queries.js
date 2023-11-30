@@ -1,5 +1,8 @@
 import { FINDINGS_STATUS_PARSED } from '~/diffs/components/app.vue';
 
+const mockError = new Error('mockedRequestError');
+export const requestError = jest.fn().mockRejectedValue(mockError);
+
 export const codeQualityErrorAndParsed = jest
   .fn()
   .mockResolvedValueOnce({
@@ -85,7 +88,43 @@ export const codeQualityErrorAndParsed = jest
     },
   });
 
-export const SASTErrorAndParsedHandler = jest
+export const SASTErrorHandler = jest.fn().mockResolvedValueOnce({
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/20',
+      mergeRequest: {
+        id: 'gid://gitlab/MergeRequest/123',
+        title: 'Update file noise.rb',
+        project: {
+          id: 'testid',
+          nameWithNamespace: 'test/name',
+          fullPath: 'testPath',
+        },
+        hasSecurityReports: false,
+        codequalityReportsComparer: {
+          status: 'PARSING',
+          report: {
+            status: 'FAILED',
+            newErrors: [],
+            resolvedErrors: [],
+            existingErrors: [],
+            summary: {
+              errored: 0,
+              resolved: 0,
+              total: 0,
+            },
+          },
+        },
+        sastReport: {
+          status: 'ERROR',
+          report: null,
+        },
+      },
+    },
+  },
+});
+
+export const SASTParsingAndParsedHandler = jest
   .fn()
   .mockResolvedValueOnce({
     data: {
@@ -115,7 +154,7 @@ export const SASTErrorAndParsedHandler = jest
             },
           },
           sastReport: {
-            status: 'ERROR',
+            status: 'PARSING',
             report: null,
           },
         },
