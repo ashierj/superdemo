@@ -666,7 +666,15 @@ module EE
 
     override :add_import_job
     def add_import_job
-      return if gitlab_custom_project_template_import?
+      # custom_project_template job is a special case that doesn't use `#add_import_job`
+      # method, instead it relies on `#add_export_job`.
+      #
+      # For the first attempt when the project repository is not created,
+      # we skip `#add_import_job` and let `#add_export_job` to create a repository.
+      #
+      # But when later `#add_import_job` is called (as a part of pull mirroring flow),
+      # it won't block the execution.
+      return if gitlab_custom_project_template_import? && !repository_exists?
 
       # Historically this was intended ensure `super` is only called
       # when a project is imported(usually on project creation only) so `repository_exists?`
