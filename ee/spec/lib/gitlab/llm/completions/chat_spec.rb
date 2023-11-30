@@ -264,7 +264,7 @@ client_subscription_id: 'someid' }
           expect(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor).not_to receive(:new)
           expect(expected_tool)
             .to receive(:new).with(expected_params).and_return(executor)
-          expect(executor).to receive(:perform).and_return(answer)
+          expect(executor).to receive(:execute).and_return(answer)
 
           subject
         end
