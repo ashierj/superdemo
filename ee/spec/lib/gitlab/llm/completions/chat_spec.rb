@@ -303,6 +303,14 @@ client_subscription_id: 'someid' }
         end
       end
 
+      context 'when /refactor is used' do
+        let(:content) { '/refactor something' }
+
+        it_behaves_like 'slash command execution' do
+          let(:expected_tool) { ::Gitlab::Llm::Chain::Tools::RefactorCode::Executor }
+        end
+      end
+
       context 'when slash command does not exist' do
         let(:content) { '/explain2 something' }
 

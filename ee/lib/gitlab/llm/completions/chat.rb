@@ -15,7 +15,8 @@ module Gitlab
 
         COMMAND_TOOLS = TOOLS + [
           ::Gitlab::Llm::Chain::Tools::ExplainCode,
-          ::Gitlab::Llm::Chain::Tools::WriteTests
+          ::Gitlab::Llm::Chain::Tools::WriteTests,
+          ::Gitlab::Llm::Chain::Tools::RefactorCode
         ].freeze
 
         def initialize(prompt_message, ai_prompt_class, options = nil)
