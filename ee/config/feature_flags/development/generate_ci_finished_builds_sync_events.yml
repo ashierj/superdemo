@@ -1,8 +1,0 @@
----
-name: generate_ci_finished_builds_sync_events
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/135846
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/424866
-milestone: '16.6'
-type: development
-group: group::runner
-default_enabled: false

@@ -41,7 +41,7 @@ module EE
       end
 
       def generate_finished_builds_sync_events?
-        ::Feature.enabled?(:generate_ci_finished_builds_sync_events) &&
+        ::Feature.enabled?(:ci_data_ingestion_to_click_house) &&
           ::License.feature_available?(:runner_performance_insights)
       end
 

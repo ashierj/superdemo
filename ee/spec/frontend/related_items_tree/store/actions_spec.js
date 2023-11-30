@@ -1054,9 +1054,7 @@ describe('RelatedItemTree', () => {
           actions.addItem({ state, dispatch: () => {}, getters });
           await axios.waitForAll();
 
-          expect(InternalEvents.trackEvent).toHaveBeenCalledWith(trackingAddedIssue, {
-            extra: { namespace: 1 },
-          });
+          expect(InternalEvents.trackEvent).toHaveBeenCalledWith(trackingAddedIssue);
         });
 
         it('should dispatch `requestAddItem` and `receiveAddItemFailure` actions on request failure', () => {
@@ -1681,9 +1679,7 @@ describe('RelatedItemTree', () => {
             actions.createNewIssue({ state, dispatch: () => {} }, { issuesEndpoint, title: '' });
             await axios.waitForAll();
 
-            expect(InternalEvents.trackEvent).toHaveBeenCalledWith(trackingAddedIssue, {
-              extra: { namespace: 2, user: 1 },
-            });
+            expect(InternalEvents.trackEvent).toHaveBeenCalledWith(trackingAddedIssue);
           });
 
           beforeEach(() => {
