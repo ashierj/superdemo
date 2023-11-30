@@ -1,5 +1,5 @@
 import { GlSprintf, GlLink } from '@gitlab/ui';
-import { getPolicyListUrl } from 'ee/security_orchestration/components/utils';
+import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import DrawerLayout from 'ee/security_orchestration/components/policy_drawer/drawer_layout.vue';
 import {
@@ -86,7 +86,9 @@ describe('DrawerLayout component', () => {
       factory({ propsData: { policy: mockGroupScanExecutionPolicy } });
       expect(findSprintf().text()).toMatchInterpolatedText(INHERITED_LABEL);
       expect(findLink().attributes('href')).toBe(
-        getPolicyListUrl({ namespacePath: mockGroupScanExecutionPolicy.source.namespace.fullPath }),
+        getSecurityPolicyListUrl({
+          namespacePath: mockGroupScanExecutionPolicy.source.namespace.fullPath,
+        }),
       );
     });
 

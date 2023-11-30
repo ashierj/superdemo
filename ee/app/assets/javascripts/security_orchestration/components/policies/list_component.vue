@@ -4,6 +4,7 @@ import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective }
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { createAlert } from '~/alert';
 import { __, s__ } from '~/locale';
+import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DATE_ONLY_FORMAT } from '~/lib/utils/datetime_utility';
 import { getParameterByName, setUrlParams, updateHistory } from '~/lib/utils/url_utility';
@@ -17,7 +18,7 @@ import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_r
 import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_result_policies.query.graphql';
 import { getPolicyType } from '../../utils';
 import DrawerWrapper from '../policy_drawer/drawer_wrapper.vue';
-import { getPolicyListUrl, isPolicyInherited, policyHasNamespace } from '../utils';
+import { isPolicyInherited, policyHasNamespace } from '../utils';
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
@@ -239,7 +240,7 @@ export default {
     getPolicyText(source) {
       return source?.namespace?.name || '';
     },
-    getPolicyListUrl,
+    getSecurityPolicyListUrl,
     isPolicyInherited,
     policyHasNamespace,
     presentPolicyDrawer(rows) {
@@ -355,7 +356,7 @@ export default {
           :message="$options.i18n.inheritedLabel"
         >
           <template #namespace>
-            <gl-link :href="getPolicyListUrl(policyListUrlArgs(source))" target="_blank">
+            <gl-link :href="getSecurityPolicyListUrl(policyListUrlArgs(source))" target="_blank">
               {{ getPolicyText(source) }}
             </gl-link>
           </template>
