@@ -302,6 +302,52 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
     end
   end
 
+  describe '#dashboard_limit' do
+    before do
+      set_dashboard_limit(namespace, megabytes: 5_120)
+    end
+
+    subject(:dashboard_limit) { model.dashboard_limit }
+
+    context 'when there is no additional purchased storage' do
+      it 'returns the dashboard limit' do
+        expect(dashboard_limit).to eq(5_120.megabytes)
+      end
+    end
+
+    context 'when there is additional purchased storage' do
+      before do
+        namespace.update!(additional_purchased_storage_size: 10_240)
+      end
+
+      it 'returns the dashboard limit with additional storage' do
+        expect(dashboard_limit).to eq(15_360.megabytes)
+      end
+    end
+
+    context 'with cached values', :use_clean_rails_memory_store_caching do
+      let(:key) do
+        [
+          namespace.actual_limits.cache_key_with_version,
+          'namespaces',
+          namespace.id,
+          'root_dashboard_size_limit'
+        ]
+      end
+
+      before do
+        set_dashboard_limit(namespace, megabytes: 70_000)
+        namespace.update!(additional_purchased_storage_size: 34_000)
+      end
+
+      it 'caches the value' do
+        subject
+
+        expect(Rails.cache.read(key)).to eq(104_000.megabytes)
+      end
+    end
+  end
+
   describe '#remaining_storage_size' do
     where(:limit, :used, :expected_size) do
       0    | 0    | 0
