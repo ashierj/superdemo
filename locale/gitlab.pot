@@ -13840,6 +13840,9 @@ msgstr ""
 msgid "Copy command"
 msgstr ""
 
+msgid "Copy command to finalize manually"
+msgstr ""
+
 msgid "Copy commands"
 msgstr ""
 
