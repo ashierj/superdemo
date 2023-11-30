@@ -22,7 +22,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
   before do
     stub_feature_flags(code_completion_anthropic: false)
-    stub_feature_flags(code_completion_split_by_language: false)
     stub_feature_flags(skip_code_generation_instruction_extraction: false)
 
     allow(Gitlab).to receive(:com?).and_return(is_saas)
@@ -460,7 +459,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           context 'when the task is code generation' do
             before do
               stub_feature_flags(code_generation_anthropic: false)
-              stub_feature_flags(code_generation_split_by_language: false)
             end
 
             let(:current_user) { authorized_user }
@@ -566,7 +564,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           context 'when the task is code generation' do
             before do
               stub_feature_flags(code_generation_anthropic: false)
-              stub_feature_flags(code_generation_split_by_language: false)
             end
 
             let(:current_user) { authorized_user }
