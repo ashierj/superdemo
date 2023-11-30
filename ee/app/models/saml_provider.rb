@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class SamlProvider < ApplicationRecord
-  include IgnorableColumns
   include MemberRoles::MemberRoleRelation
 
   base_access_level_attr :default_membership_role
@@ -21,7 +20,6 @@ class SamlProvider < ApplicationRecord
   after_initialize :set_defaults, if: :new_record?
 
   delegate :assertion_consumer_service_url, :issuer, :name_identifier_format, to: :defaults
-  ignore_column :relay_state_domain_allowlist, remove_with: '16.6', remove_after: '2023-10-22'
 
   def certificate_fingerprint=(value)
     super(strip_left_to_right_chars(value))

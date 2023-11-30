@@ -5,9 +5,7 @@ module MergeRequests
     self.table_name = 'external_status_checks'
 
     include Auditable
-    include IgnorableColumns
     include EachBatch
-    ignore_column :external_approval_rule_id, remove_with: '14.3', remove_after: '2021-09-22'
 
     scope :with_api_entity_associations, -> { preload(:protected_branches) }
     scope :applicable_to_branch, ->(branch) do
