@@ -3,6 +3,7 @@
 module EE
   module Gitlab
     class NamespaceStorageSizeErrorMessage
+      include SafeFormatHelper
       include ActiveSupport::NumberHelper
 
       delegate :current_size, :limit, :exceeded_size, to: :@checker
@@ -21,15 +22,20 @@ module EE
       end
 
       def merge_error
-        "Your namespace storage is full. This merge request cannot be merged. " \
-        "To continue, %{manage_storage_url}.".html_safe % {
-          manage_storage_url: link_to(
-            'manage your storage usage',
-            help_page_path('user/usage_quotas'),
-            target: '_blank',
-            rel: 'noopener noreferrer'
-          )
-        }
+        manage_storage_url = link_to(
+          '',
+          help_page_path('user/usage_quotas'),
+          target: '_blank',
+          rel: 'noopener noreferrer'
+        )
+        tag_pair_manage_storage_url = tag_pair(manage_storage_url, :link_start, :link_end)
+        safe_format(
+          _(
+            "Your namespace storage is full. This merge request cannot be merged. " \
+            "To continue, %{link_start}manage your storage usage%{link_end}."
+          ),
+          tag_pair_manage_storage_url
+        )
       end
 
       def push_warning
@@ -63,9 +69,16 @@ module EE
       end
 
       def above_size_limit_message
-        "The namespace storage size (#{formatted(current_size)}) exceeds the limit of #{formatted(limit)} " \
-          "by #{formatted(exceeded_size)}. You won't be able to push new code to this project. " \
-          "Please contact your GitLab administrator for more information."
+        format(
+          _(
+            "The namespace storage size (%{current_size}) exceeds the limit of %{size_limit} " \
+            "by %{exceeded_size}. You won't be able to push new code to this project. " \
+            "Please contact your GitLab administrator for more information."
+          ),
+          current_size: formatted(current_size),
+          size_limit: formatted(limit),
+          exceeded_size: formatted(exceeded_size)
+        )
       end
 
       private
