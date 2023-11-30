@@ -14,6 +14,9 @@ RSpec.shared_context 'with work item types request context EE' do
           canInviteMembers
           allowsMultipleAssignees
         }
+        ... on WorkItemWidgetDefinitionLabels {
+          allowsScopedLabels
+        }
       }
     GRAPHQL
   end
@@ -22,6 +25,9 @@ RSpec.shared_context 'with work item types request context EE' do
     ee_attributes = {
       assignees: {
         'allowsMultipleAssignees' => true
+      },
+      labels: {
+        'allowsScopedLabels' => false
       }
     }
 
