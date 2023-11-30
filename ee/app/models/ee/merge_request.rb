@@ -536,9 +536,7 @@ module EE
 
       strong_memoize(:merge_request_approval_variables) do
         ::Gitlab::Ci::Variables::Collection.new.tap do |variables|
-          if approved? && !approval_state.temporarily_unapproved?
-            variables.append(key: 'CI_MERGE_REQUEST_APPROVED', value: approved?.to_s)
-          end
+          variables.append(key: 'CI_MERGE_REQUEST_APPROVED', value: approved?.to_s) if approved?
         end
       end
     end

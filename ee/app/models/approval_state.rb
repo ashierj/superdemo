@@ -70,10 +70,11 @@ class ApprovalState
   end
 
   def approved?
-    strong_memoize(:approved) do
-      wrapped_approval_rules.all?(&:approved?)
-    end
+    return false if temporarily_unapproved?
+
+    wrapped_approval_rules.all?(&:approved?)
   end
+  strong_memoize_attr :approved?
 
   def expire_unapproved_key!
     Gitlab::Redis::SharedState.with do |redis|

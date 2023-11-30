@@ -34,7 +34,15 @@ RSpec.describe 'getting merge request listings (EE) nested in a project', featur
   context 'when requesting approval fields' do
     let(:search_params) { { iids: [merge_request_a.iid.to_s] } }
     let(:requested_fields) { [:approved, :approvals_left, :approvals_required] }
-    let(:approval_state) { instance_double(ApprovalState, approvals_required: 5, approvals_left: 3, approved?: false) }
+    let(:approval_state) do
+      instance_double(
+        ApprovalState,
+        approvals_required: 5,
+        approvals_left: 3,
+        temporarily_unapproved?: false,
+        approved?: false
+      )
+    end
 
     before do
       allow_next_found_instance_of(MergeRequest) do |mr|

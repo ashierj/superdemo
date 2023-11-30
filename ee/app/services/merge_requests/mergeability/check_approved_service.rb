@@ -9,11 +9,9 @@ module MergeRequests
       def execute
         return inactive unless merge_request.approval_feature_available?
 
-        if merge_request.approved? && !merge_request.approval_state.temporarily_unapproved?
-          success
-        else
-          failure
-        end
+        return success if merge_request.approved?
+
+        failure
       end
 
       def skip?
