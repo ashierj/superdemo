@@ -13,8 +13,11 @@ import ProjectToken from 'ee/dependencies/components/filtered_search/tokens/proj
 import getProjects from 'ee/dependencies/graphql/projects.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { createAlert } from '~/alert';
 
 Vue.use(VueApollo);
+
+jest.mock('~/alert');
 
 const TEST_PROJECTS = [
   {
@@ -132,10 +135,14 @@ describe('ee/dependencies/components/filtered_search/tokens/project_token.vue', 
     );
   });
 
-  describe('when the projects have been fetched', () => {
+  describe('when the projects have been fetched successfully', () => {
     beforeEach(async () => {
       createComponent();
       await waitForPromises();
+    });
+
+    it('does not show an error message', () => {
+      expect(createAlert).not.toHaveBeenCalled();
     });
 
     it('shows a list of project suggestions', () => {
@@ -204,6 +211,24 @@ describe('ee/dependencies/components/filtered_search/tokens/project_token.vue', 
             },
           ],
         ]);
+      });
+    });
+  });
+
+  describe('when there is an error fetching the projects', () => {
+    beforeEach(async () => {
+      createComponent({
+        handlers: {
+          getProjectHandler: jest.fn().mockRejectedValue(new Error('GraphQL error')),
+        },
+      });
+
+      await waitForPromises();
+    });
+
+    it('shows an error message', () => {
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'There was an error fetching the projects for this group. Please try again later.',
       });
     });
   });

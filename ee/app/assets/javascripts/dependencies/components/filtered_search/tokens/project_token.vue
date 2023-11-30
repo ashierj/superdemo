@@ -7,7 +7,9 @@ import {
   GlLoadingIcon,
   GlIntersperse,
 } from '@gitlab/ui';
+import { createAlert } from '~/alert';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
+import { s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { extractGroupNamespace } from 'ee/dependencies/store/utils';
 import getProjects from 'ee/dependencies/graphql/projects.query.graphql';
@@ -68,19 +70,25 @@ export default {
   },
   methods: {
     async fetchProjects() {
-      const { data } = await this.$apollo.query({
-        query: getProjects,
-        variables: {
-          groupFullPath: this.groupNamespace,
-          search: this.searchTerm,
-          first: 50,
-          includeSubgroups: true,
-        },
-      });
+      try {
+        const { data } = await this.$apollo.query({
+          query: getProjects,
+          variables: {
+            groupFullPath: this.groupNamespace,
+            search: this.searchTerm,
+            first: 50,
+            includeSubgroups: true,
+          },
+        });
 
-      this.projects = data.group.projects.nodes;
-
-      this.isLoadingProjects = false;
+        this.projects = data.group.projects.nodes;
+      } catch {
+        createAlert({
+          message: this.$options.i18n.fetchErrorMessage,
+        });
+      } finally {
+        this.isLoadingProjects = false;
+      }
     },
     isProjectSelected(project) {
       return this.selectedProjects.some((p) => p.id === project.id);
@@ -101,9 +109,16 @@ export default {
       if (typeof data === 'string') {
         this.searchTerm = data.length >= 3 ? data : '';
 
+        // since apollo caches the results, we can trigger a fetch every time the search term changes
+        // and requests will only be made if there is no existing data for the current term
         this.fetchProjects();
       }
     }, DEFAULT_DEBOUNCE_AND_THROTTLE_MS),
+  },
+  i18n: {
+    fetchErrorMessage: s__(
+      'Dependencies|There was an error fetching the projects for this group. Please try again later.',
+    ),
   },
 };
 </script>
