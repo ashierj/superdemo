@@ -26,8 +26,8 @@ import { processQueryResponse, formatChildItem, gqClient } from '../utils/epic_u
 
 import * as types from './mutation_types';
 
-const trackEpicActivity = (params = {}) => {
-  InternalEvents.trackEvent(trackingAddedIssue, { extra: params });
+const trackEpicActivity = () => {
+  InternalEvents.trackEvent(trackingAddedIssue);
 };
 export const setInitialConfig = ({ commit }, data) => commit(types.SET_INITIAL_CONFIG, data);
 
@@ -344,7 +344,7 @@ export const addItem = ({ state, dispatch, getters }) => {
       issuable_references: state.pendingReferences,
     })
     .then(({ data }) => {
-      trackEpicActivity({ namespace: state.parentItem?.groupId });
+      trackEpicActivity();
 
       dispatch('receiveAddItemSuccess', {
         // Newly added item is always first in the list
@@ -580,8 +580,7 @@ export const createNewIssue = ({ state, dispatch }, { issuesEndpoint, title }) =
   return axios
     .post(issuesEndpoint, { epic_id: epicId, title })
     .then(({ data }) => {
-      const { author, epic } = data;
-      trackEpicActivity({ user: author?.id, namespace: epic?.group_id });
+      trackEpicActivity();
 
       dispatch('receiveCreateIssueSuccess', data);
       dispatch('fetchItems', {
