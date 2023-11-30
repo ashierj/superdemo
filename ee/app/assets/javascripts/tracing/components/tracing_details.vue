@@ -82,7 +82,7 @@ export default {
       visitUrl(this.tracingIndexUrl);
     },
     onToggleDrawer({ spanId }) {
-      if (this.isDrawerOpen) {
+      if (this.selectedSpan?.span_id === spanId) {
         this.closeDrawer();
       } else {
         const span = this.trace.spans.find((s) => s.span_id === spanId);

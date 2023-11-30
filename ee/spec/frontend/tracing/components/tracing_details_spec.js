@@ -57,7 +57,10 @@ describe('TracingDetails', () => {
   });
 
   describe('when tracing is enabled', () => {
-    const mockTrace = { traceId: 'test-trace-id', spans: [{ span_id: 'span-1' }] };
+    const mockTrace = {
+      traceId: 'test-trace-id',
+      spans: [{ span_id: 'span-1' }, { span_id: 'span-2' }],
+    };
     beforeEach(async () => {
       observabilityClientMock.isObservabilityEnabled.mockResolvedValueOnce(true);
       observabilityClientMock.fetchTrace.mockResolvedValueOnce(mockTrace);
@@ -85,8 +88,8 @@ describe('TracingDetails', () => {
         expect(getDrawerSpan()).toBe(null);
       });
 
-      const selectSpan = () =>
-        findTraceDetailsChart().vm.$emit('span-selected', { spanId: 'span-1' });
+      const selectSpan = (spanId = 'span-1') =>
+        findTraceDetailsChart().vm.$emit('span-selected', { spanId });
 
       it('opens the drawer and set the selected span, upond selection', async () => {
         await selectSpan();
@@ -104,7 +107,7 @@ describe('TracingDetails', () => {
         expect(getDrawerSpan()).toBe(null);
       });
 
-      it('closes the drawer on row selection, if drawer is already open', async () => {
+      it('closes the drawer if the same span is selected', async () => {
         await selectSpan();
 
         expect(isDrawerOpen()).toBe(true);
@@ -112,6 +115,17 @@ describe('TracingDetails', () => {
         await selectSpan();
 
         expect(isDrawerOpen()).toBe(false);
+      });
+
+      it('changes the selected span and keeps the drawer open, upon selecting a different span', async () => {
+        await selectSpan('span-1');
+
+        expect(isDrawerOpen()).toBe(true);
+
+        await selectSpan('span-2');
+
+        expect(isDrawerOpen()).toBe(true);
+        expect(getDrawerSpan()).toEqual({ span_id: 'span-2' });
       });
 
       it('set the selected-span-in on the chart component', async () => {
