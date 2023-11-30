@@ -64,9 +64,8 @@ RSpec.describe 'Requirements list', :js, feature_category: :requirements_managem
         expect(page).to have_selector('.gl-search-box-by-click')
         expect(page.find('.gl-filtered-search-term-input')[:placeholder]).to eq('Search requirements')
 
-        expect(page).to have_selector('.sort-dropdown-container')
-        page.find('.sort-dropdown-container button.gl-dropdown-toggle').click
-        expect(page.find('.sort-dropdown-container')).to have_selector('li', count: 2)
+        click_button 'Created date'
+        expect(page).to have_selector('[role="option"]', count: 2)
       end
     end
 
@@ -305,8 +304,7 @@ RSpec.describe 'Requirements list', :js, feature_category: :requirements_managem
 
       it 'shows sort dropdown' do
         page.within('.vue-filtered-search-bar-container') do
-          expect(page).to have_selector('.gl-dropdown button.gl-dropdown-toggle')
-          expect(page).to have_selector('.gl-dropdown ul.dropdown-menu', visible: false)
+          expect(page).to have_button('Created date')
         end
       end
     end
