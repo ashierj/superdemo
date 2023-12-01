@@ -8,8 +8,7 @@
             .template-options-icon-container.d-flex.justify-content-center.align-items-center.gl-mr-3
               = sprite_icon('chevron-lg-down', css_class: 's16 options-expanded-icon')
               = sprite_icon('chevron-lg-right', css_class: 's16 options-collapsed-icon')
-            .avatar-container.s40
-              = group_icon(group, alt: group.name, class: 'btn-template-icon avatar s40 avatar-tile', lazy: false)
+            = render Pajamas::AvatarComponent.new(group, alt: group.name, class: 'btn-template-icon gl-flex-shrink-0 gl-mr-5', size: 48, avatar_options: { lazy: false })
             .template-subgroup-name.gl-ml-2
               %strong= group.full_name
               - if group.description.present?
@@ -20,8 +19,7 @@
 
         - projects.each do |project|
           .template-option.align-items-center{ data: { testid: 'template-option-container' } }
-            .avatar-container.s40
-              = project_icon(project, alt: project.name, class: 'btn-template-icon avatar s40 avatar-tile', lazy: false)
+            = render Pajamas::AvatarComponent.new(project, alt: project.name, size: 48, class: 'gl-flex-shrink-0 gl-mr-5 gl-ml-7', avatar_options: { lazy: false })
             .description.gl-ml-2
               %strong
                 = project.title

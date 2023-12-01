@@ -2,8 +2,7 @@
   - if @custom_project_templates.present?
     - @custom_project_templates.each do |template|
       .template-option.d-flex.align-items-center{ data: { testid: 'template-option-container' } }
-        .avatar-container.s40
-          = project_icon(template, alt: template.name, class: 'btn-template-icon avatar s40 avatar-tile', lazy: false)
+        = render Pajamas::AvatarComponent.new(template, alt: template.name, class: 'btn-template-icon gl-flex-shrink-0 gl-mr-5', size: 48, avatar_options: { lazy: false })
         .description
           %strong
             = template.title
