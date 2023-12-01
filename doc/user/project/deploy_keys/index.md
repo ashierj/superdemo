@@ -17,7 +17,7 @@ Depending on your needs, you might want to use a [deploy token](../deploy_tokens
 | Source           | Public SSH key generated on an external host. | Generated on your GitLab instance, and is provided to users only at creation time. |
 | Accessible resources  | Git repository over SSH | Git repository over HTTP, package registry, and container registry. |
 
-Deploy keys can't be used for Git operations if [external authorization](../../admin_area/settings/external_authorization.md) is enabled.
+Deploy keys can't be used for Git operations if [external authorization](../../../administration/settings/external_authorization.md) is enabled.
 
 ## Scope
 

@@ -38,7 +38,7 @@ Prerequisites:
    ```ruby
    ##
    ## The unique identifier for the Geo site. See
-   ## https://docs.gitlab.com/ee/user/admin_area/geo_nodes.html#common-settings
+   ## https://docs.gitlab.com/ee/administration/geo_sites.html#common-settings
    ##
    gitlab_rails['geo_node_name'] = '<site_name_here>'
    ```
@@ -538,7 +538,7 @@ You must manually replicate the secret file across all of your secondary sites, 
    ```ruby
    ##
    ## The unique identifier for the Geo site. See
-   ## https://docs.gitlab.com/ee/user/admin_area/geo_nodes.html#common-settings
+   ## https://docs.gitlab.com/ee/administration/geo_sites.html#common-settings
    ##
    gitlab_rails['geo_node_name'] = '<site_name_here>'
    ```
