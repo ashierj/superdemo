@@ -59,7 +59,7 @@ module AuditEventsHelper
       data.merge!({
         empty_state_svg_path: image_path('illustrations/cloud.svg'),
         group_path: 'instance',
-        show_streams: 'true',
+        show_streams: License.feature_available?(:external_audit_events).to_s,
         audit_event_definitions: audit_event_definitions.to_json
       })
     end
