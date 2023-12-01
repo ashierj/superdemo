@@ -111,3 +111,38 @@ export const mockPaginatedAddOnEligibleUsers = {
     },
   },
 };
+
+export const mockNoProjects = {
+  data: {
+    group: {
+      projects: {
+        nodes: [],
+        __typename: 'ProjectConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockProjects = {
+  data: {
+    group: {
+      projects: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Project/20',
+            name: 'A Project',
+            __typename: 'Project',
+          },
+          {
+            id: 'gid://gitlab/Project/19',
+            name: 'Another Project',
+            __typename: 'Project',
+          },
+        ],
+        __typename: 'ProjectConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
