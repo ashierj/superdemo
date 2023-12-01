@@ -1,9 +1,9 @@
 import { nextTick } from 'vue';
 import { GlTable } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import TracingTableList from 'ee/tracing/components/tracing_table_list.vue';
+import TracingTable from 'ee/tracing/list/tracing_table.vue';
 
-describe('TracingTableList', () => {
+describe('TracingTable', () => {
   let wrapper;
   const mockTraces = [
     {
@@ -23,7 +23,7 @@ describe('TracingTableList', () => {
   ];
 
   const mountComponent = ({ traces = mockTraces, highlightedTraceId } = {}) => {
-    wrapper = mountExtended(TracingTableList, {
+    wrapper = mountExtended(TracingTable, {
       propsData: {
         traces,
         highlightedTraceId,

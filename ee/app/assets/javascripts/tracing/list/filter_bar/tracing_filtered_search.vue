@@ -14,7 +14,7 @@ import {
   TRACE_ID_FILTER_TOKEN_TYPE,
   DURATION_MS_FILTER_TOKEN_TYPE,
   ATTRIBUTE_FILTER_TOKEN_TYPE,
-} from '../filters';
+} from './filters';
 import ServiceToken from './service_search_token.vue';
 import OperationToken from './operation_search_token.vue';
 import AttributeSearchToken from './attribute_search_token.vue';

@@ -1,12 +1,12 @@
 import { GlDrawer } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetailsDrawer from 'ee/tracing/components/tracing_details_drawer.vue';
+import TracingDrawer from 'ee/tracing/details/tracing_drawer.vue';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 
 jest.mock('~/lib/utils/dom_utils');
 
-describe('TracingDetailsDrawer', () => {
+describe('TracingDrawer', () => {
   let wrapper;
 
   const findDrawer = () => wrapper.findComponent(GlDrawer);
@@ -28,7 +28,7 @@ describe('TracingDetailsDrawer', () => {
   };
 
   const mountComponent = ({ open = true, span = mockSpan } = {}) => {
-    wrapper = shallowMountExtended(TracingDetailsDrawer, {
+    wrapper = shallowMountExtended(TracingDrawer, {
       propsData: {
         span,
         open,

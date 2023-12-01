@@ -1,7 +1,7 @@
 <script>
 import { GlDiscreteScatterChart } from '@gitlab/ui/dist/charts';
 import { s__, __ } from '~/locale';
-import { durationNanoToMs } from './trace_utils';
+import { durationNanoToMs } from '../trace_utils';
 
 export default {
   components: {

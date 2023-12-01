@@ -1,13 +1,13 @@
 import { GlLoadingIcon } from '@gitlab/ui';
+import TracingChart from 'ee/tracing/details/tracing_chart.vue';
+import TracingHeader from 'ee/tracing/details/tracing_header.vue';
+import TracingDrawer from 'ee/tracing/details/tracing_drawer.vue';
 import { createMockClient } from 'helpers/mock_observability_client';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetails from 'ee/tracing/components/tracing_details.vue';
+import TracingDetails from 'ee/tracing/details/tracing_details.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
-import TracingDetailsChart from 'ee/tracing/components/tracing_details_chart.vue';
-import TracingDetailsHeader from 'ee/tracing/components/tracing_details_header.vue';
-import TracingDetailsDrawer from 'ee/tracing/components/tracing_details_drawer.vue';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
@@ -22,9 +22,9 @@ describe('TracingDetails', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const findTraceDetails = () => wrapper.findComponentByTestId('trace-details');
-  const findTraceDetailsChart = () => wrapper.findComponent(TracingDetailsChart);
+  const findTraceChart = () => wrapper.findComponent(TracingChart);
 
-  const findDrawer = () => wrapper.findComponent(TracingDetailsDrawer);
+  const findDrawer = () => wrapper.findComponent(TracingDrawer);
   const isDrawerOpen = () => findDrawer().props('open');
   const getDrawerSpan = () => findDrawer().props('span');
 
@@ -77,8 +77,8 @@ describe('TracingDetails', () => {
 
     it('renders the correct components', () => {
       const details = findTraceDetails();
-      expect(findTraceDetailsChart().exists()).toBe(true);
-      expect(details.findComponent(TracingDetailsHeader).exists()).toBe(true);
+      expect(findTraceChart().exists()).toBe(true);
+      expect(details.findComponent(TracingHeader).exists()).toBe(true);
     });
 
     describe('details drawer', () => {
@@ -89,7 +89,7 @@ describe('TracingDetails', () => {
       });
 
       const selectSpan = (spanId = 'span-1') =>
-        findTraceDetailsChart().vm.$emit('span-selected', { spanId });
+        findTraceChart().vm.$emit('span-selected', { spanId });
 
       it('opens the drawer and set the selected span, upond selection', async () => {
         await selectSpan();
@@ -129,9 +129,9 @@ describe('TracingDetails', () => {
       });
 
       it('set the selected-span-in on the chart component', async () => {
-        expect(findTraceDetailsChart().props('selectedSpanId')).toBeNull();
+        expect(findTraceChart().props('selectedSpanId')).toBeNull();
         await selectSpan();
-        expect(findTraceDetailsChart().props('selectedSpanId')).toBe('span-1');
+        expect(findTraceChart().props('selectedSpanId')).toBe('span-1');
       });
     });
   });

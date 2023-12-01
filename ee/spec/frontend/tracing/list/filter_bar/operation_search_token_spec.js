@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GlDropdownText } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import OperationServiceToken from 'ee/tracing/components/operation_search_token.vue';
+import OperationServiceToken from 'ee/tracing/list/filter_bar/operation_search_token.vue';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';

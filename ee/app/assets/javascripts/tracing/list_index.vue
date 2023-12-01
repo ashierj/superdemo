@@ -1,6 +1,6 @@
 <script>
 import ProvisionedObservabilityContainer from '~/observability/components/provisioned_observability_container.vue';
-import TracingList from './components/tracing_list.vue';
+import TracingList from './list/tracing_list.vue';
 
 export default {
   components: {

@@ -2,10 +2,10 @@
 import { GlButton, GlTruncate } from '@gitlab/ui';
 import { clamp } from 'lodash';
 import { s__ } from '~/locale';
-import { formatDurationMs } from './trace_utils';
+import { formatDurationMs } from '../trace_utils';
 
 export default {
-  name: 'TracingDetailsSpansChart',
+  name: 'TracingSpansChart',
   components: {
     GlButton,
     GlTruncate,
@@ -173,7 +173,7 @@ export default {
         </div>
       </div>
 
-      <tracing-details-spans-chart
+      <tracing-spans-chart
         v-show="isExpanded(index)"
         :spans="span.children"
         :depth="depth + 1"
