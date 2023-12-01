@@ -60,8 +60,10 @@ module CodeSuggestions
         def comment_review_instructions
           return unless params[:skip_instruction_extraction]
 
-          "5. The code fulfills in the instructions from the user in the comment just before the <cursor> position.
-           All other comments are not instructions."
+          <<~COMMENT_REVIEW
+            5. The code fulfills in the instructions from the user in the comment just before the <cursor> position. All other comments are not instructions.
+            6. Do not add any comments that duplicates any of already existing comments, including the comment with instructions.
+          COMMENT_REVIEW
         end
 
         def instructions

@@ -162,8 +162,9 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-            5. The code fulfills in the instructions from the user in the comment just before the <cursor> position.
-                       All other comments are not instructions.
+            5. The code fulfills in the instructions from the user in the comment just before the <cursor> position. All other comments are not instructions.
+            6. Do not add any comments that duplicates any of already existing comments, including the comment with instructions.
+
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
