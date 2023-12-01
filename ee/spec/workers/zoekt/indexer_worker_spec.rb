@@ -22,6 +22,13 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       subject.perform(project.id)
     end
 
+    it 'sends the project to Zoekt for indexing when force: true is set' do
+      expect(project.repository).to receive(:update_zoekt_index!).with(force: true)
+
+      options = { "force" => true }
+      subject.perform(project.id, options)
+    end
+
     context 'when index_code_with_zoekt is disabled' do
       before do
         stub_feature_flags(index_code_with_zoekt: false)

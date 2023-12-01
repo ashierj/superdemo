@@ -54,10 +54,10 @@ module Gitlab
           add_request_details(start_time: start, path: path, body: payload)
         end
 
-        def index(project, node_id)
+        def index(project, node_id, force: false)
           target_node = node(node_id)
           with_node_exception_handling(target_node) do
-            response = zoekt_indexer_post('/indexer/index', indexing_payload(project), node_id)
+            response = zoekt_indexer_post('/indexer/index', indexing_payload(project, force: force), node_id)
 
             raise "Request failed with: #{response.inspect}" unless response.success?
 
@@ -132,7 +132,7 @@ module Gitlab
           }.compact
         end
 
-        def indexing_payload(project)
+        def indexing_payload(project, force:)
           repository_storage = project.repository_storage
           connection_info = Gitlab::GitalyClient.connection_data(repository_storage)
           repository_path = "#{project.repository.disk_path}.git"
@@ -144,7 +144,7 @@ module Gitlab
             address = "unix:#{Rails.root.join(path)}"
           end
 
-          {
+          payload = {
             GitalyConnectionInfo: {
               Address: address,
               Token: connection_info['token'],
@@ -155,6 +155,10 @@ module Gitlab
             FileSizeLimit: Gitlab::CurrentSettings.elasticsearch_indexed_file_size_limit_kb.kilobytes,
             Timeout: "#{INDEXING_TIMEOUT_S}s"
           }
+
+          payload[:Force] = force if force
+
+          payload
         end
 
         def node(node_id)

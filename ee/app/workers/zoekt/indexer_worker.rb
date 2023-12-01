@@ -16,7 +16,7 @@ module Zoekt
     idempotent!
     pause_control :zoekt
 
-    def perform(project_id)
+    def perform(project_id, options = {})
       return unless ::Feature.enabled?(:index_code_with_zoekt)
       return unless ::License.feature_available?(:zoekt_code_search)
 
@@ -26,7 +26,8 @@ module Zoekt
       return true if project.empty_repo?
 
       in_lock("#{self.class.name}/#{project_id}", ttl: (TIMEOUT + 1.minute), retries: 0) do
-        project.repository.update_zoekt_index!
+        force = !!options['force']
+        project.repository.update_zoekt_index!(force: force)
       end
     end
   end
