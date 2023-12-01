@@ -49,23 +49,19 @@ module Ci
       end
 
       def time_last_tracked_consumption!(new_time)
-        old_time = nil
+        key = last_build_update_key
 
-        ::Gitlab::Redis::SharedState.with do |redis|
+        old_time = ::Gitlab::Redis::SharedState.with do |redis|
           redis.multi do |multi|
-            key = last_build_update_key
-
-            old_time = multi.get(key)
+            multi.get(key)
             multi.set(key, new_time)
             multi.expire(key, TTL_RUNNING_BUILDS)
           end
-        end
+        end.first
 
-        if old_time&.value
-          DateTime.parse(old_time.value)
-        else
-          new_time
-        end
+        return DateTime.parse(old_time) if old_time
+
+        new_time
       end
 
       private
