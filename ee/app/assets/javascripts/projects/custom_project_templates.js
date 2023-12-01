@@ -138,8 +138,8 @@ export default () => {
     bindEvents();
   };
 
-  navElement.addEventListener('click', () => fetchHtmlForTabContent(tabContent), { once: true });
-  groupNavElement.addEventListener('click', () => fetchHtmlForTabContent(groupTabContent), {
+  navElement?.addEventListener('click', () => fetchHtmlForTabContent(tabContent), { once: true });
+  groupNavElement?.addEventListener('click', () => fetchHtmlForTabContent(groupTabContent), {
     once: true,
   });
 
