@@ -50,3 +50,6 @@ module Gitlab
     end
   end
 end
+
+# Added for JiHu
+::Gitlab::Llm::StageCheck.prepend_mod
