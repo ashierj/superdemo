@@ -26,7 +26,7 @@ RSpec.describe Vulnerabilities::RemoveAllVulnerabilitiesWorker, feature_category
     end
 
     include_examples 'an idempotent worker' do
-      subject(:perform) { worker.perform(project) }
+      subject(:perform) { worker.perform(project.id) }
 
       it 'iterates over Vulnerabilities in batches' do
         expect(::Vulnerability).to receive(:transaction).twice
