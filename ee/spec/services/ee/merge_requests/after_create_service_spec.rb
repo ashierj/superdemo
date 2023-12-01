@@ -15,6 +15,7 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
       allow(Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async)
       allow(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to receive(:perform_async)
       allow(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to receive(:perform_async)
+      allow(::Security::UnenforceablePolicyRulesNotificationWorker).to receive(:perform_async)
     end
 
     context 'when the merge request has actual_head_pipeline' do
@@ -33,6 +34,12 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
         expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
           .to have_received(:perform_async).ordered.with(pipeline_id)
       end
+
+      it 'does not schedule background job to check for unenforceable policy rules' do
+        execute
+
+        expect(::Security::UnenforceablePolicyRulesNotificationWorker).not_to have_received(:perform_async)
+      end
     end
 
     context 'when the merge request does not have actual_head_pipeline' do
@@ -41,6 +48,25 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
 
         expect(Ci::SyncReportsToReportApprovalRulesWorker).not_to have_received(:perform_async)
         expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to have_received(:perform_async)
+      end
+
+      it 'schedules background job to check for unenforceable policy rules' do
+        execute
+
+        expect(::Security::UnenforceablePolicyRulesNotificationWorker).to have_received(:perform_async)
+                                                                            .with(merge_request.id)
+      end
+
+      context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
+        before do
+          stub_feature_flags(security_policies_unenforceable_rules_notification: false)
+        end
+
+        it 'does not schedule background job to check for unenforceable policy rules' do
+          execute
+
+          expect(::Security::UnenforceablePolicyRulesNotificationWorker).not_to have_received(:perform_async)
+        end
       end
     end
 

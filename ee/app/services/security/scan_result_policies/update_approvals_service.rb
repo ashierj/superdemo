@@ -30,9 +30,9 @@ module Security
         violated_rules, unviolated_rules = partition_rules(approval_rules)
 
         update_required_approvals(violated_rules, unviolated_rules)
-        generate_policy_bot_comment(merge_request, violated_rules, :scan_finding)
         violations.add(violated_rules.pluck(:scan_result_policy_id), unviolated_rules.pluck(:scan_result_policy_id)) # rubocop:disable CodeReuse/ActiveRecord
         violations.execute
+        generate_policy_bot_comment(merge_request, violated_rules, :scan_finding)
       end
 
       private

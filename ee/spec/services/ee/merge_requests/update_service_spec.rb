@@ -432,5 +432,39 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
         end
       end
     end
+
+    describe '#notify_for_policy_violations' do
+      let(:opts) { { target_branch: 'feature-2' } }
+
+      subject(:execute) { update_merge_request(opts) }
+
+      it 'enqueues Security::UnenforceablePolicyRulesNotificationWorker' do
+        expect(Security::UnenforceablePolicyRulesNotificationWorker).to receive(:perform_async).with(merge_request.id)
+
+        execute
+      end
+
+      context 'when target_branch is not changing' do
+        let(:opts) { {} }
+
+        it 'does not enqueue Security::UnenforceablePolicyRulesNotificationWorker' do
+          expect(Security::UnenforceablePolicyRulesNotificationWorker).not_to receive(:perform_async)
+
+          execute
+        end
+      end
+
+      context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
+        before do
+          stub_feature_flags(security_policies_unenforceable_rules_notification: false)
+        end
+
+        it 'does not enqueue Security::UnenforceablePolicyRulesNotificationWorker' do
+          expect(Security::UnenforceablePolicyRulesNotificationWorker).not_to receive(:perform_async)
+
+          execute
+        end
+      end
+    end
   end
 end
