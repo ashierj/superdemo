@@ -751,6 +751,13 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
           )
       end
 
+      context 'when compliance_framework_project_setting is not present' do
+        it 'does not publish Projects::ComplianceFrameworkChangedEvent' do
+          expect { update_project(project, user, { compliance_framework_setting_attributes: { framework: nil } }) }
+            .not_to publish_event(::Projects::ComplianceFrameworkChangedEvent)
+        end
+      end
+
       context 'when unassigning a framework' do
         before do
           create(:compliance_framework_project_setting, project: project, compliance_management_framework: framework)
