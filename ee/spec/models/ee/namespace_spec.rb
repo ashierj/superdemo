@@ -496,7 +496,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     end
   end
 
-  describe 'after_commit :sync_name_with_customers_dot' do
+  describe 'after_commit :sync_name_with_customers_dot', :request_store do
     let(:owner) { create(:user) }
     let(:namespace) { create(:group) }
     let(:privatized_by_abuse_automation) { false }

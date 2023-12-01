@@ -9,7 +9,7 @@ RSpec.describe WebHookService, feature_category: :webhooks do
   let(:service_instance) { described_class.new(project_hook, {}, :push_hooks) }
 
   describe '#async_execute' do
-    context 'when hook has custom context attributes' do
+    context 'when hook has custom context attributes', :request_store do
       it 'includes the subscription plan in the worker context' do
         expect(WebHookWorker).to receive(:perform_async) do
           expect(Gitlab::ApplicationContext.current).to include(

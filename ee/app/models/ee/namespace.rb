@@ -227,7 +227,7 @@ module EE
 
     override :actual_plan
     def actual_plan
-      strong_memoize(:actual_plan) do
+      ::Gitlab::SafeRequestStore.fetch(actual_plan_store_key) do
         next ::Plan.default unless ::Gitlab.com?
 
         if parent_id
@@ -237,6 +237,10 @@ module EE
           hosted_plan_for(subscription) || ::Plan.free
         end
       end
+    end
+
+    def actual_plan_store_key
+      "namespaces:#{id}:actual_plan"
     end
 
     def plan_name_for_upgrading

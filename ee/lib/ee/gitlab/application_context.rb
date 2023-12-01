@@ -45,7 +45,7 @@ module EE
         # Avoid loading the project's namespace if it wasn't loaded
         object ||= project.namespace if project&.association(:namespace)&.loaded?
         # Avoid loading or creating a plan if it wasn't already.
-        return unless object&.strong_memoized?(:actual_plan)
+        return unless ::Gitlab::SafeRequestStore.exist?(object&.actual_plan_store_key)
 
         object&.actual_plan_name
       end
