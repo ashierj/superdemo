@@ -122,7 +122,7 @@ func (cd *contentDisposition) isUnbuffered() bool {
 }
 
 func (cd *contentDisposition) Flush() {
-	_ = cd.FlushError()
+	cd.FlushError()
 }
 
 // FlushError lets http.ResponseController to be used to flush the underlying http.ResponseWriter.

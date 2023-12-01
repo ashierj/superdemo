@@ -102,11 +102,6 @@ func (s *sendDataResponseWriter) tryInject() bool {
 }
 
 func (s *sendDataResponseWriter) Flush() {
-	_ = s.FlushError()
-}
-
-// FlushError lets http.ResponseController to be used to flush the underlying http.ResponseWriter.
-func (s *sendDataResponseWriter) FlushError() error {
 	s.WriteHeader(http.StatusOK)
-	return http.NewResponseController(s.rw).Flush()
+	http.NewResponseController(s.rw).Flush()
 }
