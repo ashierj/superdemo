@@ -14,8 +14,7 @@ module Security
       def execute
         return if merge_request.merged?
 
-        remove_required_approvals
-        violations.execute
+        sync_required_approvals
       end
 
       private
@@ -24,7 +23,7 @@ module Security
 
       delegate :project, to: :merge_request, private: true
 
-      def remove_required_approvals
+      def sync_required_approvals
         related_policies = merge_request.project.scan_result_policy_reads.targeting_commits
                                         .including_approval_merge_request_rules
         return if related_policies.empty?
@@ -34,7 +33,6 @@ module Security
         violated_rules, unviolated_rules = rules_for_violated_policies(violated_policies_ids)
         violated_rules, unviolated_rules = update_required_approvals(violated_rules, unviolated_rules)
 
-        generate_policy_bot_comment(merge_request, violated_rules, :any_merge_request)
         log_violated_rules(violated_rules)
         # rubocop:disable CodeReuse/ActiveRecord
         violations.add(
@@ -42,6 +40,8 @@ module Security
           unviolated_policies_ids + unviolated_rules.pluck(:scan_result_policy_id)
         )
         # rubocop:enable CodeReuse/ActiveRecord
+        violations.execute
+        generate_policy_bot_comment(merge_request, violated_rules, :any_merge_request)
       end
 
       def evaluate_policy_violations(scan_result_policy_reads)

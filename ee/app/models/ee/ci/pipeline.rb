@@ -83,6 +83,14 @@ module EE
             end
           end
 
+          after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
+            next if ::Feature.disabled?(:security_policies_unenforceable_rules_notification, pipeline.project)
+
+            pipeline.run_after_commit do
+              ::Security::UnenforceablePolicyRulesPipelineNotificationWorker.perform_async(pipeline.id)
+            end
+          end
+
           after_transition any => ::Ci::Pipeline.bridgeable_statuses.map(&:to_sym) do |pipeline|
             next unless pipeline.downstream_bridges.any?
 
@@ -233,6 +241,10 @@ module EE
 
       def has_security_reports?
         complete_and_has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.of_report_type(:license_scanning)))
+      end
+
+      def has_all_security_policies_reports?
+        can_store_security_reports? && can_ingest_sbom_reports?
       end
 
       private

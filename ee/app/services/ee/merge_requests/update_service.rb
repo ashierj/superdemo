@@ -37,6 +37,7 @@ module EE
       def delete_approvals_on_target_branch_change(merge_request)
         delete_approvals(merge_request) if reset_approvals?(merge_request, nil)
         sync_any_merge_request_approval_rules(merge_request)
+        notify_for_policy_violations(merge_request)
       end
 
       def reset_approval_rules(merge_request)
@@ -50,6 +51,12 @@ module EE
         return unless merge_request.approval_rules.any_merge_request.any?
 
         ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)
+      end
+
+      def notify_for_policy_violations(merge_request)
+        return if ::Feature.disabled?(:security_policies_unenforceable_rules_notification, merge_request.project)
+
+        ::Security::UnenforceablePolicyRulesNotificationWorker.perform_async(merge_request.id)
       end
     end
   end

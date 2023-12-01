@@ -221,6 +221,50 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
   end
 
+  describe '::Security::UnenforceablePolicyRulesPipelineNotificationWorker' do
+    shared_examples_for 'notification for unenforceable policy rules' do |transition|
+      subject(:transition_pipeline) { pipeline.update!(status_event: transition) }
+
+      before do
+        allow(::Security::UnenforceablePolicyRulesPipelineNotificationWorker).to receive(:perform_async)
+      end
+
+      it 'schedules notification job for unenforceable policies' do
+        transition_pipeline
+
+        expect(::Security::UnenforceablePolicyRulesPipelineNotificationWorker).to have_received(:perform_async).with(pipeline.id)
+      end
+
+      context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
+        before do
+          stub_feature_flags(security_policies_unenforceable_rules_notification: false)
+        end
+
+        it 'does not schedule notification job for unenforceable policies' do
+          transition_pipeline
+
+          expect(::Security::UnenforceablePolicyRulesPipelineNotificationWorker).not_to have_received(:perform_async)
+        end
+      end
+    end
+
+    context 'when pipeline is succeeded' do
+      it_behaves_like 'notification for unenforceable policy rules', :succeed
+    end
+
+    context 'when pipeline is dropped' do
+      it_behaves_like 'notification for unenforceable policy rules', :drop
+    end
+
+    context 'when pipeline is skipped' do
+      it_behaves_like 'notification for unenforceable policy rules', :skip
+    end
+
+    context 'when pipeline is canceled' do
+      it_behaves_like 'notification for unenforceable policy rules', :cancel
+    end
+  end
+
   describe '::Sbom::IngestReportsWorker' do
     let(:can_ingest_sbom_reports) { true }
     let(:default_branch) { true }
@@ -755,6 +799,30 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
 
         it { is_expected.to be false }
       end
+    end
+  end
+
+  describe '#has_all_security_policies_reports?', feature_category: :security_policy_management do
+    subject { pipeline.has_all_security_policies_reports? }
+
+    let(:pipeline) { build(:ci_empty_pipeline, status: :created, project: project) }
+
+    before do
+      allow(pipeline).to receive(:can_store_security_reports?).and_return(can_store_security_reports)
+      allow(pipeline).to receive(:can_ingest_sbom_reports?).and_return(can_ingest_sbom_reports)
+    end
+
+    where(:can_store_security_reports, :can_ingest_sbom_reports, :result) do
+      [
+        [true, true, true],
+        [true, false, false],
+        [false, true, false],
+        [false, false, false]
+      ]
+    end
+
+    with_them do
+      it { is_expected.to eq(result) }
     end
   end
 

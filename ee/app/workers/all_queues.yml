@@ -2127,6 +2127,24 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: security_unenforceable_policy_rules_notification
+  :worker_name: Security::UnenforceablePolicyRulesNotificationWorker
+  :feature_category: :security_policy_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: security_unenforceable_policy_rules_pipeline_notification
+  :worker_name: Security::UnenforceablePolicyRulesPipelineNotificationWorker
+  :feature_category: :security_policy_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: set_user_status_based_on_user_cap_setting
   :worker_name: SetUserStatusBasedOnUserCapSettingWorker
   :feature_category: :user_profile

@@ -15,5 +15,10 @@ module Security
     validates :scan_result_policy_id, uniqueness: { scope: %i[merge_request_id] }
 
     scope :including_scan_result_policy_reads, -> { includes(:scan_result_policy_read) }
+
+    scope :for_approval_rules,
+      ->(approval_rules) {
+        where(scan_result_policy_id: approval_rules.pluck(:scan_result_policy_id))
+      }
   end
 end

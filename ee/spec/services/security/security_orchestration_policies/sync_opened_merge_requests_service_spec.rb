@@ -82,6 +82,31 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
       end
     end
 
+    describe '#notify_for_policy_violations' do
+      it 'enqueues UnenforceablePolicyRulesNotificationWorker' do
+        expect(::Security::UnenforceablePolicyRulesNotificationWorker).to(
+          receive(:perform_async).with(opened_merge_request.id, { 'force_without_approval_rules' => true })
+        )
+        expect(::Security::UnenforceablePolicyRulesNotificationWorker).to(
+          receive(:perform_async).with(draft_merge_request.id, { 'force_without_approval_rules' => true })
+        )
+
+        subject
+      end
+
+      context 'when feature flag "security_policies_unenforceable_rules_notification" is disabled' do
+        before do
+          stub_feature_flags(security_policies_unenforceable_rules_notification: false)
+        end
+
+        it 'does not enqueue UnenforceablePolicyRulesNotificationWorker' do
+          expect(::Security::UnenforceablePolicyRulesNotificationWorker).not_to receive(:perform_async)
+
+          subject
+        end
+      end
+    end
+
     context "when merge request has `any_merge_request` rules" do
       let_it_be(:any_merge_request_project_approval_rule) do
         create(:approval_project_rule, :any_merge_request,
