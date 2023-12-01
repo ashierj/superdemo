@@ -111,8 +111,7 @@ Prerequisites:
 
 To create a public deploy key:
 
-1. On the left sidebar, select **Search or go to**.
-1. Select **Admin Area**.
+1. On the left sidebar, at the bottom, select **Admin Area**.
 1. Select **Deploy Keys**.
 1. Select **New deploy key**.
 1. Complete the fields.
