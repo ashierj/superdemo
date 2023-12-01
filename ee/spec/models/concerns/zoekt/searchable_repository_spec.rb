@@ -52,6 +52,22 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
 
       expect(search_for('somenewsearchablefile.txt', node_id)).to match_array(['somenewsearchablefile.txt'])
     end
+
+    it 'makes updates available when called with force: true' do
+      project.repository.create_file(
+        user,
+        'file_with_force.txt',
+        'some content',
+        message: 'added test file',
+        branch_name: project.default_branch)
+
+      expect(search_for('file_with_force.txt', node_id)).to be_empty
+
+      response = repository.update_zoekt_index!(force: true)
+      expect(response['Success']).to be_truthy
+
+      expect(search_for('file_with_force.txt', node_id)).to match_array(['file_with_force.txt'])
+    end
   end
 
   describe '#async_update_zoekt_index' do
