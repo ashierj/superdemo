@@ -1,7 +1,7 @@
 <script>
 import { debounce } from 'lodash';
-import { GlButton, GlCollapsibleListbox, GlLabel, GlFormGroup } from '@gitlab/ui';
-import { s__, __ } from '~/locale';
+import { GlButton, GlCollapsibleListbox, GlLabel, GlFormGroup, GlPopover } from '@gitlab/ui';
+import { n__, s__, __, sprintf } from '~/locale';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_COMPLIANCE_FRAMEWORK } from '~/graphql_shared/constants';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
@@ -14,6 +14,9 @@ export default {
     complianceFrameworkCreateButton: s__('SecurityOrchestration|Create new framework label'),
     complianceFrameworkHeader: s__('SecurityOrchestration|Select frameworks'),
     complianceFrameworkTypeName: s__('SecurityOrchestration|compliance frameworks'),
+    complianceFrameworkPopoverPlaceholder: s__(
+      'SecurityOrchestration|Compliance framework has no projects',
+    ),
     errorMessage: s__('SecurityOrchestration|At least one framework label should be selected'),
     noFrameworksText: s__('SecurityOrchestration|No compliance frameworks'),
     selectAllLabel: __('Select all'),
@@ -26,6 +29,7 @@ export default {
     GlCollapsibleListbox,
     GlFormGroup,
     GlLabel,
+    GlPopover,
   },
   apollo: {
     complianceFrameworks: {
@@ -167,6 +171,27 @@ export default {
     onComplianceFrameworkCreated() {
       this.$refs.formModal.hide();
     },
+    extractProjects(framework) {
+      return framework?.projects?.nodes || [];
+    },
+    renderPopoverContent(framework) {
+      return (
+        this.extractProjects(framework)
+          .map(({ name }) => name)
+          .join(', ') || this.$options.i18n.complianceFrameworkPopoverPlaceholder
+      );
+    },
+    renderPopoverTitle(frameworkName, projectLength) {
+      const projects = n__('project', 'projects', projectLength);
+      return sprintf(
+        s__('SecurityOrchestration|%{frameworkName} has %{projectLength} %{projects}'),
+        {
+          frameworkName,
+          projectLength,
+          projects,
+        },
+      );
+    },
   },
 };
 </script>
@@ -202,13 +227,23 @@ export default {
         @select-all="selectFrameworks(complianceFrameworkIds)"
       >
         <template #list-item="{ item }">
-          <gl-label
-            size="sm"
-            :background-color="item.color"
-            :description="$options.i18n.editFramework"
-            :title="item.text"
-            :target="item.editPath"
-          />
+          <div :id="item.value">
+            <gl-label
+              size="sm"
+              :background-color="item.color"
+              :description="$options.i18n.editFramework"
+              :title="item.text"
+              :target="item.editPath"
+            />
+            <gl-popover
+              boundary="viewport"
+              placement="right"
+              triggers="hover"
+              :content="renderPopoverContent(item)"
+              :target="item.value"
+              :title="renderPopoverTitle(item.text, extractProjects(item).length)"
+            />
+          </div>
         </template>
         <template #footer>
           <div class="gl-border-t">

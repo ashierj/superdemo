@@ -231,6 +231,7 @@ describe('Table', () => {
                 PIPELINE_CONFIGURATION_PATH_FORMAT,
               ),
               color: expect.stringMatching(/^#([0-9A-F]{3}){1,2}$/i),
+              projects: { nodes: [] },
             },
             loading: false,
           }),
