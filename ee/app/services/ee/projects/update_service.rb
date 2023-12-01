@@ -149,6 +149,8 @@ module EE
       end
 
       def publish_compliance_framework_changed_event
+        return unless project.compliance_framework_setting
+
         settings_params = params[:compliance_framework_setting_attributes]
         return if settings_params.blank?
 
