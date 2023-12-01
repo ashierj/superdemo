@@ -2,6 +2,8 @@
 
 module Sbom
   class Source < ApplicationRecord
+    include Gitlab::Ci::Reports::Sbom::SourceHelper
+
     enum source_type: {
       dependency_scanning: 0,
       container_scanning: 1
@@ -10,16 +12,6 @@ module Sbom
     validates :source_type, presence: true
     validates :source, presence: true, json_schema: { filename: 'sbom_source' }
 
-    def packager
-      source.dig('package_manager', 'name')
-    end
-
-    def input_file_path
-      source.dig('input_file', 'path')
-    end
-
-    def source_file_path
-      source.dig('source_file', 'path')
-    end
+    alias_attribute :data, :source
   end
 end

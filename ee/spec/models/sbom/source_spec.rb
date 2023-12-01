@@ -119,34 +119,69 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
   end
 
   describe 'readers' do
-    let(:source_attributes) do
-      {
-        'category' => 'development',
-        'input_file' => { 'path' => 'package-lock.json' },
-        'source_file' => { 'path' => 'package.json' },
-        'package_manager' => { 'name' => 'npm' },
-        'language' => { 'name' => 'JavaScript' }
-      }
-    end
-
     let(:source) { build(:sbom_source, source: source_attributes) }
 
-    describe '#packager' do
-      subject { source.packager }
+    context 'for dependency scanning' do
+      let(:source_attributes) do
+        {
+          'category' => 'development',
+          'input_file' => { 'path' => 'package-lock.json' },
+          'source_file' => { 'path' => 'package.json' },
+          'package_manager' => { 'name' => 'npm' },
+          'language' => { 'name' => 'JavaScript' }
+        }
+      end
 
-      it { is_expected.to eq('npm') }
+      describe '#packager' do
+        subject { source.packager }
+
+        it { is_expected.to eq('npm') }
+      end
+
+      describe '#input_file_path' do
+        subject { source.input_file_path }
+
+        it { is_expected.to eq('package-lock.json') }
+      end
+
+      describe '#source_file_path' do
+        subject { source.source_file_path }
+
+        it { is_expected.to eq('package.json') }
+      end
     end
 
-    describe '#input_file_path' do
-      subject { source.input_file_path }
+    context "for container scanning" do
+      let(:source_attributes) do
+        {
+          "image" => { "name" => "rhel", "tag" => "7.1" },
+          "operating_system" => { "name" => "Red Hat Enterprise Linux", "version" => "7" }
+        }
+      end
 
-      it { is_expected.to eq('package-lock.json') }
-    end
+      describe "#image_name" do
+        subject { source.image_name }
 
-    describe '#source_file_path' do
-      subject { source.source_file_path }
+        it { is_expected.to eq("rhel") }
+      end
 
-      it { is_expected.to eq('package.json') }
+      describe "#image_tag" do
+        subject { source.image_tag }
+
+        it { is_expected.to eq("7.1") }
+      end
+
+      describe "#operating_system_name" do
+        subject { source.operating_system_name }
+
+        it { is_expected.to eq("Red Hat Enterprise Linux") }
+      end
+
+      describe "#operating_system_version" do
+        subject { source.operating_system_version }
+
+        it { is_expected.to eq("7") }
+      end
     end
   end
 end
