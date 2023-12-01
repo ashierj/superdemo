@@ -163,8 +163,6 @@ export const ALERT_TEXT = s__(
   'DORA4Metrics|To help us improve the Value Stream Management Dashboard, please share feedback about your experience in this %{linkStart}survey%{linkEnd}.',
 );
 
-export const CLICK_METRIC_DRILLDOWN_LINK_ACTION = 'click_link';
-
 export const DORA_PERFORMERS_SCORE_CATEGORY_TYPES = {
   HIGH: 'highProjectsCount',
   MEDIUM: 'mediumProjectsCount',
