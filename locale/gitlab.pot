@@ -9023,6 +9023,12 @@ msgstr ""
 msgid "BulkImport|Destination"
 msgstr ""
 
+msgid "BulkImport|Direct transfer"
+msgstr ""
+
+msgid "BulkImport|Direct transfer history"
+msgstr ""
+
 msgid "BulkImport|Direct transfer maximum download file size (MiB)"
 msgstr ""
 
@@ -9030,9 +9036,6 @@ msgid "BulkImport|Filter by source group"
 msgstr ""
 
 msgid "BulkImport|Following data will not be migrated: %{bullets} Contact system administrator of %{host} to upgrade GitLab if you need this data in your migration"
-msgstr ""
-
-msgid "BulkImport|GitLab Migration history"
 msgstr ""
 
 msgid "BulkImport|Group import disabled on source or destination instance. Ask an administrator to enable it on both instances and try again."
@@ -9053,7 +9056,7 @@ msgstr ""
 msgid "BulkImport|Import failed: Destination cannot be a subgroup of the source group. Change the destination and try again."
 msgstr ""
 
-msgid "BulkImport|Import groups from GitLab"
+msgid "BulkImport|Import groups by direct transfer"
 msgstr ""
 
 msgid "BulkImport|Import is finished. Pick another name for re-import"
@@ -9072,6 +9075,9 @@ msgid "BulkImport|Importing the group failed."
 msgstr ""
 
 msgid "BulkImport|Invalid source URL. Enter only the base URL of the source GitLab instance."
+msgstr ""
+
+msgid "BulkImport|Items that failed to be imported for %{id}"
 msgstr ""
 
 msgid "BulkImport|Last imported to %{link}"
@@ -9128,7 +9134,7 @@ msgstr ""
 msgid "BulkImport|Source group"
 msgstr ""
 
-msgid "BulkImport|Template / File-based import / GitLab Migration"
+msgid "BulkImport|Template / File-based import / Direct transfer"
 msgstr ""
 
 msgid "BulkImport|Unsupported GitLab version. Minimum supported version is '%{version}'."
@@ -24722,9 +24728,6 @@ msgstr ""
 msgid "Import group from file"
 msgstr ""
 
-msgid "Import groups"
-msgstr ""
-
 msgid "Import history"
 msgstr ""
 
@@ -24901,10 +24904,10 @@ msgstr ""
 msgid "Import|An error occurred while fetching import details."
 msgstr ""
 
-msgid "Import|GitHub import details"
+msgid "Import|Failures for %{id}"
 msgstr ""
 
-msgid "Import|GitLab Migration details"
+msgid "Import|GitHub import details"
 msgstr ""
 
 msgid "Import|Maximum decompressed file size for archives from imports (MiB)"
