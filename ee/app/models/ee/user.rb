@@ -583,6 +583,12 @@ module EE
       code_suggestions_add_on_available_namespace_ids.any?
     end
 
+    def eligible_for_self_managed_code_suggestions?
+      return false if ::Gitlab::Saas.feature_available?(:code_suggestions)
+
+      active? && !bot? && !ghost?
+    end
+
     def billable_code_suggestions_root_group_ids
       group_ids_from_project_authorizaton = ::Project.where(id: project_authorizations.non_guests.select(:project_id)).pluck(:namespace_id)
       group_ids_from_memberships = ::GroupMember.with_user(self).active.non_guests.pluck(:source_id)

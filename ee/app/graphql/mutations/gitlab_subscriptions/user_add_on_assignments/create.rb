@@ -23,10 +23,7 @@ module Mutations
         authorize :admin_add_on_purchase
 
         def resolve(**)
-          create_service = ::GitlabSubscriptions::UserAddOnAssignments::CreateService.new(
-            add_on_purchase: add_on_purchase,
-            user: user_to_be_assigned
-          ).execute
+          create_service = create_user_add_on_service.execute
 
           if create_service.success?
             {
@@ -54,6 +51,22 @@ module Mutations
 
         def feature_enabled?
           Feature.enabled?(:hamilton_seat_management, add_on_purchase&.namespace)
+          # Once the FF for SM is merged we should use it for SM instead of hamilton_seat_management
+          # https://gitlab.com/gitlab-org/gitlab/-/issues/433011
+        end
+
+        def create_user_add_on_service
+          service_class = if gitlab_saas?
+                            ::GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService
+                          else
+                            ::GitlabSubscriptions::UserAddOnAssignments::SelfManaged::CreateService
+                          end
+
+          service_class.new(add_on_purchase: add_on_purchase, user: user_to_be_assigned)
+        end
+
+        def gitlab_saas?
+          ::Gitlab::Saas.feature_available?(:code_suggestions)
         end
       end
     end
