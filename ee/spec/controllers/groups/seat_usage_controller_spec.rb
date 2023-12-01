@@ -9,7 +9,6 @@ RSpec.describe Groups::SeatUsageController, feature_category: :purchase do
   describe 'GET show' do
     before do
       sign_in(user)
-      stub_application_setting(check_namespace_plan: true)
     end
 
     def get_show(format: :html, group_id: group)
