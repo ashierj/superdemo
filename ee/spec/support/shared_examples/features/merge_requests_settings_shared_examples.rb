@@ -14,11 +14,11 @@ RSpec.shared_examples_for 'MR checks settings' do
       visit(merge_requests_settings_path)
 
       expect(page).not_to have_selector(
-        '[data-testid="allow_merge_if_pipeline_succeeds_checkbox"]>input[disabled]'
+        '[data-testid="allow-merge-if-pipeline-succeeds-checkbox"]>input[disabled]'
       )
-      expect(page).to have_selector('[data-testid="allow_merge_on_skipped_pipeline_checkbox"]>input[disabled]')
+      expect(page).to have_selector('[data-testid="allow-merge-on-skipped-pipeline-checkbox"]>input[disabled]')
       expect(page).not_to have_selector(
-        '[data-testid="allow_merge_if_all_discussions_are_resolved_checkbox"]>input[disabled]'
+        '[data-testid="allow-merge-if-all-discussions-are-resolved-checkbox"]>input[disabled]'
       )
     end
   end
@@ -34,9 +34,9 @@ RSpec.shared_examples_for 'MR checks settings' do
 
     it 'shows disabled status' do
       checkboxs_selectors = %w[
-        [data-testid="allow_merge_if_pipeline_succeeds_checkbox"]>input[disabled]
-        [data-testid="allow_merge_on_skipped_pipeline_checkbox"]>input[disabled]
-        [data-testid="allow_merge_if_all_discussions_are_resolved_checkbox"]>input[disabled]
+        [data-testid="allow-merge-if-pipeline-succeeds-checkbox"]>input[disabled]
+        [data-testid="allow-merge-on-skipped-pipeline-checkbox"]>input[disabled]
+        [data-testid="allow-merge-if-all-discussions-are-resolved-checkbox"]>input[disabled]
       ]
 
       visit(merge_requests_settings_path)

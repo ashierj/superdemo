@@ -27,7 +27,7 @@ describe('MergeChecksApp', () => {
   };
 
   const findOnlyAllowMergeWhenPipelineSucceeds = () =>
-    wrapper.findByTestId('allow_merge_if_pipeline_succeeds_checkbox');
+    wrapper.findByTestId('allow-merge-if-pipeline-succeeds-checkbox');
 
   const findOnlyAllowMergeWhenPipelineSucceedsInput = () =>
     wrapper.find('input[name$="[only_allow_merge_if_pipeline_succeeds]"]');
@@ -87,7 +87,7 @@ describe('MergeChecksApp', () => {
 
   describe('skipped pipeline', () => {
     const findSkippedPipelineCheckbox = () =>
-      wrapper.findByTestId('allow_merge_on_skipped_pipeline_checkbox');
+      wrapper.findByTestId('allow-merge-on-skipped-pipeline-checkbox');
 
     it('should be corresponding with pipeline must succeeds', () => {
       createWrapper();

@@ -61,8 +61,7 @@ export default {
       :checked="hasPipelineMustSucceed"
       :locked="pipelineMustSucceed.locked"
       :locked-text="lockedText"
-      checkbox-qa-selector="only_allow_merge_if_pipeline_succeeds_checkbox"
-      data-testid="allow_merge_if_pipeline_succeeds_checkbox"
+      data-testid="allow-merge-if-pipeline-succeeds-checkbox"
       @input="toggleChecked('hasPipelineMustSucceed')"
     >
       <template #help>{{ $options.i18n.pipelineMustSucceed.help }}</template>
@@ -78,9 +77,8 @@ export default {
         :checked="skippedPipelineChecked"
         :locked="skippedPipelineLocked"
         :locked-text="skippedPipelineText"
-        checkbox-qa-selector="always_allow_merge_on_skipped_pipeline_checkbox"
-        data-testid="allow_merge_on_skipped_pipeline_checkbox"
-        @change="toggleChecked('hasAllowMergeOnSkippedPipeline')"
+        data-testid="allow-merge-on-skipped-pipeline-checkbox"
+        @input="toggleChecked('hasAllowMergeOnSkippedPipeline')"
       >
         <template #help>{{ $options.i18n.allowMergeOnSkipped.help }}</template>
       </approval-settings-checkbox>
@@ -95,7 +93,7 @@ export default {
       :checked="hasOnlyAllowMergeIfAllResolved"
       :locked="onlyAllowMergeIfAllResolved.locked"
       :locked-text="lockedText"
-      data-testid="allow_merge_if_all_discussions_are_resolved_checkbox"
+      data-testid="allow-merge-if-all-discussions-are-resolved-checkbox"
       @input="toggleChecked('hasOnlyAllowMergeIfAllResolved')"
     />
   </div>
