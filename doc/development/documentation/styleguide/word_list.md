@@ -651,6 +651,12 @@ of the fields at once. For example:
 
 Learn more about [documenting multiple fields at once](index.md#documenting-multiple-fields-at-once).
 
+## file name
+
+Use two words for **file name**.
+
+([Vale](../testing.md#vale) rule: [`SubstitutionWarning.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/SubstitutionWarning.yml))
+
 ## filter
 
 When you are viewing a list of items, like issues or merge requests, you filter the list by
