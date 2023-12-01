@@ -21,12 +21,15 @@ export default {
   },
 
   [types.RECEIVE_CHART_SUCCESS](state, { chart, data }) {
-    const { type, description } = chart;
+    const { type, description, query } = chart;
+
+    const { issuable_type: issuableType, metric } = query.params || {};
 
     state.chartData[chart.title] = {
       type,
       description,
       data: transformChartDataForGlCharts(chart, data),
+      dataSourceType: issuableType ?? metric,
       loaded: true,
     };
   },

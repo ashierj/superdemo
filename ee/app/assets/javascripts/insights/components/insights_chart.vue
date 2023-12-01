@@ -1,12 +1,23 @@
 <script>
-import { GlColumnChart, GlLineChart, GlStackedColumnChart } from '@gitlab/ui/dist/charts';
+import {
+  GlColumnChart,
+  GlLineChart,
+  GlStackedColumnChart,
+  GlChartSeriesLabel,
+} from '@gitlab/ui/dist/charts';
 
 import { isNumber } from 'lodash';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import ChartTooltipText from 'ee/analytics/shared/components/chart_tooltip_text.vue';
+import { visitUrl, mergeUrlParams, joinPaths } from '~/lib/utils/url_utility';
 
-import { CHART_TYPES, INSIGHTS_NO_DATA_TOOLTIP } from '../constants';
+import {
+  CHART_TYPES,
+  INSIGHTS_NO_DATA_TOOLTIP,
+  INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES,
+  INSIGHTS_CHARTS_SUPPORT_DRILLDOWN,
+} from '../constants';
 import InsightsChartError from './insights_chart_error.vue';
 
 const CHART_HEIGHT = 300;
@@ -54,6 +65,15 @@ export default {
     InsightsChartError,
     ChartSkeletonLoader,
     ChartTooltipText,
+    GlChartSeriesLabel,
+  },
+  inject: {
+    fullPath: {
+      default: '',
+    },
+    isProject: {
+      default: false,
+    },
   },
   props: {
     loaded: {
@@ -81,6 +101,11 @@ export default {
       required: false,
       default: null,
     },
+    dataSourceType: {
+      type: String,
+      required: false,
+      default: '',
+    },
     error: {
       type: String,
       required: false,
@@ -92,7 +117,9 @@ export default {
       svgs: {},
       tooltipTitle: null,
       tooltipValue: null,
+      tooltipContent: [],
       chart: null,
+      activeSeriesId: null,
     };
   },
   computed: {
@@ -109,6 +136,7 @@ export default {
         yAxis: {
           minInterval: 1,
         },
+        cursor: 'auto',
       };
 
       if (this.type === this.$options.chartTypes.LINE) {
@@ -127,6 +155,16 @@ export default {
         };
       }
 
+      if (this.supportsDrillDown) {
+        options = {
+          ...options,
+          cursor: 'pointer',
+          emphasis: {
+            focus: 'series',
+          },
+        };
+      }
+
       return { dataZoom: [this.dataZoomConfig], ...options };
     },
     isColumnChart() {
@@ -138,6 +176,36 @@ export default {
     isLineChart() {
       return this.type === this.$options.chartTypes.LINE;
     },
+    supportsDrillDown() {
+      return (
+        INSIGHTS_CHARTS_SUPPORT_DRILLDOWN.includes(this.title) &&
+        this.type === this.$options.chartTypes.STACKED_BAR
+      );
+    },
+    namespacePath() {
+      return this.isProject ? this.fullPath : joinPaths('groups', this.fullPath);
+    },
+    drillThroughPathSuffix() {
+      const { groupPathSuffix, projectPathSuffix } = INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES[
+        this.dataSourceType
+      ];
+
+      return this.isProject ? projectPathSuffix : groupPathSuffix;
+    },
+    chartItemUrl() {
+      return joinPaths(
+        '/',
+        gon.relative_url_root || '',
+        this.namespacePath,
+        this.drillThroughPathSuffix,
+      );
+    },
+  },
+  beforeDestroy() {
+    if (this.chart && this.supportsDrillDown) {
+      this.chart.off('mouseover', this.onChartDataSeriesMouseOver);
+      this.chart.off('mouseout', this.onChartDataSeriesMouseOut);
+    }
   },
   methods: {
     setSvg(name) {
@@ -155,6 +223,21 @@ export default {
     onChartCreated(chart) {
       this.chart = chart;
       this.setSvg('scroll-handle');
+
+      if (this.supportsDrillDown) {
+        this.chart.on('mouseover', 'series', this.onChartDataSeriesMouseOver);
+        this.chart.on('mouseout', 'series', this.onChartDataSeriesMouseOut);
+      }
+    },
+    onChartItemClicked({ params }) {
+      const { seriesName } = params;
+      const canDrillDown = seriesName !== 'undefined' && this.supportsDrillDown;
+
+      if (!canDrillDown) return;
+
+      const chartItemUrlWithParams = mergeUrlParams({ label_name: seriesName }, this.chartItemUrl);
+
+      visitUrl(chartItemUrlWithParams);
     },
     formatTooltipText(params) {
       const { seriesData } = params;
@@ -162,6 +245,34 @@ export default {
 
       this.tooltipTitle = params.value;
       this.tooltipValue = tooltipValue;
+    },
+    formatBarChartTooltip({ value: title, seriesData }) {
+      this.tooltipTitle = title;
+      this.tooltipContent = seriesData
+        .map(({ borderColor, seriesId, seriesName, seriesIndex, value }) => ({
+          color: borderColor,
+          seriesId,
+          seriesName,
+          seriesIndex,
+          value: value ?? INSIGHTS_NO_DATA_TOOLTIP,
+        }))
+        .reverse();
+    },
+    onChartDataSeriesMouseOver({ seriesId }) {
+      this.activeSeriesId = seriesId;
+    },
+    onChartDataSeriesMouseOut() {
+      this.activeSeriesId = null;
+    },
+    activeChartSeriesLabelStyles(seriesId) {
+      if (!this.activeSeriesId) return null;
+
+      const isSeriesActive = this.activeSeriesId === seriesId;
+
+      return {
+        'gl-font-weight-bold': isSeriesActive,
+        'gl-opacity-4': !isSeriesActive,
+      };
     },
   },
   height: CHART_HEIGHT,
@@ -204,8 +315,25 @@ export default {
       :x-axis-title="data.xAxisTitle"
       :y-axis-title="data.yAxisTitle"
       :option="chartOptions"
+      :format-tooltip-text="formatBarChartTooltip"
       @created="onChartCreated"
-    />
+      @chartItemClicked="onChartItemClicked"
+    >
+      <template #tooltip-title>{{ tooltipTitle }}</template>
+      <template #tooltip-content>
+        <div
+          v-for="{ seriesId, seriesName, color, value } in tooltipContent"
+          :key="seriesId"
+          class="gl-display-flex gl-justify-content-space-between gl-line-height-20 gl-min-w-20"
+          :class="activeChartSeriesLabelStyles(seriesId)"
+        >
+          <gl-chart-series-label class="gl-mr-7 gl-font-sm" :color="color">
+            {{ seriesName }}
+          </gl-chart-series-label>
+          <div class="gl-font-weight-bold">{{ value }}</div>
+        </div>
+      </template>
+    </gl-stacked-column-chart>
     <template v-else-if="loaded && isLineChart">
       <gl-line-chart
         v-bind="$attrs"
