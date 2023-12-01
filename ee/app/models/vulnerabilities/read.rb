@@ -32,6 +32,7 @@ module Vulnerabilities
     enum state: ::Enums::Vulnerability.vulnerability_states
     enum report_type: ::Enums::Vulnerability.report_types
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
+    enum owasp_top_10: ::Enums::Vulnerability.owasp_top_10
 
     scope :by_uuid, -> (uuids) { where(uuid: uuids) }
     scope :by_vulnerabilities, -> (vulnerabilities) { where(vulnerability: vulnerabilities) }
