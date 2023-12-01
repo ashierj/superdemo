@@ -180,7 +180,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
     before do
       visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
-      sign_up
+      sign_up(invite: true)
     end
 
     context 'when the user is low risk' do
@@ -275,8 +275,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
   private
 
-  def sign_up
-    fill_in_sign_up_form(new_user) { solve_arkose_verify_challenge(risk: risk) }
+  def sign_up(invite: false)
+    fill_in_sign_up_form(new_user, invite: invite) { solve_arkose_verify_challenge(risk: risk) }
   end
 
   def saml_sign_up

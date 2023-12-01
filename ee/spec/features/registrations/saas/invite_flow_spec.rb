@@ -54,7 +54,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
 
     visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
 
-    fill_in_sign_up_form(user)
+    fill_in_sign_up_form(user, invite: true)
   end
 
   def fill_in_welcome_form
