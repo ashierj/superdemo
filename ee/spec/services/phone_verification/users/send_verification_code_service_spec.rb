@@ -60,7 +60,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
     context 'when phone number is linked to an already banned user' do
       let(:banned_user) { create(:user, :banned) }
-      let(:record) { create(:phone_number_validation, user: banned_user) }
+      let(:record) { create(:phone_number_validation, :validated, user: banned_user) }
 
       let(:params) do
         {
