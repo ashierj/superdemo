@@ -13,6 +13,12 @@ query getComplianceFramework(
         description
         color
         pipelineConfigurationFullPath
+        projects {
+          nodes {
+            id
+            name
+          }
+        }
       }
     }
   }

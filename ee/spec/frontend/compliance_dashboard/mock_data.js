@@ -241,6 +241,7 @@ export const createComplianceFrameworksTokenResponse = () => {
               default: false,
               description: 'this is a framework',
               color: '#3cb371',
+              projects: { nodes: [] },
               pipelineConfigurationFullPath:
                 '.compliance-gitlab-ci.yml@gitlab-shell/compliance-framework',
               __typename: 'ComplianceFramework',
@@ -251,6 +252,7 @@ export const createComplianceFrameworksTokenResponse = () => {
               default: false,
               description: 'this is another framework',
               color: '#3cb371',
+              projects: { nodes: [] },
               pipelineConfigurationFullPath:
                 '.compliance-gitlab-ci.yml@gitlab-shell/compliance-framework',
               __typename: 'ComplianceFramework',
@@ -269,6 +271,7 @@ export const createFramework = ({ id, isDefault = false } = {}) => ({
   default: isDefault,
   description: `This is a framework ${id}`,
   color: `#3cb37${id}`,
+  projects: { nodes: [] },
   pipelineConfigurationFullPath: null,
   __typename: 'ComplianceFramework',
 });

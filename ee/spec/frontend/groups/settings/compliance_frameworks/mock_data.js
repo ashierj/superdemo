@@ -19,6 +19,9 @@ export const validFetchResponse = {
             description: 'General Data Protection Regulation',
             pipelineConfigurationFullPath: 'file.yml@group/project',
             color: '#1aaa55',
+            projects: {
+              nodes: [],
+            },
             __typename: 'ComplianceFramework',
           },
           {
@@ -28,6 +31,9 @@ export const validFetchResponse = {
             description: 'Payment Card Industry-Data Security Standard',
             pipelineConfigurationFullPath: 'file.yml@group/project',
             color: '#6666c4',
+            projects: {
+              nodes: [],
+            },
             __typename: 'ComplianceFramework',
           },
         ],
@@ -76,6 +82,7 @@ export const validFetchOneResponse = {
             description: 'General Data Protection Regulation',
             pipelineConfigurationFullPath: 'file.yml@group/project',
             color: '#1aaa55',
+            projects: { nodes: [] },
             __typename: 'ComplianceFramework',
           },
         ],

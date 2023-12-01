@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
-import { GlButton, GlCollapsibleListbox, GlModal, GlFormGroup } from '@gitlab/ui';
+import { GlButton, GlCollapsibleListbox, GlModal, GlPopover, GlFormGroup } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_COMPLIANCE_FRAMEWORK } from '~/graphql_shared/constants';
@@ -28,24 +28,45 @@ describe('ComplianceFrameworkDropdown', () => {
       name: 'A1',
       default: true,
       description: 'description 1',
-      color: 'color 1',
+      color: '#cd5b45',
       pipelineConfigurationFullPath: 'path 1',
+      projects: { nodes: [] },
     },
     {
       id: convertToGraphQLId(TYPE_COMPLIANCE_FRAMEWORK, 2),
       name: 'B2',
       default: false,
       description: 'description 2',
-      color: 'color 2',
+      color: '#cd5b45',
       pipelineConfigurationFullPath: 'path 2',
+      projects: {
+        nodes: [
+          {
+            id: '1',
+            name: 'project-1',
+          },
+        ],
+      },
     },
     {
       id: convertToGraphQLId(TYPE_COMPLIANCE_FRAMEWORK, 3),
       name: 'a3',
       default: true,
       description: 'description 3',
-      color: 'color 3',
+      color: '#cd5b45',
       pipelineConfigurationFullPath: 'path 3',
+      projects: {
+        nodes: [
+          {
+            id: '1',
+            name: 'project-1',
+          },
+          {
+            id: '2',
+            name: 'project-2',
+          },
+        ],
+      },
     },
   ];
 
@@ -113,6 +134,7 @@ describe('ComplianceFrameworkDropdown', () => {
   const findSharedForm = () => wrapper.findComponent(SharedForm);
   const selectAll = () => findDropdown().vm.$emit('select-all');
   const resetAll = () => findDropdown().vm.$emit('reset');
+  const findAllPopovers = () => wrapper.findAllComponents(GlPopover);
 
   describe('without selected frameworks', () => {
     beforeEach(() => {
@@ -166,6 +188,29 @@ describe('ComplianceFrameworkDropdown', () => {
       findComplianceFrameworkFormModal().vm.$emit('change');
 
       expect(hideMock).toHaveBeenCalled();
+    });
+  });
+
+  describe('popover with project list', () => {
+    it('renders popover with projects list', async () => {
+      createComponent({
+        stubs: {
+          GlCollapsibleListbox,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findAllPopovers().at(0).props('title')).toBe('A1 has 0 projects');
+      expect(findAllPopovers().at(0).attributes('content')).toBe(
+        'Compliance framework has no projects',
+      );
+
+      expect(findAllPopovers().at(1).props('title')).toBe('B2 has 1 project');
+      expect(findAllPopovers().at(1).attributes('content')).toBe('project-1');
+
+      expect(findAllPopovers().at(2).props('title')).toBe('a3 has 2 projects');
+      expect(findAllPopovers().at(2).attributes('content')).toBe('project-1, project-2');
     });
   });
 
