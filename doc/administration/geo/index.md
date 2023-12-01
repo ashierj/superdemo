@@ -249,6 +249,8 @@ Pausing and resuming replication is done through a command-line tool from the no
 
 If `postgresql` is on a standalone database node, ensure that `gitlab.rb` on that node contains the configuration line `gitlab_rails['geo_node_name'] = 'node_name'`, where `node_name` is the same as the `geo_node_name` on the application node.
 
+Also, be aware that if PostgreSQL is restarted after pausing replication (either by restarting the VM or restarting the service with `gitlab-ctl restart postgresql`), PostgreSQL automatically resumes replication, which is something you wouldn't want during an upgrade or in a planned failover scenario.
+
 **To Pause: (from secondary)**
 
 ```shell
