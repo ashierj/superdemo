@@ -6,12 +6,7 @@ RSpec.describe StubSaasFeatures, feature_category: :shared do
   describe '#stub_saas_features' do
     using RSpec::Parameterized::TableSyntax
 
-    let(:feature_name) { :feature_one }
-    let(:all_features) { [feature_name, :feature_two, :feature_three] }
-
-    before do
-      stub_const("Gitlab::Saas::FEATURES", all_features)
-    end
+    let(:feature_name) { :experimentation }
 
     context 'when checking global state' do
       where(:feature_value) do
@@ -54,11 +49,11 @@ RSpec.describe StubSaasFeatures, feature_category: :shared do
 
     context 'when checking multiple features' do
       it 'stubs defaults false value for other known features' do
-        stub_saas_features(feature_one: true)
+        stub_saas_features(experimentation: true)
 
-        expect(::Gitlab::Saas.feature_available?(:feature_one)).to eq(true)
-        expect(::Gitlab::Saas.feature_available?(:feature_two)).to eq(false)
-        expect(::Gitlab::Saas.feature_available?(:feature_three)).to eq(false)
+        expect(::Gitlab::Saas.feature_available?(:experimentation)).to eq(true)
+        expect(::Gitlab::Saas.feature_available?(:onboarding)).to eq(false)
+        expect(::Gitlab::Saas.feature_available?(:purchases_additional_minutes)).to eq(false)
       end
     end
   end

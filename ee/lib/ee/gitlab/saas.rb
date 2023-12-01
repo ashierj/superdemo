@@ -10,6 +10,7 @@ module EE
       FEATURES =
         %i[
           ai_vertex_embeddings
+          experimentation
           marketing_google_tag_manager
           namespaces_storage_limit
           onboarding
@@ -33,7 +34,7 @@ module EE
           # Use existing checks initially. We can allow it only in this place and remove it anywhere else.
           # eventually we can change its implementation like using an ENV variable for each instance
           # or any other method that people can't mess with.
-          ::Gitlab.com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks
+          ::Gitlab.com? # rubocop:disable Gitlab/AvoidGitlabInstanceChecks  -- See above comment
         end
 
         def feature_file_path(feature)

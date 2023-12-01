@@ -10,6 +10,8 @@ Dir[Rails.root.join("ee/spec/support/**/*.rb")].sort.each { |f| require f }
 RSpec.configure do |config|
   config.include EE::LicenseHelpers
 
+  include StubSaasFeatures
+
   config.define_derived_metadata(file_path: %r{ee/spec/}) do |metadata|
     # For now, we assign a starter license for ee/spec
     metadata[:with_license] = metadata.fetch(:with_license, true)
