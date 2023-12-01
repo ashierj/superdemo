@@ -599,7 +599,7 @@ When a Maven package is not found in the package registry, the request is forwar
 to [Maven Central](https://search.maven.org/).
 
 When the feature flag is enabled, administrators can disable this behavior in the
-[Continuous Integration settings](../../admin_area/settings/continuous_integration.md).
+[Continuous Integration settings](../../../administration/settings/continuous_integration.md).
 
 Maven forwarding is restricted to only the project level and
 group level [endpoints](#naming-convention). The instance level endpoint

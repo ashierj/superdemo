@@ -279,7 +279,7 @@ For self-managed instances, those settings can be updated in the [Rails console]
   ApplicationSetting.last.update(container_registry_expiration_policies_worker_capacity: 3)
   ```
 
-They are also available in the [administrator area](../../admin_area/index.md):
+They are also available in the [administrator area](../../../administration/admin_area.md):
 
 1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.

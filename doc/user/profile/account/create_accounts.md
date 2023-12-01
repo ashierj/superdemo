@@ -18,7 +18,7 @@ You can create users:
 
 Prerequisites:
 
-- [Sign-up must be enabled](../../admin_area/settings/sign_up_restrictions.md).
+- [Sign-up must be enabled](../../../administration/settings/sign_up_restrictions.md).
 
 Users can create their own accounts by either:
 
