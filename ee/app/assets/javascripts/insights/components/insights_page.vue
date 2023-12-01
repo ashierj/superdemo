@@ -70,13 +70,16 @@ export default {
       <h4 class="text-center">{{ pageConfig.title }}</h4>
       <div class="insights-charts" data-testid="insights-charts">
         <insights-chart
-          v-for="({ loaded, type, description, data, error }, key, index) in chartData"
+          v-for="(
+            { loaded, type, description, data, dataSourceType, error }, key, index
+          ) in chartData"
           :key="index"
           :loaded="loaded"
           :type="type"
           :title="key"
           :description="description"
           :data="data"
+          :data-source-type="dataSourceType"
           :error="error"
         />
       </div>

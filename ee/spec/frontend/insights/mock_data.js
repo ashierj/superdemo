@@ -114,3 +114,15 @@ export const doraSeries = [
     symbolSize: 8,
   },
 ];
+
+export const chartDataSeriesParams = {
+  params: {
+    seriesName: 'bug',
+  },
+};
+
+export const chartUndefinedDataSeriesParams = {
+  params: {
+    seriesName: 'undefined',
+  },
+};

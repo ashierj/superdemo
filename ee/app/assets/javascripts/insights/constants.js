@@ -26,3 +26,19 @@ export const INSIGHTS_DATA_SOURCE_DORA = 'dora';
 
 export const INSIGHTS_NO_DATA_TOOLTIP = __('No data available');
 export const INSIGHTS_REPORT_DROPDOWN_EMPTY_TEXT = __('Select report');
+
+export const ISSUABLE_TYPES = {
+  ISSUE: 'issue',
+};
+
+export const INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES = {
+  [ISSUABLE_TYPES.ISSUE]: {
+    groupPathSuffix: '-/issues_analytics',
+    projectPathSuffix: '-/analytics/issues_analytics',
+  },
+};
+
+export const INSIGHTS_CHARTS_SUPPORT_DRILLDOWN = [
+  __('Bugs created per month by Priority'),
+  __('Bugs created per month by Severity'),
+];
