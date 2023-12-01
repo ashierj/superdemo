@@ -8,4 +8,5 @@
 
 .form-group.gl-mb-3
   = f.gitlab_ui_checkbox_component :product_analytics_enabled,
-    s_('ProductAnalytics|Use product analytics')
+    s_('ProductAnalytics|Use product analytics'),
+    checkbox_options: { data: { testid: 'use-product-analytics-checkbox' } }
