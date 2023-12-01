@@ -178,7 +178,7 @@ export default {
         :aria-label="__('AI actions')"
         category="tertiary"
         size="small"
-        class="gl-mr-3 gl-px-2!"
+        class="gl-mr-2 gl-px-2!"
       >
         <gl-loading-icon v-if="loading" />
         <gl-icon v-else name="tanuki" />
