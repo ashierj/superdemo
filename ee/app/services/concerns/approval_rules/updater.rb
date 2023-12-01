@@ -38,7 +38,7 @@ module ApprovalRules
       audit_context = {
         name: name,
         author: current_user,
-        scope: rule.project,
+        scope: container,
         target: rule
       }
 
@@ -49,8 +49,20 @@ module ApprovalRules
       return unless params.key?(:user_ids) || params.key?(:usernames)
 
       users = User.by_ids_or_usernames(params.delete(:user_ids), params.delete(:usernames))
+      if group_container?
+        filter_group_members(users)
+      else
+        filter_project_members(users)
+      end
+    end
 
-      params[:users] = project.members_among(users)
+    def filter_project_members(users)
+      params[:users] = rule.project.members_among(users)
+    end
+
+    def filter_group_members(users)
+      users_ids_of_direct_members = rule.group.users_ids_of_direct_members
+      params[:users] = users.select { |user| users_ids_of_direct_members.include?(user.id) }
     end
 
     def filter_eligible_groups!
@@ -69,6 +81,9 @@ module ApprovalRules
       return unless params.key?(:protected_branch_ids)
 
       protected_branch_ids = params.delete(:protected_branch_ids)
+
+      # Currently group approval rules support only all protected branches.
+      return if group_container?
 
       return unless project.multiple_approval_rules_available? &&
         (skip_authorization || can?(current_user, :admin_project, project))
@@ -93,7 +108,7 @@ module ApprovalRules
       audit_changes(
         :approvals_required,
         as: 'number of required approvals',
-        entity: rule.project,
+        entity: container,
         model: rule,
         event_type: 'update_approval_rules'
       )

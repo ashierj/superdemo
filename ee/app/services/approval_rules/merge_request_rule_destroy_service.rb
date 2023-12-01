@@ -5,7 +5,7 @@ module ApprovalRules
     def initialize(approval_rule, user)
       @rule = approval_rule
 
-      super(@rule.project, user, params)
+      super(container: @rule.project, current_user: user, params: params)
     end
 
     def action

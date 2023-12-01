@@ -2,8 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalRules::CreateService do
+RSpec.describe ApprovalRules::CreateService, feature_category: :source_code_management do
   let(:project) { create(:project) }
+  let(:group) { create(:group, projects: [project]) }
   let(:user) { project.creator }
 
   shared_examples 'creatable' do
@@ -22,7 +23,6 @@ RSpec.describe ApprovalRules::CreateService do
 
       it 'creates approval, excluding non-eligible users and groups' do
         expect(result[:status]).to eq(:success)
-
         rule = result[:rule]
 
         expect(rule.name).to eq('security')
@@ -42,6 +42,7 @@ RSpec.describe ApprovalRules::CreateService do
     context 'when some users and groups are eligible' do
       before do
         project.add_reporter new_approvers.first
+        group.add_member(new_approvers.first, GroupMember::DEVELOPER)
         new_groups.first.add_guest(user)
       end
 
@@ -108,11 +109,11 @@ RSpec.describe ApprovalRules::CreateService do
       end
     end
 
-    context 'when user does not have right to admin project' do
-      let(:user) { create(:user) }
+    context 'when user does not have right to admin project or group' do
+      let(:user1) { create(:user) }
 
       it 'returns error message' do
-        result = described_class.new(target, user, {
+        result = described_class.new(target, user1, {
           approvals_required: 1
         }).execute
 
@@ -214,17 +215,95 @@ RSpec.describe ApprovalRules::CreateService do
           expect { subject.execute }.not_to change(target.approval_rules.any_approver, :count)
         end
       end
+    end
+  end
 
-      it_behaves_like 'records an onboarding progress action', :required_mr_approvals_enabled do
-        let(:namespace) { project.namespace }
+  shared_examples 'onboarding progress action' do
+    it_behaves_like 'records an onboarding progress action', :required_mr_approvals_enabled do
+      let(:namespace) { project.namespace }
 
-        subject do
-          described_class.new(target, user, {
-            name: 'security',
+      subject do
+        described_class.new(target, user, {
+          name: 'security',
+          approvals_required: 1
+        }).execute
+      end
+    end
+  end
+
+  context 'when target is group' do
+    let(:target) { group }
+    let(:new_approvers) { create_list(:user, 2) }
+    let(:new_groups) { create_list(:group, 2, :private) }
+    let(:name) { 'group approval rule' }
+    let(:params) do
+      {
+        name: name,
+        approvals_required: 1
+      }
+    end
+
+    before do
+      target.add_owner(user)
+    end
+
+    subject do
+      described_class.new(
+        target,
+        user,
+        params
+      ).execute
+    end
+
+    it_behaves_like "creatable"
+
+    context 'when approval_group_rules is disabled for group' do
+      before do
+        stub_feature_flags(approval_group_rules: false)
+      end
+
+      it 'returns an error' do
+        expect(subject[:status]).to eq(:error)
+        expect(subject[:message]).to eq('The feature approval_group_rules is not enabled.')
+      end
+    end
+
+    context 'and multiple approval rules are enabled' do
+      before do
+        stub_licensed_features(multiple_approval_rules: true)
+      end
+
+      context 'when protected_branch_ids param is present' do
+        let(:protected_branch) { create(:protected_branch, project: nil, group: group) }
+        let(:protected_branch_ids) { [protected_branch.id] }
+        let(:params) do
+          {
+            name: name,
             approvals_required: 1,
-            user_ids: new_approvers.map(&:id),
-            group_ids: new_groups.map(&:id)
-          }).execute
+            skip_authorization: true
+          }
+        end
+
+        it 'does not associate the group approval rule to the protected branches' do
+          expect(subject[:status]).to eq(:success)
+          expect(subject[:rule].protected_branches).to eq([])
+        end
+      end
+
+      context 'when applies_to_all_protected_branches is set to false' do
+        let(:protected_branch) { create(:protected_branch, project: nil, group: group) }
+        let(:skip_authorization) { true }
+        let(:params) do
+          {
+            name: name,
+            approvals_required: 1,
+            skip_authorization: true,
+            applies_to_all_protected_branches: false
+          }
+        end
+
+        it 'throws a validation error' do
+          expect(subject[:status]).to eq(:error)
         end
       end
     end
@@ -234,6 +313,8 @@ RSpec.describe ApprovalRules::CreateService do
     let(:target) { project }
 
     it_behaves_like "creatable"
+
+    it_behaves_like 'onboarding progress action'
 
     context 'when protected_branch_ids param is present' do
       let(:protected_branch) { create(:protected_branch, project: target) }
@@ -370,6 +451,8 @@ RSpec.describe ApprovalRules::CreateService do
     let(:target) { create(:merge_request, source_project: project, target_project: project) }
 
     it_behaves_like "creatable"
+
+    it_behaves_like 'onboarding progress action'
 
     context 'when project rule id is present' do
       let_it_be(:project_user) { create(:user) }

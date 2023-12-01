@@ -275,6 +275,7 @@ module EE
         enable :maintainer_access
         enable :admin_wiki
         enable :modify_product_analytics_settings
+        enable :update_approval_rule
       end
 
       rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent }.policy do

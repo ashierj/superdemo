@@ -10,7 +10,7 @@ module ApprovalRules
       @rule = approval_rule
       @keep_existing_hidden_groups = !Gitlab::Utils.to_boolean(params.delete(:remove_hidden_groups))
 
-      super(@rule.project, user, params)
+      super(container: @rule.project, current_user: user, params: params)
     end
 
     def filter_eligible_groups!

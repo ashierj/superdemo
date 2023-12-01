@@ -3509,4 +3509,28 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       expect(group.resource_parent).to eq(group)
     end
   end
+
+  describe '#multiple_approval_rules_available?' do
+    subject { group.multiple_approval_rules_available? }
+
+    context 'licensed' do
+      before do
+        stub_licensed_features(multiple_approval_rules: true)
+      end
+
+      it 'returns true for licensed instance' do
+        is_expected.to be true
+      end
+    end
+
+    context 'unlicensed' do
+      before do
+        stub_licensed_features(multiple_approval_rules: false)
+      end
+
+      it 'returns false for unlicensed instance' do
+        is_expected.to be false
+      end
+    end
+  end
 end
