@@ -2,7 +2,7 @@
 
 module GitlabSubscriptions
   module UserAddOnAssignments
-    class CreateService < BaseService
+    class BaseCreateService < ::BaseService
       include Gitlab::Utils::StrongMemoize
 
       ERROR_NO_SEATS_AVAILABLE = 'NO_SEATS_AVAILABLE'
@@ -25,22 +25,21 @@ module GitlabSubscriptions
 
         error = validate
 
-        if error.blank?
-          add_on_purchase.with_lock do
-            raise NoSeatsAvailableError unless seats_available?
+        if error.present?
+          log_event('User AddOn assignment creation failed', error: error, error_code: VALIDATION_ERROR_CODE)
+          return ServiceResponse.error(message: error)
+        end
 
-            add_on_purchase.assigned_users.create!(user: user)
-          end
+        add_on_purchase.with_lock do
+          raise NoSeatsAvailableError unless seats_available?
+
+          add_on_purchase.assigned_users.create!(user: user)
 
           Rails.cache.delete(format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user.id))
 
           log_event('User AddOn assignment created')
 
           ServiceResponse.success
-        else
-          log_event('User AddOn assignment creation failed', error: error, error_code: VALIDATION_ERROR_CODE)
-
-          ServiceResponse.error(message: error)
         end
       rescue NoSeatsAvailableError => error
         Gitlab::ErrorTracking.log_exception(
@@ -56,7 +55,8 @@ module GitlabSubscriptions
 
       def validate
         return ERROR_NO_SEATS_AVAILABLE unless seats_available?
-        return ERROR_INVALID_USER_MEMBERSHIP unless billed_member_of_namespace?
+
+        ERROR_INVALID_USER_MEMBERSHIP unless eligible_for_code_suggestions_seat?
       end
 
       def seats_available?
@@ -71,13 +71,8 @@ module GitlabSubscriptions
         add_on_purchase.already_assigned?(user)
       end
 
-      def billed_member_of_namespace?
-        namespace.eligible_for_code_suggestions_seat?(user)
-      end
-      strong_memoize_attr :billed_member_of_namespace?
-
-      def namespace
-        @namespace ||= add_on_purchase.namespace
+      def eligible_for_code_suggestions_seat?
+        raise NotImplementedError, 'Subclasses must implement the eligible_for_code_suggestions_seat? method'
       end
 
       def log_event(message, error: nil, error_code: nil)
@@ -93,8 +88,7 @@ module GitlabSubscriptions
       def base_log_params
         {
           user: user.username.to_s,
-          add_on: add_on_purchase.add_on.name,
-          namespace: add_on_purchase.namespace.path
+          add_on: add_on_purchase.add_on.name
         }
       end
     end
