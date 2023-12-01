@@ -204,4 +204,24 @@ RSpec.describe ::TodosHelper do
       end
     end
   end
+
+  describe '#todo_action_name' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:merge_request) { create(:merge_request) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:todo) { create(:todo, target: merge_request, user: user) }
+
+    where(:action, :expected_action_name) do
+      ::Todo::ADDED_APPROVER | s_('Todos|have been added as an approver')
+    end
+
+    with_them do
+      before do
+        todo.action = action
+      end
+
+      it { expect(helper.todo_action_name(todo)).to eq(expected_action_name) }
+    end
+  end
 end

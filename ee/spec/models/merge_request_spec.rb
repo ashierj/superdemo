@@ -2319,4 +2319,17 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#notify_approvers' do
+    let_it_be(:merge_request) { create(:merge_request) }
+    let_it_be(:approvers) { create_list(:user, 2) }
+    let_it_be(:approval_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: approvers) }
+
+    it 'calls NotificationService.added_as_approver' do
+      expect_any_instance_of(EE::NotificationService).to receive(:added_as_approver)
+        .with(merge_request.wrapped_approval_rules.flat_map(&:approvers), merge_request)
+
+      merge_request.notify_approvers
+    end
+  end
 end
