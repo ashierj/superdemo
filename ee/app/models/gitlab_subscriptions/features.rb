@@ -63,7 +63,6 @@ module GitlabSubscriptions
       project_merge_request_analytics
       protected_refs_for_users
       push_rules
-      repository_mirrors
       resource_access_token
       seat_link
       usage_quotas
@@ -80,7 +79,6 @@ module GitlabSubscriptions
       blocking_merge_requests
       board_assignee_lists
       board_milestone_lists
-      ci_cd_projects
       ci_namespace_catalog
       ci_secrets_management
       ci_pipeline_cancellation_restrictions
@@ -113,7 +111,6 @@ module GitlabSubscriptions
       geo
       generic_alert_fingerprinting
       git_two_factor_enforcement
-      github_integration
       group_allowed_email_domains
       group_coverage_reports
       group_forking_protection
@@ -268,6 +265,7 @@ module GitlabSubscriptions
       group_webhooks
       member_lock
       elastic_search
+      repository_mirrors
     ].freeze
 
     # Features defined in this list will be available in Premium license OR by enabling usage ping setting
@@ -283,6 +281,8 @@ module GitlabSubscriptions
       cross_project_pipelines
       feature_flags_related_issues
       merge_pipelines
+      ci_cd_projects
+      github_integration
     ].freeze
 
     # Features defined in this list will be available in Ultimate license OR by enabling usage ping setting

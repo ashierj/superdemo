@@ -4321,4 +4321,34 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       expect(project.resource_parent).to eq(project)
     end
   end
+
+  describe '#github_external_pull_request_pipelines_available?' do
+    let_it_be(:project) { create(:project, :mirror) }
+
+    subject { project.github_external_pull_request_pipelines_available? }
+
+    context 'when enabled through license' do
+      before do
+        stub_licensed_features(ci_cd_projects: true, github_integration: true, repository_mirrors: true)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when enabled through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'without license' do
+      before do
+        stub_licensed_features(ci_cd_projects: false, github_integration: false, repository_mirrors: false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
 end

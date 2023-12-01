@@ -78,74 +78,7 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
       )
     end
 
-    context 'when licensed' do
-      before do
-        stub_licensed_features(ci_cd_projects: true)
-      end
-
-      it 'shows CI/CD tab and pane' do
-        visit new_project_path
-
-        expect(page).to have_link 'Run CI/CD for external repository'
-
-        click_link 'Run CI/CD for external repository'
-
-        expect(page).to have_css('#ci-cd-project-pane')
-      end
-
-      it '"Import project" tab creates projects with features enabled' do
-        stub_request(:get, "http://foo.git/info/refs?service=git-upload-pack").to_return(status: 200, body: "001e# service=git-upload-pack", headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' })
-
-        visit new_project_path
-        click_link 'Import project'
-
-        page.within '#import-project-pane' do
-          first('.js-import-git-toggle-button').click
-
-          fill_in 'project_import_url', with: 'http://foo.git'
-
-          wait_for_requests
-
-          click_on 'Pick a group or namespace'
-          click_on user.username
-
-          fill_in 'project_name', with: 'import-project-with-features1'
-          fill_in 'project_path', with: 'import-project-with-features1'
-          choose 'project_visibility_level_20'
-          click_button 'Create project'
-          wait_for_requests
-
-          created_project = Project.last
-
-          expect(page).to have_current_path(project_import_path(created_project), ignore_query: true)
-          expect(created_project.project_feature).to be_issues_enabled
-        end
-      end
-
-      it 'creates CI/CD project from repo URL', :sidekiq_might_not_need_inline do
-        visit new_project_path
-        click_link 'Run CI/CD for external repository'
-
-        page.within '#ci-cd-project-pane' do
-          stub_request(:get, "http://foo.git/info/refs?service=git-upload-pack")
-            .to_return(status: 200, body: "001e# service=git-upload-pack", headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' })
-          find('.js-import-git-toggle-button').click
-
-          fill_in 'project_import_url', with: 'http://foo.git'
-          fill_in 'project_name', with: 'CI CD Project1'
-          fill_in 'project_path', with: 'ci-cd-project1'
-          click_on 'Pick a group or namespace'
-          click_on user.username
-          choose 'project_visibility_level_20'
-          click_button 'Create project'
-
-          created_project = Project.last
-          expect(page).to have_current_path(project_path(created_project), ignore_query: true)
-          expect(created_project.mirror).to eq(true)
-          expect(created_project.project_feature).not_to be_issues_enabled
-        end
-      end
-
+    shared_examples 'CI/CD for GitHub' do
       it 'creates CI/CD project from GitHub' do
         visit new_project_path
         click_link 'Run CI/CD for external repository'
@@ -216,6 +149,85 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
         expect(page).to have_text('Access denied to your GitHub account.')
         expect(page).to have_current_path(new_import_github_path(ci_cd_only: true))
       end
+    end
+
+    context 'when licensed' do
+      before do
+        stub_licensed_features(ci_cd_projects: true)
+      end
+
+      it 'shows CI/CD tab and pane' do
+        visit new_project_path
+
+        expect(page).to have_link 'Run CI/CD for external repository'
+
+        click_link 'Run CI/CD for external repository'
+
+        expect(page).to have_css('#ci-cd-project-pane')
+      end
+
+      it '"Import project" tab creates projects with features enabled' do
+        stub_request(:get, "http://foo.git/info/refs?service=git-upload-pack").to_return(status: 200, body: "001e# service=git-upload-pack", headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' })
+
+        visit new_project_path
+        click_link 'Import project'
+
+        page.within '#import-project-pane' do
+          first('.js-import-git-toggle-button').click
+
+          fill_in 'project_import_url', with: 'http://foo.git'
+
+          wait_for_requests
+
+          click_on 'Pick a group or namespace'
+          click_on user.username
+
+          fill_in 'project_name', with: 'import-project-with-features1'
+          fill_in 'project_path', with: 'import-project-with-features1'
+          choose 'project_visibility_level_20'
+          click_button 'Create project'
+          wait_for_requests
+
+          created_project = Project.last
+
+          expect(page).to have_current_path(project_import_path(created_project), ignore_query: true)
+          expect(created_project.project_feature).to be_issues_enabled
+        end
+      end
+
+      it 'creates CI/CD project from repo URL', :sidekiq_might_not_need_inline do
+        visit new_project_path
+        click_link 'Run CI/CD for external repository'
+
+        page.within '#ci-cd-project-pane' do
+          stub_request(:get, "http://foo.git/info/refs?service=git-upload-pack")
+            .to_return(status: 200, body: "001e# service=git-upload-pack", headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' })
+          find('.js-import-git-toggle-button').click
+
+          fill_in 'project_import_url', with: 'http://foo.git'
+          fill_in 'project_name', with: 'CI CD Project1'
+          fill_in 'project_path', with: 'ci-cd-project1'
+          click_on 'Pick a group or namespace'
+          click_on user.username
+          choose 'project_visibility_level_20'
+          click_button 'Create project'
+
+          created_project = Project.last
+          expect(page).to have_current_path(project_path(created_project), ignore_query: true)
+          expect(created_project.mirror).to eq(true)
+          expect(created_project.project_feature).not_to be_issues_enabled
+        end
+      end
+
+      it_behaves_like 'CI/CD for GitHub'
+    end
+
+    context 'when available through usage ping features' do
+      before do
+        stub_usage_ping_features(true)
+      end
+
+      it_behaves_like 'CI/CD for GitHub'
     end
 
     context 'when unlicensed' do
