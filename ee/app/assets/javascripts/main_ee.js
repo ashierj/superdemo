@@ -1,5 +1,4 @@
 import initEETrialBanner from 'ee/ee_trial_banner';
-import trackNavbarEvents from 'ee/event_tracking/navbar';
 import initNamespaceUserCapReachedAlert from 'ee/namespace_user_cap_reached_alert';
 import { initTanukiBotChatDrawer } from 'ee/ai/tanuki_bot';
 
@@ -14,5 +13,4 @@ if (document.querySelector('.js-verification-reminder') !== null) {
 initEETrialBanner();
 initNamespaceUserCapReachedAlert();
 
-trackNavbarEvents();
 initTanukiBotChatDrawer();

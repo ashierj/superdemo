@@ -23492,30 +23492,6 @@ msgstr ""
 msgid "Groups are the best way to manage projects and members."
 msgstr ""
 
-msgid "GroupsDropdown|Frequently visited"
-msgstr ""
-
-msgid "GroupsDropdown|Groups you visit often will appear here"
-msgstr ""
-
-msgid "GroupsDropdown|Loading groups"
-msgstr ""
-
-msgid "GroupsDropdown|Search your groups"
-msgstr ""
-
-msgid "GroupsDropdown|Something went wrong on our end."
-msgstr ""
-
-msgid "GroupsDropdown|Sorry, no groups matched your search"
-msgstr ""
-
-msgid "GroupsDropdown|This feature requires browser localStorage support"
-msgstr ""
-
-msgid "GroupsDropdown|Toggle edit mode"
-msgstr ""
-
 msgid "GroupsEmptyState|A group is a collection of several projects"
 msgstr ""
 
@@ -38363,30 +38339,6 @@ msgid "Projects with this topic"
 msgstr ""
 
 msgid "Projects with write access"
-msgstr ""
-
-msgid "ProjectsDropdown|Frequently visited"
-msgstr ""
-
-msgid "ProjectsDropdown|Loading projects"
-msgstr ""
-
-msgid "ProjectsDropdown|Projects you visit often will appear here"
-msgstr ""
-
-msgid "ProjectsDropdown|Search your projects"
-msgstr ""
-
-msgid "ProjectsDropdown|Something went wrong on our end."
-msgstr ""
-
-msgid "ProjectsDropdown|Sorry, no projects matched your search"
-msgstr ""
-
-msgid "ProjectsDropdown|This feature requires browser localStorage support"
-msgstr ""
-
-msgid "ProjectsDropdown|Toggle edit mode"
 msgstr ""
 
 msgid "ProjectsNew|Allows you to immediately clone this project’s repository. Skip this if you plan to push up an existing repository."

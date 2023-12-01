@@ -16,7 +16,7 @@ import { mapState, mapActions } from 'vuex';
 
 import Api from '~/api';
 import { createAlert } from '~/alert';
-import { STORAGE_KEY } from '~/frequent_items/constants';
+import { STORAGE_KEY } from '~/super_sidebar/constants';
 import { getTopFrequentItems } from '~/super_sidebar/utils';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
