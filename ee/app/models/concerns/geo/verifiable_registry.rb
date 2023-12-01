@@ -46,7 +46,7 @@ module Geo
         message = 'Checksum does not match the primary checksum'
         details = { checksum: checksum, primary_checksum: primary_checksum }
 
-        log_info(message, details)
+        log_error(message, details)
 
         self.verification_failure = "#{message} #{details}".truncate(255)
         self.verification_checksum = checksum
