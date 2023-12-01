@@ -76,8 +76,7 @@ export default {
   computed: {
     hasLimitedAccess() {
       return (
-        gon.features?.limitedAccessModal &&
-        LIMITED_ACCESS_KEYS.includes(this.subscriptionPermissions.reason)
+        gon.features?.limitedAccessModal && LIMITED_ACCESS_KEYS.includes(this.permissionReason)
       );
     },
     isFreePlan() {
@@ -97,6 +96,9 @@ export default {
     },
     parsedNamespaceId() {
       return parseInt(this.namespaceId, 10);
+    },
+    permissionReason() {
+      return this.subscriptionPermissions?.reason;
     },
     shouldShowModal() {
       return !this.canAddSeats && this.hasLimitedAccess;
@@ -131,6 +133,10 @@ export default {
         reason: data.userActionAccess?.limitedAccessReason,
       }),
       error: (error) => {
+        const { networkError } = error;
+        if (networkError?.result?.errors.length) {
+          networkError?.result?.errors.forEach(({ message }) => Sentry.captureException(message));
+        }
         Sentry.captureException(error);
       },
     },
@@ -245,7 +251,7 @@ export default {
     <limited-access-modal
       v-if="shouldShowModal"
       v-model="showLimitedAccessModal"
-      :limited-access-reason="subscriptionPermissions.reason"
+      :limited-access-reason="permissionReason"
     />
   </div>
 </template>

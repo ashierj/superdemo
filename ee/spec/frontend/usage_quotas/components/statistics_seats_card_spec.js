@@ -130,6 +130,43 @@ describe('StatisticsSeatsCard', () => {
     });
   });
 
+  describe('when there are network errors', () => {
+    const message = 'a network error';
+    const error = new Error('A network error');
+
+    describe('when the error array is not populated', () => {
+      beforeEach(async () => {
+        subscriptionPermissionsQueryHandlerMock = jest.fn().mockRejectedValueOnce(error);
+        createComponent();
+
+        await waitForPromises();
+      });
+
+      it('captures the exception', () => {
+        expect(Sentry.captureException).toHaveBeenCalledTimes(1);
+        expect(Sentry.captureException).toHaveBeenCalledWith(error);
+      });
+    });
+
+    describe('when the error array is populated', () => {
+      beforeEach(async () => {
+        error.result = { errors: [{ message }] };
+        subscriptionPermissionsQueryHandlerMock = jest.fn().mockRejectedValueOnce(error);
+        createComponent();
+
+        await waitForPromises();
+      });
+
+      it('captures the message', () => {
+        expect(Sentry.captureException).toHaveBeenNthCalledWith(1, message);
+      });
+
+      it('captures the exception', () => {
+        expect(Sentry.captureException).toHaveBeenNthCalledWith(2, error);
+      });
+    });
+  });
+
   describe('seats owed block', () => {
     it('renders seats owed block if seatsOwed is passed', async () => {
       createComponent();
@@ -209,6 +246,7 @@ describe('StatisticsSeatsCard', () => {
               },
             },
           });
+
           await waitForPromises();
         });
 
@@ -228,6 +266,7 @@ describe('StatisticsSeatsCard', () => {
       describe('with no Free Plan', () => {
         beforeEach(async () => {
           createComponent();
+
           await waitForPromises();
         });
 
@@ -246,7 +285,7 @@ describe('StatisticsSeatsCard', () => {
     });
 
     describe('when canAddSeats is false', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
           data: {
             subscription: { canAddSeats: false, canRenew: true, communityPlan: false },
@@ -263,7 +302,8 @@ describe('StatisticsSeatsCard', () => {
             },
           },
         });
-        return waitForPromises();
+
+        await waitForPromises();
       });
 
       it('does not render the `Add more seats` button', () => {
@@ -287,6 +327,7 @@ describe('StatisticsSeatsCard', () => {
             },
           });
           createComponent();
+
           return waitForPromises();
         });
 
@@ -298,24 +339,25 @@ describe('StatisticsSeatsCard', () => {
   });
 
   describe('limited access modal', () => {
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
     describe('when limitedAccessModal FF is on', () => {
       beforeEach(() => {
         gon.features = { limitedAccessModal: true };
       });
 
-      describe('when canAddSeats=false and limitedAccessReason=INVALID_REASON', () => {
+      describe.each([
+        null,
+        { limitedAccessReason: null },
+        { limitedAccessReason: 'INVALID_REASON' },
+      ])('with userActionAccess = %s', (userActionAccess) => {
         beforeEach(async () => {
           subscriptionPermissionsQueryHandlerMock = jest.fn().mockResolvedValue({
             data: {
               subscription: { canAddSeats: false, canRenew: true, communityPlan: false },
-              userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+              userActionAccess,
             },
           });
           createComponent();
+
           await waitForPromises();
         });
 
@@ -346,6 +388,7 @@ describe('StatisticsSeatsCard', () => {
             await waitForPromises();
 
             findPurchaseButton().vm.$emit('click');
+
             await nextTick();
           });
 
