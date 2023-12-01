@@ -68,22 +68,8 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: You are a coding autocomplete agent. We want to generate new Go code inside the
+            You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
-            The existing code is provided in <existing_code></existing_code> tags.
-            The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
-            In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
-            likely new code to generate at the cursor position to fulfill the instructions.
-
-            When generating the new code, please ensure the following:
-            1. It is valid Go code.
-            2. It matches the existing code's variable, parameter and function names.
-            3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
-            4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-
-            Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
-            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-
             Here are a few examples of successfully generated code by other autocomplete agents:
 
             <examples>
@@ -98,7 +84,6 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
 
             </examples>
 
-
             <existing_code>
             package main
 
@@ -108,13 +93,21 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             <cursor>
             </existing_code>
 
+            The existing code is provided in <existing_code></existing_code> tags.
+            The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
+            In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
+            likely new code to generate at the cursor position to fulfill the instructions.
 
-            Here are instructions provided in <instruction></instruction> tags.
+            When generating the new code, please ensure the following:
+            1. It is valid Go code.
+            2. It matches the existing code's variable, parameter and function names.
+            3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
+            4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
 
-            <instruction>
-            Print a hello world message
-            </instruction>
+            Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
+            Human: Print a hello world message
 
             Assistant: <new_code>
           PROMPT
@@ -133,8 +126,31 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
             prompt_version: 2,
             prompt: <<~PROMPT
-            Human: You are a coding autocomplete agent. We want to generate new Go code inside the
+            You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
+            Here are a few examples of successfully generated code by other autocomplete agents:
+
+            <examples>
+
+              <example>
+                H: <existing_code>
+                     func hello() {
+                   </existing_code>
+
+                A: func hello() {<new_code>fmt.Println(\"hello\")</new_code>
+              </example>
+
+            </examples>
+
+            <existing_code>
+            package main
+
+            import "fmt"
+
+            func main() {
+            <cursor>
+            </existing_code>
+
             The existing code is provided in <existing_code></existing_code> tags.
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -151,32 +167,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            Here are a few examples of successfully generated code by other autocomplete agents:
-
-            <examples>
-
-              <example>
-                H: <existing_code>
-                     func hello() {
-                   </existing_code>
-
-                A: func hello() {<new_code>fmt.Println(\"hello\")</new_code>
-              </example>
-
-            </examples>
-
-
-            <existing_code>
-            package main
-
-            import "fmt"
-
-            func main() {
-            <cursor>
-            </existing_code>
-
-
-
+            Human: Generate the most likely code based on instructions.
 
             Assistant: <new_code>
             PROMPT
@@ -197,8 +188,10 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: You are a coding autocomplete agent. We want to generate new Go code inside the
+            You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
+
+
 
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -213,16 +206,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-
-
-
-
-            Here are instructions provided in <instruction></instruction> tags.
-
-            <instruction>
-            Print a hello world message
-            </instruction>
-
+            Human: Print a hello world message
 
             Assistant: <new_code>
           PROMPT
@@ -245,8 +229,14 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: You are a coding autocomplete agent. We want to generate new Go code inside the
+            You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
+
+            <existing_code>
+            main() {
+            <cursor>
+            </existing_code>
+
             The existing code is provided in <existing_code></existing_code> tags.
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -261,20 +251,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-
-
-            <existing_code>
-            main() {
-            <cursor>
-            </existing_code>
-
-
-            Here are instructions provided in <instruction></instruction> tags.
-
-            <instruction>
-            Print a hello world message
-            </instruction>
-
+            Human: Print a hello world message
 
             Assistant: <new_code>
           PROMPT
@@ -295,8 +272,18 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: You are a coding autocomplete agent. We want to generate new  code inside the
+            You are a coding autocomplete agent. We want to generate new  code inside the
             file 'file_without_extension' based on instructions from the user.
+
+            <existing_code>
+            package main
+
+            import "fmt"
+
+            func main() {
+            <cursor>
+            </existing_code>
+
             The existing code is provided in <existing_code></existing_code> tags.
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -311,24 +298,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-
-
-            <existing_code>
-            package main
-
-            import "fmt"
-
-            func main() {
-            <cursor>
-            </existing_code>
-
-
-            Here are instructions provided in <instruction></instruction> tags.
-
-            <instruction>
-            Print a hello world message
-            </instruction>
-
+            Human: Print a hello world message
 
             Assistant: <new_code>
           PROMPT
@@ -349,8 +319,18 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            Human: You are a coding autocomplete agent. We want to generate new  code inside the
+            You are a coding autocomplete agent. We want to generate new  code inside the
             file 'README.md' based on instructions from the user.
+
+            <existing_code>
+            package main
+
+            import "fmt"
+
+            func main() {
+            <cursor>
+            </existing_code>
+
             The existing code is provided in <existing_code></existing_code> tags.
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -365,24 +345,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-
-
-            <existing_code>
-            package main
-
-            import "fmt"
-
-            func main() {
-            <cursor>
-            </existing_code>
-
-
-            Here are instructions provided in <instruction></instruction> tags.
-
-            <instruction>
-            Print a hello world message
-            </instruction>
-
+            Human: Print a hello world message
 
             Assistant: <new_code>
           PROMPT

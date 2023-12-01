@@ -20,8 +20,10 @@ module CodeSuggestions
 
         def prompt
           <<~PROMPT.strip
-            Human: You are a coding autocomplete agent. We want to generate new #{language.name} code inside the
+            You are a coding autocomplete agent. We want to generate new #{language.name} code inside the
             file '#{file_path_info}' based on instructions from the user.
+            #{examples_section}
+            #{existing_code_block}
             #{existing_code_instruction}
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -36,11 +38,7 @@ module CodeSuggestions
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            #{examples_section}
-
-            #{existing_code_block}
-
-            #{instructions}
+            Human: #{instructions}
 
             Assistant: <new_code>
           PROMPT
@@ -67,15 +65,7 @@ module CodeSuggestions
         end
 
         def instructions
-          return unless params[:instruction].present?
-
-          <<~INSTRUCTIONS
-            Here are instructions provided in <instruction></instruction> tags.
-
-            <instruction>
-            #{params[:instruction]}
-            </instruction>
-          INSTRUCTIONS
+          params[:instruction].presence || 'Generate the most likely code based on instructions.'
         end
 
         def existing_code_block
