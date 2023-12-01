@@ -6,6 +6,8 @@ module Types
       class ProjectType < BaseObject
         graphql_name 'CiSubscriptionsProject'
 
+        connection_type_class Types::CountableConnectionType
+
         authorize :read_project_subscription
 
         field :id, Types::GlobalIDType[::Ci::Subscriptions::Project], description: "Global ID of the subscription."
