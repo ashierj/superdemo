@@ -307,6 +307,18 @@ module EE
           null: true, description: 'Member roles available for the group.',
           resolver: ::Resolvers::MemberRoles::RolesResolver,
           alpha: { milestone: '16.5' }
+
+        field :ci_subscriptions_projects,
+          type: ::Types::Ci::Subscriptions::ProjectType.connection_type,
+          method: :upstream_project_subscriptions,
+          description: 'Triggers a new pipeline in the(downstream) project when a pipeline successfully' \
+                       'completes on the upstream project.'
+
+        field :ci_subscribed_projects,
+          type: ::Types::Ci::Subscriptions::ProjectType.connection_type,
+          method: :downstream_project_subscriptions,
+          description: 'Triggers a new pipeline in the downstream project when a pipeline successfully' \
+                       'completes on the(upstream) project.'
       end
 
       def tracking_key
