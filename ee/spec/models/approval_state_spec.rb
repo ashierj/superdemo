@@ -381,6 +381,28 @@ RSpec.describe ApprovalState do
           it 'returns true' do
             expect(subject.approved?).to eq(true)
           end
+
+          context "when there may be a temporary unapproval" do
+            context "there is not a temporary unapproval" do
+              before do
+                allow(subject).to receive(:temporarily_unapproved?).and_return(false)
+              end
+
+              it "returns true" do
+                expect(subject.approved?).to be(true)
+              end
+            end
+
+            context "there is a temporary unapproval" do
+              before do
+                allow(subject).to receive(:temporarily_unapproved?).and_return(true)
+              end
+
+              it "returns false" do
+                expect(subject.approved?).to be(false)
+              end
+            end
+          end
         end
 
         context 'when some rules are not approved' do

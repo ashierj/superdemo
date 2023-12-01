@@ -30,20 +30,9 @@ RSpec.describe MergeRequests::Mergeability::CheckApprovedService, feature_catego
       context "when the merge request is approved" do
         let(:approved) { true }
 
-        context "with no temporary blocks" do
-          it "returns a check result with status success" do
-            expect(result.status)
-              .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
-          end
-        end
-
-        context "with a temporary block" do
-          it "returns a check result with status failure" do
-            merge_request.approval_state.temporarily_unapprove!
-
-            expect(result.status)
-              .to eq Gitlab::MergeRequests::Mergeability::CheckResult::FAILED_STATUS
-          end
+        it "returns a check result with status success" do
+          expect(result.status)
+            .to eq Gitlab::MergeRequests::Mergeability::CheckResult::SUCCESS_STATUS
         end
       end
 
