@@ -4,11 +4,11 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import {
-  member as memberMock,
+  upgradedMember as memberMock,
   directMember,
   members,
   bannedMember,
-} from 'ee_else_ce_jest/members/mock_data';
+} from 'ee_jest/members/mock_data';
 import MembersTable from '~/members/components/table/members_table.vue';
 import { MEMBER_TYPES } from '~/members/constants';
 
@@ -52,7 +52,7 @@ describe('MemberList', () => {
         'expires-at',
         'created-at',
         'member-action-buttons',
-        'role-dropdown',
+        'max-role',
         'disable-two-factor-modal',
         'remove-group-link-modal',
         'remove-member-modal',

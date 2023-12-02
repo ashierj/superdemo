@@ -105,7 +105,7 @@ describe('Members Utils', () => {
         expect(flatten).toHaveLength(3);
 
         expect(flatten).toContainEqual({
-          text: 'a',
+          text: 'custom role 1',
           value: 'role-custom-0',
           accessLevel: 10,
           memberRoleId: 101,
