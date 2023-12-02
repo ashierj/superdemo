@@ -1,0 +1,8 @@
+query availableMemberRolePermissions {
+  memberRolePermissions {
+    nodes {
+      name
+      value
+    }
+  }
+}

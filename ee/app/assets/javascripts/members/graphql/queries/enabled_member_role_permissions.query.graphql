@@ -1,0 +1,6 @@
+query enabledMemberRolePermissions($id: MemberRoleID!) {
+  memberRole(id: $id) {
+    id
+    enabledPermissions
+  }
+}

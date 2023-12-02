@@ -52,13 +52,13 @@ describe('Vuex members mutations', () => {
   });
 
   describe(types.RECEIVE_LDAP_OVERRIDE_ERROR, () => {
-    const state = {
-      showError: false,
-      errorMessage: '',
-    };
-
     describe('when enabling LDAP override', () => {
       it('shows error message', () => {
+        const state = {
+          showError: false,
+          errorMessage: '',
+        };
+
         mutations[types.RECEIVE_LDAP_OVERRIDE_ERROR](state, true);
 
         expect(state.showError).toBe(true);
@@ -70,6 +70,11 @@ describe('Vuex members mutations', () => {
 
     describe('when disabling LDAP override', () => {
       it('shows error message', () => {
+        const state = {
+          showError: false,
+          errorMessage: '',
+        };
+
         mutations[types.RECEIVE_LDAP_OVERRIDE_ERROR](state, false);
 
         expect(state.showError).toBe(true);
