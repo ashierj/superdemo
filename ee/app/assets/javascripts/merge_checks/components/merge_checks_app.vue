@@ -78,7 +78,7 @@ export default {
         :locked="skippedPipelineLocked"
         :locked-text="skippedPipelineText"
         data-testid="allow-merge-on-skipped-pipeline-checkbox"
-        @input="toggleChecked('hasAllowMergeOnSkippedPipeline')"
+        @change="toggleChecked('hasAllowMergeOnSkippedPipeline')"
       >
         <template #help>{{ $options.i18n.allowMergeOnSkipped.help }}</template>
       </approval-settings-checkbox>
