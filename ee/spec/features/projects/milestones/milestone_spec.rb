@@ -20,11 +20,24 @@ RSpec.describe 'Milestones on EE', feature_category: :team_planning do
       create(:milestone, project: project, start_date: Date.yesterday, due_date: Date.tomorrow)
     end
 
-    context 'with the milestone charts feature available' do
-      let(:issue_params) { { project: project, assignees: [user], author: user, milestone: milestone } }
+    context 'with no issues' do
+      it 'shows a mention to add issues' do
+        visit_milestone
 
+        expect(page).to have_content 'Assign some issues to this milestone.'
+      end
+    end
+
+    context 'with the milestone charts feature available' do
       before do
+        create(:issue, project: project, assignees: [user], author: user, milestone: milestone)
         stub_licensed_features(milestone_charts: true)
+      end
+
+      it 'does not show a mention to add issues' do
+        visit_milestone
+
+        expect(page).not_to have_content 'Assign some issues to this milestone.'
       end
 
       it 'shows a burndown chart' do
@@ -41,9 +54,7 @@ RSpec.describe 'Milestones on EE', feature_category: :team_planning do
         it 'shows a mention to fill in dates' do
           visit project_milestone_path(project, milestone_without_dates)
 
-          within('#content-body') do
-            expect(page).to have_link('Add start and due date')
-          end
+          expect(find_by_testid('no-issues-and-dates-alert')).to have_content('Add a start date and due date')
         end
       end
     end
