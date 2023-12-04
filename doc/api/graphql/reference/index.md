@@ -5806,7 +5806,33 @@ Input type: `OrganizationCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationorganizationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationorganizationcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationorganizationcreateorganization"></a>`organization` | [`Organization`](#organization) | Organization created. |
+| <a id="mutationorganizationcreateorganization"></a>`organization` | [`Organization`](#organization) | Organization after mutation. |
+
+### `Mutation.organizationUpdate`
+
+WARNING:
+**Introduced** in 16.7.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `OrganizationUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationorganizationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationorganizationupdatedescription"></a>`description` | [`String`](#string) | Description of the organization. |
+| <a id="mutationorganizationupdateid"></a>`id` | [`OrganizationsOrganizationID!`](#organizationsorganizationid) | ID of the organization to mutate. |
+| <a id="mutationorganizationupdatename"></a>`name` | [`String`](#string) | Name for the organization. |
+| <a id="mutationorganizationupdatepath"></a>`path` | [`String`](#string) | Path for the organization. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationorganizationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationorganizationupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationorganizationupdateorganization"></a>`organization` | [`Organization`](#organization) | Organization after mutation. |
 
 ### `Mutation.pagesMarkOnboardingComplete`
 

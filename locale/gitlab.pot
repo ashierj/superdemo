@@ -20388,6 +20388,9 @@ msgstr ""
 msgid "Failed to update issue status"
 msgstr ""
 
+msgid "Failed to update organization"
+msgstr ""
+
 msgid "Failed to update the Canary Ingress."
 msgstr ""
 
@@ -55819,6 +55822,9 @@ msgid "You have insufficient permissions to set customer relations contacts for 
 msgstr ""
 
 msgid "You have insufficient permissions to update an on-call schedule for this project"
+msgstr ""
+
+msgid "You have insufficient permissions to update the organization"
 msgstr ""
 
 msgid "You have insufficient permissions to update this HTTP integration"
