@@ -22,6 +22,23 @@ describe('TracingTableList', () => {
     },
   ];
 
+  const expectedTraces = [
+    {
+      timestamp: 'Jul 10, 2023 3:02pm UTC',
+      service_name: 'tracegen',
+      operation: 'lets-go',
+      duration: '1.50 ms',
+      trace_id: 'trace-1',
+    },
+    {
+      timestamp: 'Aug 11, 2023 4:03pm UTC',
+      service_name: 'tracegen-2',
+      operation: 'lets-go-2',
+      duration: '2.00 ms',
+      trace_id: 'trace-2',
+    },
+  ];
+
   const mountComponent = ({ traces = mockTraces, highlightedTraceId } = {}) => {
     wrapper = mountExtended(TracingTableList, {
       propsData: {
@@ -31,13 +48,8 @@ describe('TracingTableList', () => {
     });
   };
 
-  const getRows = () => wrapper.findComponent(GlTable).find('tbody').findAll('tr');
+  const getRows = () => wrapper.findComponent(GlTable).findAll(`[data-testid="trace-row"]`);
   const getRow = (idx) => getRows().at(idx);
-  const getCells = (trIdx) => getRows().at(trIdx).findAll('td');
-
-  const getCell = (trIdx, tdIdx) => {
-    return getCells(trIdx).at(tdIdx);
-  };
 
   const clickRow = async (idx) => {
     getRow(idx).trigger('click');
@@ -47,21 +59,16 @@ describe('TracingTableList', () => {
   it('renders traces as table', () => {
     mountComponent();
 
-    const rows = wrapper.findAll('table tbody tr');
-
+    const rows = getRows();
     expect(rows.length).toBe(mockTraces.length);
-
-    expect(getCells(0).length).toBe(4);
-    expect(getCell(0, 0).text()).toBe('Jul 10, 2023 3:02pm UTC');
-    expect(getCell(0, 1).text()).toBe('tracegen');
-    expect(getCell(0, 2).text()).toBe('lets-go');
-    expect(getCell(0, 3).text()).toBe(`1.50 ms`);
-
-    expect(getCells(1).length).toBe(4);
-    expect(getCell(1, 0).text()).toBe('Aug 11, 2023 4:03pm UTC');
-    expect(getCell(1, 1).text()).toBe('tracegen-2');
-    expect(getCell(1, 2).text()).toBe('lets-go-2');
-    expect(getCell(1, 3).text()).toBe(`2.00 ms`);
+    mockTraces.forEach((_, i) => {
+      const row = getRows().at(i);
+      const trace = expectedTraces[i];
+      expect(row.find(`[data-testid="trace-timestamp"]`).text()).toBe(trace.timestamp);
+      expect(row.find(`[data-testid="trace-service"]`).text()).toBe(trace.service_name);
+      expect(row.find(`[data-testid="trace-operation"]`).text()).toBe(trace.operation);
+      expect(row.find(`[data-testid="trace-duration"]`).text()).toBe(trace.duration);
+    });
   });
 
   it('emits trace-clicked on row-clicked', async () => {
@@ -76,7 +83,9 @@ describe('TracingTableList', () => {
   it('renders the empty state when no traces are provided', () => {
     mountComponent({ traces: [] });
 
-    expect(getCell(0, 0).text()).toContain('No results found');
+    expect(getRows().length).toBe(1);
+
+    expect(getRows().at(0).text()).toContain('No results found');
   });
 
   it('sets the correct variant when a trace is highlighted', () => {

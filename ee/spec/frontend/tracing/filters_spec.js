@@ -1,183 +1,122 @@
 import {
-  filterToQueryObject,
-  urlQueryToFilter,
-  prepareTokens,
-  processFilters,
-} from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
-import { FILTERED_SEARCH_TERM } from '~/vue_shared/components/filtered_search_bar/constants';
-
-import {
-  PERIOD_FILTER_TOKEN_TYPE,
-  SERVICE_NAME_FILTER_TOKEN_TYPE,
-  OPERATION_FILTER_TOKEN_TYPE,
-  TRACE_ID_FILTER_TOKEN_TYPE,
-  DURATION_MS_FILTER_TOKEN_TYPE,
-  ATTRIBUTE_FILTER_TOKEN_TYPE,
   queryToFilterObj,
   filterObjToQuery,
   filterObjToFilterToken,
   filterTokensToFilterObj,
 } from 'ee/tracing/filters';
 
-jest.mock('~/vue_shared/components/filtered_search_bar/filtered_search_utils');
-
 describe('utils', () => {
+  const query =
+    'sortBy=timestamp_desc' +
+    '&period[]=1h' +
+    '&service[]=accountingservice&not%5Bservice%5D[]=adservice' +
+    '&operation[]=orders%20receive&not%5Boperation%5D[]=orders%20receive' +
+    '&gt%5BdurationMs%5D[]=100&lt%5BdurationMs%5D[]=1000' +
+    '&trace_id[]=9609bf00-4b68-f86c-abe2-5e23d0089c83' +
+    '&not%5Btrace_id%5D[]=9609bf00-4b68-f86c-abe2-5e23d0089c83' +
+    '&attribute[]=foo%3Dbar&attribute[]=baz%3Dbar' +
+    '&search=searchquery';
+
+  const filterObj = {
+    period: [{ operator: '=', value: '1h' }],
+    service: [
+      { operator: '=', value: 'accountingservice' },
+      { operator: '!=', value: 'adservice' },
+    ],
+    operation: [
+      { operator: '=', value: 'orders receive' },
+      { operator: '!=', value: 'orders receive' },
+    ],
+    traceId: [
+      { operator: '=', value: '9609bf00-4b68-f86c-abe2-5e23d0089c83' },
+      { operator: '!=', value: '9609bf00-4b68-f86c-abe2-5e23d0089c83' },
+    ],
+    durationMs: [
+      { operator: '>', value: '100' },
+      { operator: '<', value: '1000' },
+    ],
+    attribute: [
+      { operator: '=', value: 'foo=bar' },
+      { operator: '=', value: 'baz=bar' },
+    ],
+    search: [{ value: 'searchquery' }],
+  };
+
+  const queryObj = {
+    attribute: ['foo=bar', 'baz=bar'],
+    durationMs: null,
+    'gt[durationMs]': ['100'],
+    'lt[durationMs]': ['1000'],
+    'not[attribute]': null,
+    'not[durationMs]': null,
+    'not[operation]': ['orders receive'],
+    'not[period]': null,
+    'not[service]': ['adservice'],
+    'not[trace_id]': ['9609bf00-4b68-f86c-abe2-5e23d0089c83'],
+    operation: ['orders receive'],
+    period: ['1h'],
+    search: 'searchquery',
+    service: ['accountingservice'],
+    trace_id: ['9609bf00-4b68-f86c-abe2-5e23d0089c83'],
+  };
+
+  const filterTokens = [
+    { type: 'period', value: { data: '1h', operator: '=' } },
+    { type: 'service-name', value: { data: 'accountingservice', operator: '=' } },
+    { type: 'service-name', value: { data: 'adservice', operator: '!=' } },
+    { type: 'operation', value: { data: 'orders receive', operator: '=' } },
+    { type: 'operation', value: { data: 'orders receive', operator: '!=' } },
+    {
+      type: 'trace-id',
+      value: { data: '9609bf00-4b68-f86c-abe2-5e23d0089c83', operator: '=' },
+    },
+    {
+      type: 'trace-id',
+      value: { data: '9609bf00-4b68-f86c-abe2-5e23d0089c83', operator: '!=' },
+    },
+    { type: 'duration-ms', value: { data: '100', operator: '>' } },
+    { type: 'duration-ms', value: { data: '1000', operator: '<' } },
+    { type: 'attribute', value: { data: 'foo=bar', operator: '=' } },
+    { type: 'attribute', value: { data: 'baz=bar', operator: '=' } },
+    { type: 'filtered-search-term', value: { data: 'searchquery', operator: undefined } },
+  ];
+
   describe('queryToFilterObj', () => {
     it('should build a filter obj', () => {
-      const query = { test: 'query' };
-      urlQueryToFilter.mockReturnValue({
-        period: '7d',
-        service: 'my_service',
-        operation: 'my_operation',
-        trace_id: 'my_trace_id',
-        durationMs: '500',
-        attribute: 'foo=bar',
-        [FILTERED_SEARCH_TERM]: 'test',
-      });
-
-      const filterObj = queryToFilterObj(query);
-
-      expect(urlQueryToFilter).toHaveBeenCalledWith(query, {
-        customOperators: [
-          { operator: '>', prefix: 'gt' },
-          { operator: '<', prefix: 'lt' },
-        ],
-        filteredSearchTermKey: 'search',
-      });
-      expect(filterObj).toEqual({
-        period: '7d',
-        service: 'my_service',
-        operation: 'my_operation',
-        traceId: 'my_trace_id',
-        durationMs: '500',
-        search: 'test',
-        attribute: 'foo=bar',
-      });
+      expect(queryToFilterObj(query)).toEqual(filterObj);
     });
 
     it('should add the default period filter if not specified', () => {
-      const query = { test: 'query' };
-      urlQueryToFilter.mockReturnValue({});
-
-      const filterObj = queryToFilterObj(query);
-
-      expect(filterObj).toEqual({
+      expect(queryToFilterObj('service[]=accountingservice')).toEqual({
         period: [{ operator: '=', value: '1h' }],
-        service: undefined,
-        operation: undefined,
-        traceId: undefined,
-        durationMs: undefined,
-        attribute: undefined,
-        search: undefined,
+        service: [{ operator: '=', value: 'accountingservice' }],
       });
     });
   });
 
   describe('filterObjToQuery', () => {
     it('should convert filter object to URL query', () => {
-      filterToQueryObject.mockReturnValue('mockquery');
-
-      const query = filterObjToQuery({
-        period: '7d',
-        service: 'my_service',
-        operation: 'my_operation',
-        traceId: 'my_trace_id',
-        durationMs: '500',
-        search: 'test',
-        attribute: 'foo=bar',
-      });
-
-      expect(filterToQueryObject).toHaveBeenCalledWith(
-        {
-          period: '7d',
-          service: 'my_service',
-          operation: 'my_operation',
-          trace_id: 'my_trace_id',
-          durationMs: '500',
-          'filtered-search-term': 'test',
-          attribute: 'foo=bar',
-        },
-        {
-          customOperators: [
-            { applyOnlyToKey: 'durationMs', operator: '>', prefix: 'gt' },
-            { applyOnlyToKey: 'durationMs', operator: '<', prefix: 'lt' },
-          ],
-          filteredSearchTermKey: 'search',
-        },
-      );
-      expect(query).toBe('mockquery');
+      expect(filterObjToQuery(filterObj)).toEqual(queryObj);
     });
   });
 
   describe('filterObjToFilterToken', () => {
     it('should convert filter object to filter tokens', () => {
-      const mockTokens = [];
-      prepareTokens.mockReturnValue(mockTokens);
-
-      const tokens = filterObjToFilterToken({
-        period: '7d',
-        service: 'my_service',
-        operation: 'my_operation',
-        traceId: 'my_trace_id',
-        durationMs: '500',
-        search: 'test',
-        attribute: 'foo=bar',
-      });
-
-      expect(prepareTokens).toHaveBeenCalledWith({
-        [PERIOD_FILTER_TOKEN_TYPE]: '7d',
-        [SERVICE_NAME_FILTER_TOKEN_TYPE]: 'my_service',
-        [OPERATION_FILTER_TOKEN_TYPE]: 'my_operation',
-        [TRACE_ID_FILTER_TOKEN_TYPE]: 'my_trace_id',
-        [DURATION_MS_FILTER_TOKEN_TYPE]: '500',
-        [FILTERED_SEARCH_TERM]: 'test',
-        [ATTRIBUTE_FILTER_TOKEN_TYPE]: 'foo=bar',
-      });
-      expect(tokens).toBe(mockTokens);
+      expect(filterObjToFilterToken(filterObj)).toEqual(filterTokens);
     });
   });
 
   describe('filterTokensToFilterObj', () => {
     it('should convert filter tokens to filter object', () => {
-      const mockTokens = [];
-      processFilters.mockReturnValue({
-        [SERVICE_NAME_FILTER_TOKEN_TYPE]: 'my_service',
-        [PERIOD_FILTER_TOKEN_TYPE]: '7d',
-        [OPERATION_FILTER_TOKEN_TYPE]: 'my_operation',
-        [TRACE_ID_FILTER_TOKEN_TYPE]: 'my_trace_id',
-        [DURATION_MS_FILTER_TOKEN_TYPE]: '500',
-        [FILTERED_SEARCH_TERM]: 'test',
-        [ATTRIBUTE_FILTER_TOKEN_TYPE]: 'foo=bar',
-      });
-
-      const filterObj = filterTokensToFilterObj(mockTokens);
-
-      expect(processFilters).toHaveBeenCalledWith(mockTokens);
-      expect(filterObj).toEqual({
-        service: 'my_service',
-        period: '7d',
-        operation: 'my_operation',
-        traceId: 'my_trace_id',
-        durationMs: '500',
-        search: 'test',
-        attribute: 'foo=bar',
-      });
+      expect(filterTokensToFilterObj(filterTokens)).toEqual(filterObj);
     });
 
     it('should add the default period filter it not specified', () => {
-      const mockTokens = [];
-      processFilters.mockReturnValue({});
-
-      const filterObj = filterTokensToFilterObj(mockTokens);
-
-      expect(filterObj).toEqual({
+      expect(
+        filterTokensToFilterObj([{ type: 'duration-ms', value: { data: '100', operator: '>' } }]),
+      ).toEqual({
         period: [{ operator: '=', value: '1h' }],
-        service: undefined,
-        operation: undefined,
-        traceId: undefined,
-        durationMs: undefined,
-        search: undefined,
-        attribute: undefined,
+        durationMs: [{ operator: '>', value: '100' }],
       });
     });
   });
