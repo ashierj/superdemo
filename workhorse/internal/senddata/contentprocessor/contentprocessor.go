@@ -133,3 +133,8 @@ func (cd *contentDisposition) FlushError() error {
 	}
 	return http.NewResponseController(cd.rw).Flush()
 }
+
+// Unwrap lets http.ResponseController get the underlying http.ResponseWriter.
+func (cd *contentDisposition) Unwrap() http.ResponseWriter {
+	return cd.rw
+}
