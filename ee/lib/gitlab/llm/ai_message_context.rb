@@ -6,7 +6,8 @@ module Gitlab
       include ActiveModel::AttributeAssignment
 
       ATTRIBUTES_LIST = [
-        :resource
+        :resource,
+        :user_agent
       ].freeze
 
       attr_accessor(*ATTRIBUTES_LIST)

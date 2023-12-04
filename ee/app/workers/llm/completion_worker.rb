@@ -43,21 +43,11 @@ module Llm
     def perform(prompt_message_hash, options = {})
       ai_prompt_message = self.class.deserialize_message(prompt_message_hash, options)
 
-      track_snowplow_event(ai_prompt_message)
+      Gitlab::Llm::Tracking.event_for_ai_message(
+        self.class.to_s, "perform_completion_worker", ai_message: ai_prompt_message
+      )
 
       Internal::CompletionService.new(ai_prompt_message, options).execute
-    end
-
-    private
-
-    def track_snowplow_event(prompt_message)
-      Gitlab::Tracking.event(
-        self.class.to_s,
-        "perform_completion_worker",
-        label: prompt_message.ai_action.to_s,
-        property: prompt_message.request_id,
-        user: prompt_message.user
-      )
     end
   end
 end
