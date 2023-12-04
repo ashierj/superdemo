@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_redis_chat, feature_category: :duo_chat do
+RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature_category: :duo_chat do
   include FakeBlobHelpers
 
   let_it_be(:user) { create(:user) }
@@ -17,27 +17,19 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     let(:resource) { nil }
     let(:extra_resource) { {} }
     let(:current_file) { nil }
+    let(:options) do
+      { extra_resource: extra_resource, current_file: current_file }
+    end
 
     let(:executor) do
-      ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
-      context = ::Gitlab::Llm::Chain::GitlabContext.new(
-        current_user: user,
-        container: resource.try(:resource_parent)&.root_ancestor,
-        resource: resource,
-        ai_request: ai_request,
-        extra_resource: extra_resource,
-        current_file: current_file
+      message = ::Gitlab::Llm::ChatMessage.new(
+        'user' => user,
+        'content' => input,
+        'role' => 'user',
+        'context' => build(:ai_chat_message, user: user, content: input, resource: resource)
       )
 
-      all_tools = Gitlab::Llm::Completions::Chat::TOOLS.dup
-      all_tools << ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
-
-      described_class.new(
-        user_input: input,
-        tools: all_tools,
-        context: context,
-        response_handler: response_service_double
-      )
+      described_class.new(message, ::Gitlab::Llm::Completions::Chat, options)
     end
 
     before_all do
@@ -56,7 +48,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         answer = executor.execute
 
         expect(executor.context).to match_llm_tools(tools)
-        expect(answer.content).to match_llm_answer(answer_match)
+        expect(answer.response_body).to match_llm_answer(answer_match)
       end
     end
 
@@ -128,14 +120,14 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         context 'with issue reference' do
           let(:input) { format(input_template, issue_identifier: "the issue #{issue.to_reference(full: true)}") }
 
-          # rubocop: disable Layout/LineLength
+          # rubocop: disable Layout/LineLength -- keep table structure readable
           where(:input_template, :tools, :answer_match) do
             'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader] | /reliability/
             'Summarize %<issue_identifier>s with bullet points' | %w[IssueIdentifier ResourceReader] | /reliability/
             'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /ai-enablement/
             'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /2 days/
             'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader] | //
-            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | lazy { /(#{milestone&.title}|due date.*#{due_date.strftime("%Y-%m-%d")})/ }
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | lazy { /(#{milestone&.title}|due date.*#{due_date.strftime('%Y-%m-%d')})/ }
             'Summarize the comments from %<issue_identifier>s into bullet points' | %w[IssueIdentifier ResourceReader] | /latency/
             'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /solution/
           end
@@ -150,13 +142,13 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           let(:resource) { issue }
           let(:input) { format(input_template, issue_identifier: "this issue") }
 
-          # rubocop: disable Layout/LineLength
+          # rubocop: disable Layout/LineLength -- keep table structure readable
           where(:input_template, :tools, :answer_match) do
             'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader] | //
             'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /ai-enablement/
             'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /2 days/
             'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader] | //
-            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | lazy { /(#{milestone&.title}|due date.*#{due_date.strftime("%Y-%m-%d")})/ }
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | lazy { /(#{milestone&.title}|due date.*#{due_date.strftime('%Y-%m-%d')})/ }
             'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /solution/
           end
           # rubocop: enable Layout/LineLength
@@ -198,7 +190,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
             note: '+1, our company will also use this to manage our projects!')
         end
 
-        # rubocop: disable Layout/LineLength
+        # rubocop: disable Layout/LineLength -- keep table structure readable
         where(:input_template, :tools, :answer_match) do
           # evaluation of questions which involve processing of other resources is not reliable yet
           # because both IssueIdentifier and JsonReader tools assume we work with single resource:
@@ -239,7 +231,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
             ]
           end
 
-          # rubocop: disable Layout/LineLength
+          # rubocop: disable Layout/LineLength -- keep table structure readable
           where(:input_template, :tools, :answer_match) do
             'Can you sort this list by the number of users that have requested the use case and include the number for each use case? Can you include a verbatim for the two most requested use cases that reflect the general opinion of commenters for these two use cases?' | %w[] | /test|manage/
           end
@@ -255,7 +247,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     end
 
     context 'when asking to explain code' do
-      # rubocop: disable Layout/LineLength
+      # rubocop: disable Layout/LineLength -- keep table structure readable
       where(:input_template, :tools, :answer_match) do
         # NOTE: `tools: []` is the correct expected value.
         # There is no tool for explaining a code and the LLM answers the question directly.
@@ -313,13 +305,14 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         context 'with epic reference' do
           let(:input) { format(input_template, epic_identifier: "the epic #{epic.to_reference(full: true)}") }
 
-          # rubocop: disable Layout/LineLength
+          # rubocop: disable Layout/LineLength -- keep table structure readable
           where(:input_template, :tools, :answer_match) do
             'Please summarize %<epic_identifier>s'                    | %w[EpicIdentifier ResourceReader] | //
             'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicIdentifier ResourceReader] | /ai-framework/
             'How old is %<epic_identifier>s?' | %w[EpicIdentifier ResourceReader] | /5 days/
             'How many days ago was %<epic_identifier>s epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
           end
+          # rubocop: enable Layout/LineLength
 
           with_them do
             it_behaves_like 'successful prompt processing'
@@ -329,12 +322,10 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         context 'with `this epic`' do
           let(:resource) { epic }
 
-          # rubocop: disable Layout/LineLength
           where(:input_template, :tools, :answer_match) do
             'Can you list all labels on this epic?'       | %w[EpicIdentifier ResourceReader] | /ai-framework/
             'How many days ago was current epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
           end
-          # rubocop: enable Layout/LineLength
 
           with_them do
             let(:input) { input_template }
@@ -365,7 +356,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           end
         end
 
-        # rubocop: disable Layout/LineLength
+        # rubocop: disable Layout/LineLength -- keep table structure readable
         where(:input_template, :tools, :answer_match) do
           # evaluation of questions which involve processing of other resources is not reliable yet
           # because both EpicIdentifier and JsonReader tools assume we work with single resource:
@@ -411,7 +402,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       it 'answers question about a name', :aggregate_failures do
         answer = executor.execute
 
-        expect(answer.content).to match_llm_answer('GitLab Duo Chat')
+        expect(answer.response_body).to match_llm_answer('GitLab Duo Chat')
       end
     end
 
