@@ -3,6 +3,5 @@
 require 'spec_helper'
 
 RSpec.describe ProtectedBranch::PushAccessLevel, feature_category: :source_code_management do
-  include_examples 'protected ref access configured for users', :protected_branch
-  include_examples 'ee protected branch access'
+  include_examples 'ee protected ref access', :protected_branch
 end
