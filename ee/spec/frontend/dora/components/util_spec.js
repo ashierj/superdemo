@@ -38,14 +38,14 @@ describe('ee/dora/components/util.js', () => {
         {
           name: chartTitle,
           data: [
-            ['Jun 26', 0],
-            ['Jun 27', 0],
-            ['Jun 28', 5],
-            ['Jun 29', 1],
-            ['Jun 30', 0],
-            ['Jul 1', 8],
-            ['Jul 2', 0],
-            ['Jul 3', 0],
+            ['Jun 26, 2015', 0],
+            ['Jun 27, 2015', 0],
+            ['Jun 28, 2015', 5],
+            ['Jun 29, 2015', 1],
+            ['Jun 30, 2015', 0],
+            ['Jul 01, 2015', 8],
+            ['Jul 02, 2015', 0],
+            ['Jul 03, 2015', 0],
           ],
         },
       ];
@@ -89,9 +89,9 @@ describe('ee/dora/components/util.js', () => {
     it('returns the correct average values', () => {
       const data = seriesToAverageSeries(
         [
-          ['Jul 1', 2],
-          ['Jul 2', 3],
-          ['Jul 3', 4],
+          ['Jul 01, 2015', 2],
+          ['Jul 02, 2015', 3],
+          ['Jul 03, 2015', 4],
         ],
         seriesName,
       );
@@ -99,9 +99,9 @@ describe('ee/dora/components/util.js', () => {
       expect(data).toStrictEqual({
         name: seriesName,
         data: [
-          ['Jul 1', 3],
-          ['Jul 2', 3],
-          ['Jul 3', 3],
+          ['Jul 01, 2015', 3],
+          ['Jul 02, 2015', 3],
+          ['Jul 03, 2015', 3],
         ],
       });
     });
@@ -125,9 +125,9 @@ describe('ee/dora/components/util.js', () => {
     it('returns the correct median values', () => {
       const data = seriesToMedianSeries(
         [
-          ['Jul 1', 1],
-          ['Jul 2', 3],
-          ['Jul 3', 10],
+          ['Jul 01, 2015', 1],
+          ['Jul 02, 2015', 3],
+          ['Jul 03, 2015', 10],
         ],
         seriesName,
       );
@@ -135,9 +135,9 @@ describe('ee/dora/components/util.js', () => {
       expect(data).toStrictEqual({
         name: seriesName,
         data: [
-          ['Jul 1', 3],
-          ['Jul 2', 3],
-          ['Jul 3', 3],
+          ['Jul 01, 2015', 3],
+          ['Jul 02, 2015', 3],
+          ['Jul 03, 2015', 3],
         ],
       });
     });
@@ -209,7 +209,7 @@ describe('ee/dora/components/util.js', () => {
     });
 
     it('includes the last data point from the data series', () => {
-      expect(res[0]).toEqual(['Jul 3', 1]);
+      expect(res[0]).toEqual(['Jul 03, 2015', 1]);
     });
   });
 

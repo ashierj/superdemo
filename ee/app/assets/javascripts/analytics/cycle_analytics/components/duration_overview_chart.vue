@@ -4,6 +4,7 @@ import { GlAreaChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
 import { mapGetters, mapState } from 'vuex';
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
+import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
 import { buildNullSeries, formatDurationOverviewTooltipMetric } from 'ee/analytics/shared/utils';
 import { isNumeric } from '~/lib/utils/number_utils';
@@ -12,8 +13,6 @@ import {
   DURATION_CHART_Y_AXIS_TITLE,
   DURATION_TOTAL_TIME_DESCRIPTION,
   DURATION_TOTAL_TIME_LABEL,
-  DURATION_OVERVIEW_CHART_X_AXIS_DATE_FORMAT,
-  DURATION_OVERVIEW_CHART_X_AXIS_TOOLTIP_TITLE_DATE_FORMAT,
   DURATION_OVERVIEW_CHART_NO_DATA,
   DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM,
 } from '../constants';
@@ -88,7 +87,7 @@ export default {
           name: '',
           type: 'time',
           axisLabel: {
-            formatter: (date) => dateFormat(date, DURATION_OVERVIEW_CHART_X_AXIS_DATE_FORMAT),
+            formatter: (date) => dateFormat(date, dateFormats.defaultDate),
           },
         },
         yAxis: {
@@ -134,10 +133,7 @@ export default {
     },
     formatTooltipText({ seriesData }) {
       const [dateTime] = seriesData[0].data;
-      this.tooltipTitle = dateFormat(
-        dateTime,
-        DURATION_OVERVIEW_CHART_X_AXIS_TOOLTIP_TITLE_DATE_FORMAT,
-      );
+      this.tooltipTitle = dateFormat(dateTime, dateFormats.defaultDate);
 
       const nonNullSeries = this.getNonNullSeriesData(seriesData);
 

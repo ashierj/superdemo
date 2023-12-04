@@ -1,5 +1,6 @@
 <script>
 import { GlToggle, GlBadge, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { BASE_FORECAST_SERIES_OPTIONS } from 'ee/analytics/shared/constants';
 import * as DoraApi from 'ee/api/dora_api';
@@ -55,6 +56,7 @@ export default {
     GlAlert,
     GlSprintf,
     GlLink,
+    GlChartSeriesLabel,
   },
   directives: {
     SafeHtml,
@@ -140,6 +142,8 @@ export default {
       forecastRequestErrorMessage: '',
       forecastError: null,
       isLoading: false,
+      tooltipTitle: '',
+      tooltipContent: [],
     };
   },
   computed: {
@@ -328,6 +332,15 @@ export default {
         modalHtmlMessage,
       });
     },
+    formatTooltipText({ value, seriesData }) {
+      this.tooltipTitle = value;
+      this.tooltipContent = seriesData.map(({ seriesId, seriesName, color, value: metric }) => ({
+        key: seriesId,
+        name: seriesName,
+        color,
+        value: metric[1],
+      }));
+    },
   },
   areaChartOptions,
   chartDescriptionText,
@@ -348,8 +361,22 @@ export default {
       :loading="isLoading"
       :charts="charts"
       :chart-options="$options.areaChartOptions"
+      :format-tooltip-text="formatTooltipText"
       @select-chart="onSelectChart"
     >
+      <template #tooltip-title>{{ tooltipTitle }}</template>
+      <template #tooltip-content>
+        <div
+          v-for="{ key, name, color, value } in tooltipContent"
+          :key="key"
+          class="gl-display-flex gl-justify-content-space-between"
+        >
+          <gl-chart-series-label class="gl-font-sm gl-mr-7" :color="color">
+            {{ name }}
+          </gl-chart-series-label>
+          <div class="gl-font-weight-bold">{{ value }}</div>
+        </div>
+      </template>
       <template v-if="glFeatures.doraChartsForecast" #extend-button-group>
         <div class="gl-display-flex gl-align-items-center">
           <gl-toggle

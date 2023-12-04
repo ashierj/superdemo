@@ -8,6 +8,7 @@ import {
   SECONDS_IN_DAY,
 } from '~/lib/utils/datetime_utility';
 import { median } from '~/lib/utils/number_utils';
+import { dateFormats } from '~/analytics/shared/constants';
 import { linearRegression } from 'ee/analytics/shared/utils';
 import { buildForecast } from '../graphql/api';
 
@@ -44,7 +45,7 @@ export const apiDataToChartSeries = (apiData, startDate, endDate, seriesName, em
   // Fill in the API data (the API may exclude data points for dates that have no data)
   // and transform it for use in the graph
   const data = dates.map((date) => {
-    const formattedDate = dateFormat(date, 'mmm d', true);
+    const formattedDate = dateFormat(date, dateFormats.defaultDate, true);
     return [formattedDate, timestampToApiValue[date.getTime()] ?? emptyValue];
   });
 
