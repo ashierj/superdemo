@@ -77,24 +77,6 @@ RSpec.describe MergeRequestBlock, feature_category: :code_review_workflow do
 
       expect(new_block).to be_valid
     end
-
-    context 'when :remove_mr_blocking_constraints FF is disabled' do
-      before do
-        stub_feature_flags(remove_mr_blocking_constraints: false)
-      end
-
-      it 'forbids blocking MR from becoming blocked' do
-        new_block = build(:merge_request_block, blocked_merge_request: block.blocking_merge_request)
-
-        expect(new_block).not_to be_valid
-      end
-
-      it 'forbids blocked MR from becoming a blocker' do
-        new_block = build(:merge_request_block, blocking_merge_request: block.blocked_merge_request)
-
-        expect(new_block).not_to be_valid
-      end
-    end
   end
 
   describe '.with_blocking_mr_ids' do

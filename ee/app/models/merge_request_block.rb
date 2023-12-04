@@ -25,19 +25,15 @@ class MergeRequestBlock < ApplicationRecord
     errors.add(:base, _('This block is self-referential')) if
       blocking_merge_request == blocked_merge_request
 
-    if Feature.enabled?(:remove_mr_blocking_constraints, blocked_merge_request.project)
-      if blocks_count >= MAX_BLOCKS_COUNT
-        error_string = "Merge request blocks the maximum number of merge requests (#{MAX_BLOCKS_COUNT})"
-        errors.add(:base, _(error_string))
-      end
-
-      if blocked_by_count >= MAX_BLOCKED_BY_COUNT
-        error_string = "Merge request is blocked by the maximum number of merge requests (#{MAX_BLOCKED_BY_COUNT})"
-        errors.add(:base, _(error_string))
-      end
-    elsif blocking_merge_request.blocks_as_blockee.any? || blocked_merge_request.blocks_as_blocker.any?
-      errors.add(:base, _('Dependency chains are not supported'))
+    if blocks_count >= MAX_BLOCKS_COUNT
+      error_string = "Merge request blocks the maximum number of merge requests (#{MAX_BLOCKS_COUNT})"
+      errors.add(:base, _(error_string))
     end
+
+    return unless blocked_by_count >= MAX_BLOCKED_BY_COUNT
+
+    error_string = "Merge request is blocked by the maximum number of merge requests (#{MAX_BLOCKED_BY_COUNT})"
+    errors.add(:base, _(error_string))
   end
 
   def blocked_by_count
