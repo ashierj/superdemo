@@ -23,8 +23,8 @@ import EditorLayout from '../editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import SettingsSection from './settings/settings_section.vue';
-import PolicyActionBuilder from './action/action_section.vue';
-import PolicyRuleBuilder from './rule/rule_section.vue';
+import ActionSection from './action/action_section.vue';
+import RuleSection from './rule/rule_section.vue';
 
 import {
   ANY_MERGE_REQUEST,
@@ -76,13 +76,13 @@ export default {
     ),
   },
   components: {
+    ActionSection,
     DimDisableContainer,
     GlAlert,
     GlButton,
     GlEmptyState,
-    PolicyActionBuilder,
     EditorLayout,
-    PolicyRuleBuilder,
+    RuleSection,
     SettingsSection,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -286,18 +286,16 @@ export default {
     },
     handleError(error) {
       if (this.isActiveRuleMode && error.cause?.length) {
-        const updatedErrors = error.cause.reduce(
-          (acc, cause) => {
-            switch (cause.field) {
-              case 'approver_ids':
-              default:
-                acc.action.push(cause);
-            }
-            return acc;
-          },
-          { action: [] },
-        );
-        this.errors = updatedErrors;
+        const ACTION_ERROR_FIELDS = ['approvers_ids'];
+        const action = error.cause.filter((cause) => ACTION_ERROR_FIELDS.includes(cause.field));
+
+        if (error.cause.some((cause) => !ACTION_ERROR_FIELDS.includes(cause.field))) {
+          this.$emit('error', error.message);
+        }
+
+        if (action.length) {
+          this.errors = { action };
+        }
       } else if (error.message.toLowerCase().includes('graphql')) {
         this.$emit('error', GRAPHQL_ERROR_MESSAGE);
       } else {
@@ -434,7 +432,7 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <policy-rule-builder
+        <rule-section
           v-for="(rule, index) in policy.rules"
           :key="index"
           class="gl-mb-4"
@@ -464,7 +462,7 @@ export default {
         </template>
 
         <div v-if="Boolean(policy.actions)">
-          <policy-action-builder
+          <action-section
             v-for="(action, index) in policy.actions"
             :key="index"
             class="gl-mb-4"

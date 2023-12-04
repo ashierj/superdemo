@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, feature_category: :global_search do
+  include ListboxHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project1) { create(:project, :repository, :public, namespace: group) }
@@ -15,7 +17,7 @@ RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, fea
     wait_for_requests
 
     within_testid('group-filter') do
-      click_button group.name
+      select_listbox_item group.name
     end
   end
 
@@ -24,7 +26,7 @@ RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, fea
     wait_for_requests
 
     within_testid('project-filter') do
-      click_button project.name
+      select_listbox_item project.name
     end
   end
 
@@ -68,6 +70,7 @@ RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, fea
 
       submit_search("username_regex")
       select_search_scope('Code')
+
       expect(page).not_to have_selector('.file-content .blob-content')
     end
 

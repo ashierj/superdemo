@@ -7,7 +7,8 @@ RSpec.describe Gitlab::Llm::AiMessageContext, feature_category: :duo_chat do
 
   let(:data) do
     {
-      resource: build_stubbed(:user)
+      resource: build_stubbed(:user),
+      user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
     }
   end
 

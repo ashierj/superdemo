@@ -7,9 +7,10 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
   let_it_be(:resource, reload: true) { create(:issue) }
   let(:resource_id) { resource.to_gid.to_s }
   let(:request_id) { 'uuid' }
-  let(:request) { instance_double(ActionDispatch::Request, headers: { "Referer" => "foobar" }) }
+  let(:headers) { { "Referer" => "foobar", "User-Agent" => "user-agent" } }
+  let(:request) { instance_double(ActionDispatch::Request, headers: headers) }
   let(:context) { { current_user: user, request: request } }
-  let(:expected_options) { {} }
+  let(:expected_options) { { user_agent: "user-agent" } }
 
   subject(:mutation) { described_class.new(object: nil, context: context, field: nil) }
 
@@ -187,14 +188,14 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
 
       it_behaves_like 'an AI action' do
         let(:expected_method) { :chat }
-        let(:expected_options) { { referer_url: "foobar" } }
+        let(:expected_options) { { referer_url: "foobar", user_agent: "user-agent" } }
       end
     end
 
     context 'when summarize_comments input is set' do
       let(:input) { { summarize_comments: { resource_id: resource_id } } }
       let(:expected_method) { :summarize_comments }
-      let(:expected_options) { {} }
+      let(:expected_options) { { user_agent: "user-agent" } }
 
       it_behaves_like 'an AI action'
     end
@@ -202,7 +203,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
     context 'when client_subscription_id input is set' do
       let(:input) { { summarize_comments: { resource_id: resource_id }, client_subscription_id: 'id' } }
       let(:expected_method) { :summarize_comments }
-      let(:expected_options) { { client_subscription_id: 'id' } }
+      let(:expected_options) { { client_subscription_id: 'id', user_agent: 'user-agent' } }
 
       it_behaves_like 'an AI action'
     end
@@ -221,7 +222,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
 
       let(:input) { { explain_vulnerability: { resource_id: resource_id, include_source_code: true } } }
       let(:expected_method) { :explain_vulnerability }
-      let(:expected_options) { { include_source_code: true } }
+      let(:expected_options) { { include_source_code: true, user_agent: 'user-agent' } }
 
       it_behaves_like 'an AI action'
     end
