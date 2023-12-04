@@ -15508,6 +15508,9 @@ msgstr ""
 msgid "DastProfiles|Could not update the site profile. Please try again."
 msgstr ""
 
+msgid "DastProfiles|Crawl timeout"
+msgstr ""
+
 msgid "DastProfiles|DAST profile library"
 msgstr ""
 
@@ -15685,9 +15688,6 @@ msgstr ""
 msgid "DastProfiles|Site type"
 msgstr ""
 
-msgid "DastProfiles|Spider timeout"
-msgstr ""
-
 msgid "DastProfiles|Submit button"
 msgstr ""
 
@@ -15700,7 +15700,7 @@ msgstr ""
 msgid "DastProfiles|Target timeout"
 msgstr ""
 
-msgid "DastProfiles|The maximum number of minutes allowed for the spider to traverse the site."
+msgid "DastProfiles|The maximum number of minutes allowed for the crawler to traverse the site."
 msgstr ""
 
 msgid "DastProfiles|The maximum number of seconds allowed for the site under test to respond to a request."

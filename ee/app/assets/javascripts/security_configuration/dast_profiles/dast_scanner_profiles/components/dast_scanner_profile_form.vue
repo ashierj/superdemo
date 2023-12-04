@@ -96,7 +96,7 @@ export default {
           : s__('DastProfiles|Could not create the scanner profile. Please try again.'),
         tooltips: {
           spiderTimeout: s__(
-            'DastProfiles|The maximum number of minutes allowed for the spider to traverse the site.',
+            'DastProfiles|The maximum number of minutes allowed for the crawler to traverse the site.',
           ),
           targetTimeout: s__(
             'DastProfiles|The maximum number of seconds allowed for the site under test to respond to a request.',
@@ -199,7 +199,7 @@ export default {
           :state="form.fields.spiderTimeout.state"
         >
           <template #label>
-            {{ s__('DastProfiles|Spider timeout') }}
+            {{ s__('DastProfiles|Crawl timeout') }}
             <tooltip-icon :title="i18n.tooltips.spiderTimeout" />
           </template>
           <gl-form-input-group

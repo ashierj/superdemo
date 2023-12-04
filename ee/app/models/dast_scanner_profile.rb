@@ -32,6 +32,7 @@ class DastScannerProfile < ApplicationRecord
       variables.append(key: 'DAST_USE_AJAX_SPIDER', value: String(use_ajax_spider))
       variables.append(key: 'DAST_DEBUG', value: String(show_debug_messages))
       variables.append(key: 'DAST_FULL_SCAN_ENABLED', value: String(active?))
+      variables.append(key: 'DAST_BROWSER_CRAWL_TIMEOUT', value: "#{String(spider_timeout)}m") if spider_timeout
 
       next unless dast_site_profile&.api?
 

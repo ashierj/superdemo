@@ -44,7 +44,7 @@ export default {
         ><scan-type-badge :scan-type="profile.scanType"
       /></summary-cell>
       <summary-cell
-        :label="s__('DastProfiles|Spider timeout')"
+        :label="s__('DastProfiles|Crawl timeout')"
         :value="n__('%d minute', '%d minutes', profile.spiderTimeout || 0)"
       />
       <summary-cell

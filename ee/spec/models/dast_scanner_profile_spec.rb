@@ -75,6 +75,7 @@ RSpec.describe DastScannerProfile, :dynamic_analysis, feature_category: :dynamic
       it 'returns a collection of variables including these', :aggregate_failures do
         expect(collection).to include(key: 'DAST_SPIDER_MINS', value: String(subject.spider_timeout), public: true)
         expect(collection).to include(key: 'DAST_TARGET_AVAILABILITY_TIMEOUT', value: String(subject.target_timeout), public: true)
+        expect(collection).to include(key: 'DAST_BROWSER_CRAWL_TIMEOUT', value: "#{String(subject.spider_timeout)}m", public: true)
       end
     end
 

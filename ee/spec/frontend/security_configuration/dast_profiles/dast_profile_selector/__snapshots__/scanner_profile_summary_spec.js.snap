@@ -14,7 +14,7 @@ exports[`DastScannerProfileSummary renders properly 1`] = `
     />
   </summary-cell-stub>
   <summary-cell-stub
-    label="Spider timeout"
+    label="Crawl timeout"
     value="5 minutes"
   />
   <summary-cell-stub
