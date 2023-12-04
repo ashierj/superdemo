@@ -25,12 +25,12 @@ export default {
     rangeMin: {
       type: Date,
       required: false,
-      default: () => null,
+      default: null,
     },
     rangeMax: {
       type: Date,
       required: false,
-      default: () => null,
+      default: null,
     },
   },
 

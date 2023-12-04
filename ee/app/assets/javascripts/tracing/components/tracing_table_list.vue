@@ -4,7 +4,6 @@ import { s__, __ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { formatTraceDuration } from './trace_utils';
 
-export const tableDataClass = 'gl-display-flex gl-md-display-table-cell gl-align-items-center';
 export default {
   name: 'TracingTableList',
   i18n: {
@@ -15,23 +14,23 @@ export default {
     {
       key: 'timestamp',
       label: s__('Tracing|Date'),
-      tdClass: tableDataClass,
+      tdAttr: { 'data-testid': 'trace-timestamp' },
     },
     {
       key: 'service_name',
       label: s__('Tracing|Service'),
-      tdClass: tableDataClass,
+      tdAttr: { 'data-testid': 'trace-service' },
     },
     {
       key: 'operation',
       label: s__('Tracing|Operation'),
-      tdClass: tableDataClass,
+      tdAttr: { 'data-testid': 'trace-operation' },
     },
     {
       key: 'duration',
       label: s__('Tracing|Duration'),
       thClass: 'gl-w-15p',
-      tdClass: tableDataClass,
+      tdAttr: { 'data-testid': 'trace-duration' },
     },
   ],
   components: {
@@ -46,7 +45,7 @@ export default {
     highlightedTraceId: {
       required: false,
       type: String,
-      default: () => null,
+      default: null,
     },
   },
   computed: {
@@ -85,6 +84,7 @@ export default {
       selectable
       select-mode="single"
       selected-variant=""
+      :tbody-tr-attr="{ 'data-testid': 'trace-row' }"
       @row-clicked="onRowClicked"
     >
       <template #cell(service_name)="{ item }">
