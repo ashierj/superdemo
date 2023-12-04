@@ -317,6 +317,11 @@ msgid_plural "%d issues successfully imported with the label"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d item found"
+msgid_plural "%d items found"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d job"
 msgid_plural "%d jobs"
 msgstr[0] ""
@@ -22373,10 +22378,10 @@ msgstr ""
 msgid "GlobalSearch|Aggregations load error."
 msgstr ""
 
-msgid "GlobalSearch|Archived"
+msgid "GlobalSearch|All available groups"
 msgstr ""
 
-msgid "GlobalSearch|Close"
+msgid "GlobalSearch|Archived"
 msgstr ""
 
 msgid "GlobalSearch|Command palette"
@@ -22436,6 +22441,9 @@ msgstr ""
 msgid "GlobalSearch|No labels found"
 msgstr ""
 
+msgid "GlobalSearch|Nothing found…"
+msgstr ""
+
 msgid "GlobalSearch|Only first %{max_shown} of not indexed projects is shown"
 msgstr ""
 
@@ -22457,13 +22465,13 @@ msgstr ""
 msgid "GlobalSearch|Recent merge requests"
 msgstr ""
 
+msgid "GlobalSearch|Reset"
+msgstr ""
+
 msgid "GlobalSearch|Result count is over limit."
 msgstr ""
 
 msgid "GlobalSearch|Results updated. %{count} results available. Use the up and down arrow keys to navigate search results list, or ENTER to submit."
-msgstr ""
-
-msgid "GlobalSearch|Search"
 msgstr ""
 
 msgid "GlobalSearch|Search for projects, issues, etc."
@@ -22491,9 +22499,6 @@ msgid "GlobalSearch|The search term must be at least 3 characters long."
 msgstr ""
 
 msgid "GlobalSearch|There was an error fetching search autocomplete suggestions."
-msgstr ""
-
-msgid "GlobalSearch|There was an error fetching the \"Syntax Options\" document."
 msgstr ""
 
 msgid "GlobalSearch|Type %{kbdOpen}/%{kbdClose} to search"

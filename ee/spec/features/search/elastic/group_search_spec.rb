@@ -4,6 +4,8 @@ require 'spec_helper'
 
 RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, :disable_rate_limiter,
   feature_category: :global_search do
+  include ListboxHelpers
+
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
@@ -14,7 +16,7 @@ RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, :disable_
     wait_for_requests
 
     within_testid('group-filter') do
-      click_button group.name
+      select_listbox_item group.name
     end
   end
 
