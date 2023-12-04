@@ -44,7 +44,7 @@ func SendData(h http.Handler, injecters ...Injecter) http.Handler {
 			req:       r,
 			injecters: injecters,
 		}
-		defer s.Flush()
+		defer s.flush()
 		h.ServeHTTP(&s, r)
 	}))
 }
@@ -101,7 +101,11 @@ func (s *sendDataResponseWriter) tryInject() bool {
 	return false
 }
 
-func (s *sendDataResponseWriter) Flush() {
+func (s *sendDataResponseWriter) flush() {
 	s.WriteHeader(http.StatusOK)
-	http.NewResponseController(s.rw).Flush()
+}
+
+// Unwrap lets http.ResponseController get the underlying http.ResponseWriter.
+func (s *sendDataResponseWriter) Unwrap() http.ResponseWriter {
+	return s.rw
 }
