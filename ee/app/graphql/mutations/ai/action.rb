@@ -36,6 +36,7 @@ module Mutations
         resource = resource_id&.then { |id| authorized_find!(id: id) }
 
         options[:referer_url] = context[:request].headers["Referer"] if method == :chat
+        options[:user_agent] = context[:request].headers["User-Agent"]
 
         response = Llm::ExecuteMethodService.new(current_user, resource, method, options).execute
 

@@ -18,6 +18,7 @@ module Gitlab
       attr_accessor(*ATTRIBUTES_LIST)
 
       delegate :resource, to: :context
+      delegate :user_agent, to: :context
 
       def self.for(action:)
         if action.to_s == 'chat'

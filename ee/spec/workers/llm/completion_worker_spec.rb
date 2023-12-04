@@ -8,11 +8,14 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:resource) { create(:issue, project: project) }
 
+  let(:user_agent) { 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' }
   let(:options) { { 'key' => 'value' } }
   let(:ai_action_name) { :summarize_comments }
 
   let(:prompt_message) do
-    build(:ai_message, user: user, resource: resource, ai_action: ai_action_name, request_id: 'uuid')
+    build(:ai_message,
+      user: user, resource: resource, ai_action: ai_action_name, request_id: 'uuid', user_agent: user_agent
+    )
   end
 
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :delayed
@@ -41,7 +44,8 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
         action: 'perform_completion_worker',
         label: ai_action_name.to_s,
         property: 'uuid',
-        user: user
+        user: user,
+        client: 'web'
       )
     end
   end

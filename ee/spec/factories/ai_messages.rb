@@ -20,10 +20,12 @@ FactoryBot.define do
 
     transient do
       resource { nil }
+      user_agent { nil }
     end
 
     initialize_with do
       context[:resource] = resource if resource
+      context[:user_agent] = user_agent if user_agent
 
       new(
         id: id,
