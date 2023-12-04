@@ -26142,10 +26142,10 @@ msgstr ""
 msgid "InviteMembersModal|To invite new users to this top-level group, you must remove existing users. You can still add existing users from the top-level group, including any subgroups and projects."
 msgstr ""
 
-msgid "InviteMembersModal|Username"
+msgid "InviteMembersModal|Username or name"
 msgstr ""
 
-msgid "InviteMembersModal|Username or email address"
+msgid "InviteMembersModal|Username, name or email address"
 msgstr ""
 
 msgid "InviteMembersModal|You only have space for %{count} more %{members} in %{name}"
