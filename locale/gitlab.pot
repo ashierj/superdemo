@@ -27236,7 +27236,7 @@ msgstr ""
 msgid "JiraService|Use custom transitions"
 msgstr ""
 
-msgid "JiraService|Use regular expression to match Jira issue keys."
+msgid "JiraService|Use regular expression to match Jira issue keys. The regular expression must follow the %{link_start}RE2 syntax%{link_end}. If empty, the default behavior is used."
 msgstr ""
 
 msgid "JiraService|Using Jira for issue tracking?"
