@@ -808,27 +808,65 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
     end
   end
 
-  describe '#target_index_names', :elastic_delete_by_query do
+  describe '#target_index_names' do
     let(:target_index) { nil }
 
     subject(:target_index_names) { helper.target_index_names(target: target_index) }
 
-    context 'when a nil target is provided' do
-      let(:index_regex) { /\Agitlab-test-[0-9-].*\z/ }
-
-      it 'uses the default target from target_name' do
-        expect(target_index_names.keys).to contain_exactly(index_regex, index_regex)
-        expect(target_index_names.values).to contain_exactly(true, false)
+    context 'when alias exists' do
+      before do
+        allow(helper).to receive(:alias_exists?).and_return(true)
+        allow(helper.client.indices).to receive(:get_alias).and_return(aliases)
       end
-    end
 
-    context 'when a non-nil target is provided' do
-      let(:target_index) { Project.index_name }
-      let(:index_regex) { /\Agitlab-test-projects-[0-9-].*\z/ }
+      context 'when a nil target is provided' do
+        let(:aliases) do
+          {
+            "gitlab-test-20231129-200242-0002" => { "aliases" => { "gitlab-test" => { "is_write_index" => true } } },
+            "gitlab-test-20231129-200242" => { "aliases" => { "gitlab-test" => { "is_write_index" => false } } }
+          }
+        end
 
-      it 'uses the target index' do
-        expect(target_index_names.keys).to contain_exactly(index_regex, index_regex)
-        expect(target_index_names.values).to contain_exactly(true, false)
+        let(:index_regex) { /\Agitlab-test-[\d-]+\z/ }
+
+        it 'uses the default target from target_name' do
+          expect(target_index_names.keys).to contain_exactly(index_regex, index_regex)
+          expect(target_index_names.values).to contain_exactly(true, false)
+        end
+      end
+
+      context 'when a target is provided' do
+        let(:aliases) do
+          {
+            "gitlab-test-projects-20231129-0002" =>
+              { "aliases" => { "gitlab-test-projects" => { "is_write_index" => true } } },
+            "gitlab-test-projects-20231129" =>
+              { "aliases" => { "gitlab-test-projects" => { "is_write_index" => false } } }
+          }
+        end
+
+        let(:target_index) { "gitlab-test-projects" }
+        let(:index_regex) { /\Agitlab-test-projects-[\d-]+\z/ }
+
+        it 'uses the target index' do
+          expect(target_index_names.keys).to contain_exactly(index_regex, index_regex)
+          expect(target_index_names.values).to contain_exactly(true, false)
+        end
+      end
+
+      context 'when write index is not set' do
+        let(:aliases) do
+          {
+            "gitlab-test-20231129-200242" => { "aliases" => { "gitlab-test" => {} } }
+          }
+        end
+
+        let(:index_regex) { /\Agitlab-test-[\d-]+\z/ }
+
+        it 'returns the write index as true' do
+          expect(target_index_names.keys).to contain_exactly(index_regex)
+          expect(target_index_names.values).to contain_exactly(true)
+        end
       end
     end
 
