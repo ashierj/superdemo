@@ -43,8 +43,8 @@ import {
   PARSING_ERROR_MESSAGE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
-import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
-import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result/rule/rule_section.vue';
+import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
+import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_result/rule/rule_section.vue';
 
 jest.mock('ee/security_orchestration/components/policy_editor/scan_result/lib', () => ({
   ...jest.requireActual('ee/security_orchestration/components/policy_editor/scan_result/lib'),
@@ -129,12 +129,12 @@ describe('EditorComponent', () => {
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPolicyEditorLayout = () => wrapper.findComponent(EditorLayout);
-  const findPolicyActionBuilder = () => wrapper.findComponent(PolicyActionBuilder);
-  const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
+  const findActionSection = () => wrapper.findComponent(ActionSection);
+  const findAllActionSections = () => wrapper.findAllComponents(ActionSection);
   const findAddActionButton = () => wrapper.findByTestId('add-action');
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
-  const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
+  const findAllRuleSections = () => wrapper.findAllComponents(RuleSection);
   const findSettingsSection = () => wrapper.findComponent(SettingsSection);
   const findEmptyActionsAlert = () => wrapper.findByTestId('empty-actions-alert');
 
@@ -209,17 +209,15 @@ describe('EditorComponent', () => {
     it('displays the initial rule and add rule button', () => {
       factory();
 
-      expect(findAllRuleBuilders()).toHaveLength(1);
+      expect(findAllRuleSections()).toHaveLength(1);
       expect(findAddRuleButton().exists()).toBe(true);
     });
 
     it('displays the initial action', () => {
       factory();
 
-      expect(findAllPolicyActionBuilders()).toHaveLength(1);
-      expect(findPolicyActionBuilder().props('existingApprovers')).toEqual(
-        scanResultPolicyApprovers,
-      );
+      expect(findAllActionSections()).toHaveLength(1);
+      expect(findActionSection().props('existingApprovers')).toEqual(scanResultPolicyApprovers);
     });
 
     describe('when a user is not an owner of the project', () => {
@@ -251,16 +249,16 @@ describe('EditorComponent', () => {
       expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
     });
 
-    describe('rule builder', () => {
+    describe('rule section', () => {
       it('adds a new rule', async () => {
         const rulesCount = 1;
         factory();
 
-        expect(findAllRuleBuilders()).toHaveLength(rulesCount);
+        expect(findAllRuleSections()).toHaveLength(rulesCount);
 
         await findAddRuleButton().vm.$emit('click');
 
-        expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
+        expect(findAllRuleSections()).toHaveLength(rulesCount + 1);
       });
 
       it('hides add button when the limit of five rules has been reached', () => {
@@ -268,7 +266,7 @@ describe('EditorComponent', () => {
         const rule = mockDefaultBranchesScanResultObject.rules[0];
         factoryWithExistingPolicy({ policy: { rules: [rule, rule, rule, rule, rule] } });
 
-        expect(findAllRuleBuilders()).toHaveLength(limit);
+        expect(findAllRuleSections()).toHaveLength(limit);
         expect(findAddRuleButton().exists()).toBe(false);
       });
 
@@ -283,7 +281,7 @@ describe('EditorComponent', () => {
         };
         factory();
 
-        findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+        findAllRuleSections().at(0).vm.$emit('changed', newValue);
 
         expect(wrapper.vm.policy.rules[0]).toEqual(newValue);
         expect(findPolicyEditorLayout().props('policy').rules[0].vulnerabilities_allowed).toBe(1);
@@ -293,11 +291,11 @@ describe('EditorComponent', () => {
         const initialRuleCount = 1;
         factory();
 
-        expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
+        expect(findAllRuleSections()).toHaveLength(initialRuleCount);
 
-        await findAllRuleBuilders().at(0).vm.$emit('remove', 0);
+        await findAllRuleSections().at(0).vm.$emit('remove', 0);
 
-        expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
+        expect(findAllRuleSections()).toHaveLength(initialRuleCount - 1);
       });
 
       describe('settings', () => {
@@ -320,7 +318,7 @@ describe('EditorComponent', () => {
               approval_settings: defaultProjectApprovalConfiguration,
             }),
           );
-          findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+          findAllRuleSections().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
               approval_settings: {
@@ -345,7 +343,7 @@ describe('EditorComponent', () => {
               approval_settings: PERMITTED_INVALID_SETTINGS,
             }),
           );
-          findAllRuleBuilders().at(0).vm.$emit('changed', { type: SCAN_FINDING });
+          findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
               approval_settings: { [BLOCK_BRANCH_MODIFICATION]: false },
@@ -357,7 +355,7 @@ describe('EditorComponent', () => {
           const newValue = { type: ANY_MERGE_REQUEST };
           factory({ glFeatures: { scanResultAnyMergeRequest: true } });
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
-          findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+          findAllRuleSections().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({ approval_settings: mergeRequestConfiguration }),
           );
@@ -373,7 +371,7 @@ describe('EditorComponent', () => {
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({ approval_settings: PERMITTED_INVALID_SETTINGS }),
           );
-          findAllRuleBuilders().at(0).vm.$emit('changed', { type: SCAN_FINDING });
+          findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
           expect(findPolicyEditorLayout().props('policy')).toEqual(
             expect.objectContaining({
               approval_settings: pushingBranchesConfiguration,
@@ -385,23 +383,23 @@ describe('EditorComponent', () => {
           const newValue = { type: ANY_MERGE_REQUEST };
           factory();
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
-          findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+          findAllRuleSections().at(0).vm.$emit('changed', newValue);
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('approval_settings');
         });
       });
     });
 
-    describe('action builder', () => {
+    describe('action section', () => {
       describe('add', () => {
         it('hides the add button when actions exist', () => {
           factory();
-          expect(findPolicyActionBuilder().exists()).toBe(true);
+          expect(findActionSection().exists()).toBe(true);
           expect(findAddActionButton().exists()).toBe(false);
         });
 
         it('shows the add button when actions do not exist', () => {
           factoryWithExistingPolicy({ hasActions: false });
-          expect(findPolicyActionBuilder().exists()).toBe(false);
+          expect(findActionSection().exists()).toBe(false);
           expect(findAddActionButton().exists()).toBe(true);
         });
       });
@@ -409,20 +407,20 @@ describe('EditorComponent', () => {
       describe('remove', () => {
         it('removes the initial action', async () => {
           factory();
-          expect(findPolicyActionBuilder().exists()).toBe(true);
+          expect(findActionSection().exists()).toBe(true);
           expect(findPolicyEditorLayout().props('policy')).toHaveProperty('actions');
-          await findPolicyActionBuilder().vm.$emit('remove');
-          expect(findPolicyActionBuilder().exists()).toBe(false);
+          await findActionSection().vm.$emit('remove');
+          expect(findActionSection().exists()).toBe(false);
           expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('actions');
         });
 
         it('removes the action approvers when the action is removed', async () => {
           factory();
-          await findPolicyActionBuilder().vm.$emit(
+          await findActionSection().vm.$emit(
             'changed',
             mockDefaultBranchesScanResultObject.actions[0],
           );
-          await findPolicyActionBuilder().vm.$emit('remove');
+          await findActionSection().vm.$emit('remove');
           await findAddActionButton().vm.$emit('click');
           expect(findPolicyEditorLayout().props('policy').actions).toEqual([
             {
@@ -430,7 +428,7 @@ describe('EditorComponent', () => {
               type: 'require_approval',
             },
           ]);
-          expect(findPolicyActionBuilder().props('existingApprovers')).toEqual({});
+          expect(findActionSection().props('existingApprovers')).toEqual({});
         });
       });
 
@@ -441,26 +439,26 @@ describe('EditorComponent', () => {
 
         it('updates policy action when edited', async () => {
           const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
-          await findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
+          await findActionSection().vm.$emit('changed', UPDATED_ACTION);
 
-          expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
+          expect(findActionSection().props('initAction')).toEqual(UPDATED_ACTION);
         });
 
         it('updates the policy approvers', async () => {
           const newApprover = ['owner'];
 
-          await findPolicyActionBuilder().vm.$emit('updateApprovers', {
+          await findActionSection().vm.$emit('updateApprovers', {
             ...scanResultPolicyApprovers,
             role: newApprover,
           });
 
-          expect(findPolicyActionBuilder().props('existingApprovers')).toMatchObject({
+          expect(findActionSection().props('existingApprovers')).toMatchObject({
             role: newApprover,
           });
         });
 
-        it('creates an error when the action builder emits one', async () => {
-          await findPolicyActionBuilder().vm.$emit('error');
+        it('creates an error when the action section emits one', async () => {
+          await findActionSection().vm.$emit('error');
           verifiesParsingError();
         });
       });
@@ -520,35 +518,68 @@ describe('EditorComponent', () => {
     );
 
     describe('error handling', () => {
-      const error = {
-        message: 'There was an error',
-        cause: [{ field: 'approver_ids' }, { field: 'approver_ids' }],
-      };
-
-      beforeEach(() => {
-        modifyPolicy.mockRejectedValue(error);
-        factory();
-      });
+      const createError = (cause) => ({ message: 'There was an error', cause });
+      const approverCause = { field: 'approvers_ids' };
+      const branchesCause = { field: 'branches' };
+      const unknownCause = { field: 'unknown' };
 
       describe('when in rule mode', () => {
-        it('passes errors with the cause of `approver_ids` to the action builder', async () => {
+        it('passes errors with the cause of `approvers_ids` to the action section', async () => {
+          const error = createError([approverCause]);
+          modifyPolicy.mockRejectedValue(error);
+          factory();
           await findPolicyEditorLayout().vm.$emit('save-policy');
           await waitForPromises();
 
-          expect(findPolicyActionBuilder().props('errors')).toEqual(error.cause);
-          expect(wrapper.emitted('error')).toContainEqual(['']);
+          expect(findActionSection().props('errors')).toEqual(error.cause);
+          expect(wrapper.emitted('error')).toStrictEqual([['']]);
+        });
+
+        it('emits error with the cause of `branches`', async () => {
+          const error = createError([branchesCause]);
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findActionSection().props('errors')).toEqual([]);
+          expect(wrapper.emitted('error')).toStrictEqual([[''], [error.message]]);
+        });
+
+        it('emits error with an unknown cause', async () => {
+          const error = createError([unknownCause]);
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findActionSection().props('errors')).toEqual([]);
+          expect(wrapper.emitted('error')).toStrictEqual([[''], [error.message]]);
+        });
+
+        it('handles mixed errors', async () => {
+          const error = createError([approverCause, branchesCause, unknownCause]);
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findActionSection().props('errors')).toEqual([approverCause]);
+          expect(wrapper.emitted('error')).toStrictEqual([[''], ['There was an error']]);
         });
       });
 
       describe('when in yaml mode', () => {
-        beforeEach(() => changesToYamlMode());
-
         it('emits errors', async () => {
+          const error = createError([approverCause, branchesCause, unknownCause]);
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          changesToYamlMode();
           await findPolicyEditorLayout().vm.$emit('save-policy');
           await waitForPromises();
 
-          expect(findPolicyActionBuilder().props('errors')).toEqual([]);
-          expect(wrapper.emitted('error')).toContainEqual([''], [error.message]);
+          expect(findActionSection().props('errors')).toEqual([]);
+          expect(wrapper.emitted('error')).toStrictEqual([[''], [error.message]]);
         });
       });
     });
@@ -746,20 +777,20 @@ describe('EditorComponent', () => {
           });
 
           it('does not show settings for non-merge request rules', async () => {
-            await findAllRuleBuilders().at(0).vm.$emit('changed', { type: 'scan_finding' });
+            await findAllRuleSections().at(0).vm.$emit('changed', { type: 'scan_finding' });
             expect(findSettingsSection().exists()).toBe(true);
             expect(findSettingsSection().props('settings')).toEqual({});
           });
 
           it('does show the policy for merge request rule', async () => {
-            await findAllRuleBuilders().at(0).vm.$emit('changed', { type: 'any_merge_request' });
+            await findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
             expect(findSettingsSection().props('settings')).toEqual({
               ...mergeRequestConfiguration,
             });
           });
 
           it('updates the policy for merge request rule', async () => {
-            findAllRuleBuilders().at(0).vm.$emit('changed', { type: 'any_merge_request' });
+            findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
             await findSettingsSection().vm.$emit('changed', {
               [PREVENT_APPROVAL_BY_AUTHOR]: false,
             });
