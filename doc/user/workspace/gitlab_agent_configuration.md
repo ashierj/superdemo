@@ -7,8 +7,9 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 # GitLab agent configuration
 
 When you [set up a workspace](configuration.md#set-up-a-workspace),
-you must configure remote development settings for the GitLab agent.
-These settings are available in the agent configuration file under `remote_development`.
+you must configure remote development for the GitLab agent.
+The remote development settings are available in the agent
+configuration file under `remote_development`.
 
 You can use any agent defined under the root group of your project,
 provided that remote development is properly configured for that agent.
@@ -23,7 +24,7 @@ provided that remote development is properly configured for that agent.
 | [`network_policy`](#network_policy)                   | Firewall rules for workspaces                                        |
 
 NOTE:
-If any setting has an invalid value, all settings cannot be updated until you fix that value.
+If a setting has an invalid value, it's not possible to update any setting until you fix that value.
 
 ### `enabled`
 
@@ -109,12 +110,12 @@ Use this setting to define a list of IP CIDR ranges to allow as egress destinati
 
 Define egress rules when:
 
-- The GitLab instance is available on a private IP.
-- Workspace users must access a cloud resource available on a private IP.
+- The GitLab instance is on a private IP range.
+- Workspace users must access a cloud resource on a private IP range.
 
 Each element of the list defines an `allow` attribute with an optional `except` attribute.
-The `allow` attribute defines an IP CIDR range to allow traffic from.
-The `except` attribute lists IP CIDR ranges to exclude from the `allow` range.
+`allow` defines an IP range to allow traffic from.
+`except` lists IP ranges to exclude from the `allow` range.
 
 **Example configuration:**
 
@@ -132,5 +133,5 @@ remote_development:
 
 In this example, traffic from the workspace is allowed if:
 
-- The destination IP is any IP except `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16`.
+- The destination IP is any range except `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16`.
 - The destination IP is `172.16.123.1/32`.
