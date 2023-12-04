@@ -70,7 +70,7 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
 
     context 'when usage ping is enabled' do
       before do
-        stub_licensed_features(group_ip_restriction: false)
+        allow(License).to receive(:current).and_return(nil)
         stub_application_setting(usage_ping_enabled: true)
       end
 
