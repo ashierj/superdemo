@@ -116,20 +116,6 @@ RSpec.describe MergeRequests::UpdateBlocksService, feature_category: :code_revie
               expect(merge_request.errors[:dependencies]).not_to include(/Dependency chains are not supported/)
               expect(merge_request.errors[:dependencies]).to include(/This block is self-referential/)
             end
-
-            context 'when :remove_mr_blocking_constraints FF is disabled' do
-              before do
-                stub_feature_flags(remove_mr_blocking_constraints: false)
-              end
-
-              it 'include an error regarding dependency chain support' do
-                service.execute
-
-                expect(merge_request.reload.blocking_merge_requests).not_to include(mr_to_add)
-                expect(merge_request.errors[:dependencies]).to include(/Dependency chains are not supported/)
-                expect(merge_request.errors[:dependencies]).to include(/This block is self-referential/)
-              end
-            end
           end
 
           context 'when an invalid reference' do

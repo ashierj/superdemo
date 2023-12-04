@@ -16495,9 +16495,6 @@ msgstr ""
 msgid "Dependency Scanning"
 msgstr ""
 
-msgid "Dependency chains are not supported"
-msgstr ""
-
 msgid "Dependency list"
 msgstr ""
 
