@@ -5,6 +5,7 @@ module Resolvers
     module SelfManaged
       class AddOnEligibleUsersResolver < BaseResolver
         include Gitlab::Graphql::Authorize::AuthorizeResource
+        include ::GitlabSubscriptions::CodeSuggestionsHelper
 
         type [::Types::GitlabSubscriptions::AddOnUserType.connection_type], null: true
 
@@ -20,6 +21,8 @@ module Resolvers
 
         def resolve(add_on_type:, search: nil)
           authorize!
+
+          return [] unless code_suggestions_available?
 
           ::GitlabSubscriptions::SelfManaged::AddOnEligibleUsersFinder.new(
             add_on_type: add_on_type,
