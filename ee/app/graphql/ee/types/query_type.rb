@@ -137,6 +137,11 @@ module EE
           description: 'Users within the self-managed instance who are eligible for add-ons.',
           resolver: ::Resolvers::GitlabSubscriptions::SelfManaged::AddOnEligibleUsersResolver,
           alpha: { milestone: '16.7' }
+        field :audit_events_instance_amazon_s3_configurations,
+          ::Types::AuditEvents::Instance::AmazonS3ConfigurationType.connection_type,
+          null: true,
+          description: 'Instance-level Amazon S3 configurations for audit events.',
+          resolver: ::Resolvers::AuditEvents::Instance::AmazonS3ConfigurationsResolver
       end
 
       def vulnerability(id:)
