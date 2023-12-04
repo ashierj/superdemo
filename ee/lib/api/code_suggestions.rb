@@ -119,6 +119,7 @@ module API
               ::CodeSuggestions::InstructionsExtractor::INTENT_GENERATION
             ],
             desc: 'The intent of the completion request, current options are "completion" or "generation"'
+          optional :stream, type: Boolean, default: false, desc: 'The option to stream code completion response'
         end
         post do
           if Gitlab.org_or_com?
