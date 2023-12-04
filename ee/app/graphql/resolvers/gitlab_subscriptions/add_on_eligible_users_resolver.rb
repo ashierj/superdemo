@@ -4,6 +4,7 @@ module Resolvers
   module GitlabSubscriptions
     class AddOnEligibleUsersResolver < BaseResolver
       include Gitlab::Graphql::Authorize::AuthorizeResource
+      include ::GitlabSubscriptions::CodeSuggestionsHelper
 
       argument :search,
         type: GraphQL::Types::String,
@@ -23,7 +24,7 @@ module Resolvers
       def resolve(add_on_type:, search: nil)
         authorize!(namespace)
 
-        return [] unless Feature.enabled?(:hamilton_seat_management, namespace)
+        return [] unless code_suggestions_available?(namespace)
 
         ::GitlabSubscriptions::AddOnEligibleUsersFinder.new(
           namespace,
