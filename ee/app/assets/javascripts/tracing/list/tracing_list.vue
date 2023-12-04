@@ -8,16 +8,16 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
+import { periodFilterToDate } from '../trace_utils';
 import {
   queryToFilterObj,
   filterObjToQuery,
   filterObjToFilterToken,
   filterTokensToFilterObj,
-} from '../filters';
-import TracingTableList from './tracing_table_list.vue';
-import FilteredSearch from './tracing_list_filtered_search.vue';
+} from './filter_bar/filters';
+import TracingTableList from './tracing_table.vue';
+import FilteredSearch from './filter_bar/tracing_filtered_search.vue';
 import ScatterChart from './tracing_scatter_chart.vue';
-import { periodFilterToDate } from './trace_utils';
 
 const PAGE_SIZE = 500;
 const CHART_HEIGHT = 300;

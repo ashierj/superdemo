@@ -3,9 +3,9 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
-import TracingDetailsChart from './tracing_details_chart.vue';
-import TracingDetailsHeader from './tracing_details_header.vue';
-import TracingDetailsDrawer from './tracing_details_drawer.vue';
+import TracingChart from './tracing_chart.vue';
+import TracingHeader from './tracing_header.vue';
+import TracingDrawer from './tracing_drawer.vue';
 
 export default {
   i18n: {
@@ -13,9 +13,9 @@ export default {
   },
   components: {
     GlLoadingIcon,
-    TracingDetailsChart,
-    TracingDetailsHeader,
-    TracingDetailsDrawer,
+    TracingChart,
+    TracingHeader,
+    TracingDrawer,
   },
   props: {
     observabilityClient: {
@@ -104,13 +104,13 @@ export default {
   </div>
 
   <div v-else-if="trace" data-testid="trace-details" class="gl-mx-7">
-    <tracing-details-header :trace="trace" />
-    <tracing-details-chart
+    <tracing-header :trace="trace" />
+    <tracing-chart
       :trace="trace"
       :selected-span-id="selectedSpan && selectedSpan.span_id"
       @span-selected="onToggleDrawer"
     />
 
-    <tracing-details-drawer :span="selectedSpan" :open="isDrawerOpen" @close="closeDrawer" />
+    <tracing-drawer :span="selectedSpan" :open="isDrawerOpen" @close="closeDrawer" />
   </div>
 </template>

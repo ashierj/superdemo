@@ -1,6 +1,6 @@
 <script>
 import ObservabilityContainer from '~/observability/components/observability_container.vue';
-import TracingDetails from './components/tracing_details.vue';
+import TracingDetails from './details/tracing_details.vue';
 
 export default {
   components: {

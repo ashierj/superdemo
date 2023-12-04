@@ -1,10 +1,10 @@
 <script>
-import TracingDetailsSpansChart from './tracing_details_spans_chart.vue';
-import { mapTraceToTreeRoot, durationNanoToMs, assignColorToServices } from './trace_utils';
+import { mapTraceToTreeRoot, durationNanoToMs, assignColorToServices } from '../trace_utils';
+import TracingSpansChart from './tracing_spans_chart.vue';
 
 export default {
   components: {
-    TracingDetailsSpansChart,
+    TracingSpansChart,
   },
   props: {
     trace: {
@@ -38,7 +38,7 @@ export default {
 </script>
 
 <template>
-  <tracing-details-spans-chart
+  <tracing-spans-chart
     :spans="spans"
     :trace-duration-ms="traceDurationMs"
     :service-to-color="serviceToColor"

@@ -1,11 +1,11 @@
+import TracingHeader from 'ee/tracing/details/tracing_header.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetailsHeader from 'ee/tracing/components/tracing_details_header.vue';
 
-describe('TracingDetailsHeader', () => {
+describe('TracingHeader', () => {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = shallowMountExtended(TracingDetailsHeader, {
+    wrapper = shallowMountExtended(TracingHeader, {
       propsData: {
         trace: {
           service_name: 'Service',

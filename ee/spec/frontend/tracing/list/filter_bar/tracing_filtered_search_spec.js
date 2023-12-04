@@ -1,9 +1,9 @@
+import OperationToken from 'ee/tracing/list/filter_bar/operation_search_token.vue';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
-import OperationToken from 'ee/tracing/components/operation_search_token.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import ServiceToken from 'ee/tracing/components/service_search_token.vue';
-import AttributeSearchToken from 'ee/tracing/components/attribute_search_token.vue';
-import TracingListFilteredSearch from 'ee/tracing/components/tracing_list_filtered_search.vue';
+import ServiceToken from 'ee/tracing/list/filter_bar/service_search_token.vue';
+import AttributeSearchToken from 'ee/tracing/list/filter_bar/attribute_search_token.vue';
+import TracingListFilteredSearch from 'ee/tracing/list/filter_bar/tracing_filtered_search.vue';
 import { createMockClient } from 'helpers/mock_observability_client';
 
 describe('TracingListFilteredSearch', () => {

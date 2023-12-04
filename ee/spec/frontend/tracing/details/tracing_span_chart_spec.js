@@ -1,9 +1,9 @@
 import { GlButton, GlTruncate } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import TracingSpansChart from 'ee/tracing/details/tracing_spans_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetailsSpansChart from 'ee/tracing/components/tracing_details_spans_chart.vue';
 
-describe('TracingDetailsSpansChart', () => {
+describe('TracingSpansChart', () => {
   const mockSpans = [
     {
       operation: 'operation-1',
@@ -62,13 +62,13 @@ describe('TracingDetailsSpansChart', () => {
     getSpan(index, depth).find('[data-testid="span-duration-bar"]');
 
   const getSpanChildren = (index, depth = 0) =>
-    getSpanWrapper(index, depth).findComponent(TracingDetailsSpansChart);
+    getSpanWrapper(index, depth).findComponent(TracingSpansChart);
 
   const toggleExpandButton = (index) =>
     getToggleButton(index).vm.$emit('click', { stopPropagation: jest.fn() });
 
   beforeEach(() => {
-    wrapper = shallowMountExtended(TracingDetailsSpansChart, {
+    wrapper = shallowMountExtended(TracingSpansChart, {
       propsData: {
         ...mockProps,
       },
@@ -137,7 +137,7 @@ describe('TracingDetailsSpansChart', () => {
 
   describe('span details', () => {
     it('renders the spans details with left padding based on depth', () => {
-      wrapper = shallowMountExtended(TracingDetailsSpansChart, {
+      wrapper = shallowMountExtended(TracingSpansChart, {
         propsData: {
           ...mockProps,
           depth: 2,
@@ -178,7 +178,7 @@ describe('TracingDetailsSpansChart', () => {
       [{ start_ms: 80, duration_ms: 40 }, '40%', '60%'],
       [{ start_ms: -10, duration_ms: 40 }, '40%', '0%'],
     ])('caps the layout width and margin', (spanAttrs, expectedWidth, expectedMargin) => {
-      wrapper = shallowMountExtended(TracingDetailsSpansChart, {
+      wrapper = shallowMountExtended(TracingSpansChart, {
         propsData: {
           serviceToColor: {
             'service-1': 'blue-500',

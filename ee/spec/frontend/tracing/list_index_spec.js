@@ -1,6 +1,6 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ListIndex from 'ee/tracing/list_index.vue';
-import TracingList from 'ee/tracing/components/tracing_list.vue';
+import TracingList from 'ee/tracing/list/tracing_list.vue';
 import ProvisionedObservabilityContainer from '~/observability/components/provisioned_observability_container.vue';
 
 describe('ListIndex', () => {

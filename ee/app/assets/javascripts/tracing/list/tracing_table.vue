@@ -2,10 +2,10 @@
 import { GlTable, GlTruncate } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
-import { formatTraceDuration } from './trace_utils';
+import { formatTraceDuration } from '../trace_utils';
 
 export default {
-  name: 'TracingTableList',
+  name: 'TracingTable',
   i18n: {
     title: s__('Tracing|Traces'),
     emptyText: __('No results found'),

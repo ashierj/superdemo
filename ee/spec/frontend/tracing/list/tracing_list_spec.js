@@ -1,17 +1,17 @@
 import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import { filterObjToFilterToken } from 'ee/tracing/list/filter_bar/filters';
+import FilteredSearch from 'ee/tracing/list/filter_bar/tracing_filtered_search.vue';
+import ScatterChart from 'ee/tracing/list/tracing_scatter_chart.vue';
+import * as traceUtils from 'ee/tracing/trace_utils';
+import TracingTableList from 'ee/tracing/list/tracing_table.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingList from 'ee/tracing/components/tracing_list.vue';
-import TracingTableList from 'ee/tracing/components/tracing_table_list.vue';
+import TracingList from 'ee/tracing/list/tracing_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import * as urlUtility from '~/lib/utils/url_utility';
-import { filterObjToFilterToken } from 'ee/tracing/filters';
-import FilteredSearch from 'ee/tracing/components/tracing_list_filtered_search.vue';
-import ScatterChart from 'ee/tracing/components/tracing_scatter_chart.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
-import * as traceUtils from 'ee/tracing/components/trace_utils';
 import { createMockClient } from 'helpers/mock_observability_client';
 
 jest.mock('~/alert');

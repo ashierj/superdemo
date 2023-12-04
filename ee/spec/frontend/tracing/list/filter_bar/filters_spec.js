@@ -3,7 +3,7 @@ import {
   filterObjToQuery,
   filterObjToFilterToken,
   filterTokensToFilterObj,
-} from 'ee/tracing/filters';
+} from 'ee/tracing/list/filter_bar/filters';
 
 describe('utils', () => {
   const query =

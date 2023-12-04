@@ -1,7 +1,7 @@
 <script>
 import { GlCard } from '@gitlab/ui';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
-import { formatTraceDuration } from './trace_utils';
+import { formatTraceDuration } from '../trace_utils';
 
 const CARD_CLASS = 'gl-mr-7 gl-w-15p gl-min-w-fit-content';
 const HEADER_CLASS = 'gl-p-2 gl-font-weight-bold gl--flex-center';

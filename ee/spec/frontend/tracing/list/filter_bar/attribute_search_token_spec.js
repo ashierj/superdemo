@@ -1,4 +1,4 @@
-import AttributeSearchToken from 'ee/tracing/components/attribute_search_token.vue';
+import AttributeSearchToken from 'ee/tracing/list/filter_bar/attribute_search_token.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 

@@ -1,15 +1,15 @@
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetailsChart from 'ee/tracing/components/tracing_details_chart.vue';
-import TracingDetailsSpansChart from 'ee/tracing/components/tracing_details_spans_chart.vue';
 import {
   mapTraceToTreeRoot,
   assignColorToServices,
   durationNanoToMs,
-} from 'ee/tracing/components/trace_utils';
+} from 'ee/tracing/trace_utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import TracingChart from 'ee/tracing/details/tracing_chart.vue';
+import TracingDetailsSpansChart from 'ee/tracing/details/tracing_spans_chart.vue';
 
-jest.mock('ee/tracing/components/trace_utils');
+jest.mock('ee/tracing/trace_utils');
 
-describe('TracingDetailsChart', () => {
+describe('TracingChart', () => {
   let wrapper;
 
   const mockTrace = {
@@ -34,7 +34,7 @@ describe('TracingDetailsChart', () => {
   };
 
   const mountComponent = () => {
-    wrapper = shallowMountExtended(TracingDetailsChart, {
+    wrapper = shallowMountExtended(TracingChart, {
       propsData: {
         trace: mockTrace,
         selectedSpanId: 'foo',

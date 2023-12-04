@@ -4,7 +4,7 @@ import isEmpty from 'lodash/isEmpty';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import { SERVICE_NAME_FILTER_TOKEN_TYPE } from '../filters';
+import { SERVICE_NAME_FILTER_TOKEN_TYPE } from './filters';
 
 export default {
   components: {
