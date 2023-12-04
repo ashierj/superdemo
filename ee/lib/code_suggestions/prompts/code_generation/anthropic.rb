@@ -20,7 +20,7 @@ module CodeSuggestions
 
         def prompt
           <<~PROMPT.strip
-            You are a coding autocomplete agent. We want to generate new #{language.name} code inside the
+            Human: You are a coding autocomplete agent. We want to generate new #{language.name} code inside the
             file '#{file_path_info}' based on instructions from the user.
             #{examples_section}
             #{existing_code_block}
@@ -38,7 +38,7 @@ module CodeSuggestions
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            Human: #{instructions}
+            #{instructions}
 
             Assistant: <new_code>
           PROMPT

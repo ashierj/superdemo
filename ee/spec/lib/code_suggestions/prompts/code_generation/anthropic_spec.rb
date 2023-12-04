@@ -68,7 +68,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            You are a coding autocomplete agent. We want to generate new Go code inside the
+            Human: You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
             Here are a few examples of successfully generated code by other autocomplete agents:
 
@@ -107,7 +107,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            Human: Print a hello world message
+            Print a hello world message
 
             Assistant: <new_code>
           PROMPT
@@ -126,7 +126,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
             prompt_version: 2,
             prompt: <<~PROMPT
-            You are a coding autocomplete agent. We want to generate new Go code inside the
+            Human: You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
             Here are a few examples of successfully generated code by other autocomplete agents:
 
@@ -168,7 +168,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            Human: Generate the most likely code based on instructions.
+            Generate the most likely code based on instructions.
 
             Assistant: <new_code>
             PROMPT
@@ -189,7 +189,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            You are a coding autocomplete agent. We want to generate new Go code inside the
+            Human: You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
 
 
@@ -207,7 +207,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            Human: Print a hello world message
+            Print a hello world message
 
             Assistant: <new_code>
           PROMPT
@@ -230,7 +230,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            You are a coding autocomplete agent. We want to generate new Go code inside the
+            Human: You are a coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
 
             <existing_code>
@@ -252,7 +252,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            Human: Print a hello world message
+            Print a hello world message
 
             Assistant: <new_code>
           PROMPT
@@ -273,7 +273,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            You are a coding autocomplete agent. We want to generate new  code inside the
+            Human: You are a coding autocomplete agent. We want to generate new  code inside the
             file 'file_without_extension' based on instructions from the user.
 
             <existing_code>
@@ -299,7 +299,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            Human: Print a hello world message
+            Print a hello world message
 
             Assistant: <new_code>
           PROMPT
@@ -320,7 +320,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
           model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
           prompt_version: 2,
           prompt: <<~PROMPT
-            You are a coding autocomplete agent. We want to generate new  code inside the
+            Human: You are a coding autocomplete agent. We want to generate new  code inside the
             file 'README.md' based on instructions from the user.
 
             <existing_code>
@@ -346,7 +346,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::Anthropic, feature_cate
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
-            Human: Print a hello world message
+            Print a hello world message
 
             Assistant: <new_code>
           PROMPT
