@@ -70,7 +70,7 @@ export const roleDropdownItems = ({ validRoles, customRoles }) => {
   const customRoleDropdownGroups = Object.entries(
     groupBy(customRoleDropdownItems, 'accessLevel'),
   ).map(([accessLevel, options]) => ({
-    text: sprintf(s__('MemberRoles|Custom roles based on %{accessLevel}'), {
+    text: sprintf(s__('MemberRole|Custom roles based on %{accessLevel}'), {
       accessLevel: ACCESS_LEVEL_LABELS[accessLevel],
     }),
     options,
@@ -80,7 +80,7 @@ export const roleDropdownItems = ({ validRoles, customRoles }) => {
     flatten: [...staticRoleDropdownItems, ...customRoleDropdownItems],
     formatted: [
       {
-        text: s__('MemberRoles|Standard roles'),
+        text: s__('MemberRole|Standard roles'),
         options: staticRoleDropdownItems,
       },
       ...customRoleDropdownGroups,

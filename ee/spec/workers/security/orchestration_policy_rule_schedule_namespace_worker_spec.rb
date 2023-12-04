@@ -76,7 +76,12 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           end
 
           context 'with namespace including project marked for deletion' do
+            let_it_be(:security_policy_bot_2) { create(:user, :security_policy_bot) }
             let_it_be(:project_pending_deletion) { create(:project, namespace: namespace, marked_for_deletion_at: Time.zone.now) }
+
+            before_all do
+              project_pending_deletion.add_guest(security_policy_bot_2)
+            end
 
             it 'does not call RuleScheduleWorker for the project' do
               expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async).with(project_pending_deletion.id, schedule.owner.id, schedule.id)
