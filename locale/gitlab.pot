@@ -28825,37 +28825,13 @@ msgstr ""
 msgid "Locks the discussion."
 msgstr ""
 
-msgid "LoggedOutMarketingHeader|About GitLab"
-msgstr ""
-
 msgid "LoggedOutMarketingHeader|Contact Sales"
 msgstr ""
 
 msgid "LoggedOutMarketingHeader|Explore GitLab"
 msgstr ""
 
-msgid "LoggedOutMarketingHeader|Get started"
-msgstr ""
-
-msgid "LoggedOutMarketingHeader|GitLab Learn"
-msgstr ""
-
-msgid "LoggedOutMarketingHeader|GitLab docs"
-msgstr ""
-
-msgid "LoggedOutMarketingHeader|GitLab: the DevOps platform"
-msgstr ""
-
-msgid "LoggedOutMarketingHeader|How GitLab compares"
-msgstr ""
-
-msgid "LoggedOutMarketingHeader|Install GitLab"
-msgstr ""
-
 msgid "LoggedOutMarketingHeader|Pricing"
-msgstr ""
-
-msgid "LoggedOutMarketingHeader|Talk to an expert"
 msgstr ""
 
 msgid "LoggedOutMarketingHeader|Why GitLab"
@@ -50708,9 +50684,6 @@ msgid "Toggle focus mode"
 msgstr ""
 
 msgid "Toggle keyboard shortcuts help dialog"
-msgstr ""
-
-msgid "Toggle navigation"
 msgstr ""
 
 msgid "Toggle project select"
