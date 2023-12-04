@@ -56,7 +56,11 @@ module QA
         let(:hook_trigger_times) { 6 }
 
         it 'group hooks do not auto-disable',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/389594' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/389594',
+          quarantine: {
+            type: :investigating,
+            issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/431816"
+          } do
           EE::Resource::GroupWebHook.setup(fail_mock, session: session, issues: true) do |webhook, smocker|
             project = create(:project, group: webhook.group)
 

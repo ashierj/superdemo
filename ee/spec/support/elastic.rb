@@ -22,12 +22,21 @@ module Elastic
 
     def setup(multi_index: true)
       clear_tracking!
-      delete_indices!
-      helper.create_empty_index(options: { settings: { number_of_replicas: 0 } })
-      helper.create_migrations_index
-      ::Elastic::DataMigrationService.mark_all_as_completed!
-      helper.create_standalone_indices
-      curator.curate! if multi_index
+      benchmark(:delete_indices!) { delete_indices! }
+
+      benchmark(:create_migrations_index) { helper.create_migrations_index }
+      benchmark(:mark_all_as_completed!) { Elastic::DataMigrationService.mark_all_as_completed! }
+
+      name_suffix = Time.now.utc.strftime('%S.%L')
+      benchmark(:create_empty_index) do
+        helper.create_empty_index(options: { settings: { number_of_replicas: 0 }, name_suffix: name_suffix })
+      end
+      benchmark(:create_standalone_indices) do
+        helper.create_standalone_indices(options: { settings: { number_of_replicas: 0 }, name_suffix: name_suffix })
+      end
+
+      benchmark(:curate) { curator.curate! } if multi_index
+
       refresh_elasticsearch_index!
     end
 
@@ -61,6 +70,19 @@ module Elastic
         }
       )
     end
+
+    def benchmark(name)
+      return yield unless ENV['SEARCH_SPEC_BENCHMARK']
+
+      result = nil
+      time = Benchmark.realtime do
+        result = yield
+      end
+
+      puts({ name: name, elapsed_time: time.round(2) }.to_json)
+
+      result
+    end
   end
 end
 
@@ -74,7 +96,7 @@ RSpec.configure do |config|
   # wherever possible.
   config.before(:all, :elastic) do
     helper = Elastic::TestHelpers.new
-    helper.setup(multi_index: true)
+    helper.setup(multi_index: false)
   end
 
   config.after(:all, :elastic) do
@@ -99,7 +121,7 @@ RSpec.configure do |config|
   end
 
   config.before(:context, :elastic_delete_by_query) do
-    Elastic::TestHelpers.new.setup
+    Elastic::TestHelpers.new.setup(multi_index: false)
   end
 
   config.after(:context, :elastic_delete_by_query) do

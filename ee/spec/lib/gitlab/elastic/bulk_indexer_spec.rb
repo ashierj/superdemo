@@ -2,30 +2,28 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_shared_state,
+  feature_category: :global_search do
   let_it_be(:issue) { create(:issue) }
   let_it_be(:other_issue) { create(:issue, project: issue.project) }
 
   let(:project) { issue.project }
-
   let(:logger) { ::Gitlab::Elasticsearch::Logger.build }
-
-  subject(:indexer) { described_class.new(logger: logger) }
-
   let(:es_client) { indexer.client }
-
   let(:issue_as_ref) { ref(issue) }
   let(:issue_as_json_with_times) { issue.__elasticsearch__.as_indexed_json }
   let(:issue_as_json) { issue_as_json_with_times.except('created_at', 'updated_at') }
   let(:other_issue_as_ref) { ref(other_issue) }
 
-  # Because there are two indices, one rolled over and one active,
-  # there is an additional op for each index.
-  #
   # Whatever the json payload bytesize is, it will ultimately be multiplied
   # by the total number of indices. We add an additional 0.5 to the overflow
   # factor to simulate the bulk_limit being exceeded in tests.
-  let(:bulk_limit_overflow_factor) { 2.5 }
+  let(:bulk_limit_overflow_factor) do
+    helper = Gitlab::Elastic::Helper.default
+    helper.target_index_names(target: nil).count + 0.5
+  end
+
+  subject(:indexer) { described_class.new(logger: logger) }
 
   describe '#process' do
     it 'returns bytesize for the indexing operation and data' do
@@ -84,19 +82,104 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
   end
 
   describe '#flush' do
-    it 'completes a bulk' do
-      indexer.process(issue_as_ref)
+    context 'when curation has not occurred' do
+      it 'completes a bulk' do
+        indexer.process(issue_as_ref)
 
-      # The es_client will receive three items in bulk request for a single ref:
-      # 1) The bulk index header, ie: { "index" => { "_index": "gitlab-issues" } }
-      # 2) The payload of the actual document to write index
-      # 3) The delete request for document in rolled over index
-      expect(es_client)
-        .to receive(:bulk)
-        .with(body: [kind_of(String), kind_of(String), kind_of(String)])
-        .and_return({})
+        # The es_client will receive three items in bulk request for a single ref:
+        # 1) The bulk index header, ie: { "index" => { "_index": "gitlab-issues" } }
+        # 2) The payload of the actual document to write index
+        expect(es_client)
+          .to receive(:bulk)
+            .with(body: [kind_of(String), kind_of(String)])
+            .and_return({})
 
-      expect(indexer.flush).to be_empty
+        expect(indexer.flush).to be_empty
+      end
+
+      it 'fails all documents on exception' do
+        expect(es_client).to receive(:bulk) { raise 'An exception' }
+
+        indexer.process(issue_as_ref)
+        indexer.process(other_issue_as_ref)
+
+        expect(indexer.flush).to contain_exactly(issue_as_ref, other_issue_as_ref)
+        expect(indexer.failures).to contain_exactly(issue_as_ref, other_issue_as_ref)
+      end
+
+      it 'fails a document correctly on exception after adding an item that exceeded the bulk limit' do
+        bulk_limit_bytes = (issue_as_json_with_times.to_json.bytesize * bulk_limit_overflow_factor).to_i
+        set_bulk_limit(indexer, bulk_limit_bytes)
+        indexer.process(issue_as_ref)
+        allow(es_client).to receive(:bulk).and_return({})
+
+        indexer.process(issue_as_ref)
+
+        expect(es_client).to have_received(:bulk) do |args|
+          body_bytesize = args[:body].sum(&:bytesize)
+          expect(body_bytesize).to be <= bulk_limit_bytes
+        end
+
+        expect(es_client).to receive(:bulk) { raise 'An exception' }
+
+        expect(indexer.flush).to contain_exactly(issue_as_ref)
+        expect(indexer.failures).to contain_exactly(issue_as_ref)
+      end
+    end
+
+    context 'when curation has occurred' do
+      before_all do
+        curator = ::Gitlab::Search::IndexCurator.new(ignore_patterns: [/migrations/], force: true, dry_run: false)
+        curator.curate!
+      end
+
+      it 'completes a bulk' do
+        indexer.process(issue_as_ref)
+
+        # The es_client will receive three items in bulk request for a single ref:
+        # 1) The bulk index header, ie: { "index" => { "_index": "gitlab-issues" } }
+        # 2) The payload of the actual document to write index
+        # 3) The delete request for document in rolled over index
+        expect(es_client)
+          .to receive(:bulk)
+            .with(body: [kind_of(String), kind_of(String), kind_of(String)])
+            .and_return({})
+
+        expect(indexer.flush).to be_empty
+      end
+
+      it 'fails all documents on exception' do
+        expect(es_client).to receive(:bulk) { raise 'An exception' }
+
+        indexer.process(issue_as_ref)
+        indexer.process(other_issue_as_ref)
+
+        # Since there are two indices, one rolled over and one active
+        # we can expect to have double the instances of failed refs
+        expect(indexer.flush).to contain_exactly(issue_as_ref, issue_as_ref, other_issue_as_ref, other_issue_as_ref)
+        expect(indexer.failures).to contain_exactly(issue_as_ref, issue_as_ref, other_issue_as_ref, other_issue_as_ref)
+      end
+
+      it 'fails a document correctly on exception after adding an item that exceeded the bulk limit' do
+        bulk_limit_bytes = (issue_as_json_with_times.to_json.bytesize * bulk_limit_overflow_factor).to_i
+        set_bulk_limit(indexer, bulk_limit_bytes)
+        indexer.process(issue_as_ref)
+        allow(es_client).to receive(:bulk).and_return({})
+
+        indexer.process(issue_as_ref)
+
+        expect(es_client).to have_received(:bulk) do |args|
+          body_bytesize = args[:body].sum(&:bytesize)
+          expect(body_bytesize).to be <= bulk_limit_bytes
+        end
+
+        expect(es_client).to receive(:bulk) { raise 'An exception' }
+
+        # Since there are two indices, one rolled over and one active
+        # we can expect to have double the instances of failed refs
+        expect(indexer.flush).to contain_exactly(issue_as_ref, issue_as_ref)
+        expect(indexer.failures).to contain_exactly(issue_as_ref, issue_as_ref)
+      end
     end
 
     it 'fails documents that elasticsearch refuses to accept' do
@@ -114,39 +197,6 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
       refresh_index!
 
       expect(search_one(Issue)).to have_attributes(issue_as_json)
-    end
-
-    it 'fails all documents on exception' do
-      expect(es_client).to receive(:bulk) { raise 'An exception' }
-
-      indexer.process(issue_as_ref)
-      indexer.process(other_issue_as_ref)
-
-      # Since there are two indices, one rolled over and one active
-      # we can expect to have double the instances of failed refs
-      expect(indexer.flush).to contain_exactly(issue_as_ref, issue_as_ref, other_issue_as_ref, other_issue_as_ref)
-      expect(indexer.failures).to contain_exactly(issue_as_ref, issue_as_ref, other_issue_as_ref, other_issue_as_ref)
-    end
-
-    it 'fails a document correctly on exception after adding an item that exceeded the bulk limit' do
-      bulk_limit_bytes = (issue_as_json_with_times.to_json.bytesize * bulk_limit_overflow_factor).to_i
-      set_bulk_limit(indexer, bulk_limit_bytes)
-      indexer.process(issue_as_ref)
-      allow(es_client).to receive(:bulk).and_return({})
-
-      indexer.process(issue_as_ref)
-
-      expect(es_client).to have_received(:bulk) do |args|
-        body_bytesize = args[:body].sum(&:bytesize)
-        expect(body_bytesize).to be <= bulk_limit_bytes
-      end
-
-      expect(es_client).to receive(:bulk) { raise 'An exception' }
-
-      # Since there are two indices, one rolled over and one active
-      # we can expect to have double the instances of failed refs
-      expect(indexer.flush).to contain_exactly(issue_as_ref, issue_as_ref)
-      expect(indexer.failures).to contain_exactly(issue_as_ref, issue_as_ref)
     end
 
     context 'indexing an issue' do
