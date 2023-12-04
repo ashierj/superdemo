@@ -31,7 +31,7 @@ module Search
           # Note: if zoekt node makes task_request with a different `node.url`,
           # we will respect that and make change here.
           s.index_base_url = params.fetch("node.url")
-          s.search_base_url = params.fetch("node.url")
+          s.search_base_url = params['node.search_url'] || params.fetch("node.url")
 
           s.last_seen_at = Time.zone.now
           s.used_bytes = params.fetch("disk.used")
