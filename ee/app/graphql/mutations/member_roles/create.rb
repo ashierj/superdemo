@@ -36,6 +36,11 @@ module Mutations
         GraphQL::Types::Boolean,
         required: false,
         description: 'Permission to admin project access tokens.'
+      argument :permissions,
+        [GraphQL::Types::String],
+        required: false,
+        alpha: { milestone: '16.7' },
+        description: 'List of all customizable permissions.'
       argument :read_code,
         GraphQL::Types::Boolean,
         required: false,
@@ -52,8 +57,7 @@ module Mutations
       def resolve(args)
         group = authorized_find!(group_path: args.delete(:group_path))
         raise_resource_not_available_error! unless group.custom_roles_enabled?
-
-        response = ::MemberRoles::CreateService.new(group, current_user, args).execute
+        response = ::MemberRoles::CreateService.new(group, current_user, canonicalize(args)).execute
 
         {
           member_role: response.payload[:member_role],
@@ -65,6 +69,11 @@ module Mutations
 
       def find_object(group_path:)
         resolve_namespace(full_path: group_path)
+      end
+
+      def canonicalize(args)
+        permissions = args.delete(:permissions) || []
+        permissions.each_with_object(args) { |permission, new_args| new_args[permission] = true }
       end
     end
   end

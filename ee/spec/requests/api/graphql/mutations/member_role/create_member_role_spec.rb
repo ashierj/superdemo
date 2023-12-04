@@ -96,6 +96,58 @@ RSpec.describe 'creating member role', feature_category: :system_access do
         end
       end
 
+      context 'with an array of permissions' do
+        let(:permissions) { { permissions: ['read_vulnerability'] } }
+
+        it 'returns success' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          expect(graphql_errors).to be_nil
+          mutation_response = create_member_role['memberRole']
+          expect(mutation_response['readVulnerability']).to eq(true)
+          expect(mutation_response['enabledPermissions']).to eq(['READ_VULNERABILITY'])
+        end
+
+        it 'creates a member role with the specified permissions' do
+          expect do
+            post_graphql_mutation(mutation, current_user: current_user)
+          end.to change { MemberRole.count }.by(1)
+
+          member_role = MemberRole.last
+          expect(member_role.read_vulnerability).to eq(true)
+        end
+      end
+
+      context 'with an array of permissions and a specific permission' do
+        let(:permissions) do
+          {
+            read_vulnerability: false,
+            permissions: [
+              'read_vulnerability'
+            ]
+          }
+        end
+
+        it 'returns success' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          expect(graphql_errors).to be_nil
+          mutation_response = create_member_role['memberRole']
+          expect(mutation_response['readVulnerability']).to eq(true)
+          expect(mutation_response['enabledPermissions']).to eq(['READ_VULNERABILITY'])
+        end
+      end
+
+      context 'with an unknown permission' do
+        let(:permissions) { { permissions: ['read_unknown'] } }
+
+        it 'returns an error' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          expect(graphql_errors).to be_present
+        end
+      end
+
       context 'with missing arguments' do
         let(:input) { { group_path: group.path } }
 
