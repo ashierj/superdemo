@@ -31,11 +31,11 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
   end
 
   describe '.find_or_initialize_by_task_request', :freeze_time do
-    let(:params) do
+    let(:base_params) do
       {
         'uuid' => '3869fe21-36d1-4612-9676-0b783ef2dcd7',
         'node.name' => 'm1.local',
-        'node.url' => 'http://localhost:6090',
+        'node.url' => 'http://localhost:6080',
         'disk.all' => 994662584320,
         'disk.used' => 532673712128,
         'disk.free' => 461988872192
@@ -44,38 +44,52 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
 
     subject(:tasked_node) { described_class.find_or_initialize_by_task_request(params) }
 
-    context 'when node does not exist for given UUID' do
-      it 'returns a new record with correct attributes' do
+    context 'when node.search_url is unset' do
+      let(:params) { base_params }
+
+      it 'returns a new record with correct base_urls' do
         expect(tasked_node).not_to be_persisted
         expect(tasked_node.index_base_url).to eq(params['node.url'])
         expect(tasked_node.search_base_url).to eq(params['node.url'])
-        expect(tasked_node.uuid).to eq(params['uuid'])
-        expect(tasked_node.last_seen_at).to eq(Time.zone.now)
-        expect(tasked_node.used_bytes).to eq(params['disk.used'])
-        expect(tasked_node.total_bytes).to eq(params['disk.all'])
-        expect(tasked_node.metadata['name']).to eq(params['node.name'])
       end
     end
 
-    context 'when node already exists for given UUID' do
-      it 'returns existing node and updates correct attributes' do
-        node.update!(uuid: params['uuid'])
+    context 'when node.search_url is set' do
+      let(:params) { base_params.merge('node.search_url' => 'http://localhost:6090') }
 
-        expect(tasked_node).to be_persisted
-        expect(tasked_node.id).to eq(node.id)
-        expect(tasked_node.index_base_url).to eq(params['node.url'])
-        expect(tasked_node.search_base_url).to eq(params['node.url'])
-        expect(tasked_node.uuid).to eq(params['uuid'])
-        expect(tasked_node.last_seen_at).to eq(Time.zone.now)
-        expect(tasked_node.used_bytes).to eq(params['disk.used'])
-        expect(tasked_node.total_bytes).to eq(params['disk.all'])
-        expect(tasked_node.metadata['name']).to eq(params['node.name'])
+      context 'when node does not exist for given UUID' do
+        it 'returns a new record with correct attributes' do
+          expect(tasked_node).not_to be_persisted
+          expect(tasked_node.index_base_url).to eq(params['node.url'])
+          expect(tasked_node.search_base_url).to eq(params['node.search_url'])
+          expect(tasked_node.uuid).to eq(params['uuid'])
+          expect(tasked_node.last_seen_at).to eq(Time.zone.now)
+          expect(tasked_node.used_bytes).to eq(params['disk.used'])
+          expect(tasked_node.total_bytes).to eq(params['disk.all'])
+          expect(tasked_node.metadata['name']).to eq(params['node.name'])
+        end
       end
 
-      it 'allows creation of another node with the same URL' do
-        node.update!(index_base_url: params['node.url'], search_base_url: params['node.url'])
+      context 'when node already exists for given UUID' do
+        it 'returns existing node and updates correct attributes' do
+          node.update!(uuid: params['uuid'])
 
-        expect(tasked_node.save).to eq(true)
+          expect(tasked_node).to be_persisted
+          expect(tasked_node.id).to eq(node.id)
+          expect(tasked_node.index_base_url).to eq(params['node.url'])
+          expect(tasked_node.search_base_url).to eq(params['node.search_url'])
+          expect(tasked_node.uuid).to eq(params['uuid'])
+          expect(tasked_node.last_seen_at).to eq(Time.zone.now)
+          expect(tasked_node.used_bytes).to eq(params['disk.used'])
+          expect(tasked_node.total_bytes).to eq(params['disk.all'])
+          expect(tasked_node.metadata['name']).to eq(params['node.name'])
+        end
+
+        it 'allows creation of another node with the same URL' do
+          node.update!(index_base_url: params['node.url'], search_base_url: params['node.url'])
+
+          expect(tasked_node.save).to eq(true)
+        end
       end
     end
   end
