@@ -88,6 +88,15 @@ RSpec.describe Namespaces::CombinedStorageUsers::OwnerAlertComponent, :saas, typ
           expect(page).to have_content(alert_title)
         end
       end
+
+      context 'when the user has purchased additional storage' do
+        it 'includes the purchased storage in the alert' do
+          namespace.additional_purchased_storage_size = 10_240
+          render_inline(component)
+
+          expect(page).to have_content('15 GiB')
+        end
+      end
     end
 
     context 'when not over one of the limits' do
