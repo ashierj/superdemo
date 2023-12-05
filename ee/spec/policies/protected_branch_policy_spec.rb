@@ -2,109 +2,77 @@
 
 require 'spec_helper'
 
-RSpec.describe ProtectedBranchPolicy do
+RSpec.describe ProtectedBranchPolicy, feature_category: :source_code_management do
   let(:user) { create(:user) }
   let(:name) { 'feature' }
-  let(:protected_branch) { create(:protected_branch, name: name) }
-  let(:project) { protected_branch.project }
-  let(:allowed_group) { create(:group) }
 
   subject { described_class.new(user, protected_branch) }
 
-  context 'when belongs to project' do
+  context 'when the protected branch belongs to a project' do
+    let(:protected_branch) { create(:protected_branch, name: name) }
+    let(:project) { protected_branch.project }
+    let(:allowed_group) { create(:group) }
+
     before do
       project.add_maintainer(user)
       project.project_group_links.create!(group: allowed_group)
     end
 
-    context 'when unprotection is limited by access levels' do
+    context 'and an unprotect access level for a group is configured' do
       before do
         protected_branch.unprotect_access_levels.create!(group: allowed_group)
       end
 
-      context 'when unprotection restriction feature is unlicensed' do
-        it "users can remove protections" do
-          is_expected.to be_allowed(:update_protected_branch)
-          is_expected.to be_allowed(:destroy_protected_branch)
-        end
+      context 'but unprotection restriction feature is unlicensed' do
+        it_behaves_like 'allows protected branch crud'
       end
 
-      context 'when unprotection restriction feature is licensed' do
+      context 'and unprotection restriction feature is licensed' do
         before do
           stub_licensed_features(unprotection_restrictions: true)
         end
 
-        it "users can't remove protections without specific access" do
-          is_expected.not_to be_allowed(:update_protected_branch)
-          is_expected.not_to be_allowed(:destroy_protected_branch)
-        end
+        it { is_expected.to be_allowed(:read_protected_branch) }
 
-        context "and access levels grant the user control" do
+        it_behaves_like 'disallows protected branch changes'
+
+        context 'and the user is a member of the group' do
           before do
-            allowed_group.add_member(user, :guest)
+            allowed_group.add_guest(user)
           end
 
-          it 'users can manage protections' do
-            is_expected.to be_allowed(:update_protected_branch)
-            is_expected.to be_allowed(:update_protected_branch)
-            is_expected.to be_allowed(:destroy_protected_branch)
-          end
-        end
-      end
-    end
-
-    context 'creating restrictions' do
-      let(:unprotect_access_levels) { [{ group_id: allowed_group.id }] }
-      let(:protected_branch) { build(:protected_branch, name: name, unprotect_access_levels_attributes: unprotect_access_levels) }
-
-      before do
-        stub_licensed_features(unprotection_restrictions: true)
-      end
-
-      it "is prevented if the user wouldn't be able to remove the restriction" do
-        is_expected.not_to be_allowed(:create_protected_branch)
-      end
-
-      context 'when the user can remove the restriction' do
-        before do
-          allowed_group.add_member(user, :guest)
-        end
-
-        it "is allowed" do
-          is_expected.to be_allowed(:create_protected_branch)
+          it_behaves_like 'allows protected branch crud'
         end
       end
     end
   end
 
-  context 'when belongs to group' do
+  context 'when the protected branch belongs to a group' do
     let(:group) { create(:group) }
     let(:protected_branch) { create(:protected_branch, name: name, project: nil, group: group) }
 
-    context 'as maintainers' do
+    context 'as a maintainer' do
       before do
         group.add_maintainer(user)
       end
 
-      it 'can be managed' do
-        is_expected.to be_allowed(:read_protected_branch)
-        is_expected.to be_allowed(:create_protected_branch)
-        is_expected.to be_allowed(:update_protected_branch)
-        is_expected.to be_allowed(:destroy_protected_branch)
-      end
+      it_behaves_like 'allows protected branch crud'
     end
 
-    context 'as guests' do
+    context 'as a developer' do
+      before do
+        group.add_developer(user)
+      end
+
+      it_behaves_like 'disallows protected branch crud'
+    end
+
+    context 'as a guest' do
       before do
         group.add_guest(user)
       end
 
-      it 'can not be managed' do
-        is_expected.not_to be_allowed(:read_protected_branch)
-        is_expected.not_to be_allowed(:create_protected_branch)
-        is_expected.not_to be_allowed(:update_protected_branch)
-        is_expected.not_to be_allowed(:destroy_protected_branch)
-      end
+      it_behaves_like 'disallows protected branch crud'
     end
   end
 end
