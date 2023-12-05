@@ -38173,9 +38173,6 @@ ALTER TABLE ONLY merge_requests_compliance_violations
 ALTER TABLE ONLY work_item_widget_definitions
     ADD CONSTRAINT fk_ecf57512f7 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY events
-    ADD CONSTRAINT fk_edfd187b6f FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY coverage_fuzzing_corpuses
     ADD CONSTRAINT fk_ef5ebf339f FOREIGN KEY (package_id) REFERENCES packages_packages(id) ON DELETE CASCADE;
 
