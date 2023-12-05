@@ -1,9 +1,9 @@
 <script>
 import Vue from 'vue';
-import { GlLoadingIcon, GlTable, GlToast, GlLink, GlModal } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon, GlTable, GlToast, GlLink } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
-import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import FrameworkBadge from '../shared/framework_badge.vue';
+import { ROUTE_EDIT_FRAMEWORK, ROUTE_NEW_FRAMEWORK } from '../../constants';
 import FrameworkInfoDrawer from './framework_info_drawer.vue';
 
 Vue.use(GlToast);
@@ -11,11 +11,10 @@ Vue.use(GlToast);
 export default {
   name: 'FrameworksTable',
   components: {
+    GlButton,
     GlLoadingIcon,
     GlTable,
     GlLink,
-    GlModal,
-    EditForm,
     FrameworkInfoDrawer,
     FrameworkBadge,
   },
@@ -36,7 +35,6 @@ export default {
   data() {
     return {
       selectedFramework: null,
-      frameworkSelectedForEdit: null,
     };
   },
   computed: {
@@ -67,15 +65,13 @@ export default {
       this.selectedFramework = null;
     },
     editComplianceFramework(framework) {
-      this.frameworkSelectedForEdit = framework;
-      this.$refs.editModal.show();
-    },
-    resetEditModal() {
-      this.frameworkSelectedForEdit = null;
-      this.$refs.editModal.hide();
+      this.$router.push({ name: ROUTE_EDIT_FRAMEWORK, params: { id: framework.id } });
     },
     isLastItem(index, arr) {
       return index >= arr.length - 1;
+    },
+    newFramework() {
+      this.$router.push({ name: ROUTE_NEW_FRAMEWORK });
     },
   },
   fields: [
@@ -95,6 +91,7 @@ export default {
     },
   ],
   i18n: {
+    newFramework: s__('ComplianceFrameworks|New framework'),
     noFrameworksFound: s__('ComplianceReport|No frameworks found'),
     editTitle: s__('ComplianceFrameworks|Edit compliance framework'),
   },
@@ -102,27 +99,18 @@ export default {
 </script>
 <template>
   <section>
-    <gl-modal
-      ref="editModal"
-      :title="$options.i18n.editTitle"
-      modal-id="edit-framework-form-modal"
-      hide-footer
-    >
-      <edit-form
-        v-if="frameworkSelectedForEdit"
-        :id="frameworkSelectedForEdit.id"
-        :framework="frameworkSelectedForEdit"
-        @success="resetEditModal"
-        @cancel="resetEditModal"
-      />
-    </gl-modal>
+    <div class="gl-p-4 gl-bg-gray-10 gl-display-flex">
+      <gl-button class="gl-ml-auto" variant="confirm" category="secondary" @click="newFramework">{{
+        $options.i18n.newFramework
+      }}</gl-button>
+    </div>
     <gl-table
       :fields="$options.fields"
       :busy="isLoading"
       :items="frameworkItems"
       no-local-sorting
       show-empty
-      stacked="lg"
+      stacked="md"
       hover
       @row-clicked="toggleDrawer"
     >

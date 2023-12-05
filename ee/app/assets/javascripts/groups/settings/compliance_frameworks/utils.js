@@ -20,10 +20,18 @@ export const initialiseFormData = () => ({
 });
 
 export const getSubmissionParams = (formData, pipelineConfigurationFullPathEnabled) => {
-  const params = { ...formData };
+  const params = {
+    name: formData.name,
+    description: formData.description,
+    color: formData.color,
+    default: formData.default,
+  };
 
-  if (!pipelineConfigurationFullPathEnabled) {
-    delete params.pipelineConfigurationFullPath;
+  if (
+    pipelineConfigurationFullPathEnabled &&
+    formData.pipelineConfigurationFullPath !== undefined
+  ) {
+    params.pipelineConfigurationFullPath = formData.pipelineConfigurationFullPath;
   }
 
   return params;
@@ -35,8 +43,9 @@ export const getPipelineConfigurationPathParts = (path) => {
   return { file, group, project };
 };
 
-export const validatePipelineConfirmationFormat = (path) =>
-  PIPELINE_CONFIGURATION_PATH_FORMAT.test(path);
+export const validatePipelineConfirmationFormat = (path) => {
+  return PIPELINE_CONFIGURATION_PATH_FORMAT.test(path);
+};
 
 export const fetchPipelineConfigurationFileExists = async (path) => {
   const { file, group, project } = getPipelineConfigurationPathParts(path);

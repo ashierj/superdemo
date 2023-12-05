@@ -51,6 +51,7 @@ describe('Utils', () => {
       name: 'a',
       description: 'b',
       color: '#000',
+      default: false,
     };
 
     it.each([true, false])(

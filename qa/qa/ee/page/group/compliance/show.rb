@@ -12,7 +12,7 @@ module QA
               element 'project-frameworks-row'
             end
 
-            view 'ee/app/assets/javascripts/compliance_dashboard/components/reports_app.vue' do
+            view 'ee/app/assets/javascripts/compliance_dashboard/components/main_layout.vue' do
               element 'standards-adherence-tab'
               element 'violations-tab'
               element 'frameworks-tab'

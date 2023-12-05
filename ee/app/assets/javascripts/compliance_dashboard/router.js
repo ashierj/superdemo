@@ -7,9 +7,15 @@ import {
   ROUTE_FRAMEWORKS,
   ROUTE_PROJECTS,
   ROUTE_VIOLATIONS,
+  ROUTE_NEW_FRAMEWORK,
+  ROUTE_EDIT_FRAMEWORK,
 } from './constants';
+
+import MainLayout from './components/main_layout.vue';
+
 import ViolationsReport from './components/violations_report/report.vue';
 import FrameworksReport from './components/frameworks_report/report.vue';
+import EditFramework from './components/frameworks_report/edit_framework.vue';
 import ProjectsReport from './components/projects_report/report.vue';
 import StandardsReport from './components/standards_adherence_report/report.vue';
 
@@ -22,45 +28,62 @@ export function createRouter(basePath, props) {
   } = props;
 
   const defaultRoute = ROUTE_STANDARDS_ADHERENCE;
-  const frameworkReport = complianceFrameworkReportUiEnabled ? FrameworksReport : ProjectsReport;
+  const FrameworkReport = complianceFrameworkReportUiEnabled ? FrameworksReport : ProjectsReport;
 
   const routes = [
     {
-      path: '/standards_adherence',
-      name: ROUTE_STANDARDS_ADHERENCE,
-      component: StandardsReport,
-      props: {
-        groupPath,
-      },
+      path: '/frameworks/new',
+      name: ROUTE_NEW_FRAMEWORK,
+      component: EditFramework,
     },
     {
-      path: '/violations',
-      name: ROUTE_VIOLATIONS,
-      component: ViolationsReport,
-      props: {
-        mergeCommitsCsvExportPath,
-        groupPath,
-      },
+      path: '/frameworks/:id',
+      name: ROUTE_EDIT_FRAMEWORK,
+      component: EditFramework,
     },
     {
-      path: '/frameworks',
-      name: ROUTE_FRAMEWORKS,
-      component: frameworkReport,
-      props: {
-        groupPath,
-        rootAncestorPath,
-      },
+      path: '/',
+      component: MainLayout,
+      children: [
+        {
+          path: 'standards_adherence',
+          name: ROUTE_STANDARDS_ADHERENCE,
+          component: StandardsReport,
+          props: {
+            groupPath,
+          },
+        },
+        {
+          path: 'violations',
+          name: ROUTE_VIOLATIONS,
+          component: ViolationsReport,
+          props: {
+            mergeCommitsCsvExportPath,
+            groupPath,
+          },
+        },
+        {
+          path: 'frameworks',
+          name: ROUTE_FRAMEWORKS,
+          component: FrameworkReport,
+          props: {
+            groupPath,
+            rootAncestorPath,
+          },
+        },
+
+        {
+          path: '/projects',
+          name: ROUTE_PROJECTS,
+          component: ProjectsReport,
+          props: {
+            groupPath,
+            rootAncestorPath,
+          },
+        },
+        { path: '*', redirect: { name: defaultRoute } },
+      ],
     },
-    {
-      path: '/projects',
-      name: ROUTE_PROJECTS,
-      component: ProjectsReport,
-      props: {
-        groupPath,
-        rootAncestorPath,
-      },
-    },
-    { path: '*', redirect: { name: defaultRoute } },
   ];
 
   return new VueRouter({

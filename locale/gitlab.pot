@@ -12546,6 +12546,9 @@ msgstr ""
 msgid "ComplianceFrameworks|Background color"
 msgstr ""
 
+msgid "ComplianceFrameworks|Basic information"
+msgstr ""
+
 msgid "ComplianceFrameworks|Cancel"
 msgstr ""
 
@@ -12561,7 +12564,13 @@ msgstr ""
 msgid "ComplianceFrameworks|Configuration not found"
 msgstr ""
 
+msgid "ComplianceFrameworks|Create a compliance framework"
+msgstr ""
+
 msgid "ComplianceFrameworks|Default compliance framework successfully updated"
+msgstr ""
+
+msgid "ComplianceFrameworks|Default framework will be applied automatically to any new project created in the group or sub group."
 msgstr ""
 
 msgid "ComplianceFrameworks|Delete compliance framework %{framework}"
@@ -12574,6 +12583,9 @@ msgid "ComplianceFrameworks|Description"
 msgstr ""
 
 msgid "ComplianceFrameworks|Description is required"
+msgstr ""
+
+msgid "ComplianceFrameworks|Edit a compliance framework"
 msgstr ""
 
 msgid "ComplianceFrameworks|Edit compliance framework"
@@ -12606,7 +12618,13 @@ msgstr ""
 msgid "ComplianceFrameworks|Name is required"
 msgstr ""
 
+msgid "ComplianceFrameworks|Name, description"
+msgstr ""
+
 msgid "ComplianceFrameworks|New compliance framework"
+msgstr ""
+
+msgid "ComplianceFrameworks|New framework"
 msgstr ""
 
 msgid "ComplianceFrameworks|No compliance frameworks are set up yet"
@@ -12627,10 +12645,16 @@ msgstr ""
 msgid "ComplianceFrameworks|Saved changes to compliance framework"
 msgstr ""
 
+msgid "ComplianceFrameworks|Set as default"
+msgstr ""
+
 msgid "ComplianceFrameworks|Set compliance pipeline configuration for projects that use this framework. %{linkStart}How do I create the configuration?%{linkEnd}"
 msgstr ""
 
 msgid "ComplianceFrameworks|Set default"
+msgstr ""
+
+msgid "ComplianceFrameworks|There can be only one default framework."
 msgstr ""
 
 msgid "ComplianceFrameworks|Unable to save this compliance framework. Please try again"
