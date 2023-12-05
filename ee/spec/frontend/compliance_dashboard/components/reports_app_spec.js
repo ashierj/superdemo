@@ -1,11 +1,10 @@
-import { mount, shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import { GlTabs } from '@gitlab/ui';
+import { extendedWrapper, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import { __ } from '~/locale';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ComplianceReportsApp from 'ee/compliance_dashboard/components/reports_app.vue';
 import ReportHeader from 'ee/compliance_dashboard/components/shared/report_header.vue';
-import MergeCommitsExportButton from 'ee/compliance_dashboard/components/violations_report/shared/merge_commits_export_button.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { mockTracking } from 'helpers/tracking_helper';
 import {
@@ -25,16 +24,22 @@ describe('ComplianceReportsApp component', () => {
   };
 
   const findHeader = () => wrapper.findComponent(ReportHeader);
-  const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
-  const findViolationsExportButton = () => wrapper.findByTestId('violations-export');
-  const findProjectsExportButton = () => wrapper.findByTestId('projects-export');
+  const findMergeCommitsExportButton = () => wrapper.findByText('Export chain of custody report');
+  const findViolationsExportButton = () => wrapper.findByText('Export violations report');
+  const findProjectFrameworksExportButton = () =>
+    wrapper.findByText('Export list of project frameworks');
   const findTabs = () => wrapper.findComponent(GlTabs);
   const findProjectsTab = () => wrapper.findByTestId('projects-tab-content');
-  const findFrameworksTab = () => wrapper.findByTestId('frameworks-tab-content');
+  const findProjectFrameworksTab = () => wrapper.findByTestId('frameworks-tab-content');
   const findViolationsTab = () => wrapper.findByTestId('violations-tab-content');
   const findStandardsAdherenceTab = () => wrapper.findByTestId('standards-adherence-tab-content');
 
-  const createComponent = (props = {}, mountFn = shallowMount, mocks = {}, provide = {}) => {
+  const createComponent = (
+    props = {},
+    mountFn = shallowMountExtended,
+    mocks = {},
+    provide = {},
+  ) => {
     return extendedWrapper(
       mountFn(ComplianceReportsApp, {
         propsData: {
@@ -88,16 +93,8 @@ describe('ComplianceReportsApp component', () => {
       });
     });
 
-    it('renders the merge commit export button', () => {
-      expect(findMergeCommitsExportButton().exists()).toBe(true);
-    });
-
     it('renders the violations export button', () => {
       expect(findViolationsExportButton().exists()).toBe(true);
-    });
-
-    it('does not render the projects export button', () => {
-      expect(findProjectsExportButton().exists()).toBe(false);
     });
 
     it('does not render the merge commit export button when there is no CSV path', () => {
@@ -134,7 +131,7 @@ describe('ComplianceReportsApp component', () => {
     });
 
     it('does not render the frameworks report tab', () => {
-      expect(findFrameworksTab().exists()).toBe(false);
+      expect(findProjectFrameworksTab().exists()).toBe(false);
     });
 
     it('passes the expected values to the header', () => {
@@ -147,12 +144,8 @@ describe('ComplianceReportsApp component', () => {
       });
     });
 
-    it('does not render the merge commit export button', () => {
-      expect(findMergeCommitsExportButton().exists()).toBe(false);
-    });
-
-    it('renders the projects export button', () => {
-      expect(findProjectsExportButton().exists()).toBe(true);
+    it('renders the project frameworks export button', () => {
+      expect(findProjectFrameworksExportButton().exists()).toBe(true);
     });
 
     it('does not render the projects export button when there is no CSV path', () => {
@@ -162,7 +155,7 @@ describe('ComplianceReportsApp component', () => {
         },
       });
 
-      expect(findProjectsExportButton().exists()).toBe(false);
+      expect(findProjectFrameworksExportButton().exists()).toBe(false);
     });
   });
 
@@ -185,7 +178,7 @@ describe('ComplianceReportsApp component', () => {
     });
 
     it('renders the frameworks report tab', () => {
-      expect(findFrameworksTab().exists()).toBe(true);
+      expect(findProjectFrameworksTab().exists()).toBe(true);
     });
   });
 
@@ -207,7 +200,7 @@ describe('ComplianceReportsApp component', () => {
     });
 
     it('tracks clicks on framework tab', () => {
-      findFrameworksTab().vm.$emit('click');
+      findProjectFrameworksTab().vm.$emit('click');
 
       expect(trackingSpy).toHaveBeenCalledTimes(1);
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_report_tab', {

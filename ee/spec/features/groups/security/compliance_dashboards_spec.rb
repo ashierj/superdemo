@@ -20,6 +20,7 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   context 'tab selection' do
     before do
       visit group_security_compliance_dashboard_path(group)
+      wait_for_all_requests
     end
 
     it 'has the `Standards Adherence` tab selected by default' do
@@ -201,13 +202,32 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
     end
   end
 
-  context 'projects tab' do
+  context 'exports' do
     before do
-      visit group_security_compliance_dashboard_path(group, vueroute: :projects)
+      visit group_security_compliance_dashboard_path(group)
     end
 
-    it 'shows an export action' do
-      expect(page).to have_content('Export full report as CSV')
+    it 'shows all export dropdowns within the dropdown' do
+      within_testid('exports-disclosure-dropdown') do
+        click_button _('Export')
+
+        expect(page).to have_content('Send email of the chosen report as CSV')
+        expect(page).to have_content('Export violations report')
+        expect(page).to have_content('Export list of project frameworks')
+        expect(page).to have_content('Export custody report of a specific commit')
+      end
+    end
+
+    context 'when exporting custody report of a specific commit' do
+      it 'shows the form and buttons' do
+        within_testid('exports-disclosure-dropdown') do
+          click_button _('Export')
+          click_button _('Export custody report of a specific commit')
+
+          expect(page).to have_content('Cancel')
+          expect(page).to have_content('Export custody report')
+        end
+      end
     end
   end
 

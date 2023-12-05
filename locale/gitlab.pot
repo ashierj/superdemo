@@ -1434,9 +1434,6 @@ msgstr ""
 msgid "(leave blank if you don't want to change it)"
 msgstr ""
 
-msgid "(max size 15 MB)"
-msgstr ""
-
 msgid "(no user)"
 msgstr ""
 
@@ -12424,13 +12421,34 @@ msgstr ""
 msgid "Completed in %{duration_seconds} seconds (%{relative_time})"
 msgstr ""
 
-msgid "Compliance Center|Export full report as CSV"
+msgid "Compliance Center Export|(limited to 15 MB)"
 msgstr ""
 
-msgid "Compliance Center|Export merge request violations as CSV. You will be emailed after the export is processed."
+msgid "Compliance Center Export|Example: 2dc6aa3"
 msgstr ""
 
-msgid "Compliance Center|Export projects as CSV. You will be emailed after the export is processed."
+msgid "Compliance Center Export|Export as CSV"
+msgstr ""
+
+msgid "Compliance Center Export|Export chain of custody report"
+msgstr ""
+
+msgid "Compliance Center Export|Export custody report"
+msgstr ""
+
+msgid "Compliance Center Export|Export custody report of a specific commit"
+msgstr ""
+
+msgid "Compliance Center Export|Export list of project frameworks"
+msgstr ""
+
+msgid "Compliance Center Export|Export violations report"
+msgstr ""
+
+msgid "Compliance Center Export|Invalid hash"
+msgstr ""
+
+msgid "Compliance Center Export|Send email of the chosen report as CSV"
 msgstr ""
 
 msgid "Compliance Center|Frameworks"
@@ -19973,9 +19991,6 @@ msgstr ""
 msgid "Export as CSV"
 msgstr ""
 
-msgid "Export commit custody report"
-msgstr ""
-
 msgid "Export group"
 msgstr ""
 
@@ -25930,9 +25945,6 @@ msgstr ""
 msgid "Invalid format selected"
 msgstr ""
 
-msgid "Invalid hash"
-msgstr ""
-
 msgid "Invalid input, please avoid emoji"
 msgstr ""
 
@@ -28688,9 +28700,6 @@ msgid "List"
 msgstr ""
 
 msgid "List available repositories"
-msgstr ""
-
-msgid "List of all commits"
 msgstr ""
 
 msgid "List of suitable GCP locations"

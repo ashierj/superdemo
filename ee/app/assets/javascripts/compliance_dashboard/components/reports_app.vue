@@ -1,5 +1,5 @@
 <script>
-import { GlTab, GlTabs, GlButton, GlTooltipDirective } from '@gitlab/ui';
+import { GlTab, GlTabs, GlTooltipDirective } from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -11,17 +11,16 @@ import {
   ROUTE_PROJECTS,
   ROUTE_VIOLATIONS,
 } from '../constants';
-import MergeCommitsExportButton from './violations_report/shared/merge_commits_export_button.vue';
 import ReportHeader from './shared/report_header.vue';
+import Export from './shared/export_disclosure_dropdown.vue';
 
 export default {
   name: 'ComplianceReportsApp',
   components: {
     GlTabs,
     GlTab,
-    GlButton,
-    MergeCommitsExportButton,
     ReportHeader,
+    Export,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -46,21 +45,6 @@ export default {
     },
   },
   computed: {
-    isViolationsReport() {
-      return this.$route.name === ROUTE_VIOLATIONS;
-    },
-    isProjectsReport() {
-      return this.$route.name === ROUTE_PROJECTS;
-    },
-    showMergeCommitsExportButton() {
-      return Boolean(this.mergeCommitsCsvExportPath) && this.isViolationsReport;
-    },
-    showViolationsExportButton() {
-      return Boolean(this.violationsCsvExportPath) && this.isViolationsReport;
-    },
-    showProjectsExportButton() {
-      return Boolean(this.frameworksCsvExportPath) && this.isProjectsReport;
-    },
     tabIndex() {
       const currentTabs = [
         ROUTE_STANDARDS_ADHERENCE,
@@ -97,15 +81,6 @@ export default {
   ROUTE_FRAMEWORKS,
   ROUTE_PROJECTS,
   i18n: {
-    export: s__('Compliance Center|Export full report as CSV'),
-    exportTitle: {
-      projects: s__(
-        'Compliance Center|Export projects as CSV. You will be emailed after the export is processed.',
-      ),
-      violations: s__(
-        'Compliance Center|Export merge request violations as CSV. You will be emailed after the export is processed.',
-      ),
-    },
     frameworksTab: s__('Compliance Center|Frameworks'),
     projectsTab: __('Projects'),
     heading: __('Compliance center'),
@@ -126,40 +101,12 @@ export default {
       :documentation-path="$options.documentationPath"
     >
       <template #actions>
-        <div align="right" style="min-width: 410px">
-          <gl-button
-            v-if="showViolationsExportButton"
-            v-gl-tooltip.hover
-            :title="$options.i18n.exportTitle.violations"
-            :aria-label="$options.i18n.export"
-            icon="export"
-            data-testid="violations-export"
-            data-track-action="click_export"
-            data-track-label="export_all_violations"
-            class="gl-lg-mb-0"
-            :href="violationsCsvExportPath"
-          >
-            {{ $options.i18n.export }}
-          </gl-button>
-          <gl-button
-            v-if="showProjectsExportButton"
-            v-gl-tooltip.hover
-            :title="$options.i18n.exportTitle.projects"
-            :aria-label="$options.i18n.export"
-            icon="export"
-            data-testid="projects-export"
-            data-track-action="click_export"
-            data-track-label="export_all_frameworks"
-            :href="frameworksCsvExportPath"
-          >
-            {{ $options.i18n.export }}
-          </gl-button>
-          <merge-commits-export-button
-            v-if="showMergeCommitsExportButton"
-            :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
-            class="gl-display-inline"
-          />
-        </div>
+        <export
+          class="gl-float-right"
+          :frameworks-csv-export-path="frameworksCsvExportPath"
+          :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
+          :violations-csv-export-path="violationsCsvExportPath"
+        />
       </template>
     </report-header>
 
