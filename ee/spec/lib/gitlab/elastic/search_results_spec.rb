@@ -81,7 +81,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       'projects'       | nil        | false
       'milestones'     | nil        | false
       'notes'          | nil        | false
-      'issues'         | 'labels'   | :search_issue_label_aggregation
+      'issues'         | 'labels'   | false
       'merge_requests' | nil        | false
       'wiki_blobs'     | nil        | false
       'commits'        | nil        | false
