@@ -12,7 +12,9 @@ import RunnerUpgradeStatusIcon from 'ee_component/ci/runner/components/runner_up
 
 import allRunnersQuery from 'ee_else_ce/ci/runner/graphql/list/all_runners.query.graphql';
 import allRunnersCountQuery from '~/ci/runner/graphql/list/all_runners_count.query.graphql';
+import runnerJobCountQuery from '~/ci/runner/graphql/list/runner_job_count.query.graphql';
 import {
+  runnerJobCountData,
   runnersCountData,
   onlineContactTimeoutSecs,
   staleTimeoutSecs,
@@ -23,6 +25,7 @@ import { allRunnersUpgradeStatusData } from '../mock_data';
 
 const mockRunnersHandler = jest.fn();
 const mockRunnersCountHandler = jest.fn();
+const mockRunnerJobCountHandler = jest.fn();
 
 Vue.use(VueApollo);
 
@@ -39,6 +42,7 @@ describe('AdminRunnersApp', () => {
     const handlers = [
       [allRunnersQuery, mockRunnersHandler],
       [allRunnersCountQuery, mockRunnersCountHandler],
+      [runnerJobCountQuery, mockRunnerJobCountHandler],
     ];
 
     wrapper = mountExtended(AdminRunnersApp, {
@@ -63,11 +67,13 @@ describe('AdminRunnersApp', () => {
   beforeEach(() => {
     mockRunnersHandler.mockResolvedValue(allRunnersUpgradeStatusData);
     mockRunnersCountHandler.mockResolvedValue(runnersCountData);
+    mockRunnerJobCountHandler.mockResolvedValue(runnerJobCountData);
   });
 
   afterEach(() => {
     mockRunnersHandler.mockReset();
     mockRunnersCountHandler.mockReset();
+    mockRunnerJobCountHandler.mockReset();
   });
 
   describe('upgrade icons', () => {
