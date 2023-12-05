@@ -33497,9 +33497,6 @@ msgstr ""
 msgid "Open raw"
 msgstr ""
 
-msgid "Open sidebar"
-msgstr ""
-
 msgid "Open: %{open}"
 msgstr ""
 
