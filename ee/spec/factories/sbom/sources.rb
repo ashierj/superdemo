@@ -8,16 +8,25 @@ FactoryBot.define do
       sequence(:input_file_path) { |n| "subproject-#{n}/package-lock.json" }
       sequence(:source_file_path) { |n| "subproject-#{n}/package.json" }
       packager_name { 'npm' }
+      operating_system { { 'name' => 'Photon OS', 'version' => '5.0' } }
     end
 
     source do
-      {
-        'category' => 'development',
-        'input_file' => { 'path' => input_file_path },
-        'source_file' => { 'path' => source_file_path },
-        'package_manager' => { 'name' => packager_name },
-        'language' => { 'name' => 'JavaScript' }
-      }
+      if source_type == :dependency_scanning
+        {
+          'category' => 'development',
+          'input_file' => { 'path' => input_file_path },
+          'source_file' => { 'path' => source_file_path },
+          'package_manager' => { 'name' => packager_name },
+          'language' => { 'name' => 'JavaScript' }
+        }
+      else
+        {
+          'category' => 'development',
+          'image' => { 'name' => 'image', 'tag' => 'v1' },
+          'operating_system' => operating_system
+        }
+      end
     end
   end
 end
