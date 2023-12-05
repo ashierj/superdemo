@@ -8,6 +8,17 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
   let_it_be(:user) { create(:user) }
   let(:path) { nil }
   let(:observability_tracing_ff) { true }
+  let(:expected_api_config) do
+    {
+      oauthUrl: Gitlab::Observability.oauth_url,
+      provisioningUrl: Gitlab::Observability.provisioning_url(project),
+      tracingUrl: Gitlab::Observability.tracing_url(project),
+      servicesUrl: Gitlab::Observability.services_url(project),
+      operationsUrl: Gitlab::Observability.operations_url(project),
+      metricsUrl: Gitlab::Observability.metrics_url(project),
+      metricsSearchUrl: Gitlab::Observability.metrics_search_url(project)
+    }
+  end
 
   subject do
     get path
@@ -72,14 +83,7 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
         element = Nokogiri::HTML.parse(subject.body).at_css('#js-tracing')
 
         expected_view_model = {
-          apiConfig: {
-            oauthUrl: Gitlab::Observability.oauth_url,
-            provisioningUrl: Gitlab::Observability.provisioning_url(project),
-            tracingUrl: Gitlab::Observability.tracing_url(project),
-            servicesUrl: Gitlab::Observability.services_url(project),
-            operationsUrl: Gitlab::Observability.operations_url(project),
-            metricsUrl: Gitlab::Observability.metrics_url(project)
-          }
+          apiConfig: expected_api_config
         }.to_json
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
       end
@@ -100,14 +104,7 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
         element = Nokogiri::HTML.parse(subject.body).at_css('#js-tracing-details')
 
         expected_view_model = {
-          apiConfig: {
-            oauthUrl: Gitlab::Observability.oauth_url,
-            provisioningUrl: Gitlab::Observability.provisioning_url(project),
-            tracingUrl: Gitlab::Observability.tracing_url(project),
-            servicesUrl: Gitlab::Observability.services_url(project),
-            operationsUrl: Gitlab::Observability.operations_url(project),
-            metricsUrl: Gitlab::Observability.metrics_url(project)
-          },
+          apiConfig: expected_api_config,
           traceId: 'test-trace-id',
           tracingIndexUrl: project_tracing_index_path(project)
         }.to_json

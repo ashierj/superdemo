@@ -33,4 +33,10 @@ RSpec.describe Gitlab::Observability, feature_category: :tracing do
 
     it { is_expected.to eq("#{described_class.observability_url}/v3/query/#{project.id}/metrics/autocomplete") }
   end
+
+  describe '.metrics_search_url' do
+    subject { described_class.metrics_search_url(project) }
+
+    it { is_expected.to eq("#{described_class.observability_url}/v3/query/#{project.id}/metrics/search") }
+  end
 end

@@ -25,6 +25,10 @@ export default {
       required: true,
       type: String,
     },
+    metricType: {
+      required: true,
+      type: String,
+    },
     metricsIndexUrl: {
       required: true,
       type: String,
@@ -79,7 +83,10 @@ export default {
     async fetchMetricDetails() {
       this.loading = true;
       try {
-        this.metricData = await this.observabilityClient.fetchMetric(this.metricId);
+        this.metricData = await this.observabilityClient.fetchMetric(
+          this.metricId,
+          this.metricType,
+        );
       } catch (e) {
         createAlert({
           message: this.$options.i18n.error,

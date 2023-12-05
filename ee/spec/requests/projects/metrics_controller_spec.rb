@@ -8,6 +8,17 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
   let_it_be(:user) { create(:user) }
   let(:path) { nil }
   let(:observability_metrics_ff) { true }
+  let(:expected_api_config) do
+    {
+      oauthUrl: Gitlab::Observability.oauth_url,
+      provisioningUrl: Gitlab::Observability.provisioning_url(project),
+      tracingUrl: Gitlab::Observability.tracing_url(project),
+      servicesUrl: Gitlab::Observability.services_url(project),
+      operationsUrl: Gitlab::Observability.operations_url(project),
+      metricsUrl: Gitlab::Observability.metrics_url(project),
+      metricsSearchUrl: Gitlab::Observability.metrics_search_url(project)
+    }
+  end
 
   subject(:html_response) do
     get path
@@ -72,14 +83,7 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
         element = Nokogiri::HTML.parse(html_response.body).at_css('#js-observability-metrics')
 
         expected_view_model = {
-          apiConfig: {
-            oauthUrl: Gitlab::Observability.oauth_url,
-            provisioningUrl: Gitlab::Observability.provisioning_url(project),
-            tracingUrl: Gitlab::Observability.tracing_url(project),
-            servicesUrl: Gitlab::Observability.services_url(project),
-            operationsUrl: Gitlab::Observability.operations_url(project),
-            metricsUrl: Gitlab::Observability.metrics_url(project)
-          }
+          apiConfig: expected_api_config
         }.to_json
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
       end
@@ -87,7 +91,7 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
   end
 
   describe 'GET #show' do
-    let(:path) { project_metric_path(project, id: 'test.metric') }
+    let(:path) { project_metric_path(project, id: 'test.metric', type: 'metric_type') }
 
     it_behaves_like 'metrics route request'
 
@@ -100,15 +104,9 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
         element = Nokogiri::HTML.parse(html_response.body).at_css('#js-observability-metrics-details')
 
         expected_view_model = {
-          apiConfig: {
-            oauthUrl: Gitlab::Observability.oauth_url,
-            provisioningUrl: Gitlab::Observability.provisioning_url(project),
-            tracingUrl: Gitlab::Observability.tracing_url(project),
-            servicesUrl: Gitlab::Observability.services_url(project),
-            operationsUrl: Gitlab::Observability.operations_url(project),
-            metricsUrl: Gitlab::Observability.metrics_url(project)
-          },
+          apiConfig: expected_api_config,
           metricId: "test.metric",
+          metricType: "metric_type",
           metricsIndexUrl: namespace_project_metrics_path(project.group, project)
         }.to_json
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
