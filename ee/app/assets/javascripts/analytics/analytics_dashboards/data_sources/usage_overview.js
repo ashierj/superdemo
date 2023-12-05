@@ -1,0 +1,115 @@
+import {
+  USAGE_OVERVIEW_QUERY_INCLUDE_KEYS,
+  USAGE_OVERVIEW_METADATA,
+  USAGE_OVERVIEW_DEFAULT_DATE_RANGE,
+  USAGE_OVERVIEW_NO_DATA_ERROR,
+  USAGE_OVERVIEW_IDENTIFIER_GROUPS,
+  USAGE_OVERVIEW_IDENTIFIER_PROJECTS,
+  USAGE_OVERVIEW_IDENTIFIER_ISSUES,
+  USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS,
+  USAGE_OVERVIEW_IDENTIFIER_PIPELINES,
+} from '~/analytics/shared/constants';
+import { toYmd } from '~/analytics/shared/utils';
+import { defaultClient } from '../graphql/client';
+import getUsageOverviewQuery from '../graphql/queries/get_usage_overview.query.graphql';
+
+const USAGE_OVERVIEW_IDENTIFIERS = [
+  USAGE_OVERVIEW_IDENTIFIER_GROUPS,
+  USAGE_OVERVIEW_IDENTIFIER_PROJECTS,
+  USAGE_OVERVIEW_IDENTIFIER_ISSUES,
+  USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS,
+  USAGE_OVERVIEW_IDENTIFIER_PIPELINES,
+];
+
+/**
+ * Takes a usage metrics query response, extracts the values and
+ * adds the additional metadata we need for rendering.
+ */
+export const extractUsageMetrics = (data) => {
+  const keys = Object.keys(data);
+  return USAGE_OVERVIEW_IDENTIFIERS.reduce((acc, identifier) => {
+    if (!keys.includes(identifier)) return acc;
+    return [
+      ...acc,
+      {
+        identifier,
+        value: data[identifier]?.count || 0,
+        ...USAGE_OVERVIEW_METADATA[identifier],
+      },
+    ];
+  }, []);
+};
+
+const usageOverviewNoData = extractUsageMetrics({
+  [USAGE_OVERVIEW_IDENTIFIER_GROUPS]: {
+    identifier: USAGE_OVERVIEW_IDENTIFIER_GROUPS,
+    count: 0,
+  },
+  [USAGE_OVERVIEW_IDENTIFIER_PROJECTS]: {
+    identifier: USAGE_OVERVIEW_IDENTIFIER_PROJECTS,
+    count: 0,
+  },
+  [USAGE_OVERVIEW_IDENTIFIER_ISSUES]: {
+    identifier: USAGE_OVERVIEW_IDENTIFIER_ISSUES,
+    count: 0,
+  },
+  [USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS]: {
+    identifier: USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS,
+    count: 0,
+  },
+  [USAGE_OVERVIEW_IDENTIFIER_PIPELINES]: {
+    identifier: USAGE_OVERVIEW_IDENTIFIER_PIPELINES,
+    count: 0,
+  },
+});
+
+/**
+ * Constructs the query variables that specify the metrics
+ * to be included in the response.
+ */
+export const prepareQuery = (queryKeysToInclude = []) => {
+  const queryIncludeVariables = new Map();
+
+  Object.entries(USAGE_OVERVIEW_QUERY_INCLUDE_KEYS).forEach(([identifier, key]) => {
+    queryIncludeVariables.set(key, queryKeysToInclude.includes(identifier));
+  });
+
+  return Object.fromEntries(queryIncludeVariables);
+};
+
+const extractRootGroup = (requestPath = '') => {
+  const [rootGroup] = requestPath.split('/');
+  return rootGroup;
+};
+
+/**
+ * Fetch usage overview metrics, making sure to only query
+ * the top most group from the namespace.
+ */
+export const fetch = async ({ namespace, query: { include = [] } }) => {
+  const variableOverrides = prepareQuery(include);
+  const { startDate, endDate } = USAGE_OVERVIEW_DEFAULT_DATE_RANGE;
+
+  const fullPath = extractRootGroup(namespace.requestPath);
+  if (!fullPath.length) return usageOverviewNoData;
+
+  try {
+    const { data = {} } = await defaultClient.query({
+      query: getUsageOverviewQuery,
+      variables: {
+        fullPath,
+        startDate: toYmd(startDate),
+        endDate: toYmd(endDate),
+        ...variableOverrides,
+      },
+    });
+
+    if (!data.group) {
+      return usageOverviewNoData;
+    }
+
+    return extractUsageMetrics(data.group);
+  } catch {
+    throw new Error(USAGE_OVERVIEW_NO_DATA_ERROR);
+  }
+};

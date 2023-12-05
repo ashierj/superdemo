@@ -556,3 +556,110 @@ export const mockMetaData = {
     },
   ],
 };
+
+export const mockUsageMetricsQueryResponse = {
+  group: {
+    __typename: 'Group',
+    groups: {
+      __typename: 'ValueStreamDashboardCount',
+      identifier: 'GROUPS',
+      count: 58,
+      recordedAt: '2023-11-27T23:59:59Z',
+    },
+    projects: {
+      __typename: 'ValueStreamDashboardCount',
+      identifier: 'PROJECTS',
+      count: 97,
+      recordedAt: '2023-11-27T23:59:59Z',
+    },
+    issues: {
+      __typename: 'ValueStreamDashboardCount',
+      identifier: 'ISSUES',
+      count: 123,
+      recordedAt: '2023-11-27T23:59:59Z',
+    },
+    pipelines: {
+      __typename: 'ValueStreamDashboardCount',
+      identifier: 'PIPELINES',
+      count: 123,
+      recordedAt: '2023-11-27T23:59:59Z',
+    },
+    merge_requests: {
+      __typename: 'ValueStreamDashboardCount',
+      identifier: 'MERGE_REQUESTS',
+      count: 183,
+      recordedAt: '2023-11-27T23:59:59Z',
+    },
+  },
+};
+
+export const mockUsageMetrics = [
+  {
+    identifier: 'groups',
+    value: 58,
+    options: {
+      title: 'Groups',
+      titleIcon: 'group',
+    },
+  },
+  {
+    identifier: 'projects',
+    value: 97,
+    options: {
+      title: 'Projects',
+      titleIcon: 'project',
+    },
+  },
+  {
+    identifier: 'issues',
+    value: 123,
+    options: {
+      title: 'Issues',
+      titleIcon: 'issues',
+    },
+  },
+  {
+    identifier: 'merge_requests',
+    value: 183,
+    options: {
+      title: 'Merge requests',
+      titleIcon: 'merge-request',
+    },
+  },
+  {
+    identifier: 'pipelines',
+    value: 123,
+    options: {
+      title: 'Pipelines',
+      titleIcon: 'pipeline',
+    },
+  },
+];
+
+export const mockUsageMetricsNoData = [
+  {
+    identifier: 'groups',
+    value: 0,
+    options: { title: 'Groups', titleIcon: 'group' },
+  },
+  {
+    identifier: 'projects',
+    value: 0,
+    options: { title: 'Projects', titleIcon: 'project' },
+  },
+  {
+    identifier: 'issues',
+    value: 0,
+    options: { title: 'Issues', titleIcon: 'issues' },
+  },
+  {
+    identifier: 'merge_requests',
+    value: 0,
+    options: { title: 'Merge requests', titleIcon: 'merge-request' },
+  },
+  {
+    identifier: 'pipelines',
+    value: 0,
+    options: { title: 'Pipelines', titleIcon: 'pipeline' },
+  },
+];
