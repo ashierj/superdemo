@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { times } from 'lodash';
 import {
   mapTraceToTreeRoot,
   durationNanoToMs,
@@ -30,7 +30,7 @@ describe('trace_utils', () => {
   describe('assignColorToService', () => {
     it('should assign the right palette', () => {
       const trace = { duration_nane: 100000, spans: [] };
-      trace.spans = _.times(31).map((i) => ({
+      trace.spans = times(31).map((i) => ({
         timestamp: '2023-08-07T15:03:32.199806Z',
         span_id: `SPAN-${i}`,
         trace_id: 'TRACE-1',
