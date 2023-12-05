@@ -29,6 +29,22 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 5
     end
 
+    it 'instanciates zoekt cache with correct arguments' do
+      query = 'use.*egex'
+      results = described_class.new(user, query, limit_project_ids, node_id: node_id)
+
+      expect(Search::Zoekt::Cache).to receive(:new).with(
+        query,
+        current_user: user,
+        page: 1,
+        per_page: described_class::DEFAULT_PER_PAGE,
+        project_ids: limit_project_ids,
+        max_per_page: described_class::DEFAULT_PER_PAGE * 2
+      ).and_call_original
+
+      results.objects('blobs')
+    end
+
     it 'correctly handles pagination' do
       per_page = 2
 
