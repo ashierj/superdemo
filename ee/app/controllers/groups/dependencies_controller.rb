@@ -114,12 +114,15 @@ module Groups
     end
 
     def set_enable_project_search
-      @enable_project_search = filtering_allowed?
+      @enable_project_search = below_group_limit?
     end
 
     def filtering_allowed?
-      Feature.enabled?(:group_level_dependencies_filtering, group) &&
-        group.count_within_namespaces <= GROUP_COUNT_LIMIT
+      Feature.enabled?(:group_level_dependencies_filtering, group) && below_group_limit?
+    end
+
+    def below_group_limit?
+      group.count_within_namespaces <= GROUP_COUNT_LIMIT
     end
   end
 end
