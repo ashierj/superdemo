@@ -1,0 +1,54 @@
+query getUsageOverview(
+  $fullPath: ID!
+  $startDate: Date!
+  $endDate: Date!
+  $includeGroups: Boolean = true
+  $includeProjects: Boolean = true
+  $includeIssues: Boolean = true
+  $includeMergeRequests: Boolean = true
+  $includePipelines: Boolean = true
+) {
+  group(fullPath: $fullPath) {
+    id
+    groups: valueStreamDashboardUsageOverview(
+      identifier: GROUPS
+      timeframe: { start: $startDate, end: $endDate }
+    ) @include(if: $includeGroups) {
+      identifier
+      count
+      recordedAt
+    }
+    projects: valueStreamDashboardUsageOverview(
+      identifier: PROJECTS
+      timeframe: { start: $startDate, end: $endDate }
+    ) @include(if: $includeProjects) {
+      identifier
+      count
+      recordedAt
+    }
+    issues: valueStreamDashboardUsageOverview(
+      identifier: ISSUES
+      timeframe: { start: $startDate, end: $endDate }
+    ) @include(if: $includeIssues) {
+      identifier
+      count
+      recordedAt
+    }
+    pipelines: valueStreamDashboardUsageOverview(
+      identifier: PIPELINES
+      timeframe: { start: $startDate, end: $endDate }
+    ) @include(if: $includePipelines) {
+      identifier
+      count
+      recordedAt
+    }
+    merge_requests: valueStreamDashboardUsageOverview(
+      identifier: MERGE_REQUESTS
+      timeframe: { start: $startDate, end: $endDate }
+    ) @include(if: $includeMergeRequests) {
+      identifier
+      count
+      recordedAt
+    }
+  }
+}
