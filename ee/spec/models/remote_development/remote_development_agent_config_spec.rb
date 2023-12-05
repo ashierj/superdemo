@@ -6,6 +6,8 @@ require 'spec_helper'
 RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category: :remote_development do
   # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   let_it_be_with_reload(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let(:default_default_resources_per_workspace_container) { {} }
+  let(:default_max_resources_per_workspace) { {} }
   let(:default_network_policy_egress) do
     [
       {
@@ -72,6 +74,34 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
       expect(config.errors[:network_policy_egress]).to include(
         'must be a valid json schema',
         'must be an array'
+      )
+    end
+
+    it 'when default_resources_per_workspace_container is not specified explicitly' do
+      expect(config).to be_valid
+      expect(config.default_resources_per_workspace_container).to eq(default_default_resources_per_workspace_container)
+    end
+
+    it 'when default_resources_per_workspace_container is nil' do
+      config.default_resources_per_workspace_container = nil
+      expect(config).not_to be_valid
+      expect(config.errors[:default_resources_per_workspace_container]).to include(
+        'must be a valid json schema',
+        'must be a hash'
+      )
+    end
+
+    it 'when max_resources_per_workspace is not specified explicitly' do
+      expect(config).to be_valid
+      expect(config.max_resources_per_workspace).to eq(default_max_resources_per_workspace)
+    end
+
+    it 'when default_resources_per_workspace_container is nil' do
+      config.max_resources_per_workspace = nil
+      expect(config).not_to be_valid
+      expect(config.errors[:max_resources_per_workspace]).to include(
+        'must be a valid json schema',
+        'must be a hash'
       )
     end
   end
