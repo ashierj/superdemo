@@ -295,7 +295,7 @@ export default {
 
       return [usersToInviteByEmail.map(({ name }) => name), usersToAddById.map(({ id }) => id)];
     },
-    overageVariables({ accessLevel }) {
+    overageVariables({ accessLevel, memberRoleId }) {
       const [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
       const addGroupId = this.newGroupToInvite;
 
@@ -305,6 +305,7 @@ export default {
         addUserEmails: usersToInviteByEmail,
         addUserIds: usersToAddById,
         role: ACCESS_LEVEL_LABELS[accessLevel].toUpperCase(),
+        memberRoleId,
       };
     },
     onCancel() {
