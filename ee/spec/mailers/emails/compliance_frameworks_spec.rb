@@ -42,7 +42,7 @@ RSpec.describe Emails::ComplianceFrameworks, feature_category: :compliance_manag
     end
 
     it "renders an email with attachment" do
-      expect(mail.subject).to eq("#{group.name} | Compliance Frameworks Export")
+      expect(mail.subject).to eq("#{group.name} | #{Date.current.iso8601} Frameworks export")
       expect(mail.to).to contain_exactly(user_email)
       expect(mail.text_part.to_s).to match(expected_plain_text)
       expect(mail.html_part.to_s).to match(expected_html_text)
