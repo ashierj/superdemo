@@ -94,4 +94,52 @@ RSpec.shared_examples 'model with member role relation' do
       end
     end
   end
+
+  describe '#set_access_level_based_on_member_role', feature_category: :permissions do
+    subject { model.set_access_level_based_on_member_role }
+
+    context 'when a member_role_id is not present' do
+      before do
+        model.member_role = nil
+      end
+
+      it 'does not change the access_level' do
+        expect { subject }.not_to change { model[model.base_access_level_attr] }
+      end
+    end
+
+    context 'when a member_role_id is present' do
+      before do
+        model.member_role = create(:member_role, namespace: model.group, base_access_level: Gitlab::Access::DEVELOPER)
+      end
+
+      context 'when custom roles are not enabled' do
+        before do
+          stub_licensed_features(custom_roles: false)
+        end
+
+        it 'does not change the access_level' do
+          expect { subject }.not_to change { model[model.base_access_level_attr] }
+        end
+
+        it 'clears the member_role_id' do
+          expect { subject }.to change { model.member_role }.to(nil)
+        end
+      end
+
+      context 'when custom roles are enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it 'changes the access_level to the member roles base_access_level' do
+          expect { subject }.to change { model[model.base_access_level_attr] }.to(Gitlab::Access::DEVELOPER)
+        end
+
+        it 'does not clear the member_role_id' do
+          expect { subject }.not_to change { model.member_role }
+        end
+      end
+    end
+  end
 end
