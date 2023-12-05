@@ -6,9 +6,10 @@ module Projects
       generate_model(project)
     end
 
-    def observability_metrics_details_view_model(project, metric_id)
+    def observability_metrics_details_view_model(project, metric_id, metric_type)
       generate_model(project) do |model|
         model[:metricId] = metric_id
+        model[:metricType] = metric_type
         model[:metricsIndexUrl] = namespace_project_metrics_path(project.group, project)
       end
     end
@@ -42,7 +43,8 @@ module Projects
           tracingUrl: ::Gitlab::Observability.tracing_url(project),
           servicesUrl: ::Gitlab::Observability.services_url(project),
           operationsUrl: ::Gitlab::Observability.operations_url(project),
-          metricsUrl: ::Gitlab::Observability.metrics_url(project)
+          metricsUrl: ::Gitlab::Observability.metrics_url(project),
+          metricsSearchUrl: ::Gitlab::Observability.metrics_search_url(project)
         }
       }
     end

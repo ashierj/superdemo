@@ -32,6 +32,9 @@ describe('MetricsComponent', () => {
     await waitForPromises();
   };
 
+  // eslint-disable-next-line no-console
+  console.error = jest.fn();
+
   const mountComponent = async () => {
     wrapper = shallowMountExtended(MetricsList, {
       propsData: {
@@ -168,30 +171,44 @@ describe('MetricsComponent', () => {
 
   describe('on metric-clicked', () => {
     let visitUrlMock;
-    const BASE_PATH = '/projectX/-/metrics';
+
+    const mockMetricSelected = mockMetrics[0];
 
     beforeEach(async () => {
-      setWindowLocation(BASE_PATH);
+      setWindowLocation('http://test.host/projectX/-/metrics?search=query');
       visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
 
       await mountComponent();
     });
 
     it('redirects to the details url', () => {
-      findMetricsTable().vm.$emit('metric-clicked', { metricId: 'test.metric' });
+      findMetricsTable().vm.$emit('metric-clicked', { metricId: mockMetricSelected.name });
 
       expect(visitUrlMock).toHaveBeenCalledTimes(1);
-      expect(visitUrlMock).toHaveBeenCalledWith(`${BASE_PATH}/test.metric`, false);
+      expect(visitUrlMock).toHaveBeenCalledWith(
+        `http://test.host/projectX/-/metrics/${mockMetricSelected.name}?type=${mockMetricSelected.type}`,
+        false,
+      );
     });
 
     it('opens a new tab if clicked with meta key', () => {
       findMetricsTable().vm.$emit('metric-clicked', {
-        metricId: 'test.metric',
+        metricId: mockMetricSelected.name,
         clickEvent: { metaKey: true },
       });
 
       expect(visitUrlMock).toHaveBeenCalledTimes(1);
-      expect(visitUrlMock).toHaveBeenCalledWith(`${BASE_PATH}/test.metric`, true);
+      expect(visitUrlMock).toHaveBeenCalledWith(
+        `http://test.host/projectX/-/metrics/${mockMetricSelected.name}?type=${mockMetricSelected.type}`,
+        true,
+      );
+    });
+
+    it('does not redirect if metric type cannot be found', () => {
+      findMetricsTable().vm.$emit('metric-clicked', {
+        metricId: 'unknown-metric',
+      });
+      expect(visitUrlMock).not.toHaveBeenCalled();
     });
   });
 });
