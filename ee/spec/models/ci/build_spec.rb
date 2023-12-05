@@ -985,6 +985,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       false | false | { pages: { path_prefix: 'foo' } } | {}
       false | true | { pages: { path_prefix: 'foo' } } | {}
       true | false | { pages: { path_prefix: 'foo' } } | {}
+      true | true | { pages: { path_prefix: nil } } | { path_prefix: '' }
       true | true | { pages: { path_prefix: 'foo' } } | { path_prefix: 'foo' }
       true | true | { pages: { path_prefix: '$CI_COMMIT_BRANCH' } } | { path_prefix: 'master' }
     end
