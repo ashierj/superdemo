@@ -16,7 +16,13 @@ module Gitlab
             response = response_for(user, options)
             @logger = Gitlab::Llm::Logger.build
 
-            process_response(response, user)
+            result = process_response(response, user)
+
+            if result
+              ResponseModifiers::CategorizeQuestion.new(nil)
+            else
+              ResponseModifiers::CategorizeQuestion.new(error: 'Event not tracked')
+            end
           end
 
           private
@@ -35,17 +41,23 @@ module Gitlab
           def process_response(response, user)
             json = Gitlab::Json.parse(response)
 
-            return unless json
+            return false unless json
 
             track(user, json)
 
           rescue JSON::ParserError
             error_message = "JSON has an invalid format."
             @logger.error(message: "Error", class: self.class.to_s, error: error_message)
+
+            false
           end
 
           def track(user, json)
-            return unless contains_categories?(json)
+            unless contains_categories?(json)
+              error_message = 'Response did not contain defined categories'
+              @logger.error(message: "Error", class: self.class.to_s, error: error_message)
+              return false
+            end
 
             context = SnowplowTracker::SelfDescribingJson.new(SCHEMA_URL, json.slice(*PERMITTED_KEYS))
 
