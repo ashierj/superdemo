@@ -1,0 +1,19 @@
+---
+description: This event tracks unique monthly users triggering Git operations on Geo secondary sites.
+category: InternalEventTracking
+action: geo_secondary_git_op_action
+label_description:
+property_description:
+value_description:
+extra_properties:
+identifiers:
+product_section: enablement
+product_stage: systems
+product_group: geo
+milestone: "16.7"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/133435
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

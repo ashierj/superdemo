@@ -25,12 +25,6 @@ module EE
         )
       end
 
-      def js_pipeline_details_header_data(project, pipeline)
-        super.merge(
-          compute_minutes: pipeline.total_ci_minutes_consumed
-        )
-      end
-
       def licenses_api_path(project, pipeline)
         if project.licensed_feature_available?(:license_scanning)
           licenses_project_pipeline_path(project, pipeline)
