@@ -4,6 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Ci::InstanceRunnerFailedJobs, :freeze_time, :clean_gitlab_redis_shared_state,
   feature_category: :fleet_visibility do
+  let(:runner_performance_insights) { false }
+
   before do
     stub_licensed_features(runner_performance_insights: runner_performance_insights)
   end
@@ -55,7 +57,6 @@ RSpec.describe Ci::InstanceRunnerFailedJobs, :freeze_time, :clean_gitlab_redis_s
       end
 
       context 'without runner_performance_insights licensed feature' do
-        let(:runner_performance_insights) { false }
         let(:runner) { instance_runner }
 
         it 'does not save job' do
@@ -168,8 +169,6 @@ RSpec.describe Ci::InstanceRunnerFailedJobs, :freeze_time, :clean_gitlab_redis_s
     end
 
     context 'without runner_performance_insights licensed feature' do
-      let(:runner_performance_insights) { false }
-
       context 'when failure_reason is runner_system_failure' do
         let(:failure_reason) { :runner_system_failure }
 
