@@ -54,10 +54,8 @@ module GitlabSubscriptions
     def delete_ineligible_user_assignments_in_batches!(batch_size: 50)
       deleted_assignments_count = 0
 
-      return deleted_assignments_count unless namespace.present?
-
       assigned_users.each_batch(of: batch_size) do |batch|
-        ineligible_user_ids = batch.pluck_user_ids.to_set - eligible_user_ids_for_assignment
+        ineligible_user_ids = filter_ineligible_assigned_user_ids(batch.pluck_user_ids.to_set)
 
         deleted_assignments_count += batch.for_user_ids(ineligible_user_ids).delete_all
 
@@ -75,8 +73,24 @@ module GitlabSubscriptions
 
     private
 
-    def eligible_user_ids_for_assignment
+    def filter_ineligible_assigned_user_ids(assigned_user_ids)
+      return assigned_user_ids - saas_eligible_user_ids if namespace
+
+      assigned_user_ids - self_managed_eligible_users_relation.where(id: assigned_user_ids).pluck(:id)
+    end
+
+    def saas_eligible_user_ids
       @eligible_user_ids ||= namespace.code_suggestions_eligible_user_ids
+    end
+
+    def self_managed_eligible_users_relation
+      @self_managed_eligible_users_relation ||= GitlabSubscriptions::SelfManaged::AddOnEligibleUsersFinder.new(
+        add_on_type: add_on_type
+      ).execute
+    end
+
+    def add_on_type
+      add_on.name.to_sym
     end
 
     def gitlab_com?
