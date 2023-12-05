@@ -183,4 +183,61 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
       end
     end
   end
+
+  describe 'instance-level ai-powered beta features settings', feature_category: :duo_chat do
+    before do
+      allow(::Gitlab).to receive(:org_or_com?).and_return(gitlab_org_or_com?)
+      stub_licensed_features(ai_chat: false)
+    end
+
+    shared_examples 'does not render the form' do
+      it 'does not render the form' do
+        render
+        expect(rendered).not_to have_field('application_setting_instance_level_ai_beta_features_enabled')
+      end
+    end
+
+    context 'when on .com or .org' do
+      let(:gitlab_org_or_com?) { true }
+
+      it_behaves_like 'does not render the form'
+    end
+
+    context 'when not on .com and not on .org' do
+      let(:gitlab_org_or_com?) { false }
+
+      context 'with license', :with_license do
+        context 'with :ai_chat feature available' do
+          before do
+            stub_licensed_features(ai_chat: true)
+          end
+
+          it 'renders the form' do
+            render
+            expect(rendered).to have_field('application_setting_instance_level_ai_beta_features_enabled')
+          end
+
+          context 'with :updated_ai_powered_features_menu_for_sm FF disabled' do
+            before do
+              stub_feature_flags(updated_ai_powered_features_menu_for_sm: false)
+            end
+
+            it_behaves_like 'does not render the form'
+          end
+        end
+
+        context 'with :ai_chat feature not available' do
+          before do
+            stub_licensed_features(ai_chat: false)
+          end
+
+          it_behaves_like 'does not render the form'
+        end
+      end
+
+      context 'with no license', :without_license do
+        it_behaves_like 'does not render the form'
+      end
+    end
+  end
 end
