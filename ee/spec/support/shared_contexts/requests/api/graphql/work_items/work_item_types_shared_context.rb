@@ -14,6 +14,11 @@ RSpec.shared_context 'with work item types request context EE' do
           canInviteMembers
           allowsMultipleAssignees
         }
+        ... on WorkItemWidgetDefinitionHierarchy {
+          allowedChildTypes {
+            nodes { id name }
+          }
+        }
         ... on WorkItemWidgetDefinitionLabels {
           allowsScopedLabels
         }
