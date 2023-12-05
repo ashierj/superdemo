@@ -33,20 +33,6 @@ module EE
 
     private
 
-    override :get_dashboard_nav_links
-    def get_dashboard_nav_links
-      super.tap do |links|
-        if can?(current_user, :read_operations_dashboard)
-          links << :environments
-          links << :operations
-        end
-
-        if security_dashboard_available?
-          links << :security
-        end
-      end
-    end
-
     def security_dashboard_available?
       security_dashboard = InstanceSecurityDashboard.new(current_user)
 
