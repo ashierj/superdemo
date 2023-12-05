@@ -24,11 +24,12 @@ export const QueryBuilder = {
       removeDimensions: () => {},
       setTimeDimensions: () => {},
       removeTimeDimensions: () => {},
+      setSegments: () => {},
     };
   },
   template: `
     <builder-component>
-      <slot name="builder" v-bind="{measures, dimensions, timeDimensions, setTimeDimensions, removeTimeDimensions, removeDimensions, addDimensions, filters, setMeasures, setFilters, addFilters}"></slot>
+      <slot name="builder" v-bind="{measures, dimensions, timeDimensions, setTimeDimensions, removeTimeDimensions, removeDimensions, addDimensions, filters, setMeasures, setFilters, addFilters, setSegments}"></slot>
       <slot v-bind="{loading}"></slot>
     </builder-component>
   `,
