@@ -223,7 +223,7 @@ module EE
 
         (options&.dig(:pages) || {}).tap do |pages_options|
           if ::Gitlab::Pages.multiple_versions_enabled_for?(project)
-            pages_options[:path_prefix] = ExpandVariables.expand(pages_options[:path_prefix], -> {
+            pages_options[:path_prefix] = ExpandVariables.expand(pages_options[:path_prefix].to_s, -> {
               variables.sort_and_expand_all
             })
           else
