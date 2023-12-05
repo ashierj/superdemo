@@ -45937,7 +45937,7 @@ msgstr ""
 msgid "Something went wrong"
 msgstr ""
 
-msgid "Something went wrong fetching the Scanner Findings. Please try again."
+msgid "Something went wrong fetching the scanner findings. Please try again."
 msgstr ""
 
 msgid "Something went wrong on our end"
