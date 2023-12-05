@@ -290,4 +290,12 @@ RSpec.describe MergeRequestWidgetEntity, feature_category: :code_review_workflow
 
     expect(subject.as_json).to include(:pipeline_id)
   end
+
+  it 'exposes saml_approval_path', :request_store do
+    expect(subject.as_json).to include(:saml_approval_path)
+  end
+
+  it 'exposes require_saml_auth_to_approve' do
+    expect(subject.as_json).to include(:require_saml_auth_to_approve)
+  end
 end

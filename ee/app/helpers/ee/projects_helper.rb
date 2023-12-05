@@ -62,6 +62,7 @@ module EE
         can_edit: can_modify_approvers.to_s,
         can_modify_author_settings: can_modify_author_settings.to_s,
         can_modify_commiter_settings: can_modify_commiter_settings.to_s,
+        saml_provider_enabled: saml_provider_enabled_for_project?(project).to_s,
         project_path: expose_path(api_v4_projects_path(id: project.id)),
         approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
         rules_path: expose_path(api_v4_projects_approval_rules_path(id: project.id)),
@@ -73,6 +74,13 @@ module EE
         full_path: project.full_path,
         new_policy_path: expose_path(new_project_security_policy_path(project))
       }
+    end
+
+    def saml_provider_enabled_for_project?(project)
+      group = project.root_ancestor
+      return false unless group.is_a? Group
+
+      !!group.saml_provider&.enabled?
     end
 
     def status_checks_app_data(project)

@@ -83,6 +83,7 @@ describe('MergeRequestStore', () => {
       'secret_detection_comparison_path',
       'api_fuzzing_comparison_path',
       'coverage_fuzzing_comparison_path',
+      'saml_approval_path',
     ])('should set %s path', (property) => {
       // Ensure something is set in the mock data
       expect(property in mockData).toBe(true);
