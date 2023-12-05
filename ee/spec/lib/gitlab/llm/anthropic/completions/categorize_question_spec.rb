@@ -28,7 +28,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::CategorizeQuestion, feature_
       let(:answer) { { detailed_category: "Summarize issue", category: 'Summarize something' }.to_json }
 
       it 'tracks event' do
-        categorize_action
+        expect(categorize_action.errors).to be_empty
 
         expect_snowplow_event(
           category: described_class.to_s,
@@ -47,7 +47,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::CategorizeQuestion, feature_
       let(:answer) { { category: 'Summarize something' }.to_json }
 
       it 'does not track event' do
-        categorize_action
+        expect(categorize_action.errors).to include('Event not tracked')
 
         expect_no_snowplow_event(
           category: described_class.to_s,
@@ -63,7 +63,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::CategorizeQuestion, feature_
       let(:answer) { "invalid" }
 
       it 'does not track event' do
-        categorize_action
+        expect(categorize_action.errors).to include('Event not tracked')
 
         expect_no_snowplow_event(
           category: described_class.to_s,
