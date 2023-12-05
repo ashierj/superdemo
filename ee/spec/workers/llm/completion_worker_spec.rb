@@ -49,22 +49,4 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
       )
     end
   end
-
-  describe 'serialization' do
-    it 'serializes with params compatible to old and new deserialization' do
-      serialized_message = described_class.serialize_message(prompt_message)
-
-      expect(serialized_message['resource']).to eq prompt_message.resource.to_gid
-      expect(serialized_message['context']['resource']).to eq prompt_message.resource.to_gid
-    end
-
-    it 'deserializes params compatible to old serialization' do
-      serialized_message = described_class.serialize_message(prompt_message)
-      serialized_message.delete('context')
-
-      message = described_class.deserialize_message(serialized_message, {})
-
-      expect(message.context.resource).to eq(prompt_message.resource)
-    end
-  end
 end

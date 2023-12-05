@@ -15,8 +15,6 @@ module Llm
         message.to_h.tap do |hash|
           hash['user'] &&= hash['user'].to_gid
           hash['context'] = hash['context'].to_h
-          # TODO: Remove 1 line below 1 deploy after landing on prod. It's forward compatibility code
-          hash['resource'] = hash['context']['resource']&.to_gid
           hash['context']['resource'] &&= hash['context']['resource'].to_gid
         end
       end
@@ -24,10 +22,6 @@ module Llm
       def deserialize_message(message_hash, options)
         message_hash['user'] &&= GitlabSchema.parse_gid(message_hash['user']).find
         message_hash['context'] = begin
-          # TODO: Remove 2 lines below 1 deploy after landing on prod. It's backwards compatibility code for old jobs
-          # scheduled before deploy but executed after deploy.
-          message_hash['context'] ||= {}
-          message_hash['context']['resource'] ||= message_hash['resource']
           message_hash['context']['resource'] &&= GitlabSchema.parse_gid(message_hash['context']['resource']).find
           ::Gitlab::Llm::AiMessageContext.new(message_hash['context'])
         end
