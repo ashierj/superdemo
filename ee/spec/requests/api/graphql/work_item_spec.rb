@@ -884,6 +884,45 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
             )
           end
         end
+
+        context 'when work item belongs to a user namespace project' do
+          let_it_be(:user_namespace_project) { create(:project, namespace: developer.namespace) }
+          let_it_be(:user_project_work_item) { create(:work_item, project: user_namespace_project) }
+          let_it_be(:ancestor) { create(:work_item, :epic, project: user_namespace_project) }
+
+          let(:work_item) { user_project_work_item }
+          let(:global_id) { user_project_work_item.to_gid.to_s }
+
+          before do
+            create(:parent_link, work_item_parent: ancestor, work_item: user_project_work_item)
+          end
+
+          it 'returns ancestor information' do
+            post_graphql(query, current_user: current_user)
+
+            expect(work_item_data).to include(
+              'widgets' => include(
+                hash_including(
+                  'ancestors' => { 'nodes' => match_array(
+                    [
+                      hash_including('id' => ancestor.to_gid.to_s)
+                    ]
+                  ) }
+                )
+              )
+            )
+          end
+
+          context 'when user does not have access' do
+            let(:current_user) { guest }
+
+            it 'does not return anything' do
+              post_graphql(query, current_user: current_user)
+
+              expect(work_item_data).to be_nil
+            end
+          end
+        end
       end
     end
 
