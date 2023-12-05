@@ -58,6 +58,7 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
               'primary_repo' => primary_repo_url,
               "geo_proxy_direct_to_primary" => true,
               "geo_proxy_fetch_direct_to_primary" => true,
+              "geo_proxy_fetch_direct_to_primary_with_options" => true,
               "request_headers" => include('Authorization')
             }
           }
@@ -81,6 +82,7 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
               'primary_repo' => primary_repo_url,
               "geo_proxy_direct_to_primary" => true,
               "geo_proxy_fetch_direct_to_primary" => true,
+              "geo_proxy_fetch_direct_to_primary_with_options" => true,
               "request_headers" => include('Authorization')
             }
           }
