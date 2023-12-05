@@ -50,9 +50,9 @@ RSpec.describe GroupSamlGroupSyncWorker, feature_category: :system_access do
           create(:saml_provider, group: top_level_group, enabled: true, default_membership_role: Gitlab::Access::GUEST)
         end
 
-        subject(:top_level_member_access_level) do
-          top_level_group.members.find_by(user_id: user.id).access_level
-        end
+        let(:top_level_member) { top_level_group.member(user) }
+
+        subject(:top_level_member_access_level) { top_level_member.access_level }
 
         context 'default membership' do
           context 'when group link ids do not include the top level group' do
@@ -69,6 +69,24 @@ RSpec.describe GroupSamlGroupSyncWorker, feature_category: :system_access do
 
               expect(top_level_member_access_level)
                 .to eq(top_level_group.saml_provider.default_membership_role)
+            end
+
+            context 'when the top-level default membership role is a custom role' do
+              let(:member_role) do
+                create(:member_role, namespace: top_level_group, base_access_level: Gitlab::Access::GUEST)
+              end
+
+              before do
+                stub_licensed_features(saml_group_sync: true, custom_roles: true)
+                saml_provider.update!(member_role: member_role)
+              end
+
+              it 'retains the default custom role' do
+                perform([group_link.id])
+
+                expect(top_level_member.member_role)
+                  .to eq(top_level_group.saml_provider.member_role)
+              end
             end
 
             context 'when the member is the last owner' do

@@ -164,6 +164,30 @@ RSpec.describe SystemAccess::GroupSamlMicrosoftGroupSyncWorker, :aggregate_failu
                     .to eq(top_level_group.saml_provider.default_membership_role)
                 end
 
+                context 'when the top-level default membership role is a custom role' do
+                  let(:member_role) do
+                    create(:member_role, namespace: top_level_group, base_access_level: Gitlab::Access::GUEST)
+                  end
+
+                  before do
+                    stub_licensed_features(microsoft_group_sync: true, custom_roles: true)
+                    saml_provider.update!(member_role: member_role)
+                  end
+
+                  it 'adds the member to the subgroup and retains the top-level group default custom role' do
+                    top_level_group.add_member(user, saml_provider.default_membership_role,
+                      member_role_id: saml_provider.member_role.id)
+
+                    expect_sync_service_call(group_links: [group_link], manage_group_ids: [group.id])
+                    expect_metadata_logging_call({ added: 1, updated: 0, removed: 0 })
+
+                    perform
+
+                    expect(top_level_member.member_role)
+                      .to eq(top_level_group.saml_provider.member_role)
+                  end
+                end
+
                 context 'when the member is the last owner' do
                   before do
                     top_level_group.add_member(user, Gitlab::Access::OWNER)
@@ -232,8 +256,12 @@ RSpec.describe SystemAccess::GroupSamlMicrosoftGroupSyncWorker, :aggregate_failu
       worker.perform(user.id, top_level_group.id)
     end
 
+    def top_level_member
+      top_level_group.member(user)
+    end
+
     def top_level_member_access_level
-      top_level_group.members.find_by(user_id: user.id).access_level
+      top_level_member.access_level
     end
 
     def group_member_access_level

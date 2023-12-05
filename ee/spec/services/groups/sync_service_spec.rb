@@ -9,12 +9,16 @@ RSpec.describe Groups::SyncService, feature_category: :system_access do
     let_it_be(:top_level_group) { create(:group) }
     let_it_be(:group1) { create(:group, parent: top_level_group) }
     let_it_be(:group2) { create(:group, parent: top_level_group) }
+    let_it_be(:member_role) do
+      create(:member_role, namespace: top_level_group, base_access_level: Gitlab::Access::DEVELOPER)
+    end
 
     let_it_be(:group_links) do
       [
         create(:saml_group_link, group: top_level_group, access_level: Gitlab::Access::GUEST),
         create(:saml_group_link, group: group1, access_level: Gitlab::Access::REPORTER),
-        create(:saml_group_link, group: group1, access_level: Gitlab::Access::DEVELOPER)
+        create(:saml_group_link, group: group1, access_level: Gitlab::Access::DEVELOPER),
+        create(:saml_group_link, group: group1, access_level: Gitlab::Access::DEVELOPER, member_role: member_role)
       ]
     end
 
@@ -51,6 +55,53 @@ RSpec.describe Groups::SyncService, feature_category: :system_access do
 
     it 'returns sync stats as payload' do
       expect(sync.payload).to include({ added: 2, removed: 0, updated: 0 })
+    end
+
+    describe 'custom roles', feature_category: :permissions do
+      before do
+        stub_licensed_features(custom_roles: true)
+      end
+
+      context 'when custom roles are enabled' do
+        it 'adds the user to group1 with a custom role' do
+          expect(sync.payload).to include({ added: 2, removed: 0, updated: 0 })
+
+          member = group1.member(user)
+
+          expect(member.access_level).to eq(::Gitlab::Access::DEVELOPER)
+          expect(member.member_role).to eq(member_role)
+        end
+      end
+
+      context 'when custom roles are not enabled' do
+        before do
+          stub_licensed_features(custom_roles: false)
+        end
+
+        it 'adds the user to group1 without a custom role' do
+          expect(sync.payload).to include({ added: 2, removed: 0, updated: 0 })
+
+          member = group1.member(user)
+
+          expect(member.access_level).to eq(::Gitlab::Access::DEVELOPER)
+          expect(member.member_role).to eq(nil)
+        end
+      end
+
+      context 'when the `custom_roles_for_saml_group_links` feature flag is not enabled' do
+        before do
+          stub_feature_flags(custom_roles_for_saml_group_links: false)
+        end
+
+        it 'adds the user to group1 without a custom role' do
+          expect(sync.payload).to include({ added: 2, removed: 0, updated: 0 })
+
+          member = group1.member(user)
+
+          expect(member.access_level).to eq(::Gitlab::Access::DEVELOPER)
+          expect(member.member_role).to eq(nil)
+        end
+      end
     end
 
     context 'when the user is already a member' do
@@ -118,6 +169,26 @@ RSpec.describe Groups::SyncService, feature_category: :system_access do
           it 'returns sync stats as payload' do
             expect(sync.payload).to include({ added: 0, removed: 0, updated: 0 })
           end
+        end
+      end
+
+      context 'with a custom role' do
+        let_it_be(:member_role) do
+          create(:member_role, namespace: top_level_group, base_access_level: ::Gitlab::Access::GUEST)
+        end
+
+        before do
+          stub_licensed_features(custom_roles: true)
+          top_level_group.add_member(user, ::Gitlab::Access::GUEST, member_role_id: member_role.id)
+        end
+
+        it 'retains the correct access level, but removes the member_role connection' do
+          expect(sync.payload).to include({ added: 1, removed: 0, updated: 1 })
+
+          member = top_level_group.member(user)
+
+          expect(member.access_level).to eq(::Gitlab::Access::GUEST)
+          expect(member.member_role).to eq(nil)
         end
       end
 
