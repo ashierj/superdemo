@@ -46,6 +46,7 @@ query pipelineFindings(
             vendor
           }
           state
+          dismissalReason
           severity
           solution
           location {
