@@ -3,7 +3,6 @@
 class Groups::SeatUsageController < Groups::ApplicationController
   before_action :verify_top_level_group
   before_action :authorize_admin_group_member!
-  before_action :verify_namespace_plan_check_enabled
 
   layout "group_settings"
 
