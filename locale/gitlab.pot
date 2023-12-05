@@ -27826,6 +27826,12 @@ msgstr ""
 msgid "KubernetesDashboard|Dashboard"
 msgstr ""
 
+msgid "KubernetesDashboard|Deployment"
+msgstr ""
+
+msgid "KubernetesDashboard|Deployments"
+msgstr ""
+
 msgid "KubernetesDashboard|Failed"
 msgstr ""
 
@@ -27848,6 +27854,9 @@ msgid "KubernetesDashboard|Pod"
 msgstr ""
 
 msgid "KubernetesDashboard|Pods"
+msgstr ""
+
+msgid "KubernetesDashboard|Ready"
 msgstr ""
 
 msgid "KubernetesDashboard|Running"
