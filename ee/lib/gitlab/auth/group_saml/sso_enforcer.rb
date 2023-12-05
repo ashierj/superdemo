@@ -7,7 +7,7 @@ module Gitlab
         DEFAULT_SESSION_TIMEOUT = 1.day
 
         class << self
-          def access_restricted?(user:, resource:)
+          def access_restricted?(user:, resource:, session_timeout: DEFAULT_SESSION_TIMEOUT)
             group = resource.is_a?(::Group) ? resource : resource.group
 
             return false unless group
@@ -17,7 +17,7 @@ module Gitlab
             return false unless saml_provider
             return false if user_authorized?(user, resource)
 
-            new(saml_provider, user: user).access_restricted?
+            new(saml_provider, user: user, session_timeout: session_timeout).access_restricted?
           end
 
           # Given an array of groups or subgroups, return an array
@@ -47,11 +47,12 @@ module Gitlab
           end
         end
 
-        attr_reader :saml_provider, :user
+        attr_reader :saml_provider, :user, :session_timeout
 
-        def initialize(saml_provider, user: nil)
+        def initialize(saml_provider, user: nil, session_timeout: DEFAULT_SESSION_TIMEOUT)
           @saml_provider = saml_provider
           @user = user
+          @session_timeout = session_timeout
         end
 
         def update_session
@@ -59,7 +60,7 @@ module Gitlab
         end
 
         def active_session?
-          SsoState.new(saml_provider.id).active_since?(DEFAULT_SESSION_TIMEOUT.ago)
+          SsoState.new(saml_provider.id).active_since?(session_timeout.ago)
         end
 
         def access_restricted?

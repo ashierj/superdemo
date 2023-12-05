@@ -41,6 +41,7 @@ describe('ApprovalSettings', () => {
 
     store = createStore({ approvalSettings: module, approvals: projectSettingsModule() });
     store.state.settings.groupName = groupName;
+    store.state.settings.samlProviderEnabled = true;
   };
 
   const showToast = jest.fn();

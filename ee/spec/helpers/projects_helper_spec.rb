@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectsHelper do
+RSpec.describe ProjectsHelper, feature_category: :shared do
   include ::EE::GeoHelpers
 
   let_it_be_with_refind(:project) { create(:project) }
@@ -553,6 +553,7 @@ RSpec.describe ProjectsHelper do
     before do
       allow(helper).to receive(:current_user).and_return(user)
       allow(helper).to receive(:can?).and_return(true)
+      allow(helper).to receive(:saml_provider_enabled_for_project?).and_return(true)
     end
 
     it 'returns the correct data' do
@@ -561,6 +562,7 @@ RSpec.describe ProjectsHelper do
         can_edit: 'true',
         can_modify_author_settings: 'true',
         can_modify_commiter_settings: 'true',
+        saml_provider_enabled: 'true',
         approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
         project_path: expose_path(api_v4_projects_path(id: project.id)),
         rules_path: expose_path(api_v4_projects_approval_rules_path(id: project.id)),
