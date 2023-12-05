@@ -1,0 +1,33 @@
+- return if Gitlab.org_or_com?
+- return unless License.feature_available?(:code_suggestions) || License.feature_available?(:ai_chat)
+
+- expanded = false
+
+%section.settings.no-animate#js-ai-powered-settings{ class: ('expanded' if expanded) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
+      = s_('AIPoweredSM|AI-powered features')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    %p.gl-text-secondary
+      = ai_powered_description
+
+  .settings-content
+    = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-ai-powered-settings'), html: { class: 'fieldset-form', id: 'ai-powered-settings' } do |f|
+      = form_errors(@application_setting)
+
+      %fieldset
+        .form-group
+          %h5.settings-header-controls
+            =  s_('CodeSuggestionsSM|Code Suggestions %{beta}').html_safe % { beta: gl_badge_tag(_('Beta'), variant: :neutral, size: :sm) }
+          = f.gitlab_ui_checkbox_component :instance_level_code_suggestions_enabled,
+            s_('CodeSuggestionsSM|Enable Code Suggestions for this instance'),
+            help_text: ai_powered_testing_agreement
+
+          %h5.settings-header-controls
+            = s_('AIPoweredSM|AI-powered features')
+          = f.gitlab_ui_checkbox_component :instance_level_ai_beta_features_enabled,
+            s_('AIPoweredSM|Enable Experiment and Beta AI-powered features'),
+            help_text: ai_powered_testing_agreement
+
+      = f.submit _('Save changes'), pajamas_button: true
