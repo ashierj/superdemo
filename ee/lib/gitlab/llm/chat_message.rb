@@ -24,6 +24,10 @@ module Gitlab
       def clean_history?
         content == CLEAN_HISTORY_MESSAGE
       end
+
+      def question?
+        user? && !conversation_reset? && !clean_history?
+      end
     end
   end
 end

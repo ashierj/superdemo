@@ -63,6 +63,10 @@ module Gitlab
         role == ROLE_USER
       end
 
+      def assistant?
+        role == ROLE_ASSISTANT
+      end
+
       def slash_command?
         content.to_s.match?(%r{\A/\w})
       end
@@ -71,6 +75,14 @@ module Gitlab
         return [] unless slash_command?
 
         content.split(' ', 2)
+      end
+
+      def ==(other)
+        super || (
+          self.class == other.class &&
+            !@id.nil? &&
+            @id == other.id
+        )
       end
     end
   end

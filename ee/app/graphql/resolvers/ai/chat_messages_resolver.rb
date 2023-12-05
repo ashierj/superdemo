@@ -16,7 +16,7 @@ module Resolvers
       def resolve(**args)
         return [] unless current_user
 
-        ::Gitlab::Llm::ChatStorage.new(current_user).messages(args).map(&:to_h)
+        ::Gitlab::Llm::ChatStorage.new(current_user).messages_by(args).map(&:to_h)
       end
     end
   end

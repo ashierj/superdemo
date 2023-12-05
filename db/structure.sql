@@ -11894,7 +11894,6 @@ CREATE TABLE application_settings (
     raw_blob_request_limit integer DEFAULT 300 NOT NULL,
     allow_local_requests_from_web_hooks_and_services boolean DEFAULT false NOT NULL,
     allow_local_requests_from_system_hooks boolean DEFAULT true NOT NULL,
-    instance_administration_project_id bigint,
     asset_proxy_enabled boolean DEFAULT false NOT NULL,
     asset_proxy_url character varying,
     encrypted_asset_proxy_secret_key text,
@@ -11940,7 +11939,6 @@ CREATE TABLE application_settings (
     encrypted_slack_app_verification_token_iv character varying(255),
     force_pages_access_control boolean DEFAULT false NOT NULL,
     updating_name_disabled_for_users boolean DEFAULT false NOT NULL,
-    instance_administrators_group_id integer,
     elasticsearch_indexed_field_length_limit integer DEFAULT 0 NOT NULL,
     elasticsearch_max_bulk_size_mb smallint DEFAULT 10 NOT NULL,
     elasticsearch_max_bulk_concurrency smallint DEFAULT 10 NOT NULL,
@@ -31716,15 +31714,11 @@ CREATE INDEX index_application_settings_on_custom_project_templates_group_id ON 
 
 CREATE INDEX index_application_settings_on_file_template_project_id ON application_settings USING btree (file_template_project_id);
 
-CREATE INDEX index_application_settings_on_instance_administrators_group_id ON application_settings USING btree (instance_administrators_group_id);
-
 CREATE UNIQUE INDEX index_application_settings_on_push_rule_id ON application_settings USING btree (push_rule_id);
 
 CREATE INDEX index_application_settings_on_usage_stats_set_by_user_id ON application_settings USING btree (usage_stats_set_by_user_id);
 
 CREATE INDEX index_application_settings_web_ide_oauth_application_id ON application_settings USING btree (web_ide_oauth_application_id);
-
-CREATE INDEX index_applicationsettings_on_instance_administration_project_id ON application_settings USING btree (instance_administration_project_id);
 
 CREATE INDEX index_approval_group_rules_groups_on_group_id ON approval_group_rules_groups USING btree (group_id);
 
@@ -32180,7 +32174,7 @@ CREATE INDEX index_ci_pipeline_schedules_on_owner_id_and_id_and_active ON ci_pip
 
 CREATE INDEX index_ci_pipeline_schedules_on_project_id ON ci_pipeline_schedules USING btree (project_id);
 
-CREATE UNIQUE INDEX index_ci_pipeline_variables_on_pipeline_id_and_key ON ci_pipeline_variables USING btree (pipeline_id, key);
+CREATE UNIQUE INDEX index_ci_pipeline_variables_on_id_partition_id_unique ON ci_pipeline_variables USING btree (id, partition_id);
 
 CREATE INDEX index_ci_pipelines_config_on_pipeline_id ON ci_pipelines_config USING btree (pipeline_id);
 
@@ -33945,6 +33939,8 @@ CREATE UNIQUE INDEX index_personal_access_tokens_on_token_digest ON personal_acc
 CREATE INDEX index_personal_access_tokens_on_user_id ON personal_access_tokens USING btree (user_id);
 
 CREATE INDEX index_pipeline_metadata_on_pipeline_id_name_text_pattern ON ci_pipeline_metadata USING btree (pipeline_id, name text_pattern_ops);
+
+CREATE UNIQUE INDEX index_pipeline_variables_on_pipeline_id_key_partition_id_unique ON ci_pipeline_variables USING btree (pipeline_id, key, partition_id);
 
 CREATE UNIQUE INDEX index_plan_limits_on_plan_id ON plan_limits USING btree (plan_id);
 

@@ -225,6 +225,25 @@ RSpec.describe API::Chat, :saas, feature_category: :duo_chat do
             post_api
           end
         end
+
+        context 'with reset_history' do
+          let(:params) { { content: content, with_clean_history: true } }
+          let(:resource) { current_user }
+          let(:reset_message) { instance_double(Gitlab::Llm::ChatMessage) }
+
+          it 'sends resource to the chat' do
+            reset_params = chat_message_params.dup
+            reset_params[:content] = '/reset'
+
+            expect(Gitlab::Llm::ChatMessage).to receive(:new).with(reset_params).twice.and_return(reset_message)
+            expect(reset_message).to receive(:save!).twice
+            expect(Gitlab::Llm::ChatMessage).to receive(:new).with(chat_message_params).and_return(chat_message)
+            expect(Llm::Internal::CompletionService).to receive(:new).with(chat_message, options).and_return(chat)
+            expect(chat).to receive(:execute)
+
+            post_api
+          end
+        end
       end
     end
   end

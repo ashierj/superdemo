@@ -28,6 +28,12 @@ module API
         object = parameters[:resource_type].camelize.safe_constantize
         object.find(parameters[:resource_id])
       end
+
+      def reset_chat(action_name, message_attributes)
+        message_attributes[:content] = '/reset'
+        prompt_message = ::Gitlab::Llm::AiMessage.for(action: action_name).new(message_attributes)
+        prompt_message.save!
+      end
     end
 
     namespace 'chat' do
@@ -38,6 +44,8 @@ module API
           optional :resource_id, type: Integer, desc: 'ID of resource.'
           optional :referer_url, type: String, limit: 1000, desc: 'Referer URL'
           optional :client_subscription_id, type: String, limit: 500, desc: 'Client Subscription ID'
+          optional :with_clean_history, type: Boolean,
+            desc: 'Indicates if we need to reset the history before and after the request'
         end
         post do
           safe_params = declared_params(include_missing: false)
@@ -46,9 +54,9 @@ module API
           not_found! unless user_allowed?(resource)
           action_name = 'chat'
 
+          options = safe_params.slice(:referer_url)
           message_attributes = {
             request_id: SecureRandom.uuid,
-            content: safe_params[:content],
             role: ::Gitlab::Llm::AiMessage::ROLE_USER,
             ai_action: action_name,
             user: current_user,
@@ -56,9 +64,14 @@ module API
             client_subscription_id: safe_params[:client_subscription_id]
           }
 
+          reset_chat(action_name, message_attributes) if safe_params[:with_clean_history]
+
+          message_attributes[:content] = safe_params[:content]
+
           prompt_message = ::Gitlab::Llm::AiMessage.for(action: action_name).new(message_attributes)
-          options = safe_params.slice(:referer_url)
           ai_response = Llm::Internal::CompletionService.new(prompt_message, options).execute
+
+          reset_chat(action_name, message_attributes) if safe_params[:with_clean_history]
 
           present ai_response.response_body
         end

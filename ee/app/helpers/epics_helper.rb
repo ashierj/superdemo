@@ -24,3 +24,5 @@ module EpicsHelper
     api_v4_groups_epics_award_emoji_path(id: epic.group.id, epic_iid: epic.iid)
   end
 end
+
+EpicsHelper.prepend_mod
