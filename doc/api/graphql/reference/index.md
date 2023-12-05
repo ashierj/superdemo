@@ -15980,7 +15980,7 @@ Represents a degradation on the compared codequality report.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="codequalityreportscomparerreportdegradationdescription"></a>`description` | [`String!`](#string) | Description of the code quality degradation. |
-| <a id="codequalityreportscomparerreportdegradationenginename"></a>`engineName` | [`String!`](#string) | Code quality plugin that reported the degradation. |
+| <a id="codequalityreportscomparerreportdegradationenginename"></a>`engineName` | [`String`](#string) | Code quality plugin that reported the degradation. |
 | <a id="codequalityreportscomparerreportdegradationfilepath"></a>`filePath` | [`String!`](#string) | Relative path to the file containing the code quality degradation. |
 | <a id="codequalityreportscomparerreportdegradationfingerprint"></a>`fingerprint` | [`String!`](#string) | Unique fingerprint to identify the code quality degradation. For example, an MD5 hash. |
 | <a id="codequalityreportscomparerreportdegradationline"></a>`line` | [`Int!`](#int) | Line on which the code quality degradation occurred. |
