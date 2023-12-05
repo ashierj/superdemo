@@ -30847,6 +30847,9 @@ msgstr ""
 msgid "MlModelRegistry|Model registry"
 msgstr ""
 
+msgid "MlModelRegistry|No description provided"
+msgstr ""
+
 msgid "MlModelRegistry|No logged metadata"
 msgstr ""
 
