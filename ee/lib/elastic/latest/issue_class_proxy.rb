@@ -21,8 +21,6 @@ module Elastic
       # rubocop: enable CodeReuse/ActiveRecord
 
       def issue_aggregations(query, options)
-        return [] if ::Feature.disabled?(:search_issue_label_aggregation, options[:current_user])
-
         query_hash = issue_query(query, options: options.merge(features: 'issues', no_join_project: true, aggregation: true))
 
         results = search(query_hash, options)
