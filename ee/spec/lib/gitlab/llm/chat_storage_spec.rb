@@ -66,6 +66,18 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
   end
 
   describe '#messages' do
+    before do
+      subject.add(build(:ai_chat_message, payload.merge(content: 'msg1', role: 'user', request_id: '1')))
+      subject.add(build(:ai_chat_message, payload.merge(content: 'msg2', role: 'assistant', request_id: '2')))
+      subject.add(build(:ai_chat_message, payload.merge(content: 'msg3', role: 'assistant', request_id: '3')))
+    end
+
+    it 'returns all records for this user' do
+      expect(subject.messages.map(&:content)).to eq(%w[msg1 msg2 msg3])
+    end
+  end
+
+  describe '#messages_by' do
     let(:filters) { {} }
 
     before do
@@ -75,14 +87,14 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
     end
 
     it 'returns all records for this user' do
-      expect(subject.messages(filters).map(&:content)).to eq(%w[msg1 msg2 msg3])
+      expect(subject.messages_by(filters).map(&:content)).to eq(%w[msg1 msg2 msg3])
     end
 
     context 'when filtering by role' do
       let(:filters) { { roles: ['user'] } }
 
       it 'returns only records for this role' do
-        expect(subject.messages(filters).map(&:content)).to eq(%w[msg1])
+        expect(subject.messages_by(filters).map(&:content)).to eq(%w[msg1])
       end
     end
 
@@ -90,7 +102,7 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       let(:filters) { { request_ids: %w[2 3] } }
 
       it 'returns only records with the same request_id' do
-        expect(subject.messages(filters).map(&:content)).to eq(%w[msg2 msg3])
+        expect(subject.messages_by(filters).map(&:content)).to eq(%w[msg2 msg3])
       end
     end
   end
@@ -148,6 +160,28 @@ RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_categ
       subject.clean!
 
       expect(subject.messages).to be_empty
+    end
+  end
+
+  describe '#messages_up_to' do
+    let(:messages) do
+      [
+        build(:ai_chat_message, payload.merge(content: 'msg1', role: 'assistant')),
+        build(:ai_chat_message, payload.merge(content: 'msg2', role: 'user')),
+        build(:ai_chat_message, payload.merge(content: 'msg3', role: 'assistant'))
+      ]
+    end
+
+    before do
+      messages.each { |m| subject.add(m) }
+    end
+
+    it 'returns first n messages up to one with matching message id' do
+      expect(subject.messages_up_to(messages[1].id)).to eq(messages.first(2))
+    end
+
+    it 'returns [] if message id is not found' do
+      expect(subject.messages_up_to('missing id')).to eq([])
     end
   end
 end

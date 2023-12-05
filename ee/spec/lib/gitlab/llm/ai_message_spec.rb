@@ -135,9 +135,56 @@ RSpec.describe Gitlab::Llm::AiMessage, feature_category: :duo_chat do
     end
   end
 
+  describe '#assistant?' do
+    context 'when role is assistant' do
+      before do
+        data[:role] = 'assistant'
+      end
+
+      it { is_expected.to be_assistant }
+    end
+
+    context 'when role is not assistant' do
+      it { is_expected.not_to be_assistant }
+    end
+  end
+
   describe '#resource' do
     it 'delegates to context' do
       expect(subject.resource).to eq(data[:context].resource)
+    end
+  end
+
+  describe '#==' do
+    it 'returns true if comparing to self' do
+      m1 = build(:ai_message)
+
+      expect(m1).to eq(m1)
+    end
+
+    it 'compares id only' do
+      m1 = build(:ai_chat_message, content: 'foobarbaz')
+      m2 = build(:ai_chat_message, content: 'foobar...')
+
+      expect(m1).not_to eq(m2)
+
+      m2.id = m1.id
+
+      expect(m1).to eq(m2)
+    end
+
+    it 'returns false if class is different' do
+      m1 = build(:ai_message, content: 'foobar')
+      m2 = build(:ai_chat_message, content: 'foobar', id: m1.id)
+
+      expect(m1).not_to eq(m2)
+    end
+
+    it 'returns false if id is nil' do
+      m1 = build(:ai_message, id: nil)
+      m2 = build(:ai_message, id: nil)
+
+      expect(m1).not_to eq(m2)
     end
   end
 end
