@@ -212,6 +212,10 @@ it is necessary due to:
 - availability
 - security
 
+When adding a mandatory section, you should track the impact on the new mandatory section
+on merge request rates.
+See the [Verify issue](https://gitlab.com/gitlab-org/gitlab/-/issues/411559) for a good example.
+
 All other cases should not use mandatory sections as we favor
 [responsbility over ridigity](https://handbook.gitlab.com/handbook/values/#freedom-and-responsibility-over-rigidity).
 
