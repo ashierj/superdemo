@@ -14,6 +14,10 @@ module EE
 
           accepts_nested_attributes_for :setting, update_only: true
         end
+
+        def at_group_level?
+          project.nil?
+        end
       end
     end
   end

@@ -207,6 +207,10 @@ module EE
           description: 'A pending membership of a user within this group.',
           resolver: Resolvers::PendingGroupMembersResolver,
           alpha: { milestone: '16.6' }
+        field :value_streams,
+          description: 'Value streams available to the group.',
+          null: true,
+          resolver: ::Resolvers::Analytics::CycleAnalytics::ValueStreamsResolver
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
