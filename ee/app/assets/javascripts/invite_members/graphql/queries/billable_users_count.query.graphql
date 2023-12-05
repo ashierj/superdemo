@@ -4,6 +4,7 @@ query getBillableUsersCount(
   $addUserEmails: [String!]
   $addUserIds: [Int!]
   $role: GitlabSubscriptionsUserRole!
+  $memberRoleId: Int
 ) {
   group(fullPath: $fullPath) {
     id
@@ -12,6 +13,7 @@ query getBillableUsersCount(
       addUserEmails: $addUserEmails
       addUserIds: $addUserIds
       role: $role
+      memberRoleId: $memberRoleId
     ) {
       willIncreaseOverage
       seatsInSubscription

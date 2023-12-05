@@ -249,11 +249,19 @@ describe('EEInviteModalBase', () => {
     beforeEach(async () => {
       createComponent({
         props: { defaultAccessLevel: 10, defaultMemberRoleId: 100, newUsersToInvite: [123] },
+        glFeatures: { overageMembersModal: true },
       });
       await waitForPromises();
     });
 
     it('submits the `memberRoleId`', async () => {
+      clickInviteButton();
+      await waitForPromises();
+
+      expect(defaultBillableMock).toHaveBeenCalledWith(
+        expect.objectContaining({ memberRoleId: 100 }),
+      );
+
       clickInviteButton();
       await waitForPromises();
 
@@ -275,6 +283,14 @@ describe('EEInviteModalBase', () => {
     });
 
     it('calls graphql API and passes correct parameters', () => {
+      expect(defaultBillableMock).toHaveBeenCalledWith({
+        fullPath: 'mygroup',
+        addGroupId: 123,
+        addUserEmails: [],
+        addUserIds: [],
+        role: 'REPORTER',
+        memberRoleId: null,
+      });
       expect(defaultResolverMock).toHaveBeenCalledTimes(1);
       expect(defaultResolverMock).toHaveBeenCalledWith({ namespaceId: 54321 });
     });
