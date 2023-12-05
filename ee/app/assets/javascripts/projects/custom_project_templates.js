@@ -42,7 +42,10 @@ const bindEvents = () => {
 
     const activeTabProjectName = document.querySelector('.tab-pane.active #project_name');
     const activeTabProjectPath = document.querySelector('.tab-pane.active #project_path');
-    const clonedTemplate = el.closest('.template-option').querySelector('.avatar').cloneNode(true);
+    const clonedTemplate = el
+      .closest('.template-option')
+      .querySelector('.gl-avatar')
+      .cloneNode(true);
 
     if (subgroupId) {
       const { subgroupFullPath, targetGroupFullPath } = el.dataset;
