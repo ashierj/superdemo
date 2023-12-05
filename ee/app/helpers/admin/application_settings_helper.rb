@@ -22,6 +22,20 @@ module Admin
       s_('CodeSuggestionsSM|By enabling this feature, you agree to the %{terms_link_start}GitLab Testing Agreement%{link_end} and acknowledge that GitLab will send data from the instance, including personal data, to our %{ai_docs_link_start}AI providers%{link_end} to provide this feature.')
         .html_safe % { terms_link_start: terms_link_start, ai_docs_link_start: ai_docs_link_start, link_end: '</a>'.html_safe }
     end
+
+    def ai_powered_testing_agreement
+      terms_link_start = ai_powered_link_start(gitlab_testing_agreement_url)
+
+      s_('AIPoweredSM|By enabling this feature, you agree to the %{terms_link_start}GitLab Testing Agreement%{link_end}.')
+        .html_safe % { terms_link_start: terms_link_start, link_end: '</a>'.html_safe }
+    end
+
+    def ai_powered_description
+      link_start = ai_powered_link_start(ai_powered_docs_url)
+
+      s_('AIPoweredSM|Enable %{link_start}AI-powered features%{link_end} for this instance.')
+        .html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
+    end
     # rubocop:enable Layout/LineLength
     # rubocop:enable Style/FormatString
     # rubocop:enable Rails/OutputSafety
@@ -42,10 +56,22 @@ module Admin
     def code_suggestions_ai_docs_url
       'https://docs.gitlab.com/ee/user/ai_features.html#third-party-services'
     end
+
+    def ai_powered_docs_url
+      'https://docs.gitlab.com/ee/user/ai_features.html'
+    end
+
+    def gitlab_testing_agreement_url
+      'https://about.gitlab.com/handbook/legal/testing-agreement/'
+    end
     # rubocop:enable Gitlab/DocUrl
 
     # rubocop:disable Rails/OutputSafety
     def code_suggestions_link_start(url)
+      "<a href=\"#{url}\" target=\"_blank\" rel=\"noopener noreferrer\">".html_safe
+    end
+
+    def ai_powered_link_start(url)
       "<a href=\"#{url}\" target=\"_blank\" rel=\"noopener noreferrer\">".html_safe
     end
     # rubocop:enable Rails/OutputSafety
