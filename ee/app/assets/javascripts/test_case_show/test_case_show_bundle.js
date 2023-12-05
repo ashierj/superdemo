@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { addShortcutsExtension } from '~/behaviors/shortcuts';
 import ShortcutsTestCase from 'ee/behaviors/shortcuts/shortcuts_test_case';
 
 import createDefaultClient from '~/lib/graphql';
@@ -10,7 +11,7 @@ import TestCaseShowApp from './components/test_case_show_root.vue';
 Vue.use(VueApollo);
 
 export default function initTestCaseShow({ mountPointSelector }) {
-  new ShortcutsTestCase(); // eslint-disable-line no-new
+  addShortcutsExtension(ShortcutsTestCase);
   const el = document.querySelector(mountPointSelector);
 
   if (!el) {
