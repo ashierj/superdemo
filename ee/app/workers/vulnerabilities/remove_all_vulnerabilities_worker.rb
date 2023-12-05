@@ -53,30 +53,31 @@ module Vulnerabilities
 
     private
 
-    # rubocop:disable Style/SymbolProc -- for some reason, using &:delete_all fails with wrong number of arguments
     def drop_by_project_id(project_id)
       MODELS_TO_DROP_BY_PROJECT_ID.each do |model|
-        model
-          .by_projects(project_id)
-          .each_batch(of: BATCH_SIZE) { |b| b.delete_all }
+        loop do
+          deleted = model.by_projects(project_id).limit(BATCH_SIZE).delete_all
+          break if deleted == 0
+        end
       end
     end
 
     def drop_by_finding_id(finding_ids)
       MODELS_TO_DROP_BY_FINDING_ID.each do |model|
-        model
-          .by_finding_id(finding_ids)
-          .each_batch(of: BATCH_SIZE) { |b| b.delete_all }
+        loop do
+          deleted = model.by_finding_id(finding_ids).limit(BATCH_SIZE).delete_all
+          break if deleted == 0
+        end
       end
     end
 
     def drop_by_vulnerability_id(vulnerability_ids)
       MODELS_TO_DROP_BY_VULNERABILITY_ID.each do |model|
-        model
-          .by_vulnerability(vulnerability_ids)
-          .each_batch(of: BATCH_SIZE) { |b| b.delete_all }
+        loop do
+          deleted = model.by_vulnerability(vulnerability_ids).limit(BATCH_SIZE).delete_all
+          break if deleted == 0
+        end
       end
     end
-    # rubocop:enable Style/SymbolProc
   end
 end
