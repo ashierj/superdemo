@@ -1,0 +1,8 @@
+---
+name: track_geo_secondary_git_op_action
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/133435
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/433237
+milestone: '16.7'
+type: development
+group: group::geo
+default_enabled: false
