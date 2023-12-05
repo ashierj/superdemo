@@ -108,12 +108,14 @@ module EE
       expose :merge_immediately_docs_path do |merge_request|
         presenter(merge_request).merge_immediately_docs_path
       end
-    end
 
-    def represent_blocking_mr(blocking_mr)
-      blocking_mr_options = options.merge(from_project: object.target_project)
+      expose :saml_approval_path do |merge_request|
+        presenter(merge_request).saml_approval_path
+      end
 
-      ::BlockingMergeRequestEntity.represent(blocking_mr, blocking_mr_options)
+      expose :require_saml_auth_to_approve do |merge_request|
+        presenter(merge_request).require_saml_auth_to_approve
+      end
     end
   end
 end

@@ -6106,6 +6106,9 @@ msgstr ""
 msgid "Approval options"
 msgstr ""
 
+msgid "Approval rejected."
+msgstr ""
+
 msgid "Approval rules"
 msgstr ""
 
@@ -6267,7 +6270,7 @@ msgstr ""
 msgid "ApprovalSettings|Remove approvals by Code Owners if their files changed"
 msgstr ""
 
-msgid "ApprovalSettings|Require user password to approve"
+msgid "ApprovalSettings|Require user re-authentication (password or SAML) to approve"
 msgstr ""
 
 msgid "ApprovalSettings|There was an error loading merge request approval settings."
@@ -57829,6 +57832,12 @@ msgid "mrWidget|Approve"
 msgstr ""
 
 msgid "mrWidget|Approve additionally"
+msgstr ""
+
+msgid "mrWidget|Approve additionally with SAML"
+msgstr ""
+
+msgid "mrWidget|Approve with SAML"
 msgstr ""
 
 msgid "mrWidget|Approved by"

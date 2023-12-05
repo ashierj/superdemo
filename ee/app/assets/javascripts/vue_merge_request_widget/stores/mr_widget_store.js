@@ -29,6 +29,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.appUrl = gon && gon.gitlab_url;
     this.licenseScanning = data.license_scanning;
     this.requirePasswordToApprove = data.require_password_to_approve;
+    this.requireSamlAuthToApprove = data.require_saml_auth_to_approve;
     this.mergeRequestApproversAvailable = data.merge_request_approvers_available;
     this.aiCommitMessageEnabled = data.aiCommitMessageEnabled;
 
@@ -62,6 +63,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
 
     this.discoverProjectSecurityPath = data.discover_project_security_path;
     this.apiStatusChecksPath = data.api_status_checks_path;
+    this.samlApprovalPath = data.saml_approval_path;
 
     // Security scan diff paths
     this.containerScanningComparisonPath = data.container_scanning_comparison_path;

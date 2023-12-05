@@ -8,6 +8,7 @@ describe('Group settings store getters', () => {
     preventCommittersApproval: { value: true },
     preventMrApprovalRuleEdit: { value: true },
     requireUserPassword: { value: true },
+    requireSamlAuth: { value: true },
     removeApprovalsOnPush: { value: false },
     selectiveCodeOwnerRemovals: { value: false },
   };
