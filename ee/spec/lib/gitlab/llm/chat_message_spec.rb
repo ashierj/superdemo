@@ -25,6 +25,25 @@ RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
     end
   end
 
+  describe '#question?' do
+    where(:role, :content, :expectation) do
+      [
+        ['user', 'foo?', true],
+        ['user', '/reset', false],
+        ['user', '/clean', false],
+        ['assistant', 'foo?', false]
+      ]
+    end
+
+    with_them do
+      it "returns expectation" do
+        subject.assign_attributes(role: role, content: content)
+
+        expect(subject.question?).to eq(expectation)
+      end
+    end
+  end
+
   describe '#save!' do
     it 'saves the message to chat storage' do
       expect_next_instance_of(Gitlab::Llm::ChatStorage, subject.user) do |instance|

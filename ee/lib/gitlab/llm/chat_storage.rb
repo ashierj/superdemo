@@ -3,6 +3,8 @@
 module Gitlab
   module Llm
     class ChatStorage
+      include Gitlab::Utils::StrongMemoize
+
       # Expiration time of user messages should not be more than 90 days.
       # EXPIRE_TIME sets expiration time for the whole chat history stream (not
       # for individual messages) - so the stream is deleted after 3 days since
@@ -25,13 +27,21 @@ module Gitlab
 
       def add(message)
         cache_data(dump_message(message))
+        clear_memoization(:messages)
       end
 
-      def messages(filters = {})
+      def messages
         with_redis do |redis|
-          redis.xrange(key).filter_map do |_id, data|
-            load_message(data) if matches_filters?(data, filters)
+          redis.xrange(key).map do |_id, data|
+            load_message(data)
           end
+        end
+      end
+      strong_memoize_attr :messages
+
+      def messages_by(filters = {})
+        messages.select do |message|
+          matches_filters?(message, filters)
         end
       end
 
@@ -44,10 +54,17 @@ module Gitlab
         all[idx + 1..]
       end
 
+      def messages_up_to(message_id)
+        all = messages
+        idx = all.rindex { |m| m.id == message_id }
+        idx ? all.first(idx + 1) : []
+      end
+
       def clean!
         with_redis do |redis|
           redis.xtrim(key, 0)
         end
+        clear_memoization(:messages)
       end
 
       private
@@ -69,11 +86,11 @@ module Gitlab
         Gitlab::Redis::Chat.with(&block) # rubocop: disable CodeReuse/ActiveRecord
       end
 
-      def matches_filters?(data, filters)
-        return false if filters[:roles]&.exclude?(data['role'])
-        return false if filters[:request_ids]&.exclude?(data['request_id'])
+      def matches_filters?(message, filters)
+        return false if filters[:roles]&.exclude?(message.role)
+        return false if filters[:request_ids]&.exclude?(message.request_id)
 
-        data
+        true
       end
 
       def dump_message(message)
