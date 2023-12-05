@@ -20,7 +20,7 @@ class SyncSeatLinkRequestWorker
 
   RequestError = Class.new(StandardError)
 
-  def perform(timestamp, license_key, max_historical_user_count, billable_users_count)
+  def perform(timestamp, license_key, max_historical_user_count, billable_users_count, refresh_token = false)
     response = Gitlab::HTTP.post(
       URI_PATH,
       base_uri: ::Gitlab::Routing.url_helpers.subscription_portal_url,
@@ -35,6 +35,7 @@ class SyncSeatLinkRequestWorker
       update_code_suggestions_add_on_purchase
       update_reconciliation!(response)
       update_code_suggestions_tokens(response) unless use_sync_service_token_worker?
+      ::Ai::SyncServiceTokenWorker.perform_async if refresh_token
     else
       raise RequestError, request_error_message(response)
     end
