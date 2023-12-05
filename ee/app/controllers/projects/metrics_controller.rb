@@ -12,6 +12,7 @@ module Projects
 
     def show
       @metric_id = params[:id]
+      @metric_type = params[:type]
     end
   end
 end

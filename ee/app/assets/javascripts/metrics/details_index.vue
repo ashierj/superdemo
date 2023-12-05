@@ -12,6 +12,10 @@ export default {
       type: String,
       required: true,
     },
+    metricType: {
+      type: String,
+      required: true,
+    },
     metricsIndexUrl: {
       required: true,
       type: String,
@@ -29,6 +33,7 @@ export default {
     <template #default="{ observabilityClient }">
       <metrics-details
         :metric-id="metricId"
+        :metric-type="metricType"
         :metrics-index-url="metricsIndexUrl"
         :observability-client="observabilityClient"
       />

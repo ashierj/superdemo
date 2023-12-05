@@ -22,6 +22,10 @@ module EE
         def metrics_url(project)
           "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/metrics/autocomplete"
         end
+
+        def metrics_search_url(project)
+          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/metrics/search"
+        end
       end
     end
   end

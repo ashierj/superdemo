@@ -15,6 +15,7 @@ describe('MetricsDetails', () => {
   let observabilityClientMock;
 
   const METRIC_ID = 'test.metric';
+  const METRIC_TYPE = 'Sum';
   const METRICS_INDEX_URL = 'https://www.gitlab.com/flightjs/Flight/-/metrics';
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
@@ -23,6 +24,7 @@ describe('MetricsDetails', () => {
 
   const props = {
     metricId: METRIC_ID,
+    metricType: METRIC_TYPE,
     metricsIndexUrl: METRICS_INDEX_URL,
   };
 
@@ -77,7 +79,7 @@ describe('MetricsDetails', () => {
 
     it('fetches details and renders the metrics details', () => {
       expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
-      expect(observabilityClientMock.fetchMetric).toHaveBeenCalled();
+      expect(observabilityClientMock.fetchMetric).toHaveBeenCalledWith(METRIC_ID, METRIC_TYPE);
       expect(findLoadingIcon().exists()).toBe(false);
       expect(findMetricDetails().exists()).toBe(true);
     });

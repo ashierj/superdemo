@@ -14,6 +14,7 @@ describe('DetailsIndex', () => {
       servicesUrl: 'https://example.com/services',
       operationsUrl: 'https://example.com/operations',
       metricsUrl: 'https://example.com/metricsUrl',
+      metricsSearchUrl: 'https://example.com/metricsSearchUrl',
     },
   };
 

@@ -2,11 +2,12 @@
 import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
-import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
+import { visitUrl, joinPaths, setUrlParams } from '~/lib/utils/url_utility';
 import { isMetaClick, contentTop } from '~/lib/utils/common_utils';
 import { sanitize } from '~/lib/dompurify';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { logError } from '~/lib/logger';
 import {
   queryToFilterObj,
   filterObjToQuery,
@@ -75,8 +76,20 @@ export default {
     },
     onMetricClicked({ metricId, clickEvent = {} }) {
       const external = isMetaClick(clickEvent);
-      const url = joinPaths(window.location.pathname, encodeURI(metricId));
-      visitUrl(sanitize(url), external);
+      const metricType = this.metrics.find((m) => m.name === metricId)?.type;
+      if (!metricType) {
+        logError(
+          new Error(`onMetricClicked() - Could not find metric type for metric ${metricId}`),
+        );
+        return;
+      }
+      const url = joinPaths(
+        window.location.origin,
+        window.location.pathname,
+        encodeURIComponent(metricId),
+      );
+      const fullUrl = setUrlParams({ type: encodeURIComponent(metricType) }, url);
+      visitUrl(sanitize(fullUrl), external);
     },
     onFilter(filterTokens) {
       this.filters = filterTokensToFilterObj(filterTokens);
