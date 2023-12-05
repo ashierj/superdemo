@@ -13,6 +13,28 @@ module EE
         render json: ::Gitlab::Workhorse.git_http_ok(repository, repo_type, user, action_name, show_all_refs: geo_request?, need_audit: need_git_audit_event?)
       end
 
+      override :info_refs
+      def info_refs
+        if ::Feature.enabled?(:track_geo_secondary_git_op_action)
+          track_git_ops_event_if_from_secondary(params["geo_node_id"])
+        end
+
+        super
+      end
+
+      # This is reached on a primary for a request orignating on a secondary
+      # only when the repository on the secondary is out of date with that on
+      # the primary
+      override :git_upload_pack
+      def git_upload_pack
+        if ::Feature.enabled?(:track_geo_secondary_git_op_action)
+          track_git_ops_event_if_from_secondary(params["geo_node_id"])
+        end
+
+        super
+      end
+
+      # Git push over HTTP
       override :git_receive_pack
       def git_receive_pack
         # Authentication/authorization already happened in `before_action`s
@@ -22,6 +44,9 @@ module EE
           gl_id = ::Gitlab::GlId.gl_id(user)
           gl_repository = repo_type.identifier_for_container(container)
           node_id = params["geo_node_id"]
+
+          track_git_ops_event_if_from_secondary(node_id) if ::Feature.enabled?(:track_geo_secondary_git_op_action)
+
           ::Gitlab::Geo::GitPushHttp.new(gl_id, gl_repository).cache_referrer_node(node_id)
         end
 
@@ -118,6 +143,38 @@ module EE
 
       def send_git_audit_streaming_event
         ::Gitlab::GitAuditEvent.new(user, project).send_audit_event({ protocol: 'http', action: 'git-upload-pack' })
+      end
+
+      # Track a git operation event if this request originated on a Geo secondary
+      # and was redirected/proxied to the primary.
+      #
+      # `git push` over ssh and http is tracked here.
+      # `git pull` is tracked in the case where the repo on the secondary was
+      # out-of-date and had to be pulled from the primary.
+      def track_git_ops_event_if_from_secondary(node_id)
+        return unless track_git_op_event?(node_id)
+
+        ::Gitlab::InternalEvents.track_event(
+          "geo_secondary_git_op_action",
+          user: user,
+          project: project,
+          namespace: project&.namespace
+        )
+      end
+
+      def track_git_op_event?(node_id)
+        # Don't track git operations by CI
+        return if ci?
+
+        # Only track on primary
+        return unless node_id && ::Gitlab::Geo.primary?
+
+        # Don't track if the request originated on the primary itself
+        return if node_id.to_i == ::Gitlab::Geo.current_node.id
+
+        # Only track when the user is identified, since we are only interested
+        # in unique users performing git operations
+        user.is_a?(User)
       end
     end
   end

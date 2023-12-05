@@ -115,6 +115,16 @@ RSpec.describe Repositories::GitHttpController, feature_category: :source_code_m
         allow(instance).to receive(:decode).and_return(decoded_headers)
       end
     end
+
+    def add_project_to_deploy_key
+      deploy_key.projects << project
+      deploy_key.save!
+    end
+
+    def allow_deploy_key_to_push_to_project
+      deploy_keys_project = deploy_key.deploy_keys_project_for(project)
+      deploy_keys_project.update!(can_push: true)
+    end
   end
 
   shared_examples 'a request with write access needed' do
@@ -122,11 +132,8 @@ RSpec.describe Repositories::GitHttpController, feature_category: :source_code_m
 
     context 'and write access is granted' do
       it 'returns a successful response' do
-        deploy_key.projects << project
-        deploy_key.save!
-
-        deploy_keys_project = deploy_key.deploy_keys_project_for(project)
-        deploy_keys_project.update!(can_push: true)
+        add_project_to_deploy_key
+        allow_deploy_key_to_push_to_project
 
         subject
 
@@ -136,8 +143,7 @@ RSpec.describe Repositories::GitHttpController, feature_category: :source_code_m
 
     context 'and write access is not granted' do
       it 'returns a failed response' do
-        deploy_key.projects << project
-        deploy_key.save!
+        add_project_to_deploy_key
 
         subject
 
@@ -172,6 +178,116 @@ RSpec.describe Repositories::GitHttpController, feature_category: :source_code_m
         expect(response).to have_gitlab_http_status(:not_found)
         expect(response.body).to eq(expected_response)
       end
+    end
+  end
+
+  shared_examples 'tracks Git operation from a Geo secondary' do
+    it do
+      expect(::Gitlab::InternalEvents).to receive(:track_event).with(
+        'geo_secondary_git_op_action',
+        user: admin,
+        project: project,
+        namespace: project&.namespace
+      ).once
+
+      subject
+    end
+  end
+
+  shared_examples 'does not track Git operation from a Geo secondary' do
+    it do
+      expect(::Gitlab::InternalEvents).not_to receive(:track_event).with(
+        'geo_secondary_git_op_action',
+        anything
+      )
+
+      subject
+    end
+  end
+
+  context 'track Geo secondary git operations' do
+    include_context 'with public deploy keys and Geo proxied request'
+
+    let(:geo_node_id) { 2 }
+
+    let(:post_git_receive_pack) do
+      post :git_receive_pack, params: { repository_path: repository_path, geo_node_id: geo_node_id }
+    end
+
+    before_all do
+      add_project_to_deploy_key
+      allow_deploy_key_to_push_to_project
+    end
+
+    context 'GET #git_upload_pack' do
+      subject do
+        get :info_refs,
+          params: { repository_path: repository_path, service: 'git-upload-pack', geo_node_id: geo_node_id }
+      end
+
+      it_behaves_like 'tracks Git operation from a Geo secondary'
+    end
+
+    context 'POST #git_upload_pack' do
+      subject do
+        post :git_upload_pack, params: { repository_path: repository_path, geo_node_id: geo_node_id }
+      end
+
+      it_behaves_like 'tracks Git operation from a Geo secondary'
+    end
+
+    context 'GET #git_receive_pack' do
+      subject do
+        get :git_receive_pack, params: { repository_path: repository_path, geo_node_id: geo_node_id }
+      end
+
+      it_behaves_like 'tracks Git operation from a Geo secondary'
+    end
+
+    context 'POST #git_receive_pack' do
+      subject { post_git_receive_pack }
+
+      it_behaves_like 'tracks Git operation from a Geo secondary'
+    end
+
+    context 'when it is a CI request' do
+      before do
+        allow_next_instance_of(::Gitlab::Auth::Result) do |result|
+          allow(result).to receive(:ci?).with(project).and_return(true)
+        end
+      end
+
+      subject { post_git_receive_pack }
+
+      it_behaves_like 'does not track Git operation from a Geo secondary'
+    end
+
+    context 'when request is from a primary' do
+      let(:geo_node_id) { ::Gitlab::Geo.current_node.id }
+
+      subject { post_git_receive_pack }
+
+      it_behaves_like 'does not track Git operation from a Geo secondary'
+    end
+
+    context 'when Geo is disabled' do
+      before do
+        allow(::Gitlab::Geo).to receive(:enabled?).and_return(false)
+      end
+
+      subject { post_git_receive_pack }
+
+      it_behaves_like 'does not track Git operation from a Geo secondary'
+    end
+
+    context 'when feature flag :track_geo_secondary_git_op_action is disabled' do
+      subject { post_git_receive_pack }
+
+      before do
+        stub_feature_flags(track_geo_secondary_git_op_action: false)
+      end
+
+      it_behaves_like 'does not track Git operation from a Geo secondary'
     end
   end
 
