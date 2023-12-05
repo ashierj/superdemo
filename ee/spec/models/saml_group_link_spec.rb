@@ -104,5 +104,14 @@ RSpec.describe SamlGroupLink do
 
   it_behaves_like 'model with member role relation' do
     subject(:model) { build(:saml_group_link) }
+
+    context 'when the member role namespace is in the same hierarchy', feature_category: :permissions do
+      before do
+        model.member_role = create(:member_role, namespace: model.group, base_access_level: Gitlab::Access::GUEST)
+        model.group = create(:group, parent: model.group)
+      end
+
+      it { is_expected.to be_valid }
+    end
   end
 end
