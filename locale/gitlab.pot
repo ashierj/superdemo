@@ -6683,9 +6683,6 @@ msgstr ""
 msgid "Artifacts|Total artifacts size"
 msgstr ""
 
-msgid "As this is a newly created account, to get started, click the link below to confirm your account."
-msgstr ""
-
 msgid "As we continue to build more features for SAST, we'd love your feedback on the SAST configuration feature in %{linkStart}this issue%{linkEnd}."
 msgstr ""
 
