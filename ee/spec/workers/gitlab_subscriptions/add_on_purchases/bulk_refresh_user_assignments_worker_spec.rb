@@ -6,10 +6,6 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWo
   describe '#perform_work' do
     subject(:perform_work) { described_class.new.perform_work }
 
-    before do
-      stub_ee_application_setting(check_namespace_plan: true)
-    end
-
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:add_on_purchase_fresh) do
       create(:gitlab_subscription_add_on_purchase, add_on: add_on, last_assigned_users_refreshed_at: 1.hour.ago)
@@ -62,20 +58,27 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWo
         perform_work
       end
 
-      context 'when not on GitLab.com' do
+      context 'when namespace for add_on_purchase is nil' do
+        let(:blocked_user) { create(:user, :blocked) }
+
         before do
-          stub_ee_application_setting(check_namespace_plan: false)
+          add_on_purchase_stale.update!(namespace: nil)
+          add_on_purchase_stale.assigned_users.create!(user: blocked_user)
         end
 
-        it_behaves_like 'returns early'
-      end
+        it 'successfully refreshes the assigned users for stale add_on_purchases' do
+          expect(Gitlab::AppLogger).to receive(:info).with(
+            message: 'AddOnPurchase user assignments refreshed via scheduled CronJob',
+            deleted_assignments_count: 1,
+            add_on: add_on_purchase_stale.add_on.name,
+            namespace: nil
+          )
 
-      context 'when feature flag bulk_add_on_assignment_refresh_worker is disabled' do
-        before do
-          stub_feature_flags(bulk_add_on_assignment_refresh_worker: false)
+          expect do
+            perform_work
+          end.to change { add_on_purchase_stale.assigned_users.count }.from(2).to(1)
+            .and change { add_on_purchase_stale.reload.last_assigned_users_refreshed_at }
         end
-
-        it_behaves_like 'returns early'
       end
     end
 
@@ -105,16 +108,6 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWo
 
       it 'returns correct amount' do
         expect(subject.remaining_work_count).to eq(2)
-      end
-
-      context 'when the bulk_add_on_assignment_refresh_worker FF is disabled' do
-        before do
-          stub_feature_flags(bulk_add_on_assignment_refresh_worker: false)
-        end
-
-        it 'returns zero' do
-          expect(subject.remaining_work_count).to eq(0)
-        end
       end
     end
 
