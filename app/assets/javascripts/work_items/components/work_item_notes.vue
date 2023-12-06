@@ -87,6 +87,11 @@ export default {
       required: false,
       default: false,
     },
+    useH2: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
   },
   data() {
     return {
@@ -326,6 +331,7 @@ export default {
       :disable-activity-filter-sort="disableActivityFilterSort"
       :work-item-type="workItemType"
       :discussion-filter="discussionFilter"
+      :use-h2="useH2"
       @changeSort="changeNotesSortOrder"
       @changeFilter="filterDiscussions"
     />

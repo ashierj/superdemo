@@ -495,6 +495,7 @@ export default {
             :work-item-type="workItemType"
             :work-item-parent-id="workItemParentId"
             :can-update="canUpdate"
+            :use-h1="!isModal"
             @error="updateError = $event"
           />
           <work-item-created-updated
@@ -585,6 +586,7 @@ export default {
               :report-abuse-path="reportAbusePath"
               :is-work-item-confidential="workItem.confidential"
               class="gl-pt-5"
+              :use-h2="!isModal"
               @error="updateError = $event"
               @has-notes="updateHasNotes"
               @openReportAbuse="openReportAbuseDrawer"
