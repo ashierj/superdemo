@@ -37138,7 +37138,7 @@ msgstr ""
 msgid "Profiles|Using emoji in names seems fun, but please try to set a status message instead"
 msgstr ""
 
-msgid "Profiles|Website url"
+msgid "Profiles|Website URL"
 msgstr ""
 
 msgid "Profiles|Who you represent or work for."
