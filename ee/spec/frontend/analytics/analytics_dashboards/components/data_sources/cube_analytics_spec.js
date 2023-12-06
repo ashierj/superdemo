@@ -164,6 +164,18 @@ describe('Cube Analytics Data Source', () => {
       },
     ];
 
+    const fetchWithFilters = (measure, filters) =>
+      fetch({
+        projectId,
+        visualizationType,
+        query: {
+          filters: existingFilters,
+          measures: [measure],
+        },
+        queryOverrides: {},
+        filters,
+      });
+
     it.each`
       type               | queryMeasurement                 | expectedDimension
       ${'TrackedEvents'} | ${'TrackedEvents.pageViewCount'} | ${'TrackedEvents.derivedTstamp'}
@@ -171,16 +183,7 @@ describe('Cube Analytics Data Source', () => {
     `(
       'loads the query with date range filters for "$type"',
       async ({ queryMeasurement, expectedDimension }) => {
-        await fetch({
-          projectId,
-          visualizationType,
-          query: {
-            filters: existingFilters,
-            measures: [queryMeasurement],
-          },
-          queryOverrides: {},
-          filters: mockFilters,
-        });
+        await fetchWithFilters(queryMeasurement, mockFilters);
 
         expect(mockLoad).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -200,5 +203,28 @@ describe('Cube Analytics Data Source', () => {
         );
       },
     );
+
+    describe('filtering anon users', () => {
+      it.each`
+        type                | queryMeasurement                  | expectedSegments
+        ${'TrackedEvents'}  | ${'TrackedEvents.pageViewCount'}  | ${{ segments: ['TrackedEvents.knownUsers'] }}
+        ${'Sessions'}       | ${'Sessions.pageViewCount'}       | ${{}}
+        ${'ReturningUsers'} | ${'ReturningUsers.pageViewCount'} | ${{}}
+      `(
+        'segments the query with "$expectedSegments" for "$type"',
+        async ({ queryMeasurement, expectedSegments }) => {
+          await fetchWithFilters(queryMeasurement, { filterAnonUsers: true });
+
+          expect(mockLoad).toHaveBeenCalledWith(
+            {
+              filters: existingFilters,
+              measures: [queryMeasurement],
+              ...expectedSegments,
+            },
+            cubeJsOptions,
+          );
+        },
+      );
+    });
   });
 });

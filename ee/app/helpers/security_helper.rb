@@ -24,7 +24,7 @@ module SecurityHelper
 
   def security_dashboard_unavailable_view_data
     {
-      empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
+      empty_state_svg_path: image_path('illustrations/empty-state/empty-dashboard-md.svg'),
       is_unavailable: "true"
     }
   end

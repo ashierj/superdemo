@@ -6,6 +6,7 @@ import {
   EVENTS_TABLE_NAME,
   RETURNING_USERS_TABLE_NAME,
   SESSIONS_TABLE_NAME,
+  TRACKED_EVENTS_KEY,
 } from 'ee/analytics/analytics_dashboards/constants';
 
 // This can be any value because the cube proxy adds the real API token.
@@ -14,7 +15,7 @@ const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/req
 
 // Filter measurement types must be lowercase
 export const DATE_RANGE_FILTER_DIMENSIONS = {
-  trackedevents: `${EVENTS_TABLE_NAME}.derivedTstamp`,
+  [TRACKED_EVENTS_KEY]: `${EVENTS_TABLE_NAME}.derivedTstamp`,
   sessions: `${SESSIONS_TABLE_NAME}.startAt`,
   returningusers: `${RETURNING_USERS_TABLE_NAME}.first_timestamp`,
 };
@@ -74,20 +75,37 @@ const convertToSingleValue = (resultSet, query) => {
   return row[measure] ?? 0;
 };
 
+const getQueryTableKey = (query) => query.measures[0].split('.')[0].toLowerCase();
+
 const buildDateRangeFilter = (query, queryOverrides, { startDate, endDate }) => {
   if (!startDate && !endDate) return {};
 
-  const measurement = query.measures[0].split('.')[0].toLowerCase();
+  const tableKey = getQueryTableKey(query);
 
   return {
     filters: [
       ...(query.filters ?? []),
       ...(queryOverrides.filters ?? []),
       {
-        member: DATE_RANGE_FILTER_DIMENSIONS[measurement],
+        member: DATE_RANGE_FILTER_DIMENSIONS[tableKey],
         operator: 'inDateRange',
         values: [pikadayToString(startDate), pikadayToString(endDate)],
       },
+    ],
+  };
+};
+
+const buildAnonUsersFilter = (query, queryOverrides, { filterAnonUsers }) => {
+  if (!filterAnonUsers) return {};
+
+  // knownUsers is only applicable on tracked events
+  if (getQueryTableKey(query) !== TRACKED_EVENTS_KEY) return {};
+
+  return {
+    segments: [
+      ...(query.segments ?? []),
+      ...(queryOverrides.segments ?? []),
+      'TrackedEvents.knownUsers',
     ],
   };
 };
@@ -96,6 +114,7 @@ const buildCubeQuery = (query, queryOverrides, filters) => ({
   ...query,
   ...queryOverrides,
   ...buildDateRangeFilter(query, queryOverrides, filters),
+  ...buildAnonUsersFilter(query, queryOverrides, filters),
 });
 
 const VISUALIZATION_PARSERS = {

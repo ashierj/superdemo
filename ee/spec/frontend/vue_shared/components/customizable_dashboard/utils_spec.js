@@ -58,6 +58,7 @@ describe('buildDefaultDashboardFilters', () => {
       startDate: defaultOption.startDate,
       endDate: defaultOption.endDate,
       dateRangeOption: defaultOption.key,
+      filterAnonUsers: false,
     });
   });
 
@@ -68,6 +69,7 @@ describe('buildDefaultDashboardFilters', () => {
       startDate: option.startDate,
       endDate: option.endDate,
       dateRangeOption: option.key,
+      filterAnonUsers: false,
     });
   });
 
@@ -78,6 +80,7 @@ describe('buildDefaultDashboardFilters', () => {
       startDate: parsePikadayDate('2023-01-10'),
       endDate: parsePikadayDate('2023-02-08'),
       dateRangeOption: CUSTOM_DATE_RANGE_KEY,
+      filterAnonUsers: false,
     });
   });
 
@@ -88,6 +91,15 @@ describe('buildDefaultDashboardFilters', () => {
       startDate: option.startDate,
       endDate: option.endDate,
       dateRangeOption: option.key,
+      filterAnonUsers: false,
+    });
+  });
+
+  it('returns "filterAnonUsers=true" when the query param for filtering out anonymous users is true', () => {
+    const queryString = 'filter_anon_users=true';
+
+    expect(buildDefaultDashboardFilters(queryString)).toMatchObject({
+      filterAnonUsers: true,
     });
   });
 });
@@ -108,6 +120,7 @@ describe('filtersToQueryParams', () => {
       date_range_option: 'foobar',
       end_date: null,
       start_date: null,
+      filter_anon_users: null,
     });
   });
 
@@ -116,6 +129,13 @@ describe('filtersToQueryParams', () => {
       date_range_option: CUSTOM_DATE_RANGE_KEY,
       start_date: '2016-01-01',
       end_date: '2016-02-01',
+      filter_anon_users: null,
+    });
+  });
+
+  it('returns "filter_anon_users=true" when filtering out anonymous users', () => {
+    expect(filtersToQueryParams({ filterAnonUsers: true })).toMatchObject({
+      filter_anon_users: true,
     });
   });
 });

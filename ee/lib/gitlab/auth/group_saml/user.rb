@@ -18,7 +18,7 @@ module Gitlab
         override :find_and_update!
         def find_and_update!
           add_or_update_user_identities
-          set_provisioned_user_attributes!(gl_user)
+          set_attributes_for_enterprise_user!(gl_user)
 
           save("GroupSaml Provider ##{@saml_provider.id}")
 
@@ -95,8 +95,8 @@ module Gitlab
           MembershipUpdater.new(gl_user, saml_provider, auth_hash).execute
         end
 
-        def set_provisioned_user_attributes!(user)
-          return unless user.provisioned_by_group_id == saml_provider.group_id
+        def set_attributes_for_enterprise_user!(user)
+          return unless user.managed_by_group?(saml_provider.group)
 
           user.assign_attributes(auth_hash.user_attributes.compact)
         end

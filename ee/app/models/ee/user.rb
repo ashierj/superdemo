@@ -428,8 +428,22 @@ module EE
       managing_group.present?
     end
 
+    # This method is outdated, see https://gitlab.com/groups/gitlab-org/-/epics/8518.
+    # Use `managed_by_user?` instead.
     def managed_by?(user)
       self.group_managed_account? && self.managing_group.owned_by?(user)
+    end
+
+    def managed_by_group?(group)
+      return false unless group
+
+      group.domain_verification_available? && enterprise_user_of_group?(group)
+    end
+
+    def managed_by_user?(user, group: user_detail.enterprise_group)
+      return false unless user && group
+
+      managed_by_group?(group) && group.owned_by?(user)
     end
 
     override :ldap_sync_time
@@ -556,12 +570,6 @@ module EE
 
     def namespace_ban_for(namespace)
       namespace_bans.find_by!(namespace: namespace)
-    end
-
-    def can_group_owner_disable_two_factor?(group, current_user)
-      return false unless group && current_user
-
-      group.domain_verification_available? && enterprise_user_of_group?(group) && group.owned_by?(current_user)
     end
 
     def code_suggestions_disabled_by_group?

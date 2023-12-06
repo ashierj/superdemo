@@ -92,7 +92,7 @@ module EE
     def product_analytics_usage_quota_app_data(group)
       {
         namespace_path: group.full_path,
-        empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
+        empty_state_illustration_path: image_path('illustrations/empty-state/empty-dashboard-md.svg'),
         product_analytics_enabled: ::Gitlab::CurrentSettings.product_analytics_enabled?.to_s
       }
     end
