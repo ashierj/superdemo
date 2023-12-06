@@ -11,7 +11,7 @@ module Ci
       include CronjobQueue
 
       data_consistency :sticky
-      feature_category :runner_fleet
+      feature_category :fleet_visibility
       urgency :low
 
       idempotent!

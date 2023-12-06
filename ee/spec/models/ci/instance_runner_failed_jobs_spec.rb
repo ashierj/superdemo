@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Ci::InstanceRunnerFailedJobs, :freeze_time, :clean_gitlab_redis_shared_state,
-  feature_category: :runner_fleet do
+  feature_category: :fleet_visibility do
   before do
     stub_licensed_features(runner_performance_insights: runner_performance_insights)
   end

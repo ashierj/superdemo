@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::RunnersFinder, feature_category: :runner_fleet do
+RSpec.describe Ci::RunnersFinder, feature_category: :fleet_visibility do
   describe '#execute' do
     subject(:execute) do
       described_class.new(current_user: user, params: params).execute

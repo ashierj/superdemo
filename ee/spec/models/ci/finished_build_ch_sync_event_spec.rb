@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::FinishedBuildChSyncEvent, type: :model, feature_category: :runner_fleet do
+RSpec.describe Ci::FinishedBuildChSyncEvent, type: :model, feature_category: :fleet_visibility do
   describe 'validations' do
     subject(:event) { described_class.create!(build_id: 1, build_finished_at: 2.hours.ago) }
 

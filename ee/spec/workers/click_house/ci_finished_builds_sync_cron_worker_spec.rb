@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ClickHouse::CiFinishedBuildsSyncCronWorker, :click_house, :freeze_time, feature_category: :runner_fleet do
+RSpec.describe ClickHouse::CiFinishedBuildsSyncCronWorker, :click_house, :freeze_time, feature_category: :fleet_visibility do
   let(:worker) { described_class.new }
 
   subject(:perform) { worker.perform(*args) }

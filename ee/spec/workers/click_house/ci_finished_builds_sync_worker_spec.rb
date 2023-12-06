@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ClickHouse::CiFinishedBuildsSyncWorker, :click_house, :freeze_time, feature_category: :runner_fleet do
+RSpec.describe ClickHouse::CiFinishedBuildsSyncWorker, :click_house, :freeze_time, feature_category: :fleet_visibility do
   let(:worker) { described_class.new }
 
   let_it_be(:build1) { create(:ci_build, :success) }

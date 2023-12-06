@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
-  :click_house, feature_category: :runner_fleet do
+  :click_house, feature_category: :fleet_visibility do
   subject(:execute) { service.execute }
 
   let(:service) { described_class.new }

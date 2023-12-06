@@ -160,7 +160,7 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
       perform
     end
 
-    context 'when job failed', feature_category: :runner_fleet do
+    context 'when job failed', feature_category: :fleet_visibility do
       let(:build) { create(:ee_ci_build, :sast, :failed, runner: ci_runner) }
 
       it 'tracks job on InstanceRunnerFailedJobs' do
