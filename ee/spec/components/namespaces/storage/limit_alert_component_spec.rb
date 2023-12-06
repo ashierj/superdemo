@@ -21,7 +21,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
   let(:usage_ratio) { 0.8 }
   let(:above_size_limit) { false }
   let(:alert_title) { /You have used \d+% of the storage quota for #{group.name}/ }
-  let(:alert_title_free_tier) { "You have reached the free storage limit of 1,000 MiB for #{group.name}" }
+  let(:alert_title_free_tier) { "You have reached the free storage limit of 5 GiB for #{group.name}" }
 
   let(:alert_message_below_limit) do
     "If #{group.name} exceeds the storage quota, your ability to write new data to this namespace will be " \
@@ -56,7 +56,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
         allow(size_checker).to receive(:above_size_limit?).and_return(above_size_limit)
       end
 
-      allow(group).to receive(:actual_size_limit).and_return(1000.megabytes)
+      set_dashboard_limit(group, megabytes: 5120)
       stub_member_access_level(group, owner: user)
     end
 
@@ -135,6 +135,17 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
           render_inline(component)
           expect(page).to have_content(alert_message_above_limit_with_purchased_storage)
         end
+      end
+    end
+
+    context 'and enforcement_limit is higher than dashboard_limit' do
+      before do
+        set_enforcement_limit(group, megabytes: 10240)
+      end
+
+      it 'renders the title with the dashboard_limit' do
+        render_inline(component)
+        expect(page).to have_content('5 GiB')
       end
     end
   end

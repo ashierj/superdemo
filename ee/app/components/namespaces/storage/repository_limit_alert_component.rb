@@ -45,7 +45,7 @@ module Namespaces
       def free_tier_alert_title
         text_args = {
           readonly_project_count: root_namespace.repository_size_excess_project_count,
-          free_size_limit: formatted(root_namespace.actual_size_limit)
+          free_size_limit: formatted(limit)
         }
 
         ns_(
@@ -59,7 +59,7 @@ module Namespaces
 
       def alert_message_explanation
         text_args = {
-          free_size_limit: formatted(root_namespace.actual_size_limit)
+          free_size_limit: formatted(limit)
         }
 
         if root_storage_size.above_size_limit?
@@ -113,6 +113,10 @@ module Namespaces
         else
           s_("NamespaceStorageSize|To reduce storage usage, reduce git repository and git LFS storage.")
         end
+      end
+
+      def limit
+        root_namespace.actual_size_limit
       end
     end
   end

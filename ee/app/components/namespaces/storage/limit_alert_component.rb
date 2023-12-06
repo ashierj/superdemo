@@ -125,6 +125,10 @@ module Namespaces
         end
       end
 
+      def limit
+        root_storage_size.dashboard_limit
+      end
+
       def namespace_has_additional_storage_purchased?
         root_namespace.additional_purchased_storage_size > 0
       end
@@ -149,7 +153,7 @@ module Namespaces
       def free_tier_alert_title
         text_args = {
           namespace_name: root_namespace.name,
-          free_size_limit: formatted(root_namespace.actual_size_limit)
+          free_size_limit: formatted(limit)
         }
 
         s_(
@@ -162,7 +166,7 @@ module Namespaces
           usage_in_percent: used_storage_percentage(root_storage_size.usage_ratio),
           namespace_name: root_namespace.name,
           used_storage: formatted(root_storage_size.current_size),
-          storage_limit: formatted(root_storage_size.limit)
+          storage_limit: formatted(limit)
         }
 
         s_(
