@@ -77,7 +77,6 @@ export default {
     </div>
     <gl-empty-state
       v-else
-      class="gl-w-half gl-mx-auto"
       :svg-path="emptyStateSvgPath"
       :svg-height="null"
       :title="title"

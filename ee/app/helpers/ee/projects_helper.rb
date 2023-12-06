@@ -216,7 +216,7 @@ module EE
           project: { id: project.id, name: project.name },
           project_full_path: project.full_path,
           vulnerabilities_export_endpoint: expose_path(api_v4_security_projects_vulnerability_exports_path(id: project.id)),
-          empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
+          empty_state_svg_path: image_path('illustrations/empty-state/empty-dashboard-md.svg'),
           security_dashboard_empty_svg_path: image_path('illustrations/empty-state/empty-secure-md.svg'),
           no_vulnerabilities_svg_path: image_path('illustrations/empty-state/empty-search-md.svg'),
           new_project_pipeline_path: new_project_pipeline_path(project),

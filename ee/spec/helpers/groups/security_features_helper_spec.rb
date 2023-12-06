@@ -76,7 +76,7 @@ RSpec.describe Groups::SecurityFeaturesHelper do
         projects_endpoint: "http://localhost/api/v4/groups/#{group.id}/projects",
         group_full_path: group.full_path,
         no_vulnerabilities_svg_path: helper.image_path('illustrations/empty-state/empty-search-md.svg'),
-        empty_state_svg_path: helper.image_path('illustrations/security-dashboard-empty-state.svg'),
+        empty_state_svg_path: helper.image_path('illustrations/empty-state/empty-dashboard-md.svg'),
         security_dashboard_empty_svg_path: helper.image_path('illustrations/empty-state/empty-secure-md.svg'),
         vulnerabilities_export_endpoint: "/api/v4/security/groups/#{group.id}/vulnerability_exports",
         can_admin_vulnerability: 'true',
