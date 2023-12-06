@@ -10,5 +10,5 @@
       = _('Prevent users from performing write operations while GitLab maintenance is in progress.')
       = link_to _('Learn more.'), help_page_path('administration/maintenance_mode/index'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content
-    #js-maintenance-mode-settings{ data: { "maintenance-enabled" => @application_setting.maintenance_mode,
+    #js-maintenance-mode-settings{ data: { "maintenance-enabled" => @application_setting.maintenance_mode.to_s,
       "banner-message" => @application_setting.maintenance_mode_message } }
