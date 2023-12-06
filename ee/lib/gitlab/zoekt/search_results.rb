@@ -209,7 +209,7 @@ module Gitlab
       end
 
       def yield_each_zoekt_search_result(response, preload_method, total_count)
-        return [[], total_count] if total_count == 0
+        return [[], total_count] if total_count == 0 || response.blank?
 
         project_ids = response.pluck(:project_id).uniq # rubocop:disable CodeReuse/ActiveRecord
         projects = Project.with_route.id_in(project_ids)

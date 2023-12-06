@@ -59,6 +59,13 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 5
     end
 
+    it 'returns empty result when request is out of page range' do
+      results = described_class.new(user, 'use.*egex', limit_project_ids, node_id: node_id)
+      blobs_page = results.objects('blobs', page: 256, per_page: 2)
+
+      expect(blobs_page).to be_empty
+    end
+
     it 'limits to the zoekt count limit' do
       stub_const("#{described_class}::ZOEKT_COUNT_LIMIT", 2)
 
