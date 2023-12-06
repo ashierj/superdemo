@@ -7,6 +7,9 @@ For example:
    contains specs which test the `Query.currentUser.workspaces` field in the GraphQL API schema.
 - `ee/spec/requests/api/graphql/remote_development/workspace`
    contains specs which test the `Query.workspace` field in the GraphQL API schema.
+- `ee/spec/requests/api/graphql/remote_development/workspaces`
+  contains specs which test the `Query.workspaces` field in the GraphQL API schema (note that
+  only admins may use this field).
 
 The `shared.rb` file in the root contains RSpec shared contexts and examples used by all
 specs in this directory.

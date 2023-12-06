@@ -43,16 +43,16 @@ module RemoteDevelopment
     end
 
     scope :forced_to_include_all_resources, -> { where(force_include_all_resources: true) }
+    scope :by_user_ids, ->(ids) { where(user_id: ids) }
     scope :by_project_ids, ->(ids) { where(project_id: ids) }
-    scope :with_actual_states, ->(actual_states) { where(actual_state: actual_states) }
+    scope :by_agent_ids, ->(ids) { where(cluster_agent_id: ids) }
+    scope :by_actual_states, ->(actual_states) { where(actual_state: actual_states) }
     scope :without_terminated, -> do
       where.not(
         desired_state: RemoteDevelopment::Workspaces::States::TERMINATED,
         actual_state: RemoteDevelopment::Workspaces::States::TERMINATED
       )
     end
-
-    scope :ordered_by_id, -> { order(:id) }
 
     before_save :touch_desired_state_updated_at, if: ->(workspace) do
       workspace.new_record? || workspace.desired_state_changed?

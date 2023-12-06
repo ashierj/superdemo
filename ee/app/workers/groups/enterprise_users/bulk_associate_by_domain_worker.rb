@@ -17,8 +17,6 @@ module Groups
         return unless group
         return unless group.domain_verification_available?
 
-        return unless Feature.enabled?(:enterprise_users_automatic_claim, group)
-
         User.select(:id)
           .with_email_domain(pages_domain.domain)
           .each_batch(of: 100) do |users|

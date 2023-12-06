@@ -19,8 +19,6 @@ module Groups
         group = pages_domain.root_group
         return unless group
 
-        return unless Feature.enabled?(:enterprise_users_automatic_claim, group)
-
         Groups::EnterpriseUsers::AssociateService.new(group: group, user: user).execute
       end
     end

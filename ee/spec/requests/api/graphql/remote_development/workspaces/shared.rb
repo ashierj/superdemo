@@ -2,10 +2,14 @@
 
 require_relative '../shared'
 
-RSpec.shared_examples 'a fully working Query.workspaces query' do
+RSpec.shared_context 'for a Query.workspaces query' do
   include GraphqlHelpers
 
-  include_context "with authorized user as developer on workspace's project"
+  let_it_be(:authorized_user) { create(:admin) }
+
+  # Only instance admins may use this query, all other users, even workspace owners, will get an empty result
+  let_it_be(:workspace_owner) { workspace.user }
+  let_it_be(:unauthorized_user) { workspace_owner }
 
   let(:fields) do
     <<~QUERY
@@ -19,5 +23,7 @@ RSpec.shared_examples 'a fully working Query.workspaces query' do
 
   subject { graphql_data.dig('workspaces', 'nodes') }
 
-  it_behaves_like 'multiple workspaces query'
+  before do
+    workspace.project.add_developer(workspace_owner)
+  end
 end

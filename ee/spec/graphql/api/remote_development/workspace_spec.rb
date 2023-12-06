@@ -2,6 +2,13 @@
 
 require 'spec_helper'
 
+#################################################################################################################
+#
+# NOTE: This spec only contains minimal coverage of core authorization policy behavior via GitlabSchema.execute.
+#       See requests specs under ee/spec/requests/api/graphql/remote_development/... for more extensive coverage.
+#
+#################################################################################################################
+
 RSpec.describe 'workspaces', feature_category: :remote_development do
   let_it_be(:group) { create(:group, :private) }
   let(:result) { execute['data'] }

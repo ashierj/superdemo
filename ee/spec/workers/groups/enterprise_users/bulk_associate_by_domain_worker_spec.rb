@@ -166,14 +166,6 @@ RSpec.describe Groups::EnterpriseUsers::BulkAssociateByDomainWorker, :saas, feat
 
             include_examples 'does not do anything'
           end
-
-          context 'when enterprise_users_automatic_claim FF is disabled' do
-            before do
-              stub_feature_flags(enterprise_users_automatic_claim: false)
-            end
-
-            include_examples 'does not do anything'
-          end
         end
       end
     end

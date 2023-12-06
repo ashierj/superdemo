@@ -948,35 +948,6 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
     end
   end
 
-  context 'Members' do
-    describe '#new_group_member_with_confirmation' do
-      let(:added_user) { create(:user) }
-      let(:group) { create(:group) }
-
-      around do |example|
-        perform_enqueued_jobs do
-          example.run
-        end
-      end
-
-      before do
-        reset_delivered_emails!
-        added_user.user_detail.update!(provisioned_by_group_id: group.id)
-      end
-
-      context 'when enterprise_users_automatic_claim FF is disabled' do
-        before do
-          stub_feature_flags(enterprise_users_automatic_claim: false)
-        end
-
-        it 'sends a notification' do
-          group.add_guest(added_user)
-          should_only_email(added_user)
-        end
-      end
-    end
-  end
-
   context 'IncidentManagement' do
     let_it_be(:user) { create(:user) }
 

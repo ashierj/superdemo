@@ -11,29 +11,38 @@ module Resolvers
       argument :ids, [::Types::GlobalIDType[::RemoteDevelopment::Workspace]],
         required: false,
         description:
-          'Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`.'
+          'Filter workspaces by workspace ids. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`.'
 
       argument :project_ids, [::Types::GlobalIDType[Project]],
         required: false,
-        description: 'Filter workspaces by project id.'
+        description: 'Filter workspaces by project ids.'
+
+      argument :agent_ids, [::Types::GlobalIDType[::Clusters::Agent]],
+        required: false,
+        description: 'Filter workspaces by agent ids.'
 
       argument :include_actual_states, [GraphQL::Types::String],
         required: false,
-        description: 'Includes all workspaces that match any of the actual states.'
+        deprecated: { reason: 'Use actual_states instead', milestone: '16.7' },
+        description: 'Filter workspaces by actual states.'
+
+      argument :actual_states, [GraphQL::Types::String],
+        required: false,
+        description: 'Filter workspaces by actual states.'
 
       def resolve(**args)
         unless License.feature_available?(:remote_development)
           raise_resource_not_available_error! "'remote_development' licensed feature is not available"
         end
 
-        ::RemoteDevelopment::WorkspacesForUserFinder.new(
-          user: current_user,
-          params: {
-            ids: resolve_ids(args[:ids]),
-            project_ids: resolve_ids(args[:project_ids]),
-            include_actual_states: args[:include_actual_states]
-          }
-        ).execute
+        ::RemoteDevelopment::WorkspacesFinder.execute(
+          current_user: current_user,
+          user_ids: [current_user.id],
+          ids: resolve_ids(args[:ids]).map(&:to_i),
+          project_ids: resolve_ids(args[:project_ids]).map(&:to_i),
+          agent_ids: resolve_ids(args[:agent_ids]).map(&:to_i),
+          actual_states: args[:actual_states] || args[:include_actual_states] || []
+        )
       end
     end
   end
