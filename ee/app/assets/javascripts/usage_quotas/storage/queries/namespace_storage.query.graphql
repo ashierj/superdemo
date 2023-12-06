@@ -11,7 +11,6 @@ query getNamespaceStorageStatistics(
 ) {
   namespace(fullPath: $fullPath) {
     id
-    name
     storageSizeLimit
     actualRepositorySizeLimit
     additionalPurchasedStorageSize
@@ -49,10 +48,7 @@ query getNamespaceStorageStatistics(
         avatarUrl
         webUrl
         name
-        repositorySizeExcess
-        actualRepositorySizeLimit
         statistics {
-          commitCount
           storageSize
           costFactoredStorageSize
           repositorySize
