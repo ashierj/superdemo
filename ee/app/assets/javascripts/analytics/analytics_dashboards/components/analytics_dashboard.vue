@@ -27,7 +27,7 @@ import {
 import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
 
-const HIDE_DATE_RANGE_FILTER = [BUILT_IN_VALUE_STREAM_DASHBOARD];
+const HIDE_DASHBOARD_FILTERS = [BUILT_IN_VALUE_STREAM_DASHBOARD];
 
 export default {
   name: 'AnalyticsDashboard',
@@ -106,8 +106,8 @@ export default {
     currentDashboardIsVsd() {
       return this.currentDashboard?.slug === BUILT_IN_VALUE_STREAM_DASHBOARD;
     },
-    showDateRangeFilter() {
-      return !HIDE_DATE_RANGE_FILTER.includes(this.currentDashboard?.slug);
+    showDashboardFilters() {
+      return !HIDE_DASHBOARD_FILTERS.includes(this.currentDashboard?.slug);
     },
     shouldFetchLegacyYamlConfiguration() {
       // NOTE: If there is no pointer project configured, we won't have a YAML file to fetch.
@@ -323,7 +323,8 @@ export default {
         :date-range-limit="0"
         :sync-url-filters="!isNewDashboard"
         :is-new-dashboard="isNewDashboard"
-        :show-date-range-filter="showDateRangeFilter"
+        :show-date-range-filter="showDashboardFilters"
+        :show-anon-users-filter="showDashboardFilters"
         :changes-saved="changesSaved"
         :title-validation-error="titleValidationError"
         @save="saveDashboard"
