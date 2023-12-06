@@ -2648,8 +2648,40 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#can_group_owner_disable_two_factor?', :saas do
+  describe '#managed_by_group?', :saas do
     let_it_be(:group) { create(:group) }
+
+    using RSpec::Parameterized::TableSyntax
+
+    where(:domain_verification_availabe_for_group, :user_is_enterprise_user_of_the_group, :expected_value) do
+      false | false | false
+      false | true  | false
+      true  | false | false
+      true  | true  | true
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(domain_verification: domain_verification_availabe_for_group)
+
+        user.user_detail.enterprise_group_id = user_is_enterprise_user_of_the_group ? group.id : -42
+      end
+
+      it "returns #{params[:expected_value]}" do
+        expect(user.managed_by_group?(group)).to eq expected_value
+      end
+    end
+
+    context 'when group passed is nil' do
+      it 'returns false' do
+        expect(user.managed_by_group?(nil)).to eq false
+      end
+    end
+  end
+
+  describe '#managed_by_user?', :saas do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:unrelated_to_user_group) { create(:group) }
     let_it_be(:current_user) { create(:user) }
 
     using RSpec::Parameterized::TableSyntax
@@ -2673,31 +2705,45 @@ RSpec.describe User, feature_category: :system_access do
 
         if current_user_is_group_owner
           group.add_owner(current_user)
+          unrelated_to_user_group.add_owner(current_user)
         else
           group.add_maintainer(current_user)
+          unrelated_to_user_group.add_maintainer(current_user)
         end
       end
 
       it "returns #{params[:expected_value]}" do
-        expect(user.can_group_owner_disable_two_factor?(group, current_user)).to eq expected_value
+        expect(user.managed_by_user?(current_user, group: group)).to eq expected_value
+      end
+
+      context 'when group is not explicitly passed' do
+        it "automatically identifies enterprise_group and returns #{params[:expected_value]}" do
+          expect(user.managed_by_user?(current_user)).to eq expected_value
+        end
+      end
+
+      context 'when group passed is not related to the user' do
+        it 'returns false' do
+          expect(user.managed_by_user?(current_user, group: unrelated_to_user_group)).to eq false
+        end
       end
     end
 
     context 'when group passed is nil' do
       it 'returns false' do
-        expect(user.can_group_owner_disable_two_factor?(nil, current_user)).to eq false
+        expect(user.managed_by_user?(current_user, group: nil)).to eq false
       end
     end
 
     context 'when current_user passed is nil' do
       it 'returns false' do
-        expect(user.can_group_owner_disable_two_factor?(group, nil)).to eq false
+        expect(user.managed_by_user?(nil, group: group)).to eq false
       end
     end
 
-    context 'when group and current_user passed are nil' do
+    context 'when current_user and group passed are nil' do
       it 'returns false' do
-        expect(user.can_group_owner_disable_two_factor?(nil, nil)).to eq false
+        expect(user.managed_by_user?(nil, group: nil)).to eq false
       end
     end
   end

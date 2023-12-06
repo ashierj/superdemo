@@ -25,7 +25,7 @@ module EE
       expose :can_unban?, as: :can_unban
 
       expose :can_disable_two_factor do |member|
-        member.user&.two_factor_enabled? & member.user&.can_group_owner_disable_two_factor?(group, current_user)
+        member.user&.two_factor_enabled? & member.user&.managed_by_user?(current_user, group: group)
       end
 
       expose :banned do |member|
