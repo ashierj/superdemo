@@ -112,6 +112,11 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
           expect { find_and_update }.to change { Identity.count }.by(1)
         end
 
+        it 'sends user confirmation email' do
+          expect { find_and_update }
+            .to have_enqueued_mail(DeviseMailer, :confirmation_instructions)
+        end
+
         context 'when a verified pages domain matches the user email domain', :saas do
           before do
             stub_licensed_features(domain_verification: true)
@@ -120,6 +125,11 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
 
           it 'confirms the user' do
             expect(find_and_update).to be_confirmed
+          end
+
+          it 'does not send user confirmation email' do
+            expect { find_and_update }
+              .not_to have_enqueued_mail(DeviseMailer, :confirmation_instructions)
           end
         end
 
@@ -138,11 +148,6 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
           it 'creates the user with correct projects_limit attribute' do
             expect(find_and_update.projects_limit).to eq(20)
           end
-        end
-
-        it 'does not send user confirmation email' do
-          expect { find_and_update }
-            .not_to have_enqueued_mail(DeviseMailer, :confirmation_instructions)
         end
       end
 

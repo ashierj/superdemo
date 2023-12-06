@@ -55,13 +55,6 @@ RSpec.describe Emails::EnterpriseUsers, feature_category: :user_management do
 
         is_expected.to have_text_part_content(user.email)
         is_expected.to have_html_part_content(user.email)
-
-        is_expected.not_to have_text_part_content(
-          'As this is a newly created account, to get started, click the link below to confirm your account.'
-        )
-        is_expected.not_to have_html_part_content(
-          'As this is a newly created account, to get started, click the link below to confirm your account.'
-        )
       end
 
       context 'when enterprise user is unconfirmed' do
@@ -73,15 +66,6 @@ RSpec.describe Emails::EnterpriseUsers, feature_category: :user_management do
 
         it 'has the correct subject and body' do
           is_expected.to have_subject 'Enterprise User Account on GitLab'
-
-          is_expected.to have_text_part_content(
-            'As this is a newly created account, to get started, click the link below to confirm your account.'
-          )
-          is_expected.to have_text_part_content(user.confirmation_token)
-          is_expected.to have_html_part_content(
-            'As this is a newly created account, to get started, click the link below to confirm your account.'
-          )
-          is_expected.to have_html_part_content(user.confirmation_token)
         end
       end
     end
