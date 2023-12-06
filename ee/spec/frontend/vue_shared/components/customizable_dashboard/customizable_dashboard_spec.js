@@ -8,6 +8,7 @@ import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
+import AnonUsersFilter from 'ee/vue_shared/components/customizable_dashboard/filters/anon_users_filter.vue';
 import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/filters/date_range_filter.vue';
 import {
   GRIDSTACK_MARGIN,
@@ -26,6 +27,7 @@ import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable
 import {
   NEW_DASHBOARD,
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
+  EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
 } from 'ee/analytics/analytics_dashboards/constants';
 import {
   TEST_VISUALIZATION,
@@ -121,6 +123,7 @@ describe('CustomizableDashboard', () => {
   const findSaveButton = () => wrapper.findByTestId('dashboard-save-btn');
   const findCancelButton = () => wrapper.findByTestId('dashboard-cancel-edit-btn');
   const findFilters = () => wrapper.findByTestId('dashboard-filters');
+  const findAnonUsersFilter = () => wrapper.findComponent(AnonUsersFilter);
   const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findVisualizationDrawer = () => wrapper.findComponent(AvailableVisualizationsDrawer);
@@ -547,59 +550,130 @@ describe('CustomizableDashboard', () => {
     });
   });
 
-  describe('when the date range filter is enabled and configured', () => {
+  describe('dashboard filters', () => {
     const defaultFilters = buildDefaultDashboardFilters('');
 
-    describe('by default', () => {
-      beforeEach(() => {
-        loadCSSFile.mockResolvedValue();
-
-        createWrapper({ showDateRangeFilter: true, syncUrlFilters: true, defaultFilters });
-      });
-
-      it('shows the date range filter and passes the default options and filters', () => {
-        expect(findDateRangeFilter().props()).toMatchObject({
-          startDate: defaultFilters.startDate,
-          endDate: defaultFilters.endDate,
-          defaultOption: defaultFilters.dateRangeOption,
-          dateRangeLimit: 0,
-        });
-      });
-
-      it('synchronizes the filters with the URL', () => {
-        expect(findUrlSync().props()).toMatchObject({
-          historyUpdateMethod: HISTORY_REPLACE_UPDATE_METHOD,
-          query: filtersToQueryParams(defaultFilters),
-        });
-      });
-
-      it('sets the panel filters to the default date range', () => {
-        expect(findPanels().at(0).props().filters).toStrictEqual(defaultFilters);
-      });
-
-      it('updates the panel filters when the date range is changed', async () => {
-        await findDateRangeFilter().vm.$emit('change', mockDateRangeFilterChangePayload);
-
-        expect(findPanels().at(0).props().filters).toStrictEqual(mockDateRangeFilterChangePayload);
-      });
-    });
-
-    describe.each([0, 12, 31])('when given a date range limit of %d', (dateRangeLimit) => {
+    describe('when showDateRangeFilter is false', () => {
       beforeEach(() => {
         loadCSSFile.mockResolvedValue();
 
         createWrapper({
-          showDateRangeFilter: true,
+          showDateRangeFilter: false,
           syncUrlFilters: true,
           defaultFilters,
-          dateRangeLimit,
+          dateRangeLimit: 0,
         });
       });
 
-      it('passes the date range limit to the date range filter', () => {
-        expect(findDateRangeFilter().props()).toMatchObject({
-          dateRangeLimit,
+      it('does not show the filters', () => {
+        expect(findDateRangeFilter().exists()).toBe(false);
+        expect(findAnonUsersFilter().exists()).toBe(false);
+      });
+    });
+
+    describe('when the date range filter is enabled and configured', () => {
+      describe('by default', () => {
+        beforeEach(() => {
+          loadCSSFile.mockResolvedValue();
+
+          createWrapper({ showDateRangeFilter: true, syncUrlFilters: true, defaultFilters });
         });
+
+        it('does not show the anon users filter', () => {
+          expect(findAnonUsersFilter().exists()).toBe(false);
+        });
+
+        it('shows the date range filter and passes the default options and filters', () => {
+          expect(findDateRangeFilter().props()).toMatchObject({
+            startDate: defaultFilters.startDate,
+            endDate: defaultFilters.endDate,
+            defaultOption: defaultFilters.dateRangeOption,
+            dateRangeLimit: 0,
+          });
+        });
+
+        it('synchronizes the filters with the URL', () => {
+          expect(findUrlSync().props()).toMatchObject({
+            historyUpdateMethod: HISTORY_REPLACE_UPDATE_METHOD,
+            query: filtersToQueryParams(defaultFilters),
+          });
+        });
+
+        it('sets the panel filters to the default date range', () => {
+          expect(findPanels().at(0).props().filters).toStrictEqual(defaultFilters);
+        });
+
+        it('updates the panel filters when the date range is changed', async () => {
+          await findDateRangeFilter().vm.$emit('change', mockDateRangeFilterChangePayload);
+
+          expect(findPanels().at(0).props().filters).toMatchObject(
+            mockDateRangeFilterChangePayload,
+          );
+        });
+      });
+
+      describe.each([0, 12, 31])('when given a date range limit of %d', (dateRangeLimit) => {
+        beforeEach(() => {
+          loadCSSFile.mockResolvedValue();
+
+          createWrapper({
+            showDateRangeFilter: true,
+            syncUrlFilters: true,
+            defaultFilters,
+            dateRangeLimit,
+          });
+        });
+
+        it('passes the date range limit to the date range filter', () => {
+          expect(findDateRangeFilter().props()).toMatchObject({
+            dateRangeLimit,
+          });
+        });
+      });
+    });
+
+    describe('filtering anonymous users', () => {
+      beforeEach(() => {
+        loadCSSFile.mockResolvedValue();
+
+        createWrapper({
+          showAnonUsersFilter: true,
+          syncUrlFilters: true,
+          defaultFilters,
+          dateRangeLimit: 0,
+        });
+      });
+
+      it('does not show the date range filter', () => {
+        expect(findDateRangeFilter().exists()).toBe(false);
+      });
+
+      it('sets the default filter on the anon users filter component', () => {
+        expect(findAnonUsersFilter().props('value')).toBe(defaultFilters.filterAnonUsers);
+      });
+
+      it('updates the panel filters when anon users are filtered out', async () => {
+        expect(findPanels().at(0).props().filters.filterAnonUsers).toBe(false);
+
+        await findAnonUsersFilter().vm.$emit('change', true);
+
+        expect(findPanels().at(0).props().filters.filterAnonUsers).toBe(true);
+      });
+
+      it(`tracks the "${EVENT_LABEL_EXCLUDE_ANONYMISED_USERS}" event when excluding anon users`, async () => {
+        await findAnonUsersFilter().vm.$emit('change', true);
+
+        expect(trackingSpy).toHaveBeenCalledWith(
+          expect.any(String),
+          EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
+          expect.any(Object),
+        );
+      });
+
+      it(`does not track "${EVENT_LABEL_EXCLUDE_ANONYMISED_USERS}" event including anon users`, async () => {
+        await findAnonUsersFilter().vm.$emit('change', false);
+
+        expect(trackingSpy).not.toHaveBeenCalled();
       });
     });
   });
@@ -684,6 +758,7 @@ describe('CustomizableDashboard', () => {
 
     it('does not show the filters', () => {
       expect(findDateRangeFilter().exists()).toBe(false);
+      expect(findAnonUsersFilter().exists()).toBe(false);
     });
 
     describe('and the user clicks on the "Add visualization" button', () => {

@@ -12,7 +12,10 @@ import { InternalEvents } from '~/tracking';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
-import { EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER } from 'ee/analytics/analytics_dashboards/constants';
+import {
+  EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
+  EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
+} from 'ee/analytics/analytics_dashboards/constants';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import PanelsBase from './panels_base.vue';
 import {
@@ -35,6 +38,7 @@ export default {
   name: 'CustomizableDashboard',
   components: {
     DateRangeFilter: () => import('./filters/date_range_filter.vue'),
+    AnonUsersFilter: () => import('./filters/anon_users_filter.vue'),
     GlButton,
     GlFormInput,
     GlIcon,
@@ -64,6 +68,11 @@ export default {
       default: 0,
     },
     showDateRangeFilter: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    showAnonUsersFilter: {
       type: Boolean,
       required: false,
       default: false,
@@ -117,7 +126,7 @@ export default {
       return this.cssLoaded && this.mounted;
     },
     showFilters() {
-      return this.showDateRangeFilter && !this.editing;
+      return !this.editing && (this.showDateRangeFilter || this.showAnonUsersFilter);
     },
     queryParams() {
       return this.showFilters ? filtersToQueryParams(this.filters) : {};
@@ -407,6 +416,16 @@ export default {
         endDate,
       };
     },
+    setAnonymousUsersFilter(filterAnonUsers) {
+      this.filters = {
+        ...this.filters,
+        filterAnonUsers,
+      };
+
+      if (filterAnonUsers) {
+        this.trackEvent(EVENT_LABEL_EXCLUDE_ANONYMISED_USERS);
+      }
+    },
     toggleVisualizationDrawer() {
       this.visualizationDrawerOpen = !this.visualizationDrawerOpen;
     },
@@ -513,7 +532,7 @@ export default {
           <section
             v-if="showFilters"
             data-testid="dashboard-filters"
-            class="gl-display-flex gl-pt-4 gl-px-3 gl-justify-content-space-between"
+            class="gl-display-flex gl-pt-4 gl-pb-3 gl-px-3 gl-flex-direction-column gl-md-flex-direction-row gl-gap-5"
           >
             <date-range-filter
               v-if="showDateRangeFilter"
@@ -522,6 +541,11 @@ export default {
               :end-date="filters.endDate"
               :date-range-limit="dateRangeLimit"
               @change="setDateRangeFilter"
+            />
+            <anon-users-filter
+              v-if="showAnonUsersFilter"
+              :value="filters.filterAnonUsers"
+              @change="setAnonymousUsersFilter"
             />
           </section>
           <url-sync

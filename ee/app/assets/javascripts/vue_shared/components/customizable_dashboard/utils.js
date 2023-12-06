@@ -10,6 +10,7 @@ import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
 import {
   convertObjectPropsToCamelCase,
   convertObjectPropsToSnakeCase,
+  parseBoolean,
 } from '~/lib/utils/common_utils';
 import {
   DATE_RANGE_OPTIONS,
@@ -32,9 +33,12 @@ export const dateRangeOptionToFilter = ({ startDate, endDate, key }) => ({
 const DEFAULT_FILTER = dateRangeOptionToFilter(DATE_RANGE_OPTIONS[DEFAULT_SELECTED_OPTION_INDEX]);
 
 export const buildDefaultDashboardFilters = (queryString) => {
-  const { dateRangeOption: optionKey, startDate, endDate } = convertObjectPropsToCamelCase(
-    queryToObject(queryString, { gatherArrays: true }),
-  );
+  const {
+    dateRangeOption: optionKey,
+    startDate,
+    endDate,
+    filterAnonUsers,
+  } = convertObjectPropsToCamelCase(queryToObject(queryString, { gatherArrays: true }));
 
   const customDateRange = isCustomOption(optionKey);
 
@@ -45,10 +49,11 @@ export const buildDefaultDashboardFilters = (queryString) => {
     // Override date range when selected option is custom date range
     ...(customDateRange && { startDate: parsePikadayDate(startDate) }),
     ...(customDateRange && { endDate: parsePikadayDate(endDate) }),
+    filterAnonUsers: parseBoolean(filterAnonUsers),
   };
 };
 
-export const filtersToQueryParams = ({ dateRangeOption, startDate, endDate }) => {
+export const filtersToQueryParams = ({ dateRangeOption, startDate, endDate, filterAnonUsers }) => {
   const customDateRange = isCustomOption(dateRangeOption);
 
   return convertObjectPropsToSnakeCase({
@@ -56,6 +61,8 @@ export const filtersToQueryParams = ({ dateRangeOption, startDate, endDate }) =>
     // Clear the date range unless the custom date range is selected
     startDate: customDateRange ? formatDate(startDate, ISO_SHORT_FORMAT) : null,
     endDate: customDateRange ? formatDate(endDate, ISO_SHORT_FORMAT) : null,
+    // Clear the anon users filter unless truthy
+    filterAnonUsers: filterAnonUsers || null,
   });
 };
 

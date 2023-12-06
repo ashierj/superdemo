@@ -96,9 +96,10 @@ export default {
 
 <template>
   <div
-    class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-gap-3 gl-w-full gl-sm-w-auto"
+    class="gl-display-flex gl-sm-flex-direction-row gl-gap-3 gl-w-full gl-sm-w-auto"
+    :class="{ 'gl-flex-direction-column': selectedOption.showDateRangePicker }"
   >
-    <gl-dropdown :text="selectedOption.text">
+    <gl-dropdown class="gl-w-full gl-sm-w-auto" :text="selectedOption.text">
       <gl-dropdown-item
         v-for="(option, idx) in $options.DATE_RANGE_OPTIONS"
         :key="idx"
@@ -107,23 +108,25 @@ export default {
         {{ option.text }}
       </gl-dropdown-item>
     </gl-dropdown>
-    <gl-daterange-picker
-      v-if="selectedOption.showDateRangePicker"
-      v-model="dateRange"
-      :default-start-date="dateRange.startDate"
-      :default-end-date="dateRange.endDate"
-      :default-max-date="$options.TODAY"
-      :max-date-range="dateRangeLimit"
-      :to-label="__('To')"
-      :from-label="__('From')"
-      :tooltip="dateRangeTooltip"
-      same-day-selection
-    />
-    <gl-icon
-      v-gl-tooltip
-      :title="s__('Analytics|Dates and times are displayed in the UTC timezone')"
-      name="information-o"
-      class="gl-align-self-center gl-text-gray-500"
-    />
+    <div class="gl-display-flex gl-gap-3">
+      <gl-daterange-picker
+        v-if="selectedOption.showDateRangePicker"
+        v-model="dateRange"
+        :default-start-date="dateRange.startDate"
+        :default-end-date="dateRange.endDate"
+        :default-max-date="$options.TODAY"
+        :max-date-range="dateRangeLimit"
+        :to-label="__('To')"
+        :from-label="__('From')"
+        :tooltip="dateRangeTooltip"
+        same-day-selection
+      />
+      <gl-icon
+        v-gl-tooltip
+        :title="s__('Analytics|Dates and times are displayed in the UTC timezone')"
+        name="information-o"
+        class="gl-align-self-end gl-mb-3 gl-text-gray-500 gl-min-w-5"
+      />
+    </div>
   </div>
 </template>

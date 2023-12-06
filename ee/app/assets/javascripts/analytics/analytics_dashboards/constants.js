@@ -43,6 +43,8 @@ export const EVENTS_TABLE_NAME = 'TrackedEvents';
 export const SESSIONS_TABLE_NAME = 'Sessions';
 export const RETURNING_USERS_TABLE_NAME = 'ReturningUsers';
 
+export const TRACKED_EVENTS_KEY = 'trackedevents';
+
 export const ANALYTICS_FIELD_CATEGORIES = [
   {
     name: s__('Analytics|Pages'),
@@ -189,3 +191,5 @@ export const EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD = 'user_viewed_custom_dashboard
 
 export const EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER = 'user_viewed_visualization_designer';
 export const EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION = 'user_created_custom_visualization';
+
+export const EVENT_LABEL_EXCLUDE_ANONYMISED_USERS = 'exclude_anonymised_users';

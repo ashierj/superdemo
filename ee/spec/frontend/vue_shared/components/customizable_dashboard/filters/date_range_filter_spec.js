@@ -71,6 +71,10 @@ describe('DateRangeFilter', () => {
       );
       expect(tooltip).toBeDefined();
     });
+
+    it('does not have the class "gl-flex-direction-column"', () => {
+      expect(wrapper.classes()).not.toContain('gl-flex-direction-column');
+    });
   });
 
   describe('with a default option', () => {
@@ -91,6 +95,12 @@ describe('DateRangeFilter', () => {
 
       beforeEach(() => {
         createWrapper({ startDate, endDate });
+      });
+
+      it('adds the class "gl-flex-direction-column" when a custom date range is selected', async () => {
+        await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+
+        expect(wrapper.classes()).toContain('gl-flex-direction-column');
       });
 
       it('does not emit a new date range when the option shows the date range picker', async () => {
