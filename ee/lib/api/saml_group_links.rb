@@ -41,11 +41,16 @@ module API
         requires 'saml_group_name', type: String, desc: 'The name of a SAML group'
         requires 'access_level', type: Integer, values: Gitlab::Access.all_values,
           desc: 'Level of permissions for the linked SA group'
+        optional 'member_role_id', type: Integer, desc: 'The ID of the Member Role for the linked SA group'
       end
       post ":id/saml_group_links" do
         group = find_group(params[:id])
 
         unauthorized! unless can?(current_user, :admin_saml_group_links, group)
+
+        unless group.custom_roles_enabled? && ::Feature.enabled?(:custom_roles_for_saml_group_links)
+          params.delete(:member_role_id)
+        end
 
         service = ::GroupSaml::SamlGroupLinks::CreateService.new(
           current_user: current_user,
