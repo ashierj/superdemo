@@ -5,11 +5,11 @@ module Members
     delegate { @subject.namespace }
 
     condition(:custom_roles_allowed) do
-      @subject.namespace&.custom_roles_enabled?
+      ::License.feature_available?(:custom_roles)
     end
 
-    rule { ~custom_roles_allowed }.policy do
-      prevent_all
+    rule { admin & custom_roles_allowed }.policy do
+      enable :admin_member_role
     end
   end
 end

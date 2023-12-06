@@ -80,6 +80,10 @@ module EE
         @user.belongs_to_paid_namespace?
       end
 
+      condition(:custom_roles_allowed) do
+        ::License.feature_available?(:custom_roles)
+      end
+
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
 
       condition(:remote_development_feature_licensed) do
@@ -108,6 +112,10 @@ module EE
       rule { admin & runner_performance_insights_available }.enable :read_jobs_statistics
 
       rule { admin & service_accounts_available }.enable :admin_service_accounts
+
+      rule { admin & custom_roles_allowed }.policy do
+        enable :admin_member_role
+      end
 
       rule { ~anonymous }.policy do
         enable :view_productivity_analytics

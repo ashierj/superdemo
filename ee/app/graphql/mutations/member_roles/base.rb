@@ -3,6 +3,8 @@
 module Mutations
   module MemberRoles
     class Base < ::Mutations::BaseMutation
+      authorize :admin_member_role
+
       field :member_role, ::Types::MemberRoles::MemberRoleType,
         description: 'Updated member role.', null: true
 

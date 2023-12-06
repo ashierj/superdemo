@@ -74,7 +74,7 @@ RSpec.describe Gitlab::CodeOwners::Loader, feature_category: :source_code_manage
         expect(loader.entries).to contain_exactly(expected_entry, other_entry)
       end
 
-      it 'performs 8 queries for users and groups' do
+      it 'performs 10 queries for users and groups' do
         test_group = create(:group, path: 'test-group')
         test_group.add_developer(create(:user))
 
@@ -84,12 +84,15 @@ RSpec.describe Gitlab::CodeOwners::Loader, feature_category: :source_code_manage
         create(:project_group_link, project: project, group: test_group)
         create(:project_group_link, project: project, group: another_group)
 
-        # - 2 queries for users
-        # - 1 for the emails to later divide them across the entries
-        # - 2 for groups with joined routes and users
-        # - 3 for loading the users for the parent group(s)
-        #
-        expect { loader.entries }.not_to exceed_query_limit(8)
+        # 1 for users matching conditions
+        # 3 for emails
+        # 2 for routes to find routes.source_id of groups matching paths
+        # 1 for groups belonging to the above routes
+        # 1 for preloading routes of the above groups
+        # 1 for members
+        # 1 for users
+        # Total = 10
+        expect { loader.entries }.not_to exceed_query_limit(10)
       end
     end
 
