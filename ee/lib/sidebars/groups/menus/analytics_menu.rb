@@ -5,10 +5,10 @@ module Sidebars
     module Menus
       class AnalyticsMenu < ::Sidebars::Menu
         include Gitlab::Utils::StrongMemoize
+        include ::Groups::AnalyticsDashboardHelper
 
         override :configure_menu_items
         def configure_menu_items
-          add_item(dashboards_menu_item)
           add_item(dashboards_analytics_menu_item)
           add_item(cycle_analytics_menu_item)
           add_item(ci_cd_analytics_menu_item)
@@ -188,44 +188,28 @@ module Sidebars
           end
         end
 
-        def show_dashboards_menu_item?
-          can?(context.current_user, :read_group_analytics_dashboards, context.group)
-        end
-
-        def dashboards_menu_item
+        def dashboards_analytics_menu_item
           menu_item_id = :analytics_dashboards
 
-          unless show_dashboards_menu_item?
+          unless group_analytics_dashboard_available?(context.current_user, context.group)
             return ::Sidebars::NilMenuItem.new(item_id: menu_item_id)
+          end
+
+          link = group_analytics_dashboards_path(context.group)
+          unless ::Feature.enabled?(:group_analytics_dashboards, context.group)
+            link = value_streams_dashboard_group_analytics_dashboards_path(context.group)
           end
 
           ::Sidebars::MenuItem.new(
             title: _('Analytics dashboards'),
-            link: value_streams_dashboard_group_analytics_dashboards_path(context.group),
-            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
-            active_routes: { path: 'groups/analytics/dashboards#value_streams_dashboard' },
-            item_id: menu_item_id
-          )
-        end
-
-        def show_analytics_dashboards?
-          ::Feature.enabled?(:group_analytics_dashboards, context.group) &&
-            context.group.licensed_feature_available?(:group_level_analytics_dashboard) &&
-            can?(context.current_user, :read_group_analytics_dashboards, context.group)
-        end
-
-        def dashboards_analytics_menu_item
-          unless show_analytics_dashboards?
-            return ::Sidebars::NilMenuItem.new(item_id: :dashboards_analytics)
-          end
-
-          ::Sidebars::MenuItem.new(
-            title: context.is_super_sidebar ? _('Application analytics') : _('Dashboards'),
-            link: group_analytics_dashboards_path(context.group),
+            link: link,
             super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             container_html_options: { class: 'shortcuts-group-dashboards-analytics' },
-            active_routes: { path: 'groups/analytics/dashboards#index' },
-            item_id: :dashboards_analytics
+            active_routes: { path: %w[
+              groups/analytics/dashboards#index
+              groups/analytics/dashboards#value_streams_dashboard
+            ] },
+            item_id: menu_item_id
           )
         end
         strong_memoize_attr :dashboards_analytics_menu_item

@@ -5736,6 +5736,9 @@ msgstr ""
 msgid "Analytics|Users"
 msgstr ""
 
+msgid "Analytics|Value Streams Dashboard"
+msgstr ""
+
 msgid "Analytics|View available dashboards"
 msgstr ""
 
@@ -5878,9 +5881,6 @@ msgid "Application"
 msgstr ""
 
 msgid "Application ID"
-msgstr ""
-
-msgid "Application analytics"
 msgstr ""
 
 msgid "Application limits saved successfully"
@@ -15409,9 +15409,6 @@ msgid "DashboardProjects|All"
 msgstr ""
 
 msgid "DashboardProjects|Personal"
-msgstr ""
-
-msgid "Dashboards"
 msgstr ""
 
 msgid "Dashboard|%{firstProject} and %{secondProject}"
