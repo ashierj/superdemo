@@ -3,8 +3,7 @@
 module API
   class MemberRoles < ::API::Base
     before { authenticate! }
-    before { authorize_admin_group }
-    before { not_found! unless user_group.custom_roles_enabled? }
+    before { authorize_admin_member_role! }
 
     feature_category :system_access
 

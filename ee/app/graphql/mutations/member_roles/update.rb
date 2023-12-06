@@ -5,8 +5,6 @@ module Mutations
     class Update < Base
       graphql_name 'MemberRoleUpdate'
 
-      authorize :admin_group_member
-
       argument :id, ::Types::GlobalIDType[::MemberRole],
         required: true,
         description: 'ID of the member role to mutate.'
