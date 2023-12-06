@@ -42,6 +42,12 @@ RSpec.describe Gitlab::Ci::Reports::Security::Locations::ContainerScanning do
           'registry.gitlab.com/group/project/tmp:glibc'
         ],
         [
+          'registry.gitlab.com/group/project/tmp:38960416',
+          nil,
+          false,
+          'registry.gitlab.com/group/project/tmp:glibc'
+        ],
+        [
           'registry.gitlab.com/group/project/feature:5b1a4a921d7a50c3757aae3f7df2221878775af4',
           'registry.gitlab.com/group/project/master:ec301f43f14a2b477806875e49cfc4d3fa0d22c3',
           true,
