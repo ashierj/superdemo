@@ -101,8 +101,11 @@ module EE
         params_ee << :enforce_ssh_certificates if current_group&.ssh_certificates_available?
         params_ee << :code_suggestions if ai_assist_ui_enabled?
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
-        params_ee << :product_analytics_enabled
-        params_ee << :experiment_features_enabled if experiment_settings_allowed?
+
+        if experiment_settings_allowed?
+          params_ee << :product_analytics_enabled
+          params_ee << :experiment_features_enabled
+        end
       end
     end
 

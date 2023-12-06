@@ -93,7 +93,7 @@ module Namespaces
       end
 
       def free_storage_limit
-        limit = root_namespace.actual_limits.storage_size_limit.megabytes
+        limit = ::Namespaces::Storage::RootSize.new(root_namespace).dashboard_limit
         number_to_human_size(limit, precision: 0)
       end
 
