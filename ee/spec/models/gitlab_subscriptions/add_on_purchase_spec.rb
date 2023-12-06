@@ -326,19 +326,19 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
   describe '#delete_ineligible_user_assignments_in_batches!' do
     let(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
 
-    let_it_be(:user_1) { create(:user) }
-    let_it_be(:user_2) { create(:user) }
+    let_it_be(:eligible_user) { create(:user) }
+    let_it_be(:ineligible_user) { create(:user) }
 
     subject(:result) { add_on_purchase.delete_ineligible_user_assignments_in_batches! }
 
     context 'with assigned_users records' do
       before do
-        add_on_purchase.assigned_users.create!(user: user_1)
-        add_on_purchase.assigned_users.create!(user: user_2)
+        add_on_purchase.assigned_users.create!(user: eligible_user)
+        add_on_purchase.assigned_users.create!(user: ineligible_user)
       end
 
       it 'removes only ineligible user assignments' do
-        add_on_purchase.namespace.add_guest(user_1) # user_1 still eligible
+        add_on_purchase.namespace.add_guest(eligible_user)
 
         expect(add_on_purchase.reload.assigned_users.count).to eq(2)
 
@@ -346,7 +346,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
           expect(result).to eq(1)
         end.to change { add_on_purchase.reload.assigned_users.count }.by(-1)
 
-        expect(add_on_purchase.reload.assigned_users.where(user: user_1).count).to eq(1)
+        expect(add_on_purchase.reload.assigned_users.where(user: eligible_user).count).to eq(1)
       end
 
       it 'accepts batch_size and deletes the assignments in batch' do
@@ -358,19 +358,19 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
       end
 
       it 'expires the cache keys for the ineligible users', :use_clean_rails_redis_caching do
-        user_1_cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user_1.id)
-        user_2_cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: user_2.id)
-        Rails.cache.write(user_1_cache_key, true, expires_in: 1.hour)
-        Rails.cache.write(user_2_cache_key, true, expires_in: 1.hour)
+        eligible_user_cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: eligible_user.id)
+        ineligible_user_cache_key = format(User::CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: ineligible_user.id)
+        Rails.cache.write(eligible_user_cache_key, true, expires_in: 1.hour)
+        Rails.cache.write(ineligible_user_cache_key, true, expires_in: 1.hour)
 
-        add_on_purchase.namespace.add_guest(user_1) # user_1 still eligible
+        add_on_purchase.namespace.add_guest(eligible_user)
 
         expect(add_on_purchase.reload.assigned_users.count).to eq(2)
 
         expect { expect(result).to eq(1) }
           .to change { add_on_purchase.reload.assigned_users.count }.by(-1)
-          .and change { Rails.cache.read(user_2_cache_key) }.from(true).to(nil)
-          .and not_change { Rails.cache.read(user_1_cache_key) }
+          .and change { Rails.cache.read(ineligible_user_cache_key) }.from(true).to(nil)
+          .and not_change { Rails.cache.read(eligible_user_cache_key) }
       end
 
       context 'when the add_on_purchase has no namespace' do
@@ -378,20 +378,40 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
           add_on_purchase.update_attribute(:namespace, nil)
         end
 
-        it { is_expected.to eq(0) }
+        context 'when all assigned users are eligible' do
+          it { is_expected.to eq(0) }
+        end
+
+        context 'when there are ineligible users' do
+          it 'removes only ineligible user assignments' do
+            ineligible_user.block!
+
+            expect(add_on_purchase.reload.assigned_users.count).to eq(2)
+
+            expect_next_instance_of(::GitlabSubscriptions::SelfManaged::AddOnEligibleUsersFinder) do |finder|
+              expect(finder).to receive(:execute).and_call_original
+            end
+
+            expect do
+              expect(result).to eq(1)
+            end.to change { add_on_purchase.reload.assigned_users.count }.by(-1)
+
+            expect(add_on_purchase.reload.assigned_users.where(user: eligible_user).count).to eq(1)
+          end
+        end
       end
     end
 
     context 'with no assigned_users records' do
       it { is_expected.to eq(0) }
-    end
 
-    context 'when add_on_purchase does not have namespace' do
-      before do
-        add_on_purchase.update!(namespace: nil)
+      context 'when add_on_purchase does not have namespace' do
+        before do
+          add_on_purchase.update!(namespace: nil)
+        end
+
+        it { is_expected.to eq(0) }
       end
-
-      it { is_expected.to eq(0) }
     end
   end
 end
