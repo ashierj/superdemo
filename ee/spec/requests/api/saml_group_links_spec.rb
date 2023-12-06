@@ -9,18 +9,21 @@ RSpec.describe API::SamlGroupLinks, api: true, feature_category: :system_access 
   let_it_be(:user) { create(:user) }
   let(:current_user) { nil }
 
-  let_it_be(:group_with_saml_group_links) do
-    group = create(:group)
-    group.saml_group_links.create!(saml_group_name: "saml-group1", access_level: ::Gitlab::Access::GUEST)
-    group.saml_group_links.create!(saml_group_name: "saml-group2", access_level: ::Gitlab::Access::GUEST)
-    group.saml_group_links.create!(saml_group_name: "saml-group3", access_level: ::Gitlab::Access::GUEST)
-    group
+  let_it_be(:group_with_saml_group_links) { create(:group) }
+  let_it_be(:member_role) do
+    create(:member_role, namespace: group_with_saml_group_links, base_access_level: ::Gitlab::Access::GUEST)
   end
 
   let_it_be(:saml_provider) { create(:saml_provider, group: group_with_saml_group_links, enabled: true) }
   let_it_be(:group_id) { group_with_saml_group_links.id }
 
-  before do
+  before_all do
+    group_with_saml_group_links.saml_group_links.create!(saml_group_name: "saml-group1",
+      access_level: ::Gitlab::Access::GUEST)
+    group_with_saml_group_links.saml_group_links.create!(saml_group_name: "saml-group2",
+      access_level: ::Gitlab::Access::GUEST)
+    group_with_saml_group_links.saml_group_links.create!(saml_group_name: "saml-group3",
+      access_level: ::Gitlab::Access::GUEST, member_role_id: member_role.id)
     group_with_saml_group_links.add_owner owner
     group_with_saml_group_links.add_member user, Gitlab::Access::DEVELOPER
   end
@@ -151,6 +154,39 @@ RSpec.describe API::SamlGroupLinks, api: true, feature_category: :system_access 
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response['name']).to eq('Test group')
             expect(json_response['access_level']).to eq(::Gitlab::Access::GUEST)
+          end
+        end
+
+        context 'when providing a member_role_id', :aggregate_failures, feature_category: :permissions do
+          let(:params) { super().merge(member_role_id: member_role.id) }
+
+          context 'when custom roles are not enabled' do
+            it 'adds the saml group link without the provided `member_role_id`' do
+              subject
+              expect(json_response.keys).not_to include(:member_role_id)
+            end
+          end
+
+          context 'when custom roles are enabled' do
+            before do
+              stub_licensed_features(group_saml: true, saml_group_sync: true, custom_roles: true)
+            end
+
+            it 'adds the saml group link with the provided `member_role_id`' do
+              subject
+              expect(json_response['member_role_id']).to eq(member_role.id)
+            end
+
+            context 'when the `custom_roles_for_saml_group_links` feature flag is disabled' do
+              before do
+                stub_feature_flags(custom_roles_for_saml_group_links: false)
+              end
+
+              it 'adds the saml group link without the provided `member_role_id`' do
+                subject
+                expect(json_response.keys).not_to include(:member_role_id)
+              end
+            end
           end
         end
 

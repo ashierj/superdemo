@@ -1,0 +1,8 @@
+---
+name: custom_roles_for_saml_group_links
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138678
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/433522
+milestone: "16.7"
+type: development
+group: group::authorization
+default_enabled: false
