@@ -21,35 +21,6 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
     end
   end
 
-  describe '#reverify_all_button' do
-    subject { helper.reverify_all_button(count, 10001) }
-
-    context 'when one project' do
-      let!(:count) { 1 }
-
-      it 'returns correct button' do
-        is_expected.to have_button 'Reverify all'
-        is_expected.to include("Reverify project")
-      end
-    end
-
-    context 'when ten projects' do
-      let!(:count) { 10 }
-
-      it 'returns correct button' do
-        is_expected.to include("Reverify all 10 projects")
-      end
-    end
-
-    context 'when 10,000+ projects' do
-      let!(:count) { 10001 }
-
-      it 'returns correct button' do
-        is_expected.to include("Reverify all 10,000+ projects")
-      end
-    end
-  end
-
   describe '#replicable_types' do
     subject(:names) { helper.replicable_types.map { |t| t[:name_plural] } }
 

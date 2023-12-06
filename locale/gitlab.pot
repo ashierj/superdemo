@@ -21661,12 +21661,6 @@ msgstr ""
 msgid "Geo|Reverify all"
 msgstr ""
 
-msgid "Geo|Reverify all %{projects_count} projects"
-msgstr ""
-
-msgid "Geo|Reverify project"
-msgstr ""
-
 msgid "Geo|Review replication status, and resynchronize and reverify items with the primary site."
 msgstr ""
 
@@ -21773,9 +21767,6 @@ msgid "Geo|This GitLab instance is subscribed to the %{insufficient_license} tie
 msgstr ""
 
 msgid "Geo|This will %{action} %{replicableType}. It may take some time to complete. Are you sure you want to continue?"
-msgstr ""
-
-msgid "Geo|This will reverify all projects. It may take some time to complete. Are you sure you want to continue?"
 msgstr ""
 
 msgid "Geo|Time in seconds"
