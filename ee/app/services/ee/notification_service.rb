@@ -47,10 +47,6 @@ module EE
       changed_iteration_resource_email(issue, new_iteration, current_user)
     end
 
-    def new_group_member_with_confirmation(group_member)
-      mailer.provisioned_member_access_granted_email(group_member.id).deliver_later
-    end
-
     def notify_oncall_users_of_alert(users, alert)
       track_usage_event(:i_incident_management_oncall_notification_sent, users.map(&:id))
 

@@ -433,34 +433,6 @@ RSpec.describe Notify, feature_category: :shared do
     end
   end
 
-  describe 'new user was created via saml' do
-    let(:group_member) { create(:group_member, user: create(:user, :unconfirmed)) }
-    let(:group) { group_member.source }
-    let(:recipient) { group_member.user }
-
-    subject { described_class.provisioned_member_access_granted_email(group_member.id) }
-
-    it_behaves_like 'an email sent from GitLab'
-    it_behaves_like 'it should not have Gmail Actions links'
-    it_behaves_like 'a user cannot unsubscribe through footer link'
-    it_behaves_like 'appearance header and footer enabled'
-    it_behaves_like 'appearance header and footer not enabled'
-
-    it 'delivers mail to user email' do
-      expect(subject).to deliver_to(recipient.email)
-    end
-
-    it 'contains all the useful information' do
-      is_expected.to have_subject 'Welcome to GitLab'
-      is_expected.to have_body_text group.name
-      is_expected.to have_body_text group.web_url
-      is_expected.to have_body_text recipient.username
-      is_expected.to have_body_text recipient.email
-      is_expected.to have_body_text 'To get started, click the link below to confirm your account'
-      is_expected.to have_body_text recipient.confirmation_token
-    end
-  end
-
   describe 'merge request reviews' do
     let!(:review) { create(:review, project: project, merge_request: merge_request) }
     let!(:review_summary) { create(:merge_request_review_llm_summary, review: review) }

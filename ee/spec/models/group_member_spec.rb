@@ -350,44 +350,6 @@ RSpec.describe GroupMember, feature_category: :groups_and_projects do
     end
   end
 
-  context 'group member welcome email', :sidekiq_inline, :saas do
-    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
-
-    let(:user) { create(:user) }
-
-    context 'when enterprise_users_automatic_claim FF is disabled' do
-      before do
-        stub_feature_flags(enterprise_users_automatic_claim: false)
-      end
-
-      context 'when user is provisioned by group' do
-        before do
-          user.user_detail.update!(provisioned_by_group_id: group.id)
-        end
-
-        it 'schedules the welcome email with confirmation' do
-          expect_next_instance_of(NotificationService) do |notification|
-            expect(notification).to receive(:new_group_member_with_confirmation)
-            expect(notification).not_to receive(:new_group_member)
-          end
-
-          group.add_developer(user)
-        end
-      end
-
-      context 'when user is not provisioned by group' do
-        it 'schedules plain welcome to the group email' do
-          expect_next_instance_of(NotificationService) do |notification|
-            expect(notification).to receive(:new_group_member)
-            expect(notification).not_to receive(:new_group_member_with_confirmation)
-          end
-
-          group.add_developer(user)
-        end
-      end
-    end
-  end
-
   describe '#provisioned_by_this_group?' do
     let_it_be(:group) { create(:group) }
 

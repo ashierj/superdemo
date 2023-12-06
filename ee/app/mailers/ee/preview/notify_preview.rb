@@ -47,10 +47,6 @@ module EE
           ).message
         end
 
-        def new_group_member_with_confirmation_email
-          ::Notify.provisioned_member_access_granted_email(member.id).message
-        end
-
         def user_associated_with_enterprise_group_email
           cleanup do
             associate_user_with_enterprise_group(user, group)
