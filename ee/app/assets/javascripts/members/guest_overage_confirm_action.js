@@ -9,28 +9,39 @@ import {
   overageModalInfoWarning,
 } from './constants';
 
-const shouldShowOverageModal = (currentAccessIntValue, dropdownValue) => {
-  if (
-    currentAccessIntValue === MEMBER_ACCESS_LEVELS.GUEST &&
-    dropdownValue > MEMBER_ACCESS_LEVELS.GUEST
-  ) {
+/**
+ * Shows overage modal if the user's current access level is MINIMAL or GUEST.
+ * It saves network requests.
+ *
+ * @param { Number } oldAccessLevel
+ */
+const shouldShowOverageModal = (oldAccessLevel) => {
+  if (gon.features.showOverageOnRolePromotion && oldAccessLevel <= MEMBER_ACCESS_LEVELS.GUEST) {
     return true;
   }
 
   return false;
 };
 
-const getOverageData = async ({ newRoleName, groupPath, memberId, memberType }) => {
+const getOverageData = async ({
+  newRoleName,
+  newMemberRoleId,
+  groupPath,
+  memberId,
+  memberType,
+}) => {
   const defaultClient = createDefaultClient();
   const response = await defaultClient.query({
     query: getBillableUserCountChanges,
     client: 'gitlabClient',
+    fetchPolicy: 'no-cache',
     variables: {
       fullPath: groupPath,
       addGroupId: memberType === 'group' ? memberId : null,
       addUserEmails: [],
       addUserIds: memberType === 'user' ? [memberId] : null,
       role: newRoleName.toUpperCase(),
+      memberRoleId: newMemberRoleId,
     },
   });
 
@@ -53,34 +64,31 @@ const getConfirmContent = ({ subscriptionSeats, newBillableUserCount, groupName 
 };
 
 export const guestOverageConfirmAction = async ({
-  currentRoleValue,
-  newRoleValue,
+  oldAccessLevel,
   newRoleName,
   newMemberRoleId,
   group,
   memberId,
   memberType,
-} = {}) => {
-  if (
-    !gon.features.showOverageOnRolePromotion ||
-    newMemberRoleId !== null || // TODO: this function doesn't support member role assignment yet.
-    !shouldShowOverageModal(currentRoleValue, newRoleValue)
-  ) {
+}) => {
+  if (!shouldShowOverageModal(oldAccessLevel)) {
     return true;
   }
 
   const overageData = await getOverageData({
     newRoleName,
+    newMemberRoleId,
     groupPath: group.path,
     memberId,
     memberType,
   });
 
-  // Allow user to proceed if BE doesn't send the expected response since we don't want this to be blocking.
+  // Allow user to proceed if willIncreaseOverage is false or if the backend doesn't
+  // send the expected response, since we don't want this to be blocking.
   if (
-    !overageData ||
-    overageData.seatsInSubscription === undefined ||
-    overageData.newBillableUserCount === undefined
+    !overageData?.willIncreaseOverage ||
+    overageData?.seatsInSubscription === undefined ||
+    overageData?.newBillableUserCount === undefined
   ) {
     return true;
   }

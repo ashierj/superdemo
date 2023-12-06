@@ -42,8 +42,8 @@ describe('MaxRole', () => {
       provide: {
         namespace: MEMBER_TYPES.user,
         group: {
-          name: '',
-          path: '',
+          name: 'groupname',
+          path: '/grouppath/',
         },
       },
       propsData: {
@@ -210,6 +210,14 @@ describe('MaxRole', () => {
       });
 
       it('does not call updateMemberRole', () => {
+        expect(guestOverageConfirmAction).toHaveBeenCalledWith({
+          oldAccessLevel: 10,
+          newRoleName: 'Reporter',
+          newMemberRoleId: 103,
+          group: { name: 'groupname', path: '/grouppath/' },
+          memberId: 238,
+          memberType: 'user',
+        });
         expect(actions.updateMemberRole).not.toHaveBeenCalled();
       });
 
