@@ -33,6 +33,7 @@ describe('Paid Feature Indicator', () => {
       variant: 'tier',
       icon: 'license-sm',
       iconSize: 'sm',
+      roundIcon: false,
     });
   });
 
