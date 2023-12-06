@@ -61,4 +61,35 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
       end
     end
   end
+
+  context 'for product analytics settings' do
+    before do
+      allow(view).to receive(:ai_assist_ui_enabled?).and_return(true)
+      allow(group).to receive(:licensed_feature_available?).and_call_original
+      allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(true)
+      allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
+    end
+
+    context 'as a sub-group' do
+      it 'renders nothing' do
+        allow(group).to receive(:root?).and_return(false)
+
+        render
+
+        expect(rendered).to render_template('groups/settings/_product_analytics_settings')
+        expect(rendered).not_to have_content(_('Product Analytics'))
+      end
+    end
+
+    context 'as a root group' do
+      it 'renders the product analytics settings' do
+        allow(group).to receive(:root?).and_return(true)
+
+        render
+
+        expect(rendered).to render_template('groups/settings/_product_analytics_settings')
+        expect(rendered).to have_content(_('Product Analytics'))
+      end
+    end
+  end
 end
