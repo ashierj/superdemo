@@ -33,7 +33,7 @@ RSpec.describe 'Query.jobs', feature_category: :continuous_integration do
   context 'when current user is an admin' do
     let_it_be(:current_user) { create(:admin) }
 
-    context "with argument `failure_reason`", feature_category: :runner_fleet do
+    context "with argument `failure_reason`", feature_category: :fleet_visibility do
       let(:query_jobs_args) do
         graphql_args(failure_reason: failure_reason)
       end

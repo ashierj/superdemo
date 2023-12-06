@@ -9,7 +9,7 @@ module ClickHouse
     idempotent!
     queue_namespace :cronjob
     data_consistency :delayed
-    feature_category :runner_fleet
+    feature_category :fleet_visibility
     loggable_arguments 1
 
     def perform(*args)

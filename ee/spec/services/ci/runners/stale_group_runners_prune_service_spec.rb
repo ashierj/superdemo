@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :runner_fleet do
+RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :fleet_visibility do
   let(:service) { described_class.new }
 
   subject(:execute) { service.execute(NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)) }

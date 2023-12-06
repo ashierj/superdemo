@@ -41,7 +41,7 @@ RSpec.describe Ci::JobsFinder, '#execute', feature_category: :continuous_integra
         end
 
         context 'with param `failure_reason` set to :runner_system_failure', :clean_gitlab_redis_shared_state,
-          feature_category: :runner_fleet do
+          feature_category: :fleet_visibility do
           let(:params) { { failure_reason: :runner_system_failure } }
 
           context 'without runner_performance_insights license' do
@@ -110,7 +110,7 @@ RSpec.describe Ci::JobsFinder, '#execute', feature_category: :continuous_integra
         end
 
         context 'with param `failure_reason` not set to :runner_system_failure', :clean_gitlab_redis_shared_state,
-          feature_category: :runner_fleet do
+          feature_category: :fleet_visibility do
           let(:params) { { failure_reason: :runner_unsupported } }
 
           context 'with runner_performance_insights license' do

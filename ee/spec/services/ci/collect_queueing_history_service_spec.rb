@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_mode, feature_category: :runner_fleet do
+RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_mode, feature_category: :fleet_visibility do
   include ClickHouseHelpers
 
   let_it_be(:project) { create(:project) }

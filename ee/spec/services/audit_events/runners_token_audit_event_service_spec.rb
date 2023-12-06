@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::RunnersTokenAuditEventService, feature_category: :runner_fleet do
+RSpec.describe AuditEvents::RunnersTokenAuditEventService, feature_category: :fleet_visibility do
   describe '#security_event' do
     let(:logger) { instance_double(Gitlab::AuditJsonLogger) }
 
