@@ -33,7 +33,7 @@ module Resolvers
         private
 
         def authorize!
-          return unless Gitlab::Saas.feature_available?(:code_suggestions) || !current_user.can_admin_all_resources?
+          return unless gitlab_saas? || !current_user.can_admin_all_resources?
 
           raise_resource_not_available_error!
         end

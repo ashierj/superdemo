@@ -11,6 +11,7 @@ module EE
     include ::Gitlab::Utils::StrongMemoize
 
     include AuditorUserHelper
+    include GitlabSubscriptions::SubscriptionHelper
 
     DEFAULT_ROADMAP_LAYOUT = 'months'
     DEFAULT_GROUP_VIEW = 'details'
@@ -584,7 +585,7 @@ module EE
     end
 
     def eligible_for_self_managed_code_suggestions?
-      return false if ::Gitlab::Saas.feature_available?(:code_suggestions)
+      return false if gitlab_saas?
 
       active? && !bot? && !ghost?
     end
