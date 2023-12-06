@@ -167,15 +167,25 @@ describe('HelpCenter component', () => {
     });
 
     describe('showWhatsNew', () => {
+      let fakeTarget;
       beforeEach(() => {
-        beforeEach(() => {
-          createWrapper({ ...sidebarData, show_version_check: true });
-        });
+        createWrapper({ ...sidebarData, show_version_check: true });
+        fakeTarget = document.createElement('div');
+        fakeTarget.setAttribute('id', 'js-whats-new-app');
+        document.body.append(fakeTarget);
+
         findButton("What's new 5").click();
       });
 
+      afterEach(() => {
+        fakeTarget.remove();
+      });
+
       it('shows the "What\'s new" slideout', () => {
-        expect(toggleWhatsNewDrawer).toHaveBeenCalledWith(expect.any(Object));
+        expect(toggleWhatsNewDrawer).toHaveBeenCalledWith(
+          fakeTarget,
+          sidebarData.whats_new_version_digest,
+        );
       });
 
       it('shows the existing "What\'s new" slideout instance on subsequent clicks', () => {

@@ -177,12 +177,12 @@ export default {
       this.showWhatsNewNotification = false;
 
       if (!this.toggleWhatsNewDrawer) {
-        const appEl = document.getElementById('whats-new-app');
+        const appEl = document.getElementById('js-whats-new-app');
         const { default: toggleWhatsNewDrawer } = await import(
           /* webpackChunkName: 'whatsNewApp' */ '~/whats_new'
         );
         this.toggleWhatsNewDrawer = toggleWhatsNewDrawer;
-        this.toggleWhatsNewDrawer(appEl);
+        this.toggleWhatsNewDrawer(appEl, this.sidebarData.whats_new_version_digest);
       } else {
         this.toggleWhatsNewDrawer();
       }
