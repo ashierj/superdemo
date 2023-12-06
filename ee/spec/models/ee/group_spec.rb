@@ -3191,7 +3191,9 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   end
 
   describe '#sbom_occurrences' do
-    subject { group.sbom_occurrences(with_totals: true) }
+    let(:with_totals) { true }
+
+    subject { group.sbom_occurrences(with_totals: with_totals) }
 
     it { is_expected.to be_empty }
 
@@ -3204,9 +3206,23 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         let!(:sbom_occurrence) { create(:sbom_occurrence, project: project) }
 
         it 'returns occurrences with aggregated ids' do
-          expect(subject).to eq([sbom_occurrence])
-          expect(subject.pluck(:project_count)).to eq([1])
-          expect(subject.pluck(:occurrence_count)).to eq([1])
+          occurrence = subject.first
+
+          expect(occurrence).to eq(sbom_occurrence)
+          expect(occurrence.project_count).to eq(1)
+          expect(occurrence.occurrence_count).to eq(1)
+        end
+
+        context 'without totals' do
+          let(:with_totals) { false }
+
+          it 'does not have counts' do
+            occurrence = subject.first
+
+            expect(occurrence).to eq(sbom_occurrence)
+            expect(occurrence).not_to respond_to(:project_count)
+            expect(occurrence).not_to respond_to(:occurrence_count)
+          end
         end
       end
     end
@@ -3230,14 +3246,14 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       let_it_be(:another_webpack_npm_project) { create(:sbom_occurrence, :npm, project: npm_project, component: webpack, component_version: webpack_v4) }
 
       it 'returns the project count for each component' do
-        expect(subject.pluck(:component_name, :component_version_id, :project_count)).to match_array([
-          [webpack.name, webpack_v4.id, 3]
+        expect(subject).to match_array([
+          an_object_having_attributes(component_name: webpack.name, component_version_id: webpack_v4.id, project_count: 3)
         ])
       end
 
       it 'returns the occurrence count for each component' do
-        expect(subject.pluck(:component_name, :component_version_id, :occurrence_count)).to match_array([
-          [webpack.name, webpack_v4.id, 5]
+        expect(subject).to match_array([
+          an_object_having_attributes(component_name: webpack.name, component_version_id: webpack_v4.id, occurrence_count: 5)
         ])
       end
     end
@@ -3278,20 +3294,20 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
 
       it 'returns the project count for each component' do
-        expect(subject.pluck(:component_name, :component_version_id, :project_count)).to match_array([
-          [bundler.name, bundler_v1.id, 2],
-          [bundler.name, bundler_v2.id, 1],
-          [caddy.name, caddy_v1.id, 1],
-          [webpack.name, webpack_v4.id, 1]
+        expect(subject).to match_array([
+          an_object_having_attributes(component_name: bundler.name, component_version_id: bundler_v1.id, project_count: 2),
+          an_object_having_attributes(component_name: bundler.name, component_version_id: bundler_v2.id, project_count: 1),
+          an_object_having_attributes(component_name: caddy.name, component_version_id: caddy_v1.id, project_count: 1),
+          an_object_having_attributes(component_name: webpack.name, component_version_id: webpack_v4.id, project_count: 1)
         ])
       end
 
       it 'returns the occurrence count for each component' do
-        expect(subject.pluck(:component_name, :component_version_id, :occurrence_count)).to match_array([
-          [bundler.name, bundler_v1.id, 3],
-          [bundler.name, bundler_v2.id, 1],
-          [caddy.name, caddy_v1.id, 1],
-          [webpack.name, webpack_v4.id, 1]
+        expect(subject).to match_array([
+          an_object_having_attributes(component_name: bundler.name, component_version_id: bundler_v1.id, occurrence_count: 3),
+          an_object_having_attributes(component_name: bundler.name, component_version_id: bundler_v2.id, occurrence_count: 1),
+          an_object_having_attributes(component_name: caddy.name, component_version_id: caddy_v1.id, occurrence_count: 1),
+          an_object_having_attributes(component_name: webpack.name, component_version_id: webpack_v4.id, occurrence_count: 1)
         ])
       end
     end
