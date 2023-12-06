@@ -85,6 +85,7 @@ export default {
   mounted() {
     eventHub.$on('epicsListScrolled', this.handleEpicsListScroll);
     this.initMounted();
+    this.$emit('milestonesMounted');
   },
   beforeDestroy() {
     eventHub.$off('epicsListScrolled', this.handleEpicsListScroll);

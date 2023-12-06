@@ -70,8 +70,15 @@ export default {
     },
     sectionContainerStyles() {
       return {
+        height: `calc(100% - ${60 + this.milestonesHeight}px)`,
         width: `${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * this.timeframe.length}px`,
       };
+    },
+    footerMessageHeight() {
+      return document.querySelector('.footer-message')?.getBoundingClientRect().height || 0;
+    },
+    milestonesHeight() {
+      return document.querySelector('.milestones-list-section')?.clientHeight || 0;
     },
     epicsWithAssociatedParents() {
       return this.epics.filter((epic) => {
@@ -92,6 +99,9 @@ export default {
 
       // Return epics with correct parent associations.
       return this.epicsWithAssociatedParents;
+    },
+    scrollBarHeight() {
+      return this.$parent.$el.getBoundingClientRect().height - this.$parent.$el.clientHeight + 1;
     },
   },
   mounted() {
@@ -141,7 +151,7 @@ export default {
         return {
           height: this.isScopedRoadmap
             ? `calc(${this.$root.$el.clientHeight}px - ${offsetTop}px)`
-            : `calc(100vh - ${top}px)`,
+            : `calc(100vh - ${top + this.scrollBarHeight + this.footerMessageHeight}px)`,
         };
       }
       return {};

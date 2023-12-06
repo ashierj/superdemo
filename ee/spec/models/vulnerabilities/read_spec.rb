@@ -618,6 +618,16 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe '.owasp_top_10' do
+    it 'raises ArgumentError for invalid enum value' do
+      expect { described_class.new(owasp_top_10: '123456') }.to raise_error(ArgumentError)
+    end
+
+    it 'accepts nil value' do
+      is_expected.to allow_value(nil).for(:owasp_top_10)
+    end
+  end
+
   private
 
   def create_vulnerability(severity: 7, confidence: 7, report_type: 0)

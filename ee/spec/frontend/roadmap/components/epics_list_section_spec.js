@@ -95,7 +95,7 @@ describe('EpicsListSectionComponent', () => {
 
     describe('sectionContainerStyles', () => {
       it('returns style string for container element based on sectionShellWidth', () => {
-        expect(wrapper.attributes('style')).toBe(
+        expect(wrapper.attributes('style')).toContain(
           `width: ${
             EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * mockTimeframeMonths.length
           }px;`,
@@ -165,7 +165,7 @@ describe('EpicsListSectionComponent', () => {
       });
 
       it('sets style attribute containing `height` on empty row', () => {
-        expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 0px);');
+        expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 1px);');
       });
     });
 
@@ -177,7 +177,7 @@ describe('EpicsListSectionComponent', () => {
       });
 
       it('sets style attribute with `height` on empty row when there epics available to render', () => {
-        expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 0px);');
+        expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 1px);');
       });
     });
 

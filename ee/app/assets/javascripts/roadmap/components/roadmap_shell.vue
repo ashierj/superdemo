@@ -40,6 +40,7 @@ export default {
   data() {
     return {
       containerStyles: {},
+      canCalculateEpicsListHeight: false,
     };
   },
   computed: {
@@ -60,6 +61,9 @@ export default {
           return this.milestones;
       }
     },
+    footerMessageHeight() {
+      return document.querySelector('.footer-message')?.getBoundingClientRect().height || 0;
+    },
   },
   mounted() {
     if (this.isShowingMilestones) {
@@ -79,8 +83,11 @@ export default {
     getContainerStyles() {
       const { top } = this.$el.getBoundingClientRect();
       return {
-        height: this.isScopedRoadmap ? '100%' : `calc(100vh - ${top}px)`,
+        height: this.isScopedRoadmap ? '100%' : `calc(100vh - ${top + this.footerMessageHeight}px)`,
       };
+    },
+    toggleCanCalculateEpicsListHeight() {
+      this.canCalculateEpicsListHeight = true;
     },
   },
 };
@@ -105,8 +112,10 @@ export default {
       :milestones="milestonesToShow"
       :timeframe="timeframe"
       :current-group-id="currentGroupId"
+      @milestonesMounted="toggleCanCalculateEpicsListHeight"
     />
     <epics-list-section
+      :key="canCalculateEpicsListHeight"
       :preset-type="presetType"
       :epics="epics"
       :timeframe="timeframe"
