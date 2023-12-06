@@ -29,7 +29,7 @@ class ProjectFeature < ApplicationRecord
     model_experiments
   ].freeze
 
-  EXPORTABLE_FEATURES = (FEATURES - [:security_and_compliance, :pages]).freeze
+  EXPORTABLE_FEATURES = (FEATURES - [:security_and_compliance, :pages, :metrics_dashboard]).freeze
 
   set_available_features(FEATURES)
 
