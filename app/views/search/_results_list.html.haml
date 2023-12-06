@@ -7,7 +7,7 @@
   = render partial: "search/results/error"
 - elsif @search_objects.blank?
   = render partial: "search/results/empty"
-
+- else
   .section
     - if @scope == 'commits'
       %ul.content-list.commit-list
