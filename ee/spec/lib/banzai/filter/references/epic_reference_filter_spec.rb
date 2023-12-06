@@ -315,9 +315,13 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
 
       # Since we're not batching queries across groups,
       # we have to account for that.
-      # 1 for both groups, 1 for epics in each group == 3
+      # - 1 for routes to find routes.source_id of groups matching paths
+      # - 1 for groups belonging to the above routes
+      # - 1 for preloading routes of the above groups
+      # - 1x2 for epics in each group
+      # Total = 5
       # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/330359
-      max_count = control_count + 2
+      max_count = control_count + 4
 
       expect do
         reference_filter(markdown, context)
