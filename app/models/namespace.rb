@@ -263,8 +263,8 @@ class Namespace < ApplicationRecord
     end
 
     # This should be kept in sync with the frontend filtering in
-    # https://gitlab.com/gitlab-org/gitlab/-/blob/1b9bcfa81db01cabe5239e94eb88fbe499174a22/app/assets/javascripts/gfm_auto_complete.js#L68 and
-    # https://gitlab.com/gitlab-org/gitlab/-/blob/1b9bcfa81db01cabe5239e94eb88fbe499174a22/app/assets/javascripts/gfm_auto_complete.js#L1053
+    # https://gitlab.com/gitlab-org/gitlab/-/blob/5d34e3488faa3982d30d7207773991c1e0b6368a/app/assets/javascripts/gfm_auto_complete.js#L68 and
+    # https://gitlab.com/gitlab-org/gitlab/-/blob/5d34e3488faa3982d30d7207773991c1e0b6368a/app/assets/javascripts/gfm_auto_complete.js#L1053
     def gfm_autocomplete_search(query)
       without_project_namespaces
         .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/420046")
