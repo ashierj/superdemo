@@ -318,3 +318,59 @@ export const parseCustomFileConfiguration = (configuration = {}) => {
     project,
   };
 };
+
+/**
+ * Convert branch exceptions from yaml editor
+ * to list box format
+ * @param item
+ * @param index
+ * @returns {{fullPath: undefined, name: string, value: string}|{fullPath: *, name, value: string}}
+ */
+export const mapExceptionsListBoxItem = (item, index) => {
+  if (!item) return undefined;
+
+  if (typeof item === 'string') {
+    return {
+      value: `${item}_${index}`,
+      name: item,
+      fullPath: '',
+    };
+  }
+
+  const fullPath = item.fullPath || item.full_path || '';
+
+  return {
+    value: `${item.name}@${fullPath}_${index}`,
+    name: item.name,
+    fullPath,
+  };
+};
+
+/**
+ * convert branch and full_path to branch
+ * full format branch-name@fullPath
+ * @param branches
+ * @returns {*}
+ */
+export const mapBranchesToString = (branches) => {
+  return branches
+    .filter(Boolean)
+    .map(({ name = '', fullPath = '', full_path = '' }) => {
+      // eslint-disable-next-line camelcase
+      const path = fullPath || full_path;
+
+      return `${name}${path ? '@' : ''}${path}`;
+    })
+    .filter(Boolean)
+    .join(', ');
+};
+
+/**
+ * Validate branch full format branch-name@fullPath
+ * @param value string input
+ * @returns {boolean}
+ */
+export const validateBranchProjectFormat = (value) => {
+  const branchProjectRegexp = /\S+@\S/;
+  return branchProjectRegexp.test(value);
+};

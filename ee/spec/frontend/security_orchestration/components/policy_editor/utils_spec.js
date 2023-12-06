@@ -9,6 +9,9 @@ import {
   renderMultiSelectText,
   createProjectWithMinimumValues,
   parseCustomFileConfiguration,
+  mapExceptionsListBoxItem,
+  mapBranchesToString,
+  validateBranchProjectFormat,
 } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
@@ -236,6 +239,47 @@ describe('renderMultiSelectText', () => {
       ${{ project: 'path' }}           | ${{ showLinkedFile: true, project: { fullPath: 'path' } }}
     `('should parse custom file path configuration', ({ configuration, expectedOutput }) => {
       expect(parseCustomFileConfiguration(configuration)).toEqual(expectedOutput);
+    });
+  });
+
+  describe('mapExceptionsListBoxItem', () => {
+    const index = 1;
+    it.each`
+      item                                        | expectedResult
+      ${'test'}                                   | ${{ value: 'test_1', name: 'test', fullPath: '' }}
+      ${''}                                       | ${undefined}
+      ${{ name: 'test', full_path: 'full-path' }} | ${{ value: 'test@full-path_1', name: 'test', fullPath: 'full-path' }}
+      ${{ name: 'test', fullPath: 'full-path' }}  | ${{ value: 'test@full-path_1', name: 'test', fullPath: 'full-path' }}
+      ${{ name: 'test', fullPath: undefined }}    | ${{ value: 'test@_1', name: 'test', fullPath: '' }}
+    `('should map exception to list box item', ({ item, expectedResult }) => {
+      expect(mapExceptionsListBoxItem(item, index)).toEqual(expectedResult);
+    });
+  });
+
+  describe('mapBranchesToString', () => {
+    it.each`
+      branches                                 | expectedResult
+      ${[{ name: 'test', fullPath: 'path' }]}  | ${'test@path'}
+      ${[{ name: 'test', full_path: 'path' }]} | ${'test@path'}
+      ${[{ invalid_name: 'name' }]}            | ${''}
+      ${[undefined]}                           | ${''}
+    `('should map branches to string format', ({ branches, expectedResult }) => {
+      expect(mapBranchesToString(branches)).toEqual(expectedResult);
+    });
+  });
+
+  describe('validateBranchProjectFormat', () => {
+    it.each`
+      value          | valid
+      ${'test'}      | ${false}
+      ${'test@path'} | ${true}
+      ${''}          | ${false}
+      ${undefined}   | ${false}
+      ${null}        | ${false}
+      ${'@path'}     | ${false}
+      ${'test@'}     | ${false}
+    `('should validate branch@full_path format', ({ value, valid }) => {
+      expect(validateBranchProjectFormat(value)).toBe(valid);
     });
   });
 });
