@@ -17,7 +17,7 @@ module PackageMetadata
         return logger.error(structured_payload(message: 'Advisory not found.', advisory_id: event.data[:advisory_id]))
       end
 
-      AdvisoryScanService.execute(advisory, global: true)
+      AdvisoryScanService.execute(advisory)
     end
   end
 end
