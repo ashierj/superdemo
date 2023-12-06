@@ -245,7 +245,7 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
         create(:test_report, requirement_issue: requirement_work_item_2)
 
         expect { post_graphql(query, current_user: current_user) }
-          .not_to exceed_all_query_limit(control)
+          .not_to exceed_query_limit(control)
       end
     end
   end
