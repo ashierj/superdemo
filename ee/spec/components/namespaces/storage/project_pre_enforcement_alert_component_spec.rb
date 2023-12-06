@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, feature_category: :consumables_cost_management, type: :component do
+  include NamespaceStorageHelpers
+
   let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }
   let_it_be_with_refind(:user) { create(:user) }
 
@@ -10,9 +12,10 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
+    set_dashboard_limit(group, megabytes: 5_120, enabled: false)
+    set_notification_limit(group, megabytes: 500)
 
     project.add_guest(user)
-    create(:plan_limits, plan: group.root_ancestor.actual_plan, notification_limit: 500)
   end
 
   shared_examples 'dismissible alert' do
@@ -24,7 +27,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
       it 'does not render the alert' do
         render_inline(component)
 
-        expect(page).not_to have_text "A namespace storage limit will soon be enforced"
+        expect(page).not_to have_text "A namespace storage limit of 5 GiB  will soon be enforced"
       end
     end
 
@@ -36,7 +39,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
       it 'does render the alert' do
         render_inline(component)
 
-        expect(page).to have_text "A namespace storage limit will soon be enforced"
+        expect(page).to have_text "A namespace storage limit of 5 GiB will soon be enforced"
       end
     end
 

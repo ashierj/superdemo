@@ -3,6 +3,7 @@
 module Namespaces
   module Storage
     class PreEnforcementAlertComponent < ViewComponent::Base
+      include ActiveSupport::NumberHelper
       include SafeFormatHelper
       include ::Namespaces::CombinedStorageUsers::PreEnforcement
 
@@ -63,16 +64,23 @@ module Namespaces
           namespace_name: root_namespace.name,
           extra_message: paragraph_1_extra_message,
           storage_limit_link_start: Kernel.format('<a href="%{url}" >', { url: storage_limit_docs_link }).html_safe,
-          link_end: "</a>".html_safe
+          link_end: "</a>".html_safe,
+          limit: dashboard_limit
         }.merge(strong_tags)
 
         safe_format(
           s_(
-            "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} will soon " \
+            "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} of %{limit} will soon " \
             "be enforced for the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}"
           ),
           text_args
         )
+      end
+
+      def dashboard_limit
+        limit = Namespaces::Storage::RootSize.new(root_namespace).dashboard_limit
+
+        number_to_human_size(limit, delimiter: ',', precision: 2)
       end
 
       def usage_quotas_nav_instruction

@@ -72,7 +72,7 @@ RSpec.describe 'Project show page', :feature, feature_category: :groups_and_proj
 
     context 'with group namespace' do
       let(:role) { :owner }
-      let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
+      let_it_be_with_refind(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
       before do
         group.add_member(user, role)
