@@ -19,6 +19,9 @@ module PackageMetadata
       @affected_range = affected_range
       @solution = solution
       @fixed_versions = fixed_versions
+      # The field name from the advisory exporter is `distro`, however, the name used in this codebase is
+      # `distro_version`. This field contains both the distro name and version. For example: `debian 12` or
+      # `alpine 3.7`.
       @distro_version = distro
       @versions = versions
       @overridden_advisory_fields = overridden_advisory_fields
