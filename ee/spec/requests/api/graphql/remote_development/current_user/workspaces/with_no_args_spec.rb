@@ -3,16 +3,12 @@
 require 'spec_helper'
 require_relative './shared'
 
-RSpec.describe 'Query.currentUser.workspaces', feature_category: :remote_development do
-  include_context 'with other user'
-
-  let_it_be(:workspace) { create(:workspace) }
-  let_it_be(:authorized_user) { workspace.user }
+RSpec.describe 'Query.currentUser.workspaces (with no arguments)', feature_category: :remote_development do
+  include_context 'with no arguments'
+  include_context 'for a Query.currentUser.workspaces query'
 
   # create workspace owned by different user, to ensure it is not returned by the query
-  let_it_be(:non_matching_workspace) { create(:workspace, user: other_user) }
+  let_it_be(:non_matching_workspace) { create(:workspace, name: 'non-matching-workspace') }
 
-  let(:args) { {} }
-
-  it_behaves_like 'a fully working Query.currentUser.workspaces query'
+  it_behaves_like 'multiple workspaces query'
 end

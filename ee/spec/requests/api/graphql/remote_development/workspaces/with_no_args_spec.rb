@@ -3,16 +3,11 @@
 require 'spec_helper'
 require_relative './shared'
 
-RSpec.describe 'Query.workspaces', feature_category: :remote_development do
-  include_context 'with other user'
+RSpec.describe 'Query.workspaces (with no arguments)', feature_category: :remote_development do
+  include_context 'with no arguments'
+  include_context 'for a Query.workspaces query'
 
-  let_it_be(:workspace) { create(:workspace) }
-  let_it_be(:authorized_user) { workspace.user }
-
-  # create workspace owned by different user, to ensure it is not returned by the query
-  let_it_be(:non_matching_workspace) { create(:workspace, user: other_user) }
-
-  let(:args) { {} }
-
-  it_behaves_like 'a fully working Query.workspaces query'
+  it_behaves_like 'multiple workspaces query',
+    authorized_user_is_admin: true,
+    expected_error_regex: /At least one filter argument must be provided/
 end

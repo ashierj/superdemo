@@ -50,7 +50,7 @@ module RemoteDevelopment
               .with_desired_state_updated_more_recently_than_last_response_to_agent
               .or(agent.workspaces.id_in(workspaces_from_agent_infos_ids))
               .or(agent.workspaces.forced_to_include_all_resources)
-              .ordered_by_id
+              .order_id_asc
           end
         end
       end
