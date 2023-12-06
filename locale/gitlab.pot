@@ -41799,7 +41799,7 @@ msgstr ""
 msgid "Runners|Shared runners are disabled."
 msgstr ""
 
-msgid "Runners|Shared runners will be disabled for all projects and subgroups in this group. If you proceed, you must manually re-enable shared runners in the settings of each project and subgroup."
+msgid "Runners|Shared runners will be disabled for all projects and subgroups in this group."
 msgstr ""
 
 msgid "Runners|Show only inherited"
