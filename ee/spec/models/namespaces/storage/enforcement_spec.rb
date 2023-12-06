@@ -313,4 +313,46 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
       end
     end
   end
+
+  describe '.in_enforcement_rollout?' do
+    let(:gitlab_subscription) { build_stubbed(:gitlab_subscription) }
+    let(:root_namespace) do
+      build_stubbed(
+        :group,
+        gitlab_subscription: gitlab_subscription
+      )
+    end
+
+    subject(:in_enforcement_rollout?) do
+      described_class.in_enforcement_rollout?(root_namespace)
+    end
+
+    where(
+      :enforce_limit,
+      :storage_limit_exclusion,
+      :dashboard_limit_applicable,
+      :enforcement_limit,
+      :storage_size_limit,
+      :result
+    ) do
+      true  | false | false | 10 | 5 | true
+      false | false | false | 10 | 5 | false
+      true  | true  | false | 10 | 5 | false
+      true  | false | true  | 10 | 5 | false
+      true  | false | false | 5  | 5 | false
+    end
+
+    with_them do
+      before do
+        allow(described_class).to receive(:enforce_limit?).and_return(enforce_limit)
+        allow(described_class).to receive(:dashboard_limit_applicable?).and_return(dashboard_limit_applicable)
+        set_dashboard_limit(root_namespace, megabytes: storage_size_limit)
+        set_enforcement_limit(root_namespace, megabytes: enforcement_limit)
+
+        allow(root_namespace).to receive(:storage_limit_exclusion).and_return(storage_limit_exclusion)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
 end
