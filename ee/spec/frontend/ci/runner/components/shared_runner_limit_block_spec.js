@@ -6,7 +6,6 @@ import { trimText } from 'helpers/text_helper';
 describe('Shared Runner Limit Block', () => {
   let wrapper;
 
-  const projectPath = 'h5bp/html5-boilerplate';
   const subscriptionsMoreMinutesUrl = 'https://customers.gitlab.com/buy_pipeline_minutes';
 
   const factory = (options = {}) => {
@@ -21,7 +20,6 @@ describe('Shared Runner Limit Block', () => {
         propsData: {
           quotaUsed: 1000,
           quotaLimit: 4000,
-          projectPath,
           subscriptionsMoreMinutesUrl,
         },
       });
@@ -48,7 +46,6 @@ describe('Shared Runner Limit Block', () => {
         propsData: {
           quotaUsed: 1000,
           quotaLimit: 4000,
-          projectPath,
           subscriptionsMoreMinutesUrl,
         },
       });
