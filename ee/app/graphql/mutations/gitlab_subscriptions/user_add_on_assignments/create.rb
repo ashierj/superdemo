@@ -5,6 +5,7 @@ module Mutations
     module UserAddOnAssignments
       class Create < BaseMutation
         graphql_name 'UserAddOnAssignmentCreate'
+        include ::GitlabSubscriptions::CodeSuggestionsHelper
 
         argument :add_on_purchase_id, ::Types::GlobalIDType[::GitlabSubscriptions::AddOnPurchase],
           required: true, description: 'Global ID of AddOnPurchase to be assigned to.'
@@ -50,9 +51,7 @@ module Mutations
         attr_reader :add_on_purchase, :user_to_be_assigned
 
         def feature_enabled?
-          Feature.enabled?(:hamilton_seat_management, add_on_purchase&.namespace)
-          # Once the FF for SM is merged we should use it for SM instead of hamilton_seat_management
-          # https://gitlab.com/gitlab-org/gitlab/-/issues/433011
+          code_suggestions_available?(add_on_purchase&.namespace)
         end
 
         def create_user_add_on_service
@@ -63,10 +62,6 @@ module Mutations
                           end
 
           service_class.new(add_on_purchase: add_on_purchase, user: user_to_be_assigned)
-        end
-
-        def gitlab_saas?
-          ::Gitlab::Saas.feature_available?(:code_suggestions)
         end
       end
     end

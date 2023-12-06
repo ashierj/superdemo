@@ -8,7 +8,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
       let_it_be(:namespace) { build_stubbed(:group) }
 
       before do
-        stub_saas_features(code_suggestions: true)
+        stub_saas_features(gitlab_saas_subscriptions: true)
       end
 
       context 'when SaaS feature flag is globally enabled' do
@@ -40,7 +40,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
 
     context 'when GitLab is self-managed' do
       before do
-        stub_saas_features(code_suggestions: false)
+        stub_saas_features(gitlab_saas_subscriptions: false)
       end
 
       context 'when self-managed feature flag is enabled' do

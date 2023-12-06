@@ -5,6 +5,7 @@ module Mutations
     module UserAddOnAssignments
       class Remove < BaseMutation
         graphql_name 'UserAddOnAssignmentRemove'
+        include ::GitlabSubscriptions::CodeSuggestionsHelper
 
         argument :add_on_purchase_id, ::Types::GlobalIDType[::GitlabSubscriptions::AddOnPurchase],
           required: true, description: 'Global ID of AddOnPurchase assignment belongs to.'
@@ -54,7 +55,7 @@ module Mutations
         attr_reader :add_on_purchase, :user_to_be_removed
 
         def feature_enabled?
-          Feature.enabled?(:hamilton_seat_management, add_on_purchase&.namespace)
+          code_suggestions_available?(add_on_purchase&.namespace)
         end
 
         def log_event
