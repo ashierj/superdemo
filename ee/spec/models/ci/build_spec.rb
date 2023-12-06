@@ -670,7 +670,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
-  describe '.recently_failed_on_instance_runner', :clean_gitlab_redis_shared_state, feature_category: :runner_fleet do
+  describe '.recently_failed_on_instance_runner', :clean_gitlab_redis_shared_state, feature_category: :fleet_visibility do
     subject(:recently_failed_on_instance_runner) do
       described_class.recently_failed_on_instance_runner(failure_reason)
     end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Types::Ci::RunnerCountableConnectionType, feature_category: :runner_fleet do
+RSpec.describe Types::Ci::RunnerCountableConnectionType, feature_category: :fleet_visibility do
   it 'includes the ee specific fields' do
     expected_fields = %w[jobs_statistics]
 
