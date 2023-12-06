@@ -58,7 +58,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
         expect(find_and_update.provisioned_by_group).to be_nil
       end
 
-      context 'when user attributes are present but the user is not provisioned' do
+      context 'when user attributes are present' do
         before do
           identity.user.update!(can_create_group: false, projects_limit: 10)
 
@@ -68,12 +68,29 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
             )
         end
 
-        it 'does not update the user can_create_group attribute' do
-          expect(find_and_update.can_create_group).to eq(false)
+        context 'when user is managed by group', :saas do
+          before do
+            stub_licensed_features(domain_verification: true)
+            identity.user.user_detail.update!(enterprise_group: group)
+          end
+
+          it 'updates the user can_create_group attribute' do
+            expect(find_and_update.can_create_group).to eq(true)
+          end
+
+          it 'updates the user projects_limit attribute' do
+            expect(find_and_update.projects_limit).to eq(20)
+          end
         end
 
-        it 'does not update the user projects_limit attribute' do
-          expect(find_and_update.projects_limit).to eq(10)
+        context 'when user is not managed by group' do
+          it 'does not update the user can_create_group attribute' do
+            expect(find_and_update.can_create_group).to eq(false)
+          end
+
+          it 'does not update the user projects_limit attribute' do
+            expect(find_and_update.projects_limit).to eq(10)
+          end
         end
       end
 
@@ -132,23 +149,6 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
               .not_to have_enqueued_mail(DeviseMailer, :confirmation_instructions)
           end
         end
-
-        context 'when user attributes are present' do
-          before do
-            auth_hash[:extra][:raw_info] =
-              OneLogin::RubySaml::Attributes.new(
-                'can_create_group' => %w[true], 'projects_limit' => %w[20]
-              )
-          end
-
-          it 'creates the user with correct can_create_group attribute' do
-            expect(find_and_update.can_create_group).to eq(true)
-          end
-
-          it 'creates the user with correct projects_limit attribute' do
-            expect(find_and_update.projects_limit).to eq(20)
-          end
-        end
       end
 
       context 'when a conflicting user already exists' do
@@ -192,12 +192,29 @@ RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_categ
                 )
             end
 
-            it 'updates the user with correct can_create_group attribute' do
-              expect(find_and_update.can_create_group).to eq(true)
+            context 'when user is managed by group', :saas do
+              before do
+                stub_licensed_features(domain_verification: true)
+                user.user_detail.update!(enterprise_group: group)
+              end
+
+              it 'updates the user can_create_group attribute' do
+                expect(find_and_update.can_create_group).to eq(true)
+              end
+
+              it 'updates the user projects_limit attribute' do
+                expect(find_and_update.projects_limit).to eq(20)
+              end
             end
 
-            it 'updates the user with correct projects_limit attribute' do
-              expect(find_and_update.projects_limit).to eq(20)
+            context 'when user is not managed by group' do
+              it 'does not update the user can_create_group attribute' do
+                expect(find_and_update.can_create_group).to eq(false)
+              end
+
+              it 'does not update the user projects_limit attribute' do
+                expect(find_and_update.projects_limit).to eq(10)
+              end
             end
           end
 

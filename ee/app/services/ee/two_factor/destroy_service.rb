@@ -11,7 +11,7 @@ module EE
       def authorized?
         return super unless group
 
-        user&.can_group_owner_disable_two_factor?(group, current_user)
+        user&.managed_by_user?(current_user, group: group)
       end
 
       override :notify_on_success
