@@ -5,8 +5,11 @@ require 'spec_helper'
 RSpec.describe DastScannerProfile, :dynamic_analysis, feature_category: :dynamic_application_security_testing, type: :model do
   subject { create(:dast_scanner_profile) }
 
-  it_behaves_like 'sanitizable', :dast_scanner_profile, %i[name]
+  before do
+    stub_feature_flags(dast_ods_browser_based_scanner: false)
+  end
 
+  it_behaves_like 'sanitizable', :dast_scanner_profile, %i[name]
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
   end
@@ -107,6 +110,20 @@ RSpec.describe DastScannerProfile, :dynamic_analysis, feature_category: :dynamic
         it 'returns a collection of variables with the passive profile', :aggregate_failures do
           expect(collection).to include(key: 'DAST_API_PROFILE', value: 'Quick')
         end
+      end
+    end
+
+    context 'when browser based ods feature flag is enabled' do
+      before do
+        stub_feature_flags(dast_ods_browser_based_scanner: true)
+      end
+
+      it 'adds the browser based scan CI variable with true value' do
+        expect(collection).to include(key: 'DAST_BROWSER_SCAN', value: 'true')
+      end
+
+      it 'removes the DAST_USE_AJAX_SPIDER CI variable' do
+        expect(collection).not_to include(key: 'DAST_USE_AJAX_SPIDER', value: 'true')
       end
     end
   end
