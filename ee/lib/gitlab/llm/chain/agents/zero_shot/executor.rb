@@ -217,7 +217,7 @@ module Gitlab
                   You must always use the following format:
                   Question: the input question you must answer
                   Thought: you should always think about what to do
-                  Action: the action to take, should be one tool from this list or an direct answer (then use DirectAnswer as action): [%<tool_names>s]
+                  Action: the action to take, should be one tool from this list or a direct answer (then use DirectAnswer as action): [%<tool_names>s]
                   Action Input: the input to the action needs to be provided for every action that uses a tool
                   Observation: the result of the actions. If the Action is DirectAnswer never write an Observation, but remember that you're still #{AGENT_NAME}.
 
