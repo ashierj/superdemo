@@ -17,10 +17,6 @@ export default {
       type: Number,
       required: true,
     },
-    projectPath: {
-      type: String,
-      required: true,
-    },
     subscriptionsMoreMinutesUrl: {
       type: String,
       required: false,
