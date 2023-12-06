@@ -14,7 +14,7 @@ module Groups
       before_action do
         push_frontend_feature_flag(:activity_filter_has_mr, @project)
         push_frontend_feature_flag(:activity_filter_has_remediations, @project)
-        push_frontend_feature_flag(:group_level_vulnerability_report_grouping, @project)
+        push_frontend_feature_flag(:group_level_vulnerability_report_grouping, @group)
       end
 
       def index
