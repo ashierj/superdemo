@@ -84,7 +84,7 @@ namespace :gitlab do
       puts " #{marker} (#{count})"
     end
 
-    desc "GitLab | ElasticSearch | Check project indexing status"
+    desc "GitLab | Elasticsearch | Overall indexing status of project repository data (code, commits, and wikis)"
     task index_projects_status: :environment do
       raise 'This task cannot be run on GitLab.com' if Gitlab.com?
 
