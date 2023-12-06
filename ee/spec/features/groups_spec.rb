@@ -55,12 +55,13 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
   describe 'storage pre-enforcement alert', :js do
     let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }
     let_it_be_with_refind(:user) { create(:user) }
-    let_it_be(:storage_banner_text) { "A namespace storage limit will soon be enforced" }
+    let_it_be(:storage_banner_text) { "A namespace storage limit of 5 GiB will soon be enforced" }
 
     before do
       stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
       set_used_storage(group, megabytes: 13)
       set_notification_limit(group, megabytes: 12)
+      set_dashboard_limit(group, megabytes: 5_120, enabled: false)
       group.add_guest(user)
       sign_in(user)
     end

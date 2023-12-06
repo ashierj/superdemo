@@ -798,6 +798,10 @@ RSpec.describe User, feature_category: :system_access do
           expect(user.available_custom_project_templates).to include public_project
         end
 
+        it 'returns internal projects' do
+          expect(user.available_custom_project_templates).to include internal_project
+        end
+
         context 'returns private projects if user' do
           it 'is a member of the project' do
             expect(user.available_custom_project_templates).not_to include private_project
@@ -813,24 +817,6 @@ RSpec.describe User, feature_category: :system_access do
             group.add_developer(user)
 
             expect(user.available_custom_project_templates).to include private_project
-          end
-        end
-
-        context 'returns internal projects if user' do
-          it 'is a member of the project' do
-            expect(user.available_custom_project_templates).not_to include internal_project
-
-            internal_project.add_developer(user)
-
-            expect(user.available_custom_project_templates).to include internal_project
-          end
-
-          it 'is a member of the group' do
-            expect(user.available_custom_project_templates).not_to include internal_project
-
-            group.add_developer(user)
-
-            expect(user.available_custom_project_templates).to include internal_project
           end
         end
 

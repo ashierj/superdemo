@@ -8,7 +8,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
   include NamespaceStorageHelpers
   include FreeUserCapHelpers
 
-  let_it_be(:group) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
+  let_it_be_with_refind(:group) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
   let_it_be_with_refind(:user) { create(:user) }
 
   subject(:component) { described_class.new(context: group, user: user) }
@@ -17,9 +17,10 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
     stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
     set_notification_limit(group, megabytes: 5_000)
     set_used_storage(group, megabytes: 5_100)
+    set_dashboard_limit(group, megabytes: 5_120, enabled: false)
   end
 
-  describe 'when qalifies for combnined users and storage alert' do
+  describe 'when qualifies for combined users and storage alert' do
     let_it_be(:group) do
       create(:group_with_plan, :with_root_storage_statistics, :private, plan: :free_plan,
         name: 'over_users_and_storage')
@@ -34,7 +35,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
     it 'does not render the alert' do
       render_inline(component)
 
-      expect(page).not_to have_text "A namespace storage limit will soon be enforced"
+      expect(page).not_to have_text "A namespace storage limit of 5 GiB will soon be enforced"
     end
   end
 
@@ -110,7 +111,15 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
     it 'indicates the storage limit will be enforced soon in the alert text' do
       render_inline(component)
 
-      expect(page).to have_text "A namespace storage limit will soon be enforced"
+      expect(page).to have_text "A namespace storage limit of 5 GiB will soon be enforced"
+    end
+
+    it 'includes any purchased storage in the alert limit' do
+      set_used_storage(group, megabytes: 16_000)
+      group.additional_purchased_storage_size = 10_240
+      render_inline(component)
+
+      expect(page).to have_text "A namespace storage limit of 15 GiB will soon be enforced"
     end
 
     it 'includes the namespace name in the alert text' do
@@ -148,7 +157,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       it 'does not render the alert' do
         render_inline(component)
 
-        expect(page).not_to have_text "A namespace storage limit will soon be enforced"
+        expect(page).not_to have_text "A namespace storage limit of 5 GiB will soon be enforced"
       end
     end
 
@@ -166,7 +175,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       it 'does render the alert' do
         render_inline(component)
 
-        expect(page).to have_text "A namespace storage limit will soon be enforced"
+        expect(page).to have_text "A namespace storage limit of 5 GiB will soon be enforced"
       end
     end
 

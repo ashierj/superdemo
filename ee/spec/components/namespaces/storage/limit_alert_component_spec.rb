@@ -141,30 +141,35 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
 
   describe '#render?' do
     where(
-      :enforce_namespace_storage_limit,
-      :automatic_purchased_storage_allocation,
       :namespaces_storage_limit,
       :user_present,
       :user_has_access,
+      :enforce_limit,
       :alert_level,
+      :in_enforcement_rollout,
       :user_has_dismissed_alert,
       :should_render
     ) do
-      true  | true  | true  | true  | true  | :error | false | true
-      false | true  | true  | true  | true  | :error | false | false
-      true  | false | true  | true  | true  | :error | false | false
-      true  | true  | false | true  | true  | :error | false | false
-      true  | true  | true  | false | true  | :error | false | false
-      true  | true  | true  | true  | false | :error | false | false
-      true  | true  | true  | true  | true  | :none  | false | false
-      true  | true  | true  | true  | true  | :error | true  | false
+      true  | true  | true  | true  | :error   | false | false | true  # Happy Path
+      false | true  | true  | true  | :error   | false | false | false # namespaces_storage_limit is false
+      true  | false | true  | true  | :error   | false | false | false # user_present is false
+      true  | true  | false | true  | :error   | false | false | false # user_has_access is false
+      true  | true  | true  | false | :error   | false | false | false # enforce_limit is false
+      true  | true  | true  | true  | :none    | false | false | false # alert_level is :none
+      # alert_level is not :none and in_enforcement_rollout is false
+      true  | true  | true  | true  | :warning | false | false | true
+      # alert_level is not :none but in_enforcement_rollout is true
+      true  | true  | true  | true  | :warning | true  | false | false
     end
 
     with_them do
       before do
-        stub_ee_application_setting(enforce_namespace_storage_limit: enforce_namespace_storage_limit)
-        stub_ee_application_setting(automatic_purchased_storage_allocation: automatic_purchased_storage_allocation)
         stub_saas_features(namespaces_storage_limit: namespaces_storage_limit)
+
+        allow(::Namespaces::Storage::Enforcement)
+          .to receive(:in_enforcement_rollout?).and_return(in_enforcement_rollout)
+        allow(::Namespaces::Storage::Enforcement)
+          .to receive(:enforce_limit?).and_return(enforce_limit)
 
         allow(user).to receive(:present?).and_return(user_present)
         allow_next_instance_of(described_class) do |instance|
@@ -176,8 +181,9 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
 
       it 'renders the alert title' do
         render_inline(component)
-        expectation = should_render ? have_content(alert_title) : have_no_content(:all)
-        expect(page).to expectation
+
+        expectation = should_render ? have_content(alert_title) : be_empty
+        expect(page.text).to expectation
       end
     end
 

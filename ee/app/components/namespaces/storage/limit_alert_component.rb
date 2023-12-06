@@ -27,6 +27,7 @@ module Namespaces
         return false unless user_has_access?
         return false unless root_storage_size.enforce_limit?
         return false if alert_level == :none
+        return false if hide_threshold_banner?
 
         !user_has_dismissed_alert?
       end
@@ -93,6 +94,11 @@ module Namespaces
 
       def dismissible?
         !attention_required_alert_level?
+      end
+
+      def hide_threshold_banner?
+        alert_level.in?(%i[warning alert]) &&
+          ::Namespaces::Storage::Enforcement.in_enforcement_rollout?(root_namespace)
       end
 
       def attention_required_alert_level?

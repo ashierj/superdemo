@@ -61,7 +61,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
         end
 
         context 'without storage size check' do
-          it 'does not show alerts' do
+          it 'does show alerts' do
             stub_feature_flags(free_user_cap_without_storage_check: true)
 
             visit_page

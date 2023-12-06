@@ -75,6 +75,16 @@ module Namespaces
         true
       end
 
+      def in_enforcement_rollout?(root_namespace)
+        return false unless enforce_limit?(root_namespace)
+        return false if root_namespace.storage_limit_exclusion.present?
+
+        plan_limit = root_namespace.actual_limits
+        return false if dashboard_limit_applicable?(root_namespace, plan_limit)
+
+        enforceable_storage_limit(root_namespace) > plan_limit.storage_size_limit
+      end
+
       private
 
       def update_pre_enforcement_timestamp(root_namespace)
