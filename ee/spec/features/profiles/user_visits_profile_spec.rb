@@ -13,7 +13,7 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
   end
 
   describe 'storage pre_enforcement banner', :js do
-    let_it_be(:storage_banner_text) { "A namespace storage limit will soon be enforced" }
+    let_it_be(:storage_banner_text) { "A namespace storage limit of 5 GiB will soon be enforced" }
 
     context 'when storage is over the notification limit' do
       let_it_be(:root_storage_statistics) do
@@ -26,6 +26,7 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
 
       before do
         set_notification_limit(user.namespace, megabytes: 500)
+        set_dashboard_limit(user.namespace, megabytes: 5_120, enabled: false)
       end
 
       it 'displays the banner in the profile page' do

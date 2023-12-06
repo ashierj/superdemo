@@ -9,11 +9,13 @@ module NamespaceStorageHelpers
     namespace.root_storage_statistics.update!(storage_size: megabytes.megabytes)
   end
 
-  def set_dashboard_limit(namespace, megabytes:)
-    namespace.gitlab_subscription.hosted_plan.actual_limits.update!(
-      storage_size_limit: megabytes,
-      dashboard_limit_enabled_at: namespace.created_at - 1.day
-    )
+  def set_dashboard_limit(namespace, megabytes:, enabled: true)
+    limits = namespace.actual_limits
+
+    limits.storage_size_limit = megabytes
+    limits.dashboard_limit_enabled_at = namespace.created_at - 1.day if enabled
+
+    limits.save!
   end
 
   def set_notification_limit(namespace, megabytes:)

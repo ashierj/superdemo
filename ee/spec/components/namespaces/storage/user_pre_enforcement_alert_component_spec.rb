@@ -4,6 +4,7 @@ require "spec_helper"
 
 RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, feature_category: :consumables_cost_management, type: :component do
   include ActionView::Helpers::NumberHelper
+  include NamespaceStorageHelpers
   include StorageHelper
 
   let_it_be_with_refind(:user) { create(:user) }
@@ -36,6 +37,7 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, fea
     context 'when a notification limit has been set' do
       before do
         create(:plan_limits, plan: user.namespace.root_ancestor.actual_plan, notification_limit: 500)
+        set_dashboard_limit(user.namespace, megabytes: 5_120, enabled: false)
       end
 
       it 'includes used storage in the alert text' do
@@ -63,7 +65,7 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, fea
         it 'does not render the alert' do
           render_inline(component)
 
-          expect(page).not_to have_text "A namespace storage limit will soon be enforced"
+          expect(page).not_to have_text "A namespace storage limit of 5 GiB will soon be enforced"
         end
       end
 
@@ -80,7 +82,7 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, fea
         it 'does render the alert' do
           render_inline(component)
 
-          expect(page).to have_text "A namespace storage limit will soon be enforced"
+          expect(page).to have_text "A namespace storage limit of 5 GiB will soon be enforced"
         end
       end
     end

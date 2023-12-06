@@ -51943,7 +51943,7 @@ msgstr ""
 msgid "UsageQuota|%{percentageRemaining}%% purchased storage remaining."
 msgstr ""
 
-msgid "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} will soon be enforced for the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}"
+msgid "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} of %{limit} will soon be enforced for the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}"
 msgstr ""
 
 msgid "UsageQuota|Any additional purchased storage will be displayed here."
