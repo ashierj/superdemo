@@ -11,6 +11,7 @@ RSpec.describe AppSec::Dast::Scans::RunService, feature_category: :dynamic_appli
 
   before do
     stub_licensed_features(security_on_demand_scans: true)
+    stub_feature_flags(dast_ods_browser_based_scanner: false)
   end
 
   describe '#execute' do
