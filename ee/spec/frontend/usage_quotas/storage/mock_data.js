@@ -65,7 +65,6 @@ export const mockedNamespaceStorageResponse = {
   data: {
     namespace: {
       id: 'gid://gitlab/Group/84',
-      name: 'wandercatgroup2',
       storageSizeLimit: 0,
       actualRepositorySizeLimit: 10737418240,
       additionalPurchasedStorageSize: 0,
@@ -96,10 +95,7 @@ export const mockedNamespaceStorageResponse = {
             avatarUrl: null,
             webUrl: 'http://gdk.test:3000/wandercatgroup2/not-so-empty-project',
             name: 'not so empty project',
-            repositorySizeExcess: 0,
-            actualRepositorySizeLimit: 10737418240,
             statistics: {
-              commitCount: 1,
               storageSize: 125771,
               costFactoredStorageSize: 12577,
               repositorySize: 20971,
@@ -120,10 +116,7 @@ export const mockedNamespaceStorageResponse = {
             avatarUrl: null,
             webUrl: 'http://gdk.test:3000/wandercatgroup2/not-so-empty-project',
             name: 'not so empty project',
-            repositorySizeExcess: 0,
-            actualRepositorySizeLimit: 10737418240,
             statistics: {
-              commitCount: 1,
               storageSize: 125771,
               costFactoredStorageSize: 12577,
               repositorySize: 20971,
