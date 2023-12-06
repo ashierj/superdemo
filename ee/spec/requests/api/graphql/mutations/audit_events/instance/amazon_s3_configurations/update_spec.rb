@@ -2,12 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events do
+RSpec.describe 'Update instance Amazon S3 configuration', feature_category: :audit_events do
   include GraphqlHelpers
 
-  let_it_be_with_reload(:config) { create(:amazon_s3_configuration) }
-  let_it_be(:group) { config.group }
-  let_it_be(:current_user) { create(:user) }
+  let_it_be_with_reload(:config) { create(:instance_amazon_s3_configuration) }
+  let_it_be(:current_user) { create(:admin) }
   let_it_be(:updated_access_key_xid) { 'AKIA1234RANDOM5678' }
   let_it_be(:updated_secret_access_key) { 'TEST/SECRET/XYZ/PQR' }
   let_it_be(:updated_bucket_name) { 'test-rspec-bucket' }
@@ -15,8 +14,8 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
   let_it_be(:updated_destination_name) { 'updated_destination_name' }
   let_it_be(:config_gid) { global_id_of(config) }
 
-  let(:mutation) { graphql_mutation(:audit_events_amazon_s3_configuration_update, input) }
-  let(:mutation_response) { graphql_mutation_response(:audit_events_amazon_s3_configuration_update) }
+  let(:mutation) { graphql_mutation(:audit_events_instance_amazon_s3_configuration_update, input) }
+  let(:mutation_response) { graphql_mutation_response(:audit_events_instance_amazon_s3_configuration_update) }
 
   let(:input) do
     {
@@ -31,7 +30,7 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
 
   subject(:mutate) { post_graphql_mutation(mutation, current_user: current_user) }
 
-  shared_examples 'a mutation that does not update the configuration' do
+  shared_examples 'a mutation that does not update the instance Amazon S3 configuration' do
     it 'does not update the configuration' do
       expect { mutate }.not_to change { config.reload.attributes }
     end
@@ -46,9 +45,9 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
       stub_licensed_features(external_audit_events: true)
     end
 
-    context 'when current user is a group owner' do
-      before_all do
-        group.add_owner(current_user)
+    context 'when current user is instance admin' do
+      before do
+        allow(Gitlab::Audit::Auditor).to receive(:audit)
       end
 
       it 'updates the configuration' do
@@ -64,7 +63,7 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
       end
 
       it 'audits the update' do
-        Mutations::AuditEvents::AmazonS3Configurations::Update::AUDIT_EVENT_COLUMNS.each do |column|
+        Mutations::AuditEvents::Instance::AmazonS3Configurations::Update::COLUMNS_TO_AUDIT.each do |column|
           message = if column == :secret_access_key
                       "Changed #{column}"
                     else
@@ -72,9 +71,9 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
                     end
 
           expected_hash = {
-            name: Mutations::AuditEvents::AmazonS3Configurations::Update::UPDATE_EVENT_NAME,
+            name: 'instance_amazon_s3_configuration_updated',
             author: current_user,
-            scope: group,
+            scope: an_instance_of(Gitlab::Audit::InstanceScope),
             target: config,
             message: message
           }
@@ -82,7 +81,7 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
           expect(Gitlab::Audit::Auditor).to receive(:audit).once.ordered.with(hash_including(expected_hash))
         end
 
-        subject
+        mutate
       end
 
       context 'when the fields are updated with existing values' do
@@ -97,7 +96,7 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
         it 'does not audit the event' do
           expect(Gitlab::Audit::Auditor).not_to receive(:audit)
 
-          subject
+          mutate
         end
       end
 
@@ -108,12 +107,12 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
           }
         end
 
-        it_behaves_like 'a mutation that does not update the configuration'
+        it_behaves_like 'a mutation that does not update the instance Amazon S3 configuration'
       end
 
       context 'when there is error while updating' do
         before do
-          allow_next_instance_of(Mutations::AuditEvents::AmazonS3Configurations::Update) do |mutation|
+          allow_next_instance_of(Mutations::AuditEvents::Instance::AmazonS3Configurations::Update) do |mutation|
             allow(mutation).to receive(:authorized_find!).with(id: config_gid).and_return(config)
           end
 
@@ -127,38 +126,18 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
           mutate
 
           expect(mutation_response).to include(
-            'amazonS3Configuration' => nil,
+            'instanceAmazonS3Configuration' => nil,
             'errors' => ['error message']
           )
         end
       end
     end
 
-    context 'when current user is a group maintainer' do
-      before_all do
-        group.add_maintainer(current_user)
-      end
+    context 'when current user is not instance admin' do
+      let_it_be(:current_user) { create(:user) }
 
       it_behaves_like 'a mutation on an unauthorized resource'
-      it_behaves_like 'a mutation that does not update the configuration'
-    end
-
-    context 'when current user is a group developer' do
-      before_all do
-        group.add_developer(current_user)
-      end
-
-      it_behaves_like 'a mutation on an unauthorized resource'
-      it_behaves_like 'a mutation that does not update the configuration'
-    end
-
-    context 'when current user is a group guest' do
-      before_all do
-        group.add_guest(current_user)
-      end
-
-      it_behaves_like 'a mutation on an unauthorized resource'
-      it_behaves_like 'a mutation that does not update the configuration'
+      it_behaves_like 'a mutation that does not update the instance Amazon S3 configuration'
     end
   end
 
@@ -168,6 +147,6 @@ RSpec.describe 'Update Amazon S3 configuration', feature_category: :audit_events
     end
 
     it_behaves_like 'a mutation on an unauthorized resource'
-    it_behaves_like 'a mutation that does not update the configuration'
+    it_behaves_like 'a mutation that does not update the instance Amazon S3 configuration'
   end
 end
