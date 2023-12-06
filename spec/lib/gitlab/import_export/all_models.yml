@@ -521,6 +521,7 @@ container_repositories:
 - name
 project:
 - catalog_resource
+- catalog_resource_sync_events
 - catalog_resource_versions
 - ci_components
 - external_status_checks
@@ -1052,6 +1053,7 @@ catalog_resource:
   - project
   - catalog_resource_components
   - catalog_resource_versions
+  - catalog_resource_sync_events
 catalog_resource_versions:
   - project
   - release
