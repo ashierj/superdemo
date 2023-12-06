@@ -26,6 +26,8 @@ export const CONTACT_STATE_ACTIVE = 'active';
 export const CONTACTS_ADD_COMMAND = '/add_contacts';
 export const CONTACTS_REMOVE_COMMAND = '/remove_contacts';
 
+const useMentionsBackendFiltering = window.gon.features?.mentionAutocompleteBackendFiltering;
+
 /**
  * Escapes user input before we pass it to at.js, which
  * renders it as HTML in the autocomplete dropdown.
@@ -386,7 +388,7 @@ class GfmAutoComplete {
       // eslint-disable-next-line no-template-curly-in-string
       insertTpl: '${atwho-at}${username}',
       limit: 10,
-      delay: 500,
+      delay: useMentionsBackendFiltering ? 500 : null,
       searchKey: 'search',
       alwaysHighlightFirst: true,
       skipSpecialCharacterTest: true,
@@ -414,10 +416,15 @@ class GfmAutoComplete {
           return match && match.length ? match[1] : null;
         },
         filter(query, data) {
-          if (GfmAutoComplete.isLoading(data) || instance.previousQuery !== query) {
-            instance.previousQuery = query;
+          if (useMentionsBackendFiltering) {
+            if (GfmAutoComplete.isLoading(data) || instance.previousQuery !== query) {
+              instance.previousQuery = query;
 
-            fetchData(this.$inputor, this.at, query);
+              fetchData(this.$inputor, this.at, query);
+              return data;
+            }
+          } else if (GfmAutoComplete.isLoading(data)) {
+            fetchData(this.$inputor, this.at);
             return data;
           }
 
@@ -989,7 +996,12 @@ GfmAutoComplete.atTypeMap = {
   '[contact:': 'contacts',
 };
 
-GfmAutoComplete.typesWithBackendFiltering = ['members', 'vulnerabilities'];
+GfmAutoComplete.typesWithBackendFiltering = ['vulnerabilities'];
+
+if (useMentionsBackendFiltering) {
+  GfmAutoComplete.typesWithBackendFiltering.push('members');
+}
+
 GfmAutoComplete.isTypeWithBackendFiltering = (type) =>
   GfmAutoComplete.typesWithBackendFiltering.includes(GfmAutoComplete.atTypeMap[type]);
 
