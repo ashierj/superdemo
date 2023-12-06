@@ -1,10 +1,177 @@
 # frozen_string_literal: true
 
-#----------------
-# SHARED CONTEXTS
-#----------------
+#-------------------------------------------------
+# SHARED CONTEXTS - INDIVIDUAL ARGUMENTS SCENARIOS
+#-------------------------------------------------
 
-RSpec.shared_context 'with authorized user' do
+RSpec.shared_context 'with no arguments' do
+  include_context 'with unauthorized workspace created'
+
+  let_it_be(:workspace) { create(:workspace, name: 'matching-workspace') }
+
+  # NOTE: Specs including this context must define `non_matching_workspace` as follows:
+  #   let_it_be(:non_matching_workspace) { create(:workspace, name: 'non-matching-workspace', ...) }
+  # ...or else specify `expected_error_regex` to indicate that no arguments is an error condition
+
+  let_it_be(:args) { {} }
+end
+
+RSpec.shared_context 'with id arg' do
+  include_context 'with unauthorized workspace created'
+
+  let_it_be(:workspace) { create(:workspace, name: 'matching-workspace') }
+
+  # create workspace with different ID but still owned by the same user, to ensure isn't returned by the query
+  let_it_be(:non_matching_workspace) { create(:workspace, user: workspace.user, name: 'non-matching-workspace') }
+
+  let(:id) { workspace.to_global_id.to_s }
+  let(:args) { { id: id } }
+end
+
+RSpec.shared_context 'with ids argument' do
+  include_context 'with unauthorized workspace created'
+
+  let_it_be(:workspace) { create(:workspace, name: 'matching-workspace') }
+
+  # create workspace with different ID but still owned by the same user, to ensure isn't returned by the query
+  let_it_be(:non_matching_workspace) { create(:workspace, user: workspace.user, name: 'non-matching-workspace') }
+
+  let_it_be(:ids) { [workspace.to_global_id.to_s, unauthorized_workspace.to_global_id.to_s] }
+  let_it_be(:args) { { ids: ids } }
+end
+
+RSpec.shared_context 'with project_ids argument' do
+  include_context 'with unauthorized workspace created'
+
+  let_it_be(:project) { create(:project, :public) }
+  let_it_be(:workspace) { create(:workspace, project_id: project.id, name: 'matching-workspace') }
+
+  # create workspace with different project but still owned by the same user, to ensure isn't returned by the query
+  let_it_be(:non_matching_workspace) do
+    create(:workspace, user: workspace.user, name: 'non-matching-workspace')
+  end
+
+  let(:project_ids) { [project.to_global_id.to_s, unauthorized_workspace.project.to_global_id.to_s] }
+  let(:args) { { project_ids: project_ids } }
+end
+
+RSpec.shared_context 'with agent_ids argument' do
+  include_context 'with unauthorized workspace created'
+
+  let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let_it_be(:workspace) { create(:workspace, agent: agent, name: 'matching-workspace') }
+
+  # create workspace associated with different agent but owned by same user, to ensure isn't returned by the query
+  let_it_be(:other_agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let_it_be(:non_matching_workspace) do
+    create(:workspace, agent: other_agent, user: workspace.user, name: 'non-matching-workspace')
+  end
+
+  let(:agent_ids) { [agent.to_global_id.to_s, unauthorized_workspace.agent.to_global_id.to_s] }
+  let(:args) { { agent_ids: agent_ids } }
+end
+
+RSpec.shared_context 'with actual_states argument' do
+  let_it_be(:matching_actual_state) { ::RemoteDevelopment::Workspaces::States::STOPPED }
+
+  include_context 'with unauthorized workspace created'
+
+  let_it_be(:workspace) { create(:workspace, actual_state: matching_actual_state, name: 'matching-workspace') }
+
+  # create workspace with non-matching actual state but owned by same user, to ensure it is not returned by the query
+  let_it_be(:non_matching_actual_state) { ::RemoteDevelopment::Workspaces::States::RUNNING }
+  let_it_be(:non_matching_workspace) do
+    create(:workspace, actual_state: non_matching_actual_state, user: workspace.user, name: 'non-matching-workspace')
+  end
+
+  let(:args) { { actual_states: [matching_actual_state] } }
+
+  before do
+    unauthorized_workspace.update!(actual_state: matching_actual_state)
+  end
+end
+
+#------------------------------------------------
+# SHARED EXAMPLES - MAIN ENTRY POINTS FOR TESTING
+#------------------------------------------------
+
+RSpec.shared_examples 'single workspace query' do |authorized_user_is_admin: false|
+  include_context 'in licensed environment'
+
+  context 'when user is authorized' do
+    include_context 'with authorized user as current user'
+
+    it_behaves_like 'query is a working graphql query'
+    it_behaves_like 'query returns single workspace'
+
+    unless authorized_user_is_admin
+      context 'when the user requests a workspace that they are not authorized for' do
+        let(:id) { unauthorized_workspace.to_global_id.to_s }
+
+        it_behaves_like 'query is a working graphql query'
+        it_behaves_like 'query returns blank'
+      end
+    end
+  end
+
+  context 'when user is not authorized' do
+    include_context 'with unauthorized user as current user'
+
+    it_behaves_like 'query is a working graphql query'
+    it_behaves_like 'query returns blank'
+  end
+
+  it_behaves_like 'query in unlicensed environment'
+end
+
+RSpec.shared_examples 'multiple workspaces query' do |authorized_user_is_admin: false, expected_error_regex: nil|
+  include_context 'in licensed environment'
+
+  let(:workspace_names) { subject.pluck("name") }
+
+  context 'when user is authorized' do
+    include_context 'with authorized user as current user'
+
+    if expected_error_regex
+      it_behaves_like 'query returns blank'
+      it_behaves_like 'query includes graphql error', expected_error_regex
+    else
+      it_behaves_like 'query is a working graphql query'
+      it_behaves_like 'query returns workspaces array containing only expected workspace'
+    end
+
+    unless authorized_user_is_admin
+      context 'when the user requests a workspace that they are not authorized for' do
+        before do
+          post_graphql(query, current_user: current_user)
+        end
+
+        it 'does not return the unauthorized workspace' do
+          expect(workspace_names).not_to include(unauthorized_workspace.name)
+        end
+
+        it 'still returns the authorized workspace' do
+          expect(workspace_names).to include(workspace.name)
+        end
+      end
+    end
+  end
+
+  context 'when user is not authorized' do
+    include_context 'with unauthorized user as current user'
+
+    it_behaves_like 'query is a working graphql query'
+    it_behaves_like 'query returns blank' unless authorized_user_is_admin
+  end
+
+  it_behaves_like 'query in unlicensed environment'
+end
+
+#----------------------------------
+# SHARED CONTEXTS - BUILDING BLOCKS
+#----------------------------------
+
+RSpec.shared_context 'with authorized user as current user' do
   let_it_be(:current_user) { authorized_user }
 end
 
@@ -16,14 +183,21 @@ RSpec.shared_context "with authorized user as developer on workspace's project" 
   end
 end
 
-RSpec.shared_context 'with other user' do
-  let_it_be(:other_user) { create(:user) }
+RSpec.shared_context 'with unauthorized user as current user' do
+  let_it_be(:current_user) { unauthorized_user }
 end
 
-RSpec.shared_context 'with unauthorized user as current user' do
-  include_context 'with other user'
+RSpec.shared_context 'with other workspace created' do
+  # This workspace will only be accessible by admins
+  let_it_be(:other_workspace) { create(:workspace, name: 'other-workspace') }
+end
 
-  let_it_be(:current_user) { other_user }
+RSpec.shared_context 'with unauthorized workspace created' do
+  # The authorized_user will not be authorized to see the `other-workspace`. We don't name it
+  # `unauthorized-workspace`, because the admin is still authorized to see it.
+  include_context 'with other workspace created'
+
+  let_it_be(:unauthorized_workspace) { other_workspace }
 end
 
 RSpec.shared_context 'in licensed environment' do
@@ -38,9 +212,9 @@ RSpec.shared_context 'in unlicensed environment' do
   end
 end
 
-#----------------
-# SHARED EXAMPLES
-#----------------
+#----------------------------------
+# SHARED EXAMPLES - BUILDING BLOCKS
+#----------------------------------
 
 RSpec.shared_examples 'query is a working graphql query' do
   before do
@@ -50,7 +224,7 @@ RSpec.shared_examples 'query is a working graphql query' do
   it_behaves_like 'a working graphql query'
 end
 
-RSpec.shared_examples 'query returns workspace' do
+RSpec.shared_examples 'query returns single workspace' do
   before do
     post_graphql(query, current_user: current_user)
   end
@@ -58,27 +232,14 @@ RSpec.shared_examples 'query returns workspace' do
   it { expect(subject['name']).to eq(workspace.name) }
 end
 
-RSpec.shared_examples 'query returns workspaces hash containing workspace' do
+RSpec.shared_examples 'query returns workspaces array containing only expected workspace' do
   before do
     post_graphql(query, current_user: current_user)
   end
 
-  # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-25400
   it 'includes only the expected workspace', :unlimited_max_formatted_output_length do
-    # NOTE: The assertions below are redundant, but they are kept separate so that failure messages are
-    #       shorter, more informative, and more understandable.
-
-    # 1. The result should not include unexpected non-matching workspaces
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
-    expect(subject).not_to include(a_hash_including('name' => non_matching_workspace.name))
-
-    # 2. The result is expected to include ONLY a single matching workspace (we should never have more than one
-    #    matching workspace in the fixture, it's not necessary for coverage of any relevant code path)
-    #    See more context in this thread: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134488#note_1614454570
-    expect(subject.length).to eq(1)
-
-    # 3. The workspace in the result should be the one we expect
-    is_expected.to match_array(a_hash_including('name' => workspace.name))
+    expect(workspace_names).not_to include(non_matching_workspace.name)
+    expect(workspace_names).to include(workspace.name)
   end
 end
 
@@ -88,6 +249,16 @@ RSpec.shared_examples 'query returns blank' do
   end
 
   it { is_expected.to be_blank }
+end
+
+RSpec.shared_examples 'query has empty graphql errors' do
+  before do
+    post_graphql(query, current_user: current_user)
+  end
+
+  it 'has empty graphql errors' do
+    expect_graphql_errors_to_be_empty
+  end
 end
 
 RSpec.shared_examples 'query includes graphql error' do |regexes_to_match|
@@ -105,60 +276,10 @@ RSpec.shared_examples 'query in unlicensed environment' do
     include_context 'in unlicensed environment'
 
     context 'when user is authorized' do
-      include_context 'with authorized user'
+      include_context 'with authorized user as current user'
 
       it_behaves_like 'query returns blank'
       it_behaves_like 'query includes graphql error', /'remote_development' licensed feature is not available/
     end
   end
-end
-
-RSpec.shared_examples 'multiple workspaces query' do
-  context 'when remote_development feature is licensed' do
-    include_context 'in licensed environment'
-
-    context 'when user is authorized' do
-      include_context 'with authorized user'
-
-      it_behaves_like 'query is a working graphql query'
-      it_behaves_like 'query returns workspaces hash containing workspace'
-
-      context 'when the user requests a workspace that they are not authorized for' do
-        let_it_be(:other_workspace) { create(:workspace) }
-
-        let(:ids) do
-          [
-            workspace.to_global_id.to_s,
-            other_workspace.to_global_id.to_s
-          ]
-        end
-
-        before do
-          post_graphql(query, current_user: current_user)
-        end
-
-        it 'does not return the unauthorized workspace' do
-          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
-          expect(subject).not_to include(a_hash_including('name' => other_workspace.name))
-        end
-
-        it 'still returns the authorized workspace' do
-          # Note we are only doing an array_including here, not an exact match_array, because that would result in a
-          # misleading failure message, and the exact array match should be covered by other tests, it's not the
-          # responsibility of this authorization test.
-          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
-          expect(subject).to include(a_hash_including('name' => workspace.name))
-        end
-      end
-    end
-
-    context 'when user is not authorized' do
-      include_context 'with unauthorized user as current user'
-
-      it_behaves_like 'query is a working graphql query'
-      it_behaves_like 'query returns blank'
-    end
-  end
-
-  it_behaves_like 'query in unlicensed environment'
 end

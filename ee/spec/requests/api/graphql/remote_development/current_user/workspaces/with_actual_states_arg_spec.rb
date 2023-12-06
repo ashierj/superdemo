@@ -3,8 +3,8 @@
 require 'spec_helper'
 require_relative './shared'
 
-RSpec.describe 'Query.currentUser.workspaces(project_ids: [::Types::GlobalIDType[Project]!])', feature_category: :remote_development do
-  include_context 'with project_ids argument'
+RSpec.describe 'Query.currentUser.workspaces(actual_states: [GraphQL::Types::String])', feature_category: :remote_development do
+  include_context 'with actual_states argument'
   include_context 'for a Query.currentUser.workspaces query'
 
   it_behaves_like 'multiple workspaces query'

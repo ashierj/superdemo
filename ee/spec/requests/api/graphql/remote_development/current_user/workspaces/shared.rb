@@ -2,8 +2,11 @@
 
 require_relative '../../shared'
 
-RSpec.shared_examples 'a fully working Query.currentUser.workspaces query' do
+RSpec.shared_context 'for a Query.currentUser.workspaces query' do
   include GraphqlHelpers
+
+  let_it_be(:authorized_user) { workspace.user }
+  let_it_be(:unauthorized_user) { create(:user) }
 
   include_context "with authorized user as developer on workspace's project"
 
@@ -23,6 +26,4 @@ RSpec.shared_examples 'a fully working Query.currentUser.workspaces query' do
   end
 
   subject { graphql_data.dig('currentUser', 'workspaces', 'nodes') }
-
-  it_behaves_like 'multiple workspaces query'
 end

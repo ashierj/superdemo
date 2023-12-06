@@ -96,8 +96,9 @@ module EE
           ::Types::RemoteDevelopment::WorkspaceType.connection_type,
           null: true,
           alpha: { milestone: '16.0' },
-          resolver: ::Resolvers::RemoteDevelopment::WorkspacesForCurrentUserResolver,
-          description: 'Find workspaces owned by the current user.'
+          resolver: ::Resolvers::RemoteDevelopment::WorkspacesForQueryRootResolver,
+          description: 'Find workspaces across the entire instance. This field is only available to instance admins, ' \
+                       'it will return an empty result for all non-admins.'
         field :instance_external_audit_event_destinations,
           ::Types::AuditEvents::InstanceExternalAuditEventDestinationType.connection_type,
           null: true,
