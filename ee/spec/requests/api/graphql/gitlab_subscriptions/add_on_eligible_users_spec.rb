@@ -23,7 +23,7 @@ RSpec.describe 'Query.namespace.addOnEligibleUsers', feature_category: :seat_cos
   end
 
   before do
-    stub_saas_features(code_suggestions: true)
+    stub_saas_features(gitlab_saas_subscriptions: true)
   end
 
   context 'when the user is not eligible to admin add-on purchases on the namespace' do

@@ -18,7 +18,7 @@ module EE
           search_indexing_status
           subscriptions_trials
           group_custom_roles
-          code_suggestions
+          gitlab_saas_subscriptions
         ].freeze
 
       CONFIG_FILE_ROOT = 'ee/config/saas_features'

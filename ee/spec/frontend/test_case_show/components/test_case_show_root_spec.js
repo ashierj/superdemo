@@ -13,6 +13,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import TestCaseShowRoot from 'ee/test_case_show/components/test_case_show_root.vue';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
+import TestCaseSidebarTodo from 'ee/test_case_show/components/test_case_sidebar_todo.vue';
 import projectTestCase from 'ee/test_case_show/queries/project_test_case.query.graphql';
 import projectTestCaseTaskList from 'ee/test_case_show/queries/test_case_tasklist.query.graphql';
 import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
@@ -45,7 +46,9 @@ describe('TestCaseShowRoot', () => {
   const findBadge = () => wrapper.findComponent(GlBadge);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findIssuableShow = () => wrapper.findComponent(IssuableShow);
+  const findIssuableEditButton = () => wrapper.findByTestId('edit-test-case');
   const findTestCaseSidebar = () => wrapper.findComponent(TestCaseSidebar);
+  const findTestCaseSidebarTodo = () => wrapper.findComponent(TestCaseSidebarTodo);
   const findToggleStateButton = () => wrapper.findByTestId('archive-test-case');
   const findToggleStateDropdownItem = () => wrapper.findByTestId('toggle-state-dropdown-item');
 
@@ -86,8 +89,8 @@ describe('TestCaseShowRoot', () => {
   describe('computed', () => {
     describe.each`
       state       | isTestCaseOpen | statusIcon              | statusBadgeText | testCaseActionTitle
-      ${'opened'} | ${true}        | ${'issue-open-m'}       | ${'Open'}       | ${'Archive test case'}
-      ${'closed'} | ${false}       | ${'mobile-issue-close'} | ${'Archived'}   | ${'Reopen test case'}
+      ${'opened'} | ${true}        | ${'issue-open-m'}       | ${'Open'}       | ${'Archive'}
+      ${'closed'} | ${false}       | ${'mobile-issue-close'} | ${'Archived'}   | ${'Reopen'}
     `(
       'when `testCase.state` is $state',
       ({ state, isTestCaseOpen, statusIcon, statusBadgeText, testCaseActionTitle }) => {
@@ -292,7 +295,6 @@ describe('TestCaseShowRoot', () => {
 
       it('renders IssuableShow', () => {
         const {
-          canEditTestCase,
           descriptionPreviewPath,
           descriptionHelpPath,
           updatePath,
@@ -308,8 +310,8 @@ describe('TestCaseShowRoot', () => {
           enableAutocomplete: true,
           enableTaskList: true,
           issuable: mockTestCase,
-          enableEdit: canEditTestCase,
-          taskCompletionStatus: {},
+          enableEdit: true,
+          taskCompletionStatus: null,
           taskListUpdatePath: updatePath,
           taskListLockVersion: lockVersion,
           workspaceType: 'project',
@@ -318,7 +320,7 @@ describe('TestCaseShowRoot', () => {
 
       describe('when IssuableShow emits `edit-issuable`', () => {
         beforeEach(() => {
-          findIssuableShow().vm.$emit('edit-issuable');
+          findIssuableEditButton().trigger('click');
         });
 
         it('renders edit-form-actions slot contents', () => {
@@ -389,7 +391,7 @@ describe('TestCaseShowRoot', () => {
 
       it('renders test-case-sidebar', () => {
         expect(findTestCaseSidebar().exists()).toBe(true);
-        expect(findTestCaseSidebar().props('todo')).toEqual(mockCurrentUserTodo);
+        expect(findTestCaseSidebarTodo().props('todo')).toEqual(mockCurrentUserTodo);
       });
 
       it('updates `sidebarExpanded` prop on `sidebar-toggle` event', async () => {

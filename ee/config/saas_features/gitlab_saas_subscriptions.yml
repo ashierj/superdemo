@@ -1,0 +1,5 @@
+---
+name: gitlab_saas_subscriptions
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138644
+milestone: '16.7'
+group: group::purchase

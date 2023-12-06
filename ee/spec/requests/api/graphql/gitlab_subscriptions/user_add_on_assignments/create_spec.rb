@@ -55,14 +55,6 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
   end
 
   shared_examples 'validates the query' do
-    context 'when feature flag hamilton_seat_management is disabled' do
-      before do
-        stub_feature_flags(hamilton_seat_management: false)
-      end
-
-      it_behaves_like 'empty response'
-    end
-
     context 'when current_user is admin' do
       let(:current_user) { create(:admin) }
 
@@ -179,7 +171,7 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
 
   context 'on Gitlab.com/Saas' do
     before do
-      stub_saas_features(code_suggestions: true)
+      stub_saas_features(gitlab_saas_subscriptions: true)
     end
 
     let_it_be(:current_user) { create(:user) }
@@ -190,6 +182,15 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
       namespace.add_owner(current_user)
       namespace.add_developer(assignee_user)
     end
+
+    context 'with feature flag disabled' do
+      before do
+        stub_feature_flags(hamilton_seat_management: false)
+      end
+
+      it_behaves_like 'empty response'
+    end
+
     it_behaves_like 'validates the query'
 
     it_behaves_like 'success response'
@@ -287,7 +288,7 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
 
   context 'on self managed instances' do
     before do
-      stub_saas_features(code_suggestions: false)
+      stub_saas_features(gitlab_saas_subscriptions: false)
     end
 
     let(:current_user) { create(:admin) }
@@ -295,6 +296,14 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
 
     it_behaves_like 'validates the query'
     it_behaves_like 'success response'
+
+    context 'with feature flag disabled' do
+      before do
+        stub_feature_flags(self_managed_code_suggestions: false)
+      end
+
+      it_behaves_like 'empty response'
+    end
 
     context 'when current_user is not an admin' do
       let(:current_user) { create(:user) }

@@ -17,7 +17,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::Saas::CreateService, f
   end
 
   before do
-    stub_saas_features(code_suggestions: true)
+    stub_saas_features(gitlab_saas_subscriptions: true)
   end
 
   describe '#execute' do
