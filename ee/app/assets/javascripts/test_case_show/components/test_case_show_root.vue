@@ -18,6 +18,7 @@ import { s__, __ } from '~/locale';
 
 import TestCaseGraphQL from '../mixins/test_case_graphql';
 import TestCaseSidebar from './test_case_sidebar.vue';
+import TestCaseSidebarTodo from './test_case_sidebar_todo.vue';
 
 const stateEvent = {
   Close: 'CLOSE',
@@ -34,6 +35,7 @@ export default {
     GlAlert,
     IssuableShow,
     TestCaseSidebar,
+    TestCaseSidebarTodo,
     GlDisclosureDropdown,
     GlDisclosureDropdownGroup,
     GlDisclosureDropdownItem,
@@ -70,7 +72,13 @@ export default {
       return this.isTestCaseOpen ? __('Open') : __('Archived');
     },
     testCaseActionTitle() {
-      return this.isTestCaseOpen ? __('Archive test case') : __('Reopen test case');
+      return this.isTestCaseOpen ? __('Archive') : __('Reopen');
+    },
+    editCaseActionTitle() {
+      return __('Edit');
+    },
+    editCaseActionAriaLabel() {
+      return __('Edit title and description');
     },
     todo() {
       const todos = this.testCase.currentUserTodos.nodes;
@@ -82,6 +90,15 @@ export default {
         ...label,
         id: getIdFromGraphQLId(label.id),
       }));
+    },
+    editTestCaseItem() {
+      return {
+        text: this.editCaseActionTitle,
+        action: this.handleEditTestCase,
+        extraAttrs: {
+          'data-testid': 'edit-test-case',
+        },
+      };
     },
     toggleTestCaseStateItem() {
       return { text: this.testCaseActionTitle, action: this.handleTestCaseStateChange };
@@ -159,6 +176,7 @@ export default {
       :issuable="testCase"
       :status-icon="statusIcon"
       :enable-edit="canEditTestCase"
+      hide-edit-button
       :enable-autocomplete="true"
       :enable-task-list="true"
       :edit-form-visible="editTestCaseFormVisible"
@@ -168,9 +186,7 @@ export default {
       :task-list-update-path="updatePath"
       :task-list-lock-version="lockVersion"
       :workspace-type="$options.WORKSPACE_PROJECT"
-      status-icon-class="gl-sm-display-none"
       show-work-item-type-icon
-      @edit-issuable="handleEditTestCase"
       @task-list-update-success="handleTaskListUpdateSuccess"
       @task-list-update-failure="handleTaskListUpdateFailure"
     >
@@ -196,6 +212,7 @@ export default {
           category="secondary"
           :toggle-text="__('Options')"
         >
+          <gl-disclosure-dropdown-item :item="editTestCaseItem" />
           <gl-disclosure-dropdown-item
             :item="toggleTestCaseStateItem"
             data-testid="toggle-state-dropdown-item"
@@ -206,8 +223,18 @@ export default {
         </gl-disclosure-dropdown>
         <gl-button
           v-if="canEditTestCase"
+          data-testid="edit-test-case"
+          class="gl-display-none gl-md-display-inline-block"
+          :loading="testCaseStateChangeInProgress"
+          :title="editCaseActionAriaLabel"
+          :aria-label="editCaseActionAriaLabel"
+          @click="handleEditTestCase"
+          >{{ editCaseActionTitle }}</gl-button
+        >
+        <gl-button
+          v-if="canEditTestCase"
           data-testid="archive-test-case"
-          class="gl-display-none gl-md-display-inline-block gl-mr-2"
+          class="gl-display-none gl-md-display-inline-block"
           :loading="testCaseStateChangeInProgress"
           @click="handleTestCaseStateChange"
           >{{ testCaseActionTitle }}</gl-button
@@ -233,19 +260,22 @@ export default {
           @click.prevent="handleSaveTestCase(issuableMeta)"
           >{{ __('Save changes') }}</gl-button
         >
-        <gl-button
-          data-testid="cancel-test-case-edit"
-          class="gl-float-right"
-          @click="handleCancelClick"
-        >
+        <gl-button data-testid="cancel-test-case-edit" @click="handleCancelClick">
           {{ __('Cancel') }}
         </gl-button>
+      </template>
+      <template #right-sidebar-top-items="{ sidebarExpanded, toggleSidebar }">
+        <test-case-sidebar-todo
+          :sidebar-expanded="sidebarExpanded"
+          :todo="todo"
+          @test-case-updated="handleTestCaseUpdated"
+          @sidebar-toggle="toggleSidebar"
+        />
       </template>
       <template #right-sidebar-items="{ sidebarExpanded, toggleSidebar }">
         <test-case-sidebar
           :sidebar-expanded="sidebarExpanded"
           :selected-labels="selectedLabels"
-          :todo="todo"
           :moved="testCase.moved"
           @test-case-updated="handleTestCaseUpdated"
           @sidebar-toggle="toggleSidebar"
