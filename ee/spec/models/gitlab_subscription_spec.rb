@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_management do
   using RSpec::Parameterized::TableSyntax
 
-  %i[free_plan bronze_plan premium_plan ultimate_plan].each do |plan| # rubocop:disable RSpec/UselessDynamicDefinition -- `plan` used in `let_it_be`
+  ['free', *Plan::PAID_HOSTED_PLANS].map { |name| "#{name}_plan" }.each do |plan| # rubocop:disable RSpec/UselessDynamicDefinition -- `plan` used in `let_it_be`
     let_it_be(plan) { create(plan) } # rubocop:disable Rails/SaveBang
   end
 
@@ -231,7 +231,7 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
     end
 
     context 'with a trial plan' do
-      let(:subscription_attrs) { { hosted_plan: bronze_plan, trial: true } }
+      let(:subscription_attrs) { { hosted_plan: ultimate_trial_plan, trial: true } }
 
       include_examples 'always returns a total of 0'
     end
@@ -337,23 +337,25 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
     subject { gitlab_subscription.seats_in_use }
 
     context 'with a paid hosted plan' do
-      let(:hosted_plan) { ultimate_plan }
+      Plan::PAID_HOSTED_PLANS.each do |plan_name| # rubocop:disable RSpec/UselessDynamicDefinition -- `plan_name` used in `let`
+        let(:hosted_plan) { send("#{plan_name}_plan") }
 
-      it 'returns the previously calculated seats in use' do
-        expect(subject).to eq(5)
-      end
+        it "returns the previously calculated seats in use when plan is #{plan_name}" do
+          expect(subject).to eq(5)
+        end
 
-      context 'when seats in use is 0' do
-        let(:seats_in_use) { 0 }
+        context 'when seats in use is 0' do
+          let(:seats_in_use) { 0 }
 
-        it 'returns 0 too' do
-          expect(subject).to eq(0)
+          it "returns 0 too when plan is #{plan_name}" do
+            expect(subject).to eq(0)
+          end
         end
       end
     end
 
     context 'with a trial plan' do
-      let(:hosted_plan) { ultimate_plan }
+      let(:hosted_plan) { ultimate_trial_plan }
       let(:trial) { true }
 
       it 'returns the current seats in use' do
@@ -804,6 +806,76 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
           let(:max_seats_used_changed_at) { Time.current - 1.year }
 
           it_behaves_like 'does not reset seat statistics'
+        end
+      end
+
+      context 'when starts ultimate_trial_paid_customer plan' do
+        before do
+          gitlab_subscription.update!(hosted_plan: premium_plan)
+        end
+
+        it 'does not reset seat statistics' do
+          expect do
+            gitlab_subscription.update!(hosted_plan: ultimate_trial_paid_customer_plan)
+          end.to not_change(gitlab_subscription, :max_seats_used)
+            .and not_change(gitlab_subscription, :max_seats_used_changed_at)
+            .and not_change(gitlab_subscription, :seats_owed)
+        end
+      end
+
+      context 'when updates max_seats_used_changed_at during ultimate_trial_paid_customer plan' do
+        before do
+          gitlab_subscription.update!(hosted_plan: ultimate_trial_paid_customer_plan)
+        end
+
+        it 'does not reset seat statistics' do
+          expect do
+            gitlab_subscription.update!(max_seats_used_changed_at: Date.current)
+          end.to not_change(gitlab_subscription, :max_seats_used)
+            .and not_change(gitlab_subscription, :seats_owed)
+        end
+      end
+
+      context 'when switches back to premium plan from ultimate_trial_paid_customer plan' do
+        before do
+          gitlab_subscription.update!(hosted_plan: premium_plan)
+          gitlab_subscription.update!(hosted_plan: ultimate_trial_paid_customer_plan)
+        end
+
+        it 'does not reset seat statistics' do
+          expect do
+            gitlab_subscription.update!(hosted_plan: premium_plan)
+          end.to not_change(gitlab_subscription, :max_seats_used)
+            .and not_change(gitlab_subscription, :max_seats_used_changed_at)
+            .and not_change(gitlab_subscription, :seats_owed)
+        end
+
+        context 'when the premium_plan was renewed during the ultimate_trial_paid_customer trial' do
+          before do
+            gitlab_subscription.update!(start_date: Date.today + 2.years, end_date: Date.today + 3.years)
+          end
+
+          it 'resets seat statistics' do
+            expect do
+              gitlab_subscription.update!(hosted_plan: premium_plan)
+            end.to change(gitlab_subscription, :max_seats_used).from(42).to(1)
+              .and change(gitlab_subscription, :seats_owed).from(29).to(0)
+              .and change(gitlab_subscription, :seats_in_use).from(20).to(1)
+          end
+        end
+      end
+
+      context 'when upgrade to ultimate plan from ultimate_trial_paid_customer plan' do
+        before do
+          gitlab_subscription.update!(hosted_plan: ultimate_trial_paid_customer_plan)
+        end
+
+        it 'does not reset seat statistics' do
+          expect do
+            gitlab_subscription.update!(hosted_plan: ultimate_plan)
+          end.to change(gitlab_subscription, :max_seats_used).from(42).to(1)
+              .and change(gitlab_subscription, :seats_owed).from(29).to(0)
+              .and change(gitlab_subscription, :seats_in_use).from(20).to(1)
         end
       end
     end
