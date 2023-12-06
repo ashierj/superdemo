@@ -51,13 +51,9 @@ module Gitlab
             end
 
             def version_semver_like?(version)
-              hash_like = /\A[0-9a-f]{32,128}\z/i
+              hash_like = /\A[0-9a-f]{8,128}\z/i
 
-              if Gem::Version.correct?(version)
-                !hash_like.match?(version)
-              else
-                false
-              end
+              Gem::Version.correct?(version) && !hash_like.match?(version)
             end
           end
         end

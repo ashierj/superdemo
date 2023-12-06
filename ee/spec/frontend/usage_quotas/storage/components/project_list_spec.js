@@ -39,10 +39,7 @@ const createProject = (attrs = {}) => {
       avatarUrl: null,
       webUrl: 'http://localhost/frontend-fixtures/gitlab',
       name: 'GitLab',
-      repositorySizeExcess: 319430.0,
-      actualRepositorySizeLimit: 100000.0,
       statistics: {
-        commitCount: 0.0,
         storageSize: 1691805.0,
         costFactoredStorageSize: 1691805.0,
         repositorySize: 209710.0,
