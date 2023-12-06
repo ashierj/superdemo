@@ -28,10 +28,10 @@ default:
   timeout: 90m
 
 .default-ruby-variables: &default-ruby-variables
-  RUBY_VERSION: "3.0"
+  RUBY_VERSION: "3.1"
 
 .next-ruby-variables: &next-ruby-variables
-  RUBY_VERSION: "3.1"
+  RUBY_VERSION: "3.2"
 
 .default-branch-pipeline-failure-variables: &default-branch-pipeline-failure-variables
   CREATE_RAILS_TEST_FAILURE_ISSUES: "true"
@@ -64,8 +64,8 @@ workflow:
     # they serve no purpose and will run anyway when the changes are merged.
     - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^release-tools\/\d+\.\d+\.\d+-rc\d+$/ && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^[\d-]+-stable(-ee)?$/ && $CI_PROJECT_PATH == "gitlab-org/gitlab"'
       when: never
-    # For merge requests running exclusively in Ruby 3.0
-    - if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_0/'
+    # For merge requests running exclusively in Ruby 3.1
+    - if: '$CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_1/'
       variables:
         <<: *default-ruby-variables
         PIPELINE_NAME: 'Ruby $RUBY_VERSION $CI_MERGE_REQUEST_EVENT_TYPE MR pipeline'
@@ -93,8 +93,8 @@ workflow:
         <<: [*default-ruby-variables, *default-branch-pipeline-failure-variables]
         CRYSTALBALL: "true"
         PIPELINE_NAME: 'Scheduled Ruby $RUBY_VERSION $CI_COMMIT_BRANCH branch pipeline'
-    # Run pipelines for ruby3_1 branch
-    - if: '$CI_COMMIT_BRANCH == "ruby3_1" && $CI_PIPELINE_SOURCE == "schedule"'
+    # Run pipelines for ruby3_2 branch
+    - if: '$CI_COMMIT_BRANCH == "ruby3_2" && $CI_PIPELINE_SOURCE == "schedule"'
       variables:
         <<: *next-ruby-variables
         PIPELINE_NAME: 'Scheduled Ruby $RUBY_VERSION $CI_COMMIT_BRANCH branch pipeline'

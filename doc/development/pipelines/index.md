@@ -613,30 +613,30 @@ Exceptions to this general guideline should be motivated and documented.
 
 ### Ruby versions testing
 
-We're running Ruby 3.0 on GitLab.com, as well as for the default branch.
-To prepare for the next Ruby version, we run merge requests in Ruby 3.1.
+We're running Ruby 3.1 on GitLab.com, as well as for the default branch.
+To prepare for the next Ruby version, we run merge requests in Ruby 3.2.
 
 This takes effects at the time when
 [Run merge requests in Ruby 3.1 by default](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/134290)
 is merged. See
-[Ruby 3.1 epic](https://gitlab.com/groups/gitlab-org/-/epics/10034)
-for the roadmap to fully make Ruby 3.1 the default.
+[Ruby 3.2 epic](https://gitlab.com/groups/gitlab-org/-/epics/9684).
+for the roadmap to fully make Ruby 3.2 the default.
 
 To make sure both Ruby versions are working, we also run our test suite
-against both Ruby 3.0 and Ruby 3.1 on dedicated 2-hourly scheduled pipelines.
+against both Ruby 3.1 and Ruby 3.2 on dedicated 2-hourly scheduled pipelines.
 
-For merge requests, you can add the `pipeline:run-in-ruby3_0` label to switch
-the Ruby version to 3.0. When you do this, the test suite will no longer run
-in Ruby 3.1 (default for merge requests).
+For merge requests, you can add the `pipeline:run-in-ruby3_1` label to switch
+the Ruby version to 3.1. When you do this, the test suite will no longer run
+in Ruby 3.2 (default for merge requests).
 
 When the pipeline is running in a Ruby version not considered default, an
 additional job `verify-default-ruby` will also run and always fail to remind
 us to remove the label and run in default Ruby before merging the merge
-request. At the moment both Ruby 3.0 and Ruby 3.1 are considered default.
+request. At the moment both Ruby 3.1 and Ruby 3.2 are considered default.
 
 This should let us:
 
-- Test changes for Ruby 3.1
+- Test changes for Ruby 3.2
 - Make sure it will not break anything when it's merged into the default branch
 
 ### PostgreSQL versions testing
@@ -652,24 +652,24 @@ We also run our test suite against PostgreSQL 13 upon specific database library 
 
 | Where?                                                                                           | PostgreSQL version                              | Ruby version          |
 |--------------------------------------------------------------------------------------------------|-------------------------------------------------|-----------------------|
-| Merge requests                                                                                   | 14 (default version), 13 for DB library changes | 3.1 |
-| `master` branch commits                                                                          | 14 (default version), 13 for DB library changes | 3.0 (default version) |
-| `maintenance` scheduled pipelines for the `master` branch (every even-numbered hour)             | 14 (default version), 13 for DB library changes | 3.0 (default version) |
-| `maintenance` scheduled pipelines for the `ruby3_1` branch (every odd-numbered hour), see below. | 14 (default version), 13 for DB library changes | 3.1                   |
-| `nightly` scheduled pipelines for the `master` branch                                            | 14 (default version), 13, 15                    | 3.0 (default version) |
+| Merge requests                                                                                   | 14 (default version), 13 for DB library changes | 3.2                   |
+| `master` branch commits                                                                          | 14 (default version), 13 for DB library changes | 3.1 (default version) |
+| `maintenance` scheduled pipelines for the `master` branch (every even-numbered hour)             | 14 (default version), 13 for DB library changes | 3.1 (default version) |
+| `maintenance` scheduled pipelines for the `ruby3_1` branch (every odd-numbered hour), see below. | 14 (default version), 13 for DB library changes | 3.2                   |
+| `nightly` scheduled pipelines for the `master` branch                                            | 14 (default version), 13, 15                    | 3.1 (default version) |
 
-There are 2 pipeline schedules used for testing Ruby 3.1. One is triggering a
-pipeline in `ruby3_1-sync` branch, which updates the `ruby3_1` branch with latest
+There are 2 pipeline schedules used for testing Ruby 3.2. One is triggering a
+pipeline in `ruby3_2-sync` branch, which updates the `ruby3_2` branch with latest
 `master`, and no pipelines will be triggered by this push. The other schedule
-is triggering a pipeline in `ruby3_1` 5 minutes after it, which is considered
+is triggering a pipeline in `ruby3_2` 5 minutes after it, which is considered
 the maintenance schedule to run test suites and update cache.
 
-The `ruby3_1` branch must not have any changes. The branch is only there to set
-`RUBY_VERSION` to `3.1` in the maintenance pipeline schedule.
+The `ruby3_2` branch must not have any changes. The branch is only there to set
+`RUBY_VERSION` to `3.2` in the maintenance pipeline schedule.
 
-The `gitlab` job in the `ruby3_1-sync` branch uses a `gitlab-org/gitlab` project
+The `gitlab` job in the `ruby3_2-sync` branch uses a `gitlab-org/gitlab` project
 token with `write_repository` scope and `Maintainer` role with no expiration.
-The token is stored in the `RUBY3_1_SYNC_TOKEN` variable in `gitlab-org/gitlab`.
+The token is stored in the `RUBY3_2_SYNC_TOKEN` variable in `gitlab-org/gitlab`.
 
 ### Redis versions testing
 

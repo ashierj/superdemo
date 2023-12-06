@@ -21,7 +21,7 @@
   if: '$FORCE_GITLAB_CI'
 
 .if-default-refs: &if-default-refs
-  if: '$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH || $CI_COMMIT_REF_NAME =~ /^[\d-]+-stable(-ee)?$/ || $CI_COMMIT_REF_NAME =~ /^\d+-\d+-auto-deploy-\d+$/ || $CI_COMMIT_REF_NAME =~ /^security\// || $CI_COMMIT_REF_NAME == "ruby3_1" || ($CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" || $CI_MERGE_REQUEST_EVENT_TYPE == "detached") || $CI_COMMIT_TAG || $FORCE_GITLAB_CI'
+  if: '$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH || $CI_COMMIT_REF_NAME =~ /^[\d-]+-stable(-ee)?$/ || $CI_COMMIT_REF_NAME =~ /^\d+-\d+-auto-deploy-\d+$/ || $CI_COMMIT_REF_NAME =~ /^security\// || $CI_COMMIT_REF_NAME == "ruby3_2" || ($CI_MERGE_REQUEST_EVENT_TYPE == "merged_result" || $CI_MERGE_REQUEST_EVENT_TYPE == "detached") || $CI_COMMIT_TAG || $FORCE_GITLAB_CI'
 
 .if-default-branch-refs: &if-default-branch-refs
   if: '$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_MERGE_REQUEST_IID == null'
@@ -125,8 +125,8 @@
 .if-default-branch-schedule-nightly: &if-default-branch-schedule-nightly
   if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "nightly"'
 
-.if-ruby3_1-branch-schedule-nightly: &if-ruby3_1-branch-schedule-nightly
-  if: '$CI_COMMIT_BRANCH == "ruby3_1" && $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "nightly"'
+.if-ruby3_2-branch-schedule-nightly: &if-ruby3_2-branch-schedule-nightly
+  if: '$CI_COMMIT_BRANCH == "ruby3_2" && $CI_PIPELINE_SOURCE == "schedule" && $SCHEDULE_TYPE == "nightly"'
 
 .if-security-schedule: &if-security-schedule
   if: '$CI_PROJECT_NAMESPACE == "gitlab-org/security" && $CI_PIPELINE_SOURCE == "schedule"'
@@ -161,8 +161,8 @@
 .if-dot-com-gitlab-org-and-security-tag: &if-dot-com-gitlab-org-and-security-tag
   if: '$CI_SERVER_HOST == "gitlab.com" && $CI_PROJECT_NAMESPACE =~ /^gitlab-org($|\/security$)/ && $CI_COMMIT_TAG'
 
-.if-ruby3_1-branch: &if-ruby3_1-branch
-  if: '$CI_COMMIT_BRANCH == "ruby3_1" || $CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_1/'
+.if-ruby3_2-branch: &if-ruby3_2-branch
+  if: '$CI_COMMIT_BRANCH == "ruby3_2" || $CI_MERGE_REQUEST_LABELS =~ /pipeline:run-in-ruby3_2/'
 
 ####################
 # Changes patterns #
@@ -911,7 +911,7 @@
     - <<: *if-dot-com-gitlab-org-schedule
       variables:
         ARCH: amd64,arm64
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
     - !reference [".releases:rules:canonical-dot-com-gitlab-stable-branch-only-setup-test-env-patterns", rules]
 
 .build-images:rules:build-qa-image-as-if-foss:
@@ -947,7 +947,7 @@
     # The rest are included to be consistent with .qa:rules:e2e:test-on-gdk
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
     # We include the job under the matching conditions below, but unlike in .qa:rules:e2e:test-on-gdk we don't need to
     # set OMNIBUS_GITLAB_BUILD_ON_ALL_OS when testing against GDK
     - <<: *if-merge-request
@@ -979,7 +979,7 @@
       when: never
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-auto-deploy-branches
     - <<: *if-default-refs
@@ -1202,7 +1202,7 @@
       changes: *setup-test-env-patterns
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-auto-deploy-branches
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
     - <<: *if-default-refs
       changes: *ci-build-images-patterns
     - <<: *if-default-refs
@@ -1514,7 +1514,7 @@
       allow_failure: true
     - <<: *if-dot-com-gitlab-org-schedule
       allow_failure: true
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
     # Rules to support .qa:rules:package-and-test-ee
     - <<: *if-merge-request
       changes: *dependency-patterns
@@ -1543,10 +1543,10 @@
     - !reference [".qa:rules:package-and-test-never-run", rules]
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
       variables:
         USE_OLD_RUBY_VERSION: 'false'
-        CACHE_EDITION: 'GITLAB_RUBY3_1'
+        CACHE_EDITION: 'GITLAB_RUBY3_2'
     - <<: *if-merge-request
       changes: *dependency-patterns
       variables:
@@ -1588,10 +1588,10 @@
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
       allow_failure: true
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
       variables:
         USE_OLD_RUBY_VERSION: 'false'
-        CACHE_EDITION: 'GITLAB_RUBY3_1'
+        CACHE_EDITION: 'GITLAB_RUBY3_2'
       allow_failure: true
     - <<: *if-merge-request
       changes: *dependency-patterns
@@ -1639,10 +1639,10 @@
     - !reference [".qa:rules:package-and-test-never-run", rules]
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
       variables:
         USE_OLD_RUBY_VERSION: 'false'
-        CACHE_EDITION: 'GITLAB_RUBY3_1'
+        CACHE_EDITION: 'GITLAB_RUBY3_2'
     - <<: *if-merge-request
       # Certain components trigger a rebuild of the e2e GDK image so we want to test it too
       changes: *gdk-component-patterns
@@ -1758,7 +1758,7 @@
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
       when: never
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
       when: never
     - <<: *if-merge-request
       changes: *dependency-patterns
@@ -1805,7 +1805,7 @@
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
       when: never
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
       when: never
     - <<: *if-merge-request
       changes: *dependency-patterns
@@ -1844,7 +1844,7 @@
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
       when: never
-    - <<: *if-ruby3_1-branch
+    - <<: *if-ruby3_2-branch
       when: never
     - <<: *if-merge-request
       changes: *dependency-patterns
