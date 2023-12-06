@@ -45,24 +45,22 @@ RSpec.describe ResourceEvents::MergeIntoNotesService, feature_category: :team_pl
 
       notes = described_class.new(resource, user).execute
 
-      added_scoped_labels_refs = [scoped_label_group1_2, scoped_label_group2_1, scoped_label_group3_1].map(&:to_reference).sort.join(' ')
-      removed_scoped_labels_refs = [scoped_label_group1_1, scoped_label_group2_2].map(&:to_reference).sort.join(' ')
+      added_scoped_labels_refs = [scoped_label_group1_2, scoped_label_group2_1, scoped_label_group3_1, label].map(&:to_reference).sort.join(' ')
+      removed_scoped_labels_refs = [scoped_label_group1_1, scoped_label_group2_2, label2].map(&:to_reference).sort.join(' ')
 
       expected = [
-        "added #{added_scoped_labels_refs} scoped labels " \
-          "and automatically removed #{removed_scoped_labels_refs} labels",
-        "added #{label.to_reference} label and removed #{label2.to_reference} label",
+        "added #{added_scoped_labels_refs} labels and removed #{removed_scoped_labels_refs} labels",
         "added #{label.to_reference} label",
         "added #{label2.to_reference} label"
       ]
 
-      expect(notes.count).to eq(4)
+      expect(notes.count).to eq(3)
       expect(notes.map(&:note)).to match_array(expected)
     end
 
     context 'scoped labels' do
-      context 'when all labels are automatically removed' do
-        it 'adds "automatically removed" message' do
+      context 'when all labels are removed' do
+        it 'adds "removed" message for scoped labels' do
           create_label_event(created_at: time, label: scoped_label_group1_1, action: :add)
           create_label_event(created_at: time, label: scoped_label_group1_2, action: :remove)
           create_label_event(created_at: time, label: scoped_label_group2_1, action: :add)
@@ -73,7 +71,7 @@ RSpec.describe ResourceEvents::MergeIntoNotesService, feature_category: :team_pl
           added_scoped_labels_refs = [scoped_label_group1_1, scoped_label_group2_1].map(&:to_reference).sort.join(' ')
           removed_scoped_labels_refs = [scoped_label_group1_2, scoped_label_group2_2].map(&:to_reference).sort.join(' ')
 
-          expect(note).to eq("added #{added_scoped_labels_refs} scoped labels and automatically removed #{removed_scoped_labels_refs} labels")
+          expect(note).to eq("added #{added_scoped_labels_refs} labels and removed #{removed_scoped_labels_refs} labels")
         end
       end
 
@@ -88,7 +86,7 @@ RSpec.describe ResourceEvents::MergeIntoNotesService, feature_category: :team_pl
           added_scoped_labels_refs = scoped_label_group1_1.to_reference
           removed_scoped_labels_refs = [scoped_label_group1_2, scoped_label_group2_1].map(&:to_reference).sort.join(' ')
 
-          expect(note).to eq("added #{added_scoped_labels_refs} scoped label and removed #{removed_scoped_labels_refs} labels")
+          expect(note).to eq("added #{added_scoped_labels_refs} label and removed #{removed_scoped_labels_refs} labels")
         end
       end
     end
