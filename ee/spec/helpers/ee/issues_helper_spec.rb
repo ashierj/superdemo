@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe EE::IssuesHelper do
+RSpec.describe EE::IssuesHelper, feature_category: :team_planning do
   let(:group) { create :group }
   let(:project) { create :project, group: group }
   let(:issue) { create :issue, project: project }
@@ -126,6 +126,7 @@ RSpec.describe EE::IssuesHelper do
       it 'returns data with licensed features enabled' do
         expected = {
           has_blocked_issues_feature: 'true',
+          has_epics_feature: 'true',
           has_issuable_health_status_feature: 'true',
           has_issue_weights_feature: 'true',
           has_iterations_feature: 'true',
@@ -148,12 +149,21 @@ RSpec.describe EE::IssuesHelper do
 
     context 'when features are disabled' do
       before do
-        stub_licensed_features(epics: false, iterations: false, issue_weights: false, issuable_health_status: false, blocked_issues: false, multiple_issue_assignees: false, okrs: false)
+        stub_licensed_features(
+          blocked_issues: false,
+          epics: false,
+          issuable_health_status: false,
+          issue_weights: false,
+          iterations: false,
+          multiple_issue_assignees: false,
+          okrs: false
+        )
       end
 
       it 'returns data with licensed features disabled' do
         expected = {
           has_blocked_issues_feature: 'false',
+          has_epics_feature: 'false',
           has_issuable_health_status_feature: 'false',
           has_issue_weights_feature: 'false',
           has_iterations_feature: 'false',
@@ -197,6 +207,7 @@ RSpec.describe EE::IssuesHelper do
         expected = {
           can_bulk_update: 'true',
           has_blocked_issues_feature: 'true',
+          has_epics_feature: 'true',
           has_issuable_health_status_feature: 'true',
           has_issue_weights_feature: 'true',
           has_iterations_feature: 'true',
@@ -211,13 +222,23 @@ RSpec.describe EE::IssuesHelper do
 
     context 'when features are disabled' do
       before do
-        stub_licensed_features(blocked_issues: false, epics: false, group_bulk_edit: false, issuable_health_status: false, issue_weights: false, iterations: false, multiple_issue_assignees: false, okrs: false)
+        stub_licensed_features(
+          blocked_issues: false,
+          epics: false,
+          group_bulk_edit: false,
+          issuable_health_status: false,
+          issue_weights: false,
+          iterations: false,
+          multiple_issue_assignees: false,
+          okrs: false
+        )
       end
 
       it 'returns data with licensed features disabled' do
         expected = {
           can_bulk_update: 'false',
           has_blocked_issues_feature: 'false',
+          has_epics_feature: 'false',
           has_issuable_health_status_feature: 'false',
           has_issue_weights_feature: 'false',
           has_iterations_feature: 'false',
