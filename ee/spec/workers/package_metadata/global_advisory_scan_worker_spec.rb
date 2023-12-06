@@ -15,7 +15,7 @@ RSpec.describe PackageMetadata::GlobalAdvisoryScanWorker, feature_category: :sof
   context 'when advisory exists' do
     it 'calls the advisory scanning service with the instantiated advisory' do
       consume_event(subscriber: described_class, event: event)
-      expect(PackageMetadata::AdvisoryScanService).to have_received(:execute).with(advisory, global: true)
+      expect(PackageMetadata::AdvisoryScanService).to have_received(:execute).with(advisory)
     end
   end
 
