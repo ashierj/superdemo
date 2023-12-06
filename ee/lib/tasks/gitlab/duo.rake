@@ -6,5 +6,10 @@ namespace :gitlab do
     task :setup, [:root_group_path] => :environment do |_, args|
       Gitlab::Duo::Developments::Setup.new(args).execute
     end
+
+    desc 'GitLab | Duo | Enable GitLab Duo feature flags'
+    task enable_feature_flags: :gitlab_environment do
+      Gitlab::Duo::Developments::FeatureFlagEnabler.execute
+    end
   end
 end
