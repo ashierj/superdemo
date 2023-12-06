@@ -39,16 +39,16 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
       end
 
       it 'shows action buttons' do
-        expect(page).to have_button('Archive test case')
+        expect(page).to have_button('Archive')
         expect(page).to have_link('New test case', href: new_project_quality_test_case_path(project))
         expect(page).not_to have_button('Options')
       end
 
       it 'archives test case' do
-        click_button('Archive test case')
+        click_button('Archive')
 
         expect(page).to have_css('.gl-badge', text: 'Archived')
-        expect(page).to have_button('Reopen test case')
+        expect(page).to have_button('Reopen')
       end
     end
 

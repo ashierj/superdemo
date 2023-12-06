@@ -1,9 +1,7 @@
-import { GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
-
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
-import { mockCurrentUserTodo, mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
+import { mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
@@ -13,7 +11,6 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import projectTestCase from 'ee/test_case_show/queries/project_test_case.query.graphql';
 
 import { TYPE_TEST_CASE, WORKSPACE_PROJECT } from '~/issues/constants';
-import waitForPromises from 'helpers/wait_for_promises';
 import { mockProvide, mockTaskCompletionResponse } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -24,7 +21,6 @@ describe('TestCaseSidebar', () => {
   const createComponent = ({
     provide = {},
     sidebarExpanded = true,
-    todo = mockCurrentUserTodo,
     selectedLabels = mockLabels,
     moved = false,
   } = {}) => {
@@ -38,7 +34,6 @@ describe('TestCaseSidebar', () => {
       apolloProvider,
       propsData: {
         sidebarExpanded,
-        todo,
         selectedLabels,
         moved,
       },
@@ -49,8 +44,6 @@ describe('TestCaseSidebar', () => {
   const findSidebarConfidentialityWidget = () =>
     wrapper.findComponent(SidebarConfidentialityWidget);
   const findProjectSelect = () => wrapper.findComponent(ProjectSelect);
-  const findCollapsedTodoButton = () => wrapper.findByTestId('collapsed-button');
-  const findExpandedTodoEl = () => wrapper.findByTestId('todo');
 
   beforeEach(() => {
     setHTMLFixture('<aside class="right-sidebar"></aside>');
@@ -58,52 +51,6 @@ describe('TestCaseSidebar', () => {
 
   afterEach(() => {
     resetHTMLFixture();
-  });
-
-  describe('To Do section', () => {
-    it('does not render', () => {
-      createComponent({
-        provide: {
-          canEditTestCase: false,
-        },
-      });
-
-      expect(findExpandedTodoEl().exists()).toBe(false);
-      expect(findCollapsedTodoButton().exists()).toBe(false);
-    });
-
-    describe('when expanded', () => {
-      it('renders expanded todo button', () => {
-        createComponent();
-
-        const todoEl = findExpandedTodoEl();
-
-        expect(todoEl.text()).toContain('To Do');
-        expect(todoEl.findComponent(GlButton).text()).toBe('Add a to do');
-      });
-    });
-
-    describe('when collapsed', () => {
-      it('renders collapsed todo button', async () => {
-        createComponent({
-          sidebarExpanded: false,
-        });
-        await waitForPromises();
-
-        const todoButton = findCollapsedTodoButton();
-
-        expect(todoButton.attributes('title')).toBe('Add a to do');
-        expect(todoButton.findComponent(GlIcon).exists()).toBe(true);
-      });
-
-      it('display loading icon', () => {
-        createComponent({
-          sidebarExpanded: false,
-        });
-
-        expect(findCollapsedTodoButton().findComponent(GlLoadingIcon).exists()).toBe(true);
-      });
-    });
   });
 
   describe('Label select widget', () => {
