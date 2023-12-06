@@ -304,7 +304,7 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
           project_full_path: project.full_path,
           vulnerabilities_export_endpoint: "/api/v4/security/projects/#{project.id}/vulnerability_exports",
           no_vulnerabilities_svg_path: start_with('/assets/illustrations/empty-state/empty-search-md-'),
-          empty_state_svg_path: start_with('/assets/illustrations/security-dashboard-empty-state'),
+          empty_state_svg_path: start_with('/assets/illustrations/empty-state/empty-dashboard-md'),
           operational_configuration_path: new_project_security_policy_path(project),
           security_dashboard_empty_svg_path: start_with('/assets/illustrations/empty-state/empty-secure-md'),
           new_project_pipeline_path: "/#{project.full_path}/-/pipelines/new",

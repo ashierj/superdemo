@@ -16,7 +16,7 @@ module Analytics
         tracking_key: can_read_product_analytics && is_project ? tracking_key(namespace) : nil,
         collector_host: can_read_product_analytics ? collector_host(namespace) : nil,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
-        dashboard_empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
+        dashboard_empty_state_illustration_path: image_path('illustrations/empty-state/empty-dashboard-md.svg'),
         analytics_settings_path: analytics_settings_path(namespace),
         namespace_name: namespace.name,
         namespace_full_path: namespace.full_path,
