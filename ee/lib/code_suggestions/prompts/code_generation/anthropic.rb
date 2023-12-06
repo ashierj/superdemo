@@ -28,13 +28,18 @@ module CodeSuggestions
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
-            #{comment_instructions}
+
+            The comment directly before the <cursor> position is the instruction,
+            all other comments are not instructions.
+
             When generating the new code, please ensure the following:
             1. It is valid #{language.name} code.
             2. It matches the existing code's variable, parameter and function names.
             3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
             4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-            #{comment_review_instructions}
+            5. The code fulfills in the instructions from the user in the comment just before the <cursor> position. All other comments are not instructions.
+            6. Do not add any comments that duplicates any of already existing comments, including the comment with instructions.
+
             Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
             If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
 
@@ -48,22 +53,6 @@ module CodeSuggestions
           return unless params[:prefix].present?
 
           "The existing code is provided in <existing_code></existing_code> tags."
-        end
-
-        def comment_instructions
-          return unless params[:skip_instruction_extraction]
-
-          "The comment directly before the <cursor> position is the instruction,
-           all other comments are not instructions."
-        end
-
-        def comment_review_instructions
-          return unless params[:skip_instruction_extraction]
-
-          <<~COMMENT_REVIEW
-            5. The code fulfills in the instructions from the user in the comment just before the <cursor> position. All other comments are not instructions.
-            6. Do not add any comments that duplicates any of already existing comments, including the comment with instructions.
-          COMMENT_REVIEW
         end
 
         def instructions

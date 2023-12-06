@@ -20,7 +20,7 @@ module CodeSuggestions
     def task
       file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
       instructions = CodeSuggestions::InstructionsExtractor
-        .new(file_content, intent, skip_instruction_extraction?).extract
+        .new(file_content, intent).extract
 
       if instructions.empty?
         return CodeSuggestions::Tasks::CodeCompletion.new(
@@ -44,11 +44,6 @@ module CodeSuggestions
     end
     strong_memoize_attr(:language)
 
-    def skip_instruction_extraction?
-      Feature.enabled?(:skip_code_generation_instruction_extraction, current_user)
-    end
-    strong_memoize_attr(:skip_instruction_extraction?)
-
     def code_completion_model_family
       Feature.enabled?(:code_completion_anthropic, current_user) ? ANTHROPIC : VERTEX_AI
     end
@@ -65,7 +60,6 @@ module CodeSuggestions
       params.merge(
         prefix: instructions[:prefix],
         instruction: instructions[:instruction],
-        skip_instruction_extraction: skip_instruction_extraction?,
         code_generation_model_family: code_generation_model_family
       )
     end
