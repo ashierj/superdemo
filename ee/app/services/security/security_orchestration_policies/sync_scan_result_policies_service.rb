@@ -5,13 +5,12 @@ module Security
     class SyncScanResultPoliciesService
       def initialize(configuration)
         @configuration = configuration
+        @sync_project_service = SyncScanResultPoliciesProjectService.new(configuration)
       end
 
       def execute
         projects.find_each do |project|
-          Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService
-            .new(configuration)
-            .execute(project.id)
+          @sync_project_service.execute(project.id)
         end
       end
 
@@ -21,7 +20,7 @@ module Security
 
       def projects
         @projects ||= if configuration.namespace?
-                        configuration.namespace.all_projects
+                        configuration.namespace.all_projects.select(:id)
                       else
                         Project.id_in(configuration.project_id)
                       end

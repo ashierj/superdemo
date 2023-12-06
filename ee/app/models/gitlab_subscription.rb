@@ -173,6 +173,7 @@ class GitlabSubscription < ApplicationRecord
 
   # If the subscription changes, we reset max_seats_used and seats_owed
   # if they're out of date, so that we don't carry them over from the previous term/subscription.
+  # One exception is the plan switch between `premium` and `ultimate_trial_paid_customer`.
   def reset_seat_statistics
     return unless reset_seat_statistics?
 
@@ -200,11 +201,51 @@ class GitlabSubscription < ApplicationRecord
   end
 
   def reset_seat_statistics?
+    return reset_involves_ultimate_trial_paid_customer_plan? if involves_ultimate_trial_paid_customer_plan?
     return false unless has_a_paid_hosted_plan?
     return true if new_term?
     return true if trial_changed? && !trial
 
     max_seats_used_changed_at.present? && max_seats_used_changed_at.to_date < start_date
+  end
+
+  def ultimate_trial_paid_customer_plan_id
+    strong_memoize(:ultimate_trial_paid_customer_plan_id) do
+      ::Plan.find_by(name: ::Plan::ULTIMATE_TRIAL_PAID_CUSTOMER)&.id
+    end
+  end
+
+  def premium_plan_id
+    strong_memoize(:premium_plan_id) do
+      ::Plan.find_by(name: ::Plan::PREMIUM)&.id
+    end
+  end
+
+  def involves_ultimate_trial_paid_customer_plan?
+    return false unless ultimate_trial_paid_customer_plan_id
+
+    ultimate_trial_paid_customer_plan_id.in?([hosted_plan_id, hosted_plan_id_was])
+  end
+
+  def reset_involves_ultimate_trial_paid_customer_plan?
+    # Do not reset if plan unchanged on ultimate_trial_paid_customer_plan
+    return false unless hosted_plan_id_changed?
+
+    # Do not reset if switching to ultimate_trial_paid_customer_plan
+    return false if hosted_plan_id == ultimate_trial_paid_customer_plan_id
+
+    # Now hosted_plan_id_was must be ultimate_trial_paid_customer_plan_id
+    return false if hosted_plan_id == premium_plan_id && premium_plan_not_renewed?
+
+    # Either the premium plan was renewed, or it is upgrading to ultimate plan
+    true
+  end
+
+  def premium_plan_not_renewed?
+    previous_premium_gs = GitlabSubscriptionHistory
+                            .where(gitlab_subscription_id: id, hosted_plan_id: premium_plan_id).order(:id).last
+
+    previous_premium_gs&.start_date == start_date && previous_premium_gs&.end_date == end_date
   end
 
   def tracked_attributes_changed?
