@@ -228,7 +228,7 @@ export default {
     <textarea
       rows="1"
       :placeholder="s__('vulnerability|Add a comment')"
-      class="reply-placeholder-text-field gl-font-regular!"
+      class="reply-placeholder-text-field"
       data-testid="add-comment-textarea"
       @focus="showCommentInput"
     ></textarea>
