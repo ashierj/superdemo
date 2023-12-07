@@ -1,5 +1,4 @@
 import { GlAlert, GlEmptyState, GlFormCheckbox } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
@@ -21,14 +20,16 @@ describe('Security Dashboard Table', () => {
   let store;
   let wrapper;
 
-  beforeEach(() => {
+  const createWrapper = ({ slots, canAdminVulnerability = true } = {}) => {
     store = new Vuex.Store();
     setupStore(store);
     wrapper = shallowMountExtended(SecurityDashboardTable, {
       store,
+      slots,
+      provide: { canAdminVulnerability },
     });
     store.state.vulnerabilities.vulnerabilitiesEndpoint = vulnerabilitiesEndpoint;
-  });
+  };
 
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
   const findAlert = () => wrapper.findComponent(GlAlert);
@@ -37,6 +38,7 @@ describe('Security Dashboard Table', () => {
 
   describe('while loading', () => {
     beforeEach(() => {
+      createWrapper();
       store.commit(`vulnerabilities/${REQUEST_VULNERABILITIES}`);
     });
 
@@ -47,6 +49,7 @@ describe('Security Dashboard Table', () => {
 
   describe('with a list of vulnerabilities', () => {
     beforeEach(() => {
+      createWrapper();
       store.commit(`vulnerabilities/${RECEIVE_VULNERABILITIES_SUCCESS}`, {
         vulnerabilities: mockDataVulnerabilities,
         pageInfo: {},
@@ -84,6 +87,7 @@ describe('Security Dashboard Table', () => {
 
   describe('with no vulnerabilities', () => {
     beforeEach(() => {
+      createWrapper();
       store.commit(`vulnerabilities/${RECEIVE_VULNERABILITIES_SUCCESS}`, {
         vulnerabilities: [],
         pageInfo: {},
@@ -97,6 +101,7 @@ describe('Security Dashboard Table', () => {
 
   describe('on error', () => {
     beforeEach(() => {
+      createWrapper();
       store.commit(`vulnerabilities/${RECEIVE_VULNERABILITIES_ERROR}`);
     });
 
@@ -111,11 +116,8 @@ describe('Security Dashboard Table', () => {
 
   describe('with a custom empty state', () => {
     beforeEach(() => {
-      wrapper = shallowMount(SecurityDashboardTable, {
-        store,
-        slots: {
-          'empty-state': '<div class="customEmptyState">Hello World</div>',
-        },
+      createWrapper({
+        slots: { 'empty-state': '<div class="customEmptyState">Hello World</div>' },
       });
 
       store.commit(`vulnerabilities/${RECEIVE_VULNERABILITIES_SUCCESS}`, {
@@ -127,5 +129,16 @@ describe('Security Dashboard Table', () => {
     it('should render the custom empty state', () => {
       expect(wrapper.find('.customEmptyState').exists()).toBe(true);
     });
+  });
+
+  describe('can admin vulnerability', () => {
+    it.each([true, false])(
+      'shows/hides the select all checkbox if the user can admin vulnerability = %s',
+      (canAdminVulnerability) => {
+        createWrapper({ canAdminVulnerability });
+
+        expect(findCheckbox().exists()).toBe(canAdminVulnerability);
+      },
+    );
   });
 });

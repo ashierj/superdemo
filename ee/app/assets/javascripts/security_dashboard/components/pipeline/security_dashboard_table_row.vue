@@ -28,6 +28,7 @@ export default {
     VulnerabilityIssueLink,
   },
   mixins: [glFeatureFlagsMixin()],
+  inject: ['canAdminVulnerability'],
   props: {
     vulnerability: {
       type: Object,
@@ -120,7 +121,7 @@ export default {
     class="gl-responsive-table-row p-2"
     :class="{ dismissed: dismissalData, 'gl-bg-blue-50': isSelected }"
   >
-    <div class="table-section section-5">
+    <div v-if="canAdminVulnerability" class="table-section section-5">
       <gl-form-checkbox
         :checked="isSelected"
         :inline="true"

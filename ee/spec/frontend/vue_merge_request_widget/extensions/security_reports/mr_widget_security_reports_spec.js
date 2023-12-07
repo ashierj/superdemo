@@ -96,6 +96,7 @@ describe('MR Widget Security Reports', () => {
     wrapper = mountFn(MRSecurityWidget, {
       apolloProvider: createMockApollo([findingHandler, ...additionalHandlers]),
       provide: {
+        canAdminVulnerability: true,
         glFeatures: {
           standaloneFindingModalMergeRequestWidget: enableStandaloneModal,
         },
