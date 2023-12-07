@@ -33,7 +33,7 @@ module Namespaces
       end
 
       def content_class
-        "container-limited limit-container-width" unless user.layout == "fluid"
+        "container-limited" unless user.layout == "fluid"
       end
 
       def storage_limit_docs_link
