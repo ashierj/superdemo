@@ -694,12 +694,7 @@ module EE
     def hosted_plan_for(subscription)
       return unless subscription
 
-      plan = subscription.hosted_plan
-      if plan && !subscription.legacy?
-        ::Subscriptions::NewPlanPresenter.new(plan)
-      else
-        plan
-      end
+      subscription.hosted_plan
     end
 
     def update_within_same_minute?
