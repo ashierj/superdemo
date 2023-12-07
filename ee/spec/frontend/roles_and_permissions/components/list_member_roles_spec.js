@@ -30,14 +30,14 @@ jest.mock('~/alert', () => ({
 Vue.use(VueApollo);
 
 const DEFAULT_PERMISSIONS = [
-  { name: 'Permission A', description: 'Description A', value: 'read_code' },
-  { name: 'Permission B', description: 'Description B', value: 'read_vulnerability' },
-  { name: 'Permission C', description: 'Description C', value: 'admin_vulnerability' },
+  { name: 'Permission A', description: 'Description A', value: 'READ_CODE' },
+  { name: 'Permission B', description: 'Description B', value: 'READ_VULNERABILITY' },
+  { name: 'Permission C', description: 'Description C', value: 'ADMIN_VULNERABILITY' },
 ];
 const NON_STANDARD_PERMISSION = {
   name: 'Permission D',
   description: 'Description D',
-  value: 'non_standard_permission',
+  value: 'NON_STANDARD_PERMISSION',
 };
 const PERMISSIONS = [...DEFAULT_PERMISSIONS, NON_STANDARD_PERMISSION];
 

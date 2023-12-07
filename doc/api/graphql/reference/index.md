@@ -567,6 +567,10 @@ Returns [`MemberRole`](#memberrole).
 
 List of all customizable permissions.
 
+WARNING:
+**Introduced** in 16.4.
+This feature is an Experiment. It can be changed or removed at any time.
+
 Returns [`CustomizablePermissionConnection`](#customizablepermissionconnection).
 
 This field returns a [connection](#connections). It accepts the

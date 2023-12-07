@@ -15,9 +15,11 @@ module Types
       field :value, GraphQL::Types::String, null: false, description: 'Value of the permission.'
 
       def available_for
+        symbolized_value = object[:value].downcase.to_sym
+
         result = []
-        result << :project if MemberRole::ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS.include?(object[:value])
-        result << :group if MemberRole::ALL_CUSTOMIZABLE_GROUP_PERMISSIONS.include?(object[:value])
+        result << :project if MemberRole::ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS.include?(symbolized_value)
+        result << :group if MemberRole::ALL_CUSTOMIZABLE_GROUP_PERMISSIONS.include?(symbolized_value)
         result
       end
 
