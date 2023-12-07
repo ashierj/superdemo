@@ -54844,6 +54844,9 @@ msgstr ""
 msgid "WorkItem|Cancel"
 msgstr ""
 
+msgid "WorkItem|Child items"
+msgstr ""
+
 msgid "WorkItem|Child objectives and key results"
 msgstr ""
 
@@ -54931,6 +54934,9 @@ msgstr ""
 msgid "WorkItem|New task"
 msgstr ""
 
+msgid "WorkItem|No child items are currently assigned. Use child items to break down this issue into smaller parts."
+msgstr ""
+
 msgid "WorkItem|No iteration"
 msgstr ""
 
@@ -55012,6 +55018,9 @@ msgstr ""
 msgid "WorkItem|Something went wrong when deleting the task. Please try again."
 msgstr ""
 
+msgid "WorkItem|Something went wrong when fetching child items. Please refresh this page."
+msgstr ""
+
 msgid "WorkItem|Something went wrong when fetching items. Please refresh this page."
 msgstr ""
 
@@ -55019,9 +55028,6 @@ msgid "WorkItem|Something went wrong when fetching iterations. Please try again.
 msgstr ""
 
 msgid "WorkItem|Something went wrong when fetching labels. Please try again."
-msgstr ""
-
-msgid "WorkItem|Something went wrong when fetching tasks. Please refresh this page."
 msgstr ""
 
 msgid "WorkItem|Something went wrong when fetching work item types. Please try again"
