@@ -32,6 +32,15 @@ RSpec.describe Gitlab::UsageDataMetrics, feature_category: :service_ping do
         expect(subject[:counts]).to include(:saml_group_links)
         expect(subject[:counts]).to include(:users_with_custom_roles)
         expect(subject[:counts]).to include(:member_roles)
+
+        # maven dependency proxy
+        expect(subject[:counts]).to include(:projects_with_dependency_proxy_for_maven_packages)
+        expect(subject[:counts]).to include(:total_dependency_proxy_packages_maven_file_pulled_from_cache_monthly)
+        expect(subject[:counts]).to include(:total_dependency_proxy_packages_maven_file_pulled_from_external_monthly)
+        expect(subject[:counts]).to include(:total_dependency_proxy_packages_maven_file_pulled_from_cache_weekly)
+        expect(subject[:counts]).to include(:total_dependency_proxy_packages_maven_file_pulled_from_external_weekly)
+        expect(subject[:counts]).to include(:total_dependency_proxy_packages_maven_file_pulled_from_cache_all)
+        expect(subject[:counts]).to include(:total_dependency_proxy_packages_maven_file_pulled_from_external_all)
       end
 
       describe 'Redis_HLL_counters' do
