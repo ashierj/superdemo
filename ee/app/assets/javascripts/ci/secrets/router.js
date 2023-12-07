@@ -34,8 +34,8 @@ export default (base) => {
         name: NEW_ROUTE_NAME,
         path: '/new',
         component: SecretFormWrapper,
-        props: (route) => {
-          return { secretKey: route.params.key };
+        props: ({ params: { key } }) => {
+          return { secretKey: key };
         },
         meta: {
           getBreadcrumbText: () => s__('Secrets|New secret'),
@@ -44,8 +44,8 @@ export default (base) => {
       {
         path: '/:key',
         component: SecretTabs,
-        props: (route) => {
-          return { secretKey: route.params.key, routeName: route.name };
+        props: ({ params: { key }, name }) => {
+          return { secretKey: key, routeName: name };
         },
         children: [
           {
@@ -75,8 +75,8 @@ export default (base) => {
         name: EDIT_ROUTE_NAME,
         path: '/:key/edit',
         component: SecretFormWrapper,
-        props: {
-          isEditing: true,
+        props: ({ params: { key } }) => {
+          return { secretKey: key, isEditing: true };
         },
         meta: {
           getBreadcrumbText: () => __('Edit'),

@@ -1,4 +1,5 @@
 <script>
+import { sprintf, s__ } from '~/locale';
 import { INDEX_ROUTE_NAME, DETAILS_ROUTE_NAME } from '../../constants';
 import SecretForm from './secret_form.vue';
 
@@ -16,6 +17,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+  },
+  computed: {
+    editPageTitle() {
+      return sprintf(s__('Secrets|Edit %{key}'), { key: this.secretKey });
     },
   },
   INDEX_ROUTE_NAME,
@@ -36,7 +42,7 @@ export default {
     </template>
 
     <h1 v-if="isEditing">
-      {{ sprintf(s__('Secrets|Edit %{key}'), { key: secretKey }) }}
+      {{ editPageTitle }}
     </h1>
 
     <secret-form
