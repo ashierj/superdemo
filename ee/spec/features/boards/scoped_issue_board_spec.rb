@@ -372,6 +372,10 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
         let!(:issue_2) { create(:labeled_issue, project: project, labels: [label_2]) }
         let!(:issue_3) { create(:labeled_issue, project: project, labels: [label_1, label_2]) }
 
+        before do
+          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(101)
+        end
+
         it 'adds label to board' do
           label_title = issue.labels.first.title
           visit project_boards_path(project)
