@@ -15,14 +15,11 @@ module Gitlab
 
       PRIMARY_GEO_JOBS = %w[
         geo_prune_event_log_worker
-        geo_repository_verification_primary_batch_worker
       ].freeze
 
       SECONDARY_GEO_JOBS = %w[
         geo_registry_sync_worker
         geo_repository_registry_sync_worker
-        geo_repository_sync_worker
-        geo_repository_verification_secondary_scheduler_worker
         geo_secondary_registry_consistency_worker
         geo_secondary_usage_data_cron_worker
         geo_sync_timeout_cron_worker

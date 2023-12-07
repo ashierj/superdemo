@@ -17,6 +17,13 @@ export default {
     EpicHealthStatus,
     EpicActionsSplitButton,
   },
+  props: {
+    isOpenString: {
+      type: String,
+      required: true,
+      default: '',
+    },
+  },
   data() {
     return {
       isOpen: true,
@@ -198,6 +205,7 @@ export default {
           category="tertiary"
           size="small"
           :icon="toggleIcon"
+          :aria-expanded="isOpenString"
           :aria-label="toggleLabel"
           data-testid="toggle-links"
           @click="handleToggle"

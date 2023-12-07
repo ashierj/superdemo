@@ -15,7 +15,7 @@ import { mockInitialConfig, mockParentItem, mockQueryResponse } from '../mock_da
 
 Vue.use(Vuex);
 
-const createComponent = ({ slots } = {}) => {
+const createComponent = ({ slots, isOpenString } = { isOpenString: 'expanded' }) => {
   const store = createDefaultStore();
   const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
 
@@ -39,6 +39,9 @@ const createComponent = ({ slots } = {}) => {
   return shallowMountExtended(RelatedItemsTreeHeader, {
     store,
     slots,
+    propsData: {
+      isOpenString,
+    },
   });
 };
 
@@ -271,6 +274,12 @@ describe('RelatedItemsTree', () => {
 
       it('is expanded by default', () => {
         expect(findToggleButton().props('icon')).toBe('chevron-lg-up');
+      });
+
+      it('has an aria-expanded state on the toggle button that is controlled by the isOpenString prop', () => {
+        expect(findToggleButton().attributes('aria-expanded')).toBe('expanded');
+        wrapper = createComponent({ isOpenString: 'collapsed' });
+        expect(findToggleButton().attributes('aria-expanded')).toBe('collapsed');
       });
 
       it('expands on click toggle button', async () => {

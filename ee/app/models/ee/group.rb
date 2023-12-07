@@ -891,9 +891,12 @@ module EE
         .order(component_version_id: :desc, project_count: :desc, id: :desc)
       )
 
+      select_values = Sbom::Occurrence.column_names + %w[occurrence_count project_count]
+
       Sbom::Occurrence
         .with(our_occurrences.to_arel)
         .from(our_occurrences.alias_to(Sbom::Occurrence.arel_table))
+        .select(*select_values)
     end
 
     def sbom_licenses(limit:)
