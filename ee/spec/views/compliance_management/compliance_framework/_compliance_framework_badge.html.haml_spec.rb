@@ -15,7 +15,7 @@ RSpec.describe 'compliance_management/compliance_framework/_compliance_framework
     it 'renders a badge' do
       render('compliance_management/compliance_framework/compliance_framework_badge', project: project)
 
-      expect(rendered).to have_selector('.compliance-framework-pill')
+      expect(rendered).to have_selector('[data-testid="compliance-framework-badge"]')
     end
   end
 
@@ -25,7 +25,7 @@ RSpec.describe 'compliance_management/compliance_framework/_compliance_framework
     it 'does not render any badge' do
       render('compliance_management/compliance_framework/compliance_framework_badge', project: project)
 
-      expect(rendered).not_to have_selector('.compliance-framework-pill')
+      expect(rendered).not_to have_selector('[data-testid="compliance-framework-badge"]')
     end
   end
 end
