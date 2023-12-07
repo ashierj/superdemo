@@ -204,9 +204,11 @@ export default {
         'disabled-content': disableContents,
         'overflow-auto': directChildren.length > $options.OVERFLOW_AFTER,
       }"
-      :aria-expanded="isOpenString"
     >
-      <related-items-tree-header @toggleRelatedItemsView="handleRelatedItemsView" />
+      <related-items-tree-header
+        :is-open-string="isOpenString"
+        @toggleRelatedItemsView="handleRelatedItemsView"
+      />
       <slot-switch
         v-if="visibleForm && parentItem.confidential"
         :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [

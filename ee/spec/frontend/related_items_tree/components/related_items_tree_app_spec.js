@@ -249,6 +249,11 @@ describe('RelatedItemsTreeApp', () => {
       expect(findRelatedItemsTreeHeader().isVisible()).toBe(true);
     });
 
+    it('renders tree header component and passes is-open-string down to it', async () => {
+      await nextTick();
+      expect(findRelatedItemsTreeHeader().props('isOpenString')).toBe('true');
+    });
+
     it('renders item add/create form container element', async () => {
       store.dispatch('toggleAddItemForm', {
         toggleState: true,
