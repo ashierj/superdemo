@@ -39,9 +39,11 @@ module MemberRoles
     def validate_member_role_belongs_to_same_root_namespace
       return unless member_role_id && group.custom_roles_enabled?
       return unless member_role.namespace_id
-      return if group.id == member_role.namespace_id
 
-      errors.add(:group, _("must belong to the same namespace as the custom role's namespace"))
+      return if group.id == member_role.namespace_id
+      return if group.root_ancestor.id == member_role.namespace_id
+
+      errors.add(:group, _("must be in same hierarchy as custom role's namespace"))
     end
   end
 end
