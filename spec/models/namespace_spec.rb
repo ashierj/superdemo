@@ -1146,7 +1146,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       expect(described_class.gfm_autocomplete_search('pare')).to eq([parent_group, group_1, group_2])
     end
 
-    it 'falls back to sorting by name' do
+    it 'falls back to sorting by full path' do
       expect(described_class.gfm_autocomplete_search('group')).to eq([group_2, group_1])
     end
   end

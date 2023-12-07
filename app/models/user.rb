@@ -861,7 +861,7 @@ class User < MainClusterwide::ApplicationRecord
             { pattern: query }
           ]
         )),
-        :name,
+        :username,
         :id
       )
     end

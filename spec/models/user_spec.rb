@@ -3384,7 +3384,7 @@ RSpec.describe User, feature_category: :user_profile do
       expect(described_class.gfm_autocomplete_search('user')).to eq([user_2, user_1])
     end
 
-    it 'falls back to sorting by name' do
+    it 'falls back to sorting by username' do
       expect(described_class.gfm_autocomplete_search('ser')).to eq([user_1, user_2])
     end
   end
