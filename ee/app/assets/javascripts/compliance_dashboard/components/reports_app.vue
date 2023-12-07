@@ -12,7 +12,7 @@ import {
   ROUTE_VIOLATIONS,
 } from '../constants';
 import ReportHeader from './shared/report_header.vue';
-import Export from './shared/export_disclosure_dropdown.vue';
+import ReportsExport from './shared/export_disclosure_dropdown.vue';
 
 export default {
   name: 'ComplianceReportsApp',
@@ -20,7 +20,7 @@ export default {
     GlTabs,
     GlTab,
     ReportHeader,
-    Export,
+    ReportsExport,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -101,7 +101,7 @@ export default {
       :documentation-path="$options.documentationPath"
     >
       <template #actions>
-        <export
+        <reports-export
           class="gl-float-right"
           :frameworks-csv-export-path="frameworksCsvExportPath"
           :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
