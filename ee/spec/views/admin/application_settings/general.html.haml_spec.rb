@@ -135,14 +135,14 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     end
   end
 
-  describe 'instance-level code suggestions settings', feature_category: :code_suggestions do
+  describe 'instance-level Code Suggestions settings', feature_category: :code_suggestions do
     before do
       allow(::Gitlab).to receive(:org_or_com?).and_return(gitlab_org_or_com?)
       stub_licensed_features(code_suggestions: false)
     end
 
-    shared_examples 'does not render the form' do
-      it 'does not render the form' do
+    shared_examples 'does not render Code Suggestions toggle' do
+      it 'does not render Code Suggestions toggle' do
         render
         expect(rendered).not_to have_field('application_setting_instance_level_code_suggestions_enabled')
       end
@@ -151,7 +151,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     context 'when on .com or .org' do
       let(:gitlab_org_or_com?) { true }
 
-      it_behaves_like 'does not render the form'
+      it_behaves_like 'does not render Code Suggestions toggle'
     end
 
     context 'when not on .com and not on .org' do
@@ -163,9 +163,28 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             stub_licensed_features(code_suggestions: true)
           end
 
-          it 'renders the form' do
-            render
-            expect(rendered).to have_field('application_setting_instance_level_code_suggestions_enabled')
+          # TODO: clean up date-related tests after the Code Suggestions feature becomes GA (16.9+)
+          context 'when before the service start date' do
+            around do |example|
+              travel_to(CodeSuggestions::SelfManaged::GA_SERVICE_START_TIME - 1.day) do
+                example.run
+              end
+            end
+
+            it 'renders Code Suggestions toggle' do
+              render
+              expect(rendered).to have_field('application_setting_instance_level_code_suggestions_enabled')
+            end
+          end
+
+          context 'when after the service start date' do
+            around do |example|
+              travel_to(CodeSuggestions::SelfManaged::GA_SERVICE_START_TIME + 1.day) do
+                example.run
+              end
+            end
+
+            it_behaves_like 'does not render Code Suggestions toggle'
           end
         end
 
@@ -174,12 +193,12 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             stub_licensed_features(code_suggestions: false)
           end
 
-          it_behaves_like 'does not render the form'
+          it_behaves_like 'does not render Code Suggestions toggle'
         end
       end
 
       context 'with no license', :without_license do
-        it_behaves_like 'does not render the form'
+        it_behaves_like 'does not render Code Suggestions toggle'
       end
     end
   end
@@ -190,8 +209,8 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
       stub_licensed_features(ai_chat: false)
     end
 
-    shared_examples 'does not render the form' do
-      it 'does not render the form' do
+    shared_examples 'does not render AI Beta features toggle' do
+      it 'does not render AI Beta features toggle' do
         render
         expect(rendered).not_to have_field('application_setting_instance_level_ai_beta_features_enabled')
       end
@@ -200,7 +219,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     context 'when on .com or .org' do
       let(:gitlab_org_or_com?) { true }
 
-      it_behaves_like 'does not render the form'
+      it_behaves_like 'does not render AI Beta features toggle'
     end
 
     context 'when not on .com and not on .org' do
@@ -212,7 +231,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             stub_licensed_features(ai_chat: true)
           end
 
-          it 'renders the form' do
+          it 'renders AI Beta features toggle' do
             render
             expect(rendered).to have_field('application_setting_instance_level_ai_beta_features_enabled')
           end
@@ -222,7 +241,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
               stub_feature_flags(updated_ai_powered_features_menu_for_sm: false)
             end
 
-            it_behaves_like 'does not render the form'
+            it_behaves_like 'does not render AI Beta features toggle'
           end
         end
 
@@ -231,12 +250,48 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             stub_licensed_features(ai_chat: false)
           end
 
-          it_behaves_like 'does not render the form'
+          it_behaves_like 'does not render AI Beta features toggle'
         end
       end
 
       context 'with no license', :without_license do
-        it_behaves_like 'does not render the form'
+        it_behaves_like 'does not render AI Beta features toggle'
+      end
+    end
+  end
+
+  # Tests specific license-related UI change that happens when the Code Suggestions feature becomes GA:
+  # (internal) https://gitlab.com/gitlab-org/gitlab/-/issues/425047#note_1673643291
+  # TODO: clean-up after Code Suggestions is GA (16.9+)
+  describe 'entire instance-level ai-powered menu section visibility', feature_category: :duo_chat do
+    where(:before_ga, :ai_chat_available, :code_suggestions_available, :expect_section_is_visible) do
+      true  | false | false | false
+      true  | false | true  | true
+      true  | true  | false | true
+      true  | true  | true  | true
+      false | false | false | false
+      false | false | true  | false
+      false | true  | false | true
+      false | true  | true  | true
+    end
+
+    with_them do
+      it 'sets entire ai-powered menu section visibility correctly' do
+        allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+        stub_licensed_features(ai_chat: ai_chat_available, code_suggestions: code_suggestions_available)
+
+        ga_time = CodeSuggestions::SelfManaged::GA_SERVICE_START_TIME
+        test_time = before_ga ? ga_time - 1.day : ga_time + 1.day
+
+        travel_to(test_time) do
+          render
+
+          if expect_section_is_visible
+            expect(rendered).to have_content('AI-powered features')
+          else
+            expect(rendered).not_to have_content('AI-powered features')
+          end
+        end
       end
     end
   end
