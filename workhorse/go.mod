@@ -3,7 +3,7 @@ module gitlab.com/gitlab-org/gitlab/workhorse
 go 1.20
 
 require (
-	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.1.0
+	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.2.0
 	github.com/BurntSushi/toml v1.3.2
 	github.com/alecthomas/chroma/v2 v2.11.1
 	github.com/aws/aws-sdk-go v1.45.20
