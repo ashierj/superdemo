@@ -235,14 +235,6 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
             render
             expect(rendered).to have_field('application_setting_instance_level_ai_beta_features_enabled')
           end
-
-          context 'with :updated_ai_powered_features_menu_for_sm FF disabled' do
-            before do
-              stub_feature_flags(updated_ai_powered_features_menu_for_sm: false)
-            end
-
-            it_behaves_like 'does not render AI Beta features toggle'
-          end
         end
 
         context 'with :ai_chat feature not available' do
