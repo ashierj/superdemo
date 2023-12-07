@@ -6,11 +6,11 @@ exports[`Corpus upload modal corpus modal uploading state does show the upload p
   data-testid="upload-status"
 >
   <span
+    aria-label="Loading"
     class="gl-spinner-container"
     role="status"
   >
     <span
-      aria-label="Loading"
       class="gl-spinner gl-spinner-dark gl-spinner-sm gl-vertical-align-text-bottom!"
     />
   </span>
