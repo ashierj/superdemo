@@ -4,7 +4,12 @@ module Ci
   class AuditVariableChangeService < ::BaseContainerService
     include ::Audit::Changes
 
-    AUDITABLE_VARIABLE_CLASSES = [::Ci::Variable, ::Ci::GroupVariable].freeze
+    AUDITABLE_VARIABLE_CLASSES = [::Ci::Variable, ::Ci::GroupVariable, ::Ci::InstanceVariable].freeze
+    TEXT_COLUMNS = %i[key value].freeze
+    SECURITY_COLUMNS = {
+      protected: 'variable protection',
+      masked: 'variable masking'
+    }.freeze
 
     def execute
       return unless container.feature_available?(:audit_events)
@@ -14,16 +19,46 @@ module Ci
       when :create, :destroy
         log_audit_event(params[:action], params[:variable])
       when :update
-        audit_changes(
-          :protected,
-          as: 'variable protection', entity: container,
-          model: params[:variable], target_details: params[:variable].key,
-          event_type: event_type_name(params[:variable], params[:action])
-        )
+        audit_update(params[:variable])
       end
     end
 
     private
+
+    def audit_update(variable)
+      SECURITY_COLUMNS.each do |column, as_text|
+        audit_changes(
+          column,
+          as: as_text,
+          entity: container,
+          model: variable,
+          target_details: variable.key,
+          event_type: event_type_name(variable, :update)
+        )
+      end
+
+      TEXT_COLUMNS.compact.each do |column|
+        # instance variables don't have a :value column
+        next if column == :value && variable.is_a?(::Ci::InstanceVariable)
+
+        audit_changes(
+          column,
+          entity: container,
+          model: variable,
+          target_details: variable.key,
+          event_type: event_type_name(variable, :update),
+          skip_changes: skip_changes?(variable, column)
+        )
+      end
+    end
+
+    def skip_changes?(variable, column)
+      return false unless column == :value
+      # do not include masked values in audit, if masking or unmasking
+      return true if variable.masked?
+
+      variable.masked_changed? && variable.masked_change.any?
+    end
 
     def log_audit_event(action, variable)
       audit_context = {

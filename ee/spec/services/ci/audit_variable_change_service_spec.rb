@@ -8,6 +8,7 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
+  let(:instance_variable) { create(:ci_instance_variable, key: 'CI_DEBUG_TRACE', value: true) }
   let(:group_variable) { create(:ci_group_variable, group: group) }
   let(:destination) { create(:external_audit_event_destination, group: group) }
   let(:project) { create(:project, group: group) }
@@ -27,13 +28,13 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
       expect { execute }.to change(AuditEvent, :count).from(0).to(1)
     end
 
-    it 'logs variable group creation' do
+    it 'logs (project/group/instance) variable creation' do
       execute
 
-      audit_event = AuditEvent.last.present
+      audit_event = AuditEvent.last.presence
 
-      expect(audit_event.action).to eq(message)
-      expect(audit_event.target).to eq(variable.key)
+      expect(audit_event.details[:custom_message]).to eq(message)
+      expect(audit_event.details[:target_details]).to eq(variable.key)
     end
 
     it_behaves_like 'sends correct event type in audit event stream' do
@@ -55,14 +56,55 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
     it 'logs variable protection update' do
       execute
 
-      audit_event = AuditEvent.last.present
+      audit_event = AuditEvent.last.presence
 
-      expect(audit_event.action).to eq('Changed variable protection from false to true')
-      expect(audit_event.target).to eq(variable.key)
+      expect(audit_event.details[:custom_message]).to eq('Changed variable protection from false to true')
+      expect(audit_event.details[:target_details]).to eq(variable.key)
     end
 
     it_behaves_like 'sends correct event type in audit event stream' do
       let_it_be(:event_type) { event_type }
+    end
+  end
+
+  shared_examples 'audit value change' do
+    let(:action) { :update }
+
+    context 'when updated masked' do
+      before do
+        variable.masked = true
+        variable.save!
+      end
+
+      it 'logs audit event' do
+        expect { execute }.to change(AuditEvent, :count).from(0).to(1)
+      end
+
+      it 'logs variable masked update' do
+        execute
+
+        audit_event = AuditEvent.last.presence
+
+        expect(audit_event.details[:custom_message]).to eq('Changed variable masking from false to true')
+        expect(audit_event.details[:target_details]).to eq(variable.key)
+      end
+
+      it_behaves_like 'sends correct event type in audit event stream' do
+        let_it_be(:event_type) { event_type }
+      end
+    end
+
+    context 'when masked is and was false' do
+      it 'audit with from and to of the value' do
+        variable.masked = false
+        variable.value = 'A'
+        variable.save!
+        variable.reload
+
+        variable.value = 'B'
+
+        expect { execute }.not_to change(AuditEvent, :count)
+      end
     end
   end
 
@@ -106,7 +148,7 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
     it 'logs variable destruction' do
       execute
 
-      audit_event = AuditEvent.last.present
+      audit_event = AuditEvent.last.presence
 
       expect(audit_event.action).to eq(message)
       expect(audit_event.target).to eq(variable.key)
@@ -124,55 +166,72 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
       group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
     end
 
-    context 'when creating group variable' do
-      it_behaves_like 'audit creation' do
-        let(:variable) { group_variable }
+    context 'with instance variables' do
+      let(:variable) { instance_variable }
 
-        let_it_be(:message) { 'Added ci group variable' }
-        let_it_be(:event_type) { "ci_group_variable_created" }
+      context 'when creating instance variable' do
+        it_behaves_like 'audit creation' do
+          let_it_be(:message) { 'Added ci instance variable' }
+          let_it_be(:event_type) { "ci_instance_variable_created" }
+        end
+      end
+
+      context 'when updating instance variable protection' do
+        it_behaves_like 'audit when updating variable protection' do
+          let_it_be(:event_type) { "ci_instance_variable_updated" }
+        end
       end
     end
 
-    context 'when updating group variable protection' do
-      it_behaves_like 'audit when updating variable protection' do
-        let(:variable) { group_variable }
+    context 'with group variables' do
+      let(:variable) { group_variable }
 
+      it_behaves_like 'audit value change' do
         let_it_be(:event_type) { "ci_group_variable_updated" }
       end
-    end
 
-    context 'when deleting group variable' do
-      it_behaves_like 'audit when updating variable protection' do
-        let(:variable) { group_variable }
+      context 'when creating group variable' do
+        it_behaves_like 'audit creation' do
+          let_it_be(:message) { 'Added ci group variable' }
+          let_it_be(:event_type) { "ci_group_variable_created" }
+        end
+      end
 
-        let_it_be(:message) { 'Removed ci group variable' }
-        let_it_be(:event_type) { "ci_group_variable_updated" }
+      context 'when updating group variable protection' do
+        it_behaves_like 'audit when updating variable protection' do
+          let_it_be(:event_type) { "ci_group_variable_updated" }
+        end
+      end
+
+      context 'when deleting group variable' do
+        it_behaves_like 'audit when updating variable protection' do
+          let_it_be(:message) { 'Removed ci group variable' }
+          let_it_be(:event_type) { "ci_group_variable_updated" }
+        end
       end
     end
 
-    context 'when creating project variable' do
-      it_behaves_like 'audit creation' do
-        let(:variable) { project_variable }
+    context 'with project variables' do
+      let(:variable) { project_variable }
 
-        let_it_be(:message) { 'Added ci variable' }
-        let_it_be(:event_type) { "ci_variable_created" }
+      context 'when creating project variable' do
+        it_behaves_like 'audit creation' do
+          let_it_be(:message) { 'Added ci variable' }
+          let_it_be(:event_type) { "ci_variable_created" }
+        end
       end
-    end
 
-    context 'when updating project variable protection' do
-      it_behaves_like 'audit when updating variable protection' do
-        let(:variable) { project_variable }
-
-        let_it_be(:event_type) { "ci_variable_updated" }
+      context 'when updating project variable protection' do
+        it_behaves_like 'audit when updating variable protection' do
+          let_it_be(:event_type) { "ci_variable_updated" }
+        end
       end
-    end
 
-    context 'when deleting project variable' do
-      it_behaves_like 'audit when updating variable protection' do
-        let(:variable) { project_variable }
-
-        let_it_be(:message) { 'Removed ci variable' }
-        let_it_be(:event_type) { "ci_variable_updated" }
+      context 'when deleting project variable' do
+        it_behaves_like 'audit when updating variable protection' do
+          let_it_be(:message) { 'Removed ci variable' }
+          let_it_be(:event_type) { "ci_variable_updated" }
+        end
       end
     end
   end
