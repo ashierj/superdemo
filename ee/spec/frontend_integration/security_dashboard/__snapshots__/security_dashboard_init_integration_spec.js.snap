@@ -71,11 +71,11 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
           </div>
         </header>
         <div
+          aria-label="Loading"
           class="gl-my-12 gl-spinner-container"
           role="status"
         >
           <span
-            aria-label="Loading"
             class="gl-spinner gl-spinner-dark gl-spinner-lg gl-vertical-align-text-bottom!"
           />
         </div>
@@ -98,11 +98,11 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
           />
         </header>
         <div
+          aria-label="Loading"
           class="gl-my-12 gl-spinner-container"
           role="status"
         >
           <span
-            aria-label="Loading"
             class="gl-spinner gl-spinner-dark gl-spinner-lg gl-vertical-align-text-bottom!"
           />
         </div>
@@ -183,11 +183,11 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
           </div>
         </header>
         <div
+          aria-label="Loading"
           class="gl-my-12 gl-spinner-container"
           role="status"
         >
           <span
-            aria-label="Loading"
             class="gl-spinner gl-spinner-dark gl-spinner-lg gl-vertical-align-text-bottom!"
           />
         </div>
@@ -210,11 +210,11 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
           />
         </header>
         <div
+          aria-label="Loading"
           class="gl-my-12 gl-spinner-container"
           role="status"
         >
           <span
-            aria-label="Loading"
             class="gl-spinner gl-spinner-dark gl-spinner-lg gl-vertical-align-text-bottom!"
           />
         </div>
