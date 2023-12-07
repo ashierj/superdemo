@@ -237,69 +237,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: cronjob:geo_repository_sync
-  :worker_name: Geo::RepositorySyncWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: cronjob:geo_repository_verification_primary_batch
-  :worker_name: Geo::RepositoryVerification::Primary::BatchWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: cronjob:geo_repository_verification_secondary_scheduler
-  :worker_name: Geo::RepositoryVerification::Secondary::SchedulerWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: cronjob:geo_repository_verification_secondary_shard
-  :worker_name: Geo::RepositoryVerification::Secondary::ShardWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: cronjob:geo_scheduler_per_shard_scheduler
-  :worker_name: Geo::Scheduler::PerShardSchedulerWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: cronjob:geo_scheduler_primary_per_shard_scheduler
-  :worker_name: Geo::Scheduler::Primary::PerShardSchedulerWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: cronjob:geo_scheduler_secondary_per_shard_scheduler
-  :worker_name: Geo::Scheduler::Secondary::PerShardSchedulerWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
 - :name: cronjob:geo_secondary_registry_consistency
   :worker_name: Geo::Secondary::RegistryConsistencyWorker
   :feature_category: :geo_replication
@@ -678,24 +615,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: geo:geo_batch_project_registry
-  :worker_name: Geo::Batch::ProjectRegistryWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_batch_project_registry_scheduler
-  :worker_name: Geo::Batch::ProjectRegistrySchedulerWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
 - :name: geo:geo_bulk_mark_pending_batch
   :worker_name: Geo::BulkMarkPendingBatchWorker
   :feature_category: :geo_replication
@@ -768,96 +687,6 @@
   :weight: 1
   :idempotent: false
   :tags: []
-- :name: geo:geo_hashed_storage_migration
-  :worker_name: Geo::HashedStorageMigrationWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_project_sync
-  :worker_name: Geo::ProjectSyncWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
-- :name: geo:geo_rename_repository
-  :worker_name: Geo::RenameRepositoryWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_repositories_clean_up
-  :worker_name: Geo::RepositoriesCleanUpWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_repository_cleanup
-  :worker_name: Geo::RepositoryCleanupWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_repository_destroy
-  :worker_name: GeoRepositoryDestroyWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_repository_shard_sync
-  :worker_name: Geo::RepositoryShardSyncWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_repository_verification_primary_shard
-  :worker_name: Geo::RepositoryVerification::Primary::ShardWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_repository_verification_primary_single
-  :worker_name: Geo::RepositoryVerification::Primary::SingleWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
-- :name: geo:geo_repository_verification_secondary_single
-  :worker_name: Geo::RepositoryVerification::Secondary::SingleWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
-  :tags: []
 - :name: geo:geo_resync_direct_upload_job_artifact_registry
   :worker_name: Geo::ResyncDirectUploadJobArtifactRegistryWorker
   :feature_category: :geo_replication
@@ -875,15 +704,6 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
-  :tags: []
-- :name: geo:geo_scheduler_primary_scheduler
-  :worker_name: Geo::Scheduler::Primary::SchedulerWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: false
   :tags: []
 - :name: geo:geo_scheduler_scheduler
   :worker_name: Geo::Scheduler::SchedulerWorker

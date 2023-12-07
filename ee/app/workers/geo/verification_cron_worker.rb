@@ -3,7 +3,6 @@
 module Geo
   # Calls trigger_background_verification on every enabled Replicator class,
   # every minute.
-  #
   class VerificationCronWorker
     include ApplicationWorker
 
