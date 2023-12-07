@@ -127,7 +127,8 @@ module EE
           ::Types::MemberRoles::CustomizablePermissionType.connection_type,
           resolver: ::Resolvers::MemberRoles::PermissionListResolver,
           null: true,
-          description: 'List of all customizable permissions.'
+          description: 'List of all customizable permissions.',
+          alpha: { milestone: '16.4' }
         field :member_role, ::Types::MemberRoles::MemberRoleType,
           null: true, description: 'Finds a single custom role.',
           resolver: ::Resolvers::MemberRoles::RolesResolver.single,

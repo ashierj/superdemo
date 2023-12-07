@@ -134,7 +134,7 @@ export default {
     },
     listPermissions(item) {
       return Object.entries(item).reduce((array, [key, value]) => {
-        const permission = this.availablePermissionsLookup[key];
+        const permission = this.availablePermissionsLookup[key.toUpperCase()];
         // The member roles data has a mix of permissions data and other data. Only add the permission's name if the key
         // is a permission and if its value is true.
         if (permission && value) {

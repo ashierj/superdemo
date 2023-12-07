@@ -56,11 +56,11 @@ RSpec.describe 'Query.member_role_permissions', feature_category: :system_access
   it 'returns all customizable ablities' do
     expected_result = [
       { 'availableFor' => ['project'], 'description' => 'Allows admin access to do something.',
-        'name' => 'Admin ability one', 'requirement' => nil, 'value' => 'admin_ability_one' },
+        'name' => 'Admin ability one', 'requirement' => nil, 'value' => 'ADMIN_ABILITY_ONE' },
       { 'availableFor' => %w[project group], 'description' => 'Allows read access to do something else.',
-        'name' => 'Read ability two', 'requirement' => nil, 'value' => 'read_ability_two' },
+        'name' => 'Read ability two', 'requirement' => nil, 'value' => 'READ_ABILITY_TWO' },
       { 'availableFor' => ['group'], 'description' => "Allows admin access to do something else.",
-        'requirement' => 'read_ability_two', 'name' => 'Admin ability two', 'value' => 'admin_ability_two' }
+        'requirement' => 'READ_ABILITY_TWO', 'name' => 'Admin ability two', 'value' => 'ADMIN_ABILITY_TWO' }
     ]
 
     expect(subject).to match_array(expected_result)
