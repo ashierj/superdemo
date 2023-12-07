@@ -11,10 +11,12 @@ module CodeSuggestions
         @unsafe_passthrough_params = unsafe_passthrough_params
       end
 
-      def endpoint
-        base_url = ENV.fetch('CODE_SUGGESTIONS_BASE_URL', DEFAULT_CODE_SUGGESTIONS_URL)
+      def self.base_url
+        ENV.fetch('CODE_SUGGESTIONS_BASE_URL', DEFAULT_CODE_SUGGESTIONS_URL)
+      end
 
-        "#{base_url}/v2/code/#{endpoint_name}"
+      def endpoint
+        "#{self.class.base_url}/v2/code/#{endpoint_name}"
       end
 
       def body

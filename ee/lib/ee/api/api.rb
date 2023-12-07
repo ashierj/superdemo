@@ -76,6 +76,7 @@ module EE
         mount ::API::Internal::Search::Zoekt
         mount ::API::Internal::SuggestedReviewers
         mount ::API::Internal::UpcomingReconciliations
+        mount ::API::Internal::Ai::XRay::Scan
       end
     end
   end
