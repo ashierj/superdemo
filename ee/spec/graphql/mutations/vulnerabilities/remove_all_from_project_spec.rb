@@ -36,16 +36,6 @@ RSpec.describe Mutations::Vulnerabilities::RemoveAllFromProject, feature_categor
       expect(mutation[:errors]).to be_empty
     end
 
-    context 'if feature flag is disabled' do
-      before do
-        stub_feature_flags(enable_remove_all_vulnerabilties_from_project_mutation: false)
-      end
-
-      it 'raises ResourceNotAvailable' do
-        expect { mutation }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-      end
-    end
-
     context 'when no project IDs are given' do
       let(:project_ids) { [] }
 
