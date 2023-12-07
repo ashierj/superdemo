@@ -238,7 +238,6 @@ export default {
           :user-id="item.id"
           :add-on-assignments="item.addOnAssignments"
           :add-on-purchase-id="addOnPurchaseId"
-          :add-on-eligible-users-query-variables="queryVariables"
           @handleAddOnAssignmentError="handleAddOnAssignmentError"
           @clearAddOnAssignmentError="clearAddOnAssignmentError"
         />

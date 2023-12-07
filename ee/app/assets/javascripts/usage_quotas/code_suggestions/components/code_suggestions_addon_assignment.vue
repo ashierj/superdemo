@@ -1,6 +1,5 @@
 <script>
 import { GlToggle } from '@gitlab/ui';
-import produce from 'immer';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { __ } from '~/locale';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
@@ -9,7 +8,6 @@ import {
   CANNOT_UNASSIGN_ADDON_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
-import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/add_on_eligible_users.query.graphql';
 import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_create.mutation.graphql';
 import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_remove.mutation.graphql';
 
@@ -33,10 +31,6 @@ export default {
     },
     addOnPurchaseId: {
       type: String,
-      required: true,
-    },
-    addOnEligibleUsersQueryVariables: {
-      type: Object,
       required: true,
     },
   },
@@ -102,9 +96,6 @@ export default {
       } = await this.$apollo.mutate({
         mutation: userAddOnAssignmentCreateMutation,
         variables: this.addOnAssignmentQueryVariables,
-        update: (store, { data: { userAddOnAssignmentCreate: response } }) => {
-          this.updateStore(store, response);
-        },
       });
       return userAddOnAssignmentCreate;
     },
@@ -114,28 +105,8 @@ export default {
       } = await this.$apollo.mutate({
         mutation: userAddOnAssignmentRemoveMutation,
         variables: this.addOnAssignmentQueryVariables,
-        update: (store, { data: { userAddOnAssignmentRemove: response } }) => {
-          this.updateStore(store, response);
-        },
       });
       return userAddOnAssignmentRemove;
-    },
-    updateStore(store, updatedAssignment) {
-      if (!updatedAssignment || updatedAssignment.errors?.length) {
-        return;
-      }
-
-      store.updateQuery(
-        { query: getAddOnEligibleUsers, variables: this.addOnEligibleUsersQueryVariables },
-        (sourceData) =>
-          produce(sourceData, (draftData) => {
-            if (updatedAssignment?.user) {
-              draftData.namespace.addOnEligibleUsers.nodes.find(
-                (node) => node.id === this.userId,
-              ).addOnAssignments.nodes = updatedAssignment.user.addOnAssignments.nodes;
-            }
-          }),
-      );
     },
     isKnownErrorCode(errorCode) {
       if (errorCode instanceof String || typeof errorCode === 'string') {

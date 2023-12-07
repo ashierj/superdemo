@@ -60,7 +60,11 @@ export const mockUserWithAddOnAssignment = {
   avatarUrl: 'path/to/img_userone',
   webUrl: 'path/to/userone',
   lastActivityOn: '2023-08-25',
-  addOnAssignments: { nodes: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }] },
+  addOnAssignments: {
+    nodes: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }],
+    __typename: 'UserAddOnAssignmentConnection',
+  },
+  __typename: 'AddOnUser',
 };
 
 export const mockUserWithNoAddOnAssignment = {
@@ -71,7 +75,8 @@ export const mockUserWithNoAddOnAssignment = {
   avatarUrl: 'path/to/img_usertwo',
   webUrl: 'path/to/usertwo',
   lastActivityOn: '2023-08-22',
-  addOnAssignments: { nodes: [] },
+  addOnAssignments: { nodes: [], __typename: 'UserAddOnAssignmentConnection' },
+  __typename: 'AddOnUser',
 };
 
 const eligibleUsers = [mockUserWithAddOnAssignment, mockUserWithNoAddOnAssignment];
@@ -89,7 +94,9 @@ export const mockAddOnEligibleUsers = {
           endCursor: 'end-cursor',
           __typename: 'PageInfo',
         },
+        __typename: 'AddOnUserConnection',
       },
+      __typename: 'Namespace',
     },
   },
 };

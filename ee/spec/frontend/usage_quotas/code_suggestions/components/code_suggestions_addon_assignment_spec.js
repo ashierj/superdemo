@@ -32,6 +32,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
     name: ADD_ON_CODE_SUGGESTIONS,
     purchasedQuantity: 3,
     assignedQuantity: 2,
+    __typename: 'AddOnPurchase',
   };
   const addOnEligibleUsersQueryVariables = {
     fullPath: 'namespace/full-path',
@@ -46,7 +47,9 @@ describe('CodeSuggestionsAddonAssignment', () => {
       id: userIdForAssignment,
       addOnAssignments: {
         nodes: codeSuggestionsAddOn,
+        __typename: 'UserAddOnAssignmentConnection',
       },
+      __typename: 'AddOnUser',
     },
   };
   const addOnUnassignmentSuccess = {
@@ -55,7 +58,11 @@ describe('CodeSuggestionsAddonAssignment', () => {
     addOnPurchase,
     user: {
       id: userIdForUnassignment,
-      addOnAssignments: { nodes: [] },
+      addOnAssignments: {
+        nodes: [],
+        __typename: 'UserAddOnAssignmentConnection',
+      },
+      __typename: 'AddOnUser',
     },
   };
   const knownAddOnAssignmentError = {
@@ -117,7 +124,6 @@ describe('CodeSuggestionsAddonAssignment', () => {
         addOnAssignments: [],
         userId: userIdForAssignment,
         addOnPurchaseId,
-        addOnEligibleUsersQueryVariables,
         ...props,
       },
     });
