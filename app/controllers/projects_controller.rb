@@ -442,6 +442,7 @@ class ProjectsController < Projects::ApplicationController
     params.require(:project)
       .permit(project_params_attributes + attributes)
       .merge(import_url_params)
+      .merge(object_format_params)
   end
 
   def project_feature_attributes
@@ -512,7 +513,6 @@ class ProjectsController < Projects::ApplicationController
       :merge_method,
       :initialize_with_sast,
       :initialize_with_readme,
-      :use_sha256_repository,
       :ci_separated_caches,
       :suggestion_commit_message,
       :packages_enabled,
@@ -529,6 +529,12 @@ class ProjectsController < Projects::ApplicationController
 
   def custom_import_params
     {}
+  end
+
+  def object_format_params
+    return {} unless Gitlab::Utils.to_boolean(params.dig(:project, :use_sha256_repository))
+
+    { repository_object_format: Repository::FORMAT_SHA256 }
   end
 
   def active_new_project_tab
