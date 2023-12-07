@@ -7127,6 +7127,9 @@ msgstr ""
 msgid "Authenticated web requests"
 msgstr ""
 
+msgid "Authenticating..."
+msgstr ""
+
 msgid "Authentication"
 msgstr ""
 
