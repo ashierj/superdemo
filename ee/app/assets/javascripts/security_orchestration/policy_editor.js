@@ -6,6 +6,8 @@ import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
 import { decomposeApprovers } from './utils';
 
 export default (el, namespaceType) => {
+  if (!el) return null;
+
   const {
     assignedPolicyProject,
     disableScanPolicyUpdate,
