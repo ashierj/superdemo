@@ -13,7 +13,7 @@ class Groups::Security::MergeCommitReportsController < Groups::ApplicationContro
       filter_params
     ).enqueue_worker
 
-    flash[:notice] = _('An email will be sent with the report attached after it is generated.')
+    flash[:notice] = _('After the report is generated, an email will be sent with the report attached.')
     redirect_to group_security_compliance_dashboard_path(group)
   end
 

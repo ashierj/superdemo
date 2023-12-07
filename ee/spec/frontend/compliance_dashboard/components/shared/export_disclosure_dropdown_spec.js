@@ -1,5 +1,6 @@
-import { GlFormInput, GlFormGroup } from '@gitlab/ui';
+import { GlFormInput, GlFormGroup, GlDisclosureDropdownItem } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import ExportApp from 'ee/compliance_dashboard/components/shared/export_disclosure_dropdown.vue';
 
 describe('ExportApp component', () => {
@@ -18,6 +19,7 @@ describe('ExportApp component', () => {
   const findCustodyReportByCommitCancelButton = () => wrapper.findByText('Cancel');
   const findCommitInput = () => wrapper.findComponent(GlFormInput);
   const findCommitInputGroup = () => wrapper.findComponent(GlFormGroup);
+  const findGlDisclosureDropdownItem = () => wrapper.findComponent(GlDisclosureDropdownItem);
 
   const createComponent = ({ props = {}, data = {} }) => {
     return mountExtended(ExportApp, {
@@ -25,6 +27,9 @@ describe('ExportApp component', () => {
         ...props,
       },
       data: () => data,
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
     });
   };
 
@@ -54,6 +59,19 @@ describe('ExportApp component', () => {
 
       expect(findViolationsExportButton().exists()).toBe(true);
     });
+
+    it('has the violations tooltip text', () => {
+      wrapper = createComponent({ props: { violationsCsvExportPath: 'example-path' } });
+      const tooltip = getBinding(findGlDisclosureDropdownItem().element, 'gl-tooltip');
+
+      expect(tooltip.value).toMatchObject({
+        title:
+          'Export merge request violations as a CSV file. You will be emailed after the export is processed.',
+        boundary: 'viewport',
+        customClass: 'gl-pointer-events-none',
+        placement: 'left',
+      });
+    });
   });
 
   describe('when project frameworks export path is passed in', () => {
@@ -62,9 +80,24 @@ describe('ExportApp component', () => {
 
       expect(findProjectFrameworksButton().exists()).toBe(true);
     });
+
+    it('has the project frameworks tooltip text', () => {
+      wrapper = createComponent({ props: { frameworksCsvExportPath: 'example-path' } });
+      const tooltip = getBinding(findGlDisclosureDropdownItem().element, 'gl-tooltip');
+
+      expect(tooltip.value).toMatchObject({
+        title:
+          'Export list of project frameworks as a CSV file. You will be emailed after the export is processed.',
+        boundary: 'viewport',
+        customClass: 'gl-pointer-events-none',
+        placement: 'left',
+      });
+    });
   });
 
   describe('when chain of custody export path is passed in', () => {
+    const findGlDisclosureDropdownItems = () => wrapper.findAllComponents(GlDisclosureDropdownItem);
+
     beforeEach(() => {
       wrapper = createComponent({ props: { mergeCommitsCsvExportPath: 'example-path' } });
     });
@@ -72,6 +105,33 @@ describe('ExportApp component', () => {
     it('renders the chain of custody export buttons', () => {
       expect(findChainOfCustodyReportButton().exists()).toBe(true);
       expect(findCustodyReportByCommmitButton().exists()).toBe(true);
+    });
+
+    it('has the chain of custody tooltip text', () => {
+      wrapper = createComponent({ props: { mergeCommitsCsvExportPath: 'example-path' } });
+      const tooltip = getBinding(findGlDisclosureDropdownItems().at(0).element, 'gl-tooltip');
+
+      expect(tooltip.value).toMatchObject({
+        title:
+          'Export chain of custody report as a CSV file (limited to 15MB). You will be emailed after the export is processed.',
+        boundary: 'viewport',
+        customClass: 'gl-pointer-events-none',
+        placement: 'left',
+      });
+    });
+
+    it('has the chain of custody for a specific commit tooltip text', () => {
+      wrapper = createComponent({ props: { mergeCommitsCsvExportPath: 'example-path' } });
+      const tooltip = getBinding(findGlDisclosureDropdownItems().at(1).element, 'gl-tooltip');
+
+      expect(tooltip.value).toMatchObject({
+        title:
+          'Export chain of custody report of a specific commit as a CSV file (limited to 15MB). ' +
+          'You will be emailed after the export is processed.',
+        boundary: 'viewport',
+        customClass: 'gl-pointer-events-none',
+        placement: 'left',
+      });
     });
 
     describe('when chain of custody report of a specific commit is clicked', () => {

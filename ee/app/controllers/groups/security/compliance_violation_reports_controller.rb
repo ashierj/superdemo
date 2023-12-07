@@ -18,7 +18,7 @@ module Groups
             sort: sort_param
           ).email_export
 
-          flash[:notice] = _('An email will be sent with the report attached after it is generated.')
+          flash[:notice] = _('After the report is generated, an email will be sent with the report attached.')
         end
 
         redirect_to group_security_compliance_dashboard_path(group, vueroute: :violations)

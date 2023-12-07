@@ -87,9 +87,7 @@ module Microsoft
     end
 
     def validate_or_update_token!
-      return if access_token.updated_at.utc + access_token.expires_in > DateTime.now.utc
-
-      store_new_access_token
+      store_new_access_token if access_token.expired?
     end
 
     def find_or_initialize_access_token(application)

@@ -22,7 +22,7 @@ RSpec.describe Groups::Security::ComplianceViolationReportsController, feature_c
     end
 
     context 'when user has access to compliance reports' do
-      let(:email_notice_message) { 'An email will be sent with the report attached after it is generated.' }
+      let(:email_notice_message) { 'After the report is generated, an email will be sent with the report attached.' }
 
       before_all do
         group.add_owner user

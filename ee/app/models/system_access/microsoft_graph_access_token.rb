@@ -13,5 +13,11 @@ module SystemAccess
       key: Settings.attr_encrypted_db_key_base_32,
       mode: :per_attribute_iv,
       algorithm: 'aes-256-gcm'
+
+    def expired?
+      return true unless persisted?
+
+      updated_at.utc + expires_in < DateTime.now.utc
+    end
   end
 end

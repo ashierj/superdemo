@@ -24,4 +24,26 @@ RSpec.describe SystemAccess::MicrosoftGraphAccessToken, feature_category: :syste
     expect(token_obj.system_access_microsoft_application).to eq(application)
     expect(token_obj.system_access_microsoft_application.system_access_microsoft_graph_access_token).to eq(token_obj)
   end
+
+  describe '#expired?' do
+    it 'returns true for an unpersisted token' do
+      access_token = build(:system_access_microsoft_graph_access_token)
+
+      expect(access_token.expired?).to eq(true)
+    end
+
+    context 'when the access token is persisted' do
+      let_it_be(:access_token) { create(:system_access_microsoft_graph_access_token, expires_in: 7200) }
+
+      it 'returns false when the token is not expired' do
+        expect(access_token.expired?).to eq(false)
+      end
+
+      it 'returns true when the token is expired' do
+        travel_to(3.hours.from_now) do
+          expect(access_token.expired?).to eq(true)
+        end
+      end
+    end
+  end
 end

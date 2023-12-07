@@ -8,7 +8,7 @@ module Emails
       attachments[filename] = { content: csv_data, mime_type: 'text/csv' }
       email_with_layout(
         to: user.notification_email_for(group),
-        subject: subject("Exported Chain of Custody Report"))
+        subject: subject(Date.current.iso8601 + s_("ComplianceChainOfCustody| Chain of custody export")))
     end
   end
 end

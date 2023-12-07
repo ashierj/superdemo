@@ -35,7 +35,7 @@ RSpec.describe Groups::Security::MergeCommitReportsController, feature_category:
         it "tells the service to enqueue a job" do
           subject
 
-          expect(flash[:notice]).to eq 'An email will be sent with the report attached after it is generated.'
+          expect(flash[:notice]).to eq 'After the report is generated, an email will be sent with the report attached.'
           expect(export_csv_service).to have_received(:enqueue_worker).once
         end
       end

@@ -1,5 +1,6 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import {
   TABLE_METRICS,
   CHART_GRADIENT,
@@ -38,12 +39,56 @@ describe('Comparison table', () => {
   const findTrendIndicator = () => wrapper.findByTestId('metric-trend-indicator');
   const findValueLimitInfoIcon = () => wrapper.findByTestId('metric-max-value-info-icon');
 
-  it.each(Object.keys(TABLE_METRICS))('renders table cell for %s metric', (identifier) => {
-    createWrapper();
-    expect(findMetricTableCell(identifier).exists()).toBe(true);
-    expect(findMetricTableCell(identifier).props()).toMatchObject({
-      identifier,
-      filterLabels,
+  describe('metric table cell', () => {
+    describe.each(Object.keys(TABLE_METRICS))('%s metric', (identifier) => {
+      beforeEach(() => {
+        createWrapper();
+      });
+
+      it('renders table cell', () => {
+        expect(findMetricTableCell(identifier).exists()).toBe(true);
+        expect(findMetricTableCell(identifier).props()).toMatchObject({
+          identifier,
+          filterLabels,
+        });
+      });
+
+      describe('drill-down clicked event', () => {
+        let trackingSpy;
+
+        const trackingMetricClickedAction = 'value_streams_dashboard_metric_link_clicked';
+        const trackingMetricIdentifierClickedAction = `value_streams_dashboard_${identifier}_link_clicked`;
+
+        beforeEach(() => {
+          trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+          findMetricTableCell(identifier).vm.$emit('drill-down-clicked');
+        });
+
+        afterEach(() => {
+          unmockTracking();
+        });
+
+        it('should send two tracking events', () => {
+          expect(trackingSpy).toHaveBeenCalledTimes(2);
+        });
+
+        it(`should track the '${trackingMetricClickedAction}' event`, () => {
+          expect(trackingSpy).toHaveBeenCalledWith(
+            expect.any(String),
+            trackingMetricClickedAction,
+            expect.any(Object),
+          );
+        });
+
+        it(`should track the '${trackingMetricIdentifierClickedAction}' event`, () => {
+          expect(trackingSpy).toHaveBeenCalledWith(
+            expect.any(String),
+            trackingMetricIdentifierClickedAction,
+            expect.any(Object),
+          );
+        });
+      });
     });
   });
 
