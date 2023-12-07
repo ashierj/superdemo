@@ -7130,6 +7130,9 @@ msgstr ""
 msgid "Authenticated web requests"
 msgstr ""
 
+msgid "Authenticating..."
+msgstr ""
+
 msgid "Authentication"
 msgstr ""
 
@@ -11988,6 +11991,9 @@ msgid "CodeSuggestions|Projects in this group can use Code Suggestions"
 msgstr ""
 
 msgid "CodeSuggestions|Subject to the %{terms_link_start}Testing Terms of Use%{link_end}. Code Suggestions uses third-party AI services."
+msgstr ""
+
+msgid "CodeSuggestions|Subject to the %{terms_link_start}Testing Terms of Use%{link_end}. Code Suggestions uses third-party AI services.|To start receiving Code Suggestions after enabling this feature, you must install and configure a %{ide_extension_link_start}supported IDE editor extension%{link_end}."
 msgstr ""
 
 msgid "CodeownersValidation|An error occurred while loading the validation errors. Please try again later."

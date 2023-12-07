@@ -11,6 +11,8 @@ const apolloProvider = new VueApollo({
 });
 
 export default (el, namespaceType) => {
+  if (!el) return null;
+
   const {
     assignedPolicyProject,
     disableSecurityPolicyProject,
