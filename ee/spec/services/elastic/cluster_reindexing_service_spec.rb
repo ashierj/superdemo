@@ -43,6 +43,18 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
 
       expect(Gitlab::CurrentSettings.elasticsearch_pause_indexing).to eq(true)
     end
+
+    context 'when partial reindexing' do
+      let(:task) { create(:elastic_reindexing_task, state: :initial, targets: %w[Project User]) }
+
+      it 'errors when there is not enough space' do
+        allow(helper).to receive(:index_size_bytes).twice.and_return(10.megabytes)
+        allow(helper).to receive(:cluster_free_size_bytes).and_return(30.megabytes)
+
+        expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('initial').to('failure')
+        expect(task.reload.error_message).to match(/storage available/)
+      end
+    end
   end
 
   context 'state: indexing_paused' do
