@@ -1529,6 +1529,24 @@ Input type: `AuditEventsInstanceAmazonS3ConfigurationCreateInput`
 | <a id="mutationauditeventsinstanceamazons3configurationcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationauditeventsinstanceamazons3configurationcreateinstanceamazons3configuration"></a>`instanceAmazonS3Configuration` | [`InstanceAmazonS3ConfigurationType`](#instanceamazons3configurationtype) | Created instance Amazon S3 configuration. |
 
+### `Mutation.auditEventsInstanceAmazonS3ConfigurationDelete`
+
+Input type: `AuditEventsInstanceAmazonS3ConfigurationDeleteInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationauditeventsinstanceamazons3configurationdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationauditeventsinstanceamazons3configurationdeleteid"></a>`id` | [`AuditEventsInstanceAmazonS3ConfigurationID!`](#auditeventsinstanceamazons3configurationid) | ID of the instance-level Amazon S3 configuration to delete. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationauditeventsinstanceamazons3configurationdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationauditeventsinstanceamazons3configurationdeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.auditEventsInstanceAmazonS3ConfigurationUpdate`
 
 Input type: `AuditEventsInstanceAmazonS3ConfigurationUpdateInput`

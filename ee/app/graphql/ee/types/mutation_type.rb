@@ -131,6 +131,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::AmazonS3Configurations::Delete
         mount_mutation ::Mutations::AuditEvents::AmazonS3Configurations::Update
         mount_mutation ::Mutations::AuditEvents::Instance::AmazonS3Configurations::Create
+        mount_mutation ::Mutations::AuditEvents::Instance::AmazonS3Configurations::Delete
         mount_mutation ::Mutations::AuditEvents::Instance::AmazonS3Configurations::Update
         mount_mutation ::Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Create
         mount_mutation ::Mutations::Forecasting::BuildForecast, alpha: { milestone: '16.0' }
