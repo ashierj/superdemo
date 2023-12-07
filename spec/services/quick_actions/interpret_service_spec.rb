@@ -2533,6 +2533,16 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
       end
 
+      context 'when MR is already merged' do
+        before do
+          merge_request.mark_as_merged!
+        end
+
+        it_behaves_like 'approve command unavailable' do
+          let(:issuable) { merge_request }
+        end
+      end
+
       it_behaves_like 'approve command unavailable' do
         let(:issuable) { issue }
       end
@@ -2574,10 +2584,20 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
           expect(merge_request.approved_by_users).to eq([developer])
         end
+      end
+
+      context 'when MR is already merged' do
+        before do
+          merge_request.mark_as_merged!
+        end
 
         it_behaves_like 'unapprove command unavailable' do
-          let(:issuable) { issue }
+          let(:issuable) { merge_request }
         end
+      end
+
+      it_behaves_like 'unapprove command unavailable' do
+        let(:issuable) { issue }
       end
     end
 
