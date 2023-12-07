@@ -37,7 +37,6 @@ module Mutations
       argument :permissions,
         [Types::MemberRoles::PermissionsEnum],
         required: false,
-        alpha: { milestone: '16.7' },
         description: 'List of all customizable permissions.'
       argument :read_code,
         GraphQL::Types::Boolean,
