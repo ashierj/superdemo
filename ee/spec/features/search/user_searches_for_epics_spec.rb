@@ -8,13 +8,6 @@ RSpec.describe 'User searches for epics', :elastic, :sidekiq_inline, :js, :disab
   let_it_be(:epic1) { create(:epic, title: 'Foo', group: group, updated_at: 6.days.ago) }
   let_it_be(:epic2) { create(:epic, :closed, :confidential, title: 'Bar', group: group) }
 
-  def search_for_epic(search)
-    fill_in('dashboard_search', with: search)
-    find('.gl-search-box-by-click-search-button').click
-
-    select_search_scope('Epics')
-  end
-
   before do
     stub_licensed_features(epics: true)
 
@@ -31,7 +24,8 @@ RSpec.describe 'User searches for epics', :elastic, :sidekiq_inline, :js, :disab
 
   shared_examples 'searches for epics' do
     it 'finds an epic' do
-      search_for_epic(epic1.title)
+      submit_search(epic1.title)
+      select_search_scope('Epics')
 
       page.within('.results') do
         expect(page).to have_link(epic1.title)
@@ -41,7 +35,8 @@ RSpec.describe 'User searches for epics', :elastic, :sidekiq_inline, :js, :disab
     end
 
     it 'hides confidential icon for non-confidential epics' do
-      search_for_epic(epic1.title)
+      submit_search(epic1.title)
+      select_search_scope('Epics')
 
       page.within('.results') do
         expect(page).not_to have_css('[data-testid="eye-slash-icon"]')
@@ -49,7 +44,8 @@ RSpec.describe 'User searches for epics', :elastic, :sidekiq_inline, :js, :disab
     end
 
     it 'shows confidential icon for confidential epics' do
-      search_for_epic(epic2.title)
+      submit_search(epic2.title)
+      select_search_scope('Epics')
 
       page.within('.results') do
         expect(page).to have_css('[data-testid="eye-slash-icon"]')
@@ -57,7 +53,8 @@ RSpec.describe 'User searches for epics', :elastic, :sidekiq_inline, :js, :disab
     end
 
     it 'shows correct badge for open epics' do
-      search_for_epic(epic1.title)
+      submit_search(epic1.title)
+      select_search_scope('Epics')
 
       page.within('.results') do
         expect(page).to have_css('.badge-success')
@@ -66,7 +63,8 @@ RSpec.describe 'User searches for epics', :elastic, :sidekiq_inline, :js, :disab
     end
 
     it 'shows correct badge for closed epics' do
-      search_for_epic(epic2.title)
+      submit_search(epic2.title)
+      select_search_scope('Epics')
 
       page.within('.results') do
         expect(page).not_to have_css('.badge-success')
