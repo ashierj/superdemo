@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CycleAnalytics::Stages::ListService do
+RSpec.describe Analytics::CycleAnalytics::Stages::ListService, feature_category: :value_stream_management do
   let_it_be(:group, refind: true) { create(:group) }
   let_it_be(:value_stream, refind: true) { create(:cycle_analytics_value_stream, namespace: group) }
   let_it_be(:user) { create(:user) }
@@ -58,6 +58,18 @@ RSpec.describe Analytics::CycleAnalytics::Stages::ListService do
 
     it 'returns the persisted stages in order' do
       expect(stages).to eq([stage3, stage1, stage2])
+    end
+  end
+
+  context 'when value_stream_ids parameter is present' do
+    let_it_be(:value_stream_2, refind: true) { create(:cycle_analytics_value_stream, namespace: group) }
+    let_it_be(:stage1) { create(:cycle_analytics_stage, namespace: group, relative_position: 1, value_stream: value_stream) }
+    let_it_be(:stage2) { create(:cycle_analytics_stage, namespace: group, relative_position: 1, value_stream: value_stream_2) }
+
+    subject { described_class.new(parent: group, current_user: user, params: { value_stream_ids: [value_stream.id, value_stream_2.id] }).execute }
+
+    it 'returns stages filtered by value streams' do
+      expect(stages).to match_array([stage1, stage2])
     end
   end
 end
