@@ -27,6 +27,9 @@ module API
           timeout: :gateway_timeout
         }.freeze
 
+        TRACKING_EVENT_NAME_FROM_EXTERNAL = 'dependency_proxy_packages_maven_file_pulled_from_external'
+        TRACKING_EVENT_NAME_FROM_CACHE = 'dependency_proxy_packages_maven_file_pulled_from_cache'
+
         helpers do
           include ::Gitlab::Utils::StrongMemoize
 
@@ -69,8 +72,8 @@ module API
           strong_memoize_attr :remote_package_file_url
 
           def respond_with(package_file:, format:)
-            return package_file.file_md5 if format == 'md5'
-            return package_file.file_sha1 if format == 'sha1'
+            return respond_digest(package_file.file_md5) if format == 'md5'
+            return respond_digest(package_file.file_sha1) if format == 'sha1'
 
             result = ::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService.new(
               remote_url: remote_package_file_url,
@@ -78,6 +81,7 @@ module API
             ).execute
 
             if result.success? || (result.error? && result.reason != :wrong_etag)
+              track_file_pulled_event(from_cache: true)
               present_carrierwave_file_with_head_support!(package_file)
             elsif can?(current_user, :destroy_package, dependency_proxy_setting) &&
                 can?(current_user, :create_package, dependency_proxy_setting)
@@ -89,7 +93,13 @@ module API
             end
           end
 
+          def respond_digest(digest)
+            track_file_pulled_event(from_cache: true)
+            digest
+          end
+
           def send_remote_url(url)
+            track_file_pulled_event(from_cache: false)
             header(
               *Gitlab::Workhorse.send_url(
                 url,
@@ -104,10 +114,20 @@ module API
           end
 
           def send_dependency(headers, url, upload_config: {})
+            track_file_pulled_event(from_cache: false)
             header(*Gitlab::Workhorse.send_dependency(headers, url, upload_config: upload_config))
             env['api.format'] = :binary
             status :ok
             body ''
+          end
+
+          def track_file_pulled_event(from_cache: false)
+            event_name = from_cache ? TRACKING_EVENT_NAME_FROM_CACHE : TRACKING_EVENT_NAME_FROM_EXTERNAL
+
+            # we can't send deploy tokens to #track_event
+            user = current_user if current_user.is_a?(User)
+
+            ::Gitlab::InternalEvents.track_event(event_name, user: user, project: project)
           end
 
           def send_and_upload_remote_url(format:)
