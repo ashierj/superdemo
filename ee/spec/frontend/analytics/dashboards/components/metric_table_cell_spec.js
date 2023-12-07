@@ -1,7 +1,6 @@
 import { GlPopover, GlLink } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import MetricTableCell from 'ee/analytics/dashboards/components/metric_table_cell.vue';
-import { CLICK_METRIC_DRILLDOWN_LINK_ACTION } from 'ee/analytics/dashboards/constants';
 
 describe('Metric table cell', () => {
   let wrapper;
@@ -31,7 +30,7 @@ describe('Metric table cell', () => {
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findPopoverLink = () => wrapper.findComponent(GlPopover).findComponent(GlLink);
 
-  describe('drilldown link', () => {
+  describe('drill-down link', () => {
     describe.each`
       isProject | relativeUrlRoot | requestPath           | metricPath
       ${false}  | ${'/'}          | ${groupRequestPath}   | ${groupMetricPath}
@@ -75,27 +74,30 @@ describe('Metric table cell', () => {
         });
       },
     );
+
+    it('should emit `drill-down-clicked` event when clicked', () => {
+      createWrapper();
+
+      findMetricLabel().vm.$emit('click');
+
+      expect(wrapper.emitted('drill-down-clicked')).toHaveLength(1);
+    });
   });
 
-  it('shows the popover when the info icon is clicked', () => {
-    createWrapper();
-    expect(findPopover().props('target')).toBe(findInfoIcon().attributes('id'));
-  });
+  describe('popover', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
 
-  it('renders popover content based on the metric identifier', () => {
-    createWrapper();
-    expect(findPopover().props('title')).toBe(metricLabel);
-    expect(findPopover().text()).toContain('Number of new issues created.');
-    expect(findPopoverLink().attributes('href')).toBe('/help/user/analytics/issue_analytics');
-    expect(findPopoverLink().text()).toBe(MetricTableCell.i18n.docsLabel);
-  });
+    it('shows the popover when the info icon is clicked', () => {
+      expect(findPopover().props('target')).toBe(findInfoIcon().attributes('id'));
+    });
 
-  it('adds tracking data attributes to drilldown link', () => {
-    createWrapper();
-
-    expect(findMetricLabel().attributes('data-track-action')).toBe(
-      CLICK_METRIC_DRILLDOWN_LINK_ACTION,
-    );
-    expect(findMetricLabel().attributes('data-track-label')).toBe(`${identifier}_drilldown`);
+    it('renders popover content based on the metric identifier', () => {
+      expect(findPopover().props('title')).toBe(metricLabel);
+      expect(findPopover().text()).toContain('Number of new issues created.');
+      expect(findPopoverLink().attributes('href')).toBe('/help/user/analytics/issue_analytics');
+      expect(findPopoverLink().text()).toBe(MetricTableCell.i18n.docsLabel);
+    });
   });
 });
