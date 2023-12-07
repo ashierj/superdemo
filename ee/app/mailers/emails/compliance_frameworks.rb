@@ -8,7 +8,7 @@ module Emails
 
       email_with_layout(
         to: user.notification_email_for(group),
-        subject: subject(s_("ComplianceFrameworks|Compliance Frameworks Export"))
+        subject: subject(Date.current.iso8601 + s_("ComplianceFrameworks| Frameworks export"))
       )
     end
   end

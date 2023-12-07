@@ -43,7 +43,7 @@ RSpec.describe Emails::MergeCommits, feature_category: :compliance_management do
       end
     end
 
-    it { expect(subject.subject).to eq("#{group.name} | Exported Chain of Custody Report") }
+    it { expect(subject.subject).to eq("#{group.name} | #{Date.current.iso8601} Chain of custody export") }
     it { expect(subject.to).to contain_exactly(current_user.notification_email_for(project.group)) }
     it { expect(subject.text_part.to_s).to match(expected_plain_text) }
     it { expect(subject.html_part.to_s).to match(expected_html_text) }
