@@ -41,6 +41,33 @@ RSpec.describe 'Loading usage overvierw for a group', feature_category: :value_s
     end
   end
 
+  context 'when requesting the CONTRIBUTORS and ClickHouse backend is off' do
+    let(:params) do
+      {
+        identifier: :CONTRIBUTORS,
+        timeframe: {
+          start: '2023-01-01',
+          end: '2023-01-31'
+        }
+      }
+    end
+
+    before do
+      stub_licensed_features(group_level_analytics_dashboard: true)
+      stub_feature_flags(clickhouse_data_collection: false)
+    end
+
+    it 'returns GraphQL error' do
+      post_graphql(query, current_user: user)
+
+      expect(response).to have_gitlab_http_status(:success)
+
+      error = Gitlab::Json.parse(response.body)['errors'].first
+      message = s_('VsdContributorCount|the ClickHouse data store is not available for this group')
+      expect(error['message']).to eq(message)
+    end
+  end
+
   context 'when the feature is not available' do
     it 'returns nil response' do
       post_graphql(query, current_user: user)
