@@ -68,6 +68,10 @@ RSpec.describe '(Project|Group).value_streams', feature_category: :value_stream_
         end
 
         context 'when value stream has stages' do
+          def perform_request
+            post_graphql(query, current_user: current_user, variables: { fullPath: resource.full_path })
+          end
+
           context 'with associated labels' do
             let_it_be(:stage_with_label) do
               create(:cycle_analytics_stage, {
@@ -82,13 +86,27 @@ RSpec.describe '(Project|Group).value_streams', feature_category: :value_stream_
             end
 
             it 'returns label event attributes' do
-              post_graphql(query, current_user: current_user, variables: { fullPath: resource.full_path })
+              perform_request
 
               expect(graphql_data_at(resource_type.to_sym, :value_streams, :nodes, 0, :stages, 0, :start_event_label,
                 :title)).to eq('Start Label')
               expect(graphql_data_at(resource_type.to_sym, :value_streams, :nodes, 0, :stages, 0, :end_event_label,
                 :title)).to eq('End Label')
             end
+          end
+
+          it 'prevents n+1 queries' do
+            perform_request # warmup
+            create(:cycle_analytics_stage, value_stream: value_streams[0], namespace: namespace, name: 'Test')
+            control = ActiveRecord::QueryRecorder.new { perform_request }
+            value_stream_3 = create(
+              :cycle_analytics_value_stream,
+              namespace: namespace,
+              name: 'Custom 3'
+            )
+            create(:cycle_analytics_stage, value_stream: value_stream_3, namespace: namespace, name: 'Code')
+
+            expect { perform_request }.to issue_same_number_of_queries_as(control)
           end
         end
       end
