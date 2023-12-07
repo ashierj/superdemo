@@ -12,11 +12,16 @@ import {
 import uniqueId from 'lodash/uniqueId';
 import isString from 'lodash/isString';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import {
+  VISUALIZATION_USAGE_OVERVIEW,
+  VISUALIZATION_USAGE_TITLE,
+} from 'ee/analytics/dashboards/constants';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
+import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
-import { __, s__ } from '~/locale';
+import { __, s__, sprintf } from '~/locale';
 import { PANEL_POPOVER_DELAY, PANEL_TROUBLESHOOTING_URL } from './constants';
 
 export default {
@@ -41,6 +46,8 @@ export default {
       import('ee/analytics/analytics_dashboards/components/visualizations/single_stat.vue'),
     DORAChart: () =>
       import('ee/analytics/analytics_dashboards/components/visualizations/dora_chart.vue'),
+    UsageOverview: () =>
+      import('ee/analytics/analytics_dashboards/components/visualizations/usage_overview.vue'),
   },
   inject: ['namespaceId', 'namespaceFullPath', 'namespaceName', 'isProject'],
   props: {
@@ -119,6 +126,11 @@ export default {
         isProject: this.isProject,
       };
     },
+    panelTitle() {
+      return convertToSnakeCase(this.visualization.type) === VISUALIZATION_USAGE_OVERVIEW
+        ? sprintf(VISUALIZATION_USAGE_TITLE, { namespaceName: this.namespace.name })
+        : this.title;
+    },
   },
   watch: {
     visualization: {
@@ -191,7 +203,7 @@ export default {
         class="gl-pb-3 gl-text-truncate"
       >
         <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500 gl-mr-1" />
-        <strong class="gl-text-gray-700">{{ title }}</strong>
+        <strong class="gl-text-gray-700">{{ panelTitle }}</strong>
       </tooltip-on-truncate>
       <gl-disclosure-dropdown
         v-if="editing"

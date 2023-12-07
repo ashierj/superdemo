@@ -163,7 +163,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   describe '.value_stream_dashboard_visualizations' do
     subject { described_class.value_stream_dashboard_visualizations }
 
-    num_builtin_visualizations = 1
+    num_builtin_visualizations = 2
 
     it 'returns the value stream dashboard builtin visualizations' do
       expect(subject.count).to eq(num_builtin_visualizations)
@@ -210,7 +210,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     it 'captures the error' do
       vis = (subject.select { |v| v.slug == 'example_invalid_custom_visualization' }).first
       expected = ["property '/type' is not one of: " \
-                  "[\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\", \"DORAChart\"]"]
+                  "[\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\", \"DORAChart\", \"UsageOverview\"]"]
       expect(vis&.errors).to match_array(expected)
     end
   end

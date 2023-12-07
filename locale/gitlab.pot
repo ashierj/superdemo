@@ -5727,6 +5727,9 @@ msgstr ""
 msgid "Analytics|Updating visualization %{visualizationName}"
 msgstr ""
 
+msgid "Analytics|Usage overview for %{namespaceName} group"
+msgstr ""
+
 msgid "Analytics|Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard."
 msgstr ""
 
