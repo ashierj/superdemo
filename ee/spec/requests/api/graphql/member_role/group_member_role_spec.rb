@@ -15,6 +15,7 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
           nodes {
             id
             name
+            membersCount
           }
         }
       }
@@ -43,18 +44,44 @@ RSpec.describe 'Query.group_member_role', feature_category: :system_access do
     it 'returns all member roles' do
       subject
 
-      expected_result = [
-        { 'id' => group_member_role_1.to_global_id.to_s, 'name' => group_member_role_1.name },
-        { 'id' => group_member_role_2.to_global_id.to_s, 'name' => group_member_role_2.name }
-      ]
-
-      expect(subject).to match_array(expected_result)
+      expect(subject).to match_array([
+        {
+          'id' => group_member_role_1.to_global_id.to_s,
+          'name' => group_member_role_1.name,
+          'membersCount' => 0
+        },
+        {
+          'id' => group_member_role_2.to_global_id.to_s,
+          'name' => group_member_role_2.name,
+          'membersCount' => 0
+        }
+      ])
     end
   end
 
   context 'with custom roles feature' do
     before do
       stub_licensed_features(custom_roles: true)
+    end
+
+    context 'for a group with multiple roles' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:user) { create(:user) }
+      let!(:member_role) { create(:member_role, namespace: group) }
+
+      before_all do
+        group.add_owner(user)
+      end
+
+      it 'avoids N+1 database queries' do
+        post_graphql(member_roles_query(group), current_user: user) # warmup
+
+        control = ActiveRecord::QueryRecorder.new { post_graphql(member_roles_query(group), current_user: user) }
+
+        create(:member_role, namespace: group)
+
+        expect { post_graphql(member_roles_query(group), current_user: user) }.not_to exceed_query_limit(control)
+      end
     end
 
     context 'for a root group' do
