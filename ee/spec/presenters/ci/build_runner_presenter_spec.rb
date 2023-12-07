@@ -259,6 +259,86 @@ RSpec.describe Ci::BuildRunnerPresenter, feature_category: :secrets_management d
           end
         end
       end
+
+      context 'with GCP Secret Manager' do
+        let(:secrets) do
+          {
+            DATABASE_PASSWORD: {
+              gcp_secret_manager: {
+                name: 'key',
+                version: '2'
+              },
+              token: '$GCP_SM_ID_TOKEN'
+            }
+          }
+        end
+
+        let(:gcp_secret_manager_server) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'gcp_secret_manager', 'server') }
+
+        context 'GCP project number' do
+          context 'GCP_PROJECT_NUMBER CI variable is present' do
+            it 'returns the value' do
+              create(:ci_variable, project: ci_build.project, key: 'GCP_PROJECT_NUMBER', value: '1234')
+
+              expect(gcp_secret_manager_server.fetch('project_number')).to eq('1234')
+            end
+          end
+
+          context 'GCP_PROJECT_NUMBER CI variable is not present' do
+            it 'returns nil' do
+              expect(gcp_secret_manager_server.fetch('project_number')).to eq(nil)
+            end
+          end
+        end
+
+        context 'GCP workload federation pool id' do
+          context 'GCP_WORKLOAD_IDENTITY_FEDERATION_POOL_ID CI variable is present' do
+            it 'returns the pool id' do
+              create(:ci_variable, project: ci_build.project, key: 'GCP_WORKLOAD_IDENTITY_FEDERATION_POOL_ID', value: 'pool')
+
+              expect(gcp_secret_manager_server.fetch('workload_identity_federation_pool_id')).to eq('pool')
+            end
+          end
+
+          context 'GCP_WORKLOAD_IDENTITY_FEDERATION_POOL_ID CI variable is not present' do
+            it 'returns nil' do
+              expect(gcp_secret_manager_server.fetch('workload_identity_federation_pool_id')).to eq(nil)
+            end
+          end
+        end
+
+        context 'GCP workload federation provider id' do
+          context 'GCP_WORKLOAD_IDENTITY_FEDERATION_PROVIDER_ID CI variable is present' do
+            it 'returns the provider id' do
+              create(:ci_variable, project: ci_build.project, key: 'GCP_WORKLOAD_IDENTITY_FEDERATION_PROVIDER_ID', value: 'provider')
+
+              expect(gcp_secret_manager_server.fetch('workload_identity_federation_provider_id')).to eq('provider')
+            end
+          end
+
+          context 'GCP_WORKLOAD_IDENTITY_FEDERATION_PROVIDER_ID CI variable is not present' do
+            it 'returns nil' do
+              expect(gcp_secret_manager_server.fetch('workload_identity_federation_provider_id')).to eq(nil)
+            end
+          end
+        end
+
+        context 'JWT token' do
+          it 'uses the specified token variable' do
+            jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'gcp_secret_manager', 'server', 'jwt')
+
+            expect(jwt).to eq('$GCP_SM_ID_TOKEN')
+          end
+        end
+
+        context 'when feature flag ci_gcp_secret_manager is disabled' do
+          before do
+            stub_feature_flags(ci_gcp_secret_manager: false)
+          end
+
+          it { expect(gcp_secret_manager_server).to be_nil }
+        end
+      end
     end
   end
 end

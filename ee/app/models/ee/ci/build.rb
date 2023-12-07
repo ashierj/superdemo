@@ -189,7 +189,7 @@ module EE
       end
 
       def secrets_provider?
-        hashicorp_vault_provider? || azure_key_vault_provider?
+        hashicorp_vault_provider? || azure_key_vault_provider? || gcp_secret_manager_provider?
       end
 
       def variable_value(key, default = nil)
@@ -296,6 +296,12 @@ module EE
             event: 'i_ci_secrets_management_vault_build_created'
           ).to_context]
         )
+      end
+
+      def gcp_secret_manager_provider?
+        variable_value('GCP_PROJECT_NUMBER').present? &&
+          variable_value('GCP_WORKLOAD_IDENTITY_FEDERATION_POOL_ID').present? &&
+          variable_value('GCP_WORKLOAD_IDENTITY_FEDERATION_PROVIDER_ID').present?
       end
 
       def azure_key_vault_provider?

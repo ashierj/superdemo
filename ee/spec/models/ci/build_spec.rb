@@ -962,6 +962,24 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
       it { is_expected.to eq(true) }
     end
+
+    context 'when only one GCP Secrets Manager CI variable is set' do
+      before do
+        project.variables.create!(key: 'GCP_PROJECT_NUMBER', value: '1234')
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when all GCP Secrets Manager CI variables are set' do
+      before do
+        project.variables.create!(key: 'GCP_PROJECT_NUMBER', value: '1234')
+        project.variables.create!(key: 'GCP_WORKLOAD_IDENTITY_FEDERATION_POOL_ID', value: 'pool-id')
+        project.variables.create!(key: 'GCP_WORKLOAD_IDENTITY_FEDERATION_PROVIDER_ID', value: 'provider-id')
+      end
+
+      it { is_expected.to eq(true) }
+    end
   end
 
   context 'with loose foreign keys for partitioned tables' do

@@ -9,6 +9,11 @@ module EE
         secrets.to_h.transform_values do |secret|
           secret['vault']['server'] = vault_server(secret) if secret['vault']
           secret['azure_key_vault']['server'] = azure_key_vault_server(secret) if secret['azure_key_vault']
+
+          if ::Feature.enabled?(:ci_gcp_secret_manager, project) && (secret['gcp_secret_manager'])
+            secret['gcp_secret_manager']['server'] = gcp_secret_manager_server(secret)
+          end
+
           secret
         end
       end
@@ -40,6 +45,15 @@ module EE
 
       def id_token_var(secret)
         secret['token'] || "$#{id_tokens.each_key.first}"
+      end
+
+      def gcp_secret_manager_server(secret)
+        @gcp_secret_manager_server ||= {
+          'project_number' => variable_value('GCP_PROJECT_NUMBER'),
+          'workload_identity_federation_pool_id' => variable_value('GCP_WORKLOAD_IDENTITY_FEDERATION_POOL_ID'),
+          'workload_identity_federation_provider_id' => variable_value('GCP_WORKLOAD_IDENTITY_FEDERATION_PROVIDER_ID'),
+          'jwt' => secret['token']
+        }
       end
 
       def azure_key_vault_server(secret)
