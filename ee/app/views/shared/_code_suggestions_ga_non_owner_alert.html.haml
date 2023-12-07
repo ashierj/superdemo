@@ -1,0 +1,19 @@
+- root_namespace = resource.root_ancestor
+- return unless show_code_suggestions_ga_non_owner_alert?(root_namespace)
+
+- content_for :page_level_alert do
+  %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
+    = render Pajamas::AlertComponent.new(title: s_('CodeSuggestionsGAAlert|Try GitLab Duo Code Suggestions today'),
+      alert_options: { class: 'js-code-suggestions-ga-non-owner-alert',
+        data: { feature_id: ::EE::Users::CalloutsHelper::CODE_SUGGESTIONS_GA_NON_OWNER_ALERT,
+                               dismiss_endpoint: callouts_path,
+                               testid: 'code-suggestions-ga-non-owner-alert' } },
+      close_button_options: { data: { testid: 'hide-code-suggestions-ga-non-owner-alert' }}) do |c|
+      - c.with_body do
+        = s_("CodeSuggestionsGAAlert|Quickly and securely author code by getting suggestions in your IDE while you type. Available in multiple languages, try Code Suggestions today.")
+      - c.with_actions do
+        = render Pajamas::ButtonComponent.new(href: profile_preferences_path(anchor: 'code-suggestions-settings'), variant: :confirm, button_options: { class: 'mr-2' }) do
+          = s_('CodeSuggestionsGAAlert|Try now')
+
+        = render Pajamas::ButtonComponent.new(href: help_page_path('user/project/repository/code_suggestions/index'), target: '_blank') do
+          = s_('CodeSuggestionsGAAlert|Learn more')
