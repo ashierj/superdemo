@@ -6,6 +6,7 @@ import {
   GlForm,
   GlFormGroup,
   GlFormInput,
+  GlTooltipDirective,
 } from '@gitlab/ui';
 
 import { INPUT_DEBOUNCE, CUSTODY_REPORT_PARAMETER } from 'ee/compliance_dashboard/constants';
@@ -13,7 +14,7 @@ import { isValidSha1Hash } from '~/lib/utils/text_utility';
 import { s__ } from '~/locale';
 
 export default {
-  name: 'ExportApp',
+  name: 'ReportsExportApp',
   components: {
     GlDisclosureDropdown,
     GlDisclosureDropdownItem,
@@ -21,6 +22,9 @@ export default {
     GlForm,
     GlFormGroup,
     GlFormInput,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     mergeCommitsCsvExportPath: {
@@ -59,6 +63,7 @@ export default {
             'data-track-action': 'click_export',
             'data-track-label': 'export_all_violations',
           },
+          tooltipText: `${this.$options.i18n.tooltipTexts.violations} ${this.$options.i18n.tooltipTexts.ending}`,
         });
       }
 
@@ -72,6 +77,7 @@ export default {
             'data-track-action': 'click_export',
             'data-track-label': 'export_all_frameworks',
           },
+          tooltipText: `${this.$options.i18n.tooltipTexts.frameworks} ${this.$options.i18n.tooltipTexts.ending}`,
         });
       }
 
@@ -85,6 +91,7 @@ export default {
             'data-track-action': 'click_export',
             'data-track-label': 'export_merge_commits',
           },
+          tooltipText: `${this.$options.i18n.tooltipTexts.mergeCommits} ${this.$options.i18n.tooltipTexts.ending}`,
         });
 
         items.push({
@@ -98,6 +105,7 @@ export default {
             'data-track-action': 'click_export',
             'data-track-label': 'export_merge_commit',
           },
+          tooltipText: `${this.$options.i18n.tooltipTexts.mergeCommitsByCommit} ${this.$options.i18n.tooltipTexts.ending}`,
         });
       }
 
@@ -131,8 +139,17 @@ export default {
     mergeCommitExampleLabel: s__('Compliance Center Export|Example: 2dc6aa3'),
     mergeCommitInvalidMessage: s__('Compliance Center Export|Invalid hash'),
     mergeCommitButtonText: s__('Compliance Center Export|Export custody report'),
-    tooltipExportText: s__('Compliance Center Export|Export as CSV'),
-    tooltipSizeLimitText: s__('Compliance Center Export|(limited to 15 MB)'),
+    tooltipTexts: {
+      violations: s__('Compliance Center Export|Export merge request violations as a CSV file.'),
+      frameworks: s__('Compliance Center Export|Export list of project frameworks as a CSV file.'),
+      mergeCommits: s__(
+        'Compliance Center Export|Export chain of custody report as a CSV file (limited to 15MB).',
+      ),
+      mergeCommitsByCommit: s__(
+        'Compliance Center Export|Export chain of custody report of a specific commit as a CSV file (limited to 15MB).',
+      ),
+      ending: s__('Compliance Center Export|You will be emailed after the export is processed.'),
+    },
   },
   inputDebounce: INPUT_DEBOUNCE,
   custodyReportParamater: CUSTODY_REPORT_PARAMETER,
@@ -190,7 +207,16 @@ export default {
       </gl-form>
     </template>
     <template v-for="(item, index) in exportItems" v-else>
-      <gl-disclosure-dropdown-item :key="index" :item="item" />
+      <gl-disclosure-dropdown-item
+        :key="index"
+        v-gl-tooltip="{
+          title: item.tooltipText,
+          boundary: 'viewport',
+          placement: 'left',
+          customClass: 'gl-pointer-events-none',
+        }"
+        :item="item"
+      />
     </template>
   </gl-disclosure-dropdown>
 </template>

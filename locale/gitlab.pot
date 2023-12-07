@@ -12444,16 +12444,16 @@ msgstr ""
 msgid "Completed in %{duration_seconds} seconds (%{relative_time})"
 msgstr ""
 
-msgid "Compliance Center Export|(limited to 15 MB)"
-msgstr ""
-
 msgid "Compliance Center Export|Example: 2dc6aa3"
 msgstr ""
 
-msgid "Compliance Center Export|Export as CSV"
+msgid "Compliance Center Export|Export chain of custody report"
 msgstr ""
 
-msgid "Compliance Center Export|Export chain of custody report"
+msgid "Compliance Center Export|Export chain of custody report as a CSV file (limited to 15MB)."
+msgstr ""
+
+msgid "Compliance Center Export|Export chain of custody report of a specific commit as a CSV file (limited to 15MB)."
 msgstr ""
 
 msgid "Compliance Center Export|Export custody report"
@@ -12465,6 +12465,12 @@ msgstr ""
 msgid "Compliance Center Export|Export list of project frameworks"
 msgstr ""
 
+msgid "Compliance Center Export|Export list of project frameworks as a CSV file."
+msgstr ""
+
+msgid "Compliance Center Export|Export merge request violations as a CSV file."
+msgstr ""
+
 msgid "Compliance Center Export|Export violations report"
 msgstr ""
 
@@ -12472,6 +12478,9 @@ msgid "Compliance Center Export|Invalid hash"
 msgstr ""
 
 msgid "Compliance Center Export|Send email of the chosen report as CSV"
+msgstr ""
+
+msgid "Compliance Center Export|You will be emailed after the export is processed."
 msgstr ""
 
 msgid "Compliance Center|Frameworks"
