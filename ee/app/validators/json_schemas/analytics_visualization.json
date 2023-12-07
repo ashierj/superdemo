@@ -15,7 +15,8 @@
             "ColumnChart",
             "DataTable",
             "SingleStat",
-            "DORAChart"
+            "DORAChart",
+            "UsageOverview"
           ]
         },
         "options": {
@@ -40,7 +41,8 @@
         "type": {
           "enum": [
             "cube_analytics",
-            "value_stream"
+            "value_stream",
+            "usage_overview"
           ]
         },
         "query": {
