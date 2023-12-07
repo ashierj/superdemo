@@ -126,6 +126,25 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
       end
 
       shared_examples 'a user pulling files' do
+        let(:using_a_deploy_token) { false }
+
+        shared_examples 'tracking an internal event' do |from_cache: false|
+          it 'tracks an internal event' do
+            event_name = if from_cache
+                           described_class::TRACKING_EVENT_NAME_FROM_CACHE
+                         else
+                           described_class::TRACKING_EVENT_NAME_FROM_EXTERNAL
+                         end
+
+            u = user unless using_a_deploy_token
+
+            expect(::Gitlab::InternalEvents).to receive(:track_event)
+              .with(event_name, user: u, project: project)
+
+            subject
+          end
+        end
+
         shared_examples 'returning a workhorse sendurl response' do
           it 'returns a workhorse sendurl response' do
             subject
@@ -146,6 +165,8 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
             expect(send_data['ErrorResponseStatus']).to eq(502)
             expect(send_data['TimeoutResponseStatus']).to eq(504)
           end
+
+          it_behaves_like 'tracking an internal event', from_cache: false
         end
 
         shared_examples 'returning a workhorse senddependency response' do
@@ -167,6 +188,8 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
             expect(upload_config['Method']).to eq('PUT')
             expect(upload_config['Url']).to be_present
           end
+
+          it_behaves_like 'tracking an internal event', from_cache: false
         end
 
         shared_examples 'pulling existing files' do |can_destroy_package_files: false|
@@ -199,6 +222,7 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
               end
 
               it_behaves_like 'returning response status', params[:expected_status] if params[:expected_status]
+              it_behaves_like 'tracking an internal event', from_cache: true if params[:expected_status] == :ok
               it_behaves_like params[:shared_example] if params[:shared_example]
             end
           end
@@ -314,6 +338,8 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
         end
 
         context 'with a deploy token' do
+          let(:using_a_deploy_token) { true }
+
           context 'with custom headers' do
             let(:headers) { { 'Deploy-Token' => deploy_token.token } }
 
