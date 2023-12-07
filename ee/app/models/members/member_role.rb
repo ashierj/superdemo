@@ -84,6 +84,12 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   scope :ordered_by_name, -> { order(:name) }
   scope :by_namespace, ->(group_ids) { where(namespace_id: group_ids) }
 
+  scope :with_members_count, -> do
+    left_outer_joins(:members)
+      .group(:id)
+      .select('member_roles.*, COUNT(members.id) AS members_count')
+  end
+
   before_destroy :prevent_delete_after_member_associated
 
   def self.levels_sentence

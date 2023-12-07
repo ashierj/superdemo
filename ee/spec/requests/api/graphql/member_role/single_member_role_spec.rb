@@ -11,6 +11,7 @@ RSpec.describe 'Query.single_member_role', feature_category: :system_access do
       memberRole(id: "#{member_role.to_global_id}") {
         id
         name
+        membersCount
       }
     }
     QUERY
@@ -28,6 +29,13 @@ RSpec.describe 'Query.single_member_role', feature_category: :system_access do
   end
 
   context 'with custom roles feature' do
+    let_it_be(:group_members) do
+      create_list(:group_member, 3, :developer, {
+        member_role: member_role,
+        source: member_role.namespace
+      })
+    end
+
     before do
       stub_licensed_features(custom_roles: true)
       post_graphql(member_role_query, current_user: user)
@@ -36,9 +44,11 @@ RSpec.describe 'Query.single_member_role', feature_category: :system_access do
     it_behaves_like 'a working graphql query'
 
     it 'returns the requested member role' do
-      expected_result = { 'id' => member_role.to_global_id.to_s, 'name' => member_role.name }
-
-      expect(subject).to eq(expected_result)
+      expect(subject).to eq({
+        'id' => member_role.to_global_id.to_s,
+        'name' => member_role.name,
+        'membersCount' => group_members.count
+      })
     end
   end
 
