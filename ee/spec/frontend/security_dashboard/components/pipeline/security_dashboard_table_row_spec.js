@@ -22,9 +22,10 @@ describe('Security Dashboard Table Row', () => {
   let wrapper;
   let store;
 
-  const createComponent = (mountFunc, { props = {} } = {}) => {
+  const createComponent = (mountFunc, { props = {}, canAdminVulnerability = true } = {}) => {
     wrapper = mountFunc(SecurityDashboardTableRow, {
       store,
+      provide: { canAdminVulnerability },
       propsData: {
         ...props,
       },
@@ -267,4 +268,15 @@ describe('Security Dashboard Table Row', () => {
       });
     },
   );
+
+  describe('can admin vulnerability', () => {
+    it.each([true, false])(
+      'shows/hides the select all checkbox if the user can admin vulnerability = %s',
+      (canAdminVulnerability) => {
+        createComponent(shallowMount, { canAdminVulnerability });
+
+        expect(findCheckbox().exists()).toBe(canAdminVulnerability);
+      },
+    );
+  });
 });

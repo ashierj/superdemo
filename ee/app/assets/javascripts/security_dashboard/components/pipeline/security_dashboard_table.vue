@@ -17,6 +17,7 @@ export default {
     SecurityDashboardTableRow,
     SelectionSummary,
   },
+  inject: ['canAdminVulnerability'],
   computed: {
     ...mapState('vulnerabilities', [
       'errorLoadingVulnerabilities',
@@ -41,7 +42,7 @@ export default {
       );
     },
     showPagination() {
-      return this.pageInfo && this.pageInfo.total;
+      return Boolean(this.pageInfo?.total);
     },
   },
   methods: {
@@ -68,7 +69,7 @@ export default {
       <selection-summary />
     </gl-collapse>
     <div class="gl-responsive-table-row table-row-header gl-bg-gray-50 text-2 px-2" role="row">
-      <div class="table-section section-5">
+      <div v-if="canAdminVulnerability" class="table-section section-5">
         <gl-form-checkbox
           :checked="hasSelectedAllVulnerabilities"
           class="my-0 ml-1 mr-3"
