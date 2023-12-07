@@ -21,7 +21,7 @@ module QA
             end
 
             def go_to_contributor_statistics
-              open_analyze_submenu('Contributor statistics')
+              open_analyze_submenu('Contributor analytics')
             end
 
             def go_to_code_review_analytics
