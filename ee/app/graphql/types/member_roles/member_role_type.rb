@@ -82,6 +82,18 @@ module Types
         null: true,
         alpha: { milestone: '16.5' },
         description: 'Array of all permissions enabled for the custom role.'
+
+      field :members_count,
+        GraphQL::Types::Int,
+        null: false,
+        alpha: { milestone: '16.7' },
+        description: 'Total number of members with the custom role.'
+
+      def members_count
+        return object.members_count if object.respond_to?(:members_count)
+
+        object.members.count
+      end
     end
   end
 end

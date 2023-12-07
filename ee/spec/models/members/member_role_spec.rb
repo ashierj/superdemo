@@ -213,6 +213,30 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         expect(described_class.ordered_by_name).to eq([group_2_member_role, member_role_2, member_role_1])
       end
     end
+
+    describe '.with_members_count' do
+      let_it_be(:member_role_1_members) do
+        create_list(:group_member, 3, :developer, {
+          member_role: member_role_1,
+          source: group
+        })
+      end
+
+      let_it_be(:member_role_2_members) do
+        create_list(:group_member, 2, :developer, {
+          member_role: member_role_2,
+          source: group
+        })
+      end
+
+      it 'returns the total count of members for each role' do
+        expect(described_class.with_members_count.map { |x| [x.id, x.members_count] }).to match_array([
+          [member_role_1.id, 3],
+          [member_role_2.id, 2],
+          [group_2_member_role.id, 0]
+        ])
+      end
+    end
   end
 
   describe '.levels_sentence' do

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['MemberRole'], feature_category: :system_access do
   let(:permissions) { MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.keys.map(&:to_s) }
-  let(:fields) { %w[baseAccessLevel description id name enabledPermissions] + permissions }
+  let(:fields) { %w[baseAccessLevel description id name enabledPermissions membersCount] + permissions }
 
   specify { expect(described_class.graphql_name).to eq('MemberRole') }
 
