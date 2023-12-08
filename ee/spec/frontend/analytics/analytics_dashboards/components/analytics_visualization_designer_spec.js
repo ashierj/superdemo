@@ -9,6 +9,7 @@ import { mockTracking } from 'helpers/tracking_helper';
 import { HTTP_STATUS_CREATED, HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { createAlert } from '~/alert';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 
@@ -23,6 +24,8 @@ import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashbo
 
 import { mockMetaData, TEST_CUSTOM_DASHBOARDS_PROJECT } from '../mock_data';
 import { BuilderComponent, QueryBuilder } from '../stubs';
+
+jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_action');
 
 const mockAlertDismiss = jest.fn();
 jest.mock('~/alert', () => ({
@@ -159,6 +162,19 @@ describe('AnalyticsVisualizationDesigner', () => {
         EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
         expect.any(Object),
       );
+    });
+
+    describe('beforeDestroy', () => {
+      it('should dismiss the alert', async () => {
+        await setVisualizationTitle('New Title');
+        await findSaveButton().vm.$emit('click');
+
+        wrapper.destroy();
+
+        await nextTick();
+
+        expect(mockAlertDismiss).toHaveBeenCalled();
+      });
     });
   });
 
@@ -366,26 +382,76 @@ describe('AnalyticsVisualizationDesigner', () => {
     });
   });
 
-  describe('beforeDestroy', () => {
+  describe('when cancelling', () => {
+    let windowDialogSpy;
+    let beforeUnloadEvent;
+
     beforeEach(() => {
+      beforeUnloadEvent = new Event('beforeunload');
+      windowDialogSpy = jest.spyOn(beforeUnloadEvent, 'returnValue', 'set');
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
       createWrapper();
+      confirmAction.mockReturnValue(new Promise(() => {}));
     });
 
-    it('should dismiss the alert', async () => {
-      await setVisualizationTitle('New Title');
-      await findSaveButton().vm.$emit('click');
+    afterEach(() => {
+      windowDialogSpy.mockRestore();
+      confirmAction.mockReset();
+    });
 
-      wrapper.destroy();
+    describe('by the "beforeunload" event', () => {
+      it('does not show the browser confirm dialog when there are no changes', () => {
+        window.dispatchEvent(beforeUnloadEvent);
 
-      await nextTick();
+        expect(windowDialogSpy).not.toHaveBeenCalled();
+      });
 
-      expect(mockAlertDismiss).toHaveBeenCalled();
+      it('shows the browser confirm dialog when there are changes', async () => {
+        await setVisualizationTitle('New Title');
+        window.dispatchEvent(beforeUnloadEvent);
+
+        expect(windowDialogSpy).toHaveBeenCalledWith(
+          'Are you sure you want to lose unsaved changes?',
+        );
+      });
+    });
+
+    describe('by the route changing', () => {
+      const nextMock = jest.fn();
+
+      it('does not show confirm dialog if there are no changes', () => {
+        wrapper.vm.$options.beforeRouteLeave.call(wrapper.vm, {}, {}, nextMock);
+
+        expect(confirmAction).not.toHaveBeenCalled();
+      });
+
+      it('shows the confirm dialog if there are changes', async () => {
+        await setVisualizationTitle('New Title');
+        wrapper.vm.$options.beforeRouteLeave.call(wrapper.vm, {}, {}, nextMock);
+
+        expect(confirmAction).toHaveBeenCalledWith(
+          'Are you sure you want to cancel creating this visualization?',
+          {
+            cancelBtnText: 'Continue creating',
+            primaryBtnText: 'Discard changes',
+          },
+        );
+      });
+
+      it('does nothing if the user opts to keep creating', async () => {
+        await setVisualizationTitle('New Title');
+        confirmAction.mockResolvedValue(false);
+
+        wrapper.vm.$options.beforeRouteLeave.call(wrapper.vm, {}, {}, nextMock);
+        await waitForPromises();
+
+        expect(routerPush).not.toHaveBeenCalled();
+      });
     });
   });
 
   describe('when editing for dashboard', () => {
-    const setupSaveDashbboard = async (dashboard) => {
+    const setupSaveDashboard = async (dashboard) => {
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
       createWrapper(dashboard);
       await setAllRequiredFields();
@@ -397,13 +463,13 @@ describe('AnalyticsVisualizationDesigner', () => {
     };
 
     it('after save it will redirect for new dashboards', async () => {
-      await setupSaveDashbboard(NEW_DASHBOARD_SLUG);
+      await setupSaveDashboard(NEW_DASHBOARD_SLUG);
 
       expect(routerPush).toHaveBeenCalledWith('/new');
     });
 
     it('after save it will redirect for existing dashboards', async () => {
-      await setupSaveDashbboard('test-source-dashboard');
+      await setupSaveDashboard('test-source-dashboard');
 
       expect(routerPush).toHaveBeenCalledWith({
         name: 'dashboard-detail',

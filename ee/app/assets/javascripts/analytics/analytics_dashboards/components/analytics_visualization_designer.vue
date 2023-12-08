@@ -1,9 +1,11 @@
 <script>
 import { QueryBuilder } from '@cubejs-client/vue';
 import { GlButton, GlFormGroup, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
+import { isEqual } from 'lodash';
 
 import { __, s__ } from '~/locale';
 import { createAlert } from '~/alert';
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 import { slugify } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -18,6 +20,9 @@ import {
   PANEL_DISPLAY_TYPES,
   EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
   EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION,
+  DEFAULT_VISUALIZATION_QUERY_STATE,
+  DEFAULT_VISUALIZATION_TITLE,
+  DEFAULT_SELECTED_VISUALIZATION_TYPE,
 } from '../constants';
 
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
@@ -46,18 +51,16 @@ export default {
       default: null,
     },
   },
-  data() {
-    const query = {
-      limit: 100,
-    };
+  async beforeRouteLeave(to, from, next) {
+    const confirmed = await this.confirmDiscardIfChanged();
+    if (!confirmed) return;
 
+    next();
+  },
+  data() {
     return {
       cubejsApi: createCubeJsApi(document.body.dataset.projectId),
-      queryState: {
-        query,
-        measureType: '',
-        measureSubType: '',
-      },
+      queryState: DEFAULT_VISUALIZATION_QUERY_STATE(),
       visualizationTitle: '',
       titleValidationError: null,
       typeValidationError: null,
@@ -99,9 +102,17 @@ export default {
         ? s__('Analytics|Save and add to Dashboard')
         : s__('Analytics|Save your visualization');
     },
+    changesMade() {
+      return (
+        this.visualizationTitle !== DEFAULT_VISUALIZATION_TITLE ||
+        this.selectedVisualizationType !== DEFAULT_SELECTED_VISUALIZATION_TYPE ||
+        !isEqual({ ...this.queryState }, DEFAULT_VISUALIZATION_QUERY_STATE())
+      );
+    },
   },
   beforeDestroy() {
     this.alert?.dismiss();
+    window.removeEventListener('beforeunload', this.onPageUnload);
   },
   mounted() {
     const wrappers = document.querySelectorAll('.container-fluid.container-limited');
@@ -111,6 +122,8 @@ export default {
     });
 
     this.trackEvent(EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER);
+
+    window.addEventListener('beforeunload', this.onPageUnload);
   },
   methods: {
     onQueryStatusChange({ error }) {
@@ -239,6 +252,29 @@ export default {
     },
     routeToDashboardList() {
       this.$router.push('/');
+    },
+    confirmDiscardIfChanged() {
+      if (!this.changesMade) {
+        return true;
+      }
+
+      return confirmAction(
+        s__('Analytics|Are you sure you want to cancel creating this visualization?'),
+        {
+          primaryBtnText: __('Discard changes'),
+          cancelBtnText: s__('Analytics|Continue creating'),
+        },
+      );
+    },
+    onPageUnload(event) {
+      if (!this.changesMade) return undefined;
+
+      event.preventDefault();
+      // This returnValue is required on some browsers. This message is displayed on older versions.
+      // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event#compatibility_notes
+      const returnValue = __('Are you sure you want to lose unsaved changes?');
+      Object.assign(event, { returnValue });
+      return returnValue;
     },
     showAlert(message, error = null, captureError = false) {
       this.alert = createAlert({
