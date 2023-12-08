@@ -4,6 +4,7 @@ module EE
   module Members
     module DestroyService
       extend ::Gitlab::Utils::Override
+      include ::GitlabSubscriptions::CodeSuggestionsHelper
 
       def after_execute(member:, skip_saml_identity: false)
         super
@@ -120,7 +121,7 @@ module EE
       def enqueue_cleanup_add_on_seat_assignments(member)
         namespace = member.source.root_ancestor
 
-        return unless ::Feature.enabled?(:hamilton_seat_management, namespace)
+        return unless gitlab_saas? && code_suggestions_available?(namespace)
 
         member.run_after_commit_or_now do
           GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker.perform_async(
