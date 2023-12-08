@@ -23,11 +23,31 @@ RSpec.describe Sbom::Ingestion::IngestReportSliceService, feature_category: :dep
         ::Sbom::Ingestion::Tasks::IngestComponents,
         ::Sbom::Ingestion::Tasks::IngestComponentVersions,
         ::Sbom::Ingestion::Tasks::IngestSources,
-        ::Sbom::Ingestion::Tasks::IngestOccurrences
+        ::Sbom::Ingestion::Tasks::IngestOccurrences,
+        ::Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities
       ]
 
       expect(tasks).to all(receive(:execute).with(pipeline, occurrence_maps).ordered)
       expect(execute).to match_array(sequencer.range)
+    end
+
+    context 'with sbom_occurrences_vulnerabilities disabled' do
+      before do
+        stub_feature_flags(sbom_occurrences_vulnerabilities: false)
+      end
+
+      it 'executes all ingestion tasks but IngestOccurrencesVulnerabilities in order' do
+        tasks = [
+          ::Sbom::Ingestion::Tasks::IngestComponents,
+          ::Sbom::Ingestion::Tasks::IngestComponentVersions,
+          ::Sbom::Ingestion::Tasks::IngestSources,
+          ::Sbom::Ingestion::Tasks::IngestOccurrences
+        ]
+
+        expect(tasks).to all(receive(:execute).with(pipeline, occurrence_maps).ordered)
+        expect(::Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities).not_to receive(:execute)
+        expect(execute).to match_array(sequencer.range)
+      end
     end
   end
 end

@@ -3,12 +3,15 @@
 module Sbom
   module Ingestion
     class OccurrenceMap
-      attr_reader :report_component, :report_source
+      include Gitlab::Utils::StrongMemoize
+
+      attr_reader :report_component, :report_source, :vulnerabilities
       attr_accessor :component_id, :component_version_id, :source_id, :occurrence_id
 
-      def initialize(report_component, report_source)
+      def initialize(report_component, report_source, vulnerabilities)
         @report_component = report_component
         @report_source = report_source
+        @vulnerabilities = vulnerabilities
       end
 
       def to_h
@@ -29,16 +32,32 @@ module Sbom
         version.present?
       end
 
+      def vulnerability_count
+        vulnerability_ids.count
+      end
+
+      def highest_severity
+        vulnerabilities_info[:highest_severity]
+      end
+
+      def vulnerability_ids
+        vulnerabilities_info[:vulnerability_ids]
+      end
+      strong_memoize_attr :vulnerability_ids
+
       delegate :packager, :input_file_path, to: :report_source, allow_nil: true
-      delegate :name, to: :report_component
+      delegate :name, :version, to: :report_component
 
       private
-
-      delegate :version, to: :report_component, private: true
 
       def purl_type
         report_component.purl&.type
       end
+
+      def vulnerabilities_info
+        @vulnerabilities.fetch(name, version, input_file_path)
+      end
+      strong_memoize_attr :vulnerabilities_info
     end
   end
 end
