@@ -61,21 +61,31 @@ RSpec.describe Projects::GroupLinks::DestroyService, feature_category: :groups_a
   context 'for refresh user addon assignments' do
     let(:worker) { GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker }
 
-    it 'enqueues RefreshUserAssignmentsWorker with correct arguments' do
-      expect(worker).to receive(:perform_async).with(project.root_ancestor.id)
-
-      subject.execute(group_link)
-    end
-
-    context 'when the feature flag is not enabled' do
-      before do
-        stub_feature_flags(hamilton_seat_management: false)
-      end
-
+    context 'when on self managed' do
       it 'does not enqueue CleanupUserAddOnAssignmentWorker' do
         expect(worker).not_to receive(:perform_async)
 
         subject.execute(group_link)
+      end
+    end
+
+    context 'when on SaaS', :saas do
+      it 'enqueues RefreshUserAssignmentsWorker with correct arguments' do
+        expect(worker).to receive(:perform_async).with(project.root_ancestor.id)
+
+        subject.execute(group_link)
+      end
+
+      context 'when the feature flag is not enabled' do
+        before do
+          stub_feature_flags(hamilton_seat_management: false)
+        end
+
+        it 'does not enqueue CleanupUserAddOnAssignmentWorker' do
+          expect(worker).not_to receive(:perform_async)
+
+          subject.execute(group_link)
+        end
       end
     end
   end

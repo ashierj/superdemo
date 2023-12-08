@@ -38,9 +38,7 @@ module EE
 
       override :remove_paid_features
       def remove_paid_features
-        revoke_project_access_tokens
-        delete_pipeline_subscriptions
-        delete_test_cases
+        ::EE::Projects::RemovePaidFeaturesService.new(project).execute(new_namespace)
       end
 
       def unassign_policy_project
@@ -62,31 +60,6 @@ module EE
 
       def sync_new_group_policies
         ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(project.id)
-      end
-
-      def revoke_project_access_tokens
-        return if new_namespace.feature_available_non_trial?(:resource_access_token)
-
-        PersonalAccessTokensFinder
-          .new(user: project.bots, impersonation: false)
-          .execute
-          .update_all(revoked: true)
-      end
-
-      # This method is within a transaction
-      def delete_pipeline_subscriptions
-        return if new_namespace.licensed_feature_available?(:ci_project_subscriptions)
-
-        project_id = project.id
-        project.run_after_commit do
-          ::Ci::UpstreamProjectsSubscriptionsCleanupWorker.perform_async(project_id)
-        end
-      end
-
-      def delete_test_cases
-        return if new_namespace.licensed_feature_available?(:quality_management)
-
-        project.issues.with_issue_type(:test_case).delete_all
       end
 
       def delete_compliance_framework_setting

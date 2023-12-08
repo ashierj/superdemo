@@ -18,6 +18,7 @@ module GroupSaml
 
       def save_saml_group_link
         saml_group_link.assign_attributes(params)
+        saml_group_link.set_access_level_based_on_member_role
         saml_group_link.save ? success : error
       rescue ArgumentError => e
         saml_group_link.errors.add(:base, e.message)
@@ -46,14 +47,20 @@ module GroupSaml
       end
 
       def create_audit_event
+        message = 'SAML group links created. Group Name - %{group_name}, '\
+                  'Access Level - %{access_level}' % { group_name: saml_group_link.saml_group_name,
+                                                       access_level: saml_group_link.access_level }
+
+        if saml_group_link.member_role_id
+          message << (', Member Role - %{member_role_id}' % { member_role_id: saml_group_link.member_role_id })
+        end
+
         ::Gitlab::Audit::Auditor.audit(
           name: 'saml_group_links_created',
           author: current_user,
           scope: group,
           target: group,
-          message: 'SAML group links created. Group Name - %{group_name}, '\
-                   'Access Level - %{access_level}' % { group_name: saml_group_link.saml_group_name,
-                                                        access_level: saml_group_link.access_level }
+          message: message
         )
       end
     end

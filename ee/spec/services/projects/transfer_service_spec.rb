@@ -156,99 +156,28 @@ RSpec.describe Projects::TransferService do
   end
 
   describe 'updating paid features' do
-    let(:premium_group) { create(:group_with_plan, plan: :premium_plan) }
+    it 'calls the ::EE::Projects::RemovePaidFeaturesService to update paid features' do
+      expect_next_instance_of(::EE::Projects::RemovePaidFeaturesService, project) do |service|
+        expect(service).to receive(:execute).with(group).and_call_original
+      end
 
-    let_it_be(:free_group) { create(:group) }
-
-    before do
-      free_group.add_owner(user)
+      subject.execute(group)
     end
 
-    describe 'project access tokens' do
-      before do
-        ResourceAccessTokens::CreateService.new(user, project).execute
-      end
-
-      def revoked_tokens
-        PersonalAccessToken.without_impersonation.for_users(project.bots).revoked
-      end
-
-      context 'with a self managed instance' do
-        before do
-          stub_ee_application_setting(should_check_namespace_plan: false)
-        end
-
-        it 'does not revoke PATs' do
-          subject.execute(group)
-
-          expect { subject.execute(group) }.not_to change { revoked_tokens.count }
-        end
-      end
-
-      context 'with GL.com', :saas do
-        before do
-          premium_group.add_owner(user)
-          stub_ee_application_setting(should_check_namespace_plan: true)
-        end
-
-        context 'when target namespace has a premium plan' do
-          it 'does not revoke PATs' do
-            expect { subject.execute(premium_group) }.not_to change { revoked_tokens.count }
-          end
-        end
-
-        context 'when target namespace has a free plan' do
-          it 'revoke PATs' do
-            expect { subject.execute(free_group) }.to change { revoked_tokens.count }.from(0).to(1)
-          end
-        end
-      end
-    end
-
-    describe 'pipeline subscriptions', :saas do
-      let_it_be(:project_2) { create(:project, :public) }
-
+    # explicit testing of the pipeline subscriptions cleanup to verify `run_after_commit` block is executed
+    context 'with pipeline subscriptions', :saas do
       before do
         create(:license, plan: License::PREMIUM_PLAN)
         stub_ee_application_setting(should_check_namespace_plan: true)
-
-        premium_group.add_owner(user)
-      end
-
-      context 'when target namespace has a premium plan' do
-        it 'does not schedule cleanup for upstream project subscription' do
-          expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).not_to receive(:perform_async)
-
-          subject.execute(premium_group)
-        end
       end
 
       context 'when target namespace has a free plan' do
         it 'schedules cleanup for upstream project subscription' do
-          expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).to receive(:perform_async).with(project.id).and_call_original
+          expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).to receive(:perform_async)
+            .with(project.id)
+            .and_call_original
 
-          subject.execute(free_group)
-        end
-      end
-    end
-
-    describe 'test cases', :saas do
-      before do
-        create(:quality_test_case, project: project, author: user)
-        stub_ee_application_setting(should_check_namespace_plan: true)
-      end
-
-      context 'when target namespace has a premium plan' do
-        it 'does not delete the test cases' do
-          subject.execute(premium_group)
-
-          expect { subject.execute(premium_group) }.not_to change { project.issues.with_issue_type(:test_case).count }
-        end
-      end
-
-      context 'when target namespace has a free plan' do
-        it 'deletes the test cases' do
-          expect { subject.execute(free_group) }.to change { project.issues.with_issue_type(:test_case).count }.from(1).to(0)
+          subject.execute(group)
         end
       end
     end

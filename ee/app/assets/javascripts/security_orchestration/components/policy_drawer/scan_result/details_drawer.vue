@@ -4,8 +4,8 @@ import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { fromYaml } from '../../policy_editor/scan_result/lib';
 import { SUMMARY_TITLE } from '../constants';
 import InfoRow from '../info_row.vue';
-import PolicyDrawerLayout from '../drawer_layout.vue';
-import BranchExceptionsToggleList from '../branch_exceptions_toggle_list.vue';
+import DrawerLayout from '../drawer_layout.vue';
+import ToggleList from '../toggle_list.vue';
 import Approvals from './policy_approvals.vue';
 import Settings from './policy_settings.vue';
 import { humanizeRules } from './utils';
@@ -16,8 +16,8 @@ export default {
     scanResult: s__('SecurityOrchestration|Scan result'),
   },
   components: {
-    BranchExceptionsToggleList,
-    PolicyDrawerLayout,
+    ToggleList,
+    DrawerLayout,
     InfoRow,
     Approvals,
     Settings,
@@ -73,7 +73,7 @@ export default {
 </script>
 
 <template>
-  <policy-drawer-layout
+  <drawer-layout
     key="scan_result_policy"
     :description="parsedYaml.description"
     :policy="policy"
@@ -91,10 +91,10 @@ export default {
           class="gl-pt-5"
         >
           {{ summary }}
-          <branch-exceptions-toggle-list
+          <toggle-list
             v-if="showBranchExceptions(branchExceptions)"
             class="gl-mb-2"
-            :branch-exceptions="branchExceptions"
+            :items="branchExceptions"
           />
           <p v-if="criteriaMessage" class="gl-mb-3">
             {{ capitalizedCriteriaMessage(criteriaMessage) }}
@@ -107,5 +107,5 @@ export default {
         </div>
       </info-row>
     </template>
-  </policy-drawer-layout>
+  </drawer-layout>
 </template>

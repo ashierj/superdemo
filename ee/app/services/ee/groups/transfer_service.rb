@@ -93,6 +93,15 @@ module EE
           ElasticWikiIndexerWorker.perform_in(interval, grp.id, grp.class.name, { force: true })
         end
       end
+
+      override :remove_paid_features_for_projects
+      def remove_paid_features_for_projects(old_root_ancestor_id)
+        return if old_root_ancestor_id == group.root_ancestor.id
+
+        group.all_projects.each do |project|
+          ::EE::Projects::RemovePaidFeaturesService.new(project).execute(new_parent_group, triggerer: group)
+        end
+      end
     end
   end
 end

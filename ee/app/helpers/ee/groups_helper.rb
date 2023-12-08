@@ -3,6 +3,7 @@
 module EE
   module GroupsHelper
     extend ::Gitlab::Utils::Override
+    include ::GitlabSubscriptions::CodeSuggestionsHelper
 
     def size_limit_message_for_group(group)
       show_lfs = group.lfs_enabled? ? 'including LFS files' : ''
@@ -120,9 +121,7 @@ module EE
     end
 
     def show_code_suggestions_tab?(group)
-      return false unless ::Feature.enabled?(:hamilton_seat_management, group)
-
-      ::Gitlab.com? && !group.has_free_or_no_subscription?
+      gitlab_saas? && code_suggestions_available?(group) && !group.has_free_or_no_subscription?
     end
 
     def saml_sso_settings_generate_helper_text(display_none:, text:)

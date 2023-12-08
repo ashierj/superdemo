@@ -18,6 +18,14 @@ module MemberRoles
       end
     end
 
+    def set_access_level_based_on_member_role
+      if member_role && group.custom_roles_enabled?
+        self[base_access_level_attr] = member_role.base_access_level
+      else
+        self.member_role_id = nil
+      end
+    end
+
     private
 
     def validate_member_role_access_level

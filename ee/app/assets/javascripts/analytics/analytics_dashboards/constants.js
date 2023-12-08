@@ -1,9 +1,5 @@
 import { s__ } from '~/locale';
 
-export const FEATURE_PRODUCT_ANALYTICS = 'productAnalytics';
-
-export const PRODUCT_ANALYTICS_FEATURE_DASHBOARDS = ['audience', 'behavior'];
-
 export const EVENTS_TYPES = ['pageViews', 'linkClickEvents', 'events'];
 
 export function isRestrictedToEventType(eventType) {
@@ -181,6 +177,16 @@ export const NEW_DASHBOARD = () => ({
   panels: [],
   userDefined: true,
 });
+
+export const DEFAULT_VISUALIZATION_QUERY_STATE = () => ({
+  query: {
+    limit: 100,
+  },
+  measureType: '',
+  measureSubType: '',
+});
+export const DEFAULT_VISUALIZATION_TITLE = '';
+export const DEFAULT_SELECTED_VISUALIZATION_TYPE = '';
 
 export const FILE_ALREADY_EXISTS_SERVER_RESPONSE = 'A file with this name already exists';
 
