@@ -1,8 +1,11 @@
 <script>
-import { GlCollapsibleListbox, GlFormGroup, GlFormInput, GlSprintf } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
+import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL } from '../../constants';
 import {
@@ -10,8 +13,10 @@ import {
   CUSTOM_ACTION_OPTIONS,
   CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS,
   CUSTOM_ACTION_OPTIONS_KEYS,
+  INSERTED_CODE_BLOCK,
   LINKED_EXISTING_FILE,
 } from '../constants';
+import CodeBlockFilePath from './code_block_file_path.vue';
 import CodeBlockImport from './code_block_import.vue';
 
 export default {
@@ -23,25 +28,22 @@ export default {
   CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS,
   i18n: {
     customSectionHeaderCopy: s__(
-      'ScanExecutionPolicy|%{boldStart}Run%{boldEnd} %{typeSelector} %{filePath} %{tooltip}',
+      'ScanExecutionPolicy|%{boldStart}Run%{boldEnd} %{typeSelector} %{actionType}',
     ),
     customSectionTypeLabel: s__('ScanExecutionPolicy|Choose a method to execute code'),
-    linkedFileInputPlaceholder: s__('ScanExecutionPolicy|Link existing CI file'),
-    linkedFileInputValidationMessage: s__("ScanExecutionPolicy|The file path can't be empty"),
-    customSectionPopoverTitle: __('Information'),
-    customSectionPopoverContent: s__(
+    popoverTitle: __('Information'),
+    popoverContent: s__(
       'ScanExecutionPolicy|If there are any conflicting variables with the local pipeline configuration (Ex, gitlab-ci.yml) then variables defined here will take precedence. %{linkStart}Learn more%{linkEnd}.',
     ),
   },
   name: 'CodeBlockAction',
   components: {
-    PolicyPopover,
+    CodeBlockSourceSelector,
+    CodeBlockFilePath,
     CodeBlockImport,
-    GlCollapsibleListbox,
-    GlFormInput,
-    GlFormGroup,
     GlSprintf,
     SectionLayout,
+    PolicyPopover,
     YamlEditor: () =>
       import(
         /* webpackChunkName: 'policy_yaml_editor' */ 'ee/security_orchestration/components/yaml_editor.vue'
@@ -59,16 +61,25 @@ export default {
     },
   },
   data() {
-    const hasFilePath = Boolean(this.initAction?.ci_configuration_path?.file);
+    const { project: selectedProject, showLinkedFile } = parseCustomFileConfiguration(
+      this.initAction?.ci_configuration_path,
+    );
 
     return {
-      selectedType: hasFilePath ? LINKED_EXISTING_FILE : '',
+      selectedProject,
+      selectedType: showLinkedFile ? LINKED_EXISTING_FILE : INSERTED_CODE_BLOCK,
       yamlEditorValue: '',
     };
   },
   computed: {
+    ciConfigurationPath() {
+      return this.initAction?.ci_configuration_path || {};
+    },
     filePath() {
-      return this.initAction?.ci_configuration_path?.file;
+      return this.ciConfigurationPath.file;
+    },
+    selectedRef() {
+      return this.ciConfigurationPath.ref;
     },
     hasExistingCode() {
       return Boolean(this.yamlEditorValue.length);
@@ -96,14 +107,42 @@ export default {
     },
     setSelectedType(type) {
       this.selectedType = type;
+      this.selectedProject = null;
       this.resetActionToDefault();
     },
     updateYaml(val) {
       this.yamlEditorValue = val;
     },
+    setSelectedRef(ref) {
+      this.triggerChanged({
+        ci_configuration_path: {
+          ...this.ciConfigurationPath,
+          ref,
+        },
+      });
+    },
+    setSelectedProject(project) {
+      this.selectedProject = null;
+      this.$nextTick(() => {
+        this.selectedProject = project;
+
+        const config = { ...this.ciConfigurationPath };
+
+        if ('ref' in config) delete config.ref;
+
+        this.triggerChanged({
+          ci_configuration_path: {
+            ...config,
+            project: project?.fullPath,
+            id: getIdFromGraphQLId(project?.id),
+          },
+        });
+      });
+    },
     updatedFilePath(path) {
       this.triggerChanged({
         ci_configuration_path: {
+          ...this.ciConfigurationPath,
           file: path,
         },
       });
@@ -133,50 +172,42 @@ export default {
           >
             <gl-sprintf :message="$options.i18n.customSectionHeaderCopy">
               <template #bold="{ content }">
-                <b>{{ content }}</b>
+                <b v-if="!isLinkedFile">{{ content }}</b>
               </template>
 
               <template #typeSelector>
-                <gl-collapsible-listbox
-                  label-for="file-path"
-                  :items="$options.CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS"
-                  :toggle-text="toggleText"
-                  :selected="selectedType"
-                  @select="setSelectedType"
-                />
-              </template>
-
-              <template #filePath>
-                <gl-form-group
-                  v-if="isLinkedFile"
-                  class="gl-w-full gl-mb-0"
-                  label-sr-only
-                  :label="__('file path group')"
-                  :optional="false"
-                  :invalid-feedback="$options.i18n.linkedFileInputValidationMessage"
-                  :state="isValidFilePath"
-                >
-                  <gl-form-input
-                    id="file-path"
-                    :placeholder="$options.i18n.linkedFileInputPlaceholder"
-                    :state="isValidFilePath"
-                    :value="filePath"
-                    @input="updatedFilePath"
+                <div v-if="!isLinkedFile" class="gl-display-flex gl-align-items-center gl-gap-3">
+                  <code-block-source-selector
+                    :selected-type="selectedType"
+                    @select="setSelectedType"
                   />
-                </gl-form-group>
+
+                  <policy-popover
+                    :content="$options.i18n.popoverContent"
+                    :title="$options.i18n.popoverTitle"
+                    :href="$options.SCAN_EXECUTION_PATH"
+                    target="code-block-action-icon"
+                  />
+                </div>
               </template>
 
-              <template #tooltip>
-                <policy-popover
-                  :content="$options.i18n.customSectionPopoverContent"
-                  :title="$options.i18n.customSectionPopoverTitle"
-                  :href="$options.SCAN_EXECUTION_PATH"
-                  target="code-block-action-icon"
+              <template #actionType>
+                <code-block-file-path
+                  v-if="isLinkedFile"
+                  :file-path="filePath"
+                  :selected-type="selectedType"
+                  :selected-ref="selectedRef"
+                  :selected-project="selectedProject"
+                  @select-ref="setSelectedRef"
+                  @select-type="setSelectedType"
+                  @select-project="setSelectedProject"
+                  @update-file-path="updatedFilePath"
                 />
               </template>
             </gl-sprintf>
           </div>
         </div>
+
         <div
           v-if="!isLinkedFile"
           class="editor gl-w-full gl-overflow-y-auto gl-rounded-base gl-h-200!"
@@ -190,7 +221,12 @@ export default {
             @input="updateYaml"
           />
         </div>
-        <code-block-import :has-existing-code="hasExistingCode" @changed="updateYaml" />
+
+        <code-block-import
+          v-if="!isLinkedFile"
+          :has-existing-code="hasExistingCode"
+          @changed="updateYaml"
+        />
       </template>
     </section-layout>
   </div>

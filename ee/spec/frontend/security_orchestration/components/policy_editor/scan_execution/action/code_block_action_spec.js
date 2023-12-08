@@ -1,8 +1,9 @@
-import { nextTick } from 'vue';
-import { GlSprintf, GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
-import { shallowMount, mount } from '@vue/test-utils';
+import { GlSprintf } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
+import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import CodeBlockAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_action.vue';
+import CodeBlockFilePath from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_file_path.vue';
 import CodeBlockImport from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_import.vue';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -16,8 +17,8 @@ import {
 describe('CodeBlockAction', () => {
   let wrapper;
 
-  const createComponent = ({ mountFunction = shallowMount, propsData = {}, provide = {} } = {}) => {
-    wrapper = mountFunction(CodeBlockAction, {
+  const createComponent = ({ propsData = {}, provide = {} } = {}) => {
+    wrapper = shallowMount(CodeBlockAction, {
       propsData: {
         initAction: {
           scan: 'custom',
@@ -35,20 +36,20 @@ describe('CodeBlockAction', () => {
     });
   };
 
+  const findCodeBlockFilePath = () => wrapper.findComponent(CodeBlockFilePath);
+  const findCodeBlockSourceSelector = () => wrapper.findComponent(CodeBlockSourceSelector);
   const findYamlEditor = () => wrapper.findComponent(YamlEditor);
-  const findListBox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findCodeBlockActionTooltip = () => wrapper.findComponent(PolicyPopover);
-  const findGlFormInput = () => wrapper.findComponent(GlFormInput);
   const findCodeBlockImport = () => wrapper.findComponent(CodeBlockImport);
 
   describe('default state', () => {
     it('should render yaml editor in default state', async () => {
       createComponent();
+
       await waitForPromises();
       expect(findYamlEditor().exists()).toBe(true);
       expect(findCodeBlockActionTooltip().exists()).toBe(true);
-      expect(findListBox().props('selected')).toBe('');
-      expect(findListBox().props('toggleText')).toBe('Choose a method to execute code');
+      expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
       expect(findCodeBlockImport().props('hasExistingCode')).toBe(false);
     });
   });
@@ -77,18 +78,16 @@ describe('CodeBlockAction', () => {
     });
 
     it('should render file path form', async () => {
-      await findListBox().vm.$emit('select', LINKED_EXISTING_FILE);
-
-      expect(findListBox().props('selected')).toBe(LINKED_EXISTING_FILE);
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
 
       expect(findYamlEditor().exists()).toBe(false);
-      expect(findGlFormInput().exists()).toBe(true);
+      expect(findCodeBlockFilePath().exists()).toBe(true);
     });
 
     it('should set file path', async () => {
-      await findListBox().vm.$emit('select', LINKED_EXISTING_FILE);
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
 
-      findGlFormInput().vm.$emit('input', 'file/path');
+      findCodeBlockFilePath().vm.$emit('update-file-path', 'file/path');
 
       expect(wrapper.emitted('changed')).toEqual([
         [{ scan: CUSTOM_ACTION_KEY }],
@@ -97,47 +96,13 @@ describe('CodeBlockAction', () => {
     });
 
     it('should reset action when action type is changed', async () => {
-      await findListBox().vm.$emit('select', LINKED_EXISTING_FILE);
-      await findListBox().vm.$emit('select', INSERTED_CODE_BLOCK);
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+      await findCodeBlockFilePath().vm.$emit('select-type', INSERTED_CODE_BLOCK);
 
       expect(wrapper.emitted('changed')).toEqual([
         [{ scan: CUSTOM_ACTION_KEY }],
         [{ scan: CUSTOM_ACTION_KEY }],
       ]);
-    });
-  });
-
-  describe('error state', () => {
-    it('should render error when file path is empty', async () => {
-      createComponent({
-        mountFunction: mount,
-        propsData: {
-          initAction: {
-            ci_configuration_path: {
-              file: 'file',
-            },
-          },
-        },
-      });
-
-      expect(findGlFormInput().element.classList.contains('is-valid')).toBe(true);
-
-      /**
-       * Can only be tested with set props
-       * Because initially rendered empty string
-       * won't trigger error state
-       */
-      wrapper.setProps({
-        initAction: {
-          ci_configuration_path: {
-            file: '',
-          },
-        },
-      });
-
-      await nextTick();
-
-      expect(findGlFormInput().element.classList.contains('is-invalid')).toBe(true);
     });
   });
 
@@ -153,8 +118,106 @@ describe('CodeBlockAction', () => {
         },
       });
 
-      expect(findListBox().props('selected')).toBe(LINKED_EXISTING_FILE);
-      expect(findGlFormInput().attributes('value')).toBe('file');
+      expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
+      expect(findCodeBlockFilePath().props('filePath')).toBe('file');
+    });
+
+    it('should render linked file mode when project exist', () => {
+      createComponent({
+        propsData: {
+          initAction: {
+            ci_configuration_path: {
+              project: 'file',
+            },
+          },
+        },
+      });
+
+      expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
+      expect(findCodeBlockFilePath().props('selectedProject')).toEqual({ fullPath: 'file' });
+    });
+
+    it('should render linked file mode when project id exist', () => {
+      createComponent({
+        propsData: {
+          initAction: {
+            ci_configuration_path: {
+              id: 'id',
+            },
+          },
+        },
+      });
+
+      expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
+      expect(findCodeBlockFilePath().props('selectedProject')).toEqual({
+        id: 'gid://gitlab/Project/id',
+      });
+    });
+
+    it('should render linked file mode when project id exist and ref is selected', () => {
+      createComponent({
+        propsData: {
+          initAction: {
+            ci_configuration_path: {
+              ref: 'ref',
+            },
+          },
+        },
+      });
+
+      expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
+      expect(findCodeBlockFilePath().props('selectedProject')).toEqual(null);
+      expect(findCodeBlockFilePath().props('selectedRef')).toBe('ref');
+    });
+  });
+
+  describe('changing linked file parameters', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('selects ref', async () => {
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+
+      findCodeBlockFilePath().vm.$emit('select-ref', 'ref');
+
+      expect(wrapper.emitted('changed')[1]).toEqual([
+        { ci_configuration_path: { ref: 'ref' }, scan: 'custom' },
+      ]);
+    });
+
+    it('selects type', async () => {
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+
+      await findCodeBlockFilePath().vm.$emit('select-type', INSERTED_CODE_BLOCK);
+
+      expect(wrapper.emitted('changed')[1]).toEqual([{ scan: 'custom' }]);
+      expect(findCodeBlockSourceSelector().props('selectedType')).toBe(INSERTED_CODE_BLOCK);
+    });
+
+    it('updates file path', async () => {
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+
+      findCodeBlockFilePath().vm.$emit('update-file-path', 'file-path');
+
+      expect(wrapper.emitted('changed')[1]).toEqual([
+        { ci_configuration_path: { file: 'file-path' }, scan: 'custom' },
+      ]);
+    });
+
+    it('updates project', async () => {
+      const project = {
+        id: 'gid://gitlab/Project/29',
+        fullPath: 'project-path',
+      };
+
+      await findCodeBlockSourceSelector().vm.$emit('select', LINKED_EXISTING_FILE);
+
+      await findCodeBlockFilePath().vm.$emit('select-project', project);
+
+      expect(wrapper.emitted('changed')[1]).toEqual([
+        { ci_configuration_path: { id: 29, project: project.fullPath }, scan: 'custom' },
+      ]);
     });
   });
 });
