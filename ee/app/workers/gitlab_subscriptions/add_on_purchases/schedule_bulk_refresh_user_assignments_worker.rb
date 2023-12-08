@@ -5,6 +5,7 @@ module GitlabSubscriptions
     class ScheduleBulkRefreshUserAssignmentsWorker
       include ApplicationWorker
       include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
+      include ::GitlabSubscriptions::CodeSuggestionsHelper
 
       feature_category :seat_cost_management
       data_consistency :sticky
@@ -13,11 +14,19 @@ module GitlabSubscriptions
       idempotent!
 
       def perform
-        return unless Feature.enabled?(:bulk_add_on_assignment_refresh_worker)
-
-        return unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        return unless feature_flag_enabled?
 
         GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWorker.perform_with_capacity
+      end
+
+      private
+
+      def feature_flag_enabled?
+        if gitlab_saas?
+          Feature.enabled?(:bulk_add_on_assignment_refresh_worker)
+        else
+          Feature.enabled?(:self_managed_code_suggestions)
+        end
       end
     end
   end

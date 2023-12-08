@@ -15,10 +15,6 @@ module GitlabSubscriptions
       MAX_RUNNING_JOBS = 10
 
       def perform_work
-        return unless Feature.enabled?(:bulk_add_on_assignment_refresh_worker)
-
-        return unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
-
         return unless add_on_purchase
 
         deleted_assignments_count = add_on_purchase.delete_ineligible_user_assignments_in_batches!
@@ -27,9 +23,6 @@ module GitlabSubscriptions
       end
 
       def remaining_work_count(*_args)
-        # make sure we stop enqueuing these jobs when the FF is disabled, as the DB column will no longer get updated
-        return 0 unless Feature.enabled?(:bulk_add_on_assignment_refresh_worker)
-
         add_on_purchases_requiring_refresh(max_running_jobs + 1).count
       end
 
@@ -64,7 +57,7 @@ module GitlabSubscriptions
           message: 'AddOnPurchase user assignments refreshed via scheduled CronJob',
           deleted_assignments_count: deleted_count,
           add_on: add_on_purchase.add_on.name,
-          namespace: add_on_purchase.namespace.path
+          namespace: add_on_purchase.namespace&.path
         )
       end
     end
