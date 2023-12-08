@@ -40,7 +40,7 @@ module Security
 
         Vulnerability.id_in(missing_ids)
                      .with_resolution(false)
-                     .not_generic
+                     .not_requiring_manual_resolution
                      .update_all(resolved_on_default_branch: true)
       end
     end
