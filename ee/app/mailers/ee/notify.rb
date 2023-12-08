@@ -20,6 +20,7 @@ module EE
       include ::Emails::AbandonedTrialNotification
       include ::Emails::ComplianceFrameworks
       include ::Emails::ComplianceViolations
+      include ::Emails::ComplianceStandards
       include ::Emails::Okr
     end
 

@@ -1,0 +1,8 @@
+---
+name: compliance_standards_adherence_csv_export
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138589
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/433421
+milestone: '16.7'
+type: development
+group: group::compliance
+default_enabled: false

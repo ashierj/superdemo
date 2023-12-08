@@ -12732,6 +12732,9 @@ msgstr ""
 msgid "ComplianceReport|Update result"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence| Standards adherence export"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|A rule is configured to prevent author approved merge requests."
 msgstr ""
 
@@ -12817,6 +12820,12 @@ msgid "ComplianceStandardsAdherence|View details"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|View details (fix available)"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Your standards adherence CSV export for the group \"%{group_name}\" is attached to this email."
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Your standards adherence CSV export for the group %{group_link} is attached to this email."
 msgstr ""
 
 msgid "ComplianceViolations| Violations export"

@@ -340,6 +340,21 @@ RSpec.describe Notify, feature_category: :shared do
       end
     end
 
+    describe 'for compliance standards adherence' do
+      subject do
+        described_class.compliance_standards_adherence_csv_email(
+          user: current_user,
+          group: group,
+          attachment: 'csv_data',
+          filename: 'filename.csv'
+        )
+      end
+
+      it_behaves_like 'an email sent from GitLab'
+      it { have_subject "#{group.name} | #{Date.current.iso8601} Standards adherence export" }
+      it { is_expected.to have_body_text('Your standards adherence CSV export for the group') }
+    end
+
     describe 'for compliance violations' do
       subject do
         described_class.compliance_violations_csv_email(
