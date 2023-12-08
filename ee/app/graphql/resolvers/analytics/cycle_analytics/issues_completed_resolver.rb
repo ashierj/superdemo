@@ -4,7 +4,7 @@
 module Resolvers
   module Analytics
     module CycleAnalytics
-      class IssuesCompletedResolver < BaseStageResolver
+      class IssuesCompletedResolver < BaseIssueStageResolver
         METRIC_CLASS = Gitlab::Analytics::CycleAnalytics::Summary::LeadTime
 
         private

@@ -15,6 +15,12 @@ module EE
               klass = super
               # Extending the dynamically generated class with two more fields.
               klass.class_eval do
+                field :time_to_merge,
+                  ::Types::Analytics::CycleAnalytics::MetricType,
+                  null: true,
+                  description: 'Median time from merge request creation to merge request merged.',
+                  resolver: ::Resolvers::Analytics::CycleAnalytics::TimeToMergeResolver[context]
+
                 field :lead_time,
                   ::Types::Analytics::CycleAnalytics::MetricType,
                   null: true,
