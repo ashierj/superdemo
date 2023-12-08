@@ -360,4 +360,55 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
       expect(project_settings.pluck(:legacy_open_source_license_available)).to match_array([false, false])
     end
   end
+
+  describe 'updating paid features' do
+    let(:sub_group) { create(:group, :public, parent: group) }
+
+    before do
+      create_list(:project, 2, :public, namespace: group)
+      create(:project, :public, namespace: sub_group)
+    end
+
+    context 'when the root ancestor has changed' do
+      it 'calls the service to remove paid features', :aggregate_failures do
+        expect(group.all_projects.count).to eq(3)
+
+        group.all_projects.each do |project|
+          expect(::EE::Projects::RemovePaidFeaturesService).to receive(:new).with(project).and_call_original
+        end
+
+        transfer_service.execute(new_group)
+      end
+
+      # explicit testing of the pipeline subscriptions cleanup to verify `run_after_commit` block is executed
+      context 'with pipeline subscriptions', :saas do
+        before do
+          create(:license, plan: License::PREMIUM_PLAN)
+          stub_ee_application_setting(should_check_namespace_plan: true)
+        end
+
+        context 'when target namespace has a free plan' do
+          it 'schedules cleanup for upstream project subscription' do
+            group.all_projects.each do |project|
+              expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).to receive(:perform_async)
+                .with(project.id)
+                .and_call_original
+            end
+
+            transfer_service.execute(new_group)
+          end
+        end
+      end
+    end
+
+    context 'when the root ancestor has not changed' do
+      let(:new_group) { create(:group, :public, parent: group) }
+
+      it 'does not call the service to remove paid features' do
+        expect(::EE::Projects::RemovePaidFeaturesService).not_to receive(:new)
+
+        transfer_service.execute(new_group)
+      end
+    end
+  end
 end
