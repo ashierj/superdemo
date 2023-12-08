@@ -82,6 +82,20 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
     end
 
     context 'as a root group' do
+      context 'when product analytics beta optin flag is disabled' do
+        before do
+          stub_feature_flags(product_analytics_beta_optin: false)
+        end
+
+        it 'renders nothing' do
+          allow(group).to receive(:root?).and_return(true)
+          render
+
+          expect(rendered).to render_template('groups/settings/_product_analytics_settings')
+          expect(rendered).not_to have_content('Product Analytics')
+        end
+      end
+
       it 'renders the product analytics settings' do
         allow(group).to receive(:root?).and_return(true)
 

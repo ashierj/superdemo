@@ -12,18 +12,19 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   describe '#product_analytics_enabled?' do
     subject { project.product_analytics_enabled? }
 
-    where(:licensed, :flag, :toggle, :outcome) do
-      false | false | false | false
-      true | false | false | false
-      false | true | false | false
-      false | false | true | false
-      true | true | true | true
+    where(:licensed, :dashboards_flag, :beta_optin_flag, :toggle, :outcome) do
+      false | false | false | false | false
+      true  | false | false | false | false
+      false | true  | false | false | false
+      false | false | true  | false | false
+      false | false | false | true  | false
+      true  | true  | true  | true |  true
     end
 
     with_them do
       before do
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-        stub_feature_flags(product_analytics_dashboards: flag)
+        stub_feature_flags(product_analytics_dashboards: dashboards_flag, product_analytics_beta_optin: beta_optin_flag)
         stub_licensed_features(product_analytics: licensed)
         project.group.root_ancestor.namespace_settings.update!(experiment_features_enabled: true,
           product_analytics_enabled: toggle)

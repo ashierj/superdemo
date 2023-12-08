@@ -49,6 +49,28 @@ RSpec.describe NamespaceSetting do
         expect(subject).to be_valid
       end
 
+      context 'when product analytics beta optin flag is disabled and product analytics was enabled' do
+        before do
+          subject.update!(experiment_features_enabled: true, product_analytics_enabled: true)
+          stub_feature_flags(product_analytics_beta_optin: false)
+        end
+
+        it 'allows changing experiment_features_enabled to true', :aggregate_failures do
+          subject.update!(experiment_features_enabled: false)
+          subject[attr] = !subject[attr]
+
+          expect(subject).to be_valid
+        end
+
+        it 'allows changing experiment_features_enabled to false and disables product analytics', :aggregate_failures do
+          subject.update!(experiment_features_enabled: true)
+          subject[attr] = !subject[attr]
+
+          expect(subject).to be_valid
+          expect(subject.product_analytics_enabled).to eq(false)
+        end
+      end
+
       context 'when experiment settings are not allowed' do
         before do
           allow(subject).to receive(:experiment_settings_allowed?).and_return(false)
@@ -451,6 +473,33 @@ RSpec.describe NamespaceSetting do
         allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
         allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(licensed_feature)
         allow(group).to receive(:root?).and_return(is_root)
+      end
+
+      it { is_expected.to eq result }
+    end
+  end
+
+  describe '#product_analytics_settings_allowed?', :saas, feature_category: :product_analytics_data_management do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:check_namespace_plan, :licensed_feature, :is_root, :product_analytics_beta_optin, :result) do
+      false | false | false | false | false
+      true  | false | false | false | false
+      false | true  | false | false | false
+      false | false | true  | false | false
+      false | false | false | true  | false
+      true  | true  | true  | true  | true
+    end
+
+    with_them do
+      let(:group) { create(:group) }
+      subject { group.namespace_settings.product_analytics_settings_allowed? }
+
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
+        allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(licensed_feature)
+        allow(group).to receive(:root?).and_return(is_root)
+        stub_feature_flags(product_analytics_beta_optin: product_analytics_beta_optin)
       end
 
       it { is_expected.to eq result }
