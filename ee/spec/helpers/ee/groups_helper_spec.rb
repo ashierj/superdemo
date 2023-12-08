@@ -558,4 +558,40 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       end
     end
   end
+
+  describe '#access_level_roles_user_can_assign' do
+    subject { helper.access_level_roles_user_can_assign(group) }
+
+    let_it_be(:group) { create(:group) }
+    let_it_be_with_reload(:user) { create(:user) }
+
+    context 'when user is provided' do
+      before do
+        allow(helper).to receive(:current_user).and_return(user)
+      end
+
+      context 'when a user is a group member' do
+        before do
+          group.add_developer(user)
+        end
+
+        context 'when the minimal access role is available' do
+          before do
+            stub_licensed_features(minimal_access_role: true)
+          end
+
+          it 'includes the minimal access role' do
+            expect(subject).to eq(
+              {
+                'Minimal Access' => 5,
+                'Guest' => 10,
+                'Reporter' => 20,
+                'Developer' => 30
+              }
+            )
+          end
+        end
+      end
+    end
+  end
 end

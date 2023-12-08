@@ -684,6 +684,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                   "primary_repo" => geo_primary_http_internal_url_to_repo(project_no_repo),
                   "geo_proxy_direct_to_primary" => true,
                   "geo_proxy_fetch_direct_to_primary" => true,
+                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
                   "request_headers" => include('Authorization')
                 }
               }
@@ -707,6 +708,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                     "primary_repo" => geo_primary_http_internal_url_to_repo(project_no_repo),
                     "geo_proxy_direct_to_primary" => false,
                     "geo_proxy_fetch_direct_to_primary" => true,
+                    "geo_proxy_fetch_direct_to_primary_with_options" => true,
                     "request_headers" => include('Authorization')
                   }
                 }
@@ -731,6 +733,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                     "primary_repo" => geo_primary_http_internal_url_to_repo(project_no_repo),
                     "geo_proxy_direct_to_primary" => true,
                     "geo_proxy_fetch_direct_to_primary" => false,
+                    "geo_proxy_fetch_direct_to_primary_with_options" => true,
                     "request_headers" => include('Authorization')
                   }
                 }
@@ -827,6 +830,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                 "primary_repo" => geo_primary_http_internal_url_to_repo(project),
                 "geo_proxy_direct_to_primary" => true,
                 "geo_proxy_fetch_direct_to_primary" => true,
+                "geo_proxy_fetch_direct_to_primary_with_options" => true,
                 "request_headers" => include('Authorization')
               }
             }
@@ -850,6 +854,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                   "primary_repo" => geo_primary_http_internal_url_to_repo(project),
                   "geo_proxy_direct_to_primary" => false,
                   "geo_proxy_fetch_direct_to_primary" => true,
+                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
                   "request_headers" => include('Authorization')
                 }
               }
@@ -874,6 +879,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                   "primary_repo" => geo_primary_http_internal_url_to_repo(project),
                   "geo_proxy_direct_to_primary" => true,
                   "geo_proxy_fetch_direct_to_primary" => false,
+                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
                   "request_headers" => include('Authorization')
                 }
               }
@@ -899,6 +905,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                 "primary_repo" => geo_primary_http_internal_url_to_repo(project),
                 "geo_proxy_direct_to_primary" => true,
                 "geo_proxy_fetch_direct_to_primary" => true,
+                "geo_proxy_fetch_direct_to_primary_with_options" => true,
                 "request_headers" => include('Authorization')
               }
             }
@@ -922,6 +929,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                   "primary_repo" => geo_primary_http_internal_url_to_repo(project),
                   "geo_proxy_direct_to_primary" => false,
                   "geo_proxy_fetch_direct_to_primary" => true,
+                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
                   "request_headers" => include('Authorization')
                 }
               }
@@ -946,6 +954,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
                   "primary_repo" => geo_primary_http_internal_url_to_repo(project),
                   "geo_proxy_direct_to_primary" => true,
                   "geo_proxy_fetch_direct_to_primary" => false,
+                  "geo_proxy_fetch_direct_to_primary_with_options" => true,
                   "request_headers" => include('Authorization')
                 }
               }
