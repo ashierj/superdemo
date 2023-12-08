@@ -403,44 +403,45 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
   end
 
   describe '#show_code_suggestions_tab?' do
-    describe 'when hamilton_seat_management is enabled' do
-      where(:has_free_or_no_subscription?, :gitlab_com?, :result) do
-        true  | true  | false
-        true  | false | false
-        false | false | false
-        false | true  | true
+    context 'on saas' do
+      before do
+        stub_saas_features(gitlab_saas_subscriptions: true)
+        allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
       end
 
-      with_them do
-        it 'returns the expected value' do
-          allow(::Gitlab).to receive(:com?) { gitlab_com? }
-          allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
+      context 'when hamilton_seat_management is enabled' do
+        where(:has_free_or_no_subscription?, :result) do
+          true  | false
+          false | true
+        end
+        with_them do
+          it { expect(helper.show_code_suggestions_tab?(group)).to eq(result) }
+        end
+      end
 
-          expect(helper.show_code_suggestions_tab?(group)).to eq(result)
+      context 'when hamilton_seat_management is disabled' do
+        before do
+          stub_feature_flags(hamilton_seat_management: false)
+        end
+
+        where(:has_free_or_no_subscription?, :result) do
+          true  | false
+          false | false
+        end
+
+        with_them do
+          it { expect(helper.show_code_suggestions_tab?(group)).to eq(result) }
         end
       end
     end
 
-    describe 'when hamilton_seat_management is disabled' do
+    context 'on self managed' do
       before do
-        stub_feature_flags(hamilton_seat_management: false)
+        stub_saas_features(gitlab_saas_subscriptions: false)
+        stub_feature_flags(self_managed_code_suggestions: true)
       end
 
-      where(:has_free_or_no_subscription?, :gitlab_com?, :result) do
-        true  | true  | false
-        true  | false | false
-        false | false | false
-        false | true  | false
-      end
-
-      with_them do
-        it 'returns the expected value' do
-          allow(::Gitlab).to receive(:com?) { gitlab_com? }
-          allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
-
-          expect(helper.show_code_suggestions_tab?(group)).to eq(result)
-        end
-      end
+      it { expect(helper.show_code_suggestions_tab?(group)).to be_falsy }
     end
   end
 
