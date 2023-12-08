@@ -728,6 +728,9 @@ On GitLab.com, Microsoft Azure/Entra ID attributes are introduced
 [with a flag](../administration/feature_flags.md) named `saml_microsoft_attribute_names`.
 On GitLab.com, this feature is unavailable but can be configured by GitLab.com administrators only.
 
+NOTE:
+The attributes are case-sensitive.
+
 | Field           | Supported default keys                                                                                                                                                         |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Email (required)| `email`, `mail`, `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress`, `http://schemas.microsoft.com/ws/2008/06/identity/claims/emailaddress`                  |

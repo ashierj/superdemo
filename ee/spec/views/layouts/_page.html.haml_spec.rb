@@ -7,7 +7,6 @@ RSpec.describe 'layouts/_page', feature_category: :global_search do
 
   describe 'EE tanuki_bot_chat' do
     before do
-      allow(view).to receive(:show_super_sidebar?).and_return(true)
       allow(view).to receive(:current_user).and_return(user)
       allow(view).to receive(:current_user_mode).and_return(Gitlab::Auth::CurrentUserMode.new(user))
     end

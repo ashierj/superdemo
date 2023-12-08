@@ -792,4 +792,22 @@ RSpec.describe Gitlab::Geo, :geo, :request_store, feature_category: :geo_replica
       end
     end
   end
+
+  describe '.primary_pipeline_refs' do
+    let(:project_id) { 1 }
+
+    it 'executes the ::Geo::PrimaryApiRequestService call' do
+      allow_next_instance_of(::Geo::PrimaryApiRequestService) do |service|
+        allow(service).to receive(:execute).and_return('pipeline_refs' => ['foo'])
+      end
+      expect(described_class.primary_pipeline_refs(project_id)).to eq(['foo'])
+    end
+
+    it 'returns an empty array when no results are found' do
+      allow_next_instance_of(::Geo::PrimaryApiRequestService) do |service|
+        allow(service).to receive(:execute).and_return(false)
+      end
+      expect(described_class.primary_pipeline_refs(project_id)).to eq([])
+    end
+  end
 end

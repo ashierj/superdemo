@@ -63,11 +63,12 @@ module EE
           'lfs_locks_api' => %w[create unlock verify]
         }.freeze
 
-        def initialize(project, controller_name, action_name, service)
+        def initialize(project, controller_name, action_name, service, synchronous_request_required)
           @project = project
           @controller_name = controller_name
           @action_name = action_name
           @service = service
+          @synchronous_request_required = synchronous_request_required
         end
 
         def match?(c_name, a_name)
@@ -89,7 +90,7 @@ module EE
 
         private
 
-        attr_reader :project, :service
+        attr_reader :project, :service, :synchronous_request_required
 
         # Examples:
         #
@@ -138,7 +139,7 @@ module EE
         end
 
         def repository_out_of_date?(project)
-          ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
+          ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id, synchronous_request_required)
         end
       end
 
@@ -221,7 +222,7 @@ module EE
       end
 
       def geo_route_helper
-        @geo_route_helper ||= GeoRouteHelper.new(project, controller_name, action_name, params[:service])
+        @geo_route_helper ||= GeoRouteHelper.new(project, controller_name, action_name, params[:service], synchronous_request_required?)
       end
 
       def geo_git_lfs_helper
@@ -260,6 +261,13 @@ module EE
         end
 
         false
+      end
+
+      # If this request comes from a gitlab runner, allow some checks that are synchronous
+      def synchronous_request_required?
+        return false unless ::Feature.enabled?(:geo_proxy_check_pipeline_refs)
+
+        !!request.headers['user-agent']&.include?('gitlab-runner')
       end
     end
   end

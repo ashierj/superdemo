@@ -65,6 +65,39 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
               end
             end
 
+            context 'when synchronous_request_required is true' do
+              let_it_be(:project) { create(:project, :pipeline_refs) }
+              let(:registry) { create(:geo_project_repository_registry, :verification_succeeded, project: project) }
+              let(:secondary_pipeline_refs) { Array.new(10) { |x| "refs/pipelines/#{x}" } }
+              let(:some_secondary_pipeline_refs) { Array.new(9) { |x| "refs/pipelines/#{x}" } }
+
+              context 'when the primary has pipeline refs the secondary does not have' do
+                let_it_be(:project) { create(:project, :pipeline_refs, pipeline_count: 9) }
+
+                it 'returns true' do
+                  allow(::Gitlab::Geo).to receive(:primary_pipeline_refs)
+                    .with(registry.project_id).and_return(secondary_pipeline_refs)
+                  expect(described_class.repository_out_of_date?(registry.project_id, true)).to be_truthy
+                end
+              end
+
+              context 'when the secondary has pipeline refs the primary does not have' do
+                it 'returns false' do
+                  allow(::Gitlab::Geo).to receive(:primary_pipeline_refs)
+                    .with(registry.project_id).and_return(some_secondary_pipeline_refs)
+                  expect(described_class.repository_out_of_date?(registry.project_id, true)).to be_falsey
+                end
+              end
+
+              context 'when pipeline refs are the same on primary and secondary' do
+                it 'returns false' do
+                  allow(::Gitlab::Geo).to receive(:primary_pipeline_refs)
+                    .with(registry.project_id).and_return(secondary_pipeline_refs)
+                  expect(described_class.repository_out_of_date?(registry.project_id, true)).to be_falsey
+                end
+              end
+            end
+
             context 'when last_repository_updated_at is set' do
               context 'when sync failed' do
                 it 'returns true' do

@@ -1,0 +1,8 @@
+---
+name: sbom_occurrences_vulnerabilities
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/133004
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/426773
+milestone: '16.7'
+type: development
+group: group::threat insights
+default_enabled: false

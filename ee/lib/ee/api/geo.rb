@@ -85,6 +85,30 @@ module EE
             end
           end
 
+          desc 'Returns the list of pipeline refs for the project' do
+            summary 'Used by secondary runners to verify the secondary instance has the very latest version'
+            success code: 200, model: ::EE::API::Entities::Geo::PipelineRefs
+            is_array true
+            failure [
+              { code: 401, message: '401 Unauthorized' },
+              { code: 404, message: '404 Not found' }
+            ]
+            tags %w[geo]
+          end
+
+          params do
+            requires :gl_repository, type: String, desc: 'The repository to check'
+          end
+
+          get 'repositories/:gl_repository/pipeline_refs' do
+            check_gitlab_geo_request_ip!
+            authenticate_by_gitlab_geo_node_token!
+
+            _, project, _ = ::Gitlab::GlRepository.parse(params[:gl_repository])
+
+            present pipeline_refs: project.repository.list_refs(['refs/pipelines/']).collect(&:name), with: ::EE::API::Entities::Geo::PipelineRefs
+          end
+
           # Post current node information to primary (e.g. health, repos synced, repos failed, etc.)
           #
           # Example request:

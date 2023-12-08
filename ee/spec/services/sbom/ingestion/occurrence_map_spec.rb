@@ -6,6 +6,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
   let_it_be(:report_component) { build_stubbed(:ci_reports_sbom_component) }
   let_it_be(:report_source) { build_stubbed(:ci_reports_sbom_source) }
 
+  let(:vulnerability_info) { create(:sbom_vulnerabilities) }
   let(:base_data) do
     {
       component_id: nil,
@@ -20,7 +21,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     }
   end
 
-  subject(:occurrence_map) { described_class.new(report_component, report_source) }
+  subject(:occurrence_map) { described_class.new(report_component, report_source, vulnerability_info) }
 
   describe '#to_h' do
     it 'returns a hash with base data without ids assigned' do
@@ -159,5 +160,35 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     it { is_expected.to delegate_method(:packager).to(:report_source).allow_nil }
     it { is_expected.to delegate_method(:input_file_path).to(:report_source).allow_nil }
     it { is_expected.to delegate_method(:name).to(:report_component) }
+    it { is_expected.to delegate_method(:version).to(:report_component) }
+  end
+
+  context 'without vulnerability data' do
+    it { expect(occurrence_map.vulnerability_ids).to be_empty }
+    it { expect(occurrence_map.vulnerability_count).to be_zero }
+    it { expect(occurrence_map.highest_severity).to be_nil }
+  end
+
+  context 'with vulnerability data' do
+    let(:pipeline) { vulnerability_info.pipeline }
+    let(:finding) do
+      create(
+        :vulnerabilities_finding,
+        :detected,
+        :with_dependency_scanning_metadata,
+        project: pipeline.project,
+        file: occurrence_map.input_file_path,
+        package: occurrence_map.name,
+        version: occurrence_map.version
+      )
+    end
+
+    before do
+      create(:vulnerabilities_finding_pipeline, pipeline: pipeline, finding: finding)
+    end
+
+    it { expect(occurrence_map.vulnerability_ids).to eq([finding.vulnerability_id]) }
+    it { expect(occurrence_map.vulnerability_count).to be 1 }
+    it { expect(occurrence_map.highest_severity).to eq 'high' }
   end
 end
