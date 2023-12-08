@@ -1,7 +1,7 @@
 <script>
 import { GlLink, GlTooltip, GlIcon } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
-import CiIcon from '~/vue_shared/components/ci_icon.vue';
+import CiIcon from '~/vue_shared/components/ci_icon/ci_icon.vue';
 
 export default {
   components: {
