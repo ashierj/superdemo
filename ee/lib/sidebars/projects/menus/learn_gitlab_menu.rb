@@ -36,16 +36,6 @@ module Sidebars
           "#{percentage}%"
         end
 
-        override :extra_nav_link_html_options
-        def extra_nav_link_html_options
-          {
-            class: 'home',
-            data: {
-              track_label: 'learn_gitlab'
-            }
-          }
-        end
-
         override :sprite_icon
         def sprite_icon
           'bulb'
