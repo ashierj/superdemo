@@ -23,7 +23,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       create(:issue, project: project, title: 'Test searching for an issue')
       ensure_elasticsearch_index!
 
-      submit_search('Test')
+      submit_dashboard_search('Test')
       select_search_scope('Issues')
 
       expect(page).to have_selector('.results', text: 'Test searching for an issue')
@@ -33,7 +33,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       create(:merge_request, source_project: project, target_project: project, title: 'Test searching for an MR')
       ensure_elasticsearch_index!
 
-      submit_search('Test')
+      submit_dashboard_search('Test')
       select_search_scope('Merge requests')
 
       expect(page).to have_selector('.results', text: 'Test searching for an MR')
@@ -43,7 +43,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       create(:milestone, project: project, title: 'Test searching for a milestone')
       ensure_elasticsearch_index!
 
-      submit_search('Test')
+      submit_dashboard_search('Test')
       select_search_scope('Milestones')
 
       expect(page).to have_selector('.results', text: 'Test searching for a milestone')
@@ -54,7 +54,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       project.wiki.index_wiki_blobs
       ensure_elasticsearch_index!
 
-      submit_search('Test')
+      submit_dashboard_search('Test')
       select_search_scope('Wiki')
 
       expect(page).to have_selector('.results', text: 'Test searching for a wiki page')
@@ -64,7 +64,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       create(:note, project: project, note: 'Test searching for a comment')
       ensure_elasticsearch_index!
 
-      submit_search('Test')
+      submit_dashboard_search('Test')
       select_search_scope('Comments')
 
       expect(page).to have_selector('.results', text: 'Test searching for a comment')
@@ -74,7 +74,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       project.repository.index_commits_and_blobs
       ensure_elasticsearch_index!
 
-      submit_search('initial')
+      submit_dashboard_search('initial')
       select_search_scope('Commits')
 
       expect(page).to have_selector('.results', text: 'Initial commit')
@@ -84,7 +84,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       project.repository.index_commits_and_blobs
       ensure_elasticsearch_index!
 
-      submit_search('def')
+      submit_dashboard_search('def')
       select_search_scope('Code')
 
       expect(page).to have_selector('.results', text: 'def username_regex')
@@ -97,6 +97,14 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       sign_in(user)
 
       visit search_path(project_id: project.id, repository_ref: repository_ref)
+    end
+
+    context "when `repository_ref` is the default branch" do
+      let(:repository_ref) { project.default_branch }
+
+      it 'displays that advanced search is enabled' do
+        expect(page).to have_content('Exact code search (powered by Zoekt) is disabled')
+      end
     end
 
     context "when `repository_ref` isn't the default branch" do
@@ -112,14 +120,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       let(:repository_ref) { "" }
 
       it 'displays that advanced search is enabled' do
-        expect(page).to have_text('Advanced search is enabled')
-      end
-    end
-
-    context "when `repository_ref` is the default branch" do
-      let(:repository_ref) { project.default_branch }
-
-      it 'displays that advanced search is enabled' do
+        wait_for_requests
         expect(page).to have_text('Advanced search is enabled')
       end
     end
@@ -131,7 +132,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       visit project_path(project)
       ensure_elasticsearch_index!
 
-      submit_search('test')
+      submit_dashboard_search('test')
       select_search_scope('Code')
     end
 
