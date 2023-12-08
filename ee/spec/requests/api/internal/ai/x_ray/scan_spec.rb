@@ -56,7 +56,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         expect(Gitlab::Workhorse)
           .to receive(:send_url)
                 .with(
-                  'https://codesuggestions.gitlab.com/v1/x_ray/libraries',
+                  'https://codesuggestions.gitlab.com/v1/x-ray/libraries',
                   body: expected_body.to_json,
                   method: "POST",
                   headers: workhorse_headers

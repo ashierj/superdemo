@@ -81,7 +81,7 @@ module API
               post ':id/x_ray/scan' do
                 workhorse_headers =
                   Gitlab::Workhorse.send_url(
-                    File.join(::CodeSuggestions::Tasks::Base.base_url, 'v1', 'x_ray', 'libraries'),
+                    File.join(::CodeSuggestions::Tasks::Base.base_url, 'v1', 'x-ray', 'libraries'),
                     body: params.except(:token, :id).to_json,
                     headers: model_gateway_headers(headers, ai_gateway_token),
                     method: "POST"
