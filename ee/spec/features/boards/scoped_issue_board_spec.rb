@@ -29,10 +29,6 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
   let(:filter_submit) { find('.gl-search-box-by-click-search-button') }
 
   before do
-    allow_next_instance_of(ApplicationHelper) do |helper|
-      allow(helper).to receive(:collapsed_sidebar?).and_return(true)
-    end
-
     stub_licensed_features(scoped_issue_board: true)
   end
 
