@@ -7,6 +7,7 @@ RSpec.describe Gitlab::Issuable::Clone::CopyResourceEventsService do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:project2) { create(:project, :public, group: group) }
+  let_it_be(:cadence) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
   let_it_be(:original_issue) { create(:issue, project: project) }
   let_it_be(:new_issue) { create(:issue, project: project2) }
 
@@ -23,6 +24,19 @@ RSpec.describe Gitlab::Issuable::Clone::CopyResourceEventsService do
       subject.execute
 
       expect(new_issue.resource_weight_events.map(&:weight)).to contain_exactly(1, 42, 5)
+    end
+  end
+
+  context 'resource iteration events' do
+    before_all do
+      create(:resource_iteration_event, issue: original_issue, iteration: cadence, action: :add)
+      create(:resource_iteration_event, issue: original_issue, iteration: cadence, action: :remove)
+    end
+
+    it 'creates expected resource iteration events' do
+      expect { subject.execute }.to change { ResourceIterationEvent.count }.by(2)
+
+      expect(new_issue.resource_iteration_events.map(&:action)).to contain_exactly("add", "remove")
     end
   end
 
@@ -47,6 +61,16 @@ RSpec.describe Gitlab::Issuable::Clone::CopyResourceEventsService do
           expect(latest_state_event).to be_valid
           expect(latest_state_event.issue_id).to be_nil
           expect(latest_state_event.epic).to eq(new_epic)
+        end
+      end
+
+      context 'when issue has iteration events' do
+        it 'ignores copying iteration events' do
+          create(:resource_iteration_event, issue: original_issue, iteration: cadence, action: :add)
+
+          expect(subject).not_to receive(:copy_events).with(ResourceIterationEvent.table_name, any_args)
+
+          expect { subject.execute }.not_to change { ResourceIterationEvent.count }
         end
       end
 
