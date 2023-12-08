@@ -1065,6 +1065,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: compliance_management_standards_adherence_export_mailer
+  :worker_name: ComplianceManagement::StandardsAdherenceExportMailerWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: compliance_management_standards_gitlab_at_least_two_approvals
   :worker_name: ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
   :feature_category: :compliance_management
