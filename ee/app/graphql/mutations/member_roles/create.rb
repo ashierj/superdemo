@@ -35,7 +35,7 @@ module Mutations
         required: false,
         description: 'Permission to admin project access tokens.'
       argument :permissions,
-        [GraphQL::Types::String],
+        [Types::MemberRoles::PermissionsEnum],
         required: false,
         alpha: { milestone: '16.7' },
         description: 'List of all customizable permissions.'
@@ -71,7 +71,9 @@ module Mutations
 
       def canonicalize(args)
         permissions = args.delete(:permissions) || []
-        permissions.each_with_object(args) { |permission, new_args| new_args[permission] = true }
+        permissions.each_with_object(args) do |permission, new_args|
+          new_args[permission.downcase] = true
+        end
       end
     end
   end

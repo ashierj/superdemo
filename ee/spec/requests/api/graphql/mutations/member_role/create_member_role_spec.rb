@@ -97,7 +97,7 @@ RSpec.describe 'creating member role', feature_category: :system_access do
       end
 
       context 'with an array of permissions' do
-        let(:permissions) { { permissions: ['read_vulnerability'] } }
+        let(:permissions) { { permissions: ['READ_VULNERABILITY'] } }
 
         it 'returns success' do
           post_graphql_mutation(mutation, current_user: current_user)
@@ -123,7 +123,7 @@ RSpec.describe 'creating member role', feature_category: :system_access do
           {
             read_vulnerability: false,
             permissions: [
-              'read_vulnerability'
+              'READ_VULNERABILITY'
             ]
           }
         end

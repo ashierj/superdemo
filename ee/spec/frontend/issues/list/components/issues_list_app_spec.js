@@ -14,11 +14,13 @@ import {
   CREATED_DESC,
   TYPE_TOKEN_OBJECTIVE_OPTION,
   TYPE_TOKEN_KEY_RESULT_OPTION,
+  TYPE_TOKEN_EPIC_OPTION,
 } from '~/issues/list/constants';
 import CEIssuesListApp from '~/issues/list/components/issues_list_app.vue';
 import {
   WORK_ITEM_TYPE_ENUM_OBJECTIVE,
   WORK_ITEM_TYPE_ENUM_KEY_RESULT,
+  WORK_ITEM_TYPE_ENUM_EPIC,
 } from '~/work_items/constants';
 import {
   TOKEN_TYPE_ASSIGNEE,
@@ -63,6 +65,7 @@ describe('EE IssuesListApp component', () => {
     hasAnyIssues: true,
     hasAnyProjects: true,
     hasBlockedIssuesFeature: true,
+    hasEpicsFeature: true,
     hasIssueDateFilterFeature: true,
     hasIssuableHealthStatusFeature: true,
     hasIssueWeightsFeature: true,
@@ -101,14 +104,11 @@ describe('EE IssuesListApp component', () => {
     issuesQueryResponse = jest.fn().mockResolvedValue(defaultQueryResponse),
     issuesCountsQueryResponse = jest.fn().mockResolvedValue(getIssuesCountsQueryResponse),
   } = {}) => {
-    const requestHandlers = [
-      [getIssuesQuery, issuesQueryResponse],
-      [getIssuesCountsQuery, issuesCountsQueryResponse],
-    ];
-    const apolloProvider = createMockApollo(requestHandlers);
-
     return mount(IssuesListApp, {
-      apolloProvider,
+      apolloProvider: createMockApollo([
+        [getIssuesQuery, issuesQueryResponse],
+        [getIssuesCountsQuery, issuesCountsQueryResponse],
+      ]),
       provide: {
         glFeatures: {
           okrsMvc,
@@ -135,6 +135,24 @@ describe('EE IssuesListApp component', () => {
 
   describe('workItemTypes', () => {
     describe.each`
+      hasEpicsFeature | isProject | eeWorkItemTypes               | message
+      ${false}        | ${true}   | ${[]}                         | ${'NOT include'}
+      ${true}         | ${true}   | ${[]}                         | ${'NOT include'}
+      ${true}         | ${false}  | ${[WORK_ITEM_TYPE_ENUM_EPIC]} | ${'include'}
+    `(
+      'when hasEpicsFeature is "$hasEpicsFeature" and isProject is "$isProject"',
+      ({ hasEpicsFeature, isProject, eeWorkItemTypes, message }) => {
+        beforeEach(() => {
+          wrapper = mountComponent({ provide: { hasEpicsFeature, isProject } });
+        });
+
+        it(`should ${message} epic in work item types`, () => {
+          expect(findIssueListApp().props('eeWorkItemTypes')).toMatchObject(eeWorkItemTypes);
+        });
+      },
+    );
+
+    describe.each`
       hasOkrsFeature | okrsMvc  | eeWorkItemTypes                                                    | message
       ${false}       | ${true}  | ${[]}                                                              | ${'NOT include'}
       ${true}        | ${false} | ${[]}                                                              | ${'NOT include'}
@@ -159,6 +177,26 @@ describe('EE IssuesListApp component', () => {
   });
 
   describe('typeTokenOptions', () => {
+    describe.each`
+      hasEpicsFeature | isProject | eeWorkItemTypeTokens        | message
+      ${false}        | ${true}   | ${[]}                       | ${'NOT include'}
+      ${true}         | ${true}   | ${[]}                       | ${'NOT include'}
+      ${true}         | ${false}  | ${[TYPE_TOKEN_EPIC_OPTION]} | ${'include'}
+    `(
+      'when hasEpicsFeature is "$hasEpicsFeature" and isProject is "$isProject"',
+      ({ hasEpicsFeature, isProject, eeWorkItemTypeTokens, message }) => {
+        beforeEach(() => {
+          wrapper = mountComponent({ provide: { hasEpicsFeature, isProject } });
+        });
+
+        it(`should ${message} epic in type tokens`, () => {
+          expect(findIssueListApp().props('eeTypeTokenOptions')).toMatchObject(
+            eeWorkItemTypeTokens,
+          );
+        });
+      },
+    );
+
     describe.each`
       hasOkrsFeature | okrsMvc  | eeWorkItemTypeTokens                                           | message
       ${false}       | ${true}  | ${[]}                                                          | ${'NOT include'}
