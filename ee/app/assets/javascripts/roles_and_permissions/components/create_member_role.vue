@@ -66,8 +66,6 @@ export default {
         switch (value) {
           case 'manage_project_access_tokens':
             return Boolean(gon.features.manageProjectAccessTokens);
-          case 'archive_project':
-            return Boolean(gon.features.archiveProject);
           default:
             return true;
         }
