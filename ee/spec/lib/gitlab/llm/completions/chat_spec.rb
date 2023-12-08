@@ -232,23 +232,6 @@ client_subscription_id: 'someid' }
       end
     end
 
-    context 'when ci_editor_assistant_tool flag is switched off' do
-      before do
-        stub_feature_flags(ci_editor_assistant_tool: false, slash_commands: true)
-      end
-
-      it_behaves_like 'tool behind a feature flag' do
-        let(:tools) do
-          [
-            ::Gitlab::Llm::Chain::Tools::JsonReader,
-            ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-            ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
-            ::Gitlab::Llm::Chain::Tools::EpicIdentifier
-          ]
-        end
-      end
-    end
-
     context 'when message is a slash command' do
       shared_examples_for 'slash command execution' do
         let(:executor) { instance_double(Gitlab::Llm::Chain::Tools::ExplainCode::Executor) }
