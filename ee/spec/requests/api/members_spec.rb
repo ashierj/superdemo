@@ -286,17 +286,36 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
       describe 'DELETE /groups/:id/members/:user_id' do
         context 'when minimal access role is available' do
-          it 'deletes the member' do
+          before do
             stub_licensed_features(minimal_access_role: true)
+          end
 
-            expect(GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker)
-              .to receive(:perform_async).with(group.id, minimal_access_member.user_id).and_call_original
-
+          it 'deletes the member' do
             expect do
               delete api("/groups/#{group.id}/members/#{minimal_access_member.user_id}", owner)
             end.to change { group.all_group_members.count }.by(-1)
 
             expect(response).to have_gitlab_http_status(:no_content)
+          end
+
+          context 'with add-on seat assignments' do
+            context 'when on self managed' do
+              it 'does not enqueue CleanupUserAddOnAssignmentWorker' do
+                expect(GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker)
+                .not_to receive(:perform_async)
+
+                delete api("/groups/#{group.id}/members/#{minimal_access_member.user_id}", owner)
+              end
+            end
+
+            context 'when on saas', :saas do
+              it 'enqueues CleanupUserAddOnAssignmentWorker' do
+                expect(GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker)
+                  .to receive(:perform_async).with(group.id, minimal_access_member.user_id).and_call_original
+
+                delete api("/groups/#{group.id}/members/#{minimal_access_member.user_id}", owner)
+              end
+            end
           end
         end
 
@@ -983,6 +1002,8 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
       shared_examples 'successful deletion' do
         it 'deletes the member' do
+          stub_saas_features(gitlab_saas_subscriptions: true)
+
           expect(group.member?(user)).to be is_group_member
 
           expect(GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker)

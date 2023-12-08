@@ -237,72 +237,82 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
       end
     end
 
-    context 'user add-on seat assignments' do
-      let(:worker_class) { GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker }
-
-      it 'enqueues the CleanupUserAddOnAssignmentWorker with correct arguments' do
-        expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
-
-        destroy_service.execute(member)
-      end
-
-      context 'when project member is removed' do
-        let!(:project_member) { create(:project_member, source: create(:project, group: group), user: member_user) }
-
-        it 'enqueues the CleanupUserAddOnAssignmentWorker with correct arguments' do
-          expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
-
-          destroy_service.execute(project_member)
-        end
-      end
-
-      context 'when recursive call is made to remove inherited membership' do
-        let(:sub_group) { create(:group, parent: group) }
-        let!(:sub_member) { create(:group_member, source: sub_group, user: member_user) }
-
-        it 'enqueues the worker only once' do
-          expect(Member.where(user: member_user).count).to eq(2)
-
-          expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
-
-          expect do
-            destroy_service.execute(member)
-          end.to change { Member.where(user: member_user).count }.by(-2)
-        end
-      end
-
-      context 'when the feature flag is not enabled' do
+    context 'when destroying member related data' do
+      context 'when AI features are available' do
         before do
-          stub_feature_flags(hamilton_seat_management: false)
+          stub_licensed_features(ai_features: true)
         end
 
-        it 'does not enqueue CleanupUserAddOnAssignmentWorker worker' do
-          expect(worker_class).not_to receive(:perform_async)
+        it 'clears AI access cache' do
+          expect(User).to receive(:clear_group_with_ai_available_cache).with(member_user.id)
 
           destroy_service.execute(member)
         end
       end
 
-      context 'when destroying member related data' do
-        context 'when AI features are available' do
-          before do
-            stub_licensed_features(ai_features: true)
-          end
+      context 'when AI features are not available' do
+        before do
+          stub_licensed_features(ai_features: false)
+        end
 
-          it 'clears AI access cache' do
-            expect(User).to receive(:clear_group_with_ai_available_cache).with(member_user.id)
+        it 'does not clear the AI access cache' do
+          expect(User).not_to receive(:clear_group_with_ai_available_cache)
 
-            destroy_service.execute(member)
+          destroy_service.execute(member)
+        end
+      end
+    end
+
+    context 'user add-on seat assignments' do
+      let(:worker_class) { GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker }
+
+      context 'when on self managed' do
+        it 'does not enqueue CleanupUserAddOnAssignmentWorker' do
+          expect(worker_class).not_to receive(:perform_async)
+
+          subject.execute(member)
+        end
+      end
+
+      context 'when on SaaS', :saas do
+        it 'enqueues the CleanupUserAddOnAssignmentWorker with correct arguments' do
+          expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
+
+          destroy_service.execute(member)
+        end
+
+        context 'when project member is removed' do
+          let!(:project_member) { create(:project_member, source: create(:project, group: group), user: member_user) }
+
+          it 'enqueues the CleanupUserAddOnAssignmentWorker with correct arguments' do
+            expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
+
+            destroy_service.execute(project_member)
           end
         end
 
-        context 'when AI features are not available' do
+        context 'when recursive call is made to remove inherited membership' do
+          let(:sub_group) { create(:group, parent: group) }
+          let!(:sub_member) { create(:group_member, source: sub_group, user: member_user) }
+
+          it 'enqueues the worker only once' do
+            expect(Member.where(user: member_user).count).to eq(2)
+
+            expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
+
+            expect do
+              destroy_service.execute(member)
+            end.to change { Member.where(user: member_user).count }.by(-2)
+          end
+        end
+
+        context 'when the feature flag is not enabled' do
           before do
-            stub_licensed_features(ai_features: false)
+            stub_feature_flags(hamilton_seat_management: false)
           end
 
-          it 'does not clear the AI access cache' do
-            expect(User).not_to receive(:clear_group_with_ai_available_cache)
+          it 'does not enqueue CleanupUserAddOnAssignmentWorker worker' do
+            expect(worker_class).not_to receive(:perform_async)
 
             destroy_service.execute(member)
           end
