@@ -338,5 +338,14 @@ module Gitlab
         end
       end
     end
+
+    def self.primary_pipeline_refs(project_id)
+      api_url = "/geo/repositories/project-#{project_id}/pipeline_refs"
+      results = ::Geo::PrimaryApiRequestService.new(api_url, Net::HTTP::Get).execute
+
+      return [] unless results
+
+      results['pipeline_refs']
+    end
   end
 end
