@@ -32,11 +32,15 @@ module Sbom
       end
 
       def ingest_report(sbom_report)
-        IngestReportService.execute(pipeline, sbom_report)
+        IngestReportService.execute(pipeline, sbom_report, vulnerabilities_info)
       end
 
       def delete_not_present_occurrences(ingested_occurrence_ids)
         DeleteNotPresentOccurrencesService.execute(pipeline, ingested_occurrence_ids)
+      end
+
+      def vulnerabilities_info
+        @vulnerabilities_info ||= Sbom::Ingestion::Vulnerabilities.new(pipeline)
       end
     end
   end

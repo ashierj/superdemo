@@ -5,13 +5,14 @@ module Sbom
     class IngestReportService
       BATCH_SIZE = 10
 
-      def self.execute(pipeline, sbom_report)
-        new(pipeline, sbom_report).execute
+      def self.execute(pipeline, sbom_report, vulnerabilities_info)
+        new(pipeline, sbom_report, vulnerabilities_info).execute
       end
 
-      def initialize(pipeline, sbom_report)
+      def initialize(pipeline, sbom_report, vulnerabilities_info)
         @pipeline = pipeline
         @sbom_report = sbom_report
+        @vulnerabilities_info = vulnerabilities_info
       end
 
       def execute
@@ -22,10 +23,10 @@ module Sbom
 
       private
 
-      attr_reader :pipeline, :sbom_report
+      attr_reader :pipeline, :sbom_report, :vulnerabilities_info
 
       def occurrence_map_collection
-        @occurrence_map_collection ||= OccurrenceMapCollection.new(sbom_report)
+        @occurrence_map_collection ||= OccurrenceMapCollection.new(sbom_report, vulnerabilities_info)
       end
 
       def ingest_slice(slice)

@@ -19,10 +19,15 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
 
     describe 'attributes' do
       let(:occurrence_maps) { [occurrence_map] }
-      let(:occurrence_map) { create(:sbom_occurrence_map, :for_occurrence_ingestion) }
       let(:ingested_occurrence) { Sbom::Occurrence.last }
+      let(:vulnerability_info) { instance_double('Sbom::Ingestion::Vulnerabilities') }
+      let(:occurrence_map) do
+        create(:sbom_occurrence_map, :for_occurrence_ingestion, vulnerabilities: vulnerability_info)
+      end
 
       before do
+        allow(vulnerability_info).to receive(:fetch).and_return({ vulnerability_ids: [1], highest_severity: 'high' })
+
         default_licenses = ["MIT", "Apache-2.0"]
 
         occurrence_maps.map(&:report_component).each do |component|
@@ -57,8 +62,23 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
               'url' => 'https://spdx.org/licenses/MIT.html'
             }
           ],
-          'component_name' => occurrence_map.name
+          'component_name' => occurrence_map.name,
+          'vulnerability_count' => 1,
+          'highest_severity' => 'high'
         )
+      end
+
+      context 'when sbom_occurrences_vulnerabilities is disabled' do
+        before do
+          stub_feature_flags(sbom_occurrences_vulnerabilities: false)
+        end
+
+        it 'does not populate vulnerability_count and highest_severity' do
+          ingest_occurrences
+
+          expect(ingested_occurrence.vulnerability_count).to be 0
+          expect(ingested_occurrence.highest_severity).to be_nil
+        end
       end
     end
 

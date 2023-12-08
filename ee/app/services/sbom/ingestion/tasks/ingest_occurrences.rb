@@ -33,8 +33,14 @@ module Sbom
               package_manager: occurrence_map.packager,
               input_file_path: occurrence_map.input_file_path,
               licenses: licenses.fetch(occurrence_map.report_component, []),
-              component_name: occurrence_map.name
-            }
+              component_name: occurrence_map.name,
+              highest_severity: occurrence_map.highest_severity,
+              vulnerability_count: occurrence_map.vulnerability_count
+            }.tap do |attrs|
+              if Feature.disabled?(:sbom_occurrences_vulnerabilities, pipeline.project)
+                attrs.except!(:vulnerability_count, :highest_severity)
+              end
+            end
           end
         end
 

@@ -20,7 +20,7 @@ module Sbom
       end
 
       def execute
-        TASKS.each { |task| task.execute(pipeline, occurrence_maps) }
+        tasks.each { |task| task.execute(pipeline, occurrence_maps) }
 
         occurrence_maps.map(&:occurrence_id)
       end
@@ -28,6 +28,14 @@ module Sbom
       private
 
       attr_reader :pipeline, :occurrence_maps
+
+      def tasks
+        if Feature.enabled?(:sbom_occurrences_vulnerabilities, pipeline.project)
+          TASKS + [::Sbom::Ingestion::Tasks::IngestOccurrencesVulnerabilities]
+        else
+          TASKS
+        end
+      end
     end
   end
 end

@@ -8,12 +8,14 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
 
   let(:sequencer) { ::Ingestion::Sequencer.new }
   let(:wrapper) { instance_double('Gitlab::Ci::Reports::Sbom::Reports') }
+  let(:vulnerability_info) { instance_double('Sbom::Ingestion::Vulnerabilities') }
 
   subject(:execute) { described_class.execute(pipeline) }
 
   before do
     allow(wrapper).to receive(:reports).and_return(reports)
     allow(pipeline).to receive(:sbom_reports).and_return(wrapper)
+    allow(::Sbom::Ingestion::Vulnerabilities).to receive(:new).and_return(vulnerability_info)
   end
 
   describe '#execute' do
@@ -27,7 +29,7 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
 
     it 'executes IngestReportService for each report' do
       reports.each do |report|
-        expect(::Sbom::Ingestion::IngestReportService).to receive(:execute).with(pipeline, report)
+        expect(::Sbom::Ingestion::IngestReportService).to receive(:execute).with(pipeline, report, vulnerability_info)
       end
 
       execute
@@ -42,10 +44,12 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
       let_it_be(:reports) { [invalid_report] + valid_reports }
 
       it 'does not process the invalid report' do
-        expect(::Sbom::Ingestion::IngestReportService).not_to receive(:execute).with(pipeline, invalid_report)
+        expect(::Sbom::Ingestion::IngestReportService).not_to receive(:execute).with(pipeline,
+          invalid_report,
+          vulnerability_info)
 
         valid_reports.each do |report|
-          expect(::Sbom::Ingestion::IngestReportService).to receive(:execute).with(pipeline, report)
+          expect(::Sbom::Ingestion::IngestReportService).to receive(:execute).with(pipeline, report, vulnerability_info)
         end
 
         execute
