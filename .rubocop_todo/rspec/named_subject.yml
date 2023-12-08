@@ -3528,7 +3528,6 @@ RSpec/NamedSubject:
     - 'spec/services/users/activity_service_spec.rb'
     - 'spec/services/users/approve_service_spec.rb'
     - 'spec/services/users/assigned_issues_count_service_spec.rb'
-    - 'spec/services/users/in_product_marketing_email_records_spec.rb'
     - 'spec/services/users/keys_count_service_spec.rb'
     - 'spec/services/users/reject_service_spec.rb'
     - 'spec/services/users/saved_replies/create_service_spec.rb'
