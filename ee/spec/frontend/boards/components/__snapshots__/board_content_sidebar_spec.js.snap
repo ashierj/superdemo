@@ -164,7 +164,6 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
         </button>
       </div>
       <div
-        class="gl-line-height-14"
         data-testid="collapsed-content"
       >
         <div

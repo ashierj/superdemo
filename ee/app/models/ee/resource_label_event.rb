@@ -28,10 +28,5 @@ module EE
 
       super
     end
-
-    override :discussion_id_key
-    def discussion_id_key
-      (super + [label&.scoped_label?]).compact # label can be nil as we don't remove resource events when deleting labels
-    end
   end
 end

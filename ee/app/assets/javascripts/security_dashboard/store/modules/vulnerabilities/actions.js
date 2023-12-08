@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { uniqueId } from 'lodash';
 import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import {
@@ -91,7 +91,7 @@ export const receiveVulnerabilitiesSuccess = ({ commit }, { headers, data }) => 
     ...vulnerability,
     // Vulnerabilities on pipelines don't have IDs.
     // We need to add dummy IDs here to avoid rendering issues.
-    id: vulnerability.id || _.uniqueId('client_'),
+    id: vulnerability.id || uniqueId('client_'),
     // The generic report component expects all fields within `vulnerability.details` to be in camelCase
     ...(vulnerability.details && {
       details: convertObjectPropsToCamelCase(vulnerability.details, { deep: true }),

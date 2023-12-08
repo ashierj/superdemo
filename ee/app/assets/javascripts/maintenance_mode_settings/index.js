@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import Translate from '~/vue_shared/translate';
 import MaintenanceModeSettingsApp from './components/app.vue';
 import { createStore } from './store';
@@ -12,7 +13,8 @@ export const initMaintenanceModeSettings = () => {
     return false;
   }
 
-  const { maintenanceEnabled, bannerMessage } = el.dataset;
+  const { maintenanceEnabled: maintenanceEnabledStr, bannerMessage } = el.dataset;
+  const maintenanceEnabled = parseBoolean(maintenanceEnabledStr);
 
   return new Vue({
     el,
