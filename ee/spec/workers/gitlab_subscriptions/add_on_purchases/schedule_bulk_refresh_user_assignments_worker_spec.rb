@@ -6,10 +6,6 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::ScheduleBulkRefreshUserAssig
   describe '#perform' do
     let(:worker_class) { GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWorker }
 
-    before do
-      stub_ee_application_setting(check_namespace_plan: true)
-    end
-
     describe 'idempotence' do
       include_examples 'an idempotent worker' do
         it 'schedules ScheduleBulkRefreshUserAssignmentsWorker' do
@@ -20,27 +16,35 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::ScheduleBulkRefreshUserAssig
       end
     end
 
-    context 'when not on GitLab.com' do
+    context 'when feature flag self_managed_code_suggestions is disabled' do
       before do
-        stub_ee_application_setting(check_namespace_plan: false)
+        stub_feature_flags(self_managed_code_suggestions: false)
       end
 
-      it 'does not schedule a worker to perform with capacity' do
+      it 'does not schedule the worker to perform with capacity' do
         expect(worker_class).not_to receive(:perform_with_capacity)
 
         subject.perform
       end
     end
 
-    context 'when feature flag bulk_add_on_assignment_refresh_worker is disabled' do
-      before do
-        stub_feature_flags(bulk_add_on_assignment_refresh_worker: false)
-      end
-
-      it 'does not schedule the worker' do
-        expect(worker_class).not_to receive(:perform_with_capacity)
+    context 'when on SaaS (GitLab.com)', :saas do
+      it 'schedules the worker to perform with capacity' do
+        expect(worker_class).to receive(:perform_with_capacity).once
 
         subject.perform
+      end
+
+      context 'when feature flag bulk_add_on_assignment_refresh_worker is disabled' do
+        before do
+          stub_feature_flags(bulk_add_on_assignment_refresh_worker: false)
+        end
+
+        it 'does not schedule the worker to perform with capacity' do
+          expect(worker_class).not_to receive(:perform_with_capacity)
+
+          subject.perform
+        end
       end
     end
   end

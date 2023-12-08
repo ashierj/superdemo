@@ -19,21 +19,6 @@ RSpec.describe Sidebars::Projects::Menus::LearnGitlabMenu, feature_category: :on
     expect(subject.has_items?).to be false
   end
 
-  describe '#nav_link_html_options' do
-    let(:data_tracking) do
-      {
-        class: 'home',
-        data: {
-          track_label: 'learn_gitlab'
-        }
-      }
-    end
-
-    specify do
-      expect(subject.nav_link_html_options).to eq(data_tracking)
-    end
-  end
-
   describe '#render?' do
     context 'when learn gitlab is enabled' do
       it 'returns true' do

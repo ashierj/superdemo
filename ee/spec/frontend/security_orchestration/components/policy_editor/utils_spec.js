@@ -7,6 +7,8 @@ import {
   slugify,
   slugifyToArray,
   renderMultiSelectText,
+  createProjectWithMinimumValues,
+  parseCustomFileConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
@@ -221,5 +223,19 @@ describe('renderMultiSelectText', () => {
     ${['project4', 'project5']} | ${{ project2: 'project 2', project3: 'project 3' }}                        | ${'Select projects'}
   `('should render correct selection text', ({ selected, items, expectedText }) => {
     expect(renderMultiSelectText(selected, items, 'projects')).toBe(expectedText);
+  });
+
+  describe('parseCustomFileConfiguration', () => {
+    it.each`
+      configuration                    | expectedOutput
+      ${{ project: 'path', id: 'id' }} | ${{ showLinkedFile: true, project: createProjectWithMinimumValues({ fullPath: 'path', id: 'id' }) }}
+      ${{ ref: 'ref' }}                | ${{ showLinkedFile: true, project: null }}
+      ${{ file: 'file' }}              | ${{ showLinkedFile: true, project: null }}
+      ${{ file: null }}                | ${{ showLinkedFile: false, project: null }}
+      ${{}}                            | ${{ showLinkedFile: false, project: null }}
+      ${{ project: 'path' }}           | ${{ showLinkedFile: true, project: { fullPath: 'path' } }}
+    `('should parse custom file path configuration', ({ configuration, expectedOutput }) => {
+      expect(parseCustomFileConfiguration(configuration)).toEqual(expectedOutput);
+    });
   });
 });
