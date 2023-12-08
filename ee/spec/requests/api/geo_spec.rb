@@ -651,4 +651,27 @@ RSpec.describe API::Geo, :aggregate_failures, feature_category: :geo_replication
       expect(json_response).to be_empty
     end
   end
+
+  describe 'GET /geo/repositories/:gl_repository/pipeline_refs' do
+    let_it_be(:project) { create(:project, :pipeline_refs) }
+    let_it_be(:api_path) { "/geo/repositories/project-#{project.id}/pipeline_refs" }
+    let(:pipeline_refs) { Array.new(10) { |x| "refs/pipelines/#{x}" } }
+    let(:geo_base_request) { Gitlab::Geo::BaseRequest.new(scope: ::Gitlab::Geo::API_SCOPE) }
+
+    before do
+      stub_current_geo_node(primary_node)
+      allow(geo_base_request).to receive(:requesting_node) { secondary_node }
+    end
+
+    it 'returns an error if not authenticated' do
+      get api(api_path)
+      expect(response).to have_gitlab_http_status(:unauthorized)
+    end
+
+    it 'returns a list of pipelines' do
+      get api(api_path), headers: geo_base_request.headers
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response['pipeline_refs']).to eq(pipeline_refs)
+    end
+  end
 end
