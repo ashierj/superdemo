@@ -170,12 +170,11 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
 
   context 'when creating mergeable refs' do
     let(:create_mergeable_ref) { true }
-    let(:expected_ref_creation_service) { MergeRequests::CreateRefService }
+    let(:expected_ref_creation_service) { MergeTrains::CreateRefService }
     let(:expected_ref_creation_service_args) do
       {
         current_user: merge_request.merge_user,
         merge_request: merge_request,
-        target_ref: merge_request.train_ref_path,
         source_sha: merge_request.diff_head_sha,
         first_parent_ref: previous_ref
       }

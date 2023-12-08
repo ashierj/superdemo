@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains do
+RSpec.describe MergeTrains::CreateRefService, feature_category: :merge_trains do
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do
@@ -10,7 +10,6 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
     let_it_be(:user) { project.creator }
     let_it_be(:first_parent_ref) { project.default_branch_or_main }
     let_it_be(:source_branch) { 'branch' }
-    let(:target_ref) { "refs/merge-requests/#{merge_request.iid}/train" }
     let(:source_sha) { project.commit(source_branch).sha }
     let(:squash) { false }
 
@@ -31,7 +30,6 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
       described_class.new(
         current_user: user,
         merge_request: merge_request,
-        target_ref: target_ref,
         source_sha: source_sha,
         first_parent_ref: first_parent_ref
       ).execute
@@ -158,6 +156,14 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
           let(:squash) { true }
 
           it_behaves_like 'writing with a squash and no merge commit'
+        end
+      end
+
+      context 'when merge request fails to save' do
+        it 'returns an error', :aggregate_failures do
+          expect(merge_request).to receive(:save).and_return(false)
+          expect(result).to be_error
+          expect(result.message).to eq('Failed to update merge params')
         end
       end
     end

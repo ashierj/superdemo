@@ -25,10 +25,9 @@ module MergeTrains
       return error('previous ref is not specified') unless previous_ref
 
       if create_mergeable_ref
-        ::MergeRequests::CreateRefService.new(
+        ::MergeTrains::CreateRefService.new(
           current_user: merge_request.merge_user,
           merge_request: merge_request,
-          target_ref: merge_request.train_ref_path,
           source_sha: merge_request.diff_head_sha,
           first_parent_ref: previous_ref
         ).execute.to_h.transform_keys do |key|
