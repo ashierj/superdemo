@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import { fromYaml } from '../../policy_editor/scan_execution/lib';
 import { ACTIONS } from '../../policy_editor/constants';
 import { SUMMARY_TITLE } from '../constants';
-import BranchExceptionsToggleList from '../branch_exceptions_toggle_list.vue';
+import ToggleList from '../toggle_list.vue';
 import InfoRow from '../info_row.vue';
 import DrawerLayout from '../drawer_layout.vue';
 import Tags from './humanized_actions/tags.vue';
@@ -23,7 +23,7 @@ export default {
     [ACTIONS.variables]: Variables,
   },
   components: {
-    BranchExceptionsToggleList,
+    ToggleList,
     Tags,
     Variables,
     GlSprintf,
@@ -89,10 +89,10 @@ export default {
         <ul>
           <li v-for="(rule, idx) in humanizedRules" :key="idx">
             {{ rule.summary }}
-            <branch-exceptions-toggle-list
+            <toggle-list
               v-if="showBranchExceptions(rule.branchExceptions)"
               class="gl-my-2"
-              :branch-exceptions="rule.branchExceptions"
+              :items="rule.branchExceptions"
             />
           </li>
         </ul>

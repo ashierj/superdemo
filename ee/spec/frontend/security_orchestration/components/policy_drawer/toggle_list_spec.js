@@ -1,18 +1,18 @@
 import { nextTick } from 'vue';
 import { GlButton } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import BranchExceptionsToggleList from 'ee/security_orchestration/components/policy_drawer/branch_exceptions_toggle_list.vue';
+import ToggleList from 'ee/security_orchestration/components/policy_drawer/toggle_list.vue';
 
 const MOCK_BRANCH_EXCEPTIONS = (count = 10) =>
-  [...Array(count).keys()].map((i) => `test=branch-${i}`);
+  [...Array(count).keys()].map((i) => `test=list-${i}`);
 
-describe('BranchExceptionsToggleList', () => {
+describe('ToggleList', () => {
   let wrapper;
 
   const createComponent = ({ propsData = {} } = {}) => {
-    wrapper = shallowMountExtended(BranchExceptionsToggleList, {
+    wrapper = shallowMountExtended(ToggleList, {
       propsData: {
-        branchExceptions: MOCK_BRANCH_EXCEPTIONS(),
+        items: MOCK_BRANCH_EXCEPTIONS(),
         ...propsData,
       },
     });
@@ -23,8 +23,8 @@ describe('BranchExceptionsToggleList', () => {
   });
 
   const findToggleButton = () => wrapper.findComponent(GlButton);
-  const findAllBranchExceptions = () => wrapper.findAllByTestId('branch-item');
-  const findExceptionList = () => wrapper.findByTestId('exception-list');
+  const findAllBranchExceptions = () => wrapper.findAllByTestId('list-item');
+  const findExceptionList = () => wrapper.findByTestId('items-list');
 
   it('should hide extra exceptions when length is over 5', () => {
     expect(findToggleButton().exists()).toBe(true);
@@ -40,13 +40,35 @@ describe('BranchExceptionsToggleList', () => {
     await nextTick();
 
     expect(findAllBranchExceptions()).toHaveLength(10);
-    expect(findToggleButton().text()).toBe('Hide extra branches');
+    expect(findToggleButton().text()).toBe('Hide extra items');
+  });
+
+  it('should render custom button text', () => {
+    createComponent({
+      propsData: {
+        customButtonText: 'Hide custom items',
+      },
+    });
+    expect(findAllBranchExceptions()).toHaveLength(5);
+    expect(findToggleButton().text()).toBe('Hide custom items');
+  });
+
+  it('should render custom close button text', async () => {
+    createComponent({
+      propsData: {
+        customCloseButtonText: 'Hide custom items',
+      },
+    });
+
+    await findToggleButton().vm.$emit('click');
+
+    expect(findToggleButton().text()).toBe('Hide custom items');
   });
 
   it('should not render toggle button when there are less than 5 exceptions', () => {
     createComponent({
       propsData: {
-        branchExceptions: MOCK_BRANCH_EXCEPTIONS(3),
+        items: MOCK_BRANCH_EXCEPTIONS(3),
       },
     });
 

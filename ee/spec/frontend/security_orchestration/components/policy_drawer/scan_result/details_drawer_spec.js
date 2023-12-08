@@ -1,6 +1,6 @@
 import { convertToTitleCase } from '~/lib/utils/text_utility';
 import DetailsDrawer from 'ee/security_orchestration/components/policy_drawer/scan_result/details_drawer.vue';
-import BranchExceptionsToggleList from 'ee/security_orchestration/components/policy_drawer/branch_exceptions_toggle_list.vue';
+import ToggleList from 'ee/security_orchestration/components/policy_drawer/toggle_list.vue';
 import PolicyDrawerLayout from 'ee/security_orchestration/components/policy_drawer/drawer_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -18,7 +18,7 @@ describe('DetailsDrawer component', () => {
   const findSummary = () => wrapper.findByTestId('policy-summary');
   const findPolicyApprovals = () => wrapper.findComponent(Approvals);
   const findPolicyDrawerLayout = () => wrapper.findComponent(PolicyDrawerLayout);
-  const findBranchExceptionsToggleList = () => wrapper.findComponent(BranchExceptionsToggleList);
+  const findToggleList = () => wrapper.findComponent(ToggleList);
   const findSettings = () => wrapper.findComponent(Settings);
 
   const factory = ({ propsData } = {}) => {
@@ -80,7 +80,7 @@ describe('DetailsDrawer component', () => {
 
       it('should not render branch exceptions list without exceptions', () => {
         factory({ propsData: { policy: mockProjectWithAllApproverTypesScanResultPolicy } });
-        expect(findBranchExceptionsToggleList().exists()).toBe(false);
+        expect(findToggleList().exists()).toBe(false);
       });
     });
   });

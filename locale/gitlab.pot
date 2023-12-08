@@ -1469,7 +1469,7 @@ msgstr ""
 msgid "+ %{count} more"
 msgstr ""
 
-msgid "+ %{hiddenBranchesLength} more"
+msgid "+ %{itemsLength} more"
 msgstr ""
 
 msgid "+ %{moreCount} more"
@@ -43427,7 +43427,7 @@ msgstr ""
 msgid "SecurityOrchestration|Groups"
 msgstr ""
 
-msgid "SecurityOrchestration|Hide extra branches"
+msgid "SecurityOrchestration|Hide extra items"
 msgstr ""
 
 msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security."
