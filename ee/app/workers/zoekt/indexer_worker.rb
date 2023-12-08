@@ -2,8 +2,9 @@
 
 module Zoekt
   class IndexerWorker
-    TIMEOUT = 2.hours
     MAX_JOBS_PER_HOUR = 3600
+    TIMEOUT = 2.hours
+    RETRY_IN_IF_LOCKED = 10.minutes
 
     include ApplicationWorker
 
@@ -29,6 +30,8 @@ module Zoekt
         force = !!options['force']
         project.repository.update_zoekt_index!(force: force)
       end
+    rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
+      self.class.perform_in(RETRY_IN_IF_LOCKED, project_id, options)
     end
   end
 end
