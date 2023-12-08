@@ -19,8 +19,6 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
     project.add_maintainer(user)
     project.add_maintainer(user2)
 
-    allow_any_instance_of(ApplicationHelper).to receive(:collapsed_sidebar?).and_return(true)
-
     stub_licensed_features(multiple_issue_assignees: true)
     gitlab_sign_in(user)
   end

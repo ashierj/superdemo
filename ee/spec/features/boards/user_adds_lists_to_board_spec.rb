@@ -34,8 +34,6 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
       )
       sign_in(user)
 
-      set_cookie('sidebar_collapsed', 'true')
-
       case board_type
       when :project
         visit project_board_path(project, project_board)

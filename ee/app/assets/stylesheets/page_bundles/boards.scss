@@ -88,14 +88,6 @@ $epic-icons-spacing: 40px;
 .swimlanes-button {
   max-width: calc(100vw - #{$contextual-sidebar-width} - #{$epic-icons-spacing});
 
-  .page-with-icon-sidebar & {
-    max-width: calc(100vw - #{$contextual-sidebar-collapsed-width} - #{$epic-icons-spacing});
-  }
-
-  .page-with-icon-sidebar .is-compact & {
-    max-width: calc(100vw - #{$contextual-sidebar-collapsed-width} - #{$right-sidebar-width} - #{$epic-icons-spacing});
-  }
-
   .is-compact & {
     max-width: calc(100vw - #{$contextual-sidebar-width} - #{$right-sidebar-width} - #{$epic-icons-spacing});
   }
