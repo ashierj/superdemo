@@ -167,11 +167,6 @@ msgid_plural "%d artifacts"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d assigned issue"
-msgid_plural "%d assigned issues"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d author"
 msgid_plural "%d authors"
 msgstr[0] ""
@@ -46833,9 +46828,6 @@ msgstr ""
 msgid "Stop impersonating"
 msgstr ""
 
-msgid "Stop impersonation"
-msgstr ""
-
 msgid "Stop this environment"
 msgstr ""
 
@@ -50575,9 +50567,6 @@ msgid "To-do item successfully marked as done."
 msgstr ""
 
 msgid "Today"
-msgstr ""
-
-msgid "Todos count"
 msgstr ""
 
 msgid "Todos|Added"
