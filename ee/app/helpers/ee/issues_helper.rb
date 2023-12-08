@@ -36,6 +36,7 @@ module EE
     def common_issues_list_data(namespace, current_user)
       super.merge(
         has_blocked_issues_feature: namespace.feature_available?(:blocked_issues).to_s,
+        has_epics_feature: namespace.feature_available?(:epics).to_s,
         has_issuable_health_status_feature: namespace.feature_available?(:issuable_health_status).to_s,
         has_issue_weights_feature: namespace.feature_available?(:issue_weights).to_s,
         has_iterations_feature: namespace.feature_available?(:iterations).to_s,

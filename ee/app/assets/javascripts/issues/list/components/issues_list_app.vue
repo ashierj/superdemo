@@ -15,8 +15,13 @@ import {
   TOKEN_TYPE_HEALTH,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
-import { TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION } from '~/issues/list/constants';
 import {
+  TYPE_TOKEN_EPIC_OPTION,
+  TYPE_TOKEN_OBJECTIVE_OPTION,
+  TYPE_TOKEN_KEY_RESULT_OPTION,
+} from '~/issues/list/constants';
+import {
+  WORK_ITEM_TYPE_ENUM_EPIC,
   WORK_ITEM_TYPE_ENUM_OBJECTIVE,
   WORK_ITEM_TYPE_ENUM_KEY_RESULT,
   WORK_ITEM_TYPE_VALUE_OBJECTIVE,
@@ -47,6 +52,7 @@ export default {
   inject: [
     'fullPath',
     'groupPath',
+    'hasEpicsFeature',
     'hasIssueWeightsFeature',
     'hasIterationsFeature',
     'hasIssuableHealthStatusFeature',
@@ -64,6 +70,9 @@ export default {
     },
     workItemTypes() {
       const types = [];
+      if (this.hasEpicsFeature && !this.isProject) {
+        types.push(WORK_ITEM_TYPE_ENUM_EPIC);
+      }
       if (this.isOkrsEnabled) {
         types.push(WORK_ITEM_TYPE_ENUM_OBJECTIVE, WORK_ITEM_TYPE_ENUM_KEY_RESULT);
       }
@@ -71,6 +80,9 @@ export default {
     },
     typeTokenOptions() {
       const typeTokens = [];
+      if (this.hasEpicsFeature && !this.isProject) {
+        typeTokens.push(TYPE_TOKEN_EPIC_OPTION);
+      }
       if (this.isOkrsEnabled) {
         typeTokens.push(TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION);
       }
