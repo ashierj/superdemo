@@ -282,6 +282,48 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
       end
     end
 
+    context 'when refresh_token is false' do
+      subject(:sync_seat_link) do
+        described_class.new.perform('2020-01-01T01:20:12+02:00', '123', 5, 4, false)
+      end
+
+      it 'does not call Ai::SyncServiceTokenWorker' do
+        expect(Ai::SyncServiceTokenWorker).not_to receive(:perform_async)
+
+        sync_seat_link
+      end
+    end
+
+    context 'when refresh_token is true' do
+      subject(:sync_seat_link) do
+        described_class.new.perform('2020-01-01T01:20:12+02:00', '123', 5, 4, true)
+      end
+
+      it 'calls Ai::SyncServiceTokenWorker' do
+        expect(Ai::SyncServiceTokenWorker).to receive(:perform_async)
+
+        sync_seat_link
+      end
+    end
+
+    context 'when the request is not successful' do
+      let(:body) { { success: false, error: "Bad Request" }.to_json }
+
+      before do
+        stub_request(:post, seat_link_url)
+          .to_return(status: 400, body: body)
+      end
+
+      it 'does not call Ai::SyncServiceTokenWorker' do
+        expect(Ai::SyncServiceTokenWorker).not_to receive(:perform_async)
+
+        expect { sync_seat_link }.to raise_error(
+          described_class::RequestError,
+          'Seat Link request failed! Code:400 Body:{"success":false,"error":"Bad Request"}'
+        )
+      end
+    end
+
     shared_examples 'unsuccessful request' do
       context 'when the request is not successful' do
         before do
