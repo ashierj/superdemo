@@ -5,7 +5,7 @@ require('spec_helper')
 RSpec.describe Projects::Settings::AnalyticsController, feature_category: :product_analytics_visualization do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group, project_setting: build(:project_setting)) }
+  let_it_be_with_reload(:project) { create(:project, group: group, project_setting: build(:project_setting)) }
   let_it_be(:pointer_project) { create(:project, group: group) }
 
   context 'as a maintainer' do
@@ -59,7 +59,7 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
           project.project_setting.update!(product_analytics_instrumentation_key: "key")
         end
 
-        it 'updates product analytics settings and cleans up instrumentation key' do
+        it 'updates product analytics settings' do
           params = {
             project: {
               project_setting_attributes: {
@@ -89,9 +89,48 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
             project.reload.project_setting.cube_api_key
           }.to(
             params.dig(:project, :project_setting_attributes, :cube_api_key)
+          )
+        end
+
+        it 'cleans up instrumentation key when params has product_analytics_configurator_connection_string' do
+          params = {
+            project: {
+              project_setting_attributes: {
+                product_analytics_configurator_connection_string: 'https://test:test@configurator.example.com'
+              }
+            }
+          }
+
+          expect do
+            patch project_settings_analytics_path(project, params)
+          end.to change {
+            project.reload.project_setting.product_analytics_configurator_connection_string
+          }.to(
+            params.dig(:project, :project_setting_attributes, :product_analytics_configurator_connection_string)
           ).and change {
             project.reload.project_setting.product_analytics_instrumentation_key
           }.to(nil)
+        end
+
+        it 'does not clean up instrumentation key when params does not have configurator connection string' do
+          params = {
+            project: {
+              project_setting_attributes: {
+                product_analytics_configurator_connection_string: '',
+                cube_api_key: 'cube_api_key'
+              }
+            }
+          }
+
+          expect do
+            patch project_settings_analytics_path(project, params)
+          end.to change {
+            project.reload.project_setting.cube_api_key
+          }.to(
+            params.dig(:project, :project_setting_attributes, :cube_api_key)
+          ).and not_change {
+            project.reload.project_setting.product_analytics_instrumentation_key
+          }
         end
 
         it 'updates dashboard pointer project reference and does not clean up instrumentation key' do
