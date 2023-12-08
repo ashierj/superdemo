@@ -32,12 +32,22 @@ RSpec.describe Security::Ingestion::MarkAsResolvedService, feature_category: :vu
         expect(vulnerability.reload).not_to be_resolved_on_default_branch
       end
 
-      it 'does not resolve generic vulnerabilities' do
-        vulnerability = create(:vulnerability, :generic, project: project)
+      context 'when a vulnerability requires manual resolution' do
+        it 'does not resolve generic vulnerabilities' do
+          vulnerability = create(:vulnerability, :generic, project: project)
 
-        command.execute
+          command.execute
 
-        expect(vulnerability.reload).not_to be_resolved_on_default_branch
+          expect(vulnerability.reload).not_to be_resolved_on_default_branch
+        end
+
+        it 'does not resolve secret_detection vulnerabilities' do
+          vulnerability = create(:vulnerability, :secret_detection, project: project)
+
+          command.execute
+
+          expect(vulnerability.reload).not_to be_resolved_on_default_branch
+        end
       end
 
       context 'when a vulnerability is already ingested' do
