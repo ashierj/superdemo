@@ -29,6 +29,7 @@ RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_manage
 
       page.within('.note') do
         expect(page).to have_content(content)
+        expect(page).to be_axe_clean.within '.note'
       end
 
       page.within('.js-main-target-form') do
@@ -48,6 +49,7 @@ RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_manage
             epic2.title,
             href: /#{epic_path(epic2)}/
           )
+          expect(page).to be_axe_clean.within '.md-preview-holder'
         end
       end
     end
@@ -64,6 +66,7 @@ RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_manage
       create(:note, noteable: epic, author: epic.author, note: content)
 
       expect(page).to have_content(content)
+      expect(page).to be_axe_clean.within '.note'
     end
   end
 end
