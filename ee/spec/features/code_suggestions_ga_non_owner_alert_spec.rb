@@ -38,22 +38,40 @@ RSpec.describe 'Code suggestions GA notify non-owner alert', :saas, :js, feature
     expect_banner_to_be_absent
   end
 
-  it 'can be dismissed' do
-    visit group_path(group)
-    dismiss_button.click
+  context 'when primary CTA button clicked' do
+    it 'is dismissed and remains dismissed' do
+      visit group_path(group)
+      click_on 'Try now'
 
-    expect_group_page_for(group)
-    expect_banner_to_be_absent
+      wait_for_requests
+
+      expect(page).to have_current_path(profile_preferences_path)
+
+      visit group_path(group)
+
+      expect_group_page_for(group)
+      expect_banner_to_be_absent
+    end
   end
 
-  it 'remains dismissed' do
-    visit group_path(group)
-    dismiss_button.click
+  context 'when dismiss button clicked' do
+    it 'is dismissed' do
+      visit group_path(group)
+      dismiss_button.click
 
-    visit group_path(group)
+      expect_group_page_for(group)
+      expect_banner_to_be_absent
+    end
 
-    expect_group_page_for(group)
-    expect_banner_to_be_absent
+    it 'remains dismissed' do
+      visit group_path(group)
+      dismiss_button.click
+
+      visit group_path(group)
+
+      expect_group_page_for(group)
+      expect_banner_to_be_absent
+    end
   end
 
   def dismiss_button
