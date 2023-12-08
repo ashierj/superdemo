@@ -64,13 +64,18 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
     end
 
     context 'when the indexer is locked for the given project' do
-      it 'does not run index' do
-        expect(subject).to receive(:in_lock) # Mock and don't yield
+      let(:options) { { "force" => true } }
+
+      it 'skips index and schedules a job' do
+        expect(subject).to receive(:in_lock)
           .with("Zoekt::IndexerWorker/#{project.id}", ttl: (Zoekt::IndexerWorker::TIMEOUT + 1.minute), retries: 0)
+          .and_raise(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
 
         expect(project.repository).not_to receive(:update_zoekt_index!)
+        expect(described_class).to receive(:perform_in)
+          .with(Zoekt::IndexerWorker::RETRY_IN_IF_LOCKED, project.id, options)
 
-        subject.perform(project.id)
+        subject.perform(project.id, options)
       end
     end
 
