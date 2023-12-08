@@ -47,6 +47,37 @@ RSpec.describe GroupSaml::SamlGroupLinks::CreateService, feature_category: :syst
             expect(AuditEvent.count).to eq(1)
             expect(AuditEvent.last.details[:custom_message]).to eq(audit_event_message)
           end
+
+          context 'when a `member_role_id` parameter is provided', feature_category: :permissions do
+            let_it_be(:member_role) { create(:member_role, namespace: group) }
+            let(:params) { super().merge(member_role_id: member_role.id) }
+
+            context 'when custom roles are not enabled' do
+              it 'does not update the `member_role`' do
+                response = service.execute
+
+                expect(response).to be_success
+                expect(group.saml_group_links.last.member_role).to eq(nil)
+                expect(AuditEvent.last.details[:custom_message]).not_to include("Member Role - #{member_role.id}")
+              end
+            end
+
+            context 'when custom roles are enabled' do
+              before do
+                stub_licensed_features(group_saml: true, saml_group_sync: true, custom_roles: true)
+              end
+
+              it 'updates the `access_level` and the `member_role`' do
+                response = service.execute
+                saml_group_link = group.saml_group_links.last
+
+                expect(response).to be_success
+                expect(saml_group_link.member_role).to eq(member_role)
+                expect(saml_group_link.access_level).to eq(member_role.base_access_level)
+                expect(AuditEvent.last.details[:custom_message]).to include("Member Role - #{member_role.id}")
+              end
+            end
+          end
         end
 
         context "when invalid params" do

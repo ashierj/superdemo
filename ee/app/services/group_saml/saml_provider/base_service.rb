@@ -23,8 +23,9 @@ module GroupSaml
         ::SamlProvider.transaction do
           group_managed_accounts_was_enforced = saml_provider.enforced_group_managed_accounts?
 
-          set_default_membership_role_based_on_member_role if params[:member_role_id].present?
-          updated = saml_provider.update(params)
+          saml_provider.assign_attributes(params)
+          saml_provider.set_access_level_based_on_member_role
+          updated = saml_provider.save
 
           if updated && saml_provider.enforced_group_managed_accounts? && !group_managed_accounts_was_enforced
             require_linked_saml_to_enable_group_managed!
@@ -51,13 +52,6 @@ module GroupSaml
       end
 
       private
-
-      def set_default_membership_role_based_on_member_role
-        return params.delete(:member_role_id) unless saml_provider.group.custom_roles_enabled?
-
-        member_role = saml_provider.group.member_roles.find(params[:member_role_id])
-        params[:default_membership_role] = member_role.base_access_level
-      end
 
       def require_linked_saml_to_enable_group_managed!
         return if saml_provider.identities.for_user(current_user).exists?
