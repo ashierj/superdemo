@@ -30,11 +30,25 @@ RSpec.describe ApplicationHelper do
             expect(helper.read_only_message).to match(default_maintenance_mode_message)
           end
 
-          it 'returns user set custom maintenance mode message' do
-            custom_message = 'Maintenance window ends at 00:00.'
-            stub_application_setting(maintenance_mode_message: custom_message)
+          context 'with user set custom maintenance mode message' do
+            before do
+              stub_application_setting(maintenance_mode_message: custom_message)
+            end
 
-            expect(helper.read_only_message).to match(/#{custom_message}/)
+            let(:custom_message) { 'Maintenance window ends at 00:00.' }
+
+            it 'returns the custom message' do
+              expect(helper.read_only_message).to match(/#{custom_message}/)
+            end
+
+            context 'with XSS injection' do
+              let(:custom_message) { 'Hi <script>alert("XSS")</script>' }
+
+              it 'sanitizes the custom message' do
+                expect(helper.read_only_message).to match(/Hi alert/)
+                expect(helper.read_only_message).not_to match(/script/)
+              end
+            end
           end
         end
 
