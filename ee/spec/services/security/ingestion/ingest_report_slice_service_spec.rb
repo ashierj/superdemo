@@ -33,6 +33,7 @@ RSpec.describe Security::Ingestion::IngestReportSliceService, feature_category: 
       expect(Security::Ingestion::Tasks::IngestFindingSignatures).to have_received(:execute).ordered.with(pipeline, finding_maps)
       expect(Security::Ingestion::Tasks::IngestFindingEvidence).to have_received(:execute).ordered.with(pipeline, finding_maps)
       expect(Security::Ingestion::Tasks::IngestVulnerabilityFlags).to have_received(:execute).ordered.with(pipeline, finding_maps)
+      expect(Security::Ingestion::Tasks::IngestVulnerabilityReads).to have_received(:execute).ordered.with(pipeline, finding_maps)
       expect(Security::Ingestion::Tasks::IngestVulnerabilityStatistics).to have_received(:execute).ordered.with(pipeline, finding_maps)
       expect(Security::Ingestion::Tasks::IngestRemediations).to have_received(:execute).ordered.with(pipeline, finding_maps)
       expect(Security::Ingestion::Tasks::HooksExecution).to have_received(:execute).ordered.with(pipeline, finding_maps)
