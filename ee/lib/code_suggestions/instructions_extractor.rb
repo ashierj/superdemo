@@ -15,32 +15,31 @@ module CodeSuggestions
 
     EMPTY_LINES_LIMIT = 1
 
-    def initialize(file_content, intent, skip_instruction_extraction)
+    def initialize(file_content, intent)
       @file_content = file_content
       @language = file_content.language
       @intent = intent
-      @skip_instruction_extraction = skip_instruction_extraction
     end
 
     def extract
       return {} if intent == INTENT_COMPLETION
 
-      prefix, comment_block = prefix_and_comment(file_content.lines_above_cursor)
+      comment_block = comment(file_content.lines_above_cursor)
       generation, instruction = get_instruction(comment_block)
 
       return {} if !generation && intent != INTENT_GENERATION
 
       {
-        prefix: skip_instruction_extraction ? file_content.content_above_cursor : prefix,
+        prefix: file_content.content_above_cursor,
         instruction: instruction
       }
     end
 
     private
 
-    attr_reader :language, :file_content, :intent, :skip_instruction_extraction
+    attr_reader :language, :file_content, :intent
 
-    def prefix_and_comment(lines)
+    def comment(lines)
       comment_block = []
       trimmed_lines = 0
 
@@ -51,12 +50,7 @@ module CodeSuggestions
         comment_block.unshift(line)
       end
 
-      # lines before the last comment block
-      comment_lines_count = comment_block.length + trimmed_lines
-      prefix_lines = comment_lines_count > 0 ? lines[0...-comment_lines_count] : lines
-      prefix = prefix_lines.join('').chomp
-
-      [prefix, comment_block]
+      comment_block
     end
 
     def get_instruction(comment_block)
@@ -66,7 +60,7 @@ module CodeSuggestions
         .join("\n")
         .gsub(/GitLab Duo Generate:\s?/, '')
 
-        return true, (skip_instruction_extraction ? '' : instruction) if instruction
+        return true, '' if instruction
       end
 
       if file_content.small?

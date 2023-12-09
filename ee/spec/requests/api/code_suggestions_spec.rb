@@ -22,7 +22,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
   before do
     stub_feature_flags(code_completion_anthropic: false)
-    stub_feature_flags(skip_code_generation_instruction_extraction: false)
 
     allow(Gitlab).to receive(:com?).and_return(is_saas)
     allow(Ability).to receive(:allowed?).and_call_original
@@ -478,11 +477,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             let(:current_user) { authorized_user }
-            let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
             let(:prefix) do
               <<~PREFIX
               def is_even(n: int) ->
-              # #{instruction}
+              # A function that outputs the first 20 fibonacci numbers
               PREFIX
             end
 
@@ -496,11 +494,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               Already existing code:
 
               ```py
-              def is_even(n: int) ->
+              #{prefix}
               ```
 
+
               Create new code for the following description:
-              `#{instruction}`
+              Generate the most likely code based on instructions.
               PROMPT
             end
 
@@ -583,29 +582,29 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             let(:current_user) { authorized_user }
-            let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
             let(:prefix) do
               <<~PREFIX
               def is_even(n: int) ->
-              # #{instruction}
+              # A function that outputs the first 20 fibonacci numbers
               PREFIX
             end
 
             let(:prompt) do
               <<~PROMPT
-              This is a task to write new Python code in a file 'test.py' based on a given description.
-              You get first the already existing code file and then the description of the code that needs to be created.
-              It is your task to write valid and working Python code.
-              Only return in your response new code.
+                This is a task to write new Python code in a file 'test.py' based on a given description.
+                You get first the already existing code file and then the description of the code that needs to be created.
+                It is your task to write valid and working Python code.
+                Only return in your response new code.
 
-              Already existing code:
+                Already existing code:
 
-              ```py
-              def is_even(n: int) ->
-              ```
+                ```py
+                #{prefix}
+                ```
 
-              Create new code for the following description:
-              `#{instruction}`
+
+                Create new code for the following description:
+                Generate the most likely code based on instructions.
               PROMPT
             end
 
@@ -616,7 +615,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 current_file: {
                   file_name: file_name,
                   content_above_cursor: prefix,
-                  content_below_cursor: ''
+                  content_below_cursor: ""
                 }
               )
 
