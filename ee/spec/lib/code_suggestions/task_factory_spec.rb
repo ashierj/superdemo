@@ -12,7 +12,11 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
     let(:suffix) { 'some suffix' }
     let(:params) do
       {
-        current_file: { file_name: file_name, content_above_cursor: prefix, content_below_cursor: suffix }
+        current_file: {
+          file_name: file_name,
+          content_above_cursor: prefix,
+          content_below_cursor: suffix
+        }
       }
     end
 
@@ -29,7 +33,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
     it 'calls instructions extractor with expected params' do
       expect(CodeSuggestions::InstructionsExtractor)
         .to receive(:new)
-        .with(an_instance_of(CodeSuggestions::FileContent), nil, true)
+        .with(an_instance_of(CodeSuggestions::FileContent), nil)
         .and_call_original
 
       subject
@@ -80,8 +84,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
           params: params.merge(
             code_generation_model_family: expected_family,
             instruction: 'instruction',
-            prefix: 'trimmed prefix',
-            skip_instruction_extraction: true
+            prefix: 'trimmed prefix'
           ),
           unsafe_passthrough_params: {}
         }

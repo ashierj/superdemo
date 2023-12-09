@@ -18,10 +18,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     let(:suffix) { '' }
     let(:file_content) { CodeSuggestions::FileContent.new(language, content, suffix) }
     let(:intent) { nil }
-    let(:skip_instruction_extraction) { false }
 
     subject do
-      described_class.new(file_content, intent, skip_instruction_extraction).extract
+      described_class.new(file_content, intent).extract
     end
 
     context 'when content is nil' do
@@ -29,7 +28,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
       it 'sets create instruction' do
         is_expected.to eq({
-          prefix: "",
+          prefix: content,
           instruction: default_instruction
         })
       end
@@ -56,8 +55,18 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it 'finds instruction' do
           is_expected.to eq({
-            instruction: "Generate me a function\nwith 2 arguments",
-            prefix: "full_name()\naddress()\nstreet()\ncity()\nstate()\npincode()\n"
+            instruction: "",
+            prefix: <<~CODE
+              full_name()
+              address()
+              street()
+              city()
+              state()
+              pincode()
+
+              #{comment_sign}Generate me a function
+              #{comment_sign}with 2 arguments
+            CODE
           })
         end
       end
@@ -78,10 +87,10 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         CODE
       end
 
-      it 'finds instruction' do
+      it 'ignores the instruction and sends the code directly' do
         is_expected.to eq({
-          instruction: "Generate me a function",
-          prefix: ''
+          instruction: '',
+          prefix: content
         })
       end
 
@@ -90,17 +99,6 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it 'ignores the instruction' do
           is_expected.to be_empty
-        end
-      end
-
-      context 'when skipping instruction extraction' do
-        let(:skip_instruction_extraction) { true }
-
-        it 'ignores the instruction and sends the code directly' do
-          is_expected.to eq({
-            instruction: '',
-            prefix: content
-          })
         end
       end
     end
@@ -125,7 +123,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
         it 'returns prefix and nil instruction' do
           is_expected.to eq({
             instruction: nil,
-            prefix: "full_name()\naddress()\nstreet()\ncity()\nstate()\npincode()"
+            prefix: "full_name()\naddress()\nstreet()\ncity()\nstate()\npincode()\n"
           })
         end
       end
@@ -141,8 +139,8 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: '',
-            instruction: "Generate me a function"
+            instruction: '',
+            prefix: "#{comment_sign}Generate me a function\n"
           )
         end
       end
@@ -156,20 +154,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it 'sets create instruction' do
           is_expected.to eq({
-            prefix: '',
+            prefix: content,
             instruction: default_instruction
           })
-        end
-
-        context 'when skipping instruction extraction' do
-          let(:skip_instruction_extraction) { true }
-
-          it 'sets create instruction' do
-            is_expected.to eq({
-              prefix: content,
-              instruction: default_instruction
-            })
-          end
         end
       end
 
@@ -183,22 +170,11 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           CODE
         end
 
-        it 'finds the instruction' do
+        it 'uses the default instruction' do
           is_expected.to eq({
-            prefix: "#{comment_sign}A function that outputs the first 20 fibonacci numbers\n\ndef fibonacci(x)",
+            prefix: content,
             instruction: default_instruction
           })
-        end
-
-        context 'when skipping instruction extraction' do
-          let(:skip_instruction_extraction) { true }
-
-          it 'finds the instruction' do
-            is_expected.to eq({
-              prefix: content,
-              instruction: default_instruction
-            })
-          end
         end
       end
 
@@ -214,8 +190,8 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: "full_name()\naddress()\n",
-            instruction: "Generate me a function"
+            instruction: "",
+            prefix: "full_name()\naddress()\n\n#{comment_sign}Generate me a function\n"
           )
         end
       end
@@ -234,8 +210,15 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: "full_name()\naddress()\n",
-            instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
+            instruction: "",
+            prefix: <<~CODE
+              full_name()
+              address()
+
+              #{comment_sign}Generate me a function
+              #{comment_sign}with 2 arguments
+              #{comment_sign}first and last
+            CODE
           )
         end
       end
@@ -256,8 +239,16 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: "full_name()\naddress()\n",
-            instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
+            instruction: "",
+            prefix: <<~CODE
+              full_name()
+              address()
+
+              #{comment_sign}Generate me a function
+              #{comment_sign}with 2 arguments
+              #{comment_sign}first and last
+
+            CODE
           )
         end
       end
@@ -327,11 +318,15 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
             #{comment_sign}just some comment
             #{comment_sign}explaining something
             another_function()
+
+            #{comment_sign}Generate me a function
+            #{comment_sign}with 2 arguments
+            #{comment_sign}first and last
           CODE
 
           is_expected.to eq(
-            prefix: expected_prefix,
-            instruction: "Generate me a function\nwith 2 arguments\nfirst and last"
+            instruction: "",
+            prefix: expected_prefix
           )
         end
       end
@@ -366,20 +361,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         it "sets the create instruction" do
           is_expected.to eq({
-            prefix: expected_prefix,
+            prefix: content,
             instruction: default_instruction
           })
-        end
-
-        context 'when skipping instruction extraction' do
-          let(:skip_instruction_extraction) { true }
-
-          it "sets the create instruction" do
-            is_expected.to eq({
-              prefix: content,
-              instruction: default_instruction
-            })
-          end
         end
       end
 
@@ -453,19 +437,6 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: content.strip,
-            instruction: instruction
-          )
-        end
-      end
-
-      context 'when skipping instruction extraction' do
-        let(:skip_instruction_extraction) { true }
-
-        let(:suffix) { '' }
-
-        specify do
-          is_expected.to eq(
             prefix: content,
             instruction: instruction
           )
@@ -485,29 +456,9 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
 
         specify do
           is_expected.to eq(
-            prefix: content.strip,
+            prefix: content,
             instruction: instruction
           )
-        end
-
-        context 'when skipping instruction extraction' do
-          let(:skip_instruction_extraction) { true }
-          let(:suffix) do
-            <<~SUFFIX
-            def index2():
-              return 0
-
-            def index3(arg1):
-              return 1
-            SUFFIX
-          end
-
-          specify do
-            is_expected.to eq(
-              prefix: content,
-              instruction: instruction
-            )
-          end
         end
       end
 

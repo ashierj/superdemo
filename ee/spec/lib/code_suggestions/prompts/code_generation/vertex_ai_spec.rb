@@ -4,10 +4,12 @@ require 'spec_helper'
 
 RSpec.describe CodeSuggestions::Prompts::CodeGeneration::VertexAi, feature_category: :code_suggestions do
   let(:prefix) { 'prefix' }
+  let(:default_instructions) { 'Generate the most likely code based on instructions.' }
+  let(:instructions) { '' }
   let(:filename) { 'test.py' }
   let(:params) do
     {
-      instruction: 'create something',
+      instruction: instructions,
       prefix: prefix,
       current_file: {
         file_name: filename
@@ -22,21 +24,48 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::VertexAi, feature_categ
       {
         prompt_version: 2,
         prompt: <<~PROMPT
-        This is a task to write new Python code in a file 'test.py' based on a given description.
-        You get first the already existing code file and then the description of the code that needs to be created.
-        It is your task to write valid and working Python code.
-        Only return in your response new code.
+          This is a task to write new Python code in a file 'test.py' based on a given description.
+          You get first the already existing code file and then the description of the code that needs to be created.
+          It is your task to write valid and working Python code.
+          Only return in your response new code.
 
-        Already existing code:
+          Already existing code:
 
-        ```py
-        prefix
-        ```
+          ```py
+          prefix
+          ```
 
-        Create new code for the following description:
-        `create something`
+          Create new code for the following description:
+          #{default_instructions}
         PROMPT
       }
+    end
+  end
+
+  context 'when instructions are passed' do
+    let(:instructions) { 'create something' }
+
+    it_behaves_like 'code suggestion prompt' do
+      let(:request_params) do
+        {
+          prompt_version: 2,
+          prompt: <<~PROMPT
+            This is a task to write new Python code in a file 'test.py' based on a given description.
+            You get first the already existing code file and then the description of the code that needs to be created.
+            It is your task to write valid and working Python code.
+            Only return in your response new code.
+
+            Already existing code:
+
+            ```py
+            prefix
+            ```
+
+            Create new code for the following description:
+            #{instructions}
+          PROMPT
+        }
+      end
     end
   end
 
@@ -54,7 +83,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::VertexAi, feature_categ
             Only return in your response new code.
 
             Create new code for the following description:
-            `create something`
+            #{default_instructions}
           PROMPT
         }
       end
@@ -81,7 +110,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::VertexAi, feature_categ
             ```
 
             Create new code for the following description:
-            `create something`
+            #{default_instructions}
           PROMPT
         }
       end
@@ -108,7 +137,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::VertexAi, feature_categ
             ```
 
             Create new code for the following description:
-            `create something`
+            #{default_instructions}
           PROMPT
         }
       end

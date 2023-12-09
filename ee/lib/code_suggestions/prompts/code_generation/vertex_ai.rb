@@ -25,8 +25,9 @@ module CodeSuggestions
             It is your task to write valid and working #{language.name} code.
             Only return in your response new code.
             #{existing_code_block}
+
             Create new code for the following description:
-            `#{params[:instruction]}`
+            #{instructions}
           PROMPT
         end
 
@@ -47,6 +48,10 @@ module CodeSuggestions
             #{params[:prefix].last(MAX_INPUT_CHARS)}
             ```
           CODE
+        end
+
+        def instructions
+          params[:instruction].presence || 'Generate the most likely code based on instructions.'
         end
       end
     end
