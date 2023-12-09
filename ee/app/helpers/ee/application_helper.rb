@@ -108,7 +108,7 @@ module EE
     private
 
     def custom_maintenance_mode_message
-      ::Gitlab::CurrentSettings.maintenance_mode_message&.html_safe ||
+      sanitize(::Gitlab::CurrentSettings.maintenance_mode_message) ||
         _('GitLab is undergoing maintenance')
     end
 
