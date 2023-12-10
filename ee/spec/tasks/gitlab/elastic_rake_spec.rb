@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_stdout,
+RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_helpers, :silence_stdout,
   feature_category: :global_search do
   before do
     Rake.application.rake_require 'tasks/gitlab/elastic'
@@ -56,7 +56,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
   end
 
-  describe 'create_empty_index' do
+  describe 'create_empty_index', :elastic_clean do
     subject { run_rake_task('gitlab:elastic:create_empty_index') }
 
     before do
@@ -129,7 +129,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
   end
 
-  describe 'delete_index' do
+  describe 'delete_index', :elastic_clean do
     subject { run_rake_task('gitlab:elastic:delete_index') }
 
     it 'removes the index' do
@@ -152,7 +152,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
   end
 
-  context "with elasticsearch_indexing enabled" do
+  context "with elasticsearch_indexing enabled", :elastic_clean do
     before do
       stub_ee_application_setting(elasticsearch_indexing: true)
     end
@@ -394,7 +394,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
   end
 
-  describe 'list_pending_migrations' do
+  describe 'list_pending_migrations', :elastic do
     subject { run_rake_task('gitlab:elastic:list_pending_migrations') }
 
     context 'when there are pending migrations' do
@@ -413,6 +413,10 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
 
     context 'when there is no pending migrations' do
+      before do
+        ::Elastic::DataMigrationService.mark_all_as_completed!
+      end
+
       it 'outputs message there are no pending migrations' do
         expect { subject }.to output(/There are no pending migrations./).to_stdout
       end
@@ -610,7 +614,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
   end
 
-  describe 'info' do
+  describe 'info', :elastic do
     subject { run_rake_task('gitlab:elastic:info') }
 
     let(:settings) { ::Gitlab::CurrentSettings }
