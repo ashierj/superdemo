@@ -14,6 +14,53 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
   let(:project_2) { create(:project, :public, :repository, :wiki_repo) }
   let(:limit_project_ids) { [project_1.id] }
 
+  shared_context 'with elastic code examples' do
+    let(:code_examples) do
+      {
+        'perlMethodCall' => '$my_perl_object->perlMethodCall',
+        '"absolute_with_specials.txt"' => '/a/longer/file-path/absolute_with_specials.txt',
+        '"components-within-slashes"' => '/file-path/components-within-slashes/',
+        'bar\(x\)' => 'Foo.bar(x)',
+        'someSingleColonMethodCall' => 'LanguageWithSingleColon:someSingleColonMethodCall',
+        'javaLangStaticMethodCall' => 'MyJavaClass::javaLangStaticMethodCall',
+        'IllegalStateException' => 'java.lang.IllegalStateException',
+        'tokenAfterParentheses' => 'ParenthesesBetweenTokens)tokenAfterParentheses',
+        'ruby_call_method_123' => 'RubyClassInvoking.ruby_call_method_123(with_arg)',
+        'ruby_method_call' => 'RubyClassInvoking.ruby_method_call(with_arg)',
+        '#ambitious-planning' => 'We [plan ambitiously](#ambitious-planning).',
+        'ambitious-planning' => 'We [plan ambitiously](#ambitious-planning).',
+        'tokenAfterCommaWithNoSpace' => 'WouldHappenInManyLanguages,tokenAfterCommaWithNoSpace',
+        'missing_token_around_equals' => 'a.b.c=missing_token_around_equals',
+        'and;colons:too$' => 'and;colons:too$',
+        '"differeñt-lønguage.txt"' => 'another/file-path/differeñt-lønguage.txt',
+        '"relative-with-specials.txt"' => 'another/file-path/relative-with-specials.txt',
+        'ruby_method_123' => 'def self.ruby_method_123(ruby_another_method_arg)',
+        'ruby_method_name' => 'def self.ruby_method_name(ruby_method_arg)',
+        '"dots.also.need.testing"' => 'dots.also.need.testing',
+        '.testing' => 'dots.also.need.testing',
+        'dots' => 'dots.also.need.testing',
+        'also.need' => 'dots.also.need.testing',
+        'need' => 'dots.also.need.testing',
+        'tests-image' => 'extends: .gitlab-tests-image',
+        'gitlab-tests' => 'extends: .gitlab-tests-image',
+        'gitlab-tests-image' => 'extends: .gitlab-tests-image',
+        'foo/bar' => 'https://s3.amazonaws.com/foo/bar/baz.png',
+        'https://test.or.dev.com/repository' => 'https://test.or.dev.com/repository/maven-all',
+        'test.or.dev.com/repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
+        'repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
+        'https://test.or.dev.com/repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
+        'bar-baz-conventions' => 'id("foo.bar-baz-conventions")',
+        'baz-conventions' => 'id("foo.bar-baz-conventions")',
+        'baz' => 'id("foo.bar-baz-conventions")',
+        'bikes-3.4' => 'include "bikes-3.4"',
+        'sql_log_bin' => 'q = "SET @@session.sql_log_bin=0;"',
+        'sql_log_bin=0' => 'q = "SET @@session.sql_log_bin=0;"',
+        'v3/delData' => 'uri: "v3/delData"',
+        '"us-east-2"' => 'us-east-2'
+      }
+    end
+  end
+
   describe '#highlight_map' do
     using RSpec::Parameterized::TableSyntax
 
@@ -1039,52 +1086,8 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
     end
 
     context 'searches with special characters', :aggregate_failures do
-      let(:examples) do
-        {
-          'perlMethodCall' => '$my_perl_object->perlMethodCall',
-          '"absolute_with_specials.txt"' => '/a/longer/file-path/absolute_with_specials.txt',
-          '"components-within-slashes"' => '/file-path/components-within-slashes/',
-          'bar\(x\)' => 'Foo.bar(x)',
-          'someSingleColonMethodCall' => 'LanguageWithSingleColon:someSingleColonMethodCall',
-          'javaLangStaticMethodCall' => 'MyJavaClass::javaLangStaticMethodCall',
-          'tokenAfterParentheses' => 'ParenthesesBetweenTokens)tokenAfterParentheses',
-          'ruby_call_method_123' => 'RubyClassInvoking.ruby_call_method_123(with_arg)',
-          'ruby_method_call' => 'RubyClassInvoking.ruby_method_call(with_arg)',
-          '#ambitious-planning' => 'We [plan ambitiously](#ambitious-planning).',
-          'ambitious-planning' => 'We [plan ambitiously](#ambitious-planning).',
-          'tokenAfterCommaWithNoSpace' => 'WouldHappenInManyLanguages,tokenAfterCommaWithNoSpace',
-          'missing_token_around_equals' => 'a.b.c=missing_token_around_equals',
-          'and;colons:too$' => 'and;colons:too$',
-          '"differeñt-lønguage.txt"' => 'another/file-path/differeñt-lønguage.txt',
-          '"relative-with-specials.txt"' => 'another/file-path/relative-with-specials.txt',
-          'ruby_method_123' => 'def self.ruby_method_123(ruby_another_method_arg)',
-          'ruby_method_name' => 'def self.ruby_method_name(ruby_method_arg)',
-          '"dots.also.need.testing"' => 'dots.also.need.testing',
-          '.testing' => 'dots.also.need.testing',
-          'dots' => 'dots.also.need.testing',
-          'also.need' => 'dots.also.need.testing',
-          'need' => 'dots.also.need.testing',
-          'tests-image' => 'extends: .gitlab-tests-image',
-          'gitlab-tests' => 'extends: .gitlab-tests-image',
-          'gitlab-tests-image' => 'extends: .gitlab-tests-image',
-          'foo/bar' => 'https://s3.amazonaws.com/foo/bar/baz.png',
-          'https://test.or.dev.com/repository' => 'https://test.or.dev.com/repository/maven-all',
-          'test.or.dev.com/repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
-          'repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
-          'https://test.or.dev.com/repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
-          'bar-baz-conventions' => 'id("foo.bar-baz-conventions")',
-          'baz-conventions' => 'id("foo.bar-baz-conventions")',
-          'baz' => 'id("foo.bar-baz-conventions")',
-          'bikes-3.4' => 'include "bikes-3.4"',
-          'sql_log_bin' => 'q = "SET @@session.sql_log_bin=0;"',
-          'sql_log_bin=0' => 'q = "SET @@session.sql_log_bin=0;"',
-          'v3/delData' => 'uri: "v3/delData"',
-          '"us-east-2"' => 'us-east-2'
-        }
-      end
-
       before do
-        examples.values.uniq.each do |file_content|
+        code_examples.values.uniq.each do |file_content|
           file_name = Digest::SHA256.hexdigest(file_content)
           project_1.repository.create_file(user, file_name, file_content, message: 'Some commit message', branch_name: 'master')
         end
@@ -1093,11 +1096,13 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
         ensure_elasticsearch_index!
       end
 
-      it 'finds all examples' do
-        examples.each do |search_term, file_content|
-          file_name = Digest::SHA256.hexdigest(file_content)
+      include_context 'with elastic code examples' do
+        it 'finds all examples' do
+          code_examples.each do |search_term, file_content|
+            file_name = Digest::SHA256.hexdigest(file_content)
 
-          expect(search_for(search_term)).to include(file_name), "failed to find #{search_term}"
+            expect(search_for(search_term)).to include(file_name), "failed to find #{search_term}"
+          end
         end
       end
     end
@@ -1293,6 +1298,36 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
         expect(issues).to include issue_4
         expect(results.issues_count).to eq 1
+      end
+
+      context 'when different issue descriptions', :aggregate_failures do
+        let(:examples) do
+          code_examples.merge(
+            'screen' => 'Screenshots or screen recordings',
+            'problem' => 'Problem to solve'
+          )
+        end
+
+        include_context 'with elastic code examples' do
+          before do
+            examples.values.uniq.each do |description|
+              sha = Digest::SHA256.hexdigest(description)
+              create :issue, project: private_project2, title: sha, description: description
+            end
+
+            ensure_elasticsearch_index!
+          end
+
+          it 'finds all examples' do
+            examples.each do |search_term, description|
+              sha = Digest::SHA256.hexdigest(description)
+
+              results = described_class.new(user, search_term, limit_project_ids)
+              issues = results.objects('issues')
+              expect(issues.map(&:title)).to include(sha), "failed to find #{search_term}"
+            end
+          end
+        end
       end
     end
 

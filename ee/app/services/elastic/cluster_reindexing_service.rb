@@ -47,7 +47,7 @@ module Elastic
     end
 
     def initial!
-      if Elastic::DataMigrationService.pending_migrations?
+      if Elastic::DataMigrationService.pending_migrations? && !current_task.options[:skip_pending_migrations_check]
         # migrations may have paused indexing so we do not want to unpause when aborting the reindexing process
         abort_reindexing!('You have unapplied advanced search migrations. Please wait until it is finished', unpause_indexing: false)
         return false

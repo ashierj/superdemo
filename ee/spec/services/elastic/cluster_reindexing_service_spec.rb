@@ -28,6 +28,14 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
       expect(task.reload.error_message).to match(/unapplied advanced search migrations/)
     end
 
+    it 'does not fail if there are pending ES migrations and skip_pending_migrations_check set' do
+      task.update!(options: { skip_pending_migrations_check: true })
+
+      allow(Elastic::DataMigrationService).to receive(:pending_migrations?).and_return(true)
+
+      expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('initial').to('indexing_paused')
+    end
+
     it 'errors when there is not enough space' do
       allow(helper).to receive(:index_size_bytes).and_return(100.megabytes)
       allow(helper).to receive(:cluster_free_size_bytes).and_return(30.megabytes)
