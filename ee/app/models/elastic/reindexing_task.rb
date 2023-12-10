@@ -5,6 +5,9 @@ class Elastic::ReindexingTask < ApplicationRecord
 
   validates :max_slices_running, presence: true
   validates :slice_multiplier, presence: true
+  validates :options, json_schema: { filename: 'elastic_reindexing_task_options' }
+
+  attribute :options, :ind_jsonb # for indifferent access
 
   has_many :subtasks, class_name: 'Elastic::ReindexingSubtask', foreign_key: :elastic_reindexing_task_id
 

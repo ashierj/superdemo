@@ -23,7 +23,7 @@ module Elastic
         indexes :iid, type: :integer
 
         indexes :title, type: :text, index_options: 'positions'
-        indexes :description, type: :text, index_options: 'positions'
+        indexes :description, type: :text, index_options: 'positions', analyzer: :code_analyzer
         indexes :created_at, type: :date
         indexes :updated_at, type: :date
         indexes :state, type: :keyword
