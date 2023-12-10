@@ -12,6 +12,7 @@ module EE
             super
 
             copy_resource_weight_events
+            copy_resource_iteration_events
           end
 
           private
@@ -26,6 +27,17 @@ module EE
 
             copy_events(ResourceWeightEvent.table_name, original_entity.resource_weight_events) do |event|
               event.attributes.except('id').merge('issue_id' => new_entity.id)
+            end
+          end
+
+          def copy_resource_iteration_events
+            return unless both_respond_to?(:resource_iteration_events)
+
+            copy_events(ResourceIterationEvent.table_name, original_entity.resource_iteration_events) do |event|
+              event.attributes.except('id').merge(
+                'issue_id' => new_entity.id,
+                'action' => ResourceIterationEvent.actions[event.action]
+              )
             end
           end
 
