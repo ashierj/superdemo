@@ -2,8 +2,6 @@
 
 require 'spec_helper'
 
-require_relative '../../../lib/click_house/migration_support/migration_error'
-
 RSpec.describe ClickHouse::MigrationSupport::MigrationContext,
   click_house: :without_migrations, feature_category: :database do
   include ClickHouseTestHelpers
@@ -32,7 +30,15 @@ RSpec.describe ClickHouse::MigrationSupport::MigrationContext,
       let(:lease_key) { 'click_house:migrations' }
       let(:lease_timeout) { 1.hour }
 
+      it 'executes migration through ClickHouse::MigrationSupport::ExclusiveLock.execute_migration' do
+        expect(ClickHouse::MigrationSupport::ExclusiveLock).to receive(:execute_migration)
+
+        # Test that not running execute_migration will not execute migrations
+        expect { migration }.not_to change { active_schema_migrations_count }
+      end
+
       it 'creates a table' do
+        expect(ClickHouse::MigrationSupport::ExclusiveLock).to receive(:execute_migration).and_call_original
         expect_to_obtain_exclusive_lease(lease_key, timeout: lease_timeout)
 
         expect { migration }.to change { active_schema_migrations_count }.from(0).to(1)
@@ -47,17 +53,13 @@ RSpec.describe ClickHouse::MigrationSupport::MigrationContext,
 
       context 'when a migration is already running' do
         let(:migration_name) { 'create_some_table' }
-        let(:migration_klass) do
-          require(File.expand_path("#{migrations_dir}/1_#{migration_name}"))
-          migration_name.camelize.constantize
-        end
 
         before do
           stub_exclusive_lease_taken(lease_key)
         end
 
         it 'raises error after timeout when migration is executing concurrently' do
-          expect { migration }.to raise_error(ClickHouse::MigrationSupport::LockError)
+          expect { migration }.to raise_error(ClickHouse::MigrationSupport::Errors::LockError)
             .and not_change { active_schema_migrations_count }
         end
       end
@@ -182,7 +184,7 @@ RSpec.describe ClickHouse::MigrationSupport::MigrationContext,
       let(:migrations_dirname) { 'plain_table_creation' }
 
       it 'raises UnknownMigrationVersionError' do
-        expect { migration }.to raise_error ClickHouse::MigrationSupport::UnknownMigrationVersionError
+        expect { migration }.to raise_error ClickHouse::MigrationSupport::Errors::UnknownMigrationVersionError
 
         expect(active_schema_migrations_count).to eq 0
       end
@@ -192,7 +194,7 @@ RSpec.describe ClickHouse::MigrationSupport::MigrationContext,
       let(:migrations_dirname) { 'duplicate_name' }
 
       it 'raises DuplicateMigrationNameError' do
-        expect { migration }.to raise_error ClickHouse::MigrationSupport::DuplicateMigrationNameError
+        expect { migration }.to raise_error ClickHouse::MigrationSupport::Errors::DuplicateMigrationNameError
 
         expect(active_schema_migrations_count).to eq 0
       end
@@ -202,7 +204,7 @@ RSpec.describe ClickHouse::MigrationSupport::MigrationContext,
       let(:migrations_dirname) { 'duplicate_version' }
 
       it 'raises DuplicateMigrationVersionError' do
-        expect { migration }.to raise_error ClickHouse::MigrationSupport::DuplicateMigrationVersionError
+        expect { migration }.to raise_error ClickHouse::MigrationSupport::Errors::DuplicateMigrationVersionError
 
         expect(active_schema_migrations_count).to eq 0
       end
@@ -272,7 +274,7 @@ RSpec.describe ClickHouse::MigrationSupport::MigrationContext,
       let(:migrations_dirname) { 'plain_table_creation' }
 
       it 'raises UnknownMigrationVersionError' do
-        expect { migration }.to raise_error ClickHouse::MigrationSupport::UnknownMigrationVersionError
+        expect { migration }.to raise_error ClickHouse::MigrationSupport::Errors::UnknownMigrationVersionError
 
         expect(active_schema_migrations_count).to eq 1
       end
