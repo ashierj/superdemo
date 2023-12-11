@@ -37993,6 +37993,9 @@ msgstr ""
 msgid "ProjectSettings|Make sure this pattern does not contradict the %{link_start}Push rules &gt; Branch name%{link_end} setting."
 msgstr ""
 
+msgid "ProjectSettings|Manage machine learning models."
+msgstr ""
+
 msgid "ProjectSettings|Manage who can see the project in the public access directory."
 msgstr ""
 
@@ -38036,6 +38039,9 @@ msgid "ProjectSettings|Merging is only allowed when the source branch is up-to-d
 msgstr ""
 
 msgid "ProjectSettings|Model experiments"
+msgstr ""
+
+msgid "ProjectSettings|Model registry"
 msgstr ""
 
 msgid "ProjectSettings|Monitor"
