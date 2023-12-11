@@ -499,8 +499,8 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
         context 'when seats is 0' do
           let(:gitlab_subscription) { build(:gitlab_subscription, namespace: namespace, seats: 0) }
 
-          it 'does not index the namespace' do
-            expect(ElasticsearchIndexedNamespace).not_to receive(:safe_find_or_create_by!)
+          it 'indexes the namespace' do
+            expect(ElasticsearchIndexedNamespace).to receive(:safe_find_or_create_by!).with(namespace_id: gitlab_subscription.namespace_id)
 
             gitlab_subscription.save!
           end
