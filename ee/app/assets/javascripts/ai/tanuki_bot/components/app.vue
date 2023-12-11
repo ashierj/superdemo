@@ -9,6 +9,7 @@ import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { helpCenterState } from '~/super_sidebar/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import DuoChatCallout from 'ee/ai/components/global_callout/duo_chat_callout.vue';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import Tracking from '~/tracking';
@@ -37,6 +38,7 @@ export default {
   helpPagePath: helpPagePath('policy/experiment-beta-support', { anchor: 'beta' }),
   components: {
     GlDuoChat,
+    DuoChatCallout,
   },
   mixins: [Tracking.mixin(), glFeatureFlagsMixin()],
   provide() {
@@ -114,6 +116,9 @@ export default {
   },
   computed: {
     ...mapState(['loading', 'messages']),
+    shouldRenderCallout() {
+      return this.glFeatures.duoChatCallout;
+    },
   },
   methods: {
     ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
@@ -156,6 +161,9 @@ export default {
     onChatClose() {
       this.helpCenterState.showTanukiBotChatDrawer = false;
     },
+    onCalloutDismissed() {
+      this.helpCenterState.showTanukiBotChatDrawer = true;
+    },
     onTrackFeedback({ extendedTextFeedback, feedbackChoices } = {}) {
       this.track(TANUKI_BOT_TRACKING_EVENT_NAME, {
         action: 'click_button',
@@ -172,19 +180,22 @@ export default {
 </script>
 
 <template>
-  <gl-duo-chat
-    v-if="helpCenterState.showTanukiBotChatDrawer"
-    :title="$options.i18n.gitlabChat"
-    :messages="messages"
-    :error="error"
-    :is-loading="loading"
-    :predefined-prompts="$options.i18n.predefinedPrompts"
-    badge-type="beta"
-    :badge-help-page-url="$options.helpPagePath"
-    :tool-name="toolName"
-    class="gl-z-index-9999"
-    @send-chat-prompt="onSendChatPrompt"
-    @chat-hidden="onChatClose"
-    @track-feedback="onTrackFeedback"
-  />
+  <div>
+    <gl-duo-chat
+      v-if="helpCenterState.showTanukiBotChatDrawer"
+      :title="$options.i18n.gitlabChat"
+      :messages="messages"
+      :error="error"
+      :is-loading="loading"
+      :predefined-prompts="$options.i18n.predefinedPrompts"
+      badge-type="beta"
+      :badge-help-page-url="$options.helpPagePath"
+      :tool-name="toolName"
+      class="gl-z-index-9999"
+      @send-chat-prompt="onSendChatPrompt"
+      @chat-hidden="onChatClose"
+      @track-feedback="onTrackFeedback"
+    />
+    <duo-chat-callout v-if="shouldRenderCallout" @callout-dismissed="onCalloutDismissed" />
+  </div>
 </template>

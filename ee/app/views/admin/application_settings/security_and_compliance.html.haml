@@ -14,7 +14,7 @@
   .settings-content
     = render 'license_compliance'
 
-- if Feature.enabled?(:secret_detection_application_setting) && License.feature_available?(:pre_receive_secret_detection)
+- if ::Gitlab::CurrentSettings.gitlab_dedicated_instance? && License.feature_available?(:pre_receive_secret_detection)
   %section.settings.as-secret-detection.no-animate#js-secret-detection-settings{ class: ('expanded' if expanded_by_default?), data: { testid: 'admin-secret-detection-settings' } }
     .settings-header
       %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only

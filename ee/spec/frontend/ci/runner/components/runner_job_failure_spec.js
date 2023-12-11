@@ -1,5 +1,5 @@
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
-import CiIcon from '~/vue_shared/components/ci_icon.vue';
+import CiIcon from '~/vue_shared/components/ci_icon/ci_icon.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import RunnerJobFailure from 'ee/ci/runner/components/runner_job_failure.vue';
