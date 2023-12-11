@@ -51377,12 +51377,6 @@ msgstr ""
 msgid "Turn on"
 msgstr ""
 
-msgid "Twitter"
-msgstr ""
-
-msgid "Twitter:"
-msgstr ""
-
 msgid "Two-Factor Authentication"
 msgstr ""
 
@@ -55404,6 +55398,12 @@ msgid "Write your release notes or drag your files here…"
 msgstr ""
 
 msgid "Wrong extern UID provided. Make sure Auth0 is configured correctly."
+msgstr ""
+
+msgid "X (formerly Twitter)"
+msgstr ""
+
+msgid "X (formerly Twitter):"
 msgstr ""
 
 msgid "Xcode"
