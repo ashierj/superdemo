@@ -3,6 +3,7 @@ import '~/lib/utils/jquery_at_who';
 import { escape as lodashEscape, sortBy, template, escapeRegExp } from 'lodash';
 import * as Emoji from '~/emoji';
 import axios from '~/lib/utils/axios_utils';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { loadingIconForLegacyJS } from '~/loading_icon_for_legacy_js';
 import { s__, __, sprintf } from '~/locale';
 import { isUserBusy } from '~/set_status_modal/utils';
@@ -388,7 +389,7 @@ class GfmAutoComplete {
       // eslint-disable-next-line no-template-curly-in-string
       insertTpl: '${atwho-at}${username}',
       limit: 10,
-      delay: useMentionsBackendFiltering ? 500 : null,
+      delay: useMentionsBackendFiltering ? DEFAULT_DEBOUNCE_AND_THROTTLE_MS : null,
       searchKey: 'search',
       alwaysHighlightFirst: true,
       skipSpecialCharacterTest: true,

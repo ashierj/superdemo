@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import '~/lib/utils/jquery_at_who';
 import GfmAutoComplete, { showAndHideHelper, escape } from '~/gfm_auto_complete';
 
@@ -124,7 +125,7 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
       at: '[vulnerability:',
       suffix: ']',
       alias: VULNERABILITIES_ALIAS,
-      delay: 500,
+      delay: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
       searchKey: 'search',
       displayTpl(value) {
         let tmpl = GfmAutoComplete.Loading.template;
