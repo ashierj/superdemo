@@ -45,7 +45,9 @@ class SoftwareLicense < ApplicationRecord
       )
     end
 
-    # This method will be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/395776
+    # This method can be used when called within a transaction.
+    # For example from Security::ProcessScanResultPolicyWorker.
+    # To avoid sub transactions the method does not call `safe_find_or_create_by!`.
     def unsafe_create_policy_for!(project:, name:, classification:, scan_result_policy_read: nil)
       project.software_license_policies.create!(
         classification: classification,
