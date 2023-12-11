@@ -2,28 +2,17 @@
 
 module Admin
   module ApplicationSettingsHelper
-    # rubocop:disable Layout/LineLength
-    # rubocop:disable Style/FormatString
-    # rubocop:disable Rails/OutputSafety
-    # We extracted Code Suggestions tooltips/texts generation to this helper from the views, to make them lightweight.
-    # Rubocop would not consider LineLength, FormatString, OutputSafety problematic if it stayed in the view.
-    # We decided that it is worth extracting this logic here and silencing Rubocop just for code_suggestions_* helpers.
     def ai_powered_testing_agreement
-      terms_link_start = ai_powered_link_start(gitlab_testing_agreement_url)
-
-      s_('AIPoweredSM|By enabling this feature, you agree to the %{terms_link_start}GitLab Testing Agreement%{link_end}.')
-        .html_safe % { terms_link_start: terms_link_start, link_end: '</a>'.html_safe }
+      safe_format(
+        s_('AIPoweredSM|By enabling this feature, you agree to the %{link_start}GitLab Testing Agreement%{link_end}.'),
+        tag_pair_for_link(gitlab_testing_agreement_url))
     end
 
     def ai_powered_description
-      link_start = ai_powered_link_start(ai_powered_docs_url)
-
-      s_('AIPoweredSM|Enable %{link_start}AI-powered features%{link_end} for this instance.')
-        .html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
+      safe_format(
+        s_('AIPoweredSM|Enable %{link_start}AI-powered features%{link_end} for this instance.'),
+        tag_pair_for_link(ai_powered_docs_url))
     end
-    # rubocop:enable Layout/LineLength
-    # rubocop:enable Style/FormatString
-    # rubocop:enable Rails/OutputSafety
 
     private
 
@@ -39,10 +28,8 @@ module Admin
     end
     # rubocop:enable Gitlab/DocUrl
 
-    # rubocop:disable Rails/OutputSafety
-    def ai_powered_link_start(url)
-      "<a href=\"#{url}\" target=\"_blank\" rel=\"noopener noreferrer\">".html_safe
+    def tag_pair_for_link(url)
+      tag_pair(link_to('', url, target: '_blank', rel: 'noopener noreferrer'), :link_start, :link_end)
     end
-    # rubocop:enable Rails/OutputSafety
   end
 end
