@@ -6,7 +6,7 @@ RSpec.describe 'User sees experimental marketing header', feature_category: :onb
   let_it_be(:project) { create(:project, :public) }
 
   context 'when not logged in' do
-    subject { page.find('.super-sidebar-logged-out') }
+    subject { page.find('.header-logged-out') }
 
     it 'does not show marketing header links', :aggregate_failures do
       visit project_path(project)
@@ -42,7 +42,7 @@ RSpec.describe 'User sees experimental marketing header', feature_category: :onb
 
       visit project_path(project)
 
-      expect(page).not_to have_selector('.super-sidebar-logged-out')
+      expect(page).not_to have_selector('.header-logged-out')
       expect(page).not_to have_text "About GitLab"
       expect(page).not_to have_text "Pricing"
       expect(page).not_to have_text "Talk to an expert"
