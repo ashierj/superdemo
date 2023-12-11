@@ -348,6 +348,24 @@ RSpec.describe User, feature_category: :system_access do
         end
       end
     end
+
+    describe '.security_policy_bots_for_projects' do
+      let_it_be(:project_1) { create(:project) }
+      let_it_be(:project_2) { create(:project) }
+      let_it_be(:security_policy_bot_1) { create(:user, :security_policy_bot) }
+      let_it_be(:security_policy_bot_2) { create(:user, :security_policy_bot) }
+
+      let(:projects) { [project_1, project_2] }
+
+      before_all do
+        project_1.add_guest(security_policy_bot_1)
+        project_2.add_guest(security_policy_bot_2)
+      end
+
+      subject { described_class.security_policy_bots_for_projects(projects) }
+
+      it { is_expected.to contain_exactly(security_policy_bot_1, security_policy_bot_2) }
+    end
   end
 
   describe 'after_create' do
