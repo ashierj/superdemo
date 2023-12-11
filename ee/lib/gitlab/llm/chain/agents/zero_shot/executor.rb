@@ -62,12 +62,6 @@ module Gitlab
 
                 tool_answer = tool.execute
 
-                # track a successful tool usage, to avoid cycling through same tools multiple times
-                context.tools_used << tool_class
-
-                # detect tool cycling for specific types of questions
-                logger.info(message: "Tool cycling detected") if tools_cycle?
-
                 return tool_answer if tool_answer.is_final?
 
                 options[:agent_scratchpad] << "Observation: #{tool_answer.content}\n"
@@ -101,10 +95,6 @@ module Gitlab
                   )
                 end
               end
-            end
-
-            def tools_cycle?
-              context.tools_used.size != context.tools_used.uniq.size
             end
 
             attr_reader :logger, :stream_response_handler

@@ -73,7 +73,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
 
           context 'when resource was already summarized' do
             before do
-              context.tools_used << described_class.name
+              context.tools_used << described_class
             end
 
             it 'returns already summarized response' do
