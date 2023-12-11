@@ -22,7 +22,7 @@ module Groups
     def index
       respond_to do |format|
         format.html do
-          set_enable_project_search
+          set_below_group_limit
 
           render status: :ok
         end
@@ -113,8 +113,8 @@ module Groups
       end
     end
 
-    def set_enable_project_search
-      @enable_project_search = below_group_limit?
+    def set_below_group_limit
+      @below_group_limit = below_group_limit?
     end
 
     def filtering_allowed?

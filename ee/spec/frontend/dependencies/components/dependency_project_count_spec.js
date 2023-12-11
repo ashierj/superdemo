@@ -38,11 +38,7 @@ describe('Dependency Project Count component', () => {
 
   const apolloResolver = jest.fn().mockResolvedValue(payload);
 
-  const createComponent = ({
-    propsData,
-    mountFn = shallowMount,
-    enableProjectSearch = true,
-  } = {}) => {
+  const createComponent = ({ propsData, mountFn = shallowMount, belowGroupLimit = true } = {}) => {
     const endpoint = 'groups/endpoint/-/dependencies.json';
     const project = { fullPath, name: projectName };
 
@@ -57,7 +53,7 @@ describe('Dependency Project Count component', () => {
     wrapper = mountFn(DependencyProjectCount, {
       apolloProvider: createMockApollo(handlers),
       propsData: { ...basicProps, ...propsData },
-      provide: { endpoint, enableProjectSearch },
+      provide: { endpoint, belowGroupLimit },
       stubs: { GlLink, GlTruncate },
     });
   };
@@ -203,7 +199,7 @@ describe('Dependency Project Count component', () => {
         propsData: {
           projectCount: 2,
         },
-        enableProjectSearch: false,
+        belowGroupLimit: false,
       });
     });
 
