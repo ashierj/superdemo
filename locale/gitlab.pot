@@ -27560,6 +27560,9 @@ msgstr ""
 msgid "Job|Erase job log and artifacts"
 msgstr ""
 
+msgid "Job|Exit full screen"
+msgstr ""
+
 msgid "Job|External links"
 msgstr ""
 
@@ -27567,6 +27570,9 @@ msgid "Job|Failed"
 msgstr ""
 
 msgid "Job|Finished at"
+msgstr ""
+
+msgid "Job|Full screen mode is not available"
 msgstr ""
 
 msgid "Job|Job artifacts"
@@ -27639,6 +27645,9 @@ msgid "Job|Search job log"
 msgstr ""
 
 msgid "Job|Show complete raw"
+msgstr ""
+
+msgid "Job|Show full screen"
 msgstr ""
 
 msgid "Job|Skipped"

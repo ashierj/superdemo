@@ -51,6 +51,16 @@ export default {
       type: Array,
       required: true,
     },
+    fullScreenModeAvailable: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    fullScreenEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -79,6 +89,12 @@ export default {
     handleSearchResults(searchResults) {
       this.$emit('searchResults', searchResults);
     },
+    handleFullscreen() {
+      this.$emit('enterFullscreen');
+    },
+    handleExitFullscreen() {
+      this.$emit('exitFullscreen');
+    },
   },
   i18n: {
     buttonName: s__('Jobs|Root cause analysis'),
@@ -103,9 +119,13 @@ export default {
       :is-job-log-size-visible="isJobLogSizeVisible"
       :is-complete="isComplete"
       :job-log="jobLog"
+      :full-screen-mode-available="fullScreenModeAvailable"
+      :full-screen-enabled="fullScreenEnabled"
       @scrollJobLogTop="handleScrollTop"
       @scrollJobLogBottom="handleScrollBottom"
       @searchResults="handleSearchResults"
+      @enterFullscreen="handleFullscreen"
+      @exitFullscreen="handleExitFullscreen"
     >
       <template #controllers>
         <gl-button v-if="rootCauseAnalysisIsAvailable" class="gl-mr-2" @click="toggleDrawer">{{
