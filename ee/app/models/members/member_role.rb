@@ -87,7 +87,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   scope :with_members_count, -> do
     left_outer_joins(:members)
       .group(:id)
-      .select('member_roles.*, COUNT(members.id) AS members_count')
+      .select(MemberRole.default_select_columns)
+      .select('COUNT(members.id) AS members_count')
   end
 
   before_destroy :prevent_delete_after_member_associated

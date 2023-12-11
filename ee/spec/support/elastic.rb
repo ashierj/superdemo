@@ -140,4 +140,5 @@ RSpec.configure do |config|
   config.include ElasticsearchHelpers, :elastic
   config.include ElasticsearchHelpers, :elastic_clean
   config.include ElasticsearchHelpers, :elastic_delete_by_query
+  config.include ElasticsearchHelpers, :elastic_helpers
 end
