@@ -1,14 +1,11 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardList from '~/boards/components/board_list.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import BoardNewItem from '~/boards/components/board_new_item.vue';
-import defaultState from '~/boards/stores/state';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
 import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
@@ -16,28 +13,18 @@ import listEpicsQuery from 'ee/boards/graphql/lists_epics.query.graphql';
 import epicListDeferredQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import {
   mockList,
-  mockGroupProjects,
   boardListQueryResponse,
   epicBoardListQueryResponse,
 } from 'jest/boards/mock_data';
-import {
-  mockIssuesByListId,
-  issues,
-  mockGroupIssuesResponse,
-  mockGroupEpicsResponse,
-  rawIssue,
-} from './mock_data';
+import { mockGroupIssuesResponse, mockGroupEpicsResponse, rawIssue } from './mock_data';
 
 export default function createComponent({
   listIssueProps = {},
   componentProps = {},
   listProps = {},
   apolloQueryHandlers = [],
-  actions = {},
-  getters = {},
   provide = {},
   data = {},
-  state = defaultState,
   stubs = {
     BoardNewIssue,
     BoardNewItem,
@@ -46,7 +33,6 @@ export default function createComponent({
   issuesCount,
 } = {}) {
   Vue.use(VueApollo);
-  Vue.use(Vuex);
 
   const fakeApollo = createMockApollo([
     [listQuery, jest.fn().mockResolvedValue(boardListQueryResponse({ issuesCount }))],
@@ -105,29 +91,6 @@ export default function createComponent({
     data: mockGroupEpicsResponse.data,
   });
 
-  const store = new Vuex.Store({
-    state: {
-      selectedProject: mockGroupProjects[0],
-      boardItemsByListId: mockIssuesByListId,
-      boardItems: issues,
-      pageInfoByListId: {
-        'gid://gitlab/List/1': { hasNextPage: true },
-        'gid://gitlab/List/2': {},
-      },
-      listsFlags: {
-        'gid://gitlab/List/1': {},
-        'gid://gitlab/List/2': {},
-      },
-      selectedBoardItems: [],
-      ...state,
-    },
-    getters: {
-      isEpicBoard: () => false,
-      ...getters,
-    },
-    actions,
-  });
-
   const list = {
     ...mockList,
     ...listProps,
@@ -148,7 +111,6 @@ export default function createComponent({
 
   const component = shallowMountExtended(BoardList, {
     apolloProvider: fakeApollo,
-    store,
     propsData: {
       list,
       boardItems: [issue],
@@ -172,7 +134,7 @@ export default function createComponent({
       disabled: false,
       boardType: 'group',
       issuableType: 'issue',
-      isApolloBoard: false,
+      isApolloBoard: true,
       ...provide,
     },
     stubs,

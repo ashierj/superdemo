@@ -1,8 +1,6 @@
 import { GlAvatarLabeled, GlFormRadio, GlFormRadioGroup, GlCollapsibleListbox } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import BoardAddNewColumn, { listTypeInfo } from 'ee/boards/components/board_add_new_column.vue';
@@ -15,10 +13,9 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { ListType } from '~/boards/constants';
-import defaultState from '~/boards/stores/state';
 import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import { getIterationPeriod } from 'ee/iterations/utils';
-import { mockLabelList, createBoardListResponse, labelsQueryResponse } from 'jest/boards/mock_data';
+import { createBoardListResponse, labelsQueryResponse } from 'jest/boards/mock_data';
 import {
   mockAssignees,
   mockIterations,
@@ -27,7 +24,6 @@ import {
   iterationsQueryResponse,
 } from '../mock_data';
 
-Vue.use(Vuex);
 Vue.use(VueApollo);
 
 describe('BoardAddNewColumn', () => {
@@ -57,24 +53,8 @@ describe('BoardAddNewColumn', () => {
     findDropdown().vm.$emit('select', id);
   };
 
-  const createStore = ({ actions = {}, getters = {}, state = {} } = {}) => {
-    return new Vuex.Store({
-      state: {
-        ...defaultState,
-        ...state,
-      },
-      actions,
-      getters,
-    });
-  };
-
   const mountComponent = ({
     selectedId,
-    labels = [],
-    assignees = [],
-    iterations = [],
-    getListByTypeId = jest.fn(),
-    actions = {},
     provide = {},
     labelsHandler = labelsQueryHandler,
     milestonesHandler = milestonesQueryHandler,
@@ -108,23 +88,6 @@ describe('BoardAddNewColumn', () => {
           selectedId,
         };
       },
-      store: createStore({
-        actions: {
-          fetchLabels: jest.fn(),
-          ...actions,
-        },
-        getters: {
-          getListByTypeId: () => getListByTypeId,
-        },
-        state: {
-          labels,
-          labelsLoading: false,
-          assignees,
-          assigneesLoading: false,
-          iterations,
-          iterationsLoading: false,
-        },
-      }),
       provide: {
         scopedLabelsAvailable: true,
         milestoneListsAvailable: true,
@@ -134,7 +97,6 @@ describe('BoardAddNewColumn', () => {
         issuableType: 'issue',
         fullPath: 'gitlab-org/gitlab',
         boardType: 'project',
-        isApolloBoard: false,
         ...provide,
       },
     });
@@ -201,151 +163,9 @@ describe('BoardAddNewColumn', () => {
 
       expect(submitButton().props('disabled')).toBe(false);
     });
-
-    it('adds a new list on click', async () => {
-      const labelId = mockLabelList.label.id;
-      const highlightList = jest.fn();
-      const createList = jest.fn();
-
-      mountComponent({
-        labels: [mockLabelList.label],
-        selectedId: labelId,
-        actions: {
-          createList,
-          highlightList,
-        },
-      });
-
-      await nextTick();
-
-      submitButton().vm.$emit('click');
-
-      expect(highlightList).not.toHaveBeenCalled();
-      expect(createList).toHaveBeenCalledWith(expect.anything(), { labelId });
-    });
-
-    it('highlights existing list if trying to re-add', async () => {
-      const getListByTypeId = jest.fn().mockReturnValue(mockLabelList);
-      const highlightList = jest.fn();
-      const createList = jest.fn();
-
-      mountComponent({
-        labels: [mockLabelList.label],
-        selectedId: mockLabelList.label.id,
-        getListByTypeId,
-        actions: {
-          createList,
-          highlightList,
-        },
-      });
-
-      await nextTick();
-
-      submitButton().vm.$emit('click');
-
-      expect(highlightList).toHaveBeenCalledWith(expect.anything(), mockLabelList.id);
-      expect(createList).not.toHaveBeenCalled();
-    });
-
-    it('does not create on click and shows the dropdown as invalid when no ID is selected', async () => {
-      const getListByTypeId = jest.fn().mockReturnValue(mockLabelList);
-      const highlightList = jest.fn();
-      const createList = jest.fn();
-
-      mountComponent({
-        selectedId: null,
-        getListByTypeId,
-        actions: {
-          createList,
-          highlightList,
-        },
-      });
-
-      await nextTick();
-
-      submitButton().vm.$emit('click');
-
-      expect(createList).not.toHaveBeenCalled();
-    });
   });
 
-  describe('assignee list', () => {
-    beforeEach(async () => {
-      mountComponent({
-        assignees: mockAssignees,
-        actions: {
-          fetchAssignees: jest.fn(),
-        },
-      });
-
-      listTypeSelect(ListType.assignee);
-
-      await nextTick();
-    });
-
-    it('sets assignee placeholder text in form', () => {
-      expect(findForm().props('searchLabel')).toBe(BoardAddNewColumn.i18n.value);
-      expect(findDropdown().props('searchPlaceholder')).toBe(
-        listTypeInfo.assignee.searchPlaceholder,
-      );
-    });
-
-    it('shows list of assignees', () => {
-      const userList = wrapper.findAllComponents(GlAvatarLabeled);
-
-      const [firstUser] = mockAssignees;
-
-      expect(userList).toHaveLength(mockAssignees.length);
-      expect(userList.at(0).props()).toMatchObject({
-        label: firstUser.name,
-        subLabel: `@${firstUser.username}`,
-      });
-    });
-  });
-
-  describe('iteration list', () => {
-    const iterationMountOptions = {
-      iterations: mockIterations,
-      actions: {
-        fetchIterations: jest.fn(),
-      },
-    };
-
-    beforeEach(async () => {
-      mountComponent({
-        ...iterationMountOptions,
-      });
-
-      await selectIteration();
-    });
-
-    it('sets iteration placeholder text in form', () => {
-      expect(findForm().props('searchLabel')).toBe(BoardAddNewColumn.i18n.value);
-      expect(findDropdown().props('searchPlaceholder')).toBe(
-        listTypeInfo.iteration.searchPlaceholder,
-      );
-    });
-
-    it('shows list of iterations', () => {
-      const itemList = findDropdown().props('items');
-
-      expect(itemList).toHaveLength(mockIterations.length);
-      expectIterationWithoutTitle();
-      expectIterationWithTitle();
-    });
-
-    it('finds a cadence in the dropdown', () => {
-      const { iterations } = iterationMountOptions;
-      const getCadenceTitleFromMocks = (idx) => iterations[idx].iterationCadence.title;
-      const cadenceTitles = wrapper
-        .findAll('[data-testid="cadence"]')
-        .wrappers.map((x) => x.text());
-
-      expect(cadenceTitles).toEqual(cadenceTitles.map((_, idx) => getCadenceTitleFromMocks(idx)));
-    });
-  });
-
-  describe('Apollo boards', () => {
+  describe('List types', () => {
     describe('assignee list', () => {
       beforeEach(async () => {
         mountComponent({ provide: { isApolloBoard: true } });

@@ -43,6 +43,8 @@ namespace :admin do
 
   resource :subscription, only: [:show]
 
+  get 'code_suggestions', to: 'code_suggestions#index'
+
   # using `only: []` to keep duplicate routes from being created
   resource :application_settings, only: [] do
     get :seat_link_payload

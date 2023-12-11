@@ -11,7 +11,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   </h2>
   <sidebartodowidget-stub
     class="gl-mt-3"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     issuableid="gid://gitlab/Issue/436"
     issuableiid="27"
     issuabletype="issue"
@@ -22,107 +22,43 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   />
   <sidebarassigneeswidget-stub
     editable="true"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     initialassignees="[object Object],[object Object]"
     issuabletype="issue"
   />
   <div>
     <sidebardropdownwidget-stub
-      attrworkspacepath="gitlab-org/gitlab-test"
+      attrworkspacepath="gitlab-org/test-subgroup/gitlab-test"
       data-testid="sidebar-milestones"
       iid="27"
       issuableattribute="milestone"
       issuabletype="issue"
-      workspacepath="gitlab-org/gitlab-test"
+      workspacepath="gitlab-org/test-subgroup/gitlab-test"
     />
   </div>
-  <div
-    class="sidebar-help-wrap time-tracker"
-    data-testid="time-tracker"
-  >
-    <div
-      class="gl-align-items-center gl-display-flex gl-font-weight-bold gl-line-height-20 gl-text-gray-900 hide-collapsed"
-    >
-      Time tracking
-      <div
-        class="gl-display-flex gl-ml-auto"
-      >
-        <button
-          aria-label="Set estimate"
-          class="btn btn-default btn-default-tertiary btn-sm gl-button"
-          data-testid="set-time-estimate-button"
-          title="Set estimate"
-          type="button"
-        >
-          <span
-            class="gl-button-text"
-          >
-            <svg
-              aria-hidden="true"
-              class="gl-icon gl-text-gray-900! s16"
-              data-testid="timer-icon"
-              role="img"
-            >
-              <use
-                href="file-mock#timer"
-              />
-            </svg>
-          </span>
-        </button>
-        <button
-          class="btn btn-default btn-default-tertiary btn-sm gl-button"
-          data-testid="add-time-entry-button"
-          title="Add time entry"
-          type="button"
-        >
-          <span
-            class="gl-button-text"
-          >
-            <svg
-              aria-hidden="true"
-              class="gl-icon gl-text-gray-900! s16"
-              data-testid="plus-icon"
-              role="img"
-            >
-              <use
-                href="file-mock#plus"
-              />
-            </svg>
-          </span>
-        </button>
-      </div>
-    </div>
-    <div
-      class="hide-collapsed"
-    >
-      <div
-        data-testid="noTrackingPane"
-      >
-        <span
-          class="gl-text-gray-500"
-        >
-          No estimate or time spent
-        </span>
-      </div>
-      <div />
-    </div>
-  </div>
+  <sidebartimetracker-stub
+    canaddtimeentries="true"
+    cansettimeestimate="true"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
+    issuableid="gid://gitlab/Issue/436"
+    issuableiid="27"
+  />
   <sidebardatewidget-stub
     data-testid="sidebar-due-date"
     datetype="dueDate"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
   <sidebarlabelswidget-stub
     allowmultiselect="true"
-    attrworkspacepath="gitlab-org/gitlab-test"
+    attrworkspacepath="gitlab-org/test-subgroup/gitlab-test"
     class="block labels"
     dropdownbuttontext="Label"
     footercreatelabeltitle="Create project label"
     footermanagelabeltitle="Manage project labels"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
     labelcreatetype="project"
@@ -530,18 +466,18 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     </div>
   </div>
   <sidebarhealthstatuswidget-stub
-    full-path="gitlab-org/gitlab-test"
+    full-path="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuable-type="issue"
   />
   <sidebarconfidentialitywidget-stub
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
   <sidebarsubscriptionswidget-stub
     data-testid="sidebar-notifications"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
@@ -559,7 +495,7 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
   </h2>
   <sidebartodowidget-stub
     class="gl-mt-3"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     issuableid="gid://gitlab/Issue/436"
     issuableiid="27"
     issuabletype="issue"
@@ -570,123 +506,59 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
   />
   <sidebarassigneeswidget-stub
     editable="true"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     initialassignees="[object Object],[object Object]"
     issuabletype="issue"
   />
   <sidebardropdownwidget-stub
-    attrworkspacepath="gitlab-org"
+    attrworkspacepath="gitlab-org/test-subgroup"
     data-testid="sidebar-epic"
     iid="27"
     issuableattribute="epic"
     issuabletype="issue"
-    workspacepath="gitlab-org/gitlab-test"
+    workspacepath="gitlab-org/test-subgroup/gitlab-test"
   />
   <div>
     <sidebardropdownwidget-stub
-      attrworkspacepath="gitlab-org/gitlab-test"
+      attrworkspacepath="gitlab-org/test-subgroup/gitlab-test"
       data-testid="sidebar-milestones"
       iid="27"
       issuableattribute="milestone"
       issuabletype="issue"
-      workspacepath="gitlab-org/gitlab-test"
+      workspacepath="gitlab-org/test-subgroup/gitlab-test"
     />
     <sidebariterationwidget-stub
-      attr-workspace-path="gitlab-org"
+      attr-workspace-path="gitlab-org/test-subgroup"
       class="gl-mt-5"
       data-testid="iteration-edit"
       iid="27"
       issuable-type="issue"
-      workspace-path="gitlab-org/gitlab-test"
+      workspace-path="gitlab-org/test-subgroup/gitlab-test"
     />
   </div>
-  <div
-    class="sidebar-help-wrap time-tracker"
-    data-testid="time-tracker"
-  >
-    <div
-      class="gl-align-items-center gl-display-flex gl-font-weight-bold gl-line-height-20 gl-text-gray-900 hide-collapsed"
-    >
-      Time tracking
-      <div
-        class="gl-display-flex gl-ml-auto"
-      >
-        <button
-          aria-label="Set estimate"
-          class="btn btn-default btn-default-tertiary btn-sm gl-button"
-          data-testid="set-time-estimate-button"
-          title="Set estimate"
-          type="button"
-        >
-          <span
-            class="gl-button-text"
-          >
-            <svg
-              aria-hidden="true"
-              class="gl-icon gl-text-gray-900! s16"
-              data-testid="timer-icon"
-              role="img"
-            >
-              <use
-                href="file-mock#timer"
-              />
-            </svg>
-          </span>
-        </button>
-        <button
-          class="btn btn-default btn-default-tertiary btn-sm gl-button"
-          data-testid="add-time-entry-button"
-          title="Add time entry"
-          type="button"
-        >
-          <span
-            class="gl-button-text"
-          >
-            <svg
-              aria-hidden="true"
-              class="gl-icon gl-text-gray-900! s16"
-              data-testid="plus-icon"
-              role="img"
-            >
-              <use
-                href="file-mock#plus"
-              />
-            </svg>
-          </span>
-        </button>
-      </div>
-    </div>
-    <div
-      class="hide-collapsed"
-    >
-      <div
-        data-testid="noTrackingPane"
-      >
-        <span
-          class="gl-text-gray-500"
-        >
-          No estimate or time spent
-        </span>
-      </div>
-      <div />
-    </div>
-  </div>
+  <sidebartimetracker-stub
+    canaddtimeentries="true"
+    cansettimeestimate="true"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
+    issuableid="gid://gitlab/Issue/436"
+    issuableiid="27"
+  />
   <sidebardatewidget-stub
     data-testid="sidebar-due-date"
     datetype="dueDate"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
   <sidebarlabelswidget-stub
     allowmultiselect="true"
-    attrworkspacepath="gitlab-org/gitlab-test"
+    attrworkspacepath="gitlab-org/test-subgroup/gitlab-test"
     class="block labels"
     dropdownbuttontext="Label"
     footercreatelabeltitle="Create project label"
     footermanagelabeltitle="Manage project labels"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
     labelcreatetype="project"
@@ -701,23 +573,23 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     None
   </sidebarlabelswidget-stub>
   <sidebarweightwidget-stub
-    full-path="gitlab-org/gitlab-test"
+    full-path="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuable-type="issue"
   />
   <sidebarhealthstatuswidget-stub
-    full-path="gitlab-org/gitlab-test"
+    full-path="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuable-type="issue"
   />
   <sidebarconfidentialitywidget-stub
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
   <sidebarsubscriptionswidget-stub
     data-testid="sidebar-notifications"
-    fullpath="gitlab-org/gitlab-test"
+    fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
