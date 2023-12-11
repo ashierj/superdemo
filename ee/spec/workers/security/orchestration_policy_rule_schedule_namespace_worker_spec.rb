@@ -54,6 +54,16 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
             expect(schedule.reload.next_run_at).to be_future
           end
 
+          it 'does not trigger N+1 queries', :use_sql_query_cache do
+            control = ActiveRecord::QueryRecorder.new { worker.perform(schedule_id) }
+
+            create(:project, namespace: namespace)
+            create(:project, namespace: namespace)
+            schedule.update_column(:next_run_at, 1.minute.ago)
+
+            expect { worker.perform(schedule_id) }.to issue_same_number_of_queries_as(control)
+          end
+
           context 'when there is a security_policy_bot in the project' do
             let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
 
