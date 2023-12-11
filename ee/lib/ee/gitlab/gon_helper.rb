@@ -27,6 +27,8 @@ module EE
           gon.payment_form_url                 = ::Gitlab::Routing.url_helpers.subscription_portal_payment_form_url
           gon.payment_validation_form_id       = ::Gitlab::SubscriptionPortal::PAYMENT_VALIDATION_FORM_ID
         end
+
+        push_frontend_feature_flag(:duo_chat_callout)
       end
 
       # Exposes if a licensed feature is available.

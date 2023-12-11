@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import TanukiBotChatApp from 'ee/ai/tanuki_bot/components/app.vue';
+import DuoChatCallout from 'ee/ai/components/global_callout/duo_chat_callout.vue';
 import { GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
@@ -44,9 +45,12 @@ describe('GitLab Duo Chat', () => {
   const chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
 
+  const findCallout = () => wrapper.findComponent(DuoChatCallout);
+
   const createComponent = ({
     initialState = {},
     propsData = { userId: MOCK_USER_ID, resourceId: MOCK_RESOURCE_ID },
+    glFeatures = { duoChatCallout: true },
   } = {}) => {
     const store = new Vuex.Store({
       actions: actionSpies,
@@ -65,6 +69,9 @@ describe('GitLab Duo Chat', () => {
       store,
       apolloProvider,
       propsData,
+      provide: {
+        glFeatures,
+      },
     });
   };
 
@@ -119,6 +126,11 @@ describe('GitLab Duo Chat', () => {
       createComponent();
       expect(findGlDuoChat().props('badgeType')).toBe('beta');
       expect(findGlDuoChat().props('badgeHelpPageUrl')).toContain('#beta');
+    });
+
+    it('renders the duo-chat-callout component', () => {
+      createComponent();
+      expect(findCallout().exists()).toBe(true);
     });
   });
 
