@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Minutes::RunnersAvailability do
+RSpec.describe Gitlab::Ci::RunnersAvailability::Minutes, feature_category: :continuous_integration do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:instance_runner) { create(:ci_runner, :instance, :online) }
 
   let(:build) { build_stubbed(:ci_build, project: project) }
-  let(:minutes) { described_class.new(project) }
+  let(:minutes) { described_class.new(project, project.all_runners.active.online.runner_matchers) }
 
   describe '#available?' do
     where(:shared_runners_enabled, :minutes_usage, :private_runner_available, :result) do
@@ -25,7 +25,10 @@ RSpec.describe Gitlab::Ci::Minutes::RunnersAvailability do
     with_them do
       let!(:namespace) { create(:namespace, minutes_usage) }
       let!(:project) { create(:project, namespace: namespace, shared_runners_enabled: shared_runners_enabled) }
-      let!(:private_runner) { create(:ci_runner, :project, :online, projects: [project], active: private_runner_available) }
+
+      let!(:private_runner) do
+        create(:ci_runner, :project, :online, projects: [project], active: private_runner_available)
+      end
 
       subject { minutes.available?(build.build_matcher) }
 
@@ -33,7 +36,7 @@ RSpec.describe Gitlab::Ci::Minutes::RunnersAvailability do
     end
   end
 
-  context 'database queries' do
+  describe 'database queries' do
     let_it_be(:project) { create(:project) }
     let_it_be(:private_runner) do
       create(:ci_runner, :project, :online, projects: [project])

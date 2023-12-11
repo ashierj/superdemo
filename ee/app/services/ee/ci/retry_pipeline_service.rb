@@ -4,7 +4,6 @@ module EE
   module Ci
     module RetryPipelineService
       extend ::Gitlab::Utils::Override
-      include ::Gitlab::Utils::StrongMemoize
 
       override :check_access
       def check_access(pipeline)
@@ -24,17 +23,12 @@ module EE
 
       override :can_be_retried?
       def can_be_retried?(build)
-        super && !ci_minutes_exceeded?(build)
-      end
-
-      def ci_minutes_exceeded?(build)
-        !runner_minutes.available?(build.build_matcher)
+        build_matcher = build.build_matcher
+        super && runner_minutes.available?(build_matcher)
       end
 
       def runner_minutes
-        strong_memoize(:runner_minutes) do
-          ::Gitlab::Ci::Minutes::RunnersAvailability.new(project)
-        end
+        ::Gitlab::Ci::RunnersAvailabilityBuilder.instance_for(project).minutes_checker
       end
     end
   end

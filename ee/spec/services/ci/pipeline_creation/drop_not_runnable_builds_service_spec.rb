@@ -18,14 +18,6 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService, feature_categ
     create(:ci_build, :tags, project: pipeline.project, pipeline: pipeline)
   end
 
-  let_it_be(:instance_runner) do
-    create(:ci_runner,
-      :online,
-      runner_type: :instance_type,
-      public_projects_minutes_cost_factor: 0,
-      private_projects_minutes_cost_factor: 1)
-  end
-
   describe '#execute' do
     subject(:execute) { described_class.new(pipeline).execute }
 
@@ -37,22 +29,7 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService, feature_categ
       end
     end
 
-    shared_examples 'quota exceeded' do
-      before do
-        allow(pipeline.project).to receive(:ci_minutes_usage)
-          .and_return(double('usage', minutes_used_up?: true, quota_enabled?: true))
-      end
-
-      it 'drops the job with ci_quota_exceeded reason' do
-        execute
-        [job, job_with_tags].each(&:reload)
-
-        expect(job).to be_failed
-        expect(job.failure_reason).to eq('ci_quota_exceeded')
-
-        expect(job_with_tags).to be_pending
-      end
-
+    shared_examples 'always running' do
       context 'when shared runners are disabled' do
         before do
           pipeline.project.update!(shared_runners_enabled: false)
@@ -62,7 +39,7 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService, feature_categ
       end
 
       context 'with project runners' do
-        let_it_be(:project_runner) do
+        let!(:project_runner) do
           create(:ci_runner, :online, runner_type: :project_type, projects: [project])
         end
 
@@ -70,7 +47,7 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService, feature_categ
       end
 
       context 'with group runners' do
-        let_it_be(:group_runner) do
+        let!(:group_runner) do
           create(:ci_runner, :online, runner_type: :group_type, groups: [group])
         end
 
@@ -86,21 +63,40 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService, feature_categ
       end
     end
 
+    shared_examples 'quota exceeded' do
+      let_it_be(:instance_runner) do
+        create(:ci_runner,
+          :online,
+          runner_type: :instance_type,
+          public_projects_minutes_cost_factor: 1,
+          private_projects_minutes_cost_factor: 1)
+      end
+
+      before do
+        allow(pipeline.project).to receive(:ci_minutes_usage)
+          .and_return(double('usage', minutes_used_up?: true, quota_enabled?: true))
+      end
+
+      it 'drops the job with ci_quota_exceeded reason' do
+        execute
+        [job, job_with_tags].each(&:reload)
+
+        expect(job).to be_failed
+        expect(job.failure_reason).to eq('ci_quota_exceeded')
+
+        expect(job_with_tags).to be_pending
+      end
+
+      it_behaves_like 'always running'
+    end
+
     context 'with public projects' do
       before do
         pipeline.project.update!(visibility_level: ::Gitlab::VisibilityLevel::PUBLIC)
       end
 
       it_behaves_like 'jobs allowed to run'
-
-      context 'when the CI quota is exceeded' do
-        before do
-          allow(pipeline.project).to receive(:ci_minutes_usage)
-            .and_return(double('usage', minutes_used_up?: true, quota_enabled?: true))
-        end
-
-        it_behaves_like 'jobs allowed to run'
-      end
+      it_behaves_like 'quota exceeded'
     end
 
     context 'with internal projects' do
