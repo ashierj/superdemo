@@ -139,3 +139,15 @@ In this example, traffic from the workspace is allowed if:
 
 - The destination IP is any range except `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16`.
 - The destination IP is `172.16.123.1/32`.
+
+## Configuring user access with remote development
+
+You can configure the `user_access` module to access the connected Kubernetes cluster with your GitLab credentials.
+
+This module is configured and runs independently of the `remote_development` module.
+However, be careful when configuring both `user_access` and `remote_development` in the same GitLab agent.
+The `remote_development` clusters manage user credentials (such as personal access tokens) as Kubernetes Secrets.
+Any misconfiguration in the `user_access` module might cause this private data to be accessible over the Kubernetes API.
+
+For more information about configuring the `user_access` module,
+see [Configure Kubernetes access](../../user/clusters/agent/user_access.md#configure-kubernetes-access).
