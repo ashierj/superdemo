@@ -27053,6 +27053,9 @@ msgstr ""
 msgid "JiraConnect|Jira Connect Proxy URL"
 msgstr ""
 
+msgid "JiraConnect|Jira user requirements"
+msgstr ""
+
 msgid "JiraConnect|Link groups"
 msgstr ""
 
