@@ -1,7 +1,7 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ProjectPipeline from 'ee/vue_shared/dashboards/components/project_pipeline.vue';
 import { mockPipelineData } from 'ee_jest/vue_shared/dashboards/mock_data';
-import CiIcon from '~/vue_shared/components/ci_icon.vue';
+import CiIcon from '~/vue_shared/components/ci_icon/ci_icon.vue';
 
 describe('project pipeline component', () => {
   let wrapper;

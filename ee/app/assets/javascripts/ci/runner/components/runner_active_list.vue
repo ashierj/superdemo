@@ -10,7 +10,7 @@ import { fetchPolicies } from '~/lib/graphql';
 import { createAlert } from '~/alert';
 import { I18N_FETCH_ERROR, JOBS_ROUTE_PATH } from '~/ci/runner/constants';
 import { tableField } from '~/ci/runner/utils';
-import CiIcon from '~/vue_shared/components/ci_icon.vue';
+import CiIcon from '~/vue_shared/components/ci_icon/ci_icon.vue';
 
 import RunnerFullName from './runner_full_name.vue';
 
