@@ -14,6 +14,12 @@ RSpec.describe ClickHouse::CiFinishedBuildsSyncWorker, :click_house, :freeze_tim
     create_sync_events build1
   end
 
+  specify do
+    expect(worker.class.click_house_worker_attrs).to match(
+      a_hash_including(migration_lock_ttl: ClickHouse::MigrationSupport::ExclusiveLock::DEFAULT_CLICKHOUSE_WORKER_TTL)
+    )
+  end
+
   include_examples 'an idempotent worker' do
     it 'calls CiFinishedBuildsSyncService and returns its response payload' do
       expect(worker).to receive(:log_extra_metadata_on_done)

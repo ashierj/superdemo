@@ -3,6 +3,7 @@
 module ClickHouse
   class CiFinishedBuildsSyncWorker
     include ApplicationWorker
+    include ClickHouseWorker
 
     idempotent!
     data_consistency :delayed
