@@ -3,9 +3,13 @@
 module Ci
   module PipelineCreation
     class DropNotRunnableBuildsService
+      include ::Gitlab::Utils::StrongMemoize
+
       def initialize(pipeline)
         @pipeline = pipeline
-        @runner_minutes = Gitlab::Ci::Minutes::RunnersAvailability.new(pipeline.project)
+
+        runners_availability = ::Gitlab::Ci::RunnersAvailabilityBuilder.instance_for(pipeline.project)
+        @runner_minutes = runners_availability.minutes_checker
       end
 
       ##
@@ -15,7 +19,7 @@ module Ci
       def execute
         return unless pipeline.created?
 
-        validate_build_matchers
+        drop_non_matching_jobs
       end
 
       private
@@ -25,14 +29,22 @@ module Ci
 
       delegate :project, to: :pipeline
 
-      def validate_build_matchers
-        build_ids = pipeline
-          .build_matchers
+      def drop_non_matching_jobs
+        drop_by_pipeline_minutes
+      end
+
+      def drop_by_pipeline_minutes
+        build_ids = build_matchers
           .filter_map { |matcher| matcher.build_ids unless runner_minutes.available?(matcher) }
           .flatten
 
         drop_all_builds(build_ids, :ci_quota_exceeded)
       end
+
+      def build_matchers
+        pipeline.build_matchers
+      end
+      strong_memoize_attr :build_matchers
 
       ##
       # We skip pipeline processing until we drop all required builds. Otherwise
