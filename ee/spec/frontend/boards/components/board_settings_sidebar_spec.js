@@ -1,40 +1,15 @@
 import { GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import BoardSettingsListTypes from 'ee_component/boards/components/board_settings_list_types.vue';
 import BoardSettingsWipLimit from 'ee_component/boards/components/board_settings_wip_limit.vue';
 import { mockLabelList, mockMilestoneList } from 'jest/boards/mock_data';
 import BoardSettingsSidebar from '~/boards/components/board_settings_sidebar.vue';
-import { LIST } from '~/boards/constants';
-import getters from '~/boards/stores/getters';
-
-Vue.use(Vuex);
 
 describe('ee/BoardSettingsSidebar', () => {
   let wrapper;
-  let storeActions;
 
-  const createComponent = ({
-    actions = {},
-    isWipLimitsOn = false,
-    list = {},
-    provide = {},
-  } = {}) => {
-    storeActions = actions;
-    const boardLists = {
-      [list.id]: { ...list, maxIssueCount: 0 },
-    };
-
-    const store = new Vuex.Store({
-      state: { sidebarType: LIST, activeId: list.id, boardLists },
-      getters,
-      actions: storeActions,
-    });
-
+  const createComponent = ({ isWipLimitsOn = false, list = {}, provide = {} } = {}) => {
     wrapper = shallowMount(BoardSettingsSidebar, {
-      store,
       provide: {
         glFeatures: {
           wipLimits: isWipLimitsOn,
@@ -44,7 +19,7 @@ describe('ee/BoardSettingsSidebar', () => {
         isIssueBoard: true,
         boardType: 'group',
         issuableType: 'issue',
-        isApolloBoard: false,
+        isApolloBoard: true,
         ...provide,
       },
       propsData: {

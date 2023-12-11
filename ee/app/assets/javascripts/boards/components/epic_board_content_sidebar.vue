@@ -1,15 +1,12 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
 import { MountingPortal } from 'portal-vue';
-// eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions, mapGetters } from 'vuex';
 import activeBoardItemQuery from 'ee_else_ce/boards/graphql/client/active_board_item.query.graphql';
 import setActiveBoardItemMutation from 'ee_else_ce/boards/graphql/client/set_active_board_item.mutation.graphql';
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
 import { s__ } from '~/locale';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
 import { setError } from '~/boards/graphql/cache_updates';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
@@ -34,7 +31,7 @@ export default {
     SidebarTodoWidget,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['canUpdate', 'labelsFilterBasePath', 'issuableType', 'isApolloBoard'],
+  inject: ['canUpdate', 'labelsFilterBasePath', 'issuableType'],
   inheritAttrs: false,
   apollo: {
     activeBoardCard: {
@@ -48,9 +45,6 @@ export default {
         }
         return data.activeBoardItem;
       },
-      skip() {
-        return !this.isApolloBoard;
-      },
       error(error) {
         setError({
           error,
@@ -60,64 +54,23 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['activeBoardItem']),
-    ...mapState(['sidebarType']),
-    activeBoardIssuable() {
-      return this.isApolloBoard ? this.activeBoardCard : this.activeBoardItem;
-    },
     isSidebarOpen() {
-      return Boolean(this.activeBoardIssuable?.id);
+      return Boolean(this.activeBoardCard?.id);
     },
     fullPath() {
-      return this.activeBoardIssuable?.referencePath?.split('&')[0] || '';
+      return this.activeBoardCard?.referencePath?.split('&')[0] || '';
     },
     isEpicColorEnabled() {
       return this.glFeatures.epicColorHighlight;
     },
   },
   methods: {
-    ...mapActions([
-      'toggleBoardItem',
-      'setActiveItemConfidential',
-      'setActiveItemSubscribed',
-      'setActiveBoardItemLabels',
-      'setActiveBoardItemColor',
-    ]),
     handleClose() {
-      if (this.isApolloBoard) {
-        this.$apollo.mutate({
-          mutation: setActiveBoardItemMutation,
-          variables: {
-            boardItem: null,
-          },
-        });
-      } else {
-        this.toggleBoardItem({
-          boardItem: this.activeBoardIssuable,
-          sidebarType: this.sidebarType,
-        });
-      }
-    },
-    handleUpdateSelectedLabels({ labels, id }) {
-      this.setActiveBoardItemLabels({
-        id,
-        groupPath: this.fullPath,
-        labelIds: labels.map((label) => getIdFromGraphQLId(label.id)),
-        labels,
-      });
-    },
-    handleUpdateSelectedColor({ id, color }) {
-      this.setActiveBoardItemColor({
-        id,
-        groupPath: this.fullPath,
-        color,
-      });
-    },
-    handleLabelRemove(removeLabelId) {
-      this.setActiveBoardItemLabels({
-        iid: this.activeBoardIssuable.iid,
-        groupPath: this.fullPath,
-        removeLabelIds: [removeLabelId],
+      this.$apollo.mutate({
+        mutation: setActiveBoardItemMutation,
+        variables: {
+          boardItem: null,
+        },
       });
     },
   },
@@ -139,23 +92,23 @@ export default {
       <template #header>
         <sidebar-todo-widget
           class="gl-mt-3"
-          :issuable-id="activeBoardIssuable.id"
-          :issuable-iid="activeBoardIssuable.iid"
+          :issuable-id="activeBoardCard.id"
+          :issuable-iid="activeBoardCard.iid"
           :full-path="fullPath"
           :issuable-type="issuableType"
         />
       </template>
       <template #default>
-        <board-sidebar-title :active-item="activeBoardIssuable" data-testid="sidebar-title" />
+        <board-sidebar-title :active-item="activeBoardCard" data-testid="sidebar-title" />
         <sidebar-date-widget
-          :iid="activeBoardIssuable.iid"
+          :iid="activeBoardCard.iid"
           :full-path="fullPath"
           date-type="startDate"
           :issuable-type="issuableType"
           :can-inherit="true"
         />
         <sidebar-date-widget
-          :iid="activeBoardIssuable.iid"
+          :iid="activeBoardCard.iid"
           :full-path="fullPath"
           date-type="dueDate"
           :issuable-type="issuableType"
@@ -164,7 +117,7 @@ export default {
         <sidebar-labels-widget
           class="block labels"
           data-testid="sidebar-labels"
-          :iid="activeBoardIssuable.iid"
+          :iid="activeBoardCard.iid"
           :full-path="fullPath"
           :allow-label-remove="canUpdate"
           :allow-multiselect="true"
@@ -173,8 +126,6 @@ export default {
           workspace-type="group"
           :issuable-type="issuableType"
           label-create-type="group"
-          @onLabelRemove="!isApolloBoard && handleLabelRemove($event)"
-          @updateSelectedLabels="!isApolloBoard && handleUpdateSelectedLabels($event)"
         >
           {{ __('None') }}
         </sidebar-labels-widget>
@@ -183,35 +134,33 @@ export default {
           v-if="isEpicColorEnabled"
           class="block colors js-colors-block"
           :allow-edit="canUpdate"
-          :iid="activeBoardIssuable.iid"
+          :iid="activeBoardCard.iid"
           :full-path="fullPath"
           workspace-type="group"
           issuable-type="epic"
           variant="sidebar"
           data-testid="colors-select"
-          @updateSelectedColor="!isApolloBoard && handleUpdateSelectedColor($event)"
         >
           {{ __('None') }}
         </color-select-dropdown>
 
         <sidebar-confidentiality-widget
-          :iid="activeBoardIssuable.iid"
+          :iid="activeBoardCard.iid"
           :full-path="fullPath"
           :issuable-type="issuableType"
-          @confidentialityUpdated="!isApolloBoard && setActiveItemConfidential($event)"
         />
         <sidebar-ancestors-widget
-          :iid="activeBoardIssuable.iid"
+          :iid="activeBoardCard.iid"
           :full-path="fullPath"
           issuable-type="epic"
         />
         <sidebar-participants-widget
-          :iid="activeBoardIssuable.iid"
+          :iid="activeBoardCard.iid"
           :full-path="fullPath"
           issuable-type="epic"
         />
         <sidebar-subscriptions-widget
-          :iid="activeBoardIssuable.iid"
+          :iid="activeBoardCard.iid"
           :full-path="fullPath"
           :issuable-type="issuableType"
         />

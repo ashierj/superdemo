@@ -1,39 +1,26 @@
 import { GlDrawer } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
 import Vue from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+import { mount } from '@vue/test-utils';
 import { stubComponent } from 'helpers/stub_component';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import BoardContentSidebar from '~/boards/components/board_content_sidebar.vue';
-import { ISSUABLE } from '~/boards/constants';
+import activeBoardItemQuery from 'ee_else_ce/boards/graphql/client/active_board_item.query.graphql';
 import { TYPE_ISSUE } from '~/issues/constants';
-import { mockIssue, mockIssueGroupPath, mockIssueProjectPath } from '../mock_data';
+import { rawIssue } from '../mock_data';
 
-Vue.use(Vuex);
+Vue.use(VueApollo);
 
 describe('ee/BoardContentSidebar', () => {
   let wrapper;
-  let store;
 
-  const createStore = ({ mockGetters = {}, mockActions = {} } = {}) => {
-    store = new Vuex.Store({
-      state: {
-        sidebarType: ISSUABLE,
-        issues: { [mockIssue.id]: { ...mockIssue, epic: null } },
-        activeId: mockIssue.id,
-      },
-      getters: {
-        activeBoardItem: () => {
-          return { ...mockIssue, epic: null };
-        },
-        projectPathForActiveIssue: () => mockIssueProjectPath,
-        groupPathForActiveIssue: () => mockIssueGroupPath,
-        isSidebarOpen: () => true,
-        ...mockGetters,
-      },
-      actions: mockActions,
-    });
-  };
+  const mockSetActiveBoardItemResolver = jest.fn();
+  const mockApollo = createMockApollo([], {
+    Mutation: {
+      setActiveBoardItem: mockSetActiveBoardItemResolver,
+    },
+  });
 
   const setPortalAnchorPoint = () => {
     const el = document.createElement('div');
@@ -41,8 +28,15 @@ describe('ee/BoardContentSidebar', () => {
     document.body.appendChild(el);
   };
 
-  const createComponent = () => {
+  const createComponent = ({ issuable = rawIssue } = {}) => {
     setPortalAnchorPoint();
+
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: activeBoardItemQuery,
+      data: {
+        activeBoardItem: issuable,
+      },
+    });
 
     /*
       Dynamically imported components (in our case ee imports)
@@ -52,6 +46,7 @@ describe('ee/BoardContentSidebar', () => {
       This requires us to use mount and additionally mock components.
     */
     wrapper = mount(BoardContentSidebar, {
+      apolloProvider: mockApollo,
       provide: {
         canUpdate: true,
         rootPath: '/',
@@ -63,7 +58,6 @@ describe('ee/BoardContentSidebar', () => {
         weightFeatureAvailable: true,
         healthStatusFeatureAvailable: true,
       },
-      store,
       stubs: {
         GlDrawer: stubComponent(GlDrawer, {
           template: `
@@ -86,24 +80,16 @@ describe('ee/BoardContentSidebar', () => {
         SidebarDropdownWidget: true,
         SidebarIterationWidget: true,
         SidebarTodoWidget: true,
+        SidebarTimeTracker: true,
         MountingPortal: true,
-      },
-      mocks: {
-        $apollo: {
-          queries: {
-            issuableTimeTracking: {
-              loading: false,
-            },
-          },
-        },
       },
     });
   };
 
   describe('issue sidebar', () => {
-    beforeEach(() => {
-      createStore();
+    beforeEach(async () => {
       createComponent();
+      await waitForPromises();
     });
 
     it('matches the snapshot', () => {
@@ -112,11 +98,9 @@ describe('ee/BoardContentSidebar', () => {
   });
 
   describe('incident sidebar', () => {
-    beforeEach(() => {
-      createStore({
-        mockGetters: { activeBoardItem: () => ({ ...mockIssue, epic: null, type: 'INCIDENT' }) },
-      });
-      createComponent();
+    beforeEach(async () => {
+      createComponent({ issuable: { ...rawIssue, epic: null, type: 'INCIDENT' } });
+      await waitForPromises();
     });
 
     it('matches the snapshot', () => {
