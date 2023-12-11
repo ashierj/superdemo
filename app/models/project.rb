@@ -3470,8 +3470,6 @@ class Project < ApplicationRecord
 
   # Catalog resource SyncEvents are created by PG triggers
   def enqueue_catalog_resource_sync_event_worker
-    catalog_resource.sync_with_project! if Feature.disabled?(:ci_process_catalog_resource_sync_events)
-
     run_after_commit do
       ::Ci::Catalog::Resources::SyncEvent.enqueue_worker
     end
