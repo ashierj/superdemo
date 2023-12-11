@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::EventStore do
+RSpec.describe Gitlab::EventStore, feature_category: :shared do
   describe '.instance' do
     it 'returns a store with CE and EE subscriptions' do
       instance = described_class.instance
@@ -21,6 +21,16 @@ RSpec.describe Gitlab::EventStore do
         ::ProjectAuthorizations::AuthorizationsChangedEvent,
         ::Projects::ComplianceFrameworkChangedEvent
       )
+    end
+  end
+
+  describe '.publish_group' do
+    let(:events) { [] }
+
+    it 'calls publish_group of instance' do
+      expect(described_class.instance).to receive(:publish_group).with(events)
+
+      described_class.publish_group(events)
     end
   end
 end
