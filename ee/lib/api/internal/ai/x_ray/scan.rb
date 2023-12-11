@@ -13,21 +13,38 @@ module API
 
           before do
             authenticate_job!
+            not_found! unless x_ray_enabled_on_instance?
             unauthorized! unless x_ray_available?
           end
 
           helpers do
             include ::Gitlab::Utils::StrongMemoize
 
+            def x_ray_enabled_on_instance?
+              return true if ::Gitlab.org_or_com?
+
+              ::License.feature_available?(:code_suggestions) && \
+                ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
+            end
+
             def x_ray_available?
+              group = current_job.namespace
+              return false unless group.namespace_settings.code_suggestions?
+
               if Gitlab.org_or_com?
-                ::GitlabSubscriptions::AddOnPurchase
-                  .for_code_suggestions
-                  .by_namespace_id(current_job.namespace.id)
-                  .any?
+                code_suggestions_add_on?(group)
               else
                 ai_access_token.present?
               end
+            end
+
+            def code_suggestions_add_on?(namespace)
+              return true unless ::Feature.enabled?(:purchase_code_suggestions)
+
+              ::GitlabSubscriptions::AddOnPurchase
+                .for_code_suggestions
+                .by_namespace_id(namespace.id)
+                .any?
             end
 
             def model_gateway_headers(headers, gateway_token)
