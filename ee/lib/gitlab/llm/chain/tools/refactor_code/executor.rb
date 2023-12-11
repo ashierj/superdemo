@@ -34,6 +34,7 @@ module Gitlab
                   You are a software developer.
                   You can refactor code.
                   %<language_info>s
+                  Here is the code user selected:
                 PROMPT
               ),
               Utils::Prompt.as_user(
@@ -43,6 +44,7 @@ module Gitlab
                   </code>
                 PROMPT
               ),
+              Utils::Prompt.as_user('The generated code should be formatted in markdown.'),
               Utils::Prompt.as_user("%<input>s")
             ].freeze
 

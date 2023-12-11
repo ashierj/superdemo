@@ -13,11 +13,13 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Prompts::Anthropic, feat
         Human: You are a software developer.
         You can refactor code.
         language
+        Here is the code user selected:
 
         <code>
           selected text
         </code>
 
+        The generated code should be formatted in markdown.
         question
 
         Assistant:
