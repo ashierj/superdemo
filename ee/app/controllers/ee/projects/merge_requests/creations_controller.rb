@@ -14,7 +14,6 @@ module EE
         private
 
         def get_target_projects
-          return super unless ::Feature.enabled?(:hide_unaccessible_saml_branches, source_project)
           return super unless params[:action] == "target_projects"
 
           filter_out_saml_groups(super)
