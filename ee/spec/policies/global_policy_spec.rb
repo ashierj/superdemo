@@ -410,6 +410,62 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
+  describe 'read_runner_usage' do
+    context 'when feature is enabled' do
+      before do
+        stub_licensed_features(runner_performance_insights: true)
+      end
+
+      context 'for admins' do
+        let(:current_user) { admin }
+
+        context 'when admin mode enabled', :enable_admin_mode do
+          context 'when ClickHouse :main database is configured' do
+            before do
+              allow(ClickHouse::Client.configuration).to receive(:databases).and_return({ main: :some_db })
+            end
+
+            it { is_expected.to be_allowed(:read_runner_usage) }
+          end
+
+          context 'when no ClickHouse databases are configured' do
+            before do
+              allow(ClickHouse::Client.configuration).to receive(:databases).and_return({})
+            end
+
+            it { is_expected.to be_disallowed(:read_runner_usage) }
+          end
+        end
+
+        context 'when admin mode disabled' do
+          it { is_expected.to be_disallowed(:read_runner_usage) }
+        end
+      end
+
+      context 'for non-admins' do
+        let(:current_user) { user }
+
+        context 'when ClickHouse :main database is configured' do
+          before do
+            allow(ClickHouse::Client.configuration).to receive(:databases).and_return({ main: :some_db })
+          end
+
+          it { is_expected.to be_disallowed(:read_runner_usage) }
+        end
+      end
+    end
+
+    context 'when feature is disabled' do
+      before do
+        stub_licensed_features(runner_performance_insights: false)
+      end
+
+      context 'when admin mode enabled', :enable_admin_mode do
+        it { expect(described_class.new(admin, [user])).to be_disallowed(:read_runner_usage) }
+      end
+    end
+  end
+
   describe 'read_jobs_statistics' do
     context 'when feature is enabled' do
       before do
