@@ -163,6 +163,13 @@ module EE
 
       scope :excluding_enterprise_users_of_group, ->(group) { left_joins(:user_detail).where('user_details.enterprise_group_id != ? OR user_details.enterprise_group_id IS NULL', group.id) }
 
+      scope :security_policy_bots_for_projects, ->(projects) do
+        security_policy_bot
+          .joins(:members)
+          .where(members: { source: projects })
+          .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/422405")
+      end
+
       accepts_nested_attributes_for :namespace
       accepts_nested_attributes_for :custom_attributes
 
