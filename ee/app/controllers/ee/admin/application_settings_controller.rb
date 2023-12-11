@@ -140,7 +140,7 @@ module EE
         end
 
         if License.feature_available?(:pre_receive_secret_detection) &&
-            ::Feature.enabled?(:secret_detection_application_setting)
+            ::Gitlab::CurrentSettings.gitlab_dedicated_instance?
           attrs << :pre_receive_secret_detection_enabled
         end
 
