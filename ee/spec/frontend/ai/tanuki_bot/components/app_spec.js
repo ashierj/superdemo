@@ -47,7 +47,6 @@ describe('GitLab Duo Chat', () => {
   const createComponent = ({
     initialState = {},
     propsData = { userId: MOCK_USER_ID, resourceId: MOCK_RESOURCE_ID },
-    glFeatures = { duoChatBeta: false },
   } = {}) => {
     const store = new Vuex.Store({
       actions: actionSpies,
@@ -66,9 +65,6 @@ describe('GitLab Duo Chat', () => {
       store,
       apolloProvider,
       propsData,
-      provide: {
-        glFeatures,
-      },
     });
   };
 
@@ -119,18 +115,11 @@ describe('GitLab Duo Chat', () => {
       expect(findGlDuoChat().exists()).toBe(true);
     });
 
-    it.each`
-      isFlagEnabled | expectedPropValue | expectedAnchorValue
-      ${true}       | ${'beta'}         | ${'#beta'}
-      ${false}      | ${'experiment'}   | ${'#experiment'}
-    `(
-      'sets correct `badge-type` and `badge-help-page-url` props on the chat compnent when feature flag is $isFlagEnabled',
-      ({ isFlagEnabled, expectedPropValue, expectedAnchorValue }) => {
-        createComponent({ glFeatures: { duoChatBeta: isFlagEnabled } });
-        expect(findGlDuoChat().props('badgeType')).toBe(expectedPropValue);
-        expect(findGlDuoChat().props('badgeHelpPageUrl')).toContain(expectedAnchorValue);
-      },
-    );
+    it('sets correct `badge-type` and `badge-help-page-url` props on the chat compnent', () => {
+      createComponent();
+      expect(findGlDuoChat().props('badgeType')).toBe('beta');
+      expect(findGlDuoChat().props('badgeHelpPageUrl')).toContain('#beta');
+    });
   });
 
   describe('events handling', () => {
