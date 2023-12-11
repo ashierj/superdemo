@@ -37,6 +37,18 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesSe
 
         subject
       end
+
+      context 'with multiple projects in the namespace' do
+        let_it_be(:worker) { Security::ProcessScanResultPolicyWorker }
+
+        it 'does trigger SyncScanResultPoliciesProjectService for each project in group' do
+          create_list(:project, 2, namespace: namespace)
+
+          expect(worker).to receive(:perform_async).and_call_original.exactly(3).times
+
+          subject
+        end
+      end
     end
   end
 end
