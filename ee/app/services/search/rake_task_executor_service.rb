@@ -21,23 +21,9 @@ module Search
 
     def execute(task)
       raise ArgumentError, "Unknown task: #{task}" unless TASKS.include?(task)
+      raise NotImplementedError unless respond_to?(task, true)
 
-      case task
-      when :index_snippets
-        index_snippets
-      when :pause_indexing
-        pause_indexing
-      when :resume_indexing
-        resume_indexing
-      when :estimate_cluster_size
-        estimate_cluster_size
-      when :mark_reindex_failed
-        mark_reindex_failed
-      when :list_pending_migrations
-        list_pending_migrations
-      else
-        raise NotImplementedError
-      end
+      send(task) # rubocop:disable GitlabSecurity/PublicSend -- We control the list of tasks in the source code
     end
 
     private
