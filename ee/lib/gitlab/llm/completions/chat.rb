@@ -89,6 +89,16 @@ module Gitlab
 
           command = slash_command_for_prompt_message
           if command
+            Gitlab::Tracking.event(
+              self.class.to_s,
+              'process_gitlab_duo_slash_command',
+              label: command.name,
+              property: prompt_message.request_id,
+              namespace: context.container,
+              user: user,
+              value: command.user_input.present? ? 1 : 0
+            )
+
             return command.tool::Executor.new(
               context: context,
               options: { input: options[:content] },

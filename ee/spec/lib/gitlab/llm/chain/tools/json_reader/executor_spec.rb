@@ -34,6 +34,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
     allow(reader).to receive(:provider_prompt_class)
       .and_return(::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic)
     stub_const("::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS", 4)
+    allow(Gitlab::Llm::StageCheck).to receive(:available?).with(project, :chat).and_return(true)
   end
 
   describe '#name' do
@@ -56,7 +57,27 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
   end
 
   describe '#execute' do
-    context 'when execution is successful' do
+    context 'when the tool was already used' do
+      before do
+        context.tools_used << described_class
+      end
+
+      it 'returns already used answer' do
+        allow(reader).to receive(:request).and_return('response')
+
+        expect(reader.execute.content).to eq('You already have the answer from ResourceReader tool, read carefully.')
+      end
+    end
+
+    it 'returns error when the resource is not authorized' do
+      expect(reader.execute.content).to eq('I am sorry, I am unable to find what you are looking for.')
+    end
+
+    context 'when the resource is authorized' do
+      before_all do
+        project.add_guest(user)
+      end
+
       context 'when resource length equals or exceeds max tokens' do
         it 'processes the long path' do
           expect(reader).to receive(:process_long_path)
@@ -76,18 +97,15 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
           reader.execute
         end
 
-        describe 'processing answer' do
-          let(:ai_response) do
-            "Please use this information about this resource: #{Ai::AiResource::Issue.new(issue)
-              .serialize_for_ai(
-                user: context.current_user,
-                content_limit: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS
-              ).to_json}"
-          end
+        it "returns a final answer even if the response doesn't contain a 'final answer' token" do
+          issue_json = Ai::AiResource::Issue.new(issue)
+            .serialize_for_ai(
+              user: context.current_user,
+              content_limit: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS
+            ).to_json
+          ai_response = "Please use this information about this resource: #{issue_json}"
 
-          it "returns a final answer even if the response doesn't contain a 'final answer' token" do
-            expect_answer_with_content(ai_response)
-          end
+          expect_answer_with_content(ai_response)
         end
       end
 
@@ -166,18 +184,22 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
           end
         end
       end
-    end
-  end
 
-  context 'when resource is not serialisable into JSON' do
-    let(:resource) { Class.new }
+      context 'when resource is not serialisable into JSON' do
+        let(:resource) { Class.new }
 
-    # e.g. when `serialize_instance` hasn't been defined on a model
-    it 'returns an answer with an error' do
-      response = reader.execute
+        before do
+          allow(reader).to receive(:authorize).and_return(true)
+        end
 
-      expect(response).to be_a(Gitlab::Llm::Chain::Answer)
-      expect(response.content).to match(/Unexpected error/)
+        # e.g. when `serialize_instance` hasn't been defined on a model
+        it 'returns an answer with an error' do
+          response = reader.execute
+
+          expect(response).to be_a(Gitlab::Llm::Chain::Answer)
+          expect(response.content).to match(/Unexpected error/)
+        end
+      end
     end
   end
 end

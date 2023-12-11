@@ -253,6 +253,10 @@ client_subscription_id: 'someid' }
       shared_examples_for 'slash command execution' do
         let(:executor) { instance_double(Gitlab::Llm::Chain::Tools::ExplainCode::Executor) }
 
+        before do
+          allow(executor).to receive(:execute).and_return(answer)
+        end
+
         it 'calls directly a tool' do
           expected_params = {
             context: an_instance_of(::Gitlab::Llm::Chain::GitlabContext),
@@ -264,9 +268,24 @@ client_subscription_id: 'someid' }
           expect(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor).not_to receive(:new)
           expect(expected_tool)
             .to receive(:new).with(expected_params).and_return(executor)
-          expect(executor).to receive(:execute).and_return(answer)
 
           subject
+        end
+
+        it 'tracks slash command event', :snowplow do
+          expect(expected_tool).to receive(:new).and_return(executor)
+
+          subject
+
+          expect_snowplow_event(
+            category: described_class.to_s,
+            action: 'process_gitlab_duo_slash_command',
+            label: command,
+            property: 'uuid',
+            namespace: container,
+            user: user,
+            value: 1
+          )
         end
 
         context 'when slash_commands flag is disabled' do
@@ -288,8 +307,10 @@ client_subscription_id: 'someid' }
         end
       end
 
+      let(:content) { "#{command} something" }
+
       context 'when /explain is used' do
-        let(:content) { '/explain something' }
+        let(:command) { '/explain' }
 
         it_behaves_like 'slash command execution' do
           let(:expected_tool) { ::Gitlab::Llm::Chain::Tools::ExplainCode::Executor }
@@ -297,7 +318,7 @@ client_subscription_id: 'someid' }
       end
 
       context 'when /tests is used' do
-        let(:content) { '/tests something' }
+        let(:command) { '/tests' }
 
         it_behaves_like 'slash command execution' do
           let(:expected_tool) { ::Gitlab::Llm::Chain::Tools::WriteTests::Executor }
@@ -305,7 +326,7 @@ client_subscription_id: 'someid' }
       end
 
       context 'when /refactor is used' do
-        let(:content) { '/refactor something' }
+        let(:command) { '/refactor' }
 
         it_behaves_like 'slash command execution' do
           let(:expected_tool) { ::Gitlab::Llm::Chain::Tools::RefactorCode::Executor }
@@ -313,7 +334,7 @@ client_subscription_id: 'someid' }
       end
 
       context 'when slash command does not exist' do
-        let(:content) { '/explain2 something' }
+        let(:command) { '/explain2' }
 
         it 'process the message with zero shot agent' do
           expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor) do |instance|

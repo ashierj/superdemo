@@ -280,7 +280,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           let(:ai_response) { "iid\", \"ResourceIdentifier\": #{issue1.iid}}" }
 
           before do
-            context.tools_used << described_class.name
+            context.tools_used << described_class
           end
 
           it 'returns already identified response' do

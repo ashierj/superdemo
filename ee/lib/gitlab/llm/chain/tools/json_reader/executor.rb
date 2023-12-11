@@ -39,7 +39,7 @@ module Gitlab
               @retries = 0
             end
 
-            def execute
+            def perform
               resource_wrapper_class = "Ai::AiResource::#{resource.class}".safe_constantize
               # We need to implement it for all models we want to take into considerations
               unless resource_wrapper_class
@@ -72,6 +72,10 @@ module Gitlab
             private
 
             attr_accessor :data, :retries
+
+            def authorize
+              Utils::Authorizer.context_allowed?(context: context)
+            end
 
             def process_short_path(resource_json)
               content = "Please use this information about this resource: #{resource_json}"
