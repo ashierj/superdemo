@@ -86,26 +86,6 @@ module EE
       end
     end
 
-    def reverify_all_button(projects_count, limit)
-      # This is deprecated and Hard Coded for Projects.
-      # All new replicable types should be using geo_replicable/app.vue
-
-      reverify_all_projects_modal_data = {
-        path: reverify_all_admin_geo_projects_url,
-        method: 'post',
-        modal_attributes: {
-          title: projects_count > 1 ? sprintf(s_('Geo|Reverify all %{projects_count} projects'), { projects_count: format_project_count(projects_count, limit) }) : s_('Geo|Reverify project'),
-          message: s_('Geo|This will reverify all projects. It may take some time to complete. Are you sure you want to continue?'),
-          okTitle: s_('Geo|Reverify all'),
-          size: 'sm'
-        }
-      }
-
-      render Pajamas::ButtonComponent.new(button_options: { class: 'js-confirm-modal-button gl-mr-3', data: reverify_all_projects_modal_data }) do
-        s_("Geo|Reverify all")
-      end
-    end
-
     def format_project_count(projects_count, limit)
       if projects_count >= limit
         number_with_delimiter(limit - 1) + "+"
