@@ -1,6 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapActions } from 'vuex';
 import BoardsSelectorFoss from '~/boards/components/boards_selector.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import Tracking from '~/tracking';
@@ -24,7 +22,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['fetchEpicBoard']),
     fullBoardId(boardId) {
       return this.isEpicBoard ? fullEpicBoardId(boardId) : fullBoardId(boardId);
     },
@@ -66,20 +63,6 @@ export default {
 
       if (!this.isEpicBoard) {
         this.loadRecentBoards();
-      }
-    },
-    fetchCurrentBoard(boardId) {
-      if (this.isEpicBoard) {
-        this.fetchEpicBoard({
-          fullPath: this.fullPath,
-          boardId: fullEpicBoardId(boardId),
-        });
-      } else {
-        this.fetchBoard({
-          fullPath: this.fullPath,
-          fullBoardId: fullBoardId(boardId),
-          boardType: this.boardType,
-        });
       }
     },
   },

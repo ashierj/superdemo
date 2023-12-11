@@ -51,7 +51,6 @@ const componentConfig = {
     issuableType: TYPE_ISSUE,
     isGroupBoard: true,
     isProjectBoard: false,
-    isApolloBoard: false,
   },
 };
 

@@ -1,9 +1,7 @@
 import { GlDrawer } from '@gitlab/ui';
 import { MountingPortal } from 'portal-vue';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -13,7 +11,6 @@ import EpicBoardContentSidebar from 'ee_component/boards/components/epic_board_c
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
 import { stubComponent } from 'helpers/stub_component';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
-import { ISSUABLE } from '~/boards/constants';
 import { TYPE_EPIC } from '~/issues/constants';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
@@ -22,14 +19,12 @@ import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sideb
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
-import { mockFormattedBoardEpic, rawEpic } from '../mock_data';
+import { rawEpic } from '../mock_data';
 
-Vue.use(Vuex);
 Vue.use(VueApollo);
 
 describe('EpicBoardContentSidebar', () => {
   let wrapper;
-  let store;
 
   const mockSetActiveBoardItemResolver = jest.fn();
   const mockApollo = createMockApollo([], {
@@ -38,32 +33,14 @@ describe('EpicBoardContentSidebar', () => {
     },
   });
 
-  const createStore = ({ mockGetters = {}, mockActions = {} } = {}) => {
-    store = new Vuex.Store({
-      state: {
-        sidebarType: ISSUABLE,
-        boardItems: { [mockFormattedBoardEpic.id]: mockFormattedBoardEpic },
-        activeId: mockFormattedBoardEpic.id,
-        fullPath: 'gitlab-org',
-      },
-      getters: {
-        activeBoardItem: () => {
-          return mockFormattedBoardEpic;
-        },
-        ...mockGetters,
-      },
-      actions: mockActions,
-    });
-  };
-
-  const createComponent = ({ glFeatures = {}, isApolloBoard = false } = {}) => {
+  const createComponent = ({ glFeatures = {}, issuable = rawEpic } = {}) => {
     mockApollo.clients.defaultClient.cache.writeQuery({
       query: activeBoardItemQuery,
       variables: {
         isIssue: false,
       },
       data: {
-        activeBoardItem: rawEpic,
+        activeBoardItem: issuable,
       },
     });
 
@@ -76,9 +53,7 @@ describe('EpicBoardContentSidebar', () => {
         issuableType: TYPE_EPIC,
         labelsFilterBasePath: '',
         glFeatures,
-        isApolloBoard,
       },
-      store,
       stubs: {
         GlDrawer: stubComponent(GlDrawer, {
           template: '<div><slot name="header"></slot><slot></slot></div>',
@@ -88,7 +63,6 @@ describe('EpicBoardContentSidebar', () => {
   };
 
   beforeEach(() => {
-    createStore();
     createComponent();
   });
 
@@ -105,8 +79,7 @@ describe('EpicBoardContentSidebar', () => {
   });
 
   it('does not render GlDrawer when no active item is set', () => {
-    createStore({ mockGetters: { activeBoardItem: () => ({ id: '', iid: '' }) } });
-    createComponent();
+    createComponent({ issuable: {} });
 
     expect(wrapper.findComponent(GlDrawer).props('open')).toBe(false);
   });
@@ -163,30 +136,8 @@ describe('EpicBoardContentSidebar', () => {
   });
 
   describe('when we emit close', () => {
-    let toggleBoardItem;
-
     beforeEach(() => {
-      toggleBoardItem = jest.fn();
-      createStore({ mockActions: { toggleBoardItem } });
       createComponent();
-    });
-
-    it('calls toggleBoardItem with correct parameters', () => {
-      wrapper.findComponent(GlDrawer).vm.$emit('close');
-
-      expect(toggleBoardItem).toHaveBeenCalledTimes(1);
-      expect(toggleBoardItem).toHaveBeenCalledWith(expect.any(Object), {
-        boardItem: mockFormattedBoardEpic,
-        sidebarType: ISSUABLE,
-      });
-    });
-  });
-
-  describe('Apollo boards', () => {
-    beforeEach(async () => {
-      createStore();
-      createComponent({ isApolloBoard: true });
-      await nextTick();
     });
 
     it('calls setActiveBoardItemMutation on close', async () => {

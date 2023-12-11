@@ -2,8 +2,6 @@ import { GlCollapsibleListbox } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import BoardsSelector from 'ee/boards/components/boards_selector.vue';
 import epicBoardsQuery from 'ee/boards/graphql/epic_boards.query.graphql';
 import groupBoardsQuery from '~/boards/graphql/group_boards.query.graphql';
@@ -27,24 +25,10 @@ import { mockEpicBoardsResponse } from '../mock_data';
 const throttleDuration = 1;
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 describe('BoardsSelector', () => {
   let wrapper;
   let fakeApollo;
-  let store;
-
-  const createStore = () => {
-    store = new Vuex.Store({
-      actions: {
-        setError: jest.fn(),
-        setBoardConfig: jest.fn(),
-      },
-      state: {
-        board: mockBoard,
-      },
-    });
-  };
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
 
@@ -80,10 +64,10 @@ describe('BoardsSelector', () => {
     ]);
 
     wrapper = shallowMount(BoardsSelector, {
-      store,
       apolloProvider: fakeApollo,
       propsData: {
         throttleDuration,
+        board: mockBoard,
       },
       attachTo: document.body,
       provide: {
@@ -109,7 +93,6 @@ describe('BoardsSelector', () => {
 
   afterEach(() => {
     fakeApollo = null;
-    store = null;
   });
 
   describe('fetching all boards', () => {
@@ -121,7 +104,6 @@ describe('BoardsSelector', () => {
     `(
       'fetches $boardType boards when isEpicBoard is $isEpicBoard',
       async ({ boardType, isEpicBoard, queryHandler, notCalledHandler }) => {
-        createStore();
         createComponent({
           isEpicBoard,
           isProjectBoard: boardType === WORKSPACE_PROJECT,
@@ -148,7 +130,6 @@ describe('BoardsSelector', () => {
     `(
       'sets error when fetching $boardType boards when isEpicBoard is $isEpicBoard fails',
       async ({ boardType, isEpicBoard }) => {
-        createStore();
         createComponent({
           isEpicBoard,
           isProjectBoard: boardType === WORKSPACE_PROJECT,
