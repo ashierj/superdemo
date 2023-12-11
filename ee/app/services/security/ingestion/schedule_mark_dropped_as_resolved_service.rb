@@ -9,8 +9,8 @@ module Security
     # finds any outstanding vulnerabilities not linked to those identifiers,
     # and marks them as resolved
     class ScheduleMarkDroppedAsResolvedService
-      BATCH_SIZE = 1000
-      DELAY_INTERVAL = 1.minute.to_i
+      BATCH_SIZE = 100
+      DELAY_INTERVAL = 20.seconds.to_i
 
       def self.execute(project_id, scan_type, primary_identifiers)
         new(project_id, scan_type, primary_identifiers).execute

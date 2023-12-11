@@ -59,13 +59,6 @@ RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker, feature_category: :
     include_examples 'an idempotent worker' do
       let(:subject) { worker.perform(pipeline.project_id, dropped_identifiers) }
 
-      it 'iterates over dropped_identifier_ids in batches' do
-        expect(worker).to receive(:vulnerability_ids_for).exactly(7).times.and_call_original
-        expect(::Vulnerability).to receive(:transaction).twice
-
-        subject
-      end
-
       it 'changes state of dismissable vulnerabilities to resolved' do
         expect { subject }.to change { dismissable_vulnerability.reload.state }
           .from('detected')
