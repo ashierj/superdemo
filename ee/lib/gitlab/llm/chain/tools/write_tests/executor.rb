@@ -44,6 +44,7 @@ module Gitlab
                   </code>
                 PROMPT
               ),
+              Utils::Prompt.as_user('The generated code should be formatted in markdown.'),
               Utils::Prompt.as_user("%<input>s")
             ].freeze
 

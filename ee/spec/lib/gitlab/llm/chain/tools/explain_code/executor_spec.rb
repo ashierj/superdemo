@@ -82,6 +82,31 @@ RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_categor
             }
           end
         end
+
+        it 'builds the expected prompt' do
+          allow(tool).to receive(:provider_prompt_class)
+            .and_return(Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic)
+
+          expected_prompt = <<~PROMPT.chomp
+
+
+            Human: You are a software developer.
+            You can explain code snippets.
+            The code is written in Python and stored as test.py
+            Here is the code user selected:
+
+            <code>
+              selected text
+            </code>
+
+            The generated code should be formatted in markdown.
+            command instruction
+
+            Assistant:
+          PROMPT
+
+          expect(tool.prompt[:prompt]).to eq(expected_prompt)
+        end
       end
 
       context 'when response is successful' do

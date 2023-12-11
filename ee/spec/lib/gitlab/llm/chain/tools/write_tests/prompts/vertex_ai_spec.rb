@@ -17,6 +17,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Prompts::VertexAi, feature
           selected text
         </code>
 
+        The generated code should be formatted in markdown.
         question
       PROMPT
 

@@ -19,6 +19,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic, featu
           selected text
         </code>
 
+        The generated code should be formatted in markdown.
         question
 
         Assistant:
