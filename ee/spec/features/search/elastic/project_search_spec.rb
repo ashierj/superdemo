@@ -103,7 +103,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       let(:repository_ref) { project.default_branch }
 
       it 'displays that advanced search is enabled' do
-        expect(page).to have_content('Exact code search (powered by Zoekt) is disabled')
+        expect(page).to have_content('Advanced search is enabled.')
       end
     end
 
@@ -111,7 +111,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       let(:repository_ref) { Gitlab::Git::BLANK_SHA }
 
       it 'displays that exact code search is disabled' do
-        expect(page).to have_text('Exact code search (powered by Zoekt) is disabled')
+        expect(page).to have_content('Advanced search is disabled')
         expect(page).to have_link('Learn more.', href: help_page_path('user/search/advanced_search', anchor: 'use-the-advanced-search-syntax'))
       end
     end
