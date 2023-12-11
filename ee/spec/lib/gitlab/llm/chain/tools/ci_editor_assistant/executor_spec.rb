@@ -69,7 +69,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Executor, feature_c
 
     context 'when code tool was already used' do
       before do
-        context.tools_used << described_class.name
+        context.tools_used << described_class
       end
 
       it 'returns already used answer' do

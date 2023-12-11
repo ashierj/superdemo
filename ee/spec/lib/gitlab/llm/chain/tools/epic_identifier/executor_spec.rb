@@ -218,7 +218,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
           let(:ai_response) { "iid\", \"ResourceIdentifier\": #{epic1.iid}}" }
 
           before do
-            context.tools_used << described_class.name
+            context.tools_used << described_class
           end
 
           it 'returns already identified response' do

@@ -105,8 +105,19 @@ module Gitlab
             )
           end
 
+          # track tool usage to avoid cycling through same tools multiple times
           def already_used?
-            context.tools_used.include?(self.class.name)
+            cls = self.class
+
+            if context.tools_used.include?(cls)
+              # detect tool cycling for specific types of questions
+              logger.info(message: "Tool cycling detected")
+              return true
+            end
+
+            context.tools_used << cls
+
+            false
           end
 
           def prompt_options

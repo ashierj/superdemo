@@ -21,7 +21,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
 
   describe '#execute' do
     it 'raises NotImplementedError' do
-      expect { subject.authorize }.to raise_error(NotImplementedError)
+      expect { subject.execute }.to raise_error(NotImplementedError)
     end
 
     context 'when authorize returns true' do
@@ -33,6 +33,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
       it 'calls perform' do
         expect(subject).to receive(:perform)
         subject.execute
+      end
+
+      it 'adds the tool to used tools' do
+        expect { subject.execute }.to change { context.tools_used }.from([]).to([described_class])
       end
     end
 
@@ -48,15 +52,27 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
       end
     end
 
-    context 'when tool already used' do
-      it 'returns already used answer' do
-        allow(subject).to receive(:already_used?).and_return(true)
+    context 'when tool was already used' do
+      before do
+        context.tools_used << described_class
+      end
 
+      it 'returns already used answer' do
         content = "You already have the answer from #{described_class::NAME} tool, read carefully."
         answer = subject.execute
 
         expect(answer.content).to eq(content)
         expect(answer.status).to eq(:not_executed)
+      end
+
+      it 'logs the message' do
+        logger = instance_double(Gitlab::Llm::Logger)
+        allow(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
+
+        expect(logger).to receive(:info_or_debug).at_least(:once)
+        expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).once
+
+        subject.execute
       end
     end
   end
