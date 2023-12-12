@@ -23,7 +23,7 @@ module EE
       return false unless project_group_link.present?
       return false if project_group_link.group_access < ::Gitlab::Access::DEVELOPER
 
-      group.member?(current_user, ::Gitlab::Access::DEVELOPER)
+      group.members.where(user: current_user).where('access_level >= ?', ::Gitlab::Access::DEVELOPER).exists?
     end
   end
 end
