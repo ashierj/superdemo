@@ -26,9 +26,6 @@ module Mutations
         def resolve(project_path:, upstream_path:)
           project = authorized_find!(project_path)
 
-          raise_resource_not_available_error! unless ::Feature.enabled?(:create_project_subscription_graphql_endpoint,
-            project)
-
           upstream_project = find_and_authorize_upstream_project!(upstream_path)
 
           response = ::Ci::CreateProjectSubscriptionService.new(
