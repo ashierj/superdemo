@@ -3,39 +3,42 @@
 require 'spec_helper'
 
 RSpec.describe Elastic::Latest::WikiClassProxy, feature_category: :global_search do
-  let_it_be(:project) { create(:project, :wiki_repo) }
+  let_it_be(:project) { create(:project, :wiki_repo, :public, :wiki_enabled) }
 
-  subject { described_class.new(project.wiki.class, use_separate_indices: ProjectWiki.use_separate_indices?) }
+  subject { described_class.new(Wiki, use_separate_indices: Wiki.use_separate_indices?) }
 
-  describe '#elastic_search_as_wiki_page', :elastic do
-    let!(:page) { create(:wiki_page, wiki: project.wiki) }
-
+  describe 'assert query', :elastic do
     before do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-
-      Gitlab::Elastic::Indexer.new(project, wiki: true).run
-      ensure_elasticsearch_index!
     end
 
-    it 'returns FoundWikiPage', :sidekiq_inline do
-      results = subject.elastic_search_as_wiki_page('*')
-
-      expect(results.size).to eq(1)
-      expect(results).to all(be_a(Gitlab::Search::FoundWikiPage))
-
-      result = results.first
-
-      expect(result.path).to eq(page.path)
-      expect(result.startline).to eq(1)
-      expect(result.data).to include(page.content)
-      expect(result.project).to eq(project)
+    let(:options) do
+      {
+        current_user: nil,
+        project_ids: [project.id],
+        public_and_internal_projects: false,
+        search_scope: 'project',
+        repository_id: "wiki_#{project.id}"
+      }
     end
-  end
 
-  it 'names elasticsearch queries', :elastic do
-    subject.elastic_search_as_wiki_page('*')
+    context 'when wiki is not using separate index, migrate_wikis_to_separate_index is not finished' do
+      before do
+        set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: false)
+      end
 
-    assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms')
+      it 'returns the result from the main index' do
+        subject.elastic_search_as_wiki_page('*', options: options)
+        assert_named_queries('wiki_blob:match:search_terms:main_index')
+      end
+    end
+
+    context 'when wiki is using separate index' do
+      it 'returns the result from the separate index' do
+        subject.elastic_search_as_wiki_page('*', options: options)
+        assert_named_queries('wiki_blob:match:search_terms:separate_index')
+      end
+    end
   end
 
   describe '#routing_options' do

@@ -404,4 +404,18 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     include_examples 'does not load results for count only queries',
       %w[projects notes blobs wiki_blobs commits issues merge_requests epics milestones users]
   end
+
+  describe '#scope_options' do
+    context ':user' do
+      it 'has not group_ids' do
+        expect(subject.scope_options(:users)).not_to include :group_ids
+      end
+    end
+
+    context ':wiki_blobs' do
+      it 'has root_ancestor_ids' do
+        expect(subject.scope_options(:wiki_blobs)).to include :root_ancestor_ids
+      end
+    end
+  end
 end

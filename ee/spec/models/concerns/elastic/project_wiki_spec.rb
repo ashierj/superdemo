@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ProjectWiki, :elastic, :sidekiq_inline, feature_category: :global_search do
-  let(:project) { create(:project, :wiki_repo) }
+  let_it_be(:project) { create(:project, :wiki_repo) }
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
