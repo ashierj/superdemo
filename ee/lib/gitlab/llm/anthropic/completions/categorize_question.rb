@@ -5,20 +5,30 @@ module Gitlab
     module Anthropic
       module Completions
         class CategorizeQuestion < Gitlab::Llm::Completions::Base
-          SCHEMA_URL = 'iglu:com.gitlab/ai_question_category/jsonschema/1-0-0'
+          SCHEMA_URL = 'iglu:com.gitlab/ai_question_category/jsonschema/1-1-0'
+
+          private_class_method def self.load_xml(filename)
+            File.read(File.join(File.dirname(__FILE__), '..', '..', 'fixtures', filename)).tr("\n", '')
+          end
+
+          LLM_MATCHING_CATEGORIES_XML = load_xml('categories.xml') # mandatory category definition
+          LLM_MATCHING_LABELS_XML = load_xml('labels.xml') # boolean attribute definitions
 
           REQUIRED_KEYS = %w[detailed_category category].freeze
-          OPTIONAL_KEYS = [].freeze
+          OPTIONAL_KEYS = (
+            %w[language] +
+              Hash.from_xml(LLM_MATCHING_LABELS_XML)
+                  .dig('root', 'label').pluck('type') # rubocop:disable CodeReuse/ActiveRecord -- Array#pluck
+          ).freeze
           PERMITTED_KEYS = REQUIRED_KEYS + OPTIONAL_KEYS
 
           def execute
             @ai_client = ::Gitlab::Llm::Anthropic::Client.new(user, tracking_context: tracking_context)
-            response = response_for(user, options)
+            @storage = ::Gitlab::Llm::ChatStorage.new(user)
+            @messages = @storage.messages_up_to(options[:message_id])
             @logger = Gitlab::Llm::Logger.build
 
-            result = process_response(response, user)
-
-            if result
+            if track(user, attributes_from_llm)
               ResponseModifiers::CategorizeQuestion.new(nil)
             else
               ResponseModifiers::CategorizeQuestion.new(error: 'Event not tracked')
@@ -27,10 +37,7 @@ module Gitlab
 
           private
 
-          def response_for(user, options)
-            template = ai_prompt_class.new(user, options)
-            request(template)
-          end
+          attr_reader :messages
 
           def request(template)
             @ai_client.complete(
@@ -38,28 +45,31 @@ module Gitlab
             )&.dig("completion").to_s.strip
           end
 
-          def process_response(response, user)
-            json = Gitlab::Json.parse(response)
+          def attributes_from_llm
+            template = ai_prompt_class.new(messages, options)
+            data = Gitlab::Json.parse(request(template)) || {}
 
-            return false unless json
+            # Turn array of matched label strings into boolean attributes
+            labels = data.delete('labels')
+            labels&.each { |label| data[label] = true }
 
-            track(user, json)
-
+            data
           rescue JSON::ParserError
             error_message = "JSON has an invalid format."
             @logger.error(message: "Error", class: self.class.to_s, error: error_message)
-
-            false
+            {}
           end
 
-          def track(user, json)
-            unless contains_categories?(json)
+          def track(user, attributes)
+            return false if attributes.empty?
+
+            unless contains_categories?(attributes)
               error_message = 'Response did not contain defined categories'
               @logger.error(message: "Error", class: self.class.to_s, error: error_message)
               return false
             end
 
-            context = SnowplowTracker::SelfDescribingJson.new(SCHEMA_URL, json.slice(*PERMITTED_KEYS))
+            context = SnowplowTracker::SelfDescribingJson.new(SCHEMA_URL, attributes.slice(*PERMITTED_KEYS))
 
             Gitlab::Tracking.event(
               self.class.to_s,
@@ -70,9 +80,9 @@ module Gitlab
             )
           end
 
-          def contains_categories?(json)
+          def contains_categories?(hash)
             REQUIRED_KEYS.each do |key|
-              return false unless json.has_key?(key)
+              return false unless hash.has_key?(key)
             end
           end
         end

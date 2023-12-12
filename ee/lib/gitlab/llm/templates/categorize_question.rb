@@ -6,41 +6,48 @@ module Gitlab
       class CategorizeQuestion
         include Gitlab::Utils::StrongMemoize
 
-        def initialize(user, params = {})
-          @user = user
+        PROMPT = ERB.new(<<~PROMPT)
+          \n\nHuman: You are helpful assistant, ready to give as accurate answer as possible in JSON format.
+
+          Based on the information below (user input, <% if previous_answer %>previous answer, <% end %>categories, labels, language), classify user input's category, detailed_category, labels. There may be multiple labels. Don't provide clarification or explanation. Always return only a JSON hash, e.g.:
+          <example>{"category": "Write, improve, or explain code", "detailed_category": "What are the potential security risks in this code?", "labels": ["contains_credentials", "contains_rejection_previous_answer_incorrect"], "language": "en"}</example>
+          <example>{"category": "Documentation about GitLab", "detailed_category": "Documentation about GitLab", "labels": [], "language": "ja"}</example>
+
+          <% if previous_answer %>
+          Previous answer:
+          <answer><%= previous_answer %></answer>
+          <% end %>
+
+          User input:
+          <input><%= question %></input>
+
+          Categories:
+          <%= ::Gitlab::Llm::Anthropic::Completions::CategorizeQuestion::LLM_MATCHING_CATEGORIES_XML %>
+
+          Labels:
+          <%= ::Gitlab::Llm::Anthropic::Completions::CategorizeQuestion::LLM_MATCHING_LABELS_XML %>
+
+          Assistant:
+        PROMPT
+
+        def initialize(messages, params = {})
+          @messages = messages
           @params = params
         end
 
         def to_prompt
-          prompt = <<~PROMPT
-            \n\nHuman: You are helpful assistant, ready to give as accurate answer as possible in JSON format.
+          previous_message = messages[-2]
+          previous_answer = previous_message&.assistant? ? previous_message.content : nil
 
-            Given categories below (formatted with XML) return category and detailed_category of question below. Question is prefixed by "q".
-
-            Categories XML:
-            %<categories>s
-
-            q: %<question>s
-
-            Return category and detailed category, always using JSON format. Example of said JSON:
-            "{"category": "Write, improve, or explain code", "detailed_category": "What are the potential security risks in this code?" }".
-
-            Always return only JSON structure.
-
-            Assistant:
-            JSON:
-          PROMPT
-
-          format(prompt, question: params[:question], categories: categories_parsed_file)
+          PROMPT.result_with_hash(
+            question: params[:question],
+            previous_answer: previous_answer
+          )
         end
 
         private
 
-        attr_reader :user, :params
-
-        def categories_parsed_file
-          File.read(File.join(File.dirname(__FILE__), '..', 'fixtures', 'categories.xml'))
-        end
+        attr_reader :params, :messages
       end
     end
   end

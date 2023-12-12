@@ -36446,9 +36446,6 @@ msgstr ""
 msgid "Previous"
 msgstr ""
 
-msgid "Previous Artifacts"
-msgstr ""
-
 msgid "Previous commit"
 msgstr ""
 
