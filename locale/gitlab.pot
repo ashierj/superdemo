@@ -49959,6 +49959,12 @@ msgstr ""
 msgid "Total test time for all commits/merges"
 msgstr ""
 
+msgid "Total time spent cannot be negative."
+msgstr ""
+
+msgid "Total time spent cannot exceed a year."
+msgstr ""
+
 msgid "Total users"
 msgstr ""
 
