@@ -28622,7 +28622,7 @@ msgstr ""
 msgid "Licenses|Components"
 msgstr ""
 
-msgid "Licenses|Displays licenses detected in the project that are out of compliance with the project's policies, based on the %{linkStart}latest successful%{linkEnd} scan"
+msgid "Licenses|Displays licenses detected in the project based on the %{linkStart}latest successful%{linkEnd} scan"
 msgstr ""
 
 msgid "Licenses|Drag your license file here or %{linkStart}click to upload%{linkEnd}."
