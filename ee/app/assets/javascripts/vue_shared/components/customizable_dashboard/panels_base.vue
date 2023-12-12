@@ -49,7 +49,14 @@ export default {
     UsageOverview: () =>
       import('ee/analytics/analytics_dashboards/components/visualizations/usage_overview.vue'),
   },
-  inject: ['namespaceId', 'namespaceFullPath', 'namespaceName', 'isProject'],
+  inject: [
+    'namespaceId',
+    'namespaceFullPath',
+    'namespaceName',
+    'isProject',
+    'rootNamespaceName',
+    'rootNamespaceFullPath',
+  ],
   props: {
     visualization: {
       type: Object,
@@ -119,6 +126,13 @@ export default {
             'Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}.',
           );
     },
+    rootNamespace() {
+      return {
+        name: this.rootNamespaceName,
+        requestPath: this.rootNamespaceFullPath,
+        isProject: false,
+      };
+    },
     namespace() {
       return {
         name: this.namespaceName,
@@ -128,7 +142,7 @@ export default {
     },
     panelTitle() {
       return convertToSnakeCase(this.visualization.type) === VISUALIZATION_USAGE_OVERVIEW
-        ? sprintf(VISUALIZATION_USAGE_TITLE, { namespaceName: this.namespace.name })
+        ? sprintf(VISUALIZATION_USAGE_TITLE, { namespaceName: this.rootNamespace.name })
         : this.title;
     },
   },
@@ -157,6 +171,7 @@ export default {
           title: this.title,
           projectId: this.namespaceId,
           namespace: this.namespace,
+          rootNamespace: this.rootNamespace,
           query,
           queryOverrides,
           visualizationType: this.visualization.type,

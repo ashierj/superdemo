@@ -21,7 +21,9 @@ module Analytics
         namespace_name: namespace.name,
         namespace_full_path: namespace.full_path,
         features: is_project ? enabled_analytics_features(namespace).to_json : [].to_json,
-        router_base: router_base(namespace)
+        router_base: router_base(namespace),
+        root_namespace_name: namespace.root_ancestor.name,
+        root_namespace_full_path: namespace.root_ancestor.full_path
       }
     end
 

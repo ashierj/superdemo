@@ -75,6 +75,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             analytics_settings_path: "/#{project.full_path}/-/settings/analytics#js-analytics-dashboards-settings",
             namespace_name: project.name,
             namespace_full_path: project.full_path,
+            root_namespace_full_path: group.name,
+            root_namespace_name: group.full_path,
             features: (enabled && has_permission ? [:product_analytics] : []).to_json,
             router_base: '/-/analytics/dashboards'
           }
@@ -111,6 +113,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           analytics_settings_path: "/groups/#{sub_group.full_path}/-/edit#js-analytics-dashboards-settings",
           namespace_name: sub_group.name,
           namespace_full_path: sub_group.full_path,
+          root_namespace_full_path: group.name,
+          root_namespace_name: group.full_path,
           features: [].to_json,
           router_base: "/groups/#{sub_group.full_path}/-/analytics/dashboards"
         }
@@ -158,6 +162,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           analytics_settings_path: "/groups/#{group.full_path}/-/edit#js-analytics-dashboards-settings",
           namespace_name: group.name,
           namespace_full_path: group.full_path,
+          root_namespace_full_path: group.name,
+          root_namespace_name: group.full_path,
           features: [].to_json,
           router_base: "/groups/#{group.full_path}/-/analytics/dashboards"
         }
