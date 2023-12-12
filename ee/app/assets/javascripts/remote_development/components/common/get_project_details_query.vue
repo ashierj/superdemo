@@ -1,4 +1,5 @@
 <script>
+import { uniqBy } from 'lodash';
 import { logError } from '~/lib/logger';
 import getProjectDetailsQuery from '../../graphql/queries/get_project_details.query.graphql';
 import getGroupClusterAgentsQuery from '../../graphql/queries/get_group_cluster_agents.query.graphql';
@@ -42,21 +43,44 @@ export default {
           ? repository.blobs.nodes.some(({ path }) => path === DEFAULT_DEVFILE_PATH)
           : false;
         const rootRef = repository ? repository.rootRef : null;
-        const groupPath = group?.fullPath.split('/').shift() || null;
-        const clusterAgentsResponse = await this.fetchClusterAgents(groupPath);
 
-        if (clusterAgentsResponse.error) {
-          logError(clusterAgentsResponse.error);
+        if (!group) {
+          // Guard clause: do not attempt to find agents if project does not have a group
+          this.$emit('result', {
+            id,
+            fullPath: this.projectFullPath,
+            nameWithNamespace,
+            clusterAgents: [],
+            hasDevFile,
+            rootRef,
+          });
+          return;
+        }
+
+        const groupFullPath = group.fullPath;
+        const groupFullPathParts = groupFullPath.split('/') || [];
+        const groupPathsFromRoot = groupFullPathParts.map((_, i, arr) =>
+          arr.slice(0, i + 1).join('/'),
+        );
+        const clusterAgentsResponses = await Promise.all(
+          groupPathsFromRoot.map(this.fetchClusterAgents),
+        );
+
+        const errors = clusterAgentsResponses.filter((response) => response.error);
+        if (errors.length > 0) {
+          errors.forEach((error) => logError(error.error));
           this.$emit('error');
           return;
         }
+
+        const clusterAgents = clusterAgentsResponses.flatMap((response) => response.result);
+        const uniqClusterAgents = uniqBy(clusterAgents, 'value');
 
         this.$emit('result', {
           id,
           fullPath: this.projectFullPath,
           nameWithNamespace,
-          clusterAgents: clusterAgentsResponse.result,
-          groupPath,
+          clusterAgents: uniqClusterAgents,
           hasDevFile,
           rootRef,
         });
@@ -65,13 +89,6 @@ export default {
   },
   methods: {
     async fetchClusterAgents(groupPath) {
-      if (!groupPath) {
-        return {
-          error: null,
-          result: [],
-        };
-      }
-
       try {
         const { data, error } = await this.$apollo.query({
           query: getGroupClusterAgentsQuery,
@@ -83,10 +100,11 @@ export default {
         }
 
         return {
-          result: data.group.clusterAgents.nodes.map(({ id, name, project }) => ({
-            value: id,
-            text: `${project.nameWithNamespace} / ${name}`,
-          })),
+          result:
+            data.group?.clusterAgents?.nodes.map(({ id, name, project }) => ({
+              value: id,
+              text: `${project.nameWithNamespace} / ${name}`,
+            })) || [],
         };
       } catch (error) {
         return { error };

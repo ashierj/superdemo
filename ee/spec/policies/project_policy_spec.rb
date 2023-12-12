@@ -2782,23 +2782,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       let(:member_role_abilities) { { archive_project: true } }
       let(:allowed_abilities) { [:archive_project] }
 
-      context 'with archive_project FF enabled' do
-        before do
-          stub_feature_flags(archive_project: [project.group])
-        end
-
-        it_behaves_like 'custom roles abilities'
-      end
-
-      context 'with archive_project FF disabled' do
-        before do
-          stub_feature_flags(archive_project: false)
-        end
-
-        let(:disallowed_abilities) { [:archive_project] }
-
-        it { is_expected.to be_disallowed(*disallowed_abilities) }
-      end
+      it_behaves_like 'custom roles abilities'
     end
   end
 

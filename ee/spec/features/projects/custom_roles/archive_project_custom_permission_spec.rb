@@ -65,14 +65,6 @@ RSpec.describe 'Archive Project Custom Permission', feature_category: :groups_an
     end
   end
 
-  context 'when the `archive_project` feature flag is disabled' do
-    before do
-      stub_feature_flags(archive_project: false)
-    end
-
-    it_behaves_like 'does not allow the user to archive the project'
-  end
-
   context 'when the `custom_roles` licensed feature is not available' do
     before do
       stub_licensed_features(custom_roles: false)

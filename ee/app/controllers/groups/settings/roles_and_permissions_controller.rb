@@ -10,7 +10,6 @@ module Groups
       before_action :ensure_custom_roles_available!
       before_action do
         push_frontend_feature_flag(:manage_project_access_tokens, group)
-        push_frontend_feature_flag(:archive_project, group)
       end
 
       private

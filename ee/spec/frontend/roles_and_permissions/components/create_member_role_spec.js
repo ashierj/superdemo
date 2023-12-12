@@ -95,19 +95,13 @@ describe('CreateMemberRole', () => {
     });
   });
 
-  describe('archive_project feature flag is on', () => {
-    beforeEach(() => {
-      window.gon.features = { archiveProject: true };
-    });
+  it('renders archive project permission', () => {
+    const permission = { name: 'Permission E', description: 'Description E' };
+    createComponent({ availablePermissions: [permission] });
+    const checkbox = findCheckboxes().at(0);
 
-    it('renders archive project permission', () => {
-      const permission = { name: 'Permission E', description: 'Description E' };
-      createComponent({ availablePermissions: [permission] });
-      const checkbox = findCheckboxes().at(0);
-
-      expect(checkbox.text()).toContain(permission.name);
-      expect(checkbox.text()).toContain(permission.description);
-    });
+    expect(checkbox.text()).toContain(permission.name);
+    expect(checkbox.text()).toContain(permission.description);
   });
 
   it('emits cancel event', () => {

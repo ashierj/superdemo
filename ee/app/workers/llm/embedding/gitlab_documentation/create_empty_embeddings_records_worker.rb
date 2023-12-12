@@ -81,7 +81,7 @@ module Llm
 
         def cleanup_embeddings_for_missing_files(embeddings_sources)
           embeddings_sources.keys.each_slice(20) do |sources|
-            MODEL.for_sources(sources).each_batch(of: BATCH_SIZE) { |batch| batch.delete_all } # rubocop:disable Style/SymbolProc
+            MODEL.for_sources(sources).each_batch(of: BATCH_SIZE) { |batch| batch.delete_all }
 
             logger.info(
               structured_payload(

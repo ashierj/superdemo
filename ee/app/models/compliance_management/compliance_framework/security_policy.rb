@@ -17,7 +17,7 @@ module ComplianceManagement
 
       class << self
         def delete_for_policy_configuration(policy_configuration)
-          for_policy_configuration(policy_configuration).each_batch(order_hint: :updated_at) do |batch| # rubocop:disable Style/SymbolProc -- does not work with ActiveRecord::Relation
+          for_policy_configuration(policy_configuration).each_batch(order_hint: :updated_at) do |batch|
             batch.delete_all
           end
         end

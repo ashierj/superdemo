@@ -42,11 +42,11 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
 
   context 'when searching with Zoekt' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project, namespace: user.namespace) }
+    let_it_be(:project) { create(:project, :public) }
 
     let(:service) do
       described_class.new(
-        user,
+        (anonymous_user ? nil : user),
         project,
         search: 'foobar',
         scope: scope,
@@ -63,6 +63,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     let(:zoekt_nodes) { create_list(:zoekt_node, 2) }
     let(:circuit_breaker) { instance_double(::Search::Zoekt::CircuitBreaker) }
     let(:circuit_breaker_operational) { true }
+    let(:anonymous_user) { false }
 
     before do
       allow(project).to receive(:search_code_with_zoekt?).and_return(search_code_with_zoekt)
@@ -122,6 +123,16 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       it 'does not search with Zoekt' do
         expect(service).not_to be_use_zoekt
         expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when anonymous user' do
+      let(:anonymous_user) { true }
+
+      it 'searches with Zoekt' do
+        expect(service.use_zoekt?).to eq(true)
+        expect(service.zoekt_searchable_scope).to eq(project)
+        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
       end
     end
   end

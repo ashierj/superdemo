@@ -23,7 +23,7 @@ module API
             def x_ray_enabled_on_instance?
               return true if ::Gitlab.org_or_com?
 
-              ::License.feature_available?(:code_suggestions) && \
+              ::License.feature_available?(:code_suggestions) &&
                 ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
             end
 
