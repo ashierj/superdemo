@@ -88,6 +88,8 @@ If your credit card is declined during the reconciliation process, an email will
 1. Select **Add New Payment Method**.
 1. Make sure that the payment method is set as **Default**.
 
+Reconciliation is retried automatically as soon as the payment method is updated.
+
 ## Quarterly reconciliation eligibility
 
 ### You are automatically enrolled in quarterly reconciliation if
