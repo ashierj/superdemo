@@ -375,6 +375,19 @@ RSpec.describe TodoService, feature_category: :team_planning do
     end
   end
 
+  describe '#added_approver' do
+    let_it_be(:users) { create_list(:user, 2) }
+    let_it_be(:merge_request) { create(:merge_request) }
+    let_it_be(:project) { merge_request.project }
+
+    it 'creates pending todo for the approver' do
+      service.added_approver(users, merge_request)
+
+      should_create_todo(user: users[0], author: merge_request.author, target: merge_request, action: ::Todo::ADDED_APPROVER)
+      should_create_todo(user: users[1], author: merge_request.author, target: merge_request, action: ::Todo::ADDED_APPROVER)
+    end
+  end
+
   def should_create_todo(attributes = {})
     attributes.reverse_merge!(
       project: project,

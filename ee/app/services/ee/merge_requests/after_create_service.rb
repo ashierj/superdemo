@@ -5,6 +5,8 @@ module EE
     module AfterCreateService
       extend ::Gitlab::Utils::Override
 
+      APPROVERS_NOTIFICATION_DELAY = 10.seconds
+
       override :prepare_merge_request
       def prepare_merge_request(merge_request)
         super
@@ -16,10 +18,15 @@ module EE
 
         schedule_sync_for(merge_request)
         schedule_fetch_suggested_reviewers(merge_request)
+        schedule_approval_notifications(merge_request)
         track_usage_event if merge_request.project.scan_result_policy_reads.any?
       end
 
       private
+
+      def schedule_approval_notifications(merge_request)
+        ::MergeRequests::NotifyApproversWorker.perform_in(APPROVERS_NOTIFICATION_DELAY, merge_request.id)
+      end
 
       def schedule_sync_for(merge_request)
         if ::Feature.enabled?(:scan_result_any_merge_request, merge_request.project) &&

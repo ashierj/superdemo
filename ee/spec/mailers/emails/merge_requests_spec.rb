@@ -17,6 +17,24 @@ RSpec.describe Emails::MergeRequests, feature_category: :code_review_workflow do
     stub_feature_flags(hide_diff_summary: false)
   end
 
+  describe '#added_as_approver_email' do
+    # rubocop: disable RSpec/FactoryBot/AvoidCreate -- The underlying code searches the DB for the correct data
+    let_it_be(:updated_by_user) { create(:user) }
+    # rubocop: enable RSpec/FactoryBot/AvoidCreate
+
+    subject { Notify.added_as_approver_email(current_user.id, merge_request.id, updated_by_user.id) }
+
+    it 'has the correct subject and body' do
+      aggregate_failures do
+        path = project_merge_request_url(merge_request.target_project, merge_request)
+
+        is_expected.to have_referable_subject(merge_request, reply: true)
+        is_expected.to have_body_text("<strong>#{current_user.name}</strong> has added you as an approver.")
+        is_expected.to have_link("View it on GitLab", href: path)
+      end
+    end
+  end
+
   describe '#changed_reviewer_of_merge_request_email' do
     let(:previous_reviewer_ids) { [] }
 

@@ -1117,4 +1117,29 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
       end
     end
   end
+
+  describe '#added_as_approver' do
+    let_it_be(:project) { create(:project, :public) }
+    let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+    let_it_be(:recipients) { create_list(:user, 3) }
+    let_it_be(:setting) { create(:notification_setting, source: project, user: recipients[0], level: :custom) }
+
+    subject(:execute) { NotificationService.new.added_as_approver(recipients, merge_request) }
+
+    before_all do
+      setting.update!(approver: true)
+    end
+
+    it 'sends emails and adds todos for each recipient' do
+      allow(Notify).to receive(:added_as_approver_email).with(Integer, Integer, Integer).and_return(mailer)
+
+      expect(mailer).to receive(:deliver_later)
+
+      expect_next_instance_of(TodoService) do |service|
+        expect(service).to receive(:added_approver).with([recipients[0]], merge_request)
+      end
+
+      execute
+    end
+  end
 end

@@ -499,6 +499,12 @@ module EE
       project.licensed_feature_available?(:license_scanning)
     end
 
+    def notify_approvers
+      approvers = wrapped_approval_rules.flat_map(&:approvers).uniq
+
+      ::NotificationService.new.added_as_approver(approvers, self)
+    end
+
     private
 
     def security_comparision?(service_class)

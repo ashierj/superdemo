@@ -85,6 +85,20 @@ module EE
       send_account_validation_email(pipeline)
     end
 
+    def added_as_approver(recipients, merge_request)
+      recipients = notifiable_users(recipients, :custom, custom_action: :approver, project: merge_request.project)
+
+      recipients.each do |recipient|
+        mailer.added_as_approver_email(
+          recipient.id,
+          merge_request.id,
+          merge_request.author.id
+        ).deliver_later
+      end
+
+      ::TodoService.new.added_approver(recipients, merge_request)
+    end
+
     private
 
     def oncall_user_removed_recipients(rotation, removed_user)
