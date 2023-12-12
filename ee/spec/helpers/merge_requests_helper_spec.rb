@@ -55,6 +55,46 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
       end
     end
 
+    context 'for codequality_report_available' do
+      context 'when feature is licensed' do
+        before do
+          stub_licensed_features(inline_codequality: true)
+
+          allow(merge_request).to receive(:has_codequality_reports?).and_return('true')
+        end
+
+        it 'returns expected value' do
+          expect(subject[:codequality_report_available]).to eq('true')
+        end
+
+        context 'when merge request does not have codequality reports' do
+          before do
+            allow(merge_request).to receive(:has_codequality_reports?).and_return('false')
+          end
+
+          it 'returns expected value' do
+            expect(subject[:codequality_report_available]).to eq('false')
+          end
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(sast_reports_in_inline_diff: false)
+          end
+
+          it 'does not return the variable' do
+            expect(subject).not_to have_key(:codequality_report_available)
+          end
+        end
+      end
+
+      context 'when feature is not licensed' do
+        it 'does not return the variable' do
+          expect(subject).not_to have_key(:codequality_report_available)
+        end
+      end
+    end
+
     context 'for sast_report_available' do
       before do
         allow(merge_request).to receive(:has_sast_reports?).and_return(true)
