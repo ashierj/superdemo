@@ -98,4 +98,29 @@ RSpec.describe ComplianceManagement::Framework, models: true, feature_category: 
       end
     end
   end
+
+  describe '.search' do
+    let_it_be(:framework) { create(:compliance_framework, name: 'some framework name') }
+    let_it_be(:framework2) { create(:compliance_framework, name: 'another framework') }
+
+    it 'returns frameworks with a matching name' do
+      expect(described_class.search(framework.name)).to eq([framework])
+    end
+
+    it 'returns frameworks with a partially matching name' do
+      expect(described_class.search(framework.name[0..2])).to eq([framework])
+    end
+
+    it 'returns frameworks with a matching name regardless of the casing' do
+      expect(described_class.search(framework.name.upcase)).to eq([framework])
+    end
+
+    it 'returns multiple frameworks matching with name' do
+      expect(described_class.search('rame')).to match_array([framework, framework2])
+    end
+
+    it 'returns all frameworks if search string is empty' do
+      expect(described_class.search('')).to match_array([framework, framework2])
+    end
+  end
 end
