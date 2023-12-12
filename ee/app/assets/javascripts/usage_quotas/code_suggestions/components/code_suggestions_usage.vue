@@ -4,6 +4,8 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getAddOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
+import { TYPENAME_GROUP } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import CodeSuggestionsInfoCard from './code_suggestions_info_card.vue';
 import CodeSuggestionsIntro from './code_suggestions_intro.vue';
 import CodeSuggestionsStatisticsCard from './code_suggestions_usage_statistics_card.vue';
@@ -17,13 +19,22 @@ export default {
     CodeSuggestionsStatisticsCard,
     GlSkeletonLoader,
   },
-  inject: ['fullPath'],
+  inject: { groupId: { default: null } },
   data() {
     return {
       addOnPurchase: undefined,
     };
   },
   computed: {
+    queryVariables() {
+      return {
+        namespaceId: this.groupGraphQLId,
+        addOnType: ADD_ON_CODE_SUGGESTIONS,
+      };
+    },
+    groupGraphQLId() {
+      return this.groupId ? convertToGraphQLId(TYPENAME_GROUP, this.groupId) : null;
+    },
     totalValue() {
       return this.addOnPurchase?.purchasedQuantity ?? 0;
     },
@@ -41,13 +52,10 @@ export default {
     addOnPurchase: {
       query: getAddOnPurchaseQuery,
       variables() {
-        return {
-          fullPath: this.fullPath,
-          addOnName: ADD_ON_CODE_SUGGESTIONS,
-        };
+        return this.queryVariables;
       },
-      update({ namespace }) {
-        return namespace?.addOnPurchase;
+      update({ addOnPurchase }) {
+        return addOnPurchase;
       },
       error(error) {
         this.reportError(error);

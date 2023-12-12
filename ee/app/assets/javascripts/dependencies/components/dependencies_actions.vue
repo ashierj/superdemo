@@ -26,7 +26,7 @@ export default {
       import('ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue'),
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['namespaceType', 'enableProjectSearch'],
+  inject: ['namespaceType', 'belowGroupLimit'],
   props: {
     namespace: {
       type: String,
@@ -51,7 +51,7 @@ export default {
       return this.sortFields[this.sortField];
     },
     sortFields() {
-      const groupFields = this.enableProjectSearch
+      const groupFields = this.belowGroupLimit
         ? SORT_FIELDS_GROUP
         : omit(SORT_FIELDS_GROUP, SORT_FIELD_LICENSE);
 

@@ -16,7 +16,7 @@ export default (namespaceType) => {
     exportEndpoint,
     supportDocumentationPath,
     locationsEndpoint,
-    enableProjectSearch,
+    belowGroupLimit,
   } = el.dataset;
 
   const store = createStore();
@@ -29,7 +29,7 @@ export default (namespaceType) => {
     exportEndpoint,
     supportDocumentationPath,
     namespaceType,
-    enableProjectSearch: parseBoolean(enableProjectSearch),
+    belowGroupLimit: parseBoolean(belowGroupLimit),
   };
 
   if (namespaceType === NAMESPACE_GROUP) {
