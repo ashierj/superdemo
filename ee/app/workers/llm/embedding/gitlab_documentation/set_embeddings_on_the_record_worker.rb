@@ -63,9 +63,9 @@ module Llm
             break if MODEL.for_source(source).nil_embeddings_for_version(update_version).exists?
 
             old_embeddings = MODEL.for_version(update_version).invert_where.for_source(source)
-            old_embeddings.each_batch(of: 100) { |batch| batch.delete_all } # rubocop:disable Style/SymbolProc
+            old_embeddings.each_batch(of: 100) { |batch| batch.delete_all }
 
-            new_embeddings.each_batch(of: 100) { |batch| batch.update_all(version: MODEL.current_version) } # rubocop:disable Style/SymbolProc
+            new_embeddings.each_batch(of: 100) { |batch| batch.update_all(version: MODEL.current_version) }
           end
         end
 
