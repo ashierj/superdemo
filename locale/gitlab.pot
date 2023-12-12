@@ -23180,9 +23180,6 @@ msgstr ""
 msgid "GroupSAML|Could not create SAML group link: %{errors}."
 msgstr ""
 
-msgid "GroupSAML|Custom roles"
-msgstr ""
-
 msgid "GroupSAML|Default membership role"
 msgstr ""
 
@@ -23280,9 +23277,6 @@ msgid "GroupSAML|Some branches are inaccessible because your SAML session has ex
 msgstr ""
 
 msgid "GroupSAML|Some to-do items may be hidden because your SAML session has expired. Select the group’s path to reauthenticate and view the hidden to-do items."
-msgstr ""
-
-msgid "GroupSAML|Standard roles"
 msgstr ""
 
 msgid "GroupSAML|The SCIM token is now hidden. To see the value of the token again, you need to %{linkStart}reset it%{linkEnd}."

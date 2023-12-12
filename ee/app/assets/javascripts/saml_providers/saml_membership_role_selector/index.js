@@ -13,17 +13,21 @@ export default () => {
   const {
     standardRoles,
     currentStandardRole,
-    customRoles,
+    customRoles = [],
     currentCustomRoleId,
-  } = convertObjectPropsToCamelCase(JSON.parse(samlMembershipRoleSelectorData));
+  } = convertObjectPropsToCamelCase(JSON.parse(samlMembershipRoleSelectorData), { deep: true });
 
   return new Vue({
     el,
     name: 'SamlMembershipRoleSelectorRoot',
+    provide: {
+      standardRoles,
+      currentStandardRole,
+      customRoles,
+      currentCustomRoleId,
+    },
     render(h) {
-      return h(SamlMembershipRoleSelector, {
-        props: { standardRoles, currentStandardRole, customRoles, currentCustomRoleId },
-      });
+      return h(SamlMembershipRoleSelector);
     },
   });
 };
