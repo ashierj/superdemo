@@ -488,13 +488,13 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
       it_behaves_like 'exposes epic'
     end
 
-    context 'when specificied issue is of type task' do
+    context 'when specified issue is of type task' do
       let(:task) { create(:issue, :task, project: project) }
 
-      it 'returns a not found status code' do
+      it 'returns a task' do
         get api("/projects/#{project.id}/issues/#{task.iid}", user)
 
-        expect(response).to have_gitlab_http_status(:not_found)
+        expect(response).to have_gitlab_http_status(:ok)
       end
     end
   end
@@ -619,13 +619,14 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
       expect(Issue.last.work_item_type.base_type).to eq('issue')
     end
 
-    it 'does not allow the creation of an issue of type task' do
+    it 'creates a new project task' do
       expect do
         post api("/projects/#{project.id}/issues", user),
-          params: { title: 'new issue', issue_type: 'task' }
-      end.to not_change(Issue, :count)
+          params: { title: 'new task', issue_type: 'task' }
+      end.to change(Issue, :count).by(1)
 
-      expect(response).to have_gitlab_http_status(:bad_request)
+      expect(response).to have_gitlab_http_status(:created)
+      expect(Issue.last.work_item_type.base_type).to eq('task')
     end
 
     it_behaves_like 'with epic parameter' do

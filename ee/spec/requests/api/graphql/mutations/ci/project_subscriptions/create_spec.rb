@@ -99,23 +99,6 @@ RSpec.describe 'Create project subscription', feature_category: :continuous_inte
         expect { post_mutation }.not_to change { ::Ci::Subscriptions::Project.count }
       end
     end
-
-    context 'when feature flag create_project_subscription_graphql_endpoint is disabled' do
-      before do
-        stub_feature_flags(create_project_subscription_graphql_endpoint: false)
-      end
-
-      it 'returns an error' do
-        post_mutation
-        expect(graphql_errors)
-          .to include(a_hash_including('message' => "The resource that you are attempting to access does " \
-                                                    "not exist or you don't have permission to perform this action"))
-      end
-
-      it 'does not create a new record' do
-        expect { post_mutation }.not_to change { ::Ci::Subscriptions::Project.count }
-      end
-    end
   end
 
   context 'when the user does not have the maintainer role' do
