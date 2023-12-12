@@ -150,33 +150,23 @@ describe('Add On Eligible User List', () => {
 
     describe('code suggestions addon', () => {
       describe('renders', () => {
-        beforeEach(async () => {
-          await createComponent({
-            mountFn: mount,
-            handler: addOnEligibleUsersDataHandler,
-          });
-        });
-
         it('shows code suggestions addon field', () => {
           const expectedProps = [
             {
               userId: 'gid://gitlab/User/1',
               addOnAssignments: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }],
               addOnPurchaseId,
-              addOnEligibleUsersQueryVariables: defaultQueryVariables,
             },
             {
               userId: 'gid://gitlab/User/2',
               addOnAssignments: [],
               addOnPurchaseId,
-              addOnEligibleUsersQueryVariables: defaultQueryVariables,
             },
           ];
           const actualProps = findAllCodeSuggestionsAddonComponents().wrappers.map((item) => ({
             userId: item.props('userId'),
             addOnAssignments: item.props('addOnAssignments'),
             addOnPurchaseId: item.props('addOnPurchaseId'),
-            addOnEligibleUsersQueryVariables: item.props('addOnEligibleUsersQueryVariables'),
           }));
 
           expect(actualProps).toMatchObject(expectedProps);
