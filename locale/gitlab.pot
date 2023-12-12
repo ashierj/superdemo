@@ -41601,6 +41601,9 @@ msgstr ""
 msgid "Runners|Existing runners are not affected. To permit runner registration for all projects, enable this setting in the Admin Area in Settings &gt; CI/CD."
 msgstr ""
 
+msgid "Runners|Export as CSV"
+msgstr ""
+
 msgid "Runners|Failed adding runner to project"
 msgstr ""
 
@@ -41873,6 +41876,9 @@ msgid "Runners|Runner Registration"
 msgstr ""
 
 msgid "Runners|Runner Registration token"
+msgstr ""
+
+msgid "Runners|Runner Usage"
 msgstr ""
 
 msgid "Runners|Runner assigned to project."
@@ -42233,7 +42239,22 @@ msgstr ""
 msgid "Runners|shared"
 msgstr ""
 
+msgid "Runner|Export runner usage"
+msgstr ""
+
+msgid "Runner|Export runner usage for previous month"
+msgstr ""
+
 msgid "Runner|Runner actions"
+msgstr ""
+
+msgid "Runner|Something went wrong while generating the CSV export. Please try again."
+msgstr ""
+
+msgid "Runner|The CSV export contains a list of projects, the number of minutes used by instance runners, and the number of jobs that ran in the previous month. When the export is completed, it is sent as an attachment to your email."
+msgstr ""
+
+msgid "Runner|Your CSV export has started. It will be sent to your email inbox when its ready."
 msgstr ""
 
 msgid "Running"
