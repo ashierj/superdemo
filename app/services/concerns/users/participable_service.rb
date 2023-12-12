@@ -28,6 +28,16 @@ module Users
       sorted(users)
     end
 
+    def filter_and_sort_users(users_relation)
+      if params[:search]
+        users_relation.gfm_autocomplete_search(params[:search]).limit(SEARCH_LIMIT).tap do |users|
+          preload_status(users)
+        end
+      else
+        sorted(users_relation)
+      end
+    end
+
     def sorted(users)
       users.uniq.to_a.compact.sort_by(&:username).tap do |users|
         preload_status(users)

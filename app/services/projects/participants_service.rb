@@ -18,21 +18,17 @@ module Projects
     end
 
     def project_members
-      relation = project.authorized_users
-
-      if params[:search]
-        relation.gfm_autocomplete_search(params[:search]).limit(SEARCH_LIMIT).tap do |users|
-          preload_status(users)
-        end
-      else
-        sorted(relation)
-      end
+      filter_and_sort_users(project_members_relation)
     end
 
     def all_members
       return [] if Feature.enabled?(:disable_all_mention)
 
-      [{ username: "all", name: "All Project and Group Members", count: project.authorized_users.count }]
+      [{ username: "all", name: "All Project and Group Members", count: project_members_relation.count }]
+    end
+
+    def project_members_relation
+      project.authorized_users
     end
   end
 end

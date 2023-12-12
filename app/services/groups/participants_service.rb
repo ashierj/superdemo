@@ -31,13 +31,7 @@ module Groups
 
       relation = Autocomplete::GroupUsersFinder.new(group: group).execute
 
-      if params[:search]
-        relation.gfm_autocomplete_search(params[:search]).limit(SEARCH_LIMIT).tap do |users|
-          preload_status(users)
-        end
-      else
-        sorted(relation)
-      end
+      filter_and_sort_users(relation)
     end
   end
 end
