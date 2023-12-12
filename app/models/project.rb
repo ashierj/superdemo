@@ -551,6 +551,7 @@ class Project < ApplicationRecord
       delegate :show_default_award_emojis, :show_default_award_emojis=
       delegate :enforce_auth_checks_on_uploads, :enforce_auth_checks_on_uploads=
       delegate :warn_about_potentially_unwanted_characters, :warn_about_potentially_unwanted_characters=
+      delegate :code_suggestions, :code_suggestions=
     end
   end
 
@@ -3198,6 +3199,11 @@ class Project < ApplicationRecord
                       .limit(INSTANCE_RUNNER_RUNNING_JOBS_MAX_BUCKET + 1).count - 1
   end
   strong_memoize_attr :instance_runner_running_jobs_count
+
+  def code_suggestions_enabled?
+    code_suggestions && (group.nil? || group.code_suggestions)
+  end
+  strong_memoize_attr :code_suggestions_enabled?
 
   private
 
