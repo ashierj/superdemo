@@ -8,7 +8,7 @@ module Search
       return false if params[:basic_search]
       return false unless ::Feature.enabled?(:search_code_with_zoekt, current_user)
       return false unless ::License.feature_available?(:zoekt_code_search)
-      return false unless current_user&.enabled_zoekt?
+      return false if current_user && !current_user.enabled_zoekt?
       return false unless zoekt_searchable_scope?
 
       zoekt_node_available_for_search?
