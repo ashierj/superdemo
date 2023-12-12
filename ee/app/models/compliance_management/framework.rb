@@ -3,6 +3,7 @@
 module ComplianceManagement
   class Framework < ApplicationRecord
     include StripAttribute
+    include Gitlab::SQL::Pattern
 
     self.table_name = 'compliance_management_frameworks'
 
@@ -34,6 +35,10 @@ module ComplianceManagement
 
     scope :with_projects, ->(project_ids) { includes(:projects).where(projects: { id: project_ids }) }
     scope :with_namespaces, ->(namespace_ids) { includes(:namespace).where(namespaces: { id: namespace_ids }) }
+
+    def self.search(query)
+      query.present? ? fuzzy_search(query, [:name], use_minimum_char_limit: true) : all
+    end
 
     private
 

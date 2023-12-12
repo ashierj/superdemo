@@ -36,14 +36,17 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace', f
     context 'when querying a specific framework ID' do
       let(:query) do
         graphql_query_for(
-          :namespace, { full_path: namespace.full_path }, query_nodes(:compliance_frameworks, nil, args: { id: global_id_of(compliance_framework_1) })
+          :namespace,
+          { full_path: namespace.full_path },
+          query_nodes(:compliance_frameworks, nil, args: { id: global_id_of(compliance_framework_1) })
         )
       end
 
       it 'returns only a single compliance framework' do
         post_graphql(query, current_user: current_user)
 
-        expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes)).to contain_exactly(a_graphql_entity_for(compliance_framework_1))
+        expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes))
+          .to contain_exactly(a_graphql_entity_for(compliance_framework_1))
       end
     end
 
@@ -114,6 +117,60 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace', f
         expect(graphql_data_at(:a, :complianceFrameworks, :nodes, :name)).to contain_exactly('Test1', 'Test2')
         expect(graphql_data_at(:b, :complianceFrameworks, :nodes, :name)).to contain_exactly('GDPR', 'SOX')
         expect(graphql_data_at(:c, :complianceFrameworks, :nodes, :name)).to contain_exactly('SOX')
+      end
+    end
+
+    context 'when searching frameworks by name' do
+      let_it_be(:compliance_framework_3) { create(:compliance_framework, namespace: namespace, name: 'RandomTest3') }
+      let_it_be(:framework_of_other_group) { create(:compliance_framework, namespace: create(:group), name: 'RandomTest4') }
+
+      before do
+        create(:compliance_framework, namespace: namespace, name: 'RandomName5')
+      end
+
+      context 'when frameworks exist with name similar to the search query' do
+        let(:query) do
+          graphql_query_for(
+            :namespace, { full_path: namespace.full_path },
+            query_nodes(:compliance_frameworks, nil, args: { search: "Test" })
+          )
+        end
+
+        it 'returns the compliance frameworks' do
+          post_graphql(query, current_user: current_user)
+
+          expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes, :name)).to contain_exactly('Test1', 'Test2', 'RandomTest3')
+        end
+      end
+
+      context 'when no framework exist with the name as per search term' do
+        let(:query) do
+          graphql_query_for(
+            :namespace, { full_path: namespace.full_path },
+            query_nodes(:compliance_frameworks, nil, args: { search: "NonExistentName" })
+          )
+        end
+
+        it 'does not returns any compliance framework' do
+          post_graphql(query, current_user: current_user)
+
+          expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes)).to be_empty
+        end
+      end
+
+      context 'when the search string is empty' do
+        let(:query) do
+          graphql_query_for(
+            :namespace, { full_path: namespace.full_path },
+            query_nodes(:compliance_frameworks, nil, args: { search: "" })
+          )
+        end
+
+        it 'returns the compliance frameworks' do
+          post_graphql(query, current_user: current_user)
+
+          expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes, :name)).to contain_exactly('Test1', 'Test2', 'RandomTest3', 'RandomName5')
+        end
       end
     end
   end
