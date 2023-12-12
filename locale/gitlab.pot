@@ -10073,6 +10073,9 @@ msgstr ""
 msgid "Checkout|Confirming..."
 msgstr ""
 
+msgid "Checkout|Contact information"
+msgstr ""
+
 msgid "Checkout|Continue to billing"
 msgstr ""
 
@@ -10131,6 +10134,9 @@ msgid "Checkout|Group"
 msgstr ""
 
 msgid "Checkout|Invalid coupon code. Enter a valid coupon code."
+msgstr ""
+
+msgid "Checkout|Manage the subscription and billing contacts for your billing account in the %{customersPortalLinkStart}Customers Portal%{customersPortalLinkEnd}. Learn more about %{manageContactsLinkStart}how to manage your contacts%{manageContactsLinkEnd}."
 msgstr ""
 
 msgid "Checkout|Must be %{minimumNumberOfUsers} (your seats in use) or more."

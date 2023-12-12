@@ -16,6 +16,7 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
     stub_eligible_namespaces
     stub_billing_plans(nil)
     stub_invoice_preview('null', premium_plan[:id])
+    stub_feature_flags(key_contacts_management: false)
 
     sign_in(user)
   end
