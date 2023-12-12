@@ -1,5 +1,6 @@
 <script>
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
+import EMPTY_CHART_SVG from '@gitlab/svgs/dist/illustrations/chart-empty-state.svg?url';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
@@ -11,10 +12,12 @@ export default {
       'ObservabilityMetrics|Error: Failed to load metrics details. Try reloading the page.',
     ),
     metricType: s__('ObservabilityMetrics|Type'),
+    noData: s__('ObservabilityMetrics|No data found for the selected metric.'),
   },
   components: {
     GlLoadingIcon,
     MetricsChart,
+    GlEmptyState,
   },
   props: {
     observabilityClient: {
@@ -37,20 +40,17 @@ export default {
   },
   data() {
     return {
-      metricData: null,
+      metricData: [],
       loading: false,
     };
   },
   computed: {
     header() {
-      if (this.metricData.length > 0) {
-        return {
-          title: this.metricData[0].name,
-          description: this.metricData[0].description,
-          type: this.metricData[0].type,
-        };
-      }
-      return null;
+      return {
+        title: this.metricId,
+        type: this.metricType,
+        description: this.metricData[0]?.description,
+      };
     },
   },
   created() {
@@ -99,6 +99,7 @@ export default {
       visitUrl(this.metricsIndexUrl);
     },
   },
+  EMPTY_CHART_SVG,
 };
 </script>
 
@@ -107,8 +108,8 @@ export default {
     <gl-loading-icon size="lg" />
   </div>
 
-  <div v-else-if="metricData" data-testid="metric-details" class="gl-m-7">
-    <div v-if="header" data-testid="metric-header">
+  <div v-else data-testid="metric-details" class="gl-m-7">
+    <div data-testid="metric-header">
       <h1 class="gl-font-size-h1 gl-my-0" data-testid="metric-title">{{ header.title }}</h1>
       <p class="gl-my-0" data-testid="metric-type">
         <strong>{{ $options.i18n.metricType }}:&nbsp;</strong>{{ header.type }}
@@ -116,6 +117,13 @@ export default {
       <p class="gl-my-0" data-testid="metric-description">{{ header.description }}</p>
     </div>
 
-    <metrics-chart :metric-data="metricData" />
+    <div class="gl-my-6">
+      <metrics-chart v-if="metricData.length > 0" :metric-data="metricData" />
+      <gl-empty-state v-else :svg-path="$options.EMPTY_CHART_SVG">
+        <template #title>
+          <p class="gl-font-lg">{{ $options.i18n.noData }}</p>
+        </template>
+      </gl-empty-state>
+    </div>
   </div>
 </template>
