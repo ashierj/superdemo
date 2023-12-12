@@ -48,7 +48,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         read_snippet read_project_member read_note read_cycle_analytics
         read_pipeline read_build read_commit_status read_container_image
         read_environment read_deployment read_merge_request read_pages
-        create_merge_request_in award_emoji
+        award_emoji
         read_project_security_dashboard read_security_resource read_vulnerability_scanner
         read_software_license_policy
         read_merge_train
@@ -73,6 +73,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'auditor' do
       let(:current_user) { auditor }
+      let(:auditor_permission_exclusions) { [:fork_project, :create_merge_request_in] }
 
       before do
         stub_licensed_features(security_dashboard: true, license_scanning: true)
@@ -84,7 +85,23 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           is_expected.to be_disallowed(*maintainer_permissions)
           is_expected.to be_disallowed(*owner_permissions)
           is_expected.to be_disallowed(*(guest_permissions - auditor_permissions))
+          is_expected.to be_allowed(*auditor_permission_exclusions)
           is_expected.to be_allowed(*auditor_permissions)
+        end
+
+        context 'with private project' do
+          let(:project) { private_project }
+
+          let(:auditor_permission_exclusions) { [:fork_project, :create_merge_request_in, :read_project_for_iids] }
+
+          it do
+            is_expected.to be_disallowed(*(developer_permissions - auditor_permissions))
+            is_expected.to be_disallowed(*maintainer_permissions)
+            is_expected.to be_disallowed(*owner_permissions)
+            is_expected.to be_disallowed(*(guest_permissions - auditor_permissions))
+            is_expected.to be_disallowed(*auditor_permission_exclusions)
+            is_expected.to be_allowed(*(auditor_permissions - auditor_permission_exclusions))
+          end
         end
       end
 
