@@ -154,18 +154,6 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
           expect(assigns(:memberships_with_custom_role).map(&:id))
             .to(contain_exactly(sub_group_membership.id, sub_2_group_membership.id))
         end
-
-        context 'when custom_roles_members_page is disabled' do
-          before do
-            stub_feature_flags(custom_roles_in_members_page: false)
-          end
-
-          it 'returns no membership' do
-            get :index, params: { group_id: sub_3_group }
-
-            expect(assigns(:memberships_with_custom_role)).to be_empty
-          end
-        end
       end
     end
   end
