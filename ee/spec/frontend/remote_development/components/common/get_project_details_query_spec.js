@@ -11,7 +11,11 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   GET_PROJECT_DETAILS_QUERY_RESULT,
-  GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT,
+  GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_NO_AGENT,
+  GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT,
+  GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_NO_AGENT,
+  GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT,
+  GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_DUPLICATES_ROOTGROUP,
 } from '../../mock_data';
 
 Vue.use(VueApollo);
@@ -19,25 +23,35 @@ Vue.use(VueApollo);
 jest.mock('~/lib/logger');
 
 describe('remote_development/components/create/get_project_details_query', () => {
-  let mockApollo;
   let getProjectDetailsQueryHandler;
   let getGroupClusterAgentsQueryHandler;
   let wrapper;
   const projectFullPathFixture = 'gitlab-org/gitlab';
 
-  const buildMockApollo = () => {
-    getProjectDetailsQueryHandler = jest.fn();
-    getGroupClusterAgentsQueryHandler = jest.fn();
-    getProjectDetailsQueryHandler.mockResolvedValueOnce(GET_PROJECT_DETAILS_QUERY_RESULT);
-    getGroupClusterAgentsQueryHandler.mockResolvedValueOnce(GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT);
-    mockApollo = createMockApollo([
+  const setupGroupClusterAgentsQueryHandler = (groupResponses) => {
+    getGroupClusterAgentsQueryHandler.mockImplementation(({ groupPath }) => {
+      const matchingResponse = groupResponses.find((x) => x.data.group.fullPath === groupPath);
+
+      if (matchingResponse) {
+        return Promise.resolve(matchingResponse);
+      }
+
+      return Promise.resolve({
+        data: {
+          group: null,
+        },
+      });
+    });
+  };
+
+  const buildWrapper = async ({ projectFullPath = projectFullPathFixture } = {}) => {
+    const apolloProvider = createMockApollo([
       [getProjectDetailsQuery, getProjectDetailsQueryHandler],
       [getGroupClusterAgentsQuery, getGroupClusterAgentsQueryHandler],
     ]);
-  };
-  const buildWrapper = async ({ projectFullPath = projectFullPathFixture } = {}) => {
+
     wrapper = shallowMountExtended(GetProjectDetailsQuery, {
-      apolloProvider: mockApollo,
+      apolloProvider,
       propsData: {
         projectFullPath,
       },
@@ -47,7 +61,11 @@ describe('remote_development/components/create/get_project_details_query', () =>
   };
 
   beforeEach(() => {
-    buildMockApollo();
+    getProjectDetailsQueryHandler = jest.fn();
+    getGroupClusterAgentsQueryHandler = jest.fn();
+
+    getProjectDetailsQueryHandler.mockResolvedValueOnce(GET_PROJECT_DETAILS_QUERY_RESULT);
+    setupGroupClusterAgentsQueryHandler([]);
   });
 
   describe('when project full path is provided', () => {
@@ -59,12 +77,76 @@ describe('remote_development/components/create/get_project_details_query', () =>
         devFilePath: DEFAULT_DEVFILE_PATH,
       });
     });
+  });
+
+  describe('when both the root group and subgroup return an agent', () => {
+    beforeEach(() => {
+      const mockedClusterAgentResponses = [
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT,
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT,
+      ];
+      setupGroupClusterAgentsQueryHandler(mockedClusterAgentResponses);
+    });
 
     it('executes get_group_cluster_agents query', async () => {
       await buildWrapper();
 
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(2);
       expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledWith({
-        groupPath: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
+        groupPath: 'gitlab-org',
+      });
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledWith({
+        groupPath: 'gitlab-org/subgroup',
+      });
+    });
+
+    it('emits result event with fetched cluster agents, project id, project group, and root files', async () => {
+      await buildWrapper();
+
+      const expectedClusterAgents = [
+        ...GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
+          ({ id, name, project }) => ({
+            text: `${project.nameWithNamespace} / ${name}`,
+            value: id,
+          }),
+        ),
+        ...GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
+          ({ id, name, project }) => ({
+            text: `${project.nameWithNamespace} / ${name}`,
+            value: id,
+          }),
+        ),
+      ];
+
+      expect(wrapper.emitted('result')[0][0]).toEqual({
+        clusterAgents: expectedClusterAgents,
+        id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
+        rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
+        nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
+        fullPath: projectFullPathFixture,
+        hasDevFile: false,
+      });
+    });
+  });
+
+  describe('when only the subgroup returns an agent', () => {
+    beforeEach(() => {
+      const mockedClusterAgentResponses = [
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_NO_AGENT,
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT,
+      ];
+      setupGroupClusterAgentsQueryHandler(mockedClusterAgentResponses);
+    });
+
+    it('executes get_group_cluster_agents query', async () => {
+      await buildWrapper();
+
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(2);
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledWith({
+        groupPath: 'gitlab-org',
+      });
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledWith({
+        groupPath: 'gitlab-org/subgroup',
       });
     });
 
@@ -72,14 +154,90 @@ describe('remote_development/components/create/get_project_details_query', () =>
       await buildWrapper();
 
       expect(wrapper.emitted('result')[0][0]).toEqual({
-        clusterAgents: GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT.data.group.clusterAgents.nodes.map(
+        clusterAgents: GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
           ({ id, name, project }) => ({
             text: `${project.nameWithNamespace} / ${name}`,
             value: id,
           }),
         ),
         id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
-        groupPath: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
+        rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
+        nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
+        fullPath: projectFullPathFixture,
+        hasDevFile: false,
+      });
+    });
+  });
+
+  describe('when subgroup returns agent and root group returns null', () => {
+    beforeEach(() => {
+      const mockedClusterAgentResponses = [
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT,
+      ];
+      setupGroupClusterAgentsQueryHandler(mockedClusterAgentResponses);
+    });
+
+    it('emits result with just subgroup items', async () => {
+      await buildWrapper();
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('result')[0][0]).toEqual({
+        clusterAgents: [
+          {
+            text: 'GitLab Org / Subgroup / GitLab / subgroup-agent',
+            value: 'gid://gitlab/Clusters::Agent/2',
+          },
+        ],
+        fullPath: 'gitlab-org/gitlab',
+        hasDevFile: false,
+        id: 'gid://gitlab/Project/1',
+        nameWithNamespace: 'GitLab Org / Subgroup / GitLab',
+        rootRef: 'main',
+      });
+    });
+  });
+
+  describe('when the subgroup returns a duplicate agent from the root group', () => {
+    beforeEach(() => {
+      const mockedClusterAgentResponses = [
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT,
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_DUPLICATES_ROOTGROUP,
+      ];
+      setupGroupClusterAgentsQueryHandler(mockedClusterAgentResponses);
+    });
+
+    it('executes get_group_cluster_agents query', async () => {
+      await buildWrapper();
+
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(2);
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledWith({
+        groupPath: 'gitlab-org',
+      });
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledWith({
+        groupPath: 'gitlab-org/subgroup',
+      });
+    });
+
+    it('emits result event with fetched cluster agents, project id, project group, and root files with no duplicates', async () => {
+      await buildWrapper();
+
+      expect(wrapper.emitted('result')[0][0]).toEqual({
+        clusterAgents: [
+          ...GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
+            ({ id, name, project }) => ({
+              text: `${project.nameWithNamespace} / ${name}`,
+              value: id,
+            }),
+          ),
+          ...GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT.data.group.clusterAgents.nodes.map(
+            ({ id, name, project }) => ({
+              text: `${project.nameWithNamespace} / ${name}`,
+              value: id,
+            }),
+          ),
+        ],
+        id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
         nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
         fullPath: projectFullPathFixture,
@@ -150,6 +308,12 @@ describe('remote_development/components/create/get_project_details_query', () =>
 
   describe('when the project does not have a repository', () => {
     beforeEach(() => {
+      const mockedClusterAgentResponses = [
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_NO_AGENT,
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_NO_AGENT,
+      ];
+      setupGroupClusterAgentsQueryHandler(mockedClusterAgentResponses);
+
       const customMockData = cloneDeep(GET_PROJECT_DETAILS_QUERY_RESULT);
 
       customMockData.data.project.repository = null;
@@ -170,6 +334,7 @@ describe('remote_development/components/create/get_project_details_query', () =>
 
   describe('when project full path is not provided', () => {
     it('does not execute get_project_details query', async () => {
+      // noinspection JSCheckFunctionSignatures -- This is incorrectly assuming the projectFullPath type is String due to its default value in the declaration
       await buildWrapper({ projectFullPath: null });
 
       expect(getProjectDetailsQueryHandler).not.toHaveBeenCalled();
@@ -197,7 +362,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
       expect(wrapper.emitted('result')[0][0]).toEqual({
         clusterAgents: [],
         id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
-        groupPath: null,
         hasDevFile: false,
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
         nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
@@ -207,12 +371,13 @@ describe('remote_development/components/create/get_project_details_query', () =>
   });
 
   describe('when the project full path changes', () => {
-    it('fetches the project root group', async () => {
+    it('fetches agents for the entire project group hierarchy', async () => {
       const customMockData = cloneDeep(GET_PROJECT_DETAILS_QUERY_RESULT);
 
       await buildWrapper();
 
-      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(1);
+      // Called once for each part in group path
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(2);
 
       customMockData.data.project.group.fullPath = 'new';
 
@@ -222,17 +387,29 @@ describe('remote_development/components/create/get_project_details_query', () =>
 
       await waitForPromises();
 
-      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(2);
+      // Once more because group.fullPath only has 1 part now
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(3);
     });
   });
 
   describe('when the project full path changes from group to not group', () => {
+    beforeEach(async () => {
+      const mockedClusterAgentResponses = [
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_NO_AGENT,
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_NO_AGENT,
+      ];
+      setupGroupClusterAgentsQueryHandler(mockedClusterAgentResponses);
+
+      await waitForPromises();
+    });
+
     it('emits empty clusters', async () => {
       const projectFullPath = 'new/path';
 
       await buildWrapper();
 
-      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(1);
+      // Called once for each part in group path
+      expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(2);
 
       const projectWithoutGroup = cloneDeep(GET_PROJECT_DETAILS_QUERY_RESULT);
       projectWithoutGroup.data.project.group = null;
@@ -249,7 +426,6 @@ describe('remote_development/components/create/get_project_details_query', () =>
       expect(wrapper.emitted('result')[1]).toEqual([
         {
           clusterAgents: [],
-          groupPath: null,
           hasDevFile: false,
           id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
           rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
@@ -268,6 +444,12 @@ describe('remote_development/components/create/get_project_details_query', () =>
     const error = new Error();
 
     beforeEach(() => {
+      const mockedClusterAgentResponses = [
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_NO_AGENT,
+        GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_NO_AGENT,
+      ];
+      setupGroupClusterAgentsQueryHandler(mockedClusterAgentResponses);
+
       const queryHandler = queryHandlerFactory();
 
       queryHandler.mockReset();
