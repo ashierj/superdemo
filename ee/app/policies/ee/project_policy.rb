@@ -491,6 +491,11 @@ module EE
         enable :read_project_runners
       end
 
+      rule { auditor & ~guest & private_project }.policy do
+        prevent :fork_project
+        prevent :create_merge_request_in
+      end
+
       rule { auditor }.policy do
         enable :access_security_and_compliance
       end
