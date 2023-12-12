@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_and_projects do
+  include ElasticsearchHelpers
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group, :public) }
@@ -286,6 +287,8 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
   context 'with epics' do
     context 'when epics feature is disabled' do
       it 'transfers a group successfully' do
+        expect(::Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_async)
+        expect(::Elastic::ProcessInitialBookkeepingService).not_to receive(:track!)
         transfer_service.execute(new_group)
 
         expect(group.parent).to eq(new_group)
@@ -308,12 +311,15 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
 
       before do
         root_group.add_owner(user)
-
+        set_elasticsearch_migration_to :create_epic_index, including: true
+        stub_ee_application_setting(elasticsearch_indexing: true)
         stub_licensed_features(epics: true)
       end
 
       context 'when group is moved completely out of the main group' do
         it 'keeps relations between all epics' do
+          expect(::Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async).with(subgroup_group_level_1.id, root_group.id, { include_descendants: true }).once
+          expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).once
           described_class.new(subgroup_group_level_1, user).execute(new_group)
 
           expect(level_1_epic_2.reload.parent).to eq(level_1_epic_1)
@@ -327,6 +333,10 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
 
       context 'when group is moved some levels up' do
         it 'keeps relations between all epics' do
+          expect(::Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_async)
+          expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!) do |*args|
+            expect(args).to match_array(subgroup_group_level_2.self_and_descendants.flat_map(&:epics))
+          end
           described_class.new(subgroup_group_level_2, user).execute(root_group)
 
           expect(level_1_epic_1.reload.parent).to eq(root_epic)

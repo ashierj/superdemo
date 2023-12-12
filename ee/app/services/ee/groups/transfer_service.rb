@@ -60,6 +60,8 @@ module EE
         end
 
         process_wikis(group)
+
+        process_epics(old_root_ancestor_id, group)
       end
 
       def update_project_settings(updated_project_ids)
@@ -83,6 +85,24 @@ module EE
         # Reindex all projects and associated data to make sure the namespace_ancestry field gets
         # updated in each document.
         ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
+      end
+
+      def process_epics(old_root_ancestor_id, group)
+        return unless group.use_elasticsearch? && ::Epic.elasticsearch_available?
+
+        epics_found = false
+        group.self_and_descendants.each_batch do |group_batch|
+          ::Epic.in_selected_groups(group_batch).each_batch do |epics|
+            epics_found ||= true
+            ::Elastic::ProcessInitialBookkeepingService.track!(*epics)
+          end
+        end
+
+        return unless epics_found
+        return if old_root_ancestor_id == group.root_ancestor.id && group.licensed_feature_available?(:epics)
+
+        ::Search::ElasticGroupAssociationDeletionWorker.perform_async(group.id, old_root_ancestor_id,
+          { include_descendants: true })
       end
 
       def process_wikis(group)

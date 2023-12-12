@@ -40,6 +40,8 @@ export default () => {
     routerBase,
     features,
     availableVisualizations = '',
+    rootNamespaceName,
+    rootNamespaceFullPath,
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
@@ -112,6 +114,8 @@ export default () => {
       analyticsSettingsPath,
       features: convertArrayToCamelCase(JSON.parse(features)),
       vsdAvailableVisualizations,
+      rootNamespaceName,
+      rootNamespaceFullPath,
     },
     render(h) {
       return h(DashboardsApp);

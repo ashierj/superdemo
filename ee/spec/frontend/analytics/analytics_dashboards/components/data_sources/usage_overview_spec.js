@@ -21,7 +21,7 @@ import {
 describe('Usage overview Data Source', () => {
   let obj;
 
-  const namespace = { name: 'cool namespace', requestPath: 'some-group-path' };
+  const rootNamespace = { name: 'cool namespace', requestPath: 'some-group-path' };
   const queryKeys = [USAGE_OVERVIEW_IDENTIFIER_GROUPS, USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS];
   const mockQuery = { include: queryKeys };
   const { group: mockGroupUsageMetricsQueryResponse } = mockUsageMetricsQueryResponse;
@@ -84,19 +84,19 @@ describe('Usage overview Data Source', () => {
 
   describe('fetch', () => {
     it.each`
-      label                 | namespaceParam
+      label                 | namespace
       ${'with a project'}   | ${{ requestPath: 'some-group/some-project' }}
       ${'with a sub group'} | ${{ requestPath: 'some-group/some-subgroup' }}
       ${'with a group'}     | ${{ requestPath: 'some-group' }}
-    `('$label queries the top level group', async ({ namespaceParam }) => {
+    `('$label queries the top level group', async ({ namespace }) => {
       jest.spyOn(defaultClient, 'query').mockResolvedValue({ data: {} });
 
-      obj = await fetch({ namespace: namespaceParam, query: mockQuery });
+      obj = await fetch({ rootNamespace, namespace, query: mockQuery });
 
       expect(defaultClient.query).toHaveBeenCalledWith(
         expect.objectContaining({
           variables: {
-            fullPath: 'some-group',
+            fullPath: rootNamespace.requestPath,
             startDate: expect.anything(),
             endDate: expect.anything(),
             includeGroups: true,
@@ -113,7 +113,7 @@ describe('Usage overview Data Source', () => {
       jest.spyOn(defaultClient, 'query').mockResolvedValue({ data: {} });
 
       obj = await fetch({
-        namespace,
+        rootNamespace,
         query: { include: [USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS] },
       });
 
@@ -135,8 +135,8 @@ describe('Usage overview Data Source', () => {
 
     it.each`
       label                              | data                             | params
-      ${'with no data'}                  | ${{}}                            | ${{ namespace, query: mockQuery }}
-      ${'with no namespace.requestPath'} | ${mockUsageMetricsQueryResponse} | ${{ namespace: {}, query: mockQuery }}
+      ${'with no data'}                  | ${{}}                            | ${{ rootNamespace, query: mockQuery }}
+      ${'with no namespace.requestPath'} | ${mockUsageMetricsQueryResponse} | ${{ rootNamespace: {}, query: mockQuery }}
     `('$label returns the no data object', async ({ params }) => {
       jest.spyOn(defaultClient, 'query').mockResolvedValue({ data: {} });
 
@@ -149,7 +149,7 @@ describe('Usage overview Data Source', () => {
       beforeEach(() => {
         jest.spyOn(defaultClient, 'query').mockRejectedValue();
 
-        obj = fetch({ namespace, query: mockQuery });
+        obj = fetch({ rootNamespace, query: mockQuery });
       });
 
       it('returns the no data object', async () => {
@@ -163,7 +163,7 @@ describe('Usage overview Data Source', () => {
           .spyOn(defaultClient, 'query')
           .mockResolvedValue({ data: mockUsageMetricsQueryResponse });
 
-        obj = await fetch({ namespace, query: mockQuery });
+        obj = await fetch({ rootNamespace, query: mockQuery });
       });
 
       it('will fetch the usage metrics', () => {

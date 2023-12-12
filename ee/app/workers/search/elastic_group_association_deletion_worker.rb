@@ -13,14 +13,28 @@ module Search
     urgency :throttled
     idempotent!
 
-    def perform(group_id, ancestor_id)
-      remove_epics(group_id, ancestor_id) if Epic.elasticsearch_available?
+    def perform(group_id, ancestor_id, options = {})
+      return unless ::Epic.elasticsearch_available?
+
+      return remove_epics(group_id, ancestor_id) unless options[:include_descendants]
+
+      # We have the return condition here because we still want to remove the deleted group epics in the above call
+      group = Group.find_by_id(group_id)
+      return if group.nil?
+
+      # rubocop: disable CodeReuse/ActiveRecord -- We need only the ids of self_and_descendants groups
+      group.self_and_descendants.each_batch { |groups| remove_epics(groups.pluck(:id), ancestor_id) }
+      # rubocop: enable CodeReuse/ActiveRecord
     end
 
     private
 
-    def remove_epics(group_id, ancestor_id)
-      Gitlab::Search::Client.new.delete_by_query(
+    def client
+      @client ||= ::Gitlab::Search::Client.new
+    end
+
+    def remove_epics(group_ids, ancestor_id)
+      client.delete_by_query(
         {
           index: ::Elastic::Latest::EpicConfig.index_name,
           routing: "group_#{ancestor_id}",
@@ -29,11 +43,7 @@ module Search
           body: {
             query: {
               bool: {
-                filter: {
-                  term: {
-                    group_id: group_id
-                  }
-                }
+                filter: { terms: { group_id: Array.wrap(group_ids) } }
               }
             }
           }
