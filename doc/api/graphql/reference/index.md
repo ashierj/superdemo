@@ -14,7 +14,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 This documentation is self-generated based on GitLab current GraphQL schema.
 
-The API can be explored interactively using the [GraphiQL IDE](../index.md#graphiql).
+The API can be explored using the [interactive GraphQL explorer](../index.md#interactive-graphql-explorer).
 
 Each table below documents a GraphQL type. Types match loosely to models, but not all
 fields and methods on a model are available via GraphQL.
