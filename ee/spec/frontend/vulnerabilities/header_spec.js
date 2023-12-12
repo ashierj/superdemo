@@ -109,7 +109,6 @@ describe('Vulnerability Header', () => {
   const findStatusDescription = () => wrapper.findComponent(StatusDescription);
   const findBadge = () => wrapper.findComponent(GlBadge);
 
-  // Helpers
   const changeStatus = (action) => {
     const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
     dropdown.vm.$emit('change', { action });
@@ -137,6 +136,123 @@ describe('Vulnerability Header', () => {
   afterEach(() => {
     mockAxios.reset();
     createAlert.mockReset();
+  });
+
+  // Resolution Alert
+  describe('the vulnerability is no longer detected on the default branch', () => {
+    const branchName = 'main';
+
+    beforeEach(() => {
+      createWrapper({
+        vulnerability: {
+          resolvedOnDefaultBranch: true,
+          projectDefaultBranch: branchName,
+        },
+      });
+    });
+
+    it('should show the resolution alert component', () => {
+      expect(findResolutionAlert().exists()).toBe(true);
+    });
+
+    it('should pass down the default branch name', () => {
+      expect(findResolutionAlert().props('defaultBranchName')).toEqual(branchName);
+    });
+
+    it('should not show the alert component when the vulnerability is resolved', async () => {
+      createWrapper({
+        vulnerability: {
+          state: 'resolved',
+        },
+      });
+      await nextTick();
+      const alert = findResolutionAlert();
+
+      expect(alert.exists()).toBe(false);
+    });
+  });
+
+  describe('status description', () => {
+    it('the status description is rendered and passed the correct data', () => {
+      const user = createRandomUser();
+
+      const vulnerability = {
+        ...defaultVulnerability,
+        state: 'confirmed',
+        confirmedById: user.id,
+      };
+
+      createWrapper({ vulnerability });
+      return waitForPromises().then(() => {
+        expect(findStatusDescription().exists()).toBe(true);
+        expect(findStatusDescription().props()).toEqual({
+          vulnerability,
+          user,
+          isLoadingVulnerability: false,
+          isLoadingUser: false,
+          isStatusBolded: false,
+        });
+      });
+    });
+
+    it.each(vulnerabilityStateEntries)(
+      `loads the correct user for the vulnerability state "%s"`,
+      (state) => {
+        const user = createRandomUser();
+        createWrapper({ vulnerability: { state, [`${state}ById`]: user.id } });
+
+        return waitForPromises().then(() => {
+          expect(mockAxios.history.get).toHaveLength(1);
+          expect(findStatusDescription().props('user')).toEqual(user);
+        });
+      },
+    );
+
+    it('does not load a user if there is no user ID', () => {
+      createWrapper({ vulnerability: { state: 'detected' } });
+
+      return waitForPromises().then(() => {
+        expect(mockAxios.history.get).toHaveLength(0);
+        expect(findStatusDescription().props('user')).toBeUndefined();
+      });
+    });
+
+    it('will show an error when the user cannot be loaded', () => {
+      createWrapper({ vulnerability: { state: 'confirmed', confirmedById: 1 } });
+
+      mockAxios.onGet().replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+
+      return waitForPromises().then(() => {
+        expect(createAlert).toHaveBeenCalledTimes(1);
+        expect(mockAxios.history.get).toHaveLength(1);
+      });
+    });
+
+    it('will set the isLoadingUser property correctly when the user is loading and finished loading', () => {
+      const user = createRandomUser();
+      createWrapper({ vulnerability: { state: 'confirmed', confirmedById: user.id } });
+
+      expect(findStatusDescription().props('isLoadingUser')).toBe(true);
+
+      return waitForPromises().then(() => {
+        expect(mockAxios.history.get).toHaveLength(1);
+        expect(findStatusDescription().props('isLoadingUser')).toBe(false);
+      });
+    });
+  });
+
+  describe('state button', () => {
+    it('renders the disabled state button when user can not admin the vulnerability', () => {
+      createWrapper({ vulnerability: getVulnerability({ canAdmin: true }) });
+
+      expect(findStateButton().props('disabled')).toBe(false);
+    });
+
+    it('renders the enabled state button when user can admin the vulnerability', () => {
+      createWrapper({ vulnerability: getVulnerability({ canAdmin: false }) });
+
+      expect(findStateButton().props('disabled')).toBe(true);
+    });
   });
 
   describe.each`
@@ -189,7 +305,7 @@ describe('Vulnerability Header', () => {
       });
     });
 
-    describe('when API call is failed', () => {
+    describe('when API call fails', () => {
       beforeEach(() => {
         const apolloProvider = createApolloProvider([
           vulnerabilityStateMutations[action],
@@ -206,7 +322,7 @@ describe('Vulnerability Header', () => {
         createWrapper({ apolloProvider });
       });
 
-      it('when the vulnerability state changes but the API call fails, an error message is displayed', async () => {
+      it('shows an error message', async () => {
         changeStatus(action);
 
         await waitForPromises();
@@ -215,95 +331,83 @@ describe('Vulnerability Header', () => {
     });
   });
 
-  describe('state button', () => {
-    it('renders the disabled state button when user can not admin the vulnerability', () => {
-      createWrapper({ vulnerability: getVulnerability({ canAdmin: true }) });
-
-      expect(findStateButton().props('disabled')).toBe(false);
-    });
-
-    it('renders the enabled state button when user can admin the vulnerability', () => {
-      createWrapper({ vulnerability: getVulnerability({ canAdmin: false }) });
-
-      expect(findStateButton().props('disabled')).toBe(true);
-    });
-  });
-
-  describe('split button', () => {
-    it('renders the correct amount of buttons', async () => {
-      createWrapper({
-        vulnerability: getVulnerability({
-          canCreateMergeRequest: true,
-          canDownloadPatch: true,
-          canResolveWithAI: true,
-        }),
-      });
-      await waitForPromises();
-      const buttons = findSplitButton().props('buttons');
-      expect(buttons).toHaveLength(3);
-    });
-
-    it.each`
-      index | name                            | tagline
-      ${0}  | ${'Resolve with merge request'} | ${'Automatically apply the patch in a new branch'}
-      ${1}  | ${'Download patch to resolve'}  | ${'Download the patch to apply it manually'}
-      ${2}  | ${'Resolve with AI'}            | ${'Automatically opens a merge request with a solution generated by AI'}
-    `('renders the button for $name at index $index', async ({ index, name, tagline }) => {
-      createWrapper({
-        vulnerability: getVulnerability({
-          canCreateMergeRequest: true,
-          canDownloadPatch: true,
-          canResolveWithAI: true,
-        }),
-      });
-      await waitForPromises();
-
-      const buttons = findSplitButton().props('buttons');
-      expect(buttons[index].name).toBe(name);
-      expect(buttons[index].tagline).toBe(tagline);
-    });
-
-    it('does not render the split button if there is only one action', () => {
-      createWrapper({
-        vulnerability: getVulnerability({
-          canCreateMergeRequest: false,
-          canDownloadPatch: false,
-          canResolveWithAI: true,
-        }),
+  describe('action buttons', () => {
+    describe('split action button', () => {
+      it('renders the correct amount of buttons', async () => {
+        createWrapper({
+          vulnerability: getVulnerability({
+            canCreateMergeRequest: true,
+            canDownloadPatch: true,
+            canResolveWithAI: true,
+          }),
+        });
+        await waitForPromises();
+        const buttons = findSplitButton().props('buttons');
+        expect(buttons).toHaveLength(3);
       });
 
-      expect(findSplitButton().exists()).toBe(false);
-    });
-  });
+      it.each`
+        index | name                            | tagline
+        ${0}  | ${'Resolve with merge request'} | ${'Automatically apply the patch in a new branch'}
+        ${1}  | ${'Download patch to resolve'}  | ${'Download the patch to apply it manually'}
+        ${2}  | ${'Resolve with AI'}            | ${'Automatically opens a merge request with a solution generated by AI'}
+      `('renders the button for $name at index $index', async ({ index, name, tagline }) => {
+        createWrapper({
+          vulnerability: getVulnerability({
+            canCreateMergeRequest: true,
+            canDownloadPatch: true,
+            canResolveWithAI: true,
+          }),
+        });
+        await waitForPromises();
 
-  describe('single action button', () => {
-    it('does not display if there are no actions', () => {
-      createWrapper({
-        vulnerability: getVulnerability({
-          canCreateMergeRequest: false,
-          canDownloadPatch: false,
-          canResolveWithAI: false,
-        }),
+        const buttons = findSplitButton().props('buttons');
+        expect(buttons[index].name).toBe(name);
+        expect(buttons[index].tagline).toBe(tagline);
       });
 
-      expect(findGlButton().exists()).toBe(false);
-    });
+      it('does not render the split button if there is only one action', () => {
+        createWrapper({
+          vulnerability: getVulnerability({
+            canCreateMergeRequest: false,
+            canDownloadPatch: false,
+            canResolveWithAI: true,
+          }),
+        });
 
-    it.each`
-      state                      | name
-      ${'canCreateMergeRequest'} | ${'Resolve with merge request'}
-      ${'canDownloadPatch'}      | ${'Download patch to resolve'}
-      ${'canResolveWithAI'}      | ${'Resolve with AI Experiment'}
-    `('renders the $name button', ({ state, name }) => {
-      createWrapper({
-        vulnerability: getVulnerability({
-          [state]: true,
-        }),
+        expect(findSplitButton().exists()).toBe(false);
       });
-      expect(findGlButton().text()).toMatchInterpolatedText(name);
     });
 
-    describe('create merge request', () => {
+    describe('single action button', () => {
+      it('does not display if there are no actions', () => {
+        createWrapper({
+          vulnerability: getVulnerability({
+            canCreateMergeRequest: false,
+            canDownloadPatch: false,
+            canResolveWithAI: false,
+          }),
+        });
+
+        expect(findGlButton().exists()).toBe(false);
+      });
+
+      it.each`
+        state                      | name
+        ${'canCreateMergeRequest'} | ${'Resolve with merge request'}
+        ${'canDownloadPatch'}      | ${'Download patch to resolve'}
+        ${'canResolveWithAI'}      | ${'Resolve with AI Experiment'}
+      `('renders the $name button', ({ state, name }) => {
+        createWrapper({
+          vulnerability: getVulnerability({
+            [state]: true,
+          }),
+        });
+        expect(findGlButton().text()).toMatchInterpolatedText(name);
+      });
+    });
+
+    describe('create merge request button', () => {
       beforeEach(() => {
         createWrapper({
           vulnerability: getVulnerability({
@@ -353,7 +457,7 @@ describe('Vulnerability Header', () => {
       });
     });
 
-    describe('can download patch', () => {
+    describe('can download patch button', () => {
       beforeEach(() => {
         createWrapper({
           vulnerability: getVulnerability({
@@ -369,7 +473,7 @@ describe('Vulnerability Header', () => {
       });
     });
 
-    describe('resolve with AI', () => {
+    describe('resolve with AI button', () => {
       let visitUrlMock;
       let mockSubscription;
       let subscriptionSpy;
@@ -474,116 +578,6 @@ describe('Vulnerability Header', () => {
           expect(createAlert.mock.calls[0][0].message.toString()).toContain(expectedError);
         },
       );
-    });
-  });
-
-  describe('status description', () => {
-    let vulnerability;
-    let user;
-
-    beforeEach(() => {
-      user = createRandomUser();
-
-      vulnerability = {
-        ...defaultVulnerability,
-        state: 'confirmed',
-        confirmedById: user.id,
-      };
-
-      createWrapper({ vulnerability });
-    });
-
-    it('the status description is rendered and passed the correct data', () => {
-      return waitForPromises().then(() => {
-        expect(findStatusDescription().exists()).toBe(true);
-        expect(findStatusDescription().props()).toEqual({
-          vulnerability,
-          user,
-          isLoadingVulnerability: false,
-          isLoadingUser: false,
-          isStatusBolded: false,
-        });
-      });
-    });
-  });
-
-  describe('when the vulnerability is no longer detected on the default branch', () => {
-    const branchName = 'main';
-
-    beforeEach(() => {
-      createWrapper({
-        vulnerability: {
-          resolvedOnDefaultBranch: true,
-          projectDefaultBranch: branchName,
-        },
-      });
-    });
-
-    it('should show the resolution alert component', () => {
-      expect(findResolutionAlert().exists()).toBe(true);
-    });
-
-    it('should pass down the default branch name', () => {
-      expect(findResolutionAlert().props('defaultBranchName')).toEqual(branchName);
-    });
-
-    it('the resolution alert component should not be shown if when the vulnerability is already resolved', async () => {
-      createWrapper({
-        vulnerability: {
-          state: 'resolved',
-        },
-      });
-      await nextTick();
-      const alert = findResolutionAlert();
-
-      expect(alert.exists()).toBe(false);
-    });
-  });
-
-  describe('vulnerability user watcher', () => {
-    it.each(vulnerabilityStateEntries)(
-      `loads the correct user for the vulnerability state "%s"`,
-      (state) => {
-        const user = createRandomUser();
-        createWrapper({ vulnerability: { state, [`${state}ById`]: user.id } });
-
-        return waitForPromises().then(() => {
-          expect(mockAxios.history.get).toHaveLength(1);
-          expect(findStatusDescription().props('user')).toEqual(user);
-        });
-      },
-    );
-
-    it('does not load a user if there is no user ID', () => {
-      createWrapper({ vulnerability: { state: 'detected' } });
-
-      return waitForPromises().then(() => {
-        expect(mockAxios.history.get).toHaveLength(0);
-        expect(findStatusDescription().props('user')).toBeUndefined();
-      });
-    });
-
-    it('will show an error when the user cannot be loaded', () => {
-      createWrapper({ vulnerability: { state: 'confirmed', confirmedById: 1 } });
-
-      mockAxios.onGet().replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR);
-
-      return waitForPromises().then(() => {
-        expect(createAlert).toHaveBeenCalledTimes(1);
-        expect(mockAxios.history.get).toHaveLength(1);
-      });
-    });
-
-    it('will set the isLoadingUser property correctly when the user is loading and finished loading', () => {
-      const user = createRandomUser();
-      createWrapper({ vulnerability: { state: 'confirmed', confirmedById: user.id } });
-
-      expect(findStatusDescription().props('isLoadingUser')).toBe(true);
-
-      return waitForPromises().then(() => {
-        expect(mockAxios.history.get).toHaveLength(1);
-        expect(findStatusDescription().props('isLoadingUser')).toBe(false);
-      });
     });
   });
 
