@@ -77,21 +77,16 @@ export const prepareQuery = (queryKeysToInclude = []) => {
   return Object.fromEntries(queryIncludeVariables);
 };
 
-const extractRootGroup = (requestPath = '') => {
-  const [rootGroup] = requestPath.split('/');
-  return rootGroup;
-};
-
 /**
  * Fetch usage overview metrics, making sure to only query
  * the top most group from the namespace.
  */
-export const fetch = async ({ namespace, query: { include = [] } }) => {
+export const fetch = async ({
+  rootNamespace: { requestPath: fullPath },
+  query: { include = [] },
+}) => {
   const variableOverrides = prepareQuery(include);
   const { startDate, endDate } = USAGE_OVERVIEW_DEFAULT_DATE_RANGE;
-
-  const fullPath = extractRootGroup(namespace.requestPath);
-  if (!fullPath.length) return usageOverviewNoData;
 
   try {
     const { data = {} } = await defaultClient.query({

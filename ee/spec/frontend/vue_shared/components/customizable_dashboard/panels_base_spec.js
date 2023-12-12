@@ -34,6 +34,8 @@ describe('PanelsBase', () => {
         namespaceId: '1',
         namespaceName: 'Namespace name',
         namespaceFullPath: 'namespace/full/path',
+        rootNamespaceName: 'Root namespace name',
+        rootNamespaceFullPath: 'namespace',
         isProject: true,
       },
       propsData: {
