@@ -14,11 +14,17 @@ export default {
       ),
     MrStatusChecksWidget: () =>
       import('ee/vue_merge_request_widget/extensions/status_checks/index.vue'),
+    MrLicenseComplianceWidget: () =>
+      import('ee/vue_merge_request_widget/extensions/license_compliance/index.vue'),
   },
 
   extends: CEWidgetApp,
 
   computed: {
+    licenseComplianceWidget() {
+      return this.mr?.enabledReports?.licenseScanning ? 'MrLicenseComplianceWidget' : undefined;
+    },
+
     metricsWidget() {
       return this.mr.metricsReportsPath ? 'MrMetricsWidget' : undefined;
     },
@@ -35,6 +41,7 @@ export default {
 
     widgets() {
       return [
+        this.licenseComplianceWidget,
         this.codeQualityWidget,
         this.testReportWidget,
         this.metricsWidget,
