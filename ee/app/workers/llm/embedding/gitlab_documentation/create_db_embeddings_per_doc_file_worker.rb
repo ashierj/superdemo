@@ -31,7 +31,7 @@ module Llm
           # sure we do not create duplicate entries for the same file. For that reason, we cleanup any records
           # for the passed in filename and given update_version.
           file_embeddings = MODEL.select(:id).for_source(source).for_version(update_version)
-          file_embeddings.each_batch(of: BATCH_SIZE) { |batch| batch.delete_all } # rubocop:disable Style/SymbolProc
+          file_embeddings.each_batch(of: BATCH_SIZE) { |batch| batch.delete_all }
 
           items = ::Gitlab::Llm::Embeddings::Utils::DocsContentParser.parse_and_split(content, source, DOC_DIRECTORY)
 

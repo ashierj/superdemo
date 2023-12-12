@@ -34,7 +34,7 @@ module Security
       def delete_violations
         Security::ScanResultPolicyViolation
           .where(merge_request_id: merge_request.id, scan_result_policy_id: unviolated_policy_ids)
-          .each_batch(order_hint: :updated_at) { |batch| batch.delete_all } # rubocop: disable Style/SymbolProc
+          .each_batch(order_hint: :updated_at) { |batch| batch.delete_all }
       end
       # rubocop: enable CodeReuse/ActiveRecord
 

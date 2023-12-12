@@ -16,9 +16,9 @@ module Vulnerabilities
     BATCH_SIZE = 1000
 
     def perform(*_args)
-      # rubocop:disable CodeReuse/ActiveRecord,Style/SymbolProc
+      # rubocop:disable CodeReuse/ActiveRecord
       Vulnerabilities::Remediation.where.missing(:findings).each_batch(of: BATCH_SIZE) { |batch| batch.delete_all }
-      # rubocop:enable CodeReuse/ActiveRecord,Style/SymbolProc
+      # rubocop:enable CodeReuse/ActiveRecord
     end
   end
 end
