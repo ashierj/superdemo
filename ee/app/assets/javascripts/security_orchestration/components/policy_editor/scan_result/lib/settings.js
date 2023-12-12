@@ -67,18 +67,16 @@ export const SETTINGS_TOOLTIP = {
 
 export const SETTINGS_POPOVER_STRINGS = {
   [BLOCK_BRANCH_MODIFICATION]: {
-    title: s__('ScanResultPolicy|Recommended setting'),
+    title: s__('ScanResultPolicy|Recommended settings'),
     description: s__(
-      'ScanResultPolicy|You have selected any protected branch option as a condition. To better protect your project, it is recommended to enable the protect branch settings. %{linkStart}Learn more.%{linkEnd}',
+      "ScanResultPolicy|You have selected all protected branches in this policy's rules. To better protect your project, you should leave this setting enabled. %{linkStart}What are the risks of allowing pushing and force pushing?%{linkEnd}",
     ),
     featureName: 'security_policy_protected_branch_modification',
   },
 };
 
 export const SETTINGS_LINKS = {
-  [BLOCK_BRANCH_MODIFICATION]: helpPagePath(
-    '/user/application_security/policies/scan-result-policies.html',
-  ),
+  [BLOCK_BRANCH_MODIFICATION]: helpPagePath('/user/project/protected_branches.html'),
 };
 
 export const VALID_APPROVAL_SETTINGS = [
