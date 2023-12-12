@@ -48,7 +48,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             let(:request) { subject }
           end
 
-          context 'when group_level_dependencies_filtering is diabled' do
+          context 'when group_level_dependencies_filtering is disabled' do
             before do
               stub_feature_flags(group_level_dependencies_filtering: false)
             end
