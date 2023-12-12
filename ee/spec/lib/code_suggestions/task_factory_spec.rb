@@ -98,24 +98,8 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         end
       end
 
-      context 'when code_generation_anthropic feature flag is on' do
-        before do
-          stub_feature_flags(code_generation_anthropic: current_user)
-        end
-
-        it_behaves_like 'correct task initializer' do
-          let(:expected_family) { described_class::ANTHROPIC }
-        end
-      end
-
-      context 'when code_generation_anthropic feature flag is off' do
-        before do
-          stub_feature_flags(code_generation_anthropic: false)
-        end
-
-        it_behaves_like 'correct task initializer' do
-          let(:expected_family) { described_class::VERTEX_AI }
-        end
+      it_behaves_like 'correct task initializer' do
+        let(:expected_family) { described_class::ANTHROPIC }
       end
     end
   end
