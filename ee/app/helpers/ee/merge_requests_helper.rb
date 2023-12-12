@@ -25,7 +25,10 @@ module EE
         show_generate_test_file_button: ::Llm::GenerateTestFileService.new(current_user, merge_request).valid?.to_s
       }
 
-      data[:sast_report_available] = merge_request.has_sast_reports?.to_s if ::Feature.enabled?(:sast_reports_in_inline_diff, project)
+      if ::Feature.enabled?(:sast_reports_in_inline_diff, project)
+        data[:codequality_report_available] = merge_request.has_codequality_reports?.to_s if project.licensed_feature_available?(:inline_codequality)
+        data[:sast_report_available] = merge_request.has_sast_reports?.to_s
+      end
 
       super.merge(data)
     end
