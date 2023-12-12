@@ -23,7 +23,7 @@ export default {
     GlAvatar,
     DependencyProjectCountPopover,
   },
-  inject: ['endpoint', 'enableProjectSearch'],
+  inject: ['endpoint', 'belowGroupLimit'],
   props: {
     project: {
       type: Object,
@@ -121,7 +121,7 @@ export default {
 <template>
   <span>
     <gl-collapsible-listbox
-      v-if="hasMultipleProjects && enableProjectSearch"
+      v-if="hasMultipleProjects && belowGroupLimit"
       :header-text="projectText"
       :items="availableProjects"
       :searching="loading"
@@ -158,7 +158,7 @@ export default {
       </template>
     </gl-collapsible-listbox>
     <dependency-project-count-popover
-      v-else-if="!enableProjectSearch"
+      v-else-if="!belowGroupLimit"
       :target-id="targetId"
       :target-text="projectText"
     />

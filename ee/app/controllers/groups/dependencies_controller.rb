@@ -22,7 +22,7 @@ module Groups
     def index
       respond_to do |format|
         format.html do
-          set_enable_project_search
+          set_below_group_limit
 
           render status: :ok
         end
@@ -113,13 +113,16 @@ module Groups
       end
     end
 
-    def set_enable_project_search
-      @enable_project_search = filtering_allowed?
+    def set_below_group_limit
+      @below_group_limit = below_group_limit?
     end
 
     def filtering_allowed?
-      Feature.enabled?(:group_level_dependencies_filtering, group) &&
-        group.count_within_namespaces <= GROUP_COUNT_LIMIT
+      Feature.enabled?(:group_level_dependencies_filtering, group) && below_group_limit?
+    end
+
+    def below_group_limit?
+      group.count_within_namespaces <= GROUP_COUNT_LIMIT
     end
   end
 end

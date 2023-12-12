@@ -34,17 +34,42 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             subject
 
             expect(assigns(:group)).to eq(group)
+            expect(assigns(:below_group_limit)).to eq(true)
             expect(response).to render_template(:index)
             expect(response.body).to include('data-documentation-path')
             expect(response.body).to include('data-empty-state-svg-path')
             expect(response.body).to include('data-endpoint')
             expect(response.body).to include('data-support-documentation-path')
             expect(response.body).to include('data-export-endpoint')
-            expect(response.body).to include('data-enable-project-search')
+            expect(response.body).to include('data-below-group-limit')
           end
 
           it_behaves_like 'tracks govern usage event', 'users_visiting_dependencies' do
             let(:request) { subject }
+          end
+
+          context 'when group_level_dependencies_filtering is disabled' do
+            before do
+              stub_feature_flags(group_level_dependencies_filtering: false)
+            end
+
+            it 'does not show group limit warning' do
+              subject
+
+              expect(assigns(:below_group_limit)).to eq(true)
+            end
+          end
+
+          context 'when the group hierarchy depth is too high' do
+            before do
+              stub_const('::Groups::DependenciesController::GROUP_COUNT_LIMIT', 0)
+            end
+
+            it 'shows group limit warning' do
+              subject
+
+              expect(assigns(:below_group_limit)).to eq(false)
+            end
           end
         end
 

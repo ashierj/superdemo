@@ -18,7 +18,7 @@ describe('DependenciesActions component', () => {
 
   const objectBasicProp = {
     namespaceType: 'project',
-    enableProjectSearch: true,
+    belowGroupLimit: true,
   };
 
   const factory = ({ propsData, provide } = {}) => {
@@ -89,13 +89,13 @@ describe('DependenciesActions component', () => {
       );
     });
 
-    describe('with the "enableProjectSearch" set to false', () => {
+    describe('with the "belowGroupLimit" set to false', () => {
       beforeEach(async () => {
         factory({
           propsData: { namespace },
           provide: {
             namespaceType: 'group',
-            enableProjectSearch: false,
+            belowGroupLimit: false,
           },
         });
         store.state[namespace].endpoint = `${TEST_HOST}/dependencies.json`;
