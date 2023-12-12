@@ -41,7 +41,7 @@ module QA
         end.to raise_error(QA::Support::Run::CommandError, /You are not allowed to push code to this project/)
       end
 
-      it 'is not allowed to create a file via the API',
+      it 'is not allowed to create a file via the API', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347874' do
         expect do
           create(:file,
@@ -51,7 +51,7 @@ module QA
         end.to raise_error(Resource::ApiFabricator::ResourceFabricationFailedError, /403 Forbidden/)
       end
 
-      it 'is not allowed to commit via the API',
+      it 'is not allowed to commit via the API', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347652' do
         expect do
           Resource::Repository::Commit.fabricate_via_api! do |commit|

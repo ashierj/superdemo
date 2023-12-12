@@ -33011,6 +33011,9 @@ msgstr ""
 msgid "ObservabilityMetrics|Name"
 msgstr ""
 
+msgid "ObservabilityMetrics|No data found for the selected metric."
+msgstr ""
+
 msgid "ObservabilityMetrics|Search metrics starting with..."
 msgstr ""
 

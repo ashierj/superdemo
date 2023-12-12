@@ -1,4 +1,4 @@
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
 import MetricsDetails from 'ee/metrics/details/metrics_details.vue';
 import { createMockClient } from 'helpers/mock_observability_client';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -20,7 +20,14 @@ describe('MetricsDetails', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findMetricDetails = () => wrapper.findComponentByTestId('metric-details');
-  const findHeader = () => wrapper.findComponentByTestId('metric-header');
+
+  const findHeader = () => findMetricDetails().find(`[data-testid="metric-header"]`);
+  const findHeaderTitle = () => findHeader().find(`[data-testid="metric-title"]`);
+  const findHeaderType = () => findHeader().find(`[data-testid="metric-type"]`);
+  const findHeaderDescription = () => findHeader().find(`[data-testid="metric-description"]`);
+
+  const findChart = () => findMetricDetails().findComponent(MetricsChart);
+  const findEmptyState = () => findMetricDetails().findComponent(GlEmptyState);
 
   const props = {
     metricId: METRIC_ID,
@@ -48,6 +55,7 @@ describe('MetricsDetails', () => {
     mountComponent();
 
     expect(findLoadingIcon().exists()).toBe(true);
+    expect(findMetricDetails().exists()).toBe(false);
     expect(observabilityClientMock.isObservabilityEnabled).toHaveBeenCalled();
   });
 
@@ -90,25 +98,26 @@ describe('MetricsDetails', () => {
       expect(chart.props('metricData')).toEqual(mockMetricData);
     });
 
-    describe('header', () => {
-      it('renders the details header', () => {
-        const header = findHeader();
-        expect(header.exists()).toBe(true);
-        expect(header.find(`[data-testid="metric-title"]`).text()).toBe(
-          'container_cpu_usage_seconds_total',
-        );
-        expect(header.find(`[data-testid="metric-description"]`).text()).toBe(
-          'System disk operations',
-        );
-        expect(header.find(`[data-testid="metric-type"]`).text()).toBe('Type:\u00a0Gauge');
-      });
+    it('renders the details header', () => {
+      expect(findHeader().exists()).toBe(true);
+      expect(findHeaderTitle().text()).toBe(METRIC_ID);
+      expect(findHeaderType().text()).toBe(`Type:\u00a0${METRIC_TYPE}`);
+      expect(findHeaderDescription().text()).toBe('System disk operations');
+    });
 
-      it('does not render the header if the metric data is empty', () => {
+    describe('with no data', () => {
+      beforeEach(async () => {
         observabilityClientMock.fetchMetric.mockResolvedValueOnce([]);
 
-        mountComponent();
-
-        expect(findHeader().exists()).toBe(false);
+        await mountComponent();
+      });
+      it('only renders the title and type headers', () => {
+        expect(findHeaderTitle().text()).toBe(METRIC_ID);
+        expect(findHeaderType().text()).toBe(`Type:\u00a0${METRIC_TYPE}`);
+        expect(findHeaderDescription().text()).toBe('');
+      });
+      it('renders the empty state', () => {
+        expect(findEmptyState().exists()).toBe(true);
       });
     });
   });
@@ -122,23 +131,36 @@ describe('MetricsDetails', () => {
     it('redirects to metricsIndexUrl', () => {
       expect(visitUrl).toHaveBeenCalledWith(props.metricsIndexUrl);
     });
-
-    it('does not render the metrics details', () => {
-      expect(findMetricDetails().exists()).toBe(false);
-    });
   });
 
   describe('error handling', () => {
-    it('if isObservabilityEnabled fails, it renders an alert and empty page', async () => {
+    beforeEach(async () => {
       observabilityClientMock.isObservabilityEnabled.mockRejectedValueOnce('error');
 
       await mountComponent();
+    });
 
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Error: Failed to load metrics details. Try reloading the page.',
+    describe.each([
+      ['isObservabilityEnabled', () => observabilityClientMock.isObservabilityEnabled],
+      ['fetchMetric', () => observabilityClientMock.fetchMetric],
+    ])('when %s fails', (_, mockFn) => {
+      beforeEach(async () => {
+        mockFn().mockRejectedValueOnce('error');
+        await mountComponent();
       });
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findMetricDetails().exists()).toBe(false);
+      it('renders an alert', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'Error: Failed to load metrics details. Try reloading the page.',
+        });
+      });
+
+      it('only renders the empty state and header', () => {
+        expect(findMetricDetails().exists()).toBe(true);
+        expect(findEmptyState().exists()).toBe(true);
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findHeader().exists()).toBe(true);
+        expect(findChart().exists()).toBe(false);
+      });
     });
   });
 });
