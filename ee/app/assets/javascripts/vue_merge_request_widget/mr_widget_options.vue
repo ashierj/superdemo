@@ -11,7 +11,6 @@ import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_ge
 import WidgetContainer from './components/widget/app.vue';
 import loadPerformanceExtension from './extensions/load_performance';
 import browserPerformanceExtension from './extensions/browser_performance';
-import licenseComplianceExtension from './extensions/license_compliance';
 
 export default {
   components: {
@@ -39,9 +38,6 @@ export default {
     };
   },
   computed: {
-    shouldRenderLicenseReport() {
-      return this.mr?.enabledReports?.licenseScanning;
-    },
     hasBrowserPerformanceMetrics() {
       return (
         this.mr.browserPerformanceMetrics?.degraded?.length > 0 ||
@@ -145,10 +141,6 @@ export default {
         this.loadingLoadPerformanceFailed,
       );
     },
-
-    licensesApiPath() {
-      return gl?.mrWidgetData?.license_scanning_comparison_path || null;
-    },
   },
   watch: {
     hasBrowserPerformancePaths(newVal) {
@@ -163,16 +155,8 @@ export default {
         this.fetchLoadPerformance();
       }
     },
-    shouldRenderLicenseReport(newVal) {
-      if (newVal) {
-        this.registerLicenseCompliance();
-      }
-    },
   },
   methods: {
-    registerLicenseCompliance() {
-      registerExtension(licenseComplianceExtension);
-    },
     registerLoadPerformance() {
       registerExtension(loadPerformanceExtension);
     },
