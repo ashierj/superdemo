@@ -472,10 +472,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
 
           context 'when the task is code generation' do
-            before do
-              stub_feature_flags(code_generation_anthropic: false)
-            end
-
             let(:current_user) { authorized_user }
             let(:prefix) do
               <<~PREFIX
@@ -485,26 +481,79 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             let(:prompt) do
-              <<~PROMPT
-              This is a task to write new Python code in a file 'test.py' based on a given description.
-              You get first the already existing code file and then the description of the code that needs to be created.
-              It is your task to write valid and working Python code.
-              Only return in your response new code.
+              <<~PROMPT.chomp
+                Human: You are a coding autocomplete agent. We want to generate new Python code inside the
+                file 'test.py' based on instructions from the user.
+                Here are a few examples of successfully generated code by other autocomplete agents:
 
-              Already existing code:
+                <examples>
 
-              ```py
-              #{prefix}
-              ```
+                  <example>
+                    H: <existing_code>
+                         class Project:
+                  def __init__(self, name, public):
+                    self.name = name
+                    self.visibility = 'PUBLIC' if public
 
+                    # is this project public?
+                <cursor>
 
-              Create new code for the following description:
-              Generate the most likely code based on instructions.
+                    # print name of this project
+                       </existing_code>
+
+                    A: <new_code>def is_public(self):
+                  self.visibility == 'PUBLIC'</new_code>
+                  </example>
+
+                  <example>
+                    H: <existing_code>
+                         # get the current user's name from the session data
+                def get_user(session):
+                <cursor>
+
+                # is the current user an admin
+                       </existing_code>
+
+                    A: <new_code>username = None
+                if 'username' in session:
+                  username = session['username']
+                return username</new_code>
+                  </example>
+
+                </examples>
+
+                <existing_code>
+                #{prefix}<cursor>
+                </existing_code>
+
+                The existing code is provided in <existing_code></existing_code> tags.
+                The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
+                In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
+                likely new code to generate at the cursor position to fulfill the instructions.
+
+                The comment directly before the <cursor> position is the instruction,
+                all other comments are not instructions.
+
+                When generating the new code, please ensure the following:
+                1. It is valid Python code.
+                2. It matches the existing code's variable, parameter and function names.
+                3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
+                4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+                5. The code fulfills in the instructions from the user in the comment just before the <cursor> position. All other comments are not instructions.
+                6. Do not add any comments that duplicates any of already existing comments, including the comment with instructions.
+
+                Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+                If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+
+                Generate the most likely code based on instructions.
+
+                Assistant: <new_code>
               PROMPT
             end
 
             it 'sends requests to the code generation endpoint' do
               expected_body = body.merge(
+                model_provider: 'anthropic',
                 prompt_version: 2,
                 prompt: prompt,
                 current_file: {
@@ -577,10 +626,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
 
           context 'when the task is code generation' do
-            before do
-              stub_feature_flags(code_generation_anthropic: false)
-            end
-
             let(:current_user) { authorized_user }
             let(:prefix) do
               <<~PREFIX
@@ -590,26 +635,79 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             let(:prompt) do
-              <<~PROMPT
-                This is a task to write new Python code in a file 'test.py' based on a given description.
-                You get first the already existing code file and then the description of the code that needs to be created.
-                It is your task to write valid and working Python code.
-                Only return in your response new code.
+              <<~PROMPT.chomp
+                Human: You are a coding autocomplete agent. We want to generate new Python code inside the
+                file 'test.py' based on instructions from the user.
+                Here are a few examples of successfully generated code by other autocomplete agents:
 
-                Already existing code:
+                <examples>
 
-                ```py
-                #{prefix}
-                ```
+                  <example>
+                    H: <existing_code>
+                         class Project:
+                  def __init__(self, name, public):
+                    self.name = name
+                    self.visibility = 'PUBLIC' if public
 
+                    # is this project public?
+                <cursor>
 
-                Create new code for the following description:
+                    # print name of this project
+                       </existing_code>
+
+                    A: <new_code>def is_public(self):
+                  self.visibility == 'PUBLIC'</new_code>
+                  </example>
+
+                  <example>
+                    H: <existing_code>
+                         # get the current user's name from the session data
+                def get_user(session):
+                <cursor>
+
+                # is the current user an admin
+                       </existing_code>
+
+                    A: <new_code>username = None
+                if 'username' in session:
+                  username = session['username']
+                return username</new_code>
+                  </example>
+
+                </examples>
+
+                <existing_code>
+                #{prefix}<cursor>
+                </existing_code>
+
+                The existing code is provided in <existing_code></existing_code> tags.
+                The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
+                In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
+                likely new code to generate at the cursor position to fulfill the instructions.
+
+                The comment directly before the <cursor> position is the instruction,
+                all other comments are not instructions.
+
+                When generating the new code, please ensure the following:
+                1. It is valid Python code.
+                2. It matches the existing code's variable, parameter and function names.
+                3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
+                4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+                5. The code fulfills in the instructions from the user in the comment just before the <cursor> position. All other comments are not instructions.
+                6. Do not add any comments that duplicates any of already existing comments, including the comment with instructions.
+
+                Return new code enclosed in <new_code></new_code> tags. We will then insert this at the <cursor> position.
+                If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+
                 Generate the most likely code based on instructions.
+
+                Assistant: <new_code>
               PROMPT
             end
 
             it 'sends requests to the code generation endpoint' do
               expected_body = body.merge(
+                model_provider: 'anthropic',
                 prompt_version: 2,
                 prompt: prompt,
                 current_file: {

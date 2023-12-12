@@ -48,10 +48,6 @@ module CodeSuggestions
       Feature.enabled?(:code_completion_anthropic, current_user) ? ANTHROPIC : VERTEX_AI
     end
 
-    def code_generation_model_family
-      Feature.enabled?(:code_generation_anthropic, current_user) ? ANTHROPIC : VERTEX_AI
-    end
-
     def code_completion_params
       params.merge(code_completion_model_family: code_completion_model_family)
     end
@@ -60,7 +56,7 @@ module CodeSuggestions
       params.merge(
         prefix: instructions[:prefix],
         instruction: instructions[:instruction],
-        code_generation_model_family: code_generation_model_family
+        code_generation_model_family: ANTHROPIC
       )
     end
   end
