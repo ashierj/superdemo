@@ -8,7 +8,6 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
-import { periodFilterToDate } from '../trace_utils';
 import {
   queryToFilterObj,
   filterObjToQuery,
@@ -47,8 +46,6 @@ export default {
       traces: [],
       filters: queryToFilterObj(filterQuery),
       nextPageToken: null,
-      chartRangeMin: null,
-      chartRangeMax: null,
       highlightedTraceId: null,
       sortBy: sortBy || DEFAULT_SORTING_OPTION,
     };
@@ -77,7 +74,7 @@ export default {
     this.fetchTraces();
   },
   methods: {
-    async fetchTraces({ skipUpdatingChartRange = false } = {}) {
+    async fetchTraces() {
       this.loading = true;
 
       try {
@@ -90,12 +87,6 @@ export default {
           pageSize: PAGE_SIZE,
           sortBy: this.sortBy,
         });
-        if (!skipUpdatingChartRange) {
-          const { min, max } = periodFilterToDate(this.filters);
-          this.chartRangeMax = max;
-          this.chartRangeMin = min;
-        }
-
         this.traces = [...this.traces, ...traces];
         if (nextPageToken) {
           this.nextPageToken = nextPageToken;
@@ -169,8 +160,6 @@ export default {
       />
       <scatter-chart
         :height="$options.CHART_HEIGHT"
-        :range-min="chartRangeMin"
-        :range-max="chartRangeMax"
         :traces="traces"
         @chart-item-selected="chartItemSelected"
         @chart-item-over="debouncedChartItemOver"

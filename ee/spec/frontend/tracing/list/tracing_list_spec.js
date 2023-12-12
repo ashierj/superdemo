@@ -3,7 +3,6 @@ import { nextTick } from 'vue';
 import { filterObjToFilterToken } from 'ee/tracing/list/filter_bar/filters';
 import FilteredSearch from 'ee/tracing/list/filter_bar/tracing_filtered_search.vue';
 import ScatterChart from 'ee/tracing/list/tracing_scatter_chart.vue';
-import * as traceUtils from 'ee/tracing/trace_utils';
 import TracingTableList from 'ee/tracing/list/tracing_table.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingList from 'ee/tracing/list/tracing_list.vue';
@@ -491,15 +490,7 @@ describe('TracingList', () => {
   });
 
   describe('scatter chart', () => {
-    const mockPeriodFilter = (filter) =>
-      jest.spyOn(traceUtils, 'periodFilterToDate').mockReturnValue(filter);
-
     beforeEach(async () => {
-      mockPeriodFilter({
-        min: new Date('2023-10-09 12:30:00'),
-        max: new Date('2023-10-09 15:30:00'),
-      });
-
       await mountComponent();
 
       wrapper.vm.$refs.tableList.$el.querySelector = jest
@@ -513,34 +504,6 @@ describe('TracingList', () => {
       const chart = findScatterChart();
       expect(chart.exists()).toBe(true);
       expect(chart.props('traces')).toEqual(mockResponse.traces);
-      expect(chart.props('rangeMin')).toEqual(new Date('2023-10-09 12:30:00'));
-      expect(chart.props('rangeMax')).toEqual(new Date('2023-10-09 15:30:00'));
-    });
-
-    it('updates the chart boundaries when changing the filters', async () => {
-      mockPeriodFilter({
-        min: new Date('2023-01-01 00:00:00'),
-        max: new Date('2023-01-02 00:00:00'),
-      });
-
-      await setFilters({});
-
-      const chart = findScatterChart();
-      expect(chart.props('rangeMin')).toEqual(new Date('2023-01-01 00:00:00'));
-      expect(chart.props('rangeMax')).toEqual(new Date('2023-01-02 00:00:00'));
-    });
-
-    it('does not updates the chart boundaries when scrolling down', async () => {
-      mockPeriodFilter({
-        min: new Date('2023-01-01 00:00:00'),
-        max: new Date('2023-01-02 00:00:00'),
-      });
-
-      await bottomReached();
-
-      const chart = findScatterChart();
-      expect(chart.props('rangeMin')).toEqual(new Date('2023-10-09 12:30:00'));
-      expect(chart.props('rangeMax')).toEqual(new Date('2023-10-09 15:30:00'));
     });
 
     it('goes to the trace details page on item selection', () => {
