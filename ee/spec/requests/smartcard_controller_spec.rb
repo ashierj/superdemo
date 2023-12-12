@@ -63,13 +63,24 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
     end
   end
 
-  describe '#extract_certificate' do
+  describe '#extract_certificate', :freeze_time do
     let(:certificate) { 'certificate' }
-    let(:certificate_headers) { { 'X-SSL-CLIENT-CERTIFICATE': certificate } }
+    let(:random_str) { SecureRandom.urlsafe_base64(12) }
+    let(:nonce) do
+      Gitlab::Utils.ensure_utf8_size(random_str, bytes: 12.bytes)
+    end
+
+    let(:encrypted_certificate) do
+      timestamped_cert = "#{certificate}#{described_class::CERT_SEPARATOR}#{Time.now.utc.to_i}"
+      encrypted_cert = Gitlab::CryptoHelper.aes256_gcm_encrypt(timestamped_cert, nonce: nonce)
+      CGI.escape(encrypted_cert)
+    end
+
+    let(:nginx_certificate_headers) { { 'X-SSL-CLIENT-CERTIFICATE': certificate } }
     let(:params) { {} }
 
     subject do
-      get(extract_certificate_smartcard_path, headers: certificate_headers,
+      get(extract_certificate_smartcard_path, headers: nginx_certificate_headers,
                                               params: params)
     end
 
@@ -80,6 +91,9 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
         client_certificate_required_host: smartcard_host,
         client_certificate_required_port: smartcard_port
       )
+
+      allow(SecureRandom).to(receive(:urlsafe_base64).and_return(random_str))
+
       host! "#{smartcard_host}:#{smartcard_port}"
     end
 
@@ -95,7 +109,8 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
         expect(response.location).to(
           eq(verify_certificate_smartcard_url(host: ::Gitlab.config.gitlab.host,
                                               port: ::Gitlab.config.gitlab.port,
-                                              client_certificate: certificate)))
+                                              client_certificate: encrypted_certificate,
+                                              nonce: nonce)))
       end
 
       context 'with provider param' do
@@ -109,13 +124,14 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
           expect(response.location).to(
             eq(verify_certificate_smartcard_url(host: ::Gitlab.config.gitlab.host,
                                                 port: ::Gitlab.config.gitlab.port,
-                                                client_certificate: certificate,
+                                                client_certificate: encrypted_certificate,
+                                                nonce: nonce,
                                                 provider: provider)))
         end
       end
 
       context 'missing NGINX client certificate header' do
-        let(:certificate_headers) { {} }
+        let(:nginx_certificate_headers) { {} }
 
         it 'renders unauthorized' do
           subject
@@ -222,6 +238,28 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
             expect(request.env['warden']).not_to be_authenticated
           end
         end
+
+        context 'when timestamp of certificate param is expired' do
+          let(:login_timestamp) { (Time.now.utc - described_class::LOGIN_CUTOFF_LIMIT).to_i }
+
+          it 'renders unauthorized' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:unauthorized)
+            expect(request.env['warden']).not_to be_authenticated
+          end
+        end
+
+        context 'when timestamp of certificate param is in the future' do
+          let(:login_timestamp) { (Time.now.utc + 1.minute).to_i }
+
+          it 'renders unauthorized' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:unauthorized)
+            expect(request.env['warden']).not_to be_authenticated
+          end
+        end
       end
 
       context 'with smartcard_auth disabled' do
@@ -238,7 +276,19 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
     end
 
     let(:client_certificate) { 'certificate' }
-    let(:params) { { client_certificate: client_certificate } }
+    let(:random_str) { SecureRandom.urlsafe_base64(12) }
+    let(:nonce) do
+      Gitlab::Utils.ensure_utf8_size(random_str, bytes: 12.bytes)
+    end
+
+    let(:login_timestamp) { Time.now.utc.to_i }
+    let(:encrypted_client_certificate) do
+      timestamped_cert = "#{client_certificate}#{described_class::CERT_SEPARATOR}#{login_timestamp}"
+      encrypted_cert = Gitlab::CryptoHelper.aes256_gcm_encrypt(timestamped_cert, nonce: nonce)
+      CGI.escape(encrypted_cert)
+    end
+
+    let(:params) { { client_certificate: encrypted_client_certificate, nonce: nonce } }
     let(:serial) { '42' }
     let(:subject_dn) { '/O=Random Corp Ltd/CN=gitlab-user/emailAddress=gitlab-user@random-corp.org' }
     let(:issuer_dn) { 'CN=Random Corp,O=Random Corp Ltd,C=US' }
