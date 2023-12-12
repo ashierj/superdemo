@@ -6,6 +6,7 @@ import { createMockSubscription as createMockApolloSubscription } from 'mock-apo
 import approvedByCurrentUser from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql.json';
 import getStateQueryResponse from 'test_fixtures/graphql/merge_requests/get_state.query.graphql.json';
 import readyToMergeResponse from 'test_fixtures/graphql/merge_requests/states/ready_to_merge.query.graphql.json';
+import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance/index.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import {
@@ -23,7 +24,6 @@ import MrWidgetApprovals from 'ee_else_ce/vue_merge_request_widget/components/ap
 import Loading from '~/vue_merge_request_widget/components/loading.vue';
 
 // EE Widget Extensions
-import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';

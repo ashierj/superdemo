@@ -36,7 +36,7 @@ RSpec.describe EE::SamlProvidersHelper, feature_category: :system_access do
     end
   end
 
-  describe '#saml_membership_role_selector_data' do
+  describe '#saml_membership_role_selector_data', feature_category: :permissions do
     let(:access_level) { Gitlab::Access::DEVELOPER }
     # rubocop:disable RSpec/FactoryBot/AvoidCreate -- we need these objects to be persisted
     let(:member_role) { create(:member_role, namespace: group, base_access_level: access_level) }
@@ -47,7 +47,7 @@ RSpec.describe EE::SamlProvidersHelper, feature_category: :system_access do
 
     let(:expected_standard_role_data) do
       {
-        standard_roles: group.access_level_roles.map { |text, id| { id: id, text: text } },
+        standard_roles: group.access_level_roles,
         current_standard_role: access_level
       }
     end
@@ -61,7 +61,11 @@ RSpec.describe EE::SamlProvidersHelper, feature_category: :system_access do
     context 'when custom roles are enabled' do
       let(:expected_custom_role_data) do
         {
-          custom_roles: [{ id: member_role.id, text: member_role.name }],
+          custom_roles: [{
+            member_role_id: member_role.id,
+            name: member_role.name,
+            base_access_level: member_role.base_access_level
+          }],
           current_custom_role_id: member_role.id
         }
       end

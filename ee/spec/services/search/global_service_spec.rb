@@ -176,22 +176,62 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
     end
 
     context 'wiki' do
-      let_it_be_with_reload(:project) { create(:project, :wiki_repo) }
-
       let(:scope) { 'wiki_blobs' }
       let(:search) { 'term' }
 
-      where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
-        permission_table_for_guest_feature_access
-      end
+      context 'for project wikis' do
+        let_it_be_with_reload(:project) { create(:project, :wiki_repo) }
 
-      with_them do
-        before do
-          project.wiki.create_page('test.md', "# #{search}")
-          project.wiki.index_wiki_blobs
+        where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
+          permission_table_for_guest_feature_access
         end
 
-        it_behaves_like 'search respects visibility'
+        with_them do
+          before do
+            project.wiki.create_page('test.md', "# #{search}")
+            project.wiki.index_wiki_blobs
+          end
+
+          it_behaves_like 'search respects visibility'
+        end
+      end
+
+      context 'for group wikis' do
+        let_it_be_with_reload(:group) { create(:group, :public, :wiki_enabled) }
+        let_it_be_with_reload(:group2)  { create(:group, :public, :wiki_enabled) }
+        let(:user) { create_user_from_membership(group, membership) }
+        let_it_be(:group_wiki) { create(:group_wiki, container: group) }
+        let_it_be(:group_wiki2) { create(:group_wiki, container: group2) }
+
+        where(:group_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
+          permission_table_for_guest_feature_access
+        end
+
+        with_them do
+          before do
+            [group_wiki, group_wiki2].each do |wiki|
+              wiki.create_page('test.md', "# term")
+              wiki.index_wiki_blobs
+            end
+            group2.add_member(user, membership) if %i[admin anonymous non_member].exclude?(membership)
+          end
+
+          it 'respects visibility' do
+            enable_admin_mode!(user) if admin_mode
+            [group, group2].each do |g|
+              g.update!(
+                visibility_level: Gitlab::VisibilityLevel.level_value(group_level.to_s),
+                wiki_access_level: feature_access_level.to_s
+              )
+            end
+
+            ensure_elasticsearch_index!
+
+            expect_search_results(user, scope, expected_count: expected_count * 2) do |user|
+              described_class.new(user, search: search).execute
+            end
+          end
+        end
       end
     end
 

@@ -22,15 +22,20 @@ module Gitlab
 
       override :base_options
       def base_options
-        super.merge(search_scope: 'group', group_ids: [group.id]) # group_ids to options for traversal_ids filtering
+        super.merge(search_scope: 'group', group_id: group.id, group_ids: [group.id]) # group_ids to options for traversal_ids filtering
       end
 
       override :scope_options
       def scope_options(scope)
-        # User uses group_id for namespace_query
-        return super.except(:group_ids).merge(group_id: group.id) if scope == :users
-
-        super
+        # User uses group_id for namespace_yquery
+        case scope
+        when :users
+          super.except(:group_ids) # User uses group_id for namespace_query
+        when :wiki_blobs
+          super.merge(root_ancestor_ids: [group.root_ancestor.id])
+        else
+          super
+        end
       end
     end
   end

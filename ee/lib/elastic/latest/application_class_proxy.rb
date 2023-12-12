@@ -545,6 +545,25 @@ module Elastic
         query_hash.dig(*path) << filter_result
         query_hash
       end
+
+      def apply_simple_query_string(name:, fields:, query:, bool_expr:, count_only:)
+        path = if count_only
+                 fields = remove_fields_boost(fields)
+                 :filter
+               else
+                 :must
+               end
+
+        simple_query_string = {
+          simple_query_string: {
+            _name: name,
+            fields: fields,
+            query: query,
+            default_operator: :and
+          }
+        }
+        add_filter(bool_expr, path) { simple_query_string }
+      end
     end
   end
 end

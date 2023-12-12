@@ -2,10 +2,9 @@ import MockAdapter from 'axios-mock-adapter';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
-import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
-import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
-import ActionButtons from '~/vue_merge_request_widget/components/action_buttons.vue';
-import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
+import ActionButtons from '~/vue_merge_request_widget/components/widget/action_buttons.vue';
+
+import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance/index.vue';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   licenseComplianceNewLicenses,
@@ -25,8 +24,6 @@ describe('License Compliance extension', () => {
   let wrapper;
   let mock;
 
-  registerExtension(licenseComplianceExtension);
-
   const licenseComparisonPath =
     '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
   const licenseComparisonPathCollapsed =
@@ -36,18 +33,18 @@ describe('License Compliance extension', () => {
   const apiApprovalsPath = '/group-name/project-name/-/licenses#policies';
 
   const mockApi = (endpoint, statusCode, data) => {
-    mock.onGet(endpoint).reply(statusCode, data);
+    mock.onGet(endpoint).reply(statusCode, data, {});
   };
 
   const findToggleCollapsedButton = () => wrapper.findByTestId('toggle-button');
   const findAllExtensionListItems = () => wrapper.findAllByTestId('extension-list-item');
   const findActionButtons = () => wrapper.findComponent(ActionButtons);
-  const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"]`);
+  const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"] span`);
   const findFullReportLink = () => findByHrefAttribute(fullReportPath);
   const findSummary = () => wrapper.findByTestId('widget-extension-top-level-summary');
 
   const createComponent = (licenseComplianceProps = {}) => {
-    wrapper = mountExtended(extensionsContainer, {
+    wrapper = mountExtended(licenseComplianceExtension, {
       propsData: {
         mr: {
           licenseCompliance: {

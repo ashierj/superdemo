@@ -1,11 +1,12 @@
+<script>
 import { isEmpty } from 'lodash';
 import { sprintf, s__, n__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
+import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import { parseDependencies } from './utils';
 
-// TODO: Clean up both status versions as part of https://gitlab.com/gitlab-org/gitlab/-/issues/356206
 const APPROVAL_STATUS_TO_ICON = {
   allowed: EXTENSION_ICONS.success,
   denied: EXTENSION_ICONS.failed,
@@ -19,115 +20,143 @@ export default {
     loading: s__('ciReport|License Compliance test metrics results are being parsed'),
     error: s__('ciReport|License Compliance failed loading results'),
   },
-  props: ['licenseCompliance'],
-  enablePolling: true,
-  enableExpandedPolling: true,
+  components: {
+    MrWidget,
+  },
+  props: {
+    mr: {
+      type: Object,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      licenseComplianceData: {
+        collapsed: null,
+        expanded: null,
+      },
+    };
+  },
   computed: {
     newLicenses() {
-      return this.collapsedData.new_licenses || 0;
+      return this.licenseComplianceData.collapsed?.new_licenses || 0;
     },
     existingLicenses() {
-      return this.collapsedData.existing_licenses || 0;
+      return this.licenseComplianceData.collapsed?.existing_licenses || 0;
     },
     licenseReportCount() {
-      return this.newLicenses();
+      return this.newLicenses;
     },
     hasReportItems() {
-      return this.licenseReportCount() > 0;
+      return this.licenseReportCount > 0;
     },
     hasBaseReportLicenses() {
-      return this.existingLicenses() > 0;
+      return this.existingLicenses > 0;
     },
     hasDeniedLicense() {
-      return this.collapsedData.has_denied_licenses;
+      return this.licenseComplianceData.collapsed?.has_denied_licenses;
     },
     shouldCollapse() {
-      return this.hasReportItems();
+      return this.hasReportItems;
     },
     tertiaryButtons() {
       return [
         {
           text: s__('ciReport|Full report'),
-          href: this.licenseCompliance.license_scanning.full_report_path,
+          href: this.mr.licenseCompliance.license_scanning.full_report_path,
           target: '_self',
         },
       ];
     },
     hasApprovalRequired() {
-      return Boolean(this.collapsedData.approval_required);
+      return Boolean(this.licenseComplianceData.collapsed?.approval_required);
     },
     summaryTextWithReportItems() {
-      if (this.hasApprovalRequired() && this.hasDeniedLicense()) {
-        if (this.hasBaseReportLicenses()) {
+      if (this.hasApprovalRequired && this.hasDeniedLicense) {
+        if (this.hasBaseReportLicenses) {
           return n__(
             'LicenseCompliance|License Compliance detected %d new license and policy violation; approval required',
             'LicenseCompliance|License Compliance detected %d new licenses and policy violations; approval required',
-            this.licenseReportCount(),
+            this.licenseReportCount,
           );
         }
         return n__(
           'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only; approval required',
           'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only; approval required',
-          this.licenseReportCount(),
+          this.licenseReportCount,
         );
       }
 
-      if (this.hasBaseReportLicenses() && !this.hasDeniedLicense()) {
+      if (this.hasBaseReportLicenses && !this.hasDeniedLicense) {
         return n__(
           'LicenseCompliance|License Compliance detected %d new license',
           'LicenseCompliance|License Compliance detected %d new licenses',
-          this.licenseReportCount(),
+          this.licenseReportCount,
         );
       }
-      if (this.hasBaseReportLicenses() && this.hasDeniedLicense()) {
+      if (this.hasBaseReportLicenses && this.hasDeniedLicense) {
         return n__(
           'LicenseCompliance|License Compliance detected %d new license and policy violation',
           'LicenseCompliance|License Compliance detected %d new licenses and policy violations',
-          this.licenseReportCount(),
+          this.licenseReportCount,
         );
       }
-      if (!this.hasBaseReportLicenses() && this.hasDeniedLicense()) {
+      if (!this.hasBaseReportLicenses && this.hasDeniedLicense) {
         return n__(
           'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only',
           'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only',
-          this.licenseReportCount(),
+          this.licenseReportCount,
         );
       }
       return n__(
         'LicenseCompliance|License Compliance detected %d license for the source branch only',
         'LicenseCompliance|License Compliance detected %d licenses for the source branch only',
-        this.licenseReportCount(),
+        this.licenseReportCount,
       );
     },
-    summary() {
-      if (this.hasReportItems()) {
-        return this.summaryTextWithReportItems();
+    summaryText() {
+      if (this.hasReportItems) {
+        return this.summaryTextWithReportItems;
       }
 
-      if (this.hasBaseReportLicenses()) {
+      if (this.hasBaseReportLicenses) {
         return s__('LicenseCompliance|License Compliance detected no new licenses');
       }
       return s__(
         'LicenseCompliance|License Compliance detected no licenses for the source branch only',
       );
     },
+    summary() {
+      return {
+        title: this.summaryText,
+      };
+    },
     statusIcon() {
-      if (this.newLicenses() === 0) {
+      if (this.newLicenses === 0) {
         return EXTENSION_ICONS.success;
       }
       return EXTENSION_ICONS.warning;
     },
+    licenseComplianceCollapsedPath() {
+      return this.mr.licenseCompliance.license_scanning_comparison_collapsed_path;
+    },
+    licenseComplianceExpandedPath() {
+      return this.mr.licenseCompliance.license_scanning_comparison_path;
+    },
   },
   methods: {
     fetchCollapsedData() {
-      const { license_scanning_comparison_collapsed_path } = this.licenseCompliance;
+      return axios.get(this.licenseComplianceCollapsedPath).then((res) => {
+        this.licenseComplianceData.collapsed = res.data;
 
-      return this.fetchReport(license_scanning_comparison_collapsed_path);
+        return {
+          ...res,
+          data: res.data,
+        };
+      });
     },
-    fetchFullData() {
-      const { license_scanning_comparison_path } = this.licenseCompliance;
-
-      return this.fetchReport(license_scanning_comparison_path).then((res) => {
+    fetchExpandedData() {
+      return axios(this.licenseComplianceExpandedPath).then((res) => {
         const { data = {} } = res;
 
         if (isEmpty(data)) {
@@ -147,7 +176,7 @@ export default {
             actions = [
               {
                 text: n__('Used by %d package', 'Used by %d packages', e.dependencies.length),
-                href: this.licenseCompliance.license_scanning.full_report_path,
+                href: this.mr.licenseCompliance.license_scanning.full_report_path,
               },
             ];
           } else {
@@ -213,11 +242,27 @@ export default {
               ]
             : []),
         ];
+
+        this.licenseComplianceData.expanded = licenseSections;
+
         return { ...res, data: licenseSections };
       });
     },
-    fetchReport(endpoint) {
-      return axios.get(endpoint);
-    },
   },
 };
+</script>
+
+<template>
+  <mr-widget
+    :action-buttons="tertiaryButtons"
+    :error-text="$options.i18n.error"
+    :loading-text="$options.i18n.loading"
+    :fetch-collapsed-data="fetchCollapsedData"
+    :fetch-expanded-data="fetchExpandedData"
+    :status-icon-name="statusIcon"
+    :widget-name="$options.name"
+    :summary="summary"
+    :is-collapsible="shouldCollapse"
+    :content="licenseComplianceData.expanded"
+  />
+</template>

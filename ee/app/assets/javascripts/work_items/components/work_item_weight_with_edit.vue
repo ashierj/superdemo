@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlForm, GlFormInput, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlForm, GlFormInput, GlLoadingIcon, GlTooltipDirective } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Tracking from '~/tracking';
 import {
@@ -18,6 +18,7 @@ export default {
     GlButton,
     GlForm,
     GlFormInput,
+    GlLoadingIcon,
   },
   mixins: [Tracking.mixin()],
   inject: ['hasIssueWeightsFeature'],
@@ -50,11 +51,15 @@ export default {
       isEditing: false,
       clickingClearButton: false,
       workItem: {},
+      isUpdating: false,
     };
   },
   computed: {
     hasWeight() {
       return this.weight !== null;
+    },
+    showRemoveWeight() {
+      return this.hasWeight && !this.isUpdating;
     },
     tracking() {
       return {
@@ -83,9 +88,13 @@ export default {
     updateWeight(weight) {
       if (this.clickingClearButton) return;
       if (!this.canUpdate) return;
-      this.isEditing = false;
 
-      if (this.weight === weight) return;
+      if (this.weight === weight) {
+        this.isEditing = false;
+        return;
+      }
+
+      this.isUpdating = true;
 
       this.track('updated_weight');
       this.$apollo
@@ -109,6 +118,10 @@ export default {
           const msg = sprintfWorkItem(I18N_WORK_ITEM_ERROR_UPDATING, this.workItemType);
           this.$emit('error', msg);
           Sentry.captureException(error);
+        })
+        .finally(() => {
+          this.isUpdating = false;
+          this.isEditing = false;
         });
     },
   },
@@ -132,12 +145,15 @@ export default {
       >
     </div>
     <gl-form v-if="isEditing" @submit.prevent="blurInput">
-      <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+      <div class="gl-display-flex gl-align-items-center">
         <label :for="$options.inputId" class="gl-mb-0">{{ __('Weight') }}</label>
+        <gl-loading-icon v-if="isUpdating" size="sm" inline class="gl-ml-3" />
         <gl-button
           data-testid="apply-weight"
           category="tertiary"
           size="small"
+          class="gl-ml-auto"
+          :disabled="isUpdating"
           @click="isEditing = false"
           >{{ __('Apply') }}</gl-button
         >
@@ -150,6 +166,7 @@ export default {
           min="0"
           class="hide-unfocused-input-decoration gl-display-block"
           type="number"
+          :disabled="isUpdating"
           :placeholder="__('Enter a number')"
           :value="weight"
           autofocus
@@ -158,7 +175,7 @@ export default {
           @keydown.exact.esc.stop="blurInput"
         />
         <gl-button
-          v-if="hasWeight"
+          v-if="showRemoveWeight"
           v-gl-tooltip
           data-testid="remove-weight"
           variant="default"

@@ -1,4 +1,4 @@
-import { GlForm, GlFormInput } from '@gitlab/ui';
+import { GlForm, GlFormInput, GlLoadingIcon } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight_with_edit.vue';
@@ -25,6 +25,7 @@ describe('WorkItemWeight component', () => {
   const findLabel = () => wrapper.find('label');
   const findForm = () => wrapper.findComponent(GlForm);
   const findInput = () => wrapper.findComponent(GlFormInput);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findClearButton = () => wrapper.find('[data-testid="remove-weight"]');
 
   const createComponent = ({
@@ -79,6 +80,27 @@ describe('WorkItemWeight component', () => {
 
       expect(findLabel().exists()).toBe(true);
       expect(findHeader().classes('gl-sr-only')).toBe(true);
+    });
+
+    it('shows loading spinner while updating', async () => {
+      createComponent({
+        isEditing: true,
+        weight: 0,
+        canUpdate: true,
+      });
+
+      await nextTick();
+
+      findInput().setValue('1');
+      findInput().trigger('blur');
+
+      await nextTick();
+
+      expect(findLoadingIcon().exists()).toBe(true);
+
+      await waitForPromises();
+
+      expect(findLoadingIcon().exists()).toBe(false);
     });
   });
 
@@ -210,6 +232,27 @@ describe('WorkItemWeight component', () => {
           },
         },
       });
+    });
+
+    it('is disabled while updating, and removed after', async () => {
+      createComponent({
+        isEditing: true,
+        weight: 0,
+        canUpdate: true,
+      });
+
+      await nextTick();
+
+      findInput().setValue('1');
+      findInput().trigger('blur');
+
+      await nextTick();
+
+      expect(findInput().attributes('disabled')).toBe('disabled');
+
+      await waitForPromises();
+
+      expect(findInput().exists()).toBe(false);
     });
 
     it('does not call a mutation to update the weight when the input value is the same', async () => {
