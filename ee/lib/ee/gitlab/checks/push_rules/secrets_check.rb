@@ -5,9 +5,31 @@ module EE
     module Checks
       module PushRules
         class SecretsCheck < ::Gitlab::Checks::BaseBulkChecker
-          BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
+          ERROR_MESSAGES = {
+            failed_to_scan_regex_error: "\n-- Failed to scan blob(id: %{blob_id}) due to regex error.\n",
+            blob_timed_out_error: "\n-- Scanning blob(id: %{blob_id}) timed out.\n",
+            scan_timeout_error: 'Secret detection scan timed out.',
+            scan_initialization_error: 'Secret detection scan failed to initialize.',
+            invalid_input_error: 'Secret detection scan failed due to invalid input.',
+            invalid_scan_status_code_error: 'Invalid secret detection scan status, check passed.'
+          }.freeze
 
-          LOG_MESSAGE = "Detecting secrets..."
+          LOG_MESSAGES = {
+            secrets_check: 'Detecting secrets...',
+            secrets_not_found: 'Secret detection scan completed with no findings.',
+            found_secrets: 'Secret detection scan completed with one or more findings.',
+            found_secrets_post_message: "\n\nPlease remove the identified secrets in your commits and try again.",
+            found_secrets_with_errors: 'Secret detection scan completed with one or more findings ' \
+                                       'but some errors occured during the scan.',
+            finding_details_message: <<~MESSAGE
+              \n\nBlob id: %{blob_id}
+              -- Line: %{line_number}
+              -- Type: %{type}
+              -- Description: %{description}\n
+            MESSAGE
+          }.freeze
+
+          BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
 
           def validate!
             # Return early and not perform the check if:
@@ -22,7 +44,7 @@ module EE
 
             return unless push_rule && project.licensed_feature_available?(:pre_receive_secret_detection)
 
-            logger.log_timed(LOG_MESSAGE) do
+            logger.log_timed(LOG_MESSAGES[:secrets_check]) do
               # List all blobs via `ListAllBlobs()` based on the existence of a
               # quarantine directory. If no directory exists, we use `ListBlobs()` instead.
               blobs =
@@ -61,10 +83,27 @@ module EE
 
               # Filter out larger than BLOB_BYTES_LIMIT blobs and binary blobs.
               blobs.reject! { |blob| blob.size > BLOB_BYTES_LIMIT || blob.binary }
+
+              # Pass blobs to gem for scanning.
+              response = ::Gitlab::SecretDetection::Scan
+                .new(logger: secret_detection_logger)
+                .secrets_scan(blobs, timeout: logger.time_left)
+
+              # Handle the response depending on the status returned.
+              format_response(response)
+
+            # TODO: Perhaps have a separate message for each and better logging?
+            rescue ::Gitlab::SecretDetection::Scan::RulesetParseError,
+              ::Gitlab::SecretDetection::Scan::RulesetCompilationError => _
+              secret_detection_logger.error(message: ERROR_MESSAGES[:scan_initialization_error])
             end
           end
 
           private
+
+          def secret_detection_logger
+            @secret_detection_logger ||= ::Gitlab::SecretDetectionLogger.build
+          end
 
           def ignore_alternate_directories?
             git_env = ::Gitlab::Git::HookEnv.all(project.repository.gl_repository)
@@ -85,6 +124,63 @@ module EE
 
             # Remove blobs that already exist.
             blobs.reject { |blob| map_blob_id_to_existence[blob.id] }
+          end
+
+          def format_response(response)
+            case response.status
+            when ::Gitlab::SecretDetection::Status::NOT_FOUND
+              # No secrets found, we log and skip the check.
+              secret_detection_logger.info(message: LOG_MESSAGES[:secrets_not_found])
+            when ::Gitlab::SecretDetection::Status::FOUND
+              # One or more secrets found, generate message with findings and fail check.
+              message = LOG_MESSAGES[:found_secrets]
+
+              response.results.each do |finding|
+                message += format(LOG_MESSAGES[:finding_details_message], finding.to_h)
+              end
+
+              message += LOG_MESSAGES[:found_secrets_post_message]
+
+              secret_detection_logger.info(message: LOG_MESSAGES[:found_secrets])
+
+              raise ::Gitlab::GitAccess::ForbiddenError, message
+            when ::Gitlab::SecretDetection::Status::FOUND_WITH_ERRORS
+              # One or more secrets found, but with scan errors, so we
+              # generate a message with findings and errors, and fail the check.
+
+              message = LOG_MESSAGES[:found_secrets_with_errors]
+
+              response.results.each do |finding|
+                case finding.status
+                when ::Gitlab::SecretDetection::Status::FOUND
+                  message += format(LOG_MESSAGES[:finding_details_message], finding.to_h)
+                when ::Gitlab::SecretDetection::Status::SCAN_ERROR
+                  message += format(ERROR_MESSAGES[:failed_to_scan_regex_error], finding.to_h)
+                when ::Gitlab::SecretDetection::Status::BLOB_TIMEOUT
+                  message += format(ERROR_MESSAGES[:blob_timed_out_error], finding.to_h)
+                end
+              end
+
+              message += LOG_MESSAGES[:found_secrets_post_message]
+
+              secret_detection_logger.info(message: LOG_MESSAGES[:found_secrets_with_errors])
+
+              raise ::Gitlab::GitAccess::ForbiddenError, message
+            when ::Gitlab::SecretDetection::Status::SCAN_TIMEOUT
+              # Entire scan timed out, we log and skip the check for now.
+              secret_detection_logger.error(message: ERROR_MESSAGES[:scan_timeout_error])
+
+              # TODO: Decide if we should also fail the check here.
+              # raise ::Gitlab::GitAccess::ForbiddenError, ERROR_MESSAGES[:scan_timeout_error]
+            when ::Gitlab::SecretDetection::Status::INPUT_ERROR
+              # Scan failed to invalid input. We skip the check because an input error
+              # could be due to not having `blobs` being empty (i.e. no new blobs to scan).
+              secret_detection_logger.error(message: ERROR_MESSAGES[:invalid_input_error])
+            else
+              # Invalid status returned by the scanning service/gem, we don't
+              # know how to handle that, so nothing happens and we skip the check.
+              secret_detection_logger.error(message: ERROR_MESSAGES[:invalid_scan_status_code_error])
+            end
           end
         end
       end
