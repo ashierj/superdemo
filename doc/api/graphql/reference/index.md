@@ -5926,6 +5926,7 @@ Input type: `OrganizationCreateInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="mutationorganizationcreateavatar"></a>`avatar` | [`Upload`](#upload) | Avatar for the organization. |
 | <a id="mutationorganizationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationorganizationcreatedescription"></a>`description` | [`String`](#string) | Description of the organization. |
 | <a id="mutationorganizationcreatename"></a>`name` | [`String!`](#string) | Name for the organization. |
@@ -5951,6 +5952,7 @@ Input type: `OrganizationUpdateInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="mutationorganizationupdateavatar"></a>`avatar` | [`Upload`](#upload) | Avatar for the organization. |
 | <a id="mutationorganizationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationorganizationupdatedescription"></a>`description` | [`String`](#string) | Description of the organization. |
 | <a id="mutationorganizationupdateid"></a>`id` | [`OrganizationsOrganizationID!`](#organizationsorganizationid) | ID of the organization to mutate. |
@@ -23269,7 +23271,7 @@ Active period time range for on-call rotation.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="organizationavatarurl"></a>`avatarUrl` **{warning-solid}** | [`String`](#string) | **Introduced** in 16.7. This feature is an Experiment. It can be changed or removed at any time. Avatar URL of the organization. `null` until [#422418](https://gitlab.com/gitlab-org/gitlab/-/issues/422418) is complete. |
+| <a id="organizationavatarurl"></a>`avatarUrl` **{warning-solid}** | [`String`](#string) | **Introduced** in 16.7. This feature is an Experiment. It can be changed or removed at any time. Avatar URL of the organization. |
 | <a id="organizationdescription"></a>`description` **{warning-solid}** | [`String`](#string) | **Introduced** in 16.7. This feature is an Experiment. It can be changed or removed at any time. Description of the organization. |
 | <a id="organizationdescriptionhtml"></a>`descriptionHtml` **{warning-solid}** | [`String`](#string) | **Introduced** in 16.7. This feature is an Experiment. It can be changed or removed at any time. GitLab Flavored Markdown rendering of `description`. |
 | <a id="organizationid"></a>`id` **{warning-solid}** | [`ID!`](#id) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. ID of the organization. |
