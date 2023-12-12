@@ -173,11 +173,14 @@ RSpec.describe 'Epic index', feature_category: :global_search do
     context 'when the group is transferred', :sidekiq_inline do
       it 'tracks the epic via Elastic::NamespaceUpdateWorker' do
         expect(Elastic::NamespaceUpdateWorker).to receive(:perform_async).with(group.id).and_call_original
+        expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async)
+          .with(group.id, parent_group.id, { include_descendants: true }).once
         expect(ElasticAssociationIndexerWorker).to receive(:perform_async)
           .with(anything, group.id, [:epics])
           .and_call_original
 
         expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(epic).once
         Groups::TransferService.new(group, user).execute(another_group)
       end
     end
