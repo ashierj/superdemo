@@ -12,9 +12,5 @@ module Projects
     validates :target_branch, presence: true, length: { maximum: 255 }
 
     strip_attributes! :name
-
-    def name=(name)
-      super(name.try(:downcase))
-    end
   end
 end

@@ -22,7 +22,7 @@ RSpec.describe Projects::TargetBranchRule, feature_category: :code_review_workfl
       rule = described_class.new(name: '  TargetBranchRule  ')
       rule.valid?
 
-      expect(rule.name).to eq('targetbranchrule')
+      expect(rule.name).to eq('TargetBranchRule')
     end
   end
 end
