@@ -44953,6 +44953,9 @@ msgstr ""
 msgid "Smartcard authentication failed: client certificate header is missing."
 msgstr ""
 
+msgid "Smartcard authentication failed: login process exceeded the time limit."
+msgstr ""
+
 msgid "Snippet"
 msgstr ""
 
