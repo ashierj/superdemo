@@ -6,7 +6,7 @@ export const WORKSPACE = {
   id: 1,
   name: 'Workspace 1',
   namespace: 'Namespace',
-  projectId: 'gid://gitlab/Project/2',
+  projectId: 'gid://gitlab/Project/1',
   desiredState: WORKSPACE_DESIRED_STATES.restartRequested,
   actualState: WORKSPACE_STATES.starting,
   url: `${TEST_HOST}/workspace/1`,
@@ -16,7 +16,7 @@ export const WORKSPACE = {
 };
 
 export const PROJECT_ID = 1;
-export const PROJECT_FULL_PATH = 'gitlab-org/gitlab';
+export const PROJECT_FULL_PATH = 'gitlab-org/subgroup/gitlab';
 
 export const WORKSPACE_QUERY_RESULT = {
   data: {
@@ -39,7 +39,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
             url: 'https://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
-            projectId: 'gid://gitlab/Project/2',
+            projectId: 'gid://gitlab/Project/1',
             createdAt: '2023-04-29T18:24:34Z',
           },
           {
@@ -51,7 +51,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
             url: 'https://8000-workspace-1-1-rfu27q.workspaces.localdev.me?tkn=password',
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
-            projectId: 'gid://gitlab/Project/2',
+            projectId: 'gid://gitlab/Project/1',
             createdAt: '2023-05-01T18:24:34Z',
           },
         ],
@@ -89,14 +89,14 @@ export const SEARCH_PROJECTS_QUERY_RESULT = {
       nodes: [
         {
           id: 1,
-          nameWithNamespace: 'GitLab Org / GitLab',
-          fullPath: 'gitlab-org/gitlab',
+          nameWithNamespace: 'GitLab Org / Subgroup / GitLab',
+          fullPath: 'gitlab-org/subgroup/gitlab',
           visibility: 'public',
         },
         {
           id: 2,
-          nameWithNamespace: 'GitLab Org / GitLab Shell',
-          fullPath: 'gitlab-org/gitlab-shell',
+          nameWithNamespace: 'GitLab Org / Subgroup / GitLab Shell',
+          fullPath: 'gitlab-org/subgroup/gitlab-shell',
           visibility: 'public',
         },
       ],
@@ -107,8 +107,8 @@ export const SEARCH_PROJECTS_QUERY_RESULT = {
 export const GET_PROJECT_DETAILS_QUERY_RESULT = {
   data: {
     project: {
-      id: 'gid://gitlab/Project/79',
-      nameWithNamespace: 'Gitlab Org / GitLab Shell',
+      id: 'gid://gitlab/Project/1',
+      nameWithNamespace: 'GitLab Org / Subgroup / GitLab',
       repository: {
         rootRef: 'main',
         blobs: {
@@ -120,13 +120,25 @@ export const GET_PROJECT_DETAILS_QUERY_RESULT = {
       },
       group: {
         id: 'gid://gitlab/Group/80',
-        fullPath: 'gitlab-org',
+        fullPath: 'gitlab-org/subgroup',
       },
     },
   },
 };
 
-export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT = {
+export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_NO_AGENT = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/80',
+      fullPath: 'gitlab-org',
+      clusterAgents: {
+        nodes: [],
+      },
+    },
+  },
+};
+
+export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT = {
   data: {
     group: {
       id: 'gid://gitlab/Group/80',
@@ -134,13 +146,63 @@ export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT = {
       clusterAgents: {
         nodes: [
           {
-            id: 'agents/1',
-            name: 'default-agent',
+            id: 'gid://gitlab/Clusters::Agent/1',
+            name: 'rootgroup-agent',
             project: {
-              id: 'gid://gitlab/Project/79',
-              nameWithNamespace: 'GitLab Org / GitLab Shell',
+              id: 'gid://gitlab/Project/101',
+              nameWithNamespace: 'GitLab Org / GitLab',
             },
           },
+        ],
+      },
+    },
+  },
+};
+
+export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_NO_AGENT = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/81',
+      fullPath: 'gitlab-org/subgroup',
+      clusterAgents: {
+        nodes: [],
+      },
+    },
+  },
+};
+
+export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/81',
+      fullPath: 'gitlab-org/subgroup',
+      clusterAgents: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Clusters::Agent/2',
+            name: 'subgroup-agent',
+            project: {
+              id: 'gid://gitlab/Project/102',
+              nameWithNamespace: 'GitLab Org / Subgroup / GitLab',
+            },
+          },
+        ],
+      },
+    },
+  },
+};
+
+export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_DUPLICATES_ROOTGROUP = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/81',
+      fullPath: 'gitlab-org/subgroup',
+      clusterAgents: {
+        nodes: [
+          GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_ONE_AGENT.data.group.clusterAgents
+            .nodes[0],
+          GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_SUBGROUP_ONE_AGENT.data.group.clusterAgents
+            .nodes[0],
         ],
       },
     },
@@ -177,7 +239,7 @@ export const USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT = {
     projects: {
       nodes: [
         {
-          id: 'gid://gitlab/Project/2',
+          id: 'gid://gitlab/Project/1',
           nameWithNamespace: 'Gitlab Org / Gitlab Shell',
           __typename: 'Project',
         },
