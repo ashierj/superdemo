@@ -32102,6 +32102,9 @@ msgstr ""
 msgid "Not confidential"
 msgstr ""
 
+msgid "Not eligible to rotate token with access level higher than the user"
+msgstr ""
+
 msgid "Not found"
 msgstr ""
 
