@@ -83,7 +83,7 @@ module EE
     end
 
     def code_suggestions_usage_app_data(group)
-      data = { full_path: group.full_path }
+      data = { full_path: group.full_path, group_id: group.id }
 
       return data unless ::Feature.enabled?(:cs_connect_with_sales, group)
 

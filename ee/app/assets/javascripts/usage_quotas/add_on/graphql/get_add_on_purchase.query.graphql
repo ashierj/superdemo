@@ -1,11 +1,8 @@
-query getAddOnPurchase($fullPath: ID!, $addOnName: String!) {
-  namespace(fullPath: $fullPath) {
+query getAddOnPurchase($addOnType: GitlabSubscriptionsAddOnType!, $namespaceId: NamespaceID) {
+  addOnPurchase(addOnType: $addOnType, namespaceId: $namespaceId) {
     id
-    addOnPurchase(addOnName: $addOnName) {
-      id
-      name
-      assignedQuantity
-      purchasedQuantity
-    }
+    name
+    assignedQuantity
+    purchasedQuantity
   }
 }

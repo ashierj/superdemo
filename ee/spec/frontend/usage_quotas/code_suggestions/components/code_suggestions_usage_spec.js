@@ -20,7 +20,6 @@ describe('Code Suggestions Usage', () => {
   let wrapper;
 
   const error = new Error('Something went wrong');
-  const fullPath = 'namespace/full-path';
 
   const noAssignedAddonDataHandler = jest.fn().mockResolvedValue(noAssignedAddonData);
   const noPurchasedAddonDataHandler = jest.fn().mockResolvedValue(noPurchasedAddonData);
@@ -35,14 +34,41 @@ describe('Code Suggestions Usage', () => {
   const findCodeSuggestionsStatistics = () => wrapper.findComponent(CodeSuggestionsStatisticsCard);
   const findAddOnEligibleUserList = () => wrapper.findComponent(AddOnEligibleUserList);
 
-  const createComponent = ({ handler } = {}) => {
+  const createComponent = ({ handler, provideProps } = {}) => {
     wrapper = shallowMount(CodeSuggestionsUsage, {
-      provide: { fullPath },
+      provide: provideProps,
       apolloProvider: createMockApolloProvider(handler),
     });
 
     return waitForPromises();
   };
+
+  describe('when no group id prop is provided', () => {
+    beforeEach(() => {
+      createComponent({ handler: noAssignedAddonDataHandler });
+    });
+    it('calls addOnPurchase query with appropriate props', () => {
+      expect(noAssignedAddonDataHandler).toHaveBeenCalledWith({
+        addOnType: 'CODE_SUGGESTIONS',
+        namespaceId: null,
+      });
+    });
+  });
+
+  describe('when group id prop is provided', () => {
+    beforeEach(() => {
+      createComponent({
+        handler: noAssignedAddonDataHandler,
+        provideProps: { groupId: '289561' },
+      });
+    });
+    it('calls addOnPurchase query with appropriate props', () => {
+      expect(noAssignedAddonDataHandler).toHaveBeenCalledWith({
+        addOnType: 'CODE_SUGGESTIONS',
+        namespaceId: 'gid://gitlab/Group/289561',
+      });
+    });
+  });
 
   describe('with no code suggestions data', () => {
     beforeEach(() => {

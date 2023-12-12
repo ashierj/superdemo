@@ -294,7 +294,8 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
 
     let(:data) do
       {
-        full_path: group.full_path
+        full_path: group.full_path,
+        group_id: group.id
       }
     end
 
