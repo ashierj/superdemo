@@ -16,6 +16,7 @@ export default (containerId = 'js-code-suggestions-usage-app') => {
 
   const {
     fullPath,
+    groupId,
     firstName,
     lastName,
     companyName,
@@ -35,6 +36,7 @@ export default (containerId = 'js-code-suggestions-usage-app') => {
     name: 'CodeSuggestionsUsageApp',
     provide: {
       fullPath,
+      groupId,
       createHandRaiseLeadPath,
       buttonAttributes: buttonAttributes && { ...JSON.parse(buttonAttributes), variant: 'confirm' },
       user: {
