@@ -6,7 +6,6 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        mount_mutation ::Mutations::Ci::Ai::GenerateConfig, alpha: { milestone: '16.0' }
         mount_mutation ::Mutations::Ci::ProjectSubscriptions::Create
         mount_mutation ::Mutations::Ci::ProjectSubscriptions::Delete
         mount_mutation ::Mutations::ComplianceManagement::Frameworks::Destroy

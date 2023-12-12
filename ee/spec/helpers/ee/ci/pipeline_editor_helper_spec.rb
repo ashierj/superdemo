@@ -49,36 +49,9 @@ RSpec.describe EE::Ci::PipelineEditorHelper do
       it_behaves_like 'api fuzzing only'
     end
 
-    context 'with ai ci config chat enabled' do
-      before do
-        allow_next_instance_of(Ai::Project::Conversations) do |conversations|
-          allow(conversations).to receive(:ci_config_chat_enabled?).and_return(true)
-        end
-      end
-
-      context 'when user can create a pipeline' do
-        before do
-          project.add_developer(user)
-        end
-
-        it 'includes ai_config_chat key only' do
-          expect(pipeline_editor_data.keys).not_to include('api-fuzzing-configuration-path')
-          expect(pipeline_editor_data.keys).not_to include('dast-configuration-path')
-          expect(pipeline_editor_data.keys).to include('ai_chat_available')
-        end
-      end
-
-      context 'when the user cannot create a pipeline' do
-        it_behaves_like 'no licensed features keys'
-      end
-    end
-
     context 'with ai ci config chat and api_fuzzing enabled' do
       before do
         stub_licensed_features(api_fuzzing: true)
-        allow_next_instance_of(Ai::Project::Conversations) do |conversations|
-          allow(conversations).to receive(:ci_config_chat_enabled?).and_return(true)
-        end
       end
 
       context 'when user can create a pipeline' do
@@ -89,7 +62,6 @@ RSpec.describe EE::Ci::PipelineEditorHelper do
         it 'includes keys for all features' do
           expect(pipeline_editor_data.keys).to include('api-fuzzing-configuration-path')
           expect(pipeline_editor_data.keys).to include('dast-configuration-path')
-          expect(pipeline_editor_data.keys).to include('ai_chat_available')
         end
       end
 
