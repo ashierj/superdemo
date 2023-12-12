@@ -117,7 +117,6 @@ module Gitlab
         end
 
         def slash_command_for_prompt_message
-          return unless Feature.enabled?(:slash_commands, user)
           return unless prompt_message.slash_command?
 
           Gitlab::Llm::Chain::SlashCommand.for(message: prompt_message, tools: COMMAND_TOOLS)

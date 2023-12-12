@@ -270,24 +270,6 @@ client_subscription_id: 'someid' }
             value: 1
           )
         end
-
-        context 'when slash_commands flag is disabled' do
-          before do
-            stub_feature_flags(slash_commands: false)
-          end
-
-          it_behaves_like 'success' do
-            let(:tools) do
-              [
-                ::Gitlab::Llm::Chain::Tools::JsonReader,
-                ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-                ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
-                ::Gitlab::Llm::Chain::Tools::EpicIdentifier,
-                ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
-              ]
-            end
-          end
-        end
       end
 
       let(:content) { "#{command} something" }
