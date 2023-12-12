@@ -41,11 +41,7 @@ module Security
 
       def delete_scan_finding_rules_for_project(project_id)
         delete_in_batches(approval_project_rules.where(project_id: project_id))
-        delete_in_batches(
-          approval_merge_request_rules
-            .joins(:merge_request)
-            .where(merge_request: { target_project_id: project_id })
-        )
+        delete_in_batches(approval_merge_request_rules.for_merge_request_project(project_id))
       end
 
       def delete_software_license_policies(project)
