@@ -8457,33 +8457,6 @@ Input type: `WorkItemDeleteInput`
 | <a id="mutationworkitemdeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationworkitemdeleteproject"></a>`project` | [`Project`](#project) | Project the deleted work item belonged to. |
 
-### `Mutation.workItemDeleteTask`
-
-Deletes a task in a work item's description.
-
-WARNING:
-**Introduced** in 15.1.
-This feature is an Experiment. It can be changed or removed at any time.
-
-Input type: `WorkItemDeleteTaskInput`
-
-#### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="mutationworkitemdeletetaskclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationworkitemdeletetaskid"></a>`id` | [`WorkItemID!`](#workitemid) | Global ID of the work item. |
-| <a id="mutationworkitemdeletetasklockversion"></a>`lockVersion` | [`Int!`](#int) | Current lock version of the work item containing the task in the description. |
-| <a id="mutationworkitemdeletetasktaskdata"></a>`taskData` | [`WorkItemDeletedTaskInput!`](#workitemdeletedtaskinput) | Arguments necessary to delete a task from a work item's description. |
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="mutationworkitemdeletetaskclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationworkitemdeletetaskerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationworkitemdeletetaskworkitem"></a>`workItem` | [`WorkItem`](#workitem) | Updated work item. |
-
 ### `Mutation.workItemExport`
 
 WARNING:
@@ -34319,16 +34292,6 @@ Attributes for value stream stage.
 | <a id="workitemconverttaskinputlockversion"></a>`lockVersion` | [`Int!`](#int) | Current lock version of the work item containing the task in the description. |
 | <a id="workitemconverttaskinputtitle"></a>`title` | [`String!`](#string) | Full string of the task to be replaced. New title for the created work item. |
 | <a id="workitemconverttaskinputworkitemtypeid"></a>`workItemTypeId` | [`WorkItemsTypeID!`](#workitemstypeid) | Global ID of the work item type used to create the new work item. |
-
-### `WorkItemDeletedTaskInput`
-
-#### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="workitemdeletedtaskinputid"></a>`id` | [`WorkItemID!`](#workitemid) | Global ID of the task referenced in the work item's description. |
-| <a id="workitemdeletedtaskinputlinenumberend"></a>`lineNumberEnd` | [`Int!`](#int) | Last line in the Markdown source that defines the list item task. |
-| <a id="workitemdeletedtaskinputlinenumberstart"></a>`lineNumberStart` | [`Int!`](#int) | First line in the Markdown source that defines the list item task. |
 
 ### `WorkItemUpdatedTaskInput`
 
