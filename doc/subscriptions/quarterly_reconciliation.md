@@ -81,7 +81,7 @@ sent and subject to your payment terms.
 
 ### Troubleshooting failed payment
 
-If your credit card is declined during the reconciliation process, an email will be sent with the subject `Your GitLab subscription failed to reconcile`. Please follow these instructions to update your payment information, and the reconciliation will be automatically retried:
+If your credit card is declined during the reconciliation process, an email will be sent with the subject `Your GitLab subscription failed to reconcile`. Follow these instructions to update your payment information, and the reconciliation will be automatically retried:
 
 1. Log in to your account at `https://customers.gitlab.com`.
 1. Go to **Payment Methods**.
