@@ -26,70 +26,58 @@ RSpec.describe Vulnerabilities::FindingPresenter, feature_category: :vulnerabili
   describe '#blob_path' do
     subject { presenter.blob_path }
 
+    let(:location) do
+      { file: 'a.txt', start_line: 1, end_line: 2 }
+    end
+
+    before do
+      allow(occurrence).to receive(:location).and_return(location)
+      occurrence.sha = 'abc'
+    end
+
+    it { is_expected.to include(occurrence.sha) }
+    it { is_expected.to end_with('#L1-2') }
+
+    it 'expect location to be instance of active support hash with indifferent access' do
+      expect(presenter.location).to be_a(ActiveSupport::HashWithIndifferentAccess)
+    end
+
     context 'without a sha' do
+      before do
+        occurrence.sha = nil
+      end
+
       it { is_expected.to be_blank }
     end
 
-    context 'with a sha' do
-      before do
-        occurrence.sha = 'abc'
-      end
+    context 'without start_line or end_line' do
+      let(:location) { super().merge(start_line: nil, end_line: nil) }
 
-      it { is_expected.to include(occurrence.sha) }
+      it { is_expected.to end_with('a.txt') }
+    end
 
-      context 'without start_line or end_line' do
-        before do
-          allow(presenter).to receive(:location)
-            .and_return({ 'file' => 'a.txt' })
-        end
+    context 'with start_line only' do
+      let(:location) { super().merge(end_line: nil) }
 
-        it { is_expected.to end_with('a.txt') }
-      end
+      it { is_expected.to end_with('#L1') }
+    end
 
-      context 'with start_line only' do
-        before do
-          allow(presenter).to receive(:location)
-            .and_return({ 'file' => 'a.txt', 'start_line' => 1 })
-        end
+    context 'when start_line and end_line are the same' do
+      let(:location) { super().merge(start_line: 1, end_line: 1) }
 
-        it { is_expected.to end_with('#L1') }
-      end
+      it { is_expected.to end_with('#L1') }
+    end
 
-      context 'with start_line and end_line' do
-        before do
-          allow(presenter).to receive(:location)
-            .and_return({ 'file' => 'a.txt', 'start_line' => 1, 'end_line' => 2 })
-        end
+    context 'without file' do
+      let(:location) { super().merge(file: nil) }
 
-        it { is_expected.to end_with('#L1-2') }
-      end
+      it { is_expected.to be_blank }
+    end
 
-      context 'when start_line and end_line are the same' do
-        before do
-          allow(presenter).to receive(:location)
-            .and_return({ 'file' => 'a.txt', 'start_line' => 1, 'end_line' => 1 })
-        end
+    context 'without location' do
+      let(:location) { {} }
 
-        it { is_expected.to end_with('#L1') }
-      end
-
-      context 'without file' do
-        before do
-          allow(presenter).to receive(:location)
-            .and_return({ 'foo' => 123 })
-        end
-
-        it { is_expected.to be_blank }
-      end
-
-      context 'without location' do
-        before do
-          allow(presenter).to receive(:location)
-            .and_return({})
-        end
-
-        it { is_expected.to be_blank }
-      end
+      it { is_expected.to be_blank }
     end
   end
 
