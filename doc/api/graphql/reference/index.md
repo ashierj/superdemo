@@ -2132,30 +2132,6 @@ Input type: `CatalogResourcesDestroyInput`
 | <a id="mutationcatalogresourcesdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationcatalogresourcesdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
-### `Mutation.ciAiGenerateConfig`
-
-WARNING:
-**Introduced** in 16.0.
-This feature is an Experiment. It can be changed or removed at any time.
-
-Input type: `CiAiGenerateConfigInput`
-
-#### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="mutationciaigenerateconfigclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationciaigenerateconfigprojectpath"></a>`projectPath` | [`ID!`](#id) | Project path for the project related to the open config editor. |
-| <a id="mutationciaigenerateconfigusercontent"></a>`userContent` | [`String!`](#string) | Content of the user message to be sent to the language model. |
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="mutationciaigenerateconfigclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationciaigenerateconfigerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationciaigenerateconfigusermessage"></a>`userMessage` | [`DeprecatedAiMessage`](#deprecatedaimessage) | User Chat message. |
-
 ### `Mutation.ciJobTokenScopeAddProject`
 
 Input type: `CiJobTokenScopeAddProjectInput`
@@ -10505,29 +10481,6 @@ The edge type for [`Deployment`](#deployment).
 | <a id="deploymentedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="deploymentedgenode"></a>`node` | [`Deployment`](#deployment) | The item at the end of the edge. |
 
-#### `DeprecatedAiMessageConnection`
-
-The connection type for [`DeprecatedAiMessage`](#deprecatedaimessage).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="deprecatedaimessageconnectionedges"></a>`edges` | [`[DeprecatedAiMessageEdge]`](#deprecatedaimessageedge) | A list of edges. |
-| <a id="deprecatedaimessageconnectionnodes"></a>`nodes` | [`[DeprecatedAiMessage]`](#deprecatedaimessage) | A list of nodes. |
-| <a id="deprecatedaimessageconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
-
-#### `DeprecatedAiMessageEdge`
-
-The edge type for [`DeprecatedAiMessage`](#deprecatedaimessage).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="deprecatedaimessageedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
-| <a id="deprecatedaimessageedgenode"></a>`node` | [`DeprecatedAiMessage`](#deprecatedaimessage) | The item at the end of the edge. |
-
 #### `DesignAtVersionConnection`
 
 The connection type for [`DesignAtVersion`](#designatversion).
@@ -17475,18 +17428,6 @@ Tags for a given deployment.
 | <a id="deploymenttagname"></a>`name` | [`String`](#string) | Name of this git tag. |
 | <a id="deploymenttagpath"></a>`path` | [`String`](#string) | Path for this tag. |
 
-### `DeprecatedAiMessage`
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="deprecatedaimessagecontent"></a>`content` | [`String`](#string) | Content of the message or null if loading. |
-| <a id="deprecatedaimessageerrors"></a>`errors` | [`[String!]!`](#string) | Errors that occurred while asynchronously fetching an AI(assistant) response. |
-| <a id="deprecatedaimessageid"></a>`id` | [`ID`](#id) | Global ID of the message. |
-| <a id="deprecatedaimessageisfetching"></a>`isFetching` | [`Boolean`](#boolean) | Whether the content is still being fetched, for a message with the assistant role. |
-| <a id="deprecatedaimessagerole"></a>`role` | [`String!`](#string) | Role of the message (system, user, assistant). |
-
 ### `DescriptionVersion`
 
 #### Fields
@@ -24014,7 +23955,6 @@ Represents vulnerability finding of a security report on the pipeline.
 | ---- | ---- | ----------- |
 | <a id="projectactualrepositorysizelimit"></a>`actualRepositorySizeLimit` | [`Float`](#float) | Size limit for the repository in bytes. |
 | <a id="projectagentconfigurations"></a>`agentConfigurations` | [`AgentConfigurationConnection`](#agentconfigurationconnection) | Agent configurations defined by the project. (see [Connections](#connections)) |
-| <a id="projectaiconversations"></a>`aiConversations` **{warning-solid}** | [`ProjectConversations`](#projectconversations) | **Introduced** in 16.0. This feature is an Experiment. It can be changed or removed at any time. Ai Chat conversations related to a given project. |
 | <a id="projectallowmergeonskippedpipeline"></a>`allowMergeOnSkippedPipeline` | [`Boolean`](#boolean) | If `only_allow_merge_if_pipeline_succeeds` is true, indicates if merge requests of the project can also be merged with skipped jobs. |
 | <a id="projectapifuzzingciconfiguration"></a>`apiFuzzingCiConfiguration` | [`ApiFuzzingCiConfiguration`](#apifuzzingciconfiguration) | API fuzzing configuration for the project. |
 | <a id="projectarchived"></a>`archived` | [`Boolean`](#boolean) | Indicates the archived status of the project. |
@@ -25583,14 +25523,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectcicdsettingmergetrainsenabled"></a>`mergeTrainsEnabled` | [`Boolean`](#boolean) | Whether merge trains are enabled. |
 | <a id="projectcicdsettingmergetrainsskiptrainallowed"></a>`mergeTrainsSkipTrainAllowed` | [`Boolean!`](#boolean) | Whether merge immediately is allowed for merge trains. |
 | <a id="projectcicdsettingproject"></a>`project` | [`Project`](#project) | Project the CI/CD settings belong to. |
-
-### `ProjectConversations`
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="projectconversationsciconfigmessages"></a>`ciConfigMessages` **{warning-solid}** | [`DeprecatedAiMessageConnection`](#deprecatedaimessageconnection) | **Introduced** in 16.0. This feature is an Experiment. It can be changed or removed at any time. Messages generated by open ai and the user. |
 
 ### `ProjectDataTransfer`
 
