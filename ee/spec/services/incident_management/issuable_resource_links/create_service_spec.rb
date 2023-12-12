@@ -177,5 +177,13 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService, feature
         it_behaves_like 'error_message', 'Link is blocked: Only allowed schemes are http, https'
       end
     end
+
+    context 'when the provided link already exists' do
+      let!(:existing_link) do
+        create(:issuable_resource_link, issue: incident, link: link, link_type: link_type)
+      end
+
+      it_behaves_like 'error_message', 'Link already exists for this incident'
+    end
   end
 end

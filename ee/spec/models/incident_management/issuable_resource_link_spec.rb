@@ -19,6 +19,11 @@ RSpec.describe IncidentManagement::IssuableResourceLink, type: :model do
     it { is_expected.to validate_length_of(:link).is_at_most(2200) }
     it { is_expected.to validate_length_of(:link_text).is_at_most(255) }
 
+    it do
+      is_expected.to validate_uniqueness_of(:link).scoped_to(:issue_id).ignoring_case_sensitivity
+        .with_message("already exists for this incident")
+    end
+
     context 'when link is invalid' do
       let(:issuable_resource_link) { build(:issuable_resource_link, link: 'some-invalid-url') }
 
