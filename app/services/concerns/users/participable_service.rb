@@ -84,11 +84,14 @@ module Users
     end
 
     def group_counts
-      @group_counts ||= GroupMember
-        .of_groups(groups)
+      groups_for_count = params[:search] ? groups : current_user.authorized_groups
+
+      GroupMember
+        .of_groups(groups_for_count)
         .non_request
         .count_users_by_group_id
     end
+    strong_memoize_attr :group_counts
 
     def preload_status(users)
       users.each { |u| lazy_user_availability(u) }
