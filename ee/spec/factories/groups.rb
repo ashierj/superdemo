@@ -14,6 +14,10 @@ FactoryBot.modify do
         raise 'Failed to create wiki repository!' unless group.create_wiki
       end
     end
+
+    trait(:wiki_enabled) { wiki_access_level { ProjectFeature::ENABLED } }
+    trait(:wiki_disabled) { wiki_access_level { ProjectFeature::DISABLED } }
+    trait(:wiki_private) { wiki_access_level { ProjectFeature::PRIVATE } }
   end
 end
 

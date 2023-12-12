@@ -288,25 +288,66 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
     end
 
     context 'wiki' do
-      let_it_be_with_reload(:project) { create(:project, :wiki_repo, :in_group) }
-
-      let(:group) { project.namespace }
-      let(:project_wiki) { create(:project_wiki, project: project, user: user) }
-      let(:projects) { [project] }
       let(:scope) { 'wiki_blobs' }
       let(:search) { 'term' }
 
-      where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
-        permission_table_for_guest_feature_access
-      end
+      context 'for project wikis' do
+        let_it_be_with_reload(:project) { create(:project, :wiki_repo, :in_group) }
 
-      with_them do
-        before do
-          project_wiki.create_page('test.md', "# term")
-          project.wiki.index_wiki_blobs
+        let(:group) { project.namespace }
+        let(:project_wiki) { create(:project_wiki, project: project, user: user) }
+        let(:projects) { [project] }
+
+        where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
+          permission_table_for_guest_feature_access
         end
 
-        it_behaves_like 'search respects visibility'
+        with_them do
+          before do
+            project_wiki.create_page('test.md', "# term")
+            project.wiki.index_wiki_blobs
+          end
+
+          it_behaves_like 'search respects visibility'
+        end
+      end
+
+      context 'for group wikis' do
+        let_it_be_with_reload(:group) { create(:group, :public, :wiki_enabled) }
+        let_it_be_with_reload(:sub_group) { create(:group, :public, :wiki_enabled, parent: group) }
+        let(:user) { create_user_from_membership(group, membership) }
+        let_it_be(:group_wiki) { create(:group_wiki, container: group) }
+        let_it_be(:sub_group_wiki) { create(:group_wiki, container: sub_group) }
+
+        where(:group_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
+          permission_table_for_guest_feature_access
+        end
+
+        with_them do
+          before do
+            [group_wiki, sub_group_wiki].each do |wiki|
+              wiki.create_page('test.md', "# term")
+              wiki.index_wiki_blobs
+            end
+          end
+
+          it 'respects visibility' do
+            enable_admin_mode!(user) if admin_mode
+            sub_group.update!(
+              visibility_level: Gitlab::VisibilityLevel.level_value(group_level.to_s),
+              wiki_access_level: feature_access_level.to_s
+            )
+            group.update!(
+              visibility_level: Gitlab::VisibilityLevel.level_value(group_level.to_s),
+              wiki_access_level: feature_access_level.to_s
+            )
+            ensure_elasticsearch_index!
+
+            expect_search_results(user, scope, expected_count: expected_count * 2) do |user|
+              described_class.new(user, search_level, search: search).execute
+            end
+          end
+        end
       end
     end
 

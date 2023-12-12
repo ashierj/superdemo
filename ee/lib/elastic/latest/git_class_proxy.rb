@@ -17,9 +17,6 @@ module Elastic
         when 'blob'
           blob_options = options.merge(features: 'repository', scope: type)
           { blobs: search_blob(query, type: type, page: page, per: per, options: blob_options) }
-        when 'wiki_blob'
-          wiki_blob_options = options.merge(features: 'wiki', scope: type)
-          { wiki_blobs: search_blob(query, type: type, page: page, per: per, options: wiki_blob_options) }
         end
       end
 
@@ -51,12 +48,6 @@ module Elastic
         filters = []
 
         if repository_ids.any?
-          if options[:features].eql?('wiki') && replace_wiki_project_with_wiki_in_rid?
-            repository_ids = repository_ids.flat_map do |rid|
-              rid =~ /wiki_project_\d+/ ? [rid, rid.gsub(/wiki_project/, 'wiki')] : rid
-            end.uniq
-          end
-
           filters << {
             terms: {
               _name: context.name(type, :related, :repositories),
@@ -245,27 +236,6 @@ module Elastic
         result.dig('_source', 'group_id')
       end
 
-      def apply_simple_query_string(name:, fields:, query:, bool_expr:, count_only:)
-        fields = remove_fields_boost(fields) if count_only
-
-        simple_query_string = {
-          simple_query_string: {
-            _name: name,
-            fields: fields,
-            query: query,
-            default_operator: :and
-          }
-        }
-
-        bool_expr.tap do |expr|
-          if count_only
-            expr[:filter] << simple_query_string
-          else
-            expr[:must] = simple_query_string
-          end
-        end
-      end
-
       # rubocop:disable Metrics/AbcSize
       # rubocop:disable Metrics/PerceivedComplexity
       # rubocop:disable Metrics/CyclomaticComplexity
@@ -295,15 +265,9 @@ module Elastic
           query_hash[:sort] = [:_score]
         end
 
-        options[:no_join_project] = disable_project_joins_for_wiki? if options[:features].eql?('wiki')
-
         options[:no_join_project] = disable_project_joins_for_blob? if options[:scope].eql?('blob')
 
-        fields = if options[:features].eql?('wiki') && use_separate_wiki_index?
-                   %w[content file_name path]
-                 else
-                   %w[blob.content blob.file_name blob.path]
-                 end
+        fields = %w[blob.content blob.file_name blob.path]
 
         bool_expr = apply_simple_query_string(
           name: context.name(:blob, :match, :search_terms),
@@ -339,7 +303,7 @@ module Elastic
         bool_expr[:must_not] += query_filter_context[:must_not] if query_filter_context[:must_not].any?
 
         # add filters extracted from the `options`
-        options[:project_id_field] = options[:features].eql?('wiki') && use_separate_wiki_index? ? 'rid' : 'blob.rid'
+        options[:project_id_field] = 'blob.rid'
         options_filter_context = options_filter_context(:blob, options)
         bool_expr[:filter] += options_filter_context[:filter] if options_filter_context[:filter].any?
         options[:order] = :default if options[:order].blank? && !aggregation
@@ -370,13 +334,6 @@ module Elastic
           }
         end
 
-        query_hash = archived_filter(query_hash) if type == 'wiki_blob' && archived_filter_applicable_on_wiki?(options)
-        # inject the `id` part of repository as project_ids
-        repository_ids = [options[:repository_id]].flatten
-        if type == 'wiki_blob' && repository_ids.any?
-          options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i }
-        end
-
         if type == 'blob' && archived_filter_applicable_for_blob_search?(options)
           query_hash = archived_filter(query_hash)
         end
@@ -396,24 +353,8 @@ module Elastic
         Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
       end
 
-      def disable_project_joins_for_wiki?
-        Elastic::DataMigrationService.migration_has_finished?(:backfill_wiki_permissions_in_main_index)
-      end
-
       def disable_project_joins_for_blob?
         Elastic::DataMigrationService.migration_has_finished?(:backfill_project_permissions_in_blobs)
-      end
-
-      def replace_wiki_project_with_wiki_in_rid?
-        !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
-      end
-
-      def backfill_archived_on_wikis_finished?
-        ::Elastic::DataMigrationService.migration_has_finished?(:reindex_wikis_to_fix_routing_and_backfill_archived)
-      end
-
-      def archived_filter_applicable_on_wiki?(options)
-        !options[:include_archived] && options[:search_scope] != 'project' && backfill_archived_on_wikis_finished?
       end
     end
   end
