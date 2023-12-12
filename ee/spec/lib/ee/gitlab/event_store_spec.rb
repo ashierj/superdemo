@@ -19,6 +19,7 @@ RSpec.describe Gitlab::EventStore do
         ::NamespaceSettings::AiRelatedSettingsChangedEvent,
         ::Members::MembersAddedEvent,
         ::ProjectAuthorizations::AuthorizationsChangedEvent,
+        ::ProjectAuthorizations::AuthorizationsRemovedEvent,
         ::Projects::ComplianceFrameworkChangedEvent
       )
     end

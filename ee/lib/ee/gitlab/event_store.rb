@@ -42,6 +42,8 @@ module EE
           store.subscribe ::Security::RefreshProjectPoliciesWorker,
             to: ::ProjectAuthorizations::AuthorizationsChangedEvent,
             delay: 1.minute
+          store.subscribe ::MergeRequests::RemoveUserApprovalRulesWorker,
+            to: ::ProjectAuthorizations::AuthorizationsRemovedEvent
           store.subscribe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker,
             to: ::Projects::ComplianceFrameworkChangedEvent
         end

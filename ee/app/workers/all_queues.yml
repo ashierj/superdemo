@@ -1569,6 +1569,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: merge_requests_remove_user_approval_rules
+  :worker_name: MergeRequests::RemoveUserApprovalRulesWorker
+  :feature_category: :code_review_workflow
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: merge_requests_stream_approval_audit_event
   :worker_name: MergeRequests::StreamApprovalAuditEventWorker
   :feature_category: :code_review_workflow

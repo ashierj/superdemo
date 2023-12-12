@@ -23,6 +23,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
       query
     end
   end
+  scope :for_merge_request_project, -> (project_id) { joins(:merge_request).where(merge_requests: { target_project_id: project_id }) }
   scope :code_owner_approval_optional, -> { code_owner.where(approvals_required: 0) }
   scope :code_owner_approval_required, -> { code_owner.where('approvals_required > 0') }
   scope :with_added_approval_rules, -> { left_outer_joins(:approval_merge_request_rule_source).where(approval_merge_request_rule_sources: { approval_merge_request_rule_id: nil }) }
