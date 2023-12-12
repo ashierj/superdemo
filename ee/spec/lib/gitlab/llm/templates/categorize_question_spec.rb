@@ -3,10 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Templates::CategorizeQuestion, feature_category: :duo_chat do
-  let(:user) { build(:user) }
+  let(:messages) { [] }
   let(:question) { 'what is the issue' }
 
-  subject { described_class.new(user, { question: question }) }
+  subject { described_class.new(messages, { question: question }) }
 
   describe '#to_prompt' do
     it 'includes question' do
@@ -15,10 +15,34 @@ RSpec.describe Gitlab::Llm::Templates::CategorizeQuestion, feature_category: :du
       expect(prompt).to include(question)
     end
 
-    it 'includes xml part' do
+    it 'includes xmls' do
       prompt = subject.to_prompt
 
-      expect(prompt).to include('<?xml version="1.0" encoding="UTF-8"?><root><row>')
+      expect(prompt).to include("Categories:\n<root>")
+      expect(prompt).to include("Labels:\n<root>")
+    end
+
+    context 'when previous answer is absent' do
+      it 'does not include previous answer' do
+        prompt = subject.to_prompt
+
+        expect(prompt).not_to include("Previous answer:\n<answer>")
+      end
+    end
+
+    context 'when previous answer is present' do
+      let(:messages) do
+        [
+          instance_double(Gitlab::Llm::ChatMessage, assistant?: true, content: '<LLM answer>'),
+          instance_double(Gitlab::Llm::ChatMessage, assistant?: false, content: '<user input>')
+        ]
+      end
+
+      it 'includes previous answer' do
+        prompt = subject.to_prompt
+
+        expect(prompt).to include("Previous answer:\n<answer>")
+      end
     end
   end
 end
