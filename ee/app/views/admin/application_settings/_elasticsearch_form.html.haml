@@ -62,12 +62,12 @@
 
             .form-group
               = f.label :elasticsearch_username, _('Username'), class: 'label-bold'
-              = f.text_field :elasticsearch_username, value: @application_setting.elasticsearch_username, class: 'form-control gl-form-input', data: { qa_selector: 'username_field' }
+              = f.text_field :elasticsearch_username, value: @application_setting.elasticsearch_username, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
                 = _('Enter the username for password-protected Elasticsearch servers.')
             .form-group
               = f.label :elasticsearch_password, _('Password'), class: 'label-bold'
-              = f.password_field :elasticsearch_password, value: (@application_setting.elasticsearch_password.present? ? ApplicationSetting::MASK_PASSWORD : ''), class: 'form-control gl-form-input', data: { qa_selector: 'password_field' }
+              = f.password_field :elasticsearch_password, value: (@application_setting.elasticsearch_password.present? ? ApplicationSetting::MASK_PASSWORD : ''), class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
                 = _('Enter the password for password-protected Elasticsearch servers.')
 
