@@ -2,7 +2,8 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
 import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
-import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status.vue';
+import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status_with_edit.vue';
+import WorkItemHealthStatusInline from 'ee/work_items/components/work_item_health_status_inline.vue';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight_with_edit.vue';
 import WorkItemWeightInline from 'ee/work_items/components/work_item_weight_inline.vue';
 import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
@@ -32,6 +33,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
   const findWorkItemWeightInline = () => wrapper.findComponent(WorkItemWeightInline);
   const findWorkItemProgress = () => wrapper.findComponent(WorkItemProgress);
   const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
+  const findWorkItemHealthStatusInline = () => wrapper.findComponent(WorkItemHealthStatusInline);
 
   const createComponent = ({
     workItem = workItemQueryResponse.data.workItem,
@@ -152,6 +154,24 @@ describe('EE WorkItemAttributesWrapper component', () => {
 
         expect(findWorkItemHealthStatus().exists()).toBe(exists);
       });
+    });
+
+    it('renders WorkItemHealthStatus when workItemsMvc2 enabled', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findWorkItemHealthStatus().exists()).toBe(true);
+      expect(findWorkItemHealthStatusInline().exists()).toBe(false);
+    });
+
+    it('renders WorkItemHealthStatusInline when workItemsMvc2 disabled', async () => {
+      createComponent({ workItemsMvc2: false });
+
+      await waitForPromises();
+
+      expect(findWorkItemHealthStatus().exists()).toBe(false);
+      expect(findWorkItemHealthStatusInline().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {

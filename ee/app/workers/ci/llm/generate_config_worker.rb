@@ -13,16 +13,8 @@ module Ci
       urgency :high
       sidekiq_options retry: 3
 
-      sidekiq_retries_exhausted do |job, _exception|
-        ai_message = Ci::Editor::AiConversation::Message.find_by_id(job['args'][0])
-        ai_message.update!(async_errors: ['Error fetching data'])
-      end
-
-      def perform(ai_message_id)
-        Ci::Editor::AiConversation::Message.find_by_id(ai_message_id).try do |ai_message|
-          ::Ci::Llm::GenerateConfigService.new(ai_message: ai_message).execute
-        end
-      end
+      # No-op. Being removed.
+      def perform(ai_message_id); end
     end
   end
 end
