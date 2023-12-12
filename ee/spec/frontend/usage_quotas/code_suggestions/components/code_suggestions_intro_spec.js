@@ -9,10 +9,12 @@ describe('Code Suggestions Intro', () => {
   const emptyState = () => wrapper.findComponent(GlEmptyState);
   const handRaiseLeadButton = () => wrapper.findComponent(HandRaiseLeadButton);
 
-  const createComponent = (createHandRaiseLeadPath) => {
+  const createComponent = (provideProps = {}) => {
     wrapper = shallowMount(CodeSuggestionsIntro, {
       mocks: { GlEmptyState },
-      provide: { createHandRaiseLeadPath },
+      provide: {
+        ...provideProps,
+      },
     });
   };
 
@@ -32,7 +34,7 @@ describe('Code Suggestions Intro', () => {
 
     describe('when showing hand raise lead button', () => {
       beforeEach(() => {
-        return createComponent('some-path');
+        return createComponent({ createHandRaiseLeadPath: 'some-path' });
       });
 
       it('renders gl-empty-state component without default button, but with hand raise lead button', () => {
