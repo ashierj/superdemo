@@ -173,6 +173,35 @@ module API
           body ''
         end
       end
+
+      resources :enabled do
+        desc 'Code suggestions enabled for a project' do
+          success code: 200
+          failure [
+            { code: 401, message: 'Unauthorized' },
+            { code: 403, message: '403 Code Suggestions Disabled' },
+            { code: 404, message: 'Not found' }
+          ]
+        end
+        params do
+          requires :project_path, type: String, desc: 'The path of the project',
+            documentation: { example: 'namespace/project' }
+        end
+
+        post do
+          path = declared_params[:project_path]
+
+          not_found! if path.empty?
+
+          projects = ::ProjectsFinder.new(params: { full_paths: [path] }, current_user: current_user).execute
+
+          not_found! if projects.none?
+
+          forbidden! unless projects.first.code_suggestions_enabled?
+
+          status :ok
+        end
+      end
     end
   end
 end
