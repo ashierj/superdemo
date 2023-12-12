@@ -12,9 +12,15 @@ import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.gra
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
+import SprintfWithLinks from 'ee/vue_shared/purchase_flow/components/checkout/sprintf_with_links.vue';
 import { s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
+import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
+import getBillingAccountQuery from 'ee/vue_shared/purchase_flow/graphql/queries/get_billing_account.customer.query.graphql';
+import { logError } from '~/lib/logger';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export default {
   components: {
@@ -22,6 +28,7 @@ export default {
     GlFormGroup,
     GlFormInput,
     GlFormSelect,
+    SprintfWithLinks,
   },
   directives: {
     autofocusonshow,
@@ -29,9 +36,20 @@ export default {
   data() {
     return {
       countries: [],
+      billingAccount: null,
     };
   },
   apollo: {
+    billingAccount: {
+      client: CUSTOMERSDOT_CLIENT,
+      query: getBillingAccountQuery,
+      skip() {
+        return !gon.features?.keyContactsManagement;
+      },
+      error(error) {
+        this.handleError(error);
+      },
+    },
     customer: {
       query: stateQuery,
     },
@@ -99,20 +117,34 @@ export default {
         this.updateState({ customer: { zipCode } });
       },
     },
+    shouldShowManageContacts() {
+      return Boolean(this.billingAccount?.zuoraAccountName);
+    },
+    stepTitle() {
+      return this.shouldShowManageContacts
+        ? this.$options.i18n.contactInformationStepTitle
+        : this.$options.i18n.billingAddressStepTitle;
+    },
     isStateRequired() {
       return COUNTRIES_WITH_STATES_REQUIRED.includes(this.customer.country);
     },
     isStateValid() {
       return this.isStateRequired ? !isEmpty(this.customer.state) : true;
     },
-    isValid() {
+    areRequiredFieldsValid() {
       return (
-        this.isStateValid &&
         !isEmpty(this.customer.country) &&
         !isEmpty(this.customer.address1) &&
         !isEmpty(this.customer.city) &&
         !isEmpty(this.customer.zipCode)
       );
+    },
+    isValid() {
+      if (this.shouldShowManageContacts) {
+        return true;
+      }
+
+      return this.isStateValid && this.areRequiredFieldsValid;
     },
     countryOptionsWithDefault() {
       return [
@@ -153,15 +185,27 @@ export default {
           this.$emit(PurchaseEvent.ERROR, error);
         });
     },
+    handleError(error) {
+      Sentry.captureException(error);
+      logError(error);
+    },
   },
   i18n: {
-    stepTitle: s__('Checkout|Billing address'),
+    billingAddressStepTitle: s__('Checkout|Billing address'),
+    contactInformationStepTitle: s__('Checkout|Contact information'),
     nextStepButtonText: s__('Checkout|Continue to payment'),
     countryLabel: s__('Checkout|Country'),
     streetAddressLabel: s__('Checkout|Street address'),
     cityLabel: s__('Checkout|City'),
     stateLabel: s__('Checkout|State'),
     zipCodeLabel: s__('Checkout|Zip code'),
+    manageContacts: s__(
+      'Checkout|Manage the subscription and billing contacts for your billing account in the %{customersPortalLinkStart}Customers Portal%{customersPortalLinkEnd}. Learn more about %{manageContactsLinkStart}how to manage your contacts%{manageContactsLinkEnd}.',
+    ),
+  },
+  manageContactsLinkObject: {
+    customersPortalLink: gon.subscriptions_url,
+    manageContactsLink: helpPagePath('subscriptions/customers_portal'),
   },
   stepId: STEPS[1].id,
 };
@@ -170,68 +214,78 @@ export default {
   <step
     v-if="!$apollo.loading.customer"
     :step-id="$options.stepId"
-    :title="$options.i18n.stepTitle"
+    :title="stepTitle"
     :is-valid="isValid"
     :next-step-button-text="$options.i18n.nextStepButtonText"
   >
     <template #body>
-      <gl-form-group
-        v-if="!$apollo.loading.countries"
-        :label="$options.i18n.countryLabel"
-        label-size="sm"
-        class="mb-3"
-      >
-        <gl-form-select
-          v-model="countryModel"
-          v-autofocusonshow
-          :options="countryOptionsWithDefault"
-          class="js-country"
-          value-field="id"
-          text-field="name"
-          data-testid="country"
+      <div v-if="shouldShowManageContacts" class="gl-mb-3">
+        <sprintf-with-links
+          :message="$options.i18n.manageContacts"
+          :link-object="$options.manageContactsLinkObject"
         />
-      </gl-form-group>
-      <gl-form-group :label="$options.i18n.streetAddressLabel" label-size="sm" class="mb-3">
-        <gl-form-input
-          v-model="streetAddressLine1Model"
-          type="text"
-          data-testid="street-address-1"
-        />
-        <gl-form-input
-          v-model="streetAddressLine2Model"
-          type="text"
-          data-testid="street-address-2"
-          class="gl-mt-3"
-        />
-      </gl-form-group>
-      <gl-form-group :label="$options.i18n.cityLabel" label-size="sm" class="mb-3">
-        <gl-form-input v-model="cityModel" type="text" data-testid="city" />
-      </gl-form-group>
-      <div class="combined d-flex">
+      </div>
+      <div v-else data-testid="checkout-billing-address-form">
         <gl-form-group
-          v-if="!$apollo.loading.states && states"
-          :label="$options.i18n.stateLabel"
+          v-if="!$apollo.loading.countries"
+          :label="$options.i18n.countryLabel"
           label-size="sm"
-          class="mr-3 w-50"
+          class="mb-3"
         >
           <gl-form-select
-            v-model="countryStateModel"
-            :options="stateOptionsWithDefault"
+            v-model="countryModel"
+            v-autofocusonshow
+            :options="countryOptionsWithDefault"
+            class="js-country"
             value-field="id"
             text-field="name"
-            data-testid="state"
+            data-testid="country"
           />
         </gl-form-group>
-        <gl-form-group :label="$options.i18n.zipCodeLabel" label-size="sm" class="w-50">
-          <gl-form-input v-model="zipCodeModel" type="text" data-testid="zip-code" />
+        <gl-form-group :label="$options.i18n.streetAddressLabel" label-size="sm" class="mb-3">
+          <gl-form-input
+            v-model="streetAddressLine1Model"
+            type="text"
+            data-testid="street-address-1"
+          />
+          <gl-form-input
+            v-model="streetAddressLine2Model"
+            type="text"
+            data-testid="street-address-2"
+            class="gl-mt-3"
+          />
         </gl-form-group>
+        <gl-form-group :label="$options.i18n.cityLabel" label-size="sm" class="mb-3">
+          <gl-form-input v-model="cityModel" type="text" data-testid="city" />
+        </gl-form-group>
+        <div class="combined gl-display-flex">
+          <gl-form-group
+            v-if="!$apollo.loading.states && states"
+            :label="$options.i18n.stateLabel"
+            label-size="sm"
+            class="mr-3 w-50"
+          >
+            <gl-form-select
+              v-model="countryStateModel"
+              :options="stateOptionsWithDefault"
+              value-field="id"
+              text-field="name"
+              data-testid="state"
+            />
+          </gl-form-group>
+          <gl-form-group :label="$options.i18n.zipCodeLabel" label-size="sm" class="w-50">
+            <gl-form-input v-model="zipCodeModel" type="text" data-testid="zip-code" />
+          </gl-form-group>
+        </div>
       </div>
     </template>
-    <template #summary>
-      <div class="js-summary-line-1">{{ customer.address1 }}</div>
-      <div class="js-summary-line-2">{{ customer.address2 }}</div>
-      <div class="js-summary-line-3">
-        {{ customer.city }}, {{ customer.country }} {{ selectedStateName }} {{ customer.zipCode }}
+    <template v-if="!shouldShowManageContacts" #summary>
+      <div data-testid="checkout-billing-address-summary">
+        <div class="js-summary-line-1">{{ customer.address1 }}</div>
+        <div class="js-summary-line-2">{{ customer.address2 }}</div>
+        <div class="js-summary-line-3">
+          {{ customer.city }}, {{ customer.country }} {{ selectedStateName }} {{ customer.zipCode }}
+        </div>
       </div>
     </template>
   </step>

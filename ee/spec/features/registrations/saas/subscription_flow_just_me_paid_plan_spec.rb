@@ -12,6 +12,7 @@ RSpec.describe 'Subscription flow for user picking just me for paid plan', :js, 
 
   with_them do
     it 'registers the user, processes subscription purchase and creates a group' do
+      stub_feature_flags(key_contacts_management: false)
       sign_up_method.call
 
       expect_to_see_subscription_welcome_form

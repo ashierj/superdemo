@@ -213,3 +213,43 @@ export const mockInvoicePreviewWithoutPromoOffer = {
     },
   },
 };
+
+export const mockBillingAccount = {
+  zuoraAccountName: 'Day Off LLC',
+  zuoraAccountVatId: 1234,
+  vatFieldVisible: 'true',
+  billingAccountCustomers: {
+    id: 1234,
+    email: 'day@off.com',
+    firstName: 'Ferris',
+    lastName: 'Bueller',
+    fullName: 'Ferris Bueller',
+    alternativeContactFullNames: [],
+    alternativeContactFirstNames: [],
+    alternativeContactLastNames: [],
+  },
+  soldToContact: {
+    id: 5678,
+    firstName: 'Jeanie',
+    lastName: 'Bueller',
+    workEmail: 'jeanie@dayoff.com',
+    address1: '123 Green St',
+    address2: '',
+    city: 'Chicago',
+    state: 'IL',
+    postalCode: 99999,
+    country: 'USA',
+  },
+  billToContact: {
+    id: 5678,
+    firstName: 'Jeanie',
+    lastName: 'Bueller',
+    workEmail: 'jeanie@dayoff.com',
+    address1: '123 Green St',
+    address2: '',
+    city: 'Chicago',
+    state: 'IL',
+    postalCode: 99999,
+    country: 'USA',
+  },
+};
