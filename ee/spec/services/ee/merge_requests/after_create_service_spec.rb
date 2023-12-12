@@ -16,6 +16,13 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
       allow(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to receive(:perform_async)
       allow(Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker).to receive(:perform_async)
       allow(::Security::UnenforceablePolicyRulesNotificationWorker).to receive(:perform_async)
+      allow(::MergeRequests::NotifyApproversWorker).to receive(:perform_in)
+    end
+
+    it 'schedules approval notifications' do
+      execute
+
+      expect(::MergeRequests::NotifyApproversWorker).to have_received(:perform_in).with(10.seconds, merge_request.id)
     end
 
     context 'when the merge request has actual_head_pipeline' do

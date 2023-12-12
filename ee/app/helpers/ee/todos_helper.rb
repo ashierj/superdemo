@@ -29,6 +29,13 @@ module EE
       super
     end
 
+    override :todo_action_name
+    def todo_action_name(todo)
+      return s_('Todos|have been added as an approver') if todo.action == ::Todo::ADDED_APPROVER
+
+      super
+    end
+
     def todo_groups_requiring_saml_reauth(todos)
       groups = todos.filter_map { |todo| todo.group || todo.project.group }.uniq
 

@@ -42,6 +42,13 @@ module EE
       create_todos(assignee, attributes, project.namespace, project)
     end
 
+    def added_approver(users, merge_request)
+      project = merge_request.project
+      attributes = attributes_for_todo(project, merge_request, merge_request.author, ::Todo::ADDED_APPROVER)
+
+      create_todos(users, attributes, project.namespace, project)
+    end
+
     private
 
     override :attributes_for_target
