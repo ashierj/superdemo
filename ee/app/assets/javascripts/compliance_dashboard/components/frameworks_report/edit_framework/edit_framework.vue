@@ -20,7 +20,6 @@ import { validateHexColor } from '~/lib/utils/color_utils';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import ColorPicker from '~/vue_shared/components/color_picker/color_picker.vue';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import { __, s__ } from '~/locale';
 
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { SAVE_ERROR } from 'ee/groups/settings/compliance_frameworks/constants';
@@ -31,8 +30,9 @@ import {
   validatePipelineConfirmationFormat,
 } from 'ee/groups/settings/compliance_frameworks/utils';
 
-import createComplianceFrameworkMutation from '../../graphql/mutations/create_compliance_framework.mutation.graphql';
-import updateComplianceFrameworkMutation from '../../graphql/mutations/update_compliance_framework.mutation.graphql';
+import createComplianceFrameworkMutation from '../../../graphql/mutations/create_compliance_framework.mutation.graphql';
+import updateComplianceFrameworkMutation from '../../../graphql/mutations/update_compliance_framework.mutation.graphql';
+import { i18n } from './constants';
 
 export default {
   components: {
@@ -54,7 +54,7 @@ export default {
     return {
       errorMessage: '',
       formData: initialiseFormData(),
-      saving: false,
+      isSaving: false,
     };
   },
   apollo: {
@@ -107,7 +107,7 @@ export default {
     },
 
     isLoading() {
-      return this.$apollo.loading || this.saving;
+      return this.$apollo.loading || this.isSaving;
     },
     isValidColor() {
       return validateHexColor(this.formData.color);
@@ -177,7 +177,7 @@ export default {
 
   methods: {
     setError(error, userFriendlyText) {
-      this.saving = false;
+      this.isSaving = false;
       this.errorMessage = userFriendlyText;
       Sentry.captureException(error);
     },
@@ -186,7 +186,7 @@ export default {
     },
 
     async onSubmit() {
-      this.saving = true;
+      this.isSaving = true;
       this.errorMessage = '';
       try {
         const params = getSubmissionParams(
@@ -239,42 +239,7 @@ export default {
     }, DEBOUNCE_DELAY),
   },
 
-  i18n: {
-    addFrameworkTitle: s__('ComplianceFrameworks|Create a compliance framework'),
-    editFrameworkTitle: s__('ComplianceFrameworks|Edit a compliance framework'),
-
-    submitButtonText: s__('ComplianceFrameworks|Add framework'),
-
-    successMessageText: s__('ComplianceFrameworks|Compliance framework created'),
-    titleInputLabel: s__('ComplianceFrameworks|Name'),
-    titleInputInvalid: s__('ComplianceFrameworks|Name is required'),
-    descriptionInputLabel: s__('ComplianceFrameworks|Description'),
-    descriptionInputInvalid: s__('ComplianceFrameworks|Description is required'),
-    pipelineConfigurationInputLabel: s__(
-      'ComplianceFrameworks|Compliance pipeline configuration (optional)',
-    ),
-    pipelineConfigurationInputDescription: s__(
-      'ComplianceFrameworks|Required format: %{codeStart}path/file.y[a]ml@group-name/project-name%{codeEnd}. %{linkStart}See some examples%{linkEnd}.',
-    ),
-    pipelineConfigurationInputDisabledPopoverTitle: s__(
-      'ComplianceFrameworks|Requires Ultimate subscription',
-    ),
-    pipelineConfigurationInputDisabledPopoverContent: s__(
-      'ComplianceFrameworks|Set compliance pipeline configuration for projects that use this framework. %{linkStart}How do I create the configuration?%{linkEnd}',
-    ),
-    pipelineConfigurationInputDisabledPopoverLink: helpPagePath(
-      'user/group/compliance_frameworks.html#compliance-pipelines',
-    ),
-    pipelineConfigurationInputInvalidFormat: s__('ComplianceFrameworks|Invalid format'),
-    pipelineConfigurationInputUnknownFile: s__('ComplianceFrameworks|Configuration not found'),
-    colorInputLabel: s__('ComplianceFrameworks|Background color'),
-
-    editSaveBtnText: __('Save changes'),
-    addSaveBtnText: s__('ComplianceFrameworks|Add framework'),
-    fetchError: s__(
-      'ComplianceFrameworks|Error fetching compliance frameworks data. Please refresh the page or try a different framework',
-    ),
-  },
+  i18n,
   disabledPipelineConfigurationInputPopoverTarget:
     'disabled-pipeline-configuration-input-popover-target',
 };
@@ -294,9 +259,9 @@ export default {
         <div class="gl-display-flex gl-bg-gray-10 gl-p-4 gl-my-4 gl-align-items-start">
           <div class="gl-flex-grow-1">
             <div class="gl-font-weight-bold gl-font-size-h2">
-              {{ s__('ComplianceFrameworks|Basic information') }}
+              {{ $options.i18n.basicInformation }}
             </div>
-            <span>{{ s__('ComplianceFrameworks|Name, description') }}</span>
+            <span>{{ $options.i18n.basicInformationDetails }}</span>
           </div>
         </div>
         <gl-collapse visible class="gl-p-4">
@@ -405,19 +370,13 @@ export default {
             </gl-popover>
           </template>
           <gl-form-checkbox v-model="formData.default" name="default">
-            <span class="gl-font-weight-bold">{{
-              s__('ComplianceFrameworks|Set as default')
-            }}</span>
+            <span class="gl-font-weight-bold">{{ $options.i18n.setAsDefault }}</span>
             <template #help>
               <div>
-                {{
-                  s__(
-                    'ComplianceFrameworks|Default framework will be applied automatically to any new project created in the group or sub group.',
-                  )
-                }}
+                {{ $options.i18n.setAsDefaultDetails }}
               </div>
               <div>
-                {{ s__('ComplianceFrameworks|There can be only one default framework.') }}
+                {{ $options.i18n.setAsDefaultOnlyOne }}
               </div>
             </template>
           </gl-form-checkbox>

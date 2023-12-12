@@ -1,4 +1,4 @@
-mutation createComplianceFramework($input: CreateComplianceFrameworkInput!) {
+mutation createNewComplianceFramework($input: CreateComplianceFrameworkInput!) {
   createComplianceFramework(input: $input) {
     framework {
       id
