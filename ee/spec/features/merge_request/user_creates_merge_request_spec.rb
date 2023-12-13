@@ -68,32 +68,14 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
         expect(page).to have_link(href: %r{/groups/#{restricted_group.name}/-/saml})
       end
 
-      context 'with the `hide_unaccessible_saml_branches` feature flag on' do
-        it 'will not show any inaccessible branches in the dropdown', :aggregate_failures, :js do
-          visit project_new_merge_request_path(target_project)
+      it 'will not show any inaccessible branches in the dropdown', :aggregate_failures, :js do
+        visit project_new_merge_request_path(target_project)
 
-          find(".js-target-project").click
+        find(".js-target-project").click
 
-          wait_for_requests
+        wait_for_requests
 
-          expect_no_listbox_item(canonical_project.full_path.to_s)
-        end
-      end
-
-      context 'with the `hide_unaccessible_saml_branches` feature flag off' do
-        before do
-          stub_feature_flags(hide_unaccessible_saml_branches: false)
-        end
-
-        it 'will not show any inaccessible branches in the dropdown', :aggregate_failures, :js do
-          visit project_new_merge_request_path(target_project)
-
-          find(".js-target-project").click
-
-          wait_for_requests
-
-          expect_listbox_item(canonical_project.full_path.to_s)
-        end
+        expect_no_listbox_item(canonical_project.full_path.to_s)
       end
     end
 
