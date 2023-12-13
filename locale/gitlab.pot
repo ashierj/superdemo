@@ -23115,6 +23115,9 @@ msgstr ""
 msgid "Group information"
 msgstr ""
 
+msgid "Group invite"
+msgstr ""
+
 msgid "Group jobs by"
 msgstr ""
 
