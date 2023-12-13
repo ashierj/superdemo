@@ -415,10 +415,10 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
 
     where(:licensed, :is_admin, :enable_admin_mode, :clickhouse_configured, :expected) do
       true  | true  | true  | true  | true
-      false | true  | true  | true  | false
+      true  | true  | true  | false | false
       true  | true  | false | true  | false
-      true  | true  | false | false | false
       true  | false | false | true  | false
+      false | true  | true  | true  | false
     end
 
     with_them do
