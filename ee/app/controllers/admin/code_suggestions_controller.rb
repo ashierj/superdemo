@@ -10,11 +10,11 @@ module Admin
     feature_category :seat_cost_management
     urgency :low
 
-    before_action :ensure_on_sm_with_feature_enabled!
+    before_action :ensure_feature_available!
 
     private
 
-    def ensure_on_sm_with_feature_enabled!
+    def ensure_feature_available!
       render_404 unless gitlab_sm? && code_suggestions_available?
     end
   end
