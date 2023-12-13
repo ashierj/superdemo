@@ -77,18 +77,22 @@ export default {
         });
       }
 
-      groupedFindings.forEach((e) => {
-        e.items.map((arr) => {
-          // enhance groupedFindings to match GlDisclosureDropdown validator
-          // https://gitlab-org.gitlab.io/gitlab-ui/?path=/docs/base-new-dropdowns-disclosure--docs#setting-disclosure-dropdown-items
-          const enhancedGroupedFindings = arr;
-          enhancedGroupedFindings.text = arr.description;
-          enhancedGroupedFindings.action = () => this.toggleDrawer(arr);
+      const allLineFindings = this.flatFindings;
 
-          return enhancedGroupedFindings;
-        });
+      // Enhance each finding with the correct index and action
+      allLineFindings.forEach((finding, index) => {
+        /* eslint-disable no-param-reassign */
+        finding.action = () => this.toggleDrawer(allLineFindings, index);
+        // enhance to match GlDisclosureDropdown validator
+        // https://gitlab-org.gitlab.io/gitlab-ui/?path=/docs/base-new-dropdowns-disclosure--docs#setting-disclosure-dropdown-items
+        finding.text = finding.description;
+        /* eslint-enable no-param-reassign */
       });
-      return groupedFindings;
+
+      return groupedFindings.map((group) => ({
+        ...group,
+        items: group.items.map((item) => allLineFindings.find((f) => f === item)),
+      }));
     },
     showMoreCount() {
       return this.moreCount && this.isHoveringFirstIcon;
@@ -106,8 +110,8 @@ export default {
     },
   },
   methods: {
-    toggleDrawer(finding) {
-      this.setDrawer(finding);
+    toggleDrawer(findings, index) {
+      this.setDrawer({ findings, index });
     },
     ...mapActions('findingsDrawer', ['setDrawer']),
   },
