@@ -12,7 +12,7 @@ RSpec.describe 'Subscription expired notification', :js, feature_category: :cons
     stub_feature_flags(namespace_storage_limit_show_preenforcement_banner: false)
 
     sign_in(admin)
-    gitlab_enable_admin_mode_sign_in(admin)
+    gitlab_enable_admin_mode_sign_in(admin, use_mock_admin_mode: false)
   end
 
   context 'for group namespace' do
