@@ -29,6 +29,10 @@ module EE
         end
       end
 
+      condition(:clickhouse_main_database_available) do
+        ClickHouse::Client.database_configured?(:main)
+      end
+
       condition(:instance_devops_adoption_available) do
         ::License.feature_available?(:instance_level_devops_adoption)
       end
@@ -110,6 +114,10 @@ module EE
       rule { admin & pages_size_limit_available }.enable :update_max_pages_size
 
       rule { admin & runner_performance_insights_available }.enable :read_jobs_statistics
+
+      rule { admin & runner_performance_insights_available & clickhouse_main_database_available }.policy do
+        enable :read_runner_usage
+      end
 
       rule { admin & service_accounts_available }.enable :admin_service_accounts
 

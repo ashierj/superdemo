@@ -29,7 +29,7 @@ module ClickHouse
           )
         end
 
-        unless ClickHouse::Client.configuration.databases[:main].present?
+        unless ClickHouse::Client.database_configured?(:main)
           return ServiceResponse.error(
             message: 'ClickHouse database is not configured', reason: :db_not_configured, payload: service_payload)
         end

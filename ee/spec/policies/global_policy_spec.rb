@@ -410,6 +410,38 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
+  describe 'read_runner_usage' do
+    include AdminModeHelper
+
+    where(:licensed, :is_admin, :enable_admin_mode, :clickhouse_configured, :expected) do
+      true  | true  | true  | true  | true
+      false | true  | true  | true  | false
+      true  | false | true  | true  | false
+      true  | true  | false | true  | false
+      true  | true  | true  | false | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(runner_performance_insights: licensed)
+
+        enable_admin_mode!(admin) if enable_admin_mode
+
+        allow(ClickHouse::Client).to receive(:database_configured?).with(:main).and_return(clickhouse_configured)
+      end
+
+      let(:current_user) { is_admin ? admin : user }
+
+      it 'matches expectation' do
+        if expected
+          is_expected.to be_allowed(:read_runner_usage)
+        else
+          is_expected.to be_disallowed(:read_runner_usage)
+        end
+      end
+    end
+  end
+
   describe 'read_jobs_statistics' do
     context 'when feature is enabled' do
       before do
