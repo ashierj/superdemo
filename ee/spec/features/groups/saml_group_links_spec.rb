@@ -3,6 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe 'SAML group links', feature_category: :system_access do
+  include ListboxHelpers
+  include Features::DomHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -35,10 +38,11 @@ RSpec.describe 'SAML group links', feature_category: :system_access do
       end
     end
 
-    it 'adds new SAML group link' do
-      page.within('form#new_saml_group_link') do
+    it 'adds new SAML group link with a standard role', :js do
+      within_testid('new-saml-group-link') do
         fill_in 'SAML Group Name', with: 'Acme SAML Group'
-        select 'Developer', from: 'saml_group_link_access_level'
+        toggle_listbox
+        select_listbox_item 'Developer'
 
         click_button 'Save'
       end
@@ -46,6 +50,31 @@ RSpec.describe 'SAML group links', feature_category: :system_access do
       expect(page).not_to have_content('No active SAML group links')
       expect(page).to have_content('SAML Group Name: Acme SAML Group')
       expect(page).to have_content('as Developer')
+    end
+  end
+
+  context 'when custom roles are enabled' do
+    before do
+      stub_licensed_features(group_saml: true, saml_group_sync: true, custom_roles: true)
+
+      create(:saml_provider, group: group, enabled: true)
+      create(:member_role, namespace: group, name: 'Custom')
+
+      visit group_saml_group_links_path(group)
+    end
+
+    it 'adds new SAML group link with a custom role', :js do
+      within_testid('new-saml-group-link') do
+        fill_in 'SAML Group Name', with: 'Acme SAML Group'
+        toggle_listbox
+        select_listbox_item 'Custom'
+
+        click_button 'Save'
+      end
+
+      expect(page).not_to have_content('No active SAML group links')
+      expect(page).to have_content('SAML Group Name: Acme SAML Group')
+      expect(page).to have_content('as Custom')
     end
   end
 end
