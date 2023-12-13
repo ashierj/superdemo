@@ -43,7 +43,7 @@ module Sbom
     end
 
     scope :order_by_package_name, ->(direction) do
-      order(package_manager: direction)
+      order(package_manager: direction, component_name: :asc)
     end
 
     scope :order_by_spdx_identifier, ->(direction, depth: 1) do
