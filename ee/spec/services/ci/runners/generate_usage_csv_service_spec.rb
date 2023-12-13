@@ -2,7 +2,29 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Runners::GenerateUsageCsvService, feature_category: :fleet_visibility do
+RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_house, :freeze_time,
+  feature_category: :fleet_visibility do
+  include ClickHouseHelpers
+
+  let_it_be(:current_user) { create(:admin) }
+  let_it_be(:instance_runner) { create(:ci_runner, :instance, :with_runner_manager) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:group_runner) { create(:ci_runner, :group, groups: [group]) }
+  let_it_be(:builds) do
+    starting_time = DateTime.new(2023, 12, 31, 21, 0, 0)
+
+    builds = Array.new(20) do |i|
+      project = create(:project, group: group)
+      create_build(instance_runner, project, starting_time + (50.minutes * i))
+    end
+
+    project = create(:project, group: group)
+    builds << create_build(group_runner, project, starting_time, 2.hours)
+    builds << create_build(instance_runner, project, starting_time, 10.minutes)
+    builds << create_build(instance_runner, create(:project, group: group), starting_time, 7.minutes)
+    builds
+  end
+
   let(:runner_type) { nil }
   let(:from_time) { nil }
   let(:to_time) { nil }
@@ -10,13 +32,23 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, feature_category: :fleet_vi
     described_class.new(current_user: current_user, runner_type: runner_type, from_time: from_time, to_time: to_time)
   end
 
+  let(:expected_header) { "Project ID,Project path,Build count,Total duration (minutes),Total duration\n" }
+  let(:expected_from_time) { DateTime.new(2023, 12, 1) }
+  let(:expected_to_time) { DateTime.new(2023, 12, 31, 23, 59, 59) }
+
   subject(:response) { service.execute }
 
   before do
     stub_licensed_features(runner_performance_insights: true)
+
+    insert_ci_builds_to_click_house(builds)
+
+    travel_to DateTime.new(2024, 1, 10)
   end
 
-  shared_examples 'insufficient permissions' do
+  context 'when current_user is not an admin' do
+    let_it_be(:current_user) { create(:user) }
+
     it 'returns error due to insufficient permissions' do
       is_expected.to be_error
 
@@ -25,172 +57,124 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, feature_category: :fleet_vi
     end
   end
 
-  context 'when current_user is not an admin' do
-    let_it_be(:current_user) { create(:user) }
+  context 'when runner_performance_insights feature is not available' do
+    before do
+      stub_licensed_features(runner_performance_insights: false)
+    end
 
-    context 'and database is configured', :click_house do
-      it_behaves_like 'insufficient permissions'
+    it 'returns error due to insufficient permissions' do
+      is_expected.to be_error
+
+      expect(response.message).to eq('Insufficient permissions to generate export')
+      expect(response.reason).to eq(:insufficient_permissions)
     end
   end
 
-  context 'when current_user is an admin' do
-    let_it_be(:current_user) { create(:admin) }
-
-    context 'when no ClickHouse databases are configured', :enable_admin_mode do
-      before do
-        allow(ClickHouse::Client.configuration).to receive(:databases).and_return({})
-      end
-
-      it 'returns error when ClickHouse database is not configured' do
-        is_expected.to be_error
-
-        expect(response.message).to eq('ClickHouse database is not configured')
-        expect(response.reason).to eq(:db_not_configured)
-      end
+  context 'when no ClickHouse databases are configured' do
+    before do
+      allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
     end
 
-    context 'when database is configured', :click_house, :freeze_time do
-      include ClickHouseHelpers
+    it 'returns error' do
+      is_expected.to be_error
 
-      let_it_be(:instance_runner) { create(:ci_runner, :instance, :with_runner_manager) }
-      let_it_be(:group) { create(:group) }
-      let_it_be(:group_runner) { create(:ci_runner, :group, groups: [group]) }
-      let_it_be(:builds) do
-        starting_time = DateTime.new(2023, 12, 31, 21, 0, 0)
+      expect(response.message).to eq('ClickHouse database is not configured')
+      expect(response.reason).to eq(:db_not_configured)
+    end
+  end
 
-        builds = Array.new(20) do |i|
-          project = create(:project, group: group)
-          create_build(instance_runner, project, starting_time + (50.minutes * i))
-        end
+  it 'contains 23 builds in source ci_finished_builds table' do
+    expect(ClickHouse::Client.select('SELECT count() FROM ci_finished_builds', :main))
+      .to contain_exactly({ 'count()' => 23 })
+  end
 
-        project = create(:project, group: group)
-        builds << create_build(group_runner, project, starting_time, 2.hours)
-        builds << create_build(instance_runner, project, starting_time, 10.minutes)
-        builds << create_build(instance_runner, create(:project, group: group), starting_time, 7.minutes)
-      end
+  it 'exports usage data for all runners for the last complete month', :aggregate_failures do
+    expect_next_instance_of(CsvBuilder::SingleBatch, anything, anything) do |csv_builder|
+      expect(csv_builder).to receive(:render)
+        .with(ExportCsv::BaseService::TARGET_FILESIZE)
+        .and_call_original
+    end
 
-      let(:expected_header) { "Project ID,Project path,Build count,Total duration (minutes),Total duration\n" }
-      let(:expected_from_time) { DateTime.new(2023, 12, 1) }
-      let(:expected_to_time) { DateTime.new(2023, 12, 31, 23, 59, 59) }
+    expect(response.payload[:csv_data].lines).to eq([
+      expected_header,
+      "#{builds[21].project_id},#{builds[21].project.full_path},2,130,2 hours and 10 minutes\n",
+      "#{builds[0].project_id},#{builds[0].project.full_path},1,14,14 minutes\n",
+      "#{builds[1].project_id},#{builds[1].project.full_path},1,14,14 minutes\n",
+      "#{builds[2].project_id},#{builds[2].project.full_path},1,14,14 minutes\n",
+      "#{builds[3].project_id},#{builds[3].project.full_path},1,14,14 minutes\n",
+      "#{builds.last.project_id},#{builds.last.project.full_path},1,7,7 minutes\n"
+    ])
 
-      before do
-        insert_ci_builds_to_click_house(builds)
+    expect(response.payload[:status]).to eq({ rows_expected: 6, rows_written: 6, truncated: false })
+  end
 
-        travel_to DateTime.new(2024, 1, 10)
-      end
+  context 'with group_type runner_type argument specified' do
+    let(:runner_type) { :group_type }
 
-      specify 'should contain 23 builds' do
-        expect(ClickHouse::Client.select('SELECT count() FROM ci_finished_builds', :main))
-          .to contain_exactly({ 'count()' => 23 })
-      end
+    it 'exports usage data for runners of specified type' do
+      expect(response.payload[:csv_data].lines).to eq([
+        expected_header,
+        "#{builds[21].project_id},#{builds[21].project.full_path},1,120,2 hours\n"
+      ])
 
-      context 'when admin mode is disabled' do
-        it_behaves_like 'insufficient permissions'
-      end
+      expect(response.payload[:status]).to eq({ rows_expected: 1, rows_written: 1, truncated: false })
+    end
+  end
 
-      context 'when admin mode is enabled', :enable_admin_mode do
-        it 'exports usage data for all runners for the last complete month', :aggregate_failures do
-          expect_next_instance_of(CsvBuilder::SingleBatch, anything, anything) do |csv_builder|
-            expect(csv_builder).to receive(:render)
-              .with(ExportCsv::BaseService::TARGET_FILESIZE)
-              .and_call_original
-          end
+  context 'with project_type runner_type argument specified' do
+    let(:runner_type) { :project_type }
 
-          expect(response.payload[:csv_data].lines).to eq([
-            expected_header,
-            "#{builds[21].project_id},#{builds[21].project.full_path},2,130,2 hours and 10 minutes\n",
-            "#{builds[0].project_id},#{builds[0].project.full_path},1,14,14 minutes\n",
-            "#{builds[1].project_id},#{builds[1].project.full_path},1,14,14 minutes\n",
-            "#{builds[2].project_id},#{builds[2].project.full_path},1,14,14 minutes\n",
-            "#{builds[3].project_id},#{builds[3].project.full_path},1,14,14 minutes\n",
-            "#{builds.last.project_id},#{builds.last.project.full_path},1,7,7 minutes\n"
-          ])
+    it 'exports usage data for runners of specified type' do
+      expect(response.payload[:csv_data].lines).to contain_exactly(expected_header)
+      expect(response.payload[:status]).to eq({ rows_expected: 0, rows_written: 0, truncated: false })
+    end
+  end
 
-          expect(response.payload[:status]).to eq({ rows_expected: 6, rows_written: 6, truncated: false })
-        end
+  context 'when from_time is beginning of current month' do
+    let(:from_time) { DateTime.new(2024, 1, 1) }
+    let(:expected_from_time) { from_time }
+    let(:expected_to_time) { from_time.end_of_month }
 
-        context 'when runner_performance_insights feature is not available' do
-          before do
-            stub_licensed_features(runner_performance_insights: false)
-          end
+    it 'exports usage data for runners which finished builds before date' do
+      expect(response.payload[:status]).to eq({ rows_expected: 16, rows_written: 16, truncated: false })
+    end
+  end
 
-          it_behaves_like 'insufficient permissions'
-        end
+  context 'and from_time is next month' do
+    let(:from_time) { DateTime.new(2024, 2, 1) }
+    let(:expected_from_time) { from_time }
+    let(:expected_to_time) { from_time.end_of_month }
 
-        context 'with group_type runner_type argument specified' do
-          let(:runner_type) { :group_type }
+    it 'exports usage data for runners which finished builds before date' do
+      expect(response.payload[:status]).to eq({ rows_expected: 0, rows_written: 0, truncated: false })
+    end
+  end
 
-          it 'exports usage data for runners of specified type' do
-            expect(response.payload[:csv_data].lines).to eq([
-              expected_header,
-              "#{builds[21].project_id},#{builds[21].project.full_path},1,120,2 hours\n"
-            ])
+  context 'and to_time is an hour ago, almost at the end of the year' do
+    let(:to_time) { DateTime.new(2023, 12, 31, 23, 0, 0) }
+    let(:expected_from_time) { DateTime.new(2023, 11, 1) }
+    let(:expected_to_time) { to_time }
 
-            expect(response.payload[:status]).to eq({ rows_expected: 1, rows_written: 1, truncated: false })
-          end
-        end
+    before do
+      travel_to DateTime.new(2023, 12, 31, 23, 59, 59)
+    end
 
-        context 'with project_type runner_type argument specified' do
-          let(:runner_type) { :project_type }
+    it 'exports usage data for runners which finished builds after date' do
+      expect(response.payload[:status]).to eq({ rows_expected: 6, rows_written: 6, truncated: false })
+    end
+  end
 
-          it 'exports usage data for runners of specified type' do
-            expect(response.payload[:csv_data].lines).to contain_exactly(expected_header)
-            expect(response.payload[:status]).to eq({ rows_expected: 0, rows_written: 0, truncated: false })
-          end
-        end
+  context 'and to_time is end of last month' do
+    let(:to_time) { DateTime.new(2024, 1, 31) }
+    let(:expected_from_time) { DateTime.new(2024, 1, 1) }
+    let(:expected_to_time) { to_time }
 
-        context 'with from_time argument specified' do
-          context 'and from_time is Jan 2024' do
-            let(:from_time) { DateTime.new(2024, 1, 1) }
-            let(:expected_from_time) { from_time }
-            let(:expected_to_time) { from_time.end_of_month }
+    before do
+      travel_to DateTime.new(2024, 2, 10)
+    end
 
-            it 'exports usage data for runners which finished builds before date' do
-              expect(response.payload[:status]).to eq({ rows_expected: 16, rows_written: 16, truncated: false })
-            end
-          end
-
-          context 'and from_time is Feb 2024' do
-            let(:from_time) { DateTime.new(2024, 2, 1) }
-            let(:expected_from_time) { from_time }
-            let(:expected_to_time) { from_time.end_of_month }
-
-            it 'exports usage data for runners which finished builds before date' do
-              expect(response.payload[:status]).to eq({ rows_expected: 0, rows_written: 0, truncated: false })
-            end
-          end
-        end
-
-        context 'with to_time argument specified' do
-          context 'and to_time is Dec 2023' do
-            let(:to_time) { DateTime.new(2023, 12, 31, 23, 0, 0) }
-            let(:expected_from_time) { DateTime.new(2023, 11, 1) }
-            let(:expected_to_time) { to_time }
-
-            before do
-              travel_to DateTime.new(2023, 12, 31, 23, 59, 59)
-            end
-
-            it 'exports usage data for runners which finished builds after date' do
-              expect(response.payload[:status]).to eq({ rows_expected: 6, rows_written: 6, truncated: false })
-            end
-          end
-
-          context 'and to_time is Jan 2024' do
-            let(:to_time) { DateTime.new(2024, 1, 31) }
-            let(:expected_from_time) { DateTime.new(2024, 1, 1) }
-            let(:expected_to_time) { to_time }
-
-            before do
-              travel_to DateTime.new(2024, 2, 10)
-            end
-
-            it 'exports usage data for runners which finished builds after date' do
-              expect(response.payload[:status]).to eq({ rows_expected: 16, rows_written: 16, truncated: false })
-            end
-          end
-        end
-      end
+    it 'exports usage data for runners which finished builds after date' do
+      expect(response.payload[:status]).to eq({ rows_expected: 16, rows_written: 16, truncated: false })
     end
   end
 

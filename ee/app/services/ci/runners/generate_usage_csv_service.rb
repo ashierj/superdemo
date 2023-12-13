@@ -69,7 +69,7 @@ module Ci
           LIMIT #{REPORT_ENTRY_LIMIT};
         SQL
 
-        ClickHouse::Client::Query.new(raw_query: raw_query, placeholders: placeholders.transform_values(&:to_s))
+        ClickHouse::Client::Query.new(raw_query: raw_query, placeholders: placeholders)
       end
 
       def where_clause

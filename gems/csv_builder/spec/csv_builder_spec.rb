@@ -139,10 +139,4 @@ RSpec.describe CsvBuilder do
 
     it_behaves_like 'csv builder examples'
   end
-
-  context 'when Hash object is given' do
-    let(:enumerable) { { a: :b } }
-
-    it_behaves_like 'csv builder examples'
-  end
 end

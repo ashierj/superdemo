@@ -415,10 +415,10 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
 
     where(:licensed, :is_admin, :enable_admin_mode, :clickhouse_configured, :expected) do
       true  | true  | true  | true  | true
-      true  | true  | true  | false | false
-      true  | true  | false | true  | false
-      true  | false | false | true  | false
       false | true  | true  | true  | false
+      true  | false | true  | true  | false
+      true  | true  | false | true  | false
+      true  | true  | true  | false | false
     end
 
     with_them do
@@ -427,8 +427,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
 
         enable_admin_mode!(admin) if enable_admin_mode
 
-        allow(ClickHouse::Client.configuration).to receive(:databases)
-          .and_return(clickhouse_configured ? { main: :some_db } : {})
+        allow(ClickHouse::Client).to receive(:database_configured?).with(:main).and_return(clickhouse_configured)
       end
 
       let(:current_user) { is_admin ? admin : user }

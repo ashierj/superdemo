@@ -216,7 +216,7 @@ RSpec.describe ClickHouse::DataIngestion::CiFinishedBuildsSyncService,
 
     context 'when no ClickHouse databases are configured' do
       before do
-        allow(ClickHouse::Client.configuration).to receive(:databases).and_return({})
+        allow(ClickHouse::Client).to receive(:database_configured?).and_return(false)
       end
 
       it 'skips execution' do
