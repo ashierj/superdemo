@@ -5,22 +5,32 @@ module Gitlab
     class ClickHouseDataCollector
       QUERY = <<~CH
         SELECT count(*) AS count,
-          "contribution_analytics_events"."author_id" AS author_id,
-          "contribution_analytics_events"."target_type" AS target_type,
-          "contribution_analytics_events"."action" AS action
+          "contributions"."author_id" AS author_id,
+          "contributions"."target_type" AS target_type,
+          "contributions"."action" AS action
         FROM (
           SELECT
             id,
-            argMax(author_id, contribution_analytics_events.updated_at) AS author_id,
-            argMax(target_type, contribution_analytics_events.updated_at) AS target_type,
-            argMax(action, contribution_analytics_events.updated_at) AS action
-          FROM contribution_analytics_events
+            argMax(author_id, contributions.updated_at) AS author_id,
+            argMax(target_type, contributions.updated_at) AS target_type,
+            argMax(action, contributions.updated_at) AS action
+          FROM contributions
             WHERE startsWith(path, {group_path:String})
-            AND "contribution_analytics_events"."created_at" >= {from:Date}
-            AND "contribution_analytics_events"."created_at" <= {to:Date}
+            AND "contributions"."created_at" >= {from:Date}
+            AND "contributions"."created_at" <= {to:Date}
+            AND (
+              (
+                "contributions"."action" = 5 AND "contributions"."target_type" = ''
+              )
+              OR
+              (
+                "contributions"."action" IN (1, 3, 7, 12)
+                AND "contributions"."target_type" IN ('MergeRequest', 'Issue')
+              )
+            )
           GROUP BY id
-        ) contribution_analytics_events
-        GROUP BY "contribution_analytics_events"."action","contribution_analytics_events"."target_type","contribution_analytics_events"."author_id"
+        ) contributions
+        GROUP BY "contributions"."action","contributions"."target_type","contributions"."author_id"
       CH
 
       attr_reader :group, :from, :to
