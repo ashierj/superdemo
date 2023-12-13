@@ -183,7 +183,8 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
   end
 
   describe '.order_by_package_name' do
-    let_it_be(:occurrence_nuget) { create(:sbom_occurrence, packager_name: 'nuget') }
+    let_it_be(:occurrence_nuget_a) { create(:sbom_occurrence, component_name: 'component-a', packager_name: 'nuget') }
+    let_it_be(:occurrence_nuget_b) { create(:sbom_occurrence, component_name: 'component-b', packager_name: 'nuget') }
     let_it_be(:occurrence_npm) { create(:sbom_occurrence, packager_name: 'npm') }
     let_it_be(:occurrence_null) { create(:sbom_occurrence, source: nil) }
 
@@ -192,16 +193,16 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     context 'when the sort order is ascending' do
       let(:order) { 'asc' }
 
-      it 'returns records sorted by package name asc' do
-        expect(relation.map(&:packager)).to eq(['npm', 'nuget', nil])
+      it 'returns records sorted by package name asc, component name asc' do
+        expect(relation.to_a).to eq([occurrence_npm, occurrence_nuget_a, occurrence_nuget_b, occurrence_null])
       end
     end
 
     context 'when the sort order is descending' do
       let(:order) { 'desc' }
 
-      it 'returns records sorted by package name desc' do
-        expect(relation.map(&:packager)).to eq([nil, 'nuget', 'npm'])
+      it 'returns records sorted by package name desc, component name asc' do
+        expect(relation.to_a).to eq([occurrence_null, occurrence_nuget_a, occurrence_nuget_b, occurrence_npm])
       end
     end
   end
