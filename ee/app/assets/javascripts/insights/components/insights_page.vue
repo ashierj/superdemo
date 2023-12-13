@@ -5,6 +5,7 @@ import { isUndefined } from 'lodash';
 import { mapActions, mapState } from 'vuex';
 
 import { __ } from '~/locale';
+import { InternalEvents } from '~/tracking';
 import InsightsChart from './insights_chart.vue';
 
 export default {
@@ -12,6 +13,7 @@ export default {
     GlEmptyState,
     InsightsChart,
   },
+  mixins: [InternalEvents.mixin()],
   props: {
     queryEndpoint: {
       type: String,
@@ -61,6 +63,10 @@ export default {
         );
       }
     },
+    onChartItemClicked() {
+      this.trackEvent('insights_chart_item_clicked');
+      this.trackEvent(`insights_issue_chart_item_clicked`); // hardcode data source type `issue` until more chart types support drilling down
+    },
   },
 };
 </script>
@@ -81,6 +87,7 @@ export default {
           :data="data"
           :data-source-type="dataSourceType"
           :error="error"
+          @chart-item-clicked="onChartItemClicked"
         />
       </div>
     </div>

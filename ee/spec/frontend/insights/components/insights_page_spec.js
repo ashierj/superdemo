@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-
+import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import InsightsChart from 'ee/insights/components/insights_chart.vue';
 import InsightsPage from 'ee/insights/components/insights_page.vue';
 import { createStore } from 'ee/insights/stores';
@@ -16,6 +16,7 @@ Vue.use(Vuex);
 describe('Insights page component', () => {
   let store;
   let wrapper;
+  let trackingSpy;
 
   const createComponent = (props = {}) => {
     wrapper = shallowMount(InsightsPage, {
@@ -43,11 +44,15 @@ describe('Insights page component', () => {
           type: chart.type,
           description: '',
           data: barChartData,
+          dataSourceType: 'issue',
           error: null,
         },
       };
     }, {});
   };
+
+  const expectTrackingAction = (action) =>
+    expect(trackingSpy).toHaveBeenCalledWith(expect.any(String), action, expect.any(Object));
 
   const findInsightsChartData = () => wrapper.findComponent(InsightsChart);
 
@@ -73,6 +78,11 @@ describe('Insights page component', () => {
   describe('charts configured', () => {
     beforeEach(() => {
       createComponent({ pageConfig: pageInfo });
+      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+    });
+
+    afterEach(() => {
+      unmockTracking();
     });
 
     it('fetches chart data when mounted', () => {
@@ -120,6 +130,27 @@ describe('Insights page component', () => {
       it('does not render loading state', () => {
         expect(findInsightsChartData().props()).toMatchObject({
           loaded: true,
+        });
+      });
+
+      describe('chart item clicked', () => {
+        const trackingChartItemClickedAction = 'insights_chart_item_clicked';
+        const trackingChartTypeItemClickedAction = 'insights_issue_chart_item_clicked';
+
+        beforeEach(() => {
+          findInsightsChartData().vm.$emit('chart-item-clicked');
+        });
+
+        it('should send two tracking events', () => {
+          expect(trackingSpy).toHaveBeenCalledTimes(2);
+        });
+
+        it(`should track the '${trackingChartItemClickedAction}' event`, () => {
+          expectTrackingAction(trackingChartItemClickedAction);
+        });
+
+        it(`should track the '${trackingChartTypeItemClickedAction}' event`, () => {
+          expectTrackingAction(trackingChartTypeItemClickedAction);
         });
       });
     });
