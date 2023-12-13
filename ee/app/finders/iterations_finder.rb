@@ -5,6 +5,7 @@
 # params - Hash
 #   parent - The group in which to look-up iterations.
 #   include_ancestors - whether to look-up iterations in group ancestors.
+#   include_descendants - whether to look-up iterations in group descendants.
 #   title - Filter by title.
 #   search - Filter by fuzzy searching the given query in the selected fields.
 #   in - Array of searchable fields used with search param.
@@ -124,6 +125,8 @@ class IterationsFinder
 
   def groups
     parent = params[:parent]
+    include_ancestors = params[:include_ancestors].present?
+    include_descendants = params[:include_descendants].present?
 
     group = case parent
             when Group
@@ -134,6 +137,14 @@ class IterationsFinder
               raise ArgumentError, 'Invalid parent class. Only Project and Group are supported.'
             end
 
-    params[:include_ancestors] ? group.self_and_ancestors : group
+    return group unless include_ancestors || include_descendants
+
+    if include_ancestors && include_descendants
+      group.self_and_hierarchy
+    elsif include_ancestors
+      group.self_and_ancestors
+    else
+      group.self_and_descendants
+    end
   end
 end

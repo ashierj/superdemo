@@ -6,6 +6,7 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:parent_group) { create(:group, :private) }
   let_it_be(:group) { create(:group, :private, parent: parent_group) }
+  let_it_be(:subgroup) { create(:group, :private, parent: group) }
 
   let_it_be(:current_iteration) do
     create(
@@ -24,6 +25,10 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
 
   let_it_be(:ancestor_iteration) do
     create(:iteration, :with_due_date, group: parent_group, start_date: 2.weeks.from_now, updated_at: 10.days.ago)
+  end
+
+  let_it_be(:descendant_iteration) do
+    create(:iteration, :with_due_date, group: subgroup, start_date: 2.weeks.from_now, updated_at: 10.days.ago)
   end
 
   before_all do
@@ -161,6 +166,14 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
       expect(json_response.size).to eq(2)
       expect(json_response.map { |i| i['id'] }).to contain_exactly(current_iteration.id, closed_iteration.id)
     end
+
+    it 'includes descendant iterations when include_descendants is set to true' do
+      get api(api_path, user), params: { include_ancestors: false, include_descendants: true }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response.size).to eq(3)
+      expect(json_response.map { |i| i['id'] }).to contain_exactly(current_iteration.id, closed_iteration.id, descendant_iteration.id)
+    end
   end
 
   describe 'GET /projects/:id/iterations' do
@@ -170,11 +183,18 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
 
     it_behaves_like 'iterations list'
 
-    it 'return direct parent group iterations when include_ancestors is set to false' do
+    it 'excludes ancestor iterations of direct parent group when include_ancestors is set to false' do
       get api(api_path, user), params: { include_ancestors: false }
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response.map { |i| i['id'] }).to contain_exactly(current_iteration.id, closed_iteration.id)
+    end
+
+    it 'includes descendant iterations of direct parent group when include_descendants is set to true' do
+      get api(api_path, user), params: { include_ancestors: false, include_descendants: true }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response.map { |i| i['id'] }).to contain_exactly(current_iteration.id, closed_iteration.id, descendant_iteration.id)
     end
   end
 end
