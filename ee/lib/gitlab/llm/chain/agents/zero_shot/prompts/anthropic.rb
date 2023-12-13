@@ -12,6 +12,8 @@ module Gitlab
             }.freeze
 
             class Anthropic < Base
+              include Concerns::AnthropicPrompt
+
               def self.prompt(options)
                 text = <<~PROMPT
                   #{ROLE_NAMES[Llm::AiMessage::ROLE_USER]}: #{base_prompt(options)}

@@ -116,6 +116,7 @@ module Gitlab
                 agent_scratchpad: +"",
                 conversation: conversation,
                 prompt_version: prompt_version,
+                current_resource: current_resource,
                 current_code: current_code,
                 resources: available_resources_names
               }
@@ -192,6 +193,23 @@ module Gitlab
               options
             end
 
+            def current_resource
+              return "" unless Feature.enabled?(:duo_chat_current_resource_by_default, context.current_user)
+
+              # We use a content limit of 10% of the total limit because LLMs can be appreciably slower when dealing
+              # with larger prompts. Since we're including the resource by default when possible, we don't want to
+              # slow down every request. This also reduces the possibility that the complete prompt exceeds the maximum.
+              <<~CONTEXT
+                Here is additional data in <resource></resource> tags about the resource the user is working with:
+                <resource>
+                #{context.resource_json(content_limit: provider_prompt_class::MAX_CHARACTERS / 10)}
+                </resource>
+
+              CONTEXT
+            rescue ArgumentError
+              ""
+            end
+
             PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(
                 <<~PROMPT
@@ -227,6 +245,7 @@ module Gitlab
                   Avoid asking for more details if you cannot provide an answer anyway.
                   Ask user to leave feedback.
 
+                  %<current_resource>s
                   Begin!
                 PROMPT
               ),
