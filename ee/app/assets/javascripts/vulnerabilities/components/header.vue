@@ -330,7 +330,7 @@ export default {
           :disabled="isProcessingAction"
           @createMergeRequest="createMergeRequest"
           @downloadPatch="downloadPatch"
-          @createMergeRequestAi="startSubscription"
+          @startSubscription="startSubscription"
         />
         <gl-button
           v-else-if="actionButtons.length > 0"
