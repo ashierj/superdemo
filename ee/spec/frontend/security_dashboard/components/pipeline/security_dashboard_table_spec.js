@@ -20,13 +20,13 @@ describe('Security Dashboard Table', () => {
   let store;
   let wrapper;
 
-  const createWrapper = ({ slots, canAdminVulnerability = true } = {}) => {
+  const createWrapper = ({ slots, canAdminVulnerability = true, glFeatures = {} } = {}) => {
     store = new Vuex.Store();
     setupStore(store);
     wrapper = shallowMountExtended(SecurityDashboardTable, {
       store,
       slots,
-      provide: { canAdminVulnerability },
+      provide: { canAdminVulnerability, glFeatures },
     });
     store.state.vulnerabilities.vulnerabilitiesEndpoint = vulnerabilitiesEndpoint;
   };
@@ -35,6 +35,8 @@ describe('Security Dashboard Table', () => {
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findSelectionSummaryCollapse = () => wrapper.findByTestId('selection-summary-collapse');
+  const findCompactPagination = () => wrapper.findByTestId('compact-pagination');
+  const findNumberedPagination = () => wrapper.findByTestId('numbered-pagination');
 
   describe('while loading', () => {
     beforeEach(() => {
@@ -81,6 +83,47 @@ describe('Security Dashboard Table', () => {
 
       it('should show the select all as checked', () => {
         expect(findCheckbox().attributes('checked')).toBe('true');
+      });
+    });
+
+    describe('pagination', () => {
+      const commitToStore = (pageInfo = {}) => {
+        store.commit(`vulnerabilities/${RECEIVE_VULNERABILITIES_SUCCESS}`, {
+          vulnerabilities: [],
+          pageInfo,
+        });
+      };
+
+      describe('with security_findings_finder_lateral_join flag on', () => {
+        beforeEach(() => {
+          createWrapper({ glFeatures: { securityFindingsFinderLateralJoin: true } });
+          commitToStore({ page: 1, nextPage: 2, prevPage: NaN });
+        });
+
+        it('should show compact pagination', () => {
+          expect(findCompactPagination().exists()).toBe(true);
+          expect(findNumberedPagination().exists()).toBe(false);
+
+          expect(findCompactPagination().props()).toMatchObject({
+            value: 1,
+            nextPage: 2,
+            prevPage: null,
+          });
+        });
+      });
+
+      describe('with security_findings_finder_lateral_join flag off', () => {
+        beforeEach(() => {
+          createWrapper({ securityFindingsFinderLateralJoin: false });
+          commitToStore({ total: 1 });
+        });
+
+        it('should show normal pagination', () => {
+          expect(findNumberedPagination().exists()).toBe(true);
+          expect(findCompactPagination().exists()).toBe(false);
+
+          expect(findNumberedPagination().props('pageInfo')).toMatchObject({ total: 1 });
+        });
       });
     });
   });
