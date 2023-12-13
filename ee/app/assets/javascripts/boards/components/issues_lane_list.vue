@@ -1,8 +1,6 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
 import Draggable from 'vuedraggable';
-// eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions } from 'vuex';
 import { __, s__ } from '~/locale';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
@@ -26,7 +24,7 @@ export default {
     BoardNewIssue,
     GlLoadingIcon,
   },
-  inject: ['boardType', 'fullPath', 'isApolloBoard'],
+  inject: ['boardType', 'fullPath'],
   props: {
     list: {
       type: Object,
@@ -74,7 +72,7 @@ export default {
       required: false,
       default: false,
     },
-    highlightedListsApollo: {
+    highlightedLists: {
       type: Array,
       required: false,
       default: () => [],
@@ -101,7 +99,7 @@ export default {
         };
       },
       skip() {
-        return !this.isApolloBoard || !this.isUnassignedIssuesLane;
+        return !this.isUnassignedIssuesLane;
       },
       update(data) {
         return data[this.boardType]?.board.lists.nodes[0];
@@ -123,7 +121,6 @@ export default {
     },
   },
   computed: {
-    ...mapState(['listsFlags', 'highlightedLists']),
     baseVariables() {
       return {
         fullPath: this.fullPath,
@@ -138,14 +135,10 @@ export default {
       };
     },
     issuesToUse() {
-      if (this.isUnassignedIssuesLane && this.isApolloBoard) {
+      if (this.isUnassignedIssuesLane) {
         return this.currentListWithUnassignedIssues?.issues.nodes || [];
       }
       return this.issues;
-    },
-
-    highlightedListsToUse() {
-      return this.isApolloBoard ? this.highlightedListsApollo : this.highlightedLists;
     },
 
     treeRootWrapper() {
@@ -168,13 +161,8 @@ export default {
       return this.canAdminList ? options : {};
     },
     isLoading() {
-      if (this.isApolloBoard) {
-        return (
-          this.$apollo.queries.currentListWithUnassignedIssues.loading && !this.isLoadingMoreIssues
-        );
-      }
       return (
-        this.listsFlags[this.list.id]?.isLoading || this.listsFlags[this.list.id]?.isLoadingMore
+        this.$apollo.queries.currentListWithUnassignedIssues.loading && !this.isLoadingMoreIssues
       );
     },
     pageInfo() {
@@ -182,7 +170,7 @@ export default {
     },
 
     highlighted() {
-      return this.highlightedListsToUse.includes(this.list.id);
+      return this.highlightedLists.includes(this.list.id);
     },
     toList() {
       if (!this.toListId) {
@@ -199,15 +187,6 @@ export default {
     },
   },
   watch: {
-    filterParams: {
-      handler() {
-        if (this.isUnassignedIssuesLane && !this.isApolloBoard) {
-          this.fetchItemsForList({ listId: this.list.id, noEpicIssues: true });
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
     highlighted: {
       handler(highlighted) {
         if (highlighted) {
@@ -231,7 +210,6 @@ export default {
     eventHub.$off(`toggle-issue-form-${this.list.id}`, this.toggleForm);
   },
   methods: {
-    ...mapActions(['moveIssue', 'fetchItemsForList']),
     toggleForm() {
       this.showIssueForm = !this.showIssueForm;
       if (this.showIssueForm && this.isUnassignedIssuesLane) {
@@ -244,7 +222,7 @@ export default {
     handleDragOnEnd(params) {
       document.body.classList.remove('is-dragging');
       const { newIndex, oldIndex, from, to, item } = params;
-      const { itemId, itemIid, itemPath } = item.dataset;
+      const { itemIid } = item.dataset;
       const { children } = to;
       let moveBeforeId;
       let moveAfterId;
@@ -272,30 +250,17 @@ export default {
         }
       }
 
-      if (this.isApolloBoard) {
-        this.moveBoardItem(
-          {
-            iid: itemIid,
-            epicId: to.dataset.epicId,
-            fromListId: from.dataset.listId,
-            toListId: to.dataset.listId,
-            moveBeforeId,
-            moveAfterId,
-          },
-          newIndex,
-        );
-      } else {
-        this.moveIssue({
-          itemId,
-          itemIid,
-          itemPath,
+      this.moveBoardItem(
+        {
+          iid: itemIid,
+          epicId: to.dataset.epicId,
           fromListId: from.dataset.listId,
           toListId: to.dataset.listId,
           moveBeforeId,
           moveAfterId,
-          epicId: from.dataset.epicId !== to.dataset.epicId ? to.dataset.epicId || null : undefined,
-        });
-      }
+        },
+        newIndex,
+      );
     },
     async fetchMoreIssues() {
       await this.$apollo.queries.currentListWithUnassignedIssues.fetchMore({

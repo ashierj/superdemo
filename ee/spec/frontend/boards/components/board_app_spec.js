@@ -38,7 +38,6 @@ describe('BoardApp', () => {
         boardType: 'group',
         isIssueBoard: true,
         isGroupBoard: true,
-        isApolloBoard: true,
         ...provide,
       },
     });
@@ -52,7 +51,7 @@ describe('BoardApp', () => {
     'fetches $issuableType lists',
     ({ issuableType, isIssueBoard, isEpicBoard, queryHandler, notCalledHandler }) => {
       createComponent({
-        provide: { isApolloBoard: true, issuableType, isEpicBoard, isIssueBoard },
+        provide: { issuableType, isEpicBoard, isIssueBoard },
       });
 
       expect(queryHandler).toHaveBeenCalled();

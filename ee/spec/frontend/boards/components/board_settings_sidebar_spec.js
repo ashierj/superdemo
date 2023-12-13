@@ -19,7 +19,6 @@ describe('ee/BoardSettingsSidebar', () => {
         isIssueBoard: true,
         boardType: 'group',
         issuableType: 'issue',
-        isApolloBoard: true,
         ...provide,
       },
       propsData: {

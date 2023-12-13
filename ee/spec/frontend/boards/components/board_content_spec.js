@@ -25,7 +25,6 @@ describe('ee/BoardContent', () => {
         isEpicBoard,
         isGroupBoard: true,
         disabled: false,
-        isApolloBoard: true,
       },
       propsData: {
         boardLists: {},

@@ -1,6 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapActions } from 'vuex';
 import { s__ } from '~/locale';
 import BoardNewItem from '~/boards/components/board_new_item.vue';
 import { toggleFormEventPrefix } from '~/boards/constants';
@@ -19,7 +17,7 @@ export default {
     BoardNewItem,
     GroupSelect,
   },
-  inject: ['boardType', 'fullPath', 'isApolloBoard'],
+  inject: ['boardType', 'fullPath'],
   props: {
     list: {
       type: Object,
@@ -37,17 +35,12 @@ export default {
   },
   apollo: {
     board: {
-      query() {
-        return epicBoardQuery;
-      },
+      query: epicBoardQuery,
       variables() {
         return {
           fullPath: this.fullPath,
           boardId: this.boardId,
         };
-      },
-      skip() {
-        return !this.isApolloBoard;
       },
       update(data) {
         const { board } = data.workspace;
@@ -76,28 +69,15 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addListNewEpic']),
     submit({ title }) {
       const labels = this.list.label ? [this.list.label] : [];
 
-      if (this.isApolloBoard) {
-        return this.addNewEpicToList({
-          epicInput: {
-            title,
-            labelIds: labels?.map((l) => getIdFromGraphQLId(l.id)),
-            groupPath: this.groupPath,
-          },
-        });
-      }
-      return this.addListNewEpic({
+      return this.addNewEpicToList({
         epicInput: {
           title,
           labelIds: labels?.map((l) => getIdFromGraphQLId(l.id)),
           groupPath: this.groupPath,
         },
-        list: this.list,
-      }).then(() => {
-        eventHub.$emit(this.formEvent);
       });
     },
     addNewEpicToList({ epicInput }) {

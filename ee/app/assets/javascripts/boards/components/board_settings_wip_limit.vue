@@ -1,7 +1,5 @@
 <script>
 import { GlButton, GlFormInput } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState } from 'vuex';
 import { __, n__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import { setError } from '~/boards/graphql/cache_updates';
@@ -23,7 +21,6 @@ export default {
   directives: {
     autofocusonshow,
   },
-  inject: ['isApolloBoard'],
   props: {
     activeListId: {
       type: String,
@@ -42,7 +39,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(['activeId']),
     wipLimitTypeText() {
       return n__('%d issue', '%d issues', this.maxIssueCount);
     },
@@ -54,7 +50,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['unsetActiveId', 'updateListWipLimit', 'setError']),
     showInput() {
       this.edit = true;
       this.currentWipLimit = this.maxIssueCount > 0 ? this.maxIssueCount : null;
@@ -80,39 +75,13 @@ export default {
         // need to reassign bc were clearing the ref in resetStateAfterUpdate.
         const wipLimit = this.currentWipLimit;
 
-        if (this.isApolloBoard) {
-          this.updateWipLimit(this.activeListId, wipLimit);
-        } else {
-          this.updateListWipLimit({ maxIssueCount: wipLimit, listId: this.activeId })
-            .catch(() => {
-              this.unsetActiveId();
-              this.setError({
-                message: this.$options.i18n.updateListError,
-              });
-            })
-            .finally(() => {
-              this.resetStateAfterUpdate();
-            });
-        }
+        this.updateWipLimit(this.activeListId, wipLimit);
       } else {
         this.edit = false;
       }
     },
     clearWipLimit() {
-      if (this.isApolloBoard) {
-        this.updateWipLimit(this.activeListId, 0);
-      } else {
-        this.updateListWipLimit({ maxIssueCount: 0, listId: this.activeId })
-          .catch(() => {
-            this.unsetActiveId();
-            this.setError({
-              message: this.$options.i18n.updateListError,
-            });
-          })
-          .finally(() => {
-            this.resetStateAfterUpdate();
-          });
-      }
+      this.updateWipLimit(this.activeListId, 0);
     },
     async updateWipLimit(listId, maxIssueCount) {
       try {

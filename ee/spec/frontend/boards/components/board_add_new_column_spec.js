@@ -168,7 +168,7 @@ describe('BoardAddNewColumn', () => {
   describe('List types', () => {
     describe('assignee list', () => {
       beforeEach(async () => {
-        mountComponent({ provide: { isApolloBoard: true } });
+        mountComponent();
         listTypeSelect(ListType.assignee);
 
         await nextTick();
@@ -196,7 +196,7 @@ describe('BoardAddNewColumn', () => {
 
     describe('iteration list', () => {
       beforeEach(async () => {
-        mountComponent({ provide: { isApolloBoard: true } });
+        mountComponent();
         await selectIteration();
       });
 
@@ -219,7 +219,6 @@ describe('BoardAddNewColumn', () => {
     describe('when fetch milestones query fails', () => {
       beforeEach(async () => {
         mountComponent({
-          provide: { isApolloBoard: true },
           milestonesHandler: milestonesQueryHandlerFailure,
         });
         listTypeSelect(ListType.milestone);
@@ -238,7 +237,6 @@ describe('BoardAddNewColumn', () => {
     describe('when fetch assignees query fails', () => {
       beforeEach(async () => {
         mountComponent({
-          provide: { isApolloBoard: true },
           assigneesHandler: assigneesQueryHandlerFailure,
         });
         listTypeSelect(ListType.assignee);
@@ -257,7 +255,6 @@ describe('BoardAddNewColumn', () => {
     describe('when fetch iterations query fails', () => {
       beforeEach(async () => {
         mountComponent({
-          provide: { isApolloBoard: true },
           iterationHandler: iterationsQueryHandlerFailure,
         });
         await selectIteration();

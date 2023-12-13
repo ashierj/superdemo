@@ -82,7 +82,6 @@ describe('BoardsSelector', () => {
         boardType: isGroupBoard ? WORKSPACE_GROUP : WORKSPACE_PROJECT,
         isGroupBoard,
         isProjectBoard,
-        isApolloBoard: false,
       },
     });
   };

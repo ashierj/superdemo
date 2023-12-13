@@ -1,7 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -16,21 +14,14 @@ import eventHub from '~/boards/eventhub';
 
 import { mockEpicBoardResponse } from '../mock_data';
 
-Vue.use(Vuex);
 Vue.use(VueApollo);
-
-const addListNewEpicSpy = jest.fn().mockResolvedValue();
-const mockActions = { addListNewEpic: addListNewEpicSpy };
 
 const epicBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockEpicBoardResponse);
 const mockApollo = createMockApollo([[epicBoardQuery, epicBoardQueryHandlerSuccess]]);
 
-const createComponent = ({ actions = mockActions, isApolloBoard = false } = {}) =>
+const createComponent = () =>
   shallowMount(BoardNewEpic, {
     apolloProvider: mockApollo,
-    store: new Vuex.Store({
-      actions,
-    }),
     propsData: {
       list: mockList,
       boardId: 'gid://gitlab/Board::EpicBoard/1',
@@ -38,7 +29,6 @@ const createComponent = ({ actions = mockActions, isApolloBoard = false } = {}) 
     provide: {
       boardType: 'group',
       fullPath: 'gitlab-org',
-      isApolloBoard,
     },
     stubs: {
       BoardNewItem,
@@ -63,6 +53,14 @@ describe('Epic boards new epic form', () => {
     await nextTick();
   });
 
+  it('fetches board when creating epic and emits addNewEpic event', async () => {
+    await submitForm(wrapper);
+    await waitForPromises();
+
+    expect(epicBoardQueryHandlerSuccess).toHaveBeenCalled();
+    expect(wrapper.emitted('addNewEpic')[0][0]).toMatchObject({ title: 'Foo' });
+  });
+
   it('renders board-new-item component', () => {
     const boardNewItem = findBoardNewItem();
     expect(boardNewItem.exists()).toBe(true);
@@ -81,40 +79,11 @@ describe('Epic boards new epic form', () => {
     expect(groupSelect.exists()).toBe(true);
   });
 
-  it('calls action `addListNewEpic` when "Create epic" button is clicked', async () => {
-    await submitForm(wrapper);
-
-    expect(addListNewEpicSpy).toHaveBeenCalledWith(expect.any(Object), {
-      list: expect.any(Object),
-      epicInput: {
-        title: 'Foo',
-        labelIds: [],
-        groupPath: 'gitlab-org',
-      },
-    });
-  });
-
   it('emits event `toggle-epic-form` with current list Id suffix on eventHub when `board-new-item` emits form-cancel event', async () => {
     jest.spyOn(eventHub, '$emit').mockImplementation();
     findBoardNewItem().vm.$emit('form-cancel');
 
     await nextTick();
     expect(eventHub.$emit).toHaveBeenCalledWith(`toggle-epic-form-${mockList.id}`);
-  });
-
-  describe('Apollo boards', () => {
-    beforeEach(async () => {
-      wrapper = createComponent({ isApolloBoard: true });
-
-      await nextTick();
-    });
-
-    it('fetches board when creating epic and emits addNewEpic event', async () => {
-      await submitForm(wrapper);
-      await waitForPromises();
-
-      expect(epicBoardQueryHandlerSuccess).toHaveBeenCalled();
-      expect(wrapper.emitted('addNewEpic')[0][0]).toMatchObject({ title: 'Foo' });
-    });
   });
 });

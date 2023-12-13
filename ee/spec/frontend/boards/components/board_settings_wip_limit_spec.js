@@ -1,9 +1,6 @@
 import { GlFormInput } from '@gitlab/ui';
-import { noop } from 'lodash';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import BoardSettingsWipLimit from 'ee_component/boards/components/board_settings_wip_limit.vue';
 import listUpdateLimitMetricsMutation from 'ee_component/boards/graphql/list_update_limit_metrics.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -14,12 +11,10 @@ import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import { mockUpdateListWipLimitResponse } from '../mock_data';
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 describe('BoardSettingsWipLimit', () => {
   let wrapper;
   let mockApollo;
-  let storeActions;
   const listId = mockLabelList.id;
   const currentWipLimit = 1; // Needs to be other than null to trigger requests
 
@@ -36,8 +31,6 @@ describe('BoardSettingsWipLimit', () => {
     .mockRejectedValue(new Error(errorMessage));
 
   const createComponent = ({
-    vuexState = { activeId: listId },
-    actions = {},
     localState = {},
     props = { maxIssueCount: 0 },
     injectedProps = {},
@@ -46,24 +39,14 @@ describe('BoardSettingsWipLimit', () => {
     mockApollo = createMockApollo([
       [listUpdateLimitMetricsMutation, listUpdateWipLimitMutationHandler],
     ]);
-    storeActions = actions;
-
-    const store = new Vuex.Store({
-      state: vuexState,
-      actions: storeActions,
-    });
 
     wrapper = shallowMountExtended(BoardSettingsWipLimit, {
       apolloProvider: mockApollo,
-      provide: {
-        isApolloBoard: false,
-        ...injectedProps,
-      },
+      provide: injectedProps,
       propsData: {
         activeListId: listId,
         ...props,
       },
-      store,
       data() {
         return localState;
       },
@@ -95,9 +78,7 @@ describe('BoardSettingsWipLimit', () => {
     describe('when activeListWipLimit is 0', () => {
       it('renders "None" in the block', () => {
         createComponent({
-          vuexState: {
-            activeId: listId,
-          },
+          props: { maxIssueCount: 0 },
         });
 
         expect(findWipLimit().text()).toBe('None');
@@ -111,9 +92,6 @@ describe('BoardSettingsWipLimit', () => {
         ${11} | ${'11 issues'}
       `('renders $num', ({ num, expected }) => {
         createComponent({
-          vuexState: {
-            activeId: listId,
-          },
           props: { maxIssueCount: num },
         });
 
@@ -126,10 +104,6 @@ describe('BoardSettingsWipLimit', () => {
     const maxIssueCount = 4;
     beforeEach(async () => {
       createComponent({
-        vuexState: {
-          activeId: listId,
-        },
-        actions: { updateListWipLimit: noop },
         props: { maxIssueCount },
       });
 
@@ -151,15 +125,8 @@ describe('BoardSettingsWipLimit', () => {
 
   describe('remove limit', () => {
     describe('when wipLimit is set', () => {
-      const spy = jest.fn().mockResolvedValue({
-        data: { boardListUpdateLimitMetrics: { list: { maxIssueCount: 0 } } },
-      });
       beforeEach(() => {
         createComponent({
-          vuexState: {
-            activeId: listId,
-          },
-          actions: { updateListWipLimit: spy },
           props: { maxIssueCount: 4 },
         });
       });
@@ -171,18 +138,16 @@ describe('BoardSettingsWipLimit', () => {
         await waitForPromises();
         await nextTick();
 
-        expect(spy).toHaveBeenCalledWith(
-          expect.anything(),
-          expect.objectContaining({ listId, maxIssueCount: 0 }),
-        );
+        expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
+          input: { listId, maxIssueCount: 0 },
+        });
       });
     });
 
     describe('when wipLimit is not set', () => {
       beforeEach(() => {
         createComponent({
-          vuexState: { activeId: listId },
-          actions: { updateListWipLimit: noop },
+          props: { maxIssueCount: 0 },
         });
       });
 
@@ -199,53 +164,40 @@ describe('BoardSettingsWipLimit', () => {
       ${'blur'}
     `('$blurMethod', ({ blurMethod }) => {
       describe(`when blur is triggered by ${blurMethod}`, () => {
-        it('calls updateListWipLimit', async () => {
-          const spy = jest.fn().mockResolvedValue({
-            data: { boardListUpdateLimitMetrics: { list: { maxIssueCount: 4 } } },
-          });
+        it('calls listUpdateLimitMetricsMutation', async () => {
           createComponent({
-            vuexState: {
-              activeId: listId,
-            },
-            actions: { updateListWipLimit: spy },
             localState: { edit: true, currentWipLimit },
           });
 
           await triggerBlur(blurMethod);
 
-          expect(spy).toHaveBeenCalledTimes(1);
+          expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
+            input: { listId, maxIssueCount: currentWipLimit },
+          });
         });
 
         describe('when component wipLimit and List.maxIssueCount are equal', () => {
-          it('does not call updateListWipLimit', async () => {
-            const spy = jest.fn().mockResolvedValue({});
+          it('does not call listUpdateLimitMetricsMutation', async () => {
             createComponent({
-              vuexState: {
-                activeId: listId,
-              },
-              actions: { updateListWipLimit: spy },
               localState: { edit: true, currentWipLimit: 2 },
               props: { maxIssueCount: 2 },
             });
 
             await triggerBlur(blurMethod);
 
-            expect(spy).toHaveBeenCalledTimes(0);
+            expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledTimes(0);
           });
         });
 
         describe('when currentWipLimit is null', () => {
-          it('does not call updateListWipLimit', async () => {
-            const spy = jest.fn().mockResolvedValue({});
+          it('does not call listUpdateLimitMetricsMutation', async () => {
             createComponent({
-              vuexState: { activeId: listId },
-              actions: { updateListWipLimit: spy },
               localState: { edit: true, currentWipLimit: null },
             });
 
             await triggerBlur(blurMethod);
 
-            expect(spy).toHaveBeenCalledTimes(0);
+            expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledTimes(0);
           });
         });
 
@@ -253,12 +205,7 @@ describe('BoardSettingsWipLimit', () => {
           const maxIssueCount = 11;
 
           beforeEach(async () => {
-            const spy = jest.fn().mockResolvedValue({});
             createComponent({
-              vuexState: {
-                activeId: listId,
-              },
-              actions: { updateListWipLimit: spy },
               localState: { edit: true, currentWipLimit: maxIssueCount },
               props: { maxIssueCount },
             });
@@ -277,26 +224,17 @@ describe('BoardSettingsWipLimit', () => {
         });
 
         describe('when response fails', () => {
-          let setErrorMock;
-
           beforeEach(async () => {
-            setErrorMock = jest.fn();
-
             createComponent({
-              vuexState: { activeId: listId },
-              actions: {
-                updateListWipLimit: jest.fn().mockRejectedValue(),
-                setError: setErrorMock,
-                unsetActiveId: noop,
-              },
               localState: { edit: true, currentWipLimit },
+              listUpdateWipLimitMutationHandler: listUpdateLimitMetricsMutationHandlerFailure,
             });
 
             await triggerBlur(blurMethod);
           });
 
-          it('calls flash with expected error', () => {
-            expect(setErrorMock).toHaveBeenCalledTimes(1);
+          it('sets error', () => {
+            expect(cacheUpdates.setError).toHaveBeenCalled();
           });
         });
       });
@@ -305,8 +243,6 @@ describe('BoardSettingsWipLimit', () => {
     describe('passing of props to gl-form-input', () => {
       beforeEach(() => {
         createComponent({
-          vuexState: { activeId: listId },
-          actions: { updateListWipLimit: noop },
           localState: { edit: true },
         });
       });
@@ -318,61 +254,6 @@ describe('BoardSettingsWipLimit', () => {
       it('passes `number`', () => {
         expect(findInput().attributes().number).toBeDefined();
       });
-    });
-  });
-
-  describe('Apollo boards', () => {
-    it('adds limit', async () => {
-      createComponent({
-        injectedProps: {
-          isApolloBoard: true,
-        },
-      });
-
-      expect(findWipLimit().text()).toContain('None');
-
-      await clickEdit();
-      findInput().vm.$emit('input', 11);
-      await triggerBlur('blur');
-
-      expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
-        input: { listId, maxIssueCount: 11 },
-      });
-    });
-
-    it('removes limit', async () => {
-      createComponent({
-        props: { maxIssueCount: 11 },
-        injectedProps: {
-          isApolloBoard: true,
-        },
-      });
-
-      expect(findWipLimit().text()).toContain('11');
-
-      findRemoveWipLimit().vm.$emit('click');
-      await waitForPromises();
-
-      expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
-        input: { listId, maxIssueCount: 0 },
-      });
-    });
-
-    it('sets error when list update fails', async () => {
-      createComponent({
-        props: { maxIssueCount: 11 },
-        injectedProps: {
-          isApolloBoard: true,
-        },
-        listUpdateWipLimitMutationHandler: listUpdateLimitMetricsMutationHandlerFailure,
-      });
-
-      expect(findWipLimit().text()).toContain('11');
-
-      findRemoveWipLimit().vm.$emit('click');
-      await waitForPromises();
-
-      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 });

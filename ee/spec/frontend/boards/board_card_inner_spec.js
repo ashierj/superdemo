@@ -52,7 +52,6 @@ describe('Board card component', () => {
         allowSubEpics: isEpicBoard,
         issuableType: TYPE_ISSUE,
         isGroupBoard: true,
-        isApolloBoard: false,
       },
     });
   };
