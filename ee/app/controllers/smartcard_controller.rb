@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class SmartcardController < ApplicationController
+  CERT_SEPARATOR = '--'
+  LOGIN_CUTOFF_LIMIT = 3.minutes
+
   skip_before_action :authenticate_user!
   skip_before_action :verify_authenticity_token
 
@@ -34,19 +37,24 @@ class SmartcardController < ApplicationController
   end
 
   def verify_certificate_url_options
+    nonce = Gitlab::Utils.ensure_utf8_size(SecureRandom.urlsafe_base64(12), bytes: 12.bytes)
+    timestamped_cert = "#{nginx_certificate_header}#{CERT_SEPARATOR}#{Time.now.utc.to_i}"
+    encrypted_cert = Gitlab::CryptoHelper.aes256_gcm_encrypt(timestamped_cert, nonce: nonce)
+
     {
       host: ::Gitlab.config.gitlab.host,
       port: ::Gitlab.config.gitlab.port,
       provider: params[:provider],
-      client_certificate: request.headers['HTTP_X_SSL_CLIENT_CERTIFICATE']
+      client_certificate: CGI.escape(encrypted_cert),
+      nonce: nonce
     }.compact
   end
 
   def client_certificate
     if ldap_provider?
-      Gitlab::Auth::Smartcard::LdapCertificate.new(params[:provider], certificate_param)
+      Gitlab::Auth::Smartcard::LdapCertificate.new(params[:provider], certificate_from_encrypted_param)
     else
-      Gitlab::Auth::Smartcard::Certificate.new(certificate_param)
+      Gitlab::Auth::Smartcard::Certificate.new(certificate_from_encrypted_param)
     end
   end
 
@@ -72,18 +80,39 @@ class SmartcardController < ApplicationController
     request.headers['HTTP_X_SSL_CLIENT_CERTIFICATE']
   end
 
-  def certificate_param
-    param = params[:client_certificate]
-    return unless param
+  def decrypted_certificate_param
+    @decrypted_certificate_param ||= begin
+      param = params[:client_certificate]
+      nonce = params[:nonce]
 
-    unescaped_param = CGI.unescape(param)
-    if unescaped_param.include?("\n")
+      if param && nonce
+        unescaped_param = CGI.unescape(param)
+        Gitlab::CryptoHelper.aes256_gcm_decrypt(unescaped_param, nonce: nonce)
+      end
+    end
+  end
+
+  def certificate_from_encrypted_param
+    decrypted_param = decrypted_certificate_param
+    return unless decrypted_param
+
+    certificate_param = decrypted_param.rpartition(CERT_SEPARATOR).first
+    certificate_string = CGI.unescape(certificate_param)
+    if certificate_string.include?("\n")
       # NGINX forwarding the $ssl_client_escaped_cert variable
-      unescaped_param
+      certificate_string
     else
       # older version of NGINX forwarding the now deprecated $ssl_client_cert variable
-      param.gsub(/ (?!CERTIFICATE)/, "\n")
+      certificate_param.gsub(/ (?!CERTIFICATE)/, "\n")
     end
+  end
+
+  def timestamp_from_encrypted_param
+    decrypted_param = decrypted_certificate_param
+    return unless decrypted_param
+
+    timestamp_param = decrypted_param.rpartition(CERT_SEPARATOR).last
+    Time.at(timestamp_param.to_i).utc
   end
 
   def check_feature_availability
@@ -104,9 +133,22 @@ class SmartcardController < ApplicationController
   end
 
   def check_certificate_param
-    unless certificate_param.present?
+    unless decrypted_certificate_param.present?
       access_denied!(_('Smartcard authentication failed: client certificate header is missing.'), 401)
+      return
     end
+
+    if login_expired? || login_started_in_future?
+      access_denied!(_('Smartcard authentication failed: login process exceeded the time limit.'), 401)
+    end
+  end
+
+  def login_expired?
+    (Time.now.utc - timestamp_from_encrypted_param) > LOGIN_CUTOFF_LIMIT
+  end
+
+  def login_started_in_future?
+    timestamp_from_encrypted_param > Time.now.utc
   end
 
   def store_active_session
