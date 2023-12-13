@@ -44,7 +44,7 @@ module API
         optional :name, type: String, desc: "Name for role (default: 'Custom')"
         optional :description, type: String, desc: "Description of role usage"
 
-        ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission_name, permission_params|
+        ::MemberRole.all_customizable_permissions.each do |permission_name, permission_params|
           optional permission_name.to_s, type: Boolean, desc: permission_params[:description], default: false
         end
       end

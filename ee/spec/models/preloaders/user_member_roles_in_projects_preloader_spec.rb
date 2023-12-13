@@ -12,8 +12,8 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
   subject(:result) { described_class.new(projects: project_list, user: user).execute }
 
   def ability_requirement(ability)
-    ability_definition = MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS[ability]
-    ability_definition[:requirement]
+    ability_definition = MemberRole.all_customizable_permissions[ability]
+    ability_definition[:requirement]&.to_sym
   end
 
   def create_member_role(ability, member)

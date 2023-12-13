@@ -18,8 +18,9 @@ module Types
         symbolized_value = object[:value].downcase.to_sym
 
         result = []
-        result << :project if MemberRole::ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS.include?(symbolized_value)
-        result << :group if MemberRole::ALL_CUSTOMIZABLE_GROUP_PERMISSIONS.include?(symbolized_value)
+        result << :project if MemberRole.all_customizable_project_permissions.include?(symbolized_value)
+        result << :group if MemberRole.all_customizable_group_permissions.include?(symbolized_value)
+
         result
       end
 

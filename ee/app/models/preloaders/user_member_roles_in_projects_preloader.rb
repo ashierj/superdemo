@@ -36,7 +36,8 @@ module Preloaders
 
       value_list = Arel::Nodes::ValuesList.new(sql_values_array)
 
-      permissions = MemberRole::ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS
+      permissions = MemberRole.all_customizable_project_permissions
+
       permission_select = permissions.map { |p| "bool_or(custom_permissions.#{p}) AS #{p}" }.join(', ')
       permission_condition = permissions.map { |p| "member_roles.#{p} = true" }.join(' OR ')
       result_default = permissions.map { |p| "false AS #{p}" }.join(', ')
