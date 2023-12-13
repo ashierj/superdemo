@@ -9,14 +9,7 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
     let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:user) { create(:user) }
 
-    let(:model) { 'vertexai' }
-
-    let(:options) do
-      {
-        prompt: 'list 10 commit titles',
-        model: model
-      }
-    end
+    let(:options) { { prompt: 'list 10 commit titles' } }
 
     include_context 'with ai features enabled for group'
 
@@ -65,25 +58,6 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
         stub_const("#{described_class}::INPUT_CONTENT_LIMIT", 4)
 
         expect(subject.execute).to be_error
-      end
-
-      context 'when openai model is requested' do
-        let(:model) { 'openai' }
-
-        it 'responds successfully with OpenAI formatted params' do
-          response = subject.execute
-
-          expect(response).to be_success
-          expect(response.payload).to include({
-            max_tokens: 300,
-            model: "gpt-3.5-turbo",
-            temperature: 0.4
-          })
-
-          expect(response.payload[:messages][0][:content]).to include(
-            "Provide the appropriate git commands for: list 10 commit titles."
-          )
-        end
       end
     end
   end
