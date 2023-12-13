@@ -2965,6 +2965,37 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe '#namespaces_ids_with_code_suggestions_enabled' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:namespace_with_code_suggestions) { create(:group) }
+    let_it_be(:namespace_without_code_suggestions) { create(:group) }
+
+    subject(:namespaces_ids_with_code_suggestions_enabled) { user.namespaces_ids_with_code_suggestions_enabled }
+
+    context 'when user belongs to group of namespace with code suggestions' do
+      before do
+        namespace_with_code_suggestions.namespace_settings.update_attribute(:code_suggestions, true)
+        namespace_with_code_suggestions.add_developer(user)
+      end
+
+      it 'returns the namespace ID' do
+        expect(namespaces_ids_with_code_suggestions_enabled).to eq([namespace_with_code_suggestions.id])
+      end
+    end
+
+    context 'when user belongs to subgroup of namespace with code suggestions' do
+      before do
+        namespace_with_code_suggestions.namespace_settings.update_attribute(:code_suggestions, true)
+        subgroup = create(:group, parent: namespace_with_code_suggestions)
+        subgroup.add_developer(user)
+      end
+
+      it 'returns the namespace ID' do
+        expect(namespaces_ids_with_code_suggestions_enabled).to eq([namespace_with_code_suggestions.id])
+      end
+    end
+  end
+
   describe '#eligible_for_self_managed_code_suggestions?' do
     using RSpec::Parameterized::TableSyntax
 

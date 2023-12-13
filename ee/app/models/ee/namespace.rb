@@ -110,6 +110,11 @@ module EE
           ).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
+      scope :with_code_suggestions_enabled, -> do
+        joins(:namespace_settings)
+          .where(namespace_settings: { code_suggestions: true })
+      end
+
       delegate :eligible_additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,

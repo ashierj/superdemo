@@ -454,6 +454,20 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
 
       it { is_expected.to contain_exactly(ultimate_namespace, ultimate_trial_namespace, opensource_namespace) }
     end
+
+    describe '.with_code_suggestions_enabled' do
+      subject { described_class.with_code_suggestions_enabled }
+
+      let_it_be(:namespace_with_code_suggestions) { create(:group) }
+      let_it_be(:namespace_without_code_suggestions) { create(:group) }
+
+      before do
+        namespace_with_code_suggestions.namespace_settings.update_attribute(:code_suggestions, true)
+        namespace_without_code_suggestions.namespace_settings.update_attribute(:code_suggestions, false)
+      end
+
+      it { is_expected.to contain_exactly(namespace_with_code_suggestions) }
+    end
   end
 
   context 'validation' do
