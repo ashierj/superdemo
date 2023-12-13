@@ -215,6 +215,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     include_context 'ProjectPolicyTable context'
 
     let_it_be(:group) { create(:group) }
+    let_it_be(:public_project) { create(:project, :wiki_repo, :public) }
     let_it_be_with_reload(:project) { create(:project, namespace: group) }
     let_it_be_with_reload(:project2) { create(:project) }
 
@@ -340,6 +341,12 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
 
       with_them do
         it_behaves_like 'search respects visibility'
+      end
+
+      it 'adds correct routing field in the elasticsearch request' do
+        public_project.wiki.create_page('test.md', "# term")
+        described_class.new(nil, public_project, search: search).execute.objects(scope)
+        assert_routing_field("n_#{public_project.root_ancestor.id}")
       end
     end
 

@@ -25,6 +25,13 @@ module ElasticsearchHelpers
     expect(a_named_query).to have_been_made.at_least_once, message
   end
 
+  def assert_routing_field(value)
+    es_host = Gitlab::CurrentSettings.elasticsearch_url.first
+    search_uri = %r{#{es_host}/[\w-]+/_search}
+
+    expect(a_request(:post, search_uri).with(query: hash_including({ 'routing' => value }))).to have_been_made
+  end
+
   def ensure_elasticsearch_index!
     # Ensure that any enqueued updates are processed
     Elastic::ProcessBookkeepingService.new.execute

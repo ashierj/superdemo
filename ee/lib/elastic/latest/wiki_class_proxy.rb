@@ -27,7 +27,7 @@ module Elastic
                               per
                             end
 
-        res = search(query_hash, options.slice(:count_only))
+        res = search(query_hash, options)
         { type.pluralize.to_sym => { results: res.results, total_count: res.size } }
       end
 
