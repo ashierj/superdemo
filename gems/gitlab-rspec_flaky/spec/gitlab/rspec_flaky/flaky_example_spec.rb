@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'rspec_flaky/flaky_example'
+require 'gitlab/rspec_flaky/flaky_example'
 
-RSpec.describe RspecFlaky::FlakyExample, :aggregate_failures do
+RSpec.describe Gitlab::RspecFlaky::FlakyExample, :aggregate_failures do
   include StubENV
 
   let(:example_attrs) do

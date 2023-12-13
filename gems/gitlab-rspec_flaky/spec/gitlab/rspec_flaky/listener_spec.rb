@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'rspec_flaky/listener'
+require 'gitlab/rspec_flaky/listener'
 
-RSpec.describe RspecFlaky::Listener, :aggregate_failures do
+RSpec.describe Gitlab::RspecFlaky::Listener, :aggregate_failures do
   include StubENV
 
   let(:already_flaky_example_uid) { '6e869794f4cfd2badd93eb68719371d1' }
@@ -85,10 +85,10 @@ RSpec.describe RspecFlaky::Listener, :aggregate_failures do
         end
 
         it 'delegates the load to RspecFlaky::Report' do
-          report = RspecFlaky::Report
-            .new(RspecFlaky::FlakyExamplesCollection.new(suite_flaky_example_report))
+          report = Gitlab::RspecFlaky::Report
+            .new(Gitlab::RspecFlaky::FlakyExamplesCollection.new(suite_flaky_example_report))
 
-          expect(RspecFlaky::Report).to receive(:load).with(report_file_path).and_return(report)
+          expect(Gitlab::RspecFlaky::Report).to receive(:load).with(report_file_path).and_return(report)
           expect(described_class.new.suite_flaky_examples.to_h).to eq(report.flaky_examples.to_h)
         end
       end
@@ -99,7 +99,7 @@ RSpec.describe RspecFlaky::Listener, :aggregate_failures do
         end
 
         it 'return an empty hash' do
-          expect(RspecFlaky::Report).not_to receive(:load)
+          expect(Gitlab::RspecFlaky::Report).not_to receive(:load)
           expect(described_class.new.suite_flaky_examples.to_h).to eq({})
         end
       end
@@ -134,7 +134,7 @@ RSpec.describe RspecFlaky::Listener, :aggregate_failures do
       end
 
       it 'changes the flaky examples hash' do
-        new_example = RspecFlaky::Example.new(rspec_example)
+        new_example = Gitlab::RspecFlaky::Example.new(rspec_example)
 
         travel_to(Time.now + 42) do
           the_future = Time.now
@@ -161,7 +161,7 @@ RSpec.describe RspecFlaky::Listener, :aggregate_failures do
       end
 
       it 'changes the all flaky examples hash' do
-        new_example = RspecFlaky::Example.new(rspec_example)
+        new_example = Gitlab::RspecFlaky::Example.new(rspec_example)
 
         travel_to(Time.now + 42) do
           the_future = Time.now
@@ -215,12 +215,12 @@ RSpec.describe RspecFlaky::Listener, :aggregate_failures do
         report1 = double
         report2 = double
 
-        expect(RspecFlaky::Report).to receive(:new).with(listener.flaky_examples).and_return(report1)
-        expect(report1).to receive(:write).with(RspecFlaky::Config.flaky_examples_report_path)
+        expect(Gitlab::RspecFlaky::Report).to receive(:new).with(listener.flaky_examples).and_return(report1)
+        expect(report1).to receive(:write).with(Gitlab::RspecFlaky::Config.flaky_examples_report_path)
 
-        expect(RspecFlaky::Report)
+        expect(Gitlab::RspecFlaky::Report)
           .to receive(:new).with(listener.__send__(:new_flaky_examples)).and_return(report2)
-        expect(report2).to receive(:write).with(RspecFlaky::Config.new_flaky_examples_report_path)
+        expect(report2).to receive(:write).with(Gitlab::RspecFlaky::Config.new_flaky_examples_report_path)
 
         listener.dump_summary(nil)
       end

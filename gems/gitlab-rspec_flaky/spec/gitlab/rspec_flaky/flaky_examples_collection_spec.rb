@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'rspec_flaky/flaky_examples_collection'
+require 'gitlab/rspec_flaky/flaky_examples_collection'
 
-RSpec.describe RspecFlaky::FlakyExamplesCollection, :aggregate_failures, :freeze_time do
+RSpec.describe Gitlab::RspecFlaky::FlakyExamplesCollection, :aggregate_failures, :freeze_time do
   let(:collection_hash) do
     {
       a: { example_id: 'spec/foo/bar_spec.rb:2' },

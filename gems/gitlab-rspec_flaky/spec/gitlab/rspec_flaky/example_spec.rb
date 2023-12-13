@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'rspec_flaky/example'
+require 'gitlab/rspec_flaky/example'
 
-RSpec.describe RspecFlaky::Example do
+RSpec.describe Gitlab::RspecFlaky::Example do
   let(:example_attrs) do
     {
       id: 'spec/foo/bar_spec.rb:2',
