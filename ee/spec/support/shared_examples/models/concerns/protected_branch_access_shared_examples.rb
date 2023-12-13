@@ -88,7 +88,7 @@ RSpec.shared_examples 'ee protected branch access' do
 
           context 'when current user has develop access to the other group' do
             where(:invited_group_access_level, :other_group_access_level, :expected_access) do
-              :developer | :developer | true
+              :developer | :developer | false
               :developer | :guest     | false
               :guest     | :guest     | false
               :guest     | :developer | false
@@ -136,7 +136,7 @@ RSpec.shared_examples 'ee protected branch access' do
         end
 
         context 'when user is a developer of the parent group' do
-          it { expect(subject.check_access(parent_group_developer)).to eq(true) }
+          it { expect(subject.check_access(parent_group_developer)).to eq(false) }
         end
 
         context 'when user is a guest of the parent group' do
