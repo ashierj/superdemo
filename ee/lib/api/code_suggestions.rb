@@ -101,6 +101,11 @@ module API
             label: 'code_suggestions'
           )
 
+          Gitlab::InternalEvents.track_event(
+            'code_suggestions_authenticate',
+            user: current_user
+          )
+
           token = Gitlab::Ai::AccessToken.new(current_user, scopes: [:code_suggestions], gitlab_realm: gitlab_realm)
           present token, with: Entities::CodeSuggestionsAccessToken
         end
