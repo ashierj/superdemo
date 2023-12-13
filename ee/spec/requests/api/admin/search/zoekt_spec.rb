@@ -157,13 +157,30 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     it_behaves_like "an API that returns 401 for unauthenticated requests", :put
     it_behaves_like "an API that returns 400 when the index_code_with_zoekt feature flag is disabled", :put
 
-    it 'creates a Zoekt::IndexedNamespace for this node and namespace pair' do
+    it 'creates a Zoekt::IndexedNamespace with search enabled for this node and namespace pair' do
       expect do
         put api(path, admin, admin_mode: true)
       end.to change { ::Zoekt::IndexedNamespace.count }.from(0).to(1)
 
       expect(response).to have_gitlab_http_status(:ok)
-      expect(json_response['id']).to eq(::Zoekt::IndexedNamespace.find_by(node: node, namespace: namespace).id)
+      np = ::Zoekt::IndexedNamespace.find_by(node: node, namespace: namespace)
+      expect(json_response['id']).to eq(np.id)
+      expect(np.search).to eq(true)
+    end
+
+    context 'when search parameter is set to false' do
+      let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces/#{namespace_id}?search=false" }
+
+      it 'creates a Zoekt::IndexedNamespace with search disabled for this node and namespace pair' do
+        expect do
+          put api(path, admin, admin_mode: true)
+        end.to change { ::Zoekt::IndexedNamespace.count }.from(0).to(1)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        np = ::Zoekt::IndexedNamespace.find_by(node: node, namespace: namespace)
+        expect(json_response['id']).to eq(np.id)
+        expect(np.search).to eq(false)
+      end
     end
 
     context 'when it already exists' do
@@ -173,6 +190,38 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
         put api(path, admin, admin_mode: true)
 
         expect(json_response['id']).to eq(id)
+      end
+
+      context 'and search parameter is not present' do
+        let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces/#{namespace_id}" }
+
+        it 'does not change the search attribute' do
+          np = create(:zoekt_indexed_namespace, node: node, namespace: namespace, search: false)
+          put api(path, admin, admin_mode: true)
+          expect(json_response['id']).to eq(np.id)
+          np.reload
+          expect(np.search).to eq(false)
+        end
+      end
+
+      context 'and search parameter is set to true' do
+        let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces/#{namespace_id}?search=true" }
+
+        it 'changes the search attribute to true' do
+          np = create(:zoekt_indexed_namespace, node: node, namespace: namespace, search: false)
+          expect { put api(path, admin, admin_mode: true) }.to change { np.reload.search }.from(false).to(true)
+          expect(json_response['id']).to eq(np.id)
+        end
+      end
+
+      context 'and search parameter is set to false' do
+        let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces/#{namespace_id}?search=false" }
+
+        it 'changes the search attribute to false' do
+          np = create(:zoekt_indexed_namespace, node: node, namespace: namespace, search: true)
+          expect { put api(path, admin, admin_mode: true) }.to change { np.reload.search }.from(true).to(false)
+          expect(json_response['id']).to eq(np.id)
+        end
       end
     end
 
