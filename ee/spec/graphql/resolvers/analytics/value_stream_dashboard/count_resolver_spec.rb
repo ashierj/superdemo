@@ -33,6 +33,32 @@ RSpec.describe Resolvers::Analytics::ValueStreamDashboard::CountResolver, featur
         expect(result[:count]).to eq(10)
       end
 
+      context 'when requesting the contributors metric', :click_house do
+        before do
+          stub_feature_flags(clickhouse_data_collection: true)
+
+          arguments[:identifier] = 'contributors'
+
+          insert_query = <<~SQL
+          INSERT INTO events
+          (id, path, author_id, target_id, target_type, action, created_at, updated_at)
+          VALUES
+          -- push event
+          -- push event, different user
+          -- outside of the date range
+          (1,'#{group.id}/',100,0,'',5,'2023-05-10','2023-05-10'),
+          (2,'#{group.id}/',200,0,'',5,'2023-05-15','2023-05-15'),
+          (3,'#{group.id}/',300,0,'',5,'2023-06-15','2023-06-15')
+          SQL
+
+          ClickHouse::Client.execute(insert_query, :main)
+        end
+
+        it 'returns the correct count' do
+          expect(result[:count]).to eq(2)
+        end
+      end
+
       context 'when querying an empty date range' do
         before do
           arguments[:timeframe][:start] = '2023-01-01'

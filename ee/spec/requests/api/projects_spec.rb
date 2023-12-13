@@ -243,6 +243,36 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
       end
     end
 
+    describe 'ci_restrict_pipeline_cancellation_role' do
+      before do
+        project.add_maintainer(user)
+      end
+
+      context 'when unavailable' do
+        it 'does not include ci_restrict_pipeline_cancellation_role' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).not_to have_key 'ci_restrict_pipeline_cancellation_role'
+        end
+      end
+
+      context 'when available' do
+        before do
+          allow_next_instance_of(Ci::ProjectCancellationRestriction) do |cr|
+            allow(cr).to receive(:feature_available?).and_return(true)
+          end
+        end
+
+        it 'includes ci_restrict_pipeline_cancellation_role' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to have_key 'ci_restrict_pipeline_cancellation_role'
+        end
+      end
+    end
+
     context 'project soft-deletion' do
       let(:project) do
         create(:project, :public, archived: true, marked_for_deletion_at: 1.day.ago, deleting_user: user)

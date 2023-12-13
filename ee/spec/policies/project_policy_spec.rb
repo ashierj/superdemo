@@ -3060,69 +3060,44 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
-  describe 'fill_in_merge_request_template policy', :saas do
-    let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
-    let_it_be(:project) { create(:project, group: namespace) }
-    let_it_be(:current_user) { owner }
+  describe 'fill_in_merge_request_template policy' do
+    let_it_be(:namespace) { group }
+    let_it_be(:project) { private_project }
+    let_it_be(:current_user) { maintainer }
+
+    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
 
     before do
-      namespace.add_owner(owner)
+      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
       allow(project).to receive(:namespace).and_return(namespace)
-      stub_ee_application_setting(should_check_namespace_plan: true)
-
-      stub_licensed_features(
-        fill_in_merge_request_template: true,
-        ai_features: true,
-        experimental_features: true
-      )
-
-      stub_feature_flags(
-        ai_global_switch: true,
-        fill_in_mr_template: true
-      )
-
-      namespace.namespace_settings.update!(experiment_features_enabled: true)
     end
 
-    it { is_expected.to be_allowed(:fill_in_merge_request_template) }
-
-    context 'when global AI feature flag is disabled' do
+    context "when feature is authorized" do
       before do
-        stub_feature_flags(ai_global_switch: false)
+        allow(authorizer).to receive(:allowed?).and_return(true)
       end
 
-      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
-    end
+      it { is_expected.to be_allowed(:fill_in_merge_request_template) }
 
-    context 'when fill_in_mr_template feature flag is disabled' do
-      before do
-        stub_feature_flags(
-          ai_global_switch: true,
-          fill_in_mr_template: false
-        )
+      context 'when fill_in_mr_template feature flag is disabled' do
+        before do
+          stub_feature_flags(fill_in_mr_template: false)
+        end
+
+        it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
       end
 
-      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
-    end
+      context 'when user cannot create_merge_request_in' do
+        let(:current_user) { guest }
 
-    context 'when license is not set' do
-      before do
-        stub_licensed_features(fill_in_merge_request_template: false)
+        it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
       end
-
-      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
     end
 
-    context 'when experiment features are disabled' do
+    context "when feature is not authorized" do
       before do
-        namespace.namespace_settings.update!(experiment_features_enabled: false)
+        allow(authorizer).to receive(:allowed?).and_return(false)
       end
-
-      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
-    end
-
-    context 'when user cannot create_merge_request_in' do
-      let(:current_user) { guest }
 
       it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
     end

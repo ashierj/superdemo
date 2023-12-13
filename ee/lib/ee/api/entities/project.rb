@@ -49,6 +49,10 @@ module EE
             project.feature_available?(:issuable_default_templates) &&
               Ability.allowed?(options[:current_user], :read_merge_request, project)
           end
+          expose :restrict_pipeline_cancellation_role, as: :ci_restrict_pipeline_cancellation_role, if: ->(project, options) {
+            project.ci_cancellation_restriction.feature_available? &&
+              Ability.allowed?(options[:current_user], :admin_project, project)
+          }
           expose :merge_pipelines_enabled?, as: :merge_pipelines_enabled, if: ->(project, _) { project.feature_available?(:merge_pipelines) }
           expose :merge_trains_enabled?, as: :merge_trains_enabled, if: ->(project, _) { project.feature_available?(:merge_pipelines) }
           expose :merge_trains_skip_train_allowed?, as: :merge_trains_skip_train_allowed, if: ->(project, _) { project.feature_available?(:merge_pipelines) }

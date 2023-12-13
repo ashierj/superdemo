@@ -34,20 +34,6 @@ RSpec.describe Llm::SummarizeMergeRequestService, feature_category: :code_review
       subject { described_class.new(current_user, resource, options) }
     end
 
-    context 'when user is not member of project group' do
-      let(:current_user) { create(:user) }
-
-      it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
-    end
-
-    context 'when general feature flag is disabled' do
-      before do
-        stub_feature_flags(ai_global_switch: false)
-      end
-
-      it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
-    end
-
     context 'when resource is not a merge_request' do
       let(:resource) { create(:epic, group: group) }
 

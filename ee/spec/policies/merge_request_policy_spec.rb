@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
+RSpec.describe MergeRequestPolicy, :aggregate_failures, feature_category: :code_review_workflow do
   include ProjectForksHelper
   include AdminModeHelper
 
@@ -16,10 +16,9 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
   let_it_be(:fork_developer) { create(:user) }
   let_it_be(:fork_maintainer) { create(:user) }
 
-  let(:project) { create(:project, :public) }
+  let(:project) { create(:project, :internal) }
   let(:owner) { project.owner }
   let(:forked_project) { fork_project(project) }
-
   let(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
   let(:fork_merge_request) { create(:merge_request, author: fork_developer, source_project: forked_project, target_project: project) }
 
@@ -30,7 +29,7 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     project.add_reporter(reporter)
 
     forked_project.add_guest(fork_guest)
-    forked_project.add_developer(fork_guest)
+    forked_project.add_developer(fork_developer)
     forked_project.add_maintainer(fork_maintainer)
   end
 
@@ -57,18 +56,6 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
 
     context 'when overwriting approvers is enabled on the project' do
       it 'allows only project developers and above to update the approvers' do
-        expect(policy_for(developer)).to be_allowed(:update_approvers)
-        expect(policy_for(maintainer)).to be_allowed(:update_approvers)
-
-        expect(policy_for(guest)).to be_disallowed(:update_approvers)
-        expect(policy_for(fork_guest)).to be_disallowed(:update_approvers)
-        expect(policy_for(fork_developer)).to be_disallowed(:update_approvers)
-        expect(policy_for(fork_maintainer)).to be_disallowed(:update_approvers)
-      end
-    end
-
-    context 'allows project developers and above' do
-      it 'to approve the merge request' do
         expect(policy_for(developer)).to be_allowed(:update_approvers)
         expect(policy_for(maintainer)).to be_allowed(:update_approvers)
 
@@ -330,90 +317,47 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     end
   end
 
-  describe "summarize_draft_code_review", :saas do
-    let_it_be(:reviewer) { create(:user) }
-    let_it_be(:ultimate_group) do
-      create(
-        :group_with_plan,
-        :public,
-        plan: :ultimate_plan,
-        experiment_features_enabled: true
-      )
-    end
+  describe "summarize_draft_code_review" do
+    let_it_be(:reviewer) { reporter }
 
-    let_it_be(:ultimate_project) { create(:project, :public, group: ultimate_group) }
-    let_it_be(:merge_request) do
-      create(
-        :merge_request,
-        source_project: ultimate_project,
-        target_project: ultimate_project,
-        author: reviewer
-      )
-    end
-
-    let(:policy_under_test) { described_class.new(reviewer, merge_request) }
+    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
 
     subject { policy_for(reviewer) }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_licensed_features(
-        summarize_my_mr_code_review: true,
-        ai_features: true,
-        experimental_features: true
-      )
-
-      project.add_maintainer(reviewer)
-      ultimate_group.namespace_settings.update!(
-        experiment_features_enabled: true
-      )
+      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
     end
 
-    context "when all settings enabled and restrictions are fulfilled" do
-      it "allows" do
-        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(true)
-      end
-    end
-
-    context "when namespace isn't available" do
-      it "does not allow" do
-        expect(merge_request.project.group).to receive(:root_ancestor).and_return(nil)
-        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
-      end
-    end
-
-    context "when summarize_my_code_review feature flag is disabled" do
+    context "when feature is authorized" do
       before do
-        stub_feature_flags(summarize_my_code_review: false)
+        allow(authorizer).to receive(:allowed?).and_return(true)
       end
 
-      it "does not allow" do
-        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
+      context 'when user can read_merge_request' do
+        it { is_expected.to be_allowed(:summarize_draft_code_review) }
+      end
+
+      context 'when user cannot read_merge_request' do
+        let(:reviewer) { nil }
+
+        it { is_expected.to be_disallowed(:summarize_draft_code_review) }
+      end
+
+      context "when summarize_my_code_review feature flag is disabled" do
+        before do
+          stub_feature_flags(summarize_my_code_review: false)
+        end
+
+        it { is_expected.to be_disallowed(:summarize_draft_code_review) }
       end
     end
 
-    context "when namespace isn't a group namespace" do
-      it "does not allow" do
-        expect(merge_request.project.group.root_ancestor).to receive(:group_namespace?).and_return(false)
-        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
-      end
-    end
-
-    context "when summarize_my_mr_code_review licensed feature is disabled" do
+    context "when feature is not authorized" do
       before do
-        stub_licensed_features(summarize_my_mr_code_review: false)
+        allow(authorizer).to receive(:allowed?).and_return(false)
       end
 
-      it "does not allow" do
-        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
-      end
-    end
-
-    context "when ::Gitlab::Llm::StageCheck.available? returns false" do
-      it "does not allow" do
-        expect(::Gitlab::Llm::StageCheck).to receive(:available?).and_return(false)
-        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
-      end
+      it { is_expected.to be_disallowed(:summarize_draft_code_review) }
     end
   end
 
@@ -469,72 +413,54 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     end
   end
 
-  describe 'summarize_submitted_review policy', :saas do
-    let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
-    let_it_be(:project) { create(:project, group: namespace) }
+  describe 'summarize_submitted_review policy' do
+    let_it_be(:project) { create(:project) }
     let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
     let_it_be(:current_user) { developer }
+
+    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
 
     subject { described_class.new(current_user, merge_request) }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-
-      stub_licensed_features(
-        summarize_submitted_review: true,
-        ai_features: true,
-        experimental_features: true
-      )
-
-      stub_feature_flags(
-        ai_global_switch: true,
-        automatically_summarize_mr_review: true
-      )
-
-      namespace.namespace_settings.update!(
-        experiment_features_enabled: true
-      )
+      stub_licensed_features(summarize_submitted_review: true)
+      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
     end
 
-    it { is_expected.to be_allowed(:summarize_submitted_review) }
-
-    context 'when global AI feature flag is disabled' do
+    context "when feature is authorized" do
       before do
-        stub_feature_flags(ai_global_switch: false)
+        allow(authorizer).to receive(:allowed?).and_return(true)
       end
 
-      it { is_expected.to be_disallowed(:summarize_submitted_review) }
-    end
+      it { is_expected.to be_allowed(:summarize_submitted_review) }
 
-    context 'when automatically_summarize_mr_review feature flag is disabled' do
-      before do
-        stub_feature_flags(
-          ai_global_switch: true,
-          automatically_summarize_mr_review: false
-        )
+      context 'when automatically_summarize_mr_review feature flag is disabled' do
+        before do
+          stub_feature_flags(automatically_summarize_mr_review: false)
+        end
+
+        it { is_expected.to be_disallowed(:summarize_submitted_review) }
       end
 
-      it { is_expected.to be_disallowed(:summarize_submitted_review) }
-    end
+      context 'when license is not set' do
+        before do
+          stub_licensed_features(summarize_submitted_review: false)
+        end
 
-    context 'when license is not set' do
-      before do
-        stub_licensed_features(summarize_submitted_review: false)
+        it { is_expected.to be_disallowed(:summarize_submitted_review) }
       end
 
-      it { is_expected.to be_disallowed(:summarize_submitted_review) }
-    end
+      context 'when user cannot read merge request' do
+        let(:current_user) { guest }
 
-    context 'when experiment features are disabled' do
-      before do
-        namespace.namespace_settings.update!(experiment_features_enabled: false)
+        it { is_expected.to be_disallowed(:summarize_submitted_review) }
       end
-
-      it { is_expected.to be_disallowed(:summarize_submitted_review) }
     end
 
-    context 'when user cannot read merge request' do
-      let(:current_user) { guest }
+    context "when feature is not authorized" do
+      before do
+        allow(authorizer).to receive(:allowed?).and_return(false)
+      end
 
       it { is_expected.to be_disallowed(:summarize_submitted_review) }
     end
@@ -581,72 +507,56 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     end
   end
 
-  describe 'summarize_merge_request policy', :saas do
-    let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
-    let_it_be(:project) { create(:project, group: namespace) }
+  describe 'summarize_merge_request policy' do
+    let_it_be(:project) { create(:project) }
     let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
     let_it_be(:current_user) { developer }
+
+    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
 
     subject { described_class.new(current_user, merge_request) }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-
-      stub_licensed_features(
-        summarize_mr_changes: true,
-        ai_features: true,
-        experimental_features: true
-      )
-
-      stub_feature_flags(
-        ai_global_switch: true,
-        summarize_diff_automatically: true
-      )
-
-      namespace.namespace_settings.update!(experiment_features_enabled: true)
+      stub_licensed_features(summarize_mr_changes: true)
+      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
     end
 
-    it { is_expected.to be_allowed(:summarize_merge_request) }
-
-    context 'when global AI feature flag is disabled' do
+    context "when feature is authorized" do
       before do
-        stub_feature_flags(ai_global_switch: false)
+        allow(authorizer).to receive(:allowed?).and_return(true)
       end
 
-      it { is_expected.to be_disallowed(:summarize_merge_request) }
-    end
+      it { is_expected.to be_allowed(:summarize_merge_request) }
 
-    context 'when summarize_diff_automatically feature flag is disabled' do
-      before do
-        stub_feature_flags(
-          ai_global_switch: true,
-          summarize_diff_automatically: false
-        )
+      context 'when summarize_diff_automatically feature flag is disabled' do
+        before do
+          stub_feature_flags(summarize_diff_automatically: false)
+        end
+
+        it { is_expected.to be_disallowed(:summarize_merge_request) }
       end
 
-      it { is_expected.to be_disallowed(:summarize_merge_request) }
-    end
+      context 'when license is not set' do
+        before do
+          stub_licensed_features(summarize_mr_changes: false)
+        end
 
-    context 'when license is not set' do
-      before do
-        stub_licensed_features(summarize_mr_changes: false)
+        it { is_expected.to be_disallowed(:summarize_merge_request) }
       end
 
-      it { is_expected.to be_disallowed(:summarize_merge_request) }
+      context 'when user cannot generate_diff_summary' do
+        let(:current_user) { guest }
+
+        it { is_expected.to be_disallowed(:summarize_merge_request) }
+      end
     end
 
-    context 'when experiment features are disabled' do
+    context "when feature is not authorized" do
       before do
-        namespace.namespace_settings.update!(experiment_features_enabled: false)
+        allow(authorizer).to receive(:allowed?).and_return(false)
       end
 
-      it { is_expected.to be_disallowed(:summarize_merge_request) }
-    end
-
-    context 'when user cannot generate_diff_summary' do
-      let(:current_user) { guest }
-
-      it { is_expected.to be_disallowed(:summarize_merge_request) }
+      it { is_expected.to be_disallowed(:summarize_draft_code_review) }
     end
   end
 end

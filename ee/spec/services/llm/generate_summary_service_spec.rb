@@ -22,28 +22,10 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
 
     subject { described_class.new(current_user, resource, {}).execute }
 
-    shared_examples 'ensures user membership' do
-      context 'without membership' do
-        let(:current_user) { create(:user) }
+    shared_examples 'ensures user has the ability to summarize notes' do
+      let(:summarize_notes_enabled) { false }
 
-        it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
-      end
-    end
-
-    shared_examples 'ensures feature flags and license' do
-      context 'without the license available' do
-        let(:summarize_notes_enabled) { false }
-
-        it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
-      end
-
-      context 'without the general feature flag enabled' do
-        before do
-          stub_feature_flags(ai_global_switch: false)
-        end
-
-        it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
-      end
+      it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
     end
 
     context 'for an issue' do
@@ -54,8 +36,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
           create_pair(:note_on_issue, project: resource.project, noteable: resource)
         end
 
-        it_behaves_like "ensures feature flags and license"
-        it_behaves_like "ensures user membership"
+        it_behaves_like 'ensures user has the ability to summarize notes'
         it_behaves_like 'schedules completion worker' do
           subject { described_class.new(current_user, resource, options) }
         end
@@ -70,8 +51,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
           create_pair(:note_on_work_item, project: resource.project, noteable: resource)
         end
 
-        it_behaves_like "ensures feature flags and license"
-        it_behaves_like "ensures user membership"
+        it_behaves_like 'ensures user has the ability to summarize notes'
         it_behaves_like 'schedules completion worker' do
           subject { described_class.new(current_user, resource, options) }
         end
@@ -86,8 +66,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :ai_abstraction_la
           create_pair(:note_on_epic, noteable: resource)
         end
 
-        it_behaves_like "ensures feature flags and license"
-        it_behaves_like "ensures user membership"
+        it_behaves_like 'ensures user has the ability to summarize notes'
         it_behaves_like 'schedules completion worker' do
           subject { described_class.new(current_user, resource, options) }
         end
