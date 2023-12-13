@@ -69,6 +69,10 @@ If you already have a working GDK, you should
 
 ### Using Gitpod
 
+If you want to contribute without the overhead of setting up a local development environment,
+you can use [Gitpod](../../integration/gitpod.md).
+Gitpod runs a virtual instance of the GDK.
+
 Set aside about 15 minutes to launch the GDK in Gitpod.
 
 1. Launch the GDK in [Gitpod](https://gitpod.io/#https://gitlab.com/gitlab-community/gitlab/-/tree/master/).
@@ -184,12 +188,6 @@ To confirm it was successful:
 
 If you get errors, run `gdk doctor` to troubleshoot. For more advanced troubleshooting, see
 [the troubleshooting docs](https://gitlab.com/gitlab-org/gitlab-development-kit/-/tree/main/doc/troubleshooting).
-
-### Gitpod
-
-If you want to contribute without the overhead of setting up a local development environment,
-you can use [Gitpod](../../integration/gitpod.md) instead.
-Gitpod runs a virtual instance of the GDK.
 
 ## Step 2: Change the code
 
