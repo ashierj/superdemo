@@ -332,6 +332,15 @@ describe('Vulnerability Header', () => {
   });
 
   describe('action buttons', () => {
+    const clickButton = (splitButtonEventName) => {
+      if (splitButtonEventName) {
+        findSplitButton().vm.$emit(splitButtonEventName);
+      } else {
+        findGlButton().vm.$emit('click');
+      }
+      return nextTick();
+    };
+
     describe('split action button', () => {
       it('renders the correct amount of buttons', async () => {
         createWrapper({
@@ -480,6 +489,7 @@ describe('Vulnerability Header', () => {
 
       const createWrapperWithAiApollo = ({
         mutationResponse = MUTATION_AI_ACTION_DEFAULT_RESPONSE,
+        getVulnerabilityParam = { canResolveWithAI: true },
       } = {}) => {
         mockSubscription = createMockSubscription();
         subscriptionSpy = jest.fn().mockReturnValue(mockSubscription);
@@ -488,9 +498,7 @@ describe('Vulnerability Header', () => {
         apolloProvider.defaultClient.setRequestHandler(aiResponseSubscription, subscriptionSpy);
 
         createWrapper({
-          vulnerability: getVulnerability({
-            canResolveWithAI: true,
-          }),
+          vulnerability: getVulnerability(getVulnerabilityParam),
           apolloProvider,
         });
 
@@ -542,15 +550,6 @@ describe('Vulnerability Header', () => {
         expect(visitUrlMock).toHaveBeenCalledTimes(1);
       });
 
-      it('starts the subscription, waits for the subscription to be ready, then runs the mutation', async () => {
-        await createWrapperAndClickButton();
-        expect(subscriptionSpy).toHaveBeenCalled();
-        expect(MUTATION_AI_ACTION_DEFAULT_RESPONSE).not.toHaveBeenCalled();
-
-        await waitForSubscriptionToBeReady();
-        expect(MUTATION_AI_ACTION_DEFAULT_RESPONSE).toHaveBeenCalled();
-      });
-
       it('redirects after it receives the AI response', async () => {
         await createWrapperAndClickButton();
         await waitForSubscriptionToBeReady();
@@ -576,6 +575,23 @@ describe('Vulnerability Header', () => {
           expect(findGlButton().props('loading')).toBe(false);
           expect(visitUrlMock).not.toHaveBeenCalled();
           expect(createAlert.mock.calls[0][0].message.toString()).toContain(expectedError);
+        },
+      );
+
+      it.each`
+        buttonType  | splitButtonEventName   | getVulnerabilityParam
+        ${'split'}  | ${'startSubscription'} | ${{ canCreateMergeRequest: true, canDownloadPatch: true, canResolveWithAI: true }}
+        ${'single'} | ${null}                | ${{ canResolveWithAI: true }}
+      `(
+        'starts the subscription, waits for the subscription to be ready, then runs the mutation when the $buttonType button is clicked',
+        async ({ splitButtonEventName, getVulnerabilityParam }) => {
+          await createWrapperWithAiApollo({ getVulnerabilityParam });
+          await clickButton(splitButtonEventName);
+          expect(subscriptionSpy).toHaveBeenCalled();
+          expect(MUTATION_AI_ACTION_DEFAULT_RESPONSE).not.toHaveBeenCalled();
+
+          await waitForSubscriptionToBeReady();
+          expect(MUTATION_AI_ACTION_DEFAULT_RESPONSE).toHaveBeenCalled();
         },
       );
     });
