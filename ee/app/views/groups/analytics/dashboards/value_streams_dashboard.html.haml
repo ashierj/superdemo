@@ -1,4 +1,8 @@
-- breadcrumb_title s_('Analytics|Analytics dashboards')
+- if Feature.enabled?(:group_analytics_dashboards, @group)
+  - add_to_breadcrumbs s_('Analytics|Analytics dashboards'), group_analytics_dashboards_path(@group)
+  - breadcrumb_title s_('Analytics|Value Streams Dashboard')
+- else
+  - breadcrumb_title s_('Analytics|Analytics dashboards')
 
 - if Feature.enabled?(:group_analytics_dashboard_dynamic_vsd, @group)
   #js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@group).merge({ available_visualizations: @available_visualizations&.to_json }) }

@@ -40,7 +40,7 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
   end
 
   describe 'Menu items' do
-    subject { described_class.new(context).renderable_items.index { |e| e.item_id == item_id } }
+    subject(:menu_item) { described_class.new(context).renderable_items.find { |e| e.item_id == item_id } }
 
     describe 'CI/CD' do
       let(:item_id) { :ci_cd_analytics }
@@ -220,38 +220,18 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
       end
     end
 
-    describe 'Dashboards' do
+    describe 'Analytics dashboards' do
       let(:item_id) { :analytics_dashboards }
+      let(:group_analytics_dashboards) { true }
       let(:group_level_analytics_dashboard_enabled) { true }
 
       before do
+        stub_feature_flags(group_analytics_dashboards: group_analytics_dashboards)
         stub_licensed_features(group_level_analytics_dashboard: group_level_analytics_dashboard_enabled)
       end
 
       specify { is_expected.not_to be_nil }
-
-      describe 'when licensed feature :group_level_analytics_dashboard is disabled' do
-        let(:group_level_analytics_dashboard_enabled) { false }
-
-        specify { is_expected.to be_nil }
-      end
-
-      describe 'when the user does not have access' do
-        let(:user) { nil }
-
-        specify { is_expected.to be_nil }
-      end
-    end
-
-    describe 'Dashboards analytics' do
-      let(:item_id) { :dashboards_analytics }
-
-      before do
-        stub_feature_flags(group_analytics_dashboards: true)
-        stub_licensed_features(group_level_analytics_dashboard: true)
-      end
-
-      specify { is_expected.not_to be_nil }
+      specify { expect(menu_item.link).to eq('/groups/group1/-/analytics/dashboards') }
 
       context 'with different user access levels' do
         where(:access_level, :has_menu_item) do
@@ -279,19 +259,16 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
       end
 
       describe 'when the license does not support the feature' do
-        before do
-          stub_licensed_features(group_level_analytics_dashboard: false)
-        end
+        let(:group_level_analytics_dashboard_enabled) { false }
 
         specify { is_expected.to be_nil }
       end
 
       describe 'when the dashboards analytics feature is disabled' do
-        before do
-          stub_feature_flags(group_analytics_dashboards: false)
-        end
+        let(:group_analytics_dashboards) { false }
 
-        specify { is_expected.to be_nil }
+        specify { is_expected.not_to be_nil }
+        specify { expect(menu_item.link).to eq('/groups/group1/-/analytics/dashboards/value_streams_dashboard') }
       end
     end
   end
