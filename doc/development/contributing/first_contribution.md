@@ -204,6 +204,9 @@ I want to change this text:
 Other settings on the page start with the word `Customize` and skip the `This setting allows you to` part.
 I'll update this phrase to match the others.
 
+NOTE:
+As this text has already been [changed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/116472) when developing this tutorial, you can instead search for `Customize the appearance of the syntax` to find the files that were changed.
+
 1. Search the `gitlab-development-kit/gitlab` directory for the string `This setting allows you to customize`.
 
    The results show one `.haml` file, two `.md` files, one `.pot` file, and
