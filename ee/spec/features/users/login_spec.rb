@@ -99,13 +99,18 @@ RSpec.describe 'Login', feature_category: :system_access do
               instance_double(OpenSSL::X509::Certificate, subject: smartcard_identity.subject, issuer: smartcard_identity.issuer)
             end
 
+            let(:encrypted_openssl_certificate) do
+              encrypted_cert = Gitlab::CryptoHelper.aes256_gcm_encrypt(openssl_certificate.to_s)
+              CGI.escape(encrypted_cert)
+            end
+
             it 'does not ask for Two-Factor Authentication' do
               allow(Gitlab::Auth::Smartcard::Certificate).to receive(:store).and_return(openssl_certificate_store)
               allow(OpenSSL::X509::Certificate).to receive(:new).and_return(openssl_certificate)
               allow(openssl_certificate_store).to receive(:verify).and_return(true)
 
               # Loging using smartcard
-              visit verify_certificate_smartcard_path(client_certificate: openssl_certificate)
+              visit verify_certificate_smartcard_path(client_certificate: encrypted_openssl_certificate)
 
               visit profile_path
 
