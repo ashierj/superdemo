@@ -102,7 +102,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                           <button
                             aria-controls="reference-1"
                             aria-labelledby="reference-0"
-                            class="btn btn-default btn-default-tertiary btn-sm gl-button gl-new-dropdown-icon-only gl-new-dropdown-toggle gl-new-dropdown-toggle-no-caret gl-p-2!"
+                            class="btn btn-default btn-default-tertiary btn-icon btn-sm gl-button gl-new-dropdown-icon-only gl-new-dropdown-toggle gl-new-dropdown-toggle-no-caret gl-p-2!"
                             data-testid="base-dropdown-toggle"
                             id="reference-0"
                             type="button"
@@ -403,7 +403,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                           <button
                             aria-controls="reference-1"
                             aria-labelledby="reference-0"
-                            class="btn btn-default btn-default-tertiary btn-sm gl-button gl-new-dropdown-icon-only gl-new-dropdown-toggle gl-new-dropdown-toggle-no-caret gl-p-2!"
+                            class="btn btn-default btn-default-tertiary btn-icon btn-sm gl-button gl-new-dropdown-icon-only gl-new-dropdown-toggle gl-new-dropdown-toggle-no-caret gl-p-2!"
                             data-testid="base-dropdown-toggle"
                             id="reference-0"
                             type="button"
