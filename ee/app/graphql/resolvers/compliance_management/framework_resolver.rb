@@ -18,12 +18,18 @@ module Resolvers
                default_value: nil,
                description: 'Search framework with most similar names.'
 
-      def resolve(id: nil, search: nil)
+      argument :ids, [::Types::GlobalIDType[::ComplianceManagement::Framework]],
+        description: 'List of Global IDs of compliance frameworks to return.',
+        required: false
+
+      def resolve(id: nil, ids: nil, search: nil)
+        ids = [id] if ids.nil? || id.present?
+        model_ids = ids.map { |single_id| single_id&.model_id }
+
         BatchLoader::GraphQL
-          .for([object.id, id&.model_id])
-          .batch(default_value: []) do |keys, loader|
-          namespace_ids = keys.map(&:first).uniq
-          by_namespace_id = keys.group_by(&:first).transform_values { |k| k.map(&:second) }
+          .for(object.id)
+          .batch(key: [:framework_id, model_ids], default_value: []) do |namespace_ids, loader|
+          by_namespace_id = namespace_ids.index_with { |_namespace_id| model_ids }
 
           evaluate(namespace_ids, by_namespace_id, loader, search)
         end
@@ -37,7 +43,7 @@ module Resolvers
             group.each do |fw|
               next unless fw_id.nil? || fw_id.to_i == fw.id
 
-              loader.call([ns_id, fw_id]) { |array| array << fw }
+              loader.call(ns_id) { |array| array << fw }
             end
           end
         end

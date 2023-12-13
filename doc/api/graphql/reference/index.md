@@ -19351,6 +19351,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="groupcomplianceframeworksid"></a>`id` | [`ComplianceManagementFrameworkID`](#compliancemanagementframeworkid) | Global ID of a specific compliance framework to return. |
+| <a id="groupcomplianceframeworksids"></a>`ids` | [`[ComplianceManagementFrameworkID!]`](#compliancemanagementframeworkid) | List of Global IDs of compliance frameworks to return. |
 | <a id="groupcomplianceframeworkssearch"></a>`search` | [`String`](#string) | Search framework with most similar names. |
 
 ##### `Group.contactStateCounts`
@@ -22993,6 +22994,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="namespacecomplianceframeworksid"></a>`id` | [`ComplianceManagementFrameworkID`](#compliancemanagementframeworkid) | Global ID of a specific compliance framework to return. |
+| <a id="namespacecomplianceframeworksids"></a>`ids` | [`[ComplianceManagementFrameworkID!]`](#compliancemanagementframeworkid) | List of Global IDs of compliance frameworks to return. |
 | <a id="namespacecomplianceframeworkssearch"></a>`search` | [`String`](#string) | Search framework with most similar names. |
 
 ##### `Namespace.projects`
