@@ -5,8 +5,6 @@ module Llm
     TEMPERATURE = 0.4
     INPUT_CONTENT_LIMIT = 300
     MAX_RESPONSE_TOKENS = 300
-    OPENAI = 'openai'
-    VERTEXAI = 'vertexai'
 
     def valid?
       super &&
@@ -17,21 +15,11 @@ module Llm
     private
 
     def perform
-      payload =
-        if options[:model] == VERTEXAI
-          config =
-            ::Gitlab::Llm::VertexAi::Configuration.new(
-              model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new
-            )
+      config = ::Gitlab::Llm::VertexAi::Configuration.new(
+        model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new
+      )
 
-          { url: config.url, headers: config.headers, body: config.payload(prompt).to_json }
-        else
-          ::Gitlab::Llm::OpenAi::Options.new.chat(
-            content: json_prompt,
-            temperature: TEMPERATURE,
-            max_tokens: MAX_RESPONSE_TOKENS
-          )
-        end
+      payload = { url: config.url, headers: config.headers, body: config.payload(prompt).to_json }
 
       success(payload)
     end
