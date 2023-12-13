@@ -181,16 +181,20 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
 
     describe '.elevating' do
       it 'creates proper query' do
-        stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
-                                                                              see_code: 'Test permission' })
+        allow(described_class).to receive(:all_customizable_permissions).and_return(
+          read_code: { description: 'Permission to read code', skip_seat_consumption: true },
+          see_code: { description: 'Test permission' }
+        )
 
         expect(described_class.elevating.to_sql).to include('WHERE (see_code = true)')
       end
 
       it 'creates proper query with multiple permissions' do
-        stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
-                                                                              see_code: 'Test permission',
-                                                                              remove_code: 'Test second permission' })
+        allow(described_class).to receive(:all_customizable_permissions).and_return(
+          read_code: { description: 'Permission to read code', skip_seat_consumption: true },
+          see_code: { description: 'Test permission', skip_seat_consumption: false },
+          remove_code: { description: 'Test second permission' }
+        )
 
         expect(described_class.elevating.to_sql).to include('WHERE (see_code = true OR remove_code = true)')
       end
@@ -250,7 +254,7 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
   describe 'covering all permissions columns' do
     it 'has all attributes listed in the member_roles table' do
       expect(described_class.attribute_names.map(&:to_sym))
-        .to contain_exactly(*described_class::ALL_CUSTOMIZABLE_PERMISSIONS.keys,
+        .to contain_exactly(*described_class.all_customizable_permissions.keys,
           *described_class::NON_PERMISSION_COLUMNS)
     end
   end

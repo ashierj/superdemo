@@ -1223,10 +1223,10 @@ RSpec.describe User, feature_category: :system_access do
              AND \(admin_group_member = true
              OR admin_merge_request = true
              OR admin_vulnerability = true
-             OR read_dependency = true
-             OR read_vulnerability = true
+             OR archive_project = true
              OR manage_project_access_tokens = true
-             OR archive_project = true\)\)\)\)'.squish # allow_cross_joins_across_databases
+             OR read_dependency = true
+             OR read_vulnerability = true\)\)\)\)'.squish # allow_cross_joins_across_databases
       end
 
       before do
