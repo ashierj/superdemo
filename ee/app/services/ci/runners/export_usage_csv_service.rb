@@ -25,7 +25,7 @@ module Ci
       end
 
       def execute
-        return db_not_configured unless ClickHouse::Client.configuration.databases[:main]
+        return db_not_configured unless ClickHouse::Client.configuration.database_configured?(:main)
         return insufficient_permissions unless Ability.allowed?(@current_user, :read_runner_usage)
 
         result = ClickHouse::Client.select(clickhouse_query, :main)
@@ -79,7 +79,7 @@ module Ci
         <<~SQL
           #{'runner_type = {runner_type: UInt8} AND' if runner_type}
           finished_at_bucket >= {from_time: DateTime('UTC', 6)} AND
-          finished_at_bucket <= {to_time: DateTime('UTC', 6)}
+          finished_at_bucket < {to_time: DateTime('UTC', 6)}
         SQL
       end
 

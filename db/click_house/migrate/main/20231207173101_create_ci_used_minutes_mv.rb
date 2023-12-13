@@ -15,7 +15,6 @@ class CreateCiUsedMinutesMv < ClickHouse::Migration
         countState() AS count_builds,
         sumSimpleState(duration) AS total_duration
       FROM ci_finished_builds
-      WHERE finished_at >= '2023-12-21' -- Filter data for future date to ensure determinism
       GROUP BY project_id, status, runner_type, finished_at_bucket
     SQL
   end

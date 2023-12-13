@@ -29,8 +29,8 @@ module EE
         end
       end
 
-      condition(:clickhouse_database_available) do
-        ClickHouse::Client.configuration.databases[:main].present?
+      condition(:clickhouse_main_database_available) do
+        ClickHouse::Client.database_configured?(:main)
       end
 
       condition(:instance_devops_adoption_available) do
@@ -115,7 +115,9 @@ module EE
 
       rule { admin & runner_performance_insights_available }.enable :read_jobs_statistics
 
-      rule { admin & runner_performance_insights_available & clickhouse_database_available }.enable :read_runner_usage
+      rule { admin & runner_performance_insights_available & clickhouse_main_database_available }.policy do
+        enable :read_runner_usage
+      end
 
       rule { admin & service_accounts_available }.enable :admin_service_accounts
 

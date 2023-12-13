@@ -411,57 +411,34 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
   end
 
   describe 'read_runner_usage' do
-    context 'when feature is enabled' do
-      before do
-        stub_licensed_features(runner_performance_insights: true)
-      end
+    include AdminModeHelper
 
-      context 'for admins' do
-        let(:current_user) { admin }
-
-        context 'when admin mode enabled', :enable_admin_mode do
-          context 'when ClickHouse :main database is configured' do
-            before do
-              allow(ClickHouse::Client.configuration).to receive(:databases).and_return({ main: :some_db })
-            end
-
-            it { is_expected.to be_allowed(:read_runner_usage) }
-          end
-
-          context 'when no ClickHouse databases are configured' do
-            before do
-              allow(ClickHouse::Client.configuration).to receive(:databases).and_return({})
-            end
-
-            it { is_expected.to be_disallowed(:read_runner_usage) }
-          end
-        end
-
-        context 'when admin mode disabled' do
-          it { is_expected.to be_disallowed(:read_runner_usage) }
-        end
-      end
-
-      context 'for non-admins' do
-        let(:current_user) { user }
-
-        context 'when ClickHouse :main database is configured' do
-          before do
-            allow(ClickHouse::Client.configuration).to receive(:databases).and_return({ main: :some_db })
-          end
-
-          it { is_expected.to be_disallowed(:read_runner_usage) }
-        end
-      end
+    where(:licensed, :is_admin, :enable_admin_mode, :clickhouse_configured, :expected) do
+      true  | true  | true  | true  | true
+      false | true  | true  | true  | false
+      true  | true  | false | true  | false
+      true  | true  | false | false | false
+      true  | false | false | true  | false
     end
 
-    context 'when feature is disabled' do
+    with_them do
       before do
-        stub_licensed_features(runner_performance_insights: false)
+        stub_licensed_features(runner_performance_insights: licensed)
+
+        enable_admin_mode!(admin) if enable_admin_mode
+
+        allow(ClickHouse::Client.configuration).to receive(:databases)
+          .and_return(clickhouse_configured ? { main: :some_db } : {})
       end
 
-      context 'when admin mode enabled', :enable_admin_mode do
-        it { expect(described_class.new(admin, [user])).to be_disallowed(:read_runner_usage) }
+      let(:current_user) { is_admin ? admin : user }
+
+      it 'matches expectation' do
+        if expected
+          is_expected.to be_allowed(:read_runner_usage)
+        else
+          is_expected.to be_disallowed(:read_runner_usage)
+        end
       end
     end
   end
