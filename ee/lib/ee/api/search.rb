@@ -26,11 +26,6 @@ module EE
           def use_elasticsearch?(resource)
             ::Gitlab::CurrentSettings.search_using_elasticsearch?(scope: resource)
           end
-
-          override :search_type
-          def search_type(additional_params = {})
-            search_service(additional_params).use_elasticsearch? ? 'advanced' : super
-          end
         end
       end
     end

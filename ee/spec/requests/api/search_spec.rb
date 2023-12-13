@@ -459,6 +459,30 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           it_behaves_like 'elasticsearch enabled', level: :group
         end
       end
+
+      context 'when zoekt is enabled', :zoekt do
+        before do
+          stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+          zoekt_ensure_project_indexed!(project)
+        end
+
+        it 'sets group search information for logging' do
+          expect(Gitlab::Instrumentation::GlobalSearchApi).to receive(:set_information).with(
+            type: 'zoekt',
+            level: 'group',
+            scope: 'blobs',
+            search_duration_s: a_kind_of(Numeric)
+          )
+
+          get api(endpoint, user), params: { scope: 'blobs', search: 'folder' }
+        end
+
+        it_behaves_like 'response is correct', schema: 'public_api/v4/blobs', size: 3 do
+          before do
+            get api(endpoint, user), params: { scope: 'blobs', search: 'file:README' }
+          end
+        end
+      end
     end
   end
 
