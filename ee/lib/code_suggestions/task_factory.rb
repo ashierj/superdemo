@@ -44,12 +44,8 @@ module CodeSuggestions
     end
     strong_memoize_attr(:language)
 
-    def code_completion_model_family
-      Feature.enabled?(:code_completion_anthropic, current_user) ? ANTHROPIC : VERTEX_AI
-    end
-
     def code_completion_params
-      params.merge(code_completion_model_family: code_completion_model_family)
+      params.merge(code_completion_model_family: VERTEX_AI)
     end
 
     def code_generation_params(instructions)
