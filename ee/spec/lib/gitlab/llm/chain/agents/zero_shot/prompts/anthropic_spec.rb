@@ -21,6 +21,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
         ],
         prompt_version: prompt_version,
         current_code: "",
+        current_resource: "",
         resources: ""
       }
     end

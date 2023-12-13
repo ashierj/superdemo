@@ -7,6 +7,8 @@ module Gitlab
         module ZeroShot
           module Prompts
             class VertexAi < Base
+              include Concerns::VertexAiPrompt
+
               def self.prompt(options)
                 Requests::VertexAi.prompt(base_prompt(options))
               end

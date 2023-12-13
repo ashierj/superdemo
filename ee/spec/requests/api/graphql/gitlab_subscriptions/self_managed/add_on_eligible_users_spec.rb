@@ -6,7 +6,10 @@ RSpec.describe 'Query.selfManagedAddOnEligibleUsers', feature_category: :seat_co
   include GraphqlHelpers
   let_it_be(:code_suggestions) { create(:gitlab_subscription_add_on) }
 
-  let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions) }
+  let_it_be(:add_on_purchase) do
+    create(:gitlab_subscription_add_on_purchase, namespace: nil, add_on: code_suggestions)
+  end
+
   let(:query_add_on_purchase_ids) { [global_id_of(add_on_purchase)] }
 
   let(:query_fields) do
@@ -83,10 +86,6 @@ RSpec.describe 'Query.selfManagedAddOnEligibleUsers', feature_category: :seat_co
     end
 
     before_all do
-      add_on_purchase.namespace.add_owner(current_user)
-      add_on_purchase.namespace.add_guest(guest_user)
-      add_on_purchase.namespace.add_developer(active_user)
-
       create(:gitlab_subscription_user_add_on_assignment, user: current_user, add_on_purchase: add_on_purchase)
       create(:gitlab_subscription_user_add_on_assignment, user: guest_user, add_on_purchase: add_on_purchase)
       create(:gitlab_subscription_user_add_on_assignment, user: active_user, add_on_purchase: add_on_purchase)
@@ -184,35 +183,7 @@ RSpec.describe 'Query.selfManagedAddOnEligibleUsers', feature_category: :seat_co
         end
 
         additional_user = create(:user)
-        add_on_purchase.namespace.add_guest(additional_user)
         create(:gitlab_subscription_user_add_on_assignment, user: additional_user, add_on_purchase: add_on_purchase)
-
-        expect { post_graphql(query, current_user: current_user) }.to issue_same_number_of_queries_as(control)
-        expect(graphql_data_at(:self_managed_add_on_eligible_users, :nodes, :add_on_assignments, :nodes).count).to eq(4)
-      end
-    end
-
-    context 'when selecting for multiple add on purchases' do
-      let(:other_add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions) }
-
-      let(:query_add_on_purchase_ids) do
-        [global_id_of(add_on_purchase), global_id_of(other_add_on_purchase)]
-      end
-
-      before do
-        other_add_on_purchase.namespace.add_owner(current_user)
-      end
-
-      it 'avoids N+1 database queries', :request_store do
-        post_graphql(query, current_user: current_user)
-
-        expect(graphql_data_at(:self_managed_add_on_eligible_users, :nodes, :add_on_assignments, :nodes).count).to eq(3)
-
-        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
-          post_graphql(query, current_user: current_user)
-        end
-
-        create(:gitlab_subscription_user_add_on_assignment, user: current_user, add_on_purchase: other_add_on_purchase)
 
         expect { post_graphql(query, current_user: current_user) }.to issue_same_number_of_queries_as(control)
         expect(graphql_data_at(:self_managed_add_on_eligible_users, :nodes, :add_on_assignments, :nodes).count).to eq(4)

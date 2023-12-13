@@ -33,6 +33,27 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace', f
       )
     end
 
+    context 'when querying frameworks with nil arguments' do
+      let(:query) do
+        graphql_query_for(
+          :namespace, { full_path: namespace.full_path },
+          query_nodes(:compliance_frameworks, nil, args: {
+            id: nil,
+            ids: nil
+          })
+        )
+      end
+
+      it 'returns the groups compliance frameworks' do
+        post_graphql(query, current_user: current_user)
+
+        expect(graphql_data_at(*path)).to contain_exactly(
+          a_graphql_entity_for(compliance_framework_1),
+          a_graphql_entity_for(compliance_framework_2)
+        )
+      end
+    end
+
     context 'when querying a specific framework ID' do
       let(:query) do
         graphql_query_for(
@@ -50,31 +71,106 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace', f
       end
     end
 
-    context 'when querying an invalid object ID' do
+    context 'when querying multiple framework IDs' do
+      before do
+        create(:compliance_framework, namespace: namespace, name: 'Test 3')
+      end
+
       let(:query) do
         graphql_query_for(
-          :namespace, { full_path: namespace.full_path }, query_nodes(:compliance_frameworks, nil, args: { id: global_id_of(namespace) })
+          :namespace, { full_path: namespace.full_path },
+          query_nodes(:compliance_frameworks, nil, args: {
+            ids: [global_id_of(compliance_framework_1), global_id_of(compliance_framework_2)]
+          })
         )
       end
 
-      it 'returns an error message' do
+      it 'returns only matching compliance framework' do
         post_graphql(query, current_user: current_user)
 
-        expect(graphql_errors).to contain_exactly(include('message' => "\"#{global_id_of(namespace)}\" does not represent an instance of ComplianceManagement::Framework"))
+        expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes)).to(
+          contain_exactly(a_graphql_entity_for(compliance_framework_1), a_graphql_entity_for(compliance_framework_2))
+        )
+      end
+    end
+
+    context 'when querying frameworks with both id and ids arguments' do
+      let(:query) do
+        graphql_query_for(
+          :namespace, { full_path: namespace.full_path },
+          query_nodes(:compliance_frameworks, nil, args: {
+            id: global_id_of(compliance_framework_1),
+            ids: [global_id_of(compliance_framework_1), global_id_of(compliance_framework_2)]
+          })
+        )
+      end
+
+      it 'returns only a single compliance framework with the matching id' do
+        post_graphql(query, current_user: current_user)
+
+        expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes)).to(
+          contain_exactly(a_graphql_entity_for(compliance_framework_1))
+        )
+      end
+    end
+
+    context 'when querying an invalid object ID' do
+      let(:query) do
+        graphql_query_for(
+          :namespace, { full_path: namespace.full_path }, query_nodes(:compliance_frameworks, nil, args: args)
+        )
+      end
+
+      before do
+        post_graphql(query, current_user: current_user)
+      end
+
+      context 'when querying by id' do
+        let(:args) { { id: global_id_of(namespace) } }
+
+        it 'returns an error message' do
+          expect(graphql_errors).to contain_exactly(include('message' => "\"#{global_id_of(namespace)}\" does not represent an instance of ComplianceManagement::Framework"))
+        end
+      end
+
+      context 'when querying by ids' do
+        let(:args) { { ids: [global_id_of(current_user), global_id_of(namespace)] } }
+
+        it 'returns an error message for the first encountered error' do
+          expect(graphql_errors).to contain_exactly(
+            include('message' => "\"#{global_id_of(current_user)}\" does not represent an instance of ComplianceManagement::Framework")
+          )
+        end
       end
     end
 
     context 'when querying a specific framework that current_user has no access to' do
       let(:query) do
         graphql_query_for(
-          :namespace, { full_path: namespace.full_path }, query_nodes(:compliance_frameworks, nil, args: { id: global_id_of(create(:compliance_framework)) })
+          :namespace, { full_path: namespace.full_path }, query_nodes(:compliance_frameworks, nil, args: args)
         )
       end
 
-      it 'does not return the framework' do
+      before do
         post_graphql(query, current_user: current_user)
+      end
 
-        expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes)).to be_empty
+      context 'when querying by id' do
+        let(:args) { { id: global_id_of(create(:compliance_framework)) } }
+
+        it 'does not return the framework' do
+          expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes)).to be_empty
+        end
+      end
+
+      context 'when querying by ids' do
+        let(:args) do
+          { ids: [global_id_of(create(:compliance_framework)), global_id_of(create(:compliance_framework))] }
+        end
+
+        it 'does not return the frameworks' do
+          expect(graphql_data_at(:namespace, :complianceFrameworks, :nodes)).to be_empty
+        end
       end
     end
 
@@ -117,6 +213,40 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace', f
         expect(graphql_data_at(:a, :complianceFrameworks, :nodes, :name)).to contain_exactly('Test1', 'Test2')
         expect(graphql_data_at(:b, :complianceFrameworks, :nodes, :name)).to contain_exactly('GDPR', 'SOX')
         expect(graphql_data_at(:c, :complianceFrameworks, :nodes, :name)).to contain_exactly('SOX')
+      end
+
+      context 'when querying multiple framework IDs' do
+        before do
+          create(:compliance_framework, namespace: namespace, name: 'Test 3')
+        end
+
+        let(:multiple_namespace_query) do
+          <<~QUERY
+            query($complianceFrameworkIds: [ComplianceManagementFrameworkID!]) {
+              a: namespace(fullPath: "#{namespace.full_path}") {
+                complianceFrameworks(ids: $complianceFrameworkIds) { nodes { id name } }
+              }
+              b: namespace(fullPath: "#{group.full_path}") {
+                complianceFrameworks { nodes { id name } }
+              }
+              c: namespace(fullPath: "#{group.full_path}") {
+                complianceFrameworks(ids: ["#{sox_framework.to_global_id}"]) { nodes { id name } }
+              }
+            }
+          QUERY
+        end
+
+        let(:query_variables) do
+          { complianceFrameworkIds: [compliance_framework_1.to_global_id, compliance_framework_2.to_global_id] }
+        end
+
+        it 'responds with the expected list of compliance frameworks' do
+          post_graphql(multiple_namespace_query, current_user: current_user, variables: query_variables)
+
+          expect(graphql_data_at(:a, :complianceFrameworks, :nodes, :name)).to contain_exactly('Test1', 'Test2')
+          expect(graphql_data_at(:b, :complianceFrameworks, :nodes, :name)).to contain_exactly('GDPR', 'SOX')
+          expect(graphql_data_at(:c, :complianceFrameworks, :nodes, :name)).to contain_exactly('SOX')
+        end
       end
     end
 

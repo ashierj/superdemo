@@ -26,6 +26,12 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     )
   end
 
+  before do
+    # This is normally derived from the AI Request class, but since we're using a double we have to mock that
+    allow(agent).to receive(:provider_prompt_class)
+      .and_return(::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+  end
+
   subject(:agent) do
     described_class.new(
       user_input: input,
@@ -65,12 +71,11 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       before do
         # just limiting the number of iterations here from 10 to 2
         stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
-        allow(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
+        allow(agent).to receive(:logger).at_least(:once).and_return(logger)
         allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
       end
 
       it 'executes associated tools and adds observations during the execution' do
-        expect(logger).to receive(:info_or_debug).at_least(:once)
         expect(logger).to receive(:info).with(hash_including(message: 'Picked tool')).twice
         expect(response_service_double).to receive(:execute).at_least(:once)
 
@@ -222,6 +227,59 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         .to receive(:prompt).once.with(a_hash_including(prompt_options))
 
       agent.prompt
+    end
+
+    context 'when duo_chat_current_resource_by_default is enabled' do
+      it 'does not include resource metadata by default' do
+        expect(agent.prompt[:prompt]).not_to include("<resource>")
+      end
+
+      context 'when the resource is nil' do
+        let(:resource) { nil }
+
+        it 'does not include resource metadata' do
+          expect(agent.prompt[:prompt]).not_to include("<resource>")
+        end
+      end
+
+      shared_examples_for 'includes metadata' do
+        let(:metadata_json) { '{"id":1,"iid":1,"description":null,"title":"My title 1"}' }
+        let(:prompt_resource) do
+          <<~CONTEXT
+            Here is additional data in <resource></resource> tags about the resource the user is working with:
+            <resource>
+            #{metadata_json}
+            </resource>
+          CONTEXT
+        end
+
+        it 'includes the current resource metadata' do
+          expect(context).to receive(:resource_json).and_return(metadata_json)
+          expect(agent.prompt[:prompt]).to include(prompt_resource)
+        end
+
+        context 'when duo_chat_current_resource_by_default is disabled' do
+          before do
+            stub_feature_flags(duo_chat_current_resource_by_default: false)
+          end
+
+          it 'does not include resource metadata' do
+            expect(agent.prompt[:prompt]).not_to include("<resource>")
+          end
+        end
+      end
+
+      context 'when the resource is an issue' do
+        let(:resource) { create(:issue) }
+
+        it_behaves_like 'includes metadata'
+      end
+
+      context 'when the resource is an epic' do
+        let(:resource) { create(:epic) }
+
+        it_behaves_like 'includes metadata'
+      end
     end
 
     context 'with self discover part' do
