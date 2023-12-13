@@ -15,6 +15,8 @@ module Gitlab
         DEFAULT_TYPE = 'prompt'
         DEFAULT_SOURCE = 'GitLab EE'
 
+        ALLOWED_PAYLOAD_PARAM_KEYS = %i[temperature max_tokens_to_sample stop_sequences].freeze
+
         def initialize(user, tracking_context: {})
           @user = user
           @tracking_context = tracking_context
@@ -124,10 +126,19 @@ module Gitlab
               payload: {
                 content: prompt,
                 provider: DEFAULT_PROVIDER,
-                model: DEFAULT_MODEL
-              }
-            }]
-          }.merge(options)
+                model: options.fetch(:model, DEFAULT_MODEL)
+              }.merge(payload_params(options))
+            }],
+            stream: options.fetch(:stream, false)
+          }
+        end
+
+        def payload_params(options)
+          params = options.slice(*ALLOWED_PAYLOAD_PARAM_KEYS)
+
+          return {} if params.empty?
+
+          { params: params }
         end
 
         def token_size(content)

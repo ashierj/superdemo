@@ -22,7 +22,10 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
     let(:response) { 'Hello World' }
     let(:expected_params) do
       {
-        prompt: "some user request"
+        prompt: "some user request",
+        max_tokens_to_sample: 2048,
+        stop_sequences: ["\n\nHuman", "Observation:"],
+        temperature: 0.1
       }
     end
 
