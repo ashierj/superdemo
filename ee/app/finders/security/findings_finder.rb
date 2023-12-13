@@ -132,6 +132,11 @@ module Security
       #
       # The latter form can end up reading a very large number of rows on projects
       # with high numbers of findings.
+      #
+      # Note the inner query needs the LIMIT incremented by 1 because of the
+      # way the Kaminari gem implements pagination without total counts.
+      # Kaminari increments the LIMIT on the outer relation query by 1 to
+      # determine if there are further pages to load. See https://github.com/kaminari/kaminari/blob/13b59ce7ab4e3d0e3072272251de734f918d5f8f/kaminari-activerecord/lib/kaminari/activerecord/active_record_relation_methods.rb#L83-L101
 
       lateral_relation = Security::Finding
         .where('"security_findings"."scan_id" = "security_scans"."id"') # rubocop:disable CodeReuse/ActiveRecord
@@ -144,7 +149,7 @@ module Security
         .then { |relation| by_scanner_external_ids(relation) }
         .then { |relation| by_state(relation) }
         .then { |relation| by_include_dismissed(relation) }
-        .limit(per_page * page)
+        .limit((per_page * page) + 1)
 
       from_sql = <<~SQL.squish
           "security_scans",

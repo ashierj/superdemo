@@ -1,7 +1,8 @@
 <script>
-import { GlAlert, GlCollapse, GlEmptyState, GlFormCheckbox } from '@gitlab/ui';
+import { GlAlert, GlCollapse, GlEmptyState, GlFormCheckbox, GlPagination } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import Pagination from '~/vue_shared/components/pagination_links.vue';
 import SecurityDashboardTableRow from './security_dashboard_table_row.vue';
 import SelectionSummary from './selection_summary_vuex.vue';
@@ -13,10 +14,12 @@ export default {
     GlCollapse,
     GlEmptyState,
     GlFormCheckbox,
+    GlPagination,
     Pagination,
     SecurityDashboardTableRow,
     SelectionSummary,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['canAdminVulnerability'],
   computed: {
     ...mapState('vulnerabilities', [
@@ -41,8 +44,20 @@ export default {
         !this.errorLoadingVulnerabilitiesCount
       );
     },
-    showPagination() {
-      return Boolean(this.pageInfo?.total);
+    showCompactPagination() {
+      return Boolean(this.glFeatures.securityFindingsFinderLateralJoin && this.pageInfo?.page);
+    },
+    showNumberedPagination() {
+      return Boolean(!this.glFeatures.securityFindingsFinderLateralJoin && this.pageInfo?.total);
+    },
+    currentPage() {
+      return this.pageInfo.page;
+    },
+    nextPage() {
+      return this.pageInfo.nextPage;
+    },
+    previousPage() {
+      return this.pageInfo.previousPage;
     },
   },
   methods: {
@@ -121,8 +136,24 @@ export default {
         />
       </slot>
 
+      <gl-pagination
+        v-if="showCompactPagination"
+        data-testid="compact-pagination"
+        :value="currentPage"
+        :next-page="nextPage"
+        :prev-page="previousPage"
+        :prev-text="__('Prev')"
+        :next-text="__('Next')"
+        :label-next-page="__('Go to next page')"
+        :label-prev-page="__('Go to previous page')"
+        align="center"
+        class="gl-mt-3"
+        @input="fetchPage"
+      />
+
       <pagination
-        v-if="showPagination"
+        v-else-if="showNumberedPagination"
+        data-testid="numbered-pagination"
         :change="fetchPage"
         :page-info="pageInfo"
         class="justify-content-center gl-mt-3"
