@@ -47,40 +47,24 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
     let_it_be(:member_role_guest) { create(:member_role, :guest, name: 'guest plus', namespace: root_group) }
     let_it_be(:member_role_reporter) { create(:member_role, :reporter, name: 'reporter plus', namespace: root_group) }
 
-    context 'when custom_roles_in_members_page feature flag is enabled' do
-      before do
-        stub_feature_flags(custom_roles_in_members_page: true)
-      end
-
-      it 'returns only roles with higher base_access_level than user highest membership in the hierarchy' do
-        expect(described_class.new(member_subgroup).valid_member_roles).to match_array(
-          [
-            { base_access_level: Gitlab::Access::REPORTER, member_role_id: member_role_reporter.id,
-              name: 'reporter plus' }
-          ]
-        )
-      end
-
-      it 'returns all roles for the root group' do
-        expect(described_class.new(member_root).valid_member_roles).to match_array(
-          [
-            { base_access_level: Gitlab::Access::REPORTER, member_role_id: member_role_reporter.id,
-              name: 'reporter plus' },
-            { base_access_level: Gitlab::Access::GUEST, member_role_id: member_role_guest.id,
-              name: 'guest plus' }
-          ]
-        )
-      end
+    it 'returns only roles with higher base_access_level than user highest membership in the hierarchy' do
+      expect(described_class.new(member_subgroup).valid_member_roles).to match_array(
+        [
+          { base_access_level: Gitlab::Access::REPORTER, member_role_id: member_role_reporter.id,
+            name: 'reporter plus' }
+        ]
+      )
     end
 
-    context 'when custom_roles_in_members_page feature flag is disabled' do
-      before do
-        stub_feature_flags(custom_roles_in_members_page: false)
-      end
-
-      it 'returns an empty array' do
-        expect(presenter.valid_member_roles).to be_empty
-      end
+    it 'returns all roles for the root group' do
+      expect(described_class.new(member_root).valid_member_roles).to match_array(
+        [
+          { base_access_level: Gitlab::Access::REPORTER, member_role_id: member_role_reporter.id,
+            name: 'reporter plus' },
+          { base_access_level: Gitlab::Access::GUEST, member_role_id: member_role_guest.id,
+            name: 'guest plus' }
+        ]
+      )
     end
   end
 

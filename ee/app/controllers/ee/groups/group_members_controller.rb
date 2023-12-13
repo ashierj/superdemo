@@ -35,11 +35,7 @@ module EE
 
         # rubocop:disable Gitlab/ModuleWithInstanceVariables
         @banned = presented_banned_members
-        @memberships_with_custom_role = if ::Feature.enabled?(:custom_roles_in_members_page, group)
-                                          present_group_members(group_memberships_with_custom_role)
-                                        else
-                                          []
-                                        end
+        @memberships_with_custom_role = present_group_members(group_memberships_with_custom_role)
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
       end
 

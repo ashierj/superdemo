@@ -23,8 +23,6 @@ module EE
 
     delegator_override :valid_member_roles
     def valid_member_roles
-      return super unless ::Feature.enabled?(:custom_roles_in_members_page, group)
-
       root_group = member.source&.root_ancestor
       member_roles = root_group.member_roles
 
