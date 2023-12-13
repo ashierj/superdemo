@@ -406,7 +406,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
       end
     end
 
-    context 'when asked about writing tests' do
+    context 'with selected code present' do
       let(:current_file) do
         {
           file_name: 'test.rb',
@@ -418,14 +418,46 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
         }
       end
 
-      where(:input_template, :tools, :answer_match) do
-        'Write tests for selected code' | [] | /tests.*hello_world/
+      context 'when asked about writing tests' do
+        where(:input_template, :tools, :answer_match) do
+          'Write tests for selected code' | []             | /tests.*hello_world/m
+          '/tests'                        | %w[WriteTests] | /tests.*hello_world/m
+          '/tests integration'            | %w[WriteTests] | /integration.*hello_world/m
+        end
+
+        with_them do
+          let(:input) { format(input_template) }
+
+          it_behaves_like 'successful prompt processing'
+        end
       end
 
-      with_them do
-        let(:input) { format(input_template) }
+      context 'when refactoring selected code' do
+        where(:input_template, :tools, :answer_match) do
+          'Refactor this code'     | []               | /method.*hello_world/
+          '/refactor'              | %w[RefactorCode] | /change/i
+          '/refactor input params' | %w[RefactorCode] | /param/
+        end
 
-        it_behaves_like 'successful prompt processing'
+        with_them do
+          let(:input) { format(input_template) }
+
+          it_behaves_like 'successful prompt processing'
+        end
+      end
+
+      context 'when explaining selected code' do
+        where(:input_template, :tools, :answer_match) do
+          'Explain this code'     | []              | /method.*hello_world/
+          '/explain'              | %w[ExplainCode] | /method.*hello_world/
+          '/explain return value' | %w[ExplainCode] | /return.*nil/
+        end
+
+        with_them do
+          let(:input) { format(input_template) }
+
+          it_behaves_like 'successful prompt processing'
+        end
       end
     end
   end
