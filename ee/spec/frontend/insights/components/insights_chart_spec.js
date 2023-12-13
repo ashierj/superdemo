@@ -153,48 +153,60 @@ describe('Insights chart component', () => {
         );
       });
 
-      it('should not drill down when clicking on `undefined` chart item', async () => {
-        findChart(GlStackedColumnChart).vm.$emit(
-          'chartItemClicked',
-          chartUndefinedDataSeriesParams,
-        );
-
-        await nextTick();
-
-        expect(visitUrl).not.toHaveBeenCalled();
-      });
-
-      it.each`
-        isProject | relativeUrlRoot | fullPath       | pathSuffix
-        ${false}  | ${'/'}          | ${groupPath}   | ${groupPathSuffix}
-        ${true}   | ${'/'}          | ${projectPath} | ${projectPathSuffix}
-        ${false}  | ${'/path'}      | ${groupPath}   | ${groupPathSuffix}
-        ${true}   | ${'/path'}      | ${projectPath} | ${projectPathSuffix}
-      `(
-        'should drill down to the correct URL when clicking on a chart item',
-        async ({ isProject, relativeUrlRoot, fullPath, pathSuffix }) => {
-          const {
-            params: { seriesName },
-          } = chartDataSeriesParams;
-          const rootPath = relativeUrlRoot === '/' ? '' : relativeUrlRoot;
-          const namespacePath = isProject ? fullPath : `groups/${fullPath}`;
-          const expectedDrillDownUrl = `${rootPath}/${namespacePath}/${pathSuffix}?label_name=${seriesName}`;
-
-          gon.relative_url_root = relativeUrlRoot;
-
-          createWrapper({
-            props: { title: chartTitle, ...supportedChartProps },
-            provide: { isProject, fullPath },
-          });
-
-          findChart(GlStackedColumnChart).vm.$emit('chartItemClicked', chartDataSeriesParams);
+      describe('chart item clicked', () => {
+        it('should not drill down on `undefined` chart item', async () => {
+          findChart(GlStackedColumnChart).vm.$emit(
+            'chartItemClicked',
+            chartUndefinedDataSeriesParams,
+          );
 
           await nextTick();
 
-          expect(visitUrl).toHaveBeenCalledTimes(1);
-          expect(visitUrl).toHaveBeenCalledWith(expectedDrillDownUrl);
-        },
-      );
+          expect(visitUrl).not.toHaveBeenCalled();
+        });
+
+        describe("chart item's series name is valid", () => {
+          it('should emit `chart-item-clicked` event', async () => {
+            findChart(GlStackedColumnChart).vm.$emit('chartItemClicked', chartDataSeriesParams);
+
+            await nextTick();
+
+            expect(wrapper.emitted('chart-item-clicked')).toHaveLength(1);
+          });
+
+          it.each`
+            isProject | relativeUrlRoot | fullPath       | pathSuffix
+            ${false}  | ${'/'}          | ${groupPath}   | ${groupPathSuffix}
+            ${true}   | ${'/'}          | ${projectPath} | ${projectPathSuffix}
+            ${false}  | ${'/path'}      | ${groupPath}   | ${groupPathSuffix}
+            ${true}   | ${'/path'}      | ${projectPath} | ${projectPathSuffix}
+          `(
+            'should drill down to the correct URL',
+            async ({ isProject, relativeUrlRoot, fullPath, pathSuffix }) => {
+              const {
+                params: { seriesName },
+              } = chartDataSeriesParams;
+              const rootPath = relativeUrlRoot === '/' ? '' : relativeUrlRoot;
+              const namespacePath = isProject ? fullPath : `groups/${fullPath}`;
+              const expectedDrillDownUrl = `${rootPath}/${namespacePath}/${pathSuffix}?label_name=${seriesName}`;
+
+              gon.relative_url_root = relativeUrlRoot;
+
+              createWrapper({
+                props: { title: chartTitle, ...supportedChartProps },
+                provide: { isProject, fullPath },
+              });
+
+              findChart(GlStackedColumnChart).vm.$emit('chartItemClicked', chartDataSeriesParams);
+
+              await nextTick();
+
+              expect(visitUrl).toHaveBeenCalledTimes(1);
+              expect(visitUrl).toHaveBeenCalledWith(expectedDrillDownUrl);
+            },
+          );
+        });
+      });
     });
   });
 });
