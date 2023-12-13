@@ -32,7 +32,7 @@ export default {
     GlSprintf,
   },
   apolloProvider,
-  inject: ['createHandRaiseLeadPath'],
+  inject: { createHandRaiseLeadPath: { default: null } },
 };
 </script>
 <template>

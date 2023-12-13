@@ -17,6 +17,7 @@ import {
   INSIGHTS_NO_DATA_TOOLTIP,
   INSIGHTS_DRILLTHROUGH_PATH_SUFFIXES,
   INSIGHTS_CHARTS_SUPPORT_DRILLDOWN,
+  ISSUABLE_TYPES,
 } from '../constants';
 import InsightsChartError from './insights_chart_error.vue';
 
@@ -179,7 +180,8 @@ export default {
     supportsDrillDown() {
       return (
         INSIGHTS_CHARTS_SUPPORT_DRILLDOWN.includes(this.title) &&
-        this.type === this.$options.chartTypes.STACKED_BAR
+        this.type === this.$options.chartTypes.STACKED_BAR &&
+        this.dataSourceType === ISSUABLE_TYPES.ISSUE
       );
     },
     namespacePath() {
@@ -236,6 +238,8 @@ export default {
       if (!canDrillDown) return;
 
       const chartItemUrlWithParams = mergeUrlParams({ label_name: seriesName }, this.chartItemUrl);
+
+      this.$emit('chart-item-clicked');
 
       visitUrl(chartItemUrlWithParams);
     },
