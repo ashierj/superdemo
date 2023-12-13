@@ -7,6 +7,7 @@ module Gitlab
         attr_reader :context
 
         TOOLS = [
+          ::Gitlab::Llm::Chain::Tools::CiEditorAssistant,
           ::Gitlab::Llm::Chain::Tools::JsonReader,
           ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
           ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
@@ -65,10 +66,9 @@ module Gitlab
 
         private
 
-        def tools(user)
-          tools = TOOLS.dup
-          tools << ::Gitlab::Llm::Chain::Tools::CiEditorAssistant if Feature.enabled?(:ci_editor_assistant_tool, user)
-          tools
+        # allows conditional logic e.g. feature flagging
+        def tools
+          TOOLS
         end
 
         def response_post_processing
@@ -109,7 +109,7 @@ module Gitlab
 
           Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
             user_input: prompt_message.content,
-            tools: tools(user),
+            tools: tools,
             context: context,
             response_handler: response_handler,
             stream_response_handler: stream_response_handler
