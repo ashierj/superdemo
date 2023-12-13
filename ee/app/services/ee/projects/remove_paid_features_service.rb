@@ -2,18 +2,13 @@
 
 module EE
   module Projects
-    # The logic of this class is called within a transaction when transferring groups and projects
-    #
-    # This class requires a `save` or similar call on the `triggerer` to be able to run the
-    # pipeline subscriptions deletion which are within a `run_after_commit` block.
     class RemovePaidFeaturesService < BaseService
       include EachBatch
 
       BATCH_SIZE = 500
 
-      def execute(new_namespace, triggerer: project)
+      def execute(new_namespace)
         @new_namespace = new_namespace
-        @triggerer = triggerer
 
         revoke_project_access_tokens
         delete_pipeline_subscriptions
@@ -22,7 +17,7 @@ module EE
 
       private
 
-      attr_reader :new_namespace, :triggerer
+      attr_reader :new_namespace
 
       def revoke_project_access_tokens
         return if new_namespace&.feature_available_non_trial?(:resource_access_token)
@@ -38,10 +33,7 @@ module EE
       def delete_pipeline_subscriptions
         return if new_namespace&.licensed_feature_available?(:ci_project_subscriptions)
 
-        project_id = project.id
-        triggerer.run_after_commit do
-          ::Ci::UpstreamProjectsSubscriptionsCleanupWorker.perform_async(project_id)
-        end
+        ::Ci::UpstreamProjectsSubscriptionsCleanupWorker.perform_async(project.id)
       end
 
       def delete_test_cases

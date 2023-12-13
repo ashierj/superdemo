@@ -101,22 +101,17 @@ RSpec.describe EE::Projects::RemovePaidFeaturesService, feature_category: :saas_
       context 'when target namespace has a free plan' do
         let(:target_namespace) { free_group }
 
-        context 'when triggerer is not triggered' do
-          include_examples 'does not schedule cleanup for upstream project subscription'
+        it 'schedules cleanup for upstream project subscription' do
+          expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).to receive(:perform_async)
+            .with(project.id)
+            .and_call_original
+
+          execute_transfer
         end
+      end
 
-        context 'with a different triggerer' do
-          subject(:execute_transfer) { service.execute(target_namespace, triggerer: target_namespace) }
-
-          it 'schedules cleanup for upstream project subscription' do
-            expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).to receive(:perform_async)
-              .with(project.id)
-              .and_call_original
-
-            execute_transfer
-            target_namespace.save! # to trigger the `run_after_commit`
-          end
-        end
+      context 'when group becomes root namespace' do
+        let(:target_namespace) { nil }
 
         it 'schedules cleanup for upstream project subscription' do
           expect(::Ci::UpstreamProjectsSubscriptionsCleanupWorker).to receive(:perform_async)
@@ -124,14 +119,7 @@ RSpec.describe EE::Projects::RemovePaidFeaturesService, feature_category: :saas_
             .and_call_original
 
           execute_transfer
-          project.save! # to trigger the `run_after_commit`
         end
-      end
-
-      context 'when group becomes root namespace' do
-        let(:target_namespace) { nil }
-
-        include_examples 'does not schedule cleanup for upstream project subscription'
       end
     end
 
