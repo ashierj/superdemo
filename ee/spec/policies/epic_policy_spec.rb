@@ -400,49 +400,39 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
     end
   end
 
-  describe 'summarize_notes', :saas do
-    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+  describe 'summarize_notes' do
+    let_it_be(:group) { create(:group, :private) }
+
+    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_licensed_features(epics: true, summarize_notes: true, ai_features: true, experimental_features: true)
-      group.namespace_settings.update!(experiment_features_enabled: true)
+      stub_licensed_features(epics: true)
+      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
     end
 
-    context 'when a member' do
+    context "when feature is authorized" do
+      before do
+        allow(authorizer).to receive(:allowed?).and_return(true)
+      end
+
+      context "when user can read epic" do
+        before do
+          group.add_guest(user)
+        end
+
+        it { is_expected.to be_allowed(:summarize_notes) }
+      end
+
+      context "when user cannot read epic" do
+        it { is_expected.to be_disallowed(:summarize_notes) }
+      end
+    end
+
+    context "when feature is not authorized" do
       before do
         group.add_guest(user)
+        allow(authorizer).to receive(:allowed?).and_return(false)
       end
-
-      it { is_expected.to be_allowed(:summarize_notes) }
-
-      context 'when experiment features are disabled' do
-        before do
-          group.namespace_settings.update!(experiment_features_enabled: false)
-        end
-
-        it { is_expected.to be_disallowed(:summarize_notes) }
-      end
-
-      context 'when license is not set' do
-        before do
-          stub_licensed_features(summarize_notes: false)
-        end
-
-        it { is_expected.to be_disallowed(:summarize_notes) }
-      end
-
-      context 'when feature flag is not set' do
-        before do
-          stub_feature_flags(ai_global_switch: false)
-        end
-
-        it { is_expected.to be_disallowed(:summarize_notes) }
-      end
-    end
-
-    context 'when not a member' do
-      let_it_be(:user) { create(:user) }
 
       it { is_expected.to be_disallowed(:summarize_notes) }
     end

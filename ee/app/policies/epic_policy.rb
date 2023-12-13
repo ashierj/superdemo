@@ -22,18 +22,12 @@ class EpicPolicy < BasePolicy
     @subject.group.licensed_feature_available?(:subepics)
   end
 
-  condition(:is_member) do
-    @subject.group.member?(@user)
-  end
-
-  condition(:ai_available, scope: :subject) do
-    ::Feature.enabled?(:ai_global_switch, type: :ops)
-  end
-
   condition(:summarize_notes_enabled, scope: :subject) do
-    ::Feature.enabled?(:ai_global_switch, type: :ops) &&
-      @subject.group.licensed_feature_available?(:summarize_notes) &&
-      Gitlab::Llm::StageCheck.available?(@subject.group, :summarize_notes)
+    ::Gitlab::Llm::FeatureAuthorizer.new(
+      container: subject.group,
+      current_user: user,
+      feature_name: :summarize_notes
+    ).allowed?
   end
 
   condition(:relations_for_non_members_available, scope: :subject) do
@@ -118,7 +112,7 @@ class EpicPolicy < BasePolicy
     enable :mark_note_as_internal
   end
 
-  rule { ai_available & summarize_notes_enabled & is_member & can?(:read_epic) }.policy do
+  rule { summarize_notes_enabled & can?(:read_epic) }.policy do
     enable :summarize_notes
   end
 

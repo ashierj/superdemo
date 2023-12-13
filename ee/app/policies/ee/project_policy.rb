@@ -281,15 +281,13 @@ module EE
       end
 
       with_scope :subject
-      condition(:ai_features_enabled) do
-        ::Feature.enabled?(:ai_global_switch, type: :ops)
-      end
-
-      with_scope :subject
       condition(:fill_in_merge_request_template_enabled) do
         ::Feature.enabled?(:fill_in_mr_template, subject) &&
-          subject.licensed_feature_available?(:fill_in_merge_request_template) &&
-          ::Gitlab::Llm::StageCheck.available?(subject, :fill_in_merge_request_template)
+          ::Gitlab::Llm::FeatureAuthorizer.new(
+            container: subject,
+            current_user: user,
+            feature_name: :fill_in_merge_request_template
+          ).allowed?
       end
 
       with_scope :subject
@@ -776,7 +774,7 @@ module EE
       end
 
       rule do
-        ai_features_enabled & fill_in_merge_request_template_enabled & can?(:create_merge_request_in)
+        fill_in_merge_request_template_enabled & can?(:create_merge_request_in)
       end.enable :fill_in_merge_request_template
 
       rule do

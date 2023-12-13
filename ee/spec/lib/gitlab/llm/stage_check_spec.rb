@@ -41,6 +41,15 @@ RSpec.describe Gitlab::Llm::StageCheck, :saas, feature_category: :ai_abstraction
           expect(described_class.available?(container, feature_name)).to eq(true)
         end
 
+        context 'for a project in a personal namespace' do
+          let_it_be(:user) { create(:user) }
+          let_it_be(:project) { create(:project, namespace: user.namespace) }
+
+          it 'returns false' do
+            expect(described_class.available?(project, feature_name)).to eq(false)
+          end
+        end
+
         context 'with an invalid feature name' do
           it 'returns false' do
             expect(described_class.available?(container, :invalid_feature_name)).to eq(false)

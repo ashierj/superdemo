@@ -13,14 +13,12 @@ module EE
 
       with_scope :subject
       condition(:summarize_draft_code_review_enabled) do
-        namespace = @subject&.project&.group&.root_ancestor
-
-        next if namespace.nil?
-
         ::Feature.enabled?(:summarize_my_code_review, @user) &&
-          namespace.group_namespace? &&
-          namespace.licensed_feature_available?(:summarize_my_mr_code_review) &&
-          ::Gitlab::Llm::StageCheck.available?(namespace, :summarize_my_mr_code_review)
+          ::Gitlab::Llm::FeatureAuthorizer.new(
+            container: @subject.project,
+            current_user: @user,
+            feature_name: :summarize_my_mr_code_review
+          ).allowed?
       end
 
       condition(:external_status_checks_enabled) do
@@ -47,15 +45,14 @@ module EE
       end
 
       with_scope :subject
-      condition(:ai_features_enabled) do
-        ::Feature.enabled?(:ai_global_switch, type: :ops)
-      end
-
-      with_scope :subject
       condition(:summarize_submitted_review_enabled) do
         ::Feature.enabled?(:automatically_summarize_mr_review, subject.project) &&
           subject.project.licensed_feature_available?(:summarize_submitted_review) &&
-          ::Gitlab::Llm::StageCheck.available?(subject.project.root_ancestor, :summarize_submitted_review)
+          ::Gitlab::Llm::FeatureAuthorizer.new(
+            container: subject.project,
+            current_user: user,
+            feature_name: :summarize_submitted_review
+          ).allowed?
       end
 
       condition(:role_enables_admin_merge_request) do
@@ -75,7 +72,11 @@ module EE
       condition(:summarize_merge_request_enabled) do
         ::Feature.enabled?(:summarize_diff_automatically, subject.project) &&
           subject.project.licensed_feature_available?(:summarize_mr_changes) &&
-          ::Gitlab::Llm::StageCheck.available?(subject.project.root_ancestor, :summarize_diff)
+          ::Gitlab::Llm::FeatureAuthorizer.new(
+            container: subject.project,
+            current_user: user,
+            feature_name: :summarize_diff
+          ).allowed?
       end
 
       def read_only?
@@ -87,11 +88,10 @@ module EE
       end
 
       rule { ~can_override_approvers }.prevent :update_approvers
+
       rule { can?(:update_merge_request) }.policy do
         enable :update_approvers
       end
-
-      rule { summarize_draft_code_review_enabled }.enable :summarize_draft_code_review
 
       rule { merge_request_group_approver }.policy do
         enable :approve_merge_request
@@ -117,7 +117,7 @@ module EE
       rule { approval_rules_licence_enabled }.enable :create_merge_request_approval_rules
 
       rule do
-        ai_features_enabled & summarize_submitted_review_enabled & can?(:read_merge_request)
+        summarize_submitted_review_enabled & can?(:read_merge_request)
       end.enable :summarize_submitted_review
 
       rule { custom_roles_allowed & role_enables_admin_merge_request }.policy do
@@ -125,8 +125,12 @@ module EE
       end
 
       rule do
-        ai_features_enabled & summarize_merge_request_enabled & can?(:generate_diff_summary)
+        summarize_merge_request_enabled & can?(:generate_diff_summary)
       end.enable :summarize_merge_request
+
+      rule do
+        summarize_draft_code_review_enabled & can?(:read_merge_request)
+      end.enable :summarize_draft_code_review
     end
 
     private

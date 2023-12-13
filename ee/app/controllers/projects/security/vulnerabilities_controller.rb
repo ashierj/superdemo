@@ -8,7 +8,6 @@ module Projects
 
       before_action do
         push_frontend_feature_flag(:create_vulnerability_jira_issue_via_graphql, @project)
-        push_frontend_feature_flag(:ai_global_switch, type: :ops)
         push_frontend_feature_flag(:resolve_vulnerability_ai, @project)
       end
 
@@ -28,7 +27,7 @@ module Projects
           can?(current_user, :explain_vulnerability, vulnerability)
         )
         pipeline = vulnerability.finding.first_finding_pipeline
-        @pipeline = pipeline if Ability.allowed?(current_user, :read_pipeline, pipeline)
+        @pipeline = pipeline if can?(current_user, :read_pipeline, pipeline)
         @gfm_form = true
       end
 
