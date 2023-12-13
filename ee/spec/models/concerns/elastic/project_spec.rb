@@ -7,6 +7,8 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
 
+  let(:schema_version) { 2306 }
+
   context 'when limited indexing is on' do
     let_it_be(:project) { create(:project, :empty_repo, name: 'main_project') }
 
@@ -275,7 +277,7 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
           'ci_catalog' => project.catalog_resource.present?,
           'join_field' => project.es_type,
           'type' => project.es_type,
-          'schema_version' => 2306,
+          'schema_version' => schema_version,
           'traversal_ids' => project.elastic_namespace_ancestry,
           'name_with_namespace' => project.full_name,
           'path_with_namespace' => project.full_path
@@ -316,7 +318,7 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
         ).merge({
           'ci_catalog' => project.catalog_resource.present?,
           'type' => project.es_type,
-          'schema_version' => 2306,
+          'schema_version' => schema_version,
           'traversal_ids' => project.elastic_namespace_ancestry,
           'name_with_namespace' => project.full_name,
           'path_with_namespace' => project.full_path

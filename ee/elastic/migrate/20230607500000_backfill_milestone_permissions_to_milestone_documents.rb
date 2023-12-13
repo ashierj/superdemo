@@ -11,10 +11,6 @@ class BackfillMilestonePermissionsToMilestoneDocuments < Elastic::Migration
 
   private
 
-  def index_name
-    DOCUMENT_TYPE.__elasticsearch__.index_name
-  end
-
   def field_names
     %w[merge_requests_access_level issues_access_level visibility_level]
   end

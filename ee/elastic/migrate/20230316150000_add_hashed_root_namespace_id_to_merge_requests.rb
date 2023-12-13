@@ -3,11 +3,9 @@
 class AddHashedRootNamespaceIdToMergeRequests < Elastic::Migration
   include Elastic::MigrationUpdateMappingsHelper
 
-  private
+  DOCUMENT_TYPE = MergeRequest
 
-  def index_name
-    MergeRequest.__elasticsearch__.index_name
-  end
+  private
 
   def new_mappings
     {

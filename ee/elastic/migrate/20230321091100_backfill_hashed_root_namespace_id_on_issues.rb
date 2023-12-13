@@ -12,10 +12,6 @@ class BackfillHashedRootNamespaceIdOnIssues < Elastic::Migration
 
   private
 
-  def index_name
-    DOCUMENT_TYPE.__elasticsearch__.index_name
-  end
-
   def field_name
     'hashed_root_namespace_id'
   end

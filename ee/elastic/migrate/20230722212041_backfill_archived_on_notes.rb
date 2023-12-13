@@ -11,10 +11,6 @@ class BackfillArchivedOnNotes < Elastic::Migration
 
   private
 
-  def index_name
-    DOCUMENT_TYPE.__elasticsearch__.index_name
-  end
-
   def field_name
     'archived'
   end
