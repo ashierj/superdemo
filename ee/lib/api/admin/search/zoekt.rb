@@ -99,6 +99,9 @@ module API
                   requires :namespace_id,
                     type: Integer,
                     desc: 'The id of the namespace you want to index in this node'
+                  optional :search,
+                    type: Grape::API::Boolean,
+                    desc: 'Whether or not an indexed namespace should be enabled for searching'
                 end
                 put do
                   ensure_zoekt_indexing_enabled!
@@ -107,6 +110,11 @@ module API
 
                   indexed_namespace = ::Zoekt::IndexedNamespace
                     .find_or_create_for_node_and_namespace!(node: node, namespace: namespace)
+
+                  if params.key?(:search) && (indexed_namespace.search != params[:search])
+                    indexed_namespace.update(search: params[:search])
+                  end
+
                   present indexed_namespace, with: ::API::Entities::Search::Zoekt::IndexedNamespace
                 end
 
