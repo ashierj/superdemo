@@ -8,11 +8,11 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
   let_it_be(:project) { create(:project, group: subgroup) }
 
   let_it_be(:occurrence_1) do
-    create(:sbom_occurrence, :mit, packager_name: 'nuget', project: project)
+    create(:sbom_occurrence, :mit, packager_name: 'nuget', project: project, highest_severity: 'low')
   end
 
   let_it_be(:occurrence_2) do
-    create(:sbom_occurrence, :apache_2, packager_name: 'npm', project: project)
+    create(:sbom_occurrence, :apache_2, packager_name: 'npm', project: project, highest_severity: 'critical')
   end
 
   let_it_be(:occurrence_3) do
@@ -108,6 +108,36 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
           spdx_ids = dependencies.map { |dependency| dependency.licenses.first['spdx_identifier'] }
 
           expect(spdx_ids).to be_sorted(verse: :desc)
+        end
+      end
+
+      context 'when sorted asc by severity' do
+        let_it_be(:params) do
+          {
+            sort: 'asc',
+            sort_by: 'severity'
+          }
+        end
+
+        it 'returns array of data properly sorted' do
+          severities = dependencies.map(&:highest_severity)
+
+          expect(severities).to eq([nil, 'low', 'critical'])
+        end
+      end
+
+      context 'when sorted desc by severity' do
+        let_it_be(:params) do
+          {
+            sort: 'desc',
+            sort_by: 'severity'
+          }
+        end
+
+        it 'returns array of data properly sorted' do
+          severities = dependencies.map(&:highest_severity)
+
+          expect(severities).to eq(['critical', 'low', nil])
         end
       end
 

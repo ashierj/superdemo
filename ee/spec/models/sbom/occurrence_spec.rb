@@ -245,6 +245,19 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.order_by_severity' do
+    let_it_be(:occurrence_critical) { create(:sbom_occurrence, highest_severity: :critical) }
+    let_it_be(:occurrence_low) { create(:sbom_occurrence, highest_severity: :low) }
+
+    it 'returns records sorted by highest_severity asc' do
+      expect(described_class.order_by_severity('asc').map(&:highest_severity)).to eq(%w[low critical])
+    end
+
+    it 'returns records sorted by highest_severity desc' do
+      expect(described_class.order_by_severity('desc').map(&:highest_severity)).to eq(%w[critical low])
+    end
+  end
+
   describe '.filter_by_component_names' do
     let_it_be(:occurrence_1) { create(:sbom_occurrence) }
     let_it_be(:occurrence_2) { create(:sbom_occurrence) }

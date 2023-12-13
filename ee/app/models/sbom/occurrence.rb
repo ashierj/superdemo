@@ -105,6 +105,10 @@ module Sbom
     end
     scope :filter_by_non_nil_component_version, -> { where.not(component_version: nil) }
 
+    scope :order_by_severity, ->(direction) do
+      order(highest_severity_arel_nodes(direction))
+    end
+
     def location
       {
         blob_path: input_file_blob_path,
@@ -120,6 +124,12 @@ module Sbom
       return unless source&.input_file_path.present?
 
       Gitlab::Routing.url_helpers.project_blob_path(project, File.join(commit_sha, source.input_file_path))
+    end
+
+    def self.highest_severity_arel_nodes(direction)
+      return Sbom::Occurrence.arel_table[:highest_severity].asc.nulls_first if direction == 'asc'
+
+      Sbom::Occurrence.arel_table[:highest_severity].desc.nulls_last
     end
   end
 end
