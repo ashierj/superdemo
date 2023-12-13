@@ -8,9 +8,9 @@ module EE
   module PersonalAccessToken
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+    include ::Gitlab::Utils::StrongMemoize
 
     prepended do
-      include ::Gitlab::Utils::StrongMemoize
       include FromUnion
 
       has_one :workspace,
@@ -67,17 +67,12 @@ module EE
     end
 
     def instance_level_expiration_policy_enabled?
-      expiration_policy_licensed? && instance_level_max_expiry_date
+      expiration_policy_licensed? &&
+        expiry_date_calculator.instance_level_max_expiry_date
     end
 
     def max_expiry_date
-      return group_level_max_expiry_date if user.group_managed_account?
-
-      instance_level_max_expiry_date
-    end
-
-    def instance_level_max_expiry_date
-      ::Gitlab::CurrentSettings.max_personal_access_token_lifetime_from_now
+      expiry_date_calculator.max_expiry_date
     end
 
     def allow_expires_at_to_be_empty?
@@ -99,15 +94,16 @@ module EE
     end
 
     def group_level_expiration_policy_enabled?
-      expiration_policy_licensed? && group_level_max_expiry_date
-    end
-
-    def group_level_max_expiry_date
-      user.managing_group.max_personal_access_token_lifetime_from_now
+      expiration_policy_licensed? && expiry_date_calculator.group_level_max_expiry_date
     end
 
     def clear_rotation_notification_cache
       ::PersonalAccessTokens::RotationVerifierService.new(user).clear_cache
     end
+
+    def expiry_date_calculator
+      EE::Gitlab::PersonalAccessTokens::ExpiryDateCalculator.new(user)
+    end
+    strong_memoize_attr :expiry_date_calculator
   end
 end

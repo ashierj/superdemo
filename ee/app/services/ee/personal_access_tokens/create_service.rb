@@ -48,6 +48,11 @@ module EE
         can_admin_service_accounts?
       end
 
+      override :max_expiry_date
+      def max_expiry_date
+        EE::Gitlab::PersonalAccessTokens::ExpiryDateCalculator.new(target_user).max_expiry_date || super
+      end
+
       def can_admin_service_accounts?
         return Ability.allowed?(current_user, :admin_service_accounts) unless params[:group]
 
