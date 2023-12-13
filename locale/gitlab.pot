@@ -27874,6 +27874,12 @@ msgstr ""
 msgid "KubernetesDashboard|Annotations"
 msgstr ""
 
+msgid "KubernetesDashboard|DaemonSet"
+msgstr ""
+
+msgid "KubernetesDashboard|DaemonSets"
+msgstr ""
+
 msgid "KubernetesDashboard|Dashboard"
 msgstr ""
 
