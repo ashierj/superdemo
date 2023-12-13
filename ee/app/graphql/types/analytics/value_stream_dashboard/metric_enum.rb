@@ -7,11 +7,17 @@ module Types
         graphql_name 'ValueStreamDashboardMetric'
         description 'Possible identifier types for a measurement'
 
+        CONTRIBUTOR_METRIC = 'contributors'
+
         value 'PROJECTS', 'Project count.', value: 'projects'
         value 'ISSUES', 'Issue count.', value: 'issues'
         value 'GROUPS', 'Group count.', value: 'groups'
         value 'MERGE_REQUESTS', 'Merge request count.', value: 'merge_requests'
         value 'PIPELINES', 'Pipeline count.', value: 'pipelines'
+
+        text = 'Contributor count. EXPERIMENTAL: Only available on the SaaS ' \
+               'version of GitLab when the ClickHouse database backend is enabled.'
+        value 'CONTRIBUTORS', value: CONTRIBUTOR_METRIC, description: text
       end
     end
   end
