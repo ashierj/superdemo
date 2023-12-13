@@ -3617,7 +3617,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   describe '#ci_cancellation_restriction' do
     it 'returns the initalized cancellation restrication object' do
       expect(project.ci_cancellation_restriction.class).to be Ci::ProjectCancellationRestriction
-      expect(project.ci_cancellation_restriction).to respond_to(:enabled?)
+      expect(project.ci_cancellation_restriction).to respond_to(:feature_available?)
     end
   end
 

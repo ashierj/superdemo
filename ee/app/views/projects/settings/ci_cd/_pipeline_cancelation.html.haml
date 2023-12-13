@@ -1,4 +1,4 @@
-- return unless @project&.ci_cancellation_restriction&.enabled?
+- return unless @project&.ci_cancellation_restriction&.feature_available?
 
 - form = local_assigns.fetch(:form)
 
