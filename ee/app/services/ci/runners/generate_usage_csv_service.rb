@@ -2,11 +2,10 @@
 
 module Ci
   module Runners
-    # Exports the runner usage for a given period (based on ClickHouse's ci_used_minutes_mv view)
+    # Generates a CSV report containing the runner usage for a given period
+    #   (based on ClickHouse's ci_used_minutes_mv view)
     #
-    class ExportUsageCsvService
-      include ::Audit::Changes
-
+    class GenerateUsageCsvService
       attr_reader :project_ids, :runner_type, :from_time, :to_time
 
       REPORT_ENTRY_LIMIT = 500 # Max number of projects listed in report
@@ -25,14 +24,12 @@ module Ci
       end
 
       def execute
-        return db_not_configured unless ClickHouse::Client.configuration.database_configured?(:main)
+        return db_not_configured unless ClickHouse::Client.database_configured?(:main)
         return insufficient_permissions unless Ability.allowed?(@current_user, :read_runner_usage)
 
         result = ClickHouse::Client.select(clickhouse_query, :main)
         csv_builder = CsvBuilder::SingleBatch.new(replace_with_project_paths(result), header_to_value_hash)
         csv_data = csv_builder.render(ExportCsv::BaseService::TARGET_FILESIZE)
-
-        log_audit_event
 
         ServiceResponse.success(payload: { csv_data: csv_data, status: csv_builder.status })
       rescue StandardError => e
@@ -111,19 +108,6 @@ module Ci
           row['total_duration_human_readable'] =
             ActiveSupport::Duration.build(row['total_duration_in_mins'] * 60).inspect
         end
-      end
-
-      def log_audit_event
-        audit_context = {
-          name: 'ci_runner_usage_export',
-          author: @current_user || ::Gitlab::Audit::UnauthenticatedAuthor.new,
-          scope: Gitlab::Audit::InstanceScope.new,
-          target: Gitlab::Audit::InstanceScope.new,
-          message: 'Generated CI runner usage report',
-          additional_details: placeholders.compact
-        }
-
-        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end
