@@ -10,7 +10,9 @@ module Resolvers
         name_desc: { sort_by: 'name', sort: 'desc' },
         name_asc: { sort_by: 'name', sort: 'asc' },
         packager_desc: { sort_by: 'packager', sort: 'desc' },
-        packager_asc: { sort_by: 'packager', sort: 'asc' }
+        packager_asc: { sort_by: 'packager', sort: 'asc' },
+        severity_desc: { sort_by: 'severity', sort: 'desc' },
+        severity_asc: { sort_by: 'severity', sort: 'asc' }
       }.freeze
 
       authorize :read_dependency

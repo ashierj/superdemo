@@ -138,7 +138,8 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
   end
 
   context 'with sort as an argument' do
-    let(:query) { pagination_query({ sort: :NAME_DESC }) }
+    let(:query) { pagination_query({ sort: sort_by }) }
+    let(:sort_by) { :NAME_DESC }
 
     it 'sorts by component name descending' do
       subject
@@ -147,6 +148,35 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
       names = result.pluck('name')
 
       expect(names).to eq(names.sort.reverse)
+    end
+
+    context 'with sorting by severity' do
+      let(:occurrence_critical) { create(:sbom_occurrence, project: project, highest_severity: :critical) }
+      let(:occurrence_low) { create(:sbom_occurrence, project: project, highest_severity: :low) }
+      let(:occurrence_null) { create(:sbom_occurrence, project: project) }
+      let!(:occurrences) { [occurrence_critical, occurrence_null, occurrence_low] }
+
+      let(:sort_by) { :SEVERITY_DESC }
+
+      it 'sorts by severity descending' do
+        subject
+
+        names = graphql_data_at(:project, :dependencies, :nodes).pluck('name')
+
+        expect(names).to eq([occurrence_critical.name, occurrence_low.name, occurrence_null.name])
+      end
+
+      context 'with sort equal to SEVERITY_ASC' do
+        let(:sort_by) { :SEVERITY_ASC }
+
+        it 'sorts by severity ascending' do
+          subject
+
+          names = graphql_data_at(:project, :dependencies, :nodes).pluck('name')
+
+          expect(names).to eq([occurrence_null.name, occurrence_low.name, occurrence_critical.name])
+        end
+      end
     end
   end
 

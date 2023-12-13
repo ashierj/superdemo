@@ -52,6 +52,8 @@ module Sbom
         @collection.order_by_package_name(sort_direction)
       when 'license'
         @collection.order_by_spdx_identifier(sort_direction)
+      when 'severity'
+        @collection.order_by_severity(sort_direction)
       else
         @collection.order_by_id
       end
