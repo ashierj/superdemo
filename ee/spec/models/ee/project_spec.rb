@@ -2924,7 +2924,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
         context 'when usage ping is enabled' do
           before do
-            stub_licensed_features(repository_size_limit: false)
+            allow(License).to receive(:current).and_return(nil)
             stub_application_setting(usage_ping_enabled: true)
           end
 

@@ -1,4 +1,4 @@
-- return unless current_user.can_admin_all_resources? && repo_size_limit_feature_available?
+- return unless current_user.can_admin_all_resources? && ::License.feature_available?(:repository_size_limit)
 
 - form = local_assigns.fetch(:form)
 - is_project = local_assigns.fetch(:type) == :project

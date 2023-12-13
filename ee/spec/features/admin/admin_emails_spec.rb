@@ -26,7 +26,7 @@ RSpec.describe 'Admin::Emails', :clean_gitlab_redis_shared_state do
 
   context 'when usage ping is enabled', feature_category: :service_ping do
     before do
-      stub_licensed_features(send_emails_from_admin_area: false)
+      allow(License).to receive(:current).and_return(nil)
       stub_application_setting(usage_ping_enabled: true)
     end
 
