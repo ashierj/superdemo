@@ -11,7 +11,7 @@ module PasswordComplexity
     private
 
     def complexity_matched?(password)
-      return true unless ::Gitlab::RegistrationFeatures::PasswordComplexity.feature_available?
+      return true unless ::License.feature_available?(:password_complexity)
 
       ::Password::ComplexityValidator.required_complexity_rules
         .all? do |regex, _error|
@@ -23,6 +23,6 @@ module PasswordComplexity
   private
 
   def validate_password_complexity?
-    password_required? && ::Gitlab::RegistrationFeatures::PasswordComplexity.feature_available?
+    password_required? && ::License.feature_available?(:password_complexity)
   end
 end

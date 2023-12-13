@@ -49,7 +49,7 @@ module EE
               )
             end
 
-            unless ::Gitlab::RegistrationFeatures::PasswordComplexity.feature_available?
+            unless ::License.feature_available?(:password_complexity)
               attrs = attrs.except(*EE::ApplicationSettingsHelper.password_complexity_attributes)
             end
 

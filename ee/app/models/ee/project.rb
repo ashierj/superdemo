@@ -10,7 +10,6 @@ module EE
     extend ::Gitlab::Utils::Override
     extend ::Gitlab::Cache::RequestCache
     include ::Gitlab::Utils::StrongMemoize
-    include ::Admin::RepoSizeLimitHelper
     include ::Ai::Model
     include FromUnion
 
@@ -879,7 +878,7 @@ module EE
             current_size_proc: -> { statistics.total_repository_size },
             limit: actual_repository_size_limit,
             namespace: namespace,
-            enabled: repo_size_limit_feature_available?
+            enabled: ::License.feature_available?(:repository_size_limit)
           )
         end
       end

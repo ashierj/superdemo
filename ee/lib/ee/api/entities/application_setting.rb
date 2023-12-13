@@ -14,7 +14,7 @@ module EE
             ::License.feature_available?(:admin_merge_request_approvers_rules)
           end)
           expose(*EE::ApplicationSettingsHelper.password_complexity_attributes, if: ->(_instance, _options) do
-            ::Gitlab::RegistrationFeatures::PasswordComplexity.feature_available?
+            ::License.feature_available?(:password_complexity)
           end)
           expose :email_additional_text, if: ->(_instance, _opts) { ::License.feature_available?(:email_additional_text) }
           expose :file_template_project_id, if: ->(_instance, _opts) { ::License.feature_available?(:custom_file_templates) }
