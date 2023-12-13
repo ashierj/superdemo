@@ -7,7 +7,7 @@ module EE
       # zero if it's not taken.
       # rubocop: disable Gitlab/ModuleWithInstanceVariables
       def try_obtain_with_ttl
-        ::Gitlab::Redis::ClusterSharedState.with do |redis|
+        ::Gitlab::Redis::SharedState.with do |redis|
           output = redis.set(@redis_shared_state_key, @uuid, nx: true, ex: @timeout) && @uuid
 
           ttl = output ? 0 : redis.ttl(@redis_shared_state_key)
@@ -20,7 +20,7 @@ module EE
       # Returns true if the UUID for the key hasn't changed.
       # rubocop: disable Gitlab/ModuleWithInstanceVariables
       def same_uuid?
-        ::Gitlab::Redis::ClusterSharedState.with do |redis|
+        ::Gitlab::Redis::SharedState.with do |redis|
           redis.get(@redis_shared_state_key) == @uuid
         end
       end
