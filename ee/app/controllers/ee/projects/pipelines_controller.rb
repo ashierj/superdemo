@@ -15,6 +15,7 @@ module EE
           push_frontend_feature_flag(:dora_charts_forecast, project.namespace)
           push_frontend_feature_flag(:use_holt_winters_forecast_for_deployment_frequency, project)
           push_frontend_feature_flag(:new_pipeline_graph, project, type: :development)
+          push_frontend_feature_flag(:security_findings_finder_lateral_join, project, type: :development)
         end
 
         feature_category :software_composition_analysis, [:licenses]
