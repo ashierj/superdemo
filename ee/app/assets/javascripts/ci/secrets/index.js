@@ -2,10 +2,6 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { injectVueAppBreadcrumbs } from '~/lib/utils/breadcrumbs';
-import {
-  groupSecrets as mockGroupSecretsData,
-  projectSecrets as mockProjectSecretsData,
-} from 'ee_jest/ci/secrets/mock_data';
 import getGroupSecretsQuery from './graphql/queries/client/get_group_secrets.query.graphql';
 import getProjectSecretsQuery from './graphql/queries/client/get_project_secrets.query.graphql';
 import createRouter from './router';
@@ -13,6 +9,9 @@ import createRouter from './router';
 import GroupSecretsApp from './components/group_secrets_app.vue';
 import ProjectSecretsApp from './components/project_secrets_app.vue';
 import SecretsBreadcrumbs from './components/secrets_breadcrumbs.vue';
+
+const mockGroupSecretsData = [{ key: 'group_secret_1' }, { key: 'group_secret_2' }];
+const mockProjectSecretsData = [{ key: 'project_secret_1' }, { key: 'project_secret_2' }];
 
 Vue.use(VueApollo);
 
