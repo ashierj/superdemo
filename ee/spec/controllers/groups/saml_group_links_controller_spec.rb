@@ -84,6 +84,46 @@ RSpec.describe Groups::SamlGroupLinksController, feature_category: :system_acces
         it 'creates the group link' do
           expect { call_action }.to change { group.saml_group_links.count }.by(1)
         end
+
+        context 'when a member_role_id is provided', feature_category: :permissions do
+          let(:custom_roles_enabled) { true }
+          let_it_be(:member_role) { create(:member_role, namespace: group) }
+          let_it_be(:params) do
+            route_params.merge(saml_group_link: { access_level: ::Gitlab::Access::DEVELOPER, saml_group_name: saml_group_name, member_role_id: member_role.id })
+          end
+
+          before do
+            stub_licensed_features(group_saml: true, saml_group_sync: true, custom_roles: custom_roles_enabled)
+          end
+
+          it 'sets the member_role' do
+            call_action
+
+            expect(group.saml_group_links.last.member_role).to eq(member_role)
+          end
+
+          context 'when custom roles are not enabled' do
+            let(:custom_roles_enabled) { false }
+
+            it 'does not set the member_role' do
+              call_action
+
+              expect(group.saml_group_links.last.member_role).to eq(nil)
+            end
+          end
+
+          context 'when the `custom_roles_for_saml_group_links` feature flag is disabled' do
+            before do
+              stub_feature_flags(custom_roles_for_saml_group_links: false)
+            end
+
+            it 'does not set the member_role' do
+              call_action
+
+              expect(group.saml_group_links.last.member_role).to eq(nil)
+            end
+          end
+        end
       end
 
       context 'with missing parameters' do
