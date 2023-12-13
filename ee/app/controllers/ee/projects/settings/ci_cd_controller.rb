@@ -27,7 +27,7 @@ module EE
           attrs = %i[
             allow_pipeline_trigger_approve_deployment
           ]
-          attrs << :restrict_pipeline_cancellation_role if project&.ci_cancellation_restriction&.enabled?
+          attrs << :restrict_pipeline_cancellation_role if project&.ci_cancellation_restriction&.feature_available?
 
           super + attrs
         end

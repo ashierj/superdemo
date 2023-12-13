@@ -2,11 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::API::Entities::Project do
-  let(:project) { create(:project) }
+RSpec.describe ::EE::API::Entities::Project, feature_category: :shared do
+  let_it_be(:project) { create(:project) }
+
+  let(:options) { {} }
 
   let(:entity) do
-    ::API::Entities::Project.new(project)
+    ::API::Entities::Project.new(project, options)
   end
 
   subject { entity.as_json }
@@ -25,6 +27,48 @@ RSpec.describe ::EE::API::Entities::Project do
 
       it 'is empty array when project has no compliance framework' do
         expect(subject[:compliance_frameworks]).to eq([])
+      end
+    end
+  end
+
+  describe 'ci_restrict_pipeline_cancellation_role' do
+    let(:options) { { current_user: current_user } }
+
+    context 'when user has maintainer permission or above' do
+      let(:current_user) { project.owner }
+
+      context 'when available' do
+        before do
+          mock_available
+        end
+
+        it { expect(subject[:ci_restrict_pipeline_cancellation_role]).to eq 'developer' }
+      end
+
+      context 'when not available' do
+        it { expect(subject[:ci_restrict_pipeline_cancellation_role]).to be nil }
+      end
+    end
+
+    context 'when user permission is below maintainer' do
+      let(:current_user) { create(:user) }
+
+      context 'when available' do
+        before do
+          mock_available
+        end
+
+        it { expect(subject[:ci_restrict_pipeline_cancellation_role]).to be nil }
+      end
+
+      context 'when not available' do
+        it { expect(subject[:ci_restrict_pipeline_cancellation_role]).to be nil }
+      end
+    end
+
+    def mock_available
+      allow_next_instance_of(Ci::ProjectCancellationRestriction) do |cr|
+        allow(cr).to receive(:feature_available?).and_return(true)
       end
     end
   end

@@ -73,7 +73,7 @@ RSpec.describe Projects::Settings::CiCdController, feature_category: :continuous
         context 'when the feature is enabled' do
           before do
             allow_next_instance_of(Ci::ProjectCancellationRestriction) do |cr|
-              allow(cr).to receive(:enabled?).and_return(true)
+              allow(cr).to receive(:feature_available?).and_return(true)
             end
           end
 
@@ -91,7 +91,7 @@ RSpec.describe Projects::Settings::CiCdController, feature_category: :continuous
         context 'when the feature is disabled' do
           before do
             allow_next_instance_of(Ci::ProjectCancellationRestriction) do |cr|
-              allow(cr).to receive(:enabled?).and_return(false)
+              allow(cr).to receive(:feature_available?).and_return(false)
             end
           end
 

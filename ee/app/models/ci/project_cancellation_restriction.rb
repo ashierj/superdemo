@@ -12,23 +12,23 @@ module Ci
     end
 
     def maintainers_only_allowed?
-      return false unless enabled?
+      return false unless feature_available?
 
       @ci_settings.restrict_pipeline_cancellation_role_maintainer?
     end
 
     def no_one_allowed?
-      return false unless enabled?
+      return false unless feature_available?
 
       @ci_settings.restrict_pipeline_cancellation_role_no_one?
     end
 
-    def enabled?
+    def feature_available?
       return false unless @project
       return false unless @ci_settings
 
       @project.licensed_feature_available?(:ci_pipeline_cancellation_restrictions)
     end
-    strong_memoize_attr :enabled?
+    strong_memoize_attr :feature_available?
   end
 end

@@ -92,8 +92,8 @@ RSpec.describe Ci::ProjectCancellationRestriction, feature_category: :continuous
     end
   end
 
-  describe '#enabled?' do
-    subject { cancellation_restriction.enabled? }
+  describe '#feature_available?' do
+    subject { cancellation_restriction.feature_available? }
 
     context 'when no project' do
       let(:project) { nil }
