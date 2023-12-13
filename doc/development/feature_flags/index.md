@@ -63,7 +63,7 @@ When the feature implementation is delivered over multiple merge requests:
 1. When the feature is ready for production use, open a merge request to:
    - Update the documentation to describe the latest flag status.
    - Add a [changelog entry](#changelog).
-   - Remove the feature flag to enable the new behavior, or flip the feature flag to be **on by default** (only for `ops` and `beta` feature flags).
+   - Remove the feature flag to enable the new behavior, or flip the feature flag to be **enabled by default** (only for `ops` and `beta` feature flags).
 
 One might be tempted to think that feature flags will delay the release of a
 feature by at least one month (= one release). This is not the case. A feature

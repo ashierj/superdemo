@@ -5,14 +5,14 @@
 # Automatically stages the file and amends the previous commit if the `--amend`
 # argument is used.
 
-require 'optparse'
-require 'yaml'
-require 'json'
-require 'httparty'
 require 'fileutils'
-require 'uri'
+require 'httparty'
+require 'json'
+require 'optparse'
 require 'readline'
-require 'tempfile'
+require 'shellwords'
+require 'uri'
+require 'yaml'
 
 require_relative '../lib/feature/shared' unless defined?(Feature::Shared)
 require_relative '../lib/gitlab/popen'
@@ -176,28 +176,7 @@ class FeatureFlagOptionParser
       raise
     end
 
-    def read_group
-      $stdout.puts
-      $stdout.puts ">> Specify the group label to which the feature flag belongs, from the following list:\n#{group_list}"
-
-      loop do
-        group = Readline.readline('?> ', false)&.strip
-        group = group_labels[group.to_i - 1] unless group.to_i.zero?
-
-        if group_labels.include?(group)
-          $stderr.puts "You picked the group '#{group}'"
-          return group
-        else
-          $stderr.puts "The group label isn't in the above labels list"
-        end
-
-      end
-    end
-
     def read_type
-      # if there's only one type, do not ask, return
-      return TYPES.first.first if TYPES.one?
-
       $stdout.puts
       $stdout.puts ">> Specify the feature flag type:"
       $stdout.puts
@@ -210,11 +189,11 @@ class FeatureFlagOptionParser
       loop do
         type = Readline.readline('?> ', false)&.strip
         type = TYPES.keys[type.to_i - 1] unless type.to_i.zero?
-        type = type.to_sym
+        type = type&.to_sym
         type_def = TYPES[type]
 
         if type_def && !type_def[:deprecated]
-          $stderr.puts "You picked the type '#{type}'"
+          $stdout.puts "You picked the type '#{type}'"
           return type
         else
           $stderr.puts "Invalid type specified '#{type}'"
@@ -222,30 +201,30 @@ class FeatureFlagOptionParser
       end
     end
 
-    def read_feature_issue_url
+    def read_group
       $stdout.puts
-      $stdout.puts ">> URL of the original feature issue (enter to skip):"
+      $stdout.puts ">> Specify the group label to which the feature flag belongs, from the following list:\n#{group_list}"
 
       loop do
-        feature_issue_url = Readline.readline('?> ', false)&.strip
-        feature_issue_url = nil if feature_issue_url.empty?
-        return feature_issue_url if feature_issue_url.nil? || feature_issue_url.start_with?('https://')
+        group = Readline.readline('?> ', false)&.strip
+        group = group_labels[group.to_i - 1] unless group.to_i.zero?
 
-        $stderr.puts "URL needs to start with https://"
+        if group_labels.include?(group)
+          $stdout.puts "You picked the group '#{group}'"
+          return group
+        else
+          $stderr.puts "The group label isn't in the above labels list"
+        end
+
       end
     end
 
+    def read_feature_issue_url
+      read_url('URL of the original feature issue (enter to skip):')
+    end
+
     def read_introduced_by_url
-      $stdout.puts
-      $stdout.puts ">> URL of the MR introducing the feature flag (enter to skip and let Danger provide a suggestion directly in the MR):"
-
-      loop do
-        introduced_by_url = Readline.readline('?> ', false)&.strip
-        introduced_by_url = nil if introduced_by_url.empty?
-        return introduced_by_url if introduced_by_url.nil? || introduced_by_url.start_with?('https://')
-
-        $stderr.puts "URL needs to start with https://"
-      end
+      read_url('URL of the MR introducing the feature flag (enter to skip and let Danger provide a suggestion directly in the MR):')
     end
 
     def read_rollout_issue_url(options)
@@ -259,29 +238,23 @@ class FeatureFlagOptionParser
       template = rollout_issue_template
 
       if options.username
-        template.gsub!('GITLAB_USERNAME_OF_DRI', "@#{options.username}")
-        template.gsub!('/assign me', "/assign @#{options.username}")
+        template.gsub!('<gitlab-username-of-dri>', options.username)
+      else
+        # Assign to current user by default
+        template.gsub!('/assign @<gitlab-username-of-dri>', "/assign me")
       end
 
       template.gsub!('<feature-flag-name>', options.name)
       template.gsub!('<merge-request-url>', options.introduced_by_url) if options.introduced_by_url
       template.gsub!('<milestone>', options.milestone)
-      template.gsub!('MAIN-ISSUE-LINK', options.feature_issue_url) if options.feature_issue_url
-      template.gsub!('g_TEAM_NAME', group_name['slack_channel']) if group_name&.key?('slack_channel')
-      template.gsub!('~group::', %Q(~"#{options.group}"))
+      template.gsub!('<feature-issue-link>', options.feature_issue_url) if options.feature_issue_url
+      template.gsub!('<slack-channel-of-dri-team>', group_name['slack_channel']) if group_name&.key?('slack_channel')
+      template.gsub!('<group-label>', %Q(~"#{options.group}"))
 
       $stdout.puts
-
-      if copy_to_clipboard!(template)
-        $stdout.puts ">> Press any key and paste the issue content that we copied to your clipboard! 🚀"
-        Readline.readline('?> ', false)
-      else
-        $stdout.puts ">> Copy the following issue content, then press any key to open #{issue_new_url} and paste the issue content:"
-        $stdout.puts "\n=================================\n\n"
-        $stdout.puts template
-        $stdout.puts "\n=================================\n"
-        Readline.readline('?> ', false)
-      end
+      $stdout.puts ">> Press any key and paste the issue content that we copied to your clipboard! 🚀"
+      Readline.readline('?> ', false)
+      copy_to_clipboard!(template)
 
       if open_url!(issue_new_url) != 0
         $stdout.puts ">> Automatic opening of the new issue URL failed, so please visit #{issue_new_url} manually."
@@ -292,9 +265,7 @@ class FeatureFlagOptionParser
       loop do
         created_url = Readline.readline('?> ', false)&.strip
         created_url = nil if created_url.empty?
-        return created_url if created_url.nil? || created_url.start_with?('https://')
-
-        $stderr.puts "URL needs to start with https://"
+        return created_url if created_url.nil? || valid_url?(created_url)
       end
     end
 
@@ -307,9 +278,35 @@ class FeatureFlagOptionParser
       $stdout.puts
       $stdout.puts ">> Username of the feature flag DRI (enter to skip):"
 
-      username = Readline.readline('?> ', false)&.strip
+      loop do
+        username = Readline.readline('?> ', false)&.strip
+        return if username.empty?
+        return username if valid_url?("https://gitlab.com/#{username}")
+      end
+    end
 
-      username.empty? ? nil : username
+    def read_url(prompt)
+      $stdout.puts
+      $stdout.puts ">> #{prompt}"
+
+      loop do
+        url = Readline.readline('?> ', false)&.strip
+        url = nil if url.empty?
+        return url if url.nil? || valid_url?(url)
+      end
+    end
+
+    def valid_url?(url)
+      unless url.start_with?('https://')
+        $stderr.puts "URL needs to start with https://"
+        return false
+      end
+
+      response = HTTParty.head(url)
+
+      return true if response.success?
+
+      $stderr.puts "URL '#{url}' isn't valid!"
     end
 
     def open_url!(url)
@@ -319,13 +316,8 @@ class FeatureFlagOptionParser
     end
 
     def copy_to_clipboard!(text)
-      file = Tempfile.new('feature-flag-rollout-issue')
-      begin
-        file.write(text)
-        system(%Q(cat "#{file.path}" | #{copy_to_clipboard_command}))
-      ensure
-        file.close
-        file.unlink
+      IO.popen(copy_to_clipboard_command.shellsplit, 'w') do |pipe|
+        pipe.print(text)
       end
     end
 

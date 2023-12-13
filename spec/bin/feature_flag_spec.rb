@@ -124,50 +124,16 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
     end
 
     describe '.read_type' do
-      let(:type) { 'development' }
-
-      context 'when there is only a single type defined' do
-        before do
-          stub_const('FeatureFlagOptionParser::TYPES',
-            development: { description: 'short' }
-          )
-        end
-
-        it 'returns that type' do
-          expect(described_class.read_type).to eq(:development)
-        end
+      before do
+        stub_const('FeatureFlagOptionParser::TYPES',
+          development: { description: 'short' },
+          deprecated: { description: 'deprecated', deprecated: true },
+          licensed: { description: 'licensed' }
+        )
       end
 
-      context 'when there is deprecated feature flag type' do
-        before do
-          stub_const('FeatureFlagOptionParser::TYPES',
-            development: { description: 'short' },
-            deprecated: { description: 'deprecated', deprecated: true }
-          )
-        end
-
-        context 'and deprecated type is given' do
-          let(:type) { 'deprecated' }
-
-          it 'shows error message and retries' do
-            expect(Readline).to receive(:readline).and_return(type)
-            expect(Readline).to receive(:readline).and_raise('EOF')
-
-            expect do
-              expect { described_class.read_type }.to raise_error(/EOF/)
-            end.to output(/Specify the feature flag type/).to_stdout
-              .and output(/Invalid type specified/).to_stderr
-          end
-        end
-      end
-
-      context 'when there are many types defined' do
-        before do
-          stub_const('FeatureFlagOptionParser::TYPES',
-            development: { description: 'short' },
-            licensed: { description: 'licensed' }
-          )
-        end
+      context 'when valid type is given' do
+        let(:type) { 'development' }
 
         it 'reads type from stdin' do
           expect(Readline).to receive(:readline).and_return(type)
@@ -175,31 +141,77 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
             expect(described_class.read_type).to eq(:development)
           end.to output(/Specify the feature flag type/).to_stdout
         end
+      end
 
-        context 'when invalid type is given' do
-          let(:type) { 'invalid' }
+      context 'when valid index is given' do
+        it 'picks the type successfully' do
+          expect(Readline).to receive(:readline).and_return('3')
+          expect do
+            expect(described_class.read_type).to eq(:licensed)
+          end.to output(/Specify the feature flag type./).to_stdout
+        end
+      end
 
-          it 'shows error message and retries' do
-            expect(Readline).to receive(:readline).and_return(type)
-            expect(Readline).to receive(:readline).and_raise('EOF')
+      context 'when deprecated type is given' do
+        let(:type) { 'deprecated' }
 
-            expect do
-              expect { described_class.read_type }.to raise_error(/EOF/)
-            end.to output(/Specify the feature flag type/).to_stdout
-              .and output(/Invalid type specified/).to_stderr
-          end
+        it 'shows error message and retries' do
+          expect(Readline).to receive(:readline).and_return(type)
+          expect(Readline).to receive(:readline).and_raise('EOF')
+
+          expect do
+            expect { described_class.read_type }.to raise_error(/EOF/)
+          end.to output(/Specify the feature flag type/).to_stdout
+            .and output(/Invalid type specified/).to_stderr
+        end
+      end
+
+      context 'when invalid type is given' do
+        let(:type) { 'invalid' }
+
+        it 'shows error message and retries' do
+          expect(Readline).to receive(:readline).and_return(type)
+          expect(Readline).to receive(:readline).and_raise('EOF')
+
+          expect do
+            expect { described_class.read_type }.to raise_error(/EOF/)
+          end.to output(/Specify the feature flag type/).to_stdout
+            .and output(/Invalid type specified/).to_stderr
+        end
+      end
+
+      context 'when invalid index is given' do
+        it 'shows error message and retries' do
+          expect(Readline).to receive(:readline).and_return('12')
+          expect(Readline).to receive(:readline).and_raise('EOF')
+
+          expect do
+            expect { described_class.read_type }.to raise_error(/EOF/)
+          end.to output(/Specify the feature flag type/).to_stdout
+            .and output(/Invalid type specified/).to_stderr
         end
       end
     end
 
     describe '.read_group' do
-      let(:group) { 'group::geo' }
+      context 'when valid group is given' do
+        let(:group) { 'group::geo' }
 
-      it 'reads type from stdin' do
-        expect(Readline).to receive(:readline).and_return(group)
-        expect do
-          expect(described_class.read_group).to eq('group::geo')
-        end.to output(/Specify the group label to which the feature flag belongs, from the following list/).to_stdout
+        it 'reads group from stdin' do
+          expect(Readline).to receive(:readline).and_return(group)
+          expect do
+            expect(described_class.read_group).to eq('group::geo')
+          end.to output(/Specify the group label to which the feature flag belongs, from the following list/).to_stdout
+        end
+      end
+
+      context 'when valid index is given' do
+        it 'picks the group successfully' do
+          expect(Readline).to receive(:readline).and_return('1')
+          expect do
+            expect(described_class.read_group).to eq('group::geo')
+          end.to output(/Specify the group label to which the feature flag belongs, from the following list/).to_stdout
+        end
       end
 
       context 'with invalid group given' do
@@ -215,16 +227,47 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
             .and output(/The group label isn't in the above labels list/).to_stderr
         end
       end
+
+      context 'when invalid index is given' do
+        it 'shows error message and retries' do
+          expect(Readline).to receive(:readline).and_return('12')
+          expect(Readline).to receive(:readline).and_raise('EOF')
+
+          expect do
+            expect { described_class.read_group }.to raise_error(/EOF/)
+          end.to output(/Specify the group label to which the feature flag belongs, from the following list/).to_stdout
+            .and output(/The group label isn't in the above labels list/).to_stderr
+        end
+      end
     end
 
-    describe '.read_introduced_by_url' do
-      let(:url) { 'https://merge-request' }
+    shared_examples 'read_url' do |method, prompt|
+      context 'with valid URL given' do
+        let(:url) { 'https://merge-request' }
 
-      it 'reads type from stdin' do
-        expect(Readline).to receive(:readline).and_return(url)
-        expect do
-          expect(described_class.read_introduced_by_url).to eq('https://merge-request')
-        end.to output(/URL of the MR introducing the feature flag/).to_stdout
+        it 'reads URL from stdin' do
+          expect(Readline).to receive(:readline).and_return(url)
+          expect(HTTParty).to receive(:head).with(url).and_return(instance_double(HTTParty::Response, success?: true))
+
+          expect do
+            expect(described_class.public_send(method)).to eq('https://merge-request')
+          end.to output(/#{prompt}/).to_stdout
+        end
+      end
+
+      context 'with invalid URL given' do
+        let(:url) { 'https://invalid' }
+
+        it 'shows error message and retries' do
+          expect(Readline).to receive(:readline).and_return(url)
+          expect(HTTParty).to receive(:head).with(url).and_return(instance_double(HTTParty::Response, success?: false))
+          expect(Readline).to receive(:readline).and_raise('EOF')
+
+          expect do
+            expect { described_class.public_send(method) }.to raise_error(/EOF/)
+          end.to output(/#{prompt}/).to_stdout
+            .and output(/URL '#{url}' isn't valid/).to_stderr
+        end
       end
 
       context 'with empty URL given' do
@@ -232,25 +275,34 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
 
         it 'skips entry' do
           expect(Readline).to receive(:readline).and_return(url)
+
           expect do
-            expect(described_class.read_introduced_by_url).to be_nil
-          end.to output(/URL of the MR introducing the feature flag/).to_stdout
+            expect(described_class.public_send(method)).to be_nil
+          end.to output(/#{prompt}/).to_stdout
         end
       end
 
-      context 'with invalid URL given' do
-        let(:url) { 'invalid' }
+      context 'with a non-URL given' do
+        let(:url) { 'malformed' }
 
         it 'shows error message and retries' do
           expect(Readline).to receive(:readline).and_return(url)
           expect(Readline).to receive(:readline).and_raise('EOF')
 
           expect do
-            expect { described_class.read_introduced_by_url }.to raise_error(/EOF/)
-          end.to output(/URL of the MR introducing the feature flag/).to_stdout
+            expect { described_class.public_send(method) }.to raise_error(/EOF/)
+          end.to output(/#{prompt}/).to_stdout
             .and output(/URL needs to start with/).to_stderr
         end
       end
+    end
+
+    describe '.read_feature_issue_url' do
+      it_behaves_like 'read_url', :read_feature_issue_url, 'URL of the original feature issue'
+    end
+
+    describe '.read_introduced_by_url' do
+      it_behaves_like 'read_url', :read_introduced_by_url, 'URL of the MR introducing the feature flag'
     end
 
     describe '.read_rollout_issue_url' do
@@ -266,27 +318,49 @@ RSpec.describe 'bin/feature-flag', feature_category: :feature_flags do
         })
       end
 
-      let(:rollout_issue_url) { 'https://rollout_issue_url' }
+      context 'with valid URL given' do
+        let(:url) { 'https://rollout_issue_url' }
 
-      it 'reads type from stdin' do
-        expect(described_class).to receive(:copy_to_clipboard!).and_return(true)
-        expect(Readline).to receive(:readline).and_return('').ordered # enter to open the new issue url
-        expect(described_class).to receive(:open_url!).and_return(true)
-        expect(Readline).to receive(:readline).and_return(rollout_issue_url).ordered
-        expect do
-          expect(described_class.read_rollout_issue_url(options)).to eq(rollout_issue_url)
-        end.to output(/URL of the rollout issue/).to_stdout
+        it 'reads type from stdin' do
+          expect(described_class).to receive(:copy_to_clipboard!).and_return(true)
+          expect(Readline).to receive(:readline).and_return('') # enter to open the new issue url
+          expect(described_class).to receive(:open_url!).and_return(true)
+          expect(Readline).to receive(:readline).and_return(url)
+          expect(HTTParty).to receive(:head).with(url).and_return(instance_double(HTTParty::Response, success?: true))
+
+          expect do
+            expect(described_class.read_rollout_issue_url(options)).to eq(url)
+          end.to output(/URL of the rollout issue/).to_stdout
+        end
       end
 
       context 'with invalid URL given' do
-        let(:url) { 'invalid' }
+        let(:url) { 'https://invalid' }
 
         it 'shows error message and retries' do
           expect(described_class).to receive(:copy_to_clipboard!).and_return(true)
-          expect(Readline).to receive(:readline).and_return('').ordered # enter to open the new issue url
+          expect(Readline).to receive(:readline).and_return('') # enter to open the new issue url
           expect(described_class).to receive(:open_url!).and_return(true)
-          expect(Readline).to receive(:readline).and_return(url).ordered
-          expect(Readline).to receive(:readline).and_raise('EOF').ordered
+          expect(Readline).to receive(:readline).and_return(url)
+          expect(HTTParty).to receive(:head).with(url).and_return(instance_double(HTTParty::Response, success?: false))
+          expect(Readline).to receive(:readline).and_raise('EOF')
+
+          expect do
+            expect { described_class.read_rollout_issue_url(options) }.to raise_error(/EOF/)
+          end.to output(/URL of the rollout issue/).to_stdout
+            .and output(/URL '#{url}' isn't valid/).to_stderr
+        end
+      end
+
+      context 'with a non-URL given' do
+        let(:url) { 'malformed' }
+
+        it 'shows error message and retries' do
+          expect(described_class).to receive(:copy_to_clipboard!).and_return(true)
+          expect(Readline).to receive(:readline).and_return('') # enter to open the new issue url
+          expect(described_class).to receive(:open_url!).and_return(true)
+          expect(Readline).to receive(:readline).and_return(url)
+          expect(Readline).to receive(:readline).and_raise('EOF')
 
           expect do
             expect { described_class.read_rollout_issue_url(options) }.to raise_error(/EOF/)
