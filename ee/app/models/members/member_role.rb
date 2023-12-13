@@ -2,50 +2,7 @@
 
 class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
-  ALL_CUSTOMIZABLE_PERMISSIONS = {
-    admin_group_member: {
-      description: 'Allows admin access to group members.'
-    },
-    admin_merge_request: {
-      description: 'Allows admin access to the merge requests.'
-    },
-    admin_vulnerability: {
-      description: 'Allows admin access to the vulnerability reports.',
-      requirement: :read_vulnerability
-    },
-    read_code: {
-      description: 'Allows read-only access to the source code.'
-    },
-    read_dependency: {
-      description: 'Allows read-only access to the dependencies.'
-    },
-    read_vulnerability: {
-      description: 'Allows read-only access to the vulnerability reports.'
-    },
-    manage_project_access_tokens: {
-      description: 'Allows manage access to the project access tokens'
-    },
-    archive_project: {
-      description: 'Allows to archive projects'
-    }
-  }.freeze
-  ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS = [
-    :read_code,
-    :read_dependency,
-    :read_vulnerability,
-    :admin_merge_request,
-    :admin_vulnerability,
-    :manage_project_access_tokens,
-    :archive_project
-  ].freeze
-  ALL_CUSTOMIZABLE_GROUP_PERMISSIONS = [
-    :read_dependency,
-    :read_vulnerability,
-    :admin_vulnerability,
-    :admin_group_member
-  ].freeze
 
-  CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT = [:read_code].freeze
   NON_PERMISSION_COLUMNS = [
     :base_access_level,
     :created_at,
@@ -106,12 +63,28 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
 
   class << self
     def elevating_permissions
-      ALL_CUSTOMIZABLE_PERMISSIONS.keys - CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT
+      all_customizable_permissions.keys - customizable_permissions_exempt_from_consuming_seat
+    end
+
+    def all_customizable_permissions
+      Gitlab::CustomRoles::Definition.all
+    end
+
+    def all_customizable_project_permissions
+      MemberRole.all_customizable_permissions.select { |_k, v| v[:project_ability] }.keys
+    end
+
+    def all_customizable_group_permissions
+      MemberRole.all_customizable_permissions.select { |_k, v| v[:group_ability] }.keys
+    end
+
+    def customizable_permissions_exempt_from_consuming_seat
+      MemberRole.all_customizable_permissions.select { |_k, v| v[:skip_seat_consumption] }.keys
     end
   end
 
   def enabled_permissions
-    MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.keys.filter { |perm| attributes[perm.to_s] }
+    MemberRole.all_customizable_permissions.keys.filter { |perm| attributes[perm.to_s] }
   end
 
   private
@@ -142,7 +115,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   end
 
   def validate_requirements
-    ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission, params|
+    self.class.all_customizable_permissions.each do |permission, params|
       requirement = params[:requirement]
 
       next unless self[permission] # skipping permissions not set for the object

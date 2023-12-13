@@ -7,6 +7,6 @@ RSpec.describe GitlabSchema.types['MemberRolePermission'], feature_category: :sy
 
   it 'exposes all the existing custom permissions' do
     expect(described_class.values.keys)
-      .to match_array(::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.keys.map(&:to_s).map(&:upcase))
+      .to match_array(::MemberRole.all_customizable_permissions.keys.map(&:to_s).map(&:upcase))
   end
 end

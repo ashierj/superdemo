@@ -11,7 +11,7 @@ RSpec.describe 'creating member role', feature_category: :system_access do
   let(:name) { 'member role name' }
   let(:permissions) do
     values = {}
-    MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission, _options|
+    MemberRole.all_customizable_permissions.each do |permission, _options|
       values[permission] = true
     end
 
@@ -83,7 +83,7 @@ RSpec.describe 'creating member role', feature_category: :system_access do
           expect(graphql_errors).to be_nil
           expect(create_member_role['memberRole']['readVulnerability']).to eq(true)
           expect(create_member_role['memberRole']['enabledPermissions'])
-            .to match_array(MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.keys.map(&:to_s).map(&:upcase))
+            .to match_array(MemberRole.all_customizable_permissions.keys.map(&:to_s).map(&:upcase))
         end
 
         it 'creates the member role' do

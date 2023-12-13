@@ -22,7 +22,7 @@ RSpec.describe 'Query.member_role_permissions', feature_category: :system_access
   end
 
   before do
-    stub_const('MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS',
+    allow(MemberRole).to receive(:all_customizable_permissions).and_return(
       {
         admin_ability_one: {
           description: 'Allows admin access to do something.',
@@ -39,10 +39,10 @@ RSpec.describe 'Query.member_role_permissions', feature_category: :system_access
         }
       }
     )
-    stub_const('::MemberRole::ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS',
+    allow(MemberRole).to receive(:all_customizable_project_permissions).and_return(
       [:admin_ability_one, :read_ability_two]
     )
-    stub_const('::MemberRole::ALL_CUSTOMIZABLE_GROUP_PERMISSIONS',
+    allow(MemberRole).to receive(:all_customizable_group_permissions).and_return(
       [:admin_ability_two, :read_ability_two]
     )
 

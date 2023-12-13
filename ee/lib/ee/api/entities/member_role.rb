@@ -15,7 +15,7 @@ module EE
           values: ::MemberRole::LEVELS
         }
 
-        ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each_key do |permission_name|
+        ::MemberRole.all_customizable_permissions.each_key do |permission_name|
           expose permission_name, documentation: { type: 'boolean' }
         end
       end

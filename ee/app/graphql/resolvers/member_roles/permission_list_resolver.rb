@@ -6,7 +6,7 @@ module Resolvers
       type Types::MemberRoles::CustomizablePermissionType, null: true
 
       def resolve
-        MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.map do |permission, definition|
+        MemberRole.all_customizable_permissions.map do |permission, definition|
           definition[:requirement] = definition[:requirement]&.to_s&.upcase
           permission = permission.to_s.upcase
 
