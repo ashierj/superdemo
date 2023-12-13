@@ -109,6 +109,57 @@ describe('EE inlineFindingsGutterIconDropdown', () => {
         await itemElements.at(1).trigger('click');
         expect(mockSetDrawer).toHaveBeenCalledTimes(2);
       });
+
+      it('calls setDrawer action with correct allLineFindings and index when an item action is triggered', async () => {
+        createComponent({
+          filePath,
+          codeQuality: singularCodeQualityFinding,
+          sast: singularSastFinding,
+        });
+
+        const itemElements = findDropdownItems();
+        await itemElements.at(0).trigger('click');
+        const firstCallFirstArg = mockSetDrawer.mock.calls[0][1];
+
+        expect(firstCallFirstArg).toEqual({
+          findings: [
+            {
+              ...singularCodeQualityFinding[0],
+              action: expect.any(Function),
+              class: 'gl-text-orange-300',
+              name: 'severity-low',
+            },
+            {
+              ...singularSastFinding[0],
+              action: expect.any(Function),
+              class: 'gl-text-orange-300',
+              name: 'severity-low',
+            },
+          ],
+          index: 0,
+        });
+
+        await itemElements.at(1).trigger('click');
+        const secondCall = mockSetDrawer.mock.calls[1][1];
+
+        expect(secondCall).toEqual({
+          findings: [
+            {
+              ...singularCodeQualityFinding[0],
+              action: expect.any(Function),
+              class: 'gl-text-orange-300',
+              name: 'severity-low',
+            },
+            {
+              ...singularSastFinding[0],
+              action: expect.any(Function),
+              class: 'gl-text-orange-300',
+              name: 'severity-low',
+            },
+          ],
+          index: 1,
+        });
+      });
     });
 
     it('sets "isHoveringFirstIcon" to true when mouse enters the first icon', async () => {
