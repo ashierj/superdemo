@@ -3,11 +3,9 @@
 class AddSchemaVersionToMergeRequest < Elastic::Migration
   include Elastic::MigrationUpdateMappingsHelper
 
-  private
+  DOCUMENT_TYPE = MergeRequest
 
-  def index_name
-    ::Elastic::Latest::MergeRequestConfig.index_name
-  end
+  private
 
   def new_mappings
     {

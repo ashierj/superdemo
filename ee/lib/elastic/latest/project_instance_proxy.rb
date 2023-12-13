@@ -11,7 +11,7 @@ module Elastic
         repository_access_level
       ].freeze
 
-      def as_indexed_json(options = {})
+      def as_indexed_json(_options = {})
         # We don't use as_json(only: ...) because it calls all virtual and serialized attributes
         # https://gitlab.com/gitlab-org/gitlab/issues/349
         data = {}

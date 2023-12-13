@@ -31,6 +31,8 @@ module Elastic
     private
 
     def index_name
+      return self.class::DOCUMENT_TYPE.__elasticsearch__.index_name if self.class.const_defined?(:DOCUMENT_TYPE)
+
       raise NotImplementedError
     end
 

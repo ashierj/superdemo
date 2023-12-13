@@ -3,11 +3,9 @@
 class AddArchivedToIssues < Elastic::Migration
   include Elastic::MigrationUpdateMappingsHelper
 
-  private
+  DOCUMENT_TYPE = Issue
 
-  def index_name
-    Issue.__elasticsearch__.index_name
-  end
+  private
 
   def new_mappings
     {

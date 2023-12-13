@@ -3,11 +3,9 @@
 class AddSchemaVersionToNote < Elastic::Migration
   include Elastic::MigrationUpdateMappingsHelper
 
-  private
+  DOCUMENT_TYPE = Note
 
-  def index_name
-    ::Elastic::Latest::NoteConfig.index_name
-  end
+  private
 
   def new_mappings
     {

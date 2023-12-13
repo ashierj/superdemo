@@ -3,11 +3,9 @@
 class AddCiCatalogToProject < Elastic::Migration
   include Elastic::MigrationUpdateMappingsHelper
 
-  private
+  DOCUMENT_TYPE = Project
 
-  def index_name
-    Project.__elasticsearch__.index_name
-  end
+  private
 
   def new_mappings
     {

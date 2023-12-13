@@ -2,11 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::ProjectInstanceProxy, feature_category: :global_search do
-  include ElasticsearchHelpers
+RSpec.describe Elastic::Latest::ProjectInstanceProxy, :elastic_helpers, feature_category: :global_search do
   let_it_be(:project) { create(:project) }
 
-  subject { described_class.new(project) }
+  let(:schema_version) { 2306 }
+
+  subject(:proxy) { described_class.new(project) }
 
   describe 'when migrate_projects_to_separate_index migration is not completed' do
     before do
@@ -17,7 +18,7 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, feature_category: :global_
 
     describe '#as_indexed_json' do
       it 'serializes project as hash' do
-        result = subject.as_indexed_json.with_indifferent_access
+        result = proxy.as_indexed_json.with_indifferent_access
 
         expect(result).to include(
           id: project.id,
@@ -44,7 +45,7 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, feature_category: :global_
         end
 
         it 'sets all tracked feature access levels to PRIVATE' do
-          result = subject.as_indexed_json.with_indifferent_access
+          result = proxy.as_indexed_json.with_indifferent_access
 
           Elastic::Latest::ProjectInstanceProxy::TRACKED_FEATURE_SETTINGS.each do |feature|
             expect(result).to include(feature => ProjectFeature::PRIVATE) # rubocop:disable GitlabSecurity/PublicSend
@@ -63,7 +64,7 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, feature_category: :global_
 
     describe '#as_indexed_json' do
       it 'serializes project as hash' do
-        result = subject.as_indexed_json.with_indifferent_access
+        result = proxy.as_indexed_json.with_indifferent_access
 
         expect(result).to include(
           id: project.id,
@@ -80,13 +81,13 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, feature_category: :global_
           traversal_ids: project.elastic_namespace_ancestry,
           type: 'project',
           visibility_level: project.visibility_level,
-          schema_version: 23_06,
+          schema_version: schema_version,
           ci_catalog: project.catalog_resource.present?
         )
       end
 
       it 'contains the expected mappings' do
-        result = subject.as_indexed_json.with_indifferent_access.keys
+        result = proxy.as_indexed_json.with_indifferent_access.keys
         project_proxy = Elastic::Latest::ApplicationClassProxy.new(Project, use_separate_indices: true)
         # readme_content is not populated by as_indexed_json
         expected_keys = project_proxy.mappings.to_hash[:properties].keys.map(&:to_s) - ['readme_content']
