@@ -112,7 +112,11 @@ module Gitlab
 
           logger.info_or_debug(user, message: "Received response from Vertex", response: response)
 
-          track_token_usage(response)
+          if response.present?
+            track_token_usage(response)
+          else
+            logger.error(message: "Empty response from Vertex")
+          end
 
           response
         end

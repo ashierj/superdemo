@@ -339,6 +339,18 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
 
         it_behaves_like 'measured Llm request with error', Gitlab::Llm::Concerns::ExponentialBackoff::RateLimitError
       end
+
+      context 'when response is empty' do
+        before do
+          stub_request(:post, url).to_return(
+            status: http_status, body: nil, headers: response_headers
+          )
+        end
+
+        it 'does not fail' do
+          subject # rubocop: disable RSpec/NamedSubject -- We cannot name it as it is used in shared context above
+        end
+      end
     end
   end
 end
