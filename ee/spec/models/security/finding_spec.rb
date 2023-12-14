@@ -262,27 +262,49 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
 
   describe '.fix_available' do
     let_it_be(:finding_without_data) { create(:security_finding) }
-    let_it_be(:finding_1) { create(:security_finding, :with_finding_data) }
-    let_it_be(:finding_2) { create(:security_finding, :with_finding_data, remediation_byte_offsets: []) }
+    let_it_be(:finding_with_solution) { create(:security_finding, :with_finding_data) }
+    let_it_be(:finding_without_solution) { create(:security_finding, :with_finding_data, solution: '') }
+    let_it_be(:finding_without_remediation_with_solution) {
+      create(:security_finding, :with_finding_data, remediation_byte_offsets: [])
+    }
+
+    let_it_be(:finding_without_remediation_without_solution) {
+      create(:security_finding, :with_finding_data, remediation_byte_offsets: [], solution: '')
+    }
 
     subject { described_class.fix_available }
 
-    it { is_expected.to contain_exactly(finding_1) }
+    it {
+      is_expected.to contain_exactly(
+        finding_with_solution, finding_without_solution, finding_without_remediation_with_solution
+      )
+    }
   end
 
   describe '.no_fix_available' do
-    let_it_be(:finding_1) do
-      create(:security_finding, :with_finding_data, remediation_byte_offsets: [{ "end_byte" => 1, "start_byte" => 2 }])
+    let_it_be(:finding_with_remediation_without_solution) do
+      create(:security_finding, :with_finding_data,
+        solution: '', remediation_byte_offsets: [{ "end_byte" => 1, "start_byte" => 2 }]
+      )
     end
 
-    let_it_be(:finding_2) { create(:security_finding, :with_finding_data, remediation_byte_offsets: []) }
+    let_it_be(:finding_with_solution_without_remediation) {
+      create(:security_finding, :with_finding_data, remediation_byte_offsets: [])
+    }
+
+    let_it_be(:finding_without_remediation_without_solution) {
+      create(:security_finding, :with_finding_data, solution: '', remediation_byte_offsets: [])
+    }
+
     let_it_be(:finding_without_data) { create(:security_finding) }
 
     subject { described_class.no_fix_available }
 
-    it { is_expected.to include(finding_2, finding_without_data) }
+    it { is_expected.to include(finding_without_remediation_without_solution, finding_without_data) }
 
-    it { is_expected.not_to include(finding_1) }
+    it {
+      is_expected.not_to include(finding_with_remediation_without_solution, finding_with_solution_without_remediation)
+    }
   end
 
   describe '.count_by_scan_type' do
