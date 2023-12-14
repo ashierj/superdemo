@@ -29,7 +29,7 @@ module API
     params do
       requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
     end
-    resource :projects do
+    resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       helpers do
         params :push_rule_params do
           optional :deny_delete_tag, type: Boolean, desc: 'Deny deleting a tag', documentation: { example: true }

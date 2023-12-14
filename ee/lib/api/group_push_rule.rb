@@ -12,7 +12,7 @@ module API
       requires :id, type: String, desc: 'The ID or URL-encoded path of a group'
     end
 
-    resource :groups do
+    resource :groups, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       helpers do
         def check_group_push_rule_access!
           not_found! unless can?(current_user, :change_push_rules, user_group)
