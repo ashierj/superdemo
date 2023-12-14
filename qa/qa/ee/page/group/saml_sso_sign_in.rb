@@ -6,17 +6,17 @@ module QA
       module Group
         class SamlSSOSignIn < QA::Page::Base
           view 'ee/app/views/groups/sso/saml.html.haml' do
-            element :saml_sso_signin_button
+            element 'saml-sso-signin-button'
           end
 
           view 'ee/app/assets/javascripts/saml_sso/components/saml_authorize.vue' do
-            element :saml_sso_signin_button
+            element 'saml-sso-signin-button'
           end
 
           def click_sign_in
             Support::Retrier.retry_until do
-              click_element :saml_sso_signin_button
-              !has_element?(:saml_sso_signin_button, wait: 0)
+              click_element 'saml-sso-signin-button'
+              !has_element?('saml-sso-signin-button', wait: 0)
             end
           end
         end

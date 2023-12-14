@@ -16,33 +16,33 @@ module QA
                 prepend ::QA::Page::Settings::Common
 
                 view 'ee/app/views/groups/_custom_project_templates_setting.html.haml' do
-                  element :custom_project_templates_container
-                  element :save_changes_button
+                  element 'custom-project-templates-container'
+                  element 'save-changes-button'
                 end
 
                 view 'ee/app/assets/javascripts/pages/groups/edit/index.js' do
-                  element :ip_restriction_field
+                  element 'ip-restriction-field'
                 end
 
                 view 'ee/app/views/groups/_member_lock_setting.html.haml' do
-                  element :membership_lock_checkbox
+                  element 'membership-lock-checkbox'
                 end
 
                 view 'ee/app/views/groups/settings/_prevent_forking.html.haml' do
-                  element :prevent_forking_outside_group_checkbox
+                  element 'prevent-forking-outside-group-checkbox'
                 end
 
                 view 'ee/app/views/shared/_repository_size_limit_setting.html.haml' do
-                  element :repository_size_limit_field
+                  element 'repository-size-limit-field'
                 end
 
                 view 'ee/app/views/groups/_templates_setting.html.haml' do
-                  element :file_template_repositories_container
-                  element :save_changes_button
+                  element 'file-template-repositories-container'
+                  element 'save-changes-button'
                 end
 
                 view 'ee/app/views/groups/_user_caps_setting.html.haml' do
-                  element :user_cap_limit_field
+                  element 'user-cap-limit-field'
                 end
 
                 view 'ee/app/views/groups/settings/_experimental_settings.haml' do
@@ -56,21 +56,21 @@ module QA
             end
 
             def current_custom_project_template
-              expand_content(:custom_project_templates_container)
+              expand_content('custom-project-templates-container')
 
-              within_element(:custom_project_templates_container) do
+              within_element('custom-project-templates-container') do
                 current_selection
               end
             end
 
             def choose_custom_project_template(path)
-              expand_content(:custom_project_templates_container)
+              expand_content('custom-project-templates-container')
 
-              within_element(:custom_project_templates_container) do
+              within_element('custom-project-templates-container') do
                 clear_current_selection_if_present
                 expand_select_list
                 search_and_select(path)
-                click_element(:save_changes_button)
+                click_element('save-changes-button')
               end
             end
 
@@ -80,9 +80,9 @@ module QA
 
               # GitLab UI Token Selector (https://gitlab-org.gitlab.io/gitlab-ui/?path=/story/base-token-selector--default)
               # `data-qa-*` can only be added to the wrapper so custom selector used to find token close buttons and text input
-              find_element(:ip_restriction_field).all('[data-testid="close-icon"]', minimum: 0).each(&:click)
+              find_element('ip-restriction-field').all('[data-testid="close-icon"]', minimum: 0).each(&:click)
 
-              ip_restriction_field_input = find_element(:ip_restriction_field).find('input[type="text"]')
+              ip_restriction_field_input = find_element('ip-restriction-field').find('input[type="text"]')
               ip_restriction_field_input.set ip_address
               ip_restriction_field_input.send_keys(:enter)
               click_element('save-permissions-changes-button')
@@ -96,13 +96,13 @@ module QA
 
             def set_membership_lock_enabled
               expand_content('permissions-settings')
-              check_element(:membership_lock_checkbox, true)
+              check_element('membership-lock-checkbox', true)
               click_element('save-permissions-changes-button')
             end
 
             def set_membership_lock_disabled
               expand_content('permissions-settings')
-              uncheck_element(:membership_lock_checkbox, true)
+              uncheck_element('membership-lock-checkbox', true)
               click_element('save-permissions-changes-button')
             end
 
@@ -115,18 +115,18 @@ module QA
 
             def set_prevent_forking_outside_group_enabled
               expand_content('permissions-settings')
-              check_element(:prevent_forking_outside_group_checkbox, true)
+              check_element('prevent-forking-outside-group-checkbox', true)
               click_element('save-permissions-changes-button')
             end
 
             def set_prevent_forking_outside_group_disabled
               expand_content('permissions-settings')
-              uncheck_element(:prevent_forking_outside_group_checkbox, true)
+              uncheck_element('prevent-forking-outside-group-checkbox', true)
               click_element('save-permissions-changes-button')
             end
 
             def set_repository_size_limit(limit)
-              find_element(:repository_size_limit_field).set limit
+              find_element('repository-size-limit-field').set limit
             end
 
             # Set group's user cap limit if feature flag is enabled
@@ -138,7 +138,7 @@ module QA
                 max_attempts: 10, retry_on_exception: true, reload_page: page, sleep_interval: 2
               ) do
                 expand_content('permissions-settings')
-                find_element(:user_cap_limit_field, wait: 1).set limit
+                find_element('user-cap-limit-field', wait: 1).set limit
                 click_element('save-permissions-changes-button')
                 wait_for_requests
 
@@ -147,22 +147,22 @@ module QA
             end
 
             def current_file_template_repository
-              expand_content(:file_template_repositories_container)
+              expand_content('file-template-repositories-container')
 
-              within_element(:file_template_repositories_container) do
+              within_element('file-template-repositories-container') do
                 current_selection
               end
             end
 
             def choose_file_template_repository(path)
-              expand_content(:file_template_repositories_container)
+              expand_content('file-template-repositories-container')
 
-              within_element(:file_template_repositories_container) do
+              within_element('file-template-repositories-container') do
                 clear_current_selection_if_present
                 expand_select_list
 
                 search_and_select(path)
-                click_element(:save_changes_button)
+                click_element('save-changes-button')
               end
             end
           end

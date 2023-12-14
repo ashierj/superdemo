@@ -1,6 +1,6 @@
 - return unless @group.licensed_feature_available?(:custom_file_templates_for_namespace)
 
-%section.settings.no-animate#js-templates{ class: ('expanded' if expanded), data: { qa_selector: 'file_template_repositories_container' } }
+%section.settings.no-animate#js-templates{ class: ('expanded' if expanded), data: { testid: 'file-template-repositories-container' } }
   .settings-header
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Templates')
@@ -14,4 +14,4 @@
       = form_errors(@group)
       .js-vue-project-select{ data: { label: _('Select a template repository'), input_name: 'group[file_template_project_id]', input_id: 'group[file_template_project_id]', group_id: @group.id, with_shared: true.to_s, selected: @group.checked_file_template_project_id } }
       %p.gl-mt-n5= s_('Create common files more quickly, and standardize their format.')
-      = f.submit _('Save changes'), pajamas_button: true, data: { qa_selector: 'save_changes_button' }
+      = f.submit _('Save changes'), pajamas_button: true, data: { testid: 'save-changes-button' }

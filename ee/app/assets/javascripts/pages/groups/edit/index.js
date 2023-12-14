@@ -23,7 +23,7 @@ initAccessRestrictionField({
 initAccessRestrictionField({
   selector: '.js-ip-restriction',
   props: { placeholder: __('192.168.0.0/24 or 2001:0DB8:1234::/48') },
-  qaSelector: 'ip_restriction_field',
+  testid: 'ip-restriction-field',
   customValidator: validateRestrictedIpAddress,
 });
 

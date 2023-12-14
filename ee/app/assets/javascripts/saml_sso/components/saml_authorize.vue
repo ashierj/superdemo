@@ -53,7 +53,7 @@ export default {
       block
       variant="confirm"
       class="gl-mt-3"
-      data-qa-selector="saml_sso_signin_button"
+      data-testid="saml-sso-signin-button"
       :href="href"
       data-method="post"
       >{{ signInButtonText }}</gl-button
