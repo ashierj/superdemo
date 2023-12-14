@@ -18,10 +18,8 @@ RSpec.describe ::Search::Zoekt::ProjectTransferWorker, feature_category: :global
       context 'when zoekt is enabled' do
         before do
           stub_feature_flags(index_code_with_zoekt: true)
-          allow(::Zoekt::IndexedNamespace).to receive(:enabled_for_namespace?).with(old_namespace).and_return(
-            namespace_zoekt_enabled)
-          allow(::Zoekt::IndexedNamespace).to receive(:enabled_for_project?).with(project).and_return(
-            project_zoekt_enabled)
+          allow(::Search::Zoekt).to receive(:index?).with(old_namespace).and_return(namespace_zoekt_enabled)
+          allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)
         end
 
         context 'when moving the project from a non-indexed namespace to an indexed namespace' do

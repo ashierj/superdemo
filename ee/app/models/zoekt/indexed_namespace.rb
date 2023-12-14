@@ -18,6 +18,7 @@ module Zoekt
 
     scope :recent, -> { order(id: :desc) }
     scope :with_limit, ->(maximum) { limit(maximum) }
+    scope :search_enabled, -> { where(search: true) }
 
     after_commit :index, on: :create
     after_commit :delete_from_index, on: :destroy
@@ -30,34 +31,14 @@ module Zoekt
       find_or_create_by!(node: node, namespace: namespace)
     end
 
-    def self.enabled_for_project?(project)
-      for_project(project).exists?
-    end
-
-    def self.enabled_for_namespace?(namespace)
-      for_namespace(namespace).exists?
-    end
-
-    def self.search_enabled_for_project?(project)
-      for_project(project).where(search: true).exists?
-    end
-
-    def self.search_enabled_for_namespace?(namespace)
-      for_namespace(namespace).where(search: true).exists?
-    end
-
-    def self.for_project(project)
-      where(namespace: project.root_namespace)
-    end
-
     def self.for_namespace(namespace)
-      where(namespace: namespace.root_ancestor)
+      where(namespace: namespace)
     end
 
     private
 
     def only_root_namespaces_can_be_indexed
-      return unless namespace.parent_id.present?
+      return unless namespace.has_parent?
 
       errors.add(:base, 'Only root namespaces can be indexed')
     end

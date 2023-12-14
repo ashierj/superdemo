@@ -131,8 +131,8 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   end
 
   describe '#use_zoekt?', feature_category: :global_search do
-    it 'delegates to ::Zoekt::IndexedNamespace' do
-      expect(::Zoekt::IndexedNamespace).to receive(:enabled_for_namespace?).with(namespace).and_return(true)
+    it 'delegates to ::Search::Zoekt' do
+      expect(::Search::Zoekt).to receive(:index?).with(namespace).and_return(true)
 
       expect(namespace.use_zoekt?).to eq(true)
     end

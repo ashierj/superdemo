@@ -22,11 +22,11 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
 
   describe '.for_namespace' do
     it 'returns associated node' do
-      expect(described_class.for_namespace(root_namespace_id: indexed_namespace1.id)).to eq(node)
+      expect(described_class.for_namespace(indexed_namespace1.id)).to contain_exactly(node)
     end
 
-    it 'returns nil when no node is associated' do
-      expect(described_class.for_namespace(root_namespace_id: unindexed_namespace.id)).to be_nil
+    it 'returns empty active record relation when no node is associated' do
+      expect(described_class.for_namespace(unindexed_namespace.id)).to be_empty
     end
   end
 

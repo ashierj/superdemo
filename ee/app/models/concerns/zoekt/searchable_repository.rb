@@ -10,7 +10,7 @@ module Zoekt
       end
 
       def update_zoekt_index!(force: false)
-        node_id = ::Zoekt::IndexedNamespace.find_by_namespace_id(project.root_ancestor.id).zoekt_node_id
+        node_id = ::Search::Zoekt.fetch_node_id(project.root_ancestor)
         ::Gitlab::Search::Zoekt::Client.index(project, node_id, force: force)
       end
 
