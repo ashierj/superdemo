@@ -156,8 +156,6 @@ describe('dropzone_input', () => {
       mock.teardown();
     });
 
-    beforeEach(() => {});
-
     it.each`
       responseType          | responseBody
       ${'application/json'} | ${JSON.stringify({ message: TEST_ERROR_MESSAGE })}
