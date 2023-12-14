@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     isItemFiltered() {
-      return Boolean(this.item?.eventTypeFilters?.length);
+      return Boolean(this.item?.eventTypeFilters?.length) || Boolean(this.item?.namespaceFilter);
     },
     isInstance() {
       return this.groupPath === 'instance';

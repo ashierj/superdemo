@@ -78,6 +78,18 @@ const makeInstanceHeader = () => ({
   active: false,
 });
 
+export const makeNamespaceFilter = () => ({
+  __typename: 'AuditEventStreamingHTTPNamespaceFilter',
+  id: uniqueId('gid://gitlab/AuditEvents::Streaming::HTTP::NamespaceFilter/'),
+  namespace: {
+    id: `namespace-id-${uniqueId()}`,
+    name: `namespace name`,
+    fullName: `namespace full name`,
+    fullPath: `namespace-full-path`,
+    __typename: `Namespace`,
+  },
+});
+
 export const mockExternalDestinations = [
   {
     __typename: 'ExternalAuditEventDestination',
@@ -89,6 +101,7 @@ export const mockExternalDestinations = [
       nodes: [],
     },
     eventTypeFilters: [],
+    namespaceFilter: null,
   },
   {
     __typename: 'ExternalAuditEventDestination',
@@ -100,6 +113,7 @@ export const mockExternalDestinations = [
     headers: {
       nodes: [makeHeader(), makeHeader()],
     },
+    namespaceFilter: makeNamespaceFilter(),
   },
 ];
 
@@ -250,6 +264,7 @@ export const destinationCreateMutationPopulator = (errors = []) => {
       headers: {
         nodes: [],
       },
+      namespaceFilter: null,
     },
   };
 
@@ -282,6 +297,7 @@ export const destinationUpdateMutationPopulator = (errors = []) => {
       headers: {
         nodes: [],
       },
+      namespaceFilter: null,
     },
   };
 
@@ -667,6 +683,52 @@ export const destinationInstanceFilterUpdateMutationPopulator = (
     auditEventsStreamingDestinationInstanceEventsAdd: {
       errors,
       eventTypeFilters,
+    },
+  },
+});
+
+export const createAllProjects = (count) => {
+  return Array(count)
+    .fill(null)
+    .map((_, id) => ({
+      value: `gitlab-org/project-${id}`,
+      text: `project ${id}`,
+      type: `Projects`,
+    }));
+};
+
+export const createAllGroups = (count) => {
+  return Array(count)
+    .fill(null)
+    .map((_, id) => ({
+      value: `gitlab-org/sub-group-${id}`,
+      text: `sub group ${id}`,
+      type: `Groups`,
+    }));
+};
+
+export const mockNamespaceFilter = (namespace) => {
+  return { namespace, type: 'project' };
+};
+export const mockAddNamespaceFilters = { namespace: 'gitlab-org/project-1', type: 'project' };
+export const mockRemoveNamespaceFilters = { namespace: '', type: 'project' };
+
+export const destinationNamespaceFilterRemoveMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsStreamingHttpNamespaceFiltersDelete: {
+      errors,
+    },
+  },
+});
+
+export const destinationNamespaceFilterAddMutationPopulator = (
+  errors = [],
+  namespaceFilter = null,
+) => ({
+  data: {
+    auditEventsStreamingHttpNamespaceFiltersAdd: {
+      errors,
+      namespaceFilter,
     },
   },
 });

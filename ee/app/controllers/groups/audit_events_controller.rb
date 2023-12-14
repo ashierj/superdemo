@@ -28,6 +28,14 @@ class Groups::AuditEventsController < Groups::ApplicationController
     @events = AuditEventSerializer.new.represent(events)
     @audit_event_definitions = Gitlab::Audit::Type::Definition.names_with_category
 
+    @all_projects = group.all_projects_except_soft_deleted.map do |project|
+      { value: project.full_path, text: project.name, type: "Projects" }
+    end
+
+    @all_groups = group.descendants.map do |group|
+      { value: group.full_path, text: group.name, type: "Groups" }
+    end
+
     Gitlab::Tracking.event(self.class.name, 'search_audit_event', user: current_user, namespace: group)
   end
 

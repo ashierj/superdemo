@@ -7013,6 +7013,9 @@ msgstr ""
 msgid "AuditStreams|Filter by audit event type"
 msgstr ""
 
+msgid "AuditStreams|Filter by groups or projects"
+msgstr ""
+
 msgid "AuditStreams|Google Cloud Logging"
 msgstr ""
 
@@ -7047,6 +7050,12 @@ msgid "AuditStreams|Secret Access Key"
 msgstr ""
 
 msgid "AuditStreams|Select events"
+msgstr ""
+
+msgid "AuditStreams|Select namespace"
+msgstr ""
+
+msgid "AuditStreams|Select projects"
 msgstr ""
 
 msgid "AuditStreams|Setup streaming for audit events"

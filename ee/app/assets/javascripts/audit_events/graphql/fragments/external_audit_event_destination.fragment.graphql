@@ -11,4 +11,13 @@ fragment ExternalAuditEventDestinationFragment on ExternalAuditEventDestination 
       ...AuditEventStreamingHeaderFragment
     }
   }
+  namespaceFilter {
+    id
+    namespace {
+      id
+      name
+      fullName
+      fullPath
+    }
+  }
 }

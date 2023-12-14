@@ -168,6 +168,41 @@ RSpec.describe Groups::AuditEventsController, feature_category: :audit_events do
 
         it_behaves_like 'a date range error is returned'
       end
+
+      context 'subgroups and projects' do
+        let_it_be(:subgroup1) { create(:group, :private, parent: group) }
+        let_it_be(:subgroup2) { create(:group, :private, parent: group) }
+        let_it_be(:other_group) { create(:group) }
+
+        let_it_be(:project1) { create(:project, :private, group: group) }
+        let_it_be(:project2) { create(:project, :private, group: subgroup1) }
+        let_it_be(:other_project) { create(:project, group: other_group) }
+
+        it 'sets list of all subgroups and projects' do
+          request
+
+          all_projects =
+            [project1, project2].map do |project|
+              {
+                value: project.full_path,
+                text: project.name,
+                type: 'Projects'
+              }
+            end
+
+          sub_groups =
+            [subgroup1, subgroup2].map do |group|
+              {
+                value: group.full_path,
+                text: group.name,
+                type: 'Groups'
+              }
+            end
+
+          expect(assigns(:all_projects)).to match_array(all_projects)
+          expect(assigns(:all_groups)).to match_array(sub_groups)
+        end
+      end
     end
 
     context 'when authorized owner' do
