@@ -21922,9 +21922,6 @@ msgstr ""
 msgid "Geo|secondary"
 msgstr ""
 
-msgid "Get a free instance review"
-msgstr ""
-
 msgid "Get a support subscription"
 msgstr ""
 
@@ -47079,9 +47076,6 @@ msgstr ""
 msgid "Submit as spam"
 msgstr ""
 
-msgid "Submit feedback"
-msgstr ""
-
 msgid "Submit feedback and approve these changes."
 msgstr ""
 
@@ -47724,9 +47718,6 @@ msgid "Switch branch"
 msgstr ""
 
 msgid "Switch branch/tag"
-msgstr ""
-
-msgid "Switch to GitLab Next"
 msgstr ""
 
 msgid "Switch to plain text editing"
@@ -53426,9 +53417,6 @@ msgid "VersionCheck|You are currently on version %{currentVersion}! We strongly 
 msgstr ""
 
 msgid "VersionCheck|You are currently on version %{currentVersion}! We strongly recommend upgrading your GitLab installation to one of the following versions immediately: %{latestStableVersions}."
-msgstr ""
-
-msgid "VersionCheck|Your GitLab Version"
 msgstr ""
 
 msgid "View File Metadata"
