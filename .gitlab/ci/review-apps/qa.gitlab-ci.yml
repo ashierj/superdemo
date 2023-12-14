@@ -43,7 +43,7 @@ include:
   after_script:
     - |
       echo "Sentry errors for the current review-app test run can be found via following url:"
-      echo "https://sentry.gitlab.net/gitlab/gitlab-review-apps/releases/$(echo "${CI_COMMIT_SHA}" | cut -c1-11)/all-events/."
+      echo "https://new-sentry.gitlab.net/organizations/gitlab/releases/$(echo "${CI_COMMIT_SHA}" | cut -c1-11)/?environment=review&issuesType=all&project=19"
   artifacts:
     paths:
       - qa/tmp
