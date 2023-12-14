@@ -119,7 +119,7 @@ module EE
         return if old_root_ancestor_id == group.root_ancestor.id
 
         group.all_projects.each do |project|
-          ::EE::Projects::RemovePaidFeaturesService.new(project).execute(new_parent_group, triggerer: group)
+          ::EE::Projects::RemovePaidFeaturesService.new(project).execute(new_parent_group)
         end
       end
     end
