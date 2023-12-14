@@ -21,6 +21,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   it { is_expected.to have_many(:member_roles) }
   it { is_expected.to have_many(:subscription_add_on_purchases).class_name('GitlabSubscriptions::AddOnPurchase') }
   it { is_expected.to have_one(:audit_event_http_namespace_filter) }
+  it { is_expected.to have_one(:audit_event_http_instance_namespace_filter) }
 
   it { is_expected.to delegate_method(:trial?).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:trial_ends_on).to(:gitlab_subscription) }

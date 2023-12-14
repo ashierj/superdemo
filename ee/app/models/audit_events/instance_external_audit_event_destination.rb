@@ -13,6 +13,10 @@ module AuditEvents
     has_many :headers, class_name: 'AuditEvents::Streaming::InstanceHeader'
     has_many :event_type_filters, class_name: 'AuditEvents::Streaming::InstanceEventTypeFilter'
 
+    has_one :namespace_filter,
+      class_name: 'AuditEvents::Streaming::HTTP::Instance::NamespaceFilter',
+      inverse_of: :instance_external_audit_event_destination
+
     validates :name, uniqueness: true
     validates :destination_url, uniqueness: true, length: { maximum: 255 }
 
