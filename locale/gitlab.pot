@@ -21429,6 +21429,9 @@ msgstr ""
 msgid "Generate site and private keys at"
 msgstr ""
 
+msgid "Generated files are collapsed by default. This behavior can be overriden via .gitattributes file if required."
+msgstr ""
+
 msgid "Generated with JSON data"
 msgstr ""
 
