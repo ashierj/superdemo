@@ -235,4 +235,8 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
 
     it_behaves_like 'unavailable when unlicensed'
   end
+
+  it_behaves_like 'value stream analytics flow metrics timeToMerge examples' do
+    it_behaves_like 'unavailable when unlicensed'
+  end
 end

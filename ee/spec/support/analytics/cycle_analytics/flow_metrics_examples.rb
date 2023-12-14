@@ -458,3 +458,77 @@ RSpec.shared_examples 'value stream analytics flow metrics issuesCompleted examp
     end
   end
 end
+
+RSpec.shared_examples 'value stream analytics flow metrics timeToMerge examples' do
+  let_it_be(:milestone) { create(:milestone, group: group) }
+  let_it_be(:label) { create(:group_label, group: group) }
+
+  let_it_be(:author) { create(:user) }
+
+  let_it_be(:merge_request1) do
+    create(:merge_request, :unique_branches, source_project: project1, author: author,
+      created_at: 17.days.ago).tap do |mr|
+      mr.metrics.update!(merged_at: 12.days.ago)
+    end
+  end
+
+  let_it_be(:merge_request2) do
+    create(:merge_request, :unique_branches, source_project: project1, created_at: 16.days.ago).tap do |issue|
+      issue.metrics.update!(merged_at: 13.days.ago)
+    end
+  end
+
+  before do
+    Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: MergeRequest).execute
+  end
+
+  let(:query) do
+    <<~QUERY
+      query($path: ID!, $authorUsername: String, $from: Time!, $to: Time!) {
+        #{context}(fullPath: $path) {
+          flowMetrics {
+            timeToMerge(authorUsername: $authorUsername, from: $from, to: $to) {
+              value
+              unit
+              identifier
+              title
+            }
+          }
+        }
+      }
+    QUERY
+  end
+
+  let(:variables) do
+    {
+      path: full_path,
+      from: 21.days.ago.iso8601,
+      to: 10.days.ago.iso8601
+    }
+  end
+
+  subject(:result) do
+    post_graphql(query, current_user: current_user, variables: variables)
+
+    graphql_data.dig(context.to_s, 'flowMetrics', 'timeToMerge')
+  end
+
+  it 'returns the correct value' do
+    expect(result).to eq({
+      'identifier' => 'time_to_merge',
+      'unit' => n_('day', 'days', 4),
+      'value' => 4,
+      'title' => _('Time to Merge')
+    })
+  end
+
+  context 'when author filter is given' do
+    before do
+      variables[:authorUsername] = author.username
+    end
+
+    it 'returns value only for the first MR' do
+      expect(result).to match(a_hash_including({ 'value' => 5 }))
+    end
+  end
+end

@@ -4,15 +4,15 @@
 module Resolvers
   module Analytics
     module CycleAnalytics
-      class LeadTimeResolver < BaseIssueStageResolver
-        METRIC_CLASS = Gitlab::Analytics::CycleAnalytics::Summary::LeadTime
+      class TimeToMergeResolver < BaseMergeRequestStageResolver
+        METRIC_CLASS = Gitlab::Analytics::CycleAnalytics::Summary::TimeToMerge
 
         private
 
         def formatted_data(metric)
           super.merge(
-            identifier: :lead_time,
-            title: _('Lead Time')
+            identifier: :time_to_merge,
+            title: _('Time to Merge')
           )
         end
       end

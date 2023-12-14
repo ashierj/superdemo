@@ -20466,6 +20466,24 @@ Returns [`ValueStreamAnalyticsMetric`](#valuestreamanalyticsmetric).
 | <a id="groupvaluestreamanalyticsflowmetricsleadtimeto"></a>`to` | [`Time!`](#time) | Timestamp marking the end date and time. |
 | <a id="groupvaluestreamanalyticsflowmetricsleadtimeweight"></a>`weight` | [`Int`](#int) | Weight applied to the issue. |
 
+##### `GroupValueStreamAnalyticsFlowMetrics.timeToMerge`
+
+Median time from merge request creation to merge request merged.
+
+Returns [`ValueStreamAnalyticsMetric`](#valuestreamanalyticsmetric).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupvaluestreamanalyticsflowmetricstimetomergeassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users assigned to the merge request. |
+| <a id="groupvaluestreamanalyticsflowmetricstimetomergeauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author of the merge request. |
+| <a id="groupvaluestreamanalyticsflowmetricstimetomergefrom"></a>`from` | [`Time!`](#time) | Timestamp marking the start date and time. |
+| <a id="groupvaluestreamanalyticsflowmetricstimetomergelabelnames"></a>`labelNames` | [`[String!]`](#string) | Labels applied to the merge request. |
+| <a id="groupvaluestreamanalyticsflowmetricstimetomergemilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Milestone applied to the merge request. |
+| <a id="groupvaluestreamanalyticsflowmetricstimetomergeprojectids"></a>`projectIds` | [`[ID!]`](#id) | Project IDs within the group hierarchy. |
+| <a id="groupvaluestreamanalyticsflowmetricstimetomergeto"></a>`to` | [`Time!`](#time) | Timestamp marking the end date and time. |
+
 ### `GroupWikiRepositoryRegistry`
 
 Represents the Geo sync and verification state of a group wiki repository.
@@ -25913,6 +25931,23 @@ Returns [`ValueStreamAnalyticsMetric`](#valuestreamanalyticsmetric).
 | <a id="projectvaluestreamanalyticsflowmetricsleadtimenot"></a>`not` | [`NegatedValueStreamAnalyticsIssueFilterInput`](#negatedvaluestreamanalyticsissuefilterinput) | Argument used for adding negated filters. |
 | <a id="projectvaluestreamanalyticsflowmetricsleadtimeto"></a>`to` | [`Time!`](#time) | Timestamp marking the end date and time. |
 | <a id="projectvaluestreamanalyticsflowmetricsleadtimeweight"></a>`weight` | [`Int`](#int) | Weight applied to the issue. |
+
+##### `ProjectValueStreamAnalyticsFlowMetrics.timeToMerge`
+
+Median time from merge request creation to merge request merged.
+
+Returns [`ValueStreamAnalyticsMetric`](#valuestreamanalyticsmetric).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectvaluestreamanalyticsflowmetricstimetomergeassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users assigned to the merge request. |
+| <a id="projectvaluestreamanalyticsflowmetricstimetomergeauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author of the merge request. |
+| <a id="projectvaluestreamanalyticsflowmetricstimetomergefrom"></a>`from` | [`Time!`](#time) | Timestamp marking the start date and time. |
+| <a id="projectvaluestreamanalyticsflowmetricstimetomergelabelnames"></a>`labelNames` | [`[String!]`](#string) | Labels applied to the merge request. |
+| <a id="projectvaluestreamanalyticsflowmetricstimetomergemilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Milestone applied to the merge request. |
+| <a id="projectvaluestreamanalyticsflowmetricstimetomergeto"></a>`to` | [`Time!`](#time) | Timestamp marking the end date and time. |
 
 ### `ProjectWikiRepositoryRegistry`
 
