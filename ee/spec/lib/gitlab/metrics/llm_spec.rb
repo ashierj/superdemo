@@ -24,6 +24,7 @@ RSpec.describe Gitlab::Metrics::Llm, feature_category: :ai_abstraction_layer do
 
   describe '#client_label' do
     it 'returns client label for known clients class' do
+      expect(described_class.client_label(Gitlab::Llm::AiGateway::Client)).to eq(:ai_gateway)
       expect(described_class.client_label(Gitlab::Llm::VertexAi::Client)).to eq(:vertex_ai)
       expect(described_class.client_label(Gitlab::Llm::Anthropic::Client)).to eq(:anthropic)
       expect(described_class.client_label(Gitlab::Llm::OpenAi::Client)).to eq(:open_ai)

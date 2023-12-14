@@ -13,7 +13,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   let(:resource) { issue }
   let(:expected_container) { group }
   let(:content) { 'Summarize issue' }
-  let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
+  let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::AiGateway) }
   let(:blob) { fake_blob(path: 'file.md') }
   let(:extra_resource) { { blob: blob } }
   let(:current_file) do
@@ -179,7 +179,7 @@ client_subscription_id: 'someid' }
 
   describe '#execute' do
     before do
-      allow(Gitlab::Llm::Chain::Requests::Anthropic).to receive(:new).and_return(ai_request)
+      allow(Gitlab::Llm::Chain::Requests::AiGateway).to receive(:new).and_return(ai_request)
       allow(context).to receive(:tools_used).and_return([Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor])
     end
 

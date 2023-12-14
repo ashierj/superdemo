@@ -17,6 +17,7 @@ module Gitlab
             RESPONSE_TYPE_TOOL = 'tool'
 
             PROVIDER_PROMPT_CLASSES = {
+              ai_gateway: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic,
               anthropic: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::VertexAi
             }.freeze

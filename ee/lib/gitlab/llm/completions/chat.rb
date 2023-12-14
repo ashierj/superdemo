@@ -30,11 +30,19 @@ module Gitlab
             current_user: user,
             container: resource.try(:resource_parent)&.root_ancestor,
             resource: resource,
-            ai_request: ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, tracking_context: tracking_context),
+            ai_request: ai_request,
             extra_resource: options.delete(:extra_resource) || {},
             request_id: prompt_message.request_id,
             current_file: options.delete(:current_file)
           )
+        end
+
+        def ai_request
+          if ::Feature.enabled?(:gitlab_duo_chat_requests_to_ai_gateway, user)
+            ::Gitlab::Llm::Chain::Requests::AiGateway.new(user, tracking_context: tracking_context)
+          else
+            ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, tracking_context: tracking_context)
+          end
         end
 
         def execute
