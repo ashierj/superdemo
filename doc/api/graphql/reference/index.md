@@ -30500,6 +30500,7 @@ Iteration ID wildcard values.
 | <a id="jobartifactfiletypemetrics_referee"></a>`METRICS_REFEREE` | METRICS REFEREE job artifact file type. |
 | <a id="jobartifactfiletypenetwork_referee"></a>`NETWORK_REFEREE` | NETWORK REFEREE job artifact file type. |
 | <a id="jobartifactfiletypeperformance"></a>`PERFORMANCE` | PERFORMANCE job artifact file type. |
+| <a id="jobartifactfiletyperepository_xray"></a>`REPOSITORY_XRAY` | REPOSITORY XRAY job artifact file type. |
 | <a id="jobartifactfiletyperequirements"></a>`REQUIREMENTS` | REQUIREMENTS job artifact file type. |
 | <a id="jobartifactfiletyperequirements_v2"></a>`REQUIREMENTS_V2` | REQUIREMENTS V2 job artifact file type. |
 | <a id="jobartifactfiletypesast"></a>`SAST` | SAST job artifact file type. |
