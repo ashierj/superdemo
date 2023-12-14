@@ -11966,9 +11966,6 @@ msgstr ""
 msgid "CodeSuggestionsGAAlert|Try GitLab Duo Code Suggestions today"
 msgstr ""
 
-msgid "CodeSuggestionsGAAlert|Try now"
-msgstr ""
-
 msgid "CodeSuggestionsSM|By enabling this feature, you agree to the %{terms_link_start}GitLab Testing Agreement%{link_end} and acknowledge that GitLab will send data from the instance, including personal data, to our %{ai_docs_link_start}AI providers%{link_end} to provide this feature."
 msgstr ""
 

@@ -12,9 +12,6 @@
       - c.with_body do
         = s_("CodeSuggestionsGAAlert|Quickly and securely author code by getting suggestions in your IDE while you type. Available in multiple languages, try Code Suggestions today.")
       - c.with_actions do
-        = render Pajamas::ButtonComponent.new(href: profile_preferences_path(anchor: 'code-suggestions-settings'), variant: :confirm,
-          button_options: { class: 'mr-2 js-close-and-follow-link' }) do
-          = s_('CodeSuggestionsGAAlert|Try now')
-
-        = render Pajamas::ButtonComponent.new(href: help_page_path('user/project/repository/code_suggestions/index'), target: '_blank') do
+        = render Pajamas::ButtonComponent.new(href: help_page_path('user/project/repository/code_suggestions/saas', anchor: 'use-code-suggestions'), variant: :confirm,
+          button_options: { class: 'js-close-and-follow-link' }) do
           = s_('CodeSuggestionsGAAlert|Learn more')
