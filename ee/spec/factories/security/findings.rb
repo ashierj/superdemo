@@ -15,6 +15,10 @@ FactoryBot.define do
     end
 
     transient do
+      solution { 'foo' }
+    end
+
+    transient do
       remediation_byte_offsets { [{ "end_byte" => 13602, "start_byte" => 12719 }] }
     end
 
@@ -23,7 +27,7 @@ FactoryBot.define do
         {
           name: 'Test finding',
           description: 'The cipher does not provide data integrity update 1',
-          solution: 'foo',
+          solution: solution,
           identifiers: [],
           links: [
             {

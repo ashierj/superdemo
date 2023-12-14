@@ -27,7 +27,7 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
 
   let_it_be(:fix_available_finding) { create(:security_finding, :with_finding_data, scan: dependency_scan) }
   let_it_be(:no_fix_available_finding) do
-    create(:security_finding, :with_finding_data, remediation_byte_offsets: [], scan: dependency_scan)
+    create(:security_finding, :with_finding_data, solution: '', remediation_byte_offsets: [], scan: dependency_scan)
   end
 
   before do

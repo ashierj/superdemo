@@ -122,12 +122,17 @@ module Security
       where("COALESCE((finding_data -> 'false_positive?')::boolean, FALSE) IS FALSE")
     end
     scope :fix_available, -> do
-      where("jsonb_array_length(finding_data -> 'remediation_byte_offsets')::bigint > 0")
+      where(
+        "jsonb_array_length(finding_data -> 'remediation_byte_offsets')::bigint > 0
+        OR COALESCE((finding_data->>'solution')::text, '') <> ''"
+      )
     end
+
     scope :no_fix_available, -> do
       where(
-        "finding_data -> 'remediation_byte_offsets' IS NULL
-        OR jsonb_array_length(finding_data -> 'remediation_byte_offsets')::bigint <= 0"
+        "(finding_data -> 'remediation_byte_offsets' IS NULL
+        OR jsonb_array_length(finding_data -> 'remediation_byte_offsets')::bigint <= 0)
+        AND COALESCE((finding_data->>'solution')::text, '') = ''"
       )
     end
 
