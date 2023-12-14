@@ -110,17 +110,6 @@ module Geo
       model_record
     end
 
-    # Called by Geo::FrameworkHousekeepingService#execute
-    #
-    # Override this to enable repository snapshotting per replicable
-    #
-    # @return [Boolean] whether the repository snapshotting is available
-    def snapshot_enabled?
-      false
-    end
-
-    def snapshot_url; end
-
     def remote_url
       Gitlab::Geo.primary_node.repository_url(repository)
     end

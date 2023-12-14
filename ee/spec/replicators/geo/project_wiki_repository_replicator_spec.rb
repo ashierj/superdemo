@@ -24,23 +24,5 @@ RSpec.describe Geo::ProjectWikiRepositoryReplicator, feature_category: :geo_repl
         end
       end
     end
-
-    describe '#snapshot_enabled?' do
-      it 'returns true' do
-        expect(replicator.snapshot_enabled?).to eq(true)
-      end
-    end
-
-    describe '#snapshot_url' do
-      it 'returns snapshot URL based on the primary node URI' do
-        snapshot_url =
-          Gitlab::Utils.append_path(
-            primary.internal_uri.to_s,
-            "/api/#{API::API.version}/projects/#{model_record.project.id}/snapshot?wiki=1"
-          )
-
-        expect(replicator.snapshot_url).to eq(snapshot_url)
-      end
-    end
   end
 end
