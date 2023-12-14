@@ -425,45 +425,68 @@ describe('Vulnerability Header', () => {
         });
       });
 
-      it('emits createMergeRequest when create merge request button is clicked', async () => {
-        const mergeRequestPath = '/group/project/merge_request/123';
-        const spy = jest.spyOn(urlUtility, 'redirectTo');
-        mockAxios.onPost(defaultVulnerability.createMrUrl).reply(HTTP_STATUS_OK, {
-          merge_request_path: mergeRequestPath,
-          merge_request_links: [{ merge_request_path: mergeRequestPath }],
-        });
-        findGlButton().vm.$emit('click');
-        await waitForPromises();
-
-        expect(spy).toHaveBeenCalledWith(mergeRequestPath);
-        expect(mockAxios.history.post).toHaveLength(1);
-        expect(JSON.parse(mockAxios.history.post[0].data)).toMatchObject({
-          vulnerability_feedback: {
-            feedback_type: FEEDBACK_TYPES.MERGE_REQUEST,
-            category: defaultVulnerability.reportType,
-            project_fingerprint: defaultVulnerability.projectFingerprint,
-            finding_uuid: defaultVulnerability.uuid,
-            vulnerability_data: {
-              ...convertObjectPropsToSnakeCase(getVulnerability({ canCreateMergeRequest: true })),
-              category: defaultVulnerability.reportType,
-              state: 'resolved',
-            },
-          },
-        });
-      });
-
-      it('shows an error message when merge request creation fails', () => {
-        mockAxios
-          .onPost(defaultVulnerability.create_mr_url)
-          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
-        findGlButton().vm.$emit('click');
-        return waitForPromises().then(() => {
-          expect(mockAxios.history.post).toHaveLength(1);
-          expect(createAlert).toHaveBeenCalledWith({
-            message: 'There was an error creating the merge request. Please try again.',
+      it.each`
+        buttonType  | splitButtonEventName    | getVulnerabilityParam
+        ${'split'}  | ${'createMergeRequest'} | ${{ canCreateMergeRequest: true, canDownloadPatch: true, canResolveWithAI: true }}
+        ${'single'} | ${null}                 | ${{ canCreateMergeRequest: true }}
+      `(
+        `submits correct data for creating a merge request whe the $buttonType button is clicked`,
+        async ({ splitButtonEventName, getVulnerabilityParam }) => {
+          const vulnerability = {
+            ...defaultVulnerability,
+            ...getVulnerability(getVulnerabilityParam),
+          };
+          createWrapper({ vulnerability });
+          await waitForPromises();
+          const mergeRequestPath = '/group/project/merge_request/123';
+          const spy = jest.spyOn(urlUtility, 'redirectTo');
+          mockAxios.onPost(vulnerability.createMrUrl).reply(HTTP_STATUS_OK, {
+            merge_request_path: mergeRequestPath,
+            merge_request_links: [{ merge_request_path: mergeRequestPath }],
           });
-        });
-      });
+          await clickButton(splitButtonEventName);
+          await waitForPromises();
+
+          expect(spy).toHaveBeenCalledWith(mergeRequestPath);
+          expect(mockAxios.history.post).toHaveLength(1);
+          expect(JSON.parse(mockAxios.history.post[0].data)).toMatchObject({
+            vulnerability_feedback: {
+              feedback_type: FEEDBACK_TYPES.MERGE_REQUEST,
+              category: vulnerability.reportType,
+              project_fingerprint: vulnerability.projectFingerprint,
+              finding_uuid: vulnerability.uuid,
+              vulnerability_data: {
+                ...convertObjectPropsToSnakeCase(vulnerability),
+                category: vulnerability.reportType,
+                target_branch: vulnerability.pipeline.sourceBranch,
+              },
+            },
+          });
+        },
+      );
+
+      it.each`
+        buttonType  | splitButtonEventName    | getVulnerabilityParam
+        ${'split'}  | ${'createMergeRequest'} | ${{ canCreateMergeRequest: true, canDownloadPatch: true, canResolveWithAI: true }}
+        ${'single'} | ${null}                 | ${{ canCreateMergeRequest: true }}
+      `(
+        `shows an error message when merge request creation fails when $buttonType button is clicked`,
+        async ({ splitButtonEventName, getVulnerabilityParam }) => {
+          createWrapper({ vulnerability: getVulnerability(getVulnerabilityParam) });
+          await waitForPromises();
+          mockAxios
+            .onPost(defaultVulnerability.create_mr_url)
+            .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+          await clickButton(splitButtonEventName);
+
+          return waitForPromises().then(() => {
+            expect(mockAxios.history.post).toHaveLength(1);
+            expect(createAlert).toHaveBeenCalledWith({
+              message: 'There was an error creating the merge request. Please try again.',
+            });
+          });
+        },
+      );
     });
 
     describe('can download patch button', () => {
@@ -475,11 +498,23 @@ describe('Vulnerability Header', () => {
         });
       });
 
-      it('emits downloadPatch when download patch button is clicked', async () => {
-        findGlButton().vm.$emit('click');
-        await nextTick();
-        expect(download).toHaveBeenCalledWith({ fileData: diff, fileName: `remediation.patch` });
-      });
+      it.each`
+        buttonType  | splitButtonEventName | getVulnerabilityParam
+        ${'split'}  | ${'downloadPatch'}   | ${{ canCreateMergeRequest: true, canDownloadPatch: true, canResolveWithAI: true }}
+        ${'single'} | ${null}              | ${{ canDownloadPatch: true }}
+      `(
+        `calls download utility correctly when $buttonType button for downloading patch is clicked`,
+        async ({ splitButtonEventName, getVulnerabilityParam }) => {
+          createWrapper({ vulnerability: getVulnerability(getVulnerabilityParam) });
+          await waitForPromises();
+          await clickButton(splitButtonEventName);
+
+          expect(download).toHaveBeenCalledWith({
+            fileData: diff,
+            fileName: `remediation.patch`,
+          });
+        },
+      );
     });
 
     describe('resolve with AI button', () => {
