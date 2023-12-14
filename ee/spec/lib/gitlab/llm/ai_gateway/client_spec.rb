@@ -42,7 +42,8 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
           provider: described_class::DEFAULT_PROVIDER,
           model: described_class::DEFAULT_MODEL
         }
-      }]
+      }],
+      stream: false
     }
   end
 
