@@ -136,6 +136,16 @@ module CodeSuggestions
       }
     }.freeze
 
+    # This constant need to be in sync with
+    # https://gitlab.com/gitlab-org/code-creation/repository-x-ray/
+    # -/blob/341394dd5961c98a0873a7064f2605957f0f0613/cmd/scan/main.go#L40
+    LANGUAGE_XRAY_NAMING = {
+      'Ruby' => 'ruby',
+      'Go' => 'go',
+      'JavaScript' => 'javascript',
+      'Python' => 'python'
+    }.freeze
+
     CODE_COMPLETIONS_EXAMPLES_URI = 'ee/lib/code_suggestions/prompts/code_completion/examples.yml'
     CODE_GENERATIONS_EXAMPLES_URI = 'ee/lib/code_suggestions/prompts/code_generation/examples.yml'
 
@@ -183,6 +193,10 @@ module CodeSuggestions
 
     def completion_examples
       LANGUAGE_CODE_COMPLETION_EXAMPLES[name] || []
+    end
+
+    def x_ray_lang
+      LANGUAGE_XRAY_NAMING[name]
     end
 
     def generation_examples
