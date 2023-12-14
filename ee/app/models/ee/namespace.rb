@@ -58,6 +58,7 @@ module EE
         class_name: 'Search::Index'
 
       has_one :audit_event_http_namespace_filter, class_name: 'AuditEvents::Streaming::HTTP::NamespaceFilter'
+      has_one :audit_event_http_instance_namespace_filter, class_name: 'AuditEvents::Streaming::HTTP::Instance::NamespaceFilter'
 
       scope :include_gitlab_subscription, -> { includes(:gitlab_subscription) }
       scope :include_gitlab_subscription_with_hosted_plan, -> { includes(gitlab_subscription: :hosted_plan) }
