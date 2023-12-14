@@ -14,6 +14,7 @@ RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_composi
     downstream_project.add_maintainer(user)
 
     stub_licensed_features(ci_project_subscriptions: true)
+    stub_feature_flags(pipeline_subscriptions_vue: false)
 
     sign_in(user)
     visit project_settings_ci_cd_path(project)
