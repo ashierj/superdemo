@@ -82,9 +82,9 @@ RSpec.shared_examples 'scan passed' do
 
     expect_next_instance_of(described_class) do |instance|
       expect(instance).to receive(:format_response)
-      .with(passed_scan_response)
-      .once
-      .and_call_original
+        .with(passed_scan_response)
+        .once
+        .and_call_original
     end
 
     expect(secret_detection_logger).to receive(:info)
@@ -189,12 +189,24 @@ RSpec.shared_examples 'scan detected secrets' do
         .and_call_original
     end
 
-    expect_next_instance_of(described_class) do |instance|
-      expect(instance).to receive(:format_response)
-      .with(successful_scan_response)
+    expect(secret_detection_logger).to receive(:info)
       .once
-      .and_call_original
+      .with(message: found_secrets)
+
+    expect { subject.validate! }.to raise_error do |error|
+      expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
+      expect(error.message).to include(found_secrets)
+      expect(error.message).to include(found_message_occurrence)
+      expect(error.message).to include(found_secrets_post_message)
     end
+  end
+
+  it 'loads tree entries of the new commit' do
+    expect(::Gitlab::Git::Tree).to receive(:tree_entries)
+      .once
+      .with(repository, new_commit, nil, true, true, nil)
+      .and_return([tree_entries, gitaly_pagination_cursor])
+      .and_call_original
 
     expect(secret_detection_logger).to receive(:info)
       .once
@@ -203,8 +215,87 @@ RSpec.shared_examples 'scan detected secrets' do
     expect { subject.validate! }.to raise_error do |error|
       expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
       expect(error.message).to include(found_secrets)
-      expect(error.message).to include(found_secrets_message)
+      expect(error.message).to include(found_message_occurrence)
       expect(error.message).to include(found_secrets_post_message)
+    end
+  end
+
+  context 'when no tree entries exist or cannot be loaded' do
+    it 'gracefully raises an error with existing information' do
+      expect(::Gitlab::Git::Tree).to receive(:tree_entries)
+        .once
+        .with(repository, new_commit, nil, true, true, nil)
+        .and_return([{}, gitaly_pagination_cursor])
+
+      expect(secret_detection_logger).to receive(:info)
+        .once
+        .with(message: found_secrets)
+
+      expect { subject.validate! }.to raise_error do |error|
+        expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
+        expect(error.message).to include(found_secrets)
+        expect(error.message).to include(found_message)
+        expect(error.message).to include(found_secrets_post_message)
+      end
+    end
+  end
+
+  context 'when tree has too many entries' do
+    let(:gitaly_pagination_cursor) { Gitaly::PaginationCursor.new(next_cursor: "abcdef") }
+
+    it 'logs an error and continue to raise and present findings' do
+      expect(::Gitlab::Git::Tree).to receive(:tree_entries)
+        .once
+        .with(repository, new_commit, nil, true, true, nil)
+        .and_return([tree_entries, gitaly_pagination_cursor])
+
+      expect(secret_detection_logger).to receive(:info)
+        .once
+        .with(message: found_secrets)
+
+      expect(secret_detection_logger).to receive(:error)
+        .once
+        .with(message: error_messages[:too_many_tree_entries_error])
+
+      expect { subject.validate! }.to raise_error(::Gitlab::GitAccess::ForbiddenError)
+    end
+  end
+
+  context 'when new commit has file in subdirectory' do
+    let_it_be(:new_commit) { create_commit('config/.env' => 'SECRET=glpat-JUST20LETTERSANDNUMB') } # gitleaks:allow
+
+    let(:found_secret_path) { 'config/.env' }
+    let(:tree_entries) do
+      [
+        Gitlab::Git::Tree.new(
+          id: new_blob_reference,
+          type: :blob,
+          mode: '100644',
+          name: '.env',
+          path: 'config/.env',
+          flat_path: 'config/.env',
+          commit_id: new_commit
+        )
+      ]
+    end
+
+    it 'loads tree entries of the new commit in subdirectories' do
+      expect(::Gitlab::Git::Tree).to receive(:tree_entries)
+        .once
+        .with(repository, new_commit, nil, true, true, nil)
+        .and_return([tree_entries, gitaly_pagination_cursor])
+        .and_call_original
+
+      expect(secret_detection_logger).to receive(:info)
+        .once
+        .with(message: found_secrets)
+
+      expect { subject.validate! }.to raise_error do |error|
+        expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
+        expect(error.message).to include(found_secrets)
+        expect(error.message).to include(found_message_occurrence)
+        expect(error.message).to include(found_secrets_post_message)
+      end
     end
   end
 end
@@ -382,7 +473,53 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
     expect { subject.validate! }.to raise_error do |error|
       expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
       expect(error.message).to include(found_secrets_with_errors)
-      expect(error.message).to include(found_secrets_message)
+      expect(error.message).to include(found_message_occurrence)
+      expect(error.message).to include(blob_timed_out_error)
+      expect(error.message).to include(failed_to_scan_regex_error)
+      expect(error.message).to include(found_secrets_post_message)
+    end
+  end
+
+  it 'loads tree entries of the new commit' do
+    expect_next_instance_of(::Gitlab::SecretDetection::Scan) do |instance|
+      expect(instance).to receive(:secrets_scan)
+        .with(
+          array_including(new_blob, timed_out_blob, failed_to_scan_blob),
+          timeout: kind_of(Float)
+        )
+        .once
+        .and_return(successful_scan_with_errors_response)
+    end
+
+    expect(::Gitlab::Git::Tree).to receive(:tree_entries)
+      .with(repository, new_commit, nil, true, true, nil)
+      .once
+      .ordered
+      .and_return([tree_entries, gitaly_pagination_cursor])
+      .and_call_original
+
+    expect(::Gitlab::Git::Tree).to receive(:tree_entries)
+      .with(repository, timed_out_commit, nil, true, true, nil)
+      .once
+      .ordered
+      .and_return([[], nil])
+      .and_call_original
+
+    expect(::Gitlab::Git::Tree).to receive(:tree_entries)
+      .with(repository, failed_to_scan_commit, nil, true, true, nil)
+      .once
+      .ordered
+      .and_return([[], nil])
+      .and_call_original
+
+    expect(secret_detection_logger).to receive(:info)
+      .once
+      .with(message: found_secrets_with_errors)
+
+    expect { subject.validate! }.to raise_error do |error|
+      expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
+      expect(error.message).to include(found_secrets_with_errors)
+      expect(error.message).to include(found_message_occurrence)
       expect(error.message).to include(blob_timed_out_error)
       expect(error.message).to include(failed_to_scan_regex_error)
       expect(error.message).to include(found_secrets_post_message)
