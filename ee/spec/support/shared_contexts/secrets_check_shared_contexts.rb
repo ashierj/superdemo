@@ -60,6 +60,22 @@ RSpec.shared_context 'secrets check context' do
   let(:old_blob) { have_attributes(class: Gitlab::Git::Blob, id: old_blob_reference, size: 23) }
   let(:new_blob) { have_attributes(class: Gitlab::Git::Blob, id: new_blob_reference, size: 33) }
 
+  # Used for mocking calls to `tree_entries` methods.
+  let(:gitaly_pagination_cursor) { Gitaly::PaginationCursor.new(next_cursor: "") }
+  let(:tree_entries) do
+    [
+      Gitlab::Git::Tree.new(
+        id: new_blob_reference,
+        type: :blob,
+        mode: '100644',
+        name: '.env',
+        path: '.env',
+        flat_path: '.env',
+        commit_id: new_commit
+      )
+    ]
+  end
+
   # Used for mocking calls to logger.
   let(:secret_detection_logger) { instance_double(::Gitlab::SecretDetectionLogger) }
 
@@ -95,7 +111,8 @@ RSpec.shared_context 'secret detection error and log messages context' do
       scan_timeout_error: 'Secret detection scan timed out.',
       scan_initialization_error: 'Secret detection scan failed to initialize.',
       invalid_input_error: 'Secret detection scan failed due to invalid input.',
-      invalid_scan_status_code_error: 'Invalid secret detection scan status, check passed.'
+      invalid_scan_status_code_error: 'Invalid secret detection scan status, check passed.',
+      too_many_tree_entries_error: format('Too many tree entries exist for commit(sha: %{sha}).', { sha: new_commit })
     }
   end
 
@@ -107,25 +124,35 @@ RSpec.shared_context 'secret detection error and log messages context' do
     'Secret detection scan completed with one or more findings but some errors occured during the scan.'
   end
 
+  let(:found_secret_path) { '.env' }
   let(:found_secret_line_number) { '1' }
-  let(:found_secret_type) { 'gitlab_personal_access_token' }
   let(:found_secret_description) { 'GitLab Personal Access Token' }
 
-  let(:found_secrets_message) do
-    message = <<~MESSAGE
-      \nBlob id: %{found_secret_blob_id}
-      -- Line: %{found_secret_line_number}
-      -- Type: %{found_secret_type}
-      -- Description: %{found_secret_description}\n
-    MESSAGE
+  let(:found_message_occurrence) do
+    message = "\n\nSecret leaked in commit: %{sha}" \
+              "\n  -- %{path}:%{line_number} | %{description}"
 
     format(
       message,
       {
-        found_secret_blob_id: new_blob_reference,
-        found_secret_line_number: found_secret_line_number,
-        found_secret_type: found_secret_type,
-        found_secret_description: found_secret_description
+        sha: new_commit,
+        path: found_secret_path,
+        line_number: found_secret_line_number,
+        description: found_secret_description
+      }
+    )
+  end
+
+  let(:found_message) do
+    message = "\n\nSecret leaked in blob: %{blob_id}" \
+              "\n  -- line:%{line_number} | %{description}"
+
+    format(
+      message,
+      {
+        blob_id: new_blob_reference,
+        line_number: found_secret_line_number,
+        description: found_secret_description
       }
     )
   end
@@ -149,6 +176,9 @@ RSpec.shared_context 'quarantine directory exists' do
     # client and `object_existence_map` in such way only some of them are considered new.
     allow(repository).to receive(:gitaly_commit_client).and_return(gitaly_commit_client)
     allow(gitaly_commit_client).to receive(:object_existence_map).and_return(object_existence_map)
+
+    # We also want to have the client return the tree entries.
+    allow(gitaly_commit_client).to receive(:tree_entries).and_return([tree_entries, gitaly_pagination_cursor])
   end
 end
 
