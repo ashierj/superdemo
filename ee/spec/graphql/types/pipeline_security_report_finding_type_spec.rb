@@ -283,6 +283,28 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
     end
   end
 
+  describe 'location' do
+    describe 'blob_path' do
+      let(:query_for_test) do
+        %(
+          location {
+            ... on VulnerabilityLocationSast { blobPath }
+        }
+      )
+      end
+
+      let(:blob_path_regex) { %r{/#{project.namespace.path}/#{project.path}/-/blob/[a-f0-9]{40}/} }
+
+      context 'when a blob path exists' do
+        it 'returns the blob path' do
+          blob_paths = graphql_dig_at(subject, :data, :project, :pipeline, :security_report_findings, :nodes, :location)
+                         .map { |location| graphql_dig_at(location, :blob_path) }
+          expect(blob_paths).to all(match blob_path_regex)
+        end
+      end
+    end
+  end
+
   describe 'merge_request' do
     let(:query_for_test) do
       %(

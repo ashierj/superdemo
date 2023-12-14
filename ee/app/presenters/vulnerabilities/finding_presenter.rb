@@ -4,6 +4,12 @@ module Vulnerabilities
   class FindingPresenter < Gitlab::View::Presenter::Delegated
     presents ::Vulnerabilities::Finding, as: :finding
 
+    delegator_override :location
+    def location
+      finding.location.presence&.with_indifferent_access ||
+        {}.with_indifferent_access
+    end
+
     def title
       name
     end

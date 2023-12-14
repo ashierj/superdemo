@@ -200,7 +200,10 @@ module Types
     end
 
     def location
-      object.location&.merge(report_type: object.report_type)
+      object.location&.merge(
+        report_type: object.report_type,
+        blob_path: object.present(presenter_class: ::Vulnerabilities::FindingPresenter).blob_path
+      )
     end
 
     def false_positive?
