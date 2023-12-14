@@ -125,6 +125,8 @@ module API
             ],
             desc: 'The intent of the completion request, current options are "completion" or "generation"'
           optional :stream, type: Boolean, default: false, desc: 'The option to stream code completion response'
+          optional :project_path, type: String, desc: 'The path of the project',
+            documentation: { example: 'namespace/project' }
         end
         post do
           if Gitlab.org_or_com?

@@ -207,4 +207,22 @@ RSpec.describe CodeSuggestions::ProgrammingLanguage, feature_category: :code_sug
       end
     end
   end
+
+  describe '#x_ray_lang' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:language, :x_ray_lang_name) do
+      'JavaScript' | 'javascript'
+      'Python'     | 'python'
+      'Ruby'       | 'ruby'
+      'Go'         | 'go'
+      'UNKNOWN'    | nil
+    end
+
+    with_them do
+      it 'returns x_ray_lang name' do
+        expect(described_class.new(language).x_ray_lang).to eq(x_ray_lang_name)
+      end
+    end
+  end
 end

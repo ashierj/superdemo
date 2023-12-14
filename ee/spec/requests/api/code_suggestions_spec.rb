@@ -422,6 +422,21 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             post_api
           end
         end
+
+        context 'when passing project_path parameter' do
+          let(:additional_params) { { project_path: 'group/test-project' } }
+
+          it 'project_path stream into TaskFactory.new' do
+            expect(::CodeSuggestions::TaskFactory).to receive(:new)
+                                                        .with(
+                                                          current_user,
+                                                          params: hash_including(project_path: 'group/test-project'),
+                                                          unsafe_passthrough_params: kind_of(Hash)
+                                                        ).and_call_original
+
+            post_api
+          end
+        end
       end
     end
 
@@ -525,6 +540,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 </existing_code>
 
                 The existing code is provided in <existing_code></existing_code> tags.
+
                 The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
                 In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
                 likely new code to generate at the cursor position to fulfill the instructions.
@@ -679,6 +695,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 </existing_code>
 
                 The existing code is provided in <existing_code></existing_code> tags.
+
                 The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
                 In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
                 likely new code to generate at the cursor position to fulfill the instructions.

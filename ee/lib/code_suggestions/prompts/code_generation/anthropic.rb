@@ -4,9 +4,12 @@ module CodeSuggestions
   module Prompts
     module CodeGeneration
       class Anthropic < CodeSuggestions::Prompts::Base
+        include Gitlab::Utils::StrongMemoize
+
         GATEWAY_PROMPT_VERSION = 2
         # claude-2 max_input_tokens is 100K tokens, token =~ 4 characters, 1000 tokens are left for prompt itself
         MAX_INPUT_CHARS = 99000 * 4
+        MAX_LIBS_COUNT = 50 # this is arbitrary number to keep prompt reasonably concise
 
         def request_params
           {
@@ -25,6 +28,7 @@ module CodeSuggestions
             #{examples_section}
             #{existing_code_block}
             #{existing_code_instruction}
+            #{libraries_block}
             The new code you will generate will start at the position of the cursor, which is currently indicated by the <cursor> XML tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
@@ -71,6 +75,30 @@ module CodeSuggestions
             </existing_code>
           CODE
         end
+
+        def libraries_block
+          return unless xray_report.present?
+          return unless xray_report.libs.any?
+
+          libs = xray_report.libs[(0...MAX_LIBS_COUNT)].map do |lib|
+            "#{lib['name']}: #{lib['description']}"
+          end
+
+          <<~LIBS
+          <libs>
+          #{libs.join("\n")}
+          </libs>
+          The list of available libraries is provided in <libs></libs> tags.
+          LIBS
+        end
+
+        def xray_report
+          ::Projects::XrayReport
+            .for_project(params[:project])
+            .for_lang(language.x_ray_lang)
+            .first
+        end
+        strong_memoize_attr :xray_report
 
         def examples_section
           examples_template = <<~EXAMPLES

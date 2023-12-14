@@ -52,8 +52,18 @@ module CodeSuggestions
       params.merge(
         prefix: instructions[:prefix],
         instruction: instructions[:instruction],
-        code_generation_model_family: ANTHROPIC
+        code_generation_model_family: ANTHROPIC,
+        project: project
       )
     end
+
+    def project
+      ::ProjectsFinder
+        .new(
+          params: { full_paths: [params[:project_path]] },
+          current_user: current_user
+        ).execute.first
+    end
+    strong_memoize_attr(:project)
   end
 end
