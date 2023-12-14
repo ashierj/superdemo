@@ -11,6 +11,7 @@ import {
 import { initFormField } from 'ee/security_configuration/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
 import { s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BaseDastProfileForm from '../../components/base_dast_profile_form.vue';
 import dastProfileFormMixin from '../../dast_profile_form_mixin';
 import { SCAN_TYPE, SCAN_TYPE_OPTIONS } from '../constants';
@@ -38,7 +39,7 @@ export default {
     GlInputGroupText,
     TooltipIcon,
   },
-  mixins: [dastProfileFormMixin()],
+  mixins: [dastProfileFormMixin(), glFeatureFlagsMixin()],
   data() {
     const {
       profileName = '',
@@ -257,6 +258,8 @@ export default {
 
       <div class="row gl-mt-5">
         <gl-form-group
+          v-if="!glFeatures.dastOdsBrowserBasedScanner"
+          data-testid="ajax-spider-toggle"
           class="gl-mb-0"
           :class="{ 'col-md-6': !stacked, 'col-md-12': stacked, 'gl-mb-4': stacked }"
         >
