@@ -55129,9 +55129,6 @@ msgstr ""
 msgid "WorkItem|Only %{MAX_WORK_ITEMS} items can be added at a time."
 msgstr ""
 
-msgid "WorkItem|Only project members with at least the Reporter role, the author, and assignees can view or be notified about this %{workItemType}."
-msgstr ""
-
 msgid "WorkItem|Open"
 msgstr ""
 
