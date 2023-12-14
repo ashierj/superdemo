@@ -47,6 +47,7 @@ export default {
     return {
       showWhatsNewNotification: this.shouldShowWhatsNewNotification(),
       helpCenterState,
+      toggleWhatsNewDrawer: null,
     };
   },
   computed: {
