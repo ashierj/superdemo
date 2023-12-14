@@ -34,7 +34,7 @@ module Ci
         ServiceResponse.success(payload: { csv_data: csv_data, status: csv_builder.status })
       rescue StandardError => e
         Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e)
-        ServiceResponse.error(message: 'Failed to generate export')
+        ServiceResponse.error(message: 'Failed to generate export', reason: :clickhouse_error)
       end
 
       private
