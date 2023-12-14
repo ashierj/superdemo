@@ -524,13 +524,13 @@ export default {
 
       try {
         const errors = [];
-
+        const { headersToDelete, headersToUpdate, headersToAdd } = this;
         if (this.existingHeaders.length > 0) {
-          errors.push(...(await this.deleteDestinationHeaders(this.headersToDelete)));
-          errors.push(...(await this.updateDestinationHeaders(this.headersToUpdate)));
+          errors.push(...(await this.deleteDestinationHeaders(headersToDelete)));
+          errors.push(...(await this.updateDestinationHeaders(headersToUpdate)));
         }
 
-        errors.push(...(await this.addDestinationHeaders(this.item.id, this.headersToAdd)));
+        errors.push(...(await this.addDestinationHeaders(this.item.id, headersToAdd)));
 
         const { errors: destinationErrors = [] } = await this.updateDestinationUrl(this.item.id);
         errors.push(...destinationErrors);
@@ -580,20 +580,20 @@ export default {
     handleHeaderNameInput(index, name) {
       const header = this.headers[index];
 
-      if (name !== '' && this.headerNameExists(name)) {
-        header.validationErrors.name = ADD_STREAM_EDITOR_I18N.HEADER_INPUT_DUPLICATE_ERROR;
-      } else {
-        const updatedHeader = {
-          ...header,
-          name,
-          validationErrors: {
-            ...header.validationErrors,
-            name: '',
-          },
-        };
+      const updatedHeader = {
+        ...header,
+        name,
+        validationErrors: {
+          ...header.validationErrors,
+          name: '',
+        },
+      };
 
-        this.$set(this.headers, index, updatedHeader);
+      if (name !== '' && this.headerNameExists(name)) {
+        updatedHeader.validationErrors.name = ADD_STREAM_EDITOR_I18N.HEADER_INPUT_DUPLICATE_ERROR;
       }
+
+      this.$set(this.headers, index, updatedHeader);
     },
     handleHeaderValueInput(index, value) {
       this.$set(this.headers, index, { ...this.headers[index], value });
@@ -602,7 +602,13 @@ export default {
       this.$set(this.headers, index, { ...this.headers[index], active });
     },
     removeHeader(index) {
-      this.headers.splice(index, 1);
+      const [removedHeader] = this.headers.splice(index, 1);
+      const firstSameHeaderWithError = this.headers.find(
+        (h) => h.name === removedHeader.name && h.validationErrors.name,
+      );
+      if (firstSameHeaderWithError) {
+        firstSameHeaderWithError.validationErrors.name = '';
+      }
     },
     updateEventTypeFilters(newFilters) {
       this.filters = newFilters;

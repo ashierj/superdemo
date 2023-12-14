@@ -434,6 +434,21 @@ describe('StreamDestinationEditor', () => {
         expect(findHeaderValueInput(1).element.value).toBe('');
       });
 
+      it('enables add button when first header with the same name is deleted', async () => {
+        findDestinationName().setValue('Name');
+        findDestinationUrl().setValue('https://example.test');
+
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(0, { name: 'a', value: 'b' });
+
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'a', value: 'c' });
+
+        await findHeaderDeleteBtn(0).trigger('click');
+
+        expect(findAddStreamBtn().props('disabled')).toBe(false);
+      });
+
       it('should show the maximum number of rows message only when the maximum is reached', async () => {
         await findAddHeaderBtn().trigger('click');
         await findAddHeaderBtn().trigger('click');
@@ -568,6 +583,53 @@ describe('StreamDestinationEditor', () => {
             destinationId: item.id,
             key: addedHeader.key,
             value: addedHeader.value,
+            active: true,
+          });
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+          expect(wrapper.emitted('updated')).toBeDefined();
+        });
+
+        it('handles adding & removal header with the same name', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationUpdateMutationPopulator());
+          const headerCreateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationHeaderCreateMutationPopulator());
+          const headerDeleteSpy = jest
+            .fn()
+            .mockResolvedValue(destinationHeaderDeleteMutationPopulator());
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item },
+            apolloHandlers: [
+              [externalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [externalAuditEventDestinationHeaderCreate, headerCreateSpy],
+              [externalAuditEventDestinationHeaderDelete, headerDeleteSpy],
+            ],
+          });
+          await waitForPromises();
+
+          findDestinationName().setValue('Name');
+          findDestinationUrl().setValue('https://example.test');
+          await findHeaderDeleteBtn(1).trigger('click');
+          await findAddHeaderBtn().trigger('click');
+          await setHeadersRowData(1, { name: item.headers.nodes[0].key, value: 'NEW' });
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+
+          await waitForPromises();
+
+          expect(headerDeleteSpy).toHaveBeenCalledTimes(1);
+          expect(headerDeleteSpy).toHaveBeenCalledWith({
+            headerId: deletedHeader.id,
+          });
+          expect(headerCreateSpy).toHaveBeenCalledTimes(1);
+          expect(headerCreateSpy).toHaveBeenCalledWith({
+            destinationId: item.id,
+            key: item.headers.nodes[0].key,
+            value: 'NEW',
             active: true,
           });
           expect(findAlertErrors()).toHaveLength(0);
