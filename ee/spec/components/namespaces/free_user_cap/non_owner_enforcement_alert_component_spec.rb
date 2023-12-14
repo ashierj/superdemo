@@ -35,7 +35,7 @@ RSpec.describe Namespaces::FreeUserCap::NonOwnerEnforcementAlertComponent, :saas
         expect(page).to have_content(title)
         expect(page).to have_link('read-only', href: help_page_path('user/free_user_limit'))
 
-        expect(page).to have_css(".gl-overflow-auto.#{content_class}")
+        expect(page).to have_css(".#{content_class}")
 
         expect(page).to have_css('[data-testid="user-over-limit-free-plan-alert"]')
       end

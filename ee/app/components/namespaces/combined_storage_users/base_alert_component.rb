@@ -67,10 +67,6 @@ module Namespaces
         }
       end
 
-      def container_class
-        "gl-overflow-auto #{content_class}"
-      end
-
       def alert_title_params
         { free_users_limit: free_users_limit, free_storage_limit: free_storage_limit }
       end
