@@ -7,6 +7,7 @@ RSpec.describe Pages::LookupPath, feature_category: :pages do
   let(:path_prefix) { nil }
   let(:file_store) { ::ObjectStorage::Store::REMOTE }
   let(:group) { build(:group, path: 'mygroup') }
+  let(:namespace_in_path) { false }
   let(:deployment) do
     build(
       :pages_deployment,
@@ -33,7 +34,8 @@ RSpec.describe Pages::LookupPath, feature_category: :pages do
       access_control: true,
       external_https: ["1.1.1.1:443"],
       url: 'http://example.com',
-      protocol: 'http')
+      protocol: 'http',
+      namespace_in_path: namespace_in_path)
 
     stub_pages_object_storage(::Pages::DeploymentUploader)
   end
@@ -130,6 +132,14 @@ RSpec.describe Pages::LookupPath, feature_category: :pages do
       it 'returns nil' do
         project.project_setting.pages_unique_domain_enabled = false
 
+        expect(lookup_path.unique_host).to be_nil
+      end
+    end
+
+    context 'when namespace_in_path is enabled' do
+      let(:namespace_in_path) { true }
+
+      it 'returns nil' do
         expect(lookup_path.unique_host).to be_nil
       end
     end
