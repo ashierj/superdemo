@@ -26,7 +26,7 @@ RSpec.describe EE::Emails::Profile do
     end
 
     it 'includes a link to personal access tokens page' do
-      is_expected.to have_body_text /#{profile_personal_access_tokens_path}/
+      is_expected.to have_body_text /#{user_settings_personal_access_tokens_path}/
     end
 
     it 'includes the email reason' do
