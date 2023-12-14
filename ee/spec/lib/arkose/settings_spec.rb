@@ -91,4 +91,26 @@ RSpec.describe Arkose::Settings, feature_category: :instance_resiliency do
       it { is_expected.to eq result }
     end
   end
+
+  describe '.data_exchange_key' do
+    subject { described_class.data_exchange_key }
+
+    context 'when set in application settings' do
+      let(:setting_value) { 'setting_public_key' }
+
+      before do
+        stub_application_setting(arkose_labs_data_exchange_key: setting_value)
+      end
+
+      it { is_expected.to eq setting_value }
+    end
+
+    context 'when not set in application settings' do
+      before do
+        stub_application_setting(arkose_labs_data_exchange_key: nil)
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
 end
