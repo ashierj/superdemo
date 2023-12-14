@@ -2,7 +2,12 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const GRIDSTACK_MARGIN = 10;
 export const GRIDSTACK_CSS_HANDLE = '.grid-stack-item-handle';
-export const GRIDSTACK_CELL_HEIGHT = '120px';
+
+/* Magic number 125px:
+ * After allowing for padding, and the panel title row, this leaves us with minimum 48px height for the cell content.
+ * This means text/content with our spacing scale can fit up to 49px without scrolling.
+ */
+export const GRIDSTACK_CELL_HEIGHT = '125px';
 export const GRIDSTACK_MIN_ROW = 1;
 
 export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
