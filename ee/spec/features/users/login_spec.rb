@@ -227,7 +227,7 @@ RSpec.describe 'Login', feature_category: :system_access do
 
         visit sso_group_saml_providers_path(group)
 
-        expect(page).to have_content('By clicking Sign in or registering through a third party you accept the GitLab Terms of Use and acknowledge the Privacy Policy and Cookie Policy')
+        expect(page).to have_content('By clicking Sign in or registering through a third party you accept the GitLab Terms of Use and acknowledge the Privacy Statement and Cookie Policy')
       end
     end
 
