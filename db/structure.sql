@@ -28500,7 +28500,7 @@ ALTER TABLE ONLY ci_pipeline_schedules
     ADD CONSTRAINT ci_pipeline_schedules_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY ci_pipeline_variables
-    ADD CONSTRAINT ci_pipeline_variables_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT ci_pipeline_variables_pkey PRIMARY KEY (id, partition_id);
 
 ALTER TABLE ONLY ci_pipelines_config
     ADD CONSTRAINT ci_pipelines_config_pkey PRIMARY KEY (pipeline_id);
@@ -32306,8 +32306,6 @@ CREATE INDEX index_ci_pipeline_schedules_on_owner_id ON ci_pipeline_schedules US
 CREATE INDEX index_ci_pipeline_schedules_on_owner_id_and_id_and_active ON ci_pipeline_schedules USING btree (owner_id, id) WHERE (active = true);
 
 CREATE INDEX index_ci_pipeline_schedules_on_project_id ON ci_pipeline_schedules USING btree (project_id);
-
-CREATE UNIQUE INDEX index_ci_pipeline_variables_on_id_partition_id_unique ON ci_pipeline_variables USING btree (id, partition_id);
 
 CREATE INDEX index_ci_pipelines_config_on_pipeline_id ON ci_pipelines_config USING btree (pipeline_id);
 
