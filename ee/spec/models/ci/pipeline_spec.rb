@@ -221,6 +221,53 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
   end
 
+  describe '::Ai::StoreRepositoryXrayWorker' do
+    shared_examples_for 'storing the xray reports' do |transition|
+      subject(:transition_pipeline) { pipeline.update!(status_event: transition) }
+
+      before do
+        allow(::Ai::StoreRepositoryXrayWorker).to receive(:perform_async)
+        allow(pipeline).to receive(:has_repository_xray_reports?).and_return(has_repository_xray_reports)
+      end
+
+      context 'when the xray reports can be stored for the pipeline' do
+        let(:has_repository_xray_reports) { true }
+
+        it 'schedules store security scans job' do
+          transition_pipeline
+
+          expect(::Ai::StoreRepositoryXrayWorker).to have_received(:perform_async).with(pipeline.id)
+        end
+      end
+
+      context 'when the xray reports can not be stored for the pipeline' do
+        let(:has_repository_xray_reports) { false }
+
+        it 'does not schedule store security scans job' do
+          transition_pipeline
+
+          expect(::Ai::StoreRepositoryXrayWorker).not_to have_received(:perform_async)
+        end
+      end
+    end
+
+    context 'when pipeline is succeeded' do
+      it_behaves_like 'storing the xray reports', :succeed
+    end
+
+    context 'when pipeline is dropped' do
+      it_behaves_like 'storing the xray reports', :drop
+    end
+
+    context 'when pipeline is skipped' do
+      it_behaves_like 'storing the xray reports', :skip
+    end
+
+    context 'when pipeline is canceled' do
+      it_behaves_like 'storing the xray reports', :cancel
+    end
+  end
+
   describe '::Security::UnenforceablePolicyRulesPipelineNotificationWorker' do
     shared_examples_for 'notification for unenforceable policy rules' do |transition|
       subject(:transition_pipeline) { pipeline.update!(status_event: transition) }
@@ -763,6 +810,28 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
 
         it { is_expected.to be_truthy }
       end
+    end
+  end
+
+  describe '#has_repository_xray_reports?', feature_category: :code_suggestions do
+    subject { pipeline.has_repository_xray_reports? }
+
+    let(:pipeline) { create(:ci_empty_pipeline, status: :created, project: project) }
+
+    before do
+      pipeline.succeed!
+    end
+
+    context 'when the pipeline does not have xray reports' do
+      it { is_expected.to be_falsy }
+    end
+
+    context 'when the pipeline has xray reports' do
+      before do
+        create(:ee_ci_build, :repository_xray, pipeline: pipeline, project: project)
+      end
+
+      it { is_expected.to be_truthy }
     end
   end
 

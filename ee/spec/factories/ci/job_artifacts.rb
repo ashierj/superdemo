@@ -453,5 +453,15 @@ FactoryBot.define do
           'application/x-gzip')
       end
     end
+
+    trait :repository_xray do
+      file_format { :gzip }
+      file_type { :repository_xray }
+
+      after(:build) do |artifact, _|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('ee/spec/fixtures/repository_xray/gl-repository-xray.json.gz'), 'application/x-gzip')
+      end
+    end
   end
 end

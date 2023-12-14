@@ -73,6 +73,14 @@ module EE
           end
 
           after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
+            next unless pipeline.has_repository_xray_reports?
+
+            pipeline.run_after_commit do
+              ::Ai::StoreRepositoryXrayWorker.perform_async(pipeline.id)
+            end
+          end
+
+          after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
             next if pipeline.child?
             next unless pipeline.default_branch? && pipeline.can_ingest_sbom_reports?
 
@@ -245,6 +253,10 @@ module EE
 
       def has_security_reports?
         complete_and_has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.of_report_type(:license_scanning)))
+      end
+
+      def has_repository_xray_reports?
+        complete_and_has_reports?(::Ci::JobArtifact.repository_xray)
       end
 
       def has_all_security_policies_reports?

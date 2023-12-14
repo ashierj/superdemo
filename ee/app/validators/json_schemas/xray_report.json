@@ -1,0 +1,19 @@
+{
+  "definitions": {
+    "scannerVersion": {
+      "type": "string"
+    },
+    "fileName": {
+      "type": "string"
+    },
+    "checksum": {
+      "type": "string"
+    },
+    "libs": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

@@ -199,6 +199,20 @@ RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
     end
   end
 
+  describe '.repository_xray' do
+    subject { described_class.repository_xray }
+
+    context 'when there is a repository_xray report' do
+      let!(:xray_artifact) { create(:ee_ci_job_artifact, :repository_xray) }
+
+      it { is_expected.to eq([xray_artifact]) }
+    end
+
+    context 'when there are no repository_xray reports' do
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '.associated_file_types_for' do
     using RSpec::Parameterized::TableSyntax
 
