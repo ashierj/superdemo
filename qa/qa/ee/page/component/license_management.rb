@@ -16,14 +16,14 @@ module QA
                 element 'toggle-button'
               end
 
-              view 'app/assets/javascripts/vue_merge_request_widget/components/extensions/child_content.vue' do
-                element 'child-content'
+              view 'app/assets/javascripts/vue_merge_request_widget/components/extensions/base.vue' do
+                element 'extension-list-item'
               end
             end
           end
 
           def has_license?(name)
-            has_element?('child-content', text: name)
+            has_element?('extension-list-item', text: name)
           end
         end
       end
