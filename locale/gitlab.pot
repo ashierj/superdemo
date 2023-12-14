@@ -35371,6 +35371,12 @@ msgstr ""
 msgid "PipelineStatusTooltip|Pipeline: %{ciStatus}"
 msgstr ""
 
+msgid "PipelineSubscriptions|An error occurred while fetching downstream pipeline subscriptions."
+msgstr ""
+
+msgid "PipelineSubscriptions|An error occurred while fetching upstream pipeline subscriptions."
+msgstr ""
+
 msgid "PipelineWizardDefaultCommitMessage|Add %{filename}"
 msgstr ""
 

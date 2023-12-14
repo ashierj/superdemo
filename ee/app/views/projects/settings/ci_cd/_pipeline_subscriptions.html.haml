@@ -14,4 +14,7 @@
       = _("A limit of %{ci_project_subscriptions_limit} subscriptions to or from a project applies.").html_safe % { ci_project_subscriptions_limit: @project.actual_limits.ci_project_subscriptions }
 
   .settings-content
-    = render 'projects/settings/subscriptions/index'
+    - if Feature.enabled?(:pipeline_subscriptions_vue, @project)
+      #js-pipeline-subscriptions-app{ data: { project_path: @project.full_path } }
+    - else
+      = render 'projects/settings/subscriptions/index'

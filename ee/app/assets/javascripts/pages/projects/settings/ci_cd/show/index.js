@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { initGroupProtectedEnvironmentList } from 'ee/protected_environments/group_protected_environment_list';
 import { initProtectedEnvironments } from 'ee/protected_environments/protected_environments';
+import initPipelineSubscriptionsApp from 'ee/ci/pipeline_subscriptions';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
 import createStore from 'ee/vue_shared/license_compliance/store/index';
 import '~/pages/projects/settings/ci_cd/show/index';
@@ -27,3 +28,4 @@ if (el?.dataset?.apiUrl) {
 
 initGroupProtectedEnvironmentList();
 initProtectedEnvironments();
+initPipelineSubscriptionsApp();
