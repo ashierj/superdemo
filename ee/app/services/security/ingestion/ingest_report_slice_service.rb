@@ -18,6 +18,7 @@ module Security
         IngestFindingSignatures
         IngestFindingEvidence
         IngestVulnerabilityFlags
+        IngestVulnerabilityReads
         IngestVulnerabilityStatistics
         IngestRemediations
         HooksExecution
