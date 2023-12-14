@@ -24,8 +24,11 @@ import externalInstanceAuditEventDestinationHeaderUpdate from 'ee/audit_events/g
 import externalInstanceAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/mutations/delete_instance_external_destination_header.mutation.graphql';
 import deleteInstanceExternalDestinationFilters from 'ee/audit_events/graphql/mutations/delete_instance_external_destination_filters.mutation.graphql';
 import addInstanceExternalDestinationFilters from 'ee/audit_events/graphql/mutations/add_instance_external_destination_filters.mutation.graphql';
+import addExternalDestinationNamespaceFilters from 'ee/audit_events/graphql/mutations/add_external_destination_namespace_filters.mutation.graphql';
+import deleteExternalDestinationNamespaceFilters from 'ee/audit_events/graphql/mutations/delete_external_destination_namespace_filters.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamEventTypeFilters from 'ee/audit_events/components/stream/stream_event_type_filters.vue';
+import StreamNamespaceFilters from 'ee/audit_events/components/stream//stream_namespace_filters.vue';
 import StreamDeleteModal from 'ee/audit_events/components/stream/stream_delete_modal.vue';
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';
 import {
@@ -56,6 +59,13 @@ import {
   destinationInstanceFilterRemoveMutationPopulator,
   destinationInstanceFilterUpdateMutationPopulator,
   destinationInstanceUpdateMutationPopulator,
+  createAllProjects,
+  createAllGroups,
+  mockNamespaceFilter,
+  destinationNamespaceFilterRemoveMutationPopulator,
+  destinationNamespaceFilterAddMutationPopulator,
+  mockAddNamespaceFilters,
+  mockRemoveNamespaceFilters,
 } from '../../mock_data';
 
 jest.mock('~/alert');
@@ -85,6 +95,8 @@ describe('StreamDestinationEditor', () => {
         groupPath: groupPathProvide,
         maxHeaders,
         auditEventDefinitions: mockAuditEventDefinitions,
+        allGroups: createAllGroups(3),
+        allProjects: createAllProjects(5),
       },
       propsData: {
         ...props,
@@ -119,7 +131,9 @@ describe('StreamDestinationEditor', () => {
   const findFilteringHeader = () => wrapper.findByTestId('filtering-header');
   const findEventTypeFilteringHeader = () => wrapper.findByTestId('event-type-filtering-header');
   const findFilters = () => wrapper.findComponent(StreamEventTypeFilters);
-
+  const findNamespaceFilters = () => wrapper.findComponent(StreamNamespaceFilters);
+  const findNamespaceFilteringHeader = () =>
+    wrapper.findByTestId('event-namespace-filtering-header');
   const findHeadersRows = () => findHeadersTable().find('tbody').findAll('tr');
   const findHeadersHeaderCell = (tdIdx) =>
     findHeadersTable().find('thead tr').findAll('th').at(tdIdx);
@@ -182,6 +196,14 @@ describe('StreamDestinationEditor', () => {
 
         it('should render the destination name input', () => {
           expect(findDestinationNameFormGroup().exists()).toBe(true);
+        });
+
+        it('should render the event type filter', () => {
+          expect(findFilters().exists()).toBe(true);
+        });
+
+        it('should render the namespace filter', () => {
+          expect(findNamespaceFilters().exists()).toBe(true);
         });
       });
 
@@ -670,7 +692,7 @@ describe('StreamDestinationEditor', () => {
       });
     });
 
-    describe('destination event filters', () => {
+    describe('destination event type filters', () => {
       describe('renders', () => {
         beforeEach(() => {
           createComponent({ mountFn: mountExtended, props: { item: mockExternalDestinations[1] } });
@@ -779,6 +801,128 @@ describe('StreamDestinationEditor', () => {
           });
 
           findFilters().vm.$emit('input', mockRemoveFilterSelect);
+
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(findAlertErrors()).toHaveLength(1);
+          expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.UPDATING_ERROR);
+          expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+          expect(wrapper.emitted('error')).toBeDefined();
+          expect(wrapper.emitted('updated')).toBeUndefined();
+        });
+      });
+    });
+
+    describe('destination namespace filters', () => {
+      describe('renders', () => {
+        beforeEach(() => {
+          createComponent({ mountFn: mountExtended, props: { item: mockExternalDestinations[1] } });
+        });
+
+        it('displays the correct text', () => {
+          expect(findNamespaceFilteringHeader().text()).toBe(
+            ADD_STREAM_EDITOR_I18N.FILTER_BY_NAMESPACE,
+          );
+        });
+
+        it('passes selected namespace to StreamEventTypeFilters', () => {
+          expect(findNamespaceFilters().props()).toMatchObject({
+            value: mockNamespaceFilter(
+              mockExternalDestinations[1].namespaceFilter.namespace.fullPath,
+            ),
+          });
+        });
+      });
+
+      describe('on change filters', () => {
+        it('removes the current filter from a destination', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationUpdateMutationPopulator());
+
+          const namespaceFilterRemoveSpy = jest
+            .fn()
+            .mockResolvedValue(destinationNamespaceFilterRemoveMutationPopulator());
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item: mockExternalDestinations[1] },
+            apolloHandlers: [
+              [externalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [deleteExternalDestinationNamespaceFilters, namespaceFilterRemoveSpy],
+            ],
+          });
+
+          await findNamespaceFilters().vm.$emit('input', mockRemoveNamespaceFilters);
+
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
+
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(namespaceFilterRemoveSpy).toHaveBeenCalledWith({
+            namespaceFilterId: mockExternalDestinations[1].namespaceFilter.id,
+          });
+
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+          expect(wrapper.emitted('updated')).toBeDefined();
+        });
+
+        it('adds the selected filter for a destination', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationUpdateMutationPopulator());
+
+          const namespaceFilterAddSpy = jest
+            .fn()
+            .mockResolvedValue(destinationNamespaceFilterAddMutationPopulator());
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item: mockExternalDestinations[0] },
+            apolloHandlers: [
+              [externalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [addExternalDestinationNamespaceFilters, namespaceFilterAddSpy],
+            ],
+          });
+
+          await findNamespaceFilters().vm.$emit('input', mockAddNamespaceFilters);
+
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
+
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(namespaceFilterAddSpy).toHaveBeenCalledWith({
+            destinationId: mockExternalDestinations[0].id,
+            projectPath: mockAddNamespaceFilters.namespace,
+          });
+
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+          expect(wrapper.emitted('updated')).toBeDefined();
+        });
+
+        it('should not emit updated event and reports error when network error occurs while saving', async () => {
+          const sentryError = new Error('Network error');
+          const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationUpdateMutationPopulator());
+          const filterRemoveSpy = jest.fn().mockRejectedValue(sentryError);
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item: mockExternalDestinations[1] },
+            apolloHandlers: [
+              [externalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [deleteExternalDestinationNamespaceFilters, filterRemoveSpy],
+            ],
+          });
+
+          findNamespaceFilters().vm.$emit('input', mockRemoveNamespaceFilters);
 
           findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
           await waitForPromises();

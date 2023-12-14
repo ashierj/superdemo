@@ -10,6 +10,8 @@ import {
   removeGcpLoggingAuditEventsStreamingDestination,
   addAmazonS3AuditEventsStreamingDestination,
   removeAmazonS3AuditEventsStreamingDestination,
+  addNamespaceFilter,
+  removeNamespaceFilter,
 } from 'ee/audit_events/graphql/cache_update';
 import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
 import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_external_destinations.query.graphql';
@@ -34,6 +36,7 @@ import {
   instanceGcpLoggingDestinationCreateMutationPopulator,
   mockAmazonS3Destinations,
   amazonS3DestinationCreateMutationPopulator,
+  makeNamespaceFilter,
 } from '../mock_data';
 
 describe('Audit Events GraphQL cache updates', () => {
@@ -327,6 +330,59 @@ describe('Audit Events GraphQL cache updates', () => {
             store: cache,
             destinationId: 'non-existing-id',
             filtersToRemove: [],
+          }),
+        ).not.toThrow();
+      });
+    });
+
+    describe('addNamespaceFilter', () => {
+      it('adds namespace filters on specified destination', () => {
+        const [, secondDestination] = getDestinations(GROUP1_PATH);
+
+        const newFilter = makeNamespaceFilter();
+        addNamespaceFilter({
+          store: cache,
+          fullPath: GROUP1_PATH,
+          destinationId: secondDestination.id,
+          filter: newFilter,
+        });
+
+        const [, secondDestinationAfterUpdate] = getDestinations(GROUP1_PATH);
+
+        expect(secondDestinationAfterUpdate.namespaceFilter).toStrictEqual(newFilter);
+      });
+
+      it('does not throw on non-existing destination', () => {
+        expect(() =>
+          addNamespaceFilter({
+            store: cache,
+            destinationId: 'non-existing-id',
+            filter: [],
+          }),
+        ).not.toThrow();
+      });
+    });
+
+    describe('removeNamespaceFilter', () => {
+      it('removes namespace filters on specified destination', () => {
+        const [firstDestination] = getDestinations(GROUP1_PATH);
+
+        removeNamespaceFilter({
+          store: cache,
+          fullPath: GROUP1_PATH,
+          destinationId: firstDestination.id,
+        });
+
+        const [firstDestinationAfterUpdate] = getDestinations(GROUP1_PATH);
+
+        expect(firstDestinationAfterUpdate.namespaceFilter).toStrictEqual(null);
+      });
+
+      it('does not throw on non-existing destination', () => {
+        expect(() =>
+          removeNamespaceFilter({
+            store: cache,
+            destinationId: 'non-existing-id',
           }),
         ).not.toThrow();
       });

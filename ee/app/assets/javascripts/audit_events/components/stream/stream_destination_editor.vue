@@ -32,6 +32,9 @@ import externalInstanceAuditEventDestinationHeaderUpdate from '../../graphql/mut
 import externalInstanceAuditEventDestinationHeaderDelete from '../../graphql/mutations/delete_instance_external_destination_header.mutation.graphql';
 import deleteInstanceExternalDestinationFilters from '../../graphql/mutations/delete_instance_external_destination_filters.mutation.graphql';
 import addInstanceExternalDestinationFilters from '../../graphql/mutations/add_instance_external_destination_filters.mutation.graphql';
+import addExternalDestinationNamespaceFilters from '../../graphql/mutations/add_external_destination_namespace_filters.mutation.graphql';
+import deleteExternalDestinationNamespaceFilters from '../../graphql/mutations/delete_external_destination_namespace_filters.mutation.graphql';
+
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
@@ -45,9 +48,12 @@ import {
   removeAuditEventStreamingHeader,
   updateEventTypeFilters,
   removeEventTypeFilters,
+  addNamespaceFilter,
+  removeNamespaceFilter,
 } from '../../graphql/cache_update';
 import { mapAllMutationErrors, mapItemHeadersToFormData } from '../../utils';
 import StreamEventTypeFilters from './stream_event_type_filters.vue';
+import StreamNamespaceFilters from './stream_namespace_filters.vue';
 import StreamDeleteModal from './stream_delete_modal.vue';
 
 const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
@@ -70,6 +76,7 @@ export default {
     GlSprintf,
     GlTableLite,
     StreamEventTypeFilters,
+    StreamNamespaceFilters,
     StreamDeleteModal,
     ClipboardButton,
   },
@@ -92,6 +99,7 @@ export default {
       loading: false,
       headers: [createBlankHeader()],
       filters: [],
+      namespaceFilter: { namespace: '', type: 'project' },
     };
   },
   computed: {
@@ -125,6 +133,7 @@ export default {
         !this.headersToUpdate.length &&
         !this.headersToDelete.length &&
         !this.isEventTypeUpdated &&
+        !this.isNamespaceUpdated &&
         this.item?.destinationUrl === this.destinationUrl &&
         this.item?.name === this.destinationName
       );
@@ -162,6 +171,8 @@ export default {
             headersDestroyString: 'auditEventsStreamingInstanceHeadersDestroy',
             filterAddMutation: addInstanceExternalDestinationFilters,
             filterDestroyMutation: deleteInstanceExternalDestinationFilters,
+            namespaceFilterAddMutation: '',
+            namespaceFilterDestroyMutation: '',
           }
         : {
             destinationCreateMutation: externalAuditEventDestinationCreate,
@@ -175,6 +186,8 @@ export default {
             headersDestroyString: 'auditEventsStreamingHeadersDestroy',
             filterAddMutation: addExternalDestinationFilters,
             filterDestroyMutation: deleteExternalDestinationFilters,
+            namespaceFilterAddMutation: addExternalDestinationNamespaceFilters,
+            namespaceFilterDestroyMutation: deleteExternalDestinationNamespaceFilters,
           };
     },
     headersToAdd() {
@@ -202,6 +215,12 @@ export default {
     isEventTypeUpdated() {
       return !isEqual(this.item?.eventTypeFilters || [], this.filters);
     },
+    isNamespaceUpdated() {
+      return !isEqual(
+        this.item?.namespaceFilter?.namespace?.fullPath || '',
+        this.namespaceFilter?.namespace,
+      );
+    },
   },
   watch: {
     item() {
@@ -213,6 +232,12 @@ export default {
     this.destinationUrl = this.item.destinationUrl;
     this.destinationName = this.item.name;
     this.filters = this.item.eventTypeFilters || [];
+    this.namespaceFilter.namespace = this.item?.namespaceFilter?.namespace?.fullPath || '';
+    if (
+      this.item?.namespaceFilter?.namespace?.id.includes('gid://gitlab/Namespaces::GroupNamespace')
+    ) {
+      this.namespaceFilter.type = 'group';
+    }
   },
   methods: {
     onDeleting() {
@@ -468,6 +493,66 @@ export default {
 
       return error;
     },
+    async removeDestinationNamespaceFilters(destinationId, namespaceFilterId) {
+      const { groupPath: fullPath } = this;
+      const { data } = await this.$apollo.mutate({
+        mutation: this.destinationVariables.namespaceFilterDestroyMutation,
+        variables: {
+          namespaceFilterId,
+        },
+        update(cache, { data: updateData }) {
+          const { errors } = updateData.auditEventsStreamingHttpNamespaceFiltersDelete;
+
+          if (errors.length) {
+            return;
+          }
+
+          removeNamespaceFilter({
+            store: cache,
+            fullPath,
+            destinationId,
+          });
+        },
+      });
+      const { errors } = data.auditEventsStreamingHttpNamespaceFiltersDelete;
+      const error = errors || [];
+
+      return error;
+    },
+    async addDestinationNamespaceFilters(destinationId, filter) {
+      const { groupPath: fullPath } = this;
+      const variables = { destinationId };
+      if (filter.type === 'group') {
+        variables.groupPath = filter.namespace;
+      } else {
+        variables.projectPath = filter.namespace;
+      }
+      const { data } = await this.$apollo.mutate({
+        mutation: this.destinationVariables.namespaceFilterAddMutation,
+        variables,
+        update(cache, { data: updateData }) {
+          const {
+            errors,
+            namespaceFilter,
+          } = updateData.auditEventsStreamingHttpNamespaceFiltersAdd;
+
+          if (errors.length) {
+            return;
+          }
+
+          addNamespaceFilter({
+            store: cache,
+            fullPath,
+            destinationId,
+            filter: namespaceFilter,
+          });
+        },
+      });
+      const { errors } = data.auditEventsStreamingHttpNamespaceFiltersAdd;
+      const error = errors || [];
+
+      return error;
+    },
     async addDestination() {
       let destinationId = null;
 
@@ -498,6 +583,15 @@ export default {
             this.filters,
           );
           errors.push(...addDestinationFiltersErrors);
+        }
+
+        if (this.namespaceFilter?.namespace) {
+          const addDestinationNamespaceFiltersErrors = await this.addDestinationNamespaceFilters(
+            destinationId,
+            this.namespaceFilter,
+          );
+          if (addDestinationNamespaceFiltersErrors?.length)
+            errors.push(...addDestinationNamespaceFiltersErrors);
         }
 
         if (errors.length > 0) {
@@ -551,6 +645,26 @@ export default {
               addFilters,
             );
             if (addDestinationFiltersErrors?.length) errors.push(...addDestinationFiltersErrors);
+          }
+        }
+
+        if (this.isNamespaceUpdated) {
+          if (this.item?.namespaceFilter?.id) {
+            const removeDestinationNamespaceFiltersErrors = await this.removeDestinationNamespaceFilters(
+              this.item?.id,
+              this.item?.namespaceFilter?.id,
+            );
+            if (removeDestinationNamespaceFiltersErrors?.length)
+              errors.push(...removeDestinationNamespaceFiltersErrors);
+          }
+
+          if (this.namespaceFilter?.namespace) {
+            const addDestinationNamespaceFiltersErrors = await this.addDestinationNamespaceFilters(
+              this.item?.id,
+              this.namespaceFilter,
+            );
+            if (addDestinationNamespaceFiltersErrors?.length)
+              errors.push(...addDestinationNamespaceFiltersErrors);
           }
         }
 
@@ -813,6 +927,15 @@ export default {
             >{{ $options.i18n.FILTER_BY_AUDIT_EVENT_TYPE }}</label
           >
           <stream-event-type-filters v-model="filters" />
+        </div>
+        <div v-if="!isInstance" class="gl-ml-5">
+          <label
+            class="gl-display-block gl-mb-3 gl-mt-5"
+            for="audit-event-namespace-filter"
+            data-testid="event-namespace-filtering-header"
+            >{{ $options.i18n.FILTER_BY_NAMESPACE }}</label
+          >
+          <stream-namespace-filters v-model="namespaceFilter" />
         </div>
       </div>
 

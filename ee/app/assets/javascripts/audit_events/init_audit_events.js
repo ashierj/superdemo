@@ -26,6 +26,8 @@ export default (selector) => {
     filterViewOnly,
     filterTokenValues,
     auditEventDefinitions,
+    allGroups,
+    allProjects,
   } = el.dataset;
 
   const store = createStore();
@@ -55,6 +57,8 @@ export default (selector) => {
       filterViewOnly: parseBoolean(filterViewOnly) || false,
       filterTokenValues: filterTokenValues ? JSON.parse(filterTokenValues) : [],
       auditEventDefinitions: auditEventDefinitions ? JSON.parse(auditEventDefinitions) : [],
+      allGroups: allGroups ? JSON.parse(allGroups) : [],
+      allProjects: allProjects ? JSON.parse(allProjects) : [],
     },
     apolloProvider,
     render: (createElement) => createElement(AuditEventsApp),

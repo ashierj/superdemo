@@ -121,6 +121,7 @@ export const ADD_STREAM_EDITOR_I18N = {
   DELETE_BUTTON_TEXT: s__('AuditStreams|Delete destination'),
   HEADER_FILTERING: s__('AuditStreams|Event filtering (optional)'),
   FILTER_BY_AUDIT_EVENT_TYPE: s__('AuditStreams|Filter by audit event type'),
+  FILTER_BY_NAMESPACE: s__('AuditStreams|Filter by groups or projects'),
   GCP_LOGGING_DESTINATION_NAME_LABEL: s__('AuditStreams|Destination Name'),
   GCP_LOGGING_DESTINATION_NAME_PLACEHOLDER: s__('AuditStreams|Destination Name'),
   GCP_LOGGING_DESTINATION_PROJECT_ID_LABEL: s__('AuditStreams|Project ID'),
@@ -180,8 +181,12 @@ export const AUDIT_STREAMS_NETWORK_ERRORS = {
 
 export const AUDIT_STREAMS_FILTERING = {
   SELECT_EVENTS: s__('AuditStreams|Select events'),
+  SELECT_PROJECTS: s__('AuditStreams|Select projects'),
+  SELECT_NAMESPACE: s__('AuditStreams|Select namespace'),
   SELECT_ALL: __('Select all'),
   UNSELECT_ALL: __('Unselect all'),
+  NO_RESULT_TEXT: __('No results found'),
+  SEARCH_PLACEHOLDER: __('Search'),
 };
 
 export const MAX_HEADERS = 20;

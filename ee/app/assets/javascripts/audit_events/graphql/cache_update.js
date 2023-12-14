@@ -153,6 +153,42 @@ export function removeEventTypeFilters({ store, isInstance, destinationId, filte
   store.writeFragment({ ...destinationIdRecord, data: destination });
 }
 
+export function addNamespaceFilter({ store, fullPath, destinationId, filter }) {
+  const destinationIdRecord =
+    fullPath === 'instance'
+      ? makeInstanceDestinationIdRecord(store, destinationId)
+      : makeDestinationIdRecord(store, destinationId);
+
+  const sourceDestination = store.readFragment(destinationIdRecord);
+
+  if (!sourceDestination) {
+    return;
+  }
+
+  const destination = produce(sourceDestination, (draftDestination) => {
+    draftDestination.namespaceFilter = filter;
+  });
+  store.writeFragment({ ...destinationIdRecord, data: destination });
+}
+
+export function removeNamespaceFilter({ store, fullPath, destinationId }) {
+  const destinationIdRecord =
+    fullPath === 'instance'
+      ? makeInstanceDestinationIdRecord(store, destinationId)
+      : makeDestinationIdRecord(store, destinationId);
+
+  const sourceDestination = store.readFragment(destinationIdRecord);
+
+  if (!sourceDestination) {
+    return;
+  }
+
+  const destination = produce(sourceDestination, (draftDestination) => {
+    draftDestination.namespaceFilter = null;
+  });
+  store.writeFragment({ ...destinationIdRecord, data: destination });
+}
+
 export function addGcpLoggingAuditEventsStreamingDestination({ store, fullPath, newDestination }) {
   const getGcpLoggingDestinationsQuery =
     fullPath === 'instance' ? instanceGcpLoggingDestinationsQuery : gcpLoggingDestinationsQuery;

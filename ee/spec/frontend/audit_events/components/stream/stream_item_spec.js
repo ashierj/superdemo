@@ -132,6 +132,21 @@ describe('StreamItem', () => {
       });
     });
 
+    describe('when an item has namespace filters', () => {
+      beforeEach(() => {
+        createComponent({ item: destinationWithFilters });
+      });
+
+      it('should show filter badge', () => {
+        expect(findFilterBadge().text()).toBe(STREAM_ITEMS_I18N.FILTER_BADGE_LABEL);
+        expect(findFilterBadge().attributes('id')).toBe(destinationWithFilters.id);
+      });
+
+      it('renders a popover', () => {
+        expect(wrapper.findByTestId('filter-popover').element).toMatchSnapshot();
+      });
+    });
+
     describe('when an item has no filter', () => {
       beforeEach(() => {
         createComponent();
