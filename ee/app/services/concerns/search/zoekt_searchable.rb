@@ -31,9 +31,8 @@ module Search
     end
 
     def zoekt_nodes
-      @zoekt_nodes ||= [ # Note: there will be more zoekt nodes whenever replicas are introduced.
-        ::Zoekt::IndexedNamespace.find_by_namespace_id(zoekt_searchable_scope.root_ancestor.id).node
-      ]
+      # Note: there will be more zoekt nodes whenever replicas are introduced.
+      @zoekt_nodes ||= ::Search::Zoekt::Node.for_namespace(zoekt_searchable_scope.root_ancestor.id)
     end
 
     def zoekt_node_available_for_search?

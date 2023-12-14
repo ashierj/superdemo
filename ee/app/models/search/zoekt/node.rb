@@ -18,11 +18,9 @@ module Search
 
       attribute :metadata, :ind_jsonb # for indifferent access
 
-      def self.for_namespace(root_namespace_id:)
-        find_by(
-          id: ::Zoekt::IndexedNamespace.where(namespace_id: root_namespace_id).select(:zoekt_node_id)
-        )
-      end
+      scope :for_namespace, ->(namespace_id) {
+        joins(:indexed_namespaces).where(indexed_namespaces: { namespace_id: namespace_id })
+      }
 
       def self.find_or_initialize_by_task_request(params)
         params = params.with_indifferent_access

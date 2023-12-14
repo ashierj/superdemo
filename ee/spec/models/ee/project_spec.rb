@@ -2469,8 +2469,8 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   describe '#use_zoekt?', feature_category: :global_search do
     let_it_be(:project) { create(:project, :public) }
 
-    it 'delegates to ::Zoekt::IndexedNamespace' do
-      expect(::Zoekt::IndexedNamespace).to receive(:enabled_for_project?).with(project).and_return(true)
+    it 'delegates to ::Search::Zoekt.index?' do
+      expect(::Search::Zoekt).to receive(:index?).with(project).and_return(true)
 
       expect(project.use_zoekt?).to eq(true)
     end
