@@ -1,4 +1,5 @@
 import VueRouter from 'vue-router';
+import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GroupSecretsApp from 'ee/ci/secrets/components/group_secrets_app.vue';
@@ -7,6 +8,7 @@ describe('GroupSecretsApp', () => {
   let wrapper;
 
   Vue.use(VueRouter);
+  Vue.use(VueApollo);
 
   const findRouterView = () => wrapper.findComponent({ ref: 'router-view' });
 

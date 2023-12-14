@@ -8,19 +8,11 @@ describe('SecretFormWrapper component', () => {
   const findPageTitle = () => wrapper.find('h1').text();
   const findSecretForm = () => wrapper.findComponent(SecretForm);
 
-  const $route = {
-    params: {
-      key: 'project_secret_1',
-    },
-  };
-
   const createComponent = (props) => {
     wrapper = shallowMountExtended(SecretFormWrapper, {
       propsData: {
+        secretKey: 'group_secret_1',
         ...props,
-      },
-      mocks: {
-        $route,
       },
     });
   };
@@ -35,7 +27,7 @@ describe('SecretFormWrapper component', () => {
   it('shows secret edit form when editing', () => {
     createComponent({ isEditing: true });
 
-    expect(findPageTitle()).toBe(`Edit ${$route.params.key}`);
+    expect(findPageTitle()).toBe(`Edit group_secret_1`);
     expect(findSecretForm().props('submitButtonText')).toBe('Save changes');
   });
 });
