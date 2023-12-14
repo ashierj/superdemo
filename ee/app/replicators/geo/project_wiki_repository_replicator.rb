@@ -34,16 +34,6 @@ module Geo
       model_record.wiki
     end
 
-    override :snapshot_enabled?
-    def snapshot_enabled?
-      true
-    end
-
-    override :snapshot_url
-    def snapshot_url
-      ::Gitlab::Geo.primary_node.api_url("projects/#{model_record.project.id}/snapshot?wiki=1")
-    end
-
     override :verify
     def verify
       # Historically some projects never had their wiki repos initialized;
