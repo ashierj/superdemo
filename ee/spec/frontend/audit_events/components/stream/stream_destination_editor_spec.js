@@ -449,6 +449,24 @@ describe('StreamDestinationEditor', () => {
         expect(findAddStreamBtn().props('disabled')).toBe(false);
       });
 
+      it('keeps add button disabled when invalid header with the same name is deleted', async () => {
+        findDestinationName().setValue('Name');
+        findDestinationUrl().setValue('https://example.test');
+
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(0, { name: 'a', value: 'b' });
+
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'a', value: 'c' });
+
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'a', value: 'c' });
+
+        await findHeaderDeleteBtn(1).trigger('click');
+
+        expect(findAddStreamBtn().props('disabled')).toBe(true);
+      });
+
       it('should show the maximum number of rows message only when the maximum is reached', async () => {
         await findAddHeaderBtn().trigger('click');
         await findAddHeaderBtn().trigger('click');

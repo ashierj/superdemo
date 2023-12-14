@@ -603,11 +603,9 @@ export default {
     },
     removeHeader(index) {
       const [removedHeader] = this.headers.splice(index, 1);
-      const firstSameHeaderWithError = this.headers.find(
-        (h) => h.name === removedHeader.name && h.validationErrors.name,
-      );
-      if (firstSameHeaderWithError) {
-        firstSameHeaderWithError.validationErrors.name = '';
+      const firstSameHeader = this.headers.find((h) => h.name === removedHeader.name);
+      if (firstSameHeader) {
+        firstSameHeader.validationErrors.name = '';
       }
     },
     updateEventTypeFilters(newFilters) {
