@@ -10675,7 +10675,10 @@ msgstr ""
 msgid "CiVariables|Variables specified here are %{boldStart}expanded%{boldEnd} and not %{boldStart}masked.%{boldEnd}"
 msgstr ""
 
-msgid "CiVariables|Variables store information, like passwords and secret keys, that you can use in job scripts. Each %{entity} can define a maximum of %{limit} variables."
+msgid "CiVariables|Variables store information that you can use in job scripts. All projects on the instance can use these variables."
+msgstr ""
+
+msgid "CiVariables|Variables store information that you can use in job scripts. Each %{entity} can define a maximum of %{limit} variables."
 msgstr ""
 
 msgid "CiVariables|You can use CI/CD variables with the same name in different places, but the variables might overwrite each other. %{linkStart}What is the order of precedence for variables?%{linkEnd}"
@@ -53312,9 +53315,6 @@ msgid "Variables can be:"
 msgstr ""
 
 msgid "Variables can have several attributes."
-msgstr ""
-
-msgid "Variables store information, like passwords and secret keys, that you can use in job scripts. All projects on the instance can use these variables."
 msgstr ""
 
 msgid "Various container registry settings."
