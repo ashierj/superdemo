@@ -291,6 +291,11 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
       let(:scope) { 'wiki_blobs' }
       let(:search) { 'term' }
 
+      it 'adds correct routing field in the elasticsearch request' do
+        described_class.new(nil, search_level, search: search).execute.objects(scope)
+        assert_routing_field("n_#{search_level.root_ancestor.id}")
+      end
+
       context 'for project wikis' do
         let_it_be_with_reload(:project) { create(:project, :wiki_repo, :in_group) }
 

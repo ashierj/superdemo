@@ -27,7 +27,7 @@ module Gitlab
 
       override :scope_options
       def scope_options(scope)
-        # User uses group_id for namespace_yquery
+        # User uses group_id for namespace_query
         case scope
         when :users
           super.except(:group_ids) # User uses group_id for namespace_query
