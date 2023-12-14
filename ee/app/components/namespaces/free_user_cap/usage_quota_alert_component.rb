@@ -64,10 +64,6 @@ module Namespaces
         ).html_safe % { free_user_limit: free_user_limit }
       end
 
-      def container_class
-        content_class
-      end
-
       def subscription_expired?
         # sometimes namespaces don't have subscriptions, so we need to protect here
         namespace.gitlab_subscription&.expired?

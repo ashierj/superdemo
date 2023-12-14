@@ -42,7 +42,7 @@ RSpec.describe Namespaces::FreeUserCap::EnforcementAlertComponent, :saas, :aggre
           href: group_billings_path(namespace, source: 'user-limit-alert-enforcement')
         )
 
-        expect(page).to have_css(".gl-overflow-auto.#{content_class}")
+        expect(page).to have_css(".#{content_class}")
 
         expect(page).to have_css('[data-testid="user-over-limit-free-plan-alert"]')
       end

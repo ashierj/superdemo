@@ -55,10 +55,6 @@ module Namespaces
         }
       end
 
-      def container_class
-        content_class
-      end
-
       def over_limit_message
         n_(
           "When your trial ends, you'll move to the Free tier, which has a limit of " \

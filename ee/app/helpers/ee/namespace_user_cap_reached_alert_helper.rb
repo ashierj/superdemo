@@ -20,6 +20,10 @@ module EE
       "hide_user_cap_alert_#{root_namespace.id}"
     end
 
+    def content_class
+      "container-limited" unless current_user.layout == "fluid"
+    end
+
     private
 
     def alert_has_been_dismissed?(root_namespace)

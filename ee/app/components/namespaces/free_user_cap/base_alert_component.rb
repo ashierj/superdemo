@@ -91,10 +91,6 @@ module Namespaces
         '</a>'.html_safe
       end
 
-      def container_class
-        "gl-overflow-auto #{content_class}"
-      end
-
       def free_user_limit
         ::Namespaces::FreeUserCap.dashboard_limit
       end
