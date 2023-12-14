@@ -4,10 +4,12 @@ import store from './store';
 
 let whatsNewApp;
 
-export default (el, versionDigest) => {
+export default (versionDigest) => {
   if (whatsNewApp) {
     store.dispatch('openDrawer');
   } else {
+    const el = document.createElement('div');
+    document.body.append(el);
     whatsNewApp = new Vue({
       el,
       store,
