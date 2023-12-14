@@ -15513,6 +15513,9 @@ msgstr ""
 msgid "DastConfig|Not enabled"
 msgstr ""
 
+msgid "DastProfiles|%{linkStart}Headers may appear in vulnerability reports%{linkEnd}."
+msgstr ""
+
 msgid "DastProfiles|/graphql"
 msgstr ""
 

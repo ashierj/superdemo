@@ -8,15 +8,15 @@ const [profile] = scannerProfiles;
 describe('DastScannerProfileSummary', () => {
   let wrapper;
 
-  const createWrapper = (props = {}) => {
+  const createWrapper = (options = {}) => {
     wrapper = shallowMount(App, {
       propsData: {
         profile,
-        ...props,
       },
       stubs: {
         DastProfileSummaryCard,
       },
+      ...options,
     });
   };
 
@@ -24,5 +24,24 @@ describe('DastScannerProfileSummary', () => {
     createWrapper();
 
     expect(wrapper.element).toMatchSnapshot();
+  });
+
+  describe('when on-demand browser based scans feature flag is enabled', () => {
+    it('does not show AJAX Spider summary line', () => {
+      createWrapper({
+        provide: { glFeatures: { dastOdsBrowserBasedScanner: true } },
+      });
+
+      expect(wrapper.find('[data-testid="summary-cell-ajax-spider"]').exists()).toBe(false);
+    });
+  });
+
+  describe('when on-demand browser based scans feature flag is disabled', () => {
+    it('does show AJAX Spider summary line', () => {
+      createWrapper({
+        provide: { glFeatures: { dastOdsBrowserBasedScanner: false } },
+      });
+      expect(wrapper.find('[data-testid="summary-cell-ajax-spider"]').exists()).toBe(true);
+    });
   });
 });
