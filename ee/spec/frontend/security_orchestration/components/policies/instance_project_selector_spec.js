@@ -55,6 +55,27 @@ const querySuccess = {
   },
 };
 
+const queryRepeat = {
+  data: {
+    projects: {
+      nodes: [
+        {
+          id: 'gid://gitlab/Project/5000163',
+          name: 'Pages Test Again',
+          nameWithNamespace: 'mixed-vulnerabilities-01 / Pages Test Again',
+        },
+      ],
+      pageInfo: {
+        __typename: 'PageInfo',
+        hasNextPage: true,
+        hasPreviousPage: false,
+        startCursor: 'a',
+        endCursor: 'z',
+      },
+    },
+  },
+};
+
 const queryError = {
   errors: [
     {
@@ -72,6 +93,7 @@ const mockGetUsersProjects = {
   empty: { data: { projects: { nodes: [], pageInfo: defaultPageInfo } } },
   error: queryError,
   success: querySuccess,
+  repeat: queryRepeat,
 };
 
 const createMockApolloProvider = (queryResolver) => {
@@ -127,6 +149,7 @@ describe('InstanceProjectSelector Component', () => {
       findListbox().vm.$emit('search', 'abc');
       await waitForPromises();
       expect(querySpy).toHaveBeenCalledTimes(1);
+      querySpy.mockResolvedValue(mockGetUsersProjects.repeat);
       findListbox().vm.$emit('bottom-reached');
       await waitForPromises();
       expect(querySpy).toHaveBeenCalledTimes(2);
