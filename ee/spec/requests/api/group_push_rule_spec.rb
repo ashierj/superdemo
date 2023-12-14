@@ -109,6 +109,18 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
 
           expect(response).to match_response_schema('entities/group_push_rules')
         end
+
+        context 'when group name contains a dot' do
+          let_it_be(:group) { create(:group, path: 'group.path', push_rule: create(:push_rule)) }
+
+          it 'returns group push rule' do
+            get api("/groups/#{group.path}/push_rule", admin, admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to be_an Hash
+            expect(json_response['id']).to eq(group.push_rule_id)
+          end
+        end
       end
 
       context 'when reject_unsigned_commits is unavailable' do

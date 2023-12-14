@@ -116,6 +116,18 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
         expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
+
+    context 'when project name contains a dot' do
+      let_it_be(:project) { create(:project, creator_id: user.id, namespace: user.namespace, path: 'project.path') }
+
+      it "returns project push rule" do
+        get api("/projects/#{CGI.escape(project.full_path)}/push_rule", user)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to be_an Hash
+        expect(json_response['project_id']).to eq(project.id)
+      end
+    end
   end
 
   describe "POST /projects/:id/push_rule" do
