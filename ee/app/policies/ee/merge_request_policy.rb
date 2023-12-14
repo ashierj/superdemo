@@ -41,7 +41,7 @@ module EE
 
       condition(:approval_rules_licence_enabled, scope: :subject) do
         @subject.target_project.licensed_feature_available?(:coverage_check_approval_rule) ||
-        @subject.target_project.licensed_feature_available?(:report_approver_rules)
+          @subject.target_project.licensed_feature_available?(:report_approver_rules)
       end
 
       with_scope :subject
@@ -122,6 +122,14 @@ module EE
 
       rule { custom_roles_allowed & role_enables_admin_merge_request }.policy do
         enable :approve_merge_request
+      end
+
+      rule { can?(:read_merge_request) }.policy do
+        enable :generate_diff_summary
+      end
+
+      rule { llm_bot }.policy do
+        enable :generate_diff_summary
       end
 
       rule do

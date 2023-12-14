@@ -507,6 +507,35 @@ RSpec.describe MergeRequestPolicy, :aggregate_failures, feature_category: :code_
     end
   end
 
+  describe 'when enabling generate diff summary permission' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:user) { create(:user) }
+
+    context 'when can read_merge_request' do
+      before do
+        project.add_developer(user)
+      end
+
+      it 'allows to generate_diff_summary' do
+        expect(policy_for(user)).to be_allowed(:generate_diff_summary)
+      end
+    end
+
+    context 'when can not read_merge_request' do
+      it 'does not allow to generate_diff_summary' do
+        expect(policy_for(user)).not_to be_allowed(:generate_diff_summary)
+      end
+
+      context 'and when is the LLM bot' do
+        let(:user) { create(:user, :llm_bot) }
+
+        it 'allows to generate_diff_summary' do
+          expect(policy_for(user)).to be_allowed(:generate_diff_summary)
+        end
+      end
+    end
+  end
+
   describe 'summarize_merge_request policy' do
     let_it_be(:project) { create(:project) }
     let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
