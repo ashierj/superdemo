@@ -6,7 +6,6 @@ import { parseBoolean } from '~/lib/utils/common_utils';
 import createDefaultClient from '~/lib/graphql';
 
 import { createRouter } from 'ee/compliance_dashboard/router';
-import ReportsApp from './components/reports_app.vue';
 
 export default () => {
   const el = document.getElementById('js-compliance-report');
@@ -49,14 +48,11 @@ export default () => {
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
       complianceFrameworkReportUiEnabled: parseBoolean(complianceFrameworkReportUiEnabled),
+
+      mergeCommitsCsvExportPath,
+      violationsCsvExportPath,
+      frameworksCsvExportPath,
     },
-    render: (createElement) =>
-      createElement(ReportsApp, {
-        props: {
-          mergeCommitsCsvExportPath,
-          violationsCsvExportPath,
-          frameworksCsvExportPath,
-        },
-      }),
+    render: (createElement) => createElement('router-view'),
   });
 };

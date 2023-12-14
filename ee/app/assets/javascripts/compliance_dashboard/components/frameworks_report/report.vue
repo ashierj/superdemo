@@ -80,11 +80,8 @@ export default {
       {{ $options.i18n.queryError }}
     </gl-alert>
 
-    <frameworks-table
-      v-else
-      :is-loading="isLoading"
-      :frameworks="frameworks"
-      :projects="projects"
-    />
+    <template v-else>
+      <frameworks-table :is-loading="isLoading" :frameworks="frameworks" :projects="projects" />
+    </template>
   </section>
 </template>

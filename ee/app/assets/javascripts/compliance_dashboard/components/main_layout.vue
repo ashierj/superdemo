@@ -26,24 +26,13 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['complianceFrameworkReportUiEnabled'],
-  props: {
-    mergeCommitsCsvExportPath: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    frameworksCsvExportPath: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    violationsCsvExportPath: {
-      type: String,
-      required: false,
-      default: '',
-    },
-  },
+  inject: [
+    'mergeCommitsCsvExportPath',
+    'frameworksCsvExportPath',
+    'violationsCsvExportPath',
+
+    'complianceFrameworkReportUiEnabled',
+  ],
   computed: {
     tabIndex() {
       const currentTabs = [

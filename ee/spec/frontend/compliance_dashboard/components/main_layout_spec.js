@@ -3,7 +3,7 @@ import { GlTabs } from '@gitlab/ui';
 import { extendedWrapper, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import { __ } from '~/locale';
-import ComplianceReportsApp from 'ee/compliance_dashboard/components/reports_app.vue';
+import MainLayout from 'ee/compliance_dashboard/components/main_layout.vue';
 import ReportHeader from 'ee/compliance_dashboard/components/shared/report_header.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { mockTracking } from 'helpers/tracking_helper';
@@ -16,7 +16,7 @@ import {
 describe('ComplianceReportsApp component', () => {
   let wrapper;
   let trackingSpy;
-  const defaultProps = {
+  const defaultInjects = {
     groupPath: 'group-path',
     mergeCommitsCsvExportPath: '/csv',
     frameworksCsvExportPath: '/framework_report.csv',
@@ -34,18 +34,9 @@ describe('ComplianceReportsApp component', () => {
   const findViolationsTab = () => wrapper.findByTestId('violations-tab-content');
   const findStandardsAdherenceTab = () => wrapper.findByTestId('standards-adherence-tab-content');
 
-  const createComponent = (
-    props = {},
-    mountFn = shallowMountExtended,
-    mocks = {},
-    provide = {},
-  ) => {
+  const createComponent = (mountFn = shallowMountExtended, mocks = {}, provide = {}) => {
     return extendedWrapper(
-      mountFn(ComplianceReportsApp, {
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
+      mountFn(MainLayout, {
         mocks: {
           $router: { push: jest.fn() },
           $route: {
@@ -58,6 +49,7 @@ describe('ComplianceReportsApp component', () => {
         },
         provide: {
           complianceFrameworkReportUiEnabled: false,
+          ...defaultInjects,
           ...provide,
         },
       }),
@@ -66,7 +58,7 @@ describe('ComplianceReportsApp component', () => {
 
   describe('adherence standards report', () => {
     beforeEach(() => {
-      wrapper = createComponent(defaultProps, mount, {}, {});
+      wrapper = createComponent(mount);
     });
 
     it('renders the standards adherence report tab', () => {
@@ -76,7 +68,7 @@ describe('ComplianceReportsApp component', () => {
 
   describe('violations report', () => {
     beforeEach(() => {
-      wrapper = createComponent(defaultProps, mount);
+      wrapper = createComponent(mount);
     });
 
     it('renders the violations report tab', () => {
@@ -98,14 +90,14 @@ describe('ComplianceReportsApp component', () => {
     });
 
     it('does not render the merge commit export button when there is no CSV path', () => {
-      wrapper = createComponent({ mergeCommitsCsvExportPath: null }, mount);
+      wrapper = createComponent(mount, {}, { mergeCommitsCsvExportPath: null });
       findTabs().vm.$emit('input', 0);
 
       expect(findMergeCommitsExportButton().exists()).toBe(false);
     });
 
     it('does not render the violations export button when there is no CSV path', () => {
-      wrapper = createComponent({ violationsCsvExportPath: null }, mount);
+      wrapper = createComponent(mount, {}, { violationsCsvExportPath: null });
       findTabs().vm.$emit('input', 0);
 
       expect(findViolationsExportButton().exists()).toBe(false);
@@ -115,7 +107,6 @@ describe('ComplianceReportsApp component', () => {
   describe('projects report', () => {
     beforeEach(() => {
       wrapper = createComponent(
-        defaultProps,
         mount,
         {
           $route: {
@@ -149,11 +140,15 @@ describe('ComplianceReportsApp component', () => {
     });
 
     it('does not render the projects export button when there is no CSV path', () => {
-      wrapper = createComponent({ frameworksCsvExportPath: null }, mount, {
-        $route: {
-          name: ROUTE_FRAMEWORKS,
+      wrapper = createComponent(
+        mount,
+        {
+          $route: {
+            name: ROUTE_FRAMEWORKS,
+          },
         },
-      });
+        { frameworksCsvExportPath: null },
+      );
 
       expect(findProjectFrameworksExportButton().exists()).toBe(false);
     });
@@ -162,7 +157,6 @@ describe('ComplianceReportsApp component', () => {
   describe('frameworks report', () => {
     beforeEach(() => {
       wrapper = createComponent(
-        defaultProps,
         mount,
         {
           $route: {
@@ -185,7 +179,6 @@ describe('ComplianceReportsApp component', () => {
   describe('tracking', () => {
     beforeEach(() => {
       wrapper = createComponent(
-        defaultProps,
         mount,
         {
           $route: {
@@ -225,7 +218,7 @@ describe('ComplianceReportsApp component', () => {
     });
     it('tracks clicks on violations tab', () => {
       // Can't navigate to a page we are already on so use a different tab to start with
-      wrapper = createComponent(defaultProps, mount, {
+      wrapper = createComponent(mount, {
         $route: {
           name: ROUTE_FRAMEWORKS,
         },

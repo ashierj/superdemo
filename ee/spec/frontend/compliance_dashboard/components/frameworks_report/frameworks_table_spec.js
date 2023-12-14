@@ -5,7 +5,6 @@ import VueApollo from 'vue-apollo';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 
-import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import {
   createComplianceFrameworksReportResponse,
   createComplianceFrameworksReportProjectsResponse,
@@ -13,6 +12,7 @@ import {
 import FrameworksTable from 'ee/compliance_dashboard/components/frameworks_report/frameworks_table.vue';
 import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
 import FrameworkInfoDrawer from 'ee/compliance_dashboard/components/frameworks_report/framework_info_drawer.vue';
+import { ROUTE_NEW_FRAMEWORK, ROUTE_EDIT_FRAMEWORK } from 'ee/compliance_dashboard/constants';
 
 Vue.use(VueApollo);
 
@@ -34,22 +34,24 @@ describe('FrameworksTable component', () => {
   const findEmptyState = () => wrapper.findByText('No frameworks found');
   const findTableLinks = () => wrapper.findAllComponents(GlLink);
   const findFrameworkInfoSidebar = () => wrapper.findComponent(FrameworkInfoDrawer);
-  const findModalByModalId = (modalId) =>
-    wrapper.findAllComponents(GlModal).wrappers.find((w) => w.props('modalId') === modalId);
-  const findEditModal = () => findModalByModalId('edit-framework-form-modal');
-
+  const findNewFrameworkButton = () => wrapper.findByText('New framework');
   const openSidebar = async () => {
     findTableRow(rowCheckIndex).trigger('click');
     await nextTick();
   };
 
+  let routerPushMock;
   const createComponent = (props = {}) => {
+    routerPushMock = jest.fn();
     return mountExtended(FrameworksTable, {
       propsData: {
         frameworks: [],
         projects: [],
         isLoading: true,
         ...props,
+      },
+      mocks: {
+        $router: { push: routerPushMock },
       },
       stubs: {
         EditForm: true,
@@ -83,6 +85,14 @@ describe('FrameworksTable component', () => {
 
       expect(headerTexts).toStrictEqual(['Frameworks', 'Associated projects']);
     });
+
+    it('navigates to add framework page when requested', () => {
+      wrapper = createComponent({ isLoading: false });
+      const newFrameworkButton = findNewFrameworkButton();
+
+      newFrameworkButton.trigger('click');
+      expect(routerPushMock).toHaveBeenCalledWith({ name: ROUTE_NEW_FRAMEWORK });
+    });
   });
 
   describe('when there are projects', () => {
@@ -111,24 +121,13 @@ describe('FrameworksTable component', () => {
         findTableRow(rowCheckIndex).findComponent(FrameworkBadge).vm.$emit('edit');
       });
 
-      it('opens edit modal with correct props', () => {
-        expect(findEditModal().findComponent(EditForm).props('id')).toEqual(
-          frameworks[rowCheckIndex].id,
-        );
-
-        expect(GlModalStub.methods.show).toHaveBeenCalled();
-      });
-
-      it('closes modal on cancel', () => {
-        findEditModal().findComponent(EditForm).vm.$emit('cancel');
-
-        expect(GlModalStub.methods.hide).toHaveBeenCalled();
-      });
-
-      it('closes modal on success', () => {
-        findEditModal().findComponent(EditForm).vm.$emit('success');
-
-        expect(GlModalStub.methods.hide).toHaveBeenCalled();
+      it('opens edit route with correct props', () => {
+        expect(routerPushMock).toHaveBeenCalledWith({
+          name: ROUTE_EDIT_FRAMEWORK,
+          params: {
+            id: frameworks[rowCheckIndex].id,
+          },
+        });
       });
     });
 
