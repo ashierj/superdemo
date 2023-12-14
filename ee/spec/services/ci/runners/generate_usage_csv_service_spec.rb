@@ -83,6 +83,22 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     end
   end
 
+  context 'when ClickHouse response is a failure' do
+    before do
+      allow(ClickHouse::Client).to receive(:select).and_raise(::ClickHouse::Client::DatabaseError)
+    end
+
+    it 'returns error' do
+      expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception)
+        .with(an_instance_of(ClickHouse::Client::DatabaseError))
+
+      is_expected.to be_error
+
+      expect(response.message).to eq('Failed to generate export')
+      expect(response.reason).to eq(:clickhouse_error)
+    end
+  end
+
   it 'contains 23 builds in source ci_finished_builds table' do
     expect(ClickHouse::Client.select('SELECT count() FROM ci_finished_builds', :main))
       .to contain_exactly({ 'count()' => 23 })
@@ -140,7 +156,7 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     end
   end
 
-  context 'and from_time is next month' do
+  context 'when from_time is next month' do
     let(:from_time) { DateTime.new(2024, 2, 1) }
     let(:expected_from_time) { from_time }
     let(:expected_to_time) { from_time.end_of_month }
@@ -150,7 +166,7 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     end
   end
 
-  context 'and to_time is an hour ago, almost at the end of the year' do
+  context 'when to_time is an hour ago, almost at the end of the year' do
     let(:to_time) { DateTime.new(2023, 12, 31, 23, 0, 0) }
     let(:expected_from_time) { DateTime.new(2023, 11, 1) }
     let(:expected_to_time) { to_time }
@@ -164,7 +180,7 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
     end
   end
 
-  context 'and to_time is end of last month' do
+  context 'when to_time is end of last month' do
     let(:to_time) { DateTime.new(2024, 1, 31) }
     let(:expected_from_time) { DateTime.new(2024, 1, 1) }
     let(:expected_to_time) { to_time }
