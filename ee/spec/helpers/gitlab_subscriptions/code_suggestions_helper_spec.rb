@@ -58,45 +58,6 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
           expect(helper.code_suggestions_available?).to be_falsy
         end
       end
-
-      context 'when license' do
-        let(:plan) { nil }
-        let(:license) { build(:license, plan: plan) }
-
-        before do
-          allow(License).to receive(:current).and_return(license)
-        end
-
-        context 'when instance has a paid license' do
-          where(:license_plan) do
-            [License::STARTER_PLAN, License::PREMIUM_PLAN, License::ULTIMATE_PLAN]
-          end
-
-          with_them do
-            let(:plan) { license_plan }
-
-            it 'returns false' do
-              expect(helper.code_suggestions_available?).to be_truthy
-            end
-          end
-        end
-
-        context 'when instance has a non-paid license' do
-          let(:plan) { License::LEGACY_LICENSE_TYPE }
-
-          it 'returns false' do
-            expect(helper.code_suggestions_available?).to be_falsy
-          end
-        end
-
-        context 'when instance does not have a paid license' do
-          let(:license) { nil }
-
-          it 'returns false' do
-            expect(helper.code_suggestions_available?).to be_falsy
-          end
-        end
-      end
     end
   end
 end

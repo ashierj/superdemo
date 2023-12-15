@@ -8,7 +8,7 @@ module GitlabSubscriptions
       if gitlab_saas?
         Feature.enabled?(:hamilton_seat_management, namespace)
       else
-        Feature.enabled?(:self_managed_code_suggestions) && License.current&.paid?
+        Feature.enabled?(:self_managed_code_suggestions)
       end
     end
   end

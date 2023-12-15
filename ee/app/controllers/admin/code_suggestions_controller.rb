@@ -15,7 +15,7 @@ module Admin
     private
 
     def ensure_feature_available!
-      render_404 unless gitlab_sm? && code_suggestions_available?
+      render_404 unless gitlab_sm? && License.current&.paid? && code_suggestions_available?
     end
   end
 end
