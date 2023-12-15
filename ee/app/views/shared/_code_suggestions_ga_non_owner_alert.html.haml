@@ -1,6 +1,12 @@
 - root_namespace = resource.root_ancestor
 - return unless show_code_suggestions_ga_non_owner_alert?(root_namespace)
 
+- ide_link = help_page_path('user/project/repository/code_suggestions/index', anchor: 'supported-editor-extensions')
+- link_start = "<a href='#{ide_link}' rel='noopener noreferrer' target='_blank'>".html_safe
+
+- alert_body  = s_("CodeSuggestionsGAAlert|Quickly and securely author code by getting suggestions in %{link_start}your IDE%{link_end} while you type. Available in multiple languages. Try Code Suggestions today.").html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
+- alert_body << s_("CodeSuggestionsGAAlert| (Code Suggestions transitions to a paid feature on %{date}.)") % {date: l('2024-02-15'.to_date, format: :long)} if Feature.enabled?(:code_suggestions_ga_non_owner_alert_end_date)
+
 - content_for :page_level_alert do
   %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
     = render Pajamas::AlertComponent.new(title: s_('CodeSuggestionsGAAlert|Try GitLab Duo Code Suggestions today'),
@@ -10,7 +16,7 @@
                                testid: 'code-suggestions-ga-non-owner-alert' } },
       close_button_options: { data: { testid: 'hide-code-suggestions-ga-non-owner-alert' }}) do |c|
       - c.with_body do
-        = s_("CodeSuggestionsGAAlert|Quickly and securely author code by getting suggestions in your IDE while you type. Available in multiple languages, try Code Suggestions today.")
+        = alert_body
       - c.with_actions do
         = render Pajamas::ButtonComponent.new(href: help_page_path('user/project/repository/code_suggestions/saas', anchor: 'use-code-suggestions'), variant: :confirm,
           button_options: { class: 'js-close-and-follow-link' }) do
