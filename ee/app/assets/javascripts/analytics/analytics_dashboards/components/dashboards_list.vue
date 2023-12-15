@@ -66,7 +66,7 @@ export default {
     };
   },
   computed: {
-    showCreateDashboardButton() {
+    showDesignerAndNewDashboardButtons() {
       return this.customDashboardsProject;
     },
     showValueStreamsDashboard() {
@@ -172,12 +172,11 @@ export default {
           }}</gl-link>
         </p>
       </div>
-      <div>
+      <div v-if="showDesignerAndNewDashboardButtons">
         <gl-button to="visualization-designer" data-testid="visualization-designer-button">
-          {{ s__('Analytics|Visualization Designer') }}
+          {{ s__('Analytics|Visualization designer') }}
         </gl-button>
         <router-link
-          v-if="showCreateDashboardButton"
           to="/new"
           class="btn btn-confirm btn-md gl-button"
           data-testid="new-dashboard-button"

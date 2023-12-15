@@ -235,6 +235,17 @@ describe('DashboardsList', () => {
         expect(findConfigureAlert().exists()).toBe(false);
       });
     });
+
+    describe('when custom dashboards project is falsy', () => {
+      beforeEach(() => {
+        createWrapper({ customDashboardsProject: null });
+      });
+
+      it('does not show the designer buttons', () => {
+        expect(findVisualizationDesignerButton().exists()).toBe(false);
+        expect(findNewDashboardButton().exists()).toBe(false);
+      });
+    });
   });
 
   describe('when the product analytics feature is enabled', () => {

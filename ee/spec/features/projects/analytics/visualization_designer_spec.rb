@@ -17,7 +17,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
 
   subject(:visit_page) do
     visit project_analytics_dashboards_path(project)
-    click_link "Visualization Designer"
+    click_link "Visualization designer"
   end
 
   context 'with all required access and analytics settings configured' do
@@ -45,111 +45,123 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
         .to_return(status: 200, body: meta_response_with_data, headers: {})
     end
 
-    it 'has the visualization designer breadcrumb' do
-      visit_page
-
-      within_testid('breadcrumb-links') do
-        expect(page).to have_link(
-          s_('Analytics|Visualization designer'),
-          href: "#"
-        )
+    context 'when a custom dashboard project has not been configured' do
+      it 'does not render the Visualization designer button' do
+        expect(page).not_to have_link(s_('Analytics|Visualization designer'))
       end
     end
 
-    context 'with valid data' do
+    context 'when a custom dashboard project has been configured' do
       before do
-        stub_request(:post, cube_dry_run_api_url)
-          .to_return(status: 200, body: query_response_with_data, headers: {})
-        stub_request(:post, cube_load_api_url)
-          .to_return(status: 200, body: query_response_with_data, headers: {})
+        create(:analytics_dashboards_pointer, :project_based, project: project)
       end
 
-      it 'renders the measure selection & preview panels and the type selector' do
+      it 'has the visualization designer breadcrumb' do
         visit_page
 
-        expect(page).to have_content('What metric do you want to visualize?')
-        expect(page).to have_content('Start by choosing a metric')
-
-        expect(page).to have_content('Visualization type')
+        within_testid('breadcrumb-links') do
+          expect(page).to have_link(
+            s_('Analytics|Visualization designer'),
+            href: "#"
+          )
+        end
       end
 
-      context 'with a measure selected' do
+      context 'with valid data' do
         before do
+          stub_request(:post, cube_dry_run_api_url)
+            .to_return(status: 200, body: query_response_with_data, headers: {})
+          stub_request(:post, cube_load_api_url)
+            .to_return(status: 200, body: query_response_with_data, headers: {})
+        end
+
+        it 'renders the measure selection & preview panels and the type selector' do
           visit_page
-          select_all_views_measure
+
+          expect(page).to have_content('What metric do you want to visualize?')
+          expect(page).to have_content('Start by choosing a metric')
+
+          expect(page).to have_content('Visualization type')
         end
 
-        it 'shows the selected measure data' do
-          expect(find_by_testid('grid-stack-panel'))
-            .to have_content('Event Count 335')
-        end
+        context 'with a measure selected' do
+          before do
+            visit_page
+            select_all_views_measure
+          end
 
-        [
-          {
-            name: 'LineChart',
-            text: 'Line chart',
-            content: 'Snowplow Tracked Events Count'
-          },
-          {
-            name: 'ColumnChart',
-            text: 'Column chart',
-            selector: 'dashboard-visualization-column-chart'
-          },
-          {
-            name: 'DataTable',
-            text: 'Data table',
-            content: 'Count 335'
-          },
-          {
-            name: 'SingleStat',
-            text: 'Single statistic',
-            content: '335'
-          }
-        ].each do |visualization|
-          context "with #{visualization[:text]} visualization selected" do
-            before do
-              click_button 'Select a visualization type'
-              click_button visualization[:text]
-            end
+          it 'shows the selected measure data' do
+            expect(find_by_testid('grid-stack-panel'))
+              .to have_content('Event Count 335')
+          end
 
-            it "shows the #{visualization[:text]} preview" do
-              preview_panel = find_by_testid('preview-visualization')
-
-              if visualization[:content].nil?
-                expect(preview_panel).to have_selector("[data-testid=\"#{visualization[:selector]}\"]")
-              else
-                expect(preview_panel).to have_content(visualization[:content])
-              end
-            end
-
-            context 'with the code tab selected' do
+          [
+            {
+              name: 'LineChart',
+              text: 'Line chart',
+              content: 'Snowplow Tracked Events Count'
+            },
+            {
+              name: 'ColumnChart',
+              text: 'Column chart',
+              selector: 'dashboard-visualization-column-chart'
+            },
+            {
+              name: 'DataTable',
+              text: 'Data table',
+              content: 'Count 335'
+            },
+            {
+              name: 'SingleStat',
+              text: 'Single statistic',
+              content: '335'
+            }
+          ].each do |visualization|
+            context "with #{visualization[:text]} visualization selected" do
               before do
-                within_testid 'query-builder' do
-                  click_button 'Code'
+                click_button 'Select a visualization type'
+                click_button visualization[:text]
+              end
+
+              it "shows the #{visualization[:text]} preview" do
+                preview_panel = find_by_testid('preview-visualization')
+
+                if visualization[:content].nil?
+                  expect(preview_panel).to have_selector("[data-testid=\"#{visualization[:selector]}\"]")
+                else
+                  expect(preview_panel).to have_content(visualization[:content])
                 end
               end
 
-              it 'shows the visualization code' do
-                json_snippet = "\"type\": \"#{visualization[:name]}\","
-                expect(find_by_testid('preview-code')).to have_content(json_snippet)
+              context 'with the code tab selected' do
+                before do
+                  within_testid 'query-builder' do
+                    click_button 'Code'
+                  end
+                end
+
+                it 'shows the visualization code' do
+                  json_snippet = "\"type\": \"#{visualization[:name]}\","
+                  expect(find_by_testid('preview-code')).to have_content(json_snippet)
+                end
               end
             end
           end
         end
       end
-    end
 
-    context 'when data fails to load' do
-      it 'shows error when selecting a measure fails' do
-        stub_request(:post, cube_dry_run_api_url)
-          .to_return(status: 200, body: query_response_with_error, headers: {})
-        stub_request(:post, cube_load_api_url)
-          .to_return(status: 200, body: query_response_with_error, headers: {})
+      context 'when data fails to load' do
+        it 'shows error when selecting a measure fails' do
+          stub_request(:post, cube_dry_run_api_url)
+            .to_return(status: 200, body: query_response_with_error, headers: {})
+          stub_request(:post, cube_load_api_url)
+            .to_return(status: 200, body: query_response_with_error, headers: {})
 
-        visit_page
-        select_all_views_measure
+          visit_page
+          select_all_views_measure
 
-        expect(page).to have_content('An error occurred while loading data')
+          expect(page).to have_content('An error occurred while loading data')
+        end
       end
     end
   end
