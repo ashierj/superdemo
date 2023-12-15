@@ -1,11 +1,11 @@
 import { s__ } from '~/locale';
-import { featureToMutationMap as featureToMutationMapCE } from '~/security_configuration/components/constants';
+import { featureToMutationMap as featureToMutationMapCE } from '~/security_configuration/constants';
 import {
   REPORT_TYPE_DEPENDENCY_SCANNING,
   REPORT_TYPE_CONTAINER_SCANNING,
 } from '~/vue_shared/security_reports/constants';
-import configureDependencyScanningMutation from '../graphql/configure_dependency_scanning.mutation.graphql';
-import configureContainerScanningMutation from '../graphql/configure_container_scanning.mutation.graphql';
+import configureDependencyScanningMutation from './graphql/configure_dependency_scanning.mutation.graphql';
+import configureContainerScanningMutation from './graphql/configure_container_scanning.mutation.graphql';
 
 export const SMALL = 'SMALL';
 export const MEDIUM = 'MEDIUM';

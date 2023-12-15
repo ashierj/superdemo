@@ -1,3 +1,4 @@
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { s__, __ } from '~/locale';
 import {
   SAST_SHORT_NAME,
@@ -6,7 +7,7 @@ import {
   SECRET_DETECTION_NAME,
   CONTAINER_SCANNING_NAME,
   SAST_IAC_SHORT_NAME,
-} from '~/security_configuration/components/constants';
+} from '~/security_configuration/constants';
 import {
   REPORT_TYPE_SAST,
   REPORT_TYPE_SAST_IAC,
@@ -15,7 +16,6 @@ import {
   REPORT_TYPE_DEPENDENCY_SCANNING,
   REPORT_TYPE_CONTAINER_SCANNING,
 } from '~/vue_shared/security_reports/constants';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 export const EDITOR_MODE_RULE = 'rule';
 export const EDITOR_MODE_YAML = 'yaml';

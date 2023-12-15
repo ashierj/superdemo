@@ -5,7 +5,7 @@ import {
   SECRET_DETECTION_NAME,
   CONTAINER_SCANNING_NAME,
   SAST_IAC_SHORT_NAME,
-} from '~/security_configuration/components/constants';
+} from '~/security_configuration/constants';
 
 /* eslint-disable @gitlab/require-i18n-strings */
 

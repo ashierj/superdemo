@@ -2,6 +2,7 @@
 import { GlBanner } from '@gitlab/ui';
 import { __ } from '~/locale';
 import SecurityTrainingPromo from 'ee/vue_shared/security_reports/components/security_training_promo.vue';
+import { i18n } from '~/security_configuration/constants';
 
 export default {
   components: {
@@ -11,9 +12,7 @@ export default {
   inject: ['securityConfigurationPath', 'projectFullPath'],
   i18n: {
     title: __('Reduce risk and triage fewer vulnerabilities with security training'),
-    content: __(
-      'Enable security training to help your developers learn how to fix vulnerabilities. Developers can view security training from selected educational providers, relevant to the detected vulnerability.',
-    ),
+    content: i18n.securityTrainingDescription,
   },
 };
 </script>

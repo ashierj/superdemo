@@ -1,7 +1,7 @@
 import { GlFormInput, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { SCHEMA_TO_PROP_SIZE_MAP } from 'ee/security_configuration/components/constants';
+import { SCHEMA_TO_PROP_SIZE_MAP } from 'ee/security_configuration/constants';
 import FormInput from 'ee/security_configuration/components/form_input.vue';
 
 describe('FormInput component', () => {
