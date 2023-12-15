@@ -5,6 +5,8 @@ module EE
     extend ::Gitlab::Utils::Override
     extend ::Gitlab::Utils::DelegatorOverride
 
+    include ::AuthHelper
+
     APPROVALS_WIDGET_FULL_TYPE = 'full'
 
     def api_approval_settings_path
@@ -68,9 +70,50 @@ module EE
 
     def saml_approval_path
       return unless feature_flag_for_saml_auth_to_approve_enabled?
-      return unless group.is_a?(Group) # feature does not work for personal namespaces
+      return if personal_namespace? # does not apply to personal projects
 
-      return unless group_requires_saml_auth_for_approval?
+      return group_saml_path if group_requires_saml_auth_for_approval?
+
+      instance_saml_path if instance_requires_saml_auth_for_approval?
+    end
+
+    def instance_saml_path
+      return unless ::Feature.enabled?(:ff_require_saml_auth_to_approve)
+
+      approval_path = saml_approval_namespace_project_merge_request_path(
+        project&.group,
+        target_project,
+        iid
+      )
+
+      expose_path(
+        user_saml_omniauth_authorize_path(
+          current_user,
+          saml_providers_active_for_user.first, # TODO this will handle only the first SAML provider provider, not necesarily the SAML provider used for the current session
+          redirect_to: approval_path
+        )
+      )
+    end
+
+    def user_saml_omniauth_authorize_path(*args)
+      _, saml_provider, options = args
+      path = URI("/users/auth/#{saml_provider}")
+      path.query = URI.encode_www_form(options)
+      path.to_s
+    end
+
+    def saml_providers_active_for_user
+      return unless current_user
+
+      current_user.identities.with_provider(saml_providers).pluck(:provider) # rubocop:disable CodeReuse/ActiveRecord  -- Using pluck here simplifies the query
+    end
+
+    def group_saml_path
+      # Will not work with URL since the SSO controller will sanitize it
+      saml_approval_redirect_path = saml_approval_namespace_project_merge_request_path(
+        group,
+        target_project,
+        merge_request.iid)
 
       expose_path sso_group_saml_providers_path(
         root_group,
@@ -82,7 +125,13 @@ module EE
     def require_saml_auth_to_approve
       return false unless feature_flag_for_saml_auth_to_approve_enabled?
 
-      group_requires_saml_auth_for_approval?
+      # require_password_to_approve setting is used to require password or SAML
+      # re-auth, setting should be renamed via
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/431346
+
+      return false unless mr_approval_setting_password_required?
+
+      group_requires_saml_auth_for_approval? || instance_requires_saml_auth_for_approval?
     end
 
     private
@@ -99,10 +148,18 @@ module EE
       target_project.namespace
     end
 
-    def group_requires_saml_auth_for_approval?
-      return false unless mr_approval_setting_password_required?
+    def instance_requires_saml_auth_for_approval?
+      # password authentication not allowed for instance
+      # AND user is not a password-based omniauth user
+      # AND user has a saml identity
+      ::Gitlab::Auth::Saml::SsoEnforcer.new(
+        user: current_user,
+        session_timeout: 0.seconds
+      ).access_restricted?
+    end
 
-      # we are intentionally passing the project as a resource here
+    def group_requires_saml_auth_for_approval?
+      # group saml enforced
       ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted?(
         user: current_user,
         resource: merge_request.project,
@@ -111,12 +168,14 @@ module EE
     end
 
     def mr_approval_setting_password_required?
-      merge_request.require_password_to_approve?
-    end
+      return false if personal_namespace? # does not apply to personal projects
 
-    def saml_approval_redirect_path
-      # Will not work with URL since the SSO controller will sanatize it
-      saml_approval_namespace_project_merge_request_path(group, target_project, merge_request.iid)
+      ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(
+        root_group,
+        project: target_project
+      )
+        .require_password_to_approve
+        .value
     end
 
     def expose_mr_status_checks?
@@ -126,6 +185,10 @@ module EE
 
     def expose_mr_approval_path?
       approval_feature_available? && merge_request.iid
+    end
+
+    def personal_namespace?
+      !group.is_a?(Group)
     end
   end
 end

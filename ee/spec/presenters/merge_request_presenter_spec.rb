@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe MergeRequestPresenter, feature_category: :shared do
   using RSpec::Parameterized::TableSyntax
+  include LoginHelpers
 
   let_it_be(:project) { create(:project, :repository) }
 
@@ -225,40 +226,79 @@ RSpec.describe MergeRequestPresenter, feature_category: :shared do
 
     subject(:presenter) { described_class.new(merge_request, current_user: user) }
 
-    before do
-      stub_licensed_features(group_saml: true)
-      create(:saml_provider, group: group, enabled: true)
-      allow(presenter).to receive(:group_requires_saml_auth_for_approval?).and_return(true)
-    end
-
-    it 'uses the root group for SSO path and token' do
-      expect(presenter.saml_approval_path).to start_with('/gitlab/groups/group_one/-/saml/sso?redirect')
-      expect(presenter.saml_approval_path).to include('token777')
-    end
-
-    context 'without nesting' do
-      let(:group) { create :group, name: 'group_wurzel', saml_discovery_token: 'root' }
-      let(:project) { create :project, group: group }
+    context 'when group saml' do
+      before do
+        stub_licensed_features(group_saml: true)
+        create(:saml_provider, group: group, enabled: true)
+        allow(presenter).to receive(:group_requires_saml_auth_for_approval?).and_return(true)
+      end
 
       it 'uses the root group for SSO path and token' do
-        expect(presenter.saml_approval_path).to start_with('/gitlab/groups/group_wurzel/-/saml/sso?redirect')
-        expect(presenter.saml_approval_path).to include('root')
+        expect(presenter.saml_approval_path).to start_with('/gitlab/groups/group_one/-/saml/sso?redirect')
+        expect(presenter.saml_approval_path).to include('token777')
+      end
+
+      context 'without nesting' do
+        let(:group) { create :group, name: 'group_wurzel', saml_discovery_token: 'root' }
+        let(:project) { create :project, group: group }
+
+        it 'uses the root group for SSO path and token' do
+          expect(presenter.saml_approval_path).to start_with('/gitlab/groups/group_wurzel/-/saml/sso?redirect')
+          expect(presenter.saml_approval_path).to include('root')
+        end
+      end
+
+      context 'without ff_require_saml_auth_to_approve feature flag' do
+        before do
+          stub_feature_flags(ff_require_saml_auth_to_approve: false)
+        end
+
+        it 'is disabled' do
+          expect(presenter.saml_approval_path).to be_nil
+        end
       end
     end
 
-    context 'without ff_require_saml_auth_to_approve feature flag' do
-      before do
-        stub_feature_flags ff_require_saml_auth_to_approve: false
+    context 'when instance saml' do
+      let_it_be(:project) { create :project, :in_group }
+      let_it_be(:user) { create(:user, identities: [build(:identity, provider: 'saml')]) }
+
+      before_all do
+        project.add_developer(user)
       end
 
-      it 'is disabled' do
-        expect(presenter.saml_approval_path).to be_nil
+      before do
+        stub_omniauth_saml_config(
+          enabled: true,
+          auto_link_saml_user: false,
+          allow_single_sign_on: ['saml'],
+          providers: [mock_saml_config]
+        )
+
+        # if password auth is allowed, instance SAML is not enforced via SSOEnforcer
+        stub_application_setting(password_authentication_enabled_for_web: false)
+        allow(presenter).to receive(:instance_requires_saml_auth_for_approval?).and_return(true)
+      end
+
+      it 'returns the instance saml path' do
+        expect(presenter.saml_approval_path).to start_with('/gitlab/users/auth/saml')
+      end
+
+      context 'without ff_require_saml_auth_to_approve feature flag' do
+        before do
+          stub_feature_flags(ff_require_saml_auth_to_approve: false)
+        end
+
+        it 'is disabled' do
+          expect(presenter.saml_approval_path).to be_nil
+        end
       end
     end
   end
 
   describe '#require_saml_auth_to_approve' do
     let(:group) { create :group, name: 'group_one', saml_discovery_token: 'token777' }
+    let(:project) { create :project, :in_group, group: group }
 
     subject(:presenter) { described_class.new(merge_request, current_user: user) }
 
@@ -266,6 +306,9 @@ RSpec.describe MergeRequestPresenter, feature_category: :shared do
       stub_licensed_features(group_saml: true)
       create(:saml_provider, group: group, enabled: true)
       allow(presenter).to receive(:group_requires_saml_auth_for_approval?).and_return(true)
+      # follow-up create proper setting with factory group_merge_request_approval_setting
+      # instead of stubbing setting here
+      allow(presenter).to receive(:mr_approval_setting_password_required?).and_return(true)
     end
 
     it 'is enabled' do
