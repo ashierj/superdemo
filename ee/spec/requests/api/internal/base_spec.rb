@@ -1038,7 +1038,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
           get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
 
           expect(response).to have_gitlab_http_status(:forbidden)
-          expect(json_response['message']).to eq('403 Forbidden - Not an Enterprise User of the group')
+          expect(json_response['message']).to eq('Not an Enterprise User of the group')
         end
       end
 
@@ -1062,7 +1062,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
           get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
 
           expect(response).to have_gitlab_http_status(:not_found)
-          expect(json_response['message']).to eq('404 Not found')
+          expect(json_response['message']).to eq('Certificate Not Found')
         end
       end
 
@@ -1073,7 +1073,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
           get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
 
           expect(response).to have_gitlab_http_status(:not_found)
-          expect(json_response['message']).to eq('404 User Not Found')
+          expect(json_response['message']).to eq('User Not Found')
         end
       end
     end
@@ -1083,7 +1083,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
 
         expect(response).to have_gitlab_http_status(:not_found)
-        expect(json_response['message']).to eq('404 User Not Found')
+        expect(json_response['message']).to eq('User Not Found')
       end
     end
 
@@ -1094,7 +1094,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
 
         expect(response).to have_gitlab_http_status(:forbidden)
-        expect(json_response['message']).to eq('403 Forbidden - Feature is not available')
+        expect(json_response['message']).to eq('Feature is not available')
       end
     end
   end
