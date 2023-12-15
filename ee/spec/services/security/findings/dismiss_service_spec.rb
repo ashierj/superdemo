@@ -150,7 +150,7 @@ RSpec.describe Security::Findings::DismissService, feature_category: :vulnerabil
             .and_return(service_double)
         end
 
-        it 'returns security finding with success reponse' do
+        it 'returns security finding with success response' do
           response = dismiss_finding
 
           expect(response).to be_success
