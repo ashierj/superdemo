@@ -2,8 +2,8 @@
 import { GlIcon, GlLink, GlCard, GlSkeletonLoader } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE } from '../constants';
-import NumberToHumanSize from './number_to_human_size.vue';
 
 export default {
   name: 'NoLimitsPurchasedStorageBreakdownCard',

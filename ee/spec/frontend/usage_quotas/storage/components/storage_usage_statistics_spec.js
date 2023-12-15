@@ -7,7 +7,7 @@ import NamespaceLimitsStorageUsageOverviewCard from 'ee/usage_quotas/storage/com
 import NamespaceLimitsTotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/namespace_limits_total_storage_available_breakdown_card.vue';
 import NoLimitsPurchasedStorageBreakdownCard from 'ee/usage_quotas/storage/components/no_limits_purchased_storage_breakdown_card.vue';
 import ProjectLimitsExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/project_limits_excess_storage_breakdown_card.vue';
-import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';

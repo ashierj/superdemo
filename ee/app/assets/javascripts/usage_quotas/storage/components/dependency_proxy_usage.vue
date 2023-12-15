@@ -3,7 +3,7 @@ import { GlSprintf, GlLink } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import UsageBanner from '~/vue_shared/components/usage_quotas/usage_banner.vue';
 import { s__ } from '~/locale';
-import NumberToHumanSize from './number_to_human_size.vue';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 
 export default {
   name: 'DependencyProxyUsage',

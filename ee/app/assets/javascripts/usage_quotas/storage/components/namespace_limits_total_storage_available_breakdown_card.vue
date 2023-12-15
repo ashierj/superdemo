@@ -2,12 +2,12 @@
 import { GlIcon, GlLink, GlCard, GlSkeletonLoader } from '@gitlab/ui';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import { sprintf, s__ } from '~/locale';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import {
   STORAGE_STATISTICS_PURCHASED_STORAGE,
   STORAGE_STATISTICS_TOTAL_STORAGE,
   STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
 } from '../constants';
-import NumberToHumanSize from './number_to_human_size.vue';
 
 /**
  * NamespaceLimitsTotalStorageAvailableBreakdownCard

@@ -1,7 +1,7 @@
 import { GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import NamespaceLimitsTotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/namespace_limits_total_storage_available_breakdown_card.vue';
-import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { withRootStorageStatistics, defaultNamespaceProvideValues } from '../mock_data';
 
 describe('NamespaceLimitsTotalStorageAvailableBreakdownCard', () => {

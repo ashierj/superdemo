@@ -1,7 +1,7 @@
 import { GlSkeletonLoader } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import StorageUsageOverviewCard from 'ee/usage_quotas/storage/components/storage_usage_overview_card.vue';
-import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { statisticsCardDefaultProps, defaultNamespaceProvideValues } from '../mock_data';
 

@@ -2,7 +2,7 @@ import NumberToHumanSize from './number_to_human_size.vue';
 
 export default {
   component: NumberToHumanSize,
-  title: 'ee/usage_quotas/storage/number_to_human_size',
+  title: 'vue_shared/number_to_human_size',
 };
 
 const Template = (args, { argTypes }) => ({
