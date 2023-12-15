@@ -54521,7 +54521,7 @@ msgstr ""
 msgid "Webhooks|Secret token"
 msgstr ""
 
-msgid "Webhooks|Secret token will be cleared on save unless updated."
+msgid "Webhooks|Secret token will be cleared on save unless token is updated."
 msgstr ""
 
 msgid "Webhooks|Sensitive portion of URL"

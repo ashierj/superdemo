@@ -163,7 +163,9 @@ export default {
     urlPlaceholder: 'http://example.com/trigger-ci.json',
     urlPreview: s__('Webhooks|URL preview'),
     valuePartOfUrl: s__('Webhooks|Must match part of URL'),
-    tokenWillBeCleared: s__('Webhooks|Secret token will be cleared on save unless updated.'),
+    tokenWillBeCleared: s__(
+      'Webhooks|Secret token will be cleared on save unless token is updated.',
+    ),
   },
 };
 </script>
