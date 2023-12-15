@@ -15,7 +15,7 @@ export default {
     FilteredSearchBar,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['fullPath'],
+  inject: { fullPath: { default: '' } },
   data() {
     return {
       search: undefined,

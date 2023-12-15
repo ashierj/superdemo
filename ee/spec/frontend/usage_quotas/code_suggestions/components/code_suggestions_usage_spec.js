@@ -6,7 +6,7 @@ import addOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purcha
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
 import CodeSuggestionsInfo from 'ee/usage_quotas/code_suggestions/components/code_suggestions_info_card.vue';
 import CodeSuggestionsStatisticsCard from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage_statistics_card.vue';
-import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
+import SaasAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/saas_add_on_eligible_user_list.vue';
 import CodeSuggestionsUsage from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -32,11 +32,14 @@ describe('Code Suggestions Usage', () => {
   const findCodeSuggestionsIntro = () => wrapper.findComponent(CodeSuggestionsIntro);
   const findCodeSuggestionsInfo = () => wrapper.findComponent(CodeSuggestionsInfo);
   const findCodeSuggestionsStatistics = () => wrapper.findComponent(CodeSuggestionsStatisticsCard);
-  const findAddOnEligibleUserList = () => wrapper.findComponent(AddOnEligibleUserList);
+  const findSaasAddOnEligibleUserList = () => wrapper.findComponent(SaasAddOnEligibleUserList);
 
   const createComponent = ({ handler, provideProps } = {}) => {
     wrapper = shallowMount(CodeSuggestionsUsage, {
-      provide: provideProps,
+      provide: {
+        isSaaS: true,
+        ...provideProps,
+      },
       apolloProvider: createMockApolloProvider(handler),
     });
 
@@ -96,9 +99,14 @@ describe('Code Suggestions Usage', () => {
     it('renders code suggestions info card', () => {
       expect(findCodeSuggestionsInfo().exists()).toBe(true);
     });
+  });
 
-    it('renders addon user list', () => {
-      expect(findAddOnEligibleUserList().props()).toEqual({
+  describe('add on eligible user list', () => {
+    it('renders addon user list for SaaS instance for SaaS', async () => {
+      createComponent({ handler: noAssignedAddonDataHandler, provideProps: { isSaaS: true } });
+      await waitForPromises();
+
+      expect(findSaasAddOnEligibleUserList().props()).toEqual({
         addOnPurchaseId: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
       });
     });

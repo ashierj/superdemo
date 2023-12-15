@@ -7,8 +7,8 @@ query getAddOnEligibleUsers(
   $search: String
   $first: Int
   $last: Int
-  $prevPageCursor: String
-  $nextPageCursor: String
+  $after: String
+  $before: String
 ) {
   namespace(fullPath: $fullPath) {
     id
@@ -17,8 +17,8 @@ query getAddOnEligibleUsers(
       search: $search
       first: $first
       last: $last
-      after: $nextPageCursor
-      before: $prevPageCursor
+      after: $after
+      before: $before
     ) {
       nodes {
         id

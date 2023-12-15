@@ -3,7 +3,7 @@ import { GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getAddOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
-import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
+import SaasAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/saas_add_on_eligible_user_list.vue';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import CodeSuggestionsInfoCard from './code_suggestions_info_card.vue';
@@ -13,13 +13,13 @@ import CodeSuggestionsStatisticsCard from './code_suggestions_usage_statistics_c
 export default {
   name: 'CodeSuggestionsUsage',
   components: {
-    AddOnEligibleUserList,
+    SaasAddOnEligibleUserList,
     CodeSuggestionsInfoCard,
     CodeSuggestionsIntro,
     CodeSuggestionsStatisticsCard,
     GlSkeletonLoader,
   },
-  inject: { groupId: { default: null } },
+  inject: { isSaaS: {}, groupId: { default: null } },
   data() {
     return {
       addOnPurchase: undefined,
@@ -105,7 +105,7 @@ export default {
           <code-suggestions-statistics-card :total-value="totalValue" :usage-value="usageValue" />
           <code-suggestions-info-card />
         </section>
-        <add-on-eligible-user-list :add-on-purchase-id="addOnPurchase.id" />
+        <saas-add-on-eligible-user-list v-if="isSaaS" :add-on-purchase-id="addOnPurchase.id" />
       </section>
       <code-suggestions-intro v-else />
     </template>

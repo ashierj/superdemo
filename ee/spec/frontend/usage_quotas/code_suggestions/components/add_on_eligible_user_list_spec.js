@@ -6,66 +6,38 @@ import {
   GlTable,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
-import VueApollo from 'vue-apollo';
-import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { nextTick } from 'vue';
 import CodeSuggestionsAddOnAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
-import createMockApollo from 'helpers/mock_apollo_helper';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
-  mockAddOnEligibleUsers,
-  mockNoAddOnEligibleUsers,
-  mockPaginatedAddOnEligibleUsers,
+  eligibleUsers,
+  pageInfoWithNoPages,
+  pageInfoWithMorePages,
 } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/add_on_eligible_users.query.graphql';
-import {
-  ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
-  ADD_ON_ERROR_DICTIONARY,
-} from 'ee/usage_quotas/error_constants';
+import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
 import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 
 jest.mock('~/lib/utils/common_utils');
 
-Vue.use(VueApollo);
-
-jest.mock('~/sentry/sentry_browser_wrapper');
-
 describe('Add On Eligible User List', () => {
   let wrapper;
 
-  const fullPath = 'namespace/full-path';
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/1';
-  const error = new Error('Error');
-  const defaultQueryVariables = {
-    fullPath,
-    addOnType: 'CODE_SUGGESTIONS',
-    addOnPurchaseIds: [addOnPurchaseId],
-    first: 20,
-  };
 
-  const addOnEligibleUsersDataHandler = jest.fn().mockResolvedValue(mockAddOnEligibleUsers);
-  const noAddOnEligibleUsersDataHandler = jest.fn().mockResolvedValue(mockNoAddOnEligibleUsers);
-  const addOnEligibleUsersErrorHandler = jest.fn().mockRejectedValue(error);
-  const paginatedAddOnEligibleUsersDataHandler = jest
-    .fn()
-    .mockResolvedValue(mockPaginatedAddOnEligibleUsers);
-
-  const createMockApolloProvider = (handler = noAddOnEligibleUsersDataHandler) =>
-    createMockApollo([[getAddOnEligibleUsers, handler]]);
-
-  const createComponent = ({ mountFn = shallowMount, handler } = {}) => {
+  const createComponent = ({ mountFn = shallowMount, props = {}, slots = {} } = {}) => {
     wrapper = extendedWrapper(
       mountFn(AddOnEligibleUserList, {
-        apolloProvider: createMockApolloProvider(handler),
         propsData: {
           addOnPurchaseId,
+          users: eligibleUsers,
+          pageInfo: pageInfoWithNoPages,
+          isLoading: false,
+          ...props,
         },
-        provide: {
-          fullPath,
-        },
+        slots,
       }),
     );
 
@@ -75,8 +47,6 @@ describe('Add On Eligible User List', () => {
   const findTable = () => wrapper.findComponent(GlTable);
   const findAllCodeSuggestionsAddonComponents = () =>
     wrapper.findAllComponents(CodeSuggestionsAddOnAssignment);
-  const findAddOnEligibleUsersFetchError = () =>
-    wrapper.findByTestId('add-on-eligible-users-fetch-error');
   const findAddOnAssignmentError = () => wrapper.findByTestId('add-on-assignment-error');
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
@@ -118,7 +88,6 @@ describe('Add On Eligible User List', () => {
     beforeEach(async () => {
       await createComponent({
         mountFn: mount,
-        handler: addOnEligibleUsersDataHandler,
       });
     });
 
@@ -171,41 +140,19 @@ describe('Add On Eligible User List', () => {
 
           expect(actualProps).toMatchObject(expectedProps);
         });
+      });
 
-        it('calls addOnEligibleUsers query with appropriate params', () => {
-          expect(addOnEligibleUsersDataHandler).toHaveBeenCalledWith(defaultQueryVariables);
-        });
-
-        describe('when there is an error fetching add on eligible users', () => {
-          beforeEach(async () => {
-            await createComponent({
-              handler: addOnEligibleUsersErrorHandler,
-            });
+      describe('error slot', () => {
+        it('should render error slot when provided', () => {
+          const slotContent = 'error slot content';
+          createComponent({
+            mountFn: mount,
+            slots: {
+              'error-alert': slotContent,
+            },
           });
 
-          it('sends the error to Sentry', () => {
-            expect(Sentry.captureException).toHaveBeenCalledTimes(1);
-            expect(Sentry.captureException.mock.calls[0][0]).toEqual(error);
-          });
-
-          it('shows an error alert', () => {
-            const expectedProps = {
-              dismissible: true,
-              error: ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
-              errorDictionary: ADD_ON_ERROR_DICTIONARY,
-            };
-            expect(findAddOnEligibleUsersFetchError().props()).toEqual(
-              expect.objectContaining(expectedProps),
-            );
-          });
-
-          it('clears error alert when dismissed', async () => {
-            findAddOnEligibleUsersFetchError().vm.$emit('dismiss');
-
-            await nextTick();
-
-            expect(findAddOnEligibleUsersFetchError().exists()).toBe(false);
-          });
+          expect(wrapper.text()).toContain(slotContent);
         });
       });
 
@@ -214,7 +161,6 @@ describe('Add On Eligible User List', () => {
         beforeEach(async () => {
           await createComponent({
             mountFn: mount,
-            handler: addOnEligibleUsersDataHandler,
           });
           findAllCodeSuggestionsAddonComponents()
             .at(0)
@@ -252,7 +198,6 @@ describe('Add On Eligible User List', () => {
       beforeEach(async () => {
         await createComponent({
           mountFn: mount,
-          handler: addOnEligibleUsersDataHandler,
         });
       });
 
@@ -267,7 +212,7 @@ describe('Add On Eligible User List', () => {
 
     describe('when loading', () => {
       beforeEach(() => {
-        createComponent();
+        return createComponent({ props: { users: [], isLoading: true } });
       });
 
       it('displays the table in a busy state', () => {
@@ -284,7 +229,7 @@ describe('Add On Eligible User List', () => {
     describe('when more pages exist', () => {
       beforeEach(async () => {
         await createComponent({
-          handler: paginatedAddOnEligibleUsersDataHandler,
+          props: { pageInfo: pageInfoWithMorePages },
         });
       });
 
@@ -301,29 +246,21 @@ describe('Add On Eligible User List', () => {
         findPagination().vm.$emit('next');
         await waitForPromises();
 
-        expect(paginatedAddOnEligibleUsersDataHandler).toHaveBeenCalledWith({
-          ...defaultQueryVariables,
-          nextPageCursor: 'end-cursor',
-        });
+        expect(wrapper.emitted('next')).toEqual([['end-cursor']]);
       });
 
       it('triggers a call to addOnEligibleUsers with appropriate params on prev', async () => {
         findPagination().vm.$emit('prev');
         await waitForPromises();
 
-        expect(paginatedAddOnEligibleUsersDataHandler).toHaveBeenLastCalledWith({
-          ...defaultQueryVariables,
-          first: undefined,
-          last: 20,
-          prevPageCursor: 'start-cursor',
-        });
+        expect(wrapper.emitted('prev')).toEqual([['start-cursor']]);
       });
     });
 
     describe('when only one page of results exists', () => {
       it('does not render pagination', async () => {
         await createComponent({
-          handler: addOnEligibleUsersDataHandler,
+          mountFn: mount,
         });
 
         expect(findPagination().exists()).toBe(false);
@@ -332,7 +269,7 @@ describe('Add On Eligible User List', () => {
 
     describe('when loading', () => {
       it('does not render pagination', () => {
-        createComponent();
+        createComponent({ props: { users: [] } });
 
         expect(findPagination().exists()).toBe(false);
       });
@@ -341,9 +278,7 @@ describe('Add On Eligible User List', () => {
 
   describe('search', () => {
     beforeEach(async () => {
-      await createComponent({
-        handler: addOnEligibleUsersDataHandler,
-      });
+      await createComponent();
     });
 
     it('renders search bar', () => {
@@ -368,10 +303,7 @@ describe('Add On Eligible User List', () => {
       findSearchAndSortBar().vm.$emit('onFilter', { search: searchString });
       await waitForPromises();
 
-      expect(addOnEligibleUsersDataHandler).toHaveBeenLastCalledWith({
-        ...defaultQueryVariables,
-        search: searchString,
-      });
+      expect(wrapper.emitted('filter')).toEqual([[{ search: searchString }]]);
     });
   });
 });

@@ -7,22 +7,13 @@ import {
   GlTooltipDirective,
   GlKeysetPagination,
 } from '@gitlab/ui';
-import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
 import { thWidthPercent } from '~/lib/utils/table_utility';
-import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/add_on_eligible_users.query.graphql';
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
-import {
-  ADD_ON_ERROR_DICTIONARY,
-  ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
-} from 'ee/usage_quotas/error_constants';
+import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import CodeSuggestionsAddonAssignment from './code_suggestions_addon_assignment.vue';
 import SearchAndSortBar from './search_and_sort_bar.vue';
-
-const PER_PAGE = 20;
 
 export default {
   name: 'AddOnEligibleUserList',
@@ -39,20 +30,30 @@ export default {
     GlTable,
     SearchAndSortBar,
   },
-  inject: ['fullPath'],
   props: {
     addOnPurchaseId: {
       type: String,
       required: true,
     },
+    users: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    pageInfo: {
+      type: Object,
+      required: false,
+      default: () => {},
+    },
   },
   data() {
     return {
-      addOnEligibleUsers: undefined,
-      addOnEligibleUsersFetchError: undefined,
       addOnAssignmentError: undefined,
-      pageInfo: undefined,
-      cursor: { first: PER_PAGE },
       filterOptions: {},
     };
   },
@@ -85,40 +86,16 @@ export default {
       tdClass: 'gl-vertical-align-middle!',
     },
   ],
-  apollo: {
-    addOnEligibleUsers: {
-      query: getAddOnEligibleUsers,
-      fetchPolicy: fetchPolicies.NETWORK_ONLY,
-      nextFetchPolicy: fetchPolicies.CACHE_FIRST,
-      variables() {
-        return this.queryVariables;
-      },
-      update({ namespace }) {
-        this.pageInfo = namespace?.addOnEligibleUsers?.pageInfo;
-        return namespace?.addOnEligibleUsers?.nodes?.map((node) => ({
-          ...node,
-          username: `@${node.username}`,
-          addOnAssignments: node.addOnAssignments.nodes,
-        }));
-      },
-      error(error) {
-        this.addOnEligibleUsersFetchError = ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE;
-        Sentry.captureException(error);
-      },
-    },
-  },
   computed: {
-    queryVariables() {
-      return {
-        fullPath: this.fullPath,
-        addOnType: ADD_ON_CODE_SUGGESTIONS,
-        addOnPurchaseIds: [this.addOnPurchaseId],
-        ...this.filterOptions,
-        ...this.cursor,
-      };
+    tableItems() {
+      return this.users.map((node) => ({
+        ...node,
+        username: `@${node.username}`,
+        addOnAssignments: node.addOnAssignments.nodes,
+      }));
     },
     showPagination() {
-      if (this.isLoaderShown || !this.pageInfo) {
+      if (this.isLoading || !this.pageInfo) {
         return false;
       }
 
@@ -132,29 +109,21 @@ export default {
       }
       return s__('Billing|No users to display.');
     },
-    isLoaderShown() {
-      return this.$apollo.queries.addOnEligibleUsers.loading;
-    },
   },
   methods: {
     nextPage() {
-      this.cursor = { first: PER_PAGE };
-      this.cursor.nextPageCursor = this.pageInfo.endCursor;
+      this.$emit('next', this.pageInfo.endCursor);
     },
     prevPage() {
-      this.cursor = { last: PER_PAGE };
-      this.cursor.prevPageCursor = this.pageInfo.startCursor;
+      this.$emit('prev', this.pageInfo.startCursor);
     },
     onFilter(filterOptions) {
-      this.cursor = { first: PER_PAGE };
+      this.$emit('filter', filterOptions);
       this.filterOptions = filterOptions;
     },
     handleAddOnAssignmentError(errorCode) {
       this.addOnAssignmentError = errorCode;
       this.scrollToTop();
-    },
-    clearAddOnEligibleUsersFetchError() {
-      this.addOnEligibleUsersFetchError = undefined;
     },
     clearAddOnAssignmentError() {
       this.addOnAssignmentError = undefined;
@@ -169,14 +138,8 @@ export default {
 <template>
   <section>
     <search-and-sort-bar @onFilter="onFilter" />
-    <error-alert
-      v-if="addOnEligibleUsersFetchError"
-      data-testid="add-on-eligible-users-fetch-error"
-      :error="addOnEligibleUsersFetchError"
-      :error-dictionary="$options.addOnErrorDictionary"
-      :dismissible="true"
-      @dismiss="clearAddOnEligibleUsersFetchError"
-    />
+
+    <slot name="error-alert"></slot>
 
     <error-alert
       v-if="addOnAssignmentError"
@@ -188,9 +151,9 @@ export default {
     />
 
     <gl-table
-      :items="addOnEligibleUsers"
+      :items="tableItems"
       :fields="$options.tableFields"
-      :busy="isLoaderShown"
+      :busy="isLoading"
       :show-empty="true"
       :empty-text="emptyText"
       primary-key="id"
