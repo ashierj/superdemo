@@ -83,7 +83,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
     let(:percentiles) { [95, 90] }
 
     it 'returns only those percentiles' do
-      build = build(:ci_build,
+      build = build_stubbed(:ci_build,
         :success,
         created_at: starting_time,
         queued_at: starting_time,
@@ -107,7 +107,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
   end
 
   it 'returns equal percentiles for a single build', :freeze_time do
-    build = build(:ci_build,
+    build = build_stubbed(:ci_build,
       :success,
       created_at: starting_time,
       queued_at: starting_time,
@@ -128,7 +128,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
   it 'groups builds by 5 minute intervals of started_at' do
     builds = Array.new(2) do |i|
       time_shift = 7.minutes * i
-      build(:ci_build,
+      build_stubbed(:ci_build,
         :success,
         created_at: starting_time + time_shift,
         queued_at: starting_time + time_shift,
@@ -154,7 +154,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
     builds = Array.new(10) do |i|
       queueing_delay = 1 + i.seconds
 
-      build(:ci_build,
+      build_stubbed(:ci_build,
         :success,
         created_at: starting_time,
         queued_at: starting_time,
@@ -188,7 +188,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
       from_time,
       to_time,
       to_time + 5.minutes + 1.second].map do |started_at|
-      build(:ci_build,
+      build_stubbed(:ci_build,
         :success,
         created_at: started_at - 1.minute,
         queued_at: started_at - 1.minute,
@@ -227,7 +227,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
         from_time_default,
         to_time_default,
         to_time_default + 5.minutes + 1.second].map do |started_at|
-        build(:ci_build,
+        build_stubbed(:ci_build,
           :success,
           created_at: started_at - 1.minute,
           queued_at: started_at - 1.minute,
@@ -265,7 +265,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
     it 'filters data by runner type' do
       builds = [
-        build(:ci_build,
+        build_stubbed(:ci_build,
           :success,
           created_at: starting_time,
           queued_at: starting_time,
@@ -273,7 +273,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
           finished_at: starting_time + 10.minutes,
           runner: instance_runner,
           runner_manager: instance_runner.runner_managers.first),
-        build(:ci_build,
+        build_stubbed(:ci_build,
           :success,
           created_at: starting_time + 10.minutes,
           queued_at: starting_time + 10.minutes,

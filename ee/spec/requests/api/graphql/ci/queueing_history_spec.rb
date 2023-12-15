@@ -90,7 +90,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :fleet
   it 'returns time_series grouped by 5 minute intervals' do
     builds = Array.new(2) do |i|
       time_shift = 7.minutes * i
-      build(:ci_build,
+      build_stubbed(:ci_build,
         :success,
         created_at: starting_time + time_shift,
         queued_at: starting_time + time_shift,
@@ -115,7 +115,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :fleet
       from_time,
       to_time,
       to_time + 5.minutes + 1.second].map do |started_at|
-      build(:ci_build,
+      build_stubbed(:ci_build,
         :success,
         created_at: started_at - 1.minute,
         queued_at: started_at - 1.minute,
@@ -152,7 +152,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :fleet
         from_time_default,
         to_time_default,
         to_time_default + 5.minutes + 1.second].map do |started_at|
-        build(:ci_build,
+        build_stubbed(:ci_build,
           :success,
           created_at: started_at - 1.minute,
           queued_at: started_at - 1.minute,
@@ -178,7 +178,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :fleet
 
     it 'filters data by runner type' do
       builds = [
-        build(:ci_build,
+        build_stubbed(:ci_build,
           :success,
           created_at: starting_time,
           queued_at: starting_time,
@@ -186,7 +186,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :fleet
           finished_at: starting_time + 10.minutes,
           runner: instance_runner,
           runner_manager: instance_runner.runner_managers.first),
-        build(:ci_build,
+        build_stubbed(:ci_build,
           :success,
           created_at: starting_time + 10.minutes,
           queued_at: starting_time + 10.minutes,

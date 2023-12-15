@@ -197,7 +197,7 @@ RSpec.describe Ci::Runners::GenerateUsageCsvService, :enable_admin_mode, :click_
   def create_build(runner, project, created_at, duration = 14.minutes)
     started_at = created_at + 6.minutes
 
-    build(:ci_build,
+    build_stubbed(:ci_build,
       :success,
       created_at: created_at,
       queued_at: created_at,
