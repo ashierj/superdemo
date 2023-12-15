@@ -16,19 +16,19 @@ module Resolvers
       argument :ids, [::Types::GlobalIDType[::RemoteDevelopment::Workspace]],
         required: false,
         description:
-          'Filter workspaces by workspace ids. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`.'
+          'Filter workspaces by workspace GlobalIDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`.'
 
       argument :user_ids, [::Types::GlobalIDType[Project]],
         required: false,
-        description: 'Filter workspaces by user ids.'
+        description: 'Filter workspaces by user GlobalIDs.'
 
       argument :project_ids, [::Types::GlobalIDType[Project]],
         required: false,
-        description: 'Filter workspaces by project ids.'
+        description: 'Filter workspaces by project GlobalIDs.'
 
       argument :agent_ids, [::Types::GlobalIDType[::Clusters::Agent]],
         required: false,
-        description: 'Filter workspaces by agent ids.'
+        description: 'Filter workspaces by agent GlobalIDs.'
 
       argument :include_actual_states, [GraphQL::Types::String],
         required: false,

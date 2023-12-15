@@ -3,6 +3,9 @@ under the root `Query` type.
 
 For example:
 
+- `ee/spec/requests/api/graphql/remote_development/cluster_agent/workspaces`
+   contains specs which test the `Query.project.clusterAgent.workspaces` field in the GraphQL API schema,
+   as well as any other field which contains a `clusterAgent` field or collection.
 - `ee/spec/requests/api/graphql/remote_development/current_user/workspaces`
    contains specs which test the `Query.currentUser.workspaces` field in the GraphQL API schema.
 - `ee/spec/requests/api/graphql/remote_development/workspace`

@@ -5,7 +5,7 @@ require_relative '../../shared'
 RSpec.shared_context 'for a Query.currentUser.workspaces query' do
   include GraphqlHelpers
 
-  let_it_be(:authorized_user) { workspace.user }
+  let_it_be(:authorized_user, reload: true) { workspace.user }
   let_it_be(:unauthorized_user) { create(:user) }
 
   include_context "with authorized user as developer on workspace's project"

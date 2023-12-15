@@ -8,7 +8,7 @@ RSpec.describe 'Query.currentUser.workspaces (with no arguments)', feature_categ
   include_context 'for a Query.currentUser.workspaces query'
 
   # create workspace owned by different user, to ensure it is not returned by the query
-  let_it_be(:non_matching_workspace) { create(:workspace, name: 'non-matching-workspace') }
+  let_it_be(:non_matching_workspace, reload: true) { create(:workspace, name: 'non-matching-workspace') }
 
   it_behaves_like 'multiple workspaces query'
 end
