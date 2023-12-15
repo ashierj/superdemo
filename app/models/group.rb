@@ -253,12 +253,20 @@ class Group < Namespace
     end
   end
 
+  scope :order_path_asc, -> { reorder(self.arel_table['path'].asc) }
+  scope :order_path_desc, -> { reorder(self.arel_table['path'].desc) }
+
   class << self
     def sort_by_attribute(method)
-      if method == 'storage_size_desc'
+      case method.to_s
+      when 'storage_size_desc'
         # storage_size is a virtual column so we need to
         # pass a string to avoid AR adding the table name
         reorder('storage_size DESC, namespaces.id DESC')
+      when 'path_asc'
+        order_path_asc
+      when 'path_desc'
+        order_path_desc
       else
         order_by(method)
       end
