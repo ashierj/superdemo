@@ -32,7 +32,7 @@
           - else
             -# TODO: remove this block after Code Suggestions is GA (16.9+)
             %h5.settings-header-controls
-              =  s_('CodeSuggestionsSM|Code Suggestions %{beta}').html_safe % { beta: gl_badge_tag(_('Beta'), variant: :neutral, size: :sm) }
+              =  s_('CodeSuggestionsSM|Code Suggestions').html_safe
             = f.gitlab_ui_checkbox_component :instance_level_code_suggestions_enabled,
               s_('CodeSuggestionsSM|Enable Code Suggestions for this instance'),
               help_text: ai_powered_testing_agreement
