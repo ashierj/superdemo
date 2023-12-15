@@ -1,6 +1,6 @@
 <script>
-import { GlTable, GlTruncate } from '@gitlab/ui';
-import { s__, __ } from '~/locale';
+import { GlTable, GlTruncate, GlBadge } from '@gitlab/ui';
+import { s__, __, sprintf, n__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { formatTraceDuration } from '../trace_utils';
 
@@ -36,6 +36,7 @@ export default {
   components: {
     GlTable,
     GlTruncate,
+    GlBadge,
   },
   props: {
     traces: {
@@ -66,6 +67,17 @@ export default {
       if (item.trace_id === this.highlightedTraceId) return 'gl-bg-t-gray-a-08';
       return '';
     },
+    matchesBadgeContent(item) {
+      const spans = n__('Tracing|%{count} span', 'Tracing|%{count} spans', item.total_spans);
+      const matches = n__(
+        'Tracing|%{count} match',
+        'Tracing|%{count} matches',
+        item.matched_span_count,
+      );
+      return `${sprintf(spans, { count: item.total_spans })} / ${sprintf(matches, {
+        count: item.matched_span_count,
+      })}`;
+    },
   },
 };
 </script>
@@ -87,6 +99,13 @@ export default {
       :tbody-tr-attr="{ 'data-testid': 'trace-row' }"
       @row-clicked="onRowClicked"
     >
+      <template #cell(timestamp)="{ item }">
+        {{ item.timestamp }}
+        <div class="gl-mt-4">
+          <gl-badge variant="info">{{ matchesBadgeContent(item) }}</gl-badge>
+        </div>
+      </template>
+
       <template #cell(service_name)="{ item }">
         <gl-truncate :text="item.service_name" with-tooltip />
       </template>
