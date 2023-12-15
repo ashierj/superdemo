@@ -541,6 +541,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
           user_id: user.id,
           project: project.full_path,
           protocol: 'ssh',
+          changes: '_any',
           namespace_path: namespace_path
         }
       end
@@ -578,6 +579,20 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
             expect(json_response['message']).to eq('You are not allowed to access projects in this namespace.')
           end
 
+          context 'when the changes list is specified' do
+            let(:params) do
+              super().merge({
+                changes: "#{Gitlab::Git::BLANK_SHA} 570e7b2abdd848b95f2f578043fc23bd6f6fd24d refs/heads/mybranch"
+              })
+            end
+
+            it 'returns success response' do
+              check_allowed
+
+              expect(response).to have_gitlab_http_status(:ok)
+            end
+          end
+
           context 'when enforce_ssh_certificates_via_settings feature flag is disabled' do
             before do
               stub_feature_flags(enforce_ssh_certificates_via_settings: false)
@@ -592,12 +607,9 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
 
           context 'when service account is used' do
             let(:params) do
-              {
-                action: "git-upload-pack",
-                project: project.full_path,
-                namespace_path: namespace_path,
+              super().merge({
                 user_id: create(:user, :service_account).id
-              }
+              })
             end
 
             it 'returns success response' do
@@ -609,12 +621,9 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
 
           context 'when deploy key is used' do
             let(:params) do
-              {
-                action: "git-upload-pack",
-                project: project.full_path,
-                namespace_path: namespace_path,
+              super().without(:user_id).merge({
                 key_id: create(:deploy_key).id
-              }
+              })
             end
 
             it 'returns success response' do

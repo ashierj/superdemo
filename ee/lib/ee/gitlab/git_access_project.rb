@@ -29,6 +29,8 @@ module EE
       end
 
       def allowed_access_namespace?
+        # Verify namespace access only on initial call from Gitlab Shell and Workhorse
+        return true unless changes == ::Gitlab::GitAccess::ANY
         # Return early if ssh certificate feature is not enabled for namespace
         # If allowed_namespace_path is passed anyway, we return false
         # It may happen, when a user authenticates via SSH certificate and tries accessing to personal namespace
