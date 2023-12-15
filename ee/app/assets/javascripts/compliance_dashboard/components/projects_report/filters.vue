@@ -5,8 +5,8 @@ import { GlButton, GlFilteredSearch, GlPopover } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 
 import { FRAMEWORKS_FILTER_TYPE_FRAMEWORK, FRAMEWORKS_FILTER_TYPE_PROJECT } from '../../constants';
-import ComplianceFrameworkToken from './filter_tokens/compliance_framework_token.vue';
 import ProjectSearchToken from './filter_tokens/project_search_token.vue';
+import ComplianceFrameworkToken from './filter_tokens/compliance_framework_token.vue';
 
 export default {
   components: {

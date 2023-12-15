@@ -74,3 +74,18 @@ export const checkFilterForChange = ({ currentFilters = {}, newFilters = {} }) =
 
   return filterKeys.some((key) => currentFilters[key] !== newFilters[key]);
 };
+
+export function mapStandardsAdherenceQueryToFilters(filters) {
+  const filterParams = {};
+
+  const checkSearch = filters?.find((filter) => filter.type === 'check');
+  filterParams.checkName = checkSearch?.value?.data ?? undefined;
+
+  const standardSearch = filters?.find((filter) => filter.type === 'standard');
+  filterParams.standard = standardSearch?.value?.data ?? undefined;
+
+  const projectIdsSearch = filters?.find((filter) => filter.type === 'project');
+  filterParams.projectIds = projectIdsSearch?.value?.data ?? undefined;
+
+  return filterParams;
+}

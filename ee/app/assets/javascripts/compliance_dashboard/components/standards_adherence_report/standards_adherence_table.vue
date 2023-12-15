@@ -3,6 +3,8 @@ import { GlAlert, GlTable, GlIcon, GlLink, GlBadge, GlLoadingIcon } from '@gitla
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { s__ } from '~/locale';
+import { mapStandardsAdherenceQueryToFilters } from 'ee/compliance_dashboard/utils';
+import getProjectsInComplianceStandardsAdherence from 'ee/compliance_dashboard/graphql/compliance_projects_in_standards_adherence.query.graphql';
 import getProjectComplianceStandardsAdherence from '../../graphql/compliance_standards_adherence.query.graphql';
 import Pagination from '../shared/pagination.vue';
 import { GRAPHQL_PAGE_SIZE } from '../../constants';
@@ -12,8 +14,10 @@ import {
   STANDARDS_ADHERENCE_STANARD_LABELS,
   NO_STANDARDS_ADHERENCES_FOUND,
   STANDARDS_ADHERENCE_FETCH_ERROR,
+  ALLOWED_FILTER_TOKENS,
 } from './constants';
 import FixSuggestionsSidebar from './fix_suggestions_sidebar.vue';
+import Filters from './filters.vue';
 
 export default {
   name: 'ComplianceStandardsAdherenceTable',
@@ -26,6 +30,7 @@ export default {
     GlLoadingIcon,
     FixSuggestionsSidebar,
     Pagination,
+    Filters,
   },
   props: {
     groupPath: {
@@ -36,12 +41,18 @@ export default {
   data() {
     return {
       hasStandardsAdherenceFetchError: false,
+      hasFilterValueError: false,
+      hasRawTextError: false,
       adherences: {
         list: [],
         pageInfo: {},
       },
+      projects: {
+        list: [],
+      },
       drawerId: null,
       drawerAdherence: {},
+      filters: {},
     };
   },
   apollo: {
@@ -50,6 +61,7 @@ export default {
       variables() {
         return {
           fullPath: this.groupPath,
+          filters: this.filters,
           ...this.paginationCursors,
         };
       },
@@ -63,6 +75,20 @@ export default {
       error(e) {
         Sentry.captureException(e);
         this.hasStandardsAdherenceFetchError = true;
+      },
+    },
+    projects: {
+      query: getProjectsInComplianceStandardsAdherence,
+      variables() {
+        return {
+          fullPath: this.groupPath,
+        };
+      },
+      update(data) {
+        const nodes = data?.group?.projects.nodes || [];
+        return {
+          list: nodes,
+        };
       },
     },
   },
@@ -198,6 +224,38 @@ export default {
         },
       });
     },
+    onFiltersChanged(filters) {
+      this.hasStandardsAdherenceFetchError = false;
+      this.hasFilterValueError = false;
+      this.hasRawTextError = false;
+
+      const availableProjectIDs = this.projects.list.map((item) => item.id);
+
+      filters.forEach((filter) => {
+        if (
+          filter.type === 'standard' &&
+          !ALLOWED_FILTER_TOKENS.standards.includes(filter.value.data)
+        ) {
+          this.hasFilterValueError = true;
+        }
+        if (filter.type === 'check' && !ALLOWED_FILTER_TOKENS.checks.includes(filter.value.data)) {
+          this.hasFilterValueError = true;
+        }
+        if (filter.type === 'project' && !availableProjectIDs.includes(filter.value.data)) {
+          this.hasFilterValueError = true;
+        }
+        if (!filter.type) {
+          this.hasRawTextError = true;
+        }
+      });
+
+      if (!this.hasFilterValueError) {
+        this.filters = mapStandardsAdherenceQueryToFilters(filters);
+      }
+    },
+    clearFilters() {
+      this.filters = {};
+    },
   },
   noStandardsAdherencesFound: NO_STANDARDS_ADHERENCES_FOUND,
   standardsAdherenceFetchError: STANDARDS_ADHERENCE_FETCH_ERROR,
@@ -212,6 +270,12 @@ export default {
       lastScanned: s__('ComplianceStandardsAdherence|Last Scanned'),
       moreInformation: s__('ComplianceStandardsAdherence|More Information'),
     },
+    rawFiltersNotSupported: s__(
+      'ComplianceStandardsAdherence|Raw text search is not currently supported. Please use the available filters.',
+    ),
+    invalidFilterValue: s__(
+      'ComplianceStandardsAdherence|Raw filter values is not currently supported. Please use available values.',
+    ),
   },
 };
 </script>
@@ -226,6 +290,19 @@ export default {
     >
       {{ $options.standardsAdherenceFetchError }}
     </gl-alert>
+    <gl-alert v-if="hasFilterValueError" variant="warning" class="gl-mt-3" :dismissible="false">
+      {{ $options.i18n.invalidFilterValue }}
+    </gl-alert>
+    <gl-alert v-if="hasRawTextError" variant="warning" class="gl-mt-3" :dismissible="false">
+      {{ $options.i18n.rawFiltersNotSupported }}
+    </gl-alert>
+    <filters
+      :projects="projects.list"
+      :group-path="groupPath"
+      :error="hasStandardsAdherenceFetchError"
+      @submit="onFiltersChanged"
+      @clear="clearFilters"
+    />
     <gl-table
       :fields="fields"
       :items="adherences.list"
