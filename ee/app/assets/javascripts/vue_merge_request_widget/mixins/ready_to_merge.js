@@ -107,7 +107,7 @@ export default {
     },
     shouldShowMergeImmediatelyDropdown() {
       if (this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY) {
-        return true;
+        return !this.mr.ffOnlyEnabled || this.mr.ffMergePossible;
       }
 
       return this.isPipelineActive && !this.state.onlyAllowMergeIfPipelineSucceeds;
