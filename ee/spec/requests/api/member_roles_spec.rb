@@ -259,7 +259,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
             subject
 
             expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['message']).to match(/Creation of member role is allowed only for root groups/)
+            expect(json_response['message']).to match(/Namespace must be top-level namespace/)
           end
         end
 

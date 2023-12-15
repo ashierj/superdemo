@@ -10,7 +10,7 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
   describe '#execute' do
     let(:params) { { name: 'new name', read_vulnerability: false } }
 
-    subject(:result) { described_class.new(group, user, params).execute(member_role) }
+    subject(:result) { described_class.new(user, params).execute(member_role) }
 
     before do
       stub_licensed_features(custom_roles: true)

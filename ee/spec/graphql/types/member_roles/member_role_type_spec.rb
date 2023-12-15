@@ -12,5 +12,5 @@ RSpec.describe GitlabSchema.types['MemberRole'], feature_category: :system_acces
   # when implementing a new custom role permission
   specify { expect(described_class).to have_graphql_fields(fields) }
 
-  specify { expect(described_class).to require_graphql_authorizations(:read_group_member) }
+  specify { expect(described_class).to require_graphql_authorizations(:admin_member_role) }
 end

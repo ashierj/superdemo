@@ -28,8 +28,8 @@ module Mutations
         required: true,
         description: 'Base access level for the custom role.'
       argument :group_path, GraphQL::Types::ID,
-        required: true,
-        description: 'Group the member role to mutate is in.'
+        required: ::Gitlab::Saas.feature_available?(:gitlab_saas_subscriptions),
+        description: 'Group the member role to mutate is in. Required for SaaS.'
       argument :manage_project_access_tokens,
         GraphQL::Types::Boolean,
         required: false,
@@ -52,9 +52,12 @@ module Mutations
         description: 'Permission to read vulnerability.'
 
       def resolve(args)
-        group = authorized_find!(group_path: args.delete(:group_path))
-        raise_resource_not_available_error! unless group.custom_roles_enabled?
-        response = ::MemberRoles::CreateService.new(group, current_user, canonicalize(args)).execute
+        group = ::Gitlab::Graphql::Lazy.force(find_object(group_path: args.delete(:group_path))) if args[:group_path]
+
+        authorize_admin_roles!(group)
+
+        params = canonicalize(args.merge(namespace: group))
+        response = ::MemberRoles::CreateService.new(current_user, params).execute
 
         {
           member_role: response.payload[:member_role],
@@ -66,6 +69,23 @@ module Mutations
 
       def find_object(group_path:)
         resolve_namespace(full_path: group_path)
+      end
+
+      def authorize_admin_roles!(group)
+        return authorize_group_member_roles!(group) if group
+
+        authorize_instance_member_roles!
+      end
+
+      def authorize_group_member_roles!(group)
+        raise_resource_not_available_error! unless Gitlab::Saas.feature_available?(:group_custom_roles)
+        raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role, group)
+        raise_resource_not_available_error! unless group.custom_roles_enabled?
+      end
+
+      def authorize_instance_member_roles!
+        raise_resource_not_available_error! unless Ability.allowed?(current_user, :admin_member_role)
+        raise_resource_not_available_error! if Gitlab::Saas.feature_available?(:group_custom_roles)
       end
 
       def canonicalize(args)

@@ -6,7 +6,7 @@ module Types
       graphql_name 'MemberRole'
       description 'Represents a member role'
 
-      authorize :read_group_member
+      authorize :admin_member_role
 
       field :id,
         ::Types::GlobalIDType[::MemberRole],

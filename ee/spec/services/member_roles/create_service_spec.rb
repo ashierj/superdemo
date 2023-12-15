@@ -8,11 +8,14 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
 
   describe '#execute' do
     let(:params) do
-      { name: 'new name', read_vulnerability: true,
-        admin_merge_request: true, base_access_level: Gitlab::Access::GUEST }
+      {
+        namespace: group,
+        name: 'new name', read_vulnerability: true,
+        admin_merge_request: true, base_access_level: Gitlab::Access::GUEST
+      }
     end
 
-    subject(:create_member_role) { described_class.new(group, user, params).execute }
+    subject(:create_member_role) { described_class.new(user, params).execute }
 
     before do
       stub_licensed_features(custom_roles: true)
@@ -32,27 +35,13 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
       end
     end
 
-    context 'with unauthorized user' do
-      before_all do
-        group.add_maintainer(user)
-      end
-
-      let(:error_message) { 'Operation not allowed' }
-
-      it_behaves_like 'service returns error'
-    end
-
-    context 'with authorized user' do
-      before_all do
-        group.add_owner(user)
-      end
-
+    shared_examples 'member role creation' do
       context 'with valid params' do
         it 'is successful' do
           expect(create_member_role).to be_success
         end
 
-        it 'returns the object with updated attribute' do
+        it 'returns the object with assigned attributes' do
           expect(create_member_role.payload[:member_role].name).to eq('new name')
         end
 
@@ -68,15 +57,12 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
           let(:licensed_features_to_stub) { { custom_roles: true } }
           let_it_be(:event_type) { 'member_role_created' }
           let(:operation) { create_member_role.payload[:member_role] }
-          let(:fail_condition!) do
-            allow(group).to receive(:custom_roles_enabled?).and_return(false)
-          end
 
           let(:attributes) do
             {
               author_id: user.id,
-              entity_id: group.id,
-              entity_type: 'Group',
+              entity_id: audit_entity_id,
+              entity_type: audit_entity_type,
               details: {
                 author_name: user.name,
                 target_id: operation.id,
@@ -100,6 +86,32 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
 
           it_behaves_like 'service returns error'
         end
+      end
+    end
+
+    context 'for group member roles', :saas do
+      let(:audit_entity_id) { group.id }
+      let(:audit_entity_type) { 'Group' }
+      let(:fail_condition!) do
+        allow(group).to receive(:custom_roles_enabled?).and_return(false)
+      end
+
+      context 'with unauthorized user' do
+        before_all do
+          group.add_maintainer(user)
+        end
+
+        let(:error_message) { 'Operation not allowed' }
+
+        it_behaves_like 'service returns error'
+      end
+
+      context 'with authorized user' do
+        before_all do
+          group.add_owner(user)
+        end
+
+        it_behaves_like 'member role creation'
 
         context 'with non-root group' do
           before_all do
@@ -107,6 +119,44 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
           end
 
           let(:error_message) { 'Creation of member role is allowed only for root groups' }
+
+          it_behaves_like 'service returns error'
+        end
+      end
+    end
+
+    context 'for instance-level member roles' do
+      let(:audit_entity_type) { 'Gitlab::Audit::InstanceScope' }
+      let(:audit_entity_id) { Gitlab::Audit::InstanceScope.new.id }
+      let(:fail_condition!) do
+        allow(Gitlab::Saas).to receive(:feature_available?).and_return(true)
+      end
+
+      before do
+        params.delete(:namespace)
+      end
+
+      context 'with unauthorized user' do
+        before_all do
+          group.add_owner(user)
+        end
+
+        let(:error_message) { 'Operation not allowed' }
+
+        it_behaves_like 'service returns error'
+      end
+
+      context 'with authorized user', :enable_admin_mode do
+        before_all do
+          user.update!(admin: true)
+        end
+
+        context 'when on self-managed' do
+          it_behaves_like 'member role creation'
+        end
+
+        context 'when on Saas', :saas do
+          let(:error_message) { 'Operation not allowed' }
 
           it_behaves_like 'service returns error'
         end
