@@ -184,6 +184,12 @@ describe('DevopsAdoptionAddDropdown', () => {
 
         describe('when multiple values are selected', () => {
           const groupGid = 'gid://gitlab/Group/1';
+
+          // Generate a unique ID, that is guaranteed to be not in the list
+          // of existing IDs. Illya doesn't like it, Lukas doesn't like it,
+          // but it works
+          const uniqueId = groupGids.reduce((acc, curr) => acc + getIdFromGraphQLId(curr), 0);
+
           beforeEach(() => {
             createComponent({
               props: {
@@ -193,13 +199,13 @@ describe('DevopsAdoptionAddDropdown', () => {
               },
               provide: { groupGid },
             });
-            findListbox().vm.$emit('select', [getIdFromGraphQLId(groupGids[0]), 12]);
+            findListbox().vm.$emit('select', [getIdFromGraphQLId(groupGids[0]), uniqueId]);
           });
 
           it('makes a request to enable the newly selected group', () => {
             expect(mutateAdd).toHaveBeenCalledWith({
               displayNamespaceId: groupGid,
-              namespaceIds: ['gid://gitlab/Group/12'],
+              namespaceIds: [`gid://gitlab/Group/${uniqueId}`],
             });
           });
 
