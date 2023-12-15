@@ -109,9 +109,9 @@ describe('diffs/components/app', () => {
     });
 
     describe('sastReportsInInlineDiff flag on', () => {
-      it('polls Code Quality data via GraphQL and not via REST when endpoint is provided', async () => {
+      it('polls Code Quality data via GraphQL and not via REST when codequalityReportAvailable is true', async () => {
         createComponent(
-          { shouldShow: true, endpointCodequality: `${TEST_HOST}/diff/endpointCodequality` },
+          { shouldShow: true, codequalityReportAvailable: true },
           {},
           { sastReportsInInlineDiff: true },
           codeQualityErrorAndParsed,
@@ -124,11 +124,23 @@ describe('diffs/components/app', () => {
         expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(2);
       });
 
+      it('does not poll Code Quality data via GraphQL when codequalityReportAvailable is false', async () => {
+        createComponent(
+          { shouldShow: true, codequalityReportAvailable: false },
+          {},
+          { sastReportsInInlineDiff: true },
+          codeQualityErrorAndParsed,
+        );
+        await waitForPromises();
+        expect(codeQualityErrorAndParsed).toHaveBeenCalledTimes(0);
+        expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
+      });
+
       it('stops polling when newErrors in response are defined', async () => {
         createComponent(
           {
             shouldShow: true,
-            endpointCodequality: `${TEST_HOST}/diff/endpointCodequality`,
+            codequalityReportAvailable: true,
           },
           {},
           { sastReportsInInlineDiff: true },
