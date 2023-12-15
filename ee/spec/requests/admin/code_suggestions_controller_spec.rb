@@ -6,7 +6,11 @@ RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_catego
   include AdminModeHelper
 
   describe 'GET /code_suggestions' do
+    let(:plan) { License::STARTER_PLAN }
+    let(:license) { build(:license, plan: plan) }
+
     before do
+      allow(License).to receive(:current).and_return(license)
       allow(::Gitlab::Saas).to receive(:feature_available?).and_return(false)
     end
 
@@ -83,6 +87,18 @@ RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_catego
 
           it_behaves_like 'hides code suggestions path'
         end
+      end
+
+      context 'when the instance has a non-paid license' do
+        let(:plan) { License::LEGACY_LICENSE_TYPE }
+
+        it_behaves_like 'hides code suggestions path'
+      end
+
+      context 'when the instance does not have a license' do
+        let(:license) { nil }
+
+        it_behaves_like 'hides code suggestions path'
       end
     end
   end
