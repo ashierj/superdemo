@@ -7,7 +7,7 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
 
   let_it_be(:owner) { create(:user) }
   let_it_be_with_refind(:group) do
-    create(:group, :private).tap do |g|
+    create(:group, :private, name: 'group_one').tap do |g|
       g.add_owner(owner)
     end
   end
@@ -231,7 +231,7 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
       end
 
       specify { is_expected.not_to be_nil }
-      specify { expect(menu_item.link).to eq('/groups/group1/-/analytics/dashboards') }
+      specify { expect(menu_item.link).to eq('/groups/group_one/-/analytics/dashboards') }
 
       context 'with different user access levels' do
         where(:access_level, :has_menu_item) do
@@ -268,7 +268,7 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
         let(:group_analytics_dashboards) { false }
 
         specify { is_expected.not_to be_nil }
-        specify { expect(menu_item.link).to eq('/groups/group1/-/analytics/dashboards/value_streams_dashboard') }
+        specify { expect(menu_item.link).to eq('/groups/group_one/-/analytics/dashboards/value_streams_dashboard') }
       end
     end
   end
