@@ -159,16 +159,6 @@ RSpec.describe SamlProvider, feature_category: :system_access do
       expect(settings[:attribute_statements]).to eq(::Gitlab::Auth::Saml::Config.default_attribute_statements)
     end
 
-    context 'when saml_microsoft_attribute_names is disabled' do
-      before do
-        stub_feature_flags(saml_microsoft_attribute_names: false)
-      end
-
-      it 'only sets nickname attribute statement' do
-        expect(settings[:attribute_statements]).to eq({ nickname: %w[username nickname] })
-      end
-    end
-
     context 'when saml_message_max_byte_size present in gitlab settings ' do
       before do
         stub_omniauth_setting(saml_message_max_byte_size: 1_000_000)
