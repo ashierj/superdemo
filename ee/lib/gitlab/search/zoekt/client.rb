@@ -5,6 +5,7 @@ module Gitlab
     module Zoekt
       class Client # rubocop:disable Search/NamespacedClass
         include Gitlab::Utils::StrongMemoize
+        include ::Gitlab::Loggable
         INDEXING_TIMEOUT_S = 30.minutes.to_i
 
         class << self
@@ -44,9 +45,7 @@ module Gitlab
               basic_auth: basic_auth_params
             )
 
-            unless response.success?
-              logger.error(message: 'Zoekt search failed', status: response.code, response: response.body)
-            end
+            log_error('Zoekt search failed', status: response.code, response: response.body) unless response.success?
 
             parse_response(response)
           end
@@ -171,9 +170,9 @@ module Gitlab
           backoff = zoekt_node.backoff
 
           if backoff.enabled?
+            log_error('Zoekt node in backoff', node_id: zoekt_node.id, expire_at: backoff.expires_at)
             raise ::Search::Zoekt::Errors::BackoffError,
-              "Zoekt node cannot be used yet because it is in back off period until #{backoff.expires_at}"
-
+              'Zoekt node cannot be used yet because it is in back off period'
           end
 
           begin
@@ -229,6 +228,10 @@ module Gitlab
 
         def logger
           @logger ||= ::Zoekt::Logger.build
+        end
+
+        def log_error(message, payload = {})
+          logger.error(build_structured_payload(**payload.merge(message: message)))
         end
       end
     end

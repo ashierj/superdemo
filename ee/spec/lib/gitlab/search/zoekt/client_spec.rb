@@ -157,7 +157,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       it 'logs an error and returns an empty array for results', :aggregate_failures do
         logger = instance_double(::Zoekt::Logger)
         expect(::Zoekt::Logger).to receive(:build).and_return(logger)
-        expect(logger).to receive(:error).with(hash_including(status: 400))
+        expect(logger).to receive(:error).with(hash_including('status' => 400))
 
         expect(subject[:Error]).to include('error parsing regexp')
       end

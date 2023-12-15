@@ -24,6 +24,8 @@ module Search
 
       def reload!
         @num_failures = cached_num_failures
+        set_expiry
+
         self
       end
 
