@@ -118,8 +118,9 @@ The following are required to run Geo:
 - [Supported PostgreSQL versions](https://about.gitlab.com/handbook/engineering/development/enablement/data_stores/database/postgresql-upgrade-cadence.html) for your GitLab releases with [Streaming Replication](https://wiki.postgresql.org/wiki/Streaming_Replication).
   - Note,[PostgreSQL 12 is deprecated](../../update/deprecations.md#postgresql-12-deprecated) and is removed in GitLab 16.0.
 - All sites must run [the same PostgreSQL versions](setup/database.md#postgresql-replication).
-  - If using different operating system versions between Geo sites,
-    [check OS locale data compatibility](replication/troubleshooting.md#check-os-locale-data-compatibility)
+  - Where possible, you should also use the same operating system version on all
+  Geo sites. If using different operating system versions between Geo sites, you
+  **must** [check OS locale data compatibility](replication/troubleshooting.md#check-os-locale-data-compatibility)
     across Geo sites to avoid silent corruption of database indexes.
 - Git 2.9 or later
 - Git-lfs 2.4.2 or later on the user side when using LFS
