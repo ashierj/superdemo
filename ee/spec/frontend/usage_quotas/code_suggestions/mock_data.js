@@ -68,7 +68,25 @@ export const mockUserWithNoAddOnAssignment = {
   __typename: 'AddOnUser',
 };
 
-const eligibleUsers = [mockUserWithAddOnAssignment, mockUserWithNoAddOnAssignment];
+export const eligibleUsers = [mockUserWithAddOnAssignment, mockUserWithNoAddOnAssignment];
+
+const pageInfo = {
+  startCursor: 'start-cursor',
+  endCursor: 'end-cursor',
+  __typename: 'PageInfo',
+};
+
+export const pageInfoWithNoPages = {
+  hasNextPage: false,
+  hasPreviousPage: false,
+  ...pageInfo,
+};
+
+export const pageInfoWithMorePages = {
+  hasNextPage: true,
+  hasPreviousPage: true,
+  ...pageInfo,
+};
 
 export const mockAddOnEligibleUsers = {
   data: {
@@ -76,13 +94,7 @@ export const mockAddOnEligibleUsers = {
       id: 'gid://gitlab/Group/1',
       addOnEligibleUsers: {
         nodes: eligibleUsers,
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false,
-          startCursor: 'start-cursor',
-          endCursor: 'end-cursor',
-          __typename: 'PageInfo',
-        },
+        pageInfo: pageInfoWithNoPages,
         __typename: 'AddOnUserConnection',
       },
       __typename: 'Namespace',
@@ -96,13 +108,7 @@ export const mockPaginatedAddOnEligibleUsers = {
       id: 'gid://gitlab/Group/1',
       addOnEligibleUsers: {
         nodes: eligibleUsers,
-        pageInfo: {
-          hasNextPage: true,
-          hasPreviousPage: true,
-          startCursor: 'start-cursor',
-          endCursor: 'end-cursor',
-          __typename: 'PageInfo',
-        },
+        pageInfo: pageInfoWithMorePages,
       },
     },
   },

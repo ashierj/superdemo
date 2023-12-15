@@ -13,15 +13,11 @@ describe('SearchAndSortBar', () => {
   let wrapper;
 
   const fullPath = 'namespace/full-path';
-  const defaultProps = {
-    namespace: fullPath,
-    searchInputPlaceholder: 'Filter users',
-  };
 
-  const createComponent = ({ enableAddOnUsersFiltering = false } = {}) => {
+  const createComponent = ({ enableAddOnUsersFiltering = false, provideProps = {} } = {}) => {
     wrapper = shallowMount(SearchAndSortBar, {
       provide: {
-        fullPath,
+        ...provideProps,
         glFeatures: {
           enableAddOnUsersFiltering,
         },
@@ -35,13 +31,25 @@ describe('SearchAndSortBar', () => {
     it('renders search and sort bar with default params', () => {
       createComponent();
 
-      expect(findFilteredSearchBar().props()).toMatchObject(defaultProps);
+      expect(findFilteredSearchBar().props()).toMatchObject({
+        namespace: '',
+        searchInputPlaceholder: 'Filter users',
+      });
+    });
+
+    it('renders search and sort bar with appropriate params', () => {
+      createComponent({ provideProps: { fullPath } });
+
+      expect(findFilteredSearchBar().props()).toMatchObject({
+        namespace: fullPath,
+        searchInputPlaceholder: 'Filter users',
+      });
     });
 
     describe('with `enableAddOnUsersFiltering`', () => {
       describe('when enabled', () => {
         it('passes the correct tokens', () => {
-          createComponent({ enableAddOnUsersFiltering: true });
+          createComponent({ enableAddOnUsersFiltering: true, provideProps: { fullPath } });
 
           expect(findFilteredSearchBar().props('tokens')).toEqual(
             expect.arrayContaining([

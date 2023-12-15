@@ -38,6 +38,7 @@ export default (containerId = 'js-code-suggestions-usage-app') => {
       fullPath,
       groupId,
       createHandRaiseLeadPath,
+      isSaaS: true,
       buttonAttributes: buttonAttributes && { ...JSON.parse(buttonAttributes), variant: 'confirm' },
       user: {
         namespaceId,
