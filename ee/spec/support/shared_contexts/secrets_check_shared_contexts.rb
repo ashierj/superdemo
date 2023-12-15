@@ -117,6 +117,11 @@ RSpec.shared_context 'secret detection error and log messages context' do
   end
 
   # Log messages
+  let(:skip_secret_detection) do
+    "\n\nIf you wish to skip secret detection, please include [skip secret detection] " \
+      "in one of the commit messages for your changes."
+  end
+
   let(:secrets_not_found) { 'Secret detection scan completed with no findings.' }
   let(:found_secrets) { 'Secret detection scan completed with one or more findings.' }
   let(:found_secrets_post_message) { "\n\nPlease remove the identified secrets in your commits and try again." }
@@ -182,11 +187,11 @@ RSpec.shared_context 'quarantine directory exists' do
   end
 end
 
-def create_commit(blobs)
+def create_commit(blobs, message = 'Add a file')
   commit = repository.commit_files(
     user,
     branch_name: 'a-new-branch',
-    message: 'Add a file',
+    message: message,
     actions: blobs.map do |path, content|
       {
         action: :create,

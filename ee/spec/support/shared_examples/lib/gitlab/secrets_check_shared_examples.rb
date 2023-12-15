@@ -197,6 +197,7 @@ RSpec.shared_examples 'scan detected secrets' do
       expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
       expect(error.message).to include(found_secrets)
       expect(error.message).to include(found_message_occurrence)
+      expect(error.message).to include(skip_secret_detection)
       expect(error.message).to include(found_secrets_post_message)
     end
   end
@@ -216,6 +217,7 @@ RSpec.shared_examples 'scan detected secrets' do
       expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
       expect(error.message).to include(found_secrets)
       expect(error.message).to include(found_message_occurrence)
+      expect(error.message).to include(skip_secret_detection)
       expect(error.message).to include(found_secrets_post_message)
     end
   end
@@ -294,6 +296,7 @@ RSpec.shared_examples 'scan detected secrets' do
         expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
         expect(error.message).to include(found_secrets)
         expect(error.message).to include(found_message_occurrence)
+        expect(error.message).to include(skip_secret_detection)
         expect(error.message).to include(found_secrets_post_message)
       end
     end
@@ -476,6 +479,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
       expect(error.message).to include(found_message_occurrence)
       expect(error.message).to include(blob_timed_out_error)
       expect(error.message).to include(failed_to_scan_regex_error)
+      expect(error.message).to include(skip_secret_detection)
       expect(error.message).to include(found_secrets_post_message)
     end
   end
@@ -522,6 +526,7 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
       expect(error.message).to include(found_message_occurrence)
       expect(error.message).to include(blob_timed_out_error)
       expect(error.message).to include(failed_to_scan_regex_error)
+      expect(error.message).to include(skip_secret_detection)
       expect(error.message).to include(found_secrets_post_message)
     end
   end
@@ -618,5 +623,37 @@ RSpec.shared_examples 'scan skipped due to invalid status' do
       .with(message: error_messages[:invalid_scan_status_code_error])
 
     expect { subject.validate! }.not_to raise_error
+  end
+end
+
+RSpec.shared_examples 'scan skipped when a commit has special bypass flag' do
+  include_context 'secrets check context'
+
+  let_it_be(:new_commit) do
+    create_commit(
+      { '.env' => 'SECRET=glpat-JUST20LETTERSANDNUMB' }, # gitleaks:allow
+      'dummy commit [skip secret detection]'
+    )
+  end
+
+  it 'skips the scanning process' do
+    expect { subject.validate! }.not_to raise_error
+  end
+
+  context 'when other commits having secrets in the same push' do
+    let_it_be(:second_commit_with_secret) do
+      create_commit('.test.env' => 'TOKEN=glpat-JUST20LETTERSANDNUMB') # gitleaks:allow
+    end
+
+    let(:changes) do
+      [
+        { oldrev: initial_commit, newrev: new_commit, ref: 'refs/heads/master' },
+        { oldrev: initial_commit, newrev: second_commit_with_secret, ref: 'refs/heads/master' }
+      ]
+    end
+
+    it 'skips the scanning process still' do
+      expect { subject.validate! }.not_to raise_error
+    end
   end
 end

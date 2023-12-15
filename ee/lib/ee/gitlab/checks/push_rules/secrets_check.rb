@@ -18,6 +18,8 @@ module EE
           LOG_MESSAGES = {
             secrets_check: 'Detecting secrets...',
             secrets_not_found: 'Secret detection scan completed with no findings.',
+            skip_secret_detection: "\n\nIf you wish to skip secret detection, please include [skip secret detection] " \
+                                   "in one of the commit messages for your changes.",
             found_secrets: 'Secret detection scan completed with one or more findings.',
             found_secrets_post_message: "\n\nPlease remove the identified secrets in your commits and try again.",
             found_secrets_with_errors: 'Secret detection scan completed with one or more findings ' \
@@ -29,6 +31,7 @@ module EE
           }.freeze
 
           BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
+          SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
 
           def validate!
             # Return early and not perform the check if:
@@ -42,6 +45,9 @@ module EE
               ::Feature.enabled?(:pre_receive_secret_detection_push_check, project)
 
             return unless push_rule && project.licensed_feature_available?(:pre_receive_secret_detection)
+
+            # Skip if any commit has the special bypass flag `[skip secret detection]`
+            return if skip_secret_detection?
 
             logger.log_timed(LOG_MESSAGES[:secrets_check]) do
               # List all blobs via `ListAllBlobs()` based on the existence of a
@@ -94,6 +100,10 @@ module EE
           end
 
           private
+
+          def skip_secret_detection?
+            changes_access.commits.any? { |commit| commit.safe_message =~ SPECIAL_COMMIT_FLAG }
+          end
 
           def secret_detection_logger
             @secret_detection_logger ||= ::Gitlab::SecretDetectionLogger.build
@@ -176,6 +186,7 @@ module EE
 
             response.results.each { |finding| message += build_finding_message(finding) }
 
+            message += LOG_MESSAGES[:skip_secret_detection]
             message += LOG_MESSAGES[:found_secrets_post_message]
             message
           end
@@ -194,6 +205,7 @@ module EE
               end
             end
 
+            message += LOG_MESSAGES[:skip_secret_detection]
             message += LOG_MESSAGES[:found_secrets_post_message]
             message
           end

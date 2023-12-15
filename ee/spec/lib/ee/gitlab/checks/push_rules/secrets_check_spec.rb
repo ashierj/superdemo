@@ -50,6 +50,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::SecretsCheck, feature_category: :s
           it_behaves_like 'scan failed to initialize'
           it_behaves_like 'scan failed with invalid input'
           it_behaves_like 'scan skipped due to invalid status'
+          it_behaves_like 'scan skipped when a commit has special bypass flag'
         end
       end
 
@@ -76,6 +77,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::SecretsCheck, feature_category: :s
           it_behaves_like 'scan failed to initialize'
           it_behaves_like 'scan failed with invalid input'
           it_behaves_like 'scan skipped due to invalid status'
+          it_behaves_like 'scan skipped when a commit has special bypass flag'
         end
 
         context 'when feature flag is disabled' do
