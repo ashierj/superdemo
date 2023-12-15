@@ -9,34 +9,34 @@ module QA
             include QA::Page::Component::Dropdown
 
             view 'ee/app/views/ldap_group_links/_form.html.haml' do
-              element :add_sync_button
-              element :ldap_group_field
-              element :ldap_sync_group_radio
-              element :ldap_sync_user_filter_radio
-              element :ldap_user_filter_field
+              element 'add-sync-button'
+              element 'ldap-group-field'
+              element 'ldap-sync-group-radio'
+              element 'ldap-sync-user-filter-radio'
+              element 'ldap-user-filter-field'
             end
 
             def set_ldap_group_sync_method
-              check_element(:ldap_sync_group_radio, true)
+              check_element('ldap-sync-group-radio', true)
             end
 
             def set_ldap_user_filter_sync_method
-              check_element(:ldap_sync_user_filter_radio, true)
+              check_element('ldap-sync-user-filter-radio', true)
             end
 
             def set_group_cn(group_cn)
-              within_element(:ldap_group_field) do
+              within_element('ldap-group-field') do
                 expand_select_list
               end
               search_and_select(group_cn)
             end
 
             def set_user_filter(user_filter)
-              fill_element(:ldap_user_filter_field, user_filter)
+              fill_element('ldap-user-filter-field', user_filter)
             end
 
             def click_add_sync_button
-              click_element(:add_sync_button)
+              click_element('add-sync-button')
             end
           end
         end
