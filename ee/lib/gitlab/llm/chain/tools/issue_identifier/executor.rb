@@ -26,6 +26,7 @@ module Gitlab
               PROMPT
 
             PROVIDER_PROMPT_CLASSES = {
+              ai_gateway: ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::Anthropic,
               anthropic: ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::VertexAi
             }.freeze

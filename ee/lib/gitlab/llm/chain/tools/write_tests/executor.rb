@@ -24,6 +24,7 @@ module Gitlab
               Reason: The question has a code block for which we want to write tests. "WriteTests" tool can process this question.
             TEXT
             PROVIDER_PROMPT_CLASSES = {
+              ai_gateway: ::Gitlab::Llm::Chain::Tools::WriteTests::Prompts::Anthropic,
               anthropic: ::Gitlab::Llm::Chain::Tools::WriteTests::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Tools::WriteTests::Prompts::VertexAi
             }.freeze

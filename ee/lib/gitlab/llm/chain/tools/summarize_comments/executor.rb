@@ -21,6 +21,7 @@ module Gitlab
               PROMPT
 
             PROVIDER_PROMPT_CLASSES = {
+              ai_gateway: ::Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::Anthropic,
               anthropic: ::Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::VertexAi
             }.freeze

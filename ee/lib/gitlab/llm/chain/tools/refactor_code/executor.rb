@@ -24,6 +24,7 @@ module Gitlab
               Reason: The question has a code block which we want to refactor. "RefactorCode" tool can process this question.
             TEXT
             PROVIDER_PROMPT_CLASSES = {
+              ai_gateway: ::Gitlab::Llm::Chain::Tools::RefactorCode::Prompts::Anthropic,
               anthropic: ::Gitlab::Llm::Chain::Tools::RefactorCode::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Tools::RefactorCode::Prompts::VertexAi
             }.freeze

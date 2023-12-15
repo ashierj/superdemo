@@ -19,6 +19,7 @@ module Gitlab
                       'Reason: The question has a code block that needs improvement. "ExplainCode" tool ' \
                       'can process this question.'
             PROVIDER_PROMPT_CLASSES = {
+              ai_gateway: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic,
               anthropic: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::VertexAi
             }.freeze

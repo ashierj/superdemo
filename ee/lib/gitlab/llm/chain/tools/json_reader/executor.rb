@@ -30,6 +30,7 @@ module Gitlab
             MAX_RETRIES = 3
 
             PROVIDER_PROMPT_CLASSES = {
+              ai_gateway: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic,
               anthropic: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::VertexAi
             }.freeze
