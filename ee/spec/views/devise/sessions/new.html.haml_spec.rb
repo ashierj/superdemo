@@ -25,42 +25,33 @@ RSpec.describe 'devise/sessions/new' do
     end
   end
 
-  flag_values = [true, false]
-  flag_values.each do |val|
-    context "with #{val}" do
+  describe 'Google Tag Manager' do
+    let!(:gtm_id) { 'GTM-WWKMTWS' }
+
+    subject { rendered }
+
+    before do
+      stub_devise
+      disable_captcha
+      stub_config(extra: { google_tag_manager_id: gtm_id, google_tag_manager_nonce_id: gtm_id })
+    end
+
+    describe 'when Google Tag Manager is enabled' do
       before do
-        stub_feature_flags(restyle_login_page: val)
+        enable_gtm
+        render
       end
 
-      describe 'Google Tag Manager' do
-        let!(:gtm_id) { 'GTM-WWKMTWS' }
+      it { is_expected.to match(/www.googletagmanager.com/) }
+    end
 
-        subject { rendered }
-
-        before do
-          stub_devise
-          disable_captcha
-          stub_config(extra: { google_tag_manager_id: gtm_id, google_tag_manager_nonce_id: gtm_id })
-        end
-
-        describe 'when Google Tag Manager is enabled' do
-          before do
-            enable_gtm
-            render
-          end
-
-          it { is_expected.to match(/www.googletagmanager.com/) }
-        end
-
-        describe 'when Google Tag Manager is disabled' do
-          before do
-            disable_gtm
-            render
-          end
-
-          it { is_expected.not_to match(/www.googletagmanager.com/) }
-        end
+    describe 'when Google Tag Manager is disabled' do
+      before do
+        disable_gtm
+        render
       end
+
+      it { is_expected.not_to match(/www.googletagmanager.com/) }
     end
   end
 
