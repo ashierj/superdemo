@@ -78,7 +78,8 @@ RSpec.describe Security::ApprovalGroupsFinder, "#execute", feature_category: :se
         group_a.members.delete_all
       end
 
-      it 'excludes groups the user lacks access to' do
+      it 'excludes groups the user lacks access to',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/435434' do
         expect(subject).to contain_exactly(group_b)
       end
     end
