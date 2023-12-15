@@ -20,14 +20,6 @@ module Geo
       delegate :geo_handle_after_destroy, to: :replicator
       delegate :geo_handle_after_update, to: :replicator
 
-      # Temporarily defining `verification_succeeded` and
-      # `verification_failed` for unverified models while verification is
-      # under development to avoid breaking GeoNodeStatusCheck code.
-      # TODO: Remove these after including `::Geo::VerificationState` on
-      # all models. https://gitlab.com/gitlab-org/gitlab/-/issues/280768
-      scope :verification_succeeded, -> { none }
-      scope :verification_failed, -> { none }
-
       # These scopes are intended to be overridden as needed
       scope :available_replicables, -> { all }
 
