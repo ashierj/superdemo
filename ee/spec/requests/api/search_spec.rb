@@ -179,7 +179,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           expect(json_response.count).to be expected_count
         end
 
-        context 'filters' do
+        context 'with filters' do
           def results_filenames
             json_response.map { |h| h['filename'] }.compact
           end
@@ -310,7 +310,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
       end
     end
 
-    context 'for users scope', :sidekiq_might_not_need_inline do
+    context 'for users scope', :sidekiq_inline do
       before do
         create_list(:user, 2).each_with_index do |user, index|
           user.update!(name: "foo_#{index}")
@@ -379,7 +379,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
         end
       end
 
-      context 'when elasticsearch is enabled', :elastic, :clean_gitlab_redis_shared_state do
+      context 'when elasticsearch is enabled', :elastic_delete_by_query do
         before do
           stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
         end
@@ -389,7 +389,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
             stub_ee_application_setting(elasticsearch_limit_indexing: true)
           end
 
-          context 'and namespace is indexed', :elastic_clean do
+          context 'and namespace is indexed', :elastic_delete_by_query do
             before do
               create :elasticsearch_indexed_namespace, namespace: group
             end
@@ -398,7 +398,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           end
         end
 
-        context 'when elasticsearch_limit_indexing off', :elastic_clean do
+        context 'when elasticsearch_limit_indexing off', :elastic_delete_by_query do
           before do
             stub_ee_application_setting(elasticsearch_limit_indexing: false)
           end
@@ -428,7 +428,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
         it_behaves_like 'elasticsearch disabled'
       end
 
-      context 'when elasticsearch is enabled', :elastic, :clean_gitlab_redis_shared_state do
+      context 'when elasticsearch is enabled', :elastic_delete_by_query do
         before do
           stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
         end
@@ -451,7 +451,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           end
         end
 
-        context 'when elasticsearch_limit_indexing off', :elastic_clean do
+        context 'when elasticsearch_limit_indexing off', :elastic_delete_by_query do
           before do
             stub_ee_application_setting(elasticsearch_limit_indexing: false)
           end
@@ -516,7 +516,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           end
         end
 
-        context 'filters' do
+        context 'with filters' do
           it 'by filename' do
             get api(endpoint, user), params: { scope: 'blobs', search: 'mon filename:PROCESS.md' }
 
@@ -555,7 +555,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
         it_behaves_like 'search enabled'
       end
 
-      context 'when elasticsearch is enabled', :elastic, :clean_gitlab_redis_shared_state do
+      context 'when elasticsearch is enabled', :elastic_delete_by_query do
         before do
           stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
         end
@@ -578,7 +578,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           end
         end
 
-        context 'when elasticsearch_limit_indexing off', :elastic_clean do
+        context 'when elasticsearch_limit_indexing off', :elastic_delete_by_query do
           before do
             stub_ee_application_setting(elasticsearch_limit_indexing: false)
           end
