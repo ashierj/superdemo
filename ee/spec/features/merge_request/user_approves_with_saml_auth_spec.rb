@@ -6,10 +6,12 @@ RSpec.describe 'Merge request > User approves with SAML auth', :js, feature_cate
   let_it_be(:user) { create :user }
   let_it_be(:group) { create :group }
   let_it_be(:setting) do
-    create :group_merge_request_approval_setting,
+    create(
+      :group_merge_request_approval_setting,
       require_saml_auth_to_approve: true,
-      require_password_to_approve: true, # enable password to spec SAML takes precdence over it
+      require_password_to_approve: true, # enable password to test that SAML takes precdence
       group: group
+    )
   end
 
   let_it_be(:sub_group) { create :group, parent: group }

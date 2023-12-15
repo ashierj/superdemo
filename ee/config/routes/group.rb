@@ -211,6 +211,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       callback_methods = Rails.env.test? ? [:get, :post] : [:post]
       match :callback, to: 'omniauth_callbacks#group_saml', via: callback_methods
       get :sso, to: 'sso#saml'
+      post :sso, to: 'sso#saml'
       delete :unlink, to: 'sso#unlink'
       put :update_microsoft_application
     end

@@ -15,9 +15,11 @@ module EE
         if !feature_flag_for_saml_auth_to_approve_enabled?
           return if incorrect_approval_password?(merge_request)
         else
-          return super unless merge_request.require_password_to_approve?
+          # use just the bare resolver here since this setting is for SAML and password now
+          # we can't let this path go through the project require_password_to_approve
+          return super unless mr_approval_setting_password_required?(merge_request)
 
-          require_saml_auth = approval_requires_saml_auth?(merge_request)
+          require_saml_auth = approval_requires_saml_auth?
 
           return if require_saml_auth && !saml_approval_in_time?
           return if incorrect_approval_password?(merge_request) && !require_saml_auth
@@ -37,10 +39,23 @@ module EE
           !::Gitlab::Auth.find_with_user_password(current_user.username, params[:approval_password])
       end
 
-      def approval_requires_saml_auth?(merge_request)
+      def approval_requires_saml_auth?
+        return true if ::AuthHelper.group_saml_enabled? && group_requires_saml_auth?
+        return true if instance_requires_saml_auth?
+
+        false
+      end
+
+      def instance_requires_saml_auth?
+        ::Gitlab::Auth::Saml::SsoEnforcer
+          .new(user: current_user, session_timeout: 0.seconds)
+          .access_restricted?
+      end
+
+      def group_requires_saml_auth?
         ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted?(
           user: current_user,
-          resource: merge_request.project,
+          resource: project,
           session_timeout: 0.seconds
         )
       end
@@ -49,7 +64,7 @@ module EE
         project.group
       end
 
-      def saml_provider
+      def group_saml_provider
         group.root_saml_provider
       end
 
@@ -57,12 +72,31 @@ module EE
         group&.root_ancestor
       end
 
-      def saml_approval_in_time?
-        return false unless saml_provider
+      def current_user_instance_saml_identities
+        current_user.identities.with_provider(::AuthHelper.saml_providers)
+      end
 
-        ::Gitlab::Auth::GroupSaml::SsoState
-          .new(saml_provider.id)
-          .active_since?(SAML_APPROVE_TIMEOUT.ago)
+      def saml_approval_in_time?
+        if group_saml_provider&.enabled?
+          return ::Gitlab::Auth::GroupSaml::SsoState
+            .new(group_saml_provider.id)
+            .active_since?(SAML_APPROVE_TIMEOUT.ago)
+        end
+
+        current_user_instance_saml_identities.any? do |identity|
+          ::Gitlab::Auth::Saml::SsoState
+            .new(provider_id: identity.provider)
+            .active_since?(SAML_APPROVE_TIMEOUT.ago)
+        end
+      end
+
+      def mr_approval_setting_password_required?(merge_request)
+        return false unless root_group.is_a? Group
+
+        ComplianceManagement::MergeRequestApprovalSettings::Resolver
+          .new(root_group, project: merge_request.target_project)
+          .require_password_to_approve
+          .value
       end
 
       override :reset_approvals_cache

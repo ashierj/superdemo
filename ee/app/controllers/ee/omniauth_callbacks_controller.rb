@@ -73,5 +73,22 @@ module EE
 
       redirect_to identity_verification_path
     end
+
+    override :set_session_active_since
+    def set_session_active_since(id)
+      ::Gitlab::Auth::Saml::SsoState.new(provider_id: id).update_active
+    end
+
+    override :store_redirect_to
+    def store_redirect_to
+      return unless ::Feature.enabled?(:ff_require_saml_auth_to_approve)
+
+      redirect_to = request.env.dig('omniauth.params', 'redirect_to').presence
+      redirect_to = sanitize_redirect redirect_to
+
+      return unless redirect_to
+
+      store_location_for :redirect, redirect_to
+    end
   end
 end
