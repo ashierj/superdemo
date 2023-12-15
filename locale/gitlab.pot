@@ -6935,7 +6935,7 @@ msgstr ""
 msgid "AuditStreams|AWS S3"
 msgstr ""
 
-msgid "AuditStreams|Access Key Xid"
+msgid "AuditStreams|Access Key ID"
 msgstr ""
 
 msgid "AuditStreams|Active"

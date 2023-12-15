@@ -205,6 +205,27 @@ export const mockAmazonS3Destinations = [
   },
 ];
 
+export const mockInstanceAmazonS3Destinations = [
+  {
+    __typename: 'InstanceAmazonS3ConfigurationType',
+    id: 'gid://gitlab/AuditEvents::Instance::AmazonS3Configuration/1',
+    name: 'Destination 1',
+    accessKeyXid: 'AKIA1231dsdsdsdsds23',
+    awsRegion: 'us-east-1',
+    bucketName: 'bucket-name-1',
+    secretAccessKey: 'SECRET_ACCESS_KEY_1',
+  },
+  {
+    __typename: 'InstanceAmazonS3ConfigurationType',
+    id: 'gid://gitlab/AuditEvents::Instance::AmazonS3Configuration/2',
+    name: 'Destination 2',
+    accessKeyXid: 'AKIA1231dsdsdsdsds12',
+    awsRegion: 'us-east-2',
+    bucketName: 'bucket-name-2',
+    secretAccessKey: 'SECRET_ACCESS_KEY_2',
+  },
+];
+
 export const groupPath = 'test-group';
 
 export const instanceGroupPath = 'instance';
@@ -244,6 +265,12 @@ export const amazonS3DataPopulator = (nodes) => ({
       id: testGroupId,
       amazonS3Configurations: { nodes },
     },
+  },
+});
+
+export const instanceAmazonS3DataPopulator = (nodes) => ({
+  data: {
+    auditEventsInstanceAmazonS3Configurations: { nodes },
   },
 });
 
@@ -438,12 +465,37 @@ export const amazonS3DestinationCreateMutationPopulator = (errors = []) => {
   };
 };
 
+export const instanceAmazonS3DestinationCreateMutationPopulator = (errors = []) => {
+  const correctData = {
+    errors,
+    instanceAmazonS3Configuration: {
+      __typename: 'InstanceAmazonS3ConfigurationType',
+      id: 'gid://gitlab/AuditEvents::Instance::AmazonS3Configuration/1',
+      name: 'Destination 1',
+      accessKeyXid: 'AKIA1231dsdsdsdsds23',
+      awsRegion: 'us-east-1',
+      bucketName: 'bucket-name-1',
+    },
+  };
+
+  const errorData = {
+    errors,
+    instanceAmazonS3Configuration: null,
+  };
+
+  return {
+    data: {
+      auditEventsInstanceAmazonS3ConfigurationCreate: errors.length > 0 ? errorData : correctData,
+    },
+  };
+};
+
 export const amazonS3DestinationUpdateMutationPopulator = (errors = []) => {
   const correctData = {
     errors,
     amazonS3Configuration: {
-      __typename: 'GoogleCloudLoggingConfigurationType',
-      id: 'gid://gitlab/AuditEvents::GoogleCloudLoggingConfiguration/1',
+      __typename: 'AmazonS3ConfigurationType',
+      id: 'gid://gitlab/AuditEvents::AmazonS3Configuration/1',
       name: 'Destination 1',
       accessKeyXid: 'AKIA1231dsdsdsdsds23',
       awsRegion: 'us-east-1',
@@ -459,6 +511,31 @@ export const amazonS3DestinationUpdateMutationPopulator = (errors = []) => {
   return {
     data: {
       auditEventsAmazonS3ConfigurationUpdate: errors.length > 0 ? errorData : correctData,
+    },
+  };
+};
+
+export const instanceAmazonS3DestinationUpdateMutationPopulator = (errors = []) => {
+  const correctData = {
+    errors,
+    instanceAmazonS3Configuration: {
+      __typename: 'InstanceAmazonS3ConfigurationType',
+      id: 'gid://gitlab/AuditEvents::InstanceAmazonS3Configuration/1',
+      name: 'Destination 1',
+      accessKeyXid: 'AKIA1231dsdsdsdsds23',
+      awsRegion: 'us-east-1',
+      bucketName: 'bucket-name-1',
+    },
+  };
+
+  const errorData = {
+    errors,
+    instanceAmazonS3Configuration: null,
+  };
+
+  return {
+    data: {
+      auditEventsInstanceAmazonS3ConfigurationUpdate: errors.length > 0 ? errorData : correctData,
     },
   };
 };
@@ -662,6 +739,14 @@ export const destinationInstanceGcpLoggingDeleteMutationPopulator = (errors = []
 export const destinationAmazonS3DeleteMutationPopulator = (errors = []) => ({
   data: {
     auditEventsAmazonS3ConfigurationDelete: {
+      errors,
+    },
+  },
+});
+
+export const destinationInstanceAmazonS3DeleteMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsInstanceAmazonS3ConfigurationDelete: {
       errors,
     },
   },

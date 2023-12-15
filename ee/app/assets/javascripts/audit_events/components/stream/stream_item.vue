@@ -85,11 +85,6 @@ export default {
       this.clearSuccessMessage();
       this.$emit('error');
     },
-    getQueryResponse(queryData) {
-      return this.isInstance
-        ? queryData.externalAuditEventDestinationCreate
-        : queryData.group.externalAuditEventDestinationCreate;
-    },
     clearSuccessMessage() {
       this.successMessage = null;
     },

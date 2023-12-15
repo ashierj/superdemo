@@ -28,6 +28,7 @@ export default (selector) => {
     auditEventDefinitions,
     allGroups,
     allProjects,
+    allowStreamingInstanceAuditEventsToAmazonS3,
   } = el.dataset;
 
   const store = createStore();
@@ -59,6 +60,9 @@ export default (selector) => {
       auditEventDefinitions: auditEventDefinitions ? JSON.parse(auditEventDefinitions) : [],
       allGroups: allGroups ? JSON.parse(allGroups) : [],
       allProjects: allProjects ? JSON.parse(allProjects) : [],
+      allowStreamingInstanceAuditEventsToAmazonS3: parseBoolean(
+        allowStreamingInstanceAuditEventsToAmazonS3,
+      ),
     },
     apolloProvider,
     render: (createElement) => createElement(AuditEventsApp),

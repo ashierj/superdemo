@@ -140,7 +140,7 @@ export const ADD_STREAM_EDITOR_I18N = {
 
   AMAZON_S3_DESTINATION_NAME_LABEL: s__('AuditStreams|Destination Name'),
   AMAZON_S3_DESTINATION_NAME_PLACEHOLDER: s__('AuditStreams|Destination Name'),
-  AMAZON_S3_DESTINATION_ACCESS_KEY_XID_LABEL: s__('AuditStreams|Access Key Xid'),
+  AMAZON_S3_DESTINATION_ACCESS_KEY_XID_LABEL: s__('AuditStreams|Access Key ID'),
   AMAZON_S3_DESTINATION_ACCESS_KEY_XID_PLACEHOLDER: s__('AuditStreams|AKIA1231dsdsdsdsds23'),
   AMAZON_S3_DESTINATION_AWS_REGION_LABEL: s__('AuditStreams|AWS Region'),
   AMAZON_S3_DESTINATION_AWS_REGION_PLACEHOLDER: s__('AuditStreams|us-east-1'),

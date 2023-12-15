@@ -11,6 +11,7 @@ describe('StreamEmptyState', () => {
       provide: {
         emptyStateSvgPath: mockSvgPath,
         groupPath,
+        allowStreamingInstanceAuditEventsToAmazonS3: true,
       },
       stubs: {
         GlEmptyState,

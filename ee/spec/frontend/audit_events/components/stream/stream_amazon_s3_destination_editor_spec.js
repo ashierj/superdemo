@@ -8,6 +8,8 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import amazonS3ConfigurationCreate from 'ee/audit_events/graphql/mutations/create_amazon_s3_destination.mutation.graphql';
 import amazonS3ConfigurationUpdate from 'ee/audit_events/graphql/mutations/update_amazon_s3_destination.mutation.graphql';
+import instanceAmazonS3ConfigurationCreate from 'ee/audit_events/graphql/mutations/create_instance_amazon_s3_destination.mutation.graphql';
+import instanceAmazonS3ConfigurationUpdate from 'ee/audit_events/graphql/mutations/update_instance_amazon_s3_destination.mutation.graphql';
 import StreamAmazonS3DestinationEditor from 'ee/audit_events/components/stream/stream_amazon_s3_destination_editor.vue';
 import StreamDeleteModal from 'ee/audit_events/components/stream/stream_delete_modal.vue';
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';
@@ -15,7 +17,11 @@ import {
   amazonS3DestinationCreateMutationPopulator,
   amazonS3DestinationUpdateMutationPopulator,
   groupPath,
+  instanceGroupPath,
   mockAmazonS3Destinations,
+  mockInstanceAmazonS3Destinations,
+  instanceAmazonS3DestinationCreateMutationPopulator,
+  instanceAmazonS3DestinationUpdateMutationPopulator,
 } from '../../mock_data';
 
 jest.mock('~/alert');
@@ -23,6 +29,7 @@ Vue.use(VueApollo);
 
 describe('StreamDestinationEditor', () => {
   let wrapper;
+  let groupPathProvide = groupPath;
 
   const createComponent = ({
     mountFn = mountExtended,
@@ -38,7 +45,7 @@ describe('StreamDestinationEditor', () => {
     wrapper = mountFn(StreamAmazonS3DestinationEditor, {
       attachTo: document.body,
       provide: {
-        groupPath,
+        groupPath: groupPathProvide,
       },
       propsData: {
         ...props,
@@ -413,6 +420,477 @@ describe('StreamDestinationEditor', () => {
         .mockResolvedValue(amazonS3DestinationCreateMutationPopulator());
       createComponent({
         apolloHandlers: [[amazonS3ConfigurationCreate, mutationMock]],
+      });
+
+      await findSecretAccessKey().setValue('\\ntest\\n');
+      await findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+
+      expect(mutationMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          secretAccessKey: '\ntest\n',
+        }),
+      );
+    });
+  });
+
+  describe('Instance amazon S3 StreamDestinationEditor', () => {
+    beforeEach(() => {
+      groupPathProvide = instanceGroupPath;
+    });
+
+    describe('when initialized', () => {
+      beforeEach(() => {
+        createComponent({
+          apolloHandlers: [
+            [
+              instanceAmazonS3ConfigurationCreate,
+              jest.fn().mockResolvedValue(instanceAmazonS3DestinationCreateMutationPopulator()),
+            ],
+          ],
+        });
+      });
+
+      it('should render the destinations warning', () => {
+        expect(findWarningMessage().props('title')).toBe(ADD_STREAM_EDITOR_I18N.WARNING_TITLE);
+      });
+
+      it('should render the destination name input', () => {
+        expect(findNameFormGroup().exists()).toBe(true);
+        expect(findName().exists()).toBe(true);
+        expect(findName().attributes('placeholder')).toBe(
+          ADD_STREAM_EDITOR_I18N.AMAZON_S3_DESTINATION_NAME_PLACEHOLDER,
+        );
+      });
+
+      it('should render the destination AccessKeyXid input', () => {
+        expect(findAccessKeyXidFormGroup().exists()).toBe(true);
+        expect(findAccessKeyXid().exists()).toBe(true);
+        expect(findAccessKeyXid().attributes('placeholder')).toBe(
+          ADD_STREAM_EDITOR_I18N.AMAZON_S3_DESTINATION_ACCESS_KEY_XID_PLACEHOLDER,
+        );
+      });
+
+      it('should render the destination awsRegion input', () => {
+        expect(findAwsRegionFormGroup().exists()).toBe(true);
+        expect(findAwsRegion().exists()).toBe(true);
+        expect(findAwsRegion().attributes('placeholder')).toBe(
+          ADD_STREAM_EDITOR_I18N.AMAZON_S3_DESTINATION_AWS_REGION_PLACEHOLDER,
+        );
+      });
+
+      it('should render the destination BucketName input', () => {
+        expect(findBucketNameFormGroup().exists()).toBe(true);
+        expect(findBucketName().exists()).toBe(true);
+        expect(findBucketName().attributes('placeholder')).toBe(
+          ADD_STREAM_EDITOR_I18N.AMAZON_S3_DESTINATION_BUCKET_NAME_PLACEHOLDER,
+        );
+      });
+
+      it('should render the destination Secret Access Key input', () => {
+        expect(findSecretAccessKeyFormGroup().exists()).toBe(true);
+        expect(findSecretAccessKey().exists()).toBe(true);
+      });
+
+      it('does not render the delete button', () => {
+        expect(findDeleteBtn().exists()).toBe(false);
+      });
+
+      it('renders the add button text', () => {
+        expect(findAddStreamBtn().attributes('name')).toBe(ADD_STREAM_EDITOR_I18N.ADD_BUTTON_NAME);
+        expect(findAddStreamBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.ADD_BUTTON_TEXT);
+      });
+
+      it('disables the add button at first', () => {
+        expect(findAddStreamBtn().props('disabled')).toBe(true);
+      });
+    });
+
+    describe('when add destination event', () => {
+      describe('successfully added', () => {
+        beforeEach(() => {
+          createComponent({
+            apolloHandlers: [
+              [
+                instanceAmazonS3ConfigurationCreate,
+                jest.fn().mockResolvedValue(instanceAmazonS3DestinationCreateMutationPopulator()),
+              ],
+            ],
+          });
+
+          findName().setValue(mockInstanceAmazonS3Destinations[0].name);
+          findAccessKeyXid().setValue(mockInstanceAmazonS3Destinations[0].accessKeyXid);
+          findAwsRegion().setValue(mockInstanceAmazonS3Destinations[0].awsRegion);
+          findBucketName().setValue(mockInstanceAmazonS3Destinations[0].bucketName);
+          findSecretAccessKey().setValue(mockInstanceAmazonS3Destinations[0].secretAccessKey);
+        });
+        it('add stream button should be disabled to start', () => {
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
+        });
+
+        it('should emit add event after destination added', async () => {
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(wrapper.emitted('added')).toBeDefined();
+        });
+        it('should not emit error event after destination added', async () => {
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+        });
+      });
+
+      describe('when server returns error', () => {
+        const errorMsg = 'Destination hosts limit exceeded';
+        beforeEach(() => {
+          createComponent({
+            apolloHandlers: [
+              [
+                instanceAmazonS3ConfigurationCreate,
+                jest
+                  .fn()
+                  .mockResolvedValue(
+                    instanceAmazonS3DestinationCreateMutationPopulator([errorMsg]),
+                  ),
+              ],
+            ],
+          });
+          findName().setValue(mockInstanceAmazonS3Destinations[0].name);
+          findAccessKeyXid().setValue(mockInstanceAmazonS3Destinations[0].accessKeyXid);
+          findAwsRegion().setValue(mockInstanceAmazonS3Destinations[0].awsRegion);
+          findBucketName().setValue(mockInstanceAmazonS3Destinations[0].bucketName);
+          findSecretAccessKey().setValue(mockInstanceAmazonS3Destinations[0].secretAccessKey);
+        });
+
+        it('add stream button should be disabled to start', () => {
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
+        });
+
+        it('should not emit add event after destination added', async () => {
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(wrapper.emitted('added')).toBeUndefined();
+        });
+        it('should emit error event after destination added', async () => {
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(findAlertErrors()).toHaveLength(1);
+          expect(findAlertErrors().at(0).text()).toBe(errorMsg);
+          expect(wrapper.emitted('error')).toBeDefined();
+        });
+      });
+
+      describe('when network errors', () => {
+        const sentryError = new Error('Network error');
+        let sentryCaptureExceptionSpy;
+
+        beforeEach(async () => {
+          sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+          createComponent({
+            apolloHandlers: [
+              [instanceAmazonS3ConfigurationCreate, jest.fn().mockRejectedValue(sentryError)],
+            ],
+          });
+
+          findName().setValue(mockInstanceAmazonS3Destinations[0].name);
+          findAccessKeyXid().setValue(mockInstanceAmazonS3Destinations[0].accessKeyXid);
+          findAwsRegion().setValue(mockInstanceAmazonS3Destinations[0].awsRegion);
+          findBucketName().setValue(mockInstanceAmazonS3Destinations[0].bucketName);
+          findSecretAccessKey().setValue(mockInstanceAmazonS3Destinations[0].secretAccessKey);
+
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+        });
+
+        it('shows error alerts', () => {
+          expect(findAlertErrors()).toHaveLength(1);
+          expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
+        });
+
+        it('logs to Sentry', () => {
+          expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+        });
+
+        it('emits correct events', () => {
+          expect(wrapper.emitted('error')).toBeDefined();
+
+          expect(wrapper.emitted('added')).toBeUndefined();
+        });
+      });
+    });
+
+    describe('cancel event', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('should emit cancel event correctly', () => {
+        findCancelStreamBtn().vm.$emit('click');
+
+        expect(wrapper.emitted('cancel')).toBeDefined();
+      });
+    });
+
+    describe('when editing an existing destination', () => {
+      describe('renders', () => {
+        beforeEach(() => {
+          createComponent({ props: { item: mockInstanceAmazonS3Destinations[0] } });
+        });
+
+        it('the name field', () => {
+          expect(findName().exists()).toBe(true);
+          expect(findName().element.value).toBe(mockInstanceAmazonS3Destinations[0].name);
+        });
+        it('the access Key id field', () => {
+          expect(findAccessKeyXid().exists()).toBe(true);
+          expect(findAccessKeyXid().element.value).toBe(
+            mockInstanceAmazonS3Destinations[0].accessKeyXid,
+          );
+        });
+        it('the aws Region field', () => {
+          expect(findAwsRegion().exists()).toBe(true);
+          expect(findAwsRegion().element.value).toBe(mockInstanceAmazonS3Destinations[0].awsRegion);
+        });
+        it('the bucket Name field', () => {
+          expect(findBucketName().exists()).toBe(true);
+          expect(findBucketName().element.value).toBe(
+            mockInstanceAmazonS3Destinations[0].bucketName,
+          );
+        });
+        it('the Secret Access Key field', () => {
+          expect(findSecretAccessKey().exists()).toBe(false);
+          expect(findSecretAccessKeyAddButton().exists()).toBe(true);
+          expect(findSecretAccessKeyCancelButton().exists()).toBe(false);
+        });
+
+        it('the delete button', () => {
+          expect(findDeleteBtn().exists()).toBe(true);
+        });
+
+        it('renders the save button text', () => {
+          expect(findAddStreamBtn().attributes('name')).toBe(
+            ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_NAME,
+          );
+          expect(findAddStreamBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT);
+        });
+
+        it('disables the save button at first', () => {
+          expect(findAddStreamBtn().props('disabled')).toBe(true);
+        });
+
+        it('displays the secret access key field when adding', async () => {
+          await findSecretAccessKeyAddButton().trigger('click');
+
+          expect(findSecretAccessKeyAddButton().props('disabled')).toBe(true);
+          expect(findSecretAccessKeyCancelButton().exists()).toBe(true);
+          expect(findSecretAccessKey().element.value).toBe('');
+        });
+
+        it('removes the secret access key field when cancelled', async () => {
+          await findSecretAccessKeyAddButton().trigger('click');
+          await findSecretAccessKeyCancelButton().trigger('click');
+
+          expect(findSecretAccessKeyAddButton().props('disabled')).toBe(false);
+          expect(findSecretAccessKey().exists()).toBe(false);
+          expect(findSecretAccessKeyAddButton().exists()).toBe(true);
+          expect(findSecretAccessKeyCancelButton().exists()).toBe(false);
+        });
+      });
+
+      describe.each`
+        name                  | findInputFn
+        ${'Destination Name'} | ${findName}
+        ${'Access Key Xid'}   | ${findAccessKeyXid}
+        ${'AWS Region'}       | ${findAwsRegion}
+        ${'Bucket Name'}      | ${findBucketName}
+      `('enable the save button when $name is edited', ({ findInputFn }) => {
+        beforeEach(() => {
+          createComponent({ props: { item: mockInstanceAmazonS3Destinations[0] } });
+        });
+
+        it('should have save button disabled', () => {
+          expect(findAddStreamBtn().props('disabled')).toBe(true);
+        });
+
+        it('should have save button enabled', async () => {
+          await findInputFn().setValue('test');
+
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
+        });
+      });
+
+      describe('when destination updated', () => {
+        beforeEach(async () => {
+          createComponent({
+            props: { item: mockInstanceAmazonS3Destinations[0] },
+            apolloHandlers: [
+              [
+                instanceAmazonS3ConfigurationUpdate,
+                jest.fn().mockResolvedValue(instanceAmazonS3DestinationUpdateMutationPopulator()),
+              ],
+            ],
+          });
+
+          findName().setValue(mockInstanceAmazonS3Destinations[0].name);
+          findAccessKeyXid().setValue(mockInstanceAmazonS3Destinations[1].accessKeyXid);
+          findAwsRegion().setValue(mockInstanceAmazonS3Destinations[1].awsRegion);
+          findBucketName().setValue(mockInstanceAmazonS3Destinations[1].bucketName);
+
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+        });
+
+        it('should emit updated event', () => {
+          expect(wrapper.emitted('updated')).toBeDefined();
+        });
+        it('not emit error event', () => {
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+        });
+      });
+
+      describe('when destination secret access key updated', () => {
+        beforeEach(async () => {
+          createComponent({
+            props: { item: mockInstanceAmazonS3Destinations[0] },
+            apolloHandlers: [
+              [
+                instanceAmazonS3ConfigurationUpdate,
+                jest.fn().mockResolvedValue(instanceAmazonS3DestinationUpdateMutationPopulator()),
+              ],
+            ],
+          });
+
+          await findSecretAccessKeyAddButton().trigger('click');
+          findSecretAccessKey().setValue(mockInstanceAmazonS3Destinations[1].secretAccessKey);
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+        });
+
+        it('should emit updated event', () => {
+          expect(wrapper.emitted('updated')).toBeDefined();
+        });
+        it('should not emit error event', () => {
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+        });
+      });
+
+      describe('when server returns error', () => {
+        const errorMsg = 'Destination hosts limit exceeded';
+
+        beforeEach(async () => {
+          createComponent({
+            props: { item: mockInstanceAmazonS3Destinations[0] },
+            apolloHandlers: [
+              [
+                instanceAmazonS3ConfigurationUpdate,
+                jest
+                  .fn()
+                  .mockResolvedValue(
+                    instanceAmazonS3DestinationUpdateMutationPopulator([errorMsg]),
+                  ),
+              ],
+            ],
+          });
+
+          findName().setValue(mockInstanceAmazonS3Destinations[0].name);
+          findAccessKeyXid().setValue(mockInstanceAmazonS3Destinations[0].accessKeyXid);
+          findAwsRegion().setValue(mockInstanceAmazonS3Destinations[0].awsRegion);
+          findBucketName().setValue(mockInstanceAmazonS3Destinations[0].bucketName);
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+        });
+
+        it('should report error', () => {
+          expect(findAlertErrors()).toHaveLength(1);
+          expect(findAlertErrors().at(0).text()).toBe(errorMsg);
+          expect(wrapper.emitted('error')).toBeDefined();
+        });
+        it('should not emit updated destination event', () => {
+          expect(wrapper.emitted('updated')).toBeUndefined();
+        });
+      });
+
+      describe('when network errors', () => {
+        const sentryError = new Error('Network error');
+        let sentryCaptureExceptionSpy;
+
+        beforeEach(async () => {
+          sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+          createComponent({
+            props: { item: mockInstanceAmazonS3Destinations[0] },
+            apolloHandlers: [
+              [instanceAmazonS3ConfigurationUpdate, jest.fn().mockRejectedValue(sentryError)],
+            ],
+          });
+
+          findName().setValue(mockInstanceAmazonS3Destinations[0].name);
+          findAccessKeyXid().setValue(mockInstanceAmazonS3Destinations[0].accessKeyXid);
+          findAwsRegion().setValue(mockInstanceAmazonS3Destinations[0].awsRegion);
+          findBucketName().setValue(mockInstanceAmazonS3Destinations[0].bucketName);
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+        });
+
+        it('shows error alerts', () => {
+          expect(findAlertErrors()).toHaveLength(1);
+          expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.UPDATING_ERROR);
+        });
+
+        it('logs to Sentry', () => {
+          expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+        });
+
+        it('emits correct events', () => {
+          expect(wrapper.emitted('error')).toBeDefined();
+
+          expect(wrapper.emitted('added')).toBeUndefined();
+        });
+      });
+    });
+
+    describe('deleting', () => {
+      beforeEach(async () => {
+        createComponent({ props: { item: mockInstanceAmazonS3Destinations[0] } });
+        await findDeleteBtn().trigger('click');
+      });
+
+      it('should emit deleting on success operation', async () => {
+        await findDeleteModal().vm.$emit('deleting');
+
+        expect(findDeleteBtn().props('loading')).toBe(true);
+      });
+
+      it('should emit deleted on success operation', async () => {
+        await findDeleteModal().vm.$emit('delete');
+
+        expect(findDeleteBtn().props('loading')).toBe(false);
+        expect(wrapper.emitted('deleted')).toEqual([[mockInstanceAmazonS3Destinations[0].id]]);
+      });
+
+      it('shows the alert for the error', () => {
+        const errorMsg = 'An error occurred';
+        findDeleteModal().vm.$emit('error', errorMsg);
+
+        expect(createAlert).toHaveBeenCalledWith({
+          message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+          captureError: true,
+          error: errorMsg,
+        });
+      });
+    });
+
+    it('passes actual newlines when these are used in the secret access key input', async () => {
+      const mutationMock = jest
+        .fn()
+        .mockResolvedValue(instanceAmazonS3DestinationCreateMutationPopulator());
+      createComponent({
+        apolloHandlers: [[instanceAmazonS3ConfigurationCreate, mutationMock]],
       });
 
       await findSecretAccessKey().setValue('\\ntest\\n');

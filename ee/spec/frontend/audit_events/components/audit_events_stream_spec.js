@@ -8,6 +8,10 @@ import waitForPromises from 'helpers/wait_for_promises';
 import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
 import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_external_destinations.query.graphql';
 import gcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_google_cloud_logging_destinations.query.graphql';
+import instanceGcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_google_cloud_logging_destinations.query.graphql';
+import amazonS3DestinationsQuery from 'ee/audit_events/graphql/queries/get_amazon_s3_destinations.query.graphql';
+import instanceAmazonS3DestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_amazon_s3_destinations.query.graphql';
+
 import {
   AUDIT_STREAMS_NETWORK_ERRORS,
   ADD_STREAM_MESSAGE,
@@ -28,6 +32,9 @@ import {
   instanceDestinationDataPopulator,
   gcpLoggingDataPopulator,
   mockGcpLoggingDestinations,
+  mockInstanceGcpLoggingDestinations,
+  mockAmazonS3Destinations,
+  mockInstanceAmazonS3Destinations,
 } from '../mock_data';
 
 jest.mock('~/alert');
@@ -40,15 +47,18 @@ describe('AuditEventsStream', () => {
   const externalDestinationsQuerySpy = jest
     .fn()
     .mockResolvedValue(destinationDataPopulator(mockExternalDestinations));
-
   const externalGcpLoggingQuerySpy = jest
     .fn()
     .mockResolvedValue(gcpLoggingDataPopulator(mockGcpLoggingDestinations));
+  const externalAmazonS3QuerySpy = jest
+    .fn()
+    .mockResolvedValue(gcpLoggingDataPopulator(mockAmazonS3Destinations));
 
   const createComponent = (mockApollo) => {
     wrapper = mountExtended(AuditEventsStream, {
       provide: {
         groupPath: providedGroupPath,
+        allowStreamingInstanceAuditEventsToAmazonS3: true,
       },
       apolloProvider: mockApollo,
       stubs: {
@@ -83,6 +93,7 @@ describe('AuditEventsStream', () => {
     createAlert.mockClear();
     externalDestinationsQuerySpy.mockClear();
     externalGcpLoggingQuerySpy.mockClear();
+    externalAmazonS3QuerySpy.mockClear();
   });
 
   describe('Group AuditEventsStream', () => {
@@ -92,6 +103,7 @@ describe('AuditEventsStream', () => {
         const mockApollo = createMockApollo([
           [externalDestinationsQuery, destinationQuerySpy],
           [gcpLoggingDestinationsQuery, destinationQuerySpy],
+          [amazonS3DestinationsQuery, destinationQuerySpy],
         ]);
         createComponent(mockApollo);
 
@@ -105,6 +117,7 @@ describe('AuditEventsStream', () => {
         const mockApollo = createMockApollo([
           [externalDestinationsQuery, destinationQuerySpy],
           [gcpLoggingDestinationsQuery, externalGcpLoggingQuerySpy],
+          [amazonS3DestinationsQuery, externalAmazonS3QuerySpy],
         ]);
         createComponent(mockApollo);
         await waitForPromises();
@@ -119,6 +132,22 @@ describe('AuditEventsStream', () => {
         const mockApollo = createMockApollo([
           [externalDestinationsQuery, externalDestinationsQuerySpy],
           [gcpLoggingDestinationsQuery, destinationQuerySpy],
+          [amazonS3DestinationsQuery, externalAmazonS3QuerySpy],
+        ]);
+        createComponent(mockApollo);
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('should still render the loading icon while waiting for aws s3 destination data to be returned', async () => {
+        const destinationQuerySpy = jest.fn().mockImplementation(() => {
+          return new Promise(() => {});
+        });
+        const mockApollo = createMockApollo([
+          [externalDestinationsQuery, destinationQuerySpy],
+          [gcpLoggingDestinationsQuery, destinationQuerySpy],
+          [amazonS3DestinationsQuery, destinationQuerySpy],
         ]);
         createComponent(mockApollo);
         await waitForPromises();
@@ -129,9 +158,11 @@ describe('AuditEventsStream', () => {
       it('should render empty state when no data is returned', async () => {
         const destinationQuerySpy = jest.fn().mockResolvedValue(destinationDataPopulator([]));
         const gcpLoggingQuerySpy = jest.fn().mockResolvedValue(gcpLoggingDataPopulator([]));
+        const amazonS3QuerySpy = jest.fn().mockResolvedValue(gcpLoggingDataPopulator([]));
         const mockApollo = createMockApollo([
           [externalDestinationsQuery, destinationQuerySpy],
           [gcpLoggingDestinationsQuery, gcpLoggingQuerySpy],
+          [amazonS3DestinationsQuery, amazonS3QuerySpy],
         ]);
         createComponent(mockApollo);
         await waitForPromises();
@@ -297,19 +328,86 @@ describe('AuditEventsStream', () => {
     const externalInstanceDestinationsQuerySpy = jest
       .fn()
       .mockResolvedValue(instanceDestinationDataPopulator(mockInstanceExternalDestinations));
+    const externalInstanceGcpLoggingQuerySpy = jest
+      .fn()
+      .mockResolvedValue(gcpLoggingDataPopulator(mockInstanceGcpLoggingDestinations));
+    const externalInstanceAmazonS3QuerySpy = jest
+      .fn()
+      .mockResolvedValue(gcpLoggingDataPopulator(mockInstanceAmazonS3Destinations));
 
     afterEach(() => {
       createAlert.mockClear();
       externalInstanceDestinationsQuerySpy.mockClear();
+      externalInstanceGcpLoggingQuerySpy.mockClear();
+      externalInstanceAmazonS3QuerySpy.mockClear();
     });
 
     describe('when initialized', () => {
-      it('should render empty state when no data is returned', async () => {
-        const instanceDestinationQuerySpy = jest
-          .fn()
-          .mockResolvedValue(instanceDestinationDataPopulator([]));
+      it('should render the loading icon while waiting for data to be returned', () => {
+        const destinationQuerySpy = jest.fn();
         const mockApollo = createMockApollo([
-          [instanceExternalDestinationsQuery, instanceDestinationQuerySpy],
+          [instanceExternalDestinationsQuery, destinationQuerySpy],
+          [instanceGcpLoggingDestinationsQuery, destinationQuerySpy],
+          [instanceAmazonS3DestinationsQuery, destinationQuerySpy],
+        ]);
+        createComponent(mockApollo);
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('should still render the loading icon while waiting for external destination data to be returned', async () => {
+        const destinationQuerySpy = jest.fn().mockImplementation(() => {
+          return new Promise(() => {});
+        });
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, destinationQuerySpy],
+          [instanceGcpLoggingDestinationsQuery, externalInstanceGcpLoggingQuerySpy],
+          [instanceAmazonS3DestinationsQuery, externalInstanceAmazonS3QuerySpy],
+        ]);
+        createComponent(mockApollo);
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('should still render the loading icon while waiting for gcp logging destination data to be returned', async () => {
+        const destinationQuerySpy = jest.fn().mockImplementation(() => {
+          return new Promise(() => {});
+        });
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, externalInstanceDestinationsQuerySpy],
+          [instanceGcpLoggingDestinationsQuery, destinationQuerySpy],
+          [instanceAmazonS3DestinationsQuery, externalInstanceAmazonS3QuerySpy],
+        ]);
+        createComponent(mockApollo);
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('should still render the loading icon while waiting for aws s3 destination data to be returned', async () => {
+        const destinationQuerySpy = jest.fn().mockImplementation(() => {
+          return new Promise(() => {});
+        });
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, destinationQuerySpy],
+          [instanceGcpLoggingDestinationsQuery, externalInstanceGcpLoggingQuerySpy],
+          [instanceAmazonS3DestinationsQuery, destinationQuerySpy],
+        ]);
+        createComponent(mockApollo);
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('should render empty state when no data is returned', async () => {
+        const destinationQuerySpy = jest.fn().mockResolvedValue(destinationDataPopulator([]));
+        const gcpLoggingQuerySpy = jest.fn().mockResolvedValue(gcpLoggingDataPopulator([]));
+        const amazonS3QuerySpy = jest.fn().mockResolvedValue(gcpLoggingDataPopulator([]));
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, destinationQuerySpy],
+          [instanceGcpLoggingDestinationsQuery, gcpLoggingQuerySpy],
+          [instanceAmazonS3DestinationsQuery, amazonS3QuerySpy],
         ]);
         createComponent(mockApollo);
         await waitForPromises();
@@ -322,6 +420,8 @@ describe('AuditEventsStream', () => {
         const instanceDestinationQuerySpy = jest.fn().mockRejectedValue({});
         const mockApollo = createMockApollo([
           [instanceExternalDestinationsQuery, instanceDestinationQuerySpy],
+          [instanceGcpLoggingDestinationsQuery, instanceDestinationQuerySpy],
+          [instanceAmazonS3DestinationsQuery, instanceDestinationQuerySpy],
         ]);
         createComponent(mockApollo);
         await waitForPromises();
@@ -343,8 +443,11 @@ describe('AuditEventsStream', () => {
         return waitForPromises();
       });
 
-      it('shows http destination editor', async () => {
+      it('does not show loading icon', () => {
         expect(findLoadingIcon().exists()).toBe(false);
+      });
+
+      it('shows http destination editor', async () => {
         expect(findStreamDestinationEditor().exists()).toBe(false);
 
         await findHttpDropdownItem().trigger('click');
@@ -353,7 +456,6 @@ describe('AuditEventsStream', () => {
       });
 
       it('exits edit mode when an http external destination is added', async () => {
-        expect(findLoadingIcon().exists()).toBe(false);
         expect(findStreamDestinationEditor().exists()).toBe(false);
 
         await findHttpDropdownItem().trigger('click');
@@ -367,7 +469,6 @@ describe('AuditEventsStream', () => {
       });
 
       it('shows gcp logging editor', async () => {
-        expect(findLoadingIcon().exists()).toBe(false);
         expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(false);
 
         expect(findAddDestinationButton().props('toggleText')).toBe('Add streaming destination');
@@ -378,7 +479,6 @@ describe('AuditEventsStream', () => {
       });
 
       it('exits edit mode when an external gcp logging destination is added', async () => {
-        expect(findLoadingIcon().exists()).toBe(false);
         expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(false);
 
         await findGcpLoggingDropdownItem().trigger('click');
@@ -386,6 +486,25 @@ describe('AuditEventsStream', () => {
         expect(findStreamGcpLoggingDestinationEditor().exists()).toBe(true);
 
         findStreamGcpLoggingDestinationEditor().vm.$emit('added');
+        await waitForPromises();
+
+        expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+      });
+
+      it('shows amazon s3 editor', () => {
+        expect(findStreamAmazonS3DestinationEditor().exists()).toBe(false);
+
+        expect(findAddDestinationButton().props('toggleText')).toBe('Add streaming destination');
+      });
+
+      it('exits edit mode when an external amazon s3 destination is added', async () => {
+        expect(findStreamAmazonS3DestinationEditor().exists()).toBe(false);
+
+        await findAmazonS3DropdownItem().trigger('click');
+
+        expect(findStreamAmazonS3DestinationEditor().exists()).toBe(true);
+
+        findStreamAmazonS3DestinationEditor().vm.$emit('added');
         await waitForPromises();
 
         expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);

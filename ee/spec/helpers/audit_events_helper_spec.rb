@@ -161,6 +161,10 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
   describe '#audit_log_app_data' do
     let_it_be(:group) { build_stubbed(:group, :private) }
     let_it_be(:events) { build_list(:group_audit_event, 5, entity_id: group.id) }
+    let(:allow_streaming_instance_audit_events_to_amazon_s3) do
+      Feature.enabled?(allow_streaming_instance_audit_events_to_amazon_s3)
+    end
+
     let_it_be(:audit_event_definitions) do
       [
         { event_name: :add_gpg_key, feature_category: "compliance_management" },
@@ -170,7 +174,7 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
 
     it 'returns the correct data' do
       stub_licensed_features(external_audit_events: true)
-      expect(helper.audit_log_app_data(true, events, audit_event_definitions)).to contain_exactly(
+      expect(helper.audit_log_app_data(true, events, audit_event_definitions, group)).to contain_exactly(
         [:form_path, "/admin/audit_logs"],
         [:events, events.to_json],
         [:is_last_page, "true"],
@@ -179,7 +183,8 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
         [:empty_state_svg_path, ActionController::Base.helpers.image_path('illustrations/cloud.svg')],
         [:group_path, "instance"],
         [:show_streams, "true"],
-        [:audit_event_definitions, audit_event_definitions.to_json]
+        [:audit_event_definitions, audit_event_definitions.to_json],
+        [:allow_streaming_instance_audit_events_to_amazon_s3, "true"]
       )
     end
   end

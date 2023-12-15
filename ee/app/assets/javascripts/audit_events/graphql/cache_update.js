@@ -4,6 +4,7 @@ import getInstanceExternalDestinationsQuery from './queries/get_instance_externa
 import gcpLoggingDestinationsQuery from './queries/get_google_cloud_logging_destinations.query.graphql';
 import instanceGcpLoggingDestinationsQuery from './queries/get_instance_google_cloud_logging_destinations.query.graphql';
 import amazonS3DestinationsQuery from './queries/get_amazon_s3_destinations.query.graphql';
+import instanceAmazonS3DestinationsQuery from './queries/get_instance_amazon_s3_destinations.query.graphql';
 import ExternalAuditEventDestinationFragment from './fragments/external_audit_event_destination.fragment.graphql';
 import InstanceExternalAuditEventDestinationFragment from './fragments/instance_external_audit_event_destination.fragment.graphql';
 
@@ -245,8 +246,11 @@ export function removeGcpLoggingAuditEventsStreamingDestination({
 }
 
 export function addAmazonS3AuditEventsStreamingDestination({ store, fullPath, newDestination }) {
+  const getAmazonS3DestinationsQuery =
+    fullPath === 'instance' ? instanceAmazonS3DestinationsQuery : amazonS3DestinationsQuery;
+
   const sourceData = store.readQuery({
-    query: amazonS3DestinationsQuery,
+    query: getAmazonS3DestinationsQuery,
     variables: { fullPath },
   });
 
@@ -255,16 +259,22 @@ export function addAmazonS3AuditEventsStreamingDestination({ store, fullPath, ne
   }
 
   const data = produce(sourceData, (draftData) => {
-    const { nodes } = draftData.group.amazonS3Configurations;
+    const nodes =
+      fullPath === 'instance'
+        ? draftData.auditEventsInstanceAmazonS3Configurations.nodes
+        : draftData.group.amazonS3Configurations.nodes;
     nodes.unshift(newDestination);
   });
 
-  store.writeQuery({ query: amazonS3DestinationsQuery, variables: { fullPath }, data });
+  store.writeQuery({ query: getAmazonS3DestinationsQuery, variables: { fullPath }, data });
 }
 
 export function removeAmazonS3AuditEventsStreamingDestination({ store, fullPath, destinationId }) {
+  const getAmazonS3DestinationsQuery =
+    fullPath === 'instance' ? instanceAmazonS3DestinationsQuery : amazonS3DestinationsQuery;
+
   const sourceData = store.readQuery({
-    query: amazonS3DestinationsQuery,
+    query: getAmazonS3DestinationsQuery,
     variables: { fullPath },
   });
 
@@ -273,10 +283,16 @@ export function removeAmazonS3AuditEventsStreamingDestination({ store, fullPath,
   }
 
   const data = produce(sourceData, (draftData) => {
-    draftData.group.amazonS3Configurations.nodes = draftData.group.amazonS3Configurations.nodes.filter(
-      (node) => node.id !== destinationId,
-    );
+    if (fullPath === 'instance') {
+      draftData.auditEventsInstanceAmazonS3Configurations.nodes = draftData.auditEventsInstanceAmazonS3Configurations.nodes.filter(
+        (node) => node.id !== destinationId,
+      );
+    } else {
+      draftData.group.amazonS3Configurations.nodes = draftData.group.amazonS3Configurations.nodes.filter(
+        (node) => node.id !== destinationId,
+      );
+    }
   });
 
-  store.writeQuery({ query: amazonS3DestinationsQuery, variables: { fullPath }, data });
+  store.writeQuery({ query: getAmazonS3DestinationsQuery, variables: { fullPath }, data });
 }
