@@ -30,6 +30,7 @@ describe('ReadyToMerge', () => {
     isMergeAllowed: true,
     onlyAllowMergeIfPipelineSucceeds: false,
     ffOnlyEnabled: false,
+    ffMergePossible: false,
     hasCI: false,
     ciStatus: null,
     sha: '12345678',
@@ -135,14 +136,31 @@ describe('ReadyToMerge', () => {
       expect(findMergeImmediatelyDropdown().exists()).toBe(true);
     });
 
-    it('should return true when the merge train auto merge stategy is available', () => {
-      createComponent({
-        availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-        headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: false },
-        onlyAllowMergeIfPipelineSucceeds: true,
-      });
+    describe('with merge train auto merge strategy', () => {
+      it.each`
+        ffOnlyEnabled | ffMergePossible | isVisible
+        ${false}      | ${false}        | ${true}
+        ${false}      | ${true}         | ${true}
+        ${true}       | ${false}        | ${false}
+        ${true}       | ${true}         | ${true}
+      `(
+        'with ffOnlyEnabled $ffOnlyEnabled and ffMergePossible $ffMergePossible should be visible: $isVisible',
+        ({ ffOnlyEnabled, ffMergePossible, isVisible }) => {
+          createComponent({
+            availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
+            headPipeline: {
+              id: 'gid://gitlab/Pipeline/1',
+              path: 'path/to/pipeline',
+              active: false,
+            },
+            ffOnlyEnabled,
+            ffMergePossible,
+            onlyAllowMergeIfPipelineSucceeds: true,
+          });
 
-      expect(findMergeImmediatelyDropdown().exists()).toBe(true);
+          expect(findMergeImmediatelyDropdown().exists()).toBe(isVisible);
+        },
+      );
     });
 
     it('should display the new merge dropdown options for merge trains when the skip trains feature flag is enabled', () => {
