@@ -8,7 +8,7 @@ RSpec.shared_context 'for a Query.workspaces query' do
   let_it_be(:authorized_user) { create(:admin) }
 
   # Only instance admins may use this query, all other users, even workspace owners, will get an empty result
-  let_it_be(:workspace_owner) { workspace.user }
+  let_it_be(:workspace_owner, reload: true) { workspace.user }
   let_it_be(:unauthorized_user) { workspace_owner }
 
   let(:fields) do

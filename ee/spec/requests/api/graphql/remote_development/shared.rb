@@ -7,7 +7,7 @@
 RSpec.shared_context 'with no arguments' do
   include_context 'with unauthorized workspace created'
 
-  let_it_be(:workspace) { create(:workspace, name: 'matching-workspace') }
+  let_it_be(:workspace, reload: true) { create(:workspace, name: 'matching-workspace') }
 
   # NOTE: Specs including this context must define `non_matching_workspace` as follows:
   #   let_it_be(:non_matching_workspace) { create(:workspace, name: 'non-matching-workspace', ...) }
@@ -19,10 +19,12 @@ end
 RSpec.shared_context 'with id arg' do
   include_context 'with unauthorized workspace created'
 
-  let_it_be(:workspace) { create(:workspace, name: 'matching-workspace') }
+  let_it_be(:workspace, reload: true) { create(:workspace, name: 'matching-workspace') }
 
   # create workspace with different ID but still owned by the same user, to ensure isn't returned by the query
-  let_it_be(:non_matching_workspace) { create(:workspace, user: workspace.user, name: 'non-matching-workspace') }
+  let_it_be(:non_matching_workspace, reload: true) do
+    create(:workspace, user: workspace.user, name: 'non-matching-workspace')
+  end
 
   let(:id) { workspace.to_global_id.to_s }
   let(:args) { { id: id } }
@@ -31,10 +33,12 @@ end
 RSpec.shared_context 'with ids argument' do
   include_context 'with unauthorized workspace created'
 
-  let_it_be(:workspace) { create(:workspace, name: 'matching-workspace') }
+  let_it_be(:workspace, reload: true) { create(:workspace, name: 'matching-workspace') }
 
   # create workspace with different ID but still owned by the same user, to ensure isn't returned by the query
-  let_it_be(:non_matching_workspace) { create(:workspace, user: workspace.user, name: 'non-matching-workspace') }
+  let_it_be(:non_matching_workspace, reload: true) do
+    create(:workspace, user: workspace.user, name: 'non-matching-workspace')
+  end
 
   let_it_be(:ids) { [workspace.to_global_id.to_s, unauthorized_workspace.to_global_id.to_s] }
   let_it_be(:args) { { ids: ids } }
@@ -44,10 +48,10 @@ RSpec.shared_context 'with project_ids argument' do
   include_context 'with unauthorized workspace created'
 
   let_it_be(:project) { create(:project, :public) }
-  let_it_be(:workspace) { create(:workspace, project_id: project.id, name: 'matching-workspace') }
+  let_it_be(:workspace, reload: true) { create(:workspace, project_id: project.id, name: 'matching-workspace') }
 
   # create workspace with different project but still owned by the same user, to ensure isn't returned by the query
-  let_it_be(:non_matching_workspace) do
+  let_it_be(:non_matching_workspace, reload: true) do
     create(:workspace, user: workspace.user, name: 'non-matching-workspace')
   end
 
@@ -59,28 +63,26 @@ RSpec.shared_context 'with agent_ids argument' do
   include_context 'with unauthorized workspace created'
 
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
-  let_it_be(:workspace) { create(:workspace, agent: agent, name: 'matching-workspace') }
+  let_it_be(:workspace, reload: true) { create(:workspace, agent: agent, name: 'matching-workspace') }
 
-  # create workspace associated with different agent but owned by same user, to ensure isn't returned by the query
-  let_it_be(:other_agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
-  let_it_be(:non_matching_workspace) do
-    create(:workspace, agent: other_agent, user: workspace.user, name: 'non-matching-workspace')
-  end
+  include_context 'with non_matching_workspace associated with other agent created'
 
   let(:agent_ids) { [agent.to_global_id.to_s, unauthorized_workspace.agent.to_global_id.to_s] }
   let(:args) { { agent_ids: agent_ids } }
 end
 
 RSpec.shared_context 'with actual_states argument' do
-  let_it_be(:matching_actual_state) { ::RemoteDevelopment::Workspaces::States::STOPPED }
+  let_it_be(:matching_actual_state) { ::RemoteDevelopment::Workspaces::States::CREATION_REQUESTED }
 
   include_context 'with unauthorized workspace created'
 
-  let_it_be(:workspace) { create(:workspace, actual_state: matching_actual_state, name: 'matching-workspace') }
+  let_it_be(:workspace, reload: true) do
+    create(:workspace, actual_state: matching_actual_state, name: 'matching-workspace')
+  end
 
-  # create workspace with non-matching actual state but owned by same user, to ensure it is not returned by the query
+  # create workspace with non-matching actual state, to ensure it is not returned by the query
   let_it_be(:non_matching_actual_state) { ::RemoteDevelopment::Workspaces::States::RUNNING }
-  let_it_be(:non_matching_workspace) do
+  let_it_be(:non_matching_workspace, reload: true) do
     create(:workspace, actual_state: non_matching_actual_state, user: workspace.user, name: 'non-matching-workspace')
   end
 
@@ -190,6 +192,22 @@ end
 RSpec.shared_context 'with other workspace created' do
   # This workspace will only be accessible by admins
   let_it_be(:other_workspace) { create(:workspace, name: 'other-workspace') }
+end
+
+RSpec.shared_context 'with non_matching_workspace associated with same agent' do
+  before do
+    # Ensure the non-matching workspace is also associated with the same agent
+    non_matching_workspace.update!(agent: agent)
+    non_matching_workspace.reload
+  end
+end
+
+RSpec.shared_context 'with non_matching_workspace associated with other agent created' do
+  # create workspace associated with different agent but owned by same user, to ensure isn't returned by the query
+  let_it_be(:other_agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let_it_be(:non_matching_workspace, reload: true) do
+    create(:workspace, agent: other_agent, user: workspace.user, name: 'non-matching-workspace')
+  end
 end
 
 RSpec.shared_context 'with unauthorized workspace created' do

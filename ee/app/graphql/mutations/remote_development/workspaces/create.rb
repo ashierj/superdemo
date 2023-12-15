@@ -18,7 +18,7 @@ module Mutations
         argument :cluster_agent_id,
           ::Types::GlobalIDType[::Clusters::Agent],
           required: true,
-          description: 'ID of the cluster agent the created workspace will be associated with.'
+          description: 'GlobalID of the cluster agent the created workspace will be associated with.'
 
         # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409772 - Make this a type:enum
         argument :desired_state,
