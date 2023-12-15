@@ -10,41 +10,62 @@ export default {
       }
       let isLastMessage = false;
 
-      const getExistingMesagesIndex = (role) =>
+      const getExistingMessagesIndex = (role) =>
         state.messages.findIndex(
           (msg) => msg.requestId === newMessageData.requestId && msg.role.toLowerCase() === role,
         );
-      const userMessageWithRequestIdIndex = getExistingMesagesIndex(GENIE_CHAT_MODEL_ROLES.user);
-      const assistantMessageWithRequestIdIndex = getExistingMesagesIndex(
-        GENIE_CHAT_MODEL_ROLES.assistant,
-      );
-      const assistantMessageExists = assistantMessageWithRequestIdIndex > -1;
+      const userMessageWithRequestIdIndex = getExistingMessagesIndex(GENIE_CHAT_MODEL_ROLES.user);
       const userMessageExists = userMessageWithRequestIdIndex > -1;
 
-      const isUserMesasge = newMessageData.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.user;
+      const isUserMessage = newMessageData.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.user;
       const isAssistantMessage =
         newMessageData.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.assistant;
 
-      if (assistantMessageExists && isAssistantMessage) {
-        // We update the existing ASSISTANT message object instead of pushing a new one
-        state.messages.splice(assistantMessageWithRequestIdIndex, 1, {
-          ...state.messages[assistantMessageWithRequestIdIndex],
-          ...newMessageData,
-        });
-      } else if (userMessageExists && isUserMesasge) {
-        // We update the existing USER message object instead of pushing a new one
-        state.messages.splice(userMessageWithRequestIdIndex, 1, {
-          ...state.messages[userMessageWithRequestIdIndex],
-          ...newMessageData,
-        });
-      } else if (userMessageExists && isAssistantMessage) {
-        // We add the new ASSISTANT message
-        isLastMessage = userMessageWithRequestIdIndex === state.messages.length - 1;
-        state.messages.splice(userMessageWithRequestIdIndex + 1, 0, newMessageData);
-      } else {
-        // It's the new message, so just push it to the end of the Array
-        state.messages.push(newMessageData);
+      if (isAssistantMessage) {
+        const assistantMessageWithRequestIdIndex = getExistingMessagesIndex(
+          GENIE_CHAT_MODEL_ROLES.assistant,
+        );
+        const assistantMessageExists = assistantMessageWithRequestIdIndex > -1;
+
+        let chunks = [];
+        if (assistantMessageExists) {
+          chunks = state.messages[assistantMessageWithRequestIdIndex].chunks || [];
+        }
+        const { chunkId, content, ...messageAttributes } = newMessageData;
+
+        // Transform chunkId + content pair into `chunks` array
+        if (chunkId) {
+          chunks[chunkId - 1] = content;
+        } else {
+          messageAttributes.content = content; // Preserve the content.
+        }
+
+        messageAttributes.chunks = chunks;
+
+        if (assistantMessageExists) {
+          state.messages.splice(assistantMessageWithRequestIdIndex, 1, {
+            ...state.messages[assistantMessageWithRequestIdIndex],
+            ...messageAttributes,
+          });
+        } else if (userMessageExists) {
+          // We add the new ASSISTANT message
+          isLastMessage = userMessageWithRequestIdIndex === state.messages.length - 1;
+          state.messages.splice(userMessageWithRequestIdIndex + 1, 0, messageAttributes);
+        } else {
+          state.messages.push(messageAttributes);
+        }
+      } else if (isUserMessage) {
+        if (userMessageExists) {
+          // We update the existing USER message object instead of pushing a new one
+          state.messages.splice(userMessageWithRequestIdIndex, 1, {
+            ...state.messages[userMessageWithRequestIdIndex],
+            ...newMessageData,
+          });
+        } else {
+          state.messages.push(newMessageData);
+        }
       }
+
       if (isLastMessage) {
         state.loading = false;
       }
