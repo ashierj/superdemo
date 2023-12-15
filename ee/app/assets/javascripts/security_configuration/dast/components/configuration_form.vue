@@ -4,11 +4,11 @@ import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/da
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { DAST_PROFILES_DRAWER, PRE_SCAN_VERIFICATION_DRAWER } from 'ee/on_demand_scans/constants';
-import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
+import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__, __ } from '~/locale';
 import { CODE_SNIPPET_SOURCE_DAST } from '~/ci/pipeline_editor/components/code_snippet_alert/constants';
-import { DAST_HELP_PATH } from '~/security_configuration/components/constants';
+import { DAST_HELP_PATH } from '~/security_configuration/constants';
 import {
   DAST_YAML_CONFIGURATION_TEMPLATE as template,
   DAST_SCANNER_PROFILE_PLACEHOLDER,

@@ -11,7 +11,7 @@ import {
   GlSprintf,
 } from '@gitlab/ui';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
-import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
+import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/constants';
 import { isEmptyValue } from '~/lib/utils/forms';
 import { __, s__ } from '~/locale';
 import { CODE_SNIPPET_SOURCE_API_FUZZING } from '~/ci/pipeline_editor/components/code_snippet_alert/constants';

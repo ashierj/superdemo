@@ -5,7 +5,7 @@ import { merge } from 'lodash';
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
-import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
+import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/constants';
 import ConfigurationForm from 'ee/security_configuration/dast/components/configuration_form.vue';
 import {
   scannerProfiles,
@@ -13,7 +13,7 @@ import {
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { CODE_SNIPPET_SOURCE_DAST } from '~/ci/pipeline_editor/components/code_snippet_alert/constants';
-import { DAST_HELP_PATH } from '~/security_configuration/components/constants';
+import { DAST_HELP_PATH } from '~/security_configuration/constants';
 
 const [scannerProfile] = scannerProfiles;
 const [siteProfile] = siteProfiles;

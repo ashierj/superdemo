@@ -7,7 +7,7 @@ import SecurityConfigurationApp from '~/security_configuration/components/app.vu
 import UpgradeBanner from 'ee/security_configuration/components/upgrade_banner.vue';
 import { securityFeaturesMock, provideMock } from 'jest/security_configuration/mock_data';
 import { SERVICE_PING_SECURITY_CONFIGURATION_THREAT_MANAGEMENT_VISIT } from '~/tracking/constants';
-import { TAB_VULNERABILITY_MANAGEMENT_INDEX } from '~/security_configuration/components/constants';
+import { TAB_VULNERABILITY_MANAGEMENT_INDEX } from '~/security_configuration/constants';
 
 jest.mock('~/api.js');
 

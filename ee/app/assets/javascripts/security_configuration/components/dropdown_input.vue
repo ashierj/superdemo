@@ -1,6 +1,6 @@
 <script>
 import { GlFormGroup, GlCollapsibleListbox, GlFormText, GlLink, GlSprintf } from '@gitlab/ui';
-import { CUSTOM_VALUE_MESSAGE } from './constants';
+import { CUSTOM_VALUE_MESSAGE } from '../constants';
 
 export default {
   components: {
