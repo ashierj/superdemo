@@ -3,7 +3,7 @@ import { nextTick } from 'vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import ProjectLimitsExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/project_limits_excess_storage_breakdown_card.vue';
-import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { defaultNamespaceProvideValues } from '../mock_data';
 

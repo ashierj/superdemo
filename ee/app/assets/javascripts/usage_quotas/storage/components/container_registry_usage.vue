@@ -1,7 +1,7 @@
 <script>
 import UsageBanner from '~/vue_shared/components/usage_quotas/usage_banner.vue';
 import { s__ } from '~/locale';
-import NumberToHumanSize from './number_to_human_size.vue';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import StorageTypeWarning from './storage_type_warning.vue';
 import HelpPageLink from './help_page_link.vue';
 

@@ -10,8 +10,8 @@ import {
 } from '@gitlab/ui';
 import { sprintf, s__ } from '~/locale';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE, BUY_STORAGE } from '../constants';
-import NumberToHumanSize from './number_to_human_size.vue';
 
 /**
  * ProjectLimitsExcessStorageBreakdownCard

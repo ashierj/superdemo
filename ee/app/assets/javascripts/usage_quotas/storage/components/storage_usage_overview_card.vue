@@ -1,10 +1,10 @@
 <script>
 import { GlCard, GlSkeletonLoader } from '@gitlab/ui';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import {
   STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
   PROJECT_ENFORCEMENT_TYPE_CARD_SUBTITLE,
 } from '../constants';
-import NumberToHumanSize from './number_to_human_size.vue';
 
 export default {
   name: 'StorageUsageOverviewCard',

@@ -4,7 +4,7 @@ import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { containerRegistryPopover } from '~/usage_quotas/storage/constants';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import NumberToHumanSize from './number_to_human_size.vue';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import StorageTypeHelpLink from './storage_type_help_link.vue';
 import StorageTypeWarning from './storage_type_warning.vue';
 

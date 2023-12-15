@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
+import NumberToHumanSize from '~/vue_shared/components/number_to_human_size/number_to_human_size.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 
 describe('NumberToHumanSize', () => {
