@@ -11957,10 +11957,13 @@ msgstr ""
 msgid "CodeOwner|Pattern"
 msgstr ""
 
+msgid "CodeSuggestionsGAAlert| (Code Suggestions transitions to a paid feature on %{date}.)"
+msgstr ""
+
 msgid "CodeSuggestionsGAAlert|Learn more"
 msgstr ""
 
-msgid "CodeSuggestionsGAAlert|Quickly and securely author code by getting suggestions in your IDE while you type. Available in multiple languages, try Code Suggestions today."
+msgid "CodeSuggestionsGAAlert|Quickly and securely author code by getting suggestions in %{link_start}your IDE%{link_end} while you type. Available in multiple languages. Try Code Suggestions today."
 msgstr ""
 
 msgid "CodeSuggestionsGAAlert|Try GitLab Duo Code Suggestions today"
