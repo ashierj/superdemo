@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Merge request > User sees security policy rules license compliance',
   :js, :sidekiq_inline, :use_clean_rails_memory_store_caching,
   feature_category: :security_policy_management do
+  include Features::SecurityPolicyHelpers
+
   let_it_be(:project) { create(:project, :repository) }
   let(:policy_management_project) { create(:project, :repository, creator: user, namespace: project.namespace) }
   let_it_be(:user) { create(:user) }
@@ -45,6 +47,8 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
           other_licenses: [{ license_names: ["MIT"], versions: ["5.1.4"] }])
       end
 
+      let(:policy_name) { "Deny #{license_type} licenses" }
+
       before do
         stub_feature_flags(merge_when_checks_pass: false)
         stub_licensed_features(security_dashboard: true,
@@ -56,9 +60,7 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
           security_policy_management_project: policy_management_project,
           project: project)
 
-        policy_update_branch_name = create_policy_update_branch
-
-        merge_policy_mr(policy_update_branch_name)
+        create_security_policy
       end
 
       context 'when scan result policy for license scanning is not violated' do
@@ -98,47 +100,5 @@ RSpec.describe 'Merge request > User sees security policy rules license complian
       it_behaves_like 'a merge request without violations'
       it_behaves_like 'with scan result policy'
     end
-  end
-
-  def create_policy_update_branch
-    rule = {
-      type: 'license_finding',
-      branches: %w[master],
-      match_on_inclusion: true,
-      license_types: [license_type],
-      license_states: %w[newly_detected]
-    }
-
-    policy_name = "Deny #{license_type} licenses"
-    policy_hash = build(:scan_result_policy, name: policy_name,
-      actions: [{ type: 'require_approval', approvals_required: 1,
-                  user_approvers_ids: [approver.id] }], rules: [rule])
-
-    input_policy_yaml = policy_hash.merge(type: 'scan_result_policy').to_yaml
-    params = { policy_yaml: input_policy_yaml, name: policy_name, operation: :append }
-    service = Security::SecurityOrchestrationPolicies::PolicyCommitService.new(container: project,
-      current_user: user,
-      params: params)
-    response = service.execute
-
-    response[:branch]
-  end
-
-  def merge_policy_mr(policy_update_branch_name)
-    mr_params = {
-      title: 'Add policy file',
-      target_branch: policy_management_project.default_branch,
-      source_branch: policy_update_branch_name
-    }
-
-    policy_merge_request = ::MergeRequests::CreateService.new(project: policy_management_project,
-      current_user: user,
-      params: mr_params).execute
-
-    merge_params = { commit_message: 'Merge commit message',
-                     squash_commit_message: 'Squash commit message',
-                     sha: policy_merge_request.diff_head_sha }
-
-    policy_merge_request.merge_async(user.id, merge_params)
   end
 end
