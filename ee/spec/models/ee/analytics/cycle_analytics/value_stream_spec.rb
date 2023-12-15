@@ -13,10 +13,11 @@ RSpec.describe Analytics::CycleAnalytics::ValueStream, type: :model, feature_cat
         name: 'test',
         setting_attributes: { project_ids_filter: [1, 2] }
       )
+
     value_stream.save!
 
     expect(value_stream).to be_persisted
     expect(value_stream.setting).to be_persisted
-    expect(value_stream.setting.project_ids_filter).to eq([1, 2])
+    expect(value_stream.setting[:project_ids_filter]).to eq([1, 2])
   end
 end

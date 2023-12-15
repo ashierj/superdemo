@@ -7,12 +7,13 @@ RSpec.describe 'Update value stream', feature_category: :value_stream_management
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
+  let_it_be(:project_1) { create(:project, group: group) }
   let_it_be(:value_stream) do
     create(
       :cycle_analytics_value_stream,
       name: 'Old name',
       namespace: group,
-      setting_attributes: { project_ids_filter: [1, 2] },
+      setting_attributes: { project_ids_filter: [project_1.id] },
       stages: Array.new(1) do
         create(
           :cycle_analytics_stage,
@@ -121,7 +122,6 @@ RSpec.describe 'Update value stream', feature_category: :value_stream_management
     end
 
     context 'when setting argument is present' do
-      let_it_be(:project_1) { create(:project, group: group) }
       let_it_be(:project_2) { create(:project, group: group) }
 
       let(:extra_parameters) do
@@ -135,7 +135,7 @@ RSpec.describe 'Update value stream', feature_category: :value_stream_management
       it 'saves project_ids filter' do
         expect { post_graphql_mutation(mutation, current_user: current_user) }
           .to change { value_stream.setting.reload.project_ids_filter }
-          .from([1, 2])
+          .from([project_1.id])
           .to([project_1.id, project_2.id])
       end
     end

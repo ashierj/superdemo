@@ -20,6 +20,15 @@ module Analytics
 
       validate :project_ids_filter_at_group_level
 
+      # rubocop: disable Database/AvoidUsingPluckWithoutLimit -- Using pluck here is safe. There is a 100 limit for project_ids_filter field.
+      def project_ids_filter
+        return [] if super.nil?
+        return super unless value_stream&.at_group_level?
+
+        value_stream.namespace.all_projects.where(id: super).pluck(:id)
+      end
+      # rubocop: enable Database/AvoidUsingPluckWithoutLimit
+
       private
 
       def project_ids_filter_at_group_level

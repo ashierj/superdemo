@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::ValueStreamSetting, type: :model, feature_category: :value_stream_management do
+  let_it_be(:group) { create(:group) }
   let_it_be(:value_stream_setting) { create(:cycle_analytics_value_stream_setting) }
 
   describe 'associations' do
@@ -41,20 +42,28 @@ RSpec.describe Analytics::CycleAnalytics::ValueStreamSetting, type: :model, feat
 
       context 'when value stream belongs to a group' do
         let_it_be(:value_stream) do
-          create(:cycle_analytics_value_stream, namespace: create(:group))
+          create(:cycle_analytics_value_stream, namespace: group)
         end
 
         it 'is valid' do
           expect(value_stream_setting).to be_valid
         end
+
+        context 'and has ids from projects outside group hierarchy' do
+          let_it_be(:subgroup) { create(:group, parent: group) }
+          let_it_be(:group_project) { create(:project, group: group) }
+          let_it_be(:subgroup_project) { create(:project, group: subgroup) }
+          let_it_be(:outsider_project) { create(:project) }
+
+          let(:ids) { [group_project, subgroup_project, outsider_project].map(&:id) }
+
+          it 'returns ids only from projects in the hierarchy' do
+            value_stream_setting.update!(project_ids_filter: ids)
+
+            expect(value_stream_setting.project_ids_filter).to match_array([group_project.id, subgroup_project.id])
+          end
+        end
       end
     end
-  end
-
-  it 'persists project ids filter' do
-    value_stream_setting =
-      create(:cycle_analytics_value_stream_setting, project_ids_filter: [1, 2, 3])
-
-    expect(value_stream_setting.project_ids_filter).to eq([1, 2, 3])
   end
 end
