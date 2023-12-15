@@ -4,5 +4,5 @@
 %p.light
   = _('Track important events in your GitLab instance.')
 
-#js-audit-log-app{ data: audit_log_app_data(@is_last_page, @events, @audit_event_definitions) }
+#js-audit-log-app{ data: audit_log_app_data(@is_last_page, @events, @audit_event_definitions, @group) }
   = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')

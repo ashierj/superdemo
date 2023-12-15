@@ -18,6 +18,7 @@ import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/g
 import gcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_google_cloud_logging_destinations.query.graphql';
 import instanceGcpLoggingDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_google_cloud_logging_destinations.query.graphql';
 import amazonS3DestinationsQuery from 'ee/audit_events/graphql/queries/get_amazon_s3_destinations.query.graphql';
+import instanceAmazonS3DestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_amazon_s3_destinations.query.graphql';
 import {
   mockExternalDestinations,
   destinationDataPopulator,
@@ -37,6 +38,9 @@ import {
   mockAmazonS3Destinations,
   amazonS3DestinationCreateMutationPopulator,
   makeNamespaceFilter,
+  mockInstanceAmazonS3Destinations,
+  instanceAmazonS3DataPopulator,
+  instanceAmazonS3DestinationCreateMutationPopulator,
 } from '../mock_data';
 
 describe('Audit Events GraphQL cache updates', () => {
@@ -79,6 +83,14 @@ describe('Audit Events GraphQL cache updates', () => {
       mockAmazonS3Destinations.map((record) => ({ ...record, id: `${record.id}-set-${id}` })),
     );
 
+  const getMockInstanceAmazonS3Destination = (id) =>
+    instanceAmazonS3DataPopulator(
+      mockInstanceAmazonS3Destinations.map((record) => ({
+        ...record,
+        id: `${record.id}-set-${id}`,
+      })),
+    );
+
   const getDestinations = (fullPath) =>
     cache.readQuery({
       query: externalDestinationsQuery,
@@ -106,6 +118,11 @@ describe('Audit Events GraphQL cache updates', () => {
       query: amazonS3DestinationsQuery,
       variables: { fullPath },
     }).group.amazonS3Configurations.nodes;
+
+  const getInstanceAmazonS3Destinations = () =>
+    cache.readQuery({
+      query: instanceAmazonS3DestinationsQuery,
+    }).auditEventsInstanceAmazonS3Configurations.nodes;
 
   beforeEach(() => {
     cache = new InMemoryCache();
@@ -154,6 +171,11 @@ describe('Audit Events GraphQL cache updates', () => {
       query: amazonS3DestinationsQuery,
       variables: { fullPath: AMAZON_S3_GROUP2_PATH },
       data: getMockAmazonS3Destination(AMAZON_S3_GROUP2_PATH).data,
+    });
+
+    cache.writeQuery({
+      query: instanceAmazonS3DestinationsQuery,
+      data: getMockInstanceAmazonS3Destination().data,
     });
   });
 
@@ -755,6 +777,42 @@ describe('Audit Events GraphQL cache updates', () => {
 
         expect(getInstanceGcpLoggingDestinations()).toHaveLength(restDestinations.length);
         expect(getInstanceGcpLoggingDestinations()).not.toStrictEqual(
+          expect.arrayContaining([expect.objectContaining({ id: firstDestination.id })]),
+        );
+      });
+    });
+
+    describe('addAmazonS3AuditEventsStreamingDestination', () => {
+      const {
+        instanceAmazonS3Configuration: newInstanceAmazonS3Destination,
+      } = instanceAmazonS3DestinationCreateMutationPopulator().data.auditEventsInstanceAmazonS3ConfigurationCreate;
+
+      it('adds new GCP configuration to beginning of list of destinations', () => {
+        const { length: originalDestinationsLength } = getInstanceAmazonS3Destinations();
+
+        addAmazonS3AuditEventsStreamingDestination({
+          store: cache,
+          fullPath: 'instance',
+          newDestination: newInstanceAmazonS3Destination,
+        });
+
+        expect(getInstanceAmazonS3Destinations()).toHaveLength(originalDestinationsLength + 1);
+        expect(getInstanceAmazonS3Destinations()[0].id).toBe(newInstanceAmazonS3Destination.id);
+      });
+    });
+
+    describe('removeAmazonS3AuditEventsStreamingDestination', () => {
+      it('removes new destination to list of destinations', () => {
+        const [firstDestination, ...restDestinations] = getInstanceAmazonS3Destinations();
+
+        removeAmazonS3AuditEventsStreamingDestination({
+          store: cache,
+          fullPath: 'instance',
+          destinationId: firstDestination.id,
+        });
+
+        expect(getInstanceAmazonS3Destinations()).toHaveLength(restDestinations.length);
+        expect(getInstanceAmazonS3Destinations()).not.toStrictEqual(
           expect.arrayContaining([expect.objectContaining({ id: firstDestination.id })]),
         );
       });

@@ -16,10 +16,13 @@ export default {
     GlEmptyState,
     GlDisclosureDropdown,
   },
-  inject: ['emptyStateSvgPath'],
+  inject: ['groupPath', 'emptyStateSvgPath', 'allowStreamingInstanceAuditEventsToAmazonS3'],
   computed: {
+    isInstance() {
+      return this.groupPath === 'instance';
+    },
     destinationOptions() {
-      return [
+      const options = [
         {
           text: ADD_HTTP,
           action: () => {
@@ -38,7 +41,10 @@ export default {
             'data-testid': 'add-gcp-destination',
           },
         },
-        {
+      ];
+
+      if (!this.isInstance || this.allowStreamingInstanceAuditEventsToAmazonS3) {
+        options.push({
           text: ADD_AMAZON_S3,
           action: () => {
             this.$emit('add', DESTINATION_TYPE_AMAZON_S3);
@@ -46,8 +52,10 @@ export default {
           extraAttrs: {
             'data-testid': 'add-amazon-s3-destination',
           },
-        },
-      ];
+        });
+      }
+
+      return options;
     },
   },
   i18n: {

@@ -24,6 +24,7 @@ import instanceExternalDestinationsQuery from '../graphql/queries/get_instance_e
 import gcpLoggingDestinationsQuery from '../graphql/queries/get_google_cloud_logging_destinations.query.graphql';
 import instanceGcpLoggingDestinationsQuery from '../graphql/queries/get_instance_google_cloud_logging_destinations.query.graphql';
 import amazonS3DestinationsQuery from '../graphql/queries/get_amazon_s3_destinations.query.graphql';
+import instanceAmazonS3DestinationsQuery from '../graphql/queries/get_instance_amazon_s3_destinations.query.graphql';
 import StreamEmptyState from './stream/stream_empty_state.vue';
 import StreamDestinationEditor from './stream/stream_destination_editor.vue';
 import StreamGcpLoggingDestinationEditor from './stream/stream_gcp_logging_destination_editor.vue';
@@ -42,7 +43,7 @@ export default {
     StreamEmptyState,
     StreamItem,
   },
-  inject: ['groupPath'],
+  inject: ['groupPath', 'allowStreamingInstanceAuditEventsToAmazonS3'],
   data() {
     return {
       externalAuditEventDestinations: null,
@@ -93,10 +94,10 @@ export default {
       return this.isInstance ? instanceGcpLoggingDestinationsQuery : gcpLoggingDestinationsQuery;
     },
     amazonS3DestinationQuery() {
-      return amazonS3DestinationsQuery;
+      return this.isInstance ? instanceAmazonS3DestinationsQuery : amazonS3DestinationsQuery;
     },
     destinationOptions() {
-      return [
+      const options = [
         {
           text: ADD_HTTP,
           action: () => {
@@ -109,13 +110,18 @@ export default {
             this.showEditor(DESTINATION_TYPE_GCP_LOGGING);
           },
         },
-        {
+      ];
+
+      if (!this.isInstance || this.allowStreamingInstanceAuditEventsToAmazonS3) {
+        options.push({
           text: ADD_AMAZON_S3,
           action: () => {
             this.showEditor(DESTINATION_TYPE_AMAZON_S3);
           },
-        },
-      ];
+        });
+      }
+
+      return options;
     },
   },
   methods: {
@@ -242,10 +248,12 @@ export default {
         };
       },
       skip() {
-        return this.isInstance;
+        return !this.groupPath;
       },
       update(data) {
-        const destinations = data.group.amazonS3Configurations.nodes;
+        const destinations = this.isInstance
+          ? data.auditEventsInstanceAmazonS3Configurations.nodes
+          : data.group.amazonS3Configurations.nodes;
         return destinations;
       },
       error() {

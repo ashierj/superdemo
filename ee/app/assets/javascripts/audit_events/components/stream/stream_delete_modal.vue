@@ -7,6 +7,8 @@ import deleteInstanceExternalDestination from '../../graphql/mutations/delete_in
 import googleCloudLoggingConfigurationDestroy from '../../graphql/mutations/delete_gcp_logging_destination.mutation.graphql';
 import instanceGoogleCloudLoggingConfigurationDestroy from '../../graphql/mutations/delete_instance_gcp_logging_destination.mutation.graphql';
 import amazonS3ConfigurationDestroy from '../../graphql/mutations/delete_amazon_s3_destination.mutation.graphql';
+import instanceAmazonS3ConfigurationDestroy from '../../graphql/mutations/delete_instance_amazon_s3_destination.mutation.graphql';
+
 import {
   DESTINATION_TYPE_HTTP,
   DESTINATION_TYPE_GCP_LOGGING,
@@ -40,7 +42,9 @@ export default {
             ? instanceGoogleCloudLoggingConfigurationDestroy
             : googleCloudLoggingConfigurationDestroy;
         case DESTINATION_TYPE_AMAZON_S3:
-          return amazonS3ConfigurationDestroy;
+          return this.isInstance
+            ? instanceAmazonS3ConfigurationDestroy
+            : amazonS3ConfigurationDestroy;
         case DESTINATION_TYPE_HTTP:
         default:
           return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
@@ -58,7 +62,9 @@ export default {
             ? data.instanceGoogleCloudLoggingConfigurationDestroy.errors
             : data.googleCloudLoggingConfigurationDestroy.errors;
         case DESTINATION_TYPE_AMAZON_S3:
-          return data.auditEventsAmazonS3ConfigurationDelete.errors;
+          return this.isInstance
+            ? data.auditEventsInstanceAmazonS3ConfigurationDelete.errors
+            : data.auditEventsAmazonS3ConfigurationDelete.errors;
         case DESTINATION_TYPE_HTTP:
         default:
           return this.isInstance

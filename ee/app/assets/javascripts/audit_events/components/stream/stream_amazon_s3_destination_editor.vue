@@ -6,6 +6,8 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import amazonS3ConfigurationCreate from '../../graphql/mutations/create_amazon_s3_destination.mutation.graphql';
 import amazonS3ConfigurationUpdate from '../../graphql/mutations/update_amazon_s3_destination.mutation.graphql';
+import instanceAmazonS3ConfigurationCreate from '../../graphql/mutations/create_instance_amazon_s3_destination.mutation.graphql';
+import instanceAmazonS3ConfigurationUpdate from '../../graphql/mutations/update_instance_amazon_s3_destination.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
@@ -97,6 +99,15 @@ export default {
     showSecretAccessKey() {
       return !this.isEditing || (this.isEditing && this.addingSecretAccessKey);
     },
+    isInstance() {
+      return this.groupPath === 'instance';
+    },
+    destinationCreateMutation() {
+      return this.isInstance ? instanceAmazonS3ConfigurationCreate : amazonS3ConfigurationCreate;
+    },
+    destinationUpdateMutation() {
+      return this.isInstance ? instanceAmazonS3ConfigurationUpdate : amazonS3ConfigurationUpdate;
+    },
   },
   methods: {
     onDeleting() {
@@ -118,13 +129,24 @@ export default {
     clearError(index) {
       this.errors.splice(index, 1);
     },
+    getDestinationCreateErrors(data) {
+      return this.isInstance
+        ? data.auditEventsInstanceAmazonS3ConfigurationCreate.errors
+        : data.auditEventsAmazonS3ConfigurationCreate.errors;
+    },
+    getDestinationUpdateErrors(data) {
+      return this.isInstance
+        ? data.auditEventsInstanceAmazonS3ConfigurationUpdate.errors
+        : data.auditEventsAmazonS3ConfigurationUpdate.errors;
+    },
     async addDestination() {
       this.errors = [];
       this.loading = true;
 
       try {
+        const { isInstance } = this;
         const { data } = await this.$apollo.mutate({
-          mutation: amazonS3ConfigurationCreate,
+          mutation: this.destinationCreateMutation,
           variables: {
             id: this.item.id,
             fullPath: this.groupPath,
@@ -135,13 +157,18 @@ export default {
             bucketName: this.bucketName,
           },
           update(cache, { data: updateData }, args) {
-            const errors = updateData?.auditEventsAmazonS3ConfigurationCreate?.errors;
+            const errors = isInstance
+              ? updateData.auditEventsInstanceAmazonS3ConfigurationCreate.errors
+              : updateData.auditEventsAmazonS3ConfigurationCreate.errors;
+
             if (errors.length) {
               return;
             }
 
-            const newAmazonS3Destination =
-              updateData?.auditEventsAmazonS3ConfigurationCreate?.amazonS3Configuration;
+            const newAmazonS3Destination = isInstance
+              ? updateData.auditEventsInstanceAmazonS3ConfigurationCreate
+                  .instanceAmazonS3Configuration
+              : updateData.auditEventsAmazonS3ConfigurationCreate.amazonS3Configuration;
 
             addAmazonS3AuditEventsStreamingDestination({
               store: cache,
@@ -151,7 +178,7 @@ export default {
           },
         });
 
-        const { errors } = data.auditEventsAmazonS3ConfigurationCreate;
+        const errors = this.getDestinationCreateErrors(data);
 
         if (errors.length > 0) {
           this.errors.push(...errors);
@@ -173,7 +200,7 @@ export default {
 
       try {
         const { data } = await this.$apollo.mutate({
-          mutation: amazonS3ConfigurationUpdate,
+          mutation: this.destinationUpdateMutation,
           variables: {
             id: this.item.id,
             fullPath: this.groupPath,
@@ -185,9 +212,7 @@ export default {
           },
         });
 
-        const {
-          auditEventsAmazonS3ConfigurationUpdate: { errors },
-        } = data;
+        const errors = this.getDestinationUpdateErrors(data);
 
         if (errors.length > 0) {
           this.errors.push(...errors);
