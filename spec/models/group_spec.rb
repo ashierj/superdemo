@@ -924,6 +924,18 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it { is_expected.to eq([group_1, group_2, group_4, group_3]) }
     end
 
+    context 'when sort by path_asc' do
+      let(:sort) { 'path_asc' }
+
+      it { is_expected.to eq([group_1, group_2, group_3, group_4].sort_by(&:path)) }
+    end
+
+    context 'when sort by path_desc' do
+      let(:sort) { 'path_desc' }
+
+      it { is_expected.to eq([group_1, group_2, group_3, group_4].sort_by(&:path).reverse) }
+    end
+
     context 'when sort by recently_created' do
       let(:sort) { 'created_desc' }
 
