@@ -51736,6 +51736,9 @@ msgstr ""
 msgid "Unauthorized to delete a package protection rule"
 msgstr ""
 
+msgid "Unauthorized to update a container registry protection rule"
+msgstr ""
+
 msgid "Unauthorized to update a package protection rule"
 msgstr ""
 
