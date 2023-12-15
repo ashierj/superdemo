@@ -1,11 +1,21 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'value stream analytics flow metrics leadTime examples' do
+RSpec.shared_context 'with value stream analytics flow metrics common data' do
+  let(:model_to_aggregate) { Issue }
+
   let_it_be(:milestone) { create(:milestone, group: group) }
   let_it_be(:label) { create(:group_label, group: group) }
 
   let_it_be(:author) { create(:user) }
   let_it_be(:assignee) { create(:user) }
+
+  before do
+    Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: model_to_aggregate).execute
+  end
+end
+
+RSpec.shared_examples 'value stream analytics flow metrics leadTime examples' do
+  include_context 'with value stream analytics flow metrics common data'
 
   let_it_be(:issue1) do
     create(:issue, project: project1, author: author, created_at: 17.days.ago, closed_at: 12.days.ago)
@@ -33,10 +43,6 @@ RSpec.shared_examples 'value stream analytics flow metrics leadTime examples' do
       assignees: [assignee],
       created_at: 20.days.ago,
       closed_at: 15.days.ago)
-  end
-
-  before do
-    Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: Issue).execute
   end
 
   let(:query) do
@@ -129,11 +135,7 @@ RSpec.shared_examples 'value stream analytics flow metrics leadTime examples' do
 end
 
 RSpec.shared_examples 'value stream analytics flow metrics cycleTime examples' do
-  let_it_be(:milestone) { create(:milestone, group: group) }
-  let_it_be(:label) { create(:group_label, group: group) }
-
-  let_it_be(:author) { create(:user) }
-  let_it_be(:assignee) { create(:user) }
+  include_context 'with value stream analytics flow metrics common data'
 
   let_it_be(:issue1) do
     create(:issue, project: project1, author: author, closed_at: 12.days.ago).tap do |issue|
@@ -167,10 +169,6 @@ RSpec.shared_examples 'value stream analytics flow metrics cycleTime examples' d
       closed_at: 15.days.ago).tap do |issue|
         issue.metrics.update!(first_mentioned_in_commit_at: 20.days.ago)
       end
-  end
-
-  before do
-    Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: Issue).execute
   end
 
   let(:query) do
@@ -260,12 +258,8 @@ RSpec.shared_examples 'value stream analytics flow metrics cycleTime examples' d
 end
 
 RSpec.shared_examples 'value stream analytics flow metrics issuesCompleted examples' do
-  let_it_be(:milestone) { create(:milestone, group: group) }
-  let_it_be(:label) { create(:group_label, group: group) }
+  include_context 'with value stream analytics flow metrics common data'
   let_it_be(:epic) { create(:epic, group: group) }
-
-  let_it_be(:author) { create(:user) }
-  let_it_be(:assignee) { create(:user) }
 
   # we don't care about opened date, only closed date.
   let_it_be(:issue1) do
@@ -303,10 +297,6 @@ RSpec.shared_examples 'value stream analytics flow metrics issuesCompleted examp
     create(:award_emoji, name: 'thumbsup', user: current_user, awardable: issue2)
     create(:award_emoji, name: 'thumbsup', user: current_user, awardable: issue3)
     create(:award_emoji, name: 'thumbsup', user: current_user, awardable: issue4)
-  end
-
-  before do
-    Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: Issue).execute
   end
 
   let(:query) do
@@ -460,10 +450,8 @@ RSpec.shared_examples 'value stream analytics flow metrics issuesCompleted examp
 end
 
 RSpec.shared_examples 'value stream analytics flow metrics timeToMerge examples' do
-  let_it_be(:milestone) { create(:milestone, group: group) }
-  let_it_be(:label) { create(:group_label, group: group) }
-
-  let_it_be(:author) { create(:user) }
+  include_context 'with value stream analytics flow metrics common data'
+  let(:model_to_aggregate) { MergeRequest }
 
   let_it_be(:merge_request1) do
     create(:merge_request, :unique_branches, source_project: project1, author: author,
@@ -476,10 +464,6 @@ RSpec.shared_examples 'value stream analytics flow metrics timeToMerge examples'
     create(:merge_request, :unique_branches, source_project: project1, created_at: 16.days.ago).tap do |issue|
       issue.metrics.update!(merged_at: 13.days.ago)
     end
-  end
-
-  before do
-    Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: MergeRequest).execute
   end
 
   let(:query) do
