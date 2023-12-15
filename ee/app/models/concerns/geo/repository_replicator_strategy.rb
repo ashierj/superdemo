@@ -95,12 +95,12 @@ module Geo
       Geo::EventWorker.perform_async(replicable_name, EVENT_UPDATED, { 'model_record_id' => model_record.id })
     end
 
-    # Called by Geo::FrameworkHousekeepingService#execute
+    # Called by Geo::FrameworkRepositorySyncService#execute_housekeeping
     def before_housekeeping
       # no-op
     end
 
-    # Called by Geo::FrameworkHousekeepingService#execute
+    # Called by Geo::FrameworkRepositorySyncService#execute_housekeeping
     #
     # Override this if you need to pass a different model instance to
     # the Repositories::HousekeepingService.
