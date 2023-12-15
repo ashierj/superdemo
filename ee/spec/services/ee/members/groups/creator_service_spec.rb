@@ -6,6 +6,43 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
   describe '.add_member' do
     let_it_be(:user) { create(:user) }
 
+    context 'when the current user has permission via a group link' do
+      let_it_be(:current_user) { create(:user) }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:other_group) { create(:group) }
+      let_it_be(:group_link) { create(:group_group_link, :owner, shared_group: group, shared_with_group: other_group) }
+
+      before_all do
+        other_group.add_owner(current_user)
+      end
+
+      where(:role, :access_level) do
+        [
+          [:guest, Gitlab::Access::GUEST],
+          [:reporter, Gitlab::Access::REPORTER],
+          [:developer, Gitlab::Access::DEVELOPER],
+          [:maintainer, Gitlab::Access::MAINTAINER],
+          [:owner, Gitlab::Access::OWNER]
+        ]
+      end
+
+      with_them do
+        subject(:member) do
+          described_class.add_member(
+            group,
+            create(:user),
+            role,
+            current_user: current_user
+          )
+        end
+
+        it "adds member with role: #{params[:role]}" do
+          expect(member).to be_persisted
+          expect(member.access_level).to eq(access_level)
+        end
+      end
+    end
+
     context 'for free user limit considerations', :saas do
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 

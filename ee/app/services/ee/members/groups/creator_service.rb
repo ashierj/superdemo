@@ -41,17 +41,9 @@ module EE
         override :member_role_too_high?
         def member_role_too_high?
           return false if skip_authorization?
+          return false if member_attributes[:access_level].blank?
 
-          user_role = max_role
-
-          return false if current_user.can_admin_all_resources?
-          return false unless member_attributes[:access_level]
-
-          member_attributes[:access_level] > user_role
-        end
-
-        def max_role
-          member.group.highest_group_member(current_user)&.access_level
+          member_attributes[:access_level] > member.group.max_member_access_for_user(current_user)
         end
       end
     end
