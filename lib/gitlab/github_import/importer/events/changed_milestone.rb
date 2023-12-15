@@ -18,6 +18,7 @@ module Gitlab
 
           def create_event(issue_event)
             attrs = {
+              importing: true,
               user_id: author_id(issue_event),
               created_at: issue_event.created_at,
               milestone_id: project.milestones.find_by_title(issue_event.milestone_title)&.id,
