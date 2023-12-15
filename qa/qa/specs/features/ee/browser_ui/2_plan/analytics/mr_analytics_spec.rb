@@ -31,7 +31,12 @@ module QA
       before do
         group.add_member(user, Resource::Members::AccessLevel::MAINTAINER)
 
-        create(:project_label, project: project, title: label, api_client: user_api_client)
+        # Retry is needed due to delays with project authorization updates
+        # Long term solution to accessing the status of a project authorization update
+        # has been proposed in https://gitlab.com/gitlab-org/gitlab/-/issues/393369
+        Support::Retrier.retry_until(max_duration: 60, retry_on_exception: true, sleep_interval: 1) do
+          create(:project_label, project: project, title: label, api_client: user_api_client)
+        end
 
         mr_2.add_comment(body: "This is mr comment")
         mr_1.merge_via_api!
