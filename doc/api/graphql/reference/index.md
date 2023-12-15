@@ -13829,7 +13829,6 @@ An abuse report.
 | <a id="abusereportdiscussions"></a>`discussions` | [`DiscussionConnection!`](#discussionconnection) | All discussions on this noteable. (see [Connections](#connections)) |
 | <a id="abusereportid"></a>`id` | [`AbuseReportID!`](#abusereportid) | Global ID of the abuse report. |
 | <a id="abusereportlabels"></a>`labels` | [`LabelConnection`](#labelconnection) | Labels of the abuse report. (see [Connections](#connections)) |
-| <a id="abusereportuserpermissions"></a>`userPermissions` | [`AbuseReportPermissions!`](#abusereportpermissions) | Permissions for the current user on the resource. |
 
 #### Fields with arguments
 
@@ -13848,15 +13847,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="abusereportnotesfilter"></a>`filter` | [`NotesFilterType`](#notesfiltertype) | Type of notes collection: ALL_NOTES, ONLY_COMMENTS, ONLY_ACTIVITY. |
-
-### `AbuseReportPermissions`
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="abusereportpermissionscreatenote"></a>`createNote` | [`Boolean!`](#boolean) | If `true`, the user can perform `create_note` on this resource. |
-| <a id="abusereportpermissionsreadabusereport"></a>`readAbuseReport` | [`Boolean!`](#boolean) | If `true`, the user can perform `read_abuse_report` on this resource. |
 
 ### `AccessLevel`
 
