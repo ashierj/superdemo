@@ -5353,7 +5353,7 @@ Input type: `MemberRoleCreateInput`
 | <a id="mutationmemberrolecreatebaseaccesslevel"></a>`baseAccessLevel` | [`MemberAccessLevel!`](#memberaccesslevel) | Base access level for the custom role. |
 | <a id="mutationmemberrolecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationmemberrolecreatedescription"></a>`description` | [`String`](#string) | Description of the member role. |
-| <a id="mutationmemberrolecreategrouppath"></a>`groupPath` | [`ID!`](#id) | Group the member role to mutate is in. |
+| <a id="mutationmemberrolecreategrouppath"></a>`groupPath` | [`ID`](#id) | Group the member role to mutate is in. Required for SaaS. |
 | <a id="mutationmemberrolecreatemanageprojectaccesstokens"></a>`manageProjectAccessTokens` | [`Boolean`](#boolean) | Permission to admin project access tokens. |
 | <a id="mutationmemberrolecreatename"></a>`name` | [`String`](#string) | Name of the member role. |
 | <a id="mutationmemberrolecreatepermissions"></a>`permissions` | [`[MemberRolePermission!]`](#memberrolepermission) | List of all customizable permissions. |

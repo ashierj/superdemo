@@ -18,7 +18,7 @@ module Mutations
         member_role = authorized_find!(id: id)
 
         response = ::MemberRoles::DeleteService
-          .new(member_role.namespace, current_user)
+          .new(current_user)
           .execute(member_role)
 
         {

@@ -7,7 +7,7 @@ RSpec.describe MemberRoles::DeleteService, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:member_role) { create(:member_role, :guest, namespace: group) }
 
-  subject(:service) { described_class.new(group, user) }
+  subject(:service) { described_class.new(user) }
 
   before do
     stub_licensed_features(custom_roles: true)

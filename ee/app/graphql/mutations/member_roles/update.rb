@@ -20,7 +20,7 @@ module Mutations
       def resolve(**args)
         member_role = authorized_find!(id: args.delete(:id))
 
-        response = ::MemberRoles::UpdateService.new(member_role.namespace, current_user, args).execute(member_role)
+        response = ::MemberRoles::UpdateService.new(current_user, args).execute(member_role)
 
         {
           member_role: response.payload[:member_role],

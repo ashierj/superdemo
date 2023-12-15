@@ -3,6 +3,8 @@
 module MemberRoles
   class DeleteService < BaseService
     def execute(member_role)
+      @member_role = member_role
+
       return authorized_error unless allowed?
 
       if member_role.destroy

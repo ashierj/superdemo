@@ -53,7 +53,7 @@ module API
         group = find_group(params[:id])
         name = declared_params[:name].presence || "#{Gitlab::Access.human_access(params[:base_access_level])} - custom"
 
-        service = ::MemberRoles::CreateService.new(group, current_user, declared_params.merge(name: name))
+        service = ::MemberRoles::CreateService.new(current_user, declared_params.merge(name: name, namespace: group))
         response = service.execute
 
         if response.success?
