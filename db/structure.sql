@@ -35539,8 +35539,6 @@ CREATE UNIQUE INDEX unique_zoekt_shards_uuid ON zoekt_shards USING btree (uuid);
 
 CREATE INDEX user_follow_users_followee_id_idx ON user_follow_users USING btree (followee_id);
 
-CREATE INDEX users_forbidden_state_idx ON users USING btree (id) WHERE ((confirmed_at IS NOT NULL) AND ((state)::text <> ALL (ARRAY['blocked'::text, 'banned'::text, 'ldap_blocked'::text])));
-
 CREATE UNIQUE INDEX vulnerability_occurrence_pipelines_on_unique_keys ON vulnerability_occurrence_pipelines USING btree (occurrence_id, pipeline_id);
 
 CREATE UNIQUE INDEX work_item_types_namespace_id_and_name_unique ON work_item_types USING btree (namespace_id, btrim(lower(name)));
