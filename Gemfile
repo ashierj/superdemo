@@ -38,8 +38,9 @@ gem 'gitlab-safe_request_store', path: 'gems/gitlab-safe_request_store' # ruboco
 # GitLab Monorepo Gems
 group :monorepo do
   gem 'gitlab-utils', path: 'gems/gitlab-utils' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'gitlab-backup-cli', path: 'gems/gitlab-backup-cli', feature_category: :backup_restore
 end
+
+gem 'gitlab-backup-cli', path: 'gems/gitlab-backup-cli', require: 'gitlab/backup/cli', feature_category: :backup_restore
 
 gem 'gitlab-secret_detection', path: 'gems/gitlab-secret_detection', feature_category: :secret_detection
 
