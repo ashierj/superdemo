@@ -27,7 +27,13 @@ RSpec.describe "User tests hooks", :js, feature_category: :webhooks do
   end
 
   context "when project is not empty" do
-    let!(:project) { create(:project, :repository, group: group) }
+    let!(:project) do
+      debug_with_puts "Before create(:project, :repository, group: group)"
+      result = create(:project, :repository, group: group)
+      debug_with_puts "After create(:project, :repository, group: group)"
+
+      result
+    end
 
     context "when URL is valid" do
       before do
@@ -65,7 +71,13 @@ RSpec.describe "User tests hooks", :js, feature_category: :webhooks do
   end
 
   context "when project is empty" do
-    let!(:project) { create(:project, group: group) }
+    let!(:project) do
+      debug_with_puts "Before create(:project, group: group)"
+      result = create(:project, group: group)
+      debug_with_puts "After create(:project, group: group)"
+
+      result
+    end
 
     before do
       debug_with_puts "Before trigger_hook"
