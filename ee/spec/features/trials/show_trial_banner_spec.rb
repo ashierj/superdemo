@@ -24,6 +24,7 @@ RSpec.describe 'Show trial banner', :js, feature_category: :purchase do
       create(:gitlab_subscription, :active_trial, namespace: user.namespace, hosted_plan: ultimate_plan)
       stub_billing_plans(user.namespace_id)
       stub_subscription_management_data(user.namespace_id)
+      stub_temporary_extension_data(user.namespace_id)
     end
 
     it 'renders congratulations banner for user in profile billing page' do
@@ -39,6 +40,7 @@ RSpec.describe 'Show trial banner', :js, feature_category: :purchase do
       create(:gitlab_subscription, :active_trial, namespace: group, hosted_plan: ultimate_plan)
       stub_billing_plans(group.id)
       stub_subscription_management_data(group.id)
+      stub_temporary_extension_data(group.id)
     end
 
     it 'renders congratulations banner for group in group details page' do

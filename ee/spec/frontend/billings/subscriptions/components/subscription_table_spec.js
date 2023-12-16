@@ -17,6 +17,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { getSubscriptionData } from 'ee/fulfillment/shared_queries/subscription_actions.customer.query.graphql';
+import { getTemporaryExtensionData } from 'ee/fulfillment/shared_queries/temporary_extension.customer.query.graphql';
 import Tracking from '~/tracking';
 
 jest.mock('~/alert');
@@ -47,6 +48,7 @@ describe('SubscriptionTable component', () => {
     provide = {},
     state = {},
     apolloMock = { subscription: { canAddSeats: true, canRenew: true } },
+    temporaryExtensionMock = { temporaryExtension: { endDate: '2023-12-28' } },
   } = {}) => {
     store = new Vuex.Store(initialStore());
     jest.spyOn(store, 'dispatch').mockImplementation();
@@ -55,6 +57,12 @@ describe('SubscriptionTable component', () => {
         getSubscriptionData,
         jest.fn().mockResolvedValue({
           data: apolloMock,
+        }),
+      ],
+      [
+        getTemporaryExtensionData,
+        jest.fn().mockResolvedValue({
+          data: temporaryExtensionMock,
         }),
       ],
     ]);

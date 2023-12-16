@@ -1,6 +1,6 @@
 <script>
-import { GlIcon, GlButton } from '@gitlab/ui';
-import { TABLE_TYPE_DEFAULT } from 'ee/billings/constants';
+import { GlIcon, GlButton, GlSprintf } from '@gitlab/ui';
+import { TABLE_TYPE_DEFAULT, TEMPORARY_EXTENSION_LABEL } from 'ee/billings/constants';
 import { dateInWords } from '~/lib/utils/datetime_utility';
 import Popover from '~/vue_shared/components/help_popover.vue';
 import { slugify } from '~/lib/utils/text_utility';
@@ -10,6 +10,7 @@ export default {
   components: {
     GlButton,
     GlIcon,
+    GlSprintf,
     Popover,
   },
   inject: {
@@ -39,6 +40,11 @@ export default {
       required: false,
       default: false,
     },
+    temporaryExtensionEndDate: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   computed: {
     rowClasses() {
@@ -55,9 +61,13 @@ export default {
     getDisplayValue(col) {
       if (col.isDate && col.value) {
         const [year, month, day] = col.value.split('-');
+        const formattedDate = dateInWords(new Date(year, month - 1, day));
 
         // create UTC date (prevent date from being converted to local timezone)
-        return dateInWords(new Date(year, month - 1, day));
+        if (col.id === 'subscriptionEndDate' && this.temporaryExtensionEndDate) {
+          return `${formattedDate}*`;
+        }
+        return formattedDate;
       }
 
       // let's display '-' instead of 0 for the 'Free' plan
@@ -67,12 +77,20 @@ export default {
 
       return typeof col.value !== 'undefined' && col.value !== null ? col.value : ' - ';
     },
+    temporaryExtensionDisplayValue() {
+      const [year, month, day] = this.temporaryExtensionEndDate.split('-');
+
+      return dateInWords(new Date(year, month - 1, day));
+    },
     isSeatsUsageButtonShown(col) {
       return this.billableSeatsHref && col.id === 'seatsInUse';
     },
     testIdSelectorValue(col) {
       return slugify(col?.label ?? '');
     },
+  },
+  i18n: {
+    TEMPORARY_EXTENSION_LABEL,
   },
   TABLE_TYPE_DEFAULT,
 };
@@ -106,6 +124,18 @@ export default {
           :class="[col.colClass ? col.colClass : '']"
         >
           {{ getDisplayValue(col) }}
+          <template v-if="col.id === 'subscriptionEndDate' && temporaryExtensionEndDate">
+            <p
+              class="gl-mb-0 gl-pt-3 gl-font-sm gl-text-secondary"
+              data-testid="temporary-extension-label"
+            >
+              <gl-sprintf :message="$options.i18n.TEMPORARY_EXTENSION_LABEL">
+                <template #temporaryExtensionEndDate>
+                  <span>{{ temporaryExtensionDisplayValue() }}</span>
+                </template>
+              </gl-sprintf>
+            </p>
+          </template>
         </p>
         <gl-button
           v-if="isSeatsUsageButtonShown(col)"

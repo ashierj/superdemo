@@ -26,6 +26,8 @@ RSpec.describe 'Group > Unlimited members alert', :js, :saas, feature_category: 
       create(:gitlab_subscription, :active_trial, namespace: group)
 
       stub_application_setting(dashboard_limit_enabled: true)
+
+      stub_temporary_extension_data(group.id)
     end
 
     context 'when user is not owner' do
@@ -44,6 +46,8 @@ RSpec.describe 'Group > Unlimited members alert', :js, :saas, feature_category: 
         group.add_owner(user)
 
         sign_in(user)
+
+        stub_temporary_extension_data(group.id)
       end
 
       it_behaves_like 'unlimited members during trial alert' do

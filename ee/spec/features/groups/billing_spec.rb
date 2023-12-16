@@ -74,6 +74,7 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
       context 'with all available management activities' do
         before do
           stub_subscription_management_data(group.id)
+          stub_temporary_extension_data(group.id)
         end
 
         it_behaves_like 'hides search settings'
@@ -101,6 +102,7 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
       context 'with disabled seats and review buttons' do
         before do
           stub_subscription_management_data(group.id, can_add_seats: false, can_renew: false)
+          stub_temporary_extension_data(group.id)
         end
 
         it 'hides add seats and renew buttons' do
@@ -117,6 +119,7 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
     context 'with a legacy paid plan' do
       before do
         stub_subscription_management_data(group.id)
+        stub_temporary_extension_data(group.id)
       end
 
       let(:plan) { 'bronze' }

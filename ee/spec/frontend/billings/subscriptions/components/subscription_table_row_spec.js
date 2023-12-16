@@ -253,4 +253,21 @@ describe('subscription table row', () => {
       },
     );
   });
+
+  describe('temporary extension label', () => {
+    const dateColumn = {
+      id: 'subscriptionEndDate',
+      label: 'Column C',
+      value: '2023-12-27',
+      isDate: true,
+    };
+
+    it('renders the temporary extension label', () => {
+      createComponent({
+        props: { temporaryExtensionEndDate: '2023-12-28', columns: [dateColumn] },
+      });
+
+      expect(wrapper.find('[data-testid="temporary-extension-label"]').exists()).toBe(true);
+    });
+  });
 });
