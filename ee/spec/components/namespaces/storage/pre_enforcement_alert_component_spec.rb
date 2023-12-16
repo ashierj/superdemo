@@ -203,16 +203,6 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
           )
         )
       end
-
-      it 'includes the faq_link in the alert text' do
-        render_inline(component)
-
-        expect(page).to have_link(
-          'FAQ',
-          href: "#{Gitlab::Saas.about_pricing_url}faq-efficient-free-tier/" \
-                "#storage-limits-on-gitlab-saas-free-tier"
-        )
-      end
     end
 
     context 'when namespace is below the notification limit' do

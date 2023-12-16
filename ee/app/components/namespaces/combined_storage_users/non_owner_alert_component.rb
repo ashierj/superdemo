@@ -29,8 +29,8 @@ module Namespaces
                       "To ensure that your group does not become read-only, " \
                       "you should contact a user with the Owner role for this group " \
                       "to upgrade to a paid tier, or manage your usage. " \
-                      "For more information about the upcoming usage limits, " \
-                      "see our %{faq_link_start}FAQ%{link_end}."), alert_body_params)
+                      "%{faq_link_start}Learn more%{link_end} about the upcoming storage limits."
+                     ), alert_body_params)
       end
     end
   end

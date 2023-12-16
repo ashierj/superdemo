@@ -23,8 +23,8 @@ module Namespaces
                       "You should reduce the number of users or upgrade to a paid tier " \
                       "%{strong_start}before%{strong_end} you manage your storage usage. Otherwise, " \
                       "your Free top-level group will become read-only immediately because the " \
-                      "5-user limit applies. For more information, " \
-                      "see our %{faq_link_start}FAQ%{link_end}."), alert_body_params)
+                      "5-user limit applies. %{faq_link_start}Learn more%{link_end} " \
+                      "about namespace storage limits."), alert_body_params)
       end
 
       def namespace_primary_cta

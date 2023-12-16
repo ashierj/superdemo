@@ -98,7 +98,7 @@ module Namespaces
       end
 
       def faq_link_start
-        link_start('https://about.gitlab.com/pricing/faq-efficient-free-tier/#next-steps')
+        link_start(help_page_path('user/usage_quotas', anchor: 'namespace-storage-limit'))
       end
 
       def link_start(url)
