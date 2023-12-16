@@ -93,10 +93,12 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Size, :saas do
           increment_pipeline_failure_reason_counter: true)
       end
 
-      it 'does not drop the pipeline' do
+      it 'fails but does not persist the pipeline' do
         subject
 
-        expect(pipeline).not_to be_failed
+        expect(pipeline).not_to be_persisted
+        expect(pipeline).to be_size_limit_exceeded
+        expect(pipeline).to be_failed
       end
 
       it 'breaks the chain' do
