@@ -44,10 +44,6 @@ module Namespaces
         help_page_path('user/usage_quotas', anchor: 'manage-your-storage-usage')
       end
 
-      def faq_link
-        "#{Gitlab::Saas.about_pricing_url}faq-efficient-free-tier/#storage-limits-on-gitlab-saas-free-tier"
-      end
-
       def strong_tags
         {
           strong_start: "<strong>".html_safe,
@@ -108,18 +104,6 @@ module Namespaces
             "%{strong_start}%{usage_quotas_nav_instruction}%{strong_end}. " \
             "%{docs_link_start}How can I manage my storage%{link_end}?" \
           ),
-          text_args
-        )
-      end
-
-      def text_paragraph_3
-        text_args = {
-          faq_link_start: Kernel.format('<a href="%{url}" >', { url: faq_link }).html_safe,
-          link_end: "</a>".html_safe
-        }
-
-        safe_format(
-          s_("UsageQuota|For more information about storage limits, see our %{faq_link_start}FAQ%{link_end}."),
           text_args
         )
       end
