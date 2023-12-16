@@ -1,0 +1,5 @@
+%p{ style: 'font-size:18px; text-align:center;  line-height:30px;' }
+  = _('Your CI runner usage CSV export containing the top %{exported_objects} has been added to this email as an attachment.').html_safe % { exported_objects: pluralize(@written_count, 'project') }
+  - if @truncated
+    %p
+      = _('This attachment has been truncated to avoid exceeding the maximum allowed attachment size of %{size_limit}. %{written_count} of %{count} projects have been included.') % { written_count: @written_count, count: @count, size_limit: @size_limit }
