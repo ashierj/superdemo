@@ -146,6 +146,20 @@ module SubscriptionPortalHelpers
     }.to_json
   end
 
+  def stub_temporary_extension_data(namespace_id)
+    stub_full_request(graphql_url, method: :post)
+      .with(
+        body: "{\"operationName\":\"getTemporaryExtensionData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getTemporaryExtensionData($namespaceId: ID!) {\\n  temporaryExtension(namespaceId: $namespaceId) {\\n    endDate\\n    __typename\\n  }\\n}\\n\"}"
+      )
+      .to_return(status: 200, body: {
+        "data": {
+          "temporaryExtension": {
+            "endDate": (Date.current + 2.weeks).strftime('%F')
+          }
+        }
+      }.to_json)
+  end
+
   private
 
   def plans_fixture

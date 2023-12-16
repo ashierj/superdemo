@@ -4,6 +4,7 @@ import { escape } from 'lodash';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { getSubscriptionData } from 'ee/fulfillment/shared_queries/subscription_actions.customer.query.graphql';
+import { getTemporaryExtensionData } from 'ee/fulfillment/shared_queries/temporary_extension.customer.query.graphql';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { TABLE_TYPE_DEFAULT, TABLE_TYPE_FREE, TABLE_TYPE_TRIAL } from 'ee/billings/constants';
 import { createAlert } from '~/alert';
@@ -11,6 +12,7 @@ import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import Tracking from '~/tracking';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import SubscriptionTableRow from './subscription_table_row.vue';
 
 const createButtonProps = (text, href, testId, clickHandler = () => {}) => {
@@ -75,6 +77,20 @@ export default {
         return this.isFreePlan;
       },
     },
+    temporaryExtension: {
+      query: getTemporaryExtensionData,
+      variables() {
+        return {
+          namespaceId: this.namespaceId,
+        };
+      },
+      skip() {
+        return this.isFreePlan;
+      },
+      error(error) {
+        this.handleError(error);
+      },
+    },
   },
   computed: {
     ...mapState(['isLoadingSubscription', 'hasErrorSubscription', 'plan', 'tables', 'endpoint']),
@@ -121,6 +137,9 @@ export default {
           )
         : null;
     },
+    temporaryExtensionEndDate() {
+      return this.temporaryExtension?.endDate;
+    },
     buttons() {
       return [this.addSeatsButton, this.renewButton, this.manageButton].filter(Boolean);
     },
@@ -162,6 +181,9 @@ export default {
     },
     trackClick() {
       this.track('click_button', { label: 'add_seats_saas', property: 'billing_page' });
+    },
+    handleError(error) {
+      Sentry.captureException(error);
     },
   },
 };
@@ -211,6 +233,7 @@ export default {
         :header="row.header"
         :columns="row.columns"
         :is-free-plan="isFreePlan"
+        :temporary-extension-end-date="temporaryExtensionEndDate"
       />
     </gl-card>
 

@@ -26,6 +26,7 @@ RSpec.describe 'Billings > Qrtly Reconciliation Alert', :js, :saas, feature_cate
     stub_full_request("#{gitlab_plans_url}?plan=#{plan.name}&namespace_id=#{namespace.id}")
       .to_return(status: 200, body: plans_data.to_json)
     stub_subscription_management_data(namespace.id)
+    stub_temporary_extension_data(namespace.id)
     sign_in(user)
   end
 

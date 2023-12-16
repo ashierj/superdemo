@@ -46,6 +46,8 @@ RSpec.describe 'Project > Unlimited members alert', :js, :saas, feature_category
         project.add_owner(user)
 
         sign_in(user)
+
+        stub_temporary_extension_data(group.id)
       end
 
       it_behaves_like 'unlimited members during trial alert' do
