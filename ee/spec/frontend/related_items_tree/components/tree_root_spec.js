@@ -5,6 +5,7 @@ import Draggable from 'vuedraggable';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { ESC_KEY_CODE } from '~/lib/utils/keycodes';
+import { DRAG_DELAY } from '~/sortable/constants';
 import TreeRoot from 'ee/related_items_tree/components/tree_root.vue';
 import { treeItemChevronBtnClassName } from 'ee/related_items_tree/constants';
 import createDefaultStore from 'ee/related_items_tree/store';
@@ -257,6 +258,13 @@ describe('RelatedItemsTree', () => {
               await nextTick();
 
               expect(document.addEventListener).toHaveBeenCalledWith('keyup', expect.any(Function));
+            });
+
+            it('sets delay and delayOnTouchOnly attributes on list', () => {
+              const listEl = wrapper.findComponent(Draggable);
+
+              expect(listEl.vm.$attrs.delay).toBe(DRAG_DELAY);
+              expect(listEl.vm.$attrs.delayOnTouchOnly).toBe(true);
             });
           });
 

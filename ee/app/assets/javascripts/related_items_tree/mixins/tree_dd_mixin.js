@@ -1,6 +1,6 @@
 import Draggable from 'vuedraggable';
 
-import { defaultSortableOptions } from '~/sortable/constants';
+import { defaultSortableOptions, DRAG_DELAY } from '~/sortable/constants';
 import { ESC_KEY_CODE } from '~/lib/utils/keycodes';
 import { idProp, relativePositions, treeItemChevronBtnClassName } from '../constants';
 
@@ -19,6 +19,8 @@ export default {
         'data-parent-reference': this.parentItem.reference,
         'data-parent-id': this.parentItem.id,
         value: this.children,
+        delay: DRAG_DELAY,
+        delayOnTouchOnly: true,
         // This filters out/ignores all the chevron buttons (used for
         // expanding and collapsing epic tree items) so the drag action
         // can only be performed on the actual item card.
