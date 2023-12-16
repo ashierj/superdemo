@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::LogCursor::Lease, :clean_gitlab_redis_cluster_shared_state,
+RSpec.describe Gitlab::Geo::LogCursor::Lease, :clean_gitlab_redis_shared_state,
   feature_category: :geo_replication do
   include ExclusiveLeaseHelpers
 
