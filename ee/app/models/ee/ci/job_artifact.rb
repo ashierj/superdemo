@@ -51,7 +51,7 @@ module EE
 
       scope :available_verifiables, -> { joins(:job_artifact_state) }
 
-      scope :repository_xray, -> { with_file_types(%w[repository_xray]) }
+      scope :repository_xray_reports, -> { with_file_types(%w[repository_xray]) }
 
       skip_callback :commit, :after, :geo_create_event!, if: :store_after_commit?
     end

@@ -256,7 +256,7 @@ module EE
       end
 
       def has_repository_xray_reports?
-        complete_and_has_reports?(::Ci::JobArtifact.repository_xray)
+        complete_and_has_reports?(::Ci::JobArtifact.repository_xray_reports)
       end
 
       def has_all_security_policies_reports?

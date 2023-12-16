@@ -199,8 +199,8 @@ RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
     end
   end
 
-  describe '.repository_xray' do
-    subject { described_class.repository_xray }
+  describe '.repository_xray_reports' do
+    subject { described_class.repository_xray_reports }
 
     context 'when there is a repository_xray report' do
       let!(:xray_artifact) { create(:ee_ci_job_artifact, :repository_xray) }

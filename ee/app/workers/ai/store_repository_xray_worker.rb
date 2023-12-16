@@ -16,7 +16,7 @@ module Ai
       ::Ci::Pipeline.find_by_id(pipeline_id).try do |pipeline|
         break unless pipeline.has_repository_xray_reports?
 
-        Ai::StoreRepositoryXrayService.execute(pipeline)
+        Ai::StoreRepositoryXrayService.new(pipeline).execute
       end
     end
   end
