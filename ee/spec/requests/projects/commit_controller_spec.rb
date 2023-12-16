@@ -10,10 +10,6 @@ RSpec.describe Projects::CommitController, feature_category: :source_code_manage
       let(:commit) { project.commit('7b5160f9bb23a3d58a0accdbe89da13b96b1ece9') }
 
       context 'when the commit has been signed by a certificate' do
-        let!(:ssh_signature) do
-          create(:ssh_signature, commit_sha: commit.sha, project: project, verification_status: :verified_ca)
-        end
-
         def badge_content(rendered)
           page = Nokogiri::HTML.parse(rendered)
           badge = page.at('.signature-badge')
@@ -25,6 +21,8 @@ RSpec.describe Projects::CommitController, feature_category: :source_code_manage
         end
 
         it 'renders verified badge' do
+          create(:ssh_signature, commit_sha: commit.sha, project: project, verification_status: :verified_ca)
+
           get project_commit_url(project, commit)
 
           title, content = badge_content(response.body)
