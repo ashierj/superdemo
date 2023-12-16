@@ -1045,8 +1045,8 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       end
 
       describe '#custom_project_template_id' do
-        it 'returns false' do
-          expect(setting.custom_project_templates_group_id).to be false
+        it 'returns nil' do
+          expect(setting.custom_project_templates_group_id).to be nil
         end
       end
 

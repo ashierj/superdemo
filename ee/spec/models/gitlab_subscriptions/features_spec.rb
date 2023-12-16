@@ -234,23 +234,6 @@ RSpec.describe GitlabSubscriptions::Features, feature_category: :subscription_ma
 
       it { is_expected.to be_falsey }
     end
-
-    described_class::FEATURES_NOT_SUPPORTING_USAGE_PING.each do |feature|
-      context "when param is `#{feature}` and not compatible with usage ping" do
-        let(:feature) { feature }
-
-        it { is_expected.to be_falsey }
-      end
-    end
-  end
-
-  describe 'features not compatible with usage ping' do
-    it 'do not overlap with usage ping features' do
-      expect(
-        described_class::FEATURES_NOT_SUPPORTING_USAGE_PING &
-        described_class::FEATURES_WITH_USAGE_PING)
-        .to be_empty
-    end
   end
 
   describe '.features_with_usage_ping' do

@@ -454,7 +454,7 @@ module EE
     end
 
     def custom_project_templates_group_id
-      custom_project_templates_enabled? && super
+      super if super.present? && custom_project_templates_enabled?
     end
 
     def available_custom_project_templates(subgroup_id = nil)
