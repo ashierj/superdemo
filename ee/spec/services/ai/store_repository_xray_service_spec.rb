@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Ai::StoreRepositoryXrayService, feature_category: :code_suggestions do
   let_it_be(:project) { create(:project) }
 
-  subject(:execute) { described_class.execute(pipeline) }
+  subject(:execute) { described_class.new(pipeline).execute }
 
   context 'with xray report' do
     let(:pipeline) do
@@ -44,6 +44,18 @@ RSpec.describe Ai::StoreRepositoryXrayService, feature_category: :code_suggestio
       expect(Projects::XrayReport).not_to receive(:upsert)
 
       execute
+    end
+  end
+
+  describe '#log_event' do
+    let(:pipeline) do
+      create(:ee_ci_pipeline, ref: 'master', project: project, user: project.creator)
+    end
+
+    it 'will log the proper context' do
+      expect(Gitlab::AppLogger).to receive(:info).with(hash_including({ message: 'store_repository_xray' }))
+
+      described_class.send(:log_event, { action: 'test' })
     end
   end
 end

@@ -226,7 +226,6 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
       subject(:transition_pipeline) { pipeline.update!(status_event: transition) }
 
       before do
-        allow(::Ai::StoreRepositoryXrayWorker).to receive(:perform_async)
         allow(pipeline).to receive(:has_repository_xray_reports?).and_return(has_repository_xray_reports)
       end
 
@@ -234,9 +233,9 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
         let(:has_repository_xray_reports) { true }
 
         it 'schedules store security scans job' do
-          transition_pipeline
+          expect(::Ai::StoreRepositoryXrayWorker).to receive(:perform_async).with(pipeline.id)
 
-          expect(::Ai::StoreRepositoryXrayWorker).to have_received(:perform_async).with(pipeline.id)
+          transition_pipeline
         end
       end
 
@@ -244,9 +243,9 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
         let(:has_repository_xray_reports) { false }
 
         it 'does not schedule store security scans job' do
-          transition_pipeline
+          expect(::Ai::StoreRepositoryXrayWorker).not_to receive(:perform_async)
 
-          expect(::Ai::StoreRepositoryXrayWorker).not_to have_received(:perform_async)
+          transition_pipeline
         end
       end
     end

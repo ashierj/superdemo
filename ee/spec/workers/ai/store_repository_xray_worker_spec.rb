@@ -25,7 +25,9 @@ RSpec.describe Ai::StoreRepositoryXrayWorker, type: :worker, feature_category: :
       subject(:perform) { described_class.new.perform(pipeline.id) }
 
       it 'will call the StoreRepositoryXrayService' do
-        expect(Ai::StoreRepositoryXrayService).to receive(:execute).and_return(true)
+        expect_next_instance_of(Ai::StoreRepositoryXrayService) do |service|
+          expect(service).to receive(:execute).and_return(true)
+        end
 
         expect { perform }.not_to raise_error
       end
