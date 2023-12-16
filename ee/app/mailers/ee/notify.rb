@@ -22,6 +22,7 @@ module EE
       include ::Emails::ComplianceViolations
       include ::Emails::ComplianceStandards
       include ::Emails::Okr
+      include ::Emails::CiRunnerUsageByProject
     end
 
     attr_reader :group

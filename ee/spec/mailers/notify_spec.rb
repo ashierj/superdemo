@@ -459,6 +459,29 @@ RSpec.describe Notify, feature_category: :shared do
     end
   end
 
+  describe 'CI runner usage report is sent', feature_category: :fleet_visibility do
+    let(:from_date) { DateTime.new(2023, 1, 1) }
+    let(:to_date) { DateTime.new(2023, 1, 31) }
+    let(:export_status) do
+      {
+        rows_expected: 500,
+        rows_written: 480,
+        truncated: false
+      }
+    end
+
+    subject { described_class.runner_usage_by_project_csv_email(user, from_date, to_date, 'CSV content', export_status) }
+
+    it_behaves_like 'an email sent from GitLab'
+    it_behaves_like 'it should not have Gmail Actions links'
+    it_behaves_like "a user cannot unsubscribe through footer link"
+
+    it 'has the correct subject and body', :aggregate_failures do
+      is_expected.to have_subject('Exported CI Runner usage (2023-01-01 - 2023-01-31)')
+      is_expected.to have_body_text('480 projects')
+    end
+  end
+
   def expect_sender(user)
     sender = subject.header[:from].addrs[0]
     expect(sender.display_name).to eq("#{user.name} (@#{user.username})")

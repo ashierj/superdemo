@@ -110,6 +110,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Destroy
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Update
         mount_mutation ::Mutations::Ci::NamespaceCiCdSettingsUpdate
+        mount_mutation ::Mutations::Ci::Runners::ExportUsage, alpha: { milestone: '16.7' }
         mount_mutation ::Mutations::RemoteDevelopment::Workspaces::Create, alpha: { milestone: '16.0' }
         mount_mutation ::Mutations::RemoteDevelopment::Workspaces::Update, alpha: { milestone: '16.0' }
         mount_mutation ::Mutations::AuditEvents::Streaming::Headers::Destroy
