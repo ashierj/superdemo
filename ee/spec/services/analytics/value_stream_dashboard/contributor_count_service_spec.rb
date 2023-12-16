@@ -95,7 +95,7 @@ RSpec.describe Analytics::ValueStreamDashboard::ContributorCountService, feature
         (2,'#{group.id}/',100,0,'',5,#{format(from + 8.days)},#{format(from + 8.days)}),
         (3,'#{group.id}/',200,0,'Issue',1,#{format(from + 9.days)},#{format(from + 9.days)}),
         (4,'#{group.id}/',200,0,'Issue',1,#{format(from + 5.years)},#{format(from + 5.years)}),
-        (5,'0',200,0,'Issue',1,#{format(from + 2.days)},#{format(from + 2.days)})
+        (5,'0/',200,0,'Issue',1,#{format(from + 2.days)},#{format(from + 2.days)})
         SQL
 
         ClickHouse::Client.execute(insert_query, :main)
