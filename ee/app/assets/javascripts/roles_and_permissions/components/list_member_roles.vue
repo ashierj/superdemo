@@ -3,27 +3,19 @@ import { GlBadge, GlButton, GlCard, GlEmptyState, GlModal, GlTable } from '@gitl
 import { keyBy } from 'lodash';
 import { deleteMemberRole, getMemberRoles } from 'ee/rest_api';
 import { ACCESS_LEVEL_LABELS } from '~/access_level/constants';
-import { createAlert, VARIANT_DANGER } from '~/alert';
+import { createAlert } from '~/alert';
 import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
-import { sprintf } from '~/locale';
-import {
-  FIELDS,
-  I18N_ADD_NEW_ROLE,
-  I18N_CANCEL,
-  I18N_CARD_TITLE,
-  I18N_CREATION_SUCCESS,
-  I18N_DELETE_ROLE,
-  I18N_DELETION_ERROR,
-  I18N_DELETION_SUCCESS,
-  I18N_EMPTY_TITLE,
-  I18N_FETCH_ERROR,
-  I18N_LICENSE_ERROR,
-  I18N_MODAL_TITLE,
-  I18N_MODAL_WARNING,
-  I18N_MEMBER_ROLE_PERMISSIONS_QUERY_ERROR,
-} from '../constants';
+import { sprintf, s__, __ } from '~/locale';
 import memberRolePermissionsQuery from '../graphql/member_role_permissions.query.graphql';
 import CreateMemberRole from './create_member_role.vue';
+
+export const FIELDS = [
+  { key: 'name', label: s__('MemberRole|Name'), sortable: true },
+  { key: 'id', label: s__('MemberRole|ID'), sortable: true },
+  { key: 'base_access_level', label: s__('MemberRole|Base role'), sortable: true },
+  { key: 'permissions', label: s__('MemberRole|Permissions') },
+  { key: 'actions', label: s__('MemberRole|Actions') },
+];
 
 export default {
   components: {
@@ -58,14 +50,14 @@ export default {
     };
   },
   apollo: {
-    memberRolePermissions: {
+    availablePermissions: {
       query: memberRolePermissionsQuery,
       update({ memberRolePermissions }) {
-        this.availablePermissions = memberRolePermissions.nodes;
+        return memberRolePermissions.nodes;
       },
       error({ message }) {
         this.alert = createAlert({
-          message: sprintf(I18N_MEMBER_ROLE_PERMISSIONS_QUERY_ERROR, { message }),
+          message: sprintf(this.$options.i18n.fetchPermissionsError, { message }),
         });
       },
     },
@@ -92,12 +84,11 @@ export default {
 
       try {
         await deleteMemberRole(this.groupId, this.memberRoleToDelete);
-        this.$toast.show(I18N_DELETION_SUCCESS);
+        this.$toast.show(this.$options.i18n.deleteSuccess);
         this.fetchMemberRoles(this.groupId);
       } catch (error) {
         this.alert = createAlert({
-          message: error.response?.data?.message || I18N_DELETION_ERROR,
-          variant: VARIANT_DANGER,
+          message: error.response?.data?.message || this.$options.i18n.deleteError,
         });
       } finally {
         this.memberRoleToDelete = null;
@@ -118,14 +109,10 @@ export default {
       } catch (error) {
         this.memberRoles = [];
         if (error?.response?.status === HTTP_STATUS_NOT_FOUND) {
-          this.alert = createAlert({
-            message: I18N_LICENSE_ERROR,
-            variant: VARIANT_DANGER,
-          });
+          this.alert = createAlert({ message: this.$options.i18n.licenseError });
         } else {
           this.alert = createAlert({
-            message: error?.response?.data?.message || I18N_FETCH_ERROR,
-            variant: VARIANT_DANGER,
+            message: error?.response?.data?.message || this.$options.i18n.fetchRolesError,
           });
         }
       } finally {
@@ -148,7 +135,7 @@ export default {
       return ACCESS_LEVEL_LABELS[value];
     },
     onCreatedMemberRole() {
-      this.$toast.show(I18N_CREATION_SUCCESS);
+      this.$toast.show(this.$options.i18n.createSuccess);
       this.showCreateMemberForm = false;
       this.fetchMemberRoles(this.groupId);
     },
@@ -161,27 +148,35 @@ export default {
   },
   FIELDS,
   i18n: {
-    addNewRole: I18N_ADD_NEW_ROLE,
-    cardTitle: I18N_CARD_TITLE,
-    deleteRole: I18N_DELETE_ROLE,
-    emptyTitle: I18N_EMPTY_TITLE,
+    addNewRole: s__('MemberRole|Add new role'),
+    cardTitle: s__('MemberRole|Custom roles'),
+    deleteRole: s__('MemberRole|Delete role'),
+    emptyTitle: s__('MemberRole|No custom roles for this group'),
+    fetchRolesError: s__('MemberRole|Failed to fetch roles.'),
+    fetchPermissionsError: s__('MemberRole|Could not fetch available permissions: %{message}'),
+    deleteSuccess: s__('MemberRole|Role successfully deleted.'),
+    deleteError: s__('MemberRole|Failed to delete the role.'),
+    createSuccess: s__('MemberRole|Role successfully created.'),
+    licenseError: s__('MemberRole|Make sure the group is in the Ultimate tier.'),
   },
   modal: {
     actionPrimary: {
-      text: I18N_DELETE_ROLE,
+      text: s__('MemberRole|Delete role'),
       attributes: {
         variant: 'danger',
       },
     },
     actionSecondary: {
-      text: I18N_CANCEL,
+      text: __('Cancel'),
       attributes: {
         variant: 'default',
       },
     },
     id: 'confirm-delete-role',
-    title: I18N_MODAL_TITLE,
-    warning: I18N_MODAL_WARNING,
+    title: s__('MemberRole|Are you sure you want to delete this role?'),
+    warning: s__(
+      'MemberRole|To delete the custom role make sure no group member has this custom role',
+    ),
   },
 };
 </script>
@@ -198,7 +193,7 @@ export default {
       <div class="gl-new-card-actions">
         <gl-button
           :disabled="!groupId"
-          :loading="$apollo.queries.memberRolePermissions.loading"
+          :loading="$apollo.queries.availablePermissions.loading"
           size="small"
           data-testid="add-role"
           @click="showCreateMemberForm = true"
@@ -227,7 +222,7 @@ export default {
       v-else
       :fields="$options.FIELDS"
       :items="memberRoles"
-      :busy="isLoadingMemberRoles || $apollo.queries.memberRolePermissions.loading"
+      :busy="isLoadingMemberRoles || $apollo.queries.availablePermissions.loading"
       stacked="sm"
     >
       <template #cell(base_access_level)="{ item: { base_access_level } }">
