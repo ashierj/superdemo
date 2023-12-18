@@ -12,7 +12,7 @@
       = _('Change your password.')
     - else
       = _('Change your password or recover your current one.')
-  = gitlab_ui_form_for @user, url: profile_password_path, method: :put, html: {class: "update-password"} do |f|
+  = gitlab_ui_form_for @user, url: user_settings_password_path, method: :put, html: {class: "update-password"} do |f|
     = form_errors(@user)
 
     - unless @user.password_automatically_set?
@@ -31,5 +31,5 @@
     .gl-mt-3.gl-mb-3
       = f.submit _('Save password'), class: "gl-mr-3", data: { qa_selector: 'save_password_button' }, pajamas_button: true
       - unless @user.password_automatically_set?
-        = render Pajamas::ButtonComponent.new(href: reset_profile_password_path, variant: :link, method: :put) do
+        = render Pajamas::ButtonComponent.new(href: reset_user_settings_password_path, variant: :link, method: :put) do
           = _('I forgot my password')

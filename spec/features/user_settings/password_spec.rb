@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Profile > Password', feature_category: :user_profile do
+RSpec.describe 'User Settings > Password', feature_category: :user_profile do
   let(:user) { create(:user) }
 
   def fill_passwords(password, confirmation)
@@ -12,16 +12,16 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
     click_button 'Save password'
   end
 
-  context 'Password authentication enabled' do
+  context 'when password authentication enabled' do
     let(:new_password) { User.random_password }
     let(:user) { create(:user, password_automatically_set: true) }
 
     before do
       sign_in(user)
-      visit edit_profile_password_path
+      visit edit_user_settings_password_path
     end
 
-    context 'User with password automatically set' do
+    context 'when User with password automatically set' do
       describe 'User puts different passwords in the field and in the confirmation' do
         it 'shows an error message' do
           fill_passwords(new_password, "#{new_password}2")
@@ -42,7 +42,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
         it 'shows a success message' do
           fill_passwords(new_password, new_password)
 
-          page.within('[data-testid="alert-info"]') do
+          within_testid('alert-info') do
             expect(page).to have_content('Password was successfully updated. Please sign in again.')
           end
         end
@@ -50,8 +50,8 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
     end
   end
 
-  context 'Password authentication unavailable' do
-    context 'Regular user' do
+  context 'when password authentication unavailable' do
+    context 'with Regular user' do
       before do
         gitlab_sign_in(user)
       end
@@ -62,13 +62,13 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
         stub_application_setting(password_authentication_enabled_for_web: false)
         stub_application_setting(password_authentication_enabled_for_git: false)
 
-        visit edit_profile_password_path
+        visit edit_user_settings_password_path
 
         expect(page).to have_gitlab_http_status(:not_found)
       end
     end
 
-    context 'LDAP user' do
+    context 'with LDAP user' do
       include LdapHelpers
 
       let(:ldap_settings) { { enabled: true } }
@@ -87,7 +87,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
       end
 
       it 'renders 404', :js do
-        visit edit_profile_password_path
+        visit edit_user_settings_password_path
 
         expect(page).to have_title('Not Found')
         expect(page).to have_content('Page Not Found')
@@ -95,12 +95,12 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
     end
   end
 
-  context 'Change password' do
+  context 'when changing password' do
     let(:new_password) { User.random_password }
 
     before do
       sign_in(user)
-      visit(edit_profile_password_path)
+      visit(edit_user_settings_password_path)
     end
 
     shared_examples 'user enters an incorrect current password' do
@@ -113,7 +113,8 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
 
       it 'handles the invalid password attempt, and prompts the user to try again', :aggregate_failures do
         expect(Gitlab::AppLogger).to receive(:info)
-          .with(message: 'Invalid current password when attempting to update user password', username: user.username, ip: user.current_sign_in_ip)
+          .with(message: 'Invalid current password when attempting to update user password', username: user.username,
+            ip: user.current_sign_in_ip)
 
         subject
 
@@ -121,7 +122,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
 
         expect(user.failed_attempts).to eq(1)
         expect(user.valid_password?(new_password)).to eq(false)
-        expect(page).to have_current_path(edit_profile_password_path, ignore_query: true)
+        expect(page).to have_current_path(edit_user_settings_password_path, ignore_query: true)
 
         page.within '.flash-container' do
           expect(page).to have_content('You must provide a valid current password')
@@ -174,7 +175,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
         expect_snowplow_event(
           category: 'Gitlab::Tracking::Helpers::WeakPasswordErrorEvent',
           action: 'track_weak_password_error',
-          controller: 'Profiles::PasswordsController',
+          controller: 'UserSettings::PasswordsController',
           method: 'update'
         )
       end
@@ -207,13 +208,12 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
 
       user.update!(password_expires_at: 1.hour.ago)
       user.identities.delete
-      expect(user.ldap_user?).to eq false
     end
 
     it 'needs change user password' do
-      visit edit_profile_password_path
+      visit edit_user_settings_password_path
 
-      expect(page).to have_current_path new_profile_password_path, ignore_query: true
+      expect(page).to have_current_path new_user_settings_password_path, ignore_query: true
 
       fill_in :user_password,      with: user.password
       fill_in :user_new_password,  with: new_password
@@ -224,9 +224,9 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
     end
 
     it 'tracks weak password error' do
-      visit edit_profile_password_path
+      visit edit_user_settings_password_path
 
-      expect(page).to have_current_path new_profile_password_path, ignore_query: true
+      expect(page).to have_current_path new_user_settings_password_path, ignore_query: true
 
       fill_in :user_password,      with: user.password
       fill_in :user_new_password,  with: "password"
@@ -235,7 +235,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
       expect_snowplow_event(
         category: 'Gitlab::Tracking::Helpers::WeakPasswordErrorEvent',
         action: 'track_weak_password_error',
-        controller: 'Profiles::PasswordsController',
+        controller: 'UserSettings::PasswordsController',
         method: 'create'
       )
     end
@@ -246,7 +246,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
 
         visit profile_path
 
-        expect(page).to have_current_path new_profile_password_path, ignore_query: true
+        expect(page).to have_current_path new_user_settings_password_path, ignore_query: true
       end
     end
   end

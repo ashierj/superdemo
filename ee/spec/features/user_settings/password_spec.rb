@@ -41,7 +41,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
     end
 
     context 'when on user profile page' do
-      let(:path_to_visit) { edit_profile_password_path }
+      let(:path_to_visit) { edit_user_settings_password_path }
       let(:password_input_selector) { :user_new_password }
       let(:submit_button_selector) { _('Save password') }
       let(:flash_message) { _('Password was successfully updated. Please sign in again.') }
@@ -50,7 +50,7 @@ RSpec.describe 'Profile > Password', feature_category: :user_profile do
     end
 
     context 'when on user setting new password page' do
-      let(:path_to_visit) { new_profile_password_path }
+      let(:path_to_visit) { new_user_settings_password_path }
       let(:password_input_selector) { :user_new_password }
       let(:submit_button_selector) { _('Set new password') }
       let(:flash_message) { _('Password successfully changed') }
