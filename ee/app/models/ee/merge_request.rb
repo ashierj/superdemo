@@ -220,14 +220,6 @@ module EE
       merge_train_car&.active?
     end
 
-    def allows_multiple_assignees?
-      project.feature_available?(:multiple_merge_request_assignees)
-    end
-
-    def allows_multiple_reviewers?
-      project.feature_available?(:multiple_merge_request_reviewers)
-    end
-
     def allow_external_status_checks?
       project.licensed_feature_available?(:external_status_checks)
     end

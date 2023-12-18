@@ -1205,6 +1205,16 @@ module EE
                                                      .events_stored_count(year: year, month: month)
     end
 
+    override :allows_multiple_merge_request_assignees?
+    def allows_multiple_merge_request_assignees?
+      feature_available?(:multiple_merge_request_assignees)
+    end
+
+    override :allows_multiple_merge_request_reviewers?
+    def allows_multiple_merge_request_reviewers?
+      feature_available?(:multiple_merge_request_reviewers)
+    end
+
     private
 
     def latest_ingested_sbom_pipeline_id_redis_key
