@@ -11,28 +11,7 @@ module EE
 
           override :integrations
           def integrations
-            super.merge(
-              'github' => [
-                {
-                  required: true,
-                  name: :token,
-                  type: String,
-                  desc: 'GitHub API token with repo:status OAuth scope'
-                },
-                {
-                  required: true,
-                  name: :repository_url,
-                  type: String,
-                  desc: "GitHub repository URL"
-                },
-                {
-                  required: false,
-                  name: :static_context,
-                  type: ::API::Integrations::Boolean,
-                  desc: 'Append instance name instead of branch to status check name'
-                }
-              ]
-            )
+            super.merge('github' => ::Integrations::Github.api_fields)
           end
 
           override :integration_classes

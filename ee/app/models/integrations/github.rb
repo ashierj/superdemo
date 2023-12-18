@@ -17,18 +17,21 @@ module Integrations
       placeholder: "8d3f016698e...",
       non_empty_password_title: -> { s_('ProjectService|Enter new token') },
       non_empty_password_help: -> { s_('ProjectService|Leave blank to use your current token.') },
+      description: -> { s_('GitHub API token with `repo:status` OAuth scope.') },
       help: -> { token_field_help }
 
     field :repository_url,
       title: -> { s_('GithubIntegration|Repository URL') },
       required: true,
       exposes_secrets: true,
+      description: -> { s_('GitHub repository URL.') },
       placeholder: 'https://github.com/owner/repository'
 
     field :static_context,
       type: :checkbox,
       title: -> { s_('GithubIntegration|Static status check names (optional)') },
       checkbox_label: -> { s_('GithubIntegration|Enable static status check names') },
+      description: -> { s_('Append the hostname of your GitLab instance to the status check name.') },
       help: -> { static_context_field_help }
 
     def initialize_properties
