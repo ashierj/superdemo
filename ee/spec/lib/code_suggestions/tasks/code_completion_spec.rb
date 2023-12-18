@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe CodeSuggestions::Tasks::CodeCompletion, feature_category: :code_suggestions do
-  let(:endpoint) { 'https://codesuggestions.gitlab.com/v2/code/completions' }
+  let(:endpoint_path) { 'v2/code/completions' }
 
   let(:current_file) do
     {
