@@ -34,7 +34,63 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   let(:new_user) { build(:user, email: user_email) }
   let(:user) { User.find_by_email(user_email) }
 
-  shared_examples 'registering a low risk user with identity verification' do
+  shared_examples 'does not allow unauthorized access to verification endpoints' do |protected_endpoints|
+    # Normally, users cannot trigger requests to endpoints of verification
+    # methods in later steps by only using the UI (e.g. if the current step is
+    # email verification. Phone and credit card steps cannot be interacted
+    # with). However, there is nothing stopping users from manually or
+    # programatically sending requests to these endpoints.
+    #
+    # This spec ensures that only the endpoints of the verification method in
+    # the current step are accessible to the user regardless of the way the
+    # request is sent.
+    #
+    # Note: SAML flow is skipped as the signin process is more involved which
+    # makes the test unnecessarily complex.
+
+    def send_request(session, method, path, headers:)
+      session.public_send(method, path, headers: headers, xhr: true, as: :json)
+    end
+
+    it do
+      session = ActionDispatch::Integration::Session.new(Rails.application)
+
+      # sign in
+      session.post user_session_path, params: { user: { login: new_user.username, password: new_user.password } }
+
+      # visit identity verification page
+      session.get identity_verification_path
+
+      # extract CSRF token
+      body = session.response.body
+      html = Nokogiri::HTML.parse(body)
+      csrf_token = html.at("meta[name=csrf-token]")['content']
+
+      headers = { 'X-CSRF-Token' => csrf_token }
+
+      phone_send_code_path = send_phone_verification_code_identity_verification_path
+      phone_verify_code_path = verify_phone_verification_code_identity_verification_path
+      credit_card_verify_path = verify_credit_card_identity_verification_path
+
+      verification_endpoint_requests = {
+        phone: [
+          -> { send_request(session, :post, phone_send_code_path, headers: headers) },
+          -> { send_request(session, :post, phone_verify_code_path, headers: headers) }
+        ],
+        credit_card: [
+          -> { send_request(session, :get, credit_card_verify_path, headers: {}) }
+        ]
+      }
+
+      protected_endpoints.each do |e|
+        verification_endpoint_requests[e].each do |request_lambda|
+          expect(request_lambda.call).to eq 400
+        end
+      end
+    end
+  end
+
+  shared_examples 'registering a low risk user with identity verification' do |flow: :others|
     let(:risk) { :low }
 
     it 'verifies the user' do
@@ -92,9 +148,17 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         expect(page).to have_content(s_('IdentityVerification|A new code has been sent.'))
       end
     end
+
+    unless flow == :saml
+      describe 'access to verification endpoints' do
+        it_behaves_like 'does not allow unauthorized access to verification endpoints', [:phone, :credit_card]
+      end
+    end
   end
 
-  shared_examples 'registering a medium risk user with identity verification' do |skip_email_validation: false|
+  shared_examples 'registering a medium risk user with identity verification' do
+    |skip_email_validation: false, flow: :others|
+
     let(:risk) { :medium }
 
     it 'verifies the user' do
@@ -127,9 +191,23 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         expect_to_see_dashboard_page
       end
     end
+
+    unless flow == :saml
+      describe 'access to verification endpoints' do
+        it_behaves_like 'does not allow unauthorized access to verification endpoints', [:credit_card]
+
+        context 'when all prerequisite verification methods have not been completed' do
+          unless skip_email_validation
+            it_behaves_like 'does not allow unauthorized access to verification endpoints', [:phone]
+          end
+        end
+      end
+    end
   end
 
-  shared_examples 'registering a high risk user with identity verification' do |skip_email_validation: false|
+  shared_examples 'registering a high risk user with identity verification' do
+    |skip_email_validation: false, flow: :others|
+
     let(:risk) { :high }
 
     it 'verifies the user' do
@@ -160,6 +238,31 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         # from calling expect_verification_completed
 
         expect_to_see_dashboard_page
+      end
+    end
+
+    unless flow == :saml
+      describe 'access to verification endpoints' do
+        context 'when all prerequisite verification methods have been completed' do
+          before do
+            verify_email unless skip_email_validation
+            verify_phone_number
+          end
+
+          it_behaves_like 'does not allow unauthorized access to verification endpoints', [:phone]
+        end
+
+        context 'when some prerequisite verification methods have not been completed' do
+          before do
+            verify_email unless skip_email_validation
+          end
+
+          it_behaves_like 'does not allow unauthorized access to verification endpoints', [:credit_card]
+        end
+
+        context 'when all prerequisite verification methods have not been completed' do
+          it_behaves_like 'does not allow unauthorized access to verification endpoints', [:credit_card]
+        end
       end
     end
   end
@@ -222,9 +325,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       with_omniauth_full_host { example.run }
     end
 
-    it_behaves_like 'registering a low risk user with identity verification'
-    it_behaves_like 'registering a medium risk user with identity verification'
-    it_behaves_like 'registering a high risk user with identity verification'
+    it_behaves_like 'registering a low risk user with identity verification', flow: :saml
+    it_behaves_like 'registering a medium risk user with identity verification', flow: :saml
+    it_behaves_like 'registering a high risk user with identity verification', flow: :saml
   end
 
   describe 'Subscription flow', :saas do

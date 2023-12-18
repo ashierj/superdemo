@@ -101,26 +101,26 @@ feature_category: :system_access do
     end
   end
 
-  shared_examples 'it requires an email verified user' do
+  shared_examples 'it ensures verification attempt is allowed' do |method|
     subject { response }
 
     before do
+      allow_next_found_instance_of(User) do |instance|
+        allow(instance).to receive(:verification_method_allowed?)
+          .with(method: method).and_return(allowed)
+      end
+
       do_request
     end
 
-    context 'when current user has verified email' do
+    context 'when verification is allowed' do
+      let(:allowed) { true }
+
       it { is_expected.to have_gitlab_http_status(:ok) }
     end
 
-    context 'when current user is not required to verify a phone number' do
-      let_it_be(:user) { create(:user, :high_risk) }
-      let_it_be(:validation) { create(:phone_number_validation, :validated, user: user) }
-
-      it { is_expected.to have_gitlab_http_status(:bad_request) }
-    end
-
-    context 'when current user does not have a verified email' do
-      let_it_be(:user) { create(:user, :unconfirmed, :medium_risk) }
+    context 'when verification is not allowed' do
+      let(:allowed) { false }
 
       it { is_expected.to have_gitlab_http_status(:bad_request) }
     end
@@ -486,7 +486,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
-    it_behaves_like 'it requires an email verified user'
+    it_behaves_like 'it ensures verification attempt is allowed', 'phone'
     it_behaves_like 'verifies arkose token before phone verification'
 
     context 'when sending the code is successful' do
@@ -546,7 +546,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
-    it_behaves_like 'it requires an email verified user'
+    it_behaves_like 'it ensures verification attempt is allowed', 'phone'
     it_behaves_like 'verifies arkose token before phone verification'
 
     context 'when code verification is successful' do
@@ -747,6 +747,10 @@ feature_category: :system_access do
 
     before do
       stub_session(verification_user_id: user.id)
+
+      allow_next_found_instance_of(User) do |instance|
+        allow(instance).to receive(:verification_method_allowed?).and_return(true)
+      end
     end
 
     subject(:do_request) { get verify_credit_card_identity_verification_path(params) }
@@ -883,6 +887,8 @@ feature_category: :system_access do
         it_behaves_like 'returns HTTP status 400 and a message'
         it_behaves_like 'logs and tracks the event', :credit_card, :failed_attempt, :rate_limited
       end
+
+      it_behaves_like 'it ensures verification attempt is allowed', 'credit_card'
     end
   end
 

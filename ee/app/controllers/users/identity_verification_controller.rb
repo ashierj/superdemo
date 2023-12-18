@@ -9,6 +9,8 @@ module Users
     include ::Gitlab::RackLoadBalancingHelpers
 
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
+    PHONE_VERIFICATION_ACTIONS = %i[send_phone_verification_code verify_phone_verification_code].freeze
+    CREDIT_CARD_VERIFICATION_ACTIONS = %i[verify_credit_card].freeze
 
     skip_before_action :authenticate_user!
 
@@ -16,10 +18,9 @@ module Users
     before_action :require_unverified_user!, except: [:verification_state, :success]
     before_action :redirect_banned_user, only: [:show]
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
-
-    before_action :require_email_verified_user!, :verify_arkose_labs_session_for_phone_verification, only: [
-      :send_phone_verification_code, :verify_phone_verification_code
-    ]
+    before_action :ensure_verification_method_attempt_allowed!,
+      only: PHONE_VERIFICATION_ACTIONS + CREDIT_CARD_VERIFICATION_ACTIONS
+    before_action :verify_arkose_labs_session_for_phone_verification, only: PHONE_VERIFICATION_ACTIONS
 
     before_action only: :show do
       push_frontend_feature_flag(:arkose_labs_phone_verification_challenge)
@@ -213,10 +214,16 @@ module Users
       redirect_to success_identity_verification_path if @user.identity_verified?
     end
 
-    def require_email_verified_user!
-      return if @user.phone_number_verification_required? && @user.confirmed?
+    def ensure_verification_method_attempt_allowed!
+      verification_method_actions = {
+        User::VERIFICATION_METHODS[:PHONE_NUMBER] => PHONE_VERIFICATION_ACTIONS,
+        User::VERIFICATION_METHODS[:CREDIT_CARD] => CREDIT_CARD_VERIFICATION_ACTIONS
+      }
 
-      log_event(:phone, :failed_attempt, :unauthorized)
+      verification_method, _ = verification_method_actions.find { |_, actions| action_name.to_sym.in?(actions) }
+      return if @user.verification_method_allowed?(method: verification_method)
+
+      log_event(verification_method.to_sym, :failed_attempt, :unauthorized)
 
       render status: :bad_request, json: {}
     end
