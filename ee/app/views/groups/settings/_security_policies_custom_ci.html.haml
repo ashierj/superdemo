@@ -1,0 +1,30 @@
+- return if Feature.disabled?(:compliance_pipeline_in_policies, @group)
+
+- docs_link_url = help_page_path('policy/experiment-beta-support')
+- docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: docs_link_url }
+- terms_link_start = '<a href="https://about.gitlab.com/handbook/legal/testing-agreement/" target="_blank" rel="noopener noreferrer">'.html_safe
+- toggle_security_policy_custom_ci_locked = cascading_namespace_setting_locked?(:toggle_security_policy_custom_ci, @group)
+
+
+%h5
+  = s_('GroupSettings|Security policy custom CI Experiment')
+
+%p
+  = s_('GroupSettings|This feature is being developed and might be unstable.')
+  = s_('GroupSettings| %{link_start}What do Experiment and Beta mean?%{link_end}').html_safe % { link_start: docs_link_start, link_end: '</a>'.html_safe }
+
+.form-group.gl-mb-3
+  .gl-form-checkbox.custom-control.custom-checkbox
+    = f.check_box :toggle_security_policy_custom_ci, checked: @group.namespace_settings.toggle_security_policy_custom_ci?, disabled: toggle_security_policy_custom_ci_locked, class: 'custom-control-input'
+    = render 'shared/namespaces/cascading_settings/setting_label_checkbox', attribute: :toggle_security_policy_custom_ci,
+        group: @group,
+        form: f,
+        setting_locked: toggle_security_policy_custom_ci_locked,
+        settings_path_helper: ->(locked_ancestor) { edit_group_path(locked_ancestor, anchor: 'js-permissions-settings') },
+        help_text: s_('Settings|Enable this feature allows you to add customized CI YAML file to run as part of the policies action. This features is your acceptance of the %{link_start}GitLab Testing Agreement%{link_end}.').html_safe % { link_start: terms_link_start, link_end: '</a>'.html_safe } do
+      = s_('Settings|Run customized CI YAML file as security policy actions')
+    = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
+        attribute: :toggle_security_policy_custom_ci,
+        group: @group,
+        form: f,
+        setting_locked: toggle_security_policy_custom_ci_locked

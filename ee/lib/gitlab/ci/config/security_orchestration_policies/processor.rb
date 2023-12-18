@@ -28,7 +28,7 @@ module Gitlab
 
             merged_config = @config.deep_merge(merged_security_policy_config)
 
-            if Feature.enabled?(:compliance_pipeline_in_policies, project) && active_scan_custom_actions.any?
+            if custom_scan_actions_enabled? && active_scan_custom_actions.any?
               stages = merged_config.fetch(:stages, [])
 
               merged_config = merged_config.deep_merge(scan_custom_actions[:pipeline_scan])
@@ -48,6 +48,12 @@ module Gitlab
           private
 
           attr_reader :project, :ref, :context
+
+          def custom_scan_actions_enabled?
+            return false if project.group.nil?
+
+            Feature.enabled?(:compliance_pipeline_in_policies, project) && project.group.namespace_settings.toggle_security_policy_custom_ci?
+          end
 
           def cleanup_stages(stages)
             stages = stages.uniq

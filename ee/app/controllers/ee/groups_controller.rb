@@ -102,7 +102,16 @@ module EE
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
         params_ee << :experiment_features_enabled if experiment_settings_allowed?
         params_ee << :product_analytics_enabled if product_analytics_settings_allowed?
-      end
+      end + security_policy_custom_ci_toggle_params
+    end
+
+    def security_policy_custom_ci_toggle_params
+      return [] if ::Feature.disabled?(:compliance_pipeline_in_policies)
+
+      [
+        :toggle_security_policy_custom_ci,
+        :lock_toggle_security_policy_custom_ci
+      ]
     end
 
     def ai_assist_ui_enabled?
