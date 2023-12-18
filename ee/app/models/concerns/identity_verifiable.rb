@@ -148,11 +148,30 @@ module IdentityVerifiable
     end
   end
 
-  def phone_number_verification_required?
-    identity_verification_state[VERIFICATION_METHODS[:PHONE_NUMBER]] == false
+  def verification_method_allowed?(method:)
+    return false unless verification_method_required?(method: method)
+
+    # Take all methods that precede <method>. E.g. if <method> is cc and
+    # required methods is [email phone cc], then prerequisite methods is
+    # [email phone]
+    prerequisite_methods = required_identity_verification_methods.take_while { |m| m != method }
+
+    # Get the state of prerequisite methods. E.g. if <method> is cc and state is
+    # { email: true, phone: false, cc: false }, then prerequisite methods state
+    # is { email: true, phone: false }
+    prerequisite_methods_state = identity_verification_state.select { |method| method.in? prerequisite_methods }
+
+    # Check if all prerequisite methods are completed?
+    prerequisite_methods_state.values.all?
   end
 
   private
+
+  def verification_method_required?(method:)
+    return unless method.in? required_identity_verification_methods
+
+    !identity_verification_state[method]
+  end
 
   def verification_state
     @verification_state ||= {

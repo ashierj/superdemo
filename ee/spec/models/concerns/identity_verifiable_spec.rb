@@ -566,29 +566,53 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
   end
 
-  describe '#phone_number_verification_required?' do
-    before do
-      add_user_risk_band('Medium')
-    end
+  describe '#verification_method_allowed?' do
+    subject(:result) { user.verification_method_allowed?(method: method) }
 
-    subject { user.phone_number_verification_required? }
-
-    context 'when user has no phone number' do
-      let_it_be(:user) { create(:user, phone_number_validation: nil) }
-
-      it { is_expected.to eq true }
-    end
-
-    context 'when user has not verified a phone number' do
-      let_it_be(:user) { create(:user, phone_number_validation: create(:phone_number_validation)) }
-
-      it { is_expected.to eq true }
-    end
-
-    context 'when user has verified a phone number' do
-      let_it_be(:user) { create(:user, phone_number_validation: create(:phone_number_validation, :validated)) }
+    context 'when verification method is not required' do
+      let_it_be(:user) { create(:user, :medium_risk, confirmed_at: Time.current) }
+      let(:method) { 'credit_card' }
 
       it { is_expected.to eq false }
+    end
+
+    context 'when verification method is required but already completed' do
+      let_it_be(:user) { create(:user, :low_risk, confirmed_at: Time.current) }
+      let(:method) { 'email' }
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when verification method is required and not completed' do
+      context 'when there are prerequisite verification methods' do
+        let(:method) { 'credit_card' }
+
+        context 'when all prerequisite verification methods are completed' do
+          let_it_be(:user) { create(:user, :high_risk, confirmed_at: Time.current) }
+          let_it_be(:phone_number_validation) { create(:phone_number_validation, :validated, user: user) }
+
+          it { is_expected.to eq true }
+        end
+
+        context 'when any of prerequisite verification methods are incomplete' do
+          let_it_be(:user) { create(:user, :high_risk, confirmed_at: Time.current) }
+
+          it { is_expected.to eq false }
+        end
+
+        context 'when all of prerequisite verification methods are incomplete' do
+          let_it_be(:user) { create(:user, :high_risk, :unconfirmed) }
+
+          it { is_expected.to eq false }
+        end
+      end
+
+      context 'when there are no prerequisite verification methods' do
+        let_it_be(:user) { create(:user, :unconfirmed) }
+        let(:method) { 'email' }
+
+        it { is_expected.to eq true }
+      end
     end
   end
 end
