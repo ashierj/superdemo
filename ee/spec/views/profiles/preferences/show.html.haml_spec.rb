@@ -37,12 +37,26 @@ RSpec.describe 'profiles/preferences/show' do
         allow(user.namespace).to receive(:ai_assist_ui_enabled?).and_return(true)
       end
 
-      it 'renders the code suggestions preference' do
+      it 'does not render the code suggestions preference' do
         render
 
         expect(rendered).to render_template('profiles/preferences/_code_suggestions_settings')
         field_text = s_('CodeSuggestions|Enable Code Suggestions')
-        expect(rendered).to have_content(field_text)
+        expect(rendered).not_to have_content(field_text)
+      end
+
+      context 'when code_suggestions_used_by_default is disabled' do
+        before do
+          stub_feature_flags(code_suggestions_used_by_default: false)
+        end
+
+        it 'renders the code suggestions preference' do
+          render
+
+          expect(rendered).to render_template('profiles/preferences/_code_suggestions_settings')
+          field_text = s_('CodeSuggestions|Enable Code Suggestions')
+          expect(rendered).to have_content(field_text)
+        end
       end
     end
 
