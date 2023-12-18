@@ -249,6 +249,16 @@ Other GitLab instances that use the proxy must configure the following settings 
 
 The GitLab for Jira Cloud app connects GitLab and Jira. Data must be shared between the two applications, and access must be granted in both directions.
 
+### Using GitLab.com as a proxy
+
+When you use [GitLab.com as a proxy](#configure-your-gitlab-instance-to-serve-as-a-proxy),
+the Jira access token is shared with GitLab.com.
+
+The Jira access token is stored on GitLab.com because the token must be used to verify
+incoming requests from Jira before the requests are sent to your self-managed instance.
+The token is encrypted and is not used to access data in Jira.
+Any data from your self-managed instance is sent directly to Jira.
+
 ### Access to GitLab through OAuth
 
 GitLab does not share an access token with Jira. However, users must authenticate through OAuth to configure the app.
