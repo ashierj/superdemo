@@ -150,10 +150,14 @@ module Geo
       raise
     end
 
-    # Return whether it's capable of generating a checksum of itself
+    # Returns whether the Git repository exists
     #
-    # @return [Boolean] whether it can generate a checksum
-    def checksummable?
+    # Does a hard check because we are doing these checks for replication or
+    # verification purposes, so we should not just trust the data in the DB if
+    # we don't absolutely have to.
+    #
+    # @return [Boolean] whether the Git repository exists
+    def resource_exists?
       repository.exists?
     end
 
@@ -162,10 +166,6 @@ module Geo
     # @return [Boolean] whether the replicable is immutable
     def immutable?
       false
-    end
-
-    def mutable?
-      !immutable?
     end
   end
 end

@@ -256,43 +256,61 @@ RSpec.shared_examples 'a blob replicator' do
   end
 
   describe '#calculate_checksum' do
-    context 'when the file is locally stored' do
-      context 'when the file exists' do
-        it 'returns hexdigest of the file' do
-          expected = described_class.model.sha256_hexdigest(subject.blob_path)
+    before do
+      model_record.save! unless model_record.persisted?
+    end
 
-          expect(subject.calculate_checksum).to eq(expected)
+    context 'when the file is verifiable' do
+      context 'when the file exists' do
+        context 'when the file is locally stored' do
+          # Avoid stubbing conditionals on this test. It helps to truly exercise the
+          # method for *all* replicator classes. If one replicator class fails, then
+          # setup isn't quite right for that one replicator, and we need to adjust
+          # setup to know that calculate checksum works for that replicator.
+          it 'returns hexdigest of the file' do
+            expected = described_class.model.sha256_hexdigest(subject.blob_path)
+
+            expect(subject.calculate_checksum).to eq(expected)
+          end
+        end
+
+        context 'when the file is remotely stored' do
+          it 'returns the the size of the file' do
+            carrierwave_uploader = replicator.carrierwave_uploader
+            allow(carrierwave_uploader).to receive(:file_storage?).and_return(false)
+            allow(carrierwave_uploader).to receive_message_chain(:file, size: 65112)
+            allow(carrierwave_uploader).to receive_message_chain(:file, exists?: true)
+            allow(replicator).to receive(:carrierwave_uploader).and_return(carrierwave_uploader)
+
+            # Padding file size string with a leading zero because it should be of even length
+            expect(subject.calculate_checksum).to eq('065112')
+          end
         end
       end
 
       context 'when the file does not exist' do
         it 'raises an error' do
-          allow(subject).to receive(:file_exists?).and_return(false)
+          allow(subject).to receive(:resource_exists?).and_return(false)
 
           expect { subject.calculate_checksum }.to raise_error('File is not checksummable')
         end
       end
     end
 
-    context 'when the file is remotely stored' do
-      it 'returns the the size of the file' do
-        carrierwave_uploader = replicator.carrierwave_uploader
-        allow(carrierwave_uploader).to receive(:file_storage?).and_return(false)
-        allow(carrierwave_uploader).to receive_message_chain(:file, size: 65112)
-        allow(carrierwave_uploader).to receive_message_chain(:file, exists?: true)
-        allow(replicator).to receive(:carrierwave_uploader).and_return(carrierwave_uploader)
+    context 'when the file is not verifiable' do
+      it 'raises an error' do
+        allow(model_record).to receive(:in_verifiables?).and_return(false)
 
-        # Padding file size string with a leading zero because it should be of even length
-        expect(subject.calculate_checksum).to eq('065112')
+        expect { subject.calculate_checksum }.to raise_error('File is not checksummable')
       end
     end
   end
 
-  describe '#file_exists?' do
+  describe '#resource_exists?' do
     let(:file) { double(exists?: true) }
     let(:uploader) { double(file: file) }
 
-    subject { replicator.file_exists? }
+    subject { replicator.resource_exists? }
 
     before do
       allow(replicator).to receive(:carrierwave_uploader).and_return(uploader)

@@ -66,6 +66,13 @@ module Geo
         super
       end
 
+      def brand_new_pending?
+        return false unless sync_fields_default_or_started?
+        return false unless verification_fields_default?
+
+        true
+      end
+
       private
 
       override :track_checksum_result!
@@ -75,6 +82,29 @@ module Geo
         end
 
         verification_succeeded_with_checksum!(checksum, calculation_started_at)
+      end
+
+      def sync_fields_default_or_started?
+        return false if !pending? && !started?
+
+        # If pending, then last_synced_at must be nil
+        return false if pending? && last_synced_at.present?
+
+        retry_at.nil? &&
+          last_sync_failure.blank? &&
+          retry_count.to_i == 0
+      end
+
+      def verification_fields_default?
+        verification_pending? &&
+          verified_at.nil? &&
+          verification_started_at.nil? &&
+          verification_retry_at.nil? &&
+          verification_checksum.nil? &&
+          verification_checksum_mismatched.nil? &&
+          verification_failure.blank? &&
+          verification_retry_count.to_i == 0 &&
+          [nil, false].include?(checksum_mismatch)
       end
     end
 

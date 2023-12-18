@@ -36,7 +36,7 @@ module Geo
           registry.synced!
         else
           message = download_result.reason
-          error = download_result.extra_details&.fetch(:error, nil)
+          error = download_result.extra_details&.delete(:error)
 
           if error
             Gitlab::ErrorTracking.track_exception(
@@ -63,6 +63,8 @@ module Geo
 
     def log_download(mark_as_synced, download_result, start_time)
       metadata = {
+        replicable_name: @replicator.replicable_name,
+        model_record_id: @replicator.model_record_id,
         mark_as_synced: mark_as_synced,
         download_success: download_result.success,
         bytes_downloaded: download_result.bytes_downloaded,
@@ -70,7 +72,7 @@ module Geo
         download_time_s: (Time.current - start_time).to_f.round(3),
         reason: download_result.reason
       }
-      metadata.merge(download_result.extra_details) if download_result.extra_details
+      metadata.merge!(download_result.extra_details) if download_result.extra_details
 
       log_info("Blob download", metadata)
     end

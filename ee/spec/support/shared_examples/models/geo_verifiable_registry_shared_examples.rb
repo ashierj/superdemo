@@ -325,6 +325,122 @@ RSpec.shared_examples 'a Geo verifiable registry' do
     end
   end
 
+  describe '#brand_new_pending?' do
+    it 'returns true when sync state is pending and all other fields are default' do
+      registry = create(registry_class_factory) # rubocop:disable Rails/SaveBang -- FactoryBot method
+
+      expect(registry.brand_new_pending?).to be_truthy
+    end
+
+    it 'returns true when started but all other fields are default' do
+      registry = create(registry_class_factory, :started)
+
+      expect(registry.brand_new_pending?).to be_truthy
+    end
+
+    it 'returns false when sync state is synced' do
+      registry = create(registry_class_factory, :synced)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when sync state is failed' do
+      registry = create(registry_class_factory, :failed)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when it is pending but was synced before' do
+      registry = create(registry_class_factory, last_synced_at: 1.hour.ago)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when it is scheduled to retry sync' do
+      registry = create(registry_class_factory, retry_at: 1.day.from_now)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when it was tried before' do
+      registry = create(registry_class_factory, retry_count: 1)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when it has a sync failure message' do
+      registry = create(registry_class_factory, last_sync_failure: 'foo')
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when verification succeeded' do
+      registry = create(registry_class_factory, :verification_succeeded)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when verification failed' do
+      registry = create(registry_class_factory, :verification_failed)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when verification started' do
+      registry = create(registry_class_factory, verification_state: 1)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when it was verified before' do
+      registry = create(registry_class_factory, verified_at: 2.days.ago)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when verification was started before' do
+      registry = create(registry_class_factory, verification_started_at: 3.minutes.ago)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when verification is scheduled for retry' do
+      registry = create(registry_class_factory, verification_retry_at: 3.hours.from_now)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when verification was tried before' do
+      registry = create(registry_class_factory, verification_retry_count: 4)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when checksum mismatched before' do
+      registry = create(registry_class_factory, checksum_mismatch: true)
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when it has a local checksum from before' do
+      registry = create(registry_class_factory, verification_checksum: 'abc123')
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when verification mismatched before' do
+      registry = create(registry_class_factory, verification_checksum_mismatched: '111111')
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+
+    it 'returns false when there is a verification failure message from before' do
+      registry = create(registry_class_factory, verification_failure: 'foo')
+
+      expect(registry.brand_new_pending?).to be_falsey
+    end
+  end
+
   def verification_state_value(key)
     described_class.verification_state_value(key)
   end

@@ -104,6 +104,11 @@ module Gitlab
             end
           end
 
+          # Optimization
+          if replicator.ok_to_skip_download?
+            return Result.new(success: true, bytes_downloaded: 0, extra_details: { skipped: true })
+          end
+
           nil
         end
 

@@ -26,6 +26,18 @@ RSpec.describe Geo::VerifiableModel, feature_category: :geo_replication do
         expect(subject.class.verification_state_model_key).to eq(TestDummyModelState.primary_key)
       end
     end
+
+    describe '#in_verifiables?' do
+      it 'returns true when the verifiables scope includes the instance' do
+        subject.save!
+
+        expect(subject.in_verifiables?).to eq(true)
+      end
+
+      it 'returns false when the verifiables scope does not include the instance' do
+        expect(subject.in_verifiables?).to eq(false)
+      end
+    end
   end
 
   context 'when separate table is not used for verification state' do
@@ -53,6 +65,18 @@ RSpec.describe Geo::VerifiableModel, feature_category: :geo_replication do
     describe '.verification_state_model_key' do
       it 'returns the primary key of the model' do
         expect(subject.class.verification_state_model_key).to eq(DummyModel.primary_key)
+      end
+    end
+
+    describe '#in_verifiables?' do
+      it 'returns true when the verifiables scope includes the instance' do
+        subject.save!
+
+        expect(subject.in_verifiables?).to eq(true)
+      end
+
+      it 'returns false when the verifiables scope does not include the instance' do
+        expect(subject.in_verifiables?).to eq(false)
       end
     end
   end

@@ -99,14 +99,17 @@ module Geo
     # Returns a checksum of the tag list
     #
     # @return [String] SHA256 hash of the repository tag list
+    override :calculate_checksum
     def calculate_checksum
       model_record.tag_list_digest
     end
 
+    override :checksummable?
     def checksummable?
       true
     end
 
+    override :immutable?
     def immutable?
       false
     end

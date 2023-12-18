@@ -48,6 +48,26 @@ RSpec.describe Geo::BlobDownloadService, feature_category: :geo_replication do
 
         subject.execute
       end
+
+      it 'logs the result' do
+        expect(Gitlab::Geo::Logger).to receive(:info).with(
+          {
+            class: 'Geo::BlobDownloadService',
+            message: 'Blob download',
+            replicable_name: 'package_file',
+            model_record_id: model_record.id,
+            mark_as_synced: false,
+            download_success: false,
+            bytes_downloaded: 0,
+            primary_missing_file: false,
+            reason: 'foo',
+            download_time_s: a_kind_of(Float),
+            gitlab_host: a_kind_of(String)
+          }
+        )
+
+        subject.execute
+      end
     end
 
     context "when it can obtain the exclusive lease" do
@@ -65,6 +85,26 @@ RSpec.describe Geo::BlobDownloadService, feature_category: :geo_replication do
             subject.execute
 
             expect(registry_class.last).to be_synced
+          end
+
+          it 'logs the result' do
+            expect(Gitlab::Geo::Logger).to receive(:info).with(
+              {
+                class: 'Geo::BlobDownloadService',
+                message: 'Blob download',
+                replicable_name: 'package_file',
+                model_record_id: model_record.id,
+                mark_as_synced: true,
+                download_success: true,
+                bytes_downloaded: 123,
+                primary_missing_file: false,
+                reason: nil,
+                download_time_s: a_kind_of(Float),
+                gitlab_host: a_kind_of(String)
+              }
+            )
+
+            subject.execute
           end
         end
 

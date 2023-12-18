@@ -712,6 +712,12 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
+  describe '#mutable?' do
+    it 'returns the opposite of immutable?' do
+      expect(replicator.mutable?).to eq(!replicator.immutable?)
+    end
+  end
+
   describe '#primary_verification_succeeded?' do
     context 'when the model record is verification_succeeded' do
       it 'returns true' do
@@ -721,7 +727,7 @@ RSpec.shared_examples 'a verifiable replicator' do
       end
     end
 
-    context 'when the model record is verification_succeeded' do
+    context 'when the model record is not verification_succeeded' do
       it 'returns false' do
         allow(model_record).to receive(:verification_succeeded?).and_return(false)
 
@@ -730,7 +736,94 @@ RSpec.shared_examples 'a verifiable replicator' do
     end
   end
 
-  context 'integration tests' do
+  describe '#ok_to_skip_download?' do
+    subject(:ok_to_skip_download?) { replicator.ok_to_skip_download? }
+
+    context 'when geo_skip_download_if_exists is enabled' do
+      context 'when the registry is brand new' do
+        context 'when the model is immutable' do
+          before do
+            skip 'this context does not apply to mutable models' unless replicator.immutable?
+          end
+
+          context 'when the resource already exists on this site' do
+            before do
+              allow(replicator).to receive(:resource_exists?).and_return(true)
+            end
+
+            context 'when verification is enabled for this model' do
+              before do
+                unless replicator.class.verification_enabled?
+                  skip 'this context does not apply to models that are not verified'
+                end
+              end
+
+              context 'when the resource is in verifiables' do
+                before do
+                  allow(model_record).to receive(:in_verifiables?).and_return(true)
+                end
+
+                it { is_expected.to be_truthy }
+              end
+
+              context 'when the resource is not in verifiables' do
+                before do
+                  allow(model_record).to receive(:in_verifiables?).and_return(false)
+                end
+
+                it { is_expected.to be_falsey }
+              end
+            end
+
+            context 'when verification is disabled for this model' do
+              before do
+                skip 'this context does not apply to models that are verified' if replicator.class.verification_enabled?
+              end
+
+              it { is_expected.to be_falsey }
+            end
+          end
+
+          context 'when the resource does not exist on this site' do
+            before do
+              allow(replicator).to receive(:resource_exists?).and_return(false)
+            end
+
+            it { is_expected.to be_falsey }
+          end
+        end
+
+        context 'when the model is mutable' do
+          before do
+            skip 'this context does not apply to immutable models' if replicator.immutable?
+          end
+
+          it { is_expected.to be_falsey }
+        end
+      end
+
+      context 'when the registry is not brand new (sync or verification has been attempted before)' do
+        before do
+          model_record.save!
+          replicator.registry.start
+          replicator.registry.synced!
+          replicator.registry.pending!
+        end
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context 'when geo_skip_download_if_exists is disabled' do
+      before do
+        stub_feature_flags(geo_skip_download_if_exists: false)
+      end
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
+  describe 'integration tests' do
     before do
       if defined?(handle_model_record_before_verification_integration_examples)
         # This method can be redefined when including
