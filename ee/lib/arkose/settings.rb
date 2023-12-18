@@ -14,6 +14,10 @@ module Arkose
       "#{::Gitlab::CurrentSettings.arkose_labs_namespace}-api.arkoselabs.com"
     end
 
+    def self.data_exchange_key
+      ::Gitlab::CurrentSettings.arkose_labs_data_exchange_key
+    end
+
     def self.enabled?(user:, user_agent:)
       arkose_public_api_key.present? &&
         arkose_private_api_key.present? &&
