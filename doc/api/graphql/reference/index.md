@@ -31681,7 +31681,7 @@ Stage event identifiers.
 
 ### `VerificationStatus`
 
-Verification status of a GPG or X.509 signature for a commit.
+Verification status of a GPG, X.509 or SSH signature for a commit.
 
 | Value | Description |
 | ----- | ----------- |
@@ -31693,6 +31693,7 @@ Verification status of a GPG or X.509 signature for a commit.
 | <a id="verificationstatusunverified"></a>`UNVERIFIED` | unverified verification status. |
 | <a id="verificationstatusunverified_key"></a>`UNVERIFIED_KEY` | unverified_key verification status. |
 | <a id="verificationstatusverified"></a>`VERIFIED` | verified verification status. |
+| <a id="verificationstatusverified_ca"></a>`VERIFIED_CA` | verified_ca verification status. |
 | <a id="verificationstatusverified_system"></a>`VERIFIED_SYSTEM` | verified_system verification status. |
 
 ### `VisibilityLevelsEnum`
