@@ -21,10 +21,6 @@ RSpec.describe '1_settings' do
     end
 
     context 'gitlab.com', :saas do
-      let(:load_settings) do
-        load Rails.root.join('config/initializers/1_settings.rb')
-      end
-
       let(:dot_com_cron_jobs) do
         %w[
           disable_legacy_open_source_license_for_inactive_projects
@@ -39,5 +35,30 @@ RSpec.describe '1_settings' do
         expect(cron_jobs.keys).to include(*dot_com_cron_jobs)
       end
     end
+  end
+
+  describe 'cloud_connector' do
+    subject(:cloud_connector_base_url) { Settings.cloud_connector.base_url }
+
+    context 'when const CLOUD_CONNECTOR_BASE_URL is set' do
+      before do
+        stub_env("CLOUD_CONNECTOR_BASE_URL", 'https://www.cloud.example.com')
+        load_settings
+      end
+
+      it { is_expected.to eq('https://www.cloud.example.com') }
+    end
+
+    context 'when const CLOUD_CONNECTOR_BASE_URL is not set' do
+      before do
+        load_settings
+      end
+
+      it { is_expected.to eq('https://cloud.gitlab.com') }
+    end
+  end
+
+  def load_settings
+    load Rails.root.join('config/initializers/1_settings.rb')
   end
 end

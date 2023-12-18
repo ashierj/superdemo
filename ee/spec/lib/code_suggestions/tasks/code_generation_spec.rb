@@ -59,7 +59,7 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
 
     context 'with vertex_ai model family' do
       it_behaves_like 'code suggestion task' do
-        let(:endpoint) { 'https://codesuggestions.gitlab.com/v2/code/generations' }
+        let(:endpoint_path) { 'v2/code/generations' }
         let(:body) { unsafe_params.merge(vertex_ai_request_params).merge(expected_current_file) }
       end
 
@@ -75,7 +75,7 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
       let(:model_family) { CodeSuggestions::TaskFactory::ANTHROPIC }
 
       it_behaves_like 'code suggestion task' do
-        let(:endpoint) { 'https://codesuggestions.gitlab.com/v2/code/generations' }
+        let(:endpoint_path) { 'v2/code/generations' }
         let(:body) { unsafe_params.merge(anthropic_request_params.merge(expected_current_file)) }
       end
 

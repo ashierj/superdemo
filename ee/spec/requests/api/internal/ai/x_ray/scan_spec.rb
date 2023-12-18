@@ -52,21 +52,35 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
     end
 
     shared_examples 'successful send request via workhorse' do
-      it 'sends requests to the XRay libraries AI Gateway endpoint', :aggregate_failures do
-        expected_body = params.except(:token)
-        expect(Gitlab::Workhorse)
-          .to receive(:send_url)
-                .with(
-                  'https://codesuggestions.gitlab.com/v1/x-ray/libraries',
-                  body: expected_body.to_json,
-                  method: "POST",
-                  headers: base_workhorse_headers.merge(namespace_workhorse_headers)
-                )
+      let(:endpoint) { 'https://cloud.gitlab.com/ai/v1/x-ray/libraries' }
 
-        post_api
+      shared_examples 'sends request to the XRay libraries' do
+        it 'sends requests to the XRay libraries AI Gateway endpoint', :aggregate_failures do
+          expected_body = params.except(:token)
+          expect(Gitlab::Workhorse)
+            .to receive(:send_url)
+                  .with(
+                    endpoint,
+                    body: expected_body.to_json,
+                    method: "POST",
+                    headers: base_workhorse_headers.merge(namespace_workhorse_headers))
+          post_api
 
-        expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to have_gitlab_http_status(:ok)
+        end
       end
+
+      context 'when use_cloud_connector_lb is disabled' do
+        let(:endpoint) { 'https://codesuggestions.gitlab.com/v1/x-ray/libraries' }
+
+        before do
+          stub_feature_flags(use_cloud_connector_lb: false)
+        end
+
+        include_examples 'sends request to the XRay libraries'
+      end
+
+      include_examples 'sends request to the XRay libraries'
     end
 
     context 'when on self-managed' do

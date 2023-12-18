@@ -275,10 +275,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       context 'when user is logged in' do
         let(:current_user) { authorized_user }
 
-        before do
-          stub_env('CODE_SUGGESTIONS_BASE_URL', nil)
-        end
-
         it_behaves_like 'rate limited endpoint', rate_limit_key: :code_suggestions_api_endpoint do
           def request
             post api('/code_suggestions/completions', current_user), headers: headers, params: body.to_json
@@ -308,7 +304,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           command, params = workhorse_send_data
           expect(command).to eq('send-url')
           expect(params).to include(
-            'URL' => 'https://codesuggestions.gitlab.com/v2/code/completions',
+            'URL' => 'https://cloud.gitlab.com/ai/v2/code/completions',
             'AllowRedirects' => false,
             'Body' => body.merge(prompt_version: 1).to_json,
             'Method' => 'POST'
@@ -325,18 +321,39 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           )
         end
 
-        context 'when overriding service base URL' do
+        context 'when use_cloud_connector_lb ff is disabled' do
           before do
-            stub_env('CODE_SUGGESTIONS_BASE_URL', 'http://test.com')
+            stub_feature_flags(use_cloud_connector_lb: false)
           end
 
-          it 'sends requests to this URL instead' do
-            post_api
+          context 'when service base URL is not set' do
+            before do
+              stub_env('CODE_SUGGESTIONS_BASE_URL', nil)
+            end
 
-            _, params = workhorse_send_data
-            expect(params).to include({
-              'URL' => 'http://test.com/v2/code/completions'
-            })
+            it 'sends requests to this URL instead' do
+              post_api
+
+              _, params = workhorse_send_data
+              expect(params).to include({
+                'URL' => 'https://codesuggestions.gitlab.com/v2/code/completions'
+              })
+            end
+          end
+
+          context 'when overriding service base URL' do
+            before do
+              stub_env('CODE_SUGGESTIONS_BASE_URL', 'http://test.com')
+            end
+
+            it 'sends requests to this URL instead' do
+              post_api
+
+              _, params = workhorse_send_data
+              expect(params).to include({
+                'URL' => 'http://test.com/v2/code/completions'
+              })
+            end
           end
         end
 
@@ -579,11 +596,38 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               expect(Gitlab::Workhorse)
                 .to receive(:send_url)
                 .with(
-                  'https://codesuggestions.gitlab.com/v2/code/generations',
+                  'https://cloud.gitlab.com/ai/v2/code/generations',
                   hash_including(body: expected_body.to_json)
                 )
 
               post_api
+            end
+
+            context  'when use_cloud_connector_lb is disabled' do
+              before do
+                stub_feature_flags(use_cloud_connector_lb: false)
+              end
+
+              it 'sends requests to the code generation endpoint' do
+                expected_body = body.merge(
+                  model_provider: 'anthropic',
+                  prompt_version: 2,
+                  prompt: prompt,
+                  current_file: {
+                    file_name: file_name,
+                    content_above_cursor: prefix,
+                    content_below_cursor: ''
+                  }
+                )
+                expect(Gitlab::Workhorse)
+                  .to receive(:send_url)
+                    .with(
+                      'https://codesuggestions.gitlab.com/v2/code/generations',
+                      hash_including(body: expected_body.to_json)
+                    )
+
+                post_api
+              end
             end
 
             it 'includes additional headers for SaaS' do
@@ -735,11 +779,39 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               expect(Gitlab::Workhorse)
                 .to receive(:send_url)
                 .with(
-                  'https://codesuggestions.gitlab.com/v2/code/generations',
+                  'https://cloud.gitlab.com/ai/v2/code/generations',
                   hash_including(body: expected_body.to_json)
                 )
 
               post_api
+            end
+
+            context  'when use_cloud_connector_lb is disabled' do
+              before do
+                stub_feature_flags(use_cloud_connector_lb: false)
+              end
+
+              it 'sends requests to the code generation endpoint' do
+                expected_body = body.merge(
+                  model_provider: 'anthropic',
+                  prompt_version: 2,
+                  prompt: prompt,
+                  current_file: {
+                    file_name: file_name,
+                    content_above_cursor: prefix,
+                    content_below_cursor: ''
+                  }
+                )
+
+                expect(Gitlab::Workhorse)
+                  .to receive(:send_url)
+                        .with(
+                          'https://codesuggestions.gitlab.com/v2/code/generations',
+                          hash_including(body: expected_body.to_json)
+                        )
+
+                post_api
+              end
             end
 
             context 'when body is too big' do
