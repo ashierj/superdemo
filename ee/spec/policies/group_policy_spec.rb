@@ -2979,6 +2979,37 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a member role with manage_group_access_tokens true' do
+      let(:member_role_abilities) { { manage_group_access_tokens: true } }
+      let(:allowed_abilities) do
+        [:read_resource_access_tokens, :destroy_resource_access_tokens,
+         :create_resource_access_tokens, :manage_resource_access_tokens]
+      end
+
+      it_behaves_like 'custom roles abilities'
+
+      context 'when resource access token creation is not allowed' do
+        before do
+          create_member_role(group_member_guest)
+          stub_licensed_features(custom_roles: true)
+          group.root_ancestor.namespace_settings.update_column(:resource_access_token_creation_allowed, false)
+        end
+
+        it { is_expected.to be_allowed(:read_resource_access_tokens, :destroy_resource_access_tokens) }
+        it { is_expected.to be_disallowed(:create_resource_access_tokens, :manage_resource_access_tokens) }
+      end
+
+      context 'when resource access tokens feature is unavailable' do
+        before do
+          create_member_role(group_member_guest)
+          stub_licensed_features(custom_roles: true)
+          stub_ee_application_setting(personal_access_tokens_disabled?: true)
+        end
+
+        it { is_expected.to be_disallowed(*allowed_abilities) }
+      end
+    end
   end
 
   context 'for :read_limit_alert' do

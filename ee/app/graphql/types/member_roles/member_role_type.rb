@@ -53,6 +53,12 @@ module Types
         alpha: { milestone: '16.8' },
         description: 'Permission to delete projects.'
 
+      field :manage_group_access_tokens,
+        GraphQL::Types::Boolean,
+        null: true,
+        alpha: { milestone: '16.8' },
+        description: 'Permission to admin group access tokens.'
+
       field :manage_project_access_tokens,
         GraphQL::Types::Boolean,
         null: true,

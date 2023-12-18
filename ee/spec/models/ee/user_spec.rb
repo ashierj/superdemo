@@ -1224,6 +1224,7 @@ RSpec.describe User, feature_category: :system_access do
              OR admin_merge_request = true
              OR admin_vulnerability = true
              OR archive_project = true
+             OR manage_group_access_tokens = true
              OR manage_project_access_tokens = true
              OR read_dependency = true
              OR read_vulnerability = true

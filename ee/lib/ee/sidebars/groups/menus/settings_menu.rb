@@ -21,6 +21,11 @@ module EE
               add_item(billing_menu_item)
               add_item(reporting_menu_item)
             else
+              if can?(context.current_user, :read_resource_access_tokens, context.group)
+                # Managing group acccess tokens is a custom ability independent of the access level.
+                add_item(access_tokens_menu_item)
+              end
+
               if can?(context.current_user, :change_push_rules, context.group)
                 # Push Rules are the only group setting that can also be edited by maintainers.
                 # They only get the Repository settings which only show the Push Rules section for maintainers.
