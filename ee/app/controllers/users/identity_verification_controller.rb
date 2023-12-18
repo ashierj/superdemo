@@ -125,6 +125,9 @@ module Users
         return render action: :arkose_labs_challenge
       end
 
+      service = PhoneVerification::Users::SendVerificationCodeService
+      service.assume_user_high_risk_if_daily_limit_exceeded!(@user)
+
       redirect_to action: :show
     end
 
