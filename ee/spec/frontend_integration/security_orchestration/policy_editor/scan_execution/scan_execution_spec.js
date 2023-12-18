@@ -4,7 +4,7 @@ import App from 'ee/security_orchestration/components/policy_editor/app.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import ScanAction from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_action.vue';
 import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/rule_section.vue';
-import { DEFAULT_PROVIDE } from './mocks';
+import { DEFAULT_PROVIDE } from '../mocks';
 
 describe('Policy Editor', () => {
   let wrapper;
