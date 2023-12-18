@@ -1,5 +1,8 @@
 import { __, s__ } from '~/locale';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
+import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
+import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
+
 import {
   FEEDBACK_TYPE_ISSUE,
   FEEDBACK_TYPE_MERGE_REQUEST,
@@ -31,6 +34,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     dropdownDescription: s__('VulnerabilityManagement|Requires assessment'),
     description: s__('VulnerabilityManagement|An unverified non-confirmed finding'),
     mutation: vulnerabilityStateMutations.revert,
+    findingMutation: revertFindingToDetectedMutation,
   },
   confirmed: {
     action: 'confirm',
@@ -48,6 +52,7 @@ export const VULNERABILITY_STATE_OBJECTS = {
     dropdownText: __('Dismiss'),
     dropdownDescription: falsePositiveMessage,
     mutation: vulnerabilityStateMutations.dismiss,
+    findingMutation: dismissFindingMutation,
     payload: {
       comment: falsePositiveMessage,
     },
