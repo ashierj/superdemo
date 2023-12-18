@@ -1002,15 +1002,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: automation_execute_rule
-  :worker_name: Automation::ExecuteRuleWorker
-  :feature_category: :no_code_automation
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: ci_llm_generate_config
   :worker_name: Ci::Llm::GenerateConfigWorker
   :feature_category: :pipeline_composition
