@@ -35,25 +35,27 @@ module Gitlab
                   You are a software developer.
                   You can write new tests.
                   %<language_info>s
-                  Here is the code user selected:
                 PROMPT
               ),
+              Utils::Prompt.as_user("%<file_content>s"),
               Utils::Prompt.as_user(
                 <<~PROMPT
-                  <code>
+                  In the file user selected this code:
+                  <selected_code>
                     %<selected_text>s
-                  </code>
+                  </selected_code>
                 PROMPT
               ),
-              Utils::Prompt.as_user('The generated code should be formatted in markdown.'),
-              Utils::Prompt.as_user("%<input>s")
+              Utils::Prompt.as_user("%<input>s"),
+              Utils::Prompt.as_user('Any code blocks in response should be formatted in markdown.')
             ].freeze
 
             SLASH_COMMANDS = {
               '/tests' => {
                 description: 'Write tests for the code',
-                instruction: 'Write tests for the code in <code></code> tags.',
-                instruction_with_input: 'Write tests %<input>s for the code in <code></code> tags.'
+                instruction: 'Write tests for the code user selected inside <selected_code></selected_code> tags.',
+                instruction_with_input: 'Write tests %<input>s for the code user selected inside ' \
+                                        '<selected_code></selected_code> tags.'
               }
             }.freeze
 

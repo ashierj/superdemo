@@ -35,25 +35,28 @@ module Gitlab
                   You are a software developer.
                   You can refactor code.
                   %<language_info>s
-                  Here is the code user selected:
                 PROMPT
               ),
+              Utils::Prompt.as_user("%<file_content>s"),
               Utils::Prompt.as_user(
                 <<~PROMPT
-                  <code>
+                  In the file user selected this code:
+                  <selected_code>
                     %<selected_text>s
-                  </code>
+                  </selected_code>
                 PROMPT
               ),
-              Utils::Prompt.as_user('The generated code should be formatted in markdown.'),
-              Utils::Prompt.as_user("%<input>s")
+              Utils::Prompt.as_user("%<input>s"),
+              Utils::Prompt.as_user("%<file_content_reuse>s"),
+              Utils::Prompt.as_user('Any code blocks in response should be formatted in markdown.')
             ].freeze
 
             SLASH_COMMANDS = {
               '/refactor' => {
                 description: 'Refactor the code',
-                instruction: 'Refactor the code in <code></code> tags.',
-                instruction_with_input: 'Refactor %<input>s in the code in <code></code> tags.'
+                instruction: 'Refactor the code user selected inside <selected_code></selected_code> tags.',
+                instruction_with_input: 'Refactor %<input>s in the selected code inside ' \
+                                        '<selected_code></selected_code> tags.'
               }
             }.freeze
 
@@ -68,6 +71,18 @@ module Gitlab
             end
 
             private
+
+            def selected_text_options
+              super.tap do |opts|
+                opts[:file_content_reuse] =
+                  if opts[:file_content].present?
+                    "The new code should fit into the existing file, " \
+                      "consider reuse of existing code in the file when generating new code."
+                  else
+                    ''
+                  end
+              end
+            end
 
             def authorize
               Utils::Authorizer.context_allowed?(context: context)

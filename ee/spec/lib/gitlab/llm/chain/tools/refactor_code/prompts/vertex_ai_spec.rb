@@ -6,19 +6,22 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Prompts::VertexAi, featu
   describe '.prompt' do
     it 'returns prompt' do
       prompt = described_class
-        .prompt({ input: 'question', language_info: 'language', selected_text: 'selected text' })[:prompt]
+        .prompt({ input: 'question', language_info: 'language', selected_text: 'selected text',
+                  file_content: 'file content', file_content_reuse: 'code reuse note' })[:prompt]
       expected_prompt = <<~PROMPT.chomp
         You are a software developer.
         You can refactor code.
         language
-        Here is the code user selected:
 
-        <code>
+        file content
+        In the file user selected this code:
+        <selected_code>
           selected text
-        </code>
+        </selected_code>
 
-        The generated code should be formatted in markdown.
         question
+        code reuse note
+        Any code blocks in response should be formatted in markdown.
       PROMPT
 
       expect(prompt).to eq(expected_prompt)

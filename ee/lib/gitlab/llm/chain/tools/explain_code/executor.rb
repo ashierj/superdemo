@@ -30,25 +30,26 @@ module Gitlab
                   You are a software developer.
                   You can explain code snippets.
                   %<language_info>s
-                  Here is the code user selected:
                 PROMPT
               ),
+              Utils::Prompt.as_user("%<file_content>s"),
               Utils::Prompt.as_user(
                 <<~PROMPT
-                  <code>
+                  Here is the code user selected:
+                  <selected_code>
                     %<selected_text>s
-                  </code>
+                  </selected_code>
                 PROMPT
               ),
-              Utils::Prompt.as_user('The generated code should be formatted in markdown.'),
-              Utils::Prompt.as_user("%<input>s")
+              Utils::Prompt.as_user("%<input>s"),
+              Utils::Prompt.as_user('Any code blocks in response should be formatted in markdown.')
             ].freeze
 
             SLASH_COMMANDS = {
               '/explain' => {
                 description: 'Explain the code',
-                instruction: 'Explain the code in <code></code> tags.',
-                instruction_with_input: 'Explain %<input>s in the code in <code></code> tags.'
+                instruction: 'Explain the code user selected inside <selected_code></selected_code> tags.',
+                instruction_with_input: 'Explain %<input>s user selected inside <selected_code></selected_code> tags.'
               }
             }.freeze
 

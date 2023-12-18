@@ -6,13 +6,19 @@ RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_categor
   let_it_be(:user) { create(:user) }
 
   let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
-  let(:options) { { input: 'input' } }
+  let(:input) { 'input' }
+  let(:options) { { input: input } }
   let(:command) { nil }
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
       current_user: user, container: nil, resource: nil, ai_request: ai_request_double,
-      current_file: { file_name: 'test.py', selected_text: 'selected text' }
+      current_file: {
+        file_name: 'test.py',
+        selected_text: 'selected text',
+        content_above_cursor: 'code above',
+        content_below_cursor: 'code below'
+      }
     )
   end
 
@@ -37,76 +43,45 @@ RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_categor
   end
 
   describe '#execute' do
-    shared_examples_for 'prompt caller' do
-      let(:prompt_class) { Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic }
-
-      before do
-        allow(ai_request_double).to receive(:request).and_return('response')
-        allow(tool).to receive(:provider_prompt_class).and_return(prompt_class)
-      end
-
-      it 'calls prompt with correct params' do
-        expect(prompt_class).to receive(:prompt).with(expected_params)
-
-        tool.execute
-      end
-    end
-
     context 'when context is authorized' do
       before do
         allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_allowed?)
           .and_return(true)
       end
 
-      it_behaves_like 'prompt caller' do
-        let(:expected_params) do
-          {
-            input: 'input',
-            selected_text: 'selected text',
-            language_info: 'The code is written in Python and stored as test.py'
-          }
-        end
+      it_behaves_like 'slash command tool' do
+        let(:prompt_class) { Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic }
+        let(:extra_params) { {} }
       end
 
-      context 'when slash command is used' do
-        let(:command_prompt_options) { { input: 'command instruction' } }
-        let(:command) { instance_double(Gitlab::Llm::Chain::SlashCommand, prompt_options: command_prompt_options) }
-        let(:options) { { input: '/explain something' } }
+      it 'builds the expected prompt' do
+        allow(tool).to receive(:provider_prompt_class)
+          .and_return(Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic)
 
-        it_behaves_like 'prompt caller' do
-          let(:expected_params) do
-            {
-              input: 'command instruction',
-              selected_text: 'selected text',
-              language_info: 'The code is written in Python and stored as test.py'
-            }
-          end
-        end
-
-        it 'builds the expected prompt' do
-          allow(tool).to receive(:provider_prompt_class)
-            .and_return(Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic)
-
-          expected_prompt = <<~PROMPT.chomp
+        expected_prompt = <<~PROMPT.chomp
 
 
-            Human: You are a software developer.
-            You can explain code snippets.
-            The code is written in Python and stored as test.py
-            Here is the code user selected:
+          Human: You are a software developer.
+          You can explain code snippets.
+          The code is written in Python and stored as test.py
 
-            <code>
-              selected text
-            </code>
+          Here is the content of the file user is working with:
+          <file>
+            code aboveselected textcode below
+          </file>
 
-            The generated code should be formatted in markdown.
-            command instruction
+          Here is the code user selected:
+          <selected_code>
+            selected text
+          </selected_code>
 
-            Assistant:
-          PROMPT
+          input
+          Any code blocks in response should be formatted in markdown.
 
-          expect(tool.prompt[:prompt]).to eq(expected_prompt)
-        end
+          Assistant:
+        PROMPT
+
+        expect(tool.prompt[:prompt]).to eq(expected_prompt)
       end
 
       context 'when response is successful' do

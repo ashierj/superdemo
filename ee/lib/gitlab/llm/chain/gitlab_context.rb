@@ -18,7 +18,7 @@ module Gitlab
           @tools_used = []
           @extra_resource = extra_resource
           @request_id = request_id
-          @current_file = current_file&.with_indifferent_access
+          @current_file = (current_file || {}).with_indifferent_access
         end
 
         def resource_json(content_limit:)

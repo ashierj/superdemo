@@ -7,6 +7,8 @@ module Gitlab
         module RefactorCode
           module Prompts
             class VertexAi
+              include Concerns::VertexAiPrompt
+
               def self.prompt(variables)
                 prompt = Utils::Prompt.no_role_text(
                   ::Gitlab::Llm::Chain::Tools::RefactorCode::Executor::PROMPT_TEMPLATE, variables
