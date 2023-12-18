@@ -190,7 +190,7 @@ module EE
           can?(current_user, :download_code, project)
         end
       else
-        group.projects.not_aimed_for_deletion
+        group.projects.not_aimed_for_deletion.non_archived
       end
     end
 
@@ -368,6 +368,7 @@ module EE
         .with_invited_groups
         .in_namespace(allowed_subgroups(group_id))
         .not_aimed_for_deletion
+        .non_archived
     end
   end
 end
