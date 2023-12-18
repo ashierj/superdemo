@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'rspec_flaky/config'
+require 'gitlab/rspec_flaky/config'
 
-RSpec.describe RspecFlaky::Config, :aggregate_failures do
+RSpec.describe Gitlab::RspecFlaky::Config, :aggregate_failures do
   include StubENV
 
   before do

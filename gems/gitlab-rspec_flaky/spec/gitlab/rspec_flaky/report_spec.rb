@@ -2,9 +2,9 @@
 
 require 'tempfile'
 
-require 'rspec_flaky/report'
+require 'gitlab/rspec_flaky/report'
 
-RSpec.describe RspecFlaky::Report, :aggregate_failures, :freeze_time do
+RSpec.describe Gitlab::RspecFlaky::Report, :aggregate_failures, :freeze_time do
   let(:thirty_one_days) { 3600 * 24 * 31 }
   let(:collection_hash) do
     {
@@ -31,7 +31,7 @@ RSpec.describe RspecFlaky::Report, :aggregate_failures, :freeze_time do
     }
   end
 
-  let(:flaky_examples) { RspecFlaky::FlakyExamplesCollection.new(collection_hash) }
+  let(:flaky_examples) { Gitlab::RspecFlaky::FlakyExamplesCollection.new(collection_hash) }
   let(:report) { described_class.new(flaky_examples) }
 
   before do
@@ -67,7 +67,7 @@ RSpec.describe RspecFlaky::Report, :aggregate_failures, :freeze_time do
   end
 
   describe '#initialize' do
-    it 'accepts a RspecFlaky::FlakyExamplesCollection' do
+    it 'accepts a Gitlab::RspecFlaky::FlakyExamplesCollection' do
       expect { report }.not_to raise_error
     end
 
@@ -76,7 +76,7 @@ RSpec.describe RspecFlaky::Report, :aggregate_failures, :freeze_time do
         described_class.new([1, 2,
           3])
       end.to raise_error(ArgumentError,
-        "`flaky_examples` must be a RspecFlaky::FlakyExamplesCollection, Array given!")
+        "`flaky_examples` must be a Gitlab::RspecFlaky::FlakyExamplesCollection, Array given!")
     end
   end
 
@@ -95,9 +95,9 @@ RSpec.describe RspecFlaky::Report, :aggregate_failures, :freeze_time do
       FileUtils.rm_f(report_file_path)
     end
 
-    context 'when RspecFlaky::Config.generate_report? is false' do
+    context 'when Gitlab::RspecFlaky::Config.generate_report? is false' do
       before do
-        allow(RspecFlaky::Config).to receive(:generate_report?).and_return(false)
+        allow(Gitlab::RspecFlaky::Config).to receive(:generate_report?).and_return(false)
       end
 
       it 'does not write any report file' do
@@ -107,12 +107,12 @@ RSpec.describe RspecFlaky::Report, :aggregate_failures, :freeze_time do
       end
     end
 
-    context 'when RspecFlaky::Config.generate_report? is true' do
+    context 'when Gitlab::RspecFlaky::Config.generate_report? is true' do
       before do
-        allow(RspecFlaky::Config).to receive(:generate_report?).and_return(true)
+        allow(Gitlab::RspecFlaky::Config).to receive(:generate_report?).and_return(true)
       end
 
-      it 'delegates the writes to RspecFlaky::Report' do
+      it 'delegates the writes to Gitlab::RspecFlaky::Report' do
         report.write(report_file_path)
 
         expect(File.exist?(report_file_path)).to be(true)

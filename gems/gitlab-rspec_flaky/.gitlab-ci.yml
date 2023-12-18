@@ -1,4 +1,4 @@
 include:
   - local: gems/gem.gitlab-ci.yml
     inputs:
-      gem_name: "rspec_flaky"
+      gem_name: "gitlab-rspec_flaky"

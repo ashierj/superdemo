@@ -9,7 +9,7 @@ PATH
 PATH
   remote: .
   specs:
-    rspec_flaky (0.1.0)
+    gitlab-rspec_flaky (0.1.0)
       activesupport (>= 6.1, < 8)
       rspec (~> 3.0)
 
@@ -136,9 +136,9 @@ PLATFORMS
 
 DEPENDENCIES
   gitlab-rspec (~> 0.1)!
+  gitlab-rspec_flaky!
   gitlab-styles (~> 10.1.0)
   rspec-parameterized (~> 1.0)
-  rspec_flaky!
   rubocop (~> 1.50)
   rubocop-rspec (~> 2.22)
 

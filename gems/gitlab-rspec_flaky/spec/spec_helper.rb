@@ -2,7 +2,7 @@
 
 require "rspec-parameterized"
 require "gitlab/rspec/all"
-require "rspec_flaky"
+require "gitlab/rspec_flaky"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/rspec_flaky/version"
+require_relative "lib/gitlab/rspec_flaky/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "rspec_flaky"
-  spec.version = RspecFlaky::Version::VERSION
+  spec.name = "gitlab-rspec_flaky"
+  spec.version = Gitlab::RspecFlaky::Version::VERSION
   spec.authors = ["Engineering Productivity"]
   spec.email = ["quality@gitlab.com"]
 
@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description =
     "This gem provide an RSpec listener that allows to detect flaky examples. See " \
     "https://docs.gitlab.com/ee/development/testing_guide/flaky_tests.html#automatic-retries-and-flaky-tests-detection."
-  spec.homepage = "https://gitlab.com/gitlab-org/gitlab/-/tree/master/gems/rspec_flaky"
+  spec.homepage = "https://gitlab.com/gitlab-org/gitlab/-/tree/master/gems/gitlab-rspec_flaky"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0"
   spec.metadata["rubygems_mfa_required"] = "true"
