@@ -79,7 +79,7 @@ describe('Code owners component', () => {
     it('expands when you click on a toggle', async () => {
       await findToggle().vm.$emit('click');
       await nextTick();
-      expect(findCollapse().attributes('visible')).toBe('true');
+      expect(findCollapse().props('visible')).toBe(true);
       expect(findToggle().text()).toBe(i18n.hideAll);
     });
 
