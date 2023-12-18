@@ -128,20 +128,7 @@ module API
         {
           'apple-app-store' => ::Integrations::AppleAppStore.api_fields,
           'asana' => ::Integrations::Asana.api_fields,
-          'assembla' => [
-            {
-              required: true,
-              name: :token,
-              type: String,
-              desc: 'The authentication token'
-            },
-            {
-              required: false,
-              name: :subdomain,
-              type: String,
-              desc: 'Subdomain setting'
-            }
-          ],
+          'assembla' => ::Integrations::Assembla.api_fields,
           'bamboo' => [
             {
               required: true,
