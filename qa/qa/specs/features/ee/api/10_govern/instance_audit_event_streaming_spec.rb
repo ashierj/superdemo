@@ -54,7 +54,7 @@ module QA
         @mock_service&.logs
       end
 
-      context 'when a group is created' do
+      context 'when a group is created', :reliable do
         # Create a group within a group so that the test doesn't reuse a pre-existing group
         let!(:parent_group) { Resource::Group.fabricate! }
         let(:entity_path) do
@@ -86,7 +86,7 @@ module QA
         include_examples 'streamed events', 'user_created', 'User', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415876'
       end
 
-      context 'when a repository is cloned via SSH' do
+      context 'when a repository is cloned via SSH', :reliable do
         # Create the project and key first so their audit events are streamed before we check for the clone event
         let!(:key) { Resource::SSHKey.fabricate_via_api! }
         let!(:project) do
