@@ -72,8 +72,8 @@ describe('FreeTierPromo component', () => {
     });
 
     it('sets up collapse component (visible by default)', () => {
-      expect(findCollapse().attributes()).toMatchObject({
-        visible: 'true',
+      expect(findCollapse().props()).toMatchObject({
+        visible: true,
       });
     });
 
@@ -145,7 +145,7 @@ describe('FreeTierPromo component', () => {
       });
 
       it('collapses the collapse component', () => {
-        expect(findCollapse().attributes('visible')).toBeUndefined();
+        expect(findCollapse().props('visible')).toBe(false);
       });
 
       it('updates local storage', () => {
@@ -167,7 +167,7 @@ describe('FreeTierPromo component', () => {
     });
 
     it('should show collapse container as collapsed', () => {
-      expect(findCollapse().attributes('visible')).toBeUndefined();
+      expect(findCollapse().props('visible')).toBe(false);
     });
 
     describe('when user clicks collapse toggle', () => {
@@ -180,7 +180,7 @@ describe('FreeTierPromo component', () => {
       });
 
       it('expands the collapse component', () => {
-        expect(findCollapse().attributes('visible')).toBe('true');
+        expect(findCollapse().props('visible')).toBe(true);
       });
 
       it('does NOT update local storage', () => {

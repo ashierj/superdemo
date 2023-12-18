@@ -52,11 +52,11 @@ describe('ee/vulnerabilities/components/generic_report/report_section_graphql.vu
       });
 
       it('collapses when the header is clicked', async () => {
-        expect(findCollapsible().attributes('visible')).toBe('true');
+        expect(findCollapsible().props('visible')).toBe(true);
 
         await findHeader().trigger('click');
 
-        expect(findCollapsible().attributes('visible')).toBeUndefined();
+        expect(findCollapsible().props('visible')).toBe(false);
       });
     });
 

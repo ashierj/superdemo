@@ -65,7 +65,7 @@ describe('Security Dashboard Table', () => {
     });
 
     it('should not show the multi select box', () => {
-      expect(findSelectionSummaryCollapse().attributes('visible')).toBeUndefined();
+      expect(findSelectionSummaryCollapse().props('visible')).toBe(false);
     });
 
     it('should show the select all as unchecked', () => {
@@ -78,7 +78,7 @@ describe('Security Dashboard Table', () => {
       });
 
       it('should show the multi select box', () => {
-        expect(findSelectionSummaryCollapse().attributes('visible')).toBe('true');
+        expect(findSelectionSummaryCollapse().props('visible')).toBe(true);
       });
 
       it('should show the select all as checked', () => {
