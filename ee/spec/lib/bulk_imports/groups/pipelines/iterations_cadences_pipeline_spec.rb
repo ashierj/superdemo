@@ -44,6 +44,8 @@ RSpec.describe BulkImports::Groups::Pipelines::IterationsCadencesPipeline, featu
     allow_next_instance_of(BulkImports::Common::Extractors::NdjsonExtractor) do |extractor|
       allow(extractor).to receive(:extract).and_return(BulkImports::Pipeline::ExtractedData.new(data: [[object, 0]]))
     end
+
+    allow(subject).to receive(:set_source_objects_counter)
   end
 
   subject { described_class.new(context) }
