@@ -594,40 +594,6 @@ describe('ProductivityApp component', () => {
       });
     });
 
-    describe('with hideGroupDropDown=true', () => {
-      beforeEach(() => {
-        createComponent({ props: { hideGroupDropDown: true } });
-        mockStore.dispatch('filters/setInitialData', {
-          skipFetch: true,
-          data: {
-            mergedAfter: new Date('2019-09-01'),
-            mergedBefore: new Date('2019-09-02'),
-          },
-        });
-
-        mockStore.dispatch('filters/setGroupNamespace', 'earth-special-forces');
-      });
-
-      it('does not set the group_id', () => {
-        shouldSetUrlParams({
-          ...defaultResults,
-        });
-      });
-    });
-
-    describe('with a group selected', () => {
-      beforeEach(() => {
-        mockStore.dispatch('filters/setGroupNamespace', 'earth-special-forces');
-      });
-
-      it('sets the group_id', () => {
-        shouldSetUrlParams({
-          ...defaultResults,
-          group_id: 'earth-special-forces',
-        });
-      });
-    });
-
     describe('with a project selected', () => {
       beforeEach(() => {
         mockStore.dispatch('filters/setProjectPath', 'earth-special-forces/frieza-saga');

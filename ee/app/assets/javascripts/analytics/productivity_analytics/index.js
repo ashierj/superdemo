@@ -5,7 +5,6 @@ import { mapState, mapActions } from 'vuex';
 import DateRange from '~/analytics/shared/components/daterange.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import createDefaultClient from '~/lib/graphql';
-import { parseBoolean } from '~/lib/utils/common_utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { buildGroupFromDataset, buildProjectFromDataset } from '../shared/utils';
 import ProductivityAnalyticsApp from './components/app.vue';
@@ -41,7 +40,6 @@ export default () => {
     : null;
 
   const group = buildGroupFromDataset(container.dataset);
-  const hideGroupDropDown = parseBoolean(container.dataset.hideGroupDropDown);
 
   let project = null;
 
@@ -150,7 +148,6 @@ export default () => {
         props: {
           group,
           project,
-          hideGroupDropDown,
         },
         on: {
           groupSelected: this.onGroupSelected,
@@ -197,7 +194,6 @@ export default () => {
         props: {
           emptyStateSvgPath,
           noAccessSvgPath,
-          hideGroupDropDown,
         },
       });
     },

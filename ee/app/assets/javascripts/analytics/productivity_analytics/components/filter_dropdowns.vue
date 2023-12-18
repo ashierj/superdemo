@@ -2,12 +2,10 @@
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
-import GroupsDropdownFilter from '../../shared/components/groups_dropdown_filter.vue';
 import { accessLevelReporter, projectsPerPage } from '../constants';
 
 export default {
   components: {
-    GroupsDropdownFilter,
     ProjectsDropdownFilter,
   },
   props: {
@@ -20,11 +18,6 @@ export default {
       type: Object,
       required: false,
       default: null,
-    },
-    hideGroupDropDown: {
-      type: Boolean,
-      default: false,
-      required: false,
     },
   },
   data() {
@@ -48,12 +41,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('filters', ['setGroupNamespace', 'setProjectPath']),
-    onGroupSelected({ id, full_path: fullPath }) {
-      this.groupId = id;
-      this.setGroupNamespace(fullPath);
-      this.$emit('groupSelected', { groupId: id, groupNamespace: fullPath });
-    },
+    ...mapActions('filters', ['setProjectPath']),
     onProjectsSelected(selectedProjects) {
       const projectNamespace = selectedProjects[0]?.fullPath || null;
       const projectId = selectedProjects[0]?.id || null;
@@ -75,13 +63,6 @@ export default {
 
 <template>
   <div class="dropdown-container d-flex flex-column flex-lg-row">
-    <groups-dropdown-filter
-      v-if="!hideGroupDropDown"
-      class="group-select"
-      :query-params="$options.groupsQueryParams"
-      :default-group="group"
-      @selected="onGroupSelected"
-    />
     <projects-dropdown-filter
       v-if="showProjectsDropdownFilter"
       :key="groupId"

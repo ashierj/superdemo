@@ -53,11 +53,6 @@ export default {
       type: String,
       required: true,
     },
-    hideGroupDropDown: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
   },
   data() {
     return {
@@ -123,7 +118,7 @@ export default {
     },
     query() {
       return {
-        group_id: !this.hideGroupDropDown ? this.groupNamespace : null,
+        group_id: this.groupNamespace,
         project_id: this.projectPath,
         author_username: this.authorUsername,
         'label_name[]': this.labelName,
