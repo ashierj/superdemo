@@ -134,7 +134,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         expect(::Gitlab::Llm::ResponseService).to receive(:new).with(
           an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid', ai_action: :chat,
 client_subscription_id: 'someid' }
-        ).and_return(stream_response_handler)
+        ).and_return(stream_response_handler).twice
+        expect(stream_response_handler).to receive(:execute)
         expect(categorize_service).to receive(:execute)
         expect(::Llm::ExecuteMethodService).to receive(:new)
           .with(user, user, :categorize_question, categorize_service_params)

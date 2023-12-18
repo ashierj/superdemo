@@ -67,6 +67,11 @@ module Gitlab
             )
           end
 
+          # Send full message to custom clientSubscriptionId at the end of streaming.
+          if response_options[:client_subscription_id]
+            ::Gitlab::Llm::ResponseService.new(context, response_options).execute(response: response_modifier)
+          end
+
           response_handler.execute(response: response_modifier)
           response_post_processing
           response_modifier
