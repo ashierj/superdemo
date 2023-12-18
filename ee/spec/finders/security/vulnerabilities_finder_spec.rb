@@ -107,23 +107,11 @@ RSpec.describe Security::VulnerabilitiesFinder, feature_category: :vulnerability
       is_expected.to contain_exactly(vulnerability1, vulnerability2)
     end
 
-    context 'when given multiple states and a dismissal reason' do
-      include_context 'with vulnerability dismissed with a reason'
+    context 'when combined with other filters' do
+      let(:filters) { { state: %w[dismissed], report_type: %w[dast] } }
 
-      let(:filters) { { state: %w[confirmed], dismissal_reason: %w[used_in_tests] } }
-
-      it 'returns vulnerabilites matching the state OR dismissal_reason' do
-        is_expected.to contain_exactly(vulnerability2, dismissed_vulnerability)
-      end
-    end
-
-    context 'when given a dismissal reason only' do
-      include_context 'with vulnerability dismissed with a reason'
-
-      let(:filters) { { dismissal_reason: %w[used_in_tests] } }
-
-      it 'only returns dismissed vulnerabilities with the given dismissal reason' do
-        is_expected.to contain_exactly(dismissed_vulnerability)
+      it 'respects the other filters' do
+        is_expected.to contain_exactly(vulnerability3)
       end
     end
   end
