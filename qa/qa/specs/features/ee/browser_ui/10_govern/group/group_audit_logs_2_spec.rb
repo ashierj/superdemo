@@ -90,9 +90,12 @@ module QA
           two_fa_group.visit!
           Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:set_require_2fa_enabled)
-          Page::Profile::TwoFactorAuth.perform(&:click_configure_it_later_button)
 
-          two_fa_group.visit!
+          Support::Retrier.retry_on_exception(max_attempts: 3, message: "Failed to configure 2FA later") do
+            Page::Profile::TwoFactorAuth.perform(&:click_configure_it_later_button)
+            two_fa_group.visit!
+          end
+
           Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:set_require_2fa_disabled)
         end
