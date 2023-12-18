@@ -4,6 +4,7 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getAddOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import SaasAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/saas_add_on_eligible_user_list.vue';
+import SelfManagedAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/self_managed_add_on_eligible_user_list.vue';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import CodeSuggestionsInfoCard from './code_suggestions_info_card.vue';
@@ -14,6 +15,7 @@ export default {
   name: 'CodeSuggestionsUsage',
   components: {
     SaasAddOnEligibleUserList,
+    SelfManagedAddOnEligibleUserList,
     CodeSuggestionsInfoCard,
     CodeSuggestionsIntro,
     CodeSuggestionsStatisticsCard,
@@ -106,6 +108,7 @@ export default {
           <code-suggestions-info-card />
         </section>
         <saas-add-on-eligible-user-list v-if="isSaaS" :add-on-purchase-id="addOnPurchase.id" />
+        <self-managed-add-on-eligible-user-list v-else :add-on-purchase-id="addOnPurchase.id" />
       </section>
       <code-suggestions-intro v-else />
     </template>

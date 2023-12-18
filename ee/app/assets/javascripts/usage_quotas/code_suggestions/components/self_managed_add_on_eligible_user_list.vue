@@ -1,8 +1,8 @@
 <script>
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import { fetchPolicies } from '~/lib/graphql';
 import { DEFAULT_PER_PAGE } from '~/api';
-import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
+import { fetchPolicies } from '~/lib/graphql';
+import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/self_managed_add_on_eligible_users.query.graphql';
 import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
@@ -12,12 +12,11 @@ import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/a
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 
 export default {
-  name: 'SaasAddOnEligibleUserList',
+  name: 'SelfManagedAddOnEligibleUserList',
   components: {
     ErrorAlert,
     AddOnEligibleUserList,
   },
-  inject: ['fullPath'],
   props: {
     addOnPurchaseId: {
       type: String,
@@ -48,9 +47,9 @@ export default {
       variables() {
         return this.queryVariables;
       },
-      update({ namespace }) {
-        this.pageInfo = namespace?.addOnEligibleUsers?.pageInfo;
-        return namespace?.addOnEligibleUsers?.nodes;
+      update({ selfManagedAddOnEligibleUsers }) {
+        this.pageInfo = selfManagedAddOnEligibleUsers?.pageInfo;
+        return selfManagedAddOnEligibleUsers?.nodes;
       },
       error(error) {
         this.handleAddOnUsersFetchError(error);
@@ -60,7 +59,6 @@ export default {
   computed: {
     queryVariables() {
       return {
-        fullPath: this.fullPath,
         addOnType: ADD_ON_CODE_SUGGESTIONS,
         addOnPurchaseIds: [this.addOnPurchaseId],
         ...this.filterOptions,
