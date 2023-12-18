@@ -1,4 +1,4 @@
-import { GlForm, GlBadge, GlCollapsibleListbox } from '@gitlab/ui';
+import { GlForm, GlBadge, GlCollapsibleListbox, GlLoadingIcon } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status_with_edit.vue';
@@ -39,6 +39,7 @@ describe('WorkItemHealthStatus component', () => {
   const findForm = () => wrapper.findComponent(GlForm);
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findBadge = () => wrapper.findComponent(GlBadge);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   const createComponent = ({
     canUpdate = true,
@@ -202,6 +203,15 @@ describe('WorkItemHealthStatus component', () => {
       expect(findListbox().exists()).toBe(false);
     });
 
+    it('is visible and disabled while updating the value', async () => {
+      await createComponent({ isEditing: true });
+
+      await findListbox().vm.$emit('select', 'onTrack');
+
+      expect(findListbox().exists()).toBe(true);
+      expect(findListbox().props('disabled')).toBe(true);
+    });
+
     it.each`
       selected            | expectedStatus
       ${'empty'}          | ${null}
@@ -277,6 +287,28 @@ describe('WorkItemHealthStatus component', () => {
         label: 'item_health_status',
         property: 'type_Task',
       });
+    });
+  });
+
+  describe('loading icon', () => {
+    it('is not visible when not editing', async () => {
+      await createComponent();
+
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('is not visible when editing but not updating', async () => {
+      await createComponent({ isEditing: true });
+
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('is visible when editing and updating', async () => {
+      await createComponent({ isEditing: true });
+
+      await findListbox().vm.$emit('select', 'onTrack');
+
+      expect(findLoadingIcon().exists()).toBe(true);
     });
   });
 });

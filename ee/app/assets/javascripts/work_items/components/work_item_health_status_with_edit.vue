@@ -127,42 +127,46 @@ export default {
 
 <template>
   <div v-if="hasIssuableHealthStatusFeature">
-    <div class="gl-display-flex gl-align-items-center">
-      <!-- hide header when editing, since we then have a form label. Keep it reachable for screenreader nav  -->
-      <h3 :class="{ 'gl-sr-only': isEditing }" class="gl-mb-0! gl-heading-scale-5">
+    <div
+      v-if="!isEditing && !updateInProgress"
+      class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
+    >
+      <h3 class="gl-mb-0! gl-heading-scale-5">
         {{ $options.HEALTH_STATUS_I18N_HEALTH_STATUS }}
       </h3>
-      <gl-loading-icon v-if="updateInProgress" size="sm" inline class="gl-ml-2 gl-my-0" />
       <gl-button
-        v-if="canUpdate && !isEditing"
+        v-if="canUpdate"
         data-testid="edit-health-status"
         category="tertiary"
         size="small"
-        class="gl-ml-auto gl-mr-2"
+        class="gl-ml-auto"
         :disabled="updateInProgress"
         @click="isEditing = true"
         >{{ __('Edit') }}</gl-button
       >
     </div>
-    <gl-form v-if="isEditing">
-      <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+    <gl-form v-if="isEditing || updateInProgress">
+      <div class="gl-display-flex gl-align-items-center">
+        <h3 class="gl-sr-only gl-mb-0! gl-heading-scale-5">
+          {{ $options.HEALTH_STATUS_I18N_HEALTH_STATUS }}
+        </h3>
         <label :for="$options.inputId" class="gl-mb-0">{{
           $options.HEALTH_STATUS_I18N_HEALTH_STATUS
         }}</label>
+        <gl-loading-icon v-if="updateInProgress" size="sm" inline class="gl-ml-2 gl-my-0" />
         <gl-button
           data-testid="apply-health-status"
           category="tertiary"
           size="small"
-          class="gl-mr-2"
+          class="gl-ml-auto"
           @click="isEditing = false"
           >{{ __('Apply') }}</gl-button
         >
       </div>
-      <div class="gl-pr-2 gl-relative">
+      <div class="gl-relative">
         <gl-collapsible-listbox
           :items="dropdownItems"
-          :disabled="!canUpdate"
-          :loading="updateInProgress"
+          :disabled="!canUpdate || updateInProgress"
           :selected="selectedHealthStatus"
           start-opened
           block
