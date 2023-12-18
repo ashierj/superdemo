@@ -11993,9 +11993,6 @@ msgstr ""
 msgid "CodeSuggestionsSM|Enable Code Suggestions for this instance"
 msgstr ""
 
-msgid "CodeSuggestionsSM|Enable Code Suggestions for this instance %{beta}"
-msgstr ""
-
 msgid "CodeSuggestionsSM|Enable Code Suggestions for users of this instance. %{link_start}What are Code Suggestions?%{link_end}"
 msgstr ""
 
