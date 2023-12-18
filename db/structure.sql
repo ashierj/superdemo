@@ -12282,6 +12282,8 @@ CREATE TABLE application_settings (
     security_txt_content text,
     encrypted_arkose_labs_data_exchange_key bytea,
     encrypted_arkose_labs_data_exchange_key_iv bytea,
+    toggle_security_policy_custom_ci boolean DEFAULT false NOT NULL,
+    lock_toggle_security_policy_custom_ci boolean DEFAULT false NOT NULL,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
@@ -19608,6 +19610,8 @@ CREATE TABLE namespace_settings (
     product_analytics_enabled boolean DEFAULT false NOT NULL,
     allow_merge_without_pipeline boolean DEFAULT false NOT NULL,
     enforce_ssh_certificates boolean DEFAULT false NOT NULL,
+    toggle_security_policy_custom_ci boolean,
+    lock_toggle_security_policy_custom_ci boolean DEFAULT false NOT NULL,
     CONSTRAINT check_0ba93c78c7 CHECK ((char_length(default_branch_name) <= 255)),
     CONSTRAINT namespace_settings_unique_project_download_limit_alertlist_size CHECK ((cardinality(unique_project_download_limit_alertlist) <= 100)),
     CONSTRAINT namespace_settings_unique_project_download_limit_allowlist_size CHECK ((cardinality(unique_project_download_limit_allowlist) <= 100))

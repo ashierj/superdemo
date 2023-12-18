@@ -107,7 +107,19 @@ module Security
       end
 
       def custom_ci_yaml_enabled?
-        custom_ci_yaml_allowed && Feature.enabled?(:compliance_pipeline_in_policies, project)
+        return false if project.group.nil?
+
+        custom_ci_yaml_allowed && compliance_pipeline_in_policies_enabled? && custom_ci_experiment_enabled?
+      end
+
+      def compliance_pipeline_in_policies_enabled?
+        Feature.enabled?(:compliance_pipeline_in_policies, project)
+      end
+
+      def custom_ci_experiment_enabled?
+        return false if project.group.nil?
+
+        project.group.namespace_settings.toggle_security_policy_custom_ci?
       end
     end
   end

@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, feature_category: :security_policy_management do
   describe '#execute' do
-    let_it_be(:project) { create(:project) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
     let_it_be(:user) { create(:user) }
 
     let(:pipeline_scan_config) { subject[:pipeline_scan] }
@@ -199,8 +200,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         CI_CONFIG
       end
 
-      it { is_expected.to eq({ pipeline_scan: { image: "busybox:latest", custom: { stage: "build", script: ["echo \"Defined in security policy\""] } }, on_demand: {}, variables: { custom: { 'CUSTOM_VARIABLE' => 'test' } } }) }
-
       context 'with the compliance_pipeline_in_policies feature disabled' do
         before do
           stub_feature_flags(compliance_pipeline_in_policies: false)
@@ -209,10 +208,20 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         it { is_expected.to eq({ pipeline_scan: {}, on_demand: {}, variables: {} }) }
       end
 
-      context 'when custom yaml is not allowed from configuration' do
-        let(:custom_ci_yaml_allowed) { false }
+      it { is_expected.to eq({ pipeline_scan: {}, on_demand: {}, variables: {} }) }
 
-        it { is_expected.to eq({ pipeline_scan: {}, on_demand: {}, variables: {} }) }
+      context 'when toggle_security_policy_custom_ci is enabled for the group' do
+        before_all do
+          group.namespace_settings.update!(toggle_security_policy_custom_ci: true)
+        end
+
+        it { is_expected.to eq({ pipeline_scan: { image: "busybox:latest", custom: { stage: "build", script: ["echo \"Defined in security policy\""] } }, on_demand: {}, variables: { custom: { 'CUSTOM_VARIABLE' => 'test' } } }) }
+
+        context 'when custom yaml is not allowed from configuration' do
+          let(:custom_ci_yaml_allowed) { false }
+
+          it { is_expected.to eq({ pipeline_scan: {}, on_demand: {}, variables: {} }) }
+        end
       end
     end
   end
