@@ -24,7 +24,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common, feature_category: :vulnera
 
       describe 'schema validation' do
         let(:validator_class) { Gitlab::Ci::Parsers::Security::Validators::SchemaValidator }
-        let(:parser) { described_class.new('{}', report, signatures_enabled: signatures_enabled, validate: validate) }
+        let(:parser) { described_class.new(+'{}', report, signatures_enabled: signatures_enabled, validate: validate) }
 
         subject(:parse_report) { parser.parse! }
 
