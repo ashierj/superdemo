@@ -10297,9 +10297,6 @@ msgstr ""
 msgid "Choose a file"
 msgstr ""
 
-msgid "Choose a group"
-msgstr ""
-
 msgid "Choose a template"
 msgstr ""
 

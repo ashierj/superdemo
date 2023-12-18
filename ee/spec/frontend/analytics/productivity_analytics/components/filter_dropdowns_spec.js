@@ -4,7 +4,6 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import FilterDropdowns from 'ee/analytics/productivity_analytics/components/filter_dropdowns.vue';
 import { getStoreConfig } from 'ee/analytics/productivity_analytics/store';
-import GroupsDropdownFilter from 'ee/analytics/shared/components/groups_dropdown_filter.vue';
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
 import resetStore from '../helpers';
 
@@ -15,7 +14,6 @@ describe('FilterDropdowns component', () => {
   let mockStore;
 
   const filtersActionSpies = {
-    setGroupNamespace: jest.fn(),
     setProjectPath: jest.fn(),
   };
 
@@ -53,7 +51,6 @@ describe('FilterDropdowns component', () => {
     });
   };
 
-  const findGroupsDropdownFilter = () => wrapper.findComponent(GroupsDropdownFilter);
   const findProjectsDropdownFilter = () => wrapper.findComponent(ProjectsDropdownFilter);
 
   afterEach(() => {
@@ -63,11 +60,6 @@ describe('FilterDropdowns component', () => {
   });
 
   describe('template', () => {
-    it('renders the groups dropdown', () => {
-      createWrapper();
-      expect(findGroupsDropdownFilter().exists()).toBe(true);
-    });
-
     describe('without a group selected', () => {
       beforeEach(() => {
         createWrapper({ group: { id: null } });
@@ -90,26 +82,6 @@ describe('FilterDropdowns component', () => {
   });
 
   describe('events', () => {
-    describe('when group is selected', () => {
-      beforeEach(() => {
-        createWrapper({ group: { id: null } });
-        findGroupsDropdownFilter().vm.$emit('selected', { id: groupId, full_path: groupNamespace });
-      });
-
-      it('invokes setGroupNamespace action and renders the projects dropdown', () => {
-        const { calls } = filtersActionSpies.setGroupNamespace.mock;
-        expect(calls[calls.length - 1][1]).toBe(groupNamespace);
-        expect(findProjectsDropdownFilter().exists()).toBe(true);
-      });
-
-      it('emits the "groupSelected" event', () => {
-        expect(wrapper.emitted().groupSelected[0][0]).toEqual({
-          groupNamespace,
-          groupId,
-        });
-      });
-    });
-
     describe('with group selected', () => {
       beforeEach(() => {
         createWrapper({ group: { id: groupId } });
