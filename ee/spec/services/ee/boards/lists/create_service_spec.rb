@@ -29,6 +29,20 @@ RSpec.describe Boards::Lists::CreateService, feature_category: :team_planning do
         expect(response.success?).to eq(true)
         expect(response.payload[:list].list_type).to eq('assignee')
       end
+
+      it 'allows invited group members as assignee list' do
+        invited_group = create(:group)
+        invited_group_user = create(:user).tap { |u| invited_group.add_guest(u) }
+
+        create(:project_group_link, group: invited_group, project: project)
+
+        service = described_class.new(project, user, 'assignee_id' => invited_group_user.id)
+        response = service.execute(board)
+
+        expect(response.success?).to eq(true)
+        expect(response.payload[:list].list_type).to eq('assignee')
+        expect(response.payload[:list].user_id).to eq(invited_group_user.id)
+      end
     end
 
     context 'when milestone_id param is sent' do

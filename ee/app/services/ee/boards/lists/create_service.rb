@@ -54,7 +54,7 @@ module EE
           strong_memoize(:target) do
             case type
             when :assignee
-              find_user(board)
+              ::User.find_by_id(params['assignee_id'])
             when :milestone
               find_milestone(board)
             when :iteration
@@ -86,22 +86,8 @@ module EE
           ::IterationsFinder.new(current_user, parent_params).find_by(id: params['iteration_id']) # rubocop: disable CodeReuse/ActiveRecord
         end
 
-        # rubocop: disable CodeReuse/ActiveRecord
-        def find_user(board)
-          allowed_user_id = user_finder(board).execute
-            .where(user_id: params['assignee_id'])
-            .pick(:user_id)
-
-          ::User.find_by(id: allowed_user_id)
-        end
-        # rubocop: enable CodeReuse/ActiveRecord
-
         def milestone_finder(board)
           @milestone_finder ||= ::Boards::MilestonesFinder.new(board, current_user)
-        end
-
-        def user_finder(board)
-          @user_finder ||= ::Boards::UsersFinder.new(board, current_user)
         end
 
         def wip_limits_available?

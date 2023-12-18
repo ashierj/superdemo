@@ -7,8 +7,7 @@ RSpec.shared_examples 'assignee board list' do
 
   context 'when assignee_id is sent' do
     it 'returns 400 if user is not found' do
-      other_user = create(:user)
-      post api(url, user), params: { assignee_id: other_user.id }
+      post api(url, user), params: { assignee_id: non_existing_record_id }
 
       expect(response).to have_gitlab_http_status(:bad_request)
       expect(json_response.dig('message', 'error')).to eq('Assignee not found')
