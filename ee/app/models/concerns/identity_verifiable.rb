@@ -108,6 +108,11 @@ module IdentityVerifiable
   end
 
   def exempt_from_identity_verification?
+    if Feature.enabled?(:exempt_paid_namespace_members_and_enterprise_users_from_identity_verification)
+      return true if belongs_to_paid_namespace?(exclude_trials: true)
+      return true if enterprise_user?
+    end
+
     identity_verification_exemption_attribute.present?
   end
 
