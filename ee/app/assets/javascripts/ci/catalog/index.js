@@ -4,7 +4,7 @@ import VueApollo from 'vue-apollo';
 import { s__ } from '~/locale';
 import createDefaultClient from '~/lib/graphql';
 import { createRouter } from '~/ci/catalog/router';
-import { cacheConfig, resolvers } from '~/ci/catalog/graphql/settings';
+import { cacheConfig } from '~/ci/catalog/graphql/settings';
 import CiNamespaceCatalogApp from './ci_namespace_catalog_app.vue';
 import CiResourcesPage from './components/pages/ci_resources_page.vue';
 
@@ -21,7 +21,7 @@ export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
   Vue.use(VueApollo);
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(resolvers, cacheConfig),
+    defaultClient: createDefaultClient({}, cacheConfig),
   });
 
   return new Vue({
