@@ -4,7 +4,7 @@ import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import Cookies from '~/lib/utils/cookies';
-import CircularProgressBar from 'ee/vue_shared/components/circular_progress_bar.vue';
+import CircularProgressBar from 'ee/vue_shared/components/circular_progress_bar/circular_progress_bar.vue';
 import LearnGitlab from 'ee/pages/projects/learn_gitlab/components/learn_gitlab.vue';
 import UltimateTrialBenefitModal from 'ee/pages/projects/learn_gitlab/components/ultimate_trial_benefit_modal.vue';
 import eventHub from '~/invite_members/event_hub';
