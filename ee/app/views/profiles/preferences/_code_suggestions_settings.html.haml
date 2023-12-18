@@ -1,3 +1,4 @@
+- return if ::Feature.enabled?(:code_suggestions_used_by_default, @user)
 - return unless @user.namespace.ai_assist_ui_enabled?
 
 - docs_link_url = help_page_url('user/project/repository/code_suggestions/index', anchor: 'start-using-code-suggestions')

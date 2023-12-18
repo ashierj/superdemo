@@ -67,6 +67,7 @@ module EE
 
       condition(:code_suggestions_enabled_by_user) do
         next true unless ::Gitlab.org_or_com?
+        next true if ::Feature.enabled?(:code_suggestions_used_by_default, @user)
 
         @user&.code_suggestions_enabled?
       end

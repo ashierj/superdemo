@@ -565,19 +565,21 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     let_it_be_with_reload(:second_group) { create(:group) }
 
     context 'when on .org or .com' do
-      where(:licensed, :user_code_suggestions_setting, :group_1_cs_setting, :group_2_cs_setting, :cs_matcher) do
-        true  | false | false | false | be_disallowed(:access_code_suggestions)
-        true  | true  | false | false | be_disallowed(:access_code_suggestions)
-        true  | false | false | true  | be_disallowed(:access_code_suggestions)
-        true  | true  | false | true  | be_allowed(:access_code_suggestions)
-        true  | false | true  | true  | be_disallowed(:access_code_suggestions)
-        true  | true  | true  | true  | be_allowed(:access_code_suggestions)
-        false | false | false | false | be_disallowed(:access_code_suggestions)
-        false | true  | false | false | be_disallowed(:access_code_suggestions)
-        false | false | false | true  | be_disallowed(:access_code_suggestions)
-        false | true  | false | true  | be_allowed(:access_code_suggestions)
-        false | false | true  | true  | be_disallowed(:access_code_suggestions)
-        false | true  | true  | true  | be_allowed(:access_code_suggestions)
+      where(:licensed, :user_code_suggestions_setting, :flag_enabled,
+        :group_1_cs_setting, :group_2_cs_setting, :cs_matcher) do
+        true  | false | false | false | false | be_disallowed(:access_code_suggestions)
+        true  | true  | false | false | false | be_disallowed(:access_code_suggestions)
+        true  | false | false | false | true  | be_disallowed(:access_code_suggestions)
+        true  | true  | false | false | true  | be_allowed(:access_code_suggestions)
+        true  | false | false | true  | true  | be_disallowed(:access_code_suggestions)
+        true  | true  | false | true  | true  | be_allowed(:access_code_suggestions)
+        true  | false | true  | true  | true  | be_allowed(:access_code_suggestions)
+        false | false | false | false | false | be_disallowed(:access_code_suggestions)
+        false | true  | false | false | false | be_disallowed(:access_code_suggestions)
+        false | false | false | false | true  | be_disallowed(:access_code_suggestions)
+        false | true  | false | false | true  | be_allowed(:access_code_suggestions)
+        false | false | false | true  | true  | be_disallowed(:access_code_suggestions)
+        false | true  | false | true  | true  | be_allowed(:access_code_suggestions)
       end
 
       with_them do
@@ -592,6 +594,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           second_group.add_owner(current_user)
 
           stub_licensed_features(code_suggestions: licensed)
+          stub_feature_flags(code_suggestions_used_by_default: flag_enabled)
         end
 
         it { is_expected.to cs_matcher }

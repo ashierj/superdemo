@@ -12,7 +12,7 @@ module EE
           # https://gitlab.com/gitlab-org/gitlab/-/issues/431384
           def update_user_namespace_settings(attrs)
             # code_suggestions is on the user's namespace settings
-            unless attrs[:code_suggestions].nil?
+            if attrs[:code_suggestions].present? && ::Feature.disabled?(:code_suggestions_used_by_default, current_user)
               ::NamespaceSettings::UpdateService.new(
                 current_user,
                 current_user.namespace,
@@ -20,11 +20,9 @@ module EE
               ).execute
 
               return false unless current_user.namespace.namespace_settings.save!
-
-              attrs.without(:code_suggestions)
             end
 
-            attrs
+            attrs.without(:code_suggestions)
           end
         end
       end

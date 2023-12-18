@@ -7,7 +7,9 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          expose :code_suggestions
+          expose :code_suggestions, if: ->(_preferences, options) do
+            ::Feature.disabled?(:code_suggestions_used_by_default, options[:current_user])
+          end
         end
       end
     end

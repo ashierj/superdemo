@@ -596,15 +596,24 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     let(:path) { '/user/preferences' }
 
     context "when authenticated" do
-      it "gets user preferences" do
-        user.namespace.namespace_settings.code_suggestions = true
-        user.save!
-
+      it 'does not return code_suggestions' do
         get api(path, user)
 
         expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response["code_suggestions"]).to be_nil
+      end
 
-        expect(json_response["code_suggestions"]).to eq(true)
+      context 'when code_suggestions_used_by_default is disabled' do
+        before do
+          stub_feature_flags(code_suggestions_used_by_default: false)
+        end
+
+        it "gets user preferences" do
+          get api(path, user)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response["code_suggestions"]).not_to be_nil
+        end
       end
     end
   end
@@ -613,7 +622,7 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     let(:path) { '/user/preferences' }
 
     context "when authenticated" do
-      it "updates user preferences" do
+      it "updates user preferences but ignores code_suggestions" do
         user.user_preference.view_diffs_file_by_file = false
         user.user_preference.show_whitespace_in_diffs = true
         user.namespace.namespace_settings.code_suggestions = true
@@ -621,36 +630,40 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
 
         put api(path, user), params: {
           view_diffs_file_by_file: true,
-          show_whitespace_in_diffs: false
+          show_whitespace_in_diffs: false,
+          code_suggestions: false
         }
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response["view_diffs_file_by_file"]).to be_truthy
         expect(json_response["show_whitespace_in_diffs"]).to be_falsey
 
-        # test that it doesn't alter unrelated preferences
-        expect(json_response["code_suggestions"]).to be_truthy
-
         user.reload
 
         expect(user.user_preference.view_diffs_file_by_file).to be_truthy
         expect(user.user_preference.show_whitespace_in_diffs).to be_falsey
+        expect(user.namespace.namespace_settings.code_suggestions).to be_truthy
       end
 
-      it "updates user namespace preferences" do
-        user.namespace.namespace_settings.code_suggestions = false
-        user.namespace.namespace_settings.save!
+      context 'when code_suggestions_used_by_default is disabled' do
+        before do
+          stub_feature_flags(code_suggestions_used_by_default: false)
+        end
 
-        put api(path, user), params: {
-          code_suggestions: true
-        }
+        it "updates user namespace preferences" do
+          user.namespace.namespace_settings.update!(code_suggestions: false)
 
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response["code_suggestions"]).to be_truthy
+          put api(path, user), params: {
+            code_suggestions: true
+          }
 
-        user.reload
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response["code_suggestions"]).to be_truthy
 
-        expect(user.namespace.namespace_settings.code_suggestions).to be_truthy
+          user.reload
+
+          expect(user.namespace.namespace_settings.code_suggestions).to be_truthy
+        end
       end
     end
   end
