@@ -25,6 +25,16 @@ export const mockEscalationPoliciesResponse = {
   },
 };
 
+export const noParentUpdatedResponse = {
+  data: {
+    workItem: {
+      id: 'gid://gitlab/Issue/1',
+      widgets: [{}],
+      __typename: 'Project',
+    },
+  },
+};
+
 export const mockCurrentEscalationPolicyResponse = {
   data: {
     workspace: {

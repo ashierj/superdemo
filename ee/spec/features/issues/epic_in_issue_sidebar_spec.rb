@@ -12,6 +12,8 @@ RSpec.describe 'Epic in issue sidebar', :js, feature_category: :team_planning do
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:epic_issue) { create(:epic_issue, epic: epic1, issue: issue) }
 
+  let_it_be(:work_item_epic) { create(:work_item, :epic, namespace: group, title: 'Work item Epic') }
+
   let_it_be(:subgroup) { create(:group, :public, parent: group) }
   let_it_be(:subproject) { create(:project, :public, group: subgroup) }
   let_it_be(:subepic) { create(:epic, group: subgroup, title: 'Subgroup epic') }
@@ -22,6 +24,10 @@ RSpec.describe 'Epic in issue sidebar', :js, feature_category: :team_planning do
   shared_examples 'epic in issue sidebar' do
     before do
       group.add_owner(user)
+
+      # disable work item search until work items filters are available
+      stub_feature_flags(display_work_item_epic_issue_sidebar: false)
+
       sign_in user
     end
 
@@ -144,6 +150,38 @@ RSpec.describe 'Epic in issue sidebar', :js, feature_category: :team_planning do
 
           expect_no_epic
         end
+      end
+    end
+  end
+
+  context 'when work item epics available' do
+    before do
+      group.add_owner(user)
+      stub_licensed_features(epics: true)
+      stub_feature_flags(display_work_item_epic_issue_sidebar: true)
+
+      sign_in(user)
+
+      visit project_issue_path(project, issue)
+    end
+
+    it 'shows work item epic in select dropdown' do
+      page.within(sidebar_epic_selector) do
+        click_edit
+
+        aggregate_failures do
+          expect(page).to have_content work_item_epic.title
+        end
+      end
+    end
+
+    it 'select a work item epic from the dropdown' do
+      page.within(sidebar_epic_selector) do
+        click_edit
+
+        click_button work_item_epic.title
+
+        expect(page).to have_link(work_item_epic.title)
       end
     end
   end

@@ -17,6 +17,9 @@ import issueEscalationPolicyQuery from './issue_escalation_policy.query.graphql'
 import issueEscalationPolicyMutation from './issue_escalation_policy.mutation.graphql';
 import projectEscalationPoliciesQuery from './project_escalation_policies.query.graphql';
 import issuableEpicSubscription from './issuable_epic.subscription.graphql';
+import workItemParent from './project_issue_parent.query.graphql';
+import updateWorkItemParent from './project_issue_update_parent.mutation.graphql';
+import workItemParentSubscription from './work_item_parent.subscription.graphql';
 
 export const issuableIterationQueries = {
   [TYPE_ISSUE]: {
@@ -57,6 +60,13 @@ const escalationPoliciesQueries = {
   },
 };
 
+export const parentQueries = {
+  [TYPE_ISSUE]: {
+    query: workItemParent,
+    mutation: updateWorkItemParent,
+  },
+};
+
 export const issuableAttributesQueries = {
   ...issuableAttributesQueriesFoss,
   [IssuableAttributeType.Iteration]: {
@@ -71,6 +81,10 @@ export const issuableAttributesQueries = {
   [IssuableAttributeType.EscalationPolicy]: {
     current: issuableEscalationPolicyQueries,
     list: escalationPoliciesQueries,
+  },
+  [IssuableAttributeType.Parent]: {
+    current: parentQueries,
+    subscription: workItemParentSubscription,
   },
 };
 

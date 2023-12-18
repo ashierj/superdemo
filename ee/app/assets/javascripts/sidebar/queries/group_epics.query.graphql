@@ -6,6 +6,7 @@ query issueEpics(
   $state: EpicState
   $in: [IssuableSearchableField!]
   $iidStartsWith: String
+  $includeWorkItems: Boolean!
 ) {
   workspace: group(fullPath: $fullPath) {
     id
@@ -20,6 +21,18 @@ query issueEpics(
       nodes {
         ...EpicFragment
         state
+      }
+    }
+    workItems @include(if: $includeWorkItems) {
+      nodes {
+        id
+        title
+        webUrl
+        state
+        workItemType {
+          id
+          name
+        }
       }
     }
   }

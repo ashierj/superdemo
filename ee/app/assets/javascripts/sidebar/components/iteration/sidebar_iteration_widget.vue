@@ -47,6 +47,11 @@ export default {
       required: true,
       type: String,
     },
+    issueId: {
+      required: false,
+      type: String,
+      default: '',
+    },
   },
   methods: {
     getCadenceTitle(currentIteration) {
@@ -65,6 +70,7 @@ export default {
     :issuable-attribute="$options.issuableAttribute"
     :issuable-type="issuableType"
     :workspace-path="workspacePath"
+    :issue-id="issueId"
   >
     <template #value="{ attributeUrl, currentAttribute }">
       <p class="gl-font-weight-bold gl-line-height-20 gl-m-0">

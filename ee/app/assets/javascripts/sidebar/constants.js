@@ -111,6 +111,7 @@ export const IssuableAttributeType = {
   Iteration: 'iteration',
   Epic: 'epic',
   EscalationPolicy: 'escalation policy', // eslint-disable-line @gitlab/require-i18n-strings
+  Parent: 'parent',
 };
 
 export const LocalizedIssuableAttributeType = {

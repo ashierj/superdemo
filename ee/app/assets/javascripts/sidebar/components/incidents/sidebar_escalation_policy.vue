@@ -29,6 +29,11 @@ export default {
       required: false,
       default: true,
     },
+    issueId: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   computed: {
     policiesPath() {
@@ -49,6 +54,7 @@ export default {
     :workspace-path="projectPath"
     :iid="iid"
     :issuable-type="issuableType"
+    :issue-id="issueId"
     :issuable-attribute="issuableAttribute"
   >
     <template #value-collapsed="{ currentAttribute }">
