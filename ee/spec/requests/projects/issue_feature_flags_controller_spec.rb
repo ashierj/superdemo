@@ -92,5 +92,16 @@ RSpec.describe Projects::IssueFeatureFlagsController, feature_category: :feature
         expect(response).to have_gitlab_http_status(:not_found)
       end
     end
+
+    context 'when feature flag related issue has been deleted' do
+      it 'returns not found' do
+        _, issue, _ = setup
+        sign_in(developer)
+
+        get_request(project, issue.delete)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
   end
 end

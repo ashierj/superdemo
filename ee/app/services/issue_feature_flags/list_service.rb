@@ -7,7 +7,7 @@ module IssueFeatureFlags
     private
 
     def child_issuables
-      issuable.related_feature_flags(current_user, preload: preload_for_collection)
+      issuable&.related_feature_flags(current_user, preload: preload_for_collection)
     end
 
     override :serializer
