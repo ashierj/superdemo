@@ -20,7 +20,7 @@ module Projects
     end
 
     def issue
-      project.issues.find_by_iid(params[:issue_id])
+      project.issues.find_by_iid!(params[:issue_id])
     end
   end
 end
