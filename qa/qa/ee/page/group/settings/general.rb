@@ -48,6 +48,10 @@ module QA
                 view 'ee/app/views/groups/settings/_experimental_settings.haml' do
                   element 'use-experimental-features-checkbox'
                 end
+
+                view 'ee/app/views/groups/settings/_product_analytics_settings.html.haml' do
+                  element 'use-product-analytics-checkbox'
+                end
               end
             end
 
@@ -99,6 +103,13 @@ module QA
             def set_membership_lock_disabled
               expand_content(:permission_lfs_2fa_content)
               uncheck_element(:membership_lock_checkbox, true)
+              click_element(:save_permissions_changes_button)
+            end
+
+            def set_use_product_analytics_enabled
+              expand_content(:permission_lfs_2fa_content)
+              check_element('use-experimental-features-checkbox', true)
+              check_element('use-product-analytics-checkbox', true)
               click_element(:save_permissions_changes_button)
             end
 

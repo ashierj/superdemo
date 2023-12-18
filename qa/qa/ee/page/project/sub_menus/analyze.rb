@@ -31,6 +31,10 @@ module QA
             def go_to_merge_request_analytics
               open_analyze_submenu('Merge request analytics')
             end
+
+            def go_to_analytics_dashboards
+              open_analyze_submenu('Analytics dashboards')
+            end
           end
         end
       end
