@@ -15,6 +15,8 @@ module Sbom
       end
 
       def execute
+        return if has_failed_sbom_jobs?
+
         not_present_occurrences.each_batch(of: DELETE_BATCH_SIZE) { |occurrences, _| occurrences.delete_all }
       end
 
@@ -23,6 +25,16 @@ module Sbom
       attr_reader :pipeline, :ingested_occurrence_ids
 
       delegate :project, to: :pipeline, private: true
+
+      def has_failed_sbom_jobs?
+        # rubocop:disable CodeReuse/ActiveRecord -- This logic is specific to this service
+        pipeline.builds.preload(:metadata).failed.find_each(batch_size: 100).any? { |b| sbom_build?(b) }
+        # rubocop:enable CodeReuse/ActiveRecord
+      end
+
+      def sbom_build?(build)
+        build.metadata.config_options.dig(:artifacts, :reports, :cyclonedx).present?
+      end
 
       def not_present_occurrences
         project.sbom_occurrences.id_not_in(ingested_occurrence_ids)
