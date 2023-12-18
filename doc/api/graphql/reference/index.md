@@ -20593,7 +20593,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="groupworkitemtypestaskable"></a>`taskable` | [`Boolean`](#boolean) | If `true`, only taskable work item types will be returned. Argument is experimental and can be removed in the future without notice. |
+| <a id="groupworkitemtypesname"></a>`name` | [`IssueType`](#issuetype) | Filter work item types by the given name. |
 
 ##### `Group.workItems`
 
@@ -26023,7 +26023,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectworkitemtypestaskable"></a>`taskable` | [`Boolean`](#boolean) | If `true`, only taskable work item types will be returned. Argument is experimental and can be removed in the future without notice. |
+| <a id="projectworkitemtypesname"></a>`name` | [`IssueType`](#issuetype) | Filter work item types by the given name. |
 
 ##### `Project.workItems`
 
