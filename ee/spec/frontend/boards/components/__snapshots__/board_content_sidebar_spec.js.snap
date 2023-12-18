@@ -34,6 +34,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
       iid="27"
       issuableattribute="milestone"
       issuabletype="issue"
+      issueid="gid://gitlab/Issue/436"
       workspacepath="gitlab-org/test-subgroup/gitlab-test"
     />
   </div>
@@ -517,6 +518,7 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     iid="27"
     issuableattribute="epic"
     issuabletype="issue"
+    issueid="gid://gitlab/Issue/436"
     workspacepath="gitlab-org/test-subgroup/gitlab-test"
   />
   <div>
@@ -526,6 +528,7 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
       iid="27"
       issuableattribute="milestone"
       issuabletype="issue"
+      issueid="gid://gitlab/Issue/436"
       workspacepath="gitlab-org/test-subgroup/gitlab-test"
     />
     <sidebariterationwidget-stub
@@ -534,6 +537,7 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
       data-testid="iteration-edit"
       iid="27"
       issuable-type="issue"
+      issue-id="gid://gitlab/Issue/436"
       workspace-path="gitlab-org/test-subgroup/gitlab-test"
     />
   </div>

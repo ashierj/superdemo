@@ -7,6 +7,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import SidebarEscalationPolicy from 'ee/sidebar/components/incidents/sidebar_escalation_policy.vue';
 import policiesQuery from 'ee/sidebar/queries/project_escalation_policies.query.graphql';
 import currentPolicyQuery from 'ee/sidebar/queries/issue_escalation_policy.query.graphql';
+import workItemUpdateParentSubscription from 'ee/sidebar/queries/work_item_parent.subscription.graphql';
 import { clickEdit } from '../../helpers';
 import {
   mockEscalationPolicy1,
@@ -14,6 +15,7 @@ import {
   mockEscalationPoliciesResponse,
   mockCurrentEscalationPolicyResponse,
   mockNullEscalationPolicyResponse,
+  noParentUpdatedResponse,
 } from './mock_data';
 
 Vue.use(VueApollo);
@@ -29,6 +31,7 @@ describe('Sidebar Escalation Policy Widget', () => {
     mockApollo = createMockApollo([
       [currentPolicyQuery, jest.fn().mockResolvedValue(escalationPolicyResponse)],
       [policiesQuery, jest.fn().mockResolvedValue(mockEscalationPoliciesResponse)],
+      [workItemUpdateParentSubscription, jest.fn().mockResolvedValue(noParentUpdatedResponse)],
     ]);
 
     wrapper = extendedWrapper(
@@ -47,6 +50,7 @@ describe('Sidebar Escalation Policy Widget', () => {
       projectPath: 'gitlab-test/test',
       iid: '1',
       escalationsPossible: true,
+      issueId: 'gid://gitlab/Issue/1',
     };
 
     provide = {

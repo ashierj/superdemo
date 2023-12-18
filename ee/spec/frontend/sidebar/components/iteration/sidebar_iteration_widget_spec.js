@@ -6,6 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TYPE_ISSUE } from '~/issues/constants';
+import workItemUpdateParentSubscription from 'ee/sidebar/queries/work_item_parent.subscription.graphql';
 import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
 import projectIssueIterationQuery from 'ee/sidebar/queries/project_issue_iteration.query.graphql';
 import { IssuableAttributeType } from 'ee/sidebar/constants';
@@ -18,6 +19,7 @@ import {
   mockIteration2,
   mockCurrentIterationResponse1,
   mockCurrentIterationResponse2,
+  noParentUpdatedResponse,
 } from '../../mock_data';
 import { clickEdit } from '../../helpers';
 
@@ -40,6 +42,7 @@ describe('SidebarIterationWidget', () => {
     mockApollo = createMockApollo([
       [groupIterationsQuery, jest.fn().mockResolvedValue(mockGroupIterationsResponse)],
       [projectIssueIterationQuery, jest.fn().mockResolvedValue(currentIterationResponse)],
+      [workItemUpdateParentSubscription, jest.fn().mockResolvedValue(noParentUpdatedResponse)],
     ]);
 
     wrapper = extendedWrapper(
@@ -56,6 +59,7 @@ describe('SidebarIterationWidget', () => {
           iid: mockIssue.iid,
           issuableType: TYPE_ISSUE,
           issuableAttribute: IssuableAttributeType.Iteration,
+          issueId: 'gid://gitlab/Issue/1',
         },
       }),
     );

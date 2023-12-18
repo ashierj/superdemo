@@ -1,12 +1,19 @@
 <script>
 import { __ } from '~/locale';
 import SidebarDropdownWidget from '~/sidebar/components/sidebar_dropdown_widget.vue';
-import { TYPE_ISSUE, TYPE_MERGE_REQUEST } from '~/issues/constants';
+import { TYPE_ISSUE, TYPE_MERGE_REQUEST, TYPE_EPIC } from '~/issues/constants';
+import { WORK_ITEM_TYPE_VALUE_EPIC } from '~/work_items/constants';
+import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_WORK_ITEM, TYPENAME_ISSUE } from '~/graphql_shared/constants';
+import { createAlert } from '~/alert';
 import {
+  dropdowni18nText,
   IssuableAttributeType,
   IssuableAttributeState,
+  LocalizedIssuableAttributeType,
+  IssuableAttributeTypeKeyMap,
   SIDEBAR_ESCALATION_POLICY_TITLE,
-} from '../constants';
+} from 'ee_else_ce/sidebar/constants';
 import { issuableAttributesQueries } from '../queries/constants';
 
 const widgetTitleText = {
@@ -63,6 +70,207 @@ export default {
       required: false,
       default: undefined,
     },
+    issueId: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    showWorkItemEpics: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  apollo: {
+    issuable: {
+      query() {
+        const { current } = this.issuableAttributeQuery;
+        const { query } = current[this.issuableType];
+
+        return query;
+      },
+      variables() {
+        return {
+          fullPath: this.workspacePath,
+          iid: this.iid,
+        };
+      },
+      update(data) {
+        return data.workspace?.issuable || {};
+      },
+      result({ data }) {
+        this.hasWorkItemParent = data?.workspace?.issuable?.hasParent && this.showWorkItemEpics;
+        // Fetch work item epic when hasParent is true
+        if (this.hasWorkItemParent) {
+          this.fetchWorkItemParent();
+        }
+      },
+      error(error) {
+        createAlert({
+          message: this.i18n.currentFetchError,
+          captureError: true,
+          error,
+        });
+      },
+      subscribeToMore: {
+        document() {
+          return issuableAttributesQueries[IssuableAttributeType.Parent].subscription;
+        },
+        variables() {
+          return {
+            workItemId: convertToGraphQLId(TYPENAME_WORK_ITEM, getIdFromGraphQLId(this.issuableId)),
+          };
+        },
+        skip() {
+          return this.skipRealTimeWorkItemParentUpdates;
+        },
+        updateQuery(_, { subscriptionData }) {
+          if (subscriptionData.data?.workItem) {
+            this.setParentData(subscriptionData.data.workItem);
+          }
+        },
+      },
+    },
+  },
+  data() {
+    return {
+      hasWorkItemParent: false,
+    };
+  },
+  computed: {
+    issuableId() {
+      return this.issuableType === TYPE_ISSUE
+        ? convertToGraphQLId(TYPENAME_ISSUE, this.issueId)
+        : this.issueId;
+    },
+    issuableAttributeQuery() {
+      return issuableAttributesQueries[this.issuableAttribute];
+    },
+    skipRealTimeWorkItemParentUpdates() {
+      return this.isEpic && !this.showWorkItemEpics && !this.issuableId;
+    },
+    i18n() {
+      const localizedAttribute =
+        LocalizedIssuableAttributeType[IssuableAttributeTypeKeyMap[this.issuableAttribute]];
+      return dropdowni18nText(localizedAttribute, this.issuableType);
+    },
+    isEpic() {
+      return this.issuableAttribute === TYPE_EPIC;
+    },
+  },
+  methods: {
+    async updateAttribute({ id, workItemType }) {
+      this.updating = true;
+      let response;
+      try {
+        if (this.hasWorkItemParent) {
+          // setting null if there is parent already assigned
+          // to avoid parent already assigned error
+          await this.updateWorkItem({
+            input: {
+              id: this.issuableId,
+              hierarchyWidget: { parentId: null },
+            },
+          });
+        } else if (this.isEpic && this.showWorkItemEpics && !this.issuable?.hasParent) {
+          // Added checks to avoid getting it fired unnecessarily for other widgets
+
+          // setting null if there is epic already assigned
+          // to avoid epic already assigned error
+          await this.updateIssuable({
+            fullPath: this.workspacePath,
+            attributeId: null,
+            iid: this.iid,
+          });
+        }
+
+        // Set actual data for work item epic or legacy epic
+        if (workItemType?.name === WORK_ITEM_TYPE_VALUE_EPIC) {
+          response = await this.updateWorkItem({
+            input: {
+              id: this.issuableId,
+              hierarchyWidget: { parentId: id },
+            },
+          });
+        } else {
+          response = await this.updateIssuable({
+            fullPath: this.workspacePath,
+            attributeId: id,
+            iid: this.iid,
+          });
+        }
+
+        if (response.data.issuableSetAttribute?.errors?.length) {
+          createAlert({
+            message: response.data.issuableSetAttribute.errors[0],
+            captureError: true,
+            error: response.data.issuableSetAttribute.errors[0],
+          });
+        } else {
+          this.hasWorkItemParent =
+            workItemType?.name === WORK_ITEM_TYPE_VALUE_EPIC ||
+            response.data.issuableSetAttribute?.issuable?.hasParent;
+          this.$emit('attribute-updated', response.data);
+        }
+      } catch (error) {
+        createAlert({ message: this.i18n.updateError, captureError: true, error });
+      } finally {
+        this.updating = false;
+      }
+    },
+    updateWorkItem(variables) {
+      const { current } = issuableAttributesQueries[IssuableAttributeType.Parent];
+      const { mutation } = current[this.issuableType];
+
+      return this.$apollo.mutate({
+        mutation,
+        variables,
+      });
+    },
+    updateIssuable(variables) {
+      const { current } = this.issuableAttributeQuery;
+      const { mutation } = current[this.issuableType];
+
+      return this.$apollo.mutate({
+        mutation,
+        variables,
+      });
+    },
+    fetchWorkItemParent() {
+      const { current } = issuableAttributesQueries[IssuableAttributeType.Parent];
+      const { query } = current[this.issuableType];
+      this.$apollo
+        .query({
+          query,
+          variables: {
+            id: this.issuableId,
+          },
+        })
+        .then(({ data: { workItem } }) => {
+          this.setParentData(workItem);
+        })
+        .catch((error) => {
+          createAlert({
+            message: this.i18n.currentFetchError,
+            captureError: true,
+            error,
+          });
+        });
+    },
+    setParentData(workItem) {
+      const parent = workItem?.widgets?.find((widget) => widget.type === 'HIERARCHY')?.parent;
+
+      this.issuable = {
+        ...this.issuable,
+        attribute: parent
+          ? {
+              id: parent.id,
+              title: parent.title,
+              webUrl: parent.webUrl,
+            }
+          : null,
+      };
+    },
   },
 };
 </script>
@@ -74,7 +282,11 @@ export default {
     :issuable-attribute="issuableAttribute"
     :iid="iid"
     :workspace-path="workspacePath"
+    :show-work-item-epics="showWorkItemEpics"
+    :is-epic-attribute="isEpic"
+    :issuable-parent="issuable"
     v-bind="$attrs"
+    @updateAttribute="updateAttribute"
     v-on="$listeners"
   >
     <template v-for="(_, name) in $scopedSlots" #[name]="slotData">

@@ -1,13 +1,14 @@
 export const mockGroupPath = 'gitlab-org';
 export const mockProjectPath = `${mockGroupPath}/some-project`;
 
+export const mockIssueId = 'gid://gitlab/Issue/1';
+
 export const mockIssue = {
   projectPath: mockProjectPath,
   iid: '1',
   groupPath: mockGroupPath,
+  id: mockIssueId,
 };
-
-export const mockIssueId = 'gid://gitlab/Issue/1';
 
 export const mockCadence1 = {
   id: 'gid://gitlab/Iterations::Cadence/1',
@@ -49,6 +50,18 @@ export const mockEpic1 = {
   state: 'opened',
 };
 
+export const mockWorkItemEpic1 = {
+  id: 'gid://gitlab/WorkItem/727',
+  title: 'Work item Epic',
+  webUrl: 'http://127.0.0.1:3000/groups/gitlab-org/-/work_items/130',
+  state: 'OPEN',
+  workItemType: {
+    id: 'gid://gitlab/WorkItems::Type/3284',
+    name: 'Epic',
+    __typename: 'WorkItemType',
+  },
+};
+
 export const mockEpic2 = {
   __typename: 'Epic',
   id: 'gid://gitlab/Epic/2',
@@ -76,6 +89,19 @@ export const mockGroupEpicsResponse = {
       id: '1',
       attributes: {
         nodes: [mockEpic1, mockEpic2],
+      },
+      __typename: 'EpicConnection',
+    },
+    __typename: 'Group',
+  },
+};
+
+export const mockGroupWorkItemEpicsResponse = {
+  data: {
+    workspace: {
+      id: '1',
+      attributes: {
+        nodes: [mockEpic1, mockEpic2, mockWorkItemEpic1],
       },
       __typename: 'EpicConnection',
     },
@@ -130,8 +156,67 @@ export const noCurrentEpicResponse = {
   data: {
     workspace: {
       id: '1',
-      issuable: { id: mockIssueId, hasEpic: false, attribute: null, __typename: 'Issue' },
+      issuable: {
+        id: mockIssueId,
+        hasEpic: false,
+        hasParent: false,
+        attribute: null,
+        __typename: 'Issue',
+      },
       __typename: 'Project',
+    },
+  },
+};
+
+export const currentEpicResponse = {
+  data: {
+    workspace: {
+      id: '1',
+      issuable: {
+        id: mockIssueId,
+        hasEpic: false,
+        hasParent: false,
+        attribute: mockEpic1,
+        __typename: 'Issue',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
+export const currentEpicHasParentResponse = {
+  data: {
+    workspace: {
+      id: '1',
+      issuable: {
+        id: mockIssueId,
+        hasEpic: false,
+        hasParent: true,
+        attribute: null,
+        __typename: 'Issue',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
+export const currentWorkItemEpicResponse = {
+  data: {
+    workItem: {
+      id: 'gid://gitlab/Issue/1',
+      widgets: [
+        {
+          type: 'HIERARCHY',
+          parent: {
+            id: 'gid://gitlab/WorkItem/3',
+            title: 'Work Item Epic',
+            webUrl: 'http://127.0.0.1:3000/groups/gitlab-org/-/work_items/130',
+            __typename: 'WorkItem',
+          },
+          __typename: 'WorkItemWidgetHierarchy',
+        },
+      ],
+      __typename: 'WorkItem',
     },
   },
 };
@@ -142,11 +227,27 @@ export const mockEpicUpdatesSubscriptionResponse = {
   },
 };
 
+export const noParentUpdatedResponse = {
+  data: {
+    workItem: {
+      id: 'gid://gitlab/Issue/1',
+      widgets: [{}],
+      __typename: 'Project',
+    },
+  },
+};
+
 export const mockNoPermissionEpicResponse = {
   data: {
     workspace: {
       id: '1',
-      issuable: { id: mockIssueId, hasEpic: true, attribute: null, __typename: 'Issue' },
+      issuable: {
+        id: mockIssueId,
+        hasEpic: true,
+        hasParent: false,
+        attribute: null,
+        __typename: 'Issue',
+      },
       __typename: 'Project',
     },
   },
@@ -158,6 +259,7 @@ export const mockEpicMutationResponse = {
       errors: [],
       issuable: {
         id: 'gid://gitlab/Issue/1',
+        hasParent: false,
         attribute: {
           id: 'gid://gitlab/Epic/2',
           title: 'Awesome Epic',
@@ -167,6 +269,66 @@ export const mockEpicMutationResponse = {
         __typename: 'Issue',
       },
       __typename: 'IssueSetEpicPayload',
+    },
+  },
+};
+
+export const mockSetEpicNullMutationResponse = {
+  data: {
+    issuableSetAttribute: {
+      errors: [],
+      issuable: {
+        id: 'gid://gitlab/Issue/1',
+        hasParent: false,
+        attribute: null,
+        __typename: 'Issue',
+      },
+      __typename: 'IssueSetEpicPayload',
+    },
+  },
+};
+
+export const mockSetWorkItemEpicNullMutationResponse = {
+  data: {
+    issuableSetAttribute: {
+      workItem: {
+        id: 'gid://gitlab/WorkItem/1',
+        widgets: [
+          {
+            type: 'HIERARCHY',
+            parent: null,
+            __typename: 'WorkItemWidgetHierarchy',
+          },
+        ],
+        __typename: 'WorkItem',
+      },
+      errors: [],
+      __typename: 'WorkItemUpdatePayload',
+    },
+  },
+};
+
+export const mockWorkItemEpicMutationResponse = {
+  data: {
+    issuableSetAttribute: {
+      workItem: {
+        id: 'gid://gitlab/Issue/1',
+        widgets: [
+          {
+            type: 'HIERARCHY',
+            parent: {
+              id: 'gid://gitlab/WorkItem/4',
+              title: 'Work Item Epic 2',
+              webUrl: 'http://127.0.0.1:3000/groups/gitlab-org/-/work_items/131',
+              __typename: 'WorkItem',
+            },
+            __typename: 'WorkItemWidgetHierarchy',
+          },
+        ],
+        __typename: 'WorkItem',
+      },
+      errors: [],
+      __typename: 'WorkItemUpdatePayload',
     },
   },
 };

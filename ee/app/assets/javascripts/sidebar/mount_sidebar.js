@@ -140,13 +140,13 @@ function mountSidebarCveIdRequest(store) {
 
 function mountSidebarEpicWidget() {
   const el = document.querySelector('.js-sidebar-epic-widget-root');
+  const displayWorkItemEpicIssueSidebar = window.gon?.features?.displayWorkItemEpicIssueSidebar;
 
   if (!el) {
     return null;
   }
 
-  const { groupPath, canEdit, projectPath, issueIid } = el.dataset;
-
+  const { groupPath, canEdit, projectPath, issueIid, issueId } = el.dataset;
   return new Vue({
     el,
     name: 'SidebarEpicWidgetRoot',
@@ -161,8 +161,10 @@ function mountSidebarEpicWidget() {
           attrWorkspacePath: groupPath,
           workspacePath: projectPath,
           iid: issueIid,
+          issueId,
           issuableType: TYPE_ISSUE,
           issuableAttribute: IssuableAttributeType.Epic,
+          showWorkItemEpics: displayWorkItemEpicIssueSidebar,
         },
       }),
   });
@@ -218,7 +220,7 @@ function mountSidebarIterationWidget() {
     return null;
   }
 
-  const { groupPath, canEdit, projectPath, issueIid } = el.dataset;
+  const { groupPath, canEdit, projectPath, issueIid, issueId } = el.dataset;
 
   return new Vue({
     el,
@@ -235,6 +237,7 @@ function mountSidebarIterationWidget() {
           workspacePath: projectPath,
           iid: issueIid,
           issuableType: TYPE_ISSUE,
+          issueId,
           issuableAttribute: IssuableAttributeType.Iteration,
         },
       }),
@@ -295,7 +298,7 @@ function mountSidebarEscalationPolicy() {
     return null;
   }
 
-  const { canEdit, projectPath, issueIid, hasEscalationPolicies } = el.dataset;
+  const { canEdit, projectPath, issueIid, hasEscalationPolicies, issueId } = el.dataset;
 
   return new Vue({
     el,
@@ -311,6 +314,7 @@ function mountSidebarEscalationPolicy() {
           projectPath,
           iid: issueIid,
           escalationsPossible: parseBoolean(hasEscalationPolicies),
+          issueId,
         },
       }),
   });

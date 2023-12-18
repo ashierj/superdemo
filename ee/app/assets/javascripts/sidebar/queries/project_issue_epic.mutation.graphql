@@ -5,6 +5,7 @@ mutation projectIssueEpicMutation($fullPath: ID!, $iid: String!, $attributeId: E
     errors
     issuable: issue {
       id
+      hasParent
       attribute: epic {
         title
         id
