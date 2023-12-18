@@ -76,7 +76,7 @@ module QA
 
             def set_ip_address_restriction(ip_address)
               QA::Runtime::Logger.debug(%(Setting ip address restriction to: #{ip_address}))
-              expand_content(:permission_lfs_2fa_content)
+              expand_content('permissions-settings')
 
               # GitLab UI Token Selector (https://gitlab-org.gitlab.io/gitlab-ui/?path=/story/base-token-selector--default)
               # `data-qa-*` can only be added to the wrapper so custom selector used to find token close buttons and text input
@@ -85,25 +85,25 @@ module QA
               ip_restriction_field_input = find_element(:ip_restriction_field).find('input[type="text"]')
               ip_restriction_field_input.set ip_address
               ip_restriction_field_input.send_keys(:enter)
-              click_element(:save_permissions_changes_button)
+              click_element('save-permissions-changes-button')
             end
 
             def set_experimental_features_enabled
-              expand_content(:permission_lfs_2fa_content)
+              expand_content('permissions-settings')
               check_element('use-experimental-features-checkbox', true)
-              click_element(:save_permissions_changes_button)
+              click_element('save-permissions-changes-button')
             end
 
             def set_membership_lock_enabled
-              expand_content(:permission_lfs_2fa_content)
+              expand_content('permissions-settings')
               check_element(:membership_lock_checkbox, true)
-              click_element(:save_permissions_changes_button)
+              click_element('save-permissions-changes-button')
             end
 
             def set_membership_lock_disabled
-              expand_content(:permission_lfs_2fa_content)
+              expand_content('permissions-settings')
               uncheck_element(:membership_lock_checkbox, true)
-              click_element(:save_permissions_changes_button)
+              click_element('save-permissions-changes-button')
             end
 
             def set_use_product_analytics_enabled
@@ -114,15 +114,15 @@ module QA
             end
 
             def set_prevent_forking_outside_group_enabled
-              expand_content(:permission_lfs_2fa_content)
+              expand_content('permissions-settings')
               check_element(:prevent_forking_outside_group_checkbox, true)
-              click_element(:save_permissions_changes_button)
+              click_element('save-permissions-changes-button')
             end
 
             def set_prevent_forking_outside_group_disabled
-              expand_content(:permission_lfs_2fa_content)
+              expand_content('permissions-settings')
               uncheck_element(:prevent_forking_outside_group_checkbox, true)
-              click_element(:save_permissions_changes_button)
+              click_element('save-permissions-changes-button')
             end
 
             def set_repository_size_limit(limit)
@@ -137,9 +137,9 @@ module QA
               Support::Retrier.retry_until(
                 max_attempts: 10, retry_on_exception: true, reload_page: page, sleep_interval: 2
               ) do
-                expand_content(:permission_lfs_2fa_content)
+                expand_content('permissions-settings')
                 find_element(:user_cap_limit_field, wait: 1).set limit
-                click_element(:save_permissions_changes_button)
+                click_element('save-permissions-changes-button')
                 wait_for_requests
 
                 page.text.match?(/was successfully updated/i)
