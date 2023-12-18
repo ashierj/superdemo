@@ -631,6 +631,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
 
             it 'includes additional headers for SaaS' do
+              add_on_purchase.namespace.namespace_settings.update_attribute(:code_suggestions, true)
+
               post_api
 
               _, params = workhorse_send_data

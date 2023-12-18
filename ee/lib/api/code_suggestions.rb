@@ -48,7 +48,7 @@ module API
         return {} unless Gitlab.com?
 
         {
-          'X-Gitlab-Saas-Namespace-Ids' => current_user.code_suggestions_add_on_available_namespace_ids.join(',')
+          'X-Gitlab-Saas-Namespace-Ids' => current_user.namespaces_ids_with_code_suggestions_enabled.join(',')
         }
       end
 
