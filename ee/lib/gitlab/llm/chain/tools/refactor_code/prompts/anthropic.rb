@@ -7,6 +7,8 @@ module Gitlab
         module RefactorCode
           module Prompts
             class Anthropic
+              include Concerns::AnthropicPrompt
+
               def self.prompt(variables)
                 base_prompt = Utils::Prompt.no_role_text(
                   ::Gitlab::Llm::Chain::Tools::RefactorCode::Executor::PROMPT_TEMPLATE, variables

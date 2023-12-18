@@ -6,21 +6,23 @@ RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Prompts::Anthropic, featur
   describe '.prompt' do
     it 'returns prompt' do
       prompt = described_class
-        .prompt({ input: 'question', language_info: 'language', selected_text: 'selected text' })[:prompt]
+        .prompt({ input: 'question', language_info: 'language', selected_text: 'selected text',
+                  file_content: 'file content' })[:prompt]
       expected_prompt = <<~PROMPT.chomp
 
 
         Human: You are a software developer.
         You can write new tests.
         language
-        Here is the code user selected:
 
-        <code>
+        file content
+        In the file user selected this code:
+        <selected_code>
           selected text
-        </code>
+        </selected_code>
 
-        The generated code should be formatted in markdown.
         question
+        Any code blocks in response should be formatted in markdown.
 
         Assistant:
       PROMPT

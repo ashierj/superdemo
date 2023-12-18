@@ -1,0 +1,8 @@
+---
+name: slash_commands_file_content
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/139527
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/435127
+milestone: '16.7'
+type: development
+group: group::code creation
+default_enabled: false
