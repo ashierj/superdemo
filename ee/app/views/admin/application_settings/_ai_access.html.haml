@@ -19,7 +19,7 @@
       %fieldset
         .form-group
           = f.gitlab_ui_checkbox_component :instance_level_code_suggestions_enabled,
-            s_('CodeSuggestionsSM|Enable Code Suggestions for this instance %{beta}').html_safe % { beta: gl_badge_tag(_('Beta'), variant: :neutral, size: :sm) },
+            s_('CodeSuggestionsSM|Enable Code Suggestions for this instance'),
             help_text: code_suggestions_agreement
 
       = f.submit _('Save changes'), pajamas_button: true
