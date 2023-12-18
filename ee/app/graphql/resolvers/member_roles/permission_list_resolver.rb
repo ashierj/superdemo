@@ -7,10 +7,10 @@ module Resolvers
 
       def resolve
         MemberRole.all_customizable_permissions.map do |permission, definition|
-          definition[:requirement] = definition[:requirement]&.to_s&.upcase
-          permission = permission.to_s.upcase
+          requirement = definition[:requirement]&.to_s&.upcase
+          value = permission.to_s.upcase
 
-          definition.merge(value: permission)
+          definition.merge(value: value, requirement: requirement)
         end
       end
     end

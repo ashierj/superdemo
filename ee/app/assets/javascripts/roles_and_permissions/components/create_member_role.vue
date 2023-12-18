@@ -112,7 +112,7 @@ export default {
         description: this.description,
       };
       this.permissions.forEach((permission) => {
-        data[permission] = 1;
+        data[permission.toLowerCase()] = 1;
       });
 
       try {

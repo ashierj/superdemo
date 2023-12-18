@@ -122,9 +122,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
       next unless requirement # skipping permissions that have no requirement
       next if self[requirement] # the requierement is met
 
-      errors.add(permission,
-        format(s_("MemberRole|%{requirement} has to be enabled in order to enable %{permission}."),
-          requirement: requirement, permission: permission)
+      errors.add(:base,
+        format(s_("MemberRole|%{requirement} has to be enabled in order to enable %{permission}"),
+          requirement: requirement.to_s.humanize, permission: permission.to_s.humanize)
       )
     end
   end
