@@ -19,21 +19,29 @@ module Gitlab
 
         class_methods do
           def activate(activation_code, automated:)
-            uuid = Gitlab::CurrentSettings.uuid
-
             variables = {
               activationCode: activation_code,
-              instanceIdentifier: uuid,
-              automated: automated
+              instanceIdentifier: Gitlab::CurrentSettings.uuid,
+              automated: automated,
+              gitlabVersion: Gitlab::VERSION,
+              hostname: Gitlab.config.gitlab.host
             }
 
             query = <<~GQL
-              mutation($activationCode: String!, $instanceIdentifier: String!, $automated: Boolean!) {
+              mutation(
+                $activationCode: String!,
+                $instanceIdentifier: String!,
+                $automated: Boolean!,
+                $gitlabVersion: String!,
+                $hostname: String!
+              ) {
                 cloudActivationActivate(
                   input: {
                     activationCode: $activationCode,
                     instanceIdentifier: $instanceIdentifier,
-                    automated: $automated
+                    automated: $automated,
+                    gitlabVersion: $gitlabVersion,
+                    hostname: $hostname
                   }
                 ) {
                   licenseKey
