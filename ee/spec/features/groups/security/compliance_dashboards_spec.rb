@@ -122,8 +122,31 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
 
     context 'when there are merge requests' do
       let_it_be(:user_2) { create(:user) }
-      let_it_be(:merge_request) { create(:merge_request, source_project: project, state: :merged, author: user, merge_commit_sha: 'b71a6483b96dc303b66fdcaa212d9db6b10591ce') }
+      let_it_be(:merge_request) { create(:merge_request, source_project: project, state: :merged, author: user, merge_user: user_2, merge_commit_sha: 'b71a6483b96dc303b66fdcaa212d9db6b10591ce') }
       let_it_be(:merge_request_2) { create(:merge_request, source_project: project_2, state: :merged, author: user_2, merge_commit_sha: '24327319d067f4101cd3edd36d023ab5e49a8579') }
+
+      context 'when less than two approvers', :sidekiq_inline do
+        let_it_be(:compliance_violations_worker) { ComplianceManagement::MergeRequests::ComplianceViolationsWorker.new }
+
+        before do
+          merge_request.metrics.update!(merged_at: 1.day.ago)
+          create(:approval, merge_request: merge_request, user: user_2)
+        end
+
+        it 'creates compliance violation for approved by insufficient number of users', :aggregate_failures do
+          compliance_violations_worker.perform(merge_request.id)
+
+          visit group_security_compliance_dashboard_path(group, vueroute: :violations)
+
+          wait_for_requests
+
+          expect(all('tbody > tr').count).to eq(1)
+          expect(first_row).to have_content('High')
+          expect(first_row).to have_content('Less than 2 approvers')
+          expect(first_row).to have_content(merge_request.title)
+          expect(first_row).to have_content(1.day.ago.to_date.to_s)
+        end
+      end
 
       context 'and there is a compliance violation' do
         let_it_be(:violation) do
