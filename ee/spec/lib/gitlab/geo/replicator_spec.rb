@@ -195,4 +195,10 @@ RSpec.describe Gitlab::Geo::Replicator, feature_category: :geo_replication do
   describe '#in_replicables_for_current_secondary?' do
     it { is_expected.to delegate_method(:in_replicables_for_current_secondary?).to(:model_record) }
   end
+
+  describe '#resource_exists?' do
+    it 'raises error when not implemented' do
+      expect { subject.resource_exists? }.to raise_error NotImplementedError
+    end
+  end
 end

@@ -339,6 +339,19 @@ module Gitlab
         { model_record_id: model_record.id }
       end
 
+      # Returns whether the actual data exists
+      #
+      # The implementation must do a hard check because we are doing these
+      # checks for replication or verification purposes, so we should not just
+      # trust the data in the DB if we don't absolutely have to.
+      #
+      # @abstract
+      # @return [Boolean] whether the actual data exists
+      def resource_exists?
+        raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+      end
+      strong_memoize_attr :resource_exists?
+
       protected
 
       # Store an event on the database

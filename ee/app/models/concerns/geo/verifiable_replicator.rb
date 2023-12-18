@@ -286,10 +286,54 @@ module Geo
       model_record.verification_succeeded?
     end
 
+    # When starting to sync something for the first time, sometimes we find it
+    # is already synced. In certain cases, we don't need to download it. We can
+    # instead rely on verification to trigger a resync if needed.
+    #
+    # For example, a replicable may legitimately already be synced if:
+    #
+    # - you did a planned failover and attached the old primary as a
+    #   secondary without rebuilding it.
+    # - you did a failover test on a secondary, rewound the PG DB, and
+    #   reattached it without rebuilding it.
+    # - you restored a backup and attached the site as a secondary
+    # - you manually copied the replicable to a secondary to workaround a problem
+    # - you reset the Geo tracking database to workaround a problem
+    #
+    # @return [Boolean] whether it is a good idea to mark a replicable synced without downloading it
+    def ok_to_skip_download?
+      return false unless Feature.enabled?(:geo_skip_download_if_exists)
+
+      # Verification of immutable data is likely to pass if the data seems to
+      # already exist. We are much less sure about mutable data, so let's
+      # exclude it from this optimization for now.
+      return false if mutable?
+
+      # It is crucial that we do not skip downloading if a "resync" is intended,
+      # e.g. if an admin clicked "Resync". So only skip if the registry record
+      # looks like a brand-new pending registry record.
+      return false unless registry.brand_new_pending?
+
+      # If data already exists at the expected location, and if we will verify
+      # that data shortly after marking it synced, then it is relatively safe to
+      # mark it synced without (re)downloading it.
+      resource_exists? && skip_download_can_rely_on_verification?
+    end
+
     # @abstract
     # @return [String] a checksum representing the data
     def calculate_checksum
       raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+    end
+
+    # @abstract
+    # @return [Boolean] whether the replicable is supposed to be immutable
+    def immutable?
+      raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+    end
+
+    def mutable?
+      !immutable?
     end
 
     private
@@ -306,16 +350,16 @@ module Geo
       checksummable?
     end
 
-    # @abstract
-    # @return [Boolean] whether the replicable is supposed to be immutable
-    def immutable?
-      raise NotImplementedError, "#{self.class} does not implement #{__method__}"
-    end
-
-    # @abstract
+    # Return whether the replicable is capable of checksumming itself
+    #
     # @return [Boolean] whether the replicable is capable of checksumming itself
     def checksummable?
-      raise NotImplementedError, "#{self.class} does not implement #{__method__}"
+      model_record.in_verifiables? && resource_exists?
+    end
+
+    # @return [Boolean] whether the file will be verified later if we were to skip download now
+    def skip_download_can_rely_on_verification?
+      self.class.verification_enabled? && checksummable?
     end
   end
 end

@@ -152,7 +152,7 @@ module Geo
     # we don't absolutely have to.
     #
     # @return [Boolean] whether the file exists on disk or in remote storage
-    def file_exists?
+    def resource_exists?
       carrierwave_uploader.file&.exists?
     end
 
@@ -164,23 +164,6 @@ module Geo
       }
     end
 
-    private
-
-    def download
-      ::Geo::BlobDownloadService.new(replicator: self).execute
-    end
-
-    # Return whether it's capable of generating a checksum of itself
-    #
-    # @return [Boolean] whether it can generate a checksum
-    def checksummable?
-      if Feature.enabled?(:geo_object_storage_verification)
-        file_exists?
-      else
-        carrierwave_uploader.file_storage? && file_exists?
-      end
-    end
-
     # Return whether it's immutable
     #
     # @return [Boolean] whether the replicable is immutable
@@ -190,8 +173,10 @@ module Geo
       true
     end
 
-    def mutable?
-      !immutable?
+    private
+
+    def download
+      ::Geo::BlobDownloadService.new(replicator: self).execute
     end
   end
 end
