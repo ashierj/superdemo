@@ -125,7 +125,7 @@ module Elastic
     def launch_subtasks(items_to_reindex)
       items_to_reindex.each do |item|
         # Record documents count
-        documents_count = elastic_helper.documents_count(index_name: item[:index_name_from])
+        documents_count = elastic_helper.documents_count(index_name: item[:index_name_from], refresh: true)
         # Create all subtasks
         subtask = current_task.subtasks.create!(item.merge(documents_count: documents_count))
 
