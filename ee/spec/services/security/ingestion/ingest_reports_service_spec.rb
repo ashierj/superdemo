@@ -27,6 +27,7 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
     before do
       allow(Security::Ingestion::IngestReportService).to receive(:execute).and_return(ids_1, ids_2)
       allow(Security::Ingestion::ScheduleMarkDroppedAsResolvedService).to receive(:execute)
+      allow(Sbom::IngestReportsWorker).to receive(:perform_async)
     end
 
     it 'calls IngestReportService for each succeeded security scan', :aggregate_failures do
@@ -145,6 +146,54 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
         it 'schedules the background job' do
           expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to have_received(:perform_async).with(pipeline.id)
         end
+      end
+    end
+
+    context 'when scheduling the Sbom::IngestReportsWorker' do
+      let(:default_branch) { true }
+      let(:can_ingest_sbom_reports) { true }
+
+      before do
+        allow(pipeline).to receive(:default_branch?).and_return(default_branch)
+        allow(pipeline).to receive(:can_ingest_sbom_reports?).and_return(can_ingest_sbom_reports)
+      end
+
+      context 'with child pipeline' do
+        before do
+          allow(pipeline).to receive(:child?).and_return(true)
+        end
+
+        it 'does not schedule Sbom::IngestReportsWorker' do
+          ingest_reports
+
+          expect(Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+        end
+      end
+
+      context 'with a non-default branch' do
+        let(:default_branch) { false }
+
+        it 'does not schedule Sbom::IngestReportsWorker' do
+          ingest_reports
+
+          expect(Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+        end
+      end
+
+      context 'when it cannot ingest sbom reports' do
+        let(:can_ingest_sbom_reports) { false }
+
+        it 'does not schedule Sbom::IngestReportsWorker' do
+          ingest_reports
+
+          expect(Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+        end
+      end
+
+      it 'schedules Sbom::IngestReportsWorker' do
+        ingest_reports
+
+        expect(Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
       end
     end
   end

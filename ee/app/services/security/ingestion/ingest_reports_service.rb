@@ -21,6 +21,7 @@ module Security
         schedule_mark_dropped_vulnerabilities
         schedule_auto_fix
         sync_findings_to_approval_rules
+        schedule_sbom_records
       end
 
       private
@@ -96,6 +97,13 @@ module Security
 
       def report_types
         latest_security_scans.map(&:scan_type).map(&:to_sym)
+      end
+
+      def schedule_sbom_records
+        return if pipeline.child?
+        return unless pipeline.default_branch? && pipeline.can_ingest_sbom_reports?
+
+        Sbom::IngestReportsWorker.perform_async(pipeline.id)
       end
     end
   end

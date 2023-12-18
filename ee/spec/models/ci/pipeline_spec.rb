@@ -343,6 +343,18 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
               expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
             end
           end
+
+          context 'when security reports are available' do
+            before do
+              allow(pipeline).to receive(:can_store_security_reports?).and_return(true)
+            end
+
+            it 'does not schedule ingest sbom reports job' do
+              transition_pipeline
+
+              expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+            end
+          end
         end
 
         context 'on a non-default branch' do

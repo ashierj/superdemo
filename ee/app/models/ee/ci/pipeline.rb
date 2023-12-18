@@ -81,6 +81,7 @@ module EE
           end
 
           after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
+            next if pipeline.can_store_security_reports?
             next if pipeline.child?
             next unless pipeline.default_branch? && pipeline.can_ingest_sbom_reports?
 
