@@ -95,8 +95,7 @@ export default {
       v-else
       :title="emptyState.title"
       :description="emptyState.description"
-      svg-path="/assets/illustrations/monitoring/getting_started.svg"
-      :svg-height="null"
+      svg-path="/assets/illustrations/empty-state/empty-dashboard-md.svg"
     />
   </div>
 </template>
