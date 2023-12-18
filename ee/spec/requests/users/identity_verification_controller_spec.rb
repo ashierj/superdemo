@@ -14,6 +14,9 @@ feature_category: :system_access do
   before do
     stub_application_setting_enum('email_confirmation_setting', 'hard')
     stub_application_setting(require_admin_approval_after_user_signup: false)
+
+    allow(::PhoneVerification::Users::SendVerificationCodeService)
+      .to receive(:daily_transaction_limit_exceeded?).and_return(false)
   end
 
   shared_examples 'it requires a valid verification_user_id' do
@@ -619,6 +622,10 @@ feature_category: :system_access do
     let(:params) { {} }
     let(:do_request) { post verify_arkose_labs_session_identity_verification_path, params: params }
 
+    before do
+      stub_session(verification_user_id: user.id)
+    end
+
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
 
@@ -631,7 +638,6 @@ feature_category: :system_access do
 
     context 'when arkose_labs_token param is not present' do
       before do
-        stub_session(verification_user_id: user.id)
         do_request
       end
 
@@ -642,8 +648,6 @@ feature_category: :system_access do
       let(:params) { { arkose_labs_token: 'fake-token' } }
 
       before do
-        stub_session(verification_user_id: user.id)
-
         init_params = { session_token: params[:arkose_labs_token], user: user }
         allow_next_instance_of(Arkose::TokenVerificationService, init_params) do |instance|
           allow(instance).to receive(:execute).and_return(service_response)
@@ -664,6 +668,23 @@ feature_category: :system_access do
         it 'redirects to show action' do
           expect(response).to redirect_to(identity_verification_path)
         end
+      end
+    end
+
+    describe 'phone verification service daily transaction limit check' do
+      let(:params) { { arkose_labs_token: 'fake-token' } }
+
+      before do
+        allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
+          allow(instance).to receive(:execute).and_return(ServiceResponse.success)
+        end
+      end
+
+      it 'is executed' do
+        service = PhoneVerification::Users::SendVerificationCodeService
+        expect(service).to receive(:assume_user_high_risk_if_daily_limit_exceeded!).with(user)
+
+        do_request
       end
     end
   end

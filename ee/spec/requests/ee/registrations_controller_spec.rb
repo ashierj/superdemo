@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe RegistrationsController, type: :request, feature_category: :system_access do
   before do
     allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
-    allow(::Arkose::Settings).to receive(:enabled?).and_return(true)
+    allow(::Arkose::Settings).to receive(:enabled?).and_return(false)
   end
 
   describe 'POST #create' do
@@ -21,7 +21,6 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
       before do
         stub_application_setting_enum('email_confirmation_setting', 'hard')
         stub_application_setting(require_admin_approval_after_user_signup: false)
-        allow(::Arkose::Settings).to receive(:enabled?).and_return(false)
       end
 
       context 'when identity verification is turned off' do
@@ -177,7 +176,6 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
     context 'with onboarding progress' do
       before do
         allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
-        allow(::Arkose::Settings).to receive(:enabled?).and_return(false)
       end
 
       context 'when on SaaS', :saas do
@@ -196,6 +194,15 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
           created_user = User.find_by(email: user_attrs[:email])
           expect(created_user.onboarding_in_progress).to be_falsey
         end
+      end
+    end
+
+    describe 'phone verification service daily transaction limit check' do
+      it 'is executed' do
+        service = PhoneVerification::Users::SendVerificationCodeService
+        expect(service).to receive(:assume_user_high_risk_if_daily_limit_exceeded!).with(an_instance_of(User))
+
+        create_user
       end
     end
   end

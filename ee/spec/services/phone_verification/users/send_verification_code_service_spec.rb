@@ -12,6 +12,11 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
   describe '#execute' do
     before do
+      allow(Gitlab::ApplicationRateLimiter)
+        .to receive(:peek).with(:soft_phone_verification_transactions_limit, scope: nil).and_return(false)
+      allow(Gitlab::ApplicationRateLimiter)
+        .to receive(:throttled?).with(:soft_phone_verification_transactions_limit, scope: nil).and_return(false)
+
       allow_next_instance_of(PhoneVerification::TelesignClient::RiskScoreService) do |instance|
         allow(instance).to receive(:execute).and_return(risk_service_response)
       end
@@ -264,6 +269,49 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         ServiceResponse.success(payload: { telesign_reference_xid: telesign_reference_xid })
       end
 
+      it 'increments soft_phone_verification_transactions_limit rate limit count' do
+        expect(Gitlab::ApplicationRateLimiter)
+          .to receive(:throttled?).with(:soft_phone_verification_transactions_limit, scope: nil).and_return(false)
+
+        service.execute
+      end
+
+      context 'when soft_phone_verification_transactions_limit rate limit is hit' do
+        it 'logs the event' do
+          allow(Gitlab::ApplicationRateLimiter)
+            .to receive(:throttled?).with(:soft_phone_verification_transactions_limit, scope: nil).and_return(true)
+
+          expect(Gitlab::AppLogger).to receive(:info).with({
+            class: described_class.name,
+            message: 'IdentityVerification::Phone',
+            event: 'Phone verification daily transaction limit exceeded'
+          })
+
+          service.execute
+        end
+
+        context 'when soft_limit_daily_phone_verifications is disabled' do
+          before do
+            stub_feature_flags(soft_limit_daily_phone_verifications: false)
+          end
+
+          it 'does not increment soft_phone_verification_transactions_limit rate limit count' do
+            expect(Gitlab::ApplicationRateLimiter)
+              .not_to receive(:throttled?).with(:soft_phone_verification_transactions_limit, scope: nil)
+
+            service.execute
+          end
+
+          it 'does not log', :aggregate_failures do
+            expect(Gitlab::ApplicationRateLimiter)
+              .not_to receive(:throttled?).with(:soft_phone_verification_transactions_limit)
+            expect(Gitlab::AppLogger).not_to receive(:info)
+
+            service.execute
+          end
+        end
+      end
+
       it 'returns a success response', :aggregate_failures do
         response = service.execute
 
@@ -316,6 +364,76 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
       it 'does not store risk score in abuse trust scores' do
         expect { service.execute }.not_to change { Abuse::TrustScore.count }
+      end
+    end
+  end
+
+  describe '.assume_user_high_risk_if_daily_limit_exceeded!' do
+    let(:limit_exceeded) { true }
+
+    subject(:call_method) { described_class.assume_user_high_risk_if_daily_limit_exceeded!(user) }
+
+    before do
+      allow(described_class).to receive(:daily_transaction_limit_exceeded?).and_return(limit_exceeded)
+    end
+
+    it 'calls assume_high_risk on the user' do
+      expect(user).to receive(:assume_high_risk).with(reason: 'Phone verification daily transaction limit exceeded')
+
+      call_method
+    end
+
+    shared_examples 'it does nothing' do
+      it 'does nothing' do
+        expect(user).not_to receive(:assume_high_risk)
+
+        call_method
+      end
+    end
+
+    context 'when no user is passed' do
+      let(:user) { nil }
+
+      it_behaves_like 'it does nothing'
+    end
+
+    context 'when limit has not been exceeded' do
+      let(:limit_exceeded) { false }
+
+      it_behaves_like 'it does nothing'
+    end
+  end
+
+  describe '.daily_transaction_limit_exceeded?' do
+    subject(:result) { described_class.daily_transaction_limit_exceeded? }
+
+    before do
+      allow(Gitlab::ApplicationRateLimiter)
+        .to receive(:peek).with(:soft_phone_verification_transactions_limit, scope: nil).and_return(exceeded)
+    end
+
+    context 'when limit has been exceeded' do
+      let(:exceeded) { true }
+
+      it { is_expected.to eq true }
+    end
+
+    context 'when limit has not been exceeded' do
+      let(:exceeded) { false }
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when soft_limit_daily_phone_verifications is disabled' do
+      let(:exceeded) { true }
+
+      before do
+        stub_feature_flags(soft_limit_daily_phone_verifications: false)
+      end
+
+      it 'returns false', :aggregate_failures do
+        expect(Gitlab::ApplicationRateLimiter).not_to receive(:peek)
+        expect(result).to eq false
       end
     end
   end

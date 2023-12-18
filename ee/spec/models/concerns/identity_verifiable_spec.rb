@@ -276,6 +276,55 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
         end
       end
     end
+
+    context 'when phone verification daily transaction limit has been exceeded' do
+      where(:risk_band, :result) do
+        'High'   | %w[email credit_card phone]
+        'Medium' | %w[email phone]
+        'Low'    | %w[email]
+        nil      | %w[email]
+      end
+
+      with_them do
+        before do
+          allow(PhoneVerification::Users::SendVerificationCodeService)
+            .to receive(:daily_transaction_limit_exceeded?).and_return(true)
+
+          add_user_risk_band(risk_band) if risk_band
+        end
+
+        it { is_expected.to eq(result) }
+      end
+    end
+
+    context 'when user is assumed high risk' do
+      where(:risk_band, :phone_exempt, :identity_verification_exempt, :result) do
+        'High'   | false | false | %w[email credit_card phone]
+        'High'   | true  | false | %w[email credit_card]
+        'High'   | false | true  | %w[email]
+        'Medium' | false | false | %w[email credit_card phone]
+        'Medium' | true  | false | %w[email credit_card]
+        'Medium' | false | true  | %w[email]
+        'Low'    | false | false | %w[email credit_card phone]
+        'Low'    | true  | false | %w[email credit_card]
+        'Low'    | false | true  | %w[email]
+        nil      | false | false | %w[email credit_card phone]
+        nil      | true  | false | %w[email credit_card]
+        nil      | false | true  | %w[email]
+      end
+
+      with_them do
+        before do
+          create(:user_custom_attribute, :assumed_high_risk_reason, user: user)
+
+          add_user_risk_band(risk_band) if risk_band
+          add_phone_exemption if phone_exempt
+          add_identity_verification_exemption if identity_verification_exempt
+        end
+
+        it { is_expected.to eq(result) }
+      end
+    end
   end
 
   describe('#identity_verification_state') do
@@ -613,6 +662,32 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
         it { is_expected.to eq true }
       end
+    end
+  end
+
+  describe '#assumed_high_risk?' do
+    subject(:result) { user.assumed_high_risk? }
+
+    it { is_expected.to eq false }
+
+    context 'when user has a ASSUMED_HIGH_RISK_REASON custom attribute' do
+      before do
+        create(:user_custom_attribute, :assumed_high_risk_reason, user: user)
+      end
+
+      it { is_expected.to eq true }
+    end
+  end
+
+  describe '#assume_high_risk' do
+    subject(:call_method) { user.assume_high_risk(reason: 'Because') }
+
+    it 'creates a custom attribute with correct attribute values for the user', :aggregate_failures do
+      expect { call_method }.to change { user.custom_attributes.count }.by(1)
+
+      record = user.custom_attributes.last
+      expect(record.key).to eq UserCustomAttribute::ASSUMED_HIGH_RISK_REASON
+      expect(record.value).to eq 'Because'
     end
   end
 end
