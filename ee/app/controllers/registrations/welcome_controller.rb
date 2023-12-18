@@ -25,6 +25,7 @@ module Registrations
       # calling this in the controller layer gives us access to request where the
       # signed cookie exist with the info we need for migration.
       experiment(:free_trial_registration_redesign, actor: current_user).run
+      experiment(:free_trial_registration_redesign, actor: current_user).track(:show, label: 'welcome')
 
       track_event('render')
     end
