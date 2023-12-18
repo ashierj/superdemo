@@ -5,7 +5,7 @@ import SettingsSection from 'ee/security_orchestration/components/policy_editor/
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_result/action/action_section.vue';
 import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_result/rule/rule_section.vue';
-import { DEFAULT_PROVIDE } from './mocks';
+import { DEFAULT_PROVIDE } from '../mocks';
 
 describe('Policy Editor', () => {
   let wrapper;
@@ -26,6 +26,7 @@ describe('Policy Editor', () => {
 
   const findSelectScanResultPolicyButton = () =>
     wrapper.findByTestId('select-policy-scan_result_policy');
+  const findYamlPreview = () => wrapper.findByTestId('rule-editor-preview');
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findActionSection = () => wrapper.findComponent(ActionSection);
   const findRuleSection = () => wrapper.findComponent(RuleSection);
@@ -46,6 +47,7 @@ describe('Policy Editor', () => {
       expect(findActionSection().exists()).toBe(true);
       expect(findRuleSection().exists()).toBe(true);
       expect(findSettingsSection().exists()).toBe(false);
+      expect(findYamlPreview().exists()).toBe(true);
     });
   });
 });
