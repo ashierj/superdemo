@@ -217,7 +217,6 @@ Lint/UnusedMethodArgument:
     - 'config/initializers/active_record_preloader.rb'
     - 'config/initializers/active_record_table_definition.rb'
     - 'config/initializers/forbid_sidekiq_in_transactions.rb'
-    - 'config/initializers/rspec_profiling.rb'
     - 'config/object_store_settings.rb'
     - 'ee/app/controllers/ee/projects/protected_branches_controller.rb'
     - 'ee/app/controllers/groups/omniauth_callbacks_controller.rb'
