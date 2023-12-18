@@ -15,6 +15,8 @@ module RemoteDevelopment
           ]
         }
       ].freeze
+      DEFAULT_RESOURCES_PER_WORKSPACE_CONTAINER_DEFAULT = {}.freeze
+      MAX_RESOURCES_PER_WORKSPACE_DEFAULT = {}.freeze
 
       # @param [Hash] value
       # @return [Result]
@@ -37,6 +39,10 @@ module RemoteDevelopment
           config_from_agent_config_file.fetch(:network_policy, {}).fetch(:egress, NETWORK_POLICY_EGRESS_DEFAULT)
         model_instance.gitlab_workspaces_proxy_namespace =
           config_from_agent_config_file.fetch(:gitlab_workspaces_proxy, {}).fetch(:namespace, 'gitlab-workspaces')
+        model_instance.default_resources_per_workspace_container =
+          config_from_agent_config_file.fetch(:default_resources_per_workspace_container, {})
+        model_instance.max_resources_per_workspace =
+          config_from_agent_config_file.fetch(:max_resources_per_workspace, {})
 
         if model_instance.save
           model_instance.workspaces.without_terminated.update_all(force_include_all_resources: true)

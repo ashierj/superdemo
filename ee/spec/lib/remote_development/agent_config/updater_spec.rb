@@ -29,6 +29,17 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
     { namespace: gitlab_workspaces_proxy_namespace }
   end
 
+  let(:default_default_resources_per_workspace_container) do
+    RemoteDevelopment::AgentConfig::Updater::DEFAULT_RESOURCES_PER_WORKSPACE_CONTAINER_DEFAULT
+  end
+
+  let(:default_resources_per_workspace_container) { default_default_resources_per_workspace_container }
+  let(:default_max_resources_per_workspace) do
+    RemoteDevelopment::AgentConfig::Updater::MAX_RESOURCES_PER_WORKSPACE_DEFAULT
+  end
+
+  let(:max_resources_per_workspace) { default_max_resources_per_workspace }
+
   let_it_be(:agent) { create(:cluster_agent) }
   let_it_be(:workspace1) { create(:workspace, force_include_all_resources: false) }
   let_it_be(:workspace2) { create(:workspace, force_include_all_resources: false) }
@@ -40,6 +51,8 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
     }
     remote_development_config[:network_policy] = network_policy if network_policy_present
     remote_development_config[:gitlab_workspaces_proxy] = gitlab_workspaces_proxy if gitlab_workspaces_proxy_present
+    remote_development_config[:default_resources_per_workspace_container] = default_resources_per_workspace_container
+    remote_development_config[:max_resources_per_workspace] = max_resources_per_workspace
     {
       remote_development: remote_development_config
     }
@@ -63,7 +76,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
   end
 
   context 'when config passed is not empty' do
-    context 'when a config file is valid' do
+    shared_examples 'successful update' do
       it 'creates a config record and returns an ok Result containing the agent config' do
         expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
 
@@ -73,14 +86,22 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
         expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
         expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
         expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
+        expect(config_instance.default_resources_per_workspace_container.deep_symbolize_keys)
+          .to eq(default_resources_per_workspace_container)
+        expect(config_instance.max_resources_per_workspace.deep_symbolize_keys)
+          .to eq(max_resources_per_workspace)
 
         expect(result)
           .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
             { remote_development_agent_config: config_instance }
           ))
         expect(config_instance.workspaces.without_terminated)
-              .to all(have_attributes(force_include_all_resources: true))
+          .to all(have_attributes(force_include_all_resources: true))
       end
+    end
+
+    context 'when a config file is valid' do
+      it_behaves_like 'successful update'
 
       context 'when enabled is not present in the config passed' do
         let(:config) { { remote_development: { dns_zone: dns_zone } } }
@@ -98,45 +119,13 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
         context 'when network_policy key is empty hash in the config passed' do
           let(:network_policy) { {} }
 
-          it 'creates a config record with default value and returns an ok Result containing the agent config' do
-            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
-
-            config_instance = agent.reload.remote_development_agent_config
-            expect(config_instance.enabled).to eq(enabled)
-            expect(config_instance.dns_zone).to eq(dns_zone)
-            expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
-            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
-            expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
-
-            expect(result)
-              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
-                { remote_development_agent_config: config_instance }
-              ))
-            expect(config_instance.workspaces.without_terminated)
-              .to all(have_attributes(force_include_all_resources: true))
-          end
+          it_behaves_like 'successful update'
         end
 
         context 'when network_policy.enabled is explicitly specified in the config passed' do
           let(:network_policy_enabled) { false }
 
-          it 'creates a config record with specified value and returns an ok Result containing the agent config' do
-            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
-
-            config_instance = agent.reload.remote_development_agent_config
-            expect(config_instance.enabled).to eq(enabled)
-            expect(config_instance.dns_zone).to eq(dns_zone)
-            expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
-            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
-            expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
-
-            expect(result)
-              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
-                { remote_development_agent_config: config_instance }
-              ))
-            expect(config_instance.workspaces.without_terminated)
-              .to all(have_attributes(force_include_all_resources: true))
-          end
+          it_behaves_like 'successful update'
         end
 
         context 'when network_policy.egress is explicitly specified in the config passed' do
@@ -153,23 +142,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
 
           let(:network_policy) { network_policy_with_egress }
 
-          it 'creates a config record with specified value and returns an ok Result containing the agent config' do
-            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
-
-            config_instance = agent.reload.remote_development_agent_config
-            expect(config_instance.enabled).to eq(enabled)
-            expect(config_instance.dns_zone).to eq(dns_zone)
-            expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
-            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
-            expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
-
-            expect(result)
-              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
-                { remote_development_agent_config: config_instance }
-              ))
-            expect(config_instance.workspaces.without_terminated)
-              .to all(have_attributes(force_include_all_resources: true))
-          end
+          it_behaves_like 'successful update'
         end
       end
 
@@ -179,45 +152,45 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
         context 'when gitlab_workspaces_proxy is empty hash in the config passed' do
           let(:gitlab_workspaces_proxy) { {} }
 
-          it 'creates a config record with default value and returns an ok Result containing the agent config' do
-            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
-
-            config_instance = agent.reload.remote_development_agent_config
-            expect(config_instance.enabled).to eq(enabled)
-            expect(config_instance.dns_zone).to eq(dns_zone)
-            expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
-            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
-            expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
-
-            expect(result)
-              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
-                { remote_development_agent_config: config_instance }
-              ))
-            expect(config_instance.workspaces.without_terminated)
-              .to all(have_attributes(force_include_all_resources: true))
-          end
+          it_behaves_like 'successful update'
         end
 
         context 'when gitlab_workspaces_proxy.namespace is explicitly specified in the config passed' do
           let(:gitlab_workspaces_proxy_namespace) { 'gitlab-workspaces-specified' }
 
-          it 'creates a config record with specified value and returns an ok Result containing the agent config' do
-            expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
+          it_behaves_like 'successful update'
+        end
+      end
 
-            config_instance = agent.reload.remote_development_agent_config
-            expect(config_instance.enabled).to eq(enabled)
-            expect(config_instance.dns_zone).to eq(dns_zone)
-            expect(config_instance.network_policy_enabled).to eq(network_policy_enabled)
-            expect(config_instance.network_policy_egress.map(&:deep_symbolize_keys)).to eq(network_policy_egress)
-            expect(config_instance.gitlab_workspaces_proxy_namespace).to eq(gitlab_workspaces_proxy_namespace)
+      context 'when default_resources_per_workspace_container is present in the config passed' do
+        context 'when gitlab_workspaces_proxy is empty hash in the config passed' do
+          let(:default_resources_per_workspace_container) { {} }
 
-            expect(result)
-              .to be_ok_result(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
-                { remote_development_agent_config: config_instance }
-              ))
-            expect(config_instance.workspaces.without_terminated)
-              .to all(have_attributes(force_include_all_resources: true))
+          it_behaves_like 'successful update'
+        end
+
+        context 'when default_resources_per_workspace_container is explicitly specified in the config passed' do
+          let(:default_resources_per_workspace_container) do
+            { limits: { cpu: "500m", memory: "1Gi" }, requests: { cpu: "200m", memory: "0.5Gi" } }
           end
+
+          it_behaves_like 'successful update'
+        end
+      end
+
+      context 'when max_resources_per_workspace is present in the config passed' do
+        context 'when gitlab_workspaces_proxy is empty hash in the config passed' do
+          let(:max_resources_per_workspace) { {} }
+
+          it_behaves_like 'successful update'
+        end
+
+        context 'when max_resources_per_workspace is explicitly specified in the config passed' do
+          let(:max_resources_per_workspace) do
+            { limits: { cpu: "500m", memory: "1Gi" }, requests: { cpu: "200m", memory: "0.5Gi" } }
+          end
+
+          it_behaves_like 'successful update'
         end
       end
     end

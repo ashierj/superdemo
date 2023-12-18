@@ -1386,7 +1386,19 @@ msgstr ""
 msgid "'allow: %{allow}' must be a string"
 msgstr ""
 
+msgid "'cpu: %{cpu}' must be a string"
+msgstr ""
+
+msgid "'cpu: %{cpu}' must match the regex '%{cpu_regex}'"
+msgstr ""
+
 msgid "'except: %{except}' must be an array of string"
+msgstr ""
+
+msgid "'memory: %{memory}' must be a string"
+msgstr ""
+
+msgid "'memory: %{memory}' must match the regex '%{memory_regex}'"
 msgstr ""
 
 msgid "'projects' is not yet supported"
@@ -58327,6 +58339,18 @@ msgid "must be a Debian package"
 msgstr ""
 
 msgid "must be a boolean value"
+msgstr ""
+
+msgid "must be a hash"
+msgstr ""
+
+msgid "must be a hash containing 'cpu' and 'memory' attribute of type string"
+msgstr ""
+
+msgid "must be a hash containing 'limits' attribute of type hash"
+msgstr ""
+
+msgid "must be a hash containing 'requests' attribute of type hash"
 msgstr ""
 
 msgid "must be a root group."
