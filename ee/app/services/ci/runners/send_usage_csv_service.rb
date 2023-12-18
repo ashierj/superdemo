@@ -29,8 +29,8 @@ module Ci
         return result if result.error?
 
         Notify.runner_usage_by_project_csv_email(
-          @current_user, generate_csv_service.from_time, generate_csv_service.to_time,
-          result.payload[:csv_data], result.payload[:status]
+          user: @current_user, from_time: generate_csv_service.from_time, to_time: generate_csv_service.to_time,
+          csv_data: result.payload[:csv_data], export_status: result.payload[:status]
         ).deliver_now
 
         ServiceResponse.success(payload: result.payload.slice(:status))

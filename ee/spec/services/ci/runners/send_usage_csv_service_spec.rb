@@ -34,7 +34,8 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
 
     expected_status = { rows_expected: 1, rows_written: 1, truncated: false }
     expect(Notify).to receive(:runner_usage_by_project_csv_email)
-      .with(current_user, from_time, to_time, anything, expected_status)
+      .with(user: current_user, from_time: from_time, to_time: to_time, csv_data: anything,
+        export_status: expected_status)
       .and_return(instance_double(ActionMailer::MessageDelivery, deliver_now: true))
 
     expect(response).to be_success
