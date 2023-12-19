@@ -8,7 +8,7 @@ data:
       - TrackedEvents.pageViewsCount
     dimensions:
       - TrackedEvents.pageUrlpath
-      - TrackedEvents.pageUrl
+      - TrackedEvents.baseUrl
     limit: 100
     timezone: UTC
     filters: []
@@ -16,4 +16,6 @@ data:
 options:
   links:
     - text: TrackedEvents.pageUrlpath
-      href: TrackedEvents.pageUrl
+      href:
+        - TrackedEvents.baseUrl
+        - TrackedEvents.pageUrlpath
