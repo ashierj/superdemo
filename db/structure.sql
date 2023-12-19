@@ -24904,7 +24904,6 @@ CREATE TABLE vulnerabilities (
     epic_id bigint,
     project_id bigint NOT NULL,
     author_id bigint NOT NULL,
-    start_date date,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     title character varying(255) NOT NULL,
