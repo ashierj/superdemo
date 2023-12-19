@@ -9,10 +9,10 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
   let_it_be(:current_user) { create(:admin) }
   let_it_be(:instance_runner) { create(:ci_runner, :instance, :with_runner_manager) }
 
-  let(:from_time) { 1.month.ago }
-  let(:to_time) { DateTime.current }
+  let(:from_date) { 1.month.ago }
+  let(:to_date) { Date.current }
   let(:service) do
-    described_class.new(current_user: current_user, runner_type: :instance_type, from_time: from_time, to_time: to_time)
+    described_class.new(current_user: current_user, runner_type: :instance_type, from_date: from_date, to_date: to_date)
   end
 
   subject(:response) { service.execute }
@@ -34,7 +34,7 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
 
     expected_status = { rows_expected: 1, rows_written: 1, truncated: false }
     expect(Notify).to receive(:runner_usage_by_project_csv_email)
-      .with(user: current_user, from_time: from_time, to_time: to_time, csv_data: anything,
+      .with(user: current_user, from_date: from_date, to_date: to_date, csv_data: anything,
         export_status: expected_status)
       .and_return(instance_double(ActionMailer::MessageDelivery, deliver_now: true))
 

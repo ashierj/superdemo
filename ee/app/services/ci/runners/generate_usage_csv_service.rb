@@ -6,21 +6,21 @@ module Ci
     #   (based on ClickHouse's ci_used_minutes_mv view)
     #
     class GenerateUsageCsvService
-      attr_reader :project_ids, :runner_type, :from_time, :to_time
+      attr_reader :project_ids, :runner_type, :from_date, :to_date
 
       REPORT_ENTRY_LIMIT = 500 # Max number of projects listed in report
 
       # @param [User] current_user The user performing the reporting
       # @param [Symbol] runner_type The type of runners to report on. Defaults to nil, reporting on all runner types
-      # @param [DateTime] from_time The start date of the period to examine. Defaults to start of last full month
-      # @param [DateTime] to_time The end date of the period to examine. Defaults to end of month
-      def initialize(current_user:, runner_type: nil, from_time: nil, to_time: nil)
+      # @param [Date] from_date The start date of the period to examine. Defaults to start of last full month
+      # @param [Date] to_date The end date of the period to examine. Defaults to end of month
+      def initialize(current_user:, runner_type: nil, from_date: nil, to_date: nil)
         runner_type = Ci::Runner.runner_types[runner_type] if runner_type.is_a?(Symbol)
 
         @current_user = current_user
         @runner_type = runner_type
-        @from_time = from_time || DateTime.current.prev_month.beginning_of_month
-        @to_time = to_time || @from_time.end_of_month
+        @from_date = from_date || Date.current.prev_month.beginning_of_month
+        @to_date = to_date || @from_date.end_of_month
       end
 
       def execute
@@ -75,23 +75,23 @@ module Ci
       def where_clause
         <<~SQL
           #{'runner_type = {runner_type: UInt8} AND' if runner_type}
-          finished_at_bucket >= {from_time: DateTime('UTC', 6)} AND
-          finished_at_bucket < {to_time: DateTime('UTC', 6)}
+          finished_at_bucket >= {from_date: DateTime('UTC', 6)} AND
+          finished_at_bucket < {to_date: DateTime('UTC', 6)}
         SQL
       end
 
       def placeholders
         placeholders = {
           runner_type: runner_type,
-          from_time: format_datetime(@from_time),
-          to_time: format_datetime(@to_time)
+          from_date: format_date(@from_date),
+          to_date: format_date(@to_date + 1) # Include jobs until the end of the day
         }
 
         placeholders.compact
       end
 
-      def format_datetime(datetime)
-        datetime&.utc&.strftime('%Y-%m-%d %H:%M:%S')
+      def format_date(date)
+        date.strftime('%Y-%m-%d %H:%M:%S')
       end
 
       def replace_with_project_paths(result)
