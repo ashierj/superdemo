@@ -30,6 +30,20 @@ export const dependencyProxyPackagesToggleSettingMutationMock = (override) => ({
   },
 });
 
+export const dependencyProxyMavenPackagesSettingMutationMock = (override) => ({
+  data: {
+    updateDependencyProxyPackagesSettings: {
+      dependencyProxyPackagesSetting: {
+        __typename: 'DependencyProxyPackagesSetting',
+        mavenExternalRegistryUrl: 'https://test.dev',
+        mavenExternalRegistryUsername: 'user1',
+      },
+      errors: [],
+      ...override,
+    },
+  },
+});
+
 export const mutationErrorMock = {
   errors: [
     {

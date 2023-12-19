@@ -1,17 +1,17 @@
 <script>
-import { GlFormGroup, GlFormInput, GlSkeletonLoader, GlToggle } from '@gitlab/ui';
+import { GlSkeletonLoader, GlToggle } from '@gitlab/ui';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
+import MavenForm from 'ee_component/packages_and_registries/settings/project/components/maven_form.vue';
 import updateDependencyProxyPackagesSettings from 'ee_component/packages_and_registries/settings/project/graphql/mutations/update_dependency_proxy_packages_settings.mutation.graphql';
-import { updateDependencyProxyPackagesToggleSettings } from 'ee_component/packages_and_registries/settings/project/graphql/utils/cache_update';
+import { cacheUpdateDependencyProxyPackagesSettings } from 'ee_component/packages_and_registries/settings/project/graphql/utils/cache_update';
 
 export default {
   name: 'DependencyProxyPackagesSettingsForm',
   components: {
-    GlFormGroup,
-    GlFormInput,
     GlSkeletonLoader,
     GlToggle,
+    MavenForm,
   },
   mixins: [Tracking.mixin()],
   inject: ['projectPath'],
@@ -31,13 +31,14 @@ export default {
       tracking: {
         label: 'dependendency_proxy_packages_settings',
       },
-      mavenExternalRegistryPassword: '',
     };
   },
   computed: {
-    prefilledForm() {
+    mavenFormData() {
+      const { mavenExternalRegistryUrl, mavenExternalRegistryUsername } = this.value;
       return {
-        ...this.value,
+        mavenExternalRegistryUrl,
+        mavenExternalRegistryUsername,
       };
     },
     enabled: {
@@ -78,7 +79,7 @@ export default {
         .mutate({
           mutation: updateDependencyProxyPackagesSettings,
           variables: this.mutationVariables({ enabled }),
-          update: updateDependencyProxyPackagesToggleSettings(this.projectPath),
+          update: cacheUpdateDependencyProxyPackagesSettings(this.projectPath),
           optimisticResponse: this.optimisticResponse({ enabled }),
         })
         .then(({ data }) => {
@@ -101,26 +102,6 @@ export default {
   <gl-skeleton-loader v-if="isLoading" />
   <div v-else>
     <gl-toggle v-model="enabled" :label="s__('DependencyProxy|Enable Dependency Proxy')" />
-    <form>
-      <h5 class="gl-mt-6">{{ s__('PackageRegistry|Maven') }}</h5>
-      <gl-form-group
-        :label="__('URL')"
-        :description="s__('DependencyProxy|Base URL of the external registry.')"
-      >
-        <gl-form-input v-model="prefilledForm.mavenExternalRegistryUrl" width="xl" />
-      </gl-form-group>
-      <gl-form-group
-        :label="__('Username')"
-        :description="s__('DependencyProxy|Username of the external registry.')"
-      >
-        <gl-form-input v-model="prefilledForm.mavenExternalRegistryUsername" width="xl" />
-      </gl-form-group>
-      <gl-form-group
-        :label="__('Password')"
-        :description="s__('DependencyProxy|Password for your external registry.')"
-      >
-        <gl-form-input v-model="mavenExternalRegistryPassword" width="xl" type="password" />
-      </gl-form-group>
-    </form>
+    <maven-form :data="mavenFormData" />
   </div>
 </template>
