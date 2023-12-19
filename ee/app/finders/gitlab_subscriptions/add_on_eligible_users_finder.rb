@@ -23,9 +23,7 @@ module GitlabSubscriptions
                 .id_in(members.select(:user_id))
                 .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/426357")
 
-      users = users.search(search_term) if search_term
-
-      users
+      search_term ? users.search(search_term) : users.ordered_by_id_desc
     end
 
     private

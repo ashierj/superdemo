@@ -24,10 +24,12 @@ module Resolvers
 
           return [] unless code_suggestions_available?
 
-          ::GitlabSubscriptions::SelfManaged::AddOnEligibleUsersFinder.new(
+          users = ::GitlabSubscriptions::SelfManaged::AddOnEligibleUsersFinder.new(
             add_on_type: add_on_type,
             search_term: search
           ).execute
+
+          offset_pagination(users)
         end
 
         private

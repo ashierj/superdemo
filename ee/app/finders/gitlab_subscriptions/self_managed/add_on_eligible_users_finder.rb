@@ -15,9 +15,7 @@ module GitlabSubscriptions
 
         users = ::User.active.without_bots.without_ghosts
 
-        users = users.search(search_term) if search_term
-
-        users
+        search_term ? users.search(search_term) : users.ordered_by_id_desc
       end
     end
   end
