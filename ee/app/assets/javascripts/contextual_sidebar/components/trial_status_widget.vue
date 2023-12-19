@@ -64,7 +64,8 @@ export default {
       <div v-if="isTrialActive">
         <div class="gl-display-flex gl-w-full">
           <span class="nav-icon-container svg-container gl-mr-3">
-            <img :src="navIconImagePath" width="16" class="svg" />
+            <!-- eslint-disable @gitlab/vue-require-i18n-attribute-strings -->
+            <img alt="" :src="navIconImagePath" width="16" class="svg" />
           </span>
           <span class="nav-item-name gl-flex-grow-1">
             {{ widgetTitle }}
