@@ -12,6 +12,8 @@ describe('TracingTable', () => {
       operation: 'lets-go',
       duration_nano: 1500000,
       trace_id: 'trace-1',
+      total_spans: 1,
+      matched_span_count: 1,
     },
     {
       timestamp: '2023-08-11T16:03:40.577538Z',
@@ -19,12 +21,15 @@ describe('TracingTable', () => {
       operation: 'lets-go-2',
       duration_nano: 2000000,
       trace_id: 'trace-2',
+      total_spans: 3,
+      matched_span_count: 2,
     },
   ];
 
   const expectedTraces = [
     {
       timestamp: 'Jul 10, 2023 3:02pm UTC',
+      badge: '1 span / 1 match',
       service_name: 'tracegen',
       operation: 'lets-go',
       duration: '1.50 ms',
@@ -32,6 +37,7 @@ describe('TracingTable', () => {
     },
     {
       timestamp: 'Aug 11, 2023 4:03pm UTC',
+      badge: '3 spans / 2 matches',
       service_name: 'tracegen-2',
       operation: 'lets-go-2',
       duration: '2.00 ms',
@@ -64,7 +70,8 @@ describe('TracingTable', () => {
     mockTraces.forEach((_, i) => {
       const row = getRows().at(i);
       const trace = expectedTraces[i];
-      expect(row.find(`[data-testid="trace-timestamp"]`).text()).toBe(trace.timestamp);
+      expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(trace.timestamp);
+      expect(row.find(`[data-testid="trace-timestamp"]`).text()).toContain(trace.badge);
       expect(row.find(`[data-testid="trace-service"]`).text()).toBe(trace.service_name);
       expect(row.find(`[data-testid="trace-operation"]`).text()).toBe(trace.operation);
       expect(row.find(`[data-testid="trace-duration"]`).text()).toBe(trace.duration);
