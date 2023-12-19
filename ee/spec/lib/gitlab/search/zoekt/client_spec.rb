@@ -216,7 +216,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       end
     end
 
-    context 'with a failed resposne' do
+    context 'with a failed response' do
       let(:successful_response) { false }
 
       it 'raises an exception when response is not successful' do

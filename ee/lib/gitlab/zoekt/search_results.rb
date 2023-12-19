@@ -150,7 +150,7 @@ module Gitlab
         [results, total_count]
       end
 
-      # Extracts results from the Zoekt resposne
+      # Extracts results from the Zoekt response
       #
       # @param response [Hash] JSON response converted to hash
       # @param per_page [Integer] how many documents per page
