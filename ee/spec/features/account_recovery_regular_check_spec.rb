@@ -86,8 +86,7 @@ RSpec.describe 'Account recovery regular check callout', feature_category: :user
         expect(page).to have_content(message)
       end
 
-      it 'hides callout on next session if user dismissed it', :js,
-        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375101' do
+      it 'hides callout on next session if user dismissed it', :js do
         visit dashboard_todos_path
 
         expect(page).to have_content(message)
@@ -97,7 +96,8 @@ RSpec.describe 'Account recovery regular check callout', feature_category: :user
         start_new_session(user_two_factor_enabled)
         visit dashboard_todos_path
 
-        expect(page).not_to have_content(message)
+        wait_for_requests
+        expect(page).to have_no_content(message)
       end
     end
   end
