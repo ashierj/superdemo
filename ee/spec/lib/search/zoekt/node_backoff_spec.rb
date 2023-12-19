@@ -77,8 +77,12 @@ RSpec.describe Search::Zoekt::NodeBackoff, :clean_gitlab_redis_cache, feature_ca
   end
 
   describe '.expires_at', :freeze_time do
+    it 'is set for a new backoff' do
+      expect(backoff.expires_at).not_to be_nil
+    end
+
     it 'is expiration date time' do
-      expect(backoff).to receive(:expires_in_s).and_return(5.seconds)
+      expect(backoff).to receive(:expires_in_s).twice.and_return(5.seconds)
       backoff.backoff!
       expect(backoff.expires_at).to eq(5.seconds.from_now)
     end
@@ -86,7 +90,7 @@ RSpec.describe Search::Zoekt::NodeBackoff, :clean_gitlab_redis_cache, feature_ca
 
   describe '.seconds_remaining', :freeze_time do
     it 'is number of seconds until expiration' do
-      expect(backoff).to receive(:expires_in_s).and_return(5.seconds)
+      expect(backoff).to receive(:expires_in_s).twice.and_return(5.seconds)
       backoff.backoff!
       expect(backoff.seconds_remaining).to eq(5.seconds)
     end
