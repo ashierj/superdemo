@@ -85,6 +85,9 @@ export const HEADER_ACTION_BUTTONS = {
     action: 'startSubscription',
     icon: 'tanuki-ai',
     badge: __('Experiment'),
+    tooltip: s__(
+      'AI|This is an experiment feature that uses AI to provide recommendations for resolving this vulnerability. Use this feature with caution.',
+    ),
   },
 };
 
