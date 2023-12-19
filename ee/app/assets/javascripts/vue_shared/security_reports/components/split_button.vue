@@ -1,5 +1,12 @@
 <script>
-import { GlButtonGroup, GlButton, GlCollapsibleListbox, GlIcon, GlBadge } from '@gitlab/ui';
+import {
+  GlButtonGroup,
+  GlButton,
+  GlCollapsibleListbox,
+  GlIcon,
+  GlBadge,
+  GlTooltipDirective as GlTooltip,
+} from '@gitlab/ui';
 import { __ } from '~/locale';
 import { visitUrl } from '~/lib/utils/url_utility';
 
@@ -10,6 +17,9 @@ export default {
     GlCollapsibleListbox,
     GlIcon,
     GlBadge,
+  },
+  directives: {
+    GlTooltip,
   },
   props: {
     buttons: {
@@ -59,7 +69,13 @@ export default {
   <!--TODO: Replace button-group workaround once `split` option for new dropdowns is implemented.-->
   <!-- See issue at https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2263-->
   <gl-button-group v-if="selectedButton">
+    <!-- Must set a unique "key" to force re-rendering. -->
+    <!-- This ensures the tooltip is reset correctly when selectedButton changes. -->
     <gl-button
+      :key="selectedButton.name"
+      v-gl-tooltip
+      :title="selectedButton.tooltip"
+      :aria-label="selectedButton.tooltip"
       :disabled="disabled"
       variant="confirm"
       :href="selectedButton.href"

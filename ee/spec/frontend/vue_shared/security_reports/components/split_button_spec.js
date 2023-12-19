@@ -1,5 +1,6 @@
 import { GlButton, GlButtonGroup, GlCollapsibleListbox, GlListboxItem, GlBadge } from '@gitlab/ui';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import * as urlUtility from '~/lib/utils/url_utility';
 
@@ -33,6 +34,9 @@ describe('Split Button', () => {
 
   const createComponent = (props, mountFn = shallowMountExtended) => {
     wrapper = mountFn(SplitButton, {
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       propsData: {
         ...defaultProps,
         ...props,
@@ -98,6 +102,19 @@ describe('Split Button', () => {
 
       expect(findButtonBadge().text()).toBe(badge);
       expect(findButtonBadge().props('size')).toBe('sm');
+    });
+
+    it('renders the tooltip', () => {
+      const tooltipText = 'some tooltip message';
+      const { buttons } = defaultProps;
+      createComponent({ buttons: [{ ...buttons[0], tooltip: tooltipText }] }, mountExtended);
+
+      const selectedButton = findButton();
+      const tooltip = getBinding(selectedButton.element, 'gl-tooltip');
+
+      expect(tooltip).toBeDefined();
+      expect(selectedButton.attributes('title')).toBe(tooltipText);
+      expect(selectedButton.attributes('aria-label')).toBe(tooltipText);
     });
   });
 
