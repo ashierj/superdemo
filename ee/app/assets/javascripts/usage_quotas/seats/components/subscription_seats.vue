@@ -17,6 +17,7 @@ import { sprintf, n__ } from '~/locale';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 import { updateSubscriptionPlanApolloCache } from 'ee/usage_quotas/seats/graphql/utils';
+import PublicNamespacePlanInfoCard from 'ee/usage_quotas/seats/components/public_namespace_plan_info_card.vue';
 import SubscriptionUpgradeInfoCard from './subscription_upgrade_info_card.vue';
 import SubscriptionUserList from './subscription_user_list.vue';
 
@@ -26,6 +27,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
+    PublicNamespacePlanInfoCard,
     GlAlert,
     StatisticsCard,
     StatisticsSeatsCard,
@@ -33,6 +35,7 @@ export default {
     SubscriptionUserList,
     GlSkeletonLoader,
   },
+  inject: ['isPublicNamespace'],
   computed: {
     ...mapState([
       'namespaceId',
@@ -53,6 +56,9 @@ export default {
       'activeTrial',
     ]),
     ...mapGetters(['hasFreePlan', 'isLoading']),
+    isPublicFreeNamespace() {
+      return this.hasFreePlan && this.isPublicNamespace;
+    },
     pendingMembersAlertMessage() {
       return sprintf(
         n__(
@@ -212,6 +218,8 @@ export default {
           :explore-plans-path="explorePlansPath"
           :active-trial="activeTrial"
         />
+        <public-namespace-plan-info-card v-else-if="isPublicFreeNamespace" />
+        <!-- StatisticsSeatsCard will eventually be replaced. See https://gitlab.com/gitlab-org/gitlab/-/issues/429828 -->
         <statistics-seats-card
           v-else
           :seats-used="maxSeatsUsed"

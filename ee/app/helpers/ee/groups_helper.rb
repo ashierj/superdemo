@@ -70,6 +70,7 @@ module EE
       {
         namespace_id: group.id,
         namespace_name: group.name,
+        is_public_namespace: group.public?.to_s,
         full_path: group.full_path,
         seat_usage_export_path: group_seat_usage_path(group, format: :csv),
         pending_members_page_path: pending_members_page_path,

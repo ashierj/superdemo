@@ -3,6 +3,7 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
+import PublicNamespacePlanInfoCard from 'ee/usage_quotas/seats/components/public_namespace_plan_info_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 import SubscriptionUpgradeInfoCard from 'ee/usage_quotas/seats/components/subscription_upgrade_info_card.vue';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
@@ -52,13 +53,16 @@ describe('Subscription Seats', () => {
   let wrapper;
 
   const createComponent = ({ initialState = {}, initialGetters = {} } = {}) => {
+    const { isPublicNamespace = false } = initialState;
     return extendedWrapper(
       shallowMount(SubscriptionSeats, {
         store: fakeStore({ initialState, initialGetters }),
+        provide: { isPublicNamespace },
       }),
     );
   };
 
+  const findPublicNamespacePlanInfoCard = () => wrapper.findComponent(PublicNamespacePlanInfoCard);
   const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
   const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
   const findSubscriptionUpgradeCard = () => wrapper.findComponent(SubscriptionUpgradeInfoCard);
@@ -116,6 +120,31 @@ describe('Subscription Seats', () => {
       });
 
       describe('when group has no subscription', () => {
+        describe('when is a public namespace', () => {
+          beforeEach(() => {
+            wrapper = createComponent({
+              initialState: {
+                ...defaultInitialState,
+                hasNoSubscription: true,
+                hasLimitedFreePlan: false,
+                activeTrial: false,
+                isPublicNamespace: true,
+              },
+              initialGetters: {
+                hasFreePlan: () => true,
+              },
+            });
+          });
+
+          it('does not render <statistics-seats-card>', () => {
+            expect(findStatisticsSeatsCard().exists()).toBe(false);
+          });
+
+          it('renders <public-namespace-plan-info-card>', () => {
+            expect(findPublicNamespacePlanInfoCard().exists()).toBe(true);
+          });
+        });
+
         describe('when not on limited free plan', () => {
           beforeEach(() => {
             wrapper = createComponent({

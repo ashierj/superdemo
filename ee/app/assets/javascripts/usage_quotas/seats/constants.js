@@ -7,6 +7,7 @@ export const HEADER_TOTAL_ENTRIES = 'x-total';
 export const HEADER_PAGE_NUMBER = 'x-page';
 export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
 export const PLAN_CODE_FREE = 'free';
+
 export const FIELDS = [
   {
     key: 'disclosure',
@@ -126,6 +127,4 @@ export const seatsUsedHelpText = __('Learn more about max seats used');
 export const seatsOwedText = __('Seats owed');
 export const seatsOwedHelpText = __('Learn more about seats owed');
 export const addSeatsText = s__('Billing|Add seats');
-export const subscriptionEndDateText = s__('Billing|Subscription end');
-export const subscriptionStartDateText = s__('Billing|Subscription start');
 export const seatsUsedDescriptionText = s__('Billing|%{plan} SaaS Plan seats used');

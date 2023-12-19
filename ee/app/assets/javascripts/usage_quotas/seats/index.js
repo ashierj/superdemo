@@ -22,6 +22,7 @@ export default (containerId = 'js-seat-usage-app') => {
     fullPath,
     namespaceId,
     namespaceName,
+    isPublicNamespace,
     seatUsageExportPath,
     pendingMembersPagePath,
     pendingMembersCount,
@@ -54,6 +55,8 @@ export default (containerId = 'js-seat-usage-app') => {
     provide: {
       explorePlansPath,
       fullPath,
+      isPublicNamespace: parseBoolean(isPublicNamespace),
+      namespaceId,
     },
     store,
     render(createElement) {

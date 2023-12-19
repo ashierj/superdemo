@@ -1,8 +1,8 @@
 import produce from 'immer';
 import getGitlabSubscription from 'ee/fulfillment/shared_queries/gitlab_subscription.query.graphql';
 
-const PLAN_TYPE = 'Plan';
-const SUBSCRIPTION_TYPE = 'Subscription';
+export const PLAN_TYPE = 'Plan';
+export const SUBSCRIPTION_TYPE = 'Subscription';
 
 export const writeDataToApolloCache = (
   apolloProvider,
