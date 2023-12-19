@@ -12,7 +12,13 @@ module EE
     USES_MERGE_BASE_PIPELINE_FOR_COMPARISON = {
       ::Ci::CompareMetricsReportsService => ->(_project) { true },
       ::Ci::CompareCodequalityReportsService => ->(_project) { true },
-      ::Ci::CompareSecurityReportsService => ->(_project) { true }
+      ::Ci::CompareSecurityReportsService => ->(_project) { true },
+      ::Ci::CompareLicenseScanningReportsCollapsedService => ->(project) do
+        ::Feature.enabled?(:scan_result_policy_license_scanning_merge_base_pipeline, project)
+      end,
+      ::Ci::CompareLicenseScanningReportsService => ->(project) do
+        ::Feature.enabled?(:scan_result_policy_license_scanning_merge_base_pipeline, project)
+      end
     }.freeze
 
     MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON = 10
@@ -434,6 +440,10 @@ module EE
           .find_by(ref: target_branch, tag: false)
     end
 
+    def latest_comparison_pipeline_with_sbom_reports
+      find_merge_base_pipeline_with_sbom_report || find_base_pipeline_with_sbom_report
+    end
+
     override :can_suggest_reviewers?
     def can_suggest_reviewers?
       open? && modified_paths.any?
@@ -512,14 +522,32 @@ module EE
     end
 
     def find_merge_base_pipeline_with_security_reports
-      last_merge_base_pipelines(limit: MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON).find do |pipeline|
-        pipeline.self_and_project_descendants.any?(&:has_security_reports?)
-      end
+      find_pipeline_with_reports(
+        last_merge_base_pipelines(limit: MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON),
+        :has_security_reports?)
     end
 
     def find_base_pipeline_with_security_reports
-      last_base_pipelines(limit: MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON).find do |pipeline|
-        pipeline.self_and_project_descendants.any?(&:has_security_reports?)
+      find_pipeline_with_reports(
+        last_base_pipelines(limit: MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON),
+        :has_security_reports?)
+    end
+
+    def find_merge_base_pipeline_with_sbom_report
+      find_pipeline_with_reports(
+        last_merge_base_pipelines(limit: MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON),
+        :has_sbom_reports?)
+    end
+
+    def find_base_pipeline_with_sbom_report
+      find_pipeline_with_reports(
+        last_base_pipelines(limit: MAX_CHECKED_PIPELINES_FOR_SECURITY_REPORT_COMPARISON),
+        :has_sbom_reports?)
+    end
+
+    def find_pipeline_with_reports(pipelines, report_method)
+      pipelines.find do |pipeline|
+        pipeline.self_and_project_descendants.any?(&report_method)
       end
     end
 

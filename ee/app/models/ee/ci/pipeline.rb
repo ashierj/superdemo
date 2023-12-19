@@ -202,6 +202,10 @@ module EE
         project.namespace.ingest_sbom_reports_available? && has_sbom_reports?
       end
 
+      def has_sbom_reports?
+        complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
+      end
+
       def can_store_security_reports?
         project.can_store_security_reports? && has_security_reports?
       end
@@ -265,10 +269,6 @@ module EE
       end
 
       private
-
-      def has_sbom_reports?
-        complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
-      end
 
       def project_has_subscriptions?
         project.feature_available?(:ci_project_subscriptions) &&
