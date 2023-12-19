@@ -6,6 +6,8 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
   let_it_be(:user) { create(:user) }
   let_it_be(:another_user) { create(:user) }
   let_it_be(:group) { create(:group) }
+  let_it_be(:project_1) { create(:project, group: group) }
+  let_it_be(:project_2) { create(:project, group: group) }
   let_it_be(:namespace) { group }
 
   let(:path_prefix) { %i[group] }
@@ -34,18 +36,18 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
       end
 
       let(:value_stream_params) do
-        { name: 'renamed', setting: { project_ids_filter: [3, 4] } }
+        { name: 'renamed', setting: { project_ids_filter: [project_1.id, project_2.id] } }
       end
 
       subject(:request) { put path_for(value_stream), params: { value_stream: value_stream_params } }
 
       it 'updates project ids filter array' do
-        value_stream.update!(setting_attributes: { project_ids_filter: [1, 2] })
+        value_stream.update!(setting_attributes: { project_ids_filter: [project_1.id] })
 
         expect { request }
           .to change { value_stream.reload.setting.project_ids_filter }
-          .from([1, 2])
-          .to([3, 4])
+          .from([project_1.id])
+          .to([project_1.id, project_2.id])
       end
 
       context 'when project ids filter parameter is empty' do
@@ -54,19 +56,19 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
         end
 
         it 'clears the filter' do
-          value_stream.update!(setting_attributes: { project_ids_filter: [1, 2] })
+          value_stream.update!(setting_attributes: { project_ids_filter: [project_1.id, project_2.id] })
 
           expect { request }
             .to change { value_stream.reload.setting.project_ids_filter }
-            .from([1, 2])
-            .to(nil)
+            .from([project_1.id, project_2.id])
+            .to([])
         end
       end
     end
 
     context 'when creating' do
       let(:value_stream_params) do
-        { name: 'New Stream', setting: { project_ids_filter: [1, 2] } }
+        { name: 'New Stream', setting: { project_ids_filter: [project_1.id, project_2.id] } }
       end
 
       subject(:request) do
@@ -79,7 +81,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
         value_stream = Analytics::CycleAnalytics::ValueStream.last
         expect(response).to have_gitlab_http_status(:created)
         expect(value_stream.setting).to be_persisted
-        expect(value_stream.setting.project_ids_filter).to eq([1, 2])
+        expect(value_stream.setting.project_ids_filter).to match_array([project_1.id, project_2.id])
       end
     end
   end
